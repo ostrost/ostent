@@ -12,7 +12,7 @@ Download
    - _Expect \*BSD builds surely_
 
 A single executable without dependecies, has no config, makes no files of it's own. Self-updates.
-Lazyest install: `curl -sSL https://github.com/rzab/ostent/raw/master/lazyinstall.sh | sh -e`
+Laziest install: `curl -sSL https://github.com/rzab/ostent/raw/master/lazyinstall.sh | sh -e`
 
 `ostent` accepts optional `-b[ind]` argument to set specific address and port to bind to, all the machine addresses and port 8050 by default.
 
@@ -45,10 +45,10 @@ Running the code
 4. **`go get github.com/jteeuwen/go-bindata/go-bindata`**
 
 5. **`scons`** to generate required `src/ostential/{assets,view}/bindata.go`. It's either scons, or run **manually**:
-```sh
-   go-bindata -pkg view   -o src/ostential/view/bindata.go   -tags '!production' -debug -prefix templates.min templates.min/...
-   go-bindata -pkg assets -o src/ostential/assets/bindata.go -tags '!production' -debug -prefix assets        assets/...
-```
+   ```sh
+      go-bindata -pkg view   -o src/ostential/view/bindata.go   -tags '!production' -debug -prefix templates.min templates.min/...
+      go-bindata -pkg assets -o src/ostential/assets/bindata.go -tags '!production' -debug -prefix assets        assets/...
+   ```
 
 6. Using [rerun](https://github.com/skelterjohn/rerun), it'll go get the remaining dependecies:
 
