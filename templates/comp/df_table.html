@@ -1,0 +1,24 @@
+<table class="{{"table1"}} {{"stripe-table"}}">
+	<thead>
+		<tr>
+			<th class="{{"header"}}">{{$__amber_1 := .Data.DiskTable}}{{$__amber_2 := $__amber_1.Links}}{{$__amber_3 := $__amber_2.DiskName}}        <a{{$__amber_3}}>Device</a></th>
+			<th class="{{"header"}}">{{$__amber_4 := .Data.DiskTable}}{{$__amber_5 := $__amber_4.Links}}{{$__amber_6 := $__amber_5.DirName}}        <a{{$__amber_6}}>Mounted</a></th>
+			<th class="{{"header"}} {{"digital"}}">{{$__amber_7 := .Data.DiskTable}}{{$__amber_8 := $__amber_7.Links}}{{$__amber_9 := $__amber_8.Avail}}<a{{$__amber_9}}>Avail</a></th>
+			<th class="{{"header"}} {{"digital"}}">{{$__amber_10 := .Data.DiskTable}}{{$__amber_11 := $__amber_10.Links}}{{$__amber_12 := $__amber_11.Used}}<a{{$__amber_12}}>Used</a></th>
+			<th class="{{"header"}} {{"digital"}}">{{$__amber_13 := .Data.DiskTable}}{{$__amber_14 := $__amber_13.Links}}{{$__amber_15 := $__amber_14.Total}}<a{{$__amber_15}}>Total</a></th>
+		</tr>
+	</thead>
+	<tbody>{{$__amber_16 := .Data.DiskTable}}{{$__amber_17 := $__amber_16.TRHTMLAttr}}{{$tr_attr := $__amber_17}}{{$__amber_18 := .Data.DiskTable}}{{$__amber_19 := $__amber_18.NOrow1}}{{$no_row1 := $__amber_19}}{{$__amber_20 := .Data.DiskTable}}{{$__amber_21 := $__amber_20.List}}{{range $disk := $__amber_21}}{{$__amber_22 := not $no_row1}}{{if $__amber_22}}
+		<tr{{$tr_attr}}>
+		<td>{{$__amber_23 := $disk.DiskName}}{{$__amber_23}}</td>
+		<td>{{$__amber_24 := $disk.DirName}}{{$__amber_24}}</td>
+		<td class="{{"digital"}}">{{$__amber_25 := $disk.Avail}}{{$__amber_25}}</td>
+		<td class="{{"digital"}}">
+			{{$__amber_26 := $disk.Used}}{{$__amber_26}}&nbsp;
+			<sup>{{$__amber_27 := $disk.AttrUsePercent}}{{$__amber_28 := $disk.UsePercent}}<span{{$__amber_27}}>{{$__amber_28}}%</span></sup>
+		</td>
+		<td class="{{"digital"}}">{{$__amber_29 := $disk.Total}}{{$__amber_29}}</td>
+		</tr>{{end}}{{end}}
+		{{$__amber_30 := .Data.DiskTable}}{{$__amber_31 := $__amber_30.JS}}{{$__amber_31}}
+	</tbody>
+</table>

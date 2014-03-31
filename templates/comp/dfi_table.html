@@ -1,0 +1,22 @@
+<table class="{{"table1"}} {{"stripe-table"}}">
+	<thead>
+		<tr>
+			<th class="{{"header"}}">        Device</th>
+			<th class="{{"header"}} {{"digital"}}">Avail</th>
+			<th class="{{"header"}} {{"digital"}}">Used</th>
+			<th class="{{"header"}} {{"digital"}}">Total</th>
+		</tr>
+	</thead>
+	<tbody>{{$__amber_1 := .Data.DiskTable}}{{$__amber_2 := $__amber_1.TRHTMLAttr}}{{$tr_attr := $__amber_2}}{{$__amber_3 := .Data.DiskTable}}{{$__amber_4 := $__amber_3.NOrow2}}{{$no_row2 := $__amber_4}}{{$__amber_5 := .Data.DiskTable}}{{$__amber_6 := $__amber_5.List}}{{range $disk := $__amber_6}}{{$__amber_7 := not $no_row2}}{{if $__amber_7}}
+		<tr{{$tr_attr}}>
+		<td>{{$__amber_8 := $disk.DiskName}}{{$__amber_8}}</td>
+		<td class="{{"digital"}}">{{$__amber_9 := $disk.Ifree}}{{$__amber_9}}</td>
+		<td class="{{"digital"}}">
+			{{$__amber_10 := $disk.Iused}}{{$__amber_10}}&nbsp;
+			<sup>{{$__amber_11 := $disk.AttrIusePercent}}{{$__amber_12 := $disk.IusePercent}}<span{{$__amber_11}}>{{$__amber_12}}%</span></sup>
+		</td>
+		<td class="{{"digital"}}">{{$__amber_13 := $disk.Inodes}}{{$__amber_13}}</td>
+		</tr>{{end}}{{end}}
+		{{$__amber_14 := .Data.DiskTable}}{{$__amber_15 := $__amber_14.JS}}{{$__amber_15}}
+	</tbody>
+</table>
