@@ -61,7 +61,7 @@ Go packages
 
 `[src/]ostent` is the main package: rerun will find `main.go`;
 the other `main.production.go` is the init code for the distributed [binaries](#download):
-includes [goagain](https://github.com/rcrowley/goagain) and [go-update](https://github.com/inconshreveable/go-update) and daemonizes.
+the only difference is inclusion of [goagain](https://github.com/rcrowley/goagain) recovering and self-updating via [go-update](https://github.com/inconshreveable/go-update).
 
 `[src/]ostential` is the core package.
 
