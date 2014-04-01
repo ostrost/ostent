@@ -1,6 +1,8 @@
 OSTENT
 ======
 
+[**View Demo**](http://demo.ostrost.com/)
+
 ![screenshot](https://github.com/rzab/ostent/raw/master/screenshot.png)
 
 Download
