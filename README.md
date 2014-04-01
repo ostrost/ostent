@@ -30,11 +30,11 @@ Self-updates: new releases will be deployed automatically, sans page reload yet.
 
 Laziest install: `curl -sSL https://github.com/rzab/ostent/raw/master/lazyinstall.sh | sh -e`
 
-`ostent` accepts optional `-b[ind]` argument to set specific address and/or port to bind to, otherwise any machine address and port 8050 by default.
+`ostent` accepts optional `-b[ind]` argument to set specific IP and/or port to bind to, otherwise any machine IP and port 8050 by default.
 
    - `ostent -bind 127.1` # [http://127.0.0.1:8050/](http://127.0.0.1:8050/)
-   - `ostent -bind 192.168.1.10:9060` # http://192.168.1.10:9060/
-   - `ostent -bind 9060` # any address, port 10060
+   - `ostent -bind 192.168.1.10:8051` # port 8051
+   - `ostent -bind 8052` # any IP, port 8052
 
 Feedback & contribute
 ---------------------
