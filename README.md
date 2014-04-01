@@ -5,6 +5,18 @@ OSTENT
 
 ![screenshot](https://github.com/rzab/ostent/raw/master/screenshot.png)
 
+   - Memory usage
+   - Network traffic
+   - Disks usage
+   - CPU load
+   - Processes
+   - to be continued
+
+Everything is on real-time display only, 1 second refresh.
+A hosted service with graphs, history, aggregation and more,
+to leave the machines out of it, is on it's way.
+ostent is inteded to be an agent of sort.
+
 Download
 --------
 
@@ -13,22 +25,16 @@ Download
    - [Darwin](https://OSTROST.COM/ostent/releases/latest/Darwin x86_64/ostent)
    - _Expect \*BSD builds surely_
 
-A single executable without dependecies, has no config, makes no files of it's own. Self-updates.
+A single executable without dependecies, has no config, makes no files of it's own.
+Self-updates: new releases will be deployed automatically, sans page reload yet.
+
 Laziest install: `curl -sSL https://github.com/rzab/ostent/raw/master/lazyinstall.sh | sh -e`
 
-`ostent` accepts optional `-b[ind]` argument to set specific address and port to bind to, all the machine addresses and port 8050 by default.
+`ostent` accepts optional `-b[ind]` argument to set specific address and/or port to bind to, otherwise any machine address and port 8050 by default.
 
    - `ostent -bind 127.1` # [http://127.0.0.1:8050/](http://127.0.0.1:8050/)
-   - `ostent -bind 192.168.1.10:9060` # [http://192.168.1.10:9060/](http://192.168.1.10:9060/)
-
-Metrics
--------
-   - Memory usage
-   - Network traffic
-   - Disks usage
-   - CPU load
-   - Processes
-   - to be continued
+   - `ostent -bind 192.168.1.10:9060` # http://192.168.1.10:9060/
+   - `ostent -bind 9060` # any address, port 10060
 
 Feedback & contribute
 ---------------------
@@ -71,7 +77,7 @@ Templates
 ---------
 
 HTML templates in this repository are actually **generated** outside.
-I'm OK with publishing all the source templates, but the generation depends on
+I'm OK with publishing the source templates, but the generation depends on
 [amber](https://github.com/eknkc/amber),
 [react-tools](https://www.npmjs.org/package/react-tools) with Node.js and
 another set of scons rules.
@@ -85,6 +91,6 @@ and _somewhat readable_ `templates/` for reference.
 The assets
 ----------
 
-The [binaries](#download), to be stand-alone, have all the assets (including `templates.min/`) embeded.
+The [binaries](#download), to be stand-alone, have the assets (including `templates.min/`) embeded.
 Unless you specifically `go build` with `-tags production`, they are not embeded for the ease of development.
 If you `rerun ostent`, the assets are read from the actual files.
