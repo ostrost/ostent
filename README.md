@@ -16,6 +16,7 @@ Everything is on real-time display only, 1 second refresh.
 A hosted service with graphs, history, aggregation and more,
 to leave the machines out of it, is on it's way.
 ostent is inteded to be an agent of sort.
+BUT till now it's stand-alone and any service connection will be opt-in and optional.
 
 Download
 --------
