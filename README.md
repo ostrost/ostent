@@ -54,7 +54,7 @@ Running the code
 
 4. **`go get github.com/jteeuwen/go-bindata/go-bindata`**
 
-5. **`scons`** to generate required `src/ostential/{assets,view}/bindata.go`. It's either scons, or run **manually**:
+5. **`scons`** to generate required `src/ostential/{assets,view}/bindata.devel.go`. It's either scons, or run **manually**:
    ```sh
       go-bindata -pkg view   -o src/ostential/view/bindata.devel.go   -tags '!production' -debug -prefix templates.min templates.min/...
       go-bindata -pkg assets -o src/ostential/assets/bindata.devel.go -tags '!production' -debug -prefix assets        assets/...
