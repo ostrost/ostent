@@ -1,13 +1,13 @@
-{{$__amber_1 := .Data.DiskTable}}{{$__amber_2 := $__amber_1.TRHTMLAttr}}{{$tr_attr := $__amber_2}}{{$__amber_3 := .Data.DiskTable}}{{$__amber_4 := $__amber_3.NOrow2}}{{$no_row2 := $__amber_4}}{{$__amber_5 := .Data.DiskTable}}{{$__amber_6 := $__amber_5.List}}{{range $disk := $__amber_6}}{{$__amber_7 := not $no_row2}}{{if $__amber_7}}
-<tr{{$tr_attr}}>{{$__amber_8 := $disk.ShortDiskName}}{{$__amber_9 := __amber_eql $__amber_8 ""}}{{if $__amber_9}}
-<td>{{$__amber_10 := $disk.DiskName}}{{$__amber_10}}</td>{{else}}
-<td>{{$__amber_11 := $disk.DiskName}}
-	<span class="{{"tooltipable"}}" data-toggle="{{"tooltip"}}" data-placement="{{"left"}}" title="{{$__amber_11}}">{{$__amber_12 := $disk.ShortDiskName}}{{$__amber_12}}...</span>
+{{$__amber_1 := .Data.DiskTable}}{{$__amber_2 := $__amber_1.TRHTMLAttr}}{{$tr_attr := $__amber_2}}{{$__amber_3 := .Data.DiskTable}}{{$__amber_4 := $__amber_3.List}}{{range $disk := $__amber_4}}
+<tr{{$tr_attr}}>{{$__amber_5 := $disk.ShortDiskName}}{{$__amber_6 := __amber_eql $__amber_5 ""}}{{if $__amber_6}}
+<td>{{$__amber_7 := $disk.DiskName}}{{$__amber_7}}</td>{{else}}
+<td>{{$__amber_8 := $disk.DiskName}}
+	<span class="{{"tooltipable"}}" data-toggle="{{"tooltip"}}" data-placement="{{"left"}}" title="{{$__amber_8}}">{{$__amber_9 := $disk.ShortDiskName}}{{$__amber_9}}...</span>
 </td>{{end}}
-<td class="{{"digital"}}">{{$__amber_13 := $disk.Ifree}}{{$__amber_13}}</td>
+<td class="{{"digital"}}">{{$__amber_10 := $disk.Ifree}}{{$__amber_10}}</td>
 <td class="{{"digital"}}">
-	{{$__amber_14 := $disk.Iused}}{{$__amber_14}}&nbsp;
-	<sup>{{$__amber_15 := $disk.AttrIusePercent}}{{$__amber_16 := $disk.IusePercent}}<span{{$__amber_15}}>{{$__amber_16}}%</span></sup>
+	{{$__amber_11 := $disk.Iused}}{{$__amber_11}}&nbsp;
+	<sup>{{$__amber_12 := $disk.AttrIusePercent}}{{$__amber_13 := $disk.IusePercent}}<span{{$__amber_12}}>{{$__amber_13}}%</span></sup>
 </td>
-<td class="{{"digital"}}">{{$__amber_17 := $disk.Inodes}}{{$__amber_17}}</td>
-</tr>{{end}}{{end}}
+<td class="{{"digital"}}">{{$__amber_14 := $disk.Inodes}}{{$__amber_14}}</td>
+</tr>{{end}}

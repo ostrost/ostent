@@ -161,21 +161,21 @@
 													<th class="{{"header"}} {{"digital"}}">{{$__amber_54 := .Data.DiskTable}}{{$__amber_55 := $__amber_54.Links}}{{$__amber_56 := $__amber_55.Total}}<a{{$__amber_56}}>Total</a></th>
 												</tr>
 											</thead>
-											<tbody>{{$__amber_57 := .Data.DiskTable}}{{$__amber_58 := $__amber_57.TRHTMLAttr}}{{$tr_attr := $__amber_58}}{{$__amber_59 := .Data.DiskTable}}{{$__amber_60 := $__amber_59.NOrow1}}{{$no_row1 := $__amber_60}}{{$__amber_61 := .Data.DiskTable}}{{$__amber_62 := $__amber_61.List}}{{range $disk := $__amber_62}}{{$__amber_63 := not $no_row1}}{{if $__amber_63}}
-												<tr{{$tr_attr}}>{{$__amber_64 := $disk.ShortDiskName}}{{$__amber_65 := __amber_eql $__amber_64 ""}}{{if $__amber_65}}
-												<td>{{$__amber_66 := $disk.DiskName}}{{$__amber_66}}</td>{{else}}
-												<td>{{$__amber_67 := $disk.DiskName}}
-													<span class="{{"tooltipable"}}" data-toggle="{{"tooltip"}}" data-placement="{{"left"}}" title="{{$__amber_67}}">{{$__amber_68 := $disk.ShortDiskName}}{{$__amber_68}}...</span>
+											<tbody>{{$__amber_57 := .Data.DiskTable}}{{$__amber_58 := $__amber_57.TRHTMLAttr}}{{$tr_attr := $__amber_58}}{{$__amber_59 := .Data.DiskTable}}{{$__amber_60 := $__amber_59.List}}{{range $disk := $__amber_60}}
+												<tr{{$tr_attr}}>{{$__amber_61 := $disk.ShortDiskName}}{{$__amber_62 := __amber_eql $__amber_61 ""}}{{if $__amber_62}}
+												<td>{{$__amber_63 := $disk.DiskName}}{{$__amber_63}}</td>{{else}}
+												<td>{{$__amber_64 := $disk.DiskName}}
+													<span class="{{"tooltipable"}}" data-toggle="{{"tooltip"}}" data-placement="{{"left"}}" title="{{$__amber_64}}">{{$__amber_65 := $disk.ShortDiskName}}{{$__amber_65}}...</span>
 												</td>{{end}}
-												<td>{{$__amber_69 := $disk.DirName}}{{$__amber_69}}</td>
-												<td class="{{"digital"}}">{{$__amber_70 := $disk.Avail}}{{$__amber_70}}</td>
+												<td>{{$__amber_66 := $disk.DirName}}{{$__amber_66}}</td>
+												<td class="{{"digital"}}">{{$__amber_67 := $disk.Avail}}{{$__amber_67}}</td>
 												<td class="{{"digital"}}">
-													{{$__amber_71 := $disk.Used}}{{$__amber_71}}&nbsp;
-													<sup>{{$__amber_72 := $disk.AttrUsePercent}}{{$__amber_73 := $disk.UsePercent}}<span{{$__amber_72}}>{{$__amber_73}}%</span></sup>
+													{{$__amber_68 := $disk.Used}}{{$__amber_68}}&nbsp;
+													<sup>{{$__amber_69 := $disk.AttrUsePercent}}{{$__amber_70 := $disk.UsePercent}}<span{{$__amber_69}}>{{$__amber_70}}%</span></sup>
 												</td>
-												<td class="{{"digital"}}">{{$__amber_74 := $disk.Total}}{{$__amber_74}}</td>
-												</tr>{{end}}{{end}}
-												{{$__amber_75 := .Data.DiskTable}}{{$__amber_76 := $__amber_75.JS}}{{$__amber_76}}
+												<td class="{{"digital"}}">{{$__amber_71 := $disk.Total}}{{$__amber_71}}</td>
+												</tr>{{end}}
+												{{$__amber_72 := .Data.DiskTable}}{{$__amber_73 := $__amber_72.JS}}{{$__amber_73}}
 											</tbody>
 										</table>
 									</span>
@@ -193,20 +193,20 @@
 													<th class="{{"header"}} {{"digital"}}">Total</th>
 												</tr>
 											</thead>
-											<tbody>{{$__amber_77 := .Data.DiskTable}}{{$__amber_78 := $__amber_77.TRHTMLAttr}}{{$tr_attr := $__amber_78}}{{$__amber_79 := .Data.DiskTable}}{{$__amber_80 := $__amber_79.NOrow2}}{{$no_row2 := $__amber_80}}{{$__amber_81 := .Data.DiskTable}}{{$__amber_82 := $__amber_81.List}}{{range $disk := $__amber_82}}{{$__amber_83 := not $no_row2}}{{if $__amber_83}}
-												<tr{{$tr_attr}}>{{$__amber_84 := $disk.ShortDiskName}}{{$__amber_85 := __amber_eql $__amber_84 ""}}{{if $__amber_85}}
-												<td>{{$__amber_86 := $disk.DiskName}}{{$__amber_86}}</td>{{else}}
-												<td>{{$__amber_87 := $disk.DiskName}}
-													<span class="{{"tooltipable"}}" data-toggle="{{"tooltip"}}" data-placement="{{"left"}}" title="{{$__amber_87}}">{{$__amber_88 := $disk.ShortDiskName}}{{$__amber_88}}...</span>
+											<tbody>{{$__amber_74 := .Data.DiskTable}}{{$__amber_75 := $__amber_74.TRHTMLAttr}}{{$tr_attr := $__amber_75}}{{$__amber_76 := .Data.DiskTable}}{{$__amber_77 := $__amber_76.List}}{{range $disk := $__amber_77}}
+												<tr{{$tr_attr}}>{{$__amber_78 := $disk.ShortDiskName}}{{$__amber_79 := __amber_eql $__amber_78 ""}}{{if $__amber_79}}
+												<td>{{$__amber_80 := $disk.DiskName}}{{$__amber_80}}</td>{{else}}
+												<td>{{$__amber_81 := $disk.DiskName}}
+													<span class="{{"tooltipable"}}" data-toggle="{{"tooltip"}}" data-placement="{{"left"}}" title="{{$__amber_81}}">{{$__amber_82 := $disk.ShortDiskName}}{{$__amber_82}}...</span>
 												</td>{{end}}
-												<td class="{{"digital"}}">{{$__amber_89 := $disk.Ifree}}{{$__amber_89}}</td>
+												<td class="{{"digital"}}">{{$__amber_83 := $disk.Ifree}}{{$__amber_83}}</td>
 												<td class="{{"digital"}}">
-													{{$__amber_90 := $disk.Iused}}{{$__amber_90}}&nbsp;
-													<sup>{{$__amber_91 := $disk.AttrIusePercent}}{{$__amber_92 := $disk.IusePercent}}<span{{$__amber_91}}>{{$__amber_92}}%</span></sup>
+													{{$__amber_84 := $disk.Iused}}{{$__amber_84}}&nbsp;
+													<sup>{{$__amber_85 := $disk.AttrIusePercent}}{{$__amber_86 := $disk.IusePercent}}<span{{$__amber_85}}>{{$__amber_86}}%</span></sup>
 												</td>
-												<td class="{{"digital"}}">{{$__amber_93 := $disk.Inodes}}{{$__amber_93}}</td>
-												</tr>{{end}}{{end}}
-												{{$__amber_94 := .Data.DiskTable}}{{$__amber_95 := $__amber_94.JS}}{{$__amber_95}}
+												<td class="{{"digital"}}">{{$__amber_87 := $disk.Inodes}}{{$__amber_87}}</td>
+												</tr>{{end}}
+												{{$__amber_88 := .Data.DiskTable}}{{$__amber_89 := $__amber_88.JS}}{{$__amber_89}}
 											</tbody>
 										</table>
 									</span>
@@ -219,7 +219,7 @@
 					<div class="{{"panel1"}}">
 						<header class="{{"draggable"}}">
 							CPU; LA&nbsp;
-							<span style="{{"width: 50%"}}" id="{{"Data.System.LA"}}">{{$__amber_96 := .Data.System}}{{$__amber_97 := $__amber_96.LA}}{{$__amber_97}}</span>
+							<span style="{{"width: 50%"}}" id="{{"Data.System.LA"}}">{{$__amber_90 := .Data.System}}{{$__amber_91 := $__amber_90.LA}}{{$__amber_91}}</span>
 						</header>
 						<span id="{{"cpu-table"}}">
 							<table class="{{"table1"}} {{"stripe-table"}}">
@@ -231,22 +231,22 @@
 										<th class="{{"digital"}}">Idle%</th>
 									</tr>
 								</thead>
-								<tbody>{{$__amber_98 := .Data.CPU}}{{$__amber_99 := $__amber_98.TRHTMLAttr}}{{$tr_attr := $__amber_99}}{{$__amber_100 := .Data.CPU}}{{$__amber_101 := $__amber_100.NOrow0}}{{$__amber_102 := not $__amber_101}}{{if $__amber_102}}
+								<tbody>{{$__amber_92 := .Data.CPU}}{{$__amber_93 := $__amber_92.TRHTMLAttr}}{{$tr_attr := $__amber_93}}{{$__amber_94 := .Data.CPU}}{{$__amber_95 := $__amber_94.NOrow0}}{{$__amber_96 := not $__amber_95}}{{if $__amber_96}}
 									<tr{{$tr_attr}}>
 									<td class="{{"digital"}} {{"nobr"}}">
-										<span id="{{"Data.CPU.N"}}">{{$__amber_103 := .Data.CPU}}{{$__amber_104 := $__amber_103.N}}{{$__amber_104}} total</span>
+										<span id="{{"Data.CPU.N"}}">{{$__amber_97 := .Data.CPU}}{{$__amber_98 := $__amber_97.N}}{{$__amber_98}} total</span>
 									</td>
-									<td class="{{"digital"}}">{{$__amber_105 := .Data.CPU}}{{$__amber_106 := $__amber_105.AttrUser}}{{$__amber_107 := .Data.CPU}}{{$__amber_108 := $__amber_107.User}}<span id="Data.CPU.User"{{$__amber_106}}>{{$__amber_108}}</span></td>
-									<td class="{{"digital"}}">{{$__amber_109 := .Data.CPU}}{{$__amber_110 := $__amber_109.AttrSys}}{{$__amber_111 := .Data.CPU}}{{$__amber_112 := $__amber_111.Sys}}<span id="Data.CPU.Sys"{{$__amber_110}}>{{$__amber_112}}</span></td>
-									<td class="{{"digital"}}">{{$__amber_113 := .Data.CPU}}{{$__amber_114 := $__amber_113.AttrIdle}}{{$__amber_115 := .Data.CPU}}{{$__amber_116 := $__amber_115.Idle}}<span id="Data.CPU.Idle"{{$__amber_114}}>{{$__amber_116}}</span></td>
-									</tr>{{end}}{{$__amber_117 := .Data.CPU}}{{$__amber_118 := $__amber_117.NOrows}}{{$__amber_119 := not $__amber_118}}{{if $__amber_119}}{{$__amber_120 := .Data.CPU}}{{$__amber_121 := $__amber_120.List}}{{range $i, $core := $__amber_121}}
+									<td class="{{"digital"}}">{{$__amber_99 := .Data.CPU}}{{$__amber_100 := $__amber_99.AttrUser}}{{$__amber_101 := .Data.CPU}}{{$__amber_102 := $__amber_101.User}}<span id="Data.CPU.User"{{$__amber_100}}>{{$__amber_102}}</span></td>
+									<td class="{{"digital"}}">{{$__amber_103 := .Data.CPU}}{{$__amber_104 := $__amber_103.AttrSys}}{{$__amber_105 := .Data.CPU}}{{$__amber_106 := $__amber_105.Sys}}<span id="Data.CPU.Sys"{{$__amber_104}}>{{$__amber_106}}</span></td>
+									<td class="{{"digital"}}">{{$__amber_107 := .Data.CPU}}{{$__amber_108 := $__amber_107.AttrIdle}}{{$__amber_109 := .Data.CPU}}{{$__amber_110 := $__amber_109.Idle}}<span id="Data.CPU.Idle"{{$__amber_108}}>{{$__amber_110}}</span></td>
+									</tr>{{end}}{{$__amber_111 := .Data.CPU}}{{$__amber_112 := $__amber_111.NOrows}}{{$__amber_113 := not $__amber_112}}{{if $__amber_113}}{{$__amber_114 := .Data.CPU}}{{$__amber_115 := $__amber_114.List}}{{range $i, $core := $__amber_115}}
 									<tr{{$tr_attr}}>
-									<td class="{{"digital"}}">{{$__amber_122 := $core.N}}#{{$__amber_122}}</td>
-									<td class="{{"digital"}}">{{$__amber_123 := __amber_add "core" $i}}{{$__amber_124 := __amber_add $__amber_123 ".User"}}{{$__amber_125 := $core.AttrUser}}{{$__amber_126 := $core.User}}<span id="{{$__amber_124}}"{{$__amber_125}}>{{$__amber_126}}</span></td>
-									<td class="{{"digital"}}">{{$__amber_127 := __amber_add "core" $i}}{{$__amber_128 := __amber_add $__amber_127 ".Sys"}}{{$__amber_129 := $core.AttrSys}}{{$__amber_130 := $core.Sys}}<span id="{{$__amber_128}}"{{$__amber_129}}>{{$__amber_130}}</span></td>
-									<td class="{{"digital"}}">{{$__amber_131 := __amber_add "core" $i}}{{$__amber_132 := __amber_add $__amber_131 ".Idle"}}{{$__amber_133 := $core.AttrIdle}}{{$__amber_134 := $core.Idle}}<span id="{{$__amber_132}}"{{$__amber_133}}>{{$__amber_134}}</span></td>
+									<td class="{{"digital"}}">{{$__amber_116 := $core.N}}#{{$__amber_116}}</td>
+									<td class="{{"digital"}}">{{$__amber_117 := __amber_add "core" $i}}{{$__amber_118 := __amber_add $__amber_117 ".User"}}{{$__amber_119 := $core.AttrUser}}{{$__amber_120 := $core.User}}<span id="{{$__amber_118}}"{{$__amber_119}}>{{$__amber_120}}</span></td>
+									<td class="{{"digital"}}">{{$__amber_121 := __amber_add "core" $i}}{{$__amber_122 := __amber_add $__amber_121 ".Sys"}}{{$__amber_123 := $core.AttrSys}}{{$__amber_124 := $core.Sys}}<span id="{{$__amber_122}}"{{$__amber_123}}>{{$__amber_124}}</span></td>
+									<td class="{{"digital"}}">{{$__amber_125 := __amber_add "core" $i}}{{$__amber_126 := __amber_add $__amber_125 ".Idle"}}{{$__amber_127 := $core.AttrIdle}}{{$__amber_128 := $core.Idle}}<span id="{{$__amber_126}}"{{$__amber_127}}>{{$__amber_128}}</span></td>
 									</tr>{{end}}{{end}}
-									{{$__amber_135 := .Data.CPU}}{{$__amber_136 := $__amber_135.JS}}{{$__amber_136}}
+									{{$__amber_129 := .Data.CPU}}{{$__amber_130 := $__amber_129.JS}}{{$__amber_130}}
 								</tbody>
 							</table>
 						</span>
@@ -263,28 +263,28 @@
 							<table class="{{"table1"}} {{"stripe-table"}}">
 								<thead>
 									<tr>
-										<th class="{{"header"}} {{"digital"}}">{{$__amber_137 := .Data.ProcTable}}{{$__amber_138 := $__amber_137.Links}}{{$__amber_139 := $__amber_138.PID}}<a{{$__amber_139}}>PID</a></th>
-										<th class="{{"header"}} {{"digital"}}">{{$__amber_140 := .Data.ProcTable}}{{$__amber_141 := $__amber_140.Links}}{{$__amber_142 := $__amber_141.User}}<a{{$__amber_142}}>USER</a></th>
-										<th class="{{"header"}} {{"digital"}}">{{$__amber_143 := .Data.ProcTable}}{{$__amber_144 := $__amber_143.Links}}{{$__amber_145 := $__amber_144.Priority}}<a{{$__amber_145}}>PR</a></th>
-										<th class="{{"header"}} {{"digital"}}">{{$__amber_146 := .Data.ProcTable}}{{$__amber_147 := $__amber_146.Links}}{{$__amber_148 := $__amber_147.Nice}}<a{{$__amber_148}}>NI</a></th>
-										<th class="{{"header"}} {{"digital"}}">{{$__amber_149 := .Data.ProcTable}}{{$__amber_150 := $__amber_149.Links}}{{$__amber_151 := $__amber_150.Size}}<a{{$__amber_151}}>VIRT</a></th>
-										<th class="{{"header"}} {{"digital"}}">{{$__amber_152 := .Data.ProcTable}}{{$__amber_153 := $__amber_152.Links}}{{$__amber_154 := $__amber_153.Resident}}<a{{$__amber_154}}>RES</a></th>
-										<th class="{{"header"}} {{"center"}}">{{$__amber_155 := .Data.ProcTable}}{{$__amber_156 := $__amber_155.Links}}{{$__amber_157 := $__amber_156.Time}} <a{{$__amber_157}}>TIME</a></th>
-										<th class="{{"header"}}">{{$__amber_158 := .Data.ProcTable}}{{$__amber_159 := $__amber_158.Links}}{{$__amber_160 := $__amber_159.Name}}        <a{{$__amber_160}}>COMMAND</a></th>
+										<th class="{{"header"}} {{"digital"}}">{{$__amber_131 := .Data.ProcTable}}{{$__amber_132 := $__amber_131.Links}}{{$__amber_133 := $__amber_132.PID}}<a{{$__amber_133}}>PID</a></th>
+										<th class="{{"header"}} {{"digital"}}">{{$__amber_134 := .Data.ProcTable}}{{$__amber_135 := $__amber_134.Links}}{{$__amber_136 := $__amber_135.User}}<a{{$__amber_136}}>USER</a></th>
+										<th class="{{"header"}} {{"digital"}}">{{$__amber_137 := .Data.ProcTable}}{{$__amber_138 := $__amber_137.Links}}{{$__amber_139 := $__amber_138.Priority}}<a{{$__amber_139}}>PR</a></th>
+										<th class="{{"header"}} {{"digital"}}">{{$__amber_140 := .Data.ProcTable}}{{$__amber_141 := $__amber_140.Links}}{{$__amber_142 := $__amber_141.Nice}}<a{{$__amber_142}}>NI</a></th>
+										<th class="{{"header"}} {{"digital"}}">{{$__amber_143 := .Data.ProcTable}}{{$__amber_144 := $__amber_143.Links}}{{$__amber_145 := $__amber_144.Size}}<a{{$__amber_145}}>VIRT</a></th>
+										<th class="{{"header"}} {{"digital"}}">{{$__amber_146 := .Data.ProcTable}}{{$__amber_147 := $__amber_146.Links}}{{$__amber_148 := $__amber_147.Resident}}<a{{$__amber_148}}>RES</a></th>
+										<th class="{{"header"}} {{"center"}}">{{$__amber_149 := .Data.ProcTable}}{{$__amber_150 := $__amber_149.Links}}{{$__amber_151 := $__amber_150.Time}} <a{{$__amber_151}}>TIME</a></th>
+										<th class="{{"header"}}">{{$__amber_152 := .Data.ProcTable}}{{$__amber_153 := $__amber_152.Links}}{{$__amber_154 := $__amber_153.Name}}        <a{{$__amber_154}}>COMMAND</a></th>
 									</tr>
 								</thead>
-								<tbody id="{{"procrows"}}">{{$__amber_161 := .Data.ProcTable}}{{$__amber_162 := $__amber_161.TRHTMLAttr}}{{$tr_attr := $__amber_162}}{{$__amber_163 := .Data.ProcTable}}{{$__amber_164 := $__amber_163.List}}{{range $proc := $__amber_164}}
+								<tbody id="{{"procrows"}}">{{$__amber_155 := .Data.ProcTable}}{{$__amber_156 := $__amber_155.TRHTMLAttr}}{{$tr_attr := $__amber_156}}{{$__amber_157 := .Data.ProcTable}}{{$__amber_158 := $__amber_157.List}}{{range $proc := $__amber_158}}
 									<tr{{$tr_attr}}>
-									<td class="{{"digital"}}">{{$__amber_165 := $proc.PID}}{{$__amber_165}}</td>
-									<td class="{{"digital"}}">{{$__amber_166 := $proc.User}}{{$__amber_166}}</td>
-									<td class="{{"digital"}}">{{$__amber_167 := $proc.Priority}}{{$__amber_167}}</td>
-									<td class="{{"digital"}}">{{$__amber_168 := $proc.Nice}}{{$__amber_168}}</td>
-									<td class="{{"digital"}}">{{$__amber_169 := $proc.Size}}{{$__amber_169}}</td>
-									<td class="{{"digital"}}">{{$__amber_170 := $proc.Resident}}{{$__amber_170}}</td>
-									<td class="{{"center"}}">{{$__amber_171 := $proc.Time}}{{$__amber_171}}</td>
-									<td>{{$__amber_172 := $proc.Name}}{{$__amber_172}}</td>
+									<td class="{{"digital"}}">{{$__amber_159 := $proc.PID}}{{$__amber_159}}</td>
+									<td class="{{"digital"}}">{{$__amber_160 := $proc.User}}{{$__amber_160}}</td>
+									<td class="{{"digital"}}">{{$__amber_161 := $proc.Priority}}{{$__amber_161}}</td>
+									<td class="{{"digital"}}">{{$__amber_162 := $proc.Nice}}{{$__amber_162}}</td>
+									<td class="{{"digital"}}">{{$__amber_163 := $proc.Size}}{{$__amber_163}}</td>
+									<td class="{{"digital"}}">{{$__amber_164 := $proc.Resident}}{{$__amber_164}}</td>
+									<td class="{{"center"}}">{{$__amber_165 := $proc.Time}}{{$__amber_165}}</td>
+									<td>{{$__amber_166 := $proc.Name}}{{$__amber_166}}</td>
 									</tr>{{end}}
-									{{$__amber_173 := .Data.ProcTable}}{{$__amber_174 := $__amber_173.JS}}{{$__amber_174}}
+									{{$__amber_167 := .Data.ProcTable}}{{$__amber_168 := $__amber_167.JS}}{{$__amber_168}}
 								</tbody>
 							</table>
 						</span>
@@ -293,11 +293,11 @@
 			</div>
 		</div>
 		<script>
-			{{$__amber_175 := .Data.HTTP_HOST}}{{$__amber_176 := .Data.CPU}}{{$__amber_177 := .Data.ProcTable}}{{$__amber_178 := .Data.DiskTable}}{{$__amber_179 := .Data.Interfaces}}var HTTP_HOST         = {{$__amber_175}};
-			var Data_CPU          = {{$__amber_176}};
-			var Data_ProcTable    = {{$__amber_177}};
-			var Data_DiskTable    = {{$__amber_178}};
-			var Data_Interfaces   = {{$__amber_179}};
+			{{$__amber_169 := .Data.HTTP_HOST}}{{$__amber_170 := .Data.CPU}}{{$__amber_171 := .Data.ProcTable}}{{$__amber_172 := .Data.DiskTable}}{{$__amber_173 := .Data.Interfaces}}var HTTP_HOST         = {{$__amber_169}};
+			var Data_CPU          = {{$__amber_170}};
+			var Data_ProcTable    = {{$__amber_171}};
+			var Data_DiskTable    = {{$__amber_172}};
+			var Data_Interfaces   = {{$__amber_173}};
 		</script>
 	</body>
 </html>

@@ -151,7 +151,6 @@ var DiskInodesTable = React.createClass({displayName: 'DiskInodesTable',
 	    return (
 
 
-
 React.DOM.tr( {key:"inode" + disk.DirName}, 
 React.DOM.td(null, diskname(disk)),
 React.DOM.td( {className:"digital"}, disk.Ifree),
@@ -161,7 +160,6 @@ React.DOM.td( {className:"digital"},
 ),
 React.DOM.td( {className:"digital"}, disk.Inodes)
 )
-
 
 	    );
 	  });
@@ -198,7 +196,6 @@ var DiskTable = React.createClass({displayName: 'DiskTable',
 	    return (
 
 
-
 React.DOM.tr( {key:"space" + disk.DirName}, 
 React.DOM.td(null, diskname(disk)),
 React.DOM.td(null, disk.DirName),
@@ -209,7 +206,6 @@ React.DOM.td( {className:"digital"},
 ),
 React.DOM.td( {className:"digital"}, disk.Total)
 )
-
 
 	    );
 	  });
