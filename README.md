@@ -55,8 +55,8 @@ Running the code
 
 5. **`scons`** to generate required `src/ostential/{assets,view}/bindata.go`. It's either scons, or run **manually**:
    ```sh
-      go-bindata -pkg view   -o src/ostential/view/bindata.go   -tags '!production' -debug -prefix templates.min templates.min/...
-      go-bindata -pkg assets -o src/ostential/assets/bindata.go -tags '!production' -debug -prefix assets        assets/...
+      go-bindata -pkg view   -o src/ostential/view/bindata.devel.go   -tags '!production' -debug -prefix templates.min templates.min/...
+      go-bindata -pkg assets -o src/ostential/assets/bindata.devel.go -tags '!production' -debug -prefix assets        assets/...
    ```
 
 6. Using [rerun](https://github.com/skelterjohn/rerun), it'll go get the remaining dependecies:
@@ -71,7 +71,7 @@ Go packages
 `[src/]ostential` is the core package.
 
 `[src/]ostent` is the main (as in [Go Program execution](http://golang.org/ref/spec#Program_execution)) package:
-rerun will find `main.go` file; the other `main.production.go` (used when building with `-tags production`)
+rerun will find `main.devel.go` file; the other `main.production.go` (used when building with `-tags production`)
 is the init code for the distributed [binaries](#download): also includes
 [goagain](https://github.com/rcrowley/goagain) recovering and self-updating via [go-update](https://github.com/inconshreveable/go-update).
 

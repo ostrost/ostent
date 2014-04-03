@@ -4,7 +4,5 @@
 /bin/
 /pkg/
 
-# devel assets/bindata.go
-/src/ostential/assets/bindata.go
-# devel view/bindata.go
-/src/ostential/view/bindata.go
+/src/ostential/assets/bindata.devel.go
+/src/ostential/view/bindata.devel.go

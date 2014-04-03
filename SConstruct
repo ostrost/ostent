@@ -35,8 +35,8 @@ env = Environment(ENV={'PATH': os.environ['PATH'],
 assets = (Dir('assets/'),             Files('assets/'))
 mintpl = ('templates.min/index.html', Files('templates.min/'))
 Default(env.Clone(TFLAGS= 'production')       .bindata('src/ostential/view/bindata.production.go',   source=mintpl))
-Default(env.Clone(TFLAGS='!production -debug').bindata('src/ostential/view/bindata.go',              source=mintpl))
+Default(env.Clone(TFLAGS='!production -debug').bindata('src/ostential/view/bindata.devel.go',        source=mintpl))
 Default(env.Clone(TFLAGS= 'production')       .bindata('src/ostential/assets/bindata.production.go', source=assets))
-Default(env.Clone(TFLAGS='!production -debug').bindata('src/ostential/assets/bindata.go',            source=assets))
+Default(env.Clone(TFLAGS='!production -debug').bindata('src/ostential/assets/bindata.devel.go',      source=assets))
 
 Default(env.sass('assets/css/index.css', 'style/index.scss'))
