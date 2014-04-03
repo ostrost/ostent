@@ -94,5 +94,5 @@ The assets
 ----------
 
 The [binaries](#download), to be stand-alone, have the assets (including `templates.min/`) embeded.
-Unless you specifically `go build` with `-tags production`, they are not embeded for the ease of development.
-If you `rerun ostent`, the assets are read from the actual files.
+Unless you specifically `go build` with `-tags production`, they are not embeded for the ease of development:
+with `rerun ostent`, asset requests are served from the actual files.
