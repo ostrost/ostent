@@ -38,7 +38,7 @@ func update_loop() {
 	}
 }
 
-const update_from = "0.1.0"
+const update_from = "0.1.1"
 func update_once(kill bool) bool {
 
 	host := "https://OSTROST.COM"

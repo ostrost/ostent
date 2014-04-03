@@ -82,7 +82,11 @@ func(s state) CPU() types.CPU {
 
 		user := percent(cp.User, total)
 		sys  := percent(cp.Sys,  total)
-		idle := 100 - user - sys
+
+		idle := uint(0)
+		if user + sys < 100 {
+			idle = 100 - user - sys
+		}
 
 		c.List[i].N    = i
  		c.List[i].User, c.List[i].AttrUser = user, textAttr_colorPercent(user)
@@ -97,7 +101,10 @@ func(s state) CPU() types.CPU {
 
 	user := percent(sum.User, total)
 	sys  := percent(sum.Sys,  total)
-	idle := 100 - user - sys
+	idle := uint(0)
+	if user + sys < 100 {
+		idle = 100 - user - sys
+	}
 
 	c.N    = len(cls.List)
  	c.User, c.AttrUser = user, textAttr_colorPercent(user)

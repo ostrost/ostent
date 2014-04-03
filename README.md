@@ -68,11 +68,12 @@ Running the code
 Go packages
 -----------
 
-`[src/]ostent` is the main package: rerun will find `main.go`;
-the other `main.production.go` is the init code for the distributed [binaries](#download):
-the only difference is inclusion of [goagain](https://github.com/rcrowley/goagain) recovering and self-updating via [go-update](https://github.com/inconshreveable/go-update).
-
 `[src/]ostential` is the core package.
+
+`[src/]ostent` is the main (as in [Go Program execution](http://golang.org/ref/spec#Program_execution)) package:
+rerun will find `main.go` file; the other `main.production.go` (used when building with `-tags production`)
+is the init code for the distributed [binaries](#download): also includes
+[goagain](https://github.com/rcrowley/goagain) recovering and self-updating via [go-update](https://github.com/inconshreveable/go-update).
 
 Templates
 ---------
