@@ -96,7 +96,7 @@ Additional required tools here:
 If you don't change source files, content re-generated should not differ from the commited.
 Whenever amber.templates or assets or style change, you have to re-run `scons`.
 
-`scons build` compiles everything and produces `./ostent` final binary.
+`scons build` compiles everything and produces final binary.
 
 The assets
 ----------
