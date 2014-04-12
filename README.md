@@ -52,7 +52,7 @@ Running the code
 
 3. **`export GOPATH=$GOPATH:$PWD`** `# the current directory into $GOPATH`
 
-4. **`go get github.com/jteeuwen/go-bindata/go-bindata`**
+4. **`go get github.com/jteeuwen/go-bindata/go-bindata github.com/rzab/amber`**
 
 5. **`scons`** to generate required `src/ostential/{assets,view}/bindata.devel.go`. These files will contain absolute local paths.
    It's either scons, or run **manually**:
