@@ -54,13 +54,16 @@ Running the code
 
 4. **`go get github.com/jteeuwen/go-bindata/go-bindata`**
 
-5. **`scons`** to generate required `src/ostential/{assets,view}/bindata.devel.go`. It's either scons, or run **manually**:
+5. **`scons`** to generate required `src/ostential/{assets,view}/bindata.devel.go`. These files will contain absolute local paths.
+   It's either scons, or run **manually**:
    ```sh
-      go-bindata -pkg view   -o src/ostential/view/bindata.devel.go   -tags '!production' -debug -prefix templates.min templates.min/...
-      go-bindata -pkg assets -o src/ostential/assets/bindata.devel.go -tags '!production' -debug -prefix assets        assets/...
+      go-bindata -pkg view   -o src/ostential/view/bindata.devel.go   -tags '!production' -debug -prefix templates.html templates.html
+      go-bindata -pkg assets -o src/ostential/assets/bindata.devel.go -tags '!production' -debug -prefix assets         assets/...
    ```
 
-6. Using [rerun](https://github.com/skelterjohn/rerun), it'll go get the remaining dependecies:
+   See [SCons](#scons) on topic.
+
+6. Using [rerun](https://github.com/skelterjohn/rerun), it'll go get the remaining Go dependecies:
 
 	**`go get github.com/skelterjohn/rerun`**
 
@@ -76,20 +79,24 @@ rerun will find `main.devel.go` file; the other `main.production.go` (used when 
 is the init code for the distributed [binaries](#download): also includes
 [goagain](https://github.com/rcrowley/goagain) recovering and self-updating via [go-update](https://github.com/inconshreveable/go-update).
 
-Templates
----------
+SCons
+-----
 
-HTML templates in this repository are actually **generated** outside.
-I'm OK with publishing the source templates, but the generation depends on
-[amber](https://github.com/eknkc/amber),
-[react-tools](https://www.npmjs.org/package/react-tools) with Node.js and
-another set of scons rules.
-The generation makes the HTML templates and propagates the layout into
-[React.js](http://facebook.github.io/react/) objects (`assets/js/gen/build.js`).
-It's just not that straight-forward.
+Additional required tools here:
+- [Sass](http://sass-lang.com/)
+- [react-tools](https://www.npmjs.org/package/react-tools) with [Node.js](http://nodejs.org/)
 
-So for now, the repo has `assets/js/gen/build.js`, `templates.min/` -- the _actual_ templates
-and _somewhat readable_ `templates/` for reference.
+`scons` makes this **commited to the repo** files:
+- `src/ostential/view/bindata.devel.go`
+- `src/ostential/assets/bindata.devel.go`
+- `assets/css/index.css`
+- `assets/js/gen/jscript.js`
+- `tmp/jscript.jsx`
+
+If you don't change source files, content re-generated should not differ from the commited.
+Whenever amber.templates or assets or style change, you have to re-run `scons`.
+
+`scons build` compiles everything and produces `./ostent` final binary.
 
 The assets
 ----------

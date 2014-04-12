@@ -5,9 +5,11 @@
 body {
   @extend .container; //?
   font-size: 12px;
+
+// pick your poison
 // font-family: "Lucida Console", Monaco, monospace;
-// "DejaVu Sans Mono", Menlo, Consolas, "Liberation Mono", Monaco, "Lucida Console", monospace
-//font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+// font-family: "DejaVu Sans Mono", Menlo, Consolas, "Liberation Mono", Monaco, "Lucida Console", monospace
+// font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .panel1 {
@@ -21,10 +23,7 @@ body {
       border-color: #ddd;
     }
   }
-  header.draggable {
-    cursor: move;
-  }
-  // .panel1-body { @extend .panel-body; }
+  // header.draggable { cursor: move; } // not yet
 }
 
 .table2, .table1 {
@@ -56,22 +55,18 @@ body {
   background-color: #f9f9f9;
 }
 
-// from skel.amber
 .nobr { white-space: pre; }
 //? .nobrinline { white-space: nowrap; display: inline; }
-
-//? .right { text-align: right; }
 
 .code {
   @extend code;
   display: inline;
-  // white-space: pre;
-  // white-space: nowrap;
-  white-space: normal;
+  white-space: normal; // pre; // nowrap;
 
   color: black;
   background-color: #f4f4f4;
 }
+
 .unit {
 //@extend code;
 //font-size: 100%;

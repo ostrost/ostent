@@ -1,0 +1,157 @@
+[[/* -*- indent-tabs-mode: nil -*- */]]
+
+[[define "define_ifsrows"]]
+  each $if in Data.Interfaces.List
+    |<tr key=#{$if.Name}>
+      td #{$if.Name}
+      td.digital #{$if.DeltaIn}
+      td.digital #{$if.DeltaOut}
+      td.digital #{$if.In}
+      td.digital #{$if.Out}
+    |</tr>
+[[end]]
+
+[[define "define_ifstable"]]
+  table.table1.stripe-table
+    thead
+      tr
+        th Interface
+        th.digital.nobr In
+          span.unit ps
+        th.digital.nobr Out
+          span.unit ps
+        th.digital.nobr In
+          span.unit %4G
+        th.digital.nobr Out
+          span.unit %4G
+    tbody
+      [[with GET "bracket_ifsrows"]][[.]][[DEL "bracket_ifsrows"]][[else]]
+        [[template "define_ifsrows" .]][[end]]
+[[end]]
+
+[[define "define_diskname"]]
+  span #{$disk.DiskName}
+[[end]]
+
+[[define "define_shortdiskname"]]
+  | <span title=#{$disk.DiskName} class="tooltipable" data-toggle="tooltip" data-placement="left">
+  | #{$disk.ShortDiskName}...
+  | </span>
+[[end]]
+
+[[define "define_disknamecell"]]
+  [[with GET "bracket_diskname"]][[.]][[DEL "bracket_diskname"]][[else]]
+
+  if $disk.ShortDiskName == ""
+    [[template "define_diskname" .]]
+  else
+    [[template "define_shortdiskname" .]]
+  [[end]]
+[[end]]
+
+[[define "define_dfrows"]]
+  each $disk in Data.DiskTable.List
+    | <tr key=#{$disk.DiskName}>
+
+      td [[template "define_disknamecell" .]]
+      td #{$disk.DirName}
+      td.digital #{$disk.Avail}
+      td.digital #{$disk.Used}&nbsp;
+        sup <span class=#{$disk.UsePercentClass}>#{$disk.UsePercent}%</span>
+      td.digital #{$disk.Total}
+    | </tr>
+[[end]]
+
+[[define "define_dftable"]]
+  table.table1.stripe-table
+    thead
+      tr
+        th.header         <a href=#{Data.DiskTable.Links.DiskName.Href} class=#{Data.DiskTable.Links.DiskName.Class}>Device</a>
+        th.header         <a href=#{Data.DiskTable.Links.DirName.Href}  class=#{Data.DiskTable.Links.DirName.Class}>Mounted</a>
+        th.header.digital <a href=#{Data.DiskTable.Links.Avail.Href}    class=#{Data.DiskTable.Links.Avail.Class}>Avail</a>
+        th.header.digital <a href=#{Data.DiskTable.Links.Used.Href}     class=#{Data.DiskTable.Links.Used.Class}>Used</a>
+        th.header.digital <a href=#{Data.DiskTable.Links.Total.Href}    class=#{Data.DiskTable.Links.Total.Class}>Total</a>
+    tbody
+      [[with GET "bracket_dfrows"]][[.]][[DEL "bracket_dfrows"]][[else]]
+        [[template "define_dfrows" .]][[end]]
+[[end]]
+
+[[define "define_dirows"]]
+  each $disk in Data.DiskTable.List
+    | <tr key=#{$disk.DiskName}>
+
+      td [[template "define_disknamecell" .]]
+      td.digital #{$disk.Ifree}
+      td.digital #{$disk.Iused}&nbsp;
+        sup <span class=#{$disk.IusePercentClass}>#{$disk.IusePercent}%</span>
+      td.digital #{$disk.Inodes}
+    | </tr>
+[[end]]
+
+[[define "define_ditable"]]
+  table.table1.stripe-table
+    thead
+      tr
+        th.header         Device
+        th.header.digital Avail
+        th.header.digital Used
+        th.header.digital Total
+    tbody
+      [[with GET "bracket_dirows"]][[.]][[DEL "bracket_dirows"]][[else]]
+        [[template "define_dirows" .]][[end]]
+[[end]]
+
+[[define "define_cpurows"]]
+  each $i, $core in Data.CPU.List
+    |<tr key=#{$core.N}>
+      td.digital.nobr #{$core.N}
+      td.digital <span id="#{"core" + $i + ".User"}" class=#{$core.UserClass}>#{$core.User}</span>
+      td.digital <span id="#{"core" + $i + ".Sys"}"  class=#{$core.SysClass}>#{$core.Sys}</span>
+      td.digital <span id="#{"core" + $i + ".Idle"}" class=#{$core.IdleClass}>#{$core.Idle}</span>
+    |</tr>
+[[end]]
+
+[[define "define_cputable"]]
+  table.table1.stripe-table
+    thead
+      tr
+        th
+        th.digital User%
+        th.digital Sys%
+        th.digital Idle%
+    tbody
+      [[with GET "bracket_cpurows"]][[.]][[DEL "bracket_cpurows"]][[else]]
+        [[template "define_cpurows" .]][[end]]
+[[end]]
+
+[[define "define_psrows"]]
+  each $proc in Data.ProcTable.List
+    | <tr key=#{$proc.PID}>
+      td.digital #{$proc.PID}
+      td.digital #{$proc.User}
+      td.digital #{$proc.Priority}
+      td.digital #{$proc.Nice}
+      td.digital #{$proc.Size}
+      td.digital #{$proc.Resident}
+      td.center #{$proc.Time}
+      td #{$proc.Name}
+    | </tr>
+[[end]]
+
+[[define "define_pstable"]]
+  table.table1.stripe-table
+    thead
+      tr
+        th.header.digital <a href=#{Data.ProcTable.Links.PID.Href}      class=#{Data.ProcTable.Links.PID.Class}>PID</a>
+        th.header.digital <a href=#{Data.ProcTable.Links.User.Href}     class=#{Data.ProcTable.Links.User.Class}>USER</a>
+        th.header.digital <a href=#{Data.ProcTable.Links.Priority.Href} class=#{Data.ProcTable.Links.Priority.Class}>PR</a>
+        th.header.digital <a href=#{Data.ProcTable.Links.Nice.Href}     class=#{Data.ProcTable.Links.Nice.Class}>NI</a>
+        th.header.digital <a href=#{Data.ProcTable.Links.Size.Href}     class=#{Data.ProcTable.Links.Size.Class}>VIRT</a>
+        th.header.digital <a href=#{Data.ProcTable.Links.Resident.Href} class=#{Data.ProcTable.Links.Resident.Class}>RES</a>
+        th.header.center  <a href=#{Data.ProcTable.Links.Time.Href}     class=#{Data.ProcTable.Links.Time.Class}>TIME</a>
+        th.header         <a href=#{Data.ProcTable.Links.Name.Href}     class=#{Data.ProcTable.Links.Name.Class}>COMMAND</a>
+
+    tbody#procrows
+      [[with GET "bracket_psrows"]][[.]][[DEL "bracket_psrows"]][[else]]
+        [[template "define_psrows" .]][[end]]
+[[end]]

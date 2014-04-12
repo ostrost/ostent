@@ -6,11 +6,20 @@ var stateClass = React.createClass({
 	);
     }
 });
+function xlabel_colorPercent(p) {
+    return "label label-"+ _xcolorPercent(p);
+}
+function _xcolorPercent(p) {
+    if (p > 90) { return "danger";  }
+    if (p > 80) { return "warning"; }
+    if (p > 20) { return "info";    }
+    return "success";
+}
 var percentClass = React.createClass({
     getInitialState: function() { return {V: this.props.initialValue}; },
     render: function() {
 	return (
-	    React.DOM.span({className:label_colorPercent(this.state.V)}, this.state.V, '%')
+	    React.DOM.span({className:xlabel_colorPercent(this.state.V)}, this.state.V, '%')
 	);
     }
 });
@@ -44,27 +53,33 @@ function update(Data) { // assert window["WebSocket"]
 	}
     });
 
-    var proc_table   = ProcTable(null);        // from gen/build.js
-    var disk_table   = DiskTable(null);        // from gen/build.js
-    var inodes_table = DiskInodesTable(null);  // from gen/build.js
-    var cpu_table    = CPUTable(null);         // from gen/build.js
-    var ifs_table    = Interfaces(null);       // from gen/build.js
-    // console.log(React.renderComponentToString(Interfaces(null)));
-    React.renderComponent(proc_table,   document.getElementById('ps-table'));
-    React.renderComponent(disk_table,   document.getElementById('df-table'));
-    React.renderComponent(inodes_table, document.getElementById('dfi-table'));
-    React.renderComponent(cpu_table,    document.getElementById('cpu-table'));
-    React.renderComponent(ifs_table,    document.getElementById('ifs-table'));
+    var params = location.search.substr(1).split("&");
+    for (var i in params) {
+	if (params[i].split("=")[0] === "nojs") {
+	    return;
+	}
+    }
+
+    var   procTable =  procTableClass(null); // from gen/jscript.js
+    var   diskTable =  diskTableClass(null); // from gen/jscript.js
+    var inodesTable = inodeTableClass(null); // from gen/jscript.js
+    var    cpuTable =   cpuTableClass(null); // from gen/jscript.js
+    var    ifsTable =   ifsTableClass(null); // from gen/jscript.js
+
+    React.renderComponent(  procTable, document.getElementById('ps-table'));
+    React.renderComponent(  diskTable, document.getElementById('df-table'));
+    React.renderComponent(inodesTable, document.getElementById('dfi-table'));
+    React.renderComponent(   cpuTable, document.getElementById('cpu-table'));
+    React.renderComponent(   ifsTable, document.getElementById('ifs-table'));
 
     var onmessage = onmessage = function(event) {
 	var data = JSON.parse(event.data);
 
-	proc_table  .setState(data.ProcTable);
-	disk_table  .setState(data.DiskTable);
-	inodes_table.setState(data.DiskTable);
-
-	cpu_table   .setState(data.CPU);
-	ifs_table   .setState({List: data.Interfaces});
+	  procTable.setState(data.ProcTable);
+	  diskTable.setState(data.DiskTable);
+	inodesTable.setState(data.DiskTable);
+	   cpuTable.setState(data.CPU);
+	   ifsTable.setState(data.Interfaces);
 
 	Data.About.Hostname  .setState({V: data.About.Hostname  });
 	Data.About.IP        .setState({V: data.About.IP        });

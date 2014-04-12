@@ -2,7 +2,6 @@ package ostential
 import (
 	"ostential/types"
 
- 	"html/template"
 	"github.com/rzab/gosigar"
 )
 
@@ -34,17 +33,9 @@ func(io interfaceOrder) Less(i, j int) bool {
 type ProcTable struct {
 	List  []types.ProcData
 	Links *ProcLinkattrs `json:",omitempty"`
-
-	JS         string            `json:"-"`
-	TRHTMLAttr template.HTMLAttr `json:"-"`
 }
 
 type DiskTable struct {
 	List  []types.DiskData
 	Links *DiskLinkattrs `json:",omitempty"`
-
-	JS         string            `json:"-"`
- 	TRHTMLAttr template.HTMLAttr `json:"-"`
-	NOrow1     bool              `json:"-"`
-	NOrow2     bool              `json:"-"`
 }

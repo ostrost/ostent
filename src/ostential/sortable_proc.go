@@ -2,7 +2,6 @@ package ostential
 import (
 	"ostential/types"
 
- 	"html/template"
 	"encoding/json"
 )
 
@@ -47,14 +46,14 @@ ____PSIOTA		types.SEQ = iota
 )
 
 type ProcLinkattrs types.Linkattrs
-func(la ProcLinkattrs) PID()      template.HTMLAttr { return types.Linkattrs(la).Attrs(PSPID ); }
-func(la ProcLinkattrs) Priority() template.HTMLAttr { return types.Linkattrs(la).Attrs(PSPRI ); }
-func(la ProcLinkattrs) Nice()     template.HTMLAttr { return types.Linkattrs(la).Attrs(PSNICE); }
-func(la ProcLinkattrs) Time()     template.HTMLAttr { return types.Linkattrs(la).Attrs(PSTIME); }
-func(la ProcLinkattrs) Name()     template.HTMLAttr { return types.Linkattrs(la).Attrs(PSNAME); }
-func(la ProcLinkattrs) User()     template.HTMLAttr { return types.Linkattrs(la).Attrs(PSUID ); }
-func(la ProcLinkattrs) Size()     template.HTMLAttr { return types.Linkattrs(la).Attrs(PSSIZE); }
-func(la ProcLinkattrs) Resident() template.HTMLAttr { return types.Linkattrs(la).Attrs(PSRES ); }
+func(la ProcLinkattrs) PID()      types.Attr { return types.Linkattrs(la).Attr(PSPID ); }
+func(la ProcLinkattrs) Priority() types.Attr { return types.Linkattrs(la).Attr(PSPRI ); }
+func(la ProcLinkattrs) Nice()     types.Attr { return types.Linkattrs(la).Attr(PSNICE); }
+func(la ProcLinkattrs) Time()     types.Attr { return types.Linkattrs(la).Attr(PSTIME); }
+func(la ProcLinkattrs) Name()     types.Attr { return types.Linkattrs(la).Attr(PSNAME); }
+func(la ProcLinkattrs) User()     types.Attr { return types.Linkattrs(la).Attr(PSUID ); }
+func(la ProcLinkattrs) Size()     types.Attr { return types.Linkattrs(la).Attr(PSSIZE); }
+func(la ProcLinkattrs) Resident() types.Attr { return types.Linkattrs(la).Attr(PSRES ); }
 
 func(la ProcLinkattrs) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]types.Attr{

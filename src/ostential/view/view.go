@@ -11,7 +11,7 @@ import (
 )
 
 func bincompile() *template.Template {
-	t := template.New("templates.min")
+	t := template.New("templates.html")
 	template.Must(t.Parse("Empty")) // initial template in case we won't have any
 
 	for filename, reader := range _bindata { // from bindata.go

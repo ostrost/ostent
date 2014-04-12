@@ -1,8 +1,6 @@
 package types
 import (
-	"bytes"
 	"net/url"
-	"html/template"
 )
 
 type SEQ int
@@ -14,23 +12,18 @@ func(seq SEQ) Sign(t bool) bool { // used in sortable_*.go
 }
 
 type CPU struct {
-	N    int
+	List []Core
+}
+type Core struct {
+	N    string
 
 	User uint // percent without "%"
 	Sys  uint // percent without "%"
 	Idle uint // percent without "%"
 
-	AttrUser template.HTMLAttr `json:"-"`
-	AttrSys  template.HTMLAttr `json:"-"`
-	AttrIdle template.HTMLAttr `json:"-"`
-
-	List []CPU
-
-	NOrow0 bool
-	NOrows bool
-
-	JS         string            `json:"-"`
-	TRHTMLAttr template.HTMLAttr `json:"-"`
+	UserClass string
+	 SysClass string
+	IdleClass string
 }
 
 type DiskData struct {
@@ -47,8 +40,8 @@ type DiskData struct {
 	IusePercent string // as a string, with "%"
 	DirName     string
 
-	AttrUsePercent  template.HTMLAttr `json:"-"`
-	AttrIusePercent template.HTMLAttr `json:"-"`
+	 UsePercentClass string
+	IusePercentClass string
 }
 
 type Attr struct {
@@ -119,29 +112,6 @@ func(la Linkattrs) _attr(base url.Values, seq SEQ) *bool {
 	return ascr
 }
 
-var attemplate = template.Must(template.New("tagline").Parse("<a {{.Name}}=\"{{.Value}}\"/>"))
-func(la Linkattrs) Attrs(seq SEQ) template.HTMLAttr {
-	attr := la.Attr(seq)
-	line := ""
-
-	for _, context := range []struct{
-		Name template.HTMLAttr
-		Value string
-	}{
-		{Name: template.HTMLAttr("href"),  Value: attr.Href},
-		{Name: template.HTMLAttr("class"), Value: attr.Class},
-	} {
-		buf := new(bytes.Buffer)
-		if err := attemplate.Execute(buf, context); err != nil {
-			panic(err)
-			return template.HTMLAttr("")
-		}
-		s := buf.String()
-		line += s[2:len(s) - 2]
-	}
-	return template.HTMLAttr(line)
-}
-
 type Linkattrs struct {
 	Base url.Values
 	Pname string
@@ -159,9 +129,6 @@ type DeltaInterface struct {
 
 type Interfaces struct {
 	List []DeltaInterface
-
-	JS         string            `json:"-"`
-	TRHTMLAttr template.HTMLAttr `json:"-"`
 }
 
 type ProcInfo struct {

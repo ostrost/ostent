@@ -55,8 +55,8 @@ func _getmem(in sigar.Swap) memory {
 		Total: total,
 		Used:  used,
 		Free:  humanB(in.Free),
-		UsePercent:     strconv.Itoa(int(usepercent)), // without "%"
-		AttrUsePercent: labelAttr_colorPercent(usepercent),
+		UsePercent:      strconv.Itoa(int(usepercent)), // without "%"
+		UsePercentClass: labelClass_colorPercent(usepercent),
 	}
 }
 func getRAM() memory {

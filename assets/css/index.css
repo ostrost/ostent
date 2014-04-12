@@ -6204,8 +6204,6 @@ body {
   color: #333;
   background-color: #f5f5f5;
   border-color: #ddd; }
-.panel1 header.draggable {
-  cursor: move; }
 
 .table2, .table1 {
   background: white;

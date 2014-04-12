@@ -2,7 +2,6 @@ package ostential
 import (
 	"ostential/types"
 
- 	"html/template"
 	"encoding/json"
 )
 
@@ -41,11 +40,11 @@ ____DFIOTA		types.SEQ = iota
 )
 
 type DiskLinkattrs types.Linkattrs
-func(la DiskLinkattrs) DiskName()    template.HTMLAttr { return types.Linkattrs(la).Attrs(DFFS);    }
-func(la DiskLinkattrs) Total()       template.HTMLAttr { return types.Linkattrs(la).Attrs(DFSIZE);  }
-func(la DiskLinkattrs) Used()        template.HTMLAttr { return types.Linkattrs(la).Attrs(DFUSED);  }
-func(la DiskLinkattrs) Avail()       template.HTMLAttr { return types.Linkattrs(la).Attrs(DFAVAIL); }
-func(la DiskLinkattrs) DirName()     template.HTMLAttr { return types.Linkattrs(la).Attrs(DFMP);    }
+func(la DiskLinkattrs) DiskName()    types.Attr { return types.Linkattrs(la).Attr(DFFS);    }
+func(la DiskLinkattrs) Total()       types.Attr { return types.Linkattrs(la).Attr(DFSIZE);  }
+func(la DiskLinkattrs) Used()        types.Attr { return types.Linkattrs(la).Attr(DFUSED);  }
+func(la DiskLinkattrs) Avail()       types.Attr { return types.Linkattrs(la).Attr(DFAVAIL); }
+func(la DiskLinkattrs) DirName()     types.Attr { return types.Linkattrs(la).Attr(DFMP);    }
 
 func(la DiskLinkattrs) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]types.Attr{

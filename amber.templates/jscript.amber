@@ -1,0 +1,87 @@
+/** @jsx React.DOM */ // -*- indent-tabs-mode: nil -*-
+$disk = disk
+script
+  // variable origin: jscript.amber
+  var ifsTableClass = React.createClass({
+    getInitialState: function() { return Data.Interfaces; },
+    render: function() {
+      var Data = {Interfaces: this.state};
+      var ifs_rows = Data.Interfaces.List.map(function($if) {
+        return ([[template "define_ifsrows" .]]);
+      });
+      [[SET "bracket_ifsrows" `{ifs_rows}`]]
+      return ([[template "define_ifstable" .]]);
+      [[DEL "bracket_ifsrows"]]
+    }
+  });
+
+  function diskname_function(disk) {
+    if (disk.ShorDiskName === "") {
+      return ([[template "define_diskname" .]]);
+    }
+    var span = ([[template "define_shortdiskname" .]]);
+    $('span .tooltipable').tooltip();
+    return span;
+  }
+
+  // variable origin: jscript.amber
+  var diskTableClass = React.createClass({
+    getInitialState: function() { return Data.DiskTable; },
+    render: function() {
+      var Data = {DiskTable: this.state};
+      [[SET "bracket_diskname" `{diskname_function($disk)}`]]
+      var df_rows = Data.DiskTable.List.map(function($disk) {
+        return ([[template "define_dfrows" .]]);
+      });
+      [[DEL "bracket_diskname"]]
+
+      [[SET "bracket_dfrows" `{df_rows}`]]
+      return ([[template "define_dftable" .]]);
+      [[DEL "bracket_dfrows"]]
+    }
+  });
+
+  // variable origin: jscript.amber
+  var inodeTableClass = React.createClass({
+    getInitialState: function() { return Data.DiskTable; },
+    render: function() {
+      var Data = {DiskTable: this.state};
+      [[SET "bracket_diskname" `{diskname_function($disk)}`]]
+      var di_rows = Data.DiskTable.List.map(function($disk) {
+        return ([[template "define_dirows" .]]);
+      });
+      [[DEL "bracket_diskname"]]
+
+      [[SET "bracket_dirows" `{di_rows}`]]
+      return ([[template "define_ditable" .]]);
+      [[DEL "bracket_dirows"]]
+    }
+  });
+
+  // variable origin: jscript.amber
+  var cpuTableClass = React.createClass({
+    getInitialState: function() { return Data.CPU; },
+    render: function() {
+      var Data = {CPU: this.state};
+      var cpu_rows = Data.CPU.List.map(function($core) {
+        return ([[template "define_cpurows" .]]);
+      });
+      [[SET "bracket_cpurows" `{cpu_rows}`]]
+      return ([[template "define_cputable" .]]);
+      [[DEL "bracket_cpurows"]]
+    }
+  });
+
+  // origin: jscript.amber
+  var procTableClass  = React.createClass({
+    getInitialState: function() { return Data.ProcTable; },
+    render: function() {
+      var Data = {ProcTable: this.state};
+      var ps_rows = Data.ProcTable.List.map(function($proc) {
+        return ([[template "define_psrows" .]]);
+      });
+      [[SET "bracket_psrows" `{ps_rows}`]]
+      return ([[template "define_pstable" .]]);
+      [[DEL "bracket_psrows"]]
+    }
+  });

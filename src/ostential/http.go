@@ -10,8 +10,6 @@ import (
 	"net/url"
 	"net/http"
 
- 	"html/template"
-
 	"github.com/rzab/gosigar"
 	"github.com/codegangsta/martini"
 )
@@ -68,14 +66,16 @@ func(s state) cpudelta() sigar.CpuList {
 		cls.List[i].Sys  -= prev.List[i].Sys
 		cls.List[i].Idle -= prev.List[i].Idle
 	}
- 	sort.Sort(cpuOrder(cls.List))
+	if len(cls.List) > 1 {
+		sort.Sort(cpuOrder(cls.List))
+	}
 	return cls
 }
 
 func(s state) CPU() types.CPU {
 	sum := sigar.Cpu{}
 	cls := s.cpudelta()
-	c := types.CPU{List: make([]types.CPU, len(cls.List))}
+	c := make([]types.Core, len(cls.List) + 1) // + total
 	for i, cp := range cls.List {
 
 		total := cp.User + cp.Nice + cp.Sys + cp.Idle
@@ -88,15 +88,21 @@ func(s state) CPU() types.CPU {
 			idle = 100 - user - sys
 		}
 
-		c.List[i].N    = i
- 		c.List[i].User, c.List[i].AttrUser = user, textAttr_colorPercent(user)
- 		c.List[i].Sys,  c.List[i].AttrSys  = sys,  textAttr_colorPercent(sys)
-		c.List[i].Idle, c.List[i].AttrIdle = idle, textAttr_colorPercent(100 - idle)
+		i++
+		c[i].N    = fmt.Sprintf("#%d", i-1)
+ 		c[i].User, c[i].UserClass = user, textClass_colorPercent(user)
+ 		c[i].Sys,  c[i]. SysClass = sys,  textClass_colorPercent(sys)
+		c[i].Idle, c[i].IdleClass = idle, textClass_colorPercent(100 - idle)
 
 		sum.User += cp.User + cp.Nice
 		sum.Sys  += cp.Sys
 		sum.Idle += cp.Idle
 	}
+	if len(cls.List) == 1 {
+		c[1].N = "1 total"
+		return types.CPU{List: c[1:]}
+	}
+
 	total := sum.User + sum.Sys + sum.Idle // + sum.Nice
 
 	user := percent(sum.User, total)
@@ -106,29 +112,26 @@ func(s state) CPU() types.CPU {
 		idle = 100 - user - sys
 	}
 
-	c.N    = len(cls.List)
- 	c.User, c.AttrUser = user, textAttr_colorPercent(user)
- 	c.Sys,  c.AttrSys  = sys,  textAttr_colorPercent(sys)
-	c.Idle, c.AttrIdle = idle, textAttr_colorPercent(100 - idle)
+	c[0].N                    = fmt.Sprintf("%d total", len(cls.List))
+ 	c[0].User, c[0].UserClass = user, textClass_colorPercent(user)
+ 	c[0].Sys,  c[0]. SysClass = sys,  textClass_colorPercent(sys)
+	c[0].Idle, c[0].IdleClass = idle, textClass_colorPercent(100 - idle)
 
-	return c
+	return types.CPU{List: c}
 }
-func textAttr_colorPercent(p uint) template.HTMLAttr {
-	return template.HTMLAttr(" class=\"text-" + colorPercent(p) + "\"")
+
+func textClass_colorPercent(p uint) string {
+	return "text-" + colorPercent(p)
 }
-func labelAttr_colorPercent(p uint) template.HTMLAttr {
-	return template.HTMLAttr(" class=\"label label-" + colorPercent(p) + "\"")
+
+func labelClass_colorPercent(p uint) string {
+	return "label label-" + colorPercent(p)
 }
+
 func colorPercent(p uint) string {
-	if p > 90 {
-		return "danger"
-	}
-	if p > 80 {
-		return "warning"
-	}
-	if p > 20 {
-		return "info"
-	}
+	if p > 90 { return "danger"  }
+	if p > 80 { return "warning" }
+	if p > 20 { return "info"    }
 	return "success"
 }
 
@@ -138,7 +141,7 @@ type memory struct {
 	Free        string
 	UsePercent  string
 
-	AttrUsePercent template.HTMLAttr `json:"-"`
+	UsePercentClass string
 }
 
 type diskInfo struct {
@@ -165,11 +168,13 @@ func valuesSet(req *http.Request, base url.Values, pname string, bimap types.Bis
 }
 
 func orderDisk(disks []diskInfo, seq types.SEQ) []types.DiskData {
-	sort.Stable(diskOrder{
-		disks: disks,
-		seq: seq,
-		reverse: _DFBIMAP.SEQ2REVERSE[seq],
-	})
+	if len(disks) > 1 {
+		sort.Stable(diskOrder{
+			disks: disks,
+			seq: seq,
+			reverse: _DFBIMAP.SEQ2REVERSE[seq],
+		})
+	}
 
 	var dd []types.DiskData
 	for _, disk := range disks {
@@ -198,8 +203,8 @@ func orderDisk(disks []diskInfo, seq types.SEQ) []types.DiskData {
 
 			DirName:     disk.DirName,
 
-			AttrUsePercent:  labelAttr_colorPercent(percent(approxused,  approxtotal)),
-			AttrIusePercent: labelAttr_colorPercent(percent(approxiused, approxitotal)),
+			 UsePercentClass: labelClass_colorPercent(percent(approxused,  approxtotal)),
+			IusePercentClass: labelClass_colorPercent(percent(approxiused, approxitotal)),
 		})
 	}
 	return dd
@@ -308,7 +313,7 @@ type pageUpdate struct {
 	DiskTable DiskTable
 	ProcTable ProcTable
 
-	Interfaces []types.DeltaInterface
+	Interfaces types.Interfaces
 }
 
 var stateLock sync.Mutex
@@ -383,7 +388,7 @@ func updates(req *http.Request, new_search bool) (pageUpdate, url.Values, types.
 			CPU:      lastState.CPU(),
 			RAM:      lastState.RAM,
 			Swap:     lastState.Swap,
-			Interfaces: lastState.InterfacesDelta(),
+			Interfaces: types.Interfaces{List: lastState.InterfacesDelta()},
 		}
 	}()
 	pu.DiskTable.List = orderDisk(disks_copy, dflinks.Seq)
@@ -422,7 +427,7 @@ func collected(req *http.Request) Page {
 				Seq: psseq,
 			},
 		},
-		Interfaces: types.Interfaces{List: latest.Interfaces },
+		Interfaces: latest.Interfaces, // types.Interfaces{List: latest.Interfaces },
 		DISTRIB: DISTRIB, // from init.go
 		HTTP_HOST: req.Host,
 	}
