@@ -101,6 +101,7 @@ Whenever amber.templates or assets or style change, you have to re-run `scons`.
 The assets
 ----------
 
-The [binaries](#download), to be stand-alone, have the assets (including `templates.min/`) embeded.
-Unless you specifically `go build` with `-tags production`, they are not embeded for the ease of development:
+The [binaries](#download), to be stand-alone, have the assets (including `templates.html/`) embeded.
+Unless you specifically `go build` with `-tags production` (e.g with scons),
+they are not embeded for the ease of development:
 with `rerun ostent`, asset requests are served from the actual files.
