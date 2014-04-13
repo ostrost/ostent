@@ -22,15 +22,17 @@ and any service connection will be opt-in and optional.
 Download
 --------
 
-   - [Linux 64bits](https://OSTROST.COM/ostent/releases/latest/Linux x86_64/ostent)
-   - [Linux 32bits](https://OSTROST.COM/ostent/releases/latest/Linux i686/ostent)
-   - [Darwin](https://OSTROST.COM/ostent/releases/latest/Darwin x86_64/ostent)
+Release 0.1.2
+
+   - [Linux 64bits](https://github.com/rzab/ostent/releases/download/v0.1.2/Linux.x86_64)
+   - [Linux 32bits](https://github.com/rzab/ostent/releases/download/v0.1.2/Linux.i686)
+   - [Darwin](https://github.com/rzab/ostent/releases/download/v0.1.2/Darwin.x86_64)
    - _Expect \*BSD builds surely_
 
 A single executable without dependecies, has no config, makes no files of it's own.
 Self-updates: new releases will be deployed automatically, sans page reload yet.
 
-Laziest install: `curl -sSL https://github.com/rzab/ostent/raw/master/lazyinstall.sh | sh -e`
+Install & run win `curl -sSL https://github.com/rzab/ostent/raw/master/ostent.sh | sh`
 
 `ostent` accepts optional `-b[ind]` argument to set specific IP and/or port to bind to, otherwise any machine IP and port 8050 by default.
 
