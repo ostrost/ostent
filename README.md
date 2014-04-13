@@ -79,6 +79,8 @@ rerun will find `main.devel.go` file; the other `main.production.go` (used when 
 is the init code for the distributed [binaries](#download): also includes
 [goagain](https://github.com/rcrowley/goagain) recovering and self-updating via [go-update](https://github.com/inconshreveable/go-update).
 
+`[src/]amberp/amberpp` is templates compiler. Compilation is done with scons.
+
 SCons
 -----
 
