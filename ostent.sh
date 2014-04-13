@@ -1,7 +1,7 @@
 #!/bin/sh -e
 set -e # yeah, won't ignore errors
 
-DEST="${DEST:-~/bin/ostent}" # change if you wish. the directory must be writable for ostent to self-update
+DEST="${DEST:-$HOME/bin/ostent}" # change if you wish. the directory must be writable for ostent to self-update
 
 if ! test -e "$DEST" ; then
     URL="https://OSTROST.COM/ostent/releases/latest/$(uname -sm)/ostent"
