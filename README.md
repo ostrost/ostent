@@ -90,7 +90,7 @@ Additional required tools here:
 - [Sass](http://sass-lang.com/)
 - [react-tools](https://www.npmjs.org/package/react-tools) with [Node.js](http://nodejs.org/)
 
-`scons` makes this **commited to the repo** files:
+`scons` makes these **commited to the repo** files:
 - `src/ostential/view/bindata.devel.go`
 - `src/ostential/assets/bindata.devel.go`
 - `assets/css/index.css`
