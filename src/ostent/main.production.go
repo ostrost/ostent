@@ -12,7 +12,10 @@ import (
  	"syscall"
 	"runtime"
 	"strings"
+	"net/url"
+	"net/http"
 	"math/rand"
+	"path/filepath"
 
 	"github.com/codegangsta/martini"
 	"github.com/rcrowley/goagain"
@@ -38,10 +41,40 @@ func update_loop() {
 	}
 }
 
-const update_from = "0.1.2"
-func update_once(kill bool) bool {
+func newer_version() string {
+	// 1. https://github.com/rzab/ostent/releases/latest # redirects, NOT followed
+	// 2. https://github.com/rzab/ostent/releases/vX.Y.Z # Redirect location
+	// 3. return "vX.Y.Z" # basename of the location
 
-	host := "https://OSTROST.COM"
+	type redirected struct {
+		error
+		url url.URL
+	}
+	checkRedirect := func(req *http.Request, _via []*http.Request) error {
+		return redirected{url: *req.URL,}
+	}
+
+	client := &http.Client{CheckRedirect: checkRedirect,}
+	resp, err := client.Get("https://github.com/rzab/ostent/releases/latest")
+	if err == nil {
+		resp.Body.Close()
+		return ""
+	}
+	urlerr, ok := err.(*url.Error)
+	if !ok {
+		return ""
+	}
+	resp.Body.Close()
+	redir, ok := urlerr.Err.(redirected)
+	if !ok {
+		return ""
+	}
+	return filepath.Base(redir.url.Path)
+}
+
+const current_version = "v0.1.3"
+// const update_from = current_version[1:]
+func update_once(kill bool) bool {
 
 	mach := runtime.GOARCH
 	if mach == "amd64" {
@@ -49,7 +82,12 @@ func update_once(kill bool) bool {
 	} else if mach == "386" {
 		mach = "i686"
 	}
-	url := fmt.Sprintf("%s/ostent/releases/%s/%s %s/newer", host, update_from, strings.Title(runtime.GOOS), mach)
+	new_version := newer_version()
+	if new_version == "" || new_version == current_version {
+		return false
+	}
+// 	url := fmt.Sprintf("https://ostrost.com"+ "/ostent/releases/%s/%s %s/newer",    update_from, strings.Title(runtime.GOOS), mach) // before v0.1.3
+	url := fmt.Sprintf("https://github.com/rzab/ostent/releases/download/%s/%s.%s", new_version, strings.Title(runtime.GOOS), mach)
 
 	err, _ := update.FromUrl(url) // , snderr
 	if err != nil ||  err != nil {
@@ -74,6 +112,10 @@ func main() {
 	}
 
 	martini.Env = martini.Prod
+	if !had_update { // start the background routine unless just had an update and gonna relaunch anyway
+		go ostential.Loop()
+	}
+
 	listen, err := goagain.Listener()
 	if err != nil {
 		listen, err = ostential.Listen()

@@ -22,7 +22,7 @@ and any service connection will be opt-in and optional.
 Download
 --------
 
-Release 0.1.2
+Release 0.1.2, distributed by GitHub Releases
 
    - [Linux 64bits](https://github.com/rzab/ostent/releases/download/v0.1.2/Linux.x86_64)
    - [Linux 32bits](https://github.com/rzab/ostent/releases/download/v0.1.2/Linux.i686)
@@ -32,7 +32,7 @@ Release 0.1.2
 A single executable without dependecies, has no config, makes no files of it's own.
 Self-updates: new releases will be deployed automatically, sans page reload yet.
 
-Install & run win `curl -sSL https://github.com/rzab/ostent/raw/master/ostent.sh | sh`
+Install & run with `curl -sSL https://github.com/rzab/ostent/raw/master/ostent.sh | sh`
 
 `ostent` accepts optional `-b[ind]` argument to set specific IP and/or port to bind to, otherwise any machine IP and port 8050 by default.
 

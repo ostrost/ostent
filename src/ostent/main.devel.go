@@ -13,7 +13,10 @@ import (
 )
 
 func main() {
+	flag.Parse()
+
 	martini.Env = martini.Dev
+	go ostential.Loop()
 
 	listen, err := ostential.Listen()
 	if err == nil {

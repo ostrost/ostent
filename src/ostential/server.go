@@ -57,9 +57,8 @@ type FlagError struct {
 	error
 }
 func Listen() (net.Listener, error) {
-	if !flag.Parsed() {
-		flag.Parse()
-	}
+	// flags must be parsed by now
+
 	bindaddr, err := parseaddr(opt_bindaddr, DEFPORT)
 	if err != nil {
 		return nil, FlagError{err}

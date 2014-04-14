@@ -1,47 +1,48 @@
 package ostential
 import (
 	"time"
+	"flag"
 	"net/url"
 	"net/http"
 	"github.com/gorilla/websocket"
 )
+
+var period = time.Second // default
+func init() {
+	flag.DurationVar(&period, "u", time.Second, "Update interval")
+}
+
+func Loop() {
+	// flags must be parsed by now, `period' is used here
+	for {
+		select {
+		case wc := <-register:
+			if len(wclients) == 0 {
+				collect() // for at least one new client
+			}
+			wclients[wc] = true
+
+		case wc := <-unregister:
+			delete(wclients, wc)
+			close(wc.ping)
+			if len(wclients) == 0 {
+				reset_prev()
+			}
+
+		case <-time.After(period):
+			collect()
+			for wc := range wclients {
+				wc.ping <- true
+			}
+		}
+	}
+}
 
 func parseSearch(search string) (url.Values, error) {
 	if search != "" && search[0] == '?' {
 		search = search[1:]
 	}
 	return url.ParseQuery(search)
-}
-
-func init() {
-	// collect() // collect for initial (first) `index' to have the data for display
-	// although it may become outdated. TODO fix this:
-	// 1. `index' should check for conntrack.count == 0, and if so, do collect() and reset timer
-
-	go func() {
-		for {
-			select {
-			case wc := <-register:
-				if len(wclients) == 0 {
-					collect() // for at least one new client
-				}
-				wclients[wc] = true
-
-			case wc := <-unregister:
-				delete(wclients, wc)
-				close(wc.ping)
-				if len(wclients) == 0 {
-					reset_prev()
-				}
-
-			case <-time.After(time.Second * 1):
-				collect()
-				for wc := range wclients {
-					wc.ping <- true
-				}
-			}
-		}
-	}()
 }
 
 type wclient struct {
