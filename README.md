@@ -22,11 +22,11 @@ and any service connection will be opt-in and optional.
 Download
 --------
 
-Release 0.1.2, distributed by GitHub Releases
+Release 0.1.3, distributed by GitHub Releases
 
-   - [Linux 64bits](https://github.com/rzab/ostent/releases/download/v0.1.2/Linux.x86_64)
-   - [Linux 32bits](https://github.com/rzab/ostent/releases/download/v0.1.2/Linux.i686)
-   - [Darwin](https://github.com/rzab/ostent/releases/download/v0.1.2/Darwin.x86_64)
+   - [Linux 64bits](https://github.com/rzab/ostent/releases/download/v0.1.3/Linux.x86_64)
+   - [Linux 32bits](https://github.com/rzab/ostent/releases/download/v0.1.3/Linux.i686)
+   - [Darwin](https://github.com/rzab/ostent/releases/download/v0.1.3/Darwin.x86_64)
    - _Expect \*BSD builds surely_
 
 A single executable without dependecies, has no config, makes no files of it's own.
@@ -39,6 +39,8 @@ Install & run with `curl -sSL https://github.com/rzab/ostent/raw/master/ostent.s
    - `ostent -bind 127.1` # [http://127.0.0.1:8050/](http://127.0.0.1:8050/)
    - `ostent -bind 192.168.1.10:8051` # port 8051
    - `ostent -bind 8052` # any IP, port 8052
+
+`-u` sets update interval (1 second by default), e.g. `500ms`, `5s` etc.
 
 Feedback & contribute
 ---------------------
