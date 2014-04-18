@@ -10,9 +10,9 @@ it will self-upgrade whenever there's new release.
 Platforms
 ---------
 
-   - [Linux 64bits](https://github.com/rzab/ostent/releases/download/v0.1.3/Linux.x86_64)
-   - [Linux 32bits](https://github.com/rzab/ostent/releases/download/v0.1.3/Linux.i686)
-   - [Darwin](https://github.com/rzab/ostent/releases/download/v0.1.3/Darwin.x86_64)
+   - [Linux 64bits](https://github.com/rzab/ostent/releases/download/v0.1.4/Linux.x86_64)
+   - [Linux 32bits](https://github.com/rzab/ostent/releases/download/v0.1.4/Linux.i686)
+   - [Darwin](https://github.com/rzab/ostent/releases/download/v0.1.4/Darwin.x86_64)
    - _Expect \*BSD builds surely_
 
 Binaries distributed by [GitHub Releases](https://github.com/rzab/ostent/releases)

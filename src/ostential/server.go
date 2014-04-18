@@ -201,4 +201,4 @@ func logThis(start time.Time, res http.ResponseWriter, req *http.Request, logger
 	logger.Printf("%s\t%s\t%s\t%v\t%s\t%s\n", start.Format("15:04:05"), host, since, code, req.Method, req.URL.Path)
 }
 
-const VERSION = "0.1.3"
+const VERSION = "0.1.4"
