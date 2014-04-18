@@ -1,11 +1,9 @@
 package ostential
 import (
 	"ostential/types"
-
-	"github.com/rzab/gosigar"
 )
 
-type cpuOrder []sigar.Cpu
+type cpuOrder []types.Core
 func(co cpuOrder) Len() int {
 	return len(co)
 }
@@ -24,10 +22,10 @@ func(io interfaceOrder) Swap(i, j int) {
 	io[i], io[j] = io[j], io[i]
 }
 func(io interfaceOrder) Less(i, j int) bool {
-	if io[i].Name == "lo" || rx_lo.Match([]byte(io[i].Name)) {
-		return true
+	if rx_lo.Match([]byte(io[i].NameKey)) {
+		return false
 	}
-	return io[i].Name < io[j].Name
+	return io[i].NameKey < io[j].NameKey
 }
 
 type ProcTable struct {
@@ -38,4 +36,7 @@ type ProcTable struct {
 type DiskTable struct {
 	List  []types.DiskData
 	Links *DiskLinkattrs `json:",omitempty"`
+	HaveCollapsed bool
 }
+
+

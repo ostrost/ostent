@@ -1,12 +1,14 @@
-/** @jsx React.DOM */ // -*- indent-tabs-mode: nil -*-
-$disk = disk
+/** @jsx React.DOM */ [[/* -*- indent-tabs-mode: nil -*- */]]
 script
-  // variable origin: jscript.amber
+  var collapsing_interfaces = true; // default is true
   var ifsTableClass = React.createClass({
     getInitialState: function() { return Data.Interfaces; },
     render: function() {
       var Data = {Interfaces: this.state};
       var ifs_rows = Data.Interfaces.List.map(function($if) {
+        if (!collapsing_interfaces) {
+          $if.CollapseClass = "collapse in";
+        }
         return ([[template "define_ifsrows" .]]);
       });
       [[SET "bracket_ifsrows" `{ifs_rows}`]]
@@ -15,25 +17,49 @@ script
     }
   });
 
-  function diskname_function(disk) {
-    if (disk.ShorDiskName === "") {
-      return ([[template "define_diskname" .]]);
+  var ifsPacketsTableClass = React.createClass({
+    getInitialState: function() { return Data.Interfaces; },
+    render: function() {
+      var Data = {Interfaces: this.state};
+      var ifs_rows = Data.Interfaces.List.map(function($if) {
+        if (!collapsing_interfaces) {
+          $if.CollapseClass = "collapse in";
+        }
+        return ([[template "define_ifspacketsrows" .]]);
+      });
+      [[SET "bracket_ifsrows" `{ifs_rows}`]]
+      return ([[template "define_ifspacketstable" .]]);
+      [[DEL "bracket_ifsrows"]]
     }
-    var span = ([[template "define_shortdiskname" .]]);
-    $('span .tooltipable').tooltip();
-    return span;
-  }
+  });
 
-  // variable origin: jscript.amber
+  var ifsErrorsTableClass = React.createClass({
+    getInitialState: function() { return Data.Interfaces; },
+    render: function() {
+      var Data = {Interfaces: this.state};
+      var ifs_rows = Data.Interfaces.List.map(function($if) {
+        if (!collapsing_interfaces) {
+          $if.CollapseClass = "collapse in";
+        }
+        return ([[template "define_ifserrorsrows" .]]);
+      });
+      [[SET "bracket_ifsrows" `{ifs_rows}`]]
+      return ([[template "define_ifserrorstable" .]]);
+      [[DEL "bracket_ifsrows"]]
+    }
+  });
+
+  var collapsing_disks = true; // default is true
   var diskTableClass = React.createClass({
     getInitialState: function() { return Data.DiskTable; },
     render: function() {
       var Data = {DiskTable: this.state};
-      [[SET "bracket_diskname" `{diskname_function($disk)}`]]
       var df_rows = Data.DiskTable.List.map(function($disk) {
+        if (!collapsing_disks) {
+          $disk.CollapseClass = "collapse in";
+        }
         return ([[template "define_dfrows" .]]);
       });
-      [[DEL "bracket_diskname"]]
 
       [[SET "bracket_dfrows" `{df_rows}`]]
       return ([[template "define_dftable" .]]);
@@ -41,16 +67,16 @@ script
     }
   });
 
-  // variable origin: jscript.amber
   var inodeTableClass = React.createClass({
     getInitialState: function() { return Data.DiskTable; },
     render: function() {
       var Data = {DiskTable: this.state};
-      [[SET "bracket_diskname" `{diskname_function($disk)}`]]
       var di_rows = Data.DiskTable.List.map(function($disk) {
+        if (!collapsing_disks) {
+          $disk.CollapseClass = "collapse in";
+        }
         return ([[template "define_dirows" .]]);
       });
-      [[DEL "bracket_diskname"]]
 
       [[SET "bracket_dirows" `{di_rows}`]]
       return ([[template "define_ditable" .]]);
@@ -58,12 +84,15 @@ script
     }
   });
 
-  // variable origin: jscript.amber
+  var collapsing_cpu = true; // default is true
   var cpuTableClass = React.createClass({
     getInitialState: function() { return Data.CPU; },
     render: function() {
       var Data = {CPU: this.state};
       var cpu_rows = Data.CPU.List.map(function($core) {
+        if (!collapsing_cpu) {
+          $core.CollapseClass = "collapse in";
+        }
         return ([[template "define_cpurows" .]]);
       });
       [[SET "bracket_cpurows" `{cpu_rows}`]]
@@ -72,7 +101,6 @@ script
     }
   });
 
-  // origin: jscript.amber
   var procTableClass  = React.createClass({
     getInitialState: function() { return Data.ProcTable; },
     render: function() {

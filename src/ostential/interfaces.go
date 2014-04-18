@@ -5,11 +5,11 @@ import (
 )
 
 var (
-	rx_lo      = regexp.MustCompile("lo\\d+") // used in interfaces_unix.go, sortable.go
+	rx_lo      = regexp.MustCompile("lo\\d*") // "lo" & lo\d+; used in interfaces_unix.go, sortable.go
 	RX_fw      = regexp.MustCompile("fw\\d+")
 	RX_gif     = regexp.MustCompile("gif\\d+")
 	RX_stf     = regexp.MustCompile("stf\\d+")
-	RX_bridge  = regexp.MustCompile("bridge\\d+")
+	RX_bridge  = regexp.MustCompile("REVERT\\d+") // "bridge\\d+"
 	RX_vboxnet = regexp.MustCompile("vboxnet\\d+")
 	RX_airdrop = regexp.MustCompile("p2p\\d+")
 )

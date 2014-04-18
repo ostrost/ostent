@@ -19,112 +19,199 @@ html
     script
       $(ready);
 
-    div.row
-      div.container
+    div.container-fluid
+      div.row
+        div.block.col-md-1.text-center
+          ul.LINKSnav.nav-pills.nav-stacked
+            li
+              a.code[href="https://ostrost.com/ostent"] OSTENT
+            li
+              a.code[href="https://github.com/rzab/ostent/releases/latest"] #{ Data.VERSION }
+
+        div.block.col-md-2#show-memory
+          div.panel1
+            header.draggable
+              a[data-toggle="collapse"][data-parent="#show-memory"][href="#memory"] Memory
+            div.panel-collapse.collapse.in#memory
+              table.table1.stripe-table
+                thead
+                  tr
+                    th
+                    th.digital Free
+                    th.digital Used
+                    th.digital Total
+                tbody
+                  tr
+                    td RAM
+                    td.digital[id="Data.RAM.Free"]
+                      | #{         Data.RAM.Free }
+                    td.digital
+                      span[id="Data.RAM.Used"]
+                        | #{Data.RAM.Used}
+                      | &nbsp;
+                      sup[id="Data.RAM.UsePercent"] <span class=#{Data.RAM.UsePercentClass}>#{Data.RAM.UsePercent}%</span>
+                    td.digital
+                      [id="Data.RAM.Total"]
+                      | #{ Data.RAM.Total }
+                  tr
+                    td swap
+                    td.digital
+                      [id="Data.Swap.Free"]
+                      | #{ Data.Swap.Free }
+                    td.digital
+                      span[id="Data.Swap.Used"]
+                        | #{Data.Swap.Used}
+                      | &nbsp;
+                      sup[id="Data.Swap.UsePercent"] <span class=#{Data.Swap.UsePercentClass}>#{Data.Swap.UsePercent}%</span>
+                    td.digital
+                      [id="Data.Swap.Total"]
+                      | #{ Data.Swap.Total }
+
+        div.block.col-md-3
+          div.panel-group#network-acc
+            div.panel1.panel.panel-default
+              //-     .panel.panel-default CLASSES REQUIRED BY BOOTSTAP JAVASCRIPT, not just for styling
+
+              header.draggable.panel-heading.nobr
+                a[data-toggle="collapse"][data-parent="#network-acc"][href="#network"] Network
+
+                div.pull-right
+                  div.btn-group.notall[data-toggle="buttons"]
+                    label.network-switch.btn.btn-xs.btn-default.nondefault
+                      [data-toggle="collapse"][data-parent="#network-acc"][href="#network-packets"]
+                      input#radio-network-packets[type="radio"][name="network-radio"]
+                      | Packets
+
+                    label.network-switch.btn.btn-xs.btn-default.nondefault
+                      [data-toggle="collapse"][data-parent="#network-acc"][href="#network-errors"]
+                      input#radio-network-errors[type="radio"][name="network-radio"]
+                      | Errors
+
+                    label.network-switch.btn.btn-xs.btn-default.active
+                      [data-toggle="collapse"][data-parent="#network-acc"][href="#network-bytes"]
+                      input#radio-network-bytes[type="radio"][name="network-radio"][checked="checked"]
+                      | Bytes
+
+                  if Data.Interfaces.HaveCollapsed
+                    div.btn-group[data-toggle="buttons"]
+                      //- [title="ii"]
+                      label.btn.btn-xs.btn-default.all[data-parent="#network-bytes,#network-packets,#network-errors"]
+                        input[type="checkbox"][name="allnetwork"]
+                        | All
+
+              div.panel-collapse.collapse#network
+              //- This div intentionally left blank
+
+              div.panel-collapse.collapse.in#network-bytes
+                span#ifs-table
+                  [[template "define_ifstable" .]]
+
+              div.panel-collapse.collapse#network-packets
+                span#ifs-packets-table
+                  [[template "define_ifspacketstable" .]]
+
+              div.panel-collapse.collapse#network-errors
+                span#ifs-errors-table
+                  [[template "define_ifserrorstable" .]]
+
+        //- #show-cpu
+        div.block.col-md-2
+          div.panel1
+            header.draggable.nobr
+              //- [data-parent="#show-cpu"]
+              a[data-toggle="collapse"][data-parent="#cpu"][href="#cpu"] CPU
+
+              if Data.CPU.HaveCollapsed
+                div.pull-right
+                  div.btn-group[data-toggle="buttons"]
+                    //- [title="ii"]
+                    label.btn.btn-xs.btn-default.all[data-parent="#cpu"][href="#cpu"]
+                      input[type="checkbox"][name="allcpu"]
+                      | All
+
+            div.panel-collapse.collapse.in#cpu
+              span#cpu-table
+                [[template "define_cputable" .]]
+
+        //- #show-disks
+        div.block.col-md-3
+          div.panel-group#disk-acc
+            div.panel1.panel.panel-default
+              //-     .panel.panel-default CLASSES REQUIRED BY BOOTSTAP JAVASCRIPT, not just for styling
+
+              header.draggable.panel-heading.nobr
+                a[data-toggle="collapse"][data-parent="#disk-acc"][href="#disks"] Disks
+
+                div.pull-right
+                  div.btn-group.notall[data-toggle="buttons"]
+                    label.disk-switch.btn.btn-xs.btn-default.nondefault
+                      [data-toggle="collapse"][data-parent="#disk-acc"][href="#disks-inodes"]
+                      input#radio-disks-inodes[type="radio"][name="disks-radio"]
+                      | Inodes
+
+                    label.disk-switch.btn.btn-xs.btn-default.active
+                      [data-toggle="collapse"][data-parent="#disk-acc"][href="#disks-bytes"]
+                      input#radio-disks-bytes[type="radio"][name="disks-radio"][checked="checked"]
+                      | Bytes
+
+                  if Data.DiskTable.HaveCollapsed
+                    div.btn-group[data-toggle="buttons"]
+                      //- [title="ii"]
+                      label.btn.btn-xs.btn-default.all[data-parent="#disks-bytes,#disks-inodes"]
+                        input[type="checkbox"][name="alldisks"]
+                        | All
+
+              div.panel-collapse.collapse#disks
+              //- This div intentionally left blank
+
+              div.panel-collapse.collapse.in#disks-bytes
+                span#df-table
+                [[template "define_dftable" .]]
+
+              div.panel-collapse.collapse#disks-inodes
+                span#dfi-table
+                [[template "define_ditable" .]]
+
+    div.container-fluid
+      div.row
         div.col-md-2
           ul.nav.nav-pills.nav-stacked
             li
-              code.code hostname:&nbsp;
-                span[id="Data.About.Hostname"]
-                  | #{ Data.About.Hostname }
+              div.row
+                div.col-md-6.cell-right
+                  span.code hostname:
+                div.col-md-6
+                  span.code[id="Data.About.Hostname"] #{ Data.About.Hostname }
+
             li
-              code.code IPv4:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                span[id="Data.About.IP"]
-                  | #{ Data.About.IP }
+              div.row
+                div.col-md-6.cell-right
+                  span.code IPv4:
+                div.col-md-6
+                  span.code[id="Data.About.IP"] #{ Data.About.IP }
+
             li
-              code.code OS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                span.nobr #{ Data.DISTRIB }
-            li.nobr
-              code.code uptime:&nbsp;&nbsp;&nbsp;
-                span[id="Data.System.Uptime"]
-                  | #{ Data.System.Uptime }
-                //- span.badge-primary[style="display: inline"] primary
-                //- span.badge-success[style="display: inline"] success
-                //- span.badge-info[style="display: inline"] info
-                //- span.badge-warning[style="display: inline"] warning
-                //- span.badge-danger[style="display: inline"] danger
+              div.row
+                div.col-md-6.cell-right
+                  span.code OS:
+                div.col-md-6
+                  span.codenobr #{ Data.DISTRIBHTML }
 
-        div.block.col-md-3
-          div.panel1
-            header.draggable Memory
-            table.table1.stripe-table
-              thead
-                tr
-                  th
-                  th.digital Free
-                  th.digital Used
-                  th.digital Total
-              tbody
-                tr
-                  td RAM
-                  td.digital[id="Data.RAM.Free"]
-                    | #{         Data.RAM.Free }
-                  td.digital
-                    span[id="Data.RAM.Used"]
-                      | #{Data.RAM.Used}
-                    | &nbsp;
-                    sup[id="Data.RAM.UsePercent"] <span class=#{Data.RAM.UsePercentClass}>#{Data.RAM.UsePercent}%</span>
-                  td.digital
-                    [id="Data.RAM.Total"]
-                    | #{ Data.RAM.Total }
-                tr
-                  td swap
-                  td.digital
-                    [id="Data.Swap.Free"]
-                    | #{ Data.Swap.Free }
-                  td.digital
-                    span[id="Data.Swap.Used"]
-                      | #{Data.Swap.Used}
-                    | &nbsp;
-                    sup[id="Data.Swap.UsePercent"] <span class=#{Data.Swap.UsePercentClass}>#{Data.Swap.UsePercent}%</span>
-                  td.digital
-                    [id="Data.Swap.Total"]
-                    | #{ Data.Swap.Total }
+            li
+              div.row
+                div.col-md-6.cell-right
+                  span.code uptime:
+                div.col-md-6
+                  span.codenobr[id="Data.System.Uptime"] #{ Data.System.Uptime }
 
-        div.block.col-md-4
-          div.panel1
-            header.draggable Network
-            span#ifs-table
-              [[template "define_ifstable" .]]
+            li
+              div.row
+                div.col-md-6.cell-right
+                  span.code loadavg:
+                div.col-md-6
+                  span.codenobr[id="Data.System.LA"] #{ Data.System.LA }
 
-      div.container
-        div.block.col-md-4.col-md-offset-1
-          div.panel-group#disk-accordion
-            div.panel1.panel.panel-default
-              header.draggable.panel-heading
-                span.nobr[style="width: 50%"] Disks usage
-
-                div[style="float: right"]
-                  div.btn-group[data-toggle="buttons"]
-                    label.disk-switch.btn.btn-xs.btn-default.active
-                      [data-toggle="collapse"][data-parent="#disk-accordion"][href="#space"]
-                      input[type="radio"][name="disks-radio"][id="radio-space"]
-                      | Space
-
-                    label.disk-switch.btn.btn-xs.btn-default
-                      [data-toggle="collapse"][data-parent="#disk-accordion"][href="#inodes"]
-                      input[type="radio"][name="disks-radio"][id="radio-inodes"]
-                      | Inodes
-
-              div.panel-collapse.collapse.in#space
-                span#df-table
-                  [[template "define_dftable" .]]
-
-              div.panel-collapse.collapse#inodes
-                span#dfi-table
-                  [[template "define_ditable" .]]
-
-        div.block.col-md-4
-          div.panel1
-            header.draggable CPU; LA&nbsp;
-              span[style="width: 50%"][id="Data.System.LA"] #{Data.System.LA}
-
-            span#cpu-table
-              [[template "define_cputable" .]]
-
-    div.container
-      div.row
-        div.block.col-md-10.col-md-offset-1
+        div.block.col-md-8
           div.panel1
             header.NOTdraggable Processes
             span#ps-table

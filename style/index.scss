@@ -3,7 +3,7 @@
 // @import 'bootflatcss.scss';
 
 body {
-  @extend .container; //?
+  // @extend .container; //?
   font-size: 12px;
 
 // pick your poison
@@ -47,24 +47,53 @@ body {
   }
 }
 .table2 {
-  @extend .table-bordered;
+  @extend .table-hover;
 }
 
 // .stripe-table > tbody > tr:nth-child(odd) > th,
-   .stripe-table > tbody > tr:nth-child(odd) > td {
+   .stripe-table > tbody > tr:nth-child(even) > td {
   background-color: #f9f9f9;
 }
 
-.nobr { white-space: pre; }
+.nobr { white-space: inline; } // used to be pre
 //? .nobrinline { white-space: nowrap; display: inline; }
 
-.code {
+.allcode {
   @extend code;
-  display: inline;
   white-space: normal; // pre; // nowrap;
 
   color: black;
   background-color: #f4f4f4;
+}
+.code {
+  @extend .allcode;
+  display: inline;
+}
+.codenobr {
+  @extend .code;
+  white-space: nowrap;
+}
+.inlinecode {
+  @extend .code;
+  padding: 0px 0px;
+}
+
+.cell-right {
+    @extend .text-right;
+    padding-right: 0px;
+}
+
+.btn-group.notall {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.LINKSnav {
+    @extend .nav;
+    li > a {
+	padding: 0px 0px;
+	display: inline;
+    }
 }
 
 .unit {
@@ -127,3 +156,11 @@ table thead tr .header a.desc:after {
 .badge-info    { @extend .badge; background: #5bc0de; }
 .badge-warning { @extend .badge; background: #f0ad4e; }
 .badge-danger  { @extend .badge; background: #d9534f; }
+
+/*
+// ".btn-default .badge" colors
+.ii-tooltip-arrow { border-left-color: #999 !important; }
+.ii-tooltip-inner { background-color:  #999;
+    color: #fff;
+    border-radius: 0px; }
+// */

@@ -13,10 +13,22 @@ package ostential
 u_int32_t Ibytes(void *data) { return ((struct if_data *)data)->ifi_ibytes; }
 u_int32_t Obytes(void *data) { return ((struct if_data *)data)->ifi_obytes; }
 
+u_int32_t Ipackets(void *data) { return ((struct if_data *)data)->ifi_ipackets; }
+u_int32_t Opackets(void *data) { return ((struct if_data *)data)->ifi_opackets; }
+
+u_int32_t Ierrors(void *data) { return ((struct if_data *)data)->ifi_ierrors; }
+u_int32_t Oerrors(void *data) { return ((struct if_data *)data)->ifi_oerrors; }
+
 #else
 #include <linux/if_link.h>
 u_int32_t Ibytes(void *data) { return ((struct rtnl_link_stats *)data)->rx_bytes; }
 u_int32_t Obytes(void *data) { return ((struct rtnl_link_stats *)data)->tx_bytes; }
+
+u_int32_t Ipackets(void *data) { return ((struct rtnl_link_stats *)data)->rx_packets; }
+u_int32_t Opackets(void *data) { return ((struct rtnl_link_stats *)data)->tx_packets; }
+
+u_int32_t Ierrors(void *data) { return ((struct rtnl_link_stats *)data)->rx_errors; }
+u_int32_t Oerrors(void *data) { return ((struct rtnl_link_stats *)data)->tx_errors; }
 #endif
 
 char ADDR[INET_ADDRSTRLEN];
@@ -26,8 +38,12 @@ import "unsafe"
 
 type InterfaceTotal struct{
 	Name string
-	In   uint
-	Out  uint
+	 InBytes   uint
+	OutBytes   uint
+	 InPackets uint
+	OutPackets uint
+	 InErrors  uint
+	OutErrors  uint
 }
 
 func NewInterfaces() ([]InterfaceTotal, string) {
@@ -48,7 +64,6 @@ func NewInterfaces() ([]InterfaceTotal, string) {
 		ifa_name := C.GoString(fi.ifa_name)
 		if IP == "" &&
 			fi.ifa_addr.sa_family == C.AF_INET   &&
-			                    ifa_name != "lo" &&
 			!rx_lo.Match([]byte(ifa_name))       &&
 			realInterfaceName(  ifa_name  ) {
 
@@ -68,15 +83,24 @@ func NewInterfaces() ([]InterfaceTotal, string) {
 		}
 
 		data := fi.ifa_data
-		if  C.Ibytes(data) == 0 &&
-			C.Obytes(data) == 0 {
+		it := InterfaceTotal{
+			Name: ifa_name,
+			 InBytes:   uint(C.Ibytes(data)),
+			OutBytes:   uint(C.Obytes(data)),
+			 InPackets: uint(C.Ipackets(data)),
+			OutPackets: uint(C.Opackets(data)),
+			 InErrors:  uint(C.Ierrors(data)),
+			OutErrors:  uint(C.Oerrors(data)),
+		}
+		if  it. InBytes   == 0 &&
+			it.OutBytes   == 0 &&
+			it. InPackets == 0 &&
+			it.OutPackets == 0 &&
+			it. InErrors  == 0 &&
+			it.OutErrors  == 0 {
 			continue
 		}
-		ifs = append(ifs, InterfaceTotal{
-			Name: ifa_name,
-			In:   uint(C.Ibytes(data)),
-			Out:  uint(C.Obytes(data)),
-		})
+		ifs = append(ifs, it)
 	}
 	return ifs, IP
 }

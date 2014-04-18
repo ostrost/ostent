@@ -1,51 +1,34 @@
-OSTENT
-======
-
-[**View Demo**](http://demo.ostrost.com/)
+`ostent` displays current system metrics. [**Demo** here](http://demo.ostrost.com/)
 
 ![screenshot](https://github.com/rzab/ostent/raw/master/screenshot.png)
 
-   - Memory usage
-   - Network traffic
-   - Disks usage
-   - CPU load
-   - Processes
-   - to be continued
+Install & run with `curl -sSL https://github.com/rzab/ostent/raw/master/ostent.sh | sh`
 
-Everything is on real-time display only, 1 second refresh.
-A hosted service with graphs, history, aggregation etc.,
-to leave the machines out of it, is bound to happen.
-ostent is inteded to be an agent of sort,
-but however it goes it's a stand-alone app
-and any service connection will be opt-in and optional.
+It's a single executable without dependecies. Once installed,
+it will self-upgrade whenever there's new release.
 
-Download
---------
-
-Release 0.1.3, distributed by GitHub Releases
+Platforms
+---------
 
    - [Linux 64bits](https://github.com/rzab/ostent/releases/download/v0.1.3/Linux.x86_64)
    - [Linux 32bits](https://github.com/rzab/ostent/releases/download/v0.1.3/Linux.i686)
    - [Darwin](https://github.com/rzab/ostent/releases/download/v0.1.3/Darwin.x86_64)
    - _Expect \*BSD builds surely_
 
-A single executable without dependecies, has no config, makes no files of it's own.
-Self-updates: new releases will be deployed automatically, sans page reload yet.
+Binaries distributed by [GitHub Releases](https://github.com/rzab/ostent/releases)
 
-Install & run with `curl -sSL https://github.com/rzab/ostent/raw/master/ostent.sh | sh`
+Usage
+-----
 
-`ostent` accepts optional `-b[ind]` argument to set specific IP and/or port to bind to, otherwise any machine IP and port 8050 by default.
+`ostent` accepts optional `-bind` argument to set specific IP and/or port to bind to, otherwise any machine IP and port 8050 by default.
 
    - `ostent -bind 127.1` # [http://127.0.0.1:8050/](http://127.0.0.1:8050/)
    - `ostent -bind 192.168.1.10:8051` # port 8051
    - `ostent -bind 8052` # any IP, port 8052
 
-`-u` sets update interval (1 second by default), e.g. `500ms`, `5s` etc.
+`-update` sets collection interval (1 second by default), append `s` for seconds: `0.5s`, `5s` etc.
 
-Feedback & contribute
----------------------
-
-[Please do](https://github.com/rzab/ostent/issues/new). Ideas, bugs, pull requests, anything.
+Run it, it'll give the link(s) to open in a browser.
 
 Running the code
 ----------------
@@ -78,12 +61,12 @@ Go packages
 
 `[src/]ostential` is the core package.
 
-`[src/]ostent` is the main (as in [Go Program execution](http://golang.org/ref/spec#Program_execution)) package:
+`[src/]ostent` is the main (_as in [Go Program execution](http://golang.org/ref/spec#Program_execution)_) package:
 rerun will find `main.devel.go` file; the other `main.production.go` (used when building with `-tags production`)
-is the init code for the distributed [binaries](#download): also includes
-[goagain](https://github.com/rcrowley/goagain) recovering and self-updating via [go-update](https://github.com/inconshreveable/go-update).
+is the init code for the distributed binaries: also includes
+[goagain](https://github.com/rcrowley/goagain) recovering and self-upgrading via [go-update](https://github.com/inconshreveable/go-update).
 
-`[src/]amberp/amberpp` is templates compiler. Compilation is done with scons.
+`[src/]amberp/amberpp` is templates compiler, used with scons.
 
 SCons
 -----
@@ -107,7 +90,7 @@ Whenever amber.templates or assets or style change, you have to re-run `scons`.
 The assets
 ----------
 
-The [binaries](#download), to be stand-alone, have the assets (including `templates.html/`) embeded.
+The binaries, to be stand-alone, have the assets (including `templates.html/`) embeded.
 Unless you specifically `go build` with `-tags production` (e.g with scons),
 they are not embeded for the ease of development:
 with `rerun ostent`, asset requests are served from the actual files.

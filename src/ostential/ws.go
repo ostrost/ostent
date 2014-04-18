@@ -9,7 +9,8 @@ import (
 
 var period = time.Second // default
 func init() {
-	flag.DurationVar(&period, "u", time.Second, "Update interval")
+	flag.DurationVar(&period, "u",      time.Second, "Collection (update) interval")
+	flag.DurationVar(&period, "update", time.Second, "Collection (update) interval")
 }
 
 func Loop() {

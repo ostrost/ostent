@@ -83,9 +83,17 @@ func(top tree) String() string {
 
 type hash map[string]interface{}
 
+func curly(s string) string {
+	if strings.HasSuffix(s, "HTML") {
+		return "<span dangerouslySetInnerHTML={{__html: " + s + "}} />"
+		return "{<span dangerouslySetInnerHTML={{__html: " + s + "}} />.props.children}"
+	}
+	return "{" + s + "}"
+}
+
 func mkmap(top tree) interface{} {
 	if len(top.leaves) == 0 {
-		return "{" + dotted(&top) + "}"
+		return curly(dotted(&top))
 	}
 	h := make(hash)
 	for _, leaf := range top.leaves {
@@ -93,7 +101,7 @@ func mkmap(top tree) interface{} {
 			if len(leaf.keys) != 0 {
 				kv := make(map[string]string)
 				for _, k := range leaf.keys {
-					kv[k] = "{"+ leaf.decl +"."+ k +"}"
+					kv[k] = curly(leaf.decl +"."+ k)
 				}
 				h[leaf.name] = []map[string]string{kv}
 			} else {

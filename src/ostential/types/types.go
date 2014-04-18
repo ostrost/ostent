@@ -1,6 +1,7 @@
 package types
 import (
 	"net/url"
+	"html/template"
 )
 
 type SEQ int
@@ -13,9 +14,11 @@ func(seq SEQ) Sign(t bool) bool { // used in sortable_*.go
 
 type CPU struct {
 	List []Core
+	HaveCollapsed bool
 }
 type Core struct {
 	N    string
+	CollapseClass string
 
 	User uint // percent without "%"
 	Sys  uint // percent without "%"
@@ -27,8 +30,9 @@ type Core struct {
 }
 
 type DiskData struct {
-	DiskName    string
-	ShortDiskName string
+	DiskNameKey string
+	DiskNameHTML template.HTML
+	DirNameHTML  template.HTML
 
 	Total       string // with units
 	Used        string // with units
@@ -38,10 +42,11 @@ type DiskData struct {
 	Iused       string // with units
 	Ifree       string // with units
 	IusePercent string // as a string, with "%"
-	DirName     string
 
 	 UsePercentClass string
 	IusePercentClass string
+
+	CollapseClass string
 }
 
 type Attr struct {
@@ -120,15 +125,29 @@ type Linkattrs struct {
 }
 
 type DeltaInterface struct {
-	Name     string
-	In       string // with units
-	Out      string // with units
-	DeltaIn  string // with units
-	DeltaOut string // with units
+	NameKey  string
+	NameHTML template.HTML
+
+	InBytes         string // with units
+	OutBytes        string // with units
+	 InPackets      string // with units
+	OutPackets      string // with units
+	 InErrors       string // with units
+	OutErrors       string // with units
+
+	DeltaInBytes    string // with units
+	DeltaOutBytes   string // with units
+	DeltaInPackets  string // with units
+	DeltaOutPackets string // with units
+	DeltaInErrors   string // with units
+	DeltaOutErrors  string // with units
+
+	CollapseClass string
 }
 
 type Interfaces struct {
 	List []DeltaInterface
+	HaveCollapsed bool
 }
 
 type ProcInfo struct {
@@ -153,9 +172,10 @@ type ProcData struct {
 	Nice     int
 
 	Time     string
-	Name     string
+	NameRaw  string
+	NameHTML template.HTML
 
-	User     string
+	UserHTML template.HTML
 	Size     string // with units
 	Resident string // with units
 }

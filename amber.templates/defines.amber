@@ -2,12 +2,32 @@
 
 [[define "define_ifsrows"]]
   each $if in Data.Interfaces.List
-    |<tr key=#{$if.Name}>
-      td #{$if.Name}
-      td.digital #{$if.DeltaIn}
-      td.digital #{$if.DeltaOut}
-      td.digital #{$if.In}
-      td.digital #{$if.Out}
+    |<tr key=#{$if.NameKey} class=#{$if.CollapseClass}>
+      td #{$if.NameHTML}
+      td.digital #{$if.DeltaInBytes}
+      td.digital #{$if.DeltaOutBytes}
+      td.digital #{$if.InBytes}
+      td.digital #{$if.OutBytes}
+    |</tr>
+[[end]]
+[[define "define_ifspacketsrows"]]
+  each $if in Data.Interfaces.List
+    |<tr key=#{$if.NameKey} class=#{$if.CollapseClass}>
+      td #{$if.NameHTML}
+      td.digital #{$if.DeltaInPackets}
+      td.digital #{$if.DeltaOutPackets}
+      td.digital #{$if.InPackets}
+      td.digital #{$if.OutPackets}
+    |</tr>
+[[end]]
+[[define "define_ifserrorsrows"]]
+  each $if in Data.Interfaces.List
+    |<tr key=#{$if.NameKey} class=#{$if.CollapseClass}>
+      td #{$if.NameHTML}
+      td.digital #{$if.DeltaInErrors}
+      td.digital #{$if.DeltaOutErrors}
+      td.digital #{$if.InErrors}
+      td.digital #{$if.OutErrors}
     |</tr>
 [[end]]
 
@@ -17,9 +37,13 @@
       tr
         th Interface
         th.digital.nobr In
-          span.unit ps
+          span.unit
+            b b
+            | ps
         th.digital.nobr Out
-          span.unit ps
+          span.unit
+            b b
+            | ps
         th.digital.nobr In
           span.unit %4G
         th.digital.nobr Out
@@ -28,33 +52,47 @@
       [[with GET "bracket_ifsrows"]][[.]][[DEL "bracket_ifsrows"]][[else]]
         [[template "define_ifsrows" .]][[end]]
 [[end]]
-
-[[define "define_diskname"]]
-  span #{$disk.DiskName}
+[[define "define_ifspacketstable"]]
+  table.table1.stripe-table
+    thead
+      tr
+        th Interface
+        th.digital.nobr In&nbsp;
+          span.unit ps
+        th.digital.nobr Out&nbsp;
+          span.unit ps
+        th.digital.nobr In
+          span.unit %4G
+        th.digital.nobr Out
+          span.unit %4G
+    tbody
+      [[with GET "bracket_ifsrows"]][[.]][[DEL "bracket_ifsrows"]][[else]]
+        [[template "define_ifspacketsrows" .]][[end]]
 [[end]]
-
-[[define "define_shortdiskname"]]
-  | <span title=#{$disk.DiskName} class="tooltipable" data-toggle="tooltip" data-placement="left">
-  | #{$disk.ShortDiskName}...
-  | </span>
-[[end]]
-
-[[define "define_disknamecell"]]
-  [[with GET "bracket_diskname"]][[.]][[DEL "bracket_diskname"]][[else]]
-
-  if $disk.ShortDiskName == ""
-    [[template "define_diskname" .]]
-  else
-    [[template "define_shortdiskname" .]]
-  [[end]]
+[[define "define_ifserrorstable"]]
+  table.table1.stripe-table
+    thead
+      tr
+        th Interface
+        th.digital.nobr In&nbsp;
+          span.unit ps
+        th.digital.nobr Out&nbsp;
+          span.unit ps
+        th.digital.nobr In
+          span.unit %4G
+        th.digital.nobr Out
+          span.unit %4G
+    tbody
+      [[with GET "bracket_ifsrows"]][[.]][[DEL "bracket_ifsrows"]][[else]]
+        [[template "define_ifserrorsrows" .]][[end]]
 [[end]]
 
 [[define "define_dfrows"]]
   each $disk in Data.DiskTable.List
-    | <tr key=#{$disk.DiskName}>
+    | <tr key=#{$disk.DiskNameKey} class=#{$disk.CollapseClass}>
 
-      td [[template "define_disknamecell" .]]
-      td #{$disk.DirName}
+      td.nobr #{$disk.DiskNameHTML}
+      td.nobr #{$disk.DirNameHTML}
       td.digital #{$disk.Avail}
       td.digital #{$disk.Used}&nbsp;
         sup <span class=#{$disk.UsePercentClass}>#{$disk.UsePercent}%</span>
@@ -78,9 +116,10 @@
 
 [[define "define_dirows"]]
   each $disk in Data.DiskTable.List
-    | <tr key=#{$disk.DiskName}>
+    | <tr key=#{$disk.DiskNameKey} class=#{$disk.CollapseClass}>
 
-      td [[template "define_disknamecell" .]]
+      td.nobr #{$disk.DiskNameHTML}
+      td.nobr #{$disk.DirNameHTML}
       td.digital #{$disk.Ifree}
       td.digital #{$disk.Iused}&nbsp;
         sup <span class=#{$disk.IusePercentClass}>#{$disk.IusePercent}%</span>
@@ -92,7 +131,8 @@
   table.table1.stripe-table
     thead
       tr
-        th.header         Device
+        th.header Device
+        th.header Mounted
         th.header.digital Avail
         th.header.digital Used
         th.header.digital Total
@@ -103,7 +143,7 @@
 
 [[define "define_cpurows"]]
   each $i, $core in Data.CPU.List
-    |<tr key=#{$core.N}>
+    |<tr key=#{$core.N} class=#{$core.CollapseClass}>
       td.digital.nobr #{$core.N}
       td.digital <span id="#{"core" + $i + ".User"}" class=#{$core.UserClass}>#{$core.User}</span>
       td.digital <span id="#{"core" + $i + ".Sys"}"  class=#{$core.SysClass}>#{$core.Sys}</span>
@@ -116,9 +156,12 @@
     thead
       tr
         th
-        th.digital User%
-        th.digital Sys%
-        th.digital Idle%
+        th.digital.nobr User
+          span.unit %
+        th.digital.nobr Sys
+          span.unit %
+        th.digital.nobr Idle
+          span.unit %
     tbody
       [[with GET "bracket_cpurows"]][[.]][[DEL "bracket_cpurows"]][[else]]
         [[template "define_cpurows" .]][[end]]
@@ -128,18 +171,18 @@
   each $proc in Data.ProcTable.List
     | <tr key=#{$proc.PID}>
       td.digital #{$proc.PID}
-      td.digital #{$proc.User}
+      td.digital #{$proc.UserHTML}
       td.digital #{$proc.Priority}
       td.digital #{$proc.Nice}
       td.digital #{$proc.Size}
       td.digital #{$proc.Resident}
       td.center #{$proc.Time}
-      td #{$proc.Name}
+      td.nobr #{$proc.NameHTML}
     | </tr>
 [[end]]
 
 [[define "define_pstable"]]
-  table.table1.stripe-table
+  table.table2.stripe-table
     thead
       tr
         th.header.digital <a href=#{Data.ProcTable.Links.PID.Href}      class=#{Data.ProcTable.Links.PID.Class}>PID</a>

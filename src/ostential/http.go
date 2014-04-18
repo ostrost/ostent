@@ -6,56 +6,83 @@ import (
 	"fmt"
 	"sort"
 	"sync"
+	"bytes"
 	"os/user"
 	"net/url"
 	"net/http"
+	"html/template"
 
 	"github.com/rzab/gosigar"
 	"github.com/codegangsta/martini"
 )
 
-func(s state) InterfacesDelta() []types.DeltaInterface {
-	ifs := make([]types.DeltaInterface, len(s.InterfacesTotal))
-	// copy(ifs, s.Interfaces)
-	/* for i := range ifs {
-		ifs[i].InterfaceTotal = s.InterfacesTotal[i]
-	} // */
+func bps(factor int, nowin, previn uint) string {
+	if nowin < previn { // counters got reset
+		return ""
+	}
+	n := (nowin - previn) * uint(factor) // bits now?
+	return humanbits(uint64(n))
+}
+func unitless(s string) string {
+	if s == "" {
+		return s
+	}
+	i := len(s) - 1
+	if s[i] == 'b' || s[i] == 'B' {
+		s = s[:i]
+	} else if s[i] == 'K' {
+		s = s[:i] + "k"
+	}
+	return s
+}
+func ps(nowin, previn uint) string {
+	return unitless(bps(1, nowin, previn))
+}
 
-	prevtotals := s.PrevInterfacesTotal
-	if len(prevtotals) == 0 {
-		for i := range ifs {
-			ifs[i] = types.DeltaInterface{
-				Name: s.InterfacesTotal[i].Name,
-				In:   humanB(uint64(s.InterfacesTotal[i].In)),
-				Out:  humanB(uint64(s.InterfacesTotal[i].Out)),
-			}
-		}
-		return ifs
-	}
-	bps := func(nowin, previn uint) string {
-		if nowin < previn { // counters got reset
-			return ""
-		}
-		n := (nowin - previn) * 8 // bits now
-		return humanbits(uint64(n))
-	}
+func(s state) InterfacesDelta() types.Interfaces {
+	ifs := make([]types.DeltaInterface, len(s.InterfacesTotal))
+
 	for i := range ifs {
-		ifs[i] = types.DeltaInterface{
-			Name:     s.InterfacesTotal[i].Name,
-			In:       humanB(uint64(s.InterfacesTotal[i].In)),
-			Out:      humanB(uint64(s.InterfacesTotal[i].Out)),
-			DeltaIn:  bps(s.InterfacesTotal[i].In,  prevtotals[i].In),
-			DeltaOut: bps(s.InterfacesTotal[i].Out, prevtotals[i].Out),
+		di := types.DeltaInterface{
+			NameKey:                    s.InterfacesTotal[i].Name,
+			NameHTML:   tooltipable(12, s.InterfacesTotal[i].Name),
+
+			InBytes:    humanB(uint64(s.InterfacesTotal[i]. InBytes)),
+			OutBytes:   humanB(uint64(s.InterfacesTotal[i].OutBytes)),
+			InPackets:  unitless(humanB(uint64(s.InterfacesTotal[i]. InPackets))),
+			OutPackets: unitless(humanB(uint64(s.InterfacesTotal[i].OutPackets))),
+			InErrors:   unitless(humanB(uint64(s.InterfacesTotal[i]. InErrors))),
+			OutErrors:  unitless(humanB(uint64(s.InterfacesTotal[i].OutErrors))),
+		}
+		if len(s.PrevInterfacesTotal) > i {
+			di.DeltaInBytes    = bps(8, s.InterfacesTotal[i]. InBytes,   s.PrevInterfacesTotal[i]. InBytes)
+			di.DeltaOutBytes   = bps(8, s.InterfacesTotal[i].OutBytes,   s.PrevInterfacesTotal[i].OutBytes)
+			di.DeltaInPackets  =  ps(   s.InterfacesTotal[i]. InPackets, s.PrevInterfacesTotal[i]. InPackets)
+			di.DeltaOutPackets =  ps(   s.InterfacesTotal[i].OutPackets, s.PrevInterfacesTotal[i].OutPackets)
+			di.DeltaInErrors   =  ps(   s.InterfacesTotal[i]. InErrors,  s.PrevInterfacesTotal[i]. InErrors)
+			di.DeltaOutErrors  =  ps(   s.InterfacesTotal[i].OutErrors,  s.PrevInterfacesTotal[i].OutErrors)
+		}
+		ifs[i] = di
+	}
+	var haveCollapsed bool
+	if len(ifs) > 1 {
+		sort.Sort(interfaceOrder(ifs))
+		for i := range ifs { // set collapse after sort
+			haveCollapsed = i > 1
+			ifs[i].CollapseClass = map[bool]string{true: "collapse"}[haveCollapsed]
 		}
 	}
-	sort.Sort(interfaceOrder(ifs))
-	return ifs
+	return types.Interfaces{List: ifs, HaveCollapsed: haveCollapsed}
 }
 
 func(s state) cpudelta() sigar.CpuList {
 	prev := s.PREVCPU
 	if len(prev.List) == 0 {
 		return s.RAWCPU
+	}
+	listlen := len(s.RAWCPU.List)
+	if listlen == 0 { // wait, what?
+		return sigar.CpuList{}
 	}
 // 	cls := s.RAWCPU
 	cls := sigar.CpuList{List: make([]sigar.Cpu, len(s.RAWCPU.List)) }
@@ -66,16 +93,18 @@ func(s state) cpudelta() sigar.CpuList {
 		cls.List[i].Sys  -= prev.List[i].Sys
 		cls.List[i].Idle -= prev.List[i].Idle
 	}
-	if len(cls.List) > 1 {
-		sort.Sort(cpuOrder(cls.List))
-	}
 	return cls
 }
 
 func(s state) CPU() types.CPU {
 	sum := sigar.Cpu{}
 	cls := s.cpudelta()
-	c := make([]types.Core, len(cls.List) + 1) // + total
+	coreno := len(cls.List)
+	if coreno == 0 { // wait, what?
+		return types.CPU{}
+	}
+
+	c := make([]types.Core, coreno + 1) // + total
 	for i, cp := range cls.List {
 
 		total := cp.User + cp.Nice + cp.Sys + cp.Idle
@@ -88,7 +117,7 @@ func(s state) CPU() types.CPU {
 			idle = 100 - user - sys
 		}
 
-		i++
+		i++ // won't use c[0], it's for totals
 		c[i].N    = fmt.Sprintf("#%d", i-1)
  		c[i].User, c[i].UserClass = user, textClass_colorPercent(user)
  		c[i].Sys,  c[i]. SysClass = sys,  textClass_colorPercent(sys)
@@ -98,9 +127,17 @@ func(s state) CPU() types.CPU {
 		sum.Sys  += cp.Sys
 		sum.Idle += cp.Idle
 	}
-	if len(cls.List) == 1 {
-		c[1].N = "1 total"
+	if coreno == 1 {
+		c[1].N = "#0"
 		return types.CPU{List: c[1:]}
+	}
+	sort.Sort(cpuOrder(c[1:]))
+	// collapse after sorting
+
+	var haveCollapsed bool
+	for i := range c[1:] { // c[0] is for totals
+		haveCollapsed = i > 0 // collapse all but one
+		c[i + 1].CollapseClass = map[bool]string{true: "collapse"}[haveCollapsed]
 	}
 
 	total := sum.User + sum.Sys + sum.Idle // + sum.Nice
@@ -112,12 +149,12 @@ func(s state) CPU() types.CPU {
 		idle = 100 - user - sys
 	}
 
-	c[0].N                    = fmt.Sprintf("%d total", len(cls.List))
+	c[0].N                    = fmt.Sprintf("all %d", coreno)
  	c[0].User, c[0].UserClass = user, textClass_colorPercent(user)
  	c[0].Sys,  c[0]. SysClass = sys,  textClass_colorPercent(sys)
 	c[0].Idle, c[0].IdleClass = idle, textClass_colorPercent(100 - idle)
 
-	return types.CPU{List: c}
+	return types.CPU{List: c, HaveCollapsed: haveCollapsed}
 }
 
 func textClass_colorPercent(p uint) string {
@@ -167,7 +204,36 @@ func valuesSet(req *http.Request, base url.Values, pname string, bimap types.Bis
 	return bimap.Default_seq
 }
 
-func orderDisk(disks []diskInfo, seq types.SEQ) []types.DiskData {
+var (
+	_attr_start = "<span title=\""
+	_attr_end   = "\" />"
+	_attr_template = template.Must(template.New("attr").Parse(_attr_start +"{{.}}"+ _attr_end))
+)
+
+func attribute_escape(data string) string {
+	if _template, err := _attr_template.Clone(); err == nil {
+		buf := new(bytes.Buffer)
+		if err := _template.Execute(buf, data); err == nil {
+			s := buf.String()
+			return s[len(_attr_start):len(s) - len(_attr_end)]
+		}
+	}
+	return ""
+}
+
+func tooltipable(limit int, devname string) template.HTML {
+	if len(devname) <= limit {
+		return template.HTML(devname)
+	}
+	title_attr := attribute_escape(devname)
+	short := template.HTMLEscapeString(devname[:limit])
+	s := template.HTML(fmt.Sprintf(`
+<span title="%s" class="tooltipable" data-toggle="tooltip" data-placement="left">%s<span class="inlinecode">...</span></span>`,
+		title_attr, short))
+	return s
+}
+
+func orderDisk(disks []diskInfo, seq types.SEQ) DiskTable {
 	if len(disks) > 1 {
 		sort.Stable(diskOrder{
 			disks: disks,
@@ -177,19 +243,18 @@ func orderDisk(disks []diskInfo, seq types.SEQ) []types.DiskData {
 	}
 
 	var dd []types.DiskData
-	for _, disk := range disks {
+	var haveCollapsed bool
+	for i, disk := range disks {
 		total,  approxtotal  := humanBandback(disk.Total)
 		used,   approxused   := humanBandback(disk.Used)
 		itotal, approxitotal := humanBandback(disk.Inodes)
 		iused,  approxiused  := humanBandback(disk.Iused)
 
-		short := ""
-		if len(disk.DevName) > 10 {
-			short = disk.DevName[:10]
-		}
+		haveCollapsed = i > 1
 		dd = append(dd, types.DiskData{
-			DiskName:    disk.DevName,
-			ShortDiskName: short,
+			DiskNameKey:  disk.DevName,
+			DiskNameHTML: tooltipable(12, disk.DevName),
+			DirNameHTML:  tooltipable(8, disk.DirName),
 
 			Total:       total,
 			Used:        used,
@@ -201,13 +266,13 @@ func orderDisk(disks []diskInfo, seq types.SEQ) []types.DiskData {
 			Ifree:       humanB(disk.Ifree),
 			IusePercent: formatPercent(approxiused, approxitotal),
 
-			DirName:     disk.DirName,
-
 			 UsePercentClass: labelClass_colorPercent(percent(approxused,  approxtotal)),
 			IusePercentClass: labelClass_colorPercent(percent(approxiused, approxitotal)),
+
+			CollapseClass: map[bool]string{true: "collapse"}[haveCollapsed],
 		})
 	}
-	return dd
+	return DiskTable{List: dd, HaveCollapsed: haveCollapsed}
 }
 
 var _DFBIMAP = types.Seq2bimap(DFFS, // the default seq for ordering
@@ -266,8 +331,8 @@ func orderProc(procs []types.ProcInfo, seq types.SEQ) []types.ProcData {
 			Priority:   proc.Priority,
 			Nice:       proc.Nice,
 			Time:       formatTime(proc.Time),
-			Name:       proc.Name,
-			User:       username(uids, proc.Uid),
+			NameHTML:   tooltipable(42, proc.Name),
+			UserHTML:   tooltipable(12, username(uids, proc.Uid)),
 			Size:       humanB(proc.Size),
 			Resident:   humanB(proc.Resident),
 		})
@@ -300,8 +365,9 @@ type Page struct {
 
 	Interfaces types.Interfaces
 
-	DISTRIB   string
-	HTTP_HOST string
+	DISTRIBHTML template.HTML
+	VERSION     string
+	HTTP_HOST   string
 }
 type pageUpdate struct {
     About    about
@@ -388,10 +454,10 @@ func updates(req *http.Request, new_search bool) (pageUpdate, url.Values, types.
 			CPU:      lastState.CPU(),
 			RAM:      lastState.RAM,
 			Swap:     lastState.Swap,
-			Interfaces: types.Interfaces{List: lastState.InterfacesDelta()},
+			Interfaces: lastState.InterfacesDelta(),
 		}
 	}()
-	pu.DiskTable.List = orderDisk(disks_copy, dflinks.Seq)
+	pu.DiskTable      = orderDisk(disks_copy, dflinks.Seq)
 	pu.ProcTable.List = orderProc(procs_copy, pslinks.Seq)
 	if new_search {
 		pu.ProcTable.Links = &pslinks
@@ -410,7 +476,8 @@ func collected(req *http.Request) Page {
 		RAM:     latest.RAM,
 		Swap:    latest.Swap,
 		DiskTable: DiskTable{
-			List: latest.DiskTable.List,
+			List:          latest.DiskTable.List,
+			HaveCollapsed: latest.DiskTable.HaveCollapsed,
 			Links: &DiskLinkattrs{
 				Base: base,
 				Pname: "df",
@@ -428,7 +495,8 @@ func collected(req *http.Request) Page {
 			},
 		},
 		Interfaces: latest.Interfaces, // types.Interfaces{List: latest.Interfaces },
-		DISTRIB: DISTRIB, // from init.go
+		DISTRIBHTML: tooltipable(11, DISTRIB), // value from init_*.go
+		VERSION: VERSION,                      // value from server.go
 		HTTP_HOST: req.Host,
 	}
 }
