@@ -54,7 +54,7 @@ var disksinBytesClass = React.createClass({
 	render: function() {
 		var Data = this.state;
 		var rows = emptyK(Data.DisksinBytes, 'List') ?'': Data.DisksinBytes.List.map(function($disk) {
-			return (<tr key={$disk.DiskNameKey}><td className="nobr"><span dangerouslySetInnerHTML={{__html: $disk.DiskNameHTML}} /></td><td className="nobr"><span dangerouslySetInnerHTML={{__html: $disk.DirNameHTML}} /></td><td className="digital">{$disk.Avail}</td><td className="digital">{$disk.Used}&nbsp;<sup><span className={$disk.UsePercentClass}>{$disk.UsePercent}%</span></sup></td><td className="digital">{$disk.Total}</td></tr>);
+			return (<tr key={$disk.DirNameKey}><td className="nobr"><span dangerouslySetInnerHTML={{__html: $disk.DiskNameHTML}} /></td><td className="nobr"><span dangerouslySetInnerHTML={{__html: $disk.DirNameHTML}} /></td><td className="digital">{$disk.Avail}</td><td className="digital">{$disk.Used}&nbsp;<sup><span className={$disk.UsePercentClass}>{$disk.UsePercent}%</span></sup></td><td className="digital">{$disk.Total}</td></tr>);
 		});
 
 		
@@ -69,7 +69,7 @@ var disksinInodesClass = React.createClass({
 	render: function() {
 		var Data = this.state;
 		var rows = emptyK(Data.DisksinInodes, 'List') ?'': Data.DisksinInodes.List.map(function($disk) {
-			return (<tr key={$disk.DiskNameKey}><td className="nobr"><span dangerouslySetInnerHTML={{__html: $disk.DiskNameHTML}} /></td><td className="nobr"><span dangerouslySetInnerHTML={{__html: $disk.DirNameHTML}} /></td><td className="digital">{$disk.Ifree}</td><td className="digital">{$disk.Iused}&nbsp;<sup><span className={$disk.IusePercentClass}>{$disk.IusePercent}%</span></sup></td><td className="digital">{$disk.Inodes}</td></tr>);
+			return (<tr key={$disk.DirNameKey}><td className="nobr"><span dangerouslySetInnerHTML={{__html: $disk.DiskNameHTML}} /></td><td className="nobr"><span dangerouslySetInnerHTML={{__html: $disk.DirNameHTML}} /></td><td className="digital">{$disk.Ifree}</td><td className="digital">{$disk.Iused}&nbsp;<sup><span className={$disk.IusePercentClass}>{$disk.IusePercent}%</span></sup></td><td className="digital">{$disk.Inodes}</td></tr>);
 		});
 
 		

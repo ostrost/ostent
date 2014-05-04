@@ -304,9 +304,9 @@ func orderDisks(disks []diskInfo, seq types.SEQ) []diskInfo {
 
 func diskMeta(disk diskInfo) types.DiskMeta {
 	return types.DiskMeta{
-		DiskNameKey:  disk.DevName,
 		DiskNameHTML: tooltipable(12, disk.DevName),
 		DirNameHTML:  tooltipable(6, disk.DirName),
+		DirNameKey:   disk.DirName,
 	}
 }
 

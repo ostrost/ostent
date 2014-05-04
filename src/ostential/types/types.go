@@ -50,9 +50,9 @@ type Core struct {
 }
 
 type DiskMeta struct {
-	DiskNameKey string
 	DiskNameHTML template.HTML
 	DirNameHTML  template.HTML
+	DirNameKey string
 }
 
 type DiskBytes struct {

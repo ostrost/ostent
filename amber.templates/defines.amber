@@ -89,7 +89,7 @@
 
 [[define "define_dfrows"]]
   each $disk in Data.DisksinBytes.List
-    | <tr key=#{$disk.DiskNameKey}>
+    | <tr key=#{$disk.DirNameKey}>
 
       td.nobr #{$disk.DiskNameHTML}
       td.nobr #{$disk.DirNameHTML}
@@ -116,7 +116,7 @@
 
 [[define "define_dirows"]]
   each $disk in Data.DisksinInodes.List
-    | <tr key=#{$disk.DiskNameKey}>
+    | <tr key=#{$disk.DirNameKey}>
 
       td.nobr #{$disk.DiskNameHTML}
       td.nobr #{$disk.DirNameHTML}

@@ -53,7 +53,7 @@ var disksinBytesClass = React.createClass({displayName: 'disksinBytesClass',
 	render: function() {
 		var Data = this.state;
 		var rows = emptyK(Data.DisksinBytes, 'List') ?'': Data.DisksinBytes.List.map(function($disk) {
-			return (React.DOM.tr( {key:$disk.DiskNameKey}, React.DOM.td( {className:"nobr"}, React.DOM.span( {dangerouslySetInnerHTML:{__html: $disk.DiskNameHTML}} )),React.DOM.td( {className:"nobr"}, React.DOM.span( {dangerouslySetInnerHTML:{__html: $disk.DirNameHTML}} )),React.DOM.td( {className:"digital"}, $disk.Avail),React.DOM.td( {className:"digital"}, $disk.Used," ",React.DOM.sup(null, React.DOM.span( {className:$disk.UsePercentClass}, $disk.UsePercent,"%"))),React.DOM.td( {className:"digital"}, $disk.Total)));
+			return (React.DOM.tr( {key:$disk.DirNameKey}, React.DOM.td( {className:"nobr"}, React.DOM.span( {dangerouslySetInnerHTML:{__html: $disk.DiskNameHTML}} )),React.DOM.td( {className:"nobr"}, React.DOM.span( {dangerouslySetInnerHTML:{__html: $disk.DirNameHTML}} )),React.DOM.td( {className:"digital"}, $disk.Avail),React.DOM.td( {className:"digital"}, $disk.Used," ",React.DOM.sup(null, React.DOM.span( {className:$disk.UsePercentClass}, $disk.UsePercent,"%"))),React.DOM.td( {className:"digital"}, $disk.Total)));
 		});
 
 		
@@ -68,7 +68,7 @@ var disksinInodesClass = React.createClass({displayName: 'disksinInodesClass',
 	render: function() {
 		var Data = this.state;
 		var rows = emptyK(Data.DisksinInodes, 'List') ?'': Data.DisksinInodes.List.map(function($disk) {
-			return (React.DOM.tr( {key:$disk.DiskNameKey}, React.DOM.td( {className:"nobr"}, React.DOM.span( {dangerouslySetInnerHTML:{__html: $disk.DiskNameHTML}} )),React.DOM.td( {className:"nobr"}, React.DOM.span( {dangerouslySetInnerHTML:{__html: $disk.DirNameHTML}} )),React.DOM.td( {className:"digital"}, $disk.Ifree),React.DOM.td( {className:"digital"}, $disk.Iused," ",React.DOM.sup(null, React.DOM.span( {className:$disk.IusePercentClass}, $disk.IusePercent,"%"))),React.DOM.td( {className:"digital"}, $disk.Inodes)));
+			return (React.DOM.tr( {key:$disk.DirNameKey}, React.DOM.td( {className:"nobr"}, React.DOM.span( {dangerouslySetInnerHTML:{__html: $disk.DiskNameHTML}} )),React.DOM.td( {className:"nobr"}, React.DOM.span( {dangerouslySetInnerHTML:{__html: $disk.DirNameHTML}} )),React.DOM.td( {className:"digital"}, $disk.Ifree),React.DOM.td( {className:"digital"}, $disk.Iused," ",React.DOM.sup(null, React.DOM.span( {className:$disk.IusePercentClass}, $disk.IusePercent,"%"))),React.DOM.td( {className:"digital"}, $disk.Inodes)));
 		});
 
 		
