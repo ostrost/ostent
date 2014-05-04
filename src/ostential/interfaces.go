@@ -73,8 +73,8 @@ func netinterface_ipaddr() (string, error) {
 	return addr[0], nil
 } // */
 
-func filterInterfaces(ifs []InterfaceTotal) []InterfaceTotal {
-	fifs := []InterfaceTotal{}
+func filterInterfaces(ifs []InterfaceInfo) []InterfaceInfo {
+	fifs := []InterfaceInfo{}
 	for _, fi := range ifs {
 		if !realInterfaceName(fi.Name) {
 			continue

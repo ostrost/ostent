@@ -2,36 +2,39 @@
 !!! 5
 html
   head
-    title #{Data.About.IP} ostent
+    title #{Data.About.HostnameString} ostent
+    meta[name="viewport"][content="width=device-width, initial-scale=1"]
+
     //- meta[itemprop="image"][content="/favicon.png"]
     link[rel="icon"][type="image/png"][href="/favicon.png"]
+    link[rel="stylesheet"][type="text/css"][href="/css/index.css"]
 
-    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/jquery/2.1.0/jquery-2.1.0.min.js"]
-    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/bootstrap/3.1.0/bootstrap.min.js"]
-    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/react/0.9.0/react.min.js"]
+    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/jquery/2.1.1/jquery-2.1.1.min.js"]
+
+    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/bootstrap/3.1.1/bootstrap.min.js"]
+    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/react/0.10.0/react.min.js"]
+
+    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/underscore/1.6.0/underscore-min.js"]
+    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/backbone/1.1.2/backbone-min.js"]
 
     script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/gen/jscript.js"]
     script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/main/main.js"]
-    link[rel="stylesheet"][type="text/css"]
-      [href="/css/index.css"]
 
   body
     script
       $(ready);
 
-    div.container-fluid
+    div.container-fluid.media
       div.row
         div.block.col-md-1.text-center
           ul.LINKSnav.nav-pills.nav-stacked
             li
-              a.code[href="https://ostrost.com/ostent"] OSTENT
-            li
-              a.code[href="https://github.com/rzab/ostent/releases/latest"] #{ Data.VERSION }
+              a.code[href="https://ostrost.com/ostent/releases/latest"][title="version "+ Data.VERSION] OSTENT
 
-        div.block.col-md-2#show-memory
+        div.block.col-md-2
           div.panel1
             header.draggable
-              a[data-toggle="collapse"][data-parent="#show-memory"][href="#memory"] Memory
+              a[href="#memory"] Memory
             div.panel-collapse.collapse.in#memory
               table.table1.stripe-table
                 thead
@@ -68,109 +71,99 @@ html
                       | #{ Data.Swap.Total }
 
         div.block.col-md-3
-          div.panel-group#network-acc
-            div.panel1.panel.panel-default
-              //-     .panel.panel-default CLASSES REQUIRED BY BOOTSTAP JAVASCRIPT, not just for styling
+          div.panel1
+            header.draggable.panel-heading.nobr
+              a[href="#network"] Network
 
-              header.draggable.panel-heading.nobr
-                a[data-toggle="collapse"][data-parent="#network-acc"][href="#network"] Network
+              div.pull-right
+                div.btn-group.notall[data-toggle="buttons"]
+                  label.network-switch.btn.btn-xx.btn-default.nondefault
+                    [href="#network-packets"][data-tabid=Data.ClientState.NetworkTabs.NetworkinPackets]
+                    input#radio-network-packets[type="radio"][name="network-radio"]
+                    | Packets
 
-                div.pull-right
-                  div.btn-group.notall[data-toggle="buttons"]
-                    label.network-switch.btn.btn-xs.btn-default.nondefault
-                      [data-toggle="collapse"][data-parent="#network-acc"][href="#network-packets"]
-                      input#radio-network-packets[type="radio"][name="network-radio"]
-                      | Packets
+                  label.network-switch.btn.btn-xx.btn-default.nondefault
+                    [href="#network-errors"][data-tabid=Data.ClientState.NetworkTabs.NetworkinErrors]
+                    input#radio-network-errors[type="radio"][name="network-radio"]
+                    | Errors
 
-                    label.network-switch.btn.btn-xs.btn-default.nondefault
-                      [data-toggle="collapse"][data-parent="#network-acc"][href="#network-errors"]
-                      input#radio-network-errors[type="radio"][name="network-radio"]
-                      | Errors
+                  label.network-switch.btn.btn-xx.btn-default.active
+                    [href="#network-bytes"][data-tabid=Data.ClientState.NetworkTabs.NetworkinBytes]
+                    input#radio-network-bytes[type="radio"][name="network-radio"][checked="checked"]
+                    | Bytes
 
-                    label.network-switch.btn.btn-xs.btn-default.active
-                      [data-toggle="collapse"][data-parent="#network-acc"][href="#network-bytes"]
-                      input#radio-network-bytes[type="radio"][name="network-radio"][checked="checked"]
-                      | Bytes
+                div.btn-group.btn-xx[data-toggle="buttons"]
+                  //- [title="ii"]
+                  label.btn.btn-xx.btn-default.all[href="#network"]
+                    [class="disabled"] ? Data.Network.Expandable == False
+                    input[type="checkbox"][name="allnetwork"]
+                    | #{Data.Network.More}
 
-                  if Data.Interfaces.HaveCollapsed
-                    div.btn-group[data-toggle="buttons"]
-                      //- [title="ii"]
-                      label.btn.btn-xs.btn-default.all[data-parent="#network-bytes,#network-packets,#network-errors"]
-                        input[type="checkbox"][name="allnetwork"]
-                        | All
+            //- selected by .network-tab
+            div.network-tab.panel-collapse.collapse#network-packets[data-tabid=Data.ClientState.NetworkTabs.NetworkinPackets]
+              span#ifs-packets-table
+                [[template "define_ifspacketstable" .]]
 
-              div.panel-collapse.collapse#network
-              //- This div intentionally left blank
+            //- selected by .network-tab
+            div.network-tab.panel-collapse.collapse#network-errors[data-tabid=Data.ClientState.NetworkTabs.NetworkinErrors]
+              span#ifs-errors-table
+                [[template "define_ifserrorstable" .]]
 
-              div.panel-collapse.collapse.in#network-bytes
-                span#ifs-table
-                  [[template "define_ifstable" .]]
+            //- selected by .network-tab
+            div.network-tab.panel-collapse.collapse.in#network-bytes[data-tabid=Data.ClientState.NetworkTabs.NetworkinBytes]
+              span#ifs-table
+                [[template "define_ifstable" .]]
 
-              div.panel-collapse.collapse#network-packets
-                span#ifs-packets-table
-                  [[template "define_ifspacketstable" .]]
-
-              div.panel-collapse.collapse#network-errors
-                span#ifs-errors-table
-                  [[template "define_ifserrorstable" .]]
-
-        //- #show-cpu
         div.block.col-md-2
           div.panel1
             header.draggable.nobr
-              //- [data-parent="#show-cpu"]
-              a[data-toggle="collapse"][data-parent="#cpu"][href="#cpu"] CPU
+              a[href="#cpu"] CPU
 
-              if Data.CPU.HaveCollapsed
-                div.pull-right
-                  div.btn-group[data-toggle="buttons"]
-                    //- [title="ii"]
-                    label.btn.btn-xs.btn-default.all[data-parent="#cpu"][href="#cpu"]
-                      input[type="checkbox"][name="allcpu"]
-                      | All
+              div.pull-right
+                div.btn-group[data-toggle="buttons"]
+                  //- [title="ii"]
+                  label.btn.btn-xx.btn-default.all[href="#cpu"]
+                    [class="disabled"] ? Data.CPU.Expandable == False
+                    input[type="checkbox"][name="allcpu"]
+                    | #{Data.CPU.More}
 
             div.panel-collapse.collapse.in#cpu
               span#cpu-table
                 [[template "define_cputable" .]]
 
-        //- #show-disks
         div.block.col-md-3
-          div.panel-group#disk-acc
-            div.panel1.panel.panel-default
-              //-     .panel.panel-default CLASSES REQUIRED BY BOOTSTAP JAVASCRIPT, not just for styling
+          div.panel1
+            header.draggable.panel-heading.nobr
+              a[href="#disks"] Disks
 
-              header.draggable.panel-heading.nobr
-                a[data-toggle="collapse"][data-parent="#disk-acc"][href="#disks"] Disks
+              div.pull-right
+                div.btn-group.notall[data-toggle="buttons"]
+                  label.disk-switch.btn.btn-xx.btn-default.nondefault
+                    [href="#disks-inodes"][data-tabid=Data.ClientState.DisksTabs.DisksinInodes]
+                    input#radio-disks-inodes[type="radio"][name="disks-radio"]
+                    | Inodes
 
-                div.pull-right
-                  div.btn-group.notall[data-toggle="buttons"]
-                    label.disk-switch.btn.btn-xs.btn-default.nondefault
-                      [data-toggle="collapse"][data-parent="#disk-acc"][href="#disks-inodes"]
-                      input#radio-disks-inodes[type="radio"][name="disks-radio"]
-                      | Inodes
+                  label.disk-switch.btn.btn-xx.btn-default.active
+                    [href="#disks-bytes"][data-tabid=Data.ClientState.DisksTabs.DisksinBytes]
+                    input#radio-disks-bytes[type="radio"][name="disks-radio"][checked="checked"]
+                    | Bytes
 
-                    label.disk-switch.btn.btn-xs.btn-default.active
-                      [data-toggle="collapse"][data-parent="#disk-acc"][href="#disks-bytes"]
-                      input#radio-disks-bytes[type="radio"][name="disks-radio"][checked="checked"]
-                      | Bytes
+                div.btn-group[data-toggle="buttons"]
+                  //- [title="ii"]
+                  label.btn.btn-xx.btn-default.all[href="#disks"]
+                    [class="disabled"] ? Data.Disks.Expandable == False
+                    input[type="checkbox"][name="alldisks"]
+                    | #{Data.Disks.More}
 
-                  if Data.DiskTable.HaveCollapsed
-                    div.btn-group[data-toggle="buttons"]
-                      //- [title="ii"]
-                      label.btn.btn-xs.btn-default.all[data-parent="#disks-bytes,#disks-inodes"]
-                        input[type="checkbox"][name="alldisks"]
-                        | All
+            //- selected by .disk-tab
+            div.disk-tab.panel-collapse.collapse#disks-inodes[data-tabid=Data.ClientState.DisksTabs.DisksinInodes]
+              span#dfi-table
+              [[template "define_ditable" .]]
 
-              div.panel-collapse.collapse#disks
-              //- This div intentionally left blank
-
-              div.panel-collapse.collapse.in#disks-bytes
-                span#df-table
-                [[template "define_dftable" .]]
-
-              div.panel-collapse.collapse#disks-inodes
-                span#dfi-table
-                [[template "define_ditable" .]]
+            //- selected by .disk-tab
+            div.disk-tab.panel-collapse.collapse.in#disks-bytes[data-tabid=Data.ClientState.DisksTabs.DisksinBytes]
+              span#df-table
+              [[template "define_dftable" .]]
 
     div.container-fluid
       div.row
@@ -181,7 +174,7 @@ html
                 div.col-md-6.cell-right
                   span.code hostname:
                 div.col-md-6
-                  span.code[id="Data.About.Hostname"] #{ Data.About.Hostname }
+                  span.code[id="Data.About.Hostname"] #{ Data.About.HostnameHTML }
 
             li
               div.row
@@ -213,9 +206,29 @@ html
 
         div.block.col-md-8
           div.panel1
-            header.NOTdraggable Processes
-            span#ps-table
-              [[template "define_pstable" .]]
+            header.NOTdraggable
+              a[href="#processes"] Processes
+
+              //- div.btn-group.btn-group-xs.notall
+              //-   label.btn.btn-xx.btn-default
+              //-     [class="collapse"] ? Data.ClientState.UserProcesses == ""
+              //-     | User #{Data.ClientState.UserProcesses} &times;
+
+              div.pull-right
+                div.btn-group[data-toggle="buttons"]
+                  //- label.btn.btn-xx.btn-default[href="#psless"]
+                  //-   //- [class="disabled"] ? Data....Expandable == False
+                  //-   input[type="checkbox"][name="psless"]
+                  //-   | -
+                  label.btn.btn-xx.btn-default.more.disabled[href="#psmore"]
+                    //- [class="disabled"] ? Data....Expandable == False
+                    input[type="checkbox"][name="psmore"]
+                    | 20
+                    //- | 20+
+
+            div.panel-collapse.collapse.in#processes
+              span#ps-table
+                [[template "define_pstable" .]]
 
     script
       var HTTP_HOST = #{Data.HTTP_HOST};

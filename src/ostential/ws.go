@@ -33,7 +33,7 @@ func Loop() {
 		case <-time.After(period):
 			collect()
 			for wc := range wclients {
-				wc.ping <- true
+				wc.ping <- nil // false
 			}
 		}
 	}
@@ -48,31 +48,44 @@ func parseSearch(search string) (url.Values, error) {
 
 type wclient struct {
 	ws *websocket.Conn
-	ping chan bool
+	ping chan *clientState
 	form url.Values
 	new_search bool
+	fullState clientState
 }
+
 var (
 	 wclients  = make(map[ *wclient ]bool)
 	  register = make(chan *wclient)
 	unregister = make(chan *wclient)
 )
 
+type received struct {
+	Search *string
+	State *clientState `json:"State"`
+}
+
 func(wc *wclient) waitfor_messages() { // read from client
 	defer wc.ws.Close()
 	for {
-		mt, data, err := wc.ws.ReadMessage()
-		// websocket.Message.Receive(wc.ws, &search)
-		if err != nil || mt != websocket.TextMessage {
+		rd := new(received)
+		if err := wc.ws.ReadJSON(&rd); err != nil {
+			// fmt.Printf("JSON ERR %s\n", err)
 			break
 		}
-		wc.form, err = parseSearch(string(data))
-		if err != nil {
-			// http.StatusBadRequest
-			break
+		if rd.State != nil {
+			wc.fullState.Merge(*rd.State)
 		}
-		wc.new_search = true
-		wc.ping <- true // don't wait for a second
+		if rd.Search != nil {
+			var err error
+			wc.form, err = parseSearch(*rd.Search) // (string(data))
+			if err != nil {
+				// http.StatusBadRequest
+				break
+			}
+			wc.new_search = true
+		}
+		wc.ping <- rd.State // != nil
 	}
 }
 func(wc *wclient) waitfor_updates() { // write to  client
@@ -82,11 +95,16 @@ func(wc *wclient) waitfor_updates() { // write to  client
 	}()
 	for {
 		select {
-		case <- wc.ping:
-			send, _, _, _ := updates(&http.Request{Form: wc.form}, wc.new_search)
+		case diffState := <- wc.ping:
+			// TODO wc.State intros race, need a lock
+			/* dState := clientState{}
+			if (diffState != nil) {
+				dState = *diffState
+			} // */
+			updates, _, _, _ := getUpdates(&http.Request{Form: wc.form}, wc.new_search, wc.fullState, diffState) // &dState
 			wc.new_search = false
 
-			if err := wc.ws.WriteJSON(send); err != nil {
+			if err := wc.ws.WriteJSON(updates); err != nil {
 				break
 			}
 		}
@@ -111,7 +129,7 @@ func slashws(w http.ResponseWriter, req *http.Request) {
 		panic(err)
 	}
 
-	wc := &wclient{ws: ws, ping: make(chan bool, 1)}
+	wc := &wclient{ws: ws, ping: make(chan *clientState, 1), fullState: defaultClientState()}
 	register <- wc
 	defer func() {
 		unregister <- wc

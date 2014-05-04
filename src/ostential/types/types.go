@@ -5,6 +5,14 @@ import (
 )
 
 type SEQ int
+func(seq SEQ) AnyOf(list []SEQ) bool {
+	for _, s := range list {
+		if s == seq {
+			return true
+		}
+	}
+	return false
+}
 func(seq SEQ) Sign(t bool) bool { // used in sortable_*.go
 	if seq < 0 {
 		return t
@@ -12,13 +20,25 @@ func(seq SEQ) Sign(t bool) bool { // used in sortable_*.go
 	return !t
 }
 
+func NewDataMeta() DataMeta {
+	return DataMeta{
+		Expandable: new(bool),
+		More:       new(int),
+	}
+}
+
+type DataMeta struct {
+	Expandable *bool `json:",omitempty"`
+	More       *int  `json:",omitempty"`
+}
+
 type CPU struct {
 	List []Core
-	HaveCollapsed bool
+	DataMeta
 }
+
 type Core struct {
 	N    string
-	CollapseClass string
 
 	User uint // percent without "%"
 	Sys  uint // percent without "%"
@@ -29,25 +49,42 @@ type Core struct {
 	IdleClass string
 }
 
-type DiskData struct {
+type DiskMeta struct {
 	DiskNameKey string
 	DiskNameHTML template.HTML
 	DirNameHTML  template.HTML
+}
 
+type DiskBytes struct {
+	DiskMeta
 	Total       string // with units
 	Used        string // with units
 	Avail       string // with units
 	UsePercent  string // as a string, with "%"
+	UsePercentClass string
+}
+
+type DiskInodes struct {
+	DiskMeta
 	Inodes      string // with units
 	Iused       string // with units
 	Ifree       string // with units
 	IusePercent string // as a string, with "%"
-
-	 UsePercentClass string
 	IusePercentClass string
-
-	CollapseClass string
 }
+
+type DisksinBytes struct {
+	List []DiskBytes
+}
+type DisksinInodes struct {
+	List []DiskInodes
+}
+
+// type DiskTable struct {
+// 	List  []DiskData
+// 	Links *DiskLinkattrs `json:",omitempty"`
+// 	HaveCollapsed bool
+// }
 
 type Attr struct {
 	Href, Class string
@@ -124,30 +161,21 @@ type Linkattrs struct {
 	Seq SEQ
 }
 
-type DeltaInterface struct {
+type InterfaceMeta struct {
 	NameKey  string
 	NameHTML template.HTML
-
-	InBytes         string // with units
-	OutBytes        string // with units
-	 InPackets      string // with units
-	OutPackets      string // with units
-	 InErrors       string // with units
-	OutErrors       string // with units
-
-	DeltaInBytes    string // with units
-	DeltaOutBytes   string // with units
-	DeltaInPackets  string // with units
-	DeltaOutPackets string // with units
-	DeltaInErrors   string // with units
-	DeltaOutErrors  string // with units
-
-	CollapseClass string
 }
 
-type Interfaces struct {
-	List []DeltaInterface
-	HaveCollapsed bool
+type Interface struct {
+	InterfaceMeta
+	In       string // with units
+	Out      string // with units
+	DeltaIn  string // with units
+	DeltaOut string // with units
+}
+
+type Interfaces struct { // TODO Networks
+	List []Interface
 }
 
 type ProcInfo struct {

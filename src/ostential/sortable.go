@@ -14,7 +14,7 @@ func(co cpuOrder) Swap(i, j int) {
 	co[i], co[j] = co[j], co[i]
 }
 
-type interfaceOrder []types.DeltaInterface
+type interfaceOrder []types.Interface
 func(io interfaceOrder) Len() int {
 	return len(io)
 }
@@ -27,16 +27,3 @@ func(io interfaceOrder) Less(i, j int) bool {
 	}
 	return io[i].NameKey < io[j].NameKey
 }
-
-type ProcTable struct {
-	List  []types.ProcData
-	Links *ProcLinkattrs `json:",omitempty"`
-}
-
-type DiskTable struct {
-	List  []types.DiskData
-	Links *DiskLinkattrs `json:",omitempty"`
-	HaveCollapsed bool
-}
-
-

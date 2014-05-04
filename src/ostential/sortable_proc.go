@@ -67,3 +67,8 @@ func(la ProcLinkattrs) MarshalJSON() ([]byte, error) {
 		"Resident": types.Linkattrs(la).Attr(PSRES),
 	})
 }
+
+type ProcTable struct {
+	List  []types.ProcData
+	Links *ProcLinkattrs `json:",omitempty"`
+}

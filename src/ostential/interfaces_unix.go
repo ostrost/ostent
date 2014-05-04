@@ -36,7 +36,7 @@ char ADDR[INET_ADDRSTRLEN];
 import "C"
 import "unsafe"
 
-type InterfaceTotal struct{
+type InterfaceInfo struct{
 	Name string
 	 InBytes   uint
 	OutBytes   uint
@@ -46,14 +46,14 @@ type InterfaceTotal struct{
 	OutErrors  uint
 }
 
-func NewInterfaces() ([]InterfaceTotal, string) {
+func NewInterfaces() ([]InterfaceInfo, string) {
 	var ifaces *C.struct_ifaddrs
 	if getrc, _ := C.getifaddrs(&ifaces); getrc != 0 {
-		return []InterfaceTotal{}, ""
+		return []InterfaceInfo{}, ""
 	}
 	defer C.freeifaddrs(ifaces)
 
-	ifs := []InterfaceTotal{}
+	ifs := []InterfaceInfo{}
 	IP  := ""
 
 	for fi := ifaces; fi != nil; fi = fi.ifa_next {
@@ -83,7 +83,7 @@ func NewInterfaces() ([]InterfaceTotal, string) {
 		}
 
 		data := fi.ifa_data
-		it := InterfaceTotal{
+		it := InterfaceInfo{
 			Name: ifa_name,
 			 InBytes:   uint(C.Ibytes(data)),
 			OutBytes:   uint(C.Obytes(data)),

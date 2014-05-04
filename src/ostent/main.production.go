@@ -62,11 +62,15 @@ func newer_version() string {
 	}
 	urlerr, ok := err.(*url.Error)
 	if !ok {
+		fmt.Fprintln(os.Stderr, err)
 		return ""
 	}
-	resp.Body.Close()
+	if resp != nil && resp.Body != nil {
+		resp.Body.Close()
+	}
 	redir, ok := urlerr.Err.(redirected)
 	if !ok {
+		fmt.Fprintln(os.Stderr, err)
 		return ""
 	}
 	return filepath.Base(redir.url.Path)
@@ -87,7 +91,7 @@ func upgrade_once(kill bool) bool {
 // 	url := fmt.Sprintf("https://ostrost.com"+ "/ostent/releases/%s/%s %s/newer",    ostential.VERSION, strings.Title(runtime.GOOS), mach) // before v0.1.3
 	url := fmt.Sprintf("https://github.com/rzab/ostent/releases/download/%s/%s.%s", new_version,  strings.Title(runtime.GOOS), mach)
 
-	err, _ := update.FromUrl(url) // , snderr
+	err, _ := update.New().FromUrl(url) // , snderr
 	if err != nil ||  err != nil {
 		// log.Printf("Upgrade failed: %v|%v\n", err, snderr)
 		return false

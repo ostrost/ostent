@@ -39,54 +39,92 @@ func ps(nowin, previn uint) string {
 	return unitless(bps(1, nowin, previn))
 }
 
-func(s state) InterfacesDelta() types.Interfaces {
-	ifs := make([]types.DeltaInterface, len(s.InterfacesTotal))
+const TOPROWS = 2
 
-	for i := range ifs {
-		di := types.DeltaInterface{
-			NameKey:                    s.InterfacesTotal[i].Name,
-			NameHTML:   tooltipable(12, s.InterfacesTotal[i].Name),
-
-			InBytes:    humanB(uint64(s.InterfacesTotal[i]. InBytes)),
-			OutBytes:   humanB(uint64(s.InterfacesTotal[i].OutBytes)),
-			InPackets:  unitless(humanB(uint64(s.InterfacesTotal[i]. InPackets))),
-			OutPackets: unitless(humanB(uint64(s.InterfacesTotal[i].OutPackets))),
-			InErrors:   unitless(humanB(uint64(s.InterfacesTotal[i]. InErrors))),
-			OutErrors:  unitless(humanB(uint64(s.InterfacesTotal[i].OutErrors))),
-		}
-		if len(s.PrevInterfacesTotal) > i {
-			di.DeltaInBytes    = bps(8, s.InterfacesTotal[i]. InBytes,   s.PrevInterfacesTotal[i]. InBytes)
-			di.DeltaOutBytes   = bps(8, s.InterfacesTotal[i].OutBytes,   s.PrevInterfacesTotal[i].OutBytes)
-			di.DeltaInPackets  =  ps(   s.InterfacesTotal[i]. InPackets, s.PrevInterfacesTotal[i]. InPackets)
-			di.DeltaOutPackets =  ps(   s.InterfacesTotal[i].OutPackets, s.PrevInterfacesTotal[i].OutPackets)
-			di.DeltaInErrors   =  ps(   s.InterfacesTotal[i]. InErrors,  s.PrevInterfacesTotal[i]. InErrors)
-			di.DeltaOutErrors  =  ps(   s.InterfacesTotal[i].OutErrors,  s.PrevInterfacesTotal[i].OutErrors)
-		}
-		ifs[i] = di
+func interfaceMeta(ii InterfaceInfo) types.InterfaceMeta {
+	return types.InterfaceMeta{
+		NameKey:  ii.Name,
+		NameHTML: tooltipable(12, ii.Name),
 	}
-	var haveCollapsed bool
-	if len(ifs) > 1 {
-		sort.Sort(interfaceOrder(ifs))
-		for i := range ifs { // set collapse after sort
-			haveCollapsed = i > 1
-			ifs[i].CollapseClass = map[bool]string{true: "collapse"}[haveCollapsed]
-		}
-	}
-	return types.Interfaces{List: ifs, HaveCollapsed: haveCollapsed}
 }
 
-func(s state) cpudelta() sigar.CpuList {
-	prev := s.PREVCPU
-	if len(prev.List) == 0 {
-		return s.RAWCPU
+type interfaceFormat interface {
+	Current(*types.Interface, InterfaceInfo)
+	Delta  (*types.Interface, InterfaceInfo, InterfaceInfo)
+}
+type interfaceInout interface {
+	InOut(InterfaceInfo) (uint, uint)
+}
+
+type interfaceBytes struct{}
+func (_ interfaceBytes) Current(id *types.Interface, ii InterfaceInfo) {
+	id.In  = humanB(uint64(ii. InBytes))
+	id.Out = humanB(uint64(ii.OutBytes))
+}
+func (_ interfaceBytes) Delta(id *types.Interface, ii, pi InterfaceInfo) {
+	id.DeltaIn  = bps(8, ii. InBytes, pi. InBytes)
+	id.DeltaOut = bps(8, ii.OutBytes, pi.OutBytes)
+}
+
+type interfaceInoutErrors struct{}
+func (_ interfaceInoutErrors) InOut(ii InterfaceInfo) (uint, uint) {
+	return ii.InErrors, ii.OutErrors
+}
+type interfaceInoutPackets struct{}
+func (_ interfaceInoutPackets) InOut(ii InterfaceInfo) (uint, uint) {
+	return ii.InPackets, ii.OutPackets
+}
+
+type interfaceNumericals struct{interfaceInout}
+func (ie interfaceNumericals) Current(id *types.Interface, ii InterfaceInfo) {
+	in, out := ie.InOut(ii)
+	id.In  = unitless(humanB(uint64(in)))
+	id.Out = unitless(humanB(uint64(out)))
+}
+func (ie interfaceNumericals) Delta(id *types.Interface, ii, previousi InterfaceInfo) {
+	in, out                   := ie.InOut(ii)
+	previous_in, previous_out := ie.InOut(previousi)
+	id.DeltaIn  = ps(in,  previous_in)
+	id.DeltaOut = ps(out, previous_out)
+}
+
+func InterfacesDelta(format interfaceFormat, current, previous []InterfaceInfo, client clientState) *types.Interfaces {
+	ifs := make([]types.Interface, len(current))
+
+	for i := range ifs {
+		di := types.Interface{
+			InterfaceMeta: interfaceMeta(current[i]),
+		}
+		format.Current(&di, current[i])
+
+		if len(previous) > i {
+			format.Delta(&di, current[i], previous[i])
+		}
+
+		ifs[i] = di
 	}
-	listlen := len(s.RAWCPU.List)
-	if listlen == 0 { // wait, what?
+	if len(ifs) > 1 {
+		sort.Sort(interfaceOrder(ifs))
+		if !*client.ExpandNetwork && len(ifs) > TOPROWS {
+			ifs = ifs[:TOPROWS]
+		}
+	}
+	ni := new(types.Interfaces)
+	ni.List = ifs
+	return ni
+}
+
+func(li lastinfo) cpuListDelta() sigar.CpuList {
+	prev := li.Previous.CPU
+	if len(prev.List) == 0 {
+		return li.CPU
+	}
+	coreno := len(li.CPU.List)
+	if coreno == 0 { // wait, what?
 		return sigar.CpuList{}
 	}
-// 	cls := s.RAWCPU
-	cls := sigar.CpuList{List: make([]sigar.Cpu, len(s.RAWCPU.List)) }
-	copy(cls.List, s.RAWCPU.List)
+	cls := sigar.CpuList{List: make([]sigar.Cpu, coreno) }
+	copy(cls.List, li.CPU.List)
 	for i := range cls.List {
 		cls.List[i].User -= prev.List[i].User
 		cls.List[i].Nice -= prev.List[i].Nice
@@ -96,65 +134,81 @@ func(s state) cpudelta() sigar.CpuList {
 	return cls
 }
 
-func(s state) CPU() types.CPU {
-	sum := sigar.Cpu{}
-	cls := s.cpudelta()
+func(li lastinfo) CPUDelta(client clientState) *types.CPU {
+	cls := li.cpuListDelta()
 	coreno := len(cls.List)
 	if coreno == 0 { // wait, what?
-		return types.CPU{}
+		return &types.CPU{}
 	}
 
-	c := make([]types.Core, coreno + 1) // + total
-	for i, cp := range cls.List {
+	sum := sigar.Cpu{}
+	cores := make([]types.Core, coreno)
+	for i, each := range cls.List {
 
-		total := cp.User + cp.Nice + cp.Sys + cp.Idle
+		total := each.User + each.Nice + each.Sys + each.Idle
 
-		user := percent(cp.User, total)
-		sys  := percent(cp.Sys,  total)
+		user := percent(each.User, total)
+		sys  := percent(each.Sys,  total)
 
 		idle := uint(0)
 		if user + sys < 100 {
 			idle = 100 - user - sys
 		}
 
-		i++ // won't use c[0], it's for totals
-		c[i].N    = fmt.Sprintf("#%d", i-1)
- 		c[i].User, c[i].UserClass = user, textClass_colorPercent(user)
- 		c[i].Sys,  c[i]. SysClass = sys,  textClass_colorPercent(sys)
-		c[i].Idle, c[i].IdleClass = idle, textClass_colorPercent(100 - idle)
+		cores[i] = types.Core{
+			N: fmt.Sprintf("#%d", i),
+			User: user,
+			Sys:  sys,
+			Idle: idle,
+			UserClass:  textClass_colorPercent(user),
+			SysClass:   textClass_colorPercent(sys),
+			IdleClass:  textClass_colorPercent(100 - idle),
+		}
 
-		sum.User += cp.User + cp.Nice
-		sum.Sys  += cp.Sys
-		sum.Idle += cp.Idle
+		sum.User += each.User + each.Nice
+		sum.Sys  += each.Sys
+		sum.Idle += each.Idle
 	}
+
+	cpu := new(types.CPU)
+	cpu.DataMeta = types.NewDataMeta()
+
 	if coreno == 1 {
-		c[1].N = "#0"
-		return types.CPU{List: c[1:]}
+		cores[0].N = "#0"
+		*cpu.DataMeta.More = 1
+		cpu.List = cores
+		return cpu
 	}
-	sort.Sort(cpuOrder(c[1:]))
-	// collapse after sorting
+	sort.Sort(cpuOrder(cores))
 
-	var haveCollapsed bool
-	for i := range c[1:] { // c[0] is for totals
-		haveCollapsed = i > 0 // collapse all but one
-		c[i + 1].CollapseClass = map[bool]string{true: "collapse"}[haveCollapsed]
+	if !*client.ExpandCPU && len(cores) > TOPROWS-1 {
+		cores = cores[:TOPROWS-1] // "all N" row + first core(s)
+	}
+	*cpu.DataMeta.Expandable = coreno > TOPROWS-1 // one row reserved for "all N"
+	*cpu.DataMeta.More       = coreno
+
+	if !*client.ExpandCPU {
+		total := sum.User + sum.Sys + sum.Idle // + sum.Nice
+
+		user := percent(sum.User, total)
+		sys  := percent(sum.Sys,  total)
+		idle := uint(0)
+		if user + sys < 100 {
+			idle = 100 - user - sys
+		}
+		cores = append([]types.Core{{ // NB
+			N: fmt.Sprintf("all %d", coreno),
+			User: user,
+			Sys:  sys,
+			Idle: idle,
+			UserClass: textClass_colorPercent(user),
+			SysClass:  textClass_colorPercent(sys),
+			IdleClass: textClass_colorPercent(100 - idle),
+		}}, cores...)
 	}
 
-	total := sum.User + sum.Sys + sum.Idle // + sum.Nice
-
-	user := percent(sum.User, total)
-	sys  := percent(sum.Sys,  total)
-	idle := uint(0)
-	if user + sys < 100 {
-		idle = 100 - user - sys
-	}
-
-	c[0].N                    = fmt.Sprintf("all %d", coreno)
- 	c[0].User, c[0].UserClass = user, textClass_colorPercent(user)
- 	c[0].Sys,  c[0]. SysClass = sys,  textClass_colorPercent(sys)
-	c[0].Idle, c[0].IdleClass = idle, textClass_colorPercent(100 - idle)
-
-	return types.CPU{List: c, HaveCollapsed: haveCollapsed}
+	cpu.List = cores
+	return cpu
 }
 
 func textClass_colorPercent(p uint) string {
@@ -226,14 +280,18 @@ func tooltipable(limit int, devname string) template.HTML {
 		return template.HTML(devname)
 	}
 	title_attr := attribute_escape(devname)
-	short := template.HTMLEscapeString(devname[:limit])
+	shortdevname := devname
+	if len(devname) > limit {
+		shortdevname = devname[:limit]
+	}
+	short := template.HTMLEscapeString(shortdevname)
 	s := template.HTML(fmt.Sprintf(`
-<span title="%s" class="tooltipable" data-toggle="tooltip" data-placement="left">%s<span class="inlinecode">...</span></span>`,
+<span title="%s" class="tooltipable" data-toggle="tooltip" data-placement="auto left">%s<span class="inlinecode">...</span></span>`,
 		title_attr, short))
 	return s
 }
 
-func orderDisk(disks []diskInfo, seq types.SEQ) DiskTable {
+func orderDisks(disks []diskInfo, seq types.SEQ) []diskInfo {
 	if len(disks) > 1 {
 		sort.Stable(diskOrder{
 			disks: disks,
@@ -241,38 +299,61 @@ func orderDisk(disks []diskInfo, seq types.SEQ) DiskTable {
 			reverse: _DFBIMAP.SEQ2REVERSE[seq],
 		})
 	}
+	return disks
+}
 
-	var dd []types.DiskData
-	var haveCollapsed bool
-	for i, disk := range disks {
+func diskMeta(disk diskInfo) types.DiskMeta {
+	return types.DiskMeta{
+		DiskNameKey:  disk.DevName,
+		DiskNameHTML: tooltipable(12, disk.DevName),
+		DirNameHTML:  tooltipable(6, disk.DirName),
+	}
+}
+
+func disksinBytes(diskinfos []diskInfo, client clientState) *types.DisksinBytes {
+	var disks []types.DiskBytes
+	for i, disk := range diskinfos {
+		if !*client.ExpandDisks && i > 1 {
+			break
+		}
 		total,  approxtotal  := humanBandback(disk.Total)
 		used,   approxused   := humanBandback(disk.Used)
-		itotal, approxitotal := humanBandback(disk.Inodes)
-		iused,  approxiused  := humanBandback(disk.Iused)
-
-		haveCollapsed = i > 1
-		dd = append(dd, types.DiskData{
-			DiskNameKey:  disk.DevName,
-			DiskNameHTML: tooltipable(12, disk.DevName),
-			DirNameHTML:  tooltipable(8, disk.DirName),
-
+		disks = append(disks, types.DiskBytes{
+			DiskMeta: diskMeta(disk),
 			Total:       total,
 			Used:        used,
 			Avail:       humanB(disk.Avail),
 			UsePercent:  formatPercent(approxused, approxtotal),
-
+			UsePercentClass: labelClass_colorPercent(percent(approxused,  approxtotal)),
+		})
+	}
+	if !*client.ExpandDisks && len(disks) > TOPROWS {
+		disks = disks[:TOPROWS]
+	}
+	dsb := new(types.DisksinBytes)
+	dsb.List = disks
+	return dsb
+}
+func disksinInodes(diskinfos []diskInfo, client clientState) *types.DisksinInodes {
+	var disks []types.DiskInodes
+	for i, disk := range diskinfos {
+		if !*client.ExpandDisks && i > 1 {
+			break
+		}
+		itotal, approxitotal := humanBandback(disk.Inodes)
+		iused,  approxiused  := humanBandback(disk.Iused)
+		disks = append(disks, types.DiskInodes{
+			DiskMeta: diskMeta(disk),
 			Inodes:      itotal,
 			Iused:       iused,
 			Ifree:       humanB(disk.Ifree),
 			IusePercent: formatPercent(approxiused, approxitotal),
-
-			 UsePercentClass: labelClass_colorPercent(percent(approxused,  approxtotal)),
 			IusePercentClass: labelClass_colorPercent(percent(approxiused, approxitotal)),
-
-			CollapseClass: map[bool]string{true: "collapse"}[haveCollapsed],
 		})
 	}
-	return DiskTable{List: dd, HaveCollapsed: haveCollapsed}
+	dsi := new(types.DisksinInodes)
+	dsi.List = disks
+	return dsi
 }
 
 var _DFBIMAP = types.Seq2bimap(DFFS, // the default seq for ordering
@@ -340,68 +421,106 @@ func orderProc(procs []types.ProcInfo, seq types.SEQ) []types.ProcData {
 	return list
 }
 
-type state struct {
-    About    about
-    System   system
-	RAWCPU   sigar.CpuList
-	PREVCPU  sigar.CpuList
-	RAM      memory
-	Swap     memory
-	DiskList []diskInfo
-	ProcList []types.ProcInfo
-
-	InterfacesTotal     []InterfaceTotal
-	PrevInterfacesTotal []InterfaceTotal
+type Previous struct {
+	CPU        sigar.CpuList
+	Interfaces []InterfaceInfo
 }
 
-type Page struct {
+type lastinfo struct {
+    About  about
+    System system
+	CPU    sigar.CpuList
+	RAM    memory
+	Swap   memory
+	DiskList   []diskInfo
+	ProcList   []types.ProcInfo
+	Interfaces []InterfaceInfo
+	Previous Previous
+}
+
+type plainDataMeta struct { // for comparison in templates
+	Expandable bool         // keep in sync with types.DataMeta
+	More       int
+}
+
+type PageData struct {
     About     about
     System    system
 	CPU       types.CPU
 	RAM       memory
 	Swap      memory
-	DiskTable DiskTable
+
 	ProcTable ProcTable
 
-	Interfaces types.Interfaces
+	DiskLinks *DiskLinkattrs          `json:",omitempty"`
+	DisksinBytes  types.DisksinBytes  `json:",omitempty"`
+	DisksinInodes types.DisksinInodes `json:",omitempty"`
+
+	Disks   plainDataMeta
+	Network plainDataMeta
+
+	InterfacesBytes   types.Interfaces
+	InterfacesErrors  types.Interfaces
+	InterfacesPackets types.Interfaces
 
 	DISTRIBHTML template.HTML
 	VERSION     string
 	HTTP_HOST   string
+
+    ClientState clientState
 }
 type pageUpdate struct {
     About    about
     System   system
-	CPU      types.CPU
-	RAM      memory
-	Swap     memory
 
-	DiskTable DiskTable
-	ProcTable ProcTable
+	RAM      memory // TODO empty on HideMemory
+	Swap     memory // TODO empty on HideMemory
 
-	Interfaces types.Interfaces
+	CPU           *types.CPU           `json:",omitempty"`
+	DiskLinks     *DiskLinkattrs       `json:",omitempty"`
+	DisksinBytes  *types.DisksinBytes  `json:",omitempty"`
+	DisksinInodes *types.DisksinInodes `json:",omitempty"`
+
+	Disks   types.DataMeta // a pointer and `json:",omitempty"` ?
+	Network types.DataMeta // a pointer and `json:",omitempty"` ?
+
+	// ProcLinks *ProcLinkattrs `json:",omitempty"`
+	ProcTable *ProcTable `json:",omitempty"`
+
+	InterfacesBytes   *types.Interfaces `json:",omitempty"`
+	InterfacesErrors  *types.Interfaces `json:",omitempty"`
+	InterfacesPackets *types.Interfaces `json:",omitempty"`
+
+	ClientState *clientState `json:",omitempty"`
 }
 
-var stateLock sync.Mutex
-var lastState state
+var (
+	lastLock sync.Mutex
+	lastInfo lastinfo
+)
+
 func reset_prev() {
-	stateLock.Lock()
-	defer stateLock.Unlock()
-	lastState.PrevInterfacesTotal = []InterfaceTotal{}
-	lastState.PREVCPU.List        = []sigar.Cpu{}
-}
-func collect() { // state
-	stateLock.Lock()
-	defer stateLock.Unlock()
+	lastLock.Lock()
+	defer lastLock.Unlock()
 
-	prev_ifstotal := lastState.InterfacesTotal
-	prev_cpu      := lastState.RAWCPU
+	lastInfo.Previous.CPU        = sigar.CpuList{}
+	lastInfo.Previous.Interfaces = []InterfaceInfo{}
+}
+
+func collect() {
+	lastLock.Lock()
+	defer lastLock.Unlock()
+
+	previous := Previous{
+		CPU:        lastInfo.CPU,
+		Interfaces: lastInfo.Interfaces,
+	}
 
 	ifs, ip := NewInterfaces()
 	about := getAbout()
 	about.IP = ip
 
-	lastState = state{
+	lastInfo = lastinfo{
 		About:    about,
 		System:   getSystem(),
 		RAM:      getRAM(),
@@ -410,14 +529,10 @@ func collect() { // state
 		ProcList: read_procs(),
 	}
 	cl := sigar.CpuList{}; cl.Get()
-	lastState.PREVCPU = prev_cpu
-	lastState.RAWCPU  = cl
+	lastInfo.CPU  = cl
 
-	ifstotal := filterInterfaces(ifs)
-	lastState.PrevInterfacesTotal = prev_ifstotal
-	lastState.InterfacesTotal     = ifstotal
-
-//	return lastState
+	lastInfo.Interfaces = filterInterfaces(ifs)
+	lastInfo.Previous = previous
 }
 
 func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Biseqmap) types.Linkattrs {
@@ -429,83 +544,179 @@ func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Bis
 	}
 }
 
-func updates(req *http.Request, new_search bool) (pageUpdate, url.Values, types.SEQ, types.SEQ) {
+func getUpdates(req *http.Request, new_search bool, client clientState, clientdiff *clientState) (pageUpdate, url.Values, types.SEQ, types.SEQ) {
 	req.ParseForm()
 	base := url.Values{}
 
-	dflinks := DiskLinkattrs(linkattrs(req, base, "df", _DFBIMAP))
-	pslinks := ProcLinkattrs(linkattrs(req, base, "ps", _PSBIMAP))
+	var (
+		disks_copy []diskInfo
+		procs_copy []types.ProcInfo
+		interfaces_copy         []InterfaceInfo
+		previousinterfaces_copy []InterfaceInfo
+	)
 
 	var pu pageUpdate
-	var disks_copy []diskInfo
-	var procs_copy []types.ProcInfo
 	func() {
-		stateLock.Lock()
-		defer stateLock.Unlock()
+		lastLock.Lock()
+		defer lastLock.Unlock()
 
-		disks_copy = make([]diskInfo, len(lastState.DiskList))
-		procs_copy = make([]types.ProcInfo, len(lastState.ProcList))
-		copy(disks_copy, lastState.DiskList)
-		copy(procs_copy, lastState.ProcList)
+		disks_copy = make([]diskInfo,       len(lastInfo.DiskList))
+		procs_copy = make([]types.ProcInfo, len(lastInfo.ProcList))
+		copy(disks_copy,   lastInfo.DiskList)
+		copy(procs_copy,   lastInfo.ProcList)
+
+		interfaces_copy = make([]InterfaceInfo, len(lastInfo.Interfaces))
+		copy(interfaces_copy, lastInfo.Interfaces)
+		previousinterfaces_copy = make([]InterfaceInfo, len(lastInfo.Previous.Interfaces))
+		copy(previousinterfaces_copy, lastInfo.Previous.Interfaces)
 
 		pu = pageUpdate{
-			About:    lastState.About,
-			System:   lastState.System,
-			CPU:      lastState.CPU(),
-			RAM:      lastState.RAM,
-			Swap:     lastState.Swap,
-			Interfaces: lastState.InterfacesDelta(),
+			About:  lastInfo.About,
+			System: lastInfo.System,
+			RAM:    lastInfo.RAM,
+			Swap:   lastInfo.Swap,
+		}
+		if !*client.HideCPU {
+			pu.CPU = lastInfo.CPUDelta(client)
 		}
 	}()
-	pu.DiskTable      = orderDisk(disks_copy, dflinks.Seq)
-	pu.ProcTable.List = orderProc(procs_copy, pslinks.Seq)
-	if new_search {
-		pu.ProcTable.Links = &pslinks
-		pu.DiskTable.Links = &dflinks
+
+	 pu.Network = types.NewDataMeta()
+	*pu.Network.More       = len(interfaces_copy)
+	*pu.Network.Expandable = *pu.Network.More > TOPROWS
+
+	pslinks := ProcLinkattrs(linkattrs(req, base, "ps", _PSBIMAP))
+	dflinks := DiskLinkattrs(linkattrs(req, base, "df", _DFBIMAP))
+
+	orderedDisks := orderDisks(disks_copy, dflinks.Seq)
+
+	 pu.Disks = types.NewDataMeta()
+	*pu.Disks.More       = len(disks_copy)
+	*pu.Disks.Expandable = *pu.Disks.More > TOPROWS
+
+	if !*client.HideDisks {
+		       if *client.CurrentDisksTab == DBYTES_TABID  { pu.DisksinBytes  = disksinBytes(orderedDisks,  client)
+		} else if *client.CurrentDisksTab == DINODES_TABID { pu.DisksinInodes = disksinInodes(orderedDisks, client)
+		}
+	}
+
+	if !*client.HideNetwork {
+		switch *client.CurrentNetworkTab {
+		case NBYTES_TABID:   pu.InterfacesBytes   = InterfacesDelta(interfaceBytes{},   interfaces_copy, previousinterfaces_copy, client)
+		case NERRORS_TABID:  pu.InterfacesErrors  = InterfacesDelta(interfaceNumericals{interfaceInoutErrors{}},  interfaces_copy, previousinterfaces_copy, client)
+		case NPACKETS_TABID: pu.InterfacesPackets = InterfacesDelta(interfaceNumericals{interfaceInoutPackets{}}, interfaces_copy, previousinterfaces_copy, client)
+		}
+	}
+
+	if !*client.HideProcesses {
+		pu.ProcTable = new(ProcTable)
+		pu.ProcTable.List = orderProc(procs_copy, pslinks.Seq)
+		if new_search {
+			pu.ProcTable.Links = &pslinks
+			pu.DiskLinks = &dflinks
+		}
+	}
+
+	if clientdiff != nil {
+		pu.ClientState = new(clientState)
+		*pu.ClientState = *clientdiff // client
 	}
 	return pu, base, dflinks.Seq, pslinks.Seq
 }
 
 var DISTRIB string // set with init from init_*.go
-func collected(req *http.Request) Page {
-	latest, base, dfseq, psseq := updates(req, false)
-	return Page{
-		About:   latest.About,
-		System:  latest.System,
-		CPU:     latest.CPU,
-		RAM:     latest.RAM,
-		Swap:    latest.Swap,
-		DiskTable: DiskTable{
-			List:          latest.DiskTable.List,
-			HaveCollapsed: latest.DiskTable.HaveCollapsed,
-			Links: &DiskLinkattrs{
-				Base: base,
-				Pname: "df",
-				Bimap: _DFBIMAP,
-				Seq: dfseq,
-			},
-		},
-		ProcTable: ProcTable{
-			List: latest.ProcTable.List,
-			Links: &ProcLinkattrs{
-				Base: base,
-				Pname: "ps",
-				Bimap: _PSBIMAP,
-				Seq: psseq,
-			},
-		},
-		Interfaces: latest.Interfaces, // types.Interfaces{List: latest.Interfaces },
-		DISTRIBHTML: tooltipable(11, DISTRIB), // value from init_*.go
-		VERSION: VERSION,                      // value from server.go
-		HTTP_HOST: req.Host,
+func pageData(req *http.Request) PageData {
+	client := defaultClientState()
+	updates, base, dfseq, psseq := getUpdates(req, false, client, &client)
+
+	dla := &DiskLinkattrs{
+		Base: base,
+		Pname: "df",
+		Bimap: _DFBIMAP,
+		Seq: dfseq,
 	}
+	pla := &ProcLinkattrs{
+		Base: base,
+		Pname: "ps",
+		Bimap: _PSBIMAP,
+		Seq: psseq,
+	}
+
+	data := PageData{
+		ClientState: *updates.ClientState,
+		About:   updates.About,
+		System:  updates.System,
+		CPU:    *updates.CPU,
+		RAM:     updates.RAM,
+		Swap:    updates.Swap,
+
+		DiskLinks:  dla,
+
+		ProcTable: ProcTable{
+			List: updates.ProcTable.List,
+			Links: pla, // ProcLinks
+		},
+
+		DISTRIBHTML: tooltipable(11, DISTRIB), // value from init_*.go
+		VERSION:     VERSION,                  // value from server.go
+		HTTP_HOST:   req.Host,
+	}
+	/*
+	if updates.DisksExpandableTo   != nil { data.DisksExpandableTo   = fmt.Sprintf("%d", *updates.DisksExpandableTo)   }
+	if updates.NetworkExpandableTo != nil { data.NetworkExpandableTo = fmt.Sprintf("%d", *updates.NetworkExpandableTo) } */
+	// if updates.DisksExpandableTo   != nil { disksExpandableTo   = *updates.DisksExpandableTo   }
+	// if updates.NetworkExpandableTo != nil { networkExpandableTo = *updates.NetworkExpandableTo }
+	data.Disks = plainDataMeta{}
+	if true { // updates.Disks != nil {
+		if updates.Disks.Expandable != nil {
+			data.Disks.Expandable = *updates.Disks.Expandable
+		}
+		if updates.Disks.More != nil {
+			data.Disks.More = *updates.Disks.More
+		}
+	}
+	data.Network = plainDataMeta{}
+	if true { // updates.Network != nil {
+		if updates.Network.Expandable != nil {
+			data.Network.Expandable = *updates.Network.Expandable
+		}
+		if updates.Network.More != nil {
+			data.Network.More = *updates.Network.More
+		}
+	}
+
+	       if updates.DisksinBytes  != nil { data.DisksinBytes  = *updates.DisksinBytes
+	} else if updates.DisksinInodes != nil { data.DisksinInodes = *updates.DisksinInodes
+	}
+
+	       if updates.InterfacesBytes   != nil { data.InterfacesBytes   = *updates.InterfacesBytes
+	} else if updates.InterfacesErrors  != nil { data.InterfacesErrors  = *updates.InterfacesErrors
+	} else if updates.InterfacesPackets != nil { data.InterfacesPackets = *updates.InterfacesPackets
+	}
+
+	return data
 }
 
 func index(req *http.Request, r view.Render) {
-	r.HTML(200, "index.html", struct{Data interface{}}{collected(req)})
+	r.HTML(200, "index.html", struct{
+		True, False bool
+		Data interface{}
+	}{
+		True:  true, // tempting, isn't it?
+		False: false,
+		Data: pageData(req),
+	})
 }
 
 type Modern struct {
 	*martini.Martini
 	 martini.Router // the router functions for convenience
 }
+
+
+
+
+
+
+
+

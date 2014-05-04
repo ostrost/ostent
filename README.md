@@ -10,8 +10,7 @@ it will self-upgrade whenever there's new release.
 Platforms
 ---------
 
-   - [Linux 64bits](https://github.com/rzab/ostent/releases/download/v0.1.4/Linux.x86_64)
-   - [Linux 32bits](https://github.com/rzab/ostent/releases/download/v0.1.4/Linux.i686)
+   - Linux [64-bit](https://github.com/rzab/ostent/releases/download/v0.1.4/Linux.x86_64) | [32-bit](https://github.com/rzab/ostent/releases/download/v0.1.4/Linux.i686)
    - [Darwin](https://github.com/rzab/ostent/releases/download/v0.1.4/Darwin.x86_64)
    - _Expect \*BSD builds surely_
 
@@ -48,7 +47,7 @@ Running the code
       go-bindata -pkg assets -o src/ostential/assets/bindata.devel.go -tags '!production' -debug -prefix assets         assets/...
    ```
 
-   See [SCons](#scons) on topic.
+   See [SCons](#scons) and [Assets](#the-assets) on topics.
 
 6. Using [rerun](https://github.com/skelterjohn/rerun), it'll go get the remaining Go dependecies:
 

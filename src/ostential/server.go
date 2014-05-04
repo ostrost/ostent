@@ -99,6 +99,14 @@ func Serve(listen net.Listener, logfunc Logfunc, cb func(*Modern)) error {
 	m.Get("/",   index)
 	m.Get("/ws", slashws)
 
+	hostname := getAbout().HostnameString
+	logger.Printf("   %s\n", strings.Repeat("-", len(hostname) + 7))
+	if len(hostname) > 19 {
+		hostname = hostname[:16] +"..."
+	}
+	logger.Printf(" / %s ostent \\ \n", hostname)
+	logger.Printf("+------------------------------+")
+
 	addr := listen.Addr()
 	if h, port, err := net.SplitHostPort(addr.String()); err == nil && h == "::" {
 		// wildcard bind
@@ -107,17 +115,31 @@ func Serve(listen net.Listener, logfunc Logfunc, cb func(*Modern)) error {
 		logger.Printf("        http://%s", IP) // */
 		addrs, err := net.InterfaceAddrs()
 		if err == nil {
+			fst := true
 			for _, a := range addrs {
 				ipnet, ok := a.(*net.IPNet)
 				if !ok || strings.Contains(ipnet.IP.String(), ":") {
 					continue // no IPv6 for now
 				}
-				logger.Printf("http://%s:%s", ipnet.IP.String(), port)
+				f := fmt.Sprintf("http://%s:%s", ipnet.IP.String(), port)
+				if len(f) < 28 {
+					f += strings.Repeat(" ", 28 - len(f))
+				}
+				if !fst {
+					logger.Printf("|------------------------------|")
+				}
+				fst = false
+				logger.Printf("| %s |", f)
 			}
 		}
 	} else {
-		logger.Printf("http://%s", addr.String())
+		f := fmt.Sprintf("http://%s", addr.String())
+		if len(f) < 28 {
+			f += strings.Repeat(" ", 28 - len(f))
+		}
+		logger.Printf("| %s |", f)
 	}
+	logger.Printf("+------------------------------+")
 
 	server := &http.Server{Addr: listen.Addr().String(), Handler: m}
 	return server.Serve(listen)

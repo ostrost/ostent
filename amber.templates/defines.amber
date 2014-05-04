@@ -1,33 +1,33 @@
 [[/* -*- indent-tabs-mode: nil -*- */]]
 
 [[define "define_ifsrows"]]
-  each $if in Data.Interfaces.List
-    |<tr key=#{$if.NameKey} class=#{$if.CollapseClass}>
+  each $if in Data.InterfacesBytes.List
+    |<tr key=#{$if.NameKey}>
       td #{$if.NameHTML}
-      td.digital #{$if.DeltaInBytes}
-      td.digital #{$if.DeltaOutBytes}
-      td.digital #{$if.InBytes}
-      td.digital #{$if.OutBytes}
-    |</tr>
-[[end]]
-[[define "define_ifspacketsrows"]]
-  each $if in Data.Interfaces.List
-    |<tr key=#{$if.NameKey} class=#{$if.CollapseClass}>
-      td #{$if.NameHTML}
-      td.digital #{$if.DeltaInPackets}
-      td.digital #{$if.DeltaOutPackets}
-      td.digital #{$if.InPackets}
-      td.digital #{$if.OutPackets}
+      td.digital #{$if.DeltaIn}
+      td.digital #{$if.DeltaOut}
+      td.digital #{$if.In}
+      td.digital #{$if.Out}
     |</tr>
 [[end]]
 [[define "define_ifserrorsrows"]]
-  each $if in Data.Interfaces.List
-    |<tr key=#{$if.NameKey} class=#{$if.CollapseClass}>
+  each $if in Data.InterfacesErrors.List
+    |<tr key=#{$if.NameKey}>
       td #{$if.NameHTML}
-      td.digital #{$if.DeltaInErrors}
-      td.digital #{$if.DeltaOutErrors}
-      td.digital #{$if.InErrors}
-      td.digital #{$if.OutErrors}
+      td.digital #{$if.DeltaIn}
+      td.digital #{$if.DeltaOut}
+      td.digital #{$if.In}
+      td.digital #{$if.Out}
+    |</tr>
+[[end]]
+[[define "define_ifspacketsrows"]]
+  each $if in Data.InterfacesPackets.List
+    |<tr key=#{$if.NameKey}>
+      td #{$if.NameHTML}
+      td.digital #{$if.DeltaIn}
+      td.digital #{$if.DeltaOut}
+      td.digital #{$if.In}
+      td.digital #{$if.Out}
     |</tr>
 [[end]]
 
@@ -37,17 +37,17 @@
       tr
         th Interface
         th.digital.nobr In
-          span.unit
+          span.unit[title="bits per second"]
             b b
             | ps
         th.digital.nobr Out
-          span.unit
+          span.unit[title="bits per second"]
             b b
             | ps
         th.digital.nobr In
-          span.unit %4G
+          span.unit[title="total modulo 4G"] %4G
         th.digital.nobr Out
-          span.unit %4G
+          span.unit[title="total modulo 4G"] %4G
     tbody
       [[with GET "bracket_ifsrows"]][[.]][[DEL "bracket_ifsrows"]][[else]]
         [[template "define_ifsrows" .]][[end]]
@@ -58,13 +58,13 @@
       tr
         th Interface
         th.digital.nobr In&nbsp;
-          span.unit ps
+          span.unit[title="per second"] ps
         th.digital.nobr Out&nbsp;
-          span.unit ps
+          span.unit[title="per second"] ps
         th.digital.nobr In
-          span.unit %4G
+          span.unit[title="modulo 4G"] %4G
         th.digital.nobr Out
-          span.unit %4G
+          span.unit[title="modulo 4G"] %4G
     tbody
       [[with GET "bracket_ifsrows"]][[.]][[DEL "bracket_ifsrows"]][[else]]
         [[template "define_ifspacketsrows" .]][[end]]
@@ -75,21 +75,21 @@
       tr
         th Interface
         th.digital.nobr In&nbsp;
-          span.unit ps
+          span.unit[title="per second"] ps
         th.digital.nobr Out&nbsp;
-          span.unit ps
+          span.unit[title="per second"] ps
         th.digital.nobr In
-          span.unit %4G
+          span.unit[title="modulo 4G"] %4G
         th.digital.nobr Out
-          span.unit %4G
+          span.unit[title="modulo 4G"] %4G
     tbody
       [[with GET "bracket_ifsrows"]][[.]][[DEL "bracket_ifsrows"]][[else]]
         [[template "define_ifserrorsrows" .]][[end]]
 [[end]]
 
 [[define "define_dfrows"]]
-  each $disk in Data.DiskTable.List
-    | <tr key=#{$disk.DiskNameKey} class=#{$disk.CollapseClass}>
+  each $disk in Data.DisksinBytes.List
+    | <tr key=#{$disk.DiskNameKey}>
 
       td.nobr #{$disk.DiskNameHTML}
       td.nobr #{$disk.DirNameHTML}
@@ -104,19 +104,19 @@
   table.table1.stripe-table
     thead
       tr
-        th.header         <a href=#{Data.DiskTable.Links.DiskName.Href} class=#{Data.DiskTable.Links.DiskName.Class}>Device</a>
-        th.header         <a href=#{Data.DiskTable.Links.DirName.Href}  class=#{Data.DiskTable.Links.DirName.Class}>Mounted</a>
-        th.header.digital <a href=#{Data.DiskTable.Links.Avail.Href}    class=#{Data.DiskTable.Links.Avail.Class}>Avail</a>
-        th.header.digital <a href=#{Data.DiskTable.Links.Used.Href}     class=#{Data.DiskTable.Links.Used.Class}>Used</a>
-        th.header.digital <a href=#{Data.DiskTable.Links.Total.Href}    class=#{Data.DiskTable.Links.Total.Class}>Total</a>
+        th.header         <a href=#{Data.DiskLinks.DiskName.Href} class=#{Data.DiskLinks.DiskName.Class}>Device</a>
+        th.header         <a href=#{Data.DiskLinks.DirName.Href}  class=#{Data.DiskLinks.DirName.Class}>Mounted</a>
+        th.header.digital <a href=#{Data.DiskLinks.Avail.Href}    class=#{Data.DiskLinks.Avail.Class}>Avail</a>
+        th.header.digital <a href=#{Data.DiskLinks.Used.Href}     class=#{Data.DiskLinks.Used.Class}>Used</a>
+        th.header.digital <a href=#{Data.DiskLinks.Total.Href}    class=#{Data.DiskLinks.Total.Class}>Total</a>
     tbody
       [[with GET "bracket_dfrows"]][[.]][[DEL "bracket_dfrows"]][[else]]
         [[template "define_dfrows" .]][[end]]
 [[end]]
 
 [[define "define_dirows"]]
-  each $disk in Data.DiskTable.List
-    | <tr key=#{$disk.DiskNameKey} class=#{$disk.CollapseClass}>
+  each $disk in Data.DisksinInodes.List
+    | <tr key=#{$disk.DiskNameKey}>
 
       td.nobr #{$disk.DiskNameHTML}
       td.nobr #{$disk.DirNameHTML}
@@ -142,8 +142,8 @@
 [[end]]
 
 [[define "define_cpurows"]]
-  each $i, $core in Data.CPU.List
-    |<tr key=#{$core.N} class=#{$core.CollapseClass}>
+each $i, $core in Data.CPU.List
+    |<tr key=#{$core.N}>
       td.digital.nobr #{$core.N}
       td.digital <span id="#{"core" + $i + ".User"}" class=#{$core.UserClass}>#{$core.User}</span>
       td.digital <span id="#{"core" + $i + ".Sys"}"  class=#{$core.SysClass}>#{$core.Sys}</span>

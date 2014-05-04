@@ -1,4 +1,4 @@
-@import 'bootstrap-3.1.0.scss';
+@import 'bootstrap-3.1.1.scss';
 // @import 'bootflat.scss';
 // @import 'bootflatcss.scss';
 
@@ -17,6 +17,7 @@ body {
   @extend .panel-default;
   header {
     @extend .panel-heading;
+    padding-right: 5px;
     a { // @.panel-default > .panel-heading
       color: #333;
       background-color: #f5f5f5;
@@ -83,9 +84,17 @@ body {
     padding-right: 0px;
 }
 
+.btn-xx {
+    @extend .btn-xs;
+    padding: 0px 5px; // xs: 1px 5 px
+    // border: 1px solid;
+    // line-height: 1.5
+}
+
 .btn-group.notall {
     padding-left: 15px;
     padding-right: 15px;
+    padding-bottom: 0px;
 }
 
 .LINKSnav {

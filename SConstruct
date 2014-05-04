@@ -8,7 +8,7 @@ uname = os.uname()
 goos, goarch = uname[0].lower(), {'x86_64': 'amd64'}.get(uname[-1], uname[-1])
 bindir = 'bin/%s_%s' % (goos, goarch)
 
-Files = lambda ROOT: [os.path.join(sub, f) for sub, _, fs in os.walk(ROOT) for f in fs]
+Files = lambda ROOT: [os.path.join(sub, f) for sub, _, fs in os.walk(ROOT) for f in fs if not f.startswith('.#')]
 def bindata(target, source, env, for_signature):
     fix = source[0].path         if isinstance(source[0], SCons.Node.FS.Dir) else os.path.dirname(source[0].path)
     src = source[0].path +'/...' if isinstance(source[0], SCons.Node.FS.Dir) else os.path.dirname(source[0].path)

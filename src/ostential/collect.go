@@ -6,18 +6,25 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"html/template"
 	"github.com/rzab/gosigar"
 )
 
 type about struct {
-	Hostname string
-	IP       string
+	HostnameHTML   template.HTML
+	HostnameString string
+	IP             string
 }
 func getAbout() about {
-	hostname, _ := os.Hostname()
+	hostname, err := os.Hostname()
+	if err != nil {
+		return about{}
+	}
+	hostname = strings.Split(hostname, ".")[0]
 	// IP, _ := netinterface_ipaddr()
 	return about{
-		Hostname: hostname,
+		HostnameString: hostname,
+		HostnameHTML: tooltipable(11, hostname),
 		// IP: IP,
 	}
 }
@@ -76,7 +83,7 @@ func read_disks() (disks []diskInfo) {
 	fls := sigar.FileSystemList{}
 	fls.Get()
 
-	devnames := map[string]bool{}
+// 	devnames := map[string]bool{}
 	dirnames := map[string]bool{}
 
 	for _, fs := range fls.List {
@@ -92,6 +99,7 @@ func read_disks() (disks []diskInfo) {
 			fs.DevName == "sysfs"  ||
 			fs.DevName == "tmpfs"  ||
 			fs.DevName == "devpts" ||
+			fs.DevName == "cgroup" ||
 			fs.DevName == "rootfs" ||
 			fs.DevName == "rpc_pipefs" ||
 
@@ -99,10 +107,10 @@ func read_disks() (disks []diskInfo) {
 			strings.HasPrefix(fs.DevName, "map ") {
 			continue
 		}
-		if _, ok := devnames[fs.DevName]; ok { continue }
+	// 	if _, ok := devnames[fs.DevName]; ok { continue }
 		if _, ok := dirnames[fs.DirName]; ok { continue }
-		devnames[fs.DevName] = true
-		devnames[fs.DirName] = true
+	// 	devnames[fs.DevName] = true
+		dirnames[fs.DirName] = true
 
 		iusePercent := 0.0
 		if usage.Files != 0 {
@@ -122,35 +130,6 @@ func read_disks() (disks []diskInfo) {
 			IusePercent: iusePercent,
 
 			DirName:     fs.DirName,
-		})
-	}
-	if false { // testing
-		usage := sigar.FileSystemUsage{
-			Total: 1024 * 1024 * 256,
-			Used:  1024 * 1024 * 64,
-			Avail: 1024 * 1024 * (256 - 64),
-			Files: 1024 * 1024 * 32,
-			FreeFiles: 1024 * 1024 * 8,
-		}
-		iusePercent := 0.0
-		if usage.Files != 0 {
-			iusePercent = float64(100) * float64(usage.Files - usage.FreeFiles) / float64(usage.Files)
-		}
-
-		disks = append(disks, diskInfo{
-			DevName:     "/dev/dummy",
-
-			Total:       usage.Total << 10,
-			Used:        usage.Used  << 10,
-			Avail:       usage.Avail << 10,
-			UsePercent:  usage.UsePercent(),
-
-			Inodes:      usage.Files,
-			Iused:       usage.Files - usage.FreeFiles,
-			Ifree:       usage.FreeFiles,
-			IusePercent: iusePercent,
-
-			DirName:     "/dummy",
 		})
 	}
 	return disks
@@ -179,18 +158,6 @@ func read_procs() (procs []types.ProcInfo) {
 			Uid:      state.Uid,
 			Size:       mem.Size,
 			Resident:   mem.Resident,
-		})
-	}
-	if false { // testing
-		procs = append(procs, types.ProcInfo{
-			PID:      uint(10000),
-			Priority: 30,
-			Nice:     0,
-			Time:     uint64(10),
-			Name:     "NOBOY",
-			Uid:      4294967294,
-			Size:       100000,
-			Resident:   200000,
 		})
 	}
 	return procs

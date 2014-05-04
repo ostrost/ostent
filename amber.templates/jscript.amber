@@ -1,14 +1,18 @@
 /** @jsx React.DOM */ [[/* -*- indent-tabs-mode: nil -*- */]]
 script
-  var collapsing_interfaces = true; // default is true
+  function emptyK(obj, key) {
+  return (obj      === undefined ||
+          obj      === null      ||
+          obj[key] === undefined ||
+          obj[key] === null);
+  }
+
   var ifsTableClass = React.createClass({
-    getInitialState: function() { return Data.Interfaces; },
+    getInitialState: function() { return Data.InterfacesBytes; },
+
     render: function() {
-      var Data = {Interfaces: this.state};
-      var ifs_rows = Data.Interfaces.List.map(function($if) {
-        if (!collapsing_interfaces) {
-          $if.CollapseClass = "collapse in";
-        }
+      var Data = {InterfacesBytes: this.state};
+      var ifs_rows = emptyK(Data.InterfacesBytes, 'List') ?'': Data.InterfacesBytes.List.map(function($if) {
         return ([[template "define_ifsrows" .]]);
       });
       [[SET "bracket_ifsrows" `{ifs_rows}`]]
@@ -17,30 +21,12 @@ script
     }
   });
 
-  var ifsPacketsTableClass = React.createClass({
-    getInitialState: function() { return Data.Interfaces; },
-    render: function() {
-      var Data = {Interfaces: this.state};
-      var ifs_rows = Data.Interfaces.List.map(function($if) {
-        if (!collapsing_interfaces) {
-          $if.CollapseClass = "collapse in";
-        }
-        return ([[template "define_ifspacketsrows" .]]);
-      });
-      [[SET "bracket_ifsrows" `{ifs_rows}`]]
-      return ([[template "define_ifspacketstable" .]]);
-      [[DEL "bracket_ifsrows"]]
-    }
-  });
-
   var ifsErrorsTableClass = React.createClass({
-    getInitialState: function() { return Data.Interfaces; },
+    getInitialState: function() { return Data.InterfacesErrors; },
+
     render: function() {
-      var Data = {Interfaces: this.state};
-      var ifs_rows = Data.Interfaces.List.map(function($if) {
-        if (!collapsing_interfaces) {
-          $if.CollapseClass = "collapse in";
-        }
+      var Data = {InterfacesErrors: this.state};
+      var ifs_rows = emptyK(Data.InterfacesErrors, 'List') ?'': Data.InterfacesErrors.List.map(function($if) {
         return ([[template "define_ifserrorsrows" .]]);
       });
       [[SET "bracket_ifsrows" `{ifs_rows}`]]
@@ -49,50 +35,56 @@ script
     }
   });
 
-  var collapsing_disks = true; // default is true
-  var diskTableClass = React.createClass({
-    getInitialState: function() { return Data.DiskTable; },
+  var ifsPacketsTableClass = React.createClass({
+    getInitialState: function() { return Data.InterfacesPackets; },
+
     render: function() {
-      var Data = {DiskTable: this.state};
-      var df_rows = Data.DiskTable.List.map(function($disk) {
-        if (!collapsing_disks) {
-          $disk.CollapseClass = "collapse in";
-        }
+      var Data = {InterfacesPackets: this.state};
+      var ifs_rows = emptyK(Data.InterfacesPackets, 'List') ?'': Data.InterfacesPackets.List.map(function($if) {
+        return ([[template "define_ifspacketsrows" .]]);
+      });
+      [[SET "bracket_ifsrows" `{ifs_rows}`]]
+      return ([[template "define_ifspacketstable" .]]);
+      [[DEL "bracket_ifsrows"]]
+    }
+  });
+
+  var disksinBytesClass = React.createClass({
+    getInitialState: function() { return {DiskLinks: Data.DiskLinks, DisksinBytes: Data.DisksinBytes}; },
+
+    render: function() {
+      var Data = this.state;
+      var rows = emptyK(Data.DisksinBytes, 'List') ?'': Data.DisksinBytes.List.map(function($disk) {
         return ([[template "define_dfrows" .]]);
       });
 
-      [[SET "bracket_dfrows" `{df_rows}`]]
+      [[SET "bracket_dfrows" `{rows}`]]
       return ([[template "define_dftable" .]]);
       [[DEL "bracket_dfrows"]]
     }
   });
 
-  var inodeTableClass = React.createClass({
-    getInitialState: function() { return Data.DiskTable; },
+  var disksinInodesClass = React.createClass({
+    getInitialState: function() { return {DiskLinks: Data.DiskLinks, DisksinInodes: Data.DisksinInodes}; },
+
     render: function() {
-      var Data = {DiskTable: this.state};
-      var di_rows = Data.DiskTable.List.map(function($disk) {
-        if (!collapsing_disks) {
-          $disk.CollapseClass = "collapse in";
-        }
+      var Data = this.state;
+      var rows = emptyK(Data.DisksinInodes, 'List') ?'': Data.DisksinInodes.List.map(function($disk) {
         return ([[template "define_dirows" .]]);
       });
 
-      [[SET "bracket_dirows" `{di_rows}`]]
+      [[SET "bracket_dirows" `{rows}`]]
       return ([[template "define_ditable" .]]);
       [[DEL "bracket_dirows"]]
     }
   });
 
-  var collapsing_cpu = true; // default is true
   var cpuTableClass = React.createClass({
     getInitialState: function() { return Data.CPU; },
+
     render: function() {
       var Data = {CPU: this.state};
       var cpu_rows = Data.CPU.List.map(function($core) {
-        if (!collapsing_cpu) {
-          $core.CollapseClass = "collapse in";
-        }
         return ([[template "define_cpurows" .]]);
       });
       [[SET "bracket_cpurows" `{cpu_rows}`]]
@@ -103,6 +95,7 @@ script
 
   var procTableClass  = React.createClass({
     getInitialState: function() { return Data.ProcTable; },
+
     render: function() {
       var Data = {ProcTable: this.state};
       var ps_rows = Data.ProcTable.List.map(function($proc) {
