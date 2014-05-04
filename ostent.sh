@@ -7,7 +7,7 @@ hadinstall=
 if ! test -e "$DEST" ; then
     hadinstall=-upgradelater
 
-    VERSION=v0.1.4
+    VERSION=v0.1.5
     URL="https://OSTROST.COM/ostent/releases/latest/$(uname -sm)/ostent"
     URL="https://github.com/rzab/ostent/releases/download/$VERSION/$(uname -sm | tr \  .)"
 
