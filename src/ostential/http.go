@@ -698,14 +698,7 @@ func pageData(req *http.Request) PageData {
 }
 
 func index(req *http.Request, r view.Render) {
-	r.HTML(200, "index.html", struct{
-		True, False bool
-		Data interface{}
-	}{
-		True:  true, // tempting, isn't it?
-		False: false,
-		Data: pageData(req),
-	})
+	r.HTML(200, "index.html", struct{Data interface{}}{Data: pageData(req),})
 }
 
 type Modern struct {

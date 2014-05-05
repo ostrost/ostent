@@ -95,7 +95,7 @@ html
                 div.btn-group.btn-xx[data-toggle="buttons"]
                   //- [title="ii"]
                   label.btn.btn-xx.btn-default.all[href="#network"]
-                    [class="disabled"] ? Data.Network.Expandable == False
+                    [class="disabled"] ? (json(Data.Network.Expandable)) != "true")
                     input[type="checkbox"][name="allnetwork"]
                     | #{Data.Network.More}
 
@@ -123,7 +123,7 @@ html
                 div.btn-group[data-toggle="buttons"]
                   //- [title="ii"]
                   label.btn.btn-xx.btn-default.all[href="#cpu"]
-                    [class="disabled"] ? Data.CPU.Expandable == False
+                    [class="disabled"] ? (json(Data.CPU.Expandable)) != "true")
                     input[type="checkbox"][name="allcpu"]
                     | #{Data.CPU.More}
 
@@ -151,7 +151,7 @@ html
                 div.btn-group[data-toggle="buttons"]
                   //- [title="ii"]
                   label.btn.btn-xx.btn-default.all[href="#disks"]
-                    [class="disabled"] ? Data.Disks.Expandable == False
+                    [class="disabled"] ? (json(Data.Disks.Expandable)) != "true")
                     input[type="checkbox"][name="alldisks"]
                     | #{Data.Disks.More}
 
@@ -211,17 +211,17 @@ html
 
               //- div.btn-group.btn-group-xs.notall
               //-   label.btn.btn-xx.btn-default
-              //-     [class="collapse"] ? Data.ClientState.UserProcesses == ""
+              //-     [class="collapse"] ifempty Data.ClientState.UserProcesses
               //-     | User #{Data.ClientState.UserProcesses} &times;
 
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
                   //- label.btn.btn-xx.btn-default[href="#psless"]
-                  //-   //- [class="disabled"] ? Data....Expandable == False
+                  //-   //- [class="disabled"] ifnot Data....Expandable
                   //-   input[type="checkbox"][name="psless"]
                   //-   | -
                   label.btn.btn-xx.btn-default.more.disabled[href="#psmore"]
-                    //- [class="disabled"] ? Data....Expandable == False
+                    //- [class="disabled"] ifnot Data....Expandable
                     input[type="checkbox"][name="psmore"]
                     | 20
                     //- | 20+
