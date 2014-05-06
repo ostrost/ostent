@@ -24,8 +24,8 @@ func Loop() {
 			wclients[wc] = true
 
 		case wc := <-unregister:
-			delete(wclients, wc)
 			close(wc.ping)
+			delete(wclients, wc)
 			if len(wclients) == 0 {
 				reset_prev()
 			}
@@ -48,9 +48,7 @@ func parseSearch(search string) (url.Values, error) {
 
 type wclient struct {
 	ws *websocket.Conn
-	ping chan *clientState
-	form url.Values
-	new_search bool
+	ping chan *received
 	fullState clientState
 }
 
@@ -62,7 +60,7 @@ var (
 
 type received struct {
 	Search *string
-	State *clientState `json:"State"`
+	State *clientState
 }
 
 func(wc *wclient) waitfor_messages() { // read from client
@@ -73,19 +71,7 @@ func(wc *wclient) waitfor_messages() { // read from client
 			// fmt.Printf("JSON ERR %s\n", err)
 			break
 		}
-		if rd.State != nil {
-			wc.fullState.Merge(*rd.State)
-		}
-		if rd.Search != nil {
-			var err error
-			wc.form, err = parseSearch(*rd.Search) // (string(data))
-			if err != nil {
-				// http.StatusBadRequest
-				break
-			}
-			wc.new_search = true
-		}
-		wc.ping <- rd.State // != nil
+		wc.ping <- rd // != nil
 	}
 }
 func(wc *wclient) waitfor_updates() { // write to  client
@@ -93,16 +79,29 @@ func(wc *wclient) waitfor_updates() { // write to  client
 		unregister <- wc
 		wc.ws.Close()
 	}()
+	var form url.Values // one per client
 	for {
 		select {
-		case diffState := <- wc.ping:
-			// TODO wc.State intros race, need a lock
-			/* dState := clientState{}
-			if (diffState != nil) {
-				dState = *diffState
-			} // */
-			updates, _, _, _ := getUpdates(&http.Request{Form: wc.form}, wc.new_search, wc.fullState, diffState) // &dState
-			wc.new_search = false
+		case rd := <- wc.ping:
+			new_search := false
+			var clientdiff *clientState
+			if rd != nil {
+				if rd.State != nil {
+					wc.fullState.Merge(*rd.State)
+					clientdiff = rd.State
+				}
+				if rd.Search != nil {
+					var err error
+					form, err = parseSearch(*rd.Search)
+					if err != nil {
+						// http.StatusBadRequest
+						continue
+					}
+					new_search = true
+				}
+			}
+
+			updates, _, _, _ := getUpdates(&http.Request{Form: form}, new_search, &wc.fullState, clientdiff)
 
 			if err := wc.ws.WriteJSON(updates); err != nil {
 				break
@@ -129,7 +128,7 @@ func slashws(w http.ResponseWriter, req *http.Request) {
 		panic(err)
 	}
 
-	wc := &wclient{ws: ws, ping: make(chan *clientState, 1), fullState: defaultClientState()}
+	wc := &wclient{ws: ws, ping: make(chan *received, 2), fullState: defaultClientState()}
 	register <- wc
 	defer func() {
 		unregister <- wc

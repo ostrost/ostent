@@ -393,16 +393,39 @@ func username(uids map[uint]string, uid uint) string {
 	return s
 }
 
-func orderProc(procs []types.ProcInfo, seq types.SEQ) []types.ProcData {
+func orderProc(procs []types.ProcInfo, seq types.SEQ, clientptr *clientState) ([]types.ProcData, string) {
+	client := *clientptr
 	sort.Sort(procOrder{ // not sort.Stable
 		procs: procs,
 		seq: seq,
 		reverse: _PSBIMAP.SEQ2REVERSE[seq],
 	})
 
-	if len(procs) > 20 {
-		procs = procs[:20]
+	limitProccesses := client.processesLimitFactor
+
+	if len(procs) <= limitProccesses {
+		limitProccesses = len(procs)
+
+		if client.processesNotExpandable == nil || !*client.processesNotExpandable {
+			clientptr.processesNotExpandable = new(bool)
+			*clientptr.processesNotExpandable = true
+			// fmt.Printf("processesNotExpandable NEW TRUE\n")
+		}
+	} else if clientptr.processesNotExpandable != nil {
+
+		if *client.processesNotExpandable {
+			*clientptr.processesNotExpandable = false
+			// fmt.Printf("processesNotExpandable true => BECAME FALSE\n")
+		} else {
+			// fmt.Printf("processesNotExpandable false => BECAME NIL\n")
+			clientptr.processesNotExpandable = nil
+		}
 	}
+
+	if len(procs) > limitProccesses {
+		procs = procs[:limitProccesses]
+	}
+	moreText := fmt.Sprintf("%d+", limitProccesses)
 
 	uids := map[uint]string{}
 	var list []types.ProcData
@@ -418,7 +441,7 @@ func orderProc(procs []types.ProcInfo, seq types.SEQ) []types.ProcData {
 			Resident:   humanB(proc.Resident),
 		})
 	}
-	return list
+	return list, moreText
 }
 
 type Previous struct {
@@ -438,11 +461,6 @@ type lastinfo struct {
 	Previous Previous
 }
 
-type plainDataMeta struct { // for comparison in templates
-	Expandable bool         // keep in sync with types.DataMeta
-	More       int
-}
-
 type PageData struct {
     About     about
     System    system
@@ -456,8 +474,8 @@ type PageData struct {
 	DisksinBytes  types.DisksinBytes  `json:",omitempty"`
 	DisksinInodes types.DisksinInodes `json:",omitempty"`
 
-	Disks   plainDataMeta
-	Network plainDataMeta
+	Disks   types.DataMeta
+	Network types.DataMeta
 
 	InterfacesBytes   types.Interfaces
 	InterfacesErrors  types.Interfaces
@@ -544,7 +562,9 @@ func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Bis
 	}
 }
 
-func getUpdates(req *http.Request, new_search bool, client clientState, clientdiff *clientState) (pageUpdate, url.Values, types.SEQ, types.SEQ) {
+func getUpdates(req *http.Request, new_search bool, clientptr *clientState, clientdiff *clientState) (pageUpdate, url.Values, types.SEQ, types.SEQ) {
+	client := *clientptr
+
 	req.ParseForm()
 	base := url.Values{}
 
@@ -602,7 +622,7 @@ func getUpdates(req *http.Request, new_search bool, client clientState, clientdi
 
 	if !*client.HideNetwork {
 		switch *client.CurrentNetworkTab {
-		case NBYTES_TABID:   pu.InterfacesBytes   = InterfacesDelta(interfaceBytes{},   interfaces_copy, previousinterfaces_copy, client)
+		case NBYTES_TABID:   pu.InterfacesBytes   = InterfacesDelta(interfaceBytes{},                             interfaces_copy, previousinterfaces_copy, client)
 		case NERRORS_TABID:  pu.InterfacesErrors  = InterfacesDelta(interfaceNumericals{interfaceInoutErrors{}},  interfaces_copy, previousinterfaces_copy, client)
 		case NPACKETS_TABID: pu.InterfacesPackets = InterfacesDelta(interfaceNumericals{interfaceInoutPackets{}}, interfaces_copy, previousinterfaces_copy, client)
 		}
@@ -610,7 +630,8 @@ func getUpdates(req *http.Request, new_search bool, client clientState, clientdi
 
 	if !*client.HideProcesses {
 		pu.ProcTable = new(ProcTable)
-		pu.ProcTable.List = orderProc(procs_copy, pslinks.Seq)
+		pu.ProcTable.List, pu.ProcTable.MoreText = orderProc(procs_copy, pslinks.Seq, clientptr)
+		pu.ProcTable.NotExpandable = clientptr.processesNotExpandable
 		if new_search {
 			pu.ProcTable.Links = &pslinks
 			pu.DiskLinks = &dflinks
@@ -618,7 +639,7 @@ func getUpdates(req *http.Request, new_search bool, client clientState, clientdi
 	}
 
 	if clientdiff != nil {
-		pu.ClientState = new(clientState)
+		 pu.ClientState = new(clientState)
 		*pu.ClientState = *clientdiff // client
 	}
 	return pu, base, dflinks.Seq, pslinks.Seq
@@ -627,7 +648,7 @@ func getUpdates(req *http.Request, new_search bool, client clientState, clientdi
 var DISTRIB string // set with init from init_*.go
 func pageData(req *http.Request) PageData {
 	client := defaultClientState()
-	updates, base, dfseq, psseq := getUpdates(req, false, client, &client)
+	updates, base, dfseq, psseq := getUpdates(req, false, &client, &client)
 
 	dla := &DiskLinkattrs{
 		Base: base,
@@ -653,7 +674,9 @@ func pageData(req *http.Request) PageData {
 		DiskLinks:  dla,
 
 		ProcTable: ProcTable{
-			List: updates.ProcTable.List,
+			List:          updates.ProcTable.List,
+			MoreText:      updates.ProcTable.MoreText,
+			NotExpandable: updates.ProcTable.NotExpandable,
 			Links: pla, // ProcLinks
 		},
 
@@ -661,29 +684,8 @@ func pageData(req *http.Request) PageData {
 		VERSION:     VERSION,                  // value from server.go
 		HTTP_HOST:   req.Host,
 	}
-	/*
-	if updates.DisksExpandableTo   != nil { data.DisksExpandableTo   = fmt.Sprintf("%d", *updates.DisksExpandableTo)   }
-	if updates.NetworkExpandableTo != nil { data.NetworkExpandableTo = fmt.Sprintf("%d", *updates.NetworkExpandableTo) } */
-	// if updates.DisksExpandableTo   != nil { disksExpandableTo   = *updates.DisksExpandableTo   }
-	// if updates.NetworkExpandableTo != nil { networkExpandableTo = *updates.NetworkExpandableTo }
-	data.Disks = plainDataMeta{}
-	if true { // updates.Disks != nil {
-		if updates.Disks.Expandable != nil {
-			data.Disks.Expandable = *updates.Disks.Expandable
-		}
-		if updates.Disks.More != nil {
-			data.Disks.More = *updates.Disks.More
-		}
-	}
-	data.Network = plainDataMeta{}
-	if true { // updates.Network != nil {
-		if updates.Network.Expandable != nil {
-			data.Network.Expandable = *updates.Network.Expandable
-		}
-		if updates.Network.More != nil {
-			data.Network.More = *updates.Network.More
-		}
-	}
+	data.Disks   = updates.Disks
+	data.Network = updates.Network
 
 	       if updates.DisksinBytes  != nil { data.DisksinBytes  = *updates.DisksinBytes
 	} else if updates.DisksinInodes != nil { data.DisksinInodes = *updates.DisksinInodes

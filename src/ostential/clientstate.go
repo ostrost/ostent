@@ -24,6 +24,11 @@ type clientState struct {
 	  DisksTabs   *disksTabs `json:",omitempty"` // immutable
 
 	// UserProcesses string `json:omitempty`
+	MoreProcessesSignal    *bool `json:",omitempty"` // recv only
+
+	// NB not marshalled:
+	processesNotExpandable *bool
+	processesLimitFactor   int
 }
 
 type disksTabs struct {
@@ -55,6 +60,17 @@ func(cs *clientState) Merge(ps clientState) {
 	cs.mergeSEQ(cs.CurrentDisksTab,   ps.CurrentDisksTab)
 	cs.NetworkTabs.merge(ps.NetworkTabs)
 	cs.DisksTabs  .merge(ps.DisksTabs)
+
+	if (ps.MoreProcessesSignal != nil) {
+		if *ps.MoreProcessesSignal {
+			if cs.processesLimitFactor < 65536 {
+				cs.processesLimitFactor *= 2
+			}
+		} else if cs.processesLimitFactor >= 2 {
+			cs.processesLimitFactor /= 2
+		}
+		cs.MoreProcessesSignal = nil
+	}
 }
 
 const (
@@ -106,6 +122,8 @@ func defaultClientState() clientState {
 		NetworkinBytes:   NBYTES_TABID,
 	}
 	// cs.UserProcesses = "" // default
+	cs.processesLimitFactor = 16
+	// cs.processesNotExpandable = new(bool) // false
 
 	return cs
 }

@@ -71,4 +71,6 @@ func(la ProcLinkattrs) MarshalJSON() ([]byte, error) {
 type ProcTable struct {
 	List  []types.ProcData
 	Links *ProcLinkattrs `json:",omitempty"`
+	MoreText      string `json:",omitempty"` // should never be empty, sanity check
+	NotExpandable  *bool `json:",omitempty"`
 }

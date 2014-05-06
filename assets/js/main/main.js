@@ -456,6 +456,78 @@ var ExpandCPUModel = Updatables.declareModel(function() {
     return self;
 });
 
+var ProcessesModel = Updatables.declareModel(function() {
+    var self = {};
+    self.hidden = function() { return this.attributes.Hide; };
+
+    self = _.extend(self, {
+        Attribute_Hide: 'HideProcesses'
+    });
+    self.modelAttributes = function(data) {
+        var r = {
+            Hide: data.ClientState[self.Attribute_Hide]
+        };
+        if (!empty(data.ProcTable)) {
+            r = _.extend(r, {
+                NotExpandable: data.ProcTable.NotExpandable,
+                MoreText:      data.ProcTable.MoreText
+            });
+        }
+        return r;
+    };
+
+    self.toggleHidden = function(s) { return _.object([self.Attribute_Hide], [!s.Hide]); }; //, [!s[self.Attribute_Hide]]
+
+    self.more         = function()  { return {MoreProcessesSignal: true}; };
+    self.less         = function()  { return {MoreProcessesSignal: false}; };
+    return self;
+});
+
+var ProcessesView = HeaderView.extend({
+    events: { 'click': 'proc_click' },
+    initialize: function() {
+        HeaderView.prototype.initialize.call(this);
+	this.listenTo(this.model, 'change:MoreText',      this.change_moretext);
+	this.listenTo(this.model, 'change:NotExpandable', this.change_notexpandable);
+    },
+    change_notexpandable: function() {
+        var $more_el = this.model.attributes.more_el;
+        if (this.model.attributes.NotExpandable) {
+            $more_el.addClass('disabled');
+        } else {
+            $more_el.removeClass('disabled');
+        }
+    },
+    change_moretext: function() {
+        var $more_el = this.model.attributes.more_el;
+        $more_el.text(this.model.attributes.MoreText);
+    },
+    proc_click: function(e) {
+	var clicked = $(e.target);
+        if (clicked.is(this.model.attributes.header_el)) { // header clicked
+            this.header_click(e);
+            return;
+        }
+        do {
+            var func;
+            if (clicked.is(this.model.attributes.more_el)) { // more clicked
+                func = 'more';
+            } else if (clicked.is(this.model.attributes.less_el)) { // less clicked
+                func = 'less';
+            } else {
+                break;
+            }
+            var newState = this.model[func]();
+            if (this.model.hidden()) { // if the panel was hidden by the header link
+                newState = _.extend(newState, this.toggleHidden());
+            }
+            websocket.sendState(newState);
+        } while (0);
+        e.stopPropagation(); // otherwise input checkbox gets checked/unchecked
+        e.preventDefault();
+    }
+});
+
 function ready() {
     var updatables = Updatables(Data);
 
@@ -499,25 +571,12 @@ function ready() {
             expand_el: $('label.all[href="#disks"]')
         });
 
-    new HeaderView({ // PROCESSES
-	el: $('header a[href="#processes"]'),
-	model: updatables.make(Updatables.declareModel(function() {
-            var self = {}
-            self.hidden = function() { return this.attributes.Hide; };
-
-            self = _.extend(self, {
-                Attribute_Hide: 'HideProcesses'
-            });
-            self.modelAttributes = function(data) {
-                return {
-                    Hide: data.ClientState[self.Attribute_Hide]
-                };
-            };
-
-            self.toggleHidden = function(s) { return _.object([self.Attribute_Hide], [!s.Hide]); }; //, [!s[self.Attribute_Hide]]
-            return self;
-        }), {target: $('#processes')})
-    });
+    updatables.make( // PROCESSES
+        ProcessesModel, {target: $('#processes')}, ProcessesView, {
+            header_el: $('header a[href="#processes"]'),
+            more_el: $('label.more[href="#psmore"]'),
+            less_el: $('label.less[href="#psless"]')
+        });
 
     /* $('label.all').tooltip({
 	container: 'body',

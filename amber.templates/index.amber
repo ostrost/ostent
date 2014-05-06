@@ -216,15 +216,12 @@ html
 
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
-                  //- label.btn.btn-xx.btn-default[href="#psless"]
-                  //-   //- [class="disabled"] ifnot Data....Expandable
-                  //-   input[type="checkbox"][name="psless"]
-                  //-   | -
-                  label.btn.btn-xx.btn-default.more.disabled[href="#psmore"]
-                    //- [class="disabled"] ifnot Data....Expandable
+                  label.btn.btn-xx.btn-default.less[href="#psless"]
+                    input[type="checkbox"][name="psless"]
+                    | -
+                  label.btn.btn-xx.btn-default.more[href="#psmore"]
                     input[type="checkbox"][name="psmore"]
-                    | 20
-                    //- | 20+
+                    | #{Data.ProcTable.MoreText}
 
             div.panel-collapse.collapse.in#processes
               span#ps-table
