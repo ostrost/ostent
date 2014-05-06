@@ -1,5 +1,6 @@
 package ostential
 import (
+	"fmt"
 	"time"
 	"flag"
 	"net/url"
@@ -11,6 +12,7 @@ var period = time.Second // default
 func init() {
 	flag.DurationVar(&period, "u",      time.Second, "Collection (update) interval")
 	flag.DurationVar(&period, "update", time.Second, "Collection (update) interval")
+	fmt.Sprintf("")
 }
 
 func Loop() {
@@ -58,9 +60,27 @@ var (
 	unregister = make(chan *wclient)
 )
 
+type recvState struct {
+	clientState
+	MoreProcessesSignal *bool // recv only
+}
+func (rs *recvState) MergeClient(cs *clientState) {
+	if (rs.MoreProcessesSignal == nil) {
+		return
+	}
+	if *rs.MoreProcessesSignal {
+		if cs.processesLimitFactor < 65536 {
+			cs.processesLimitFactor *= 2
+		}
+	} else if cs.processesLimitFactor >= 2 {
+		cs.processesLimitFactor /= 2
+	}
+	rs.MoreProcessesSignal = nil
+}
+
 type received struct {
 	Search *string
-	State *clientState
+	State *recvState
 }
 
 func(wc *wclient) waitfor_messages() { // read from client
@@ -87,8 +107,9 @@ func(wc *wclient) waitfor_updates() { // write to  client
 			var clientdiff *clientState
 			if rd != nil {
 				if rd.State != nil {
-					wc.fullState.Merge(*rd.State)
-					clientdiff = rd.State
+					rd.State.MergeClient(&wc.fullState)
+					wc.fullState.Merge(rd.State.clientState)
+					clientdiff = &rd.State.clientState
 				}
 				if rd.Search != nil {
 					var err error

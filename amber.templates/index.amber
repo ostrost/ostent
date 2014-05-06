@@ -216,12 +216,12 @@ html
 
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
-                  label.btn.btn-xx.btn-default.less[href="#psless"]
-                    input[type="checkbox"][name="psless"]
-                    | -
                   label.btn.btn-xx.btn-default.more[href="#psmore"]
                     input[type="checkbox"][name="psmore"]
                     | #{Data.ProcTable.MoreText}
+                  label.btn.btn-xx.btn-default.less[href="#psless"]
+                    input[type="checkbox"][name="psless"]
+                    | -
 
             div.panel-collapse.collapse.in#processes
               span#ps-table
