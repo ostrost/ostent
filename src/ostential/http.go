@@ -608,13 +608,13 @@ func getUpdates(req *http.Request, new_search bool, clientptr *clientState, clie
 	pslinks := ProcLinkattrs(linkattrs(req, base, "ps", _PSBIMAP))
 	dflinks := DiskLinkattrs(linkattrs(req, base, "df", _DFBIMAP))
 
-	orderedDisks := orderDisks(disks_copy, dflinks.Seq)
-
 	 pu.Disks = types.NewDataMeta()
 	*pu.Disks.More       = len(disks_copy)
 	*pu.Disks.Expandable = *pu.Disks.More > TOPROWS
 
 	if !*client.HideDisks {
+		orderedDisks := orderDisks(disks_copy, dflinks.Seq)
+
 		       if *client.CurrentDisksTab == DBYTES_TABID  { pu.DisksinBytes  = disksinBytes(orderedDisks,  client)
 		} else if *client.CurrentDisksTab == DINODES_TABID { pu.DisksinInodes = disksinInodes(orderedDisks, client)
 		}

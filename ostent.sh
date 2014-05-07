@@ -7,8 +7,9 @@ hadinstall=
 if ! test -e "$DEST" ; then
     hadinstall=-upgradelater
 
-    VERSION=v0.1.5
-    URL="https://OSTROST.COM/ostent/releases/latest/$(uname -sm)/ostent"
+    LATEST=https://github.com/rzab/ostent/releases/latest # Location header -> basename of it == version
+    VERSION=$(curl -sSI $LATEST | awk -F:\  '$1 == "Location" { L=$2 } END { sub(/\r$/, "", L); sub(/^.*\//, "", L); print L }')
+
     URL="https://github.com/rzab/ostent/releases/download/$VERSION/$(uname -sm | tr \  .)"
 
     curl -sSL --create-dirs -o "$DEST" "$URL"
