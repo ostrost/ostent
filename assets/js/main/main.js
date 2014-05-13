@@ -2,51 +2,6 @@
 // requires backbone.js
 // requires jquery.js
 
-var stateClass = React.createClass({
-    getInitialState: function() { return {V: this.props.initialValue}; },
-    render: function() {
-	return (
-            React.DOM.span(null, this.state.V, this.props.append)
-	);
-    }
-});
-function xlabel_colorPercent(p) {
-    return "label label-"+ _xcolorPercent(p);
-}
-function _xcolorPercent(p) {
-    if (p > 90) { return "danger";  }
-    if (p > 80) { return "warning"; }
-    if (p > 20) { return "info";    }
-    return "success";
-}
-var percentClass = React.createClass({
-    getInitialState: function() { return {V: this.props.initialValue}; },
-    render: function() {
-	return (
-            React.DOM.span({className:xlabel_colorPercent(this.state.V)}, this.state.V, '%')
-	);
-    }
-});
-
-function newState(ID) {
-    var node = document.getElementById(ID);
-    n = new stateClass({
-	elementID:    node,
-	initialValue: node.innerHTML
-    });
-    return React.renderComponent(n, n.props.elementID);
-    return n;
-}
-function newPercent(ID) {
-    var node = document.getElementById(ID);
-    n = new percentClass({
-	elementID:    node,
-        initialValue: ''
-    });
-    // React.renderComponent(n, n.props.elementID);
-    return n;
-}
-
 function default_button(btn) {
     btn.addClass('btn-default');
     btn.removeClass('btn-primary');
