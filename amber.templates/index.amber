@@ -13,6 +13,7 @@ html
 
     script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/bootstrap/3.1.1/bootstrap.min.js"]
     script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/react/0.10.0/react.min.js"]
+    //- script[type="text/javascript"][charset="utf-8"][src="http://fb.me/react-0.10.0.js"]
 
     script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/underscore/1.6.0/underscore-min.js"]
     script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/backbone/1.1.2/backbone-min.js"]

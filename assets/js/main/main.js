@@ -34,7 +34,7 @@ function newState(ID) {
 	elementID:    node,
 	initialValue: node.innerHTML
     });
-    React.renderComponent(n, n.props.elementID);
+    return React.renderComponent(n, n.props.elementID);
     return n;
 }
 function newPercent(ID) {
@@ -172,43 +172,38 @@ function update(currentState, updatables, inlines) {
 	}
     }
 
-    var    cpuTable     = cpuTableClass       (null); // from gen/jscript.js
-    var   procTable     = procTableClass      (null); // from gen/jscript.js
-
-    var disksinBytes    = disksinBytesClass   (null); // from gen/jscript.js
-    var disksinInodes   = disksinInodesClass  (null); // from gen/jscript.js
-
-    var    ifsTable     = ifsTableClass       (null); // from gen/jscript.js
-    var ifsPacketsTable = ifsPacketsTableClass(null); // from gen/jscript.js
-    var ifsErrorsTable  = ifsErrorsTableClass (null); // from gen/jscript.js
-
-    React.renderComponent(procTable,       document.getElementById('ps-table'));
-
-    React.renderComponent(disksinBytes,    document.getElementById('df-table'));
-    React.renderComponent(disksinInodes,   document.getElementById('dfi-table'));
-
-    React.renderComponent(cpuTable,        document.getElementById('cpu-table'));
-    React.renderComponent(ifsTable,        document.getElementById('ifs-table'));
-    React.renderComponent(ifsPacketsTable, document.getElementById('ifs-packets-table'));
-    React.renderComponent(ifsErrorsTable,  document.getElementById('ifs-errors-table'));
+    // all *Class defined in gen/jscript.js
+    var   procTable     = React.renderComponent(procTableClass      (null), document.getElementById('ps-table'));
+    var disksinBytes    = React.renderComponent(disksinBytesClass   (null), document.getElementById('df-table'));
+    var disksinInodes   = React.renderComponent(disksinInodesClass  (null), document.getElementById('dfi-table'));
+    var    cpuTable     = React.renderComponent(cpuTableClass       (null), document.getElementById('cpu-table'));
+    var    ifsTable     = React.renderComponent(ifsTableClass       (null), document.getElementById('ifs-table'));
+    var ifsPacketsTable = React.renderComponent(ifsPacketsTableClass(null), document.getElementById('ifs-packets-table'));
+    var ifsErrorsTable  = React.renderComponent(ifsErrorsTableClass (null), document.getElementById('ifs-errors-table'));
 
     var onmessage = function(event) {
 	var data = JSON.parse(event.data);
 
-        procTable.setState(data.ProcTable);
+        var setState = function(obj, data) {
+            if (data !== undefined) { // null
+                obj.setState(data);
+            }
+        };
+
+        setState(procTable, data.ProcTable);
 
 	var bytestate = {DisksinBytes: data.DisksinBytes};
 	if (data.DiskLinks !== undefined) { bytestate.DiskLinks = data.DiskLinks; }
-	disksinBytes.setState(bytestate);
+	setState(disksinBytes, bytestate);
 
 	var inodestate = {DisksinInodes: data.DisksinInodes};
 	if (data.DiskLinks !== undefined) { inodestate.DiskLinks = data.DiskLinks; }
-	disksinInodes.setState(inodestate);
+	setState(disksinInodes, inodestate);
 
-        cpuTable.setState(data.CPU);
-        ifsTable.setState(data.InterfacesBytes);
-	ifsErrorsTable .setState(data.InterfacesErrors);
-	ifsPacketsTable.setState(data.InterfacesPackets);
+        setState(cpuTable, data.CPU);
+        setState(ifsTable, data.InterfacesBytes);
+	setState(ifsErrorsTable,  data.InterfacesErrors);
+	setState(ifsPacketsTable, data.InterfacesPackets);
 
 	inlines.About.Hostname  .setState({V: data.About.HostnameHTML }); // TODO there could be real html
 	inlines.About.IP        .setState({V: data.About.IP        });
@@ -219,15 +214,15 @@ function update(currentState, updatables, inlines) {
 	inlines.RAM.Used        .setState({V: data.RAM.Used        });
 	inlines.RAM.Total       .setState({V: data.RAM.Total       });
 
-	React.renderComponent(inlines.RAM.UsePercent, inlines.RAM.UsePercent.props.elementID);
-	inlines.RAM.UsePercent  .setState({V: data.RAM.UsePercent  });
+	var x = React.renderComponent(inlines.RAM.UsePercent, inlines.RAM.UsePercent.props.elementID);
+	x.setState({V: data.RAM.UsePercent  });
 
 	inlines.Swap.Free       .setState({V: data.Swap.Free       });
 	inlines.Swap.Used       .setState({V: data.Swap.Used       });
 	inlines.Swap.Total      .setState({V: data.Swap.Total      });
 
-        React.renderComponent(inlines.Swap.UsePercent, inlines.Swap.UsePercent.props.elementID);
-	inlines.Swap.UsePercent .setState({V: data.Swap.UsePercent });
+        var y = React.renderComponent(inlines.Swap.UsePercent, inlines.Swap.UsePercent.props.elementID);
+	y.setState({V: data.Swap.UsePercent });
 
         currentState = _.extend(currentState, data.ClientState);
         data.ClientState = currentState;
