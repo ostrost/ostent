@@ -236,8 +236,9 @@ function update(currentState, updatables, inlines) {
     websocket = newwebsocket(onmessage);
 }
 
-var HeaderView = Backbone.View.extend({
-    events: { 'click': 'header_click' },
+var CollapseView = Backbone.View.extend({
+    hidden: function() { return this.model.attributes.Hide; },
+
     initialize: function() {
 	this.listenTo(this.model, 'change:Hide', this.redisplay_panel);
         this.init_target();
@@ -249,13 +250,15 @@ var HeaderView = Backbone.View.extend({
     },
     redisplay_panel: function() {
 	_.map(this.model.attributes.target, function(t) {
-            $(t).collapse(this.model.hidden() ? 'hide' : 'show');
+            $(t).collapse(this.hidden() ? 'hide' : 'show');
 	}, this);
     },
     toggleHidden: function() {
 	return this.model.toggleHidden(this.model.attributes);
     },
-    header_click: function(e) {
+
+    events: {'click': 'collapse_click'},
+    collapse_click: function(e) {
 	websocket.sendState(this.toggleHidden());
         e.preventDefault();
     }
@@ -265,8 +268,9 @@ function empty(obj) {
     return obj === undefined || obj === null;
 }
 
-var ExpandButtonView = HeaderView.extend({
-    events: { 'click': 'expand_click' },
+var ExpandButtonView = CollapseView.extend({
+    expanded: function() { return this.model.attributes.Expand; },
+
     initialize_fromswitch: function() {
 	this.listenTo(this.model, 'change:More',       this.redisplay_more);
 	this.listenTo(this.model, 'change:Expandable', this.redisplay_expandable);
@@ -274,7 +278,7 @@ var ExpandButtonView = HeaderView.extend({
     initialize: function() {
         this.initialize_fromswitch();
 	this.listenTo(this.model, 'change:Expand',     this.change_expand);
-        HeaderView.prototype.initialize.call(this); // does this.init_target();
+        CollapseView.prototype.initialize.call(this); // does this.init_target();
     },
     change_expand: function() {
         this.redisplay_panel();
@@ -286,7 +290,7 @@ var ExpandButtonView = HeaderView.extend({
     },
     redisplay_expand: function() {
         var $expand_el = this.model.attributes.expand_el;
-        if (this.model.expanded()) {
+        if (this.expanded()) {
             primary_button($expand_el);
         } else {
             default_button($expand_el);
@@ -301,30 +305,31 @@ var ExpandButtonView = HeaderView.extend({
             $expand_el.removeClass('disabled');
         }
     },
+    toggleExpandedState: function() {
+        var te = this.model.toggleExpanded; //this.toggleExpanded !== undefined ? this.toggleExpanded : this.model.toggleExpanded;
+	return te(this.model.attributes);
+    },
+
+    events: {'click': 'expand_click'},
     expand_click: function(e) {
 	var clicked = $(e.target);
         if (clicked.is(this.model.attributes.header_el)) { // header clicked
-            this.header_click(e);
+            this.collapse_click(e);
             return;
         }
 
 	var newState = this.toggleExpandedState();
-	if (this.model.hidden()) { // if the panel was hidden by the header link
+	if (this.hidden()) { // if the panel was hidden by the header link
             newState = _.extend(newState, this.toggleHidden());
 	}
 	websocket.sendState(newState);
-    },
-    toggleExpandedState: function() {
-        var te = this.model.toggleExpanded; //this.toggleExpanded !== undefined ? this.toggleExpanded : this.model.toggleExpanded;
-	return te(this.model.attributes);
     }
 });
 
-var SwitchView = HeaderView.extend(ExpandButtonView.prototype).extend({
-    events: { 'click': 'switch_click' },
+var SwitchView = CollapseView.extend(ExpandButtonView.prototype).extend({
     initialize: function() {
-        // HeaderView.prototype.initialize.call(this); // DO NOT HeaderView.initialize
-	this.listenTo(this.model, 'change:Hide',       this.change_switch); // <- as in HeaderView.initialize
+        // CollapseView.prototype.initialize.call(this); // DO NOT CollapseView.initialize
+	this.listenTo(this.model, 'change:Hide',       this.change_switch); // <- as in CollapseView.initialize
 	this.listenTo(this.model, 'change:Expand',     this.change_switch); // <- as in ExpandButton.initialize
 	this.listenTo(this.model, 'change:CurrentTab', this.change_switch);
         ExpandButtonView.prototype.initialize_fromswitch.call(this);
@@ -360,17 +365,19 @@ var SwitchView = HeaderView.extend(ExpandButtonView.prototype).extend({
         }, this);
     },
     change_switch: function() {
-        if (this.model.hidden()) {
+        if (this.hidden()) {
             this.redisplay_panel();
         }
         this.redisplay_tabs();
         this.redisplay_buttons();
         this.redisplay_expand(this.model.attributes.expand_el);
     },
+
+    events: {'click': 'switch_click'},
     switch_click: function(e) {
 	var clicked = $(e.target);
         if (clicked.is(this.model.attributes.header_el)) { // header clicked
-            this.header_click(e);
+            this.collapse_click(e);
             return;
         } else if (clicked.is(this.model.attributes.expand_el)) {
             this.expand_click(e);
@@ -380,7 +387,7 @@ var SwitchView = HeaderView.extend(ExpandButtonView.prototype).extend({
         var newtab_id = +$( clicked.attr('href') ).attr('data-tabid'); // THIS. +string makes an int
         var newState = this.model.setTabState(newtab_id);
 
-	if (this.model.hidden()) { // if the panel was hidden by the header link
+	if (this.hidden()) { // if the panel was hidden by the header link
             newState = _.extend(newState, this.toggleHidden());
 	}
 	websocket.sendState(newState);
@@ -389,9 +396,7 @@ var SwitchView = HeaderView.extend(ExpandButtonView.prototype).extend({
 
 function SwitchModel(self) {
     var easy = {};
-    easy.hidden   = function() { return this.attributes.Hide;       }; // return this.attributes[self.Attribute_Hide];
-    easy.expanded = function() { return this.attributes.Expand;     }; // return this.attributes[self.Attribute_Expand];
-    easy.tabid    = function() { return this.attributes.CurrentTab; }; // return this.attributes[self.Attribute_CurrentTab];
+    easy.tabid = function() { return this.attributes.CurrentTab; }; // return this.attributes[self.Attribute_CurrentTab];
 
     self = _.extend(self, easy);
     self.modelAttributes = function(data) {
@@ -426,14 +431,10 @@ var NetworkSwitchModel = SwitchModel({
 });
 
 var ExpandCPUModel = Updatables.declareModel(function() {
-    var self = {};
-    self.hidden   = function() { return this.attributes.Hide;   }; // return this.attributes[self.Attribute_Hide];
-    self.expanded = function() { return this.attributes.Expand; }; // return this.attributes[self.Attribute_Expand];
-
-    self = _.extend(self, {
+    var self = {
         Attribute_Expand: 'ExpandCPU',
         Attribute_Hide:   'HideCPU'
-    });
+    };
     self.modelAttributes = function(data) {
         var r = {
             Hide:       data.ClientState[self.Attribute_Hide],
@@ -455,12 +456,9 @@ var ExpandCPUModel = Updatables.declareModel(function() {
 });
 
 var ProcessesModel = Updatables.declareModel(function() {
-    var self = {};
-    self.hidden = function() { return this.attributes.Hide; };
-
-    self = _.extend(self, {
+    var self = {
         Attribute_Hide: 'HideProcesses'
-    });
+    };
     self.modelAttributes = function(data) {
         var r = {
             Hide: data.ClientState[self.Attribute_Hide]
@@ -481,10 +479,9 @@ var ProcessesModel = Updatables.declareModel(function() {
     return self;
 });
 
-var ProcessesView = HeaderView.extend({
-    events: { 'click': 'proc_click' },
+var ProcessesView = CollapseView.extend({
     initialize: function() {
-        HeaderView.prototype.initialize.call(this);
+        CollapseView.prototype.initialize.call(this);
 	this.listenTo(this.model, 'change:MoreText',      this.change_moretext);
 	this.listenTo(this.model, 'change:NotExpandable', this.change_notexpandable);
     },
@@ -500,10 +497,12 @@ var ProcessesView = HeaderView.extend({
         var $more_el = this.model.attributes.more_el;
         $more_el.text(this.model.attributes.MoreText);
     },
+
+    events: {'click': 'proc_click'},
     proc_click: function(e) {
 	var clicked = $(e.target);
         if (clicked.is(this.model.attributes.header_el)) { // header clicked
-            this.header_click(e);
+            this.collapse_click(e);
             return;
         }
         do {
@@ -516,7 +515,7 @@ var ProcessesView = HeaderView.extend({
                 break;
             }
             var newState = this.model[func]();
-            if (this.model.hidden()) { // if the panel was hidden by the header link
+            if (this.hidden()) { // if the panel was hidden by the header link
                 newState = _.extend(newState, this.toggleHidden());
             }
             websocket.sendState(newState);
@@ -543,15 +542,12 @@ function ready() {
 
     var updatables = Updatables(Data);
 
-    new HeaderView({ // MEMORY
+    new CollapseView({ // MEMORY
 	el: $('header a[href="#memory"]'),
 	model: updatables.make(Updatables.declareModel(function () {
-            var self = {};
-            self.hidden = function() { return this.attributes.Hide; };
-
-            self = _.extend(self, {
+            var self = {
                 Attribute_Hide: 'HideMemory'
-            });
+            };
             self.modelAttributes = function(data) {
                 return {
                     Hide: data.ClientState[self.Attribute_Hide]
