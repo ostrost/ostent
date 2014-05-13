@@ -228,7 +228,10 @@ function update(currentState, updatables, inlines) {
         data.ClientState = currentState;
         updatables.set(data);
 
-        $('span .tooltipable').tooltip(); // update the tooltips
+        // update the tooltips
+        // $('span .tooltipable').tooltip();
+        $('span .tooltipable').popover({trigger: 'hover focus'});
+        $('span .tooltipabledots').popover(); // the clickable dots
     };
     websocket = newwebsocket(onmessage);
 }
@@ -524,6 +527,20 @@ var ProcessesView = HeaderView.extend({
 });
 
 function ready() {
+    // $('span .tooltipable').tooltip();
+    $('span .tooltipable').popover({trigger: 'hover focus'});
+    $('span .tooltipabledots').popover(); // the clickable dots
+
+    $('body').on('click', function (e) { // hide the popovers on click outside
+        $('span .tooltipabledots').each(function () {
+            //the 'is' for buttons that trigger popups
+            //the 'has' for icons within a button that triggers a popup
+            if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                $(this).popover('hide');
+            }
+        });
+    });
+
     var updatables = Updatables(Data);
 
     new HeaderView({ // MEMORY
@@ -572,20 +589,6 @@ function ready() {
             more_el: $('label.more[href="#psmore"]'),
             less_el: $('label.less[href="#psless"]')
         });
-
-    /* $('label.all').tooltip({
-	container: 'body',
-	placement: 'left',
-	trigger: 'click'
-    });
-    $('label.all').tooltip('show');
-    $(window).resize(function() {
-	$('label.all').tooltip('show');
-    });
-    $('.tooltip .tooltip-arrow').addClass('ii-tooltip-arrow');
-    $('.tooltip .tooltip-inner').addClass('ii-tooltip-inner'); // */
-
-    $('span .tooltipable').tooltip();
 
     update(Data.ClientState, updatables, {
 	About: { Hostname:   newState('Data.About.Hostname'),

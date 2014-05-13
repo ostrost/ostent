@@ -285,9 +285,13 @@ func tooltipable(limit int, devname string) template.HTML {
 		shortdevname = devname[:limit]
 	}
 	short := template.HTMLEscapeString(shortdevname)
-	s := template.HTML(fmt.Sprintf(`
-<span title="%s" class="tooltipable" data-toggle="tooltip" data-placement="auto left">%s<span class="inlinecode">...</span></span>`,
-		title_attr, short))
+	s := template.HTML(fmt.Sprintf(`<span><span class="tooltipable" data-placement="auto left"`+
+//		` data-toggle="tooltip" title`+
+//		` data-toggle="popover" data-trigger="hover focus click"`+
+//		` data-toggle="popover" data-trigger="click"`+
+		` data-content`+
+		`="%s">%s</span><span class="tooltipabledots inlinecode" data-placement="auto left" data-content="%s">...</span></span>`,
+		title_attr, short, title_attr))
 	return s
 }
 
