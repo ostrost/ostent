@@ -227,12 +227,10 @@ func colorPercent(p uint) string {
 }
 
 type memory struct {
-	Total       string
-	Used        string
-	Free        string
-	UsePercent  string
-
-	UsePercentClass string
+	Total          string
+	Used           string
+	Free           string
+	UsePercentHTML template.HTML
 }
 
 type diskInfo struct {

@@ -48,7 +48,7 @@ env = Environment(ENV={'PATH': os.environ['PATH'],
 })
 
 assets    = (Dir('assets/'),              Files('assets/'))
-templates = ('templates.html/index.html', Files('templates.html/'))
+templates = ('templates.html/index.html', 'templates.html/usepercent.html', Files('templates.html/'))
 Default(env.Clone(TFLAGS= 'production')       .bindata('src/ostential/view/bindata.production.go',   source=templates))
 Default(env.Clone(TFLAGS='!production -debug').bindata('src/ostential/view/bindata.devel.go',        source=templates))
 Default(env.Clone(TFLAGS= 'production')       .bindata('src/ostential/assets/bindata.production.go', source=assets))
@@ -63,6 +63,12 @@ Default(env.amberpp(
     'templates.html/index.html',
     ('amber.templates/defines.amber',
      'amber.templates/index.amber',
+     amberpp)))
+
+Default(env.amberpp(
+    'templates.html/usepercent.html',
+    ('amber.templates/defines.amber',
+     'amber.templates/usepercent.amber',
      amberpp)))
 
 jscript_jsx = env.Clone(FLAG='-j').amberpp(

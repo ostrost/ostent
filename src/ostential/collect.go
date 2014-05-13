@@ -1,6 +1,7 @@
 package ostential
 import (
 	"ostential/types"
+	"ostential/view"
 
 	"os"
 	"fmt"
@@ -58,12 +59,19 @@ func _getmem(in sigar.Swap) memory {
 	total, approxtotal := humanBandback(in.Total)
 	used,  approxused  := humanBandback(in.Used)
 	usepercent := percent(approxused, approxtotal)
+
+	UPhtml, _ := view.UsePercentTemplate.Execute(struct{
+		Class, Value string
+	}{
+		Value: strconv.Itoa(int(usepercent)), // without "%"
+		Class: labelClass_colorPercent(usepercent),
+	})
+
 	return memory{
 		Total: total,
 		Used:  used,
 		Free:  humanB(in.Free),
-		UsePercent:      strconv.Itoa(int(usepercent)), // without "%"
-		UsePercentClass: labelClass_colorPercent(usepercent),
+		UsePercentHTML: UPhtml,
 	}
 }
 func getRAM() memory {

@@ -1,5 +1,9 @@
 [[/* -*- indent-tabs-mode: nil -*- */]]
 
+[[define "define_usepercent"]]
+  span[class=Class] #{Value}%
+[[end]]
+
 [[define "define_ifsrows"]]
   each $if in Data.InterfacesBytes.List
     |<tr key=#{$if.NameKey}>

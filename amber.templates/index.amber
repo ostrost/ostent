@@ -53,7 +53,7 @@ html
                       span[id="Data.RAM.Used"]
                         | #{Data.RAM.Used}
                       | &nbsp;
-                      sup[id="Data.RAM.UsePercent"] <span class=#{Data.RAM.UsePercentClass}>#{Data.RAM.UsePercent}%</span>
+                      sup[id="Data.RAM.UsePercent"] #{Data.RAM.UsePercentHTML}
                     td.digital
                       [id="Data.RAM.Total"]
                       | #{ Data.RAM.Total }
@@ -66,7 +66,7 @@ html
                       span[id="Data.Swap.Used"]
                         | #{Data.Swap.Used}
                       | &nbsp;
-                      sup[id="Data.Swap.UsePercent"] <span class=#{Data.Swap.UsePercentClass}>#{Data.Swap.UsePercent}%</span>
+                      sup[id="Data.Swap.UsePercent"] #{Data.Swap.UsePercentHTML}
                     td.digital
                       [id="Data.Swap.Total"]
                       | #{ Data.Swap.Total }
@@ -175,14 +175,14 @@ html
                 div.col-md-6.cell-right
                   span.code hostname:
                 div.col-md-6
-                  span.code[id="Data.About.Hostname"] #{ Data.About.HostnameHTML }
+                  span.code#About-Hostname #{ Data.About.HostnameHTML }
 
             li
               div.row
                 div.col-md-6.cell-right
                   span.code IPv4:
                 div.col-md-6
-                  span.code[id="Data.About.IP"] #{ Data.About.IP }
+                  span.code#About-IP #{ Data.About.IP }
 
             li
               div.row
@@ -196,14 +196,14 @@ html
                 div.col-md-6.cell-right
                   span.code uptime:
                 div.col-md-6
-                  span.codenobr[id="Data.System.Uptime"] #{ Data.System.Uptime }
+                  span.codenobr#System-Uptime #{ Data.System.Uptime }
 
             li
               div.row
                 div.col-md-6.cell-right
                   span.code loadavg:
                 div.col-md-6
-                  span.codenobr[id="Data.System.LA"] #{ Data.System.LA }
+                  span.codenobr#System-LA #{ Data.System.LA }
 
         div.block.col-md-8
           div.panel1

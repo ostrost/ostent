@@ -72,7 +72,12 @@ function Updatables(initial) {
                 el = el.add(a);
             });
         }
-        opt = _.extend(opt, modelClass.modelAttributes(initial)); // !
+        if (opt === undefined) {
+            opt = {};
+        }
+        var modinit = modelClass.modelAttributes(initial);
+        opt = _.extend(opt, modinit);            // !
+        opt = _.extend(opt, {initial: modinit}); // !
         var model = new modelClass(opt);
 	models.push(model);
 
@@ -164,7 +169,7 @@ function newwebsocket(onmessage) {
 }
 
 var websocket; // a global
-function update(currentState, updatables, inlines) {
+function update(currentState, updatables) {
     var params = location.search.substr(1).split("&");
     for (var i in params) {
 	if (params[i].split("=")[0] === "still") {
@@ -204,25 +209,6 @@ function update(currentState, updatables, inlines) {
         setState(ifsTable, data.InterfacesBytes);
 	setState(ifsErrorsTable,  data.InterfacesErrors);
 	setState(ifsPacketsTable, data.InterfacesPackets);
-
-	inlines.About.Hostname  .setState({V: data.About.HostnameHTML }); // TODO there could be real html
-	inlines.About.IP        .setState({V: data.About.IP        });
-	inlines.System.Uptime   .setState({V: data.System.Uptime   });
-	inlines.System.LA       .setState({V: data.System.LA       });
-
-	inlines.RAM.Free        .setState({V: data.RAM.Free        });
-	inlines.RAM.Used        .setState({V: data.RAM.Used        });
-	inlines.RAM.Total       .setState({V: data.RAM.Total       });
-
-	var x = React.renderComponent(inlines.RAM.UsePercent, inlines.RAM.UsePercent.props.elementID);
-	x.setState({V: data.RAM.UsePercent  });
-
-	inlines.Swap.Free       .setState({V: data.Swap.Free       });
-	inlines.Swap.Used       .setState({V: data.Swap.Used       });
-	inlines.Swap.Total      .setState({V: data.Swap.Total      });
-
-        var y = React.renderComponent(inlines.Swap.UsePercent, inlines.Swap.UsePercent.props.elementID);
-	y.setState({V: data.Swap.UsePercent });
 
         currentState = _.extend(currentState, data.ClientState);
         data.ClientState = currentState;
@@ -525,6 +511,21 @@ var ProcessesView = CollapseView.extend({
     }
 });
 
+var UpdateView = Backbone.View.extend({
+    events: {}, // sanity check
+    initialize: function() {
+	this.listenTo(this.model, 'change:'+ this.update_key(), this.change);
+    },
+    update_key: function() {
+        return _.keys(this.model.attributes.initial)[0];
+    },
+    change: function() {
+        var key = this.update_key();
+        var func = /HTML$/.test(key) ? 'html' : 'text';
+        this.$el[func](this.model.attributes[key]);
+    }
+});
+
 function ready() {
     // $('span .tooltipable').tooltip();
     $('span .tooltipable').popover({trigger: 'hover focus'});
@@ -586,24 +587,34 @@ function ready() {
             less_el: $('label.less[href="#psless"]')
         });
 
-    update(Data.ClientState, updatables, {
-	About: { Hostname:   newState('Data.About.Hostname'),
-                 IP:         newState('Data.About.IP')
-               },
-	System: { Uptime:    newState('Data.System.Uptime'),
-                  LA:        newState('Data.System.LA')
-		},
-	RAM: { Free:         newState('Data.RAM.Free'),
-               Used:         newState('Data.RAM.Used'),
-               UsePercent:   newPercent('Data.RAM.UsePercent'),
-               Total:        newState('Data.RAM.Total')
-             },
-	Swap: { Free:        newState('Data.Swap.Free'),
-                Used:        newState('Data.Swap.Used'),
-                UsePercent:  newPercent('Data.Swap.UsePercent'),
-                Total:       newState('Data.Swap.Total')
-              }
-    });
+    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {IP: data.About.IP}; }}),
+                    {}, UpdateView, {el: $('#About-IP')});
+    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {HostnameHTML: data.About.HostnameHTML}; }}),
+                    {}, UpdateView, {el: $('#About-Hostname')});
+    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Uptime: data.System.Uptime}; }}),
+                    {}, UpdateView, {el: $('#System-Uptime')});
+    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {LA: data.System.LA}; }}),
+                    {}, UpdateView, {el: $('#System-LA')});
+
+    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Free: data.RAM.Free}; }}),
+                    {}, UpdateView, {el: $('#Data.RAM.Free')});
+    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Used: data.RAM.Used}; }}),
+                    {}, UpdateView, {el: $('#Data.RAM.Used')});
+    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Total: data.RAM.Total}; }}),
+                    {}, UpdateView, {el: $('#Data.RAM.Total')});
+    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {UsePercentHTML: data.RAM.UsePercentHTML}; }}),
+                    {}, UpdateView, {el: $('#Data.RAM.UsePercent')});
+
+    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Free: data.Swap.Free}; }}),
+                    {}, UpdateView, {el: $('#Data.Swap.Free')});
+    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Used: data.Swap.Used}; }}),
+                    {}, UpdateView, {el: $('#Data.Swap.Used')});
+    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Total: data.Swap.Total}; }}),
+                    {}, UpdateView, {el: $('#Data.Swap.Used')});
+    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {UsePercentHTML: data.Swap.UsePercentHTML}; }}),
+                    {}, UpdateView, {el: $('#Data.Swap.UsePercent')});
+
+    update(Data.ClientState, updatables);
 }
 
 // Local Variables:
