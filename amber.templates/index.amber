@@ -2,7 +2,7 @@
 !!! 5
 html
   head
-    title #{Data.About.HostnameString} ostent
+    title #{Data.Generic.HostnameString} ostent
     meta[name="viewport"][content="width=device-width, initial-scale=1"]
 
     //- meta[itemprop="image"][content="/favicon.png"]
@@ -47,29 +47,20 @@ html
                 tbody
                   tr
                     td RAM
-                    td.digital[id="Data.RAM.Free"]
-                      | #{         Data.RAM.Free }
+                    td.digital#RAM-Free #{Data.RAM.Free}
                     td.digital
-                      span[id="Data.RAM.Used"]
-                        | #{Data.RAM.Used}
+                      span#RAM-Used #{Data.RAM.Used}
                       | &nbsp;
-                      sup[id="Data.RAM.UsePercent"] #{Data.RAM.UsePercentHTML}
-                    td.digital
-                      [id="Data.RAM.Total"]
-                      | #{ Data.RAM.Total }
+                      sup#RAM-UsePercent #{Data.RAM.UsePercentHTML}
+                    td.digital#RAM-Total #{Data.RAM.Total}
                   tr
                     td swap
+                    td.digital#swap-free #{Data.Swap.Free}
                     td.digital
-                      [id="Data.Swap.Free"]
-                      | #{ Data.Swap.Free }
-                    td.digital
-                      span[id="Data.Swap.Used"]
-                        | #{Data.Swap.Used}
+                      span#Swap-Used #{Data.Swap.Used}
                       | &nbsp;
-                      sup[id="Data.Swap.UsePercent"] #{Data.Swap.UsePercentHTML}
-                    td.digital
-                      [id="Data.Swap.Total"]
-                      | #{ Data.Swap.Total }
+                      sup#Swap-UsePercent #{Data.Swap.UsePercentHTML}
+                    td.digital#Swap-Total #{Data.Swap.Total}
 
         div.block.col-md-3
           div.panel1
@@ -175,35 +166,35 @@ html
                 div.col-md-6.cell-right
                   span.code hostname:
                 div.col-md-6
-                  span.code#About-Hostname #{ Data.About.HostnameHTML }
+                  span.code#generic-hostname #{Data.Generic.HostnameHTML}
 
             li
               div.row
                 div.col-md-6.cell-right
                   span.code IPv4:
                 div.col-md-6
-                  span.code#About-IP #{ Data.About.IP }
+                  span.code#generic-ip #{Data.Generic.IP}
 
             li
               div.row
                 div.col-md-6.cell-right
                   span.code OS:
                 div.col-md-6
-                  span.codenobr #{ Data.DISTRIBHTML }
+                  span.codenobr #{Data.DISTRIBHTML}
 
             li
               div.row
                 div.col-md-6.cell-right
                   span.code uptime:
                 div.col-md-6
-                  span.codenobr#System-Uptime #{ Data.System.Uptime }
+                  span.codenobr#generic-uptime #{Data.Generic.Uptime}
 
             li
               div.row
                 div.col-md-6.cell-right
                   span.code loadavg:
                 div.col-md-6
-                  span.codenobr#System-LA #{ Data.System.LA }
+                  span.codenobr#generic-la #{Data.Generic.LA}
 
         div.block.col-md-8
           div.panel1

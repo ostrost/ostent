@@ -452,11 +452,10 @@ type Previous struct {
 }
 
 type lastinfo struct {
-    About  about
-    System system
-	CPU    sigar.CpuList
-	RAM    memory
-	Swap   memory
+    Generic generic
+	CPU     sigar.CpuList
+	RAM     memory
+	Swap    memory
 	DiskList   []diskInfo
 	ProcList   []types.ProcInfo
 	Interfaces []InterfaceInfo
@@ -464,11 +463,10 @@ type lastinfo struct {
 }
 
 type PageData struct {
-    About     about
-    System    system
-	CPU       types.CPU
-	RAM       memory
-	Swap      memory
+    Generic generic
+	CPU     types.CPU
+	RAM     memory
+	Swap    memory
 
 	ProcTable ProcTable
 
@@ -490,8 +488,7 @@ type PageData struct {
     ClientState clientState
 }
 type pageUpdate struct {
-    About    about
-    System   system
+    Generic  generic
 
 	RAM      memory // TODO empty on HideMemory
 	Swap     memory // TODO empty on HideMemory
@@ -537,12 +534,11 @@ func collect() {
 	}
 
 	ifs, ip := NewInterfaces()
-	about := getAbout()
-	about.IP = ip
+	generic := getGeneric()
+	generic.IP = ip
 
 	lastInfo = lastinfo{
-		About:    about,
-		System:   getSystem(),
+		Generic:  generic,
 		RAM:      getRAM(),
 		Swap:     getSwap(),
 		DiskList: read_disks(),
@@ -593,10 +589,11 @@ func getUpdates(req *http.Request, new_search bool, clientptr *clientState, clie
 		copy(previousinterfaces_copy, lastInfo.Previous.Interfaces)
 
 		pu = pageUpdate{
-			About:  lastInfo.About,
-			System: lastInfo.System,
-			RAM:    lastInfo.RAM,
-			Swap:   lastInfo.Swap,
+			Generic: lastInfo.Generic,
+		}
+		if !*client.HideMemory {
+			pu.RAM  = lastInfo.RAM
+			pu.Swap = lastInfo.Swap
 		}
 		if !*client.HideCPU {
 			pu.CPU = lastInfo.CPUDelta(client)
@@ -667,11 +664,10 @@ func pageData(req *http.Request) PageData {
 
 	data := PageData{
 		ClientState: *updates.ClientState,
-		About:   updates.About,
-		System:  updates.System,
-		CPU:    *updates.CPU,
-		RAM:     updates.RAM,
-		Swap:    updates.Swap,
+		Generic:      updates.Generic,
+		CPU:         *updates.CPU,
+		RAM:          updates.RAM,
+		Swap:         updates.Swap,
 
 		DiskLinks:  dla,
 

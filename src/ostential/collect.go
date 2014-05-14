@@ -11,48 +11,42 @@ import (
 	"github.com/rzab/gosigar"
 )
 
-type about struct {
+type generic struct { // ex about
 	HostnameHTML   template.HTML
-	HostnameString string
+	HostnameString string // for page title
 	IP             string
+
+	// ex system
+	Uptime string
+//	La1    string
+//	La5    string
+//	La15   string
+	LA     string
 }
-func getAbout() about {
+
+func getGeneric() generic { // ex getAbout
 	hostname, err := os.Hostname()
-	if err != nil {
-		return about{}
+	if err == nil {
+		hostname = strings.Split(hostname, ".")[0]
 	}
-	hostname = strings.Split(hostname, ".")[0]
 	// IP, _ := netinterface_ipaddr()
-	return about{
+	g := generic{
 		HostnameString: hostname,
 		HostnameHTML: tooltipable(11, hostname),
 		// IP: IP,
 	}
-}
-
-type system struct {
-	Uptime string
-	La1    string
-	La5    string
-	La15   string
-	LA     string
-}
-func getSystem() system {
-	uptime := sigar.Uptime{}
-	uptime.Get()
-
-	s := system{
-		Uptime: formatUptime(uptime.Length),
-	}
+	uptime := sigar.Uptime{}; uptime.Get()
+	g.Uptime = formatUptime(uptime.Length)
 
 	la := sigar.LoadAverage{}
 	la.Get()
 
-	s.La1  = fmt.Sprintf("%.2f", la.One)
-	s.La5  = fmt.Sprintf("%.2f", la.Five)
-	s.La15 = fmt.Sprintf("%.2f", la.Fifteen)
-	s.LA   = fmt.Sprintf("%.2f %.2f %.2f", la.One, la.Five, la.Fifteen)
-	return s
+//	g.La1  = fmt.Sprintf("%.2f", la.One)
+//	g.La5  = fmt.Sprintf("%.2f", la.Five)
+//	g.La15 = fmt.Sprintf("%.2f", la.Fifteen)
+	g.LA   = fmt.Sprintf("%.2f %.2f %.2f", la.One, la.Five, la.Fifteen)
+
+	return g
 }
 
 func _getmem(in sigar.Swap) memory {
@@ -150,10 +144,12 @@ func read_procs() (procs []types.ProcInfo) {
 	for _, pid := range pls.List {
 
 		state := sigar.ProcState{}
+		// args  := sigar.ProcArgs{}
 		time  := sigar.ProcTime{}
 		mem   := sigar.ProcMem{}
 
 		if err := state.Get(pid); err != nil { continue }
+		// if err :=  args.Get(pid); err != nil { continue }
 		if err :=  time.Get(pid); err != nil { continue }
 		if err :=   mem.Get(pid); err != nil { continue }
 
@@ -162,10 +158,12 @@ func read_procs() (procs []types.ProcInfo) {
 			Priority: state.Priority,
 			Nice:     state.Nice,
 			Time:     time.Total,
-			Name:     procname(pid, state.Name), // proc_{darwin,linux}.go
+			// `procname' defined proc_{darwin,linux}.go
+			Name:     procname(pid, state.Name),
+			// Name:     strings.Join(append([]string{procname(pid, state.Name)}, args.List[1:]...), " "),
 			Uid:      state.Uid,
-			Size:       mem.Size,
-			Resident:   mem.Resident,
+			Size:     mem.Size,
+			Resident: mem.Resident,
 		})
 	}
 	return procs

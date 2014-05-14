@@ -93,7 +93,7 @@ func Serve(listen net.Listener, logfunc Logfunc, cb func(*Modern)) error {
 	m.Get("/",   index)
 	m.Get("/ws", slashws)
 
-	hostname := getAbout().HostnameString
+	hostname := getGeneric().HostnameString
 	logger.Printf("   %s\n", strings.Repeat("-", len(hostname) + 7))
 	if len(hostname) > 19 {
 		hostname = hostname[:16] +"..."

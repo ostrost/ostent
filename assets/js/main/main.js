@@ -542,32 +542,32 @@ function ready() {
             less_el: $('label.less[href="#psless"]')
         });
 
-    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {IP: data.About.IP}; }}),
-                    {}, UpdateView, {el: $('#About-IP')});
-    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {HostnameHTML: data.About.HostnameHTML}; }}),
-                    {}, UpdateView, {el: $('#About-Hostname')});
-    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Uptime: data.System.Uptime}; }}),
-                    {}, UpdateView, {el: $('#System-Uptime')});
-    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {LA: data.System.LA}; }}),
-                    {}, UpdateView, {el: $('#System-LA')});
+    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {IP: data.Generic.IP}; }}),
+                    {}, UpdateView, {el: $('#generic-ip')});
+    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {HostnameHTML: data.Generic.HostnameHTML}; }}),
+                    {}, UpdateView, {el: $('#generic-hostname')});
+    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Uptime: data.Generic.Uptime}; }}),
+                    {}, UpdateView, {el: $('#generic-uptime')});
+    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {LA: data.Generic.LA}; }}),
+                    {}, UpdateView, {el: $('#generic-la')});
 
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Free: data.RAM.Free}; }}),
-                    {}, UpdateView, {el: $('#Data.RAM.Free')});
+                    {}, UpdateView, {el: $('#RAM-Free')});
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Used: data.RAM.Used}; }}),
-                    {}, UpdateView, {el: $('#Data.RAM.Used')});
+                    {}, UpdateView, {el: $('#RAM-Used')});
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Total: data.RAM.Total}; }}),
-                    {}, UpdateView, {el: $('#Data.RAM.Total')});
+                    {}, UpdateView, {el: $('#RAM-Total')});
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {UsePercentHTML: data.RAM.UsePercentHTML}; }}),
-                    {}, UpdateView, {el: $('#Data.RAM.UsePercent')});
+                    {}, UpdateView, {el: $('#RAM-UsePercent')});
 
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Free: data.Swap.Free}; }}),
-                    {}, UpdateView, {el: $('#Data.Swap.Free')});
+                    {}, UpdateView, {el: $('#Swap-Free')});
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Used: data.Swap.Used}; }}),
-                    {}, UpdateView, {el: $('#Data.Swap.Used')});
+                    {}, UpdateView, {el: $('#Swap-Used')});
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Total: data.Swap.Total}; }}),
-                    {}, UpdateView, {el: $('#Data.Swap.Used')});
+                    {}, UpdateView, {el: $('#Swap-Used')});
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {UsePercentHTML: data.Swap.UsePercentHTML}; }}),
-                    {}, UpdateView, {el: $('#Data.Swap.UsePercent')});
+                    {}, UpdateView, {el: $('#Swap-UsePercent')});
 
     update(Data.ClientState, updatables);
 }
