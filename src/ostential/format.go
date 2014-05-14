@@ -26,6 +26,26 @@ func formatUptime(seconds float64) string { // "seconds" is expected to be sigar
 	return s
 }
 
+func humanUnitless(n uint64) string {
+	sizes := []string{"", "k", "M", "G", "T", "P", "E"}
+	if n < 10 {
+		return fmt.Sprintf("%d%s", n, sizes[0])
+	}
+	base := float64(1000)
+	e := math.Floor(math.Log(float64(n)) / math.Log(base))
+	pow := math.Pow(base, math.Floor(e))
+	val := float64(n) / pow
+	f := "%.0f"
+	if val < 10 {
+		f = "%.1f"
+	}
+	s := fmt.Sprintf(f+"%s", val, sizes[int(e)])
+	if s[0] == ' ' {
+		panic(fmt.Errorf("UNEXPECTED: starts with a space: \"%v\"", s))
+	}
+	return s
+}
+
 func humanBmany(n uint64, bits ...bool) (string, string, float64, float64) { // almost humanize.IBytes
 	sizes    := []string{"B", "K", "M", "G", "T", "P", "E"}
 	if len(bits) > 0 && bits[0] { // bits instead of bytes
@@ -48,6 +68,7 @@ func humanBmany(n uint64, bits ...bool) (string, string, float64, float64) { // 
 	}
 	return s, f, val, pow
 }
+
 func humanbits(n uint64) string {
 	s, _, _, _ := humanBmany(n, true); return s
 }

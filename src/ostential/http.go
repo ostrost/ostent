@@ -36,7 +36,10 @@ func unitless(s string) string {
 	return s
 }
 func ps(nowin, previn uint) string {
-	return unitless(bps(1, nowin, previn))
+	if nowin < previn { // counters got reset
+		return ""
+	}
+	return humanUnitless(uint64(nowin - previn))
 }
 
 const TOPROWS = 2
@@ -78,8 +81,8 @@ func (_ interfaceInoutPackets) InOut(ii InterfaceInfo) (uint, uint) {
 type interfaceNumericals struct{interfaceInout}
 func (ie interfaceNumericals) Current(id *types.Interface, ii InterfaceInfo) {
 	in, out := ie.InOut(ii)
-	id.In  = unitless(humanB(uint64(in)))
-	id.Out = unitless(humanB(uint64(out)))
+	id.In  = humanUnitless(uint64(in))
+	id.Out = humanUnitless(uint64(out))
 }
 func (ie interfaceNumericals) Delta(id *types.Interface, ii, previousi InterfaceInfo) {
 	in, out                   := ie.InOut(ii)
