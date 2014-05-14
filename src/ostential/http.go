@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"sort"
 	"sync"
-	"bytes"
 	"os/user"
 	"net/url"
 	"net/http"
@@ -259,41 +258,19 @@ func valuesSet(req *http.Request, base url.Values, pname string, bimap types.Bis
 	return bimap.Default_seq
 }
 
-var (
-	_attr_start = "<span title=\""
-	_attr_end   = "\" />"
-	_attr_template = template.Must(template.New("attr").Parse(_attr_start +"{{.}}"+ _attr_end))
-)
-
-func attribute_escape(data string) string {
-	if _template, err := _attr_template.Clone(); err == nil {
-		buf := new(bytes.Buffer)
-		if err := _template.Execute(buf, data); err == nil {
-			s := buf.String()
-			return s[len(_attr_start):len(s) - len(_attr_end)]
+func tooltipable(limit int, full string) template.HTML {
+	if len(full) > limit {
+		short := full[:limit]
+		if html, err := view.TooltipableTemplate.Execute(struct {
+			Full, Short string
+		}{
+			Full: full,
+			Short: short,
+		}); err == nil {
+			return html
 		}
 	}
-	return ""
-}
-
-func tooltipable(limit int, devname string) template.HTML {
-	if len(devname) <= limit {
-		return template.HTML(devname)
-	}
-	title_attr := attribute_escape(devname)
-	shortdevname := devname
-	if len(devname) > limit {
-		shortdevname = devname[:limit]
-	}
-	short := template.HTMLEscapeString(shortdevname)
-	s := template.HTML(fmt.Sprintf(`<span><span class="tooltipable" data-placement="auto left"`+
-//		` data-toggle="tooltip" title`+
-//		` data-toggle="popover" data-trigger="hover focus click"`+
-//		` data-toggle="popover" data-trigger="click"`+
-		` data-content`+
-		`="%s">%s</span><span class="tooltipabledots inlinecode" data-placement="auto left" data-content="%s">...</span></span>`,
-		title_attr, short, title_attr))
-	return s
+	return template.HTML(template.HTMLEscapeString(full))
 }
 
 func orderDisks(disks []diskInfo, seq types.SEQ) []diskInfo {

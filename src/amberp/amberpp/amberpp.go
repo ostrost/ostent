@@ -185,6 +185,9 @@ func main() {
 		b, err := ioutil.ReadFile(definesFile)
 		check(err)
 		inputText += compile(b, prettyPrint)
+		if inputText[len(inputText) - 1] == '\n' { // amber does add this '\n', which is fine for the end of a file, which inputText is not
+			inputText = inputText[:len(inputText) - 1]
+		}
 	}
 	b, err := ioutil.ReadFile(inputFile)
 	check(err)

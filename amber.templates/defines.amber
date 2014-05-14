@@ -4,6 +4,19 @@
   span[class=Class] #{Value}%
 [[end]]
 
+[[define "define_tooltipable"]]
+  span
+    span.tooltipable
+      //- [data-toggle="tooltip"|"popover"] // done in js now
+      [data-placement="auto left"]
+      [data-content=Full]
+      | #{Short}
+    span.tooltipabledots.inlinecode
+      [data-placement="auto left"]
+      [data-content=Full]
+      | ...
+[[end]]
+
 [[define "define_ifsrows"]]
   each $if in Data.InterfacesBytes.List
     |<tr key=#{$if.NameKey}>

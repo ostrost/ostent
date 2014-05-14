@@ -47,8 +47,11 @@ env = Environment(ENV={'PATH': os.environ['PATH'],
     'amberpp': Builder(generator=generator('{source[2]} -defines {source[0]} $FLAG -output $TARGET {source[1]}')),
 })
 
-assets    = (Dir('assets/'),              Files('assets/'))
-templates = ('templates.html/index.html', 'templates.html/usepercent.html', Files('templates.html/'))
+assets    = (Dir('assets/'), Files('assets/'))
+templates = ('templates.html/index.html',
+             'templates.html/usepercent.html',
+             'templates.html/tooltipable.html',
+             Files('templates.html/'))
 Default(env.Clone(TFLAGS= 'production')       .bindata('src/ostential/view/bindata.production.go',   source=templates))
 Default(env.Clone(TFLAGS='!production -debug').bindata('src/ostential/view/bindata.devel.go',        source=templates))
 Default(env.Clone(TFLAGS= 'production')       .bindata('src/ostential/assets/bindata.production.go', source=assets))
@@ -69,6 +72,12 @@ Default(env.amberpp(
     'templates.html/usepercent.html',
     ('amber.templates/defines.amber',
      'amber.templates/usepercent.amber',
+     amberpp)))
+
+Default(env.amberpp(
+    'templates.html/tooltipable.html',
+    ('amber.templates/defines.amber',
+     'amber.templates/tooltipable.amber',
      amberpp)))
 
 jscript_jsx = env.Clone(FLAG='-j').amberpp(

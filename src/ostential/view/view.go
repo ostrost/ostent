@@ -15,7 +15,8 @@ type stringTemplate struct {
 	*template.Template
 }
 
-var UsePercentTemplate = mustTemplate("usepercent.html")
+var UsePercentTemplate  = mustTemplate("usepercent.html")
+var TooltipableTemplate = mustTemplate("tooltipable.html")
 
 func mustTemplate(filename string) stringTemplate {
 	reader, ok := _bindata[filename]

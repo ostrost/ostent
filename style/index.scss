@@ -138,3 +138,7 @@ table thead tr .header a {
 .badge-info    { @extend .badge; background: #5bc0de; }
 .badge-warning { @extend .badge; background: #f0ad4e; }
 .badge-danger  { @extend .badge; background: #d9534f; }
+
+span.tooltipabledots {
+  cursor: pointer;
+}

@@ -1,4 +1,3 @@
-
 /** @jsx React.DOM */ function emptyK(obj, key) {
 return (obj      === undefined ||
 	obj      === null      ||
