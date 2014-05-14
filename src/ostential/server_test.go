@@ -18,12 +18,12 @@ func TestParseArgs(t *testing.T) {
 		{ "127",            "127.0.0.1:"+ defport},
 		{ "127.1",          "127.1:"    + defport},
 	} {
-		cmp, err := parseaddr(v.a, defport)
-		if err != nil {
+		bv := newBind(v.a, defport) // double Set, should be ok
+		if err := bv.Set(v.a); err != nil {
 			t.Error(err)
 		}
-		if cmp != v.cmp {
-			t.Errorf("Mismatch: parseaddr(%v) == %v != %v\n", v.a, v.cmp, cmp)
+		if bv.string != v.cmp {
+			t.Errorf("Mismatch: bindFlag %v == %v != %v\n", v.a, v.cmp, bv.string)
 		}
 	}
 }

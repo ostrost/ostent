@@ -18,56 +18,50 @@ import (
 	"github.com/codegangsta/martini"
 )
 
-func parseaddr(bind_spec, defport string) (string, error) {
-	if !strings.Contains(bind_spec, ":") {
-		bind_spec = ":" + bind_spec
+type bindValue struct {
+	string
+	defport string // const
+	Host, Port string // available after flag.Parse()
+}
+
+func newBind(defstring, defport string) bindValue {
+	bv := bindValue{defport: defport}
+	bv.Set(defstring)
+	return bv
+}
+
+// satisfying flag.Value interface
+func(bv bindValue) String() string { return string(bv.string); }
+func(bv *bindValue) Set(input string) error {
+	if !strings.Contains(input, ":") {
+		input = ":" + input
 	}
-	host, port, err := net.SplitHostPort(bind_spec)
+	var err error
+	bv.Host, bv.Port, err = net.SplitHostPort(input)
 	if err != nil {
-		return "", err
+		return err
 	}
-	if host == "*" {
-		host = ""
-	} else if port == "127" {
-		host = "127.0.0.1"
-		port = defport
+	if bv.Host == "*" {
+		bv.Host = ""
+	} else if bv.Port == "127" {
+		bv.Host = "127.0.0.1"
+		bv.Port = bv.defport
 	}
-	if _, err = net.LookupPort("tcp", port); err != nil {
-		if host != "" {
-			return "", err
+	if _, err = net.LookupPort("tcp", bv.Port); err != nil {
+		if bv.Host != "" {
+			return err
 		}
-		host = port
-		port = defport
+		bv.Host, bv.Port = bv.Port, bv.defport
 	}
-	if err = os.Setenv("HOST", host); err != nil { return "", err }
-	if err = os.Setenv("PORT", port); err != nil { return "", err }
 
-	return host + ":" + port, nil
+	bv.string = bv.Host + ":" + bv.Port
+	return nil
 }
 
-var ZEROTIME, _ = time.Parse("15:04:05", "00:00:00")
-var opt_bindaddr string
-const DEFPORT = "8050"
+var BindFlag = newBind(":8050", "8050")
 func init() {
-	flag.StringVar(&opt_bindaddr, "b",    ":"+ DEFPORT, "Bind address")
-	flag.StringVar(&opt_bindaddr, "bind", ":"+ DEFPORT, "Bind address")
-}
-
-type FlagError struct {
-	error
-}
-func Listen() (net.Listener, error) {
-	// flags must be parsed by now
-
-	bindaddr, err := parseaddr(opt_bindaddr, DEFPORT)
-	if err != nil {
-		return nil, FlagError{err}
-	}
-	listen, err := net.Listen("tcp", bindaddr)
-	if err != nil {
-		return nil, err
-	}
-	return listen, nil
+	flag.Var(&BindFlag, "b",    "Bind address")
+	flag.Var(&BindFlag, "bind", "Bind address")
 }
 
 func newModern() *Modern { // customized martini.Classic
@@ -201,6 +195,8 @@ func LogAll(res http.ResponseWriter, req *http.Request, c martini.Context, logge
 	c.Next()
 	logThis(start, res, req, logger)
 }
+
+var ZEROTIME, _ = time.Parse("15:04:05", "00:00:00")
 
 func logThis(start time.Time, res http.ResponseWriter, req *http.Request, logger *log.Logger) {
 	diff := time.Since(start)

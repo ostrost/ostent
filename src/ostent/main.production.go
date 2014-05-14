@@ -5,6 +5,7 @@ import (
 	"ostential"
 
 	"os"
+	"net"
 	"log"
 	"fmt"
 	"flag"
@@ -110,6 +111,9 @@ func main() {
 
 	flag.Parse()
 
+	os.Setenv("HOST", ostential.BindFlag.Host) // for martini
+	os.Setenv("PORT", ostential.BindFlag.Port) // for martini
+
 	had_upgrade := false
 	if !upgradelater && os.Getenv("GOAGAIN_PPID") == "" { // not after gone again
 		log.Println("Initial check for upgrades; run with -ugradelater to disable")
@@ -123,13 +127,8 @@ func main() {
 
 	listen, err := goagain.Listener()
 	if err != nil {
-		listen, err = ostential.Listen()
+		listen, err = net.Listen("tcp", ostential.BindFlag.String())
 		if err != nil {
-			if _, ok := err.(ostential.FlagError); ok {
-				flag.Usage()
-				os.Exit(2)
-				return
-			}
 			log.Fatalln(err)
 		}
 
