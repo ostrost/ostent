@@ -87,22 +87,23 @@ type DisksinInodes struct {
 // }
 
 type Attr struct {
-	Href, Class string
+	Href, Class, CaretClass string
 }
 func(la Linkattrs) Attr(seq SEQ) Attr {
 	base := url.Values{}
 	for k, v := range la.Base {
 		base[k] = v
 	}
-	ascp := la._attr(base, seq)
-	class := "state"
-	if ascp != nil {
-		class += " "+ map[bool]string{true: "asc", false: "desc"}[*ascp]
+	attr := Attr{Class: "state",}
+	if ascp := la._attr(base, seq); ascp != nil {
+		attr.CaretClass = "caret"
+		attr.Class += " current"
+		if *ascp {
+			attr.Class += " dropup"
+		}
 	}
-	return Attr{
-		Href:  "?" + base.Encode(),
-		Class: class,
-	}
+	attr.Href = "?" + base.Encode() // la._attr modifies base, DO NOT use before to the call
+	return attr
 }
 
 func(la Linkattrs) _attr(base url.Values, seq SEQ) *bool {

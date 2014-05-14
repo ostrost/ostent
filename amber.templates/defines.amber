@@ -108,11 +108,12 @@
   table.table1.stripe-table
     thead
       tr
-        th.header         <a href=#{Data.DiskLinks.DiskName.Href} class=#{Data.DiskLinks.DiskName.Class}>Device</a>
-        th.header         <a href=#{Data.DiskLinks.DirName.Href}  class=#{Data.DiskLinks.DirName.Class}>Mounted</a>
-        th.header.digital <a href=#{Data.DiskLinks.Avail.Href}    class=#{Data.DiskLinks.Avail.Class}>Avail</a>
-        th.header.digital <a href=#{Data.DiskLinks.Used.Href}     class=#{Data.DiskLinks.Used.Class}>Used</a>
-        th.header.digital <a href=#{Data.DiskLinks.Total.Href}    class=#{Data.DiskLinks.Total.Class}>Total</a>
+        $L = Data.DiskLinks
+        th.header         <a href=#{$L.DiskName.Href} class=#{$L.DiskName.Class}>Device<span  class=#{$L.DiskName.CaretClass} /></a>
+        th.header         <a href=#{$L.DirName.Href}  class=#{$L.DirName.Class} >Mounted<span class=#{$L.DirName.CaretClass}  /></a>
+        th.header.digital <a href=#{$L.Avail.Href}    class=#{$L.Avail.Class}   >Avail<span   class=#{$L.Avail.CaretClass}    /></a>
+        th.header.digital <a href=#{$L.Used.Href}     class=#{$L.Used.Class}    >Used<span    class=#{$L.Used.CaretClass}     /></a>
+        th.header.digital <a href=#{$L.Total.Href}    class=#{$L.Total.Class}   >Total<span   class=#{$L.Total.CaretClass}    /></a>
     tbody
       [[with GET "bracket_dfrows"]][[.]][[DEL "bracket_dfrows"]][[else]]
         [[template "define_dfrows" .]][[end]]
@@ -189,14 +190,15 @@ each $i, $core in Data.CPU.List
   table.table2.stripe-table
     thead
       tr
-        th.header.digital <a href=#{Data.ProcTable.Links.PID.Href}      class=#{Data.ProcTable.Links.PID.Class}>PID</a>
-        th.header.digital <a href=#{Data.ProcTable.Links.User.Href}     class=#{Data.ProcTable.Links.User.Class}>USER</a>
-        th.header.digital <a href=#{Data.ProcTable.Links.Priority.Href} class=#{Data.ProcTable.Links.Priority.Class}>PR</a>
-        th.header.digital <a href=#{Data.ProcTable.Links.Nice.Href}     class=#{Data.ProcTable.Links.Nice.Class}>NI</a>
-        th.header.digital <a href=#{Data.ProcTable.Links.Size.Href}     class=#{Data.ProcTable.Links.Size.Class}>VIRT</a>
-        th.header.digital <a href=#{Data.ProcTable.Links.Resident.Href} class=#{Data.ProcTable.Links.Resident.Class}>RES</a>
-        th.header.center  <a href=#{Data.ProcTable.Links.Time.Href}     class=#{Data.ProcTable.Links.Time.Class}>TIME</a>
-        th.header         <a href=#{Data.ProcTable.Links.Name.Href}     class=#{Data.ProcTable.Links.Name.Class}>COMMAND</a>
+        $L = Data.ProcTable.Links
+        th.header.digital <a href=#{$L.PID.Href}      class=#{$L.PID.Class}     >PID<span     class=#{$L.PID.CaretClass}      /></a>
+        th.header.digital <a href=#{$L.User.Href}     class=#{$L.User.Class}    >USER<span    class=#{$L.User.CaretClass}     /></a>
+        th.header.digital <a href=#{$L.Priority.Href} class=#{$L.Priority.Class}>PR<span      class=#{$L.Priority.CaretClass} /></a>
+        th.header.digital <a href=#{$L.Nice.Href}     class=#{$L.Nice.Class}    >NI<span      class=#{$L.Nice.CaretClass}     /></a>
+        th.header.digital <a href=#{$L.Size.Href}     class=#{$L.Size.Class}    >VIRT<span    class=#{$L.Size.CaretClass}     /></a>
+        th.header.digital <a href=#{$L.Resident.Href} class=#{$L.Resident.Class}>RES<span     class=#{$L.Resident.CaretClass} /></a>
+        th.header.center  <a href=#{$L.Time.Href}     class=#{$L.Time.Class}    >TIME<span    class=#{$L.Time.CaretClass}     /></a>
+        th.header         <a href=#{$L.Name.Href}     class=#{$L.Name.Class}    >COMMAND<span class=#{$L.Name.CaretClass}     /></a>
 
     tbody#procrows
       [[with GET "bracket_psrows"]][[.]][[DEL "bracket_psrows"]][[else]]

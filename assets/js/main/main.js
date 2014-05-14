@@ -114,15 +114,16 @@ function newwebsocket(onmessage) {
             });
 	};
 
+        var statesel = 'table thead tr .header a.state';
 	var again = function(_e) {
-            $("a.state").unbind('click');
+            $(statesel).unbind('click');
             window.setTimeout(init, 5000);
 	};
 	conn.onclose = again;
 	conn.onerror = again;
 	conn.onmessage = onmessage;
 
-        $("a.state").click(function() {
+        $(statesel).click(function() {
             history.pushState({path: this.path}, '', this.href);
             sendSearch(this.search);
             return false;

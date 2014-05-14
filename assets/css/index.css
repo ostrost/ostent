@@ -6129,40 +6129,12 @@ table .bold {
   font-weight: bold; }
 
 table thead tr .header a {
-  color: black;
-  text-decoration: none; }
+  color: black; }
   table thead tr .header a:hover {
     color: #428bca;
     text-decoration: none; }
-
-table thead tr .header a.asc,
-table thead tr .header a.desc {
-  font-weight: bold; }
-
-table thead tr .header a {
-  position: relative; }
-
-table thead tr .header a.asc:after {
-  position: absolute;
-  width: 0;
-  height: 0;
-  content: "";
-  left: 100%;
-  top: 0.5em;
-  border-left: 0.3em solid transparent;
-  border-right: 0.3em solid transparent;
-  border-bottom: 0.3em solid black; }
-
-table thead tr .header a.desc:after {
-  position: absolute;
-  width: 0;
-  height: 0;
-  content: "";
-  left: 100%;
-  top: 0.5em;
-  border-left: 0.3em solid transparent;
-  border-right: 0.3em solid transparent;
-  border-top: 0.3em solid black; }
+  table thead tr .header a.state.current {
+    font-weight: bold; }
 
 .badge-primary {
   background: #428bca; }
@@ -6178,11 +6150,3 @@ table thead tr .header a.desc:after {
 
 .badge-danger {
   background: #d9534f; }
-
-/*
-// ".btn-default .badge" colors
-.ii-tooltip-arrow { border-left-color: #999 !important; }
-.ii-tooltip-inner { background-color:  #999;
-    color: #fff;
-    border-radius: 0px; }
-// */

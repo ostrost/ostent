@@ -121,42 +121,15 @@ table thead th { font-weight: normal; }
 table .bold    { font-weight: bold;   }
 
 table thead tr .header a {
+  color: black;
   &:hover {
     // @extend a; @extend a:hover;
     color: #428bca;
     text-decoration: none;
   }
-  color: black;
-  text-decoration: none;
-}
-table thead tr .header a.asc,
-table thead tr .header a.desc {
-  font-weight: bold;
-}
-table thead tr .header a {
-  position: relative;
-}
-table thead tr .header a.asc:after {
-  position: absolute;
-  width: 0;
-  height: 0;
-  content: "";
-  left: 100%;
-  top: 0.5em;
-  border-left:   0.3em solid transparent;
-  border-right:  0.3em solid transparent;
-  border-bottom: 0.3em solid black;
-}
-table thead tr .header a.desc:after {
-  position: absolute;
-  width: 0;
-  height: 0;
-  content: "";
-  left: 100%;
-  top: 0.5em;
-  border-left:   0.3em solid transparent;
-  border-right:  0.3em solid transparent;
-  border-top:    0.3em solid black;
+  &.state.current {
+    font-weight: bold;
+  }
 }
 
 // .badge-default { @extend .badge; background:
@@ -165,11 +138,3 @@ table thead tr .header a.desc:after {
 .badge-info    { @extend .badge; background: #5bc0de; }
 .badge-warning { @extend .badge; background: #f0ad4e; }
 .badge-danger  { @extend .badge; background: #d9534f; }
-
-/*
-// ".btn-default .badge" colors
-.ii-tooltip-arrow { border-left-color: #999 !important; }
-.ii-tooltip-inner { background-color:  #999;
-    color: #fff;
-    border-radius: 0px; }
-// */
