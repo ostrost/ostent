@@ -8,16 +8,41 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var period = time.Second // default
+type periodValue struct {
+	time.Duration
+}
+
+func(pv periodValue) String() string { return pv.Duration.String(); }
+func(pv *periodValue) Set(input string) error {
+	v, err := time.ParseDuration(input)
+	if err != nil {
+		return err
+	}
+	if v <= 0 {
+		return fmt.Errorf("Negative interval: %s", v)
+	}
+	if v <= time.Second {
+		return fmt.Errorf("Less than a second: %s", v)
+	}
+	if v % time.Second != 0 {
+		return fmt.Errorf("Not a multiple of a second: %s", v)
+	}
+	pv.Duration = v
+	return nil
+}
+
+var periodFlag = periodValue{Duration: time.Second} // default
 func init() {
-	flag.DurationVar(&period, "u",      time.Second, "Collection (update) interval")
-	flag.DurationVar(&period, "update", time.Second, "Collection (update) interval")
-	fmt.Sprintf("")
+	flag.Var(&periodFlag, "u",      "Collection (update) interval")
+	flag.Var(&periodFlag, "update", "Collection (update) interval")
 }
 
 func Loop() {
 	// flags must be parsed by now, `period' is used here
 	for {
+		now := time.Now()
+		next := now.Truncate(periodFlag.Duration).Add(periodFlag.Duration)
+		diff := next.Sub(now)
 		select {
 		case wc := <-register:
 			if len(wclients) == 0 {
@@ -32,7 +57,7 @@ func Loop() {
 				reset_prev()
 			}
 
-		case <-time.After(period):
+		case <-time.After(diff):
 			collect()
 			for wc := range wclients {
 				wc.ping <- nil // false
@@ -124,7 +149,7 @@ func(wc *wclient) waitfor_updates() { // write to  client
 
 			updates, _, _, _ := getUpdates(&http.Request{Form: form}, new_search, &wc.fullState, clientdiff)
 
-			if err := wc.ws.WriteJSON(updates); err != nil {
+			if wc.ws.WriteJSON(updates) != nil {
 				break
 			}
 		}
