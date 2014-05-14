@@ -25,7 +25,10 @@ html
     script
       $(ready);
 
-    div.container-fluid.media
+    div.container
+      div.row.collapse
+
+    div.container-fluid.padding-top15
       div.row
         div.block.col-md-1.text-center
           ul.LINKSnav.nav-pills.nav-stacked
