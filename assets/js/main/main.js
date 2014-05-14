@@ -57,6 +57,7 @@ function Updatables(initial) {
 	set:  set
     };
 }
+
 Updatables.declareModel = function(opt) {
     if (typeof opt == 'function') {
         opt = opt();
@@ -64,6 +65,18 @@ Updatables.declareModel = function(opt) {
     var modelClass = Backbone.Model.extend(opt);
     modelClass.modelAttributes = opt.modelAttributes;
     return modelClass;
+};
+
+Updatables.declareCollapseModel = function(ATTRIBUTE_HIDE) {
+    return Updatables.declareModel(function () {
+        return {
+            Attribute_Hide: ATTRIBUTE_HIDE,
+            modelAttributes: function(data) { return {
+                Hide: data.ClientState[ATTRIBUTE_HIDE]
+            }; },
+            toggleHidden: function(s) { return _.object([ATTRIBUTE_HIDE], [!s.Hide]); }
+        };
+    });
 };
 
 function newwebsocket(onmessage) {
@@ -498,22 +511,8 @@ function ready() {
 
     var updatables = Updatables(Data);
 
-    new CollapseView({ // MEMORY
-	el: $('header a[href="#memory"]'),
-	model: updatables.make(Updatables.declareModel(function () {
-            var self = {
-                Attribute_Hide: 'HideMemory'
-            };
-            self.modelAttributes = function(data) {
-                return {
-                    Hide: data.ClientState[self.Attribute_Hide]
-                };
-            };
-
-            self.toggleHidden = function(s) { return _.object([self.Attribute_Hide], [!s.Hide]); }; //, [!s[self.Attribute_Hide]]
-            return self;
-        }), {target: $('#memory')})
-    });
+    updatables.make(Updatables.declareCollapseModel('HideMemory'), // MEMORY
+                    {target: $('#memory')}, CollapseView, { el: $('header a[href="#memory"]') });
 
     updatables.make( // NETWORK
         NetworkSwitchModel, {target: $('.network-tab')}, SwitchView, {
