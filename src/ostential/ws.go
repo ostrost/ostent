@@ -87,20 +87,20 @@ var (
 
 type recvState struct {
 	clientState
-	MoreProcessesSignal *bool // recv only
+	MorePsignal *bool
 }
-func (rs *recvState) MergeClient(cs *clientState) {
-	if (rs.MoreProcessesSignal == nil) {
+func (rs *recvState) mergeMorePsignal(cs *clientState) {
+	if rs.MorePsignal == nil {
 		return
 	}
-	if *rs.MoreProcessesSignal {
-		if cs.processesLimitFactor < 65536 {
-			cs.processesLimitFactor *= 2
+	if *rs.MorePsignal {
+		if cs.psLimit < 65536 {
+			cs.psLimit *= 2
 		}
-	} else if cs.processesLimitFactor >= 2 {
-		cs.processesLimitFactor /= 2
+	} else if cs.psLimit >= 2 {
+		cs.psLimit /= 2
 	}
-	rs.MoreProcessesSignal = nil
+	rs.MorePsignal = nil
 }
 
 type received struct {
@@ -132,7 +132,7 @@ func(wc *wclient) waitfor_updates() { // write to  client
 			var clientdiff *clientState
 			if rd != nil {
 				if rd.State != nil {
-					rd.State.MergeClient(&wc.fullState)
+					rd.State.mergeMorePsignal(&wc.fullState)
 					wc.fullState.Merge(rd.State.clientState)
 					clientdiff = &rd.State.clientState
 				}

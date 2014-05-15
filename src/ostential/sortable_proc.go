@@ -45,17 +45,17 @@ ____PSIOTA		types.SEQ = iota
 	PSUID
 )
 
-type ProcLinkattrs types.Linkattrs
-func(la ProcLinkattrs) PID()      types.Attr { return types.Linkattrs(la).Attr(PSPID ); }
-func(la ProcLinkattrs) Priority() types.Attr { return types.Linkattrs(la).Attr(PSPRI ); }
-func(la ProcLinkattrs) Nice()     types.Attr { return types.Linkattrs(la).Attr(PSNICE); }
-func(la ProcLinkattrs) Time()     types.Attr { return types.Linkattrs(la).Attr(PSTIME); }
-func(la ProcLinkattrs) Name()     types.Attr { return types.Linkattrs(la).Attr(PSNAME); }
-func(la ProcLinkattrs) User()     types.Attr { return types.Linkattrs(la).Attr(PSUID ); }
-func(la ProcLinkattrs) Size()     types.Attr { return types.Linkattrs(la).Attr(PSSIZE); }
-func(la ProcLinkattrs) Resident() types.Attr { return types.Linkattrs(la).Attr(PSRES ); }
+type PSlinks types.Linkattrs
+func(la PSlinks) PID()      types.Attr { return types.Linkattrs(la).Attr(PSPID ); }
+func(la PSlinks) Priority() types.Attr { return types.Linkattrs(la).Attr(PSPRI ); }
+func(la PSlinks) Nice()     types.Attr { return types.Linkattrs(la).Attr(PSNICE); }
+func(la PSlinks) Time()     types.Attr { return types.Linkattrs(la).Attr(PSTIME); }
+func(la PSlinks) Name()     types.Attr { return types.Linkattrs(la).Attr(PSNAME); }
+func(la PSlinks) User()     types.Attr { return types.Linkattrs(la).Attr(PSUID ); }
+func(la PSlinks) Size()     types.Attr { return types.Linkattrs(la).Attr(PSSIZE); }
+func(la PSlinks) Resident() types.Attr { return types.Linkattrs(la).Attr(PSRES ); }
 
-func(la ProcLinkattrs) MarshalJSON() ([]byte, error) {
+func(la PSlinks) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]types.Attr{
 		"PID":      types.Linkattrs(la).Attr(PSPID),
 		"Priority": types.Linkattrs(la).Attr(PSPRI),
@@ -68,9 +68,9 @@ func(la ProcLinkattrs) MarshalJSON() ([]byte, error) {
 	})
 }
 
-type ProcTable struct {
-	List  []types.ProcData
-	Links *ProcLinkattrs `json:",omitempty"`
-	MoreText      string `json:",omitempty"` // should never be empty, sanity check
-	NotExpandable  *bool `json:",omitempty"`
+type PStable struct {
+	List []types.ProcData
+	Links        *PSlinks `json:",omitempty"`
+	PlusText      string  `json:",omitempty"` // should never be empty, sanity check
+	NotExpandable *bool   `json:",omitempty"`
 }

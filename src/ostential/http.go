@@ -107,7 +107,7 @@ func InterfacesDelta(format interfaceFormat, current, previous []InterfaceInfo, 
 	}
 	if len(ifs) > 1 {
 		sort.Sort(interfaceOrder(ifs))
-		if !*client.ExpandNetwork && len(ifs) > TOPROWS {
+		if !*client.ExpandIF && len(ifs) > TOPROWS {
 			ifs = ifs[:TOPROWS]
 		}
 	}
@@ -177,19 +177,20 @@ func(li lastinfo) CPUDelta(client clientState) *types.CPU {
 
 	if coreno == 1 {
 		cores[0].N = "#0"
-		*cpu.DataMeta.More = 1
+		*cpu.DataMeta.ExpandText = "1"
 		cpu.List = cores
 		return cpu
 	}
 	sort.Sort(cpuOrder(cores))
 
-	if !*client.ExpandCPU && len(cores) > TOPROWS-1 {
-		cores = cores[:TOPROWS-1] // "all N" row + first core(s)
-	}
+	*cpu.DataMeta.ExpandText = fmt.Sprintf("%d", coreno)
 	*cpu.DataMeta.Expandable = coreno > TOPROWS-1 // one row reserved for "all N"
-	*cpu.DataMeta.More       = coreno
 
 	if !*client.ExpandCPU {
+		if coreno > TOPROWS-1 {
+			cores = cores[:TOPROWS-1] // first core(s)
+		}
+
 		total := sum.User + sum.Sys + sum.Idle // + sum.Nice
 
 		user := percent(sum.User, total)
@@ -198,7 +199,7 @@ func(li lastinfo) CPUDelta(client clientState) *types.CPU {
 		if user + sys < 100 {
 			idle = 100 - user - sys
 		}
-		cores = append([]types.Core{{ // NB
+		cores = append([]types.Core{{ // "all N"
 			N: fmt.Sprintf("all %d", coreno),
 			User: user,
 			Sys:  sys,
@@ -292,10 +293,10 @@ func diskMeta(disk diskInfo) types.DiskMeta {
 	}
 }
 
-func disksinBytes(diskinfos []diskInfo, client clientState) *types.DisksinBytes {
+func dfbytes(diskinfos []diskInfo, client clientState) *types.DFbytes {
 	var disks []types.DiskBytes
 	for i, disk := range diskinfos {
-		if !*client.ExpandDisks && i > 1 {
+		if !*client.ExpandDF && i > 1 {
 			break
 		}
 		total,  approxtotal  := humanBandback(disk.Total)
@@ -309,17 +310,18 @@ func disksinBytes(diskinfos []diskInfo, client clientState) *types.DisksinBytes 
 			UsePercentClass: labelClass_colorPercent(percent(approxused,  approxtotal)),
 		})
 	}
-	if !*client.ExpandDisks && len(disks) > TOPROWS {
-		disks = disks[:TOPROWS]
-	}
-	dsb := new(types.DisksinBytes)
+	// if !*client.ExpandDF && len(disks) > TOPROWS {
+	// 	disks = disks[:TOPROWS]
+	// }
+	dsb := new(types.DFbytes)
 	dsb.List = disks
 	return dsb
 }
-func disksinInodes(diskinfos []diskInfo, client clientState) *types.DisksinInodes {
+
+func dfinodes(diskinfos []diskInfo, client clientState) *types.DFinodes {
 	var disks []types.DiskInodes
 	for i, disk := range diskinfos {
-		if !*client.ExpandDisks && i > 1 {
+		if !*client.ExpandDF && i > 1 {
 			break
 		}
 		itotal, approxitotal := humanBandback(disk.Inodes)
@@ -333,7 +335,7 @@ func disksinInodes(diskinfos []diskInfo, client clientState) *types.DisksinInode
 			IusePercentClass: labelClass_colorPercent(percent(approxiused, approxitotal)),
 		})
 	}
-	dsi := new(types.DisksinInodes)
+	dsi := new(types.DFinodes)
 	dsi.List = disks
 	return dsi
 }
@@ -383,31 +385,27 @@ func orderProc(procs []types.ProcInfo, seq types.SEQ, clientptr *clientState) ([
 		reverse: _PSBIMAP.SEQ2REVERSE[seq],
 	})
 
-	limitProccesses := client.processesLimitFactor
+	limitPS := client.psLimit
 
-	if len(procs) <= limitProccesses {
-		limitProccesses = len(procs)
+	if len(procs) <= limitPS {
+		limitPS = len(procs)
 
-		if client.processesNotExpandable == nil || !*client.processesNotExpandable {
-			clientptr.processesNotExpandable = new(bool)
-			*clientptr.processesNotExpandable = true
-			// fmt.Printf("processesNotExpandable NEW TRUE\n")
+		if client.psNotexpandable == nil || !*client.psNotexpandable {
+			clientptr.psNotexpandable = newtrue()
 		}
-	} else if clientptr.processesNotExpandable != nil {
+	} else if clientptr.psNotexpandable != nil {
 
-		if *client.processesNotExpandable {
-			*clientptr.processesNotExpandable = false
-			// fmt.Printf("processesNotExpandable true => BECAME FALSE\n")
+		if *client.psNotexpandable {
+			*clientptr.psNotexpandable = false
 		} else {
-			// fmt.Printf("processesNotExpandable false => BECAME NIL\n")
-			clientptr.processesNotExpandable = nil
+			clientptr.psNotexpandable = nil
 		}
 	}
 
-	if len(procs) > limitProccesses {
-		procs = procs[:limitProccesses]
+	if len(procs) > limitPS {
+		procs = procs[:limitPS]
 	}
-	moreText := fmt.Sprintf("%d+", limitProccesses)
+	plustext := fmt.Sprintf("%d+", limitPS)
 
 	uids := map[uint]string{}
 	var list []types.ProcData
@@ -423,7 +421,7 @@ func orderProc(procs []types.ProcInfo, seq types.SEQ, clientptr *clientState) ([
 			Resident:   humanB(proc.Resident),
 		})
 	}
-	return list, moreText
+	return list, plustext
 }
 
 type Previous struct {
@@ -448,18 +446,18 @@ type PageData struct {
 	RAM     memory
 	Swap    memory
 
-	ProcTable ProcTable
+	PStable PStable
 
-	DiskLinks *DiskLinkattrs          `json:",omitempty"`
-	DisksinBytes  types.DisksinBytes  `json:",omitempty"`
-	DisksinInodes types.DisksinInodes `json:",omitempty"`
+	DFlinks *DFlinks        `json:",omitempty"`
+	DFbytes  types.DFbytes  `json:",omitempty"`
+	DFinodes types.DFinodes `json:",omitempty"`
 
-	Disks   types.DataMeta
-	Network types.DataMeta
+	DF types.DataMeta
+	IF types.DataMeta
 
-	InterfacesBytes   types.Interfaces
-	InterfacesErrors  types.Interfaces
-	InterfacesPackets types.Interfaces
+	IFbytes   types.Interfaces
+	IFerrors  types.Interfaces
+	IFpackets types.Interfaces
 
 	DISTRIBHTML template.HTML
 	VERSION     string
@@ -467,26 +465,28 @@ type PageData struct {
 
     ClientState clientState
 }
+
 type pageUpdate struct {
     Generic  generic
 
-	RAM      memory // TODO empty on HideMemory
-	Swap     memory // TODO empty on HideMemory
+	RAM      memory // TODO empty on HideMEM
+	Swap     memory // TODO empty on HideMEM
 
-	CPU           *types.CPU           `json:",omitempty"`
-	DiskLinks     *DiskLinkattrs       `json:",omitempty"`
-	DisksinBytes  *types.DisksinBytes  `json:",omitempty"`
-	DisksinInodes *types.DisksinInodes `json:",omitempty"`
+	CPU      *types.CPU      `json:",omitempty"`
 
-	Disks   types.DataMeta // a pointer and `json:",omitempty"` ?
-	Network types.DataMeta // a pointer and `json:",omitempty"` ?
+	DFlinks  *DFlinks        `json:",omitempty"`
+	DFbytes  *types.DFbytes  `json:",omitempty"`
+	DFinodes *types.DFinodes `json:",omitempty"`
 
-	// ProcLinks *ProcLinkattrs `json:",omitempty"`
-	ProcTable *ProcTable `json:",omitempty"`
+	DF types.DataMeta // a pointer and `json:",omitempty"` ?
+	IF types.DataMeta // a pointer and `json:",omitempty"` ?
 
-	InterfacesBytes   *types.Interfaces `json:",omitempty"`
-	InterfacesErrors  *types.Interfaces `json:",omitempty"`
-	InterfacesPackets *types.Interfaces `json:",omitempty"`
+	// PSlinks *PSlinks `json:",omitempty"`
+	PStable *PStable `json:",omitempty"`
+
+	IFbytes   *types.Interfaces `json:",omitempty"`
+	IFerrors  *types.Interfaces `json:",omitempty"`
+	IFpackets *types.Interfaces `json:",omitempty"`
 
 	ClientState *clientState `json:",omitempty"`
 }
@@ -547,10 +547,10 @@ func getUpdates(req *http.Request, new_search bool, clientptr *clientState, clie
 	base := url.Values{}
 
 	var (
-		disks_copy []diskInfo
-		procs_copy []types.ProcInfo
-		interfaces_copy         []InterfaceInfo
-		previousinterfaces_copy []InterfaceInfo
+		df_copy []diskInfo
+		ps_copy []types.ProcInfo
+		if_copy     []InterfaceInfo
+		previf_copy []InterfaceInfo
 	)
 
 	var pu pageUpdate
@@ -558,20 +558,20 @@ func getUpdates(req *http.Request, new_search bool, clientptr *clientState, clie
 		lastLock.Lock()
 		defer lastLock.Unlock()
 
-		disks_copy = make([]diskInfo,       len(lastInfo.DiskList))
-		procs_copy = make([]types.ProcInfo, len(lastInfo.ProcList))
-		copy(disks_copy,   lastInfo.DiskList)
-		copy(procs_copy,   lastInfo.ProcList)
+		df_copy = make([]diskInfo,       len(lastInfo.DiskList))
+		ps_copy = make([]types.ProcInfo, len(lastInfo.ProcList))
+		copy(df_copy, lastInfo.DiskList)
+		copy(ps_copy, lastInfo.ProcList)
 
-		interfaces_copy = make([]InterfaceInfo, len(lastInfo.Interfaces))
-		copy(interfaces_copy, lastInfo.Interfaces)
-		previousinterfaces_copy = make([]InterfaceInfo, len(lastInfo.Previous.Interfaces))
-		copy(previousinterfaces_copy, lastInfo.Previous.Interfaces)
+		if_copy     = make([]InterfaceInfo, len(lastInfo.Interfaces))
+		previf_copy = make([]InterfaceInfo, len(lastInfo.Previous.Interfaces))
+		copy(if_copy,     lastInfo.Interfaces)
+		copy(previf_copy, lastInfo.Previous.Interfaces)
 
 		pu = pageUpdate{
 			Generic: lastInfo.Generic,
 		}
-		if !*client.HideMemory {
+		if !*client.HideMEM {
 			pu.RAM  = lastInfo.RAM
 			pu.Swap = lastInfo.Swap
 		}
@@ -580,41 +580,41 @@ func getUpdates(req *http.Request, new_search bool, clientptr *clientState, clie
 		}
 	}()
 
-	 pu.Network = types.NewDataMeta()
-	*pu.Network.More       = len(interfaces_copy)
-	*pu.Network.Expandable = *pu.Network.More > TOPROWS
+	 pu.IF = types.NewDataMeta()
+	*pu.IF.Expandable = len(if_copy) > TOPROWS
+	*pu.IF.ExpandText = fmt.Sprintf("%d", len(if_copy))
 
-	pslinks := ProcLinkattrs(linkattrs(req, base, "ps", _PSBIMAP))
-	dflinks := DiskLinkattrs(linkattrs(req, base, "df", _DFBIMAP))
+	pslinks := PSlinks(linkattrs(req, base, "ps", _PSBIMAP))
+	dflinks := DFlinks(linkattrs(req, base, "df", _DFBIMAP))
 
-	 pu.Disks = types.NewDataMeta()
-	*pu.Disks.More       = len(disks_copy)
-	*pu.Disks.Expandable = *pu.Disks.More > TOPROWS
+	 pu.DF = types.NewDataMeta()
+	*pu.DF.Expandable = len(df_copy) > TOPROWS
+	*pu.DF.ExpandText = fmt.Sprintf("%d", len(df_copy))
 
-	if !*client.HideDisks {
-		orderedDisks := orderDisks(disks_copy, dflinks.Seq)
+	if !*client.HideDF {
+		orderedDisks := orderDisks(df_copy, dflinks.Seq)
 
-		       if *client.CurrentDisksTab == DBYTES_TABID  { pu.DisksinBytes  = disksinBytes(orderedDisks,  client)
-		} else if *client.CurrentDisksTab == DINODES_TABID { pu.DisksinInodes = disksinInodes(orderedDisks, client)
+		       if *client.TabDF == DFBYTES_TABID  { pu.DFbytes  = dfbytes (orderedDisks, client)
+		} else if *client.TabDF == DFINODES_TABID { pu.DFinodes = dfinodes(orderedDisks, client)
 		}
 	}
 
-	if !*client.HideNetwork {
-		switch *client.CurrentNetworkTab {
-		case NBYTES_TABID:   pu.InterfacesBytes   = InterfacesDelta(interfaceBytes{},                             interfaces_copy, previousinterfaces_copy, client)
-		case NERRORS_TABID:  pu.InterfacesErrors  = InterfacesDelta(interfaceNumericals{interfaceInoutErrors{}},  interfaces_copy, previousinterfaces_copy, client)
-		case NPACKETS_TABID: pu.InterfacesPackets = InterfacesDelta(interfaceNumericals{interfaceInoutPackets{}}, interfaces_copy, previousinterfaces_copy, client)
+	if !*client.HideIF {
+		switch *client.TabIF {
+		case IFBYTES_TABID:   pu.IFbytes   = InterfacesDelta(interfaceBytes{},                             if_copy, previf_copy, client)
+		case IFERRORS_TABID:  pu.IFerrors  = InterfacesDelta(interfaceNumericals{interfaceInoutErrors{}},  if_copy, previf_copy, client)
+		case IFPACKETS_TABID: pu.IFpackets = InterfacesDelta(interfaceNumericals{interfaceInoutPackets{}}, if_copy, previf_copy, client)
 		}
 	}
 
-	if !*client.HideProcesses {
-		pu.ProcTable = new(ProcTable)
-		pu.ProcTable.List, pu.ProcTable.MoreText = orderProc(procs_copy, pslinks.Seq, clientptr)
-		pu.ProcTable.NotExpandable = clientptr.processesNotExpandable
-		if new_search {
-			pu.ProcTable.Links = &pslinks
-			pu.DiskLinks = &dflinks
-		}
+	if !*client.HidePS {
+		pu.PStable = new(PStable)
+		pu.PStable.List, pu.PStable.PlusText = orderProc(ps_copy, pslinks.Seq, clientptr)
+		pu.PStable.NotExpandable = clientptr.psNotexpandable
+	}
+	if new_search {
+		pu.PStable.Links = &pslinks
+		pu.DFlinks       = &dflinks
 	}
 
 	if clientdiff != nil {
@@ -629,13 +629,13 @@ func pageData(req *http.Request) PageData {
 	client := defaultClientState()
 	updates, base, dfseq, psseq := getUpdates(req, false, &client, &client)
 
-	dla := &DiskLinkattrs{
+	dla := &DFlinks{
 		Base: base,
 		Pname: "df",
 		Bimap: _DFBIMAP,
 		Seq: dfseq,
 	}
-	pla := &ProcLinkattrs{
+	pla := &PSlinks{
 		Base: base,
 		Pname: "ps",
 		Bimap: _PSBIMAP,
@@ -649,29 +649,29 @@ func pageData(req *http.Request) PageData {
 		RAM:          updates.RAM,
 		Swap:         updates.Swap,
 
-		DiskLinks:  dla,
+		DFlinks:  dla,
 
-		ProcTable: ProcTable{
-			List:          updates.ProcTable.List,
-			MoreText:      updates.ProcTable.MoreText,
-			NotExpandable: updates.ProcTable.NotExpandable,
-			Links: pla, // ProcLinks
+		PStable: PStable{
+			List:          updates.PStable.List,
+			PlusText:      updates.PStable.PlusText,
+			NotExpandable: updates.PStable.NotExpandable,
+			Links: pla,
 		},
 
 		DISTRIBHTML: tooltipable(11, DISTRIB), // value from init_*.go
 		VERSION:     VERSION,                  // value from server.go
 		HTTP_HOST:   req.Host,
 	}
-	data.Disks   = updates.Disks
-	data.Network = updates.Network
+	data.DF = updates.DF
+	data.IF = updates.IF
 
-	       if updates.DisksinBytes  != nil { data.DisksinBytes  = *updates.DisksinBytes
-	} else if updates.DisksinInodes != nil { data.DisksinInodes = *updates.DisksinInodes
+	       if updates.DFbytes  != nil { data.DFbytes  = *updates.DFbytes
+	} else if updates.DFinodes != nil { data.DFinodes = *updates.DFinodes
 	}
 
-	       if updates.InterfacesBytes   != nil { data.InterfacesBytes   = *updates.InterfacesBytes
-	} else if updates.InterfacesErrors  != nil { data.InterfacesErrors  = *updates.InterfacesErrors
-	} else if updates.InterfacesPackets != nil { data.InterfacesPackets = *updates.InterfacesPackets
+	       if updates.IFbytes   != nil { data.IFbytes   = *updates.IFbytes
+	} else if updates.IFerrors  != nil { data.IFerrors  = *updates.IFerrors
+	} else if updates.IFpackets != nil { data.IFpackets = *updates.IFpackets
 	}
 
 	return data

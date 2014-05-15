@@ -38,8 +38,9 @@ html
         div.block.col-md-2
           div.panel1
             header.draggable
-              a[href="#memory"] Memory
-            div.panel-collapse.collapse.in#memory
+              a[href="#mem"] Memory
+            div.collapse#mem
+              [class="in"] ? (json(Data.ClientState.HideMEM) == "false")
               table.table1.stripe-table
                 thead
                   tr
@@ -50,64 +51,65 @@ html
                 tbody
                   tr
                     td RAM
-                    td.digital#RAM-Free #{Data.RAM.Free}
+                    td.digital#ram-free #{Data.RAM.Free}
                     td.digital
-                      span#RAM-Used #{Data.RAM.Used}
+                      span#ram-used #{Data.RAM.Used}
                       | &nbsp;
-                      sup#RAM-UsePercent #{Data.RAM.UsePercentHTML}
-                    td.digital#RAM-Total #{Data.RAM.Total}
+                      sup#ram-usepercent #{Data.RAM.UsePercentHTML}
+                    td.digital#ram-total #{Data.RAM.Total}
                   tr
                     td swap
                     td.digital#swap-free #{Data.Swap.Free}
                     td.digital
-                      span#Swap-Used #{Data.Swap.Used}
+                      span#swap-used #{Data.Swap.Used}
                       | &nbsp;
-                      sup#Swap-UsePercent #{Data.Swap.UsePercentHTML}
-                    td.digital#Swap-Total #{Data.Swap.Total}
+                      sup#swap-usepercent #{Data.Swap.UsePercentHTML}
+                    td.digital#swap-total #{Data.Swap.Total}
 
         div.block.col-md-3
           div.panel1
             header.draggable.panel-heading.nobr
-              a[href="#network"] Network
+              a[href="#if"] Network
 
               div.pull-right
                 div.btn-group.notall[data-toggle="buttons"]
                   label.network-switch.btn.btn-xx.btn-default.nondefault
-                    [href="#network-packets"][data-tabid=Data.ClientState.NetworkTabs.NetworkinPackets]
+                    [href="#ifpackets"][data-tabid=Data.ClientState.IFTABS.IFpackets]
                     input#radio-network-packets[type="radio"][name="network-radio"]
                     | Packets
 
                   label.network-switch.btn.btn-xx.btn-default.nondefault
-                    [href="#network-errors"][data-tabid=Data.ClientState.NetworkTabs.NetworkinErrors]
+                    [href="#iferrors"][data-tabid=Data.ClientState.IFTABS.IFerrors]
                     input#radio-network-errors[type="radio"][name="network-radio"]
                     | Errors
 
                   label.network-switch.btn.btn-xx.btn-default.active
-                    [href="#network-bytes"][data-tabid=Data.ClientState.NetworkTabs.NetworkinBytes]
+                    [href="#ifbytes"][data-tabid=Data.ClientState.IFTABS.IFbytes]
                     input#radio-network-bytes[type="radio"][name="network-radio"][checked="checked"]
                     | Bytes
 
                 div.btn-group.btn-xx[data-toggle="buttons"]
                   //- [title="ii"]
-                  label.btn.btn-xx.btn-default.all[href="#network"]
-                    [class="disabled"] ? (json(Data.Network.Expandable)) != "true")
+                  label.btn.btn-xx.btn-default.all[href="#if"]
+                    [class="disabled"] ? (json(Data.IF.Expandable)) != "true")
                     input[type="checkbox"][name="allnetwork"]
-                    | #{Data.Network.More}
+                    | #{Data.IF.ExpandText}
 
-            //- selected by .network-tab
-            div.network-tab.panel-collapse.collapse#network-packets[data-tabid=Data.ClientState.NetworkTabs.NetworkinPackets]
-              span#ifs-packets-table
-                [[template "define_ifspacketstable" .]]
+            //- panels selected by .network-tab
+            div.network-tab.collapse#ifpackets[data-tabid=Data.ClientState.IFTABS.IFpackets]
+              [class="in"] ? (json(Data.ClientState.TabIF) == json(Data.ClientState.IFTABS.IFpackets))
+              span#ifpackets-table
+                [[template "define_ifpackets_table" .]]
 
-            //- selected by .network-tab
-            div.network-tab.panel-collapse.collapse#network-errors[data-tabid=Data.ClientState.NetworkTabs.NetworkinErrors]
-              span#ifs-errors-table
-                [[template "define_ifserrorstable" .]]
+            div.network-tab.collapse#iferrors[data-tabid=Data.ClientState.IFTABS.IFerrors]
+              [class="in"] ? (json(Data.ClientState.TabIF) == json(Data.ClientState.IFTABS.IFerrors))
+              span#iferrors-table
+                [[template "define_iferrors_table" .]]
 
-            //- selected by .network-tab
-            div.network-tab.panel-collapse.collapse.in#network-bytes[data-tabid=Data.ClientState.NetworkTabs.NetworkinBytes]
-              span#ifs-table
-                [[template "define_ifstable" .]]
+            div.network-tab.collapse#ifbytes[data-tabid=Data.ClientState.IFTABS.IFbytes]
+              [class="in"] ? (json(Data.ClientState.TabIF) == json(Data.ClientState.IFTABS.IFbytes))
+              span#ifbytes-table
+                [[template "define_ifbytes_table" .]]
 
         div.block.col-md-2
           div.panel1
@@ -120,45 +122,47 @@ html
                   label.btn.btn-xx.btn-default.all[href="#cpu"]
                     [class="disabled"] ? (json(Data.CPU.Expandable)) != "true")
                     input[type="checkbox"][name="allcpu"]
-                    | #{Data.CPU.More}
+                    | #{Data.CPU.ExpandText}
 
-            div.panel-collapse.collapse.in#cpu
+            div.collapse#cpu
+              [class="in"] ? (json(Data.ClientState.HideCPU) == "false")
               span#cpu-table
                 [[template "define_cputable" .]]
 
         div.block.col-md-3
           div.panel1
             header.draggable.panel-heading.nobr
-              a[href="#disks"] Disks
+              a[href="#df"] Disks
 
               div.pull-right
                 div.btn-group.notall[data-toggle="buttons"]
                   label.disk-switch.btn.btn-xx.btn-default.nondefault
-                    [href="#disks-inodes"][data-tabid=Data.ClientState.DisksTabs.DisksinInodes]
+                    [href="#dfinodes"][data-tabid=Data.ClientState.DFTABS.DFinodes]
                     input#radio-disks-inodes[type="radio"][name="disks-radio"]
                     | Inodes
 
                   label.disk-switch.btn.btn-xx.btn-default.active
-                    [href="#disks-bytes"][data-tabid=Data.ClientState.DisksTabs.DisksinBytes]
+                    [href="#dfbytes"][data-tabid=Data.ClientState.DFTABS.DFbytes]
                     input#radio-disks-bytes[type="radio"][name="disks-radio"][checked="checked"]
                     | Bytes
 
                 div.btn-group[data-toggle="buttons"]
                   //- [title="ii"]
-                  label.btn.btn-xx.btn-default.all[href="#disks"]
-                    [class="disabled"] ? (json(Data.Disks.Expandable)) != "true")
+                  label.btn.btn-xx.btn-default.all[href="#df"]
+                    [class="disabled"] ? (json(Data.DF.Expandable)) != "true")
                     input[type="checkbox"][name="alldisks"]
-                    | #{Data.Disks.More}
+                    | #{Data.DF.ExpandText}
 
-            //- selected by .disk-tab
-            div.disk-tab.panel-collapse.collapse#disks-inodes[data-tabid=Data.ClientState.DisksTabs.DisksinInodes]
-              span#dfi-table
-              [[template "define_ditable" .]]
+            //- panels selected by .disk-tab
+            div.disk-tab.collapse#dfinodes[data-tabid=Data.ClientState.DFTABS.DFinodes]
+              [class="in"] ? (json(Data.ClientState.TabDF) == json(Data.ClientState.DFTABS.DFinodes))
+              span#dfinodes-table
+                [[template "define_dfinodes_table" .]]
 
-            //- selected by .disk-tab
-            div.disk-tab.panel-collapse.collapse.in#disks-bytes[data-tabid=Data.ClientState.DisksTabs.DisksinBytes]
-              span#df-table
-              [[template "define_dftable" .]]
+            div.disk-tab.collapse#dfbytes[data-tabid=Data.ClientState.DFTABS.DFbytes]
+              [class="in"] ? (json(Data.ClientState.TabDF) == json(Data.ClientState.DFTABS.DFbytes))
+              span#dfbytes-table
+                [[template "define_dfbytes_table" .]]
 
     div.container-fluid
       div.row
@@ -202,7 +206,7 @@ html
         div.block.col-md-8
           div.panel1
             header.NOTdraggable
-              a[href="#processes"] Processes
+              a[href="#ps"] Processes
 
               //- div.btn-group.btn-group-xs.notall
               //-   label.btn.btn-xx.btn-default
@@ -213,12 +217,13 @@ html
                 div.btn-group[data-toggle="buttons"]
                   label.btn.btn-xx.btn-default.more[href="#psmore"]
                     input[type="checkbox"][name="psmore"]
-                    | #{Data.ProcTable.MoreText}
+                    | #{Data.PStable.PlusText}
                   label.btn.btn-xx.btn-default.less[href="#psless"]
                     input[type="checkbox"][name="psless"]
                     | -
 
-            div.panel-collapse.collapse.in#processes
+            div.collapse#ps
+              [class="in"] ? (json(Data.ClientState.HidePS) == "false")
               span#ps-table
                 [[template "define_pstable" .]]
 

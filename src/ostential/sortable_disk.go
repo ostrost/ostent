@@ -39,14 +39,14 @@ ____DFIOTA		types.SEQ = iota
 	DFMP
 )
 
-type DiskLinkattrs types.Linkattrs
-func(la DiskLinkattrs) DiskName()    types.Attr { return types.Linkattrs(la).Attr(DFFS);    }
-func(la DiskLinkattrs) Total()       types.Attr { return types.Linkattrs(la).Attr(DFSIZE);  }
-func(la DiskLinkattrs) Used()        types.Attr { return types.Linkattrs(la).Attr(DFUSED);  }
-func(la DiskLinkattrs) Avail()       types.Attr { return types.Linkattrs(la).Attr(DFAVAIL); }
-func(la DiskLinkattrs) DirName()     types.Attr { return types.Linkattrs(la).Attr(DFMP);    }
+type DFlinks types.Linkattrs
+func(la DFlinks) DiskName() types.Attr { return types.Linkattrs(la).Attr(DFFS);    }
+func(la DFlinks) Total()    types.Attr { return types.Linkattrs(la).Attr(DFSIZE);  }
+func(la DFlinks) Used()     types.Attr { return types.Linkattrs(la).Attr(DFUSED);  }
+func(la DFlinks) Avail()    types.Attr { return types.Linkattrs(la).Attr(DFAVAIL); }
+func(la DFlinks) DirName()  types.Attr { return types.Linkattrs(la).Attr(DFMP);    }
 
-func(la DiskLinkattrs) MarshalJSON() ([]byte, error) {
+func(la DFlinks) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]types.Attr{
 		"DiskName": types.Linkattrs(la).Attr(DFFS),
 		"Total":    types.Linkattrs(la).Attr(DFSIZE),

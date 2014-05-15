@@ -138,6 +138,7 @@ function newwebsocket(onmessage) {
 }
 
 var websocket; // a global
+
 function update(currentState, updatables) {
     var params = location.search.substr(1).split("&");
     for (var i in params) {
@@ -146,14 +147,14 @@ function update(currentState, updatables) {
 	}
     }
 
-    // all *Class defined in gen/jscript.js
-    var   procTable     = React.renderComponent(procTableClass      (null), document.getElementById('ps-table'));
-    var disksinBytes    = React.renderComponent(disksinBytesClass   (null), document.getElementById('df-table'));
-    var disksinInodes   = React.renderComponent(disksinInodesClass  (null), document.getElementById('dfi-table'));
-    var    cpuTable     = React.renderComponent(cpuTableClass       (null), document.getElementById('cpu-table'));
-    var    ifsTable     = React.renderComponent(ifsTableClass       (null), document.getElementById('ifs-table'));
-    var ifsPacketsTable = React.renderComponent(ifsPacketsTableClass(null), document.getElementById('ifs-packets-table'));
-    var ifsErrorsTable  = React.renderComponent(ifsErrorsTableClass (null), document.getElementById('ifs-errors-table'));
+    // all *CLASS defined in gen/jscript.js
+    var pstable   = React.renderComponent(PStableCLASS  (null), document.getElementById('ps-table'));
+    var dfbytes   = React.renderComponent(DFbytesCLASS  (null), document.getElementById('dfbytes-table'));
+    var dfinodes  = React.renderComponent(DFinodesCLASS (null), document.getElementById('dfinodes-table'));
+    var cputable  = React.renderComponent(CPUtableCLASS (null), document.getElementById('cpu-table'));
+    var ifbytes   = React.renderComponent(IFbytesCLASS  (null), document.getElementById('ifbytes-table'));
+    var iferrors  = React.renderComponent(IFerrorsCLASS (null), document.getElementById('iferrors-table'));
+    var ifpackets = React.renderComponent(IFpacketsCLASS(null), document.getElementById('ifpackets-table'));
 
     var onmessage = function(event) {
 	var data = JSON.parse(event.data);
@@ -164,20 +165,20 @@ function update(currentState, updatables) {
             }
         };
 
-        setState(procTable, data.ProcTable);
+        setState(pstable, data.PStable);
 
-	var bytestate = {DisksinBytes: data.DisksinBytes};
-	if (data.DiskLinks !== undefined) { bytestate.DiskLinks = data.DiskLinks; }
-	setState(disksinBytes, bytestate);
+	var bytestate = {DFbytes: data.DFbytes};
+	if (data.DFlinks !== undefined) { bytestate.DFlinks = data.DFlinks; }
+	setState(dfbytes, bytestate);
 
-	var inodestate = {DisksinInodes: data.DisksinInodes};
-	if (data.DiskLinks !== undefined) { inodestate.DiskLinks = data.DiskLinks; }
-	setState(disksinInodes, inodestate);
+	var inodestate = {DFinodes: data.DFinodes};
+	if (data.DFlinks !== undefined) { inodestate.DFlinks = data.DFlinks; }
+	setState(dfinodes, inodestate);
 
-        setState(cpuTable, data.CPU);
-        setState(ifsTable, data.InterfacesBytes);
-	setState(ifsErrorsTable,  data.InterfacesErrors);
-	setState(ifsPacketsTable, data.InterfacesPackets);
+        setState(cputable, data.CPU);
+        setState(ifbytes,   data.IFbytes);
+        setState(iferrors,  data.IFerrors);
+	setState(ifpackets, data.IFpackets);
 
         currentState = _.extend(currentState, data.ClientState);
         data.ClientState = currentState;
@@ -189,6 +190,10 @@ function update(currentState, updatables) {
         $('span .tooltipabledots').popover(); // the clickable dots
     };
     websocket = newwebsocket(onmessage);
+}
+
+function empty(obj) {
+    return obj === undefined || obj === null;
 }
 
 var CollapseView = Backbone.View.extend({
@@ -219,15 +224,11 @@ var CollapseView = Backbone.View.extend({
     }
 });
 
-function empty(obj) {
-    return obj === undefined || obj === null;
-}
-
-var ExpandButtonView = CollapseView.extend({
+var ExpandView = CollapseView.extend({
     expanded: function() { return this.model.attributes.Expand; },
 
     initialize_fromswitch: function() {
-	this.listenTo(this.model, 'change:More',       this.redisplay_more);
+	this.listenTo(this.model, 'change:ExpandText', this.redisplay_expandtext);
 	this.listenTo(this.model, 'change:Expandable', this.redisplay_expandable);
     },
     initialize: function() {
@@ -239,9 +240,9 @@ var ExpandButtonView = CollapseView.extend({
         this.redisplay_panel();
         this.redisplay_expand();
     },
-    redisplay_more: function() {
+    redisplay_expandtext: function() {
         var $expand_el = this.model.attributes.expand_el;
-        $expand_el.text(this.model.attributes.More);
+        $expand_el.text(this.model.attributes.ExpandText);
     },
     redisplay_expand: function() {
         var $expand_el = this.model.attributes.expand_el;
@@ -281,13 +282,13 @@ var ExpandButtonView = CollapseView.extend({
     }
 });
 
-var SwitchView = CollapseView.extend(ExpandButtonView.prototype).extend({
+var SwitchView = CollapseView.extend(ExpandView.prototype).extend({
     initialize: function() {
         // CollapseView.prototype.initialize.call(this); // DO NOT CollapseView.initialize
 	this.listenTo(this.model, 'change:Hide',       this.change_switch); // <- as in CollapseView.initialize
-	this.listenTo(this.model, 'change:Expand',     this.change_switch); // <- as in ExpandButton.initialize
+	this.listenTo(this.model, 'change:Expand',     this.change_switch); // <- as in ExpandView.initialize
 	this.listenTo(this.model, 'change:CurrentTab', this.change_switch);
-        ExpandButtonView.prototype.initialize_fromswitch.call(this);
+        ExpandView.prototype.initialize_fromswitch.call(this);
         this.init_target();
     },
     redisplay_tabs: function() {
@@ -360,7 +361,7 @@ function SwitchModel(self) {
             Expand:     data.ClientState[self.Attribute_Expand],
             CurrentTab: data.ClientState[self.Attribute_CurrentTab],
             Expandable: data[self.Attribute_Data].Expandable, // immutable
-            More:       data[self.Attribute_Data].More        // immutable
+            ExpandText: data[self.Attribute_Data].ExpandText  // immutable
         };
     };
 
@@ -371,18 +372,18 @@ function SwitchModel(self) {
     return Updatables.declareModel(self);
 }
 
-var DisksSwitchModel = SwitchModel({
-    Attribute_CurrentTab: 'CurrentDisksTab',
-    Attribute_Expand:     'ExpandDisks',
-    Attribute_Hide:       'HideDisks',
-    Attribute_Data:       'Disks'
+var DFswitchmodel = SwitchModel({
+    Attribute_CurrentTab: 'TabDF',
+    Attribute_Expand:     'ExpandDF',
+    Attribute_Hide:       'HideDF',
+    Attribute_Data:       'DF'
 });
 
-var NetworkSwitchModel = SwitchModel({
-    Attribute_CurrentTab: 'CurrentNetworkTab',
-    Attribute_Expand:     'ExpandNetwork',
-    Attribute_Hide:       'HideNetwork',
-    Attribute_Data:       'Network'
+var IFswitchmodel = SwitchModel({
+    Attribute_CurrentTab: 'TabIF',
+    Attribute_Expand:     'ExpandIF',
+    Attribute_Hide:       'HideIF',
+    Attribute_Data:       'IF'
 });
 
 var ExpandCPUModel = Updatables.declareModel(function() {
@@ -398,7 +399,7 @@ var ExpandCPUModel = Updatables.declareModel(function() {
         if (!empty(data.CPU)) {
             r = _.extend(r, {
                 Expandable: data.CPU.Expandable, // immutable
-                More:       data.CPU.More        // immutable
+                ExpandText: data.CPU.ExpandText  // immutable
             });
         }
         return r;
@@ -410,18 +411,18 @@ var ExpandCPUModel = Updatables.declareModel(function() {
     return self;
 });
 
-var ProcessesModel = Updatables.declareModel(function() {
+var PSmodel = Updatables.declareModel(function() {
     var self = {
-        Attribute_Hide: 'HideProcesses'
+        Attribute_Hide: 'HidePS'
     };
     self.modelAttributes = function(data) {
         var r = {
             Hide: data.ClientState[self.Attribute_Hide]
         };
-        if (!empty(data.ProcTable)) {
+        if (!empty(data.PStable)) {
             r = _.extend(r, {
-                NotExpandable: data.ProcTable.NotExpandable,
-                MoreText:      data.ProcTable.MoreText
+                NotExpandable: data.PStable.NotExpandable,
+                PlusText:      data.PStable.PlusText
             });
         }
         return r;
@@ -429,15 +430,15 @@ var ProcessesModel = Updatables.declareModel(function() {
 
     self.toggleHidden = function(s) { return _.object([self.Attribute_Hide], [!s.Hide]); }; //, [!s[self.Attribute_Hide]]
 
-    self.more         = function()  { return {MoreProcessesSignal: true}; };
-    self.less         = function()  { return {MoreProcessesSignal: false}; };
+    self.more         = function()  { return {MorePsignal: true}; };
+    self.less         = function()  { return {MorePsignal: false}; };
     return self;
 });
 
-var ProcessesView = CollapseView.extend({
+var PSview = CollapseView.extend({
     initialize: function() {
         CollapseView.prototype.initialize.call(this);
-	this.listenTo(this.model, 'change:MoreText',      this.change_moretext);
+	this.listenTo(this.model, 'change:PlusText',      this.change_plustext);
 	this.listenTo(this.model, 'change:NotExpandable', this.change_notexpandable);
     },
     change_notexpandable: function() {
@@ -448,13 +449,13 @@ var ProcessesView = CollapseView.extend({
             $more_el.removeClass('disabled');
         }
     },
-    change_moretext: function() {
+    change_plustext: function() {
         var $more_el = this.model.attributes.more_el;
-        $more_el.text(this.model.attributes.MoreText);
+        $more_el.text(this.model.attributes.PlusText);
     },
 
-    events: {'click': 'proc_click'},
-    proc_click: function(e) {
+    events: {'click': 'ps_click'},
+    ps_click: function(e) {
 	var clicked = $(e.target);
         if (clicked.is(this.model.attributes.header_el)) { // header clicked
             this.collapse_click(e);
@@ -512,32 +513,32 @@ function ready() {
 
     var updatables = Updatables(Data);
 
-    updatables.make(Updatables.declareCollapseModel('HideMemory'), // MEMORY
-                    {target: $('#memory')}, CollapseView, { el: $('header a[href="#memory"]') });
+    updatables.make(Updatables.declareCollapseModel('HideMEM'), // MEMORY
+                    {target: $('#mem')}, CollapseView, { el: $('header a[href="#mem"]') });
 
-    updatables.make( // NETWORK
-        NetworkSwitchModel, {target: $('.network-tab')}, SwitchView, {
-            switch_el: $('label.network-switch'), // el_added:
-            header_el: $('header  a[href="#network"]'),
-            expand_el: $('label.all[href="#network"]')
+    updatables.make( // IF
+        IFswitchmodel, {target: $('.network-tab')}, SwitchView, {
+            switch_el: $('label.network-switch'),
+            header_el: $('header a[href="#if"]'),
+            expand_el: $('label.all[href="#if"]')
         });
 
     updatables.make( // CPU
-        ExpandCPUModel, {target: $('#cpu')}, ExpandButtonView, {
-            header_el: $('header  a[href="#cpu"]'),
+        ExpandCPUModel, {target: $('#cpu')}, ExpandView, {
+            header_el: $('header a[href="#cpu"]'),
             expand_el: $('label.all[href="#cpu"]')
         });
 
-    updatables.make( // DISKS
-        DisksSwitchModel, {target: $('.disk-tab')}, SwitchView, {
-            switch_el: $('label.disk-switch'), // el_added:
-            header_el: $('header  a[href="#disks"]'),
-            expand_el: $('label.all[href="#disks"]')
+    updatables.make( // DF
+        DFswitchmodel, {target: $('.disk-tab')}, SwitchView, {
+            switch_el: $('label.disk-switch'),
+            header_el: $('header a[href="#df"]'),
+            expand_el: $('label.all[href="#df"]')
         });
 
-    updatables.make( // PROCESSES
-        ProcessesModel, {target: $('#processes')}, ProcessesView, {
-            header_el: $('header a[href="#processes"]'),
+    updatables.make( // PS
+        PSmodel, {target: $('#ps')}, PSview, {
+            header_el: $('header a[href="#ps"]'),
             more_el: $('label.more[href="#psmore"]'),
             less_el: $('label.less[href="#psless"]')
         });
@@ -552,22 +553,22 @@ function ready() {
                     {}, UpdateView, {el: $('#generic-la')});
 
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Free: data.RAM.Free}; }}),
-                    {}, UpdateView, {el: $('#RAM-Free')});
+                    {}, UpdateView, {el: $('#ram-free')});
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Used: data.RAM.Used}; }}),
-                    {}, UpdateView, {el: $('#RAM-Used')});
+                    {}, UpdateView, {el: $('#ram-used')});
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Total: data.RAM.Total}; }}),
-                    {}, UpdateView, {el: $('#RAM-Total')});
+                    {}, UpdateView, {el: $('#ram-total')});
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {UsePercentHTML: data.RAM.UsePercentHTML}; }}),
-                    {}, UpdateView, {el: $('#RAM-UsePercent')});
+                    {}, UpdateView, {el: $('#ram-usepercent')});
 
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Free: data.Swap.Free}; }}),
-                    {}, UpdateView, {el: $('#Swap-Free')});
+                    {}, UpdateView, {el: $('#swap-free')});
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Used: data.Swap.Used}; }}),
-                    {}, UpdateView, {el: $('#Swap-Used')});
+                    {}, UpdateView, {el: $('#swap-used')});
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Total: data.Swap.Total}; }}),
-                    {}, UpdateView, {el: $('#Swap-Used')});
+                    {}, UpdateView, {el: $('#swap-total')});
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {UsePercentHTML: data.Swap.UsePercentHTML}; }}),
-                    {}, UpdateView, {el: $('#Swap-UsePercent')});
+                    {}, UpdateView, {el: $('#swap-usepercent')});
 
     update(Data.ClientState, updatables);
 }

@@ -17,28 +17,8 @@
       | ...
 [[end]]
 
-[[define "define_ifsrows"]]
-  each $if in Data.InterfacesBytes.List
-    |<tr key=#{$if.NameKey}>
-      td #{$if.NameHTML}
-      td.digital #{$if.DeltaIn}
-      td.digital #{$if.DeltaOut}
-      td.digital #{$if.In}
-      td.digital #{$if.Out}
-    |</tr>
-[[end]]
-[[define "define_ifserrorsrows"]]
-  each $if in Data.InterfacesErrors.List
-    |<tr key=#{$if.NameKey}>
-      td #{$if.NameHTML}
-      td.digital #{$if.DeltaIn}
-      td.digital #{$if.DeltaOut}
-      td.digital #{$if.In}
-      td.digital #{$if.Out}
-    |</tr>
-[[end]]
-[[define "define_ifspacketsrows"]]
-  each $if in Data.InterfacesPackets.List
+[[define "define_ifbytes_rows"]]
+  each $if in Data.IFbytes.List
     |<tr key=#{$if.NameKey}>
       td #{$if.NameHTML}
       td.digital #{$if.DeltaIn}
@@ -48,7 +28,29 @@
     |</tr>
 [[end]]
 
-[[define "define_ifstable"]]
+[[define "define_iferrors_rows"]]
+  each $if in Data.IFerrors.List
+    |<tr key=#{$if.NameKey}>
+      td #{$if.NameHTML}
+      td.digital #{$if.DeltaIn}
+      td.digital #{$if.DeltaOut}
+      td.digital #{$if.In}
+      td.digital #{$if.Out}
+    |</tr>
+[[end]]
+
+[[define "define_ifpackets_rows"]]
+  each $if in Data.IFpackets.List
+    |<tr key=#{$if.NameKey}>
+      td #{$if.NameHTML}
+      td.digital #{$if.DeltaIn}
+      td.digital #{$if.DeltaOut}
+      td.digital #{$if.In}
+      td.digital #{$if.Out}
+    |</tr>
+[[end]]
+
+[[define "define_ifbytes_table"]]
   table.table1.stripe-table
     thead
       tr
@@ -66,46 +68,48 @@
         th.digital.nobr Out
           span.unit[title="total modulo 4G"] %4G
     tbody
-      [[with GET "bracket_ifsrows"]][[.]][[DEL "bracket_ifsrows"]][[else]]
-        [[template "define_ifsrows" .]][[end]]
-[[end]]
-[[define "define_ifspacketstable"]]
-  table.table1.stripe-table
-    thead
-      tr
-        th Interface
-        th.digital.nobr In&nbsp;
-          span.unit[title="per second"] ps
-        th.digital.nobr Out&nbsp;
-          span.unit[title="per second"] ps
-        th.digital.nobr In
-          span.unit[title="modulo 4G"] %4G
-        th.digital.nobr Out
-          span.unit[title="modulo 4G"] %4G
-    tbody
-      [[with GET "bracket_ifsrows"]][[.]][[DEL "bracket_ifsrows"]][[else]]
-        [[template "define_ifspacketsrows" .]][[end]]
-[[end]]
-[[define "define_ifserrorstable"]]
-  table.table1.stripe-table
-    thead
-      tr
-        th Interface
-        th.digital.nobr In&nbsp;
-          span.unit[title="per second"] ps
-        th.digital.nobr Out&nbsp;
-          span.unit[title="per second"] ps
-        th.digital.nobr In
-          span.unit[title="modulo 4G"] %4G
-        th.digital.nobr Out
-          span.unit[title="modulo 4G"] %4G
-    tbody
-      [[with GET "bracket_ifsrows"]][[.]][[DEL "bracket_ifsrows"]][[else]]
-        [[template "define_ifserrorsrows" .]][[end]]
+      [[with GET "bracket_ifrows"]][[.]][[DEL "bracket_ifrows"]][[else]]
+        [[template "define_ifbytes_rows" .]][[end]]
 [[end]]
 
-[[define "define_dfrows"]]
-  each $disk in Data.DisksinBytes.List
+[[define "define_ifpackets_table"]]
+  table.table1.stripe-table
+    thead
+      tr
+        th Interface
+        th.digital.nobr In&nbsp;
+          span.unit[title="per second"] ps
+        th.digital.nobr Out&nbsp;
+          span.unit[title="per second"] ps
+        th.digital.nobr In
+          span.unit[title="modulo 4G"] %4G
+        th.digital.nobr Out
+          span.unit[title="modulo 4G"] %4G
+    tbody
+      [[with GET "bracket_ifrows"]][[.]][[DEL "bracket_ifrows"]][[else]]
+        [[template "define_ifpackets_rows" .]][[end]]
+[[end]]
+
+[[define "define_iferrors_table"]]
+  table.table1.stripe-table
+    thead
+      tr
+        th Interface
+        th.digital.nobr In&nbsp;
+          span.unit[title="per second"] ps
+        th.digital.nobr Out&nbsp;
+          span.unit[title="per second"] ps
+        th.digital.nobr In
+          span.unit[title="modulo 4G"] %4G
+        th.digital.nobr Out
+          span.unit[title="modulo 4G"] %4G
+    tbody
+      [[with GET "bracket_ifrows"]][[.]][[DEL "bracket_ifrows"]][[else]]
+        [[template "define_iferrors_rows" .]][[end]]
+[[end]]
+
+[[define "define_dfbytes_rows"]]
+  each $disk in Data.DFbytes.List
     | <tr key=#{$disk.DirNameKey}>
 
       td.nobr #{$disk.DiskNameHTML}
@@ -117,23 +121,8 @@
     | </tr>
 [[end]]
 
-[[define "define_dftable"]]
-  table.table1.stripe-table
-    thead
-      tr
-        $L = Data.DiskLinks
-        th.header         <a href=#{$L.DiskName.Href} class=#{$L.DiskName.Class}>Device<span  class=#{$L.DiskName.CaretClass} /></a>
-        th.header         <a href=#{$L.DirName.Href}  class=#{$L.DirName.Class} >Mounted<span class=#{$L.DirName.CaretClass}  /></a>
-        th.header.digital <a href=#{$L.Avail.Href}    class=#{$L.Avail.Class}   >Avail<span   class=#{$L.Avail.CaretClass}    /></a>
-        th.header.digital <a href=#{$L.Used.Href}     class=#{$L.Used.Class}    >Used<span    class=#{$L.Used.CaretClass}     /></a>
-        th.header.digital <a href=#{$L.Total.Href}    class=#{$L.Total.Class}   >Total<span   class=#{$L.Total.CaretClass}    /></a>
-    tbody
-      [[with GET "bracket_dfrows"]][[.]][[DEL "bracket_dfrows"]][[else]]
-        [[template "define_dfrows" .]][[end]]
-[[end]]
-
-[[define "define_dirows"]]
-  each $disk in Data.DisksinInodes.List
+[[define "define_dfinodes_rows"]]
+  each $disk in Data.DFinodes.List
     | <tr key=#{$disk.DirNameKey}>
 
       td.nobr #{$disk.DiskNameHTML}
@@ -145,7 +134,22 @@
     | </tr>
 [[end]]
 
-[[define "define_ditable"]]
+[[define "define_dfbytes_table"]]
+  table.table1.stripe-table
+    thead
+      tr
+        $L = Data.DFlinks
+        th.header         <a href=#{$L.DiskName.Href} class=#{$L.DiskName.Class}>Device<span  class=#{$L.DiskName.CaretClass} /></a>
+        th.header         <a href=#{$L.DirName.Href}  class=#{$L.DirName.Class} >Mounted<span class=#{$L.DirName.CaretClass}  /></a>
+        th.header.digital <a href=#{$L.Avail.Href}    class=#{$L.Avail.Class}   >Avail<span   class=#{$L.Avail.CaretClass}    /></a>
+        th.header.digital <a href=#{$L.Used.Href}     class=#{$L.Used.Class}    >Used<span    class=#{$L.Used.CaretClass}     /></a>
+        th.header.digital <a href=#{$L.Total.Href}    class=#{$L.Total.Class}   >Total<span   class=#{$L.Total.CaretClass}    /></a>
+    tbody
+      [[with GET "bracket_dfrows"]][[.]][[DEL "bracket_dfrows"]][[else]]
+        [[template "define_dfbytes_rows" .]][[end]]
+[[end]]
+
+[[define "define_dfinodes_table"]]
   table.table1.stripe-table
     thead
       tr
@@ -155,8 +159,8 @@
         th.header.digital Used
         th.header.digital Total
     tbody
-      [[with GET "bracket_dirows"]][[.]][[DEL "bracket_dirows"]][[else]]
-        [[template "define_dirows" .]][[end]]
+      [[with GET "bracket_dfrows"]][[.]][[DEL "bracket_dfrows"]][[else]]
+        [[template "define_dfinodes_rows" .]][[end]]
 [[end]]
 
 [[define "define_cpurows"]]
@@ -186,7 +190,7 @@ each $i, $core in Data.CPU.List
 [[end]]
 
 [[define "define_psrows"]]
-  each $proc in Data.ProcTable.List
+  each $proc in Data.PStable.List
     | <tr key=#{$proc.PID}>
       td.digital #{$proc.PID}
       td.digital #{$proc.UserHTML}
@@ -203,7 +207,7 @@ each $i, $core in Data.CPU.List
   table.table2.stripe-table
     thead
       tr
-        $L = Data.ProcTable.Links
+        $L = Data.PStable.Links
         th.header.digital <a href=#{$L.PID.Href}      class=#{$L.PID.Class}     >PID<span     class=#{$L.PID.CaretClass}      /></a>
         th.header.digital <a href=#{$L.User.Href}     class=#{$L.User.Class}    >USER<span    class=#{$L.User.CaretClass}     /></a>
         th.header.digital <a href=#{$L.Priority.Href} class=#{$L.Priority.Class}>PR<span      class=#{$L.Priority.CaretClass} /></a>
@@ -213,7 +217,7 @@ each $i, $core in Data.CPU.List
         th.header.center  <a href=#{$L.Time.Href}     class=#{$L.Time.Class}    >TIME<span    class=#{$L.Time.CaretClass}     /></a>
         th.header         <a href=#{$L.Name.Href}     class=#{$L.Name.Class}    >COMMAND<span class=#{$L.Name.CaretClass}     /></a>
 
-    tbody#procrows
+    tbody
       [[with GET "bracket_psrows"]][[.]][[DEL "bracket_psrows"]][[else]]
         [[template "define_psrows" .]][[end]]
 [[end]]

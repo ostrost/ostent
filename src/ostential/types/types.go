@@ -20,16 +20,16 @@ func(seq SEQ) Sign(t bool) bool { // used in sortable_*.go
 	return !t
 }
 
+type DataMeta struct {
+	Expandable *bool   `json:",omitempty"`
+	ExpandText *string `json:",omitempty"`
+}
+
 func NewDataMeta() DataMeta {
 	return DataMeta{
 		Expandable: new(bool),
-		More:       new(int),
+		ExpandText: new(string),
 	}
-}
-
-type DataMeta struct {
-	Expandable *bool `json:",omitempty"`
-	More       *int  `json:",omitempty"`
 }
 
 type CPU struct {
@@ -73,10 +73,10 @@ type DiskInodes struct {
 	IusePercentClass string
 }
 
-type DisksinBytes struct {
+type DFbytes struct {
 	List []DiskBytes
 }
-type DisksinInodes struct {
+type DFinodes struct {
 	List []DiskInodes
 }
 

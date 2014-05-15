@@ -3,115 +3,127 @@ import (
 	"ostential/types"
 )
 
+type internalClient struct {
+	// NB lowercase fields only, NOT to be marshalled/exported
+
+	psNotexpandable *bool
+	psLimit int
+}
+
 type clientState struct {
-	   HideMemory *bool `json:",omitempty"`
+	internalClient `json:"-"` // NB not marshalled
 
-	  HideNetwork *bool `json:",omitempty"`
-	ExpandNetwork *bool `json:",omitempty"`
+	HideMEM *bool `json:",omitempty"`
+	HideIF  *bool `json:",omitempty"`
+	HideCPU *bool `json:",omitempty"`
+	HideDF  *bool `json:",omitempty"`
+	HidePS  *bool `json:",omitempty"`
 
-	      HideCPU *bool `json:",omitempty"`
-	    ExpandCPU *bool `json:",omitempty"`
+	ExpandIF  *bool `json:",omitempty"`
+	ExpandCPU *bool `json:",omitempty"`
+	ExpandDF  *bool `json:",omitempty"`
 
-	    HideDisks *bool `json:",omitempty"`
-	  ExpandDisks *bool `json:",omitempty"`
+	TabIF *types.SEQ `json:",omitempty"`
+	TabDF *types.SEQ `json:",omitempty"`
 
-	HideProcesses *bool `json:",omitempty"`
+	IFTABS *iftabs `json:",omitempty"` // immutable, constant
+	DFTABS *dftabs `json:",omitempty"` // immutable, constant
 
-	CurrentNetworkTab *types.SEQ `json:",omitempty"`
-	CurrentDisksTab   *types.SEQ `json:",omitempty"`
-
-	NetworkTabs *networkTabs `json:",omitempty"` // immutable
-	  DisksTabs   *disksTabs `json:",omitempty"` // immutable
-
-	// UserProcesses string `json:omitempty`
-
-	// NB not marshalled:
-	processesNotExpandable *bool
-	processesLimitFactor   int
+	// PSusers []string `json:omitempty`
 }
 
-type disksTabs struct {
-	DisksinBytes  types.SEQ
-	DisksinInodes types.SEQ
-}
-type networkTabs struct {
-	NetworkinPackets  types.SEQ
-	NetworkinErrors   types.SEQ
-	NetworkinBytes    types.SEQ
+type dftabs struct {
+	DFbytes  types.SEQ
+	DFinodes types.SEQ
 }
 
-func(nt *networkTabs) merge(src *networkTabs) { if src != nil { *nt = *src } }
-func(dt *disksTabs)   merge(src *disksTabs)   { if src != nil { *dt = *src } }
+type iftabs struct {
+	IFpackets types.SEQ
+	IFerrors  types.SEQ
+	IFbytes   types.SEQ
+}
 
 func(_  clientState) merge_bool(dest, src *bool)    { if src != nil { *dest = *src } }
 func(_  clientState) mergeSEQ(dest, src *types.SEQ) { if src != nil { *dest = *src } }
 
 func(cs *clientState) Merge(ps clientState) {
-	cs.merge_bool(cs.HideMemory,      ps.HideMemory)
-	cs.merge_bool(cs.HideNetwork,     ps.HideNetwork)
-	cs.merge_bool(cs.ExpandNetwork,   ps.ExpandNetwork)
-	cs.merge_bool(cs.HideCPU,         ps.HideCPU)
-	cs.merge_bool(cs.ExpandCPU,       ps.ExpandCPU)
-	cs.merge_bool(cs.HideDisks,       ps.HideDisks)
-	cs.merge_bool(cs.ExpandDisks,     ps.ExpandDisks)
-	cs.merge_bool(cs.HideProcesses,   ps.HideProcesses)
-	cs.mergeSEQ(cs.CurrentNetworkTab, ps.CurrentNetworkTab)
-	cs.mergeSEQ(cs.CurrentDisksTab,   ps.CurrentDisksTab)
-	cs.NetworkTabs.merge(ps.NetworkTabs)
-	cs.DisksTabs  .merge(ps.DisksTabs)
+	cs.merge_bool(cs.HideMEM, ps.HideMEM)
+	cs.merge_bool(cs.HideIF,  ps.HideIF)
+	cs.merge_bool(cs.HideCPU, ps.HideCPU)
+	cs.merge_bool(cs.HideDF,  ps.HideDF)
+	cs.merge_bool(cs.HidePS,  ps.HidePS)
+
+	cs.merge_bool(cs.ExpandIF,  ps.ExpandIF)
+	cs.merge_bool(cs.ExpandCPU, ps.ExpandCPU)
+	cs.merge_bool(cs.ExpandDF,  ps.ExpandDF)
+
+	cs.mergeSEQ(cs.TabIF, ps.TabIF)
+	cs.mergeSEQ(cs.TabDF, ps.TabDF)
 }
 
 const (
-	____NTABID types.SEQ = iota
-	NPACKETS_TABID
-	 NERRORS_TABID
-	  NBYTES_TABID
+	____IFTABID types.SEQ = iota
+	IFPACKETS_TABID
+	 IFERRORS_TABID
+	  IFBYTES_TABID
 )
-var NETWORK_TABS = []types.SEQ{
-	NPACKETS_TABID,
-	NERRORS_TABID,
-	NBYTES_TABID,
+
+var IF_TABS = []types.SEQ{
+	IFPACKETS_TABID,
+	 IFERRORS_TABID,
+	  IFBYTES_TABID,
 }
+
 const (
-	____DTABID types.SEQ = iota
-	DINODES_TABID
-	 DBYTES_TABID
+	____DFTABID types.SEQ = iota
+	DFINODES_TABID
+	 DFBYTES_TABID
 )
-var DISKS_TABS = []types.SEQ{
-	DINODES_TABID,
-	DBYTES_TABID,
+
+var DF_TABS = []types.SEQ{
+	DFINODES_TABID,
+	 DFBYTES_TABID,
+}
+
+func newfalse() *bool { return new(bool) }
+func newtrue()  *bool { return newbool(true); }
+func newbool(v bool) (b *bool) { b = new(bool); *b = v; return }
+
+func newseq(v types.SEQ) *types.SEQ {
+	s := new(types.SEQ)
+	*s = v
+	return s
 }
 
 func defaultClientState() clientState {
 	cs := clientState{}
 
-	cs.HideMemory    = new(bool)
-	cs.HideNetwork   = new(bool)
-	cs.ExpandNetwork = new(bool)
-	cs.HideCPU       = new(bool)
-	cs.ExpandCPU     = new(bool)
-	cs.HideDisks     = new(bool)
-	cs.ExpandDisks   = new(bool)
-	cs.HideProcesses = new(bool)
+	cs.HideMEM = newfalse()
+	cs.HideIF  = newfalse()
+	cs.HideCPU = newfalse()
+	cs.HideDF  = newfalse()
+	cs.HidePS  = newfalse()
 
-	cs.CurrentNetworkTab = new(types.SEQ)
-	cs.CurrentDisksTab   = new(types.SEQ)
-	*cs.CurrentNetworkTab = NBYTES_TABID
-	*cs.CurrentDisksTab   = DBYTES_TABID
+	cs.ExpandIF  = newfalse()
+	cs.ExpandCPU = newfalse()
+	cs.ExpandDF  = newfalse()
 
-	 cs.DisksTabs = &disksTabs{ // immutable
-		 DisksinBytes:  DBYTES_TABID,
-		 DisksinInodes: DINODES_TABID,
-	 }
+	cs.TabIF = newseq(IFBYTES_TABID)
+	cs.TabDF = newseq(DFBYTES_TABID)
 
-	cs.NetworkTabs = &networkTabs{ // immutable
-		NetworkinPackets: NPACKETS_TABID,
-		NetworkinErrors:  NERRORS_TABID,
-		NetworkinBytes:   NBYTES_TABID,
+	cs.DFTABS = &dftabs{ // immutable, constant
+		DFbytes:  DFBYTES_TABID,
+		DFinodes: DFINODES_TABID,
 	}
-	// cs.UserProcesses = "" // default
-	cs.processesLimitFactor = 16
-	// cs.processesNotExpandable = new(bool) // false
+
+	cs.IFTABS = &iftabs{ // immutable, constant
+		IFpackets: IFPACKETS_TABID,
+		IFerrors:  IFERRORS_TABID,
+		IFbytes:   IFBYTES_TABID,
+	}
+
+	cs.psLimit = 16
+	// cs.psNotexpandable = newfalse()
 
 	return cs
 }
