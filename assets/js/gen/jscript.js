@@ -14,7 +14,7 @@ var IFbytesCLASS = React.createClass({displayName: 'IFbytesCLASS',
 			return (React.DOM.tr( {key:$if.NameKey}, React.DOM.td(null, React.DOM.span( {dangerouslySetInnerHTML:{__html: $if.NameHTML}} )),React.DOM.td( {className:"digital"}, $if.DeltaIn),React.DOM.td( {className:"digital"}, $if.DeltaOut),React.DOM.td( {className:"digital"}, $if.In),React.DOM.td( {className:"digital"}, $if.Out)));
 		});
 		
-		return (React.DOM.table( {className:"table1 stripe-table"}, React.DOM.thead(null, React.DOM.tr(null, React.DOM.th(null, "Interface"),React.DOM.th( {className:"digital nobr"}, "In",React.DOM.span( {className:"unit", title:"bits per second"}, React.DOM.b(null, "b"),"ps")),React.DOM.th( {className:"digital nobr"}, "Out",React.DOM.span( {className:"unit", title:"bits per second"}, React.DOM.b(null, "b"),"ps")),React.DOM.th( {className:"digital nobr"}, "In",React.DOM.span( {className:"unit", title:"total modulo 4G"}, "%4G")),React.DOM.th( {className:"digital nobr"}, "Out",React.DOM.span( {className:"unit", title:"total modulo 4G"}, "%4G")))),React.DOM.tbody(null, rows)));
+		return (React.DOM.table( {className:"table1 stripe-table"}, React.DOM.thead(null, React.DOM.tr(null, React.DOM.th(null, "Interface"),React.DOM.th( {className:"digital nobr", title:"BITS per second"}, "In",React.DOM.span( {className:"unit"}, React.DOM.b(null, "b"),"ps")),React.DOM.th( {className:"digital nobr", title:"BITS per second"}, "Out",React.DOM.span( {className:"unit"}, React.DOM.b(null, "b"),"ps")),React.DOM.th( {className:"digital nobr", title:"total BYTES modulo 4G"}, "In",React.DOM.span( {className:"unit"}, React.DOM.b(null, "B"),"%4G")),React.DOM.th( {className:"digital nobr", title:"total BYTES modulo 4G"}, "Out",React.DOM.span( {className:"unit"}, React.DOM.b(null, "B"),"%4G")))),React.DOM.tbody(null, rows)));
 		
 	}
 });
@@ -28,7 +28,7 @@ var IFerrorsCLASS = React.createClass({displayName: 'IFerrorsCLASS',
 			return (React.DOM.tr( {key:$if.NameKey}, React.DOM.td(null, React.DOM.span( {dangerouslySetInnerHTML:{__html: $if.NameHTML}} )),React.DOM.td( {className:"digital"}, $if.DeltaIn),React.DOM.td( {className:"digital"}, $if.DeltaOut),React.DOM.td( {className:"digital"}, $if.In),React.DOM.td( {className:"digital"}, $if.Out)));
 		});
 		
-		return (React.DOM.table( {className:"table1 stripe-table"}, React.DOM.thead(null, React.DOM.tr(null, React.DOM.th(null, "Interface"),React.DOM.th( {className:"digital nobr"}, "In ",React.DOM.span( {className:"unit", title:"per second"}, "ps")),React.DOM.th( {className:"digital nobr"}, "Out ",React.DOM.span( {className:"unit", title:"per second"}, "ps")),React.DOM.th( {className:"digital nobr"}, "In",React.DOM.span( {className:"unit", title:"modulo 4G"}, "%4G")),React.DOM.th( {className:"digital nobr"}, "Out",React.DOM.span( {className:"unit", title:"modulo 4G"}, "%4G")))),React.DOM.tbody(null, rows)));
+		return (React.DOM.table( {className:"table1 stripe-table"}, React.DOM.thead(null, React.DOM.tr(null, React.DOM.th(null, "Interface"),React.DOM.th( {className:"digital nobr", title:"per second"}, "In ",React.DOM.span( {className:"unit"}, "ps")),React.DOM.th( {className:"digital nobr", title:"per second"}, "Out ",React.DOM.span( {className:"unit"}, "ps")),React.DOM.th( {className:"digital nobr", title:"modulo 4G"}, "In ",React.DOM.span( {className:"unit"}, "%4G")),React.DOM.th( {className:"digital nobr", title:"modulo 4G"}, "Out ",React.DOM.span( {className:"unit"}, "%4G")))),React.DOM.tbody(null, rows)));
 		
 	}
 });
@@ -42,7 +42,7 @@ var IFpacketsCLASS = React.createClass({displayName: 'IFpacketsCLASS',
 			return (React.DOM.tr( {key:$if.NameKey}, React.DOM.td(null, React.DOM.span( {dangerouslySetInnerHTML:{__html: $if.NameHTML}} )),React.DOM.td( {className:"digital"}, $if.DeltaIn),React.DOM.td( {className:"digital"}, $if.DeltaOut),React.DOM.td( {className:"digital"}, $if.In),React.DOM.td( {className:"digital"}, $if.Out)));
 		});
 		
-		return (React.DOM.table( {className:"table1 stripe-table"}, React.DOM.thead(null, React.DOM.tr(null, React.DOM.th(null, "Interface"),React.DOM.th( {className:"digital nobr"}, "In ",React.DOM.span( {className:"unit", title:"per second"}, "ps")),React.DOM.th( {className:"digital nobr"}, "Out ",React.DOM.span( {className:"unit", title:"per second"}, "ps")),React.DOM.th( {className:"digital nobr"}, "In",React.DOM.span( {className:"unit", title:"modulo 4G"}, "%4G")),React.DOM.th( {className:"digital nobr"}, "Out",React.DOM.span( {className:"unit", title:"modulo 4G"}, "%4G")))),React.DOM.tbody(null, rows)));
+		return (React.DOM.table( {className:"table1 stripe-table"}, React.DOM.thead(null, React.DOM.tr(null, React.DOM.th(null, "Interface"),React.DOM.th( {className:"digital nobr", title:"per second"}, "In ",React.DOM.span( {className:"unit"}, "ps")),React.DOM.th( {className:"digital nobr", title:"per second"}, "Out ",React.DOM.span( {className:"unit"}, "ps")),React.DOM.th( {className:"digital nobr", title:"total modulo 4G"}, "In ",React.DOM.span( {className:"unit"}, "%4G")),React.DOM.th( {className:"digital nobr", title:"total modulo 4G"}, "Out ",React.DOM.span( {className:"unit"}, "%4G")))),React.DOM.tbody(null, rows)));
 		
 	}
 });

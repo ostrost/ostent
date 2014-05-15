@@ -55,18 +55,22 @@
     thead
       tr
         th Interface
-        th.digital.nobr In
-          span.unit[title="bits per second"]
+        th.digital.nobr[title="BITS per second"] In
+          span.unit
             b b
             | ps
-        th.digital.nobr Out
-          span.unit[title="bits per second"]
+        th.digital.nobr[title="BITS per second"] Out
+          span.unit
             b b
             | ps
-        th.digital.nobr In
-          span.unit[title="total modulo 4G"] %4G
-        th.digital.nobr Out
-          span.unit[title="total modulo 4G"] %4G
+        th.digital.nobr[title="total BYTES modulo 4G"] In
+          span.unit
+            b B
+            | %4G
+        th.digital.nobr[title="total BYTES modulo 4G"] Out
+          span.unit
+            b B
+            | %4G
     tbody
       [[with GET "bracket_ifrows"]][[.]][[DEL "bracket_ifrows"]][[else]]
         [[template "define_ifbytes_rows" .]][[end]]
@@ -77,14 +81,14 @@
     thead
       tr
         th Interface
-        th.digital.nobr In&nbsp;
-          span.unit[title="per second"] ps
-        th.digital.nobr Out&nbsp;
-          span.unit[title="per second"] ps
-        th.digital.nobr In
-          span.unit[title="modulo 4G"] %4G
-        th.digital.nobr Out
-          span.unit[title="modulo 4G"] %4G
+        th.digital.nobr[title="per second"] In&nbsp;
+          span.unit ps
+        th.digital.nobr[title="per second"] Out&nbsp;
+          span.unit ps
+        th.digital.nobr[title="total modulo 4G"] In&nbsp;
+          span.unit %4G
+        th.digital.nobr[title="total modulo 4G"] Out&nbsp;
+          span.unit %4G
     tbody
       [[with GET "bracket_ifrows"]][[.]][[DEL "bracket_ifrows"]][[else]]
         [[template "define_ifpackets_rows" .]][[end]]
@@ -95,14 +99,14 @@
     thead
       tr
         th Interface
-        th.digital.nobr In&nbsp;
-          span.unit[title="per second"] ps
-        th.digital.nobr Out&nbsp;
-          span.unit[title="per second"] ps
-        th.digital.nobr In
-          span.unit[title="modulo 4G"] %4G
-        th.digital.nobr Out
-          span.unit[title="modulo 4G"] %4G
+        th.digital.nobr[title="per second"] In&nbsp;
+          span.unit ps
+        th.digital.nobr[title="per second"] Out&nbsp;
+          span.unit ps
+        th.digital.nobr[title="modulo 4G"] In&nbsp;
+          span.unit %4G
+        th.digital.nobr[title="modulo 4G"] Out&nbsp;
+          span.unit %4G
     tbody
       [[with GET "bracket_ifrows"]][[.]][[DEL "bracket_ifrows"]][[else]]
         [[template "define_iferrors_rows" .]][[end]]

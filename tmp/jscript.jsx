@@ -14,7 +14,7 @@ var IFbytesCLASS = React.createClass({
 			return (<tr key={$if.NameKey}><td><span dangerouslySetInnerHTML={{__html: $if.NameHTML}} /></td><td className="digital">{$if.DeltaIn}</td><td className="digital">{$if.DeltaOut}</td><td className="digital">{$if.In}</td><td className="digital">{$if.Out}</td></tr>);
 		});
 		
-		return (<table className="table1 stripe-table"><thead><tr><th>Interface</th><th className="digital nobr">In<span className="unit" title="bits per second"><b>b</b>ps</span></th><th className="digital nobr">Out<span className="unit" title="bits per second"><b>b</b>ps</span></th><th className="digital nobr">In<span className="unit" title="total modulo 4G">%4G</span></th><th className="digital nobr">Out<span className="unit" title="total modulo 4G">%4G</span></th></tr></thead><tbody>{rows}</tbody></table>);
+		return (<table className="table1 stripe-table"><thead><tr><th>Interface</th><th className="digital nobr" title="BITS per second">In<span className="unit"><b>b</b>ps</span></th><th className="digital nobr" title="BITS per second">Out<span className="unit"><b>b</b>ps</span></th><th className="digital nobr" title="total BYTES modulo 4G">In<span className="unit"><b>B</b>%4G</span></th><th className="digital nobr" title="total BYTES modulo 4G">Out<span className="unit"><b>B</b>%4G</span></th></tr></thead><tbody>{rows}</tbody></table>);
 		
 	}
 });
@@ -28,7 +28,7 @@ var IFerrorsCLASS = React.createClass({
 			return (<tr key={$if.NameKey}><td><span dangerouslySetInnerHTML={{__html: $if.NameHTML}} /></td><td className="digital">{$if.DeltaIn}</td><td className="digital">{$if.DeltaOut}</td><td className="digital">{$if.In}</td><td className="digital">{$if.Out}</td></tr>);
 		});
 		
-		return (<table className="table1 stripe-table"><thead><tr><th>Interface</th><th className="digital nobr">In&nbsp;<span className="unit" title="per second">ps</span></th><th className="digital nobr">Out&nbsp;<span className="unit" title="per second">ps</span></th><th className="digital nobr">In<span className="unit" title="modulo 4G">%4G</span></th><th className="digital nobr">Out<span className="unit" title="modulo 4G">%4G</span></th></tr></thead><tbody>{rows}</tbody></table>);
+		return (<table className="table1 stripe-table"><thead><tr><th>Interface</th><th className="digital nobr" title="per second">In&nbsp;<span className="unit">ps</span></th><th className="digital nobr" title="per second">Out&nbsp;<span className="unit">ps</span></th><th className="digital nobr" title="modulo 4G">In&nbsp;<span className="unit">%4G</span></th><th className="digital nobr" title="modulo 4G">Out&nbsp;<span className="unit">%4G</span></th></tr></thead><tbody>{rows}</tbody></table>);
 		
 	}
 });
@@ -42,7 +42,7 @@ var IFpacketsCLASS = React.createClass({
 			return (<tr key={$if.NameKey}><td><span dangerouslySetInnerHTML={{__html: $if.NameHTML}} /></td><td className="digital">{$if.DeltaIn}</td><td className="digital">{$if.DeltaOut}</td><td className="digital">{$if.In}</td><td className="digital">{$if.Out}</td></tr>);
 		});
 		
-		return (<table className="table1 stripe-table"><thead><tr><th>Interface</th><th className="digital nobr">In&nbsp;<span className="unit" title="per second">ps</span></th><th className="digital nobr">Out&nbsp;<span className="unit" title="per second">ps</span></th><th className="digital nobr">In<span className="unit" title="modulo 4G">%4G</span></th><th className="digital nobr">Out<span className="unit" title="modulo 4G">%4G</span></th></tr></thead><tbody>{rows}</tbody></table>);
+		return (<table className="table1 stripe-table"><thead><tr><th>Interface</th><th className="digital nobr" title="per second">In&nbsp;<span className="unit">ps</span></th><th className="digital nobr" title="per second">Out&nbsp;<span className="unit">ps</span></th><th className="digital nobr" title="total modulo 4G">In&nbsp;<span className="unit">%4G</span></th><th className="digital nobr" title="total modulo 4G">Out&nbsp;<span className="unit">%4G</span></th></tr></thead><tbody>{rows}</tbody></table>);
 		
 	}
 });
