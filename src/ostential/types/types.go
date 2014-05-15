@@ -23,12 +23,14 @@ func(seq SEQ) Sign(t bool) bool { // used in sortable_*.go
 type DataMeta struct {
 	Expandable *bool   `json:",omitempty"`
 	ExpandText *string `json:",omitempty"`
+	Hatch *template.HTML `json:",omitempty"`
 }
 
 func NewDataMeta() DataMeta {
 	return DataMeta{
 		Expandable: new(bool),
 		ExpandText: new(string),
+		Hatch: new(template.HTML),
 	}
 }
 

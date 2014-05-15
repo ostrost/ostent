@@ -513,6 +513,26 @@ function ready() {
 
     var updatables = Updatables(Data);
 
+    new CollapseView({ el: $('[href="#memconfig"]'), // MEM CONFIG
+                       model: updatables.make(Updatables.declareCollapseModel('ConfigMEM'),
+                                              {target: $('#memconfig')}) });
+
+    new CollapseView({ el: $('[href="#ifconfig"]'), // IF CONFIG
+                       model: updatables.make(Updatables.declareCollapseModel('ConfigIF'),
+                                              {target: $('#ifconfig')}) });
+
+    new CollapseView({ el: $('[href="#cpuconfig"]'), // CPU CONFIG
+                       model: updatables.make(Updatables.declareCollapseModel('ConfigCPU'),
+                                              {target: $('#cpuconfig')}) });
+
+    new CollapseView({ el: $('[href="#dfconfig"]'), // DF CONFIG
+                       model: updatables.make(Updatables.declareCollapseModel('ConfigDF'),
+                                              {target: $('#dfconfig')}) });
+
+    new CollapseView({ el: $('[href="#psconfig"]'), // PS CONFIG
+                       model: updatables.make(Updatables.declareCollapseModel('ConfigPS'),
+                                              {target: $('#psconfig')}) });
+
     updatables.make(Updatables.declareCollapseModel('HideMEM'), // MEMORY
                     {target: $('#mem')}, CollapseView, { el: $('header a[href="#mem"]') });
 

@@ -30,6 +30,12 @@ type clientState struct {
 	DFTABS *dftabs `json:",omitempty"` // immutable, constant
 
 	// PSusers []string `json:omitempty`
+
+	ConfigMEM *bool `json:",omitempty"`
+	ConfigIF  *bool `json:",omitempty"`
+	ConfigCPU *bool `json:",omitempty"`
+	ConfigDF  *bool `json:",omitempty"`
+	ConfigPS  *bool `json:",omitempty"`
 }
 
 type dftabs struct {
@@ -59,6 +65,12 @@ func(cs *clientState) Merge(ps clientState) {
 
 	cs.mergeSEQ(cs.TabIF, ps.TabIF)
 	cs.mergeSEQ(cs.TabDF, ps.TabDF)
+
+	cs.merge_bool(cs.ConfigMEM, ps.ConfigMEM)
+	cs.merge_bool(cs.ConfigIF,  ps.ConfigIF)
+	cs.merge_bool(cs.ConfigCPU, ps.ConfigCPU)
+	cs.merge_bool(cs.ConfigDF,  ps.ConfigDF)
+	cs.merge_bool(cs.ConfigPS,  ps.ConfigPS)
 }
 
 const (
@@ -121,6 +133,15 @@ func defaultClientState() clientState {
 		IFerrors:  IFERRORS_TABID,
 		IFbytes:   IFBYTES_TABID,
 	}
+
+	configdefault := true
+	// configdefault = false // DEVELOPMENT
+
+	cs.ConfigMEM = newbool(configdefault)
+	cs.ConfigIF  = newbool(configdefault)
+	cs.ConfigCPU = newbool(configdefault)
+	cs.ConfigDF  = newbool(configdefault)
+	cs.ConfigPS  = newbool(configdefault)
 
 	cs.psLimit = 16
 	// cs.psNotexpandable = newfalse()

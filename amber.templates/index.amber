@@ -1,4 +1,22 @@
 [[/* -*- indent-tabs-mode: nil -*- */]]
+[[define "define_refresh"]]
+  div.btn-group[data-toggle="buttons"]
+    div.input-group.input-group-sm#meminput-group
+      input.form-control[type="text"][placeholder="0.5m"]
+      div.input-group-btn
+        button.btn.btn-default.dropdown-toggle[data-toggle="dropdown"][type="button"]
+          span.caret
+          span.sr-only Toggle dropdown
+        ul.dropdown-menu
+          li
+            a[href="#1s"] 1 second
+          li
+            a[href="#5s"] 5 seconds
+          li
+            a[href="#1m"]
+              em 1 minute
+        button.btn.btn-default[type="button"] 1s
+[[end]]
 !!! 5
 html
   head
@@ -26,7 +44,10 @@ html
       $(ready);
 
     div.container
-      div.row.collapse
+      div.row.collapse#alert-parent
+        div.alert.alert-danger.alert-dismissable
+          button.close[type="button"][data-dismiss="alert"][aria-hidden="true"] &times;
+          span#alert-message Alert
 
     div.container-fluid.padding-top15
       div.row
@@ -39,6 +60,29 @@ html
           div.panel1
             header.draggable
               a[href="#mem"] Memory
+              div.pull-right
+                div.btn-group[data-toggle="buttons"]
+                  label.btn-header[href="#memconfig"][disabled="disabled"]
+                    input[type="checkbox"][name="memconfig"]
+                    | #{Data.MEMhatch}
+
+            div.collapse#memconfig
+              [class="in"] ? (json(Data.ClientState.ConfigMEM) == "false")
+              //- ALSO DISABLED HATCH
+              //- form.horizontal-form
+              //-   div.form-group
+              //-     label.col-sm-4.control-label[for="input"] swap
+              //-     div.col-sm-8
+              //-       div.btn-group[data-toggle="buttons"]
+              //-         label.btn.btn-default.btn-sm.active
+              //-           input[type="checkbox"][name="showswap"]
+              //-           | Shown
+
+              //-   div.pad-form-group
+              //-     label[for="refresh"] Refresh
+              //-     div.col-sm-10#memrefresh
+              //-       [[template "define_refresh"]]
+
             div.collapse#mem
               [class="in"] ? (json(Data.ClientState.HideMEM) == "false")
               table.table1.stripe-table
@@ -70,30 +114,47 @@ html
           div.panel1
             header.draggable.panel-heading.nobr
               a[href="#if"] Network
-
               div.pull-right
-                div.btn-group.notall[data-toggle="buttons"]
-                  label.network-switch.btn.btn-xx.btn-default.nondefault
-                    [href="#ifpackets"][data-tabid=Data.ClientState.IFTABS.IFpackets]
-                    input#radio-network-packets[type="radio"][name="network-radio"]
-                    | Packets
+                div.btn-group[data-toggle="buttons"]
+                  label.btn-header[href="#ifconfig"]
+                    input[type="checkbox"][name="ifconfig"]
+                    | #{Data.IF.Hatch}
 
-                  label.network-switch.btn.btn-xx.btn-default.nondefault
-                    [href="#iferrors"][data-tabid=Data.ClientState.IFTABS.IFerrors]
-                    input#radio-network-errors[type="radio"][name="network-radio"]
-                    | Errors
+            div.collapse#ifconfig
+              [class="in"] ? (json(Data.ClientState.ConfigIF) == "false")
+              form.horizontal-form
+                div.form-group
+                  label.col-sm-4.control-label[for="input"] Show
+                  div.col-sm-8
+                     div.btn-group[data-toggle="buttons"]
+                      label.btn.btn-default.btn-sm.all[href="#if"]
+                        [class="disabled"] ? (json(Data.IF.Expandable)) != "true")
+                        input[type="checkbox"][name="expandnetwork"]
+                        | #{Data.IF.ExpandText}
 
-                  label.network-switch.btn.btn-xx.btn-default.active
-                    [href="#ifbytes"][data-tabid=Data.ClientState.IFTABS.IFbytes]
-                    input#radio-network-bytes[type="radio"][name="network-radio"][checked="checked"]
-                    | Bytes
+                div.form-group
+                  label.col-sm-4.control-label[for="network"] Network
+                  div.col-sm-8
+                    div.btn-group.btn-group-sm[data-toggle="buttons"]
+                      label.network-switch.btn.btn-default.nondefault
+                        [href="#ifpackets"][data-tabid=Data.ClientState.IFTABS.IFpackets]
+                        input#radio-network-packets[type="radio"][name="network-radio"]
+                        | Packets
 
-                div.btn-group.btn-xx[data-toggle="buttons"]
-                  //- [title="ii"]
-                  label.btn.btn-xx.btn-default.all[href="#if"]
-                    [class="disabled"] ? (json(Data.IF.Expandable)) != "true")
-                    input[type="checkbox"][name="allnetwork"]
-                    | #{Data.IF.ExpandText}
+                      label.network-switch.btn.btn-default.nondefault
+                        [href="#iferrors"][data-tabid=Data.ClientState.IFTABS.IFerrors]
+                        input#radio-network-errors[type="radio"][name="network-radio"]
+                        | Errors
+
+                      label.network-switch.btn.btn-default.active
+                        [href="#ifbytes"][data-tabid=Data.ClientState.IFTABS.IFbytes]
+                        input#radio-network-bytes[type="radio"][name="network-radio"][checked="checked"]
+                        | Bytes
+
+                //- div.form-group
+                //-   label.col-sm-4.control-label[for="refresh"] Refresh
+                //-   div.col-sm-6
+                //-     [[template "define_refresh"]]
 
             //- panels selected by .network-tab
             div.network-tab.collapse#ifpackets[data-tabid=Data.ClientState.IFTABS.IFpackets]
@@ -115,14 +176,28 @@ html
           div.panel1
             header.draggable.nobr
               a[href="#cpu"] CPU
-
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
-                  //- [title="ii"]
-                  label.btn.btn-xx.btn-default.all[href="#cpu"]
-                    [class="disabled"] ? (json(Data.CPU.Expandable)) != "true")
-                    input[type="checkbox"][name="allcpu"]
-                    | #{Data.CPU.ExpandText}
+                  label.btn-header[href="#cpuconfig"]
+                    input[type="checkbox"][name="cpuconfig"]
+                    | #{Data.CPU.Hatch}
+
+            div.collapse#cpuconfig
+              [class="in"] ? (json(Data.ClientState.ConfigCPU) == "false")
+              form.horizontal-form
+                div.form-group
+                  label.col-sm-4.control-label[for="input"] Show
+                  div.col-sm-8
+                    div.btn-group[data-toggle="buttons"]
+                      label.btn.btn-default.btn-sm.all[href="#cpu"]
+                        [class="disabled"] ? (json(Data.CPU.Expandable)) != "true")
+                        input[type="checkbox"][name="expandcpu"]
+                        | #{Data.CPU.ExpandText}
+
+                //- div.pad-form-group
+                //-   label[for="refresh"] Refresh
+                //-   div.col-sm-10
+                //-       [[template "define_refresh"]]
 
             div.collapse#cpu
               [class="in"] ? (json(Data.ClientState.HideCPU) == "false")
@@ -133,25 +208,42 @@ html
           div.panel1
             header.draggable.panel-heading.nobr
               a[href="#df"] Disks
-
               div.pull-right
-                div.btn-group.notall[data-toggle="buttons"]
-                  label.disk-switch.btn.btn-xx.btn-default.nondefault
-                    [href="#dfinodes"][data-tabid=Data.ClientState.DFTABS.DFinodes]
-                    input#radio-disks-inodes[type="radio"][name="disks-radio"]
-                    | Inodes
-
-                  label.disk-switch.btn.btn-xx.btn-default.active
-                    [href="#dfbytes"][data-tabid=Data.ClientState.DFTABS.DFbytes]
-                    input#radio-disks-bytes[type="radio"][name="disks-radio"][checked="checked"]
-                    | Bytes
-
                 div.btn-group[data-toggle="buttons"]
-                  //- [title="ii"]
-                  label.btn.btn-xx.btn-default.all[href="#df"]
-                    [class="disabled"] ? (json(Data.DF.Expandable)) != "true")
-                    input[type="checkbox"][name="alldisks"]
-                    | #{Data.DF.ExpandText}
+                  label.btn-header[href="#dfconfig"]
+                    input[type="checkbox"][name="dfconfig"]
+                    | #{Data.DF.Hatch}
+
+            div.collapse#dfconfig
+              [class="in"] ? (json(Data.ClientState.ConfigDF) == "false")
+              form.horizontal-form
+                div.form-group
+                  label.col-sm-4.control-label[for="input"] Show
+                  div.col-sm-8
+                    div.btn-group[data-toggle="buttons"]
+                      label.btn.btn-default.btn-sm.all[href="#df"]
+                        [class="disabled"] ? (json(Data.DF.Expandable)) != "true")
+                        input[type="checkbox"][name="expandisks"]
+                        | #{Data.DF.ExpandText}
+
+                div.form-group
+                  label.col-sm-4.control-label[for="df"] Disks
+                  div.col-sm-8
+                    div.btn-group.btn-group-sm[data-toggle="buttons"]
+                      label.disk-switch.btn.btn-default.nondefault
+                        [href="#dfinodes"][data-tabid=Data.ClientState.DFTABS.DFinodes]
+                        input#radio-disks-inodes[type="radio"][name="disks-radio"]
+                        | Inodes
+
+                      label.disk-switch.btn.btn-default.active
+                        [href="#dfbytes"][data-tabid=Data.ClientState.DFTABS.DFbytes]
+                        input#radio-disks-bytes[type="radio"][name="disks-radio"][checked="checked"]
+                        | Bytes
+
+                //- div.form-group
+                //-   label.col-sm-4.control-label[for="refresh"] Refresh
+                //-   div.col-sm-6
+                //-     [[template "define_refresh"]]
 
             //- panels selected by .disk-tab
             div.disk-tab.collapse#dfinodes[data-tabid=Data.ClientState.DFTABS.DFinodes]
@@ -208,19 +300,35 @@ html
             header.NOTdraggable
               a[href="#ps"] Processes
 
-              //- div.btn-group.btn-group-xs.notall
-              //-   label.btn.btn-xx.btn-default
+              //- div.btn-group.btn-group-xs
+              //-   label.btn.btn-sm.btn-default
               //-     [class="collapse"] ifempty Data.ClientState.UserProcesses
               //-     | User #{Data.ClientState.UserProcesses} &times;
 
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
-                  label.btn.btn-xx.btn-default.more[href="#psmore"]
-                    input[type="checkbox"][name="psmore"]
-                    | #{Data.PStable.PlusText}
-                  label.btn.btn-xx.btn-default.less[href="#psless"]
-                    input[type="checkbox"][name="psless"]
-                    | -
+                  label.btn-header[href="#psconfig"]
+                    input[type="checkbox"][name="psconfig"]
+                    | #{Data.PShatch}
+
+            div.collapse#psconfig
+              [class="in"] ? (json(Data.ClientState.ConfigPS) == "false")
+              form.horizontal-form
+                div.form-group
+                  //- label.col-sm-1.col-sm-offset-6.control-label[for="refresh"] Refresh
+                  //- div.col-sm-2
+                  //-   [[template "define_refresh"]]
+
+                  //- NB REMOVE OFFSET WHEN REFRESH ENABLED
+                  label.col-sm-1.col-sm-offset-9.control-label[for="show"] Show
+                  div.col-sm-2
+                    div.btn-group.btn-group-sm[data-toggle="buttons"]
+                      label.btn.btn-default.less[href="#psless"]
+                        input[type="checkbox"][name="psless"]
+                        | -
+                      label.btn.btn-default.more[href="#psmore"]
+                        input[type="checkbox"][name="psmore"]
+                        | #{Data.PStable.PlusText}
 
             div.collapse#ps
               [class="in"] ? (json(Data.ClientState.HidePS) == "false")
