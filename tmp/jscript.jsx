@@ -75,13 +75,27 @@ var DFinodesCLASS = React.createClass({
 	}
 });
 
+var MEMtableCLASS = React.createClass({
+	getInitialState: function() { return Data.MEM; },
+
+	render: function() {
+		var Data = {MEM: this.state};
+		var rows = Data.MEM.List.map(function($mem) {
+			return (<tr key={$mem.Kind}><td>{$mem.Kind}</td><td className="digital">{$mem.Free}</td><td className="digital">{$mem.Used}&nbsp;<sup><span dangerouslySetInnerHTML={{__html: $mem.UsePercentHTML}} /></sup></td><td className="digital">{$mem.Total}</td></tr>);
+		});
+		
+		return (<table className="table1 stripe-table"><thead><tr><th></th><th className="digital">Free</th><th className="digital">Used</th><th className="digital">Total</th></tr></thead><tbody>{rows}</tbody></table>);
+		
+	}
+});
+
 var CPUtableCLASS = React.createClass({
 	getInitialState: function() { return Data.CPU; },
 
 	render: function() {
 		var Data = {CPU: this.state};
 		var rows = Data.CPU.List.map(function($core) {
-			return (<tr key={$core.N}><td className="digital nobr">{$core.N}</td><td className="digital"><span id="core0.User" className={$core.UserClass}>{$core.User}</span></td><td className="digital"><span id="core0.Sys"  className={$core.SysClass}>{$core.Sys}</span></td><td className="digital"><span id="core0.Idle" className={$core.IdleClass}>{$core.Idle}</span></td></tr>);
+			return (<tr key={$core.N}><td className="digital nobr">{$core.N}</td><td className="digital"><span className={$core.UserClass}>{$core.User}</span></td><td className="digital"><span className={$core.SysClass}>{$core.Sys}</span></td><td className="digital"><span className={$core.IdleClass}>{$core.Idle}</span></td></tr>);
 		});
 		
 		return (<table className="table1 stripe-table"><thead><tr><th></th><th className="digital nobr">User<span className="unit">%</span></th><th className="digital nobr">Sys<span className="unit">%</span></th><th className="digital nobr">Idle<span className="unit">%</span></th></tr></thead><tbody>{rows}</tbody></table>);

@@ -62,53 +62,32 @@ html
               a[href="#mem"] Memory
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
-                  label.btn-header[href="#memconfig"][disabled="disabled"]
+                  label.btn-header[href="#memconfig"]
                     input[type="checkbox"][name="memconfig"]
-                    | #{Data.MEMhatch}
+                    | #{Data.MEM.Hatch}
 
             div.collapse#memconfig
               [class="in"] ? (json(Data.ClientState.ConfigMEM) == "false")
-              //- ALSO DISABLED HATCH
-              //- form.horizontal-form
-              //-   div.form-group
-              //-     label.col-sm-4.control-label[for="input"] swap
-              //-     div.col-sm-8
-              //-       div.btn-group[data-toggle="buttons"]
-              //-         label.btn.btn-default.btn-sm.active
-              //-           input[type="checkbox"][name="showswap"]
-              //-           | Shown
+              form.horizontal-form
+                div.form-group
+                  label.col-sm-4.control-label[for="input"] swap
+                  div.col-sm-8
+                    div.btn-group[data-toggle="buttons"]
+                      label.btn.btn-sm[href="#showswap"]
+                        [class="btn-primary active"] ? (json(Data.ClientState.HideSWAP)) == "false")
+                        [class="btn-default"]        ? (json(Data.ClientState.HideSWAP)) != "false")
+                        input[type="checkbox"][name="showswap"]
+                        | Show
 
-              //-   div.pad-form-group
-              //-     label[for="refresh"] Refresh
-              //-     div.col-sm-10#memrefresh
-              //-       [[template "define_refresh"]]
+                //- div.pad-form-group
+                //-   label[for="refresh"] Refresh
+                //-   div.col-sm-10#memrefresh
+                //-     [[template "define_refresh"]]
 
             div.collapse#mem
               [class="in"] ? (json(Data.ClientState.HideMEM) == "false")
-              table.table1.stripe-table
-                thead
-                  tr
-                    th
-                    th.digital Free
-                    th.digital Used
-                    th.digital Total
-                tbody
-                  tr
-                    td RAM
-                    td.digital#ram-free #{Data.RAM.Free}
-                    td.digital
-                      span#ram-used #{Data.RAM.Used}
-                      | &nbsp;
-                      sup#ram-usepercent #{Data.RAM.UsePercentHTML}
-                    td.digital#ram-total #{Data.RAM.Total}
-                  tr
-                    td swap
-                    td.digital#swap-free #{Data.Swap.Free}
-                    td.digital
-                      span#swap-used #{Data.Swap.Used}
-                      | &nbsp;
-                      sup#swap-usepercent #{Data.Swap.UsePercentHTML}
-                    td.digital#swap-total #{Data.Swap.Total}
+              span#mem-table
+                [[template "define_memtable" .]]
 
         div.block.col-md-3
           div.panel1

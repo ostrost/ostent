@@ -167,13 +167,40 @@
         [[template "define_dfinodes_rows" .]][[end]]
 [[end]]
 
+[[define "define_memrows"]]
+each $i, $mem in Data.MEM.List
+    |<tr key=#{$mem.Kind}>
+      td #{$mem.Kind}
+      td.digital #{$mem.Free}
+      td.digital #{$mem.Used}&nbsp;
+        sup #{$mem.UsePercentHTML}
+      td.digital #{$mem.Total}
+      //- td.digital <span class=#{$core.UserClass}>#{$core.User}</span>
+      //- td.digital <span class=#{$core.SysClass}>#{$core.Sys}</span>
+      //- td.digital <span class=#{$core.IdleClass}>#{$core.Idle}</span>
+    |</tr>
+[[end]]
+
+[[define "define_memtable"]]
+  table.table1.stripe-table
+    thead
+      tr
+        th
+        th.digital Free
+        th.digital Used
+        th.digital Total
+    tbody
+      [[with GET "bracket_memrows"]][[.]][[DEL "bracket_memrows"]][[else]]
+        [[template "define_memrows" .]][[end]]
+[[end]]
+
 [[define "define_cpurows"]]
 each $i, $core in Data.CPU.List
     |<tr key=#{$core.N}>
       td.digital.nobr #{$core.N}
-      td.digital <span id="#{"core" + $i + ".User"}" class=#{$core.UserClass}>#{$core.User}</span>
-      td.digital <span id="#{"core" + $i + ".Sys"}"  class=#{$core.SysClass}>#{$core.Sys}</span>
-      td.digital <span id="#{"core" + $i + ".Idle"}" class=#{$core.IdleClass}>#{$core.Idle}</span>
+      td.digital <span class=#{$core.UserClass}>#{$core.User}</span>
+      td.digital <span class=#{$core.SysClass}>#{$core.Sys}</span>
+      td.digital <span class=#{$core.IdleClass}>#{$core.Idle}</span>
     |</tr>
 [[end]]
 

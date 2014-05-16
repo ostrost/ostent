@@ -34,6 +34,20 @@ func NewDataMeta() DataMeta {
 	}
 }
 
+type Memory struct {
+	Kind           string
+	Total          string
+	Used           string
+	Free           string
+	UsePercentHTML template.HTML
+}
+
+type MEM struct {
+	List []Memory
+	Hatch *template.HTML `json:",omitempty"`
+	// DataMeta? // unused Expand* by MEM
+}
+
 type CPU struct {
 	List []Core
 	DataMeta

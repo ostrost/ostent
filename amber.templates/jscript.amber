@@ -77,6 +77,20 @@ script
     }
   });
 
+  var MEMtableCLASS = React.createClass({
+    getInitialState: function() { return Data.MEM; },
+
+    render: function() {
+      var Data = {MEM: this.state};
+      var rows = Data.MEM.List.map(function($mem) {
+        return ([[template "define_memrows" .]]);
+      });
+      [[SET "bracket_memrows" `{rows}`]]
+      return ([[template "define_memtable" .]]);
+      [[DEL "bracket_memrows"]]
+    }
+  });
+
   var CPUtableCLASS = React.createClass({
     getInitialState: function() { return Data.CPU; },
 

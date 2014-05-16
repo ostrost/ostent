@@ -75,13 +75,27 @@ var DFinodesCLASS = React.createClass({displayName: 'DFinodesCLASS',
 	}
 });
 
+var MEMtableCLASS = React.createClass({displayName: 'MEMtableCLASS',
+	getInitialState: function() { return Data.MEM; },
+
+	render: function() {
+		var Data = {MEM: this.state};
+		var rows = Data.MEM.List.map(function($mem) {
+			return (React.DOM.tr( {key:$mem.Kind}, React.DOM.td(null, $mem.Kind),React.DOM.td( {className:"digital"}, $mem.Free),React.DOM.td( {className:"digital"}, $mem.Used," ",React.DOM.sup(null, React.DOM.span( {dangerouslySetInnerHTML:{__html: $mem.UsePercentHTML}} ))),React.DOM.td( {className:"digital"}, $mem.Total)));
+		});
+		
+		return (React.DOM.table( {className:"table1 stripe-table"}, React.DOM.thead(null, React.DOM.tr(null, React.DOM.th(null),React.DOM.th( {className:"digital"}, "Free"),React.DOM.th( {className:"digital"}, "Used"),React.DOM.th( {className:"digital"}, "Total"))),React.DOM.tbody(null, rows)));
+		
+	}
+});
+
 var CPUtableCLASS = React.createClass({displayName: 'CPUtableCLASS',
 	getInitialState: function() { return Data.CPU; },
 
 	render: function() {
 		var Data = {CPU: this.state};
 		var rows = Data.CPU.List.map(function($core) {
-			return (React.DOM.tr( {key:$core.N}, React.DOM.td( {className:"digital nobr"}, $core.N),React.DOM.td( {className:"digital"}, React.DOM.span( {id:"core0.User", className:$core.UserClass}, $core.User)),React.DOM.td( {className:"digital"}, React.DOM.span( {id:"core0.Sys",  className:$core.SysClass}, $core.Sys)),React.DOM.td( {className:"digital"}, React.DOM.span( {id:"core0.Idle", className:$core.IdleClass}, $core.Idle))));
+			return (React.DOM.tr( {key:$core.N}, React.DOM.td( {className:"digital nobr"}, $core.N),React.DOM.td( {className:"digital"}, React.DOM.span( {className:$core.UserClass}, $core.User)),React.DOM.td( {className:"digital"}, React.DOM.span( {className:$core.SysClass}, $core.Sys)),React.DOM.td( {className:"digital"}, React.DOM.span( {className:$core.IdleClass}, $core.Idle))));
 		});
 		
 		return (React.DOM.table( {className:"table1 stripe-table"}, React.DOM.thead(null, React.DOM.tr(null, React.DOM.th(null),React.DOM.th( {className:"digital nobr"}, "User",React.DOM.span( {className:"unit"}, "%")),React.DOM.th( {className:"digital nobr"}, "Sys",React.DOM.span( {className:"unit"}, "%")),React.DOM.th( {className:"digital nobr"}, "Idle",React.DOM.span( {className:"unit"}, "%")))),React.DOM.tbody(null, rows)));

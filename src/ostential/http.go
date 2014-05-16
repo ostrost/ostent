@@ -117,6 +117,18 @@ func InterfacesDelta(format interfaceFormat, current, previous []InterfaceInfo, 
 	return ni
 }
 
+func(li lastinfo) MEM(client clientState) *types.MEM {
+	mem := new(types.MEM)
+	mem.List = append(mem.List, li.RAM)
+	rows := 1
+	if !*client.HideSWAP {
+		mem.List = append(mem.List, li.Swap)
+		rows = 2
+	}
+	mem.Hatch = hatch(false, rows)
+	return mem
+}
+
 func(li lastinfo) cpuListDelta() sigar.CpuList {
 	prev := li.Previous.CPU
 	if len(prev.List) == 0 {
@@ -180,7 +192,7 @@ func(li lastinfo) CPUDelta(client clientState) *types.CPU {
 	if coreno == 1 {
 		cores[0].N = "#0"
 		*cpu.DataMeta.ExpandText = "Expanded (1)"
-		cpu.List  = cores
+		cpu.List = cores
 		return cpu
 	}
 	sort.Sort(cpuOrder(cores))
@@ -229,13 +241,6 @@ func colorPercent(p uint) string {
 	if p > 80 { return "warning" }
 	if p > 20 { return "info"    }
 	return "success"
-}
-
-type memory struct {
-	Total          string
-	Used           string
-	Free           string
-	UsePercentHTML template.HTML
 }
 
 type diskInfo struct {
@@ -434,8 +439,8 @@ type Previous struct {
 type lastinfo struct {
     Generic generic
 	CPU     sigar.CpuList
-	RAM     memory
-	Swap    memory
+	RAM     types.Memory
+	Swap    types.Memory
 	DiskList   []diskInfo
 	ProcList   []types.ProcInfo
 	Interfaces []InterfaceInfo
@@ -445,12 +450,10 @@ type lastinfo struct {
 type PageData struct {
     Generic generic
 	CPU     types.CPU
-	RAM     memory
-	Swap    memory
-	MEMhatch *template.HTML `json:",omitempty"`
-	PShatch  *template.HTML `json:",omitempty"`
+	MEM     types.MEM
 
 	PStable PStable
+	PShatch *template.HTML `json:",omitempty"`
 
 	DFlinks *DFlinks        `json:",omitempty"`
 	DFbytes  types.DFbytes  `json:",omitempty"`
@@ -473,12 +476,8 @@ type PageData struct {
 type pageUpdate struct {
     Generic  generic
 
-	RAM      memory // TODO empty on HideMEM
-	Swap     memory // TODO empty on HideMEM
-	MEMhatch *template.HTML `json:",omitempty"`
-	PShatch  *template.HTML `json:",omitempty"`
-
 	CPU      *types.CPU      `json:",omitempty"`
+	MEM      *types.MEM      `json:",omitempty"` // TODO empty on HideMEM
 
 	DFlinks  *DFlinks        `json:",omitempty"`
 	DFbytes  *types.DFbytes  `json:",omitempty"`
@@ -488,7 +487,8 @@ type pageUpdate struct {
 	IF types.DataMeta // a pointer and `json:",omitempty"` ?
 
 	// PSlinks *PSlinks `json:",omitempty"`
-	PStable *PStable `json:",omitempty"`
+	PStable *PStable       `json:",omitempty"`
+	PShatch *template.HTML `json:",omitempty"`
 
 	IFbytes   *types.Interfaces `json:",omitempty"`
 	IFerrors  *types.Interfaces `json:",omitempty"`
@@ -610,15 +610,13 @@ func getUpdates(req *http.Request, new_search bool, clientptr *clientState, clie
 			Generic: lastInfo.Generic,
 		}
 		if !*client.HideMEM {
-			pu.RAM  = lastInfo.RAM
-			pu.Swap = lastInfo.Swap
+			pu.MEM  = lastInfo.MEM(client)
 		}
 		if !*client.HideCPU {
 			pu.CPU = lastInfo.CPUDelta(client)
 		}
 	}()
-	pu.MEMhatch = hatch(false, TOPROWS)
-	pu.PShatch  = muted_hatch(4)
+	pu.PShatch = muted_hatch(4)
 
 	 pu.IF = types.NewDataMeta()
 	*pu.IF.Expandable = len(if_copy) > TOPROWS
@@ -688,8 +686,7 @@ func pageData(req *http.Request) PageData {
 		ClientState: *updates.ClientState,
 		Generic:      updates.Generic,
 		CPU:         *updates.CPU,
-		RAM:          updates.RAM,
-		Swap:         updates.Swap,
+		MEM:         *updates.MEM,
 
 		DFlinks:  dla,
 
@@ -704,10 +701,9 @@ func pageData(req *http.Request) PageData {
 		VERSION:     VERSION,                  // value from server.go
 		HTTP_HOST:   req.Host,
 	}
-	data.DF = updates.DF
-	data.IF = updates.IF
-	data.MEMhatch = updates.MEMhatch
-	data.PShatch  = updates.PShatch
+	data.DF  = updates.DF
+	data.IF  = updates.IF
+	data.PShatch = updates.PShatch
 
 	       if updates.DFbytes  != nil { data.DFbytes  = *updates.DFbytes
 	} else if updates.DFinodes != nil { data.DFinodes = *updates.DFinodes

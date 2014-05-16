@@ -49,7 +49,7 @@ func getGeneric() generic { // ex getAbout
 	return g
 }
 
-func _getmem(in sigar.Swap) memory {
+func _getmem(kind string, in sigar.Swap) types.Memory {
 	total, approxtotal := humanBandback(in.Total)
 	used,  approxused  := humanBandback(in.Used)
 	usepercent := percent(approxused, approxtotal)
@@ -61,24 +61,25 @@ func _getmem(in sigar.Swap) memory {
 		Class: labelClass_colorPercent(usepercent),
 	})
 
-	return memory{
+	return types.Memory{
+		Kind:  kind,
 		Total: total,
 		Used:  used,
 		Free:  humanB(in.Free),
 		UsePercentHTML: UPhtml,
 	}
 }
-func getRAM() memory {
+func getRAM() types.Memory {
 	got := sigar.Mem{}; got.Get()
-	return _getmem(sigar.Swap{
+	return _getmem("RAM", sigar.Swap{
 		Total: got.Total,
 		Used:  got.Used,
 		Free:  got.Free,
 	})
 }
-func getSwap() memory {
+func getSwap() types.Memory {
 	got := sigar.Swap{}; got.Get()
-	return _getmem(got)
+	return _getmem("swap", got)
 }
 
 func read_disks() (disks []diskInfo) {

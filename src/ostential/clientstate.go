@@ -19,6 +19,7 @@ type clientState struct {
 	HideDF  *bool `json:",omitempty"`
 	HidePS  *bool `json:",omitempty"`
 
+	HideSWAP  *bool `json:",omitempty"`
 	ExpandIF  *bool `json:",omitempty"`
 	ExpandCPU *bool `json:",omitempty"`
 	ExpandDF  *bool `json:",omitempty"`
@@ -59,6 +60,7 @@ func(cs *clientState) Merge(ps clientState) {
 	cs.merge_bool(cs.HideDF,  ps.HideDF)
 	cs.merge_bool(cs.HidePS,  ps.HidePS)
 
+	cs.merge_bool(cs.HideSWAP,  ps.HideSWAP)
 	cs.merge_bool(cs.ExpandIF,  ps.ExpandIF)
 	cs.merge_bool(cs.ExpandCPU, ps.ExpandCPU)
 	cs.merge_bool(cs.ExpandDF,  ps.ExpandDF)
@@ -116,6 +118,7 @@ func defaultClientState() clientState {
 	cs.HideDF  = newfalse()
 	cs.HidePS  = newfalse()
 
+	cs.HideSWAP  = newfalse()
 	cs.ExpandIF  = newfalse()
 	cs.ExpandCPU = newfalse()
 	cs.ExpandDF  = newfalse()
@@ -134,6 +137,7 @@ func defaultClientState() clientState {
 		IFbytes:   IFBYTES_TABID,
 	}
 
+	// reverse logic
 	configdefault := true
 	// configdefault = false // DEVELOPMENT
 

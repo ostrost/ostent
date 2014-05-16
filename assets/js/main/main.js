@@ -148,6 +148,7 @@ function update(currentState, updatables) {
     }
 
     // all *CLASS defined in gen/jscript.js
+    var memtable  = React.renderComponent(MEMtableCLASS (null), document.getElementById('mem-table'));
     var pstable   = React.renderComponent(PStableCLASS  (null), document.getElementById('ps-table'));
     var dfbytes   = React.renderComponent(DFbytesCLASS  (null), document.getElementById('dfbytes-table'));
     var dfinodes  = React.renderComponent(DFinodesCLASS (null), document.getElementById('dfinodes-table'));
@@ -175,11 +176,15 @@ function update(currentState, updatables) {
 	if (data.DFlinks !== undefined) { inodestate.DFlinks = data.DFlinks; }
 	setState(dfinodes, inodestate);
 
+        setState(memtable, data.MEM);
         setState(cputable, data.CPU);
         setState(ifbytes,   data.IFbytes);
         setState(iferrors,  data.IFerrors);
 	setState(ifpackets, data.IFpackets);
 
+        if (data.ClientState !== undefined) {
+            console.log(JSON.stringify(data.ClientState), 'recvState');
+        }
         currentState = _.extend(currentState, data.ClientState);
         data.ClientState = currentState;
         updatables.set(data);
@@ -386,6 +391,24 @@ var IFswitchmodel = SwitchModel({
     Attribute_Data:       'IF'
 });
 
+var ExpandMEMModel = Updatables.declareModel(function() {
+    var self = {
+        Attribute_Expand: 'HideSWAP',
+        Attribute_Hide:   'HideMEM'
+    };
+    self.modelAttributes = function(data) {
+        return {
+            Expand:    !data.ClientState[self.Attribute_Expand], // NB inverse
+            Hide:       data.ClientState[self.Attribute_Hide]
+        };
+    };
+
+    self.toggleHidden   = function(s) { return _.object([self.Attribute_Hide],   [!s.Hide]);   };
+    self.toggleExpanded = function(s) { return _.object([self.Attribute_Expand], [ s.Expand]); }; // NB reverse, thus not "!"
+
+    return self;
+});
+
 var ExpandCPUModel = Updatables.declareModel(function() {
     var self = {
         Attribute_Expand: 'ExpandCPU',
@@ -533,8 +556,14 @@ function ready() {
                        model: updatables.make(Updatables.declareCollapseModel('ConfigPS'),
                                               {target: $('#psconfig')}) });
 
-    updatables.make(Updatables.declareCollapseModel('HideMEM'), // MEMORY
-                    {target: $('#mem')}, CollapseView, { el: $('header a[href="#mem"]') });
+    // updatables.make(Updatables.declareCollapseModel('HideMEM'), // MEMORY
+    //                 {target: $('#mem')}, CollapseView, { el: $('header a[href="#mem"]') });
+
+    updatables.make( // MEM
+        ExpandMEMModel, {target: $('#mem')}, ExpandView, {
+            header_el: $('header a[href="#mem"]'),
+            expand_el: $('label[href="#showswap"]')
+        });
 
     updatables.make( // IF
         IFswitchmodel, {target: $('.network-tab')}, SwitchView, {
@@ -572,6 +601,7 @@ function ready() {
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {LA: data.Generic.LA}; }}),
                     {}, UpdateView, {el: $('#generic-la')});
 
+    /*
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Free: data.RAM.Free}; }}),
                     {}, UpdateView, {el: $('#ram-free')});
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Used: data.RAM.Used}; }}),
@@ -589,6 +619,7 @@ function ready() {
                     {}, UpdateView, {el: $('#swap-total')});
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {UsePercentHTML: data.Swap.UsePercentHTML}; }}),
                     {}, UpdateView, {el: $('#swap-usepercent')});
+    */
 
     update(Data.ClientState, updatables);
 }
