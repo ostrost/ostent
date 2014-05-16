@@ -99,7 +99,7 @@ hr {
 pre {
   overflow: auto; }
 
-code, .allcode, .code, .codenobr, .inlinecode,
+code, .code, .codenowrap, .inlinecode,
 kbd,
 pre,
 samp {
@@ -680,13 +680,13 @@ address {
   font-style: normal;
   line-height: 1.42857143; }
 
-code, .allcode, .code, .codenobr, .inlinecode,
+code, .code, .codenowrap, .inlinecode,
 kbd,
 pre,
 samp {
   font-family: Menlo, Monaco, Consolas, "Courier New", monospace; }
 
-code, .allcode, .code, .codenobr, .inlinecode {
+code, .code, .codenowrap, .inlinecode {
   padding: 2px 4px;
   font-size: 90%;
   color: #c7254e;
@@ -715,7 +715,7 @@ pre {
   border: 1px solid #ccc;
   border-radius: 4px; }
 
-pre code, pre .allcode, pre .code, pre .codenobr, pre .inlinecode {
+pre code, pre .code, pre .codenowrap, pre .inlinecode {
   padding: 0;
   font-size: inherit;
   color: inherit;
@@ -6139,37 +6139,30 @@ body {
 .panel1 header {
   padding-right: 5px; }
   .panel1 header a {
-    color: #333;
-    background-color: #f5f5f5;
-    border-color: #ddd; }
+    color: inherit;
+    background-color: inherit;
+    border-color: inherit; }
 .panel1 form {
   border-bottom: 1px solid #ddd; }
 
 .table2, .table1 {
-  background: white;
   margin-bottom: 0px; }
-  .table2 .center, .table1 .center {
-    text-align: center; }
-  .table2 .digital, .table1 .digital {
-    text-align: right; }
-    .table2 .digital sup, .table1 .digital sup {
-      font-size: 100%; }
+  .table2 .text-right sup, .table2 .cell-right sup, .table1 .text-right sup, .table1 .cell-right sup {
+    font-size: 100%; }
 
 .stripe-table > tbody > tr:nth-child(even) > td {
   background-color: #f9f9f9; }
 
-.nobr {
-  white-space: inline; }
+.nowrap {
+  white-space: nowrap; }
 
-.allcode, .code, .codenobr, .inlinecode {
+.code, .codenowrap, .inlinecode {
   white-space: normal;
+  display: inline;
   color: black;
   background-color: #f4f4f4; }
 
-.code, .codenobr, .inlinecode {
-  display: inline; }
-
-.codenobr {
+.codenowrap {
   white-space: nowrap; }
 
 .inlinecode {
@@ -6198,6 +6191,7 @@ table thead tr .header a {
     color: #428bca;
     text-decoration: none; }
   table thead tr .header a.state.current {
+    white-space: nowrap;
     font-weight: bold; }
 
 .badge-primary {

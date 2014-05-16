@@ -1,46 +1,35 @@
 @import 'bootstrap-3.1.1.scss';
-// @import 'bootflat.scss';
-// @import 'bootflatcss.scss';
 
 body {
-  // @extend .container; //?
   font-size: 12px;
-
-// pick your poison
-// font-family: "Lucida Console", Monaco, monospace;
-// font-family: "DejaVu Sans Mono", Menlo, Consolas, "Liberation Mono", Monaco, "Lucida Console", monospace
-// font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .panel1 {
   @extend .panel;
   @extend .panel-default;
+
+//header.draggable { cursor: move; } // not yet
   header {
     @extend .panel-heading;
     padding-right: 5px;
-    a { // @.panel-default > .panel-heading
-      color: #333;
-      background-color: #f5f5f5;
-      border-color: #ddd;
+    a {
+      color:            inherit; // use the text colors
+      background-color: inherit;
+      border-color:     inherit;
     }
   }
   form {
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #ddd; // table border styling
   }
-  // header.draggable { cursor: move; } // not yet
 }
 
 .table2, .table1 {
   @extend .table;
   @extend .table-condensed;
-  background: white; //?
   margin-bottom: 0px;
 
-  .center  { text-align: center; }
-  .digital { text-align: right;
-    sup {
-      font-size: 100%;
-    }
+  .text-right sup { // or any sup?
+    font-size: 100%;
   }
 }
 .table2 {
@@ -52,24 +41,21 @@ body {
   background-color: #f9f9f9;
 }
 
-.nobr { white-space: inline; } // used to be pre
-//? .nobrinline { white-space: nowrap; display: inline; }
+.nowrap { white-space: nowrap; }
 
-.allcode {
+.code {
   @extend code;
   white-space: normal; // pre; // nowrap;
-
+  display: inline;
   color: black;
   background-color: #f4f4f4;
 }
-.code {
-  @extend .allcode;
-  display: inline;
-}
-.codenobr {
+
+.codenowrap {
   @extend .code;
   white-space: nowrap;
 }
+
 .inlinecode {
   @extend .code;
   padding: 0px 0px;
@@ -88,14 +74,7 @@ body {
     }
 }
 
-.unit {
-//@extend code;
-//font-size: 100%;
-//padding: 0px 0px;
-
-//display: inline;
-//white-space: normal;
-
+.unit { // code colors
   color: black;
   background-color: #f4f4f4;
 }
@@ -111,6 +90,7 @@ table thead tr .header a {
     text-decoration: none;
   }
   &.state.current {
+    white-space: nowrap;
     font-weight: bold;
   }
 }

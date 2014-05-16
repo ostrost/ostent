@@ -21,10 +21,10 @@
   each $if in Data.IFbytes.List
     |<tr key=#{$if.NameKey}>
       td #{$if.NameHTML}
-      td.digital #{$if.DeltaIn}
-      td.digital #{$if.DeltaOut}
-      td.digital #{$if.In}
-      td.digital #{$if.Out}
+      td.text-right #{$if.DeltaIn}
+      td.text-right #{$if.DeltaOut}
+      td.text-right #{$if.In}
+      td.text-right #{$if.Out}
     |</tr>
 [[end]]
 
@@ -32,10 +32,10 @@
   each $if in Data.IFerrors.List
     |<tr key=#{$if.NameKey}>
       td #{$if.NameHTML}
-      td.digital #{$if.DeltaIn}
-      td.digital #{$if.DeltaOut}
-      td.digital #{$if.In}
-      td.digital #{$if.Out}
+      td.text-right #{$if.DeltaIn}
+      td.text-right #{$if.DeltaOut}
+      td.text-right #{$if.In}
+      td.text-right #{$if.Out}
     |</tr>
 [[end]]
 
@@ -43,10 +43,10 @@
   each $if in Data.IFpackets.List
     |<tr key=#{$if.NameKey}>
       td #{$if.NameHTML}
-      td.digital #{$if.DeltaIn}
-      td.digital #{$if.DeltaOut}
-      td.digital #{$if.In}
-      td.digital #{$if.Out}
+      td.text-right #{$if.DeltaIn}
+      td.text-right #{$if.DeltaOut}
+      td.text-right #{$if.In}
+      td.text-right #{$if.Out}
     |</tr>
 [[end]]
 
@@ -55,19 +55,19 @@
     thead
       tr
         th Interface
-        th.digital.nobr[title="BITS per second"] In
+        th.text-right.nowrap[title="BITS per second"] In
           span.unit
             b b
             | ps
-        th.digital.nobr[title="BITS per second"] Out
+        th.text-right.nowrap[title="BITS per second"] Out
           span.unit
             b b
             | ps
-        th.digital.nobr[title="total BYTES modulo 4G"] In
+        th.text-right.nowrap[title="total BYTES modulo 4G"] In
           span.unit
             b B
             | %4G
-        th.digital.nobr[title="total BYTES modulo 4G"] Out
+        th.text-right.nowrap[title="total BYTES modulo 4G"] Out
           span.unit
             b B
             | %4G
@@ -81,13 +81,13 @@
     thead
       tr
         th Interface
-        th.digital.nobr[title="per second"] In&nbsp;
+        th.text-right.nowrap[title="per second"] In&nbsp;
           span.unit ps
-        th.digital.nobr[title="per second"] Out&nbsp;
+        th.text-right.nowrap[title="per second"] Out&nbsp;
           span.unit ps
-        th.digital.nobr[title="total modulo 4G"] In&nbsp;
+        th.text-right.nowrap[title="total modulo 4G"] In&nbsp;
           span.unit %4G
-        th.digital.nobr[title="total modulo 4G"] Out&nbsp;
+        th.text-right.nowrap[title="total modulo 4G"] Out&nbsp;
           span.unit %4G
     tbody
       [[with GET "bracket_ifrows"]][[.]][[DEL "bracket_ifrows"]][[else]]
@@ -99,13 +99,13 @@
     thead
       tr
         th Interface
-        th.digital.nobr[title="per second"] In&nbsp;
+        th.text-right.nowrap[title="per second"] In&nbsp;
           span.unit ps
-        th.digital.nobr[title="per second"] Out&nbsp;
+        th.text-right.nowrap[title="per second"] Out&nbsp;
           span.unit ps
-        th.digital.nobr[title="modulo 4G"] In&nbsp;
+        th.text-right.nowrap[title="modulo 4G"] In&nbsp;
           span.unit %4G
-        th.digital.nobr[title="modulo 4G"] Out&nbsp;
+        th.text-right.nowrap[title="modulo 4G"] Out&nbsp;
           span.unit %4G
     tbody
       [[with GET "bracket_ifrows"]][[.]][[DEL "bracket_ifrows"]][[else]]
@@ -116,12 +116,12 @@
   each $disk in Data.DFbytes.List
     | <tr key=#{$disk.DirNameKey}>
 
-      td.nobr #{$disk.DiskNameHTML}
-      td.nobr #{$disk.DirNameHTML}
-      td.digital #{$disk.Avail}
-      td.digital #{$disk.Used}&nbsp;
+      td.nowrap #{$disk.DiskNameHTML}
+      td.nowrap #{$disk.DirNameHTML}
+      td.text-right #{$disk.Avail}
+      td.text-right #{$disk.Used}&nbsp;
         sup <span class=#{$disk.UsePercentClass}>#{$disk.UsePercent}%</span>
-      td.digital #{$disk.Total}
+      td.text-right #{$disk.Total}
     | </tr>
 [[end]]
 
@@ -129,12 +129,12 @@
   each $disk in Data.DFinodes.List
     | <tr key=#{$disk.DirNameKey}>
 
-      td.nobr #{$disk.DiskNameHTML}
-      td.nobr #{$disk.DirNameHTML}
-      td.digital #{$disk.Ifree}
-      td.digital #{$disk.Iused}&nbsp;
+      td.nowrap #{$disk.DiskNameHTML}
+      td.nowrap #{$disk.DirNameHTML}
+      td.text-right #{$disk.Ifree}
+      td.text-right #{$disk.Iused}&nbsp;
         sup <span class=#{$disk.IusePercentClass}>#{$disk.IusePercent}%</span>
-      td.digital #{$disk.Inodes}
+      td.text-right #{$disk.Inodes}
     | </tr>
 [[end]]
 
@@ -145,9 +145,9 @@
         $L = Data.DFlinks
         th.header         <a href=#{$L.DiskName.Href} class=#{$L.DiskName.Class}>Device<span  class=#{$L.DiskName.CaretClass} /></a>
         th.header         <a href=#{$L.DirName.Href}  class=#{$L.DirName.Class} >Mounted<span class=#{$L.DirName.CaretClass}  /></a>
-        th.header.digital <a href=#{$L.Avail.Href}    class=#{$L.Avail.Class}   >Avail<span   class=#{$L.Avail.CaretClass}    /></a>
-        th.header.digital <a href=#{$L.Used.Href}     class=#{$L.Used.Class}    >Used<span    class=#{$L.Used.CaretClass}     /></a>
-        th.header.digital <a href=#{$L.Total.Href}    class=#{$L.Total.Class}   >Total<span   class=#{$L.Total.CaretClass}    /></a>
+        th.header.text-right <a href=#{$L.Avail.Href}    class=#{$L.Avail.Class}   >Avail<span   class=#{$L.Avail.CaretClass}    /></a>
+        th.header.text-right <a href=#{$L.Used.Href}     class=#{$L.Used.Class}    >Used<span    class=#{$L.Used.CaretClass}     /></a>
+        th.header.text-right <a href=#{$L.Total.Href}    class=#{$L.Total.Class}   >Total<span   class=#{$L.Total.CaretClass}    /></a>
     tbody
       [[with GET "bracket_dfrows"]][[.]][[DEL "bracket_dfrows"]][[else]]
         [[template "define_dfbytes_rows" .]][[end]]
@@ -159,9 +159,9 @@
       tr
         th.header Device
         th.header Mounted
-        th.header.digital Avail
-        th.header.digital Used
-        th.header.digital Total
+        th.header.text-right Avail
+        th.header.text-right Used
+        th.header.text-right Total
     tbody
       [[with GET "bracket_dfrows"]][[.]][[DEL "bracket_dfrows"]][[else]]
         [[template "define_dfinodes_rows" .]][[end]]
@@ -171,13 +171,10 @@
 each $i, $mem in Data.MEM.List
     |<tr key=#{$mem.Kind}>
       td #{$mem.Kind}
-      td.digital #{$mem.Free}
-      td.digital #{$mem.Used}&nbsp;
+      td.text-right #{$mem.Free}
+      td.text-right #{$mem.Used}&nbsp;
         sup #{$mem.UsePercentHTML}
-      td.digital #{$mem.Total}
-      //- td.digital <span class=#{$core.UserClass}>#{$core.User}</span>
-      //- td.digital <span class=#{$core.SysClass}>#{$core.Sys}</span>
-      //- td.digital <span class=#{$core.IdleClass}>#{$core.Idle}</span>
+      td.text-right #{$mem.Total}
     |</tr>
 [[end]]
 
@@ -186,9 +183,9 @@ each $i, $mem in Data.MEM.List
     thead
       tr
         th
-        th.digital Free
-        th.digital Used
-        th.digital Total
+        th.text-right Free
+        th.text-right Used
+        th.text-right Total
     tbody
       [[with GET "bracket_memrows"]][[.]][[DEL "bracket_memrows"]][[else]]
         [[template "define_memrows" .]][[end]]
@@ -197,10 +194,10 @@ each $i, $mem in Data.MEM.List
 [[define "define_cpurows"]]
 each $i, $core in Data.CPU.List
     |<tr key=#{$core.N}>
-      td.digital.nobr #{$core.N}
-      td.digital <span class=#{$core.UserClass}>#{$core.User}</span>
-      td.digital <span class=#{$core.SysClass}>#{$core.Sys}</span>
-      td.digital <span class=#{$core.IdleClass}>#{$core.Idle}</span>
+      td.text-right.nowrap #{$core.N}
+      td.text-right <span class=#{$core.UserClass}>#{$core.User}</span>
+      td.text-right <span class=#{$core.SysClass}>#{$core.Sys}</span>
+      td.text-right <span class=#{$core.IdleClass}>#{$core.Idle}</span>
     |</tr>
 [[end]]
 
@@ -209,11 +206,11 @@ each $i, $core in Data.CPU.List
     thead
       tr
         th
-        th.digital.nobr User
+        th.text-right.nowrap User
           span.unit %
-        th.digital.nobr Sys
+        th.text-right.nowrap Sys
           span.unit %
-        th.digital.nobr Idle
+        th.text-right.nowrap Idle
           span.unit %
     tbody
       [[with GET "bracket_cpurows"]][[.]][[DEL "bracket_cpurows"]][[else]]
@@ -223,14 +220,14 @@ each $i, $core in Data.CPU.List
 [[define "define_psrows"]]
   each $proc in Data.PStable.List
     | <tr key=#{$proc.PID}>
-      td.digital #{$proc.PID}
-      td.digital #{$proc.UserHTML}
-      td.digital #{$proc.Priority}
-      td.digital #{$proc.Nice}
-      td.digital #{$proc.Size}
-      td.digital #{$proc.Resident}
-      td.center #{$proc.Time}
-      td.nobr #{$proc.NameHTML}
+      td.text-right #{$proc.PID}
+      td.text-right #{$proc.UserHTML}
+      td.text-right #{$proc.Priority}
+      td.text-right #{$proc.Nice}
+      td.text-right #{$proc.Size}
+      td.text-right #{$proc.Resident}
+      td.text-center #{$proc.Time}
+      td.nowrap #{$proc.NameHTML}
     | </tr>
 [[end]]
 
@@ -239,14 +236,14 @@ each $i, $core in Data.CPU.List
     thead
       tr
         $L = Data.PStable.Links
-        th.header.digital <a href=#{$L.PID.Href}      class=#{$L.PID.Class}     >PID<span     class=#{$L.PID.CaretClass}      /></a>
-        th.header.digital <a href=#{$L.User.Href}     class=#{$L.User.Class}    >USER<span    class=#{$L.User.CaretClass}     /></a>
-        th.header.digital <a href=#{$L.Priority.Href} class=#{$L.Priority.Class}>PR<span      class=#{$L.Priority.CaretClass} /></a>
-        th.header.digital <a href=#{$L.Nice.Href}     class=#{$L.Nice.Class}    >NI<span      class=#{$L.Nice.CaretClass}     /></a>
-        th.header.digital <a href=#{$L.Size.Href}     class=#{$L.Size.Class}    >VIRT<span    class=#{$L.Size.CaretClass}     /></a>
-        th.header.digital <a href=#{$L.Resident.Href} class=#{$L.Resident.Class}>RES<span     class=#{$L.Resident.CaretClass} /></a>
-        th.header.center  <a href=#{$L.Time.Href}     class=#{$L.Time.Class}    >TIME<span    class=#{$L.Time.CaretClass}     /></a>
-        th.header         <a href=#{$L.Name.Href}     class=#{$L.Name.Class}    >COMMAND<span class=#{$L.Name.CaretClass}     /></a>
+        th.header.text-right  <a href=#{$L.PID.Href}      class=#{$L.PID.Class}     >PID<span     class=#{$L.PID.CaretClass}      /></a>
+        th.header.text-right  <a href=#{$L.User.Href}     class=#{$L.User.Class}    >USER<span    class=#{$L.User.CaretClass}     /></a>
+        th.header.text-right  <a href=#{$L.Priority.Href} class=#{$L.Priority.Class}>PR<span      class=#{$L.Priority.CaretClass} /></a>
+        th.header.text-right  <a href=#{$L.Nice.Href}     class=#{$L.Nice.Class}    >NI<span      class=#{$L.Nice.CaretClass}     /></a>
+        th.header.text-right  <a href=#{$L.Size.Href}     class=#{$L.Size.Class}    >VIRT<span    class=#{$L.Size.CaretClass}     /></a>
+        th.header.text-right  <a href=#{$L.Resident.Href} class=#{$L.Resident.Class}>RES<span     class=#{$L.Resident.CaretClass} /></a>
+        th.header.text-center <a href=#{$L.Time.Href}     class=#{$L.Time.Class}    >TIME<span    class=#{$L.Time.CaretClass}     /></a>
+        th.header             <a href=#{$L.Name.Href}     class=#{$L.Name.Class}    >COMMAND<span class=#{$L.Name.CaretClass}     /></a>
 
     tbody
       [[with GET "bracket_psrows"]][[.]][[DEL "bracket_psrows"]][[else]]

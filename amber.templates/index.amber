@@ -91,7 +91,7 @@ html
 
         div.block.col-md-3
           div.panel1
-            header.draggable.panel-heading.nobr
+            header.draggable.nowrap
               a[href="#if"] Network
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
@@ -153,7 +153,7 @@ html
 
         div.block.col-md-2
           div.panel1
-            header.draggable.nobr
+            header.draggable.nowrap
               a[href="#cpu"] CPU
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
@@ -185,7 +185,7 @@ html
 
         div.block.col-md-3
           div.panel1
-            header.draggable.panel-heading.nobr
+            header.draggable.nowrap
               a[href="#df"] Disks
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
@@ -258,21 +258,21 @@ html
                 div.col-md-6.cell-right
                   span.code OS:
                 div.col-md-6
-                  span.codenobr #{Data.DISTRIBHTML}
+                  span.codenowrap #{Data.DISTRIBHTML}
 
             li
               div.row
                 div.col-md-6.cell-right
                   span.code uptime:
                 div.col-md-6
-                  span.codenobr#generic-uptime #{Data.Generic.Uptime}
+                  span.codenowrap#generic-uptime #{Data.Generic.Uptime}
 
             li
               div.row
                 div.col-md-6.cell-right
                   span.code loadavg:
                 div.col-md-6
-                  span.codenobr#generic-la #{Data.Generic.LA}
+                  span.codenowrap#generic-la #{Data.Generic.LA}
 
         div.block.col-md-8
           div.panel1
