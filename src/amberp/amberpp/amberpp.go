@@ -134,27 +134,25 @@ func hindent(h hash, level int) string {
 	return s
 } // */
 
-var bracketTrack = map[string]string{}
-
-func bracketGet(key string) string {
-	return bracketTrack[key]
+type dotValue struct {
+	s string
+	hashp *hash
 }
 
-func bracketSet(clause, value string) string {
-	bracketTrack[clause] = value
-	return ""
+func (dv dotValue) GoString() string { return dv.GoString() }
+func (dv dotValue)   String() string {
+	v := dv.s
+	delete(*dv.hashp, "dot")
+	return v
 }
 
-func bracketDel(key string) string {
-	delete(bracketTrack, key)
-	return ""
+func dot(dot interface{}, key string) hash {
+	h := dot.(hash)
+	h["dot"] = dotValue{s: curly(key), hashp: &h}
+	return h
 }
 
-var bracketFuncs = map[string]interface{}{
-	"GET": bracketGet,
-	"SET": bracketSet,
-	"DEL": bracketDel,
-}
+var dotFuncs = map[string]interface{}{"dot": dot}
 
 func main() {
 	var  outputFile string
@@ -193,9 +191,9 @@ func main() {
 	check(err)
 	inputText += compile(b, prettyPrint)
 
-	fstplate, err := template.New("fst").Funcs(bracketFuncs).Delims("[[", "]]").Parse(inputText)
+	fstplate, err := template.New("fst").Funcs(dotFuncs).Delims("[[", "]]").Parse(inputText)
 	check(err)
-	fst := execute(fstplate, nil)
+	fst := execute(fstplate, hash{})
 
 	if !jscriptMode {
 		writeFile(outputFile, fst)

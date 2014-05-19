@@ -1,120 +1,22 @@
 /** @jsx React.DOM */ [[/* -*- indent-tabs-mode: nil -*- */]]
 script
-  function emptyK(obj, key) {
-  return (obj      === undefined ||
-          obj      === null      ||
-          obj[key] === undefined ||
-          obj[key] === null);
-  }
+  function mem_rows       (Data, $mem)  { return ([[template "define_memrows"         .]]); }
+  function mem_table      (Data, rows)  { return ([[template "define_memtable"        (dot . `rows`)]]); }
 
-  var IFbytesCLASS = React.createClass({
-    getInitialState: function() { return Data.IFbytes; },
+  function ifbytes_rows   (Data, $if)   { return ([[template "define_ifbytes_rows"    .]]); }
+  function ifbytes_table  (Data, rows)  { return ([[template "define_ifbytes_table"   (dot . `rows`)]]); }
+  function iferrors_rows  (Data, $if)   { return ([[template "define_iferrors_rows"   .]]); }
+  function iferrors_table (Data, rows)  { return ([[template "define_iferrors_table"  (dot . `rows`)]]); }
+  function ifpackets_rows (Data, $if)   { return ([[template "define_ifpackets_rows"  .]]); }
+  function ifpackets_table(Data, rows)  { return ([[template "define_ifpackets_table" (dot . `rows`)]]); }
 
-    render: function() {
-      var Data = {IFbytes: this.state};
-      var rows = emptyK(Data.IFbytes, 'List') ?'': Data.IFbytes.List.map(function($if) {
-        return ([[template "define_ifbytes_rows" .]]);
-      });
-      [[SET "bracket_ifrows" `{rows}`]]
-      return ([[template "define_ifbytes_table" .]]);
-      [[DEL "bracket_ifrows"]]
-    }
-  });
+  function cpu_rows       (Data, $core) { return ([[template "define_cpurows"         .]]); }
+  function cpu_table      (Data, rows)  { return ([[template "define_cputable"        (dot . `rows`)]]); }
 
-  var IFerrorsCLASS = React.createClass({
-    getInitialState: function() { return Data.IFerrors; },
+  function dfbytes_rows   (Data, $disk) { return ([[template "define_dfbytes_rows"    .]]); }
+  function dfbytes_table  (Data, rows)  { return ([[template "define_dfbytes_table"   (dot . `rows`)]]); }
+  function dfinodes_rows  (Data, $disk) { return ([[template "define_dfinodes_rows"   .]]); }
+  function dfinodes_table (Data, rows)  { return ([[template "define_dfinodes_table"  (dot . `rows`)]]); }
 
-    render: function() {
-      var Data = {IFerrors: this.state};
-      var rows = emptyK(Data.IFerrors, 'List') ?'': Data.IFerrors.List.map(function($if) {
-        return ([[template "define_iferrors_rows" .]]);
-      });
-      [[SET "bracket_ifrows" `{rows}`]]
-      return ([[template "define_iferrors_table" .]]);
-      [[DEL "bracket_ifrows"]]
-    }
-  });
-
-  var IFpacketsCLASS = React.createClass({
-    getInitialState: function() { return Data.IFpackets; },
-
-    render: function() {
-      var Data = {IFpackets: this.state};
-      var rows = emptyK(Data.IFpackets, 'List') ?'': Data.IFpackets.List.map(function($if) {
-        return ([[template "define_ifpackets_rows" .]]);
-      });
-      [[SET "bracket_ifrows" `{rows}`]]
-      return ([[template "define_ifpackets_table" .]]);
-      [[DEL "bracket_ifrows"]]
-    }
-  });
-
-  var DFbytesCLASS = React.createClass({
-    getInitialState: function() { return {DFlinks: Data.DFlinks, DFbytes: Data.DFbytes}; },
-
-    render: function() {
-      var Data = this.state;
-      var rows = emptyK(Data.DFbytes, 'List') ?'': Data.DFbytes.List.map(function($disk) {
-        return ([[template "define_dfbytes_rows" .]]);
-      });
-      [[SET "bracket_dfrows" `{rows}`]]
-      return ([[template "define_dfbytes_table" .]]);
-      [[DEL "bracket_dfrows"]]
-    }
-  });
-
-  var DFinodesCLASS = React.createClass({
-    getInitialState: function() { return {DFlinks: Data.DFlinks, DFinodes: Data.DFinodes}; },
-
-    render: function() {
-      var Data = this.state;
-      var rows = emptyK(Data.DFinodes, 'List') ?'': Data.DFinodes.List.map(function($disk) {
-        return ([[template "define_dfinodes_rows" .]]);
-      });
-      [[SET "bracket_dfrows" `{rows}`]]
-      return ([[template "define_dfinodes_table" .]]);
-      [[DEL "bracket_dfrows"]]
-    }
-  });
-
-  var MEMtableCLASS = React.createClass({
-    getInitialState: function() { return Data.MEM; },
-
-    render: function() {
-      var Data = {MEM: this.state};
-      var rows = Data.MEM.List.map(function($mem) {
-        return ([[template "define_memrows" .]]);
-      });
-      [[SET "bracket_memrows" `{rows}`]]
-      return ([[template "define_memtable" .]]);
-      [[DEL "bracket_memrows"]]
-    }
-  });
-
-  var CPUtableCLASS = React.createClass({
-    getInitialState: function() { return Data.CPU; },
-
-    render: function() {
-      var Data = {CPU: this.state};
-      var rows = Data.CPU.List.map(function($core) {
-        return ([[template "define_cpurows" .]]);
-      });
-      [[SET "bracket_cpurows" `{rows}`]]
-      return ([[template "define_cputable" .]]);
-      [[DEL "bracket_cpurows"]]
-    }
-  });
-
-  var PStableCLASS = React.createClass({
-    getInitialState: function() { return Data.PStable; },
-
-    render: function() {
-      var Data = {PStable: this.state};
-      var rows = Data.PStable.List.map(function($proc) {
-        return ([[template "define_psrows" .]]);
-      });
-      [[SET "bracket_psrows" `{rows}`]]
-      return ([[template "define_pstable" .]]);
-      [[DEL "bracket_psrows"]]
-    }
-  });
+  function ps_rows        (Data, $proc) { return ([[template "define_psrows"          .]]); }
+  function ps_table       (Data, rows)  { return ([[template "define_pstable"         (dot . `rows`)]]); }

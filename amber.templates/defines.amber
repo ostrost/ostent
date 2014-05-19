@@ -18,6 +18,7 @@
 [[end]]
 
 [[define "define_ifbytes_rows"]]
+  [[with .dot]][[.]][[else]]
   each $if in Data.IFbytes.List
     |<tr key=#{$if.NameKey}>
       td #{$if.NameHTML}
@@ -26,9 +27,10 @@
       td.text-right #{$if.In}
       td.text-right #{$if.Out}
     |</tr>
-[[end]]
+[[end]][[end]]
 
 [[define "define_iferrors_rows"]]
+  [[with .dot]][[.]][[else]]
   each $if in Data.IFerrors.List
     |<tr key=#{$if.NameKey}>
       td #{$if.NameHTML}
@@ -37,9 +39,10 @@
       td.text-right #{$if.In}
       td.text-right #{$if.Out}
     |</tr>
-[[end]]
+[[end]][[end]]
 
 [[define "define_ifpackets_rows"]]
+  [[with .dot]][[.]][[else]]
   each $if in Data.IFpackets.List
     |<tr key=#{$if.NameKey}>
       td #{$if.NameHTML}
@@ -48,7 +51,7 @@
       td.text-right #{$if.In}
       td.text-right #{$if.Out}
     |</tr>
-[[end]]
+[[end]][[end]]
 
 [[define "define_ifbytes_table"]]
   table.table1.stripe-table
@@ -72,8 +75,7 @@
             b B
             | %4G
     tbody
-      [[with GET "bracket_ifrows"]][[.]][[DEL "bracket_ifrows"]][[else]]
-        [[template "define_ifbytes_rows" .]][[end]]
+      [[template "define_ifbytes_rows" .]]
 [[end]]
 
 [[define "define_ifpackets_table"]]
@@ -90,8 +92,7 @@
         th.text-right.nowrap[title="total modulo 4G"] Out&nbsp;
           span.unit %4G
     tbody
-      [[with GET "bracket_ifrows"]][[.]][[DEL "bracket_ifrows"]][[else]]
-        [[template "define_ifpackets_rows" .]][[end]]
+      [[template "define_ifpackets_rows" .]]
 [[end]]
 
 [[define "define_iferrors_table"]]
@@ -108,11 +109,11 @@
         th.text-right.nowrap[title="modulo 4G"] Out&nbsp;
           span.unit %4G
     tbody
-      [[with GET "bracket_ifrows"]][[.]][[DEL "bracket_ifrows"]][[else]]
-        [[template "define_iferrors_rows" .]][[end]]
+      [[template "define_iferrors_rows" .]]
 [[end]]
 
 [[define "define_dfbytes_rows"]]
+  [[with .dot]][[.]][[else]]
   each $disk in Data.DFbytes.List
     | <tr key=#{$disk.DirNameKey}>
 
@@ -123,9 +124,10 @@
         sup <span class=#{$disk.UsePercentClass}>#{$disk.UsePercent}%</span>
       td.text-right #{$disk.Total}
     | </tr>
-[[end]]
+[[end]][[end]]
 
 [[define "define_dfinodes_rows"]]
+  [[with .dot]][[.]][[else]]
   each $disk in Data.DFinodes.List
     | <tr key=#{$disk.DirNameKey}>
 
@@ -136,7 +138,7 @@
         sup <span class=#{$disk.IusePercentClass}>#{$disk.IusePercent}%</span>
       td.text-right #{$disk.Inodes}
     | </tr>
-[[end]]
+[[end]][[end]]
 
 [[define "define_dfbytes_table"]]
   table.table1.stripe-table
@@ -149,8 +151,7 @@
         th.header.text-right <a href=#{$L.Used.Href}     class=#{$L.Used.Class}    >Used<span    class=#{$L.Used.CaretClass}     /></a>
         th.header.text-right <a href=#{$L.Total.Href}    class=#{$L.Total.Class}   >Total<span   class=#{$L.Total.CaretClass}    /></a>
     tbody
-      [[with GET "bracket_dfrows"]][[.]][[DEL "bracket_dfrows"]][[else]]
-        [[template "define_dfbytes_rows" .]][[end]]
+      [[template "define_dfbytes_rows" .]]
 [[end]]
 
 [[define "define_dfinodes_table"]]
@@ -163,12 +164,12 @@
         th.header.text-right Used
         th.header.text-right Total
     tbody
-      [[with GET "bracket_dfrows"]][[.]][[DEL "bracket_dfrows"]][[else]]
-        [[template "define_dfinodes_rows" .]][[end]]
+      [[template "define_dfinodes_rows" .]]
 [[end]]
 
 [[define "define_memrows"]]
-each $i, $mem in Data.MEM.List
+  [[with .dot]][[.]][[else]]
+  each $i, $mem in Data.MEM.List
     |<tr key=#{$mem.Kind}>
       td #{$mem.Kind}
       td.text-right #{$mem.Free}
@@ -176,7 +177,7 @@ each $i, $mem in Data.MEM.List
         sup #{$mem.UsePercentHTML}
       td.text-right #{$mem.Total}
     |</tr>
-[[end]]
+[[end]][[end]]
 
 [[define "define_memtable"]]
   table.table1.stripe-table
@@ -187,19 +188,19 @@ each $i, $mem in Data.MEM.List
         th.text-right Used
         th.text-right Total
     tbody
-      [[with GET "bracket_memrows"]][[.]][[DEL "bracket_memrows"]][[else]]
-        [[template "define_memrows" .]][[end]]
+      [[template "define_memrows" .]]
 [[end]]
 
 [[define "define_cpurows"]]
-each $i, $core in Data.CPU.List
+  [[with .dot]][[.]][[else]]
+  each $i, $core in Data.CPU.List
     |<tr key=#{$core.N}>
       td.text-right.nowrap #{$core.N}
       td.text-right <span class=#{$core.UserClass}>#{$core.User}</span>
       td.text-right <span class=#{$core.SysClass}>#{$core.Sys}</span>
       td.text-right <span class=#{$core.IdleClass}>#{$core.Idle}</span>
     |</tr>
-[[end]]
+[[end]][[end]]
 
 [[define "define_cputable"]]
   table.table1.stripe-table
@@ -213,11 +214,11 @@ each $i, $core in Data.CPU.List
         th.text-right.nowrap Idle
           span.unit %
     tbody
-      [[with GET "bracket_cpurows"]][[.]][[DEL "bracket_cpurows"]][[else]]
-        [[template "define_cpurows" .]][[end]]
+      [[template "define_cpurows" .]]
 [[end]]
 
 [[define "define_psrows"]]
+  [[with .dot]][[.]][[else]]
   each $proc in Data.PStable.List
     | <tr key=#{$proc.PID}>
       td.text-right #{$proc.PID}
@@ -229,7 +230,7 @@ each $i, $core in Data.CPU.List
       td.text-center #{$proc.Time}
       td.nowrap #{$proc.NameHTML}
     | </tr>
-[[end]]
+[[end]][[end]]
 
 [[define "define_pstable"]]
   table.table2.stripe-table
@@ -246,6 +247,5 @@ each $i, $core in Data.CPU.List
         th.header             <a href=#{$L.Name.Href}     class=#{$L.Name.Class}    >COMMAND<span class=#{$L.Name.CaretClass}     /></a>
 
     tbody
-      [[with GET "bracket_psrows"]][[.]][[DEL "bracket_psrows"]][[else]]
-        [[template "define_psrows" .]][[end]]
+      [[template "define_psrows" .]]
 [[end]]

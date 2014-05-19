@@ -137,6 +137,93 @@ function newwebsocket(onmessage) {
     };
 }
 
+function emptyK(obj, key) {
+    return (obj      === undefined ||
+            obj      === null      ||
+            obj[key] === undefined ||
+            obj[key] === null);
+}
+
+var IFbytesCLASS = React.createClass({
+  getInitialState: function() { return Data.IFbytes; },
+
+  render: function() {
+    var Data = {IFbytes: this.state};
+    var rows = emptyK(Data.IFbytes, 'List') ?'': Data.IFbytes.List.map(function($if) { return ifbytes_rows(Data, $if); });
+    return ifbytes_table(Data, rows);
+  }
+});
+
+var IFerrorsCLASS = React.createClass({
+  getInitialState: function() { return Data.IFerrors; },
+
+  render: function() {
+    var Data = {IFerrors: this.state};
+    var rows = emptyK(Data.IFerrors, 'List') ?'': Data.IFerrors.List.map(function($if) { return iferrors_rows(Data, $if); });
+    return iferrors_table(Data, rows);
+  }
+});
+
+var IFpacketsCLASS = React.createClass({
+  getInitialState: function() { return Data.IFpackets; },
+
+  render: function() {
+    var Data = {IFpackets: this.state};
+    var rows = emptyK(Data.IFpackets, 'List') ?'': Data.IFpackets.List.map(function($if) { return ifpackets_rows(Data, $if); });
+    return ifpackets_table(Data, rows);
+  }
+});
+
+var DFbytesCLASS = React.createClass({
+  getInitialState: function() { return {DFlinks: Data.DFlinks, DFbytes: Data.DFbytes}; },
+
+  render: function() {
+    var Data = this.state;
+    var rows = emptyK(Data.DFbytes, 'List') ?'': Data.DFbytes.List.map(function($disk) { return dfbytes_rows(Data, $disk); });
+    return dfbytes_table(Data, rows);
+  }
+});
+
+var DFinodesCLASS = React.createClass({
+  getInitialState: function() { return {DFlinks: Data.DFlinks, DFinodes: Data.DFinodes}; },
+
+  render: function() {
+    var Data = this.state;
+    var rows = emptyK(Data.DFinodes, 'List') ?'': Data.DFinodes.List.map(function($disk) { return dfinodes_rows(Data, $disk); });
+    return dfinodes_table(Data, rows);
+  }
+});
+
+var MEMtableCLASS = React.createClass({
+  getInitialState: function() { return Data.MEM; },
+
+  render: function() {
+    var Data = {MEM: this.state};
+    var rows = Data.MEM.List.map(function($mem) { return mem_rows(Data, $mem); });
+    return mem_table(Data, rows);
+  }
+});
+
+var CPUtableCLASS = React.createClass({
+  getInitialState: function() { return Data.CPU; },
+
+  render: function() {
+    var Data = {CPU: this.state};
+    var rows = Data.CPU.List.map(function($core) { return cpu_rows(Data, $core); });
+    return cpu_table(Data, rows);
+  }
+});
+
+var PStableCLASS = React.createClass({
+  getInitialState: function() { return Data.PStable; },
+
+  render: function() {
+    var Data = {PStable: this.state};
+    var rows = Data.PStable.List.map(function($proc) { return ps_rows(Data, $proc); });
+    return ps_table(Data, rows);
+  }
+});
+
 var websocket; // a global
 
 function update(currentState, updatables) {
