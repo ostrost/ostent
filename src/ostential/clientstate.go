@@ -18,6 +18,7 @@ type clientState struct {
 	HideCPU *bool `json:",omitempty"`
 	HideDF  *bool `json:",omitempty"`
 	HidePS  *bool `json:",omitempty"`
+	HideVG  *bool `json:",omitempty"`
 
 	HideSWAP  *bool `json:",omitempty"`
 	ExpandIF  *bool `json:",omitempty"`
@@ -37,6 +38,7 @@ type clientState struct {
 	ConfigCPU *bool `json:",omitempty"`
 	ConfigDF  *bool `json:",omitempty"`
 	ConfigPS  *bool `json:",omitempty"`
+	ConfigVG  *bool `json:",omitempty"`
 }
 
 type dftabs struct {
@@ -59,6 +61,7 @@ func(cs *clientState) Merge(ps clientState) {
 	cs.merge_bool(cs.HideCPU, ps.HideCPU)
 	cs.merge_bool(cs.HideDF,  ps.HideDF)
 	cs.merge_bool(cs.HidePS,  ps.HidePS)
+	cs.merge_bool(cs.HideVG,  ps.HideVG)
 
 	cs.merge_bool(cs.HideSWAP,  ps.HideSWAP)
 	cs.merge_bool(cs.ExpandIF,  ps.ExpandIF)
@@ -73,6 +76,7 @@ func(cs *clientState) Merge(ps clientState) {
 	cs.merge_bool(cs.ConfigCPU, ps.ConfigCPU)
 	cs.merge_bool(cs.ConfigDF,  ps.ConfigDF)
 	cs.merge_bool(cs.ConfigPS,  ps.ConfigPS)
+	cs.merge_bool(cs.ConfigVG,  ps.ConfigVG)
 }
 
 const (
@@ -117,6 +121,7 @@ func defaultClientState() clientState {
 	cs.HideCPU = newfalse()
 	cs.HideDF  = newfalse()
 	cs.HidePS  = newfalse()
+	cs.HideVG  = newfalse()
 
 	cs.HideSWAP  = newfalse()
 	cs.ExpandIF  = newfalse()
@@ -146,8 +151,9 @@ func defaultClientState() clientState {
 	cs.ConfigCPU = newbool(configdefault)
 	cs.ConfigDF  = newbool(configdefault)
 	cs.ConfigPS  = newbool(configdefault)
+	cs.ConfigVG  = newbool(configdefault)
 
-	cs.psLimit = 16
+	cs.psLimit = 8
 	// cs.psNotexpandable = newfalse()
 
 	return cs

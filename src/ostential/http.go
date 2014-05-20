@@ -454,6 +454,7 @@ type PageData struct {
 
 	PStable PStable
 	PShatch *template.HTML `json:",omitempty"`
+	VGhatch *template.HTML `json:",omitempty"`
 
 	DFlinks *DFlinks        `json:",omitempty"`
 	DFbytes  types.DFbytes  `json:",omitempty"`
@@ -465,6 +466,10 @@ type PageData struct {
 	IFbytes   types.Interfaces
 	IFerrors  types.Interfaces
 	IFpackets types.Interfaces
+
+	VagrantMachines *vagrantMachines
+	VagrantError     string
+	VagrantErrord    bool
 
 	DISTRIBHTML template.HTML
 	VERSION     string
@@ -489,10 +494,15 @@ type pageUpdate struct {
 	// PSlinks *PSlinks `json:",omitempty"`
 	PStable *PStable       `json:",omitempty"`
 	PShatch *template.HTML `json:",omitempty"`
+	VGhatch *template.HTML `json:",omitempty"`
 
 	IFbytes   *types.Interfaces `json:",omitempty"`
 	IFerrors  *types.Interfaces `json:",omitempty"`
 	IFpackets *types.Interfaces `json:",omitempty"`
+
+	VagrantMachines *vagrantMachines `json:",omitempty"`
+	VagrantError     string
+	VagrantErrord    bool
 
 	ClientState *clientState `json:",omitempty"`
 }
@@ -617,6 +627,7 @@ func getUpdates(req *http.Request, new_search bool, clientptr *clientState, clie
 		}
 	}()
 	pu.PShatch = muted_hatch(4)
+	pu.VGhatch = muted_hatch(4)
 
 	 pu.IF = types.NewDataMeta()
 	*pu.IF.Expandable = len(if_copy) > TOPROWS
@@ -655,6 +666,17 @@ func getUpdates(req *http.Request, new_search bool, clientptr *clientState, clie
 	if new_search {
 		pu.PStable.Links = &pslinks
 		pu.DFlinks       = &dflinks
+	}
+
+	if !*client.HideVG {
+		machines, err := vagrantmachines()
+		if err != nil {
+			pu.VagrantError = err.Error()
+			pu.VagrantErrord = true
+		} else {
+			pu.VagrantMachines = machines
+			pu.VagrantErrord = false
+		}
 	}
 
 	if clientdiff != nil {
@@ -704,6 +726,7 @@ func pageData(req *http.Request) PageData {
 	data.DF  = updates.DF
 	data.IF  = updates.IF
 	data.PShatch = updates.PShatch
+	data.VGhatch = updates.VGhatch
 
 	       if updates.DFbytes  != nil { data.DFbytes  = *updates.DFbytes
 	} else if updates.DFinodes != nil { data.DFinodes = *updates.DFinodes
@@ -713,6 +736,9 @@ func pageData(req *http.Request) PageData {
 	} else if updates.IFerrors  != nil { data.IFerrors  = *updates.IFerrors
 	} else if updates.IFpackets != nil { data.IFpackets = *updates.IFpackets
 	}
+	data.VagrantMachines = updates.VagrantMachines
+	data.VagrantError    = updates.VagrantError
+	data.VagrantErrord   = updates.VagrantErrord
 
 	return data
 }

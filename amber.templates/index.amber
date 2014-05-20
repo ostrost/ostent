@@ -43,7 +43,7 @@ html
     script
       $(ready);
 
-    div.container
+    div.container-fluid
       div.row.collapse#alert-parent
         div.alert.alert-danger.alert-dismissable
           button.close[type="button"][data-dismiss="alert"][aria-hidden="true"] &times;
@@ -313,6 +313,30 @@ html
               [class="in"] ? (json(Data.ClientState.HidePS) == "false")
               span#ps-table
                 [[template "define_pstable" .]]
+
+    div.container-fluid
+      div.row
+        div.block.col-md-8.col-md-offset-2
+          div.panel1
+            header.NOTdraggable
+              a[href="#vagrant"] Vagrant global-status
+
+              div.pull-right
+                div.btn-group[data-toggle="buttons"]
+                  label.btn-header[href="#vgconfig"].disabled
+                    input[type="checkbox"][name="vgconfig"]
+                    | #{Data.VGhatch}
+
+            div.collapse#vgconfig
+              [class="in"] ? (json(Data.ClientState.ConfigVG) == "false")
+              form.horizontal-form
+                div.form-group
+                  p Nothing to see here yet.
+
+            div.collapse#vagrant
+              [class="in"] ? (json(Data.ClientState.HideVG) == "false")
+              span#vagrant-table
+                [[template "define_vagrant_table" .]]
 
     script
       var HTTP_HOST = #{Data.HTTP_HOST};

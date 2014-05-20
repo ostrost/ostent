@@ -249,3 +249,42 @@
     tbody
       [[template "define_psrows" .]]
 [[end]]
+
+[[define "define_vagrant_error"]]
+  | <tr key="vagrant-error">
+    td[colspan="5"] #{Data.VagrantError}
+  | </tr>
+[[end]]
+
+[[define "define_vagrant_switch"]]
+  [[with .dot]][[.]][[else]]
+  if json(Data.VagrantErrord) == "true"
+    [[template "define_vagrant_error" .]]
+  else
+    [[template "define_vagrant_rows" .]]
+[[end]][[end]]
+
+[[define "define_vagrant_rows"]]
+  each $uuid, $machine in Data.VagrantMachines.List
+    | <tr key=#{$machine.UUID}>
+      td #{$machine.UUIDHTML}
+      td #{$machine.Name}
+      td #{$machine.Provider}
+      td #{$machine.State}
+      td.nowrap #{$machine.Vagrantfile_pathHTML}
+    | </tr>
+[[end]]
+
+[[define "define_vagrant_table"]]
+  table.table1.stripe-table#vagrant-table
+    thead
+      tr
+        th id
+        th name
+        th provider
+        th state
+        th directory
+
+    tbody
+      [[template "define_vagrant_switch" .]]
+[[end]]

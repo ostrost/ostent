@@ -20,3 +20,7 @@ script
 
   function ps_rows        (Data, $proc) { return ([[template "define_psrows"          .]]); }
   function ps_table       (Data, rows)  { return ([[template "define_pstable"         (dot . `rows`)]]); }
+
+  function vagrant_rows(Data, $machine) { return ([[template "define_vagrant_rows"    .]]); }
+  function vagrant_error  (Data)        { return ([[template "define_vagrant_error"   .]]); }
+  function vagrant_table  (Data, rows)  { return ([[template "define_vagrant_table"   (dot . `rows`)]]); }

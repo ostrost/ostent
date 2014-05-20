@@ -199,7 +199,7 @@ var MEMtableCLASS = React.createClass({
 
   render: function() {
     var Data = {MEM: this.state};
-    var rows = Data.MEM.List.map(function($mem) { return mem_rows(Data, $mem); });
+    var rows = emptyK(Data.MEM, 'List') ?'': Data.MEM.List.map(function($mem) { return mem_rows(Data, $mem); });
     return mem_table(Data, rows);
   }
 });
@@ -209,7 +209,7 @@ var CPUtableCLASS = React.createClass({
 
   render: function() {
     var Data = {CPU: this.state};
-    var rows = Data.CPU.List.map(function($core) { return cpu_rows(Data, $core); });
+    var rows = emptyK(Data.CPU, 'List') ?'': Data.CPU.List.map(function($core) { return cpu_rows(Data, $core); });
     return cpu_table(Data, rows);
   }
 });
@@ -219,8 +219,26 @@ var PStableCLASS = React.createClass({
 
   render: function() {
     var Data = {PStable: this.state};
-    var rows = Data.PStable.List.map(function($proc) { return ps_rows(Data, $proc); });
+    var rows = emptyK(Data.PStable, 'List') ?'': Data.PStable.List.map(function($proc) { return ps_rows(Data, $proc); });
     return ps_table(Data, rows);
+  }
+});
+
+var VGtableCLASS = React.createClass({
+  getInitialState: function() { return {VagrantMachines: Data.VagrantMachines,
+                                        VagrantError:  Data.VagrantError,
+                                        VagrantErrord: Data.VagrantErrord
+                                       }; },
+
+  render: function() {
+    var Data = this.state;
+    var rows;
+    if (Data.VagrantErrord !== undefined && Data.VagrantErrord) {
+        rows = [vagrant_error(Data)];
+    } else {
+        rows = emptyK(Data.VagrantMachines, 'List') ?'': Data.VagrantMachines.List.map(function($machine) { return vagrant_rows(Data, $machine); });
+    }
+    return vagrant_table(Data, rows);
   }
 });
 
@@ -243,6 +261,7 @@ function update(currentState, updatables) {
     var ifbytes   = React.renderComponent(IFbytesCLASS  (null), document.getElementById('ifbytes-table'));
     var iferrors  = React.renderComponent(IFerrorsCLASS (null), document.getElementById('iferrors-table'));
     var ifpackets = React.renderComponent(IFpacketsCLASS(null), document.getElementById('ifpackets-table'));
+    var vagrant   = React.renderComponent(VGtableCLASS(null),   document.getElementById('vagrant-table'));
 
     var onmessage = function(event) {
 	var data = JSON.parse(event.data);
@@ -268,6 +287,10 @@ function update(currentState, updatables) {
         setState(ifbytes,   data.IFbytes);
         setState(iferrors,  data.IFerrors);
 	setState(ifpackets, data.IFpackets);
+	setState(vagrant, {VagrantMachines: data.VagrantMachines,
+                           VagrantError:  data.VagrantError,
+                           VagrantErrord: data.VagrantErrord
+                          });
 
         if (data.ClientState !== undefined) {
             console.log(JSON.stringify(data.ClientState), 'recvState');
@@ -496,6 +519,23 @@ var ExpandMEMModel = Updatables.declareModel(function() {
     return self;
 });
 
+var ExpandVGModel = Updatables.declareModel(function() {
+    var self = {
+        Attribute_Hide:   'HideMEM'
+    };
+    self.modelAttributes = function(data) {
+        return {
+            Expand:    !data.ClientState[self.Attribute_Expand], // NB inverse
+            Hide:       data.ClientState[self.Attribute_Hide]
+        };
+    };
+
+    self.toggleHidden   = function(s) { return _.object([self.Attribute_Hide],   [!s.Hide]);   };
+    self.toggleExpanded = function(s) { return _.object([self.Attribute_Expand], [ s.Expand]); }; // NB reverse, thus not "!"
+
+    return self;
+});
+
 var ExpandCPUModel = Updatables.declareModel(function() {
     var self = {
         Attribute_Expand: 'ExpandCPU',
@@ -643,6 +683,10 @@ function ready() {
                        model: updatables.make(Updatables.declareCollapseModel('ConfigPS'),
                                               {target: $('#psconfig')}) });
 
+    new CollapseView({ el: $('[href="#vgconfig"]'), // VG CONFIG
+                       model: updatables.make(Updatables.declareCollapseModel('ConfigVG'),
+                                              {target: $('#vgconfig')}) });
+
     // updatables.make(Updatables.declareCollapseModel('HideMEM'), // MEMORY
     //                 {target: $('#mem')}, CollapseView, { el: $('header a[href="#mem"]') });
 
@@ -678,6 +722,10 @@ function ready() {
             more_el: $('label.more[href="#psmore"]'),
             less_el: $('label.less[href="#psless"]')
         });
+
+    updatables.make( // VG
+        Updatables.declareCollapseModel('HideVG'), {target: $('#vagrant')},
+        CollapseView, {header_el: $('header a[href="#vagrant"]')});
 
     updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {IP: data.Generic.IP}; }}),
                     {}, UpdateView, {el: $('#generic-ip')});
