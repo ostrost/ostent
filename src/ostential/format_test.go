@@ -16,21 +16,39 @@ import (
 	if cmp != "11" {
 		t.Errorf("Mismatch, cmp: \"%v\"\n", cmp)
 	}
-}
+} // */
 
-func Test_humanizeIBytes(t *testing.T) {
+func Test_humanB(t *testing.T) {
 	for _, v := range []struct{
 		a uint64
 		cmp string
 	}{
-		{117649480 * 1024, "112GiB"}, // sigar.FileSystemUsage....[uint64] value is /1024
+		{117649480 * 1024, "112G" /* "iB" */}, // sigar.FileSystemUsage....[uint64] value is /1024
+		{1023, "1023B"},
+		{1024, "1.0K"},
 	} {
-		cmp := humanize.IBytes(v.a)
+		cmp := humanB(v.a)
 		if cmp != v.cmp {
-			t.Errorf("Mismatch: humanize.IBytes(%v) == %v != %v\n", v.a, v.cmp, cmp)
+			t.Errorf("Mismatch: humanB(%v) == %v != %v\n", v.a, v.cmp, cmp)
 		}
 	}
-} */
+} // */
+
+func Test_humanUnitless(t *testing.T) {
+	for _, v := range []struct{
+		a uint64
+		cmp string
+	}{
+		{999,  "999"},
+		{1000, "1.0k"},
+		{1001, "1.0k"},
+	} {
+		cmp := humanUnitless(v.a)
+		if cmp != v.cmp {
+			t.Errorf("Mismatch: humanUnitless(%v) == %v != %v\n", v.a, v.cmp, cmp)
+		}
+	}
+}
 
 func Test_percent(t *testing.T) {
 	for _, v := range []struct{

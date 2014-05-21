@@ -19,21 +19,10 @@ func bps(factor int, nowin, previn uint) string {
 	if nowin < previn { // counters got reset
 		return ""
 	}
-	n := (nowin - previn) * uint(factor) // bits now?
+	n := (nowin - previn) * uint(factor) // bits now if the factor is 8
 	return humanbits(uint64(n))
 }
-func unitless(s string) string {
-	if s == "" {
-		return s
-	}
-	i := len(s) - 1
-	if s[i] == 'b' || s[i] == 'B' {
-		s = s[:i]
-	} else if s[i] == 'K' {
-		s = s[:i] + "k"
-	}
-	return s
-}
+
 func ps(nowin, previn uint) string {
 	if nowin < previn { // counters got reset
 		return ""
