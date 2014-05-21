@@ -1,6 +1,5 @@
 package ostential
 import (
-	"ostential/assets"
 	"ostential/view"
 
 	"os"
@@ -10,10 +9,8 @@ import (
 	"flag"
 	"time"
 	"sync"
-	"bytes"
 	"strings"
 	"net/http"
-	"path/filepath"
 
 	"github.com/codegangsta/martini"
 )
@@ -87,7 +84,12 @@ func Serve(listen net.Listener, logfunc Logfunc, cb func(*Modern)) error {
 
 	m.Use(logfunc) // log middleware
 
-	m.Use(assets_bindata())
+	// m.Use(assets_bindata())
+	m.Any("/robots.txt",        view.AssetsHandlerFunc("/"))        // http.HandleFunc("/robots.txt", ...)
+	m.Any("/assets/robots.txt", http.NotFound)                      // http.HandleFunc("/assets/robots.txt", http.NotFound)
+	m.Any("/assets/.*",         view.AssetsHandlerFunc("/assets/")) // http.HandleFunc("/assets/",    ...)
+
+	// a martini.Handler, handles all non-asset requests e.g. "/" and "/ws"
 	m.Use(view.BinTemplates_MartiniHandler())
 
 	m.Get("/",   index)
@@ -139,7 +141,7 @@ func Serve(listen net.Listener, logfunc Logfunc, cb func(*Modern)) error {
 	return server.Serve(listen)
 }
 
-func assets_bindata() martini.Handler {
+/* func assets_bindata() martini.Handler {
 	return func(res http.ResponseWriter, req *http.Request, log *log.Logger) {
 		if req.Method != "GET" && req.Method != "HEAD" {
 			return
@@ -158,7 +160,7 @@ func assets_bindata() martini.Handler {
 		reader := bytes.NewReader(text)
 		http.ServeContent(res, req, path, assets.ModTime(), reader)
 	}
-}
+} // */
 
 type Logfunc martini.Handler
 

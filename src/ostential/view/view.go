@@ -1,5 +1,4 @@
 package view
-
 import (
 	"io"
 	"fmt"

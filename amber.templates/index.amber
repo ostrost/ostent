@@ -23,21 +23,21 @@ html
     title #{Data.Generic.HostnameString} ostent
     meta[name="viewport"][content="width=device-width, initial-scale=1"]
 
-    //- meta[itemprop="image"][content="/favicon.png"]
-    link[rel="icon"][type="image/png"][href="/favicon.png"]
-    link[rel="stylesheet"][type="text/css"][href="/css/index.css"]
+    //- meta[itemprop="image"][content="/assets/favicon.png"]
+    link[rel="icon"][type="image/png"][href="/assets/favicon.png"]
+    link[rel="stylesheet"][type="text/css"][href="/assets/css/index.css"]
 
-    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/jquery/2.1.1/jquery-2.1.1.min.js"]
+    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/assets/js/vendor/min/jquery/2.1.1/jquery-2.1.1.min.js"]
 
-    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/bootstrap/3.1.1/bootstrap.min.js"]
-    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/react/0.10.0/react.min.js"]
+    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/assets/js/vendor/min/bootstrap/3.1.1/bootstrap.min.js"]
+    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/assets/js/vendor/min/react/0.10.0/react.min.js"]
     //- script[type="text/javascript"][charset="utf-8"][src="http://fb.me/react-0.10.0.js"]
 
-    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/underscore/1.6.0/underscore-min.js"]
-    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/backbone/1.1.2/backbone-min.js"]
+    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/assets/js/vendor/min/underscore/1.6.0/underscore-min.js"]
+    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/assets/js/vendor/min/backbone/1.1.2/backbone-min.js"]
 
-    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/gen/jscript.js"]
-    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/main/main.js"]
+    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/assets/js/gen/jscript.js"]
+    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/assets/js/main/main.js"]
 
   body
     script
