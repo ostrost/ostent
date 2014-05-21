@@ -13,7 +13,6 @@ import (
 	"html/template"
 
 	"github.com/rzab/gosigar"
-	"github.com/codegangsta/martini"
 )
 
 func bps(factor int, nowin, previn uint) string {
@@ -746,16 +745,6 @@ func pageData(req *http.Request) PageData {
 func index(req *http.Request, r view.Render) {
 	r.HTML(200, "index.html", struct{Data interface{}}{Data: pageData(req),})
 }
-
-type Modern struct {
-	*martini.Martini
-	 martini.Router // the router functions for convenience
-}
-
-
-
-
-
 
 
 

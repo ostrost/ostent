@@ -61,6 +61,11 @@ func init() {
 	flag.Var(&BindFlag, "bind", "Bind address")
 }
 
+type Modern struct {
+	*martini.Martini
+	 martini.Router // the router functions for convenience
+}
+
 func newModern() *Modern { // customized martini.Classic
 	r := martini.NewRouter()
 	m := martini.New()
