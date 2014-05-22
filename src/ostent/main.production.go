@@ -18,7 +18,6 @@ import (
 	"math/rand"
 	"path/filepath"
 
-	"github.com/codegangsta/martini"
 	"github.com/rcrowley/goagain"
 
 	"github.com/inconshreveable/go-update"
@@ -111,16 +110,12 @@ func main() {
 
 	flag.Parse()
 
-	os.Setenv("HOST", ostential.BindFlag.Host) // for martini
-	os.Setenv("PORT", ostential.BindFlag.Port) // for martini
-
 	had_upgrade := false
 	if !upgradelater && os.Getenv("GOAGAIN_PPID") == "" { // not after gone again
 		log.Println("Initial check for upgrades; run with -ugradelater to disable")
 		had_upgrade = upgrade_once(false)
 	}
 
-	martini.Env = martini.Prod
 	if !had_upgrade { // start the background routine unless just had an upgrade and gonna relaunch anyway
 		go ostential.Loop()
 	}
@@ -140,12 +135,12 @@ func main() {
 			}()
 		} else {
 			go upgrade_loop()
-			go ostential.Serve(listen, ostential.LogOne, nil)
+			go ostential.Serve(listen, true, nil)
 		}
 
 	} else {
 		go upgrade_loop()
-		go ostential.Serve(listen, ostential.LogOne, nil)
+		go ostential.Serve(listen, true, nil)
 
 		if err := goagain.Kill(); err != nil {
 			log.Fatalln(err)

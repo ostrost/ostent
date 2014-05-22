@@ -1,11 +1,13 @@
 package ostential
 import (
+	"ostential/view"
+
 	"fmt"
 	"time"
 	"flag"
 	"net/url"
 	"net/http"
-	"github.com/gorilla/websocket"
+	gorillawebsocket "github.com/gorilla/websocket"
 )
 
 type periodValue struct {
@@ -74,7 +76,7 @@ func parseSearch(search string) (url.Values, error) {
 }
 
 type wclient struct {
-	ws *websocket.Conn
+	ws *gorillawebsocket.Conn
 	ping chan *received
 	fullState clientState
 }
@@ -158,20 +160,14 @@ func(wc *wclient) waitfor_updates() { // write to  client
 
 func slashws(w http.ResponseWriter, req *http.Request) {
 	if req.Method != "GET" {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		http.Error(w, view.StatusLine(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
 	}
-	if req.Header.Get("Origin") != "http://"+ req.Host {
-		http.Error(w, "Forbidden", http.StatusForbidden)
+	// Upgrader.Upgrade() has Origin check if .CheckOrigin is nil
+	upgrader := gorillawebsocket.Upgrader{}
+	ws, err := upgrader.Upgrade(w, req, nil)
+	if err != nil { // Upgrade() does http.Error() to the client
 		return
-	}
-	ws, err := websocket.Upgrade(w, req, nil, 1024, 1024)
-	if err != nil {
-		if _, ok := err.(websocket.HandshakeError); ok {
-			http.Error(w, "websocket.Upgrade errd", http.StatusBadRequest)
-			return
-		}
-		panic(err)
 	}
 
 	wc := &wclient{ws: ws, ping: make(chan *received, 2), fullState: defaultClientState()}

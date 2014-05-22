@@ -3,6 +3,10 @@ import (
 	"ostential/types"
 	"ostential/view"
 
+	"io"
+	"bytes"
+	"strconv"
+
 	"fmt"
 	"sort"
 	"sync"
@@ -15,19 +19,19 @@ import (
 	"github.com/rzab/gosigar"
 )
 
-func bps(factor int, nowin, previn uint) string {
-	if nowin < previn { // counters got reset
+func bps(factor int, current, previous uint) string {
+	if current < previous { // counters got reset
 		return ""
 	}
-	n := (nowin - previn) * uint(factor) // bits now if the factor is 8
-	return humanbits(uint64(n))
+	diff := (current - previous) * uint(factor) // bits now if the factor is 8
+	return humanbits(uint64(diff))
 }
 
-func ps(nowin, previn uint) string {
-	if nowin < previn { // counters got reset
+func ps(current, previous uint) string {
+	if current < previous { // counters got reset
 		return ""
 	}
-	return humanUnitless(uint64(nowin - previn))
+	return humanUnitless(uint64(current - previous))
 }
 
 const TOPROWS = 2
@@ -731,9 +735,38 @@ func pageData(req *http.Request) PageData {
 	return data
 }
 
-func index(req *http.Request, r view.Render) {
-	r.HTML(200, "index.html", struct{Data interface{}}{Data: pageData(req),})
+func indexFunc(exactpath string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" && r.Method != "HEAD" {
+			http.Error(w, view.StatusLine(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
+			return
+		}
+
+		if r.URL.Path == exactpath {
+			index(w, r)
+			return
+		}
+		http.NotFound(w, r)
+	}
 }
 
+var indexTemplate = view.Bincompile()
 
+func index(w http.ResponseWriter, r *http.Request) {
+	template, err := indexTemplate.Clone()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
+	buf := new(bytes.Buffer)
+	err  = template.ExecuteTemplate(buf, "index.html", struct{Data interface{}}{Data: pageData(r),})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html")
+ 	w.Header().Set("Content-Length", strconv.Itoa(len(buf.String())))
+	io.Copy(w, buf)
+}

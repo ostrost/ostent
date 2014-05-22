@@ -7,12 +7,8 @@ import (
 	"log"
 	"net"
 	"flag"
-	"time"
-	"sync"
 	"strings"
 	"net/http"
-
-	"github.com/codegangsta/martini"
 )
 
 type bindValue struct {
@@ -61,45 +57,33 @@ func init() {
 	flag.Var(&BindFlag, "bind", "Bind address")
 }
 
-type Modern struct {
-	*martini.Martini
-	 martini.Router // the router functions for convenience
-}
-
-func newModern() *Modern { // customized martini.Classic
-	r := martini.NewRouter()
-	m := martini.New()
-	m.Use(martini.Recovery())
-	m.Action(r.Handle)
-
-	return &Modern{
-		Martini: m,
-		Router: r,
-	}
-}
-
-func Serve(listen net.Listener, logfunc Logfunc, cb func(*Modern)) error {
-	m := newModern() // as oppose to classic
-	if cb != nil {
-		cb(m)
-	}
-
+func Serve(listen net.Listener, production bool, cbservemux func(*http.ServeMux)) error {
 	logger := log.New(os.Stderr, "[ostent] ", 0)
-	m.Map(logger) // log.Logger object
+	wrap := func(handler func(http.ResponseWriter, *http.Request)) http.Handler {
+		return LoggedFunc(production, log.New(os.Stdout, "", 0))(
+			RecoveringFunc(production, logger)(http.HandlerFunc(handler)))
+	}
 
-	m.Use(logfunc) // log middleware
+	mux := http.NewServeMux() // http.DefaultServeMux
+	mux.Handle("/robots.txt", wrap(view.AssetsHandlerFunc("/")))
+mux.HandleFunc("/assets/robots.txt", http.NotFound)
+	mux.Handle("/assets/",    wrap(view.AssetsHandlerFunc("/assets/")))
+	mux.Handle("/",           wrap(indexFunc("/")))
+	mux.Handle("/ws",         wrap(slashws))
 
-	// m.Use(assets_bindata())
-	m.Any("/robots.txt",        view.AssetsHandlerFunc("/"))        // http.HandleFunc("/robots.txt", ...)
-	m.Any("/assets/robots.txt", http.NotFound)                      // http.HandleFunc("/assets/robots.txt", http.NotFound)
-	m.Any("/assets/.*",         view.AssetsHandlerFunc("/assets/")) // http.HandleFunc("/assets/",    ...)
+	// mux.Handle("/panic", handleFunc(http.HandlerFunc(func(http.ResponseWriter, *http.Request) { panic(fmt.Errorf("I'm panicing")) })))
 
-	// a martini.Handler, handles all non-asset requests e.g. "/" and "/ws"
-	m.Use(view.BinTemplates_MartiniHandler())
+	if cbservemux != nil {
+		cbservemux(mux)
+	}
 
-	m.Get("/",   index)
-	m.Get("/ws", slashws)
+	banner(listen, logger)
 
+	server := &http.Server{Addr: listen.Addr().String(), Handler: mux}
+	return server.Serve(listen)
+}
+
+func banner(listen net.Listener, logger *log.Logger) {
 	hostname := getGeneric().HostnameString
 	logger.Printf("   %s\n", strings.Repeat("-", len(hostname) + 7))
 	if len(hostname) > 19 {
@@ -141,89 +125,6 @@ func Serve(listen net.Listener, logfunc Logfunc, cb func(*Modern)) error {
 		logger.Printf("| %s |", f)
 	}
 	logger.Printf("+------------------------------+")
-
-	server := &http.Server{Addr: listen.Addr().String(), Handler: m}
-	return server.Serve(listen)
-}
-
-/* func assets_bindata() martini.Handler {
-	return func(res http.ResponseWriter, req *http.Request, log *log.Logger) {
-		if req.Method != "GET" && req.Method != "HEAD" {
-			return
-		}
-		path := req.URL.Path
-		if path == "/" || path == "" || filepath.Ext(path) == ".go" { // cover the bindata.go
-			return
-		}
-		if path[0] == '/' {
-			path = path[1:]
-		}
-		text, err := assets.Asset(path)
-		if err != nil {
-			return
-		}
-		reader := bytes.NewReader(text)
-		http.ServeContent(res, req, path, assets.ModTime(), reader)
-	}
-} // */
-
-type Logfunc martini.Handler
-
-var logOneLock sync.Mutex
-var logged = map[string]bool{}
-func LogOne(res http.ResponseWriter, req *http.Request, c martini.Context, logger *log.Logger) {
-	start := time.Now()
-	c.Next()
-
-	rw := res.(martini.ResponseWriter)
-	status := rw.Status()
-	if status != 200 && status != 304 && req.URL.Path != "/ws" {
-		logThis(start, res, req, logger)
-		return
-	}
-
-	host, _, err := net.SplitHostPort(req.RemoteAddr)
-	if err != nil {
-		host = req.RemoteAddr
-	}
-	logOneLock.Lock()
-	if _, ok := logged[host]; ok {
-		logOneLock.Unlock()
-		return
-	}
-	logged[host] = true
-	logOneLock.Unlock()
-
-	logger.Printf("%s\tRequested from %s; subsequent successful requests will not be logged\n", time.Now().Format("15:04:05"), host)
-}
-
-func LogAll(res http.ResponseWriter, req *http.Request, c martini.Context, logger *log.Logger) {
-	start := time.Now()
-	c.Next()
-	logThis(start, res, req, logger)
-}
-
-var ZEROTIME, _ = time.Parse("15:04:05", "00:00:00")
-
-func logThis(start time.Time, res http.ResponseWriter, req *http.Request, logger *log.Logger) {
-	diff := time.Since(start)
-	since := ZEROTIME.Add(diff).Format("5.0000s")
-
-	rw := res.(martini.ResponseWriter)
-	status := rw.Status()
-	code := fmt.Sprintf("%d", status)
-	if status != 200 {
-		text := http.StatusText(status)
-		if text != "" {
-			code += fmt.Sprintf(" %s", text)
-		}
-	}
-	host, _, err := net.SplitHostPort(req.RemoteAddr)
-	if err != nil {
-		host = req.RemoteAddr
-	}
-
-	logger.Printf("%s\t%s\t%s\t%v\t%s\t%s\n", start.Format("15:04:05"), host, since, code, req.Method, req.URL.Path)
 }
 
 const VERSION = "0.1.6"
