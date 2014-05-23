@@ -1,12 +1,13 @@
 package ostential
 import (
-	"ostential/view"
+	"ostential/assets"
 
 	"os"
 	"fmt"
 	"log"
 	"net"
 	"flag"
+	"bytes"
 	"strings"
 	"net/http"
 )
@@ -57,21 +58,21 @@ func init() {
 	flag.Var(&BindFlag, "bind", "Bind address")
 }
 
-func Serve(listen net.Listener, production bool, cbservemux func(*http.ServeMux)) error {
+func Serve(listen net.Listener, production bool, cbservemux func(ServeMux)) error {
 	logger := log.New(os.Stderr, "[ostent] ", 0)
-	wrap := func(handler func(http.ResponseWriter, *http.Request)) http.Handler {
-		return LoggedFunc(production, log.New(os.Stdout, "", 0))(
-			RecoveringFunc(production, logger)(http.HandlerFunc(handler)))
+	mux := NewMux(production, logger, log.New(os.Stdout, "", 0))
+
+	for path := range assets.Bindata { // keys
+		hf := serveContentFunc(path)
+		mux.HandleFunc("GET",  "/"+ path, hf)
+		mux.HandleFunc("HEAD", "/"+ path, hf)
 	}
 
-	mux := http.NewServeMux() // http.DefaultServeMux
-	mux.Handle("/robots.txt", wrap(view.AssetsHandlerFunc("/")))
-mux.HandleFunc("/assets/robots.txt", http.NotFound)
-	mux.Handle("/assets/",    wrap(view.AssetsHandlerFunc("/assets/")))
-	mux.Handle("/",           wrap(indexFunc("/")))
-	mux.Handle("/ws",         wrap(slashws))
+	mux.HandleFunc("GET",  "/ws", slashws)
+	mux.HandleFunc("GET",  "/",   index)
+	mux.HandleFunc("HEAD", "/",   index)
 
-	// mux.Handle("/panic", handleFunc(http.HandlerFunc(func(http.ResponseWriter, *http.Request) { panic(fmt.Errorf("I'm panicing")) })))
+	// mux.HandleFunc("/panic", ... func(http.ResponseWriter, *http.Request) { panic(fmt.Errorf("I'm panicing")) })
 
 	if cbservemux != nil {
 		cbservemux(mux)
@@ -81,6 +82,22 @@ mux.HandleFunc("/assets/robots.txt", http.NotFound)
 
 	server := &http.Server{Addr: listen.Addr().String(), Handler: mux}
 	return server.Serve(listen)
+}
+
+func serveContentFunc(path string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		text, err := assets.Asset(path)
+		if err != nil {
+			panic(err)
+		}
+		reader := bytes.NewReader(text)
+		modtime, err := assets.ModTime("assets", path)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		http.ServeContent(w, r, path, modtime, reader)
+	}
 }
 
 func banner(listen net.Listener, logger *log.Logger) {

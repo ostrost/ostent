@@ -1,7 +1,5 @@
 package ostential
 import (
-	"ostential/view"
-
 	"fmt"
 	"time"
 	"flag"
@@ -159,10 +157,6 @@ func(wc *wclient) waitfor_updates() { // write to  client
 }
 
 func slashws(w http.ResponseWriter, req *http.Request) {
-	if req.Method != "GET" {
-		http.Error(w, view.StatusLine(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
-		return
-	}
 	// Upgrader.Upgrade() has Origin check if .CheckOrigin is nil
 	upgrader := gorillawebsocket.Upgrader{}
 	ws, err := upgrader.Upgrade(w, req, nil)

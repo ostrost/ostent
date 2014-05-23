@@ -735,19 +735,8 @@ func pageData(req *http.Request) PageData {
 	return data
 }
 
-func indexFunc(exactpath string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "GET" && r.Method != "HEAD" {
-			http.Error(w, view.StatusLine(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
-			return
-		}
-
-		if r.URL.Path == exactpath {
-			index(w, r)
-			return
-		}
-		http.NotFound(w, r)
-	}
+func statusLine(status int) string {
+	return fmt.Sprintf("%d %s", status, http.StatusText(status))
 }
 
 var indexTemplate = view.Bincompile()

@@ -1,7 +1,5 @@
 package ostential
 import (
-	"ostential/view"
-
 	"fmt"
 	"log"
 	"net"
@@ -73,8 +71,8 @@ func(lg *logger) log(start time.Time, w loggedResponseWriter, r *http.Request) {
 	since := ZEROTIME.Add(diff).Format("5.0000s")
 
 	code := fmt.Sprintf("%d", w.status)
-	if w.status != 200 {
-		code = view.StatusLine(w.status)
+	if w.status != 200 && w.status != 304 {
+		code = statusLine(w.status)
 	}
 
 	host, _, err := net.SplitHostPort(r.RemoteAddr)

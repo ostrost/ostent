@@ -1,7 +1,5 @@
 package ostential
 import (
-	"ostential/view"
-
 	"log"
 	"runtime"
 	"net/http"
@@ -38,7 +36,7 @@ func (rc *recovery) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 const panicstatuscode = http.StatusInternalServerError
-var   panicstatustext = view.StatusLine(panicstatuscode)
+var   panicstatustext = statusLine(panicstatuscode)
 
 func (rc *recovery) recov(w http.ResponseWriter, E interface{}) {
 	w.WriteHeader(panicstatuscode) // NB

@@ -6,6 +6,6 @@ import (
 )
 
 var STARTIME = time.Now()
-func ModTime() time.Time {
-	return STARTIME
+func ModTime(string, string) (time.Time, error) {
+	return STARTIME, nil
 }
