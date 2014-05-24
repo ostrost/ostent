@@ -39,7 +39,7 @@ go_env = Environment(BUILDERS={'build': Builder(generator=generator('go build -o
 go_env['ENV']['PATH'] += ':'+ os.environ['GOROOT'] +'/bin'
 go_env['ENV']['GOPATH'] =     os.environ['GOPATH'] +':'+ os.getcwd()
 
-env = Environment(ENV={'PATH': os.environ['PATH'],
+env = Environment(ENV={'PATH': os.environ['PATH'] +':'+ os.getcwd() + '/node_modules/.bin',
                        'HOME': os.path.expanduser('~')}, BUILDERS={
     'bindata': Builder(generator=bindata),
     'sass':    Builder(action='sass $SOURCES $TARGETS'),
@@ -100,4 +100,5 @@ ostent = build_env.build('%s/ostent' % bindir, (
         'src/ostential/assets/bindata.production.go',
         'src/ostential/assets/bindata.devel.go',
 ))
+Alias('b',     ostent)
 Alias('build', ostent)

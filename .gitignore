@@ -1,6 +1,8 @@
 /.sass-cache/
 /.sconsign.dblite
 
+/node_modules/
+
 /bin/
 /pkg/
 

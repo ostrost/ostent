@@ -72,7 +72,7 @@ SCons
 
 Additional required tools here:
 - [Sass](http://sass-lang.com/)
-- [react-tools](https://www.npmjs.org/package/react-tools) with [Node.js](http://nodejs.org/)
+- [react-tools](https://www.npmjs.org/package/react-tools) for jsx(1): `npm install react-tools #--global`
 
 `scons` makes these **commited to the repo** files:
 - `src/ostential/view/bindata.devel.go`
