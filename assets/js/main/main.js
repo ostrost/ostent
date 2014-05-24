@@ -316,12 +316,6 @@ var CollapseView = Backbone.View.extend({
 
     initialize: function() {
 	this.listenTo(this.model, 'change:Hide', this.redisplay_panel);
-        this.init_target();
-    },
-    init_target: function() {
-	_.map(this.model.attributes.target, function(t) {
-            $(t).collapse({toggle: false}); // init collapsable objects
-	}, this);
     },
     redisplay_panel: function() {
 	_.map(this.model.attributes.target, function(t) {
@@ -348,8 +342,8 @@ var ExpandView = CollapseView.extend({
     },
     initialize: function() {
         this.initialize_fromswitch();
-	this.listenTo(this.model, 'change:Expand',     this.change_expand);
-        CollapseView.prototype.initialize.call(this); // does this.init_target();
+	this.listenTo(this.model, 'change:Expand', this.change_expand);
+        CollapseView.prototype.initialize.call(this);
     },
     change_expand: function() {
         this.redisplay_panel();
@@ -404,7 +398,6 @@ var SwitchView = CollapseView.extend(ExpandView.prototype).extend({
 	this.listenTo(this.model, 'change:Expand',     this.change_switch); // <- as in ExpandView.initialize
 	this.listenTo(this.model, 'change:CurrentTab', this.change_switch);
         ExpandView.prototype.initialize_fromswitch.call(this);
-        this.init_target();
     },
     redisplay_tabs: function() {
 	var target = this.model.attributes.target;
@@ -647,6 +640,9 @@ var UpdateView = Backbone.View.extend({
 });
 
 function ready() {
+
+    $('.collapse').collapse({toggle: false}); // init collapsable objects
+
     // $('span .tooltipable').tooltip();
     $('span .tooltipable').popover({trigger: 'hover focus'});
     $('span .tooltipabledots').popover(); // the clickable dots
