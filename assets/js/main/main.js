@@ -521,7 +521,7 @@ var ExpandMEMModel = Updatables.declareModel(function() {
 
 var ExpandVGModel = Updatables.declareModel(function() {
     var self = {
-        Attribute_Hide:   'HideMEM'
+        Attribute_Hide: 'HideVG'
     };
     self.modelAttributes = function(data) {
         return {
