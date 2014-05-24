@@ -1,6 +1,6 @@
 `ostent` displays current system metrics. [**Demo** here](http://demo.ostrost.com/)
 
-![screenshot](https://github.com/rzab/ostent/raw/master/screenshot.png)
+![screenshot](https://ostrost.com/ostent/screenshot.png)
 
 Install & run with `curl -sSL https://github.com/rzab/ostent/raw/master/ostent.sh | sh`
 
@@ -71,7 +71,7 @@ SCons
 -----
 
 Additional required tools here:
-- [Sass](http://sass-lang.com/)
+- [Sass](http://sass-lang.com/install)
 - [react-tools](https://www.npmjs.org/package/react-tools) for jsx(1): `npm install react-tools #--global`
 
 `scons` makes these **commited to the repo** files:
