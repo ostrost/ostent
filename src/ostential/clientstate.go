@@ -33,12 +33,12 @@ type clientState struct {
 
 	// PSusers []string `json:omitempty`
 
-	ConfigMEM *bool `json:",omitempty"`
-	ConfigIF  *bool `json:",omitempty"`
-	ConfigCPU *bool `json:",omitempty"`
-	ConfigDF  *bool `json:",omitempty"`
-	ConfigPS  *bool `json:",omitempty"`
-	ConfigVG  *bool `json:",omitempty"`
+	HideconfigMEM *bool `json:",omitempty"`
+	HideconfigIF  *bool `json:",omitempty"`
+	HideconfigCPU *bool `json:",omitempty"`
+	HideconfigDF  *bool `json:",omitempty"`
+	HideconfigPS  *bool `json:",omitempty"`
+	HideconfigVG  *bool `json:",omitempty"`
 }
 
 type dftabs struct {
@@ -71,12 +71,12 @@ func(cs *clientState) Merge(ps clientState) {
 	cs.mergeSEQ(cs.TabIF, ps.TabIF)
 	cs.mergeSEQ(cs.TabDF, ps.TabDF)
 
-	cs.merge_bool(cs.ConfigMEM, ps.ConfigMEM)
-	cs.merge_bool(cs.ConfigIF,  ps.ConfigIF)
-	cs.merge_bool(cs.ConfigCPU, ps.ConfigCPU)
-	cs.merge_bool(cs.ConfigDF,  ps.ConfigDF)
-	cs.merge_bool(cs.ConfigPS,  ps.ConfigPS)
-	cs.merge_bool(cs.ConfigVG,  ps.ConfigVG)
+	cs.merge_bool(cs.HideconfigMEM, ps.HideconfigMEM)
+	cs.merge_bool(cs.HideconfigIF,  ps.HideconfigIF)
+	cs.merge_bool(cs.HideconfigCPU, ps.HideconfigCPU)
+	cs.merge_bool(cs.HideconfigDF,  ps.HideconfigDF)
+	cs.merge_bool(cs.HideconfigPS,  ps.HideconfigPS)
+	cs.merge_bool(cs.HideconfigVG,  ps.HideconfigVG)
 }
 
 const (
@@ -142,16 +142,15 @@ func defaultClientState() clientState {
 		IFbytes:   IFBYTES_TABID,
 	}
 
-	// reverse logic
-	configdefault := true
-	// configdefault = false // DEVELOPMENT
+	hideconfig := true
+	// hideconfig = false // DEVELOPMENT
 
-	cs.ConfigMEM = newbool(configdefault)
-	cs.ConfigIF  = newbool(configdefault)
-	cs.ConfigCPU = newbool(configdefault)
-	cs.ConfigDF  = newbool(configdefault)
-	cs.ConfigPS  = newbool(configdefault)
-	cs.ConfigVG  = newbool(configdefault)
+	cs.HideconfigMEM = newbool(hideconfig)
+	cs.HideconfigIF  = newbool(hideconfig)
+	cs.HideconfigCPU = newbool(hideconfig)
+	cs.HideconfigDF  = newbool(hideconfig)
+	cs.HideconfigPS  = newbool(hideconfig)
+	cs.HideconfigVG  = newbool(hideconfig)
 
 	cs.psLimit = 8
 	// cs.psNotexpandable = newfalse()

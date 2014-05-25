@@ -11,74 +11,6 @@ function primary_button(btn) {
     btn.removeClass('btn-default');
 }
 
-function Updatables(initial) {
-    var models = [];
-    function make(modelClass, opt, viewClass, elopt) {
-        var el;
-        if (elopt !== undefined) {
-            el  =  elopt.el_added;
-            delete elopt.el_added;
-            _.extend(opt, elopt); // !
-
-            if (el === undefined) {
-                el = $();
-            }
-            _.map(elopt, function(a) { // add the values
-                el = el.add(a);
-            });
-        }
-        if (opt === undefined) {
-            opt = {};
-        }
-        var modinit = modelClass.modelAttributes(initial);
-        opt = _.extend(opt, modinit);            // !
-        opt = _.extend(opt, {initial: modinit}); // !
-        var model = new modelClass(opt);
-	models.push(model);
-
-        if (viewClass !== undefined) {
-            new viewClass({el: el, model: model});
-        }
-	return model;
-    }
-    function set(data) {
-	for (var i = 0; i < models.length; i++) {
-            var ma = models[i].modelAttributes(data);
-            for (var k in ma) {
-                if (ma[k] === null) {
-                    delete ma[k];
-                }
-            }
-            models[i].set(ma);
-	}
-    }
-    return {
-	make: make,
-	set:  set
-    };
-}
-
-Updatables.declareModel = function(opt) {
-    if (typeof opt == 'function') {
-        opt = opt();
-    }
-    var modelClass = Backbone.Model.extend(opt);
-    modelClass.modelAttributes = opt.modelAttributes;
-    return modelClass;
-};
-
-Updatables.declareCollapseModel = function(ATTRIBUTE_HIDE) {
-    return Updatables.declareModel(function () {
-        return {
-            Attribute_Hide: ATTRIBUTE_HIDE,
-            modelAttributes: function(data) { return {
-                Hide: data.ClientState[ATTRIBUTE_HIDE]
-            }; },
-            toggleHidden: function(s) { return _.object([ATTRIBUTE_HIDE], [!s.Hide]); }
-        };
-    });
-};
-
 function newwebsocket(onmessage) {
     var conn, connected = false;
     function sendJSON(obj) {
@@ -137,6 +69,9 @@ function newwebsocket(onmessage) {
     };
 }
 
+// function empty(obj) {
+//     return obj === undefined || obj === null;
+// }
 function emptyK(obj, key) {
     return (obj      === undefined ||
             obj      === null      ||
@@ -244,7 +179,7 @@ var VGtableCLASS = React.createClass({
 
 var websocket; // a global
 
-function update(currentState, updatables) {
+function update(currentState, model) {
     var params = location.search.substr(1).split("&");
     for (var i in params) {
 	if (params[i].split("=")[0] === "still") {
@@ -297,7 +232,7 @@ function update(currentState, updatables) {
         }
         currentState = _.extend(currentState, data.ClientState);
         data.ClientState = currentState;
-        updatables.set(data);
+        model.set(Model.attributes(data));
 
         // update the tooltips
         // $('span .tooltipable').tooltip();
@@ -307,335 +242,205 @@ function update(currentState, updatables) {
     websocket = newwebsocket(onmessage);
 }
 
-function empty(obj) {
-    return obj === undefined || obj === null;
-}
-
-var CollapseView = Backbone.View.extend({
-    hidden: function() { return this.model.attributes.Hide; },
-
+var Model = Backbone.Model.extend({
     initialize: function() {
-	this.listenTo(this.model, 'change:Hide', this.redisplay_panel);
-    },
-    redisplay_panel: function() {
-	_.map(this.model.attributes.target, function(t) {
-            $(t).collapse(this.hidden() ? 'hide' : 'show');
-	}, this);
-    },
-    toggleHidden: function() {
-	return this.model.toggleHidden(this.model.attributes);
-    },
-
-    events: {'click': 'collapse_click'},
-    collapse_click: function(e) {
-	websocket.sendState(this.toggleHidden());
-        e.preventDefault();
     }
 });
+Model.attributes = function(data) {
+    return {
+        IP:           data.Generic.IP,
+        HostnameHTML: data.Generic.HostnameHTML,
+        Uptime:       data.Generic.Uptime,
+        LA:           data.Generic.LA,
 
-var ExpandView = CollapseView.extend({
-    expanded: function() { return this.model.attributes.Expand; },
+        HideSWAP:     data.ClientState.HideSWAP,
 
-    initialize_fromswitch: function() {
-	this.listenTo(this.model, 'change:ExpandText', this.redisplay_expandtext);
-	this.listenTo(this.model, 'change:Expandable', this.redisplay_expandable);
-    },
+        HideMEM:      data.ClientState.HideMEM,
+        HideIF:       data.ClientState.HideIF,
+        HideCPU:      data.ClientState.HideCPU,
+        HideDF:       data.ClientState.HideDF,
+        HidePS:       data.ClientState.HidePS,
+        HideVG:       data.ClientState.HideVG,
+
+        ExpandIF:     data.ClientState.ExpandIF,
+        ExpandCPU:    data.ClientState.ExpandCPU,
+        ExpandDF:     data.ClientState.ExpandDF,
+
+        TabIF:        data.ClientState.TabIF,
+        TabDF:        data.ClientState.TabDF,
+
+        HideconfigMEM:    data.ClientState.HideconfigMEM,
+        HideconfigIF:     data.ClientState.HideconfigIF,
+        HideconfigCPU:    data.ClientState.HideconfigCPU,
+        HideconfigDF:     data.ClientState.HideconfigDF,
+        HideconfigPS:     data.ClientState.HideconfigPS,
+        HideconfigVG:     data.ClientState.HideconfigVG
+    };
+};
+
+var View = Backbone.View.extend({
     initialize: function() {
-        this.initialize_fromswitch();
-	this.listenTo(this.model, 'change:Expand', this.change_expand);
-        CollapseView.prototype.initialize.call(this);
-    },
-    change_expand: function() {
-        this.redisplay_panel();
-        this.redisplay_expand();
-    },
-    redisplay_expandtext: function() {
-        var $expand_el = this.model.attributes.expand_el;
-        $expand_el.text(this.model.attributes.ExpandText);
-    },
-    redisplay_expand: function() {
-        var $expand_el = this.model.attributes.expand_el;
-        if (this.expanded()) {
-            primary_button($expand_el);
-        } else {
-            default_button($expand_el);
+        var A = this.model.attributes;
+
+	this.listenchange_Textfunc('IP',           A.$generic_ip);
+	this.listenchange_HTMLfunc('HostnameHTML', A.$generic_hostname);
+	this.listenchange_Textfunc('Uptime',       A.$generic_uptime);
+	this.listenchange_Textfunc('LA',           A.$generic_la);
+
+        this.listenTo(this.model, 'change:HideSWAP', this.change_buttonfunc('HideSWAP', A.$toggleswap_button, true));
+
+        this.listenhide('HideMEM', A.$section_mem);
+        this.listenhide('HideCPU', A.$section_cpu);
+        this.listenhide('HidePS',  A.$section_ps);
+        this.listenhide('HideVG',  A.$section_vg);
+
+        this.listenhide('HideconfigMEM', A.$config_mem);
+        this.listenhide('HideconfigIF',  A.$config_if);
+        this.listenhide('HideconfigCPU', A.$config_cpu);
+        this.listenhide('HideconfigDF',  A.$config_df);
+        this.listenhide('HideconfigPS',  A.$config_ps);
+        this.listenhide('HideconfigVG',  A.$config_vg);
+
+        this.listenTo(this.model, 'change:HideIF', this.change_collapsetabfunc('HideIF', 'TabIF', A.$section_if, A.$tab_if));
+        this.listenTo(this.model, 'change:HideDF', this.change_collapsetabfunc('HideDF', 'TabDF', A.$section_df, A.$tab_df));
+        this.listenTo(this.model, 'change:TabIF',  this.change_collapsetabfunc('HideIF', 'TabIF', A.$section_if, A.$tab_if));
+        this.listenTo(this.model, 'change:TabDF',  this.change_collapsetabfunc('HideDF', 'TabDF', A.$section_df, A.$tab_df));
+
+        var B = _.bind(function(c) { return _.bind(c, this); }, this);
+        A.$toggleswap_button.click( B(this.click_expandfunc('HideSWAP')) );
+
+        var expandable_sections = [
+            [A.$section_if,  'ExpandIF',  'HideIF'],
+            [A.$section_cpu, 'ExpandCPU', 'HideCPU'],
+            [A.$section_df,  'ExpandDF',  'HideDF' ]
+        ];
+        for (var i = 0; i < expandable_sections.length; ++i) {
+            var S  = expandable_sections[i][0];
+            var K  = expandable_sections[i][1];
+            var KK = expandable_sections[i][2];
+            var $b = $('label.all[href="'+ S.selector +'"]');
+            this.listenTo(this.model, 'change:'+ K, this.change_buttonfunc(K, $b));
+            $b.click( B(this.click_expandfunc(K, KK)) );
         }
+
+        $('[href="'+ A.$config_mem.selector +'"]').click( B(this.click_expandfunc('HideconfigMEM', 'HideMEM')) );
+        $('[href="'+ A.$config_if .selector +'"]').click( B(this.click_expandfunc('HideconfigIF',  'HideIF' )) );
+        $('[href="'+ A.$config_cpu.selector +'"]').click( B(this.click_expandfunc('HideconfigCPU', 'HideCPU')) );
+        $('[href="'+ A.$config_df .selector +'"]').click( B(this.click_expandfunc('HideconfigDF',  'HideDF' )) );
+        $('[href="'+ A.$config_ps .selector +'"]').click( B(this.click_expandfunc('HideconfigPS',  'HidePS' )) );
+        $('[href="'+ A.$config_vg .selector +'"]').click( B(this.click_expandfunc('HideconfigVG',  'HideVG' )) );
+
+        A.$tab_if    .click( B(this.click_tabfunc('TabIF', 'HideIF')) );
+        A.$tab_df    .click( B(this.click_tabfunc('TabDF', 'HideDF')) );
+
+        A.$header_mem.click( B(this.click_expandfunc('HideMEM', 'HideconfigMEM', true)) );
+        A.$header_if .click( B(this.click_expandfunc('HideIF',  'HideconfigIF',  true)) );
+        A.$header_cpu.click( B(this.click_expandfunc('HideCPU', 'HideconfigCPU', true)) );
+        A.$header_df .click( B(this.click_expandfunc('HideDF',  'HideconfigDF',  true)) );
+        A.$header_ps .click( B(this.click_expandfunc('HidePS',  'HideconfigPS',  true)) );
+        A.$header_vg .click( B(this.click_expandfunc('HideVG',  'HideconfigVG',  true)) );
+
+        A.$ps_more .click( B(this.click_psignalfunc('HidePS', true )) );
+        A.$ps_less .click( B(this.click_psignalfunc('HidePS', false)) );
     },
-    redisplay_expandable: function() {
-        var $expand_el = this.model.attributes.expand_el;
-        var expandable = this.model.attributes.Expandable;
-        if (empty(expandable)) {
-            $expand_el.addClass('disabled');
-        } else {
-            $expand_el.removeClass('disabled');
-        }
-    },
-    toggleExpandedState: function() {
-        var te = this.model.toggleExpanded; //this.toggleExpanded !== undefined ? this.toggleExpanded : this.model.toggleExpanded;
-	return te(this.model.attributes);
+    listenchange_Textfunc: function(K, $el){ this.listenTo(this.model, 'change:'+ K, this.change_Textfunc(K, $el)); },
+    listenchange_HTMLfunc: function(K, $el){ this.listenTo(this.model, 'change:'+ K, this.change_HTMLfunc(K, $el)); },
+          change_Textfunc: function(K, $el) { return function() { var A = this.model.attributes; $el.text(A[K]); }; },
+          change_HTMLfunc: function(K, $el) { return function() { var A = this.model.attributes; $el.html(A[K]); }; },
+
+    listenhide: function(K, $el) {
+        this.listenTo(this.model, 'change:'+ K, this.change_collapsefunc(K, $el));
     },
 
-    events: {'click': 'expand_click'},
-    expand_click: function(e) {
-	var clicked = $(e.target);
-        if (clicked.is(this.model.attributes.header_el)) { // header clicked
-            this.collapse_click(e);
-            return;
-        }
-
-	var newState = this.toggleExpandedState();
-	if (this.hidden()) { // if the panel was hidden by the header link
-            newState = _.extend(newState, this.toggleHidden());
-	}
-	websocket.sendState(newState);
-    }
-});
-
-var SwitchView = CollapseView.extend(ExpandView.prototype).extend({
-    initialize: function() {
-        // CollapseView.prototype.initialize.call(this); // DO NOT CollapseView.initialize
-	this.listenTo(this.model, 'change:Hide',       this.change_switch); // <- as in CollapseView.initialize
-	this.listenTo(this.model, 'change:Expand',     this.change_switch); // <- as in ExpandView.initialize
-	this.listenTo(this.model, 'change:CurrentTab', this.change_switch);
-        ExpandView.prototype.initialize_fromswitch.call(this);
-    },
-    redisplay_tabs: function() {
-	var target = this.model.attributes.target;
-        var tabid  = this.model.tabid();
-        var nots = _.map(target.not('[data-tabid="'+ tabid +'"]'),
-                         function(el) {
-                             var $el = $(el);
-                             $el.collapse('hide');
-                             return el;
-                         });
-        var el = target.not(nots);
-        $(el).collapse('show');
-    },
-    redisplay_buttons: function() {
-        var tabid = this.model.tabid();
-        // _.map(this.$el, function(el) {
-        _.map(this.model.attributes.switch_el, function(el) {
-            var $el = $(el);
-
-            if (!$el.hasClass('nondefault')) {
+    change_collapsetabfunc: function(K, KK, $el, $tabel) {
+        return function() {
+            var A = this.model.attributes;
+            if (A[K]) { // hiding all
+                $el.collapse('hide'); // do what change_collapsefunc does
                 return;
             }
-            var tabid_attr = +$el.attr('data-tabid'); // an int
-            if (tabid_attr === tabid) {
-                primary_button($el);
-            } else {
-                default_button($el);
-            }
-        }, this);
-    },
-    change_switch: function() {
-        if (this.hidden()) {
-            this.redisplay_panel();
-        }
-        this.redisplay_tabs();
-        this.redisplay_buttons();
-        this.redisplay_expand(this.model.attributes.expand_el);
-    },
+            var curtabid = A[KK];
+            var nots = _.map($el.not('[data-tabid="'+ curtabid +'"]'),
+                             function(el) {
+                                 var $el = $(el);
+                                 $el.collapse('hide');
+                                 return el;
+                             });
+            $($el.not(nots)).collapse('show');
 
-    events: {'click': 'switch_click'},
-    switch_click: function(e) {
-	var clicked = $(e.target);
-        if (clicked.is(this.model.attributes.header_el)) { // header clicked
-            this.collapse_click(e);
-            return;
-        } else if (clicked.is(this.model.attributes.expand_el)) {
-            this.expand_click(e);
-            return;
-        }
+            _.map($tabel, function(el) {
+                var $el = $(el);
 
-        var newtab_id = +$( clicked.attr('href') ).attr('data-tabid'); // THIS. +string makes an int
-        var newState = this.model.setTabState(newtab_id);
-
-	if (this.hidden()) { // if the panel was hidden by the header link
-            newState = _.extend(newState, this.toggleHidden());
-	}
-	websocket.sendState(newState);
-    }
-});
-
-function SwitchModel(self) {
-    var easy = {};
-    easy.tabid = function() { return this.attributes.CurrentTab; }; // return this.attributes[self.Attribute_CurrentTab];
-
-    self = _.extend(self, easy);
-    self.modelAttributes = function(data) {
-        return {
-            Hide:       data.ClientState[self.Attribute_Hide],
-            Expand:     data.ClientState[self.Attribute_Expand],
-            CurrentTab: data.ClientState[self.Attribute_CurrentTab],
-            Expandable: data[self.Attribute_Data].Expandable, // immutable
-            ExpandText: data[self.Attribute_Data].ExpandText  // immutable
-        };
-    };
-
-    self.toggleHidden   = function(s) { return _.object([self.Attribute_Hide],   [!s.Hide]);   }; //, [!s[self.Attribute_Hide]]
-    self.toggleExpanded = function(s) { return _.object([self.Attribute_Expand], [!s.Expand]); }; //, [!s[self.Attribute_Expand]]
-    self.setTabState    = function(n) { return _.object([self.Attribute_CurrentTab], [n]); };
-
-    return Updatables.declareModel(self);
-}
-
-var DFswitchmodel = SwitchModel({
-    Attribute_CurrentTab: 'TabDF',
-    Attribute_Expand:     'ExpandDF',
-    Attribute_Hide:       'HideDF',
-    Attribute_Data:       'DF'
-});
-
-var IFswitchmodel = SwitchModel({
-    Attribute_CurrentTab: 'TabIF',
-    Attribute_Expand:     'ExpandIF',
-    Attribute_Hide:       'HideIF',
-    Attribute_Data:       'IF'
-});
-
-var ExpandMEMModel = Updatables.declareModel(function() {
-    var self = {
-        Attribute_Expand: 'HideSWAP',
-        Attribute_Hide:   'HideMEM'
-    };
-    self.modelAttributes = function(data) {
-        return {
-            Expand:    !data.ClientState[self.Attribute_Expand], // NB inverse
-            Hide:       data.ClientState[self.Attribute_Hide]
-        };
-    };
-
-    self.toggleHidden   = function(s) { return _.object([self.Attribute_Hide],   [!s.Hide]);   };
-    self.toggleExpanded = function(s) { return _.object([self.Attribute_Expand], [ s.Expand]); }; // NB reverse, thus not "!"
-
-    return self;
-});
-
-var ExpandVGModel = Updatables.declareModel(function() {
-    var self = {
-        Attribute_Hide: 'HideVG'
-    };
-    self.modelAttributes = function(data) {
-        return {
-            Expand:    !data.ClientState[self.Attribute_Expand], // NB inverse
-            Hide:       data.ClientState[self.Attribute_Hide]
-        };
-    };
-
-    self.toggleHidden   = function(s) { return _.object([self.Attribute_Hide],   [!s.Hide]);   };
-    self.toggleExpanded = function(s) { return _.object([self.Attribute_Expand], [ s.Expand]); }; // NB reverse, thus not "!"
-
-    return self;
-});
-
-var ExpandCPUModel = Updatables.declareModel(function() {
-    var self = {
-        Attribute_Expand: 'ExpandCPU',
-        Attribute_Hide:   'HideCPU'
-    };
-    self.modelAttributes = function(data) {
-        var r = {
-            Hide:       data.ClientState[self.Attribute_Hide],
-            Expand:     data.ClientState[self.Attribute_Expand]
-        };
-        if (!empty(data.CPU)) {
-            r = _.extend(r, {
-                Expandable: data.CPU.Expandable, // immutable
-                ExpandText: data.CPU.ExpandText  // immutable
+                if (!$el.hasClass('nondefault')) {
+                    return;
+                }
+                var tabid_attr = +$el.attr('data-tabid'); // an int
+                if (tabid_attr === curtabid) {
+                    primary_button($el);
+                } else {
+                    default_button($el);
+                }
             });
-        }
-        return r;
-    };
-
-    self.toggleHidden   = function(s) { return _.object([self.Attribute_Hide],   [!s.Hide]);   }; //, [!s[self.Attribute_Hide]]
-    self.toggleExpanded = function(s) { return _.object([self.Attribute_Expand], [!s.Expand]); }; //, [!s[self.Attribute_Expand]]
-
-    return self;
-});
-
-var PSmodel = Updatables.declareModel(function() {
-    var self = {
-        Attribute_Hide: 'HidePS'
-    };
-    self.modelAttributes = function(data) {
-        var r = {
-            Hide: data.ClientState[self.Attribute_Hide]
         };
-        if (!empty(data.PStable)) {
-            r = _.extend(r, {
-                NotExpandable: data.PStable.NotExpandable,
-                PlusText:      data.PStable.PlusText
-            });
-        }
-        return r;
-    };
-
-    self.toggleHidden = function(s) { return _.object([self.Attribute_Hide], [!s.Hide]); }; //, [!s[self.Attribute_Hide]]
-
-    self.more         = function()  { return {MorePsignal: true}; };
-    self.less         = function()  { return {MorePsignal: false}; };
-    return self;
-});
-
-var PSview = CollapseView.extend({
-    initialize: function() {
-        CollapseView.prototype.initialize.call(this);
-	this.listenTo(this.model, 'change:PlusText',      this.change_plustext);
-	this.listenTo(this.model, 'change:NotExpandable', this.change_notexpandable);
     },
-    change_notexpandable: function() {
-        var $more_el = this.model.attributes.more_el;
-        if (this.model.attributes.NotExpandable) {
-            $more_el.addClass('disabled');
-        } else {
-            $more_el.removeClass('disabled');
-        }
+    change_collapsefunc: function(K, $el) {
+        return function() {
+            var A = this.model.attributes;
+            $el.collapse(A[K] ? 'hide' : 'show');
+        };
     },
-    change_plustext: function() {
-        var $more_el = this.model.attributes.more_el;
-        $more_el.text(this.model.attributes.PlusText);
+    change_buttonfunc: function(K, $el, reverse) {
+        return function() {
+            var A = this.model.attributes;
+            var V = reverse !== undefined && reverse ? !A[K] : A[K];
+            var c = V ? primary_button : default_button;
+            c($el);
+        };
     },
 
-    events: {'click': 'ps_click'},
-    ps_click: function(e) {
-	var clicked = $(e.target);
-        if (clicked.is(this.model.attributes.header_el)) { // header clicked
-            this.collapse_click(e);
-            return;
-        }
-        do {
-            var func;
-            if (clicked.is(this.model.attributes.more_el)) { // more clicked
-                func = 'more';
-            } else if (clicked.is(this.model.attributes.less_el)) { // less clicked
-                func = 'less';
-            } else {
-                break;
+    click_psignalfunc: function(KK, v) {
+        return function(e) {
+            var newstate = {MorePsignal: v};
+            var A = this.model.attributes;
+            if (A[KK]) { // if was hidden
+                newstate = _.extend(newstate, _.object([KK], [!A[KK]]));
             }
-            var newState = this.model[func]();
-            if (this.hidden()) { // if the panel was hidden by the header link
-                newState = _.extend(newState, this.toggleHidden());
+            websocket.sendState(newstate);
+            e.preventDefault();
+            e.stopPropagation(); // don't check/uncheck the checkbox
+        };
+    },
+    click_tabfunc: function(K, KK) {
+        return function(e) {
+            var newtabid = +$( $(e.target).attr('href') ).attr('data-tabid'); // THIS. +string makes an int
+            var newstate = _.object([K], [newtabid]);
+            var A = this.model.attributes;
+            if (A[KK]) { // if was hidden
+                newstate = _.extend(newstate, _.object([KK], [!A[KK]]));
             }
-            websocket.sendState(newState);
-        } while (0);
-        e.stopPropagation(); // otherwise input checkbox gets checked/unchecked
-        e.preventDefault();
-    }
-});
-
-var UpdateView = Backbone.View.extend({
-    events: {}, // sanity check
-    initialize: function() {
-	this.listenTo(this.model, 'change:'+ this.update_key(), this.change);
+            websocket.sendState(newstate);
+            e.preventDefault();
+        };
     },
-    update_key: function() {
-        return _.keys(this.model.attributes.initial)[0];
-    },
-    change: function() {
-        var key = this.update_key();
-        var func = /HTML$/.test(key) ? 'html' : 'text';
-        this.$el[func](this.model.attributes[key]);
+    click_expandfunc: function(K, KK, isheader) {
+        isheader = isheader !== undefined && isheader;
+        return function(e) {
+            var A = this.model.attributes;
+            var V = A[K];
+            var newstate = _.object([K], [!V]);
+            do {
+                if (V) {
+                    if (isheader || !A[KK]) {
+                        break;
+                    }
+                } else if (!isheader || A[KK]) {
+                    break;
+                }
+                newstate = _.extend(newstate, _.object([KK], [!A[KK]]));
+            } while (0);
+            websocket.sendState(newstate);
+            e.preventDefault();
+        };
     }
 });
 
@@ -657,102 +462,43 @@ function ready() {
         });
     });
 
-    var updatables = Updatables(Data);
+    var model = new Model(_.extend(Model.attributes(Data), {
+        $generic_ip:        $('#generic-ip'),
+        $generic_hostname:  $('#generic-hostname'),
+        $generic_uptime:    $('#generic-uptime'),
+        $generic_la:        $('#generic-la'),
+        $toggleswap_button: $('label[href="#showswap"]'),
 
-    new CollapseView({ el: $('[href="#memconfig"]'), // MEM CONFIG
-                       model: updatables.make(Updatables.declareCollapseModel('ConfigMEM'),
-                                              {target: $('#memconfig')}) });
+        $config_mem:        $('#memconfig'),
+        $config_if:         $('#ifconfig'),
+        $config_cpu:        $('#cpuconfig'),
+        $config_df:         $('#dfconfig'),
+        $config_ps:         $('#psconfig'),
+        $config_vg:         $('#vgconfig'),
 
-    new CollapseView({ el: $('[href="#ifconfig"]'), // IF CONFIG
-                       model: updatables.make(Updatables.declareCollapseModel('ConfigIF'),
-                                              {target: $('#ifconfig')}) });
+        $header_mem:        $('header a[href="#mem"]'),
+        $header_if:         $('header a[href="#if"]'),
+        $header_cpu:        $('header a[href="#cpu"]'),
+        $header_df:         $('header a[href="#df"]'),
+        $header_ps:         $('header a[href="#ps"]'),
+        $header_vg:         $('header a[href="#vagrant"]'),
 
-    new CollapseView({ el: $('[href="#cpuconfig"]'), // CPU CONFIG
-                       model: updatables.make(Updatables.declareCollapseModel('ConfigCPU'),
-                                              {target: $('#cpuconfig')}) });
+        $tab_if:            $('label.network-switch'),
+        $tab_df:            $('label.disk-switch'),
+        $section_if:        $('.network-tab'),
+        $section_df:        $('.disk-tab'),
 
-    new CollapseView({ el: $('[href="#dfconfig"]'), // DF CONFIG
-                       model: updatables.make(Updatables.declareCollapseModel('ConfigDF'),
-                                              {target: $('#dfconfig')}) });
+        $section_mem:       $('#mem'),
+        $section_cpu:       $('#cpu'),
+        $section_ps:        $('#ps'),
+        $section_vg:        $('#vagrant'),
 
-    new CollapseView({ el: $('[href="#psconfig"]'), // PS CONFIG
-                       model: updatables.make(Updatables.declareCollapseModel('ConfigPS'),
-                                              {target: $('#psconfig')}) });
+        $ps_more:           $('label.more[href="#psmore"]'),
+        $ps_less:           $('label.less[href="#psless"]')
+    }));
+    var view = new View({model: model});
 
-    new CollapseView({ el: $('[href="#vgconfig"]'), // VG CONFIG
-                       model: updatables.make(Updatables.declareCollapseModel('ConfigVG'),
-                                              {target: $('#vgconfig')}) });
-
-    // updatables.make(Updatables.declareCollapseModel('HideMEM'), // MEMORY
-    //                 {target: $('#mem')}, CollapseView, { el: $('header a[href="#mem"]') });
-
-    updatables.make( // MEM
-        ExpandMEMModel, {target: $('#mem')}, ExpandView, {
-            header_el: $('header a[href="#mem"]'),
-            expand_el: $('label[href="#showswap"]')
-        });
-
-    updatables.make( // IF
-        IFswitchmodel, {target: $('.network-tab')}, SwitchView, {
-            switch_el: $('label.network-switch'),
-            header_el: $('header a[href="#if"]'),
-            expand_el: $('label.all[href="#if"]')
-        });
-
-    updatables.make( // CPU
-        ExpandCPUModel, {target: $('#cpu')}, ExpandView, {
-            header_el: $('header a[href="#cpu"]'),
-            expand_el: $('label.all[href="#cpu"]')
-        });
-
-    updatables.make( // DF
-        DFswitchmodel, {target: $('.disk-tab')}, SwitchView, {
-            switch_el: $('label.disk-switch'),
-            header_el: $('header a[href="#df"]'),
-            expand_el: $('label.all[href="#df"]')
-        });
-
-    updatables.make( // PS
-        PSmodel, {target: $('#ps')}, PSview, {
-            header_el: $('header a[href="#ps"]'),
-            more_el: $('label.more[href="#psmore"]'),
-            less_el: $('label.less[href="#psless"]')
-        });
-
-    updatables.make( // VG
-        Updatables.declareCollapseModel('HideVG'), {target: $('#vagrant')},
-        CollapseView, {header_el: $('header a[href="#vagrant"]')});
-
-    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {IP: data.Generic.IP}; }}),
-                    {}, UpdateView, {el: $('#generic-ip')});
-    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {HostnameHTML: data.Generic.HostnameHTML}; }}),
-                    {}, UpdateView, {el: $('#generic-hostname')});
-    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Uptime: data.Generic.Uptime}; }}),
-                    {}, UpdateView, {el: $('#generic-uptime')});
-    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {LA: data.Generic.LA}; }}),
-                    {}, UpdateView, {el: $('#generic-la')});
-
-    /*
-    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Free: data.RAM.Free}; }}),
-                    {}, UpdateView, {el: $('#ram-free')});
-    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Used: data.RAM.Used}; }}),
-                    {}, UpdateView, {el: $('#ram-used')});
-    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Total: data.RAM.Total}; }}),
-                    {}, UpdateView, {el: $('#ram-total')});
-    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {UsePercentHTML: data.RAM.UsePercentHTML}; }}),
-                    {}, UpdateView, {el: $('#ram-usepercent')});
-
-    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Free: data.Swap.Free}; }}),
-                    {}, UpdateView, {el: $('#swap-free')});
-    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Used: data.Swap.Used}; }}),
-                    {}, UpdateView, {el: $('#swap-used')});
-    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {Total: data.Swap.Total}; }}),
-                    {}, UpdateView, {el: $('#swap-total')});
-    updatables.make(Updatables.declareModel({modelAttributes: function(data) { return {UsePercentHTML: data.Swap.UsePercentHTML}; }}),
-                    {}, UpdateView, {el: $('#swap-usepercent')});
-    */
-
-    update(Data.ClientState, updatables);
+    update(Data.ClientState, model);
 }
 
 // Local Variables:

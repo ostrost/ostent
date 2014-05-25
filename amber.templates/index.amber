@@ -67,7 +67,7 @@ html
                     | #{Data.MEM.Hatch}
 
             div.collapse#memconfig
-              [class="in"] ? (json(Data.ClientState.ConfigMEM) == "false")
+              [class="in"] ? (json(Data.ClientState.HideconfigMEM) == "false")
               form.horizontal-form
                 div.form-group
                   label.col-sm-4.control-label[for="input"] swap
@@ -100,7 +100,7 @@ html
                     | #{Data.IF.Hatch}
 
             div.collapse#ifconfig
-              [class="in"] ? (json(Data.ClientState.ConfigIF) == "false")
+              [class="in"] ? (json(Data.ClientState.HideconfigIF) == "false")
               form.horizontal-form
                 div.form-group
                   label.col-sm-4.control-label[for="input"] Show
@@ -162,7 +162,7 @@ html
                     | #{Data.CPU.Hatch}
 
             div.collapse#cpuconfig
-              [class="in"] ? (json(Data.ClientState.ConfigCPU) == "false")
+              [class="in"] ? (json(Data.ClientState.HideconfigCPU) == "false")
               form.horizontal-form
                 div.form-group
                   label.col-sm-4.control-label[for="input"] Show
@@ -194,7 +194,7 @@ html
                     | #{Data.DF.Hatch}
 
             div.collapse#dfconfig
-              [class="in"] ? (json(Data.ClientState.ConfigDF) == "false")
+              [class="in"] ? (json(Data.ClientState.HideconfigDF) == "false")
               form.horizontal-form
                 div.form-group
                   label.col-sm-4.control-label[for="input"] Show
@@ -291,7 +291,7 @@ html
                     | #{Data.PShatch}
 
             div.collapse#psconfig
-              [class="in"] ? (json(Data.ClientState.ConfigPS) == "false")
+              [class="in"] ? (json(Data.ClientState.HideconfigPS) == "false")
               form.horizontal-form
                 div.form-group
                   //- label.col-sm-1.col-sm-offset-6.control-label[for="refresh"] Refresh
@@ -328,7 +328,7 @@ html
                     | #{Data.VGhatch}
 
             div.collapse#vgconfig
-              [class="in"] ? (json(Data.ClientState.ConfigVG) == "false")
+              [class="in"] ? (json(Data.ClientState.HideconfigVG) == "false")
               form.horizontal-form
                 div.form-group
                   p Nothing to see here yet.
