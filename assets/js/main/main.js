@@ -428,16 +428,18 @@ var View = Backbone.View.extend({
             var A = this.model.attributes;
             var V = A[K];
             var newstate = _.object([K], [!V]);
-            do {
-                if (V) {
-                    if (isheader || !A[KK]) {
+            if (KK !== undefined) {
+                do {
+                    if (V) {
+                        if (isheader || !A[KK]) {
+                            break;
+                        }
+                    } else if (!isheader || A[KK]) {
                         break;
                     }
-                } else if (!isheader || A[KK]) {
-                    break;
-                }
-                newstate = _.extend(newstate, _.object([KK], [!A[KK]]));
-            } while (0);
+                    newstate = _.extend(newstate, _.object([KK], [!A[KK]]));
+                } while (0);
+            }
             websocket.sendState(newstate);
             e.preventDefault();
         };
