@@ -217,15 +217,16 @@ function update(currentState, model) {
 	if (data.DFlinks !== undefined) { inodestate.DFlinks = data.DFlinks; }
 	setState(dfinodes, inodestate);
 
-        setState(memtable, data.MEM);
-        setState(cputable, data.CPU);
+        setState(memtable,  data.MEM);
+        setState(cputable,  data.CPU);
         setState(ifbytes,   data.IFbytes);
         setState(iferrors,  data.IFerrors);
 	setState(ifpackets, data.IFpackets);
-	setState(vagrant, {VagrantMachines: data.VagrantMachines,
-                           VagrantError:  data.VagrantError,
-                           VagrantErrord: data.VagrantErrord
-                          });
+	setState(vagrant, {
+            VagrantMachines: data.VagrantMachines,
+            VagrantError:  data.VagrantError,
+            VagrantErrord: data.VagrantErrord
+        });
 
         if (data.ClientState !== undefined) {
             console.log(JSON.stringify(data.ClientState), 'recvState');
@@ -247,107 +248,114 @@ var Model = Backbone.Model.extend({
     }
 });
 Model.attributes = function(data) {
-    return {
-        IP:           data.Generic.IP,
-        HostnameHTML: data.Generic.HostnameHTML,
-        Uptime:       data.Generic.Uptime,
-        LA:           data.Generic.LA,
-
-        HideSWAP:     data.ClientState.HideSWAP,
-
-        HideMEM:      data.ClientState.HideMEM,
-        HideIF:       data.ClientState.HideIF,
-        HideCPU:      data.ClientState.HideCPU,
-        HideDF:       data.ClientState.HideDF,
-        HidePS:       data.ClientState.HidePS,
-        HideVG:       data.ClientState.HideVG,
-
-        ExpandIF:     data.ClientState.ExpandIF,
-        ExpandCPU:    data.ClientState.ExpandCPU,
-        ExpandDF:     data.ClientState.ExpandDF,
-
-        TabIF:        data.ClientState.TabIF,
-        TabDF:        data.ClientState.TabDF,
-
-        HideconfigMEM:    data.ClientState.HideconfigMEM,
-        HideconfigIF:     data.ClientState.HideconfigIF,
-        HideconfigCPU:    data.ClientState.HideconfigCPU,
-        HideconfigDF:     data.ClientState.HideconfigDF,
-        HideconfigPS:     data.ClientState.HideconfigPS,
-        HideconfigVG:     data.ClientState.HideconfigVG
-    };
+    var A = _.extend(data.Generic, data.ClientState);
+    A = _.extend(A, {
+        PlusText: data.PStable.PlusText
+    });
+    return A;
 };
 
 var View = Backbone.View.extend({
     initialize: function() {
-        var A = this.model.attributes;
+	this.listenchange_Textfunc('IP',           $('#generic-ip'));
+	this.listenchange_HTMLfunc('HostnameHTML', $('#generic-hostname'));
+	this.listenchange_Textfunc('Uptime',       $('#generic-uptime'));
+	this.listenchange_Textfunc('LA',           $('#generic-la'));
 
-	this.listenchange_Textfunc('IP',           A.$generic_ip);
-	this.listenchange_HTMLfunc('HostnameHTML', A.$generic_hostname);
-	this.listenchange_Textfunc('Uptime',       A.$generic_uptime);
-	this.listenchange_Textfunc('LA',           A.$generic_la);
+        var $hswapb = $('label[href="#showswap"]');
+        this.listenchange_buttonfunc('HideSWAP', $hswapb, true);
 
-        this.listenTo(this.model, 'change:HideSWAP', this.change_buttonfunc('HideSWAP', A.$toggleswap_button, true));
+        var $section_mem = $('#mem');
+        var $section_if  = $('#if');
+        var $section_cpu = $('#cpu');
+        var $section_df  = $('#df');
+        var $section_ps  = $('#ps');
+        var $section_vg  = $('#vagrant');
+        this.listenhide('HideMEM', $section_mem);
+        this.listenhide('HideCPU', $section_cpu);
+        this.listenhide('HidePS',  $section_ps);
+        this.listenhide('HideVG',  $section_vg);
 
-        this.listenhide('HideMEM', A.$section_mem);
-        this.listenhide('HideCPU', A.$section_cpu);
-        this.listenhide('HidePS',  A.$section_ps);
-        this.listenhide('HideVG',  A.$section_vg);
+        var $config_mem = $('#memconfig');
+        var $config_if  = $('#ifconfig');
+        var $config_cpu = $('#cpuconfig');
+        var $config_df  = $('#dfconfig');
+        var $config_ps  = $('#psconfig');
+        var $config_vg  = $('#vgconfig');
 
-        this.listenhide('HideconfigMEM', A.$config_mem);
-        this.listenhide('HideconfigIF',  A.$config_if);
-        this.listenhide('HideconfigCPU', A.$config_cpu);
-        this.listenhide('HideconfigDF',  A.$config_df);
-        this.listenhide('HideconfigPS',  A.$config_ps);
-        this.listenhide('HideconfigVG',  A.$config_vg);
+        this.listenhide('HideconfigMEM', $config_mem);
+        this.listenhide('HideconfigIF',  $config_if);
+        this.listenhide('HideconfigCPU', $config_cpu);
+        this.listenhide('HideconfigDF',  $config_df);
+        this.listenhide('HideconfigPS',  $config_ps);
+        this.listenhide('HideconfigVG',  $config_vg);
 
-        this.listenTo(this.model, 'change:HideIF', this.change_collapsetabfunc('HideIF', 'TabIF', A.$section_if, A.$tab_if));
-        this.listenTo(this.model, 'change:HideDF', this.change_collapsetabfunc('HideDF', 'TabDF', A.$section_df, A.$tab_df));
-        this.listenTo(this.model, 'change:TabIF',  this.change_collapsetabfunc('HideIF', 'TabIF', A.$section_if, A.$tab_if));
-        this.listenTo(this.model, 'change:TabDF',  this.change_collapsetabfunc('HideDF', 'TabDF', A.$section_df, A.$tab_df));
+        var $tab_if    = $('label.network-switch');
+        var $tab_df    = $('label.disk-switch');
+        var $panels_if = $('.network-tab'); // by class
+        var $panels_df = $('.disk-tab');    // by class
+
+        this.listenTo(this.model, 'change:HideIF', this.change_collapsetabfunc('HideIF', 'TabIF', $panels_if, $tab_if));
+        this.listenTo(this.model, 'change:HideDF', this.change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df));
+        this.listenTo(this.model, 'change:TabIF',  this.change_collapsetabfunc('HideIF', 'TabIF', $panels_if, $tab_if));
+        this.listenTo(this.model, 'change:TabDF',  this.change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df));
+
+        var $psmore = $('label.more[href="#psmore"]');
+        var $psless = $('label.less[href="#psless"]');
+        this.listenchange_Textfunc('PlusText', $psmore);
 
         var B = _.bind(function(c) { return _.bind(c, this); }, this);
-        A.$toggleswap_button.click( B(this.click_expandfunc('HideSWAP')) );
+
+        $hswapb.click( B(this.click_expandfunc('HideSWAP')) );
+        $tab_if.click( B(this.click_tabfunc('TabIF', 'HideIF')) );
+        $tab_df.click( B(this.click_tabfunc('TabDF', 'HideDF')) );
 
         var expandable_sections = [
-            [A.$section_if,  'ExpandIF',  'HideIF'],
-            [A.$section_cpu, 'ExpandCPU', 'HideCPU'],
-            [A.$section_df,  'ExpandDF',  'HideDF' ]
+            [$section_if,  'ExpandIF',  'HideIF'],
+            [$section_cpu, 'ExpandCPU', 'HideCPU'],
+            [$section_df,  'ExpandDF',  'HideDF' ]
         ];
         for (var i = 0; i < expandable_sections.length; ++i) {
             var S  = expandable_sections[i][0];
             var K  = expandable_sections[i][1];
             var KK = expandable_sections[i][2];
             var $b = $('label.all[href="'+ S.selector +'"]');
-            this.listenTo(this.model, 'change:'+ K, this.change_buttonfunc(K, $b));
+
+            this.listenchange_buttonfunc(K, $b);
             $b.click( B(this.click_expandfunc(K, KK)) );
         }
 
-        $('[href="'+ A.$config_mem.selector +'"]').click( B(this.click_expandfunc('HideconfigMEM', 'HideMEM')) );
-        $('[href="'+ A.$config_if .selector +'"]').click( B(this.click_expandfunc('HideconfigIF',  'HideIF' )) );
-        $('[href="'+ A.$config_cpu.selector +'"]').click( B(this.click_expandfunc('HideconfigCPU', 'HideCPU')) );
-        $('[href="'+ A.$config_df .selector +'"]').click( B(this.click_expandfunc('HideconfigDF',  'HideDF' )) );
-        $('[href="'+ A.$config_ps .selector +'"]').click( B(this.click_expandfunc('HideconfigPS',  'HidePS' )) );
-        $('[href="'+ A.$config_vg .selector +'"]').click( B(this.click_expandfunc('HideconfigVG',  'HideVG' )) );
+        $('[href="'+ $config_mem.selector +'"]').click( B(this.click_expandfunc('HideconfigMEM', 'HideMEM')) );
+        $('[href="'+ $config_if .selector +'"]').click( B(this.click_expandfunc('HideconfigIF',  'HideIF' )) );
+        $('[href="'+ $config_cpu.selector +'"]').click( B(this.click_expandfunc('HideconfigCPU', 'HideCPU')) );
+        $('[href="'+ $config_df .selector +'"]').click( B(this.click_expandfunc('HideconfigDF',  'HideDF' )) );
+        $('[href="'+ $config_ps .selector +'"]').click( B(this.click_expandfunc('HideconfigPS',  'HidePS' )) );
+        $('[href="'+ $config_vg .selector +'"]').click( B(this.click_expandfunc('HideconfigVG',  'HideVG' )) );
 
-        A.$tab_if    .click( B(this.click_tabfunc('TabIF', 'HideIF')) );
-        A.$tab_df    .click( B(this.click_tabfunc('TabDF', 'HideDF')) );
+        $('header a[href="'+ $section_mem.selector +'"]').click( B(this.click_expandfunc('HideMEM', 'HideconfigMEM', true)) );
+        $('header a[href="'+ $section_if .selector +'"]').click( B(this.click_expandfunc('HideIF',  'HideconfigIF',  true)) );
+        $('header a[href="'+ $section_cpu.selector +'"]').click( B(this.click_expandfunc('HideCPU', 'HideconfigCPU', true)) );
+        $('header a[href="'+ $section_df .selector +'"]').click( B(this.click_expandfunc('HideDF',  'HideconfigDF',  true)) );
+        $('header a[href="'+ $section_ps .selector +'"]').click( B(this.click_expandfunc('HidePS',  'HideconfigPS',  true)) );
+        $('header a[href="'+ $section_vg .selector +'"]').click( B(this.click_expandfunc('HideVG',  'HideconfigVG',  true)) );
 
-        A.$header_mem.click( B(this.click_expandfunc('HideMEM', 'HideconfigMEM', true)) );
-        A.$header_if .click( B(this.click_expandfunc('HideIF',  'HideconfigIF',  true)) );
-        A.$header_cpu.click( B(this.click_expandfunc('HideCPU', 'HideconfigCPU', true)) );
-        A.$header_df .click( B(this.click_expandfunc('HideDF',  'HideconfigDF',  true)) );
-        A.$header_ps .click( B(this.click_expandfunc('HidePS',  'HideconfigPS',  true)) );
-        A.$header_vg .click( B(this.click_expandfunc('HideVG',  'HideconfigVG',  true)) );
-
-        A.$ps_more .click( B(this.click_psignalfunc('HidePS', true )) );
-        A.$ps_less .click( B(this.click_psignalfunc('HidePS', false)) );
+        $psmore.click( B(this.click_psignalfunc('HidePS', true )) );
+        $psless.click( B(this.click_psignalfunc('HidePS', false)) );
     },
+
     listenchange_Textfunc: function(K, $el){ this.listenTo(this.model, 'change:'+ K, this.change_Textfunc(K, $el)); },
     listenchange_HTMLfunc: function(K, $el){ this.listenTo(this.model, 'change:'+ K, this.change_HTMLfunc(K, $el)); },
           change_Textfunc: function(K, $el) { return function() { var A = this.model.attributes; $el.text(A[K]); }; },
           change_HTMLfunc: function(K, $el) { return function() { var A = this.model.attributes; $el.html(A[K]); }; },
 
+    listenchange_buttonfunc: function(K, $el, reverse) {
+        this.listenTo(this.model, 'change:'+ K, function() {
+            var A = this.model.attributes;
+            var V = reverse !== undefined && reverse ? !A[K] : A[K];
+            var c = V ? primary_button : default_button;
+            c($el);
+        });
+    },
     listenhide: function(K, $el) {
         this.listenTo(this.model, 'change:'+ K, this.change_collapsefunc(K, $el));
     },
@@ -387,14 +395,6 @@ var View = Backbone.View.extend({
         return function() {
             var A = this.model.attributes;
             $el.collapse(A[K] ? 'hide' : 'show');
-        };
-    },
-    change_buttonfunc: function(K, $el, reverse) {
-        return function() {
-            var A = this.model.attributes;
-            var V = reverse !== undefined && reverse ? !A[K] : A[K];
-            var c = V ? primary_button : default_button;
-            c($el);
         };
     },
 
@@ -462,41 +462,8 @@ function ready() {
         });
     });
 
-    var model = new Model(_.extend(Model.attributes(Data), {
-        $generic_ip:        $('#generic-ip'),
-        $generic_hostname:  $('#generic-hostname'),
-        $generic_uptime:    $('#generic-uptime'),
-        $generic_la:        $('#generic-la'),
-        $toggleswap_button: $('label[href="#showswap"]'),
-
-        $config_mem:        $('#memconfig'),
-        $config_if:         $('#ifconfig'),
-        $config_cpu:        $('#cpuconfig'),
-        $config_df:         $('#dfconfig'),
-        $config_ps:         $('#psconfig'),
-        $config_vg:         $('#vgconfig'),
-
-        $header_mem:        $('header a[href="#mem"]'),
-        $header_if:         $('header a[href="#if"]'),
-        $header_cpu:        $('header a[href="#cpu"]'),
-        $header_df:         $('header a[href="#df"]'),
-        $header_ps:         $('header a[href="#ps"]'),
-        $header_vg:         $('header a[href="#vagrant"]'),
-
-        $tab_if:            $('label.network-switch'),
-        $tab_df:            $('label.disk-switch'),
-        $section_if:        $('.network-tab'),
-        $section_df:        $('.disk-tab'),
-
-        $section_mem:       $('#mem'),
-        $section_cpu:       $('#cpu'),
-        $section_ps:        $('#ps'),
-        $section_vg:        $('#vagrant'),
-
-        $ps_more:           $('label.more[href="#psmore"]'),
-        $ps_less:           $('label.less[href="#psless"]')
-    }));
-    var view = new View({model: model});
+    var model = new Model(Model.attributes(Data));
+    var view  = new View({model: model});
 
     update(Data.ClientState, model);
 }
