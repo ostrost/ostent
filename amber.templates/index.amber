@@ -92,7 +92,7 @@ html
         div.block.col-md-3
           div.panel1
             header.draggable
-              a[href="#if"] Network
+              a[href="#if"] #{Data.ClientState.TabIFtitle}
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
                   label.btn-header[href="#ifconfig"]
@@ -116,17 +116,20 @@ html
                   div.col-sm-8
                     div.btn-group.btn-group-sm[data-toggle="buttons"]
                       label.network-switch.btn.btn-default.nondefault
-                        [href="#ifpackets"][data-tabid=Data.ClientState.IFTABS.IFpackets]
+                        [href="#ifpackets"]
+                        [data-tabid=Data.IFTABS.IFpackets]
                         input#radio-network-packets[type="radio"][name="network-radio"]
                         | Packets
 
                       label.network-switch.btn.btn-default.nondefault
-                        [href="#iferrors"][data-tabid=Data.ClientState.IFTABS.IFerrors]
+                        [href="#iferrors"]
+                        [data-tabid=Data.IFTABS.IFerrors]
                         input#radio-network-errors[type="radio"][name="network-radio"]
                         | Errors
 
                       label.network-switch.btn.btn-default.active
-                        [href="#ifbytes"][data-tabid=Data.ClientState.IFTABS.IFbytes]
+                        [href="#ifbytes"]
+                        [data-tabid=Data.IFTABS.IFbytes]
                         input#radio-network-bytes[type="radio"][name="network-radio"][checked="checked"]
                         | Bytes
 
@@ -136,18 +139,24 @@ html
                 //-     [[template "define_refresh"]]
 
             //- panels selected by .network-tab
-            div.network-tab.collapse#ifpackets[data-tabid=Data.ClientState.IFTABS.IFpackets]
-              [class="in"] ? (json(Data.ClientState.TabIF) == json(Data.ClientState.IFTABS.IFpackets))
+            div.network-tab.collapse#ifpackets
+              [class="in"] ? (json(Data.IFTABS.IFpackets) == json(Data.ClientState.TabIF))
+              [data-title=Data.IFTABS.IFpacketsTitle]
+              [data-tabid=Data.IFTABS.IFpackets]
               span#ifpackets-table
                 [[template "define_ifpackets_table" .]]
 
-            div.network-tab.collapse#iferrors[data-tabid=Data.ClientState.IFTABS.IFerrors]
-              [class="in"] ? (json(Data.ClientState.TabIF) == json(Data.ClientState.IFTABS.IFerrors))
+            div.network-tab.collapse#iferrors
+              [class="in"] ? (json(Data.IFTABS.IFerrors) == json(Data.ClientState.TabIF))
+              [data-title=Data.IFTABS.IFerrorsTitle]
+              [data-tabid=Data.IFTABS.IFerrors]
               span#iferrors-table
                 [[template "define_iferrors_table" .]]
 
-            div.network-tab.collapse#ifbytes[data-tabid=Data.ClientState.IFTABS.IFbytes]
-              [class="in"] ? (json(Data.ClientState.TabIF) == json(Data.ClientState.IFTABS.IFbytes))
+            div.network-tab.collapse#ifbytes
+              [class="in"] ? (json(Data.IFTABS.IFbytes) == json(Data.ClientState.TabIF))
+              [data-title=Data.IFTABS.IFbytesTitle]
+              [data-tabid=Data.IFTABS.IFbytes]
               span#ifbytes-table
                 [[template "define_ifbytes_table" .]]
 
@@ -186,7 +195,7 @@ html
         div.block.col-md-3
           div.panel1
             header.draggable
-              a[href="#df"] Disks
+              a[href="#df"] #{Data.ClientState.TabDFtitle}
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
                   label.btn-header[href="#dfconfig"]
@@ -210,12 +219,14 @@ html
                   div.col-sm-8
                     div.btn-group.btn-group-sm[data-toggle="buttons"]
                       label.disk-switch.btn.btn-default.nondefault
-                        [href="#dfinodes"][data-tabid=Data.ClientState.DFTABS.DFinodes]
+                        [href="#dfinodes"]
+                        [data-tabid=Data.DFTABS.DFinodes]
                         input#radio-disks-inodes[type="radio"][name="disks-radio"]
                         | Inodes
 
                       label.disk-switch.btn.btn-default.active
-                        [href="#dfbytes"][data-tabid=Data.ClientState.DFTABS.DFbytes]
+                        [href="#dfbytes"]
+                        [data-tabid=Data.DFTABS.DFbytes]
                         input#radio-disks-bytes[type="radio"][name="disks-radio"][checked="checked"]
                         | Bytes
 
@@ -225,13 +236,17 @@ html
                 //-     [[template "define_refresh"]]
 
             //- panels selected by .disk-tab
-            div.disk-tab.collapse#dfinodes[data-tabid=Data.ClientState.DFTABS.DFinodes]
-              [class="in"] ? (json(Data.ClientState.TabDF) == json(Data.ClientState.DFTABS.DFinodes))
+            div.disk-tab.collapse#dfinodes
+              [class="in"] ? (json(Data.DFTABS.DFinodes) == json(Data.ClientState.TabDF))
+              [data-title=Data.DFTABS.DFinodesTitle]
+              [data-tabid=Data.DFTABS.DFinodes]
               span#dfinodes-table
                 [[template "define_dfinodes_table" .]]
 
-            div.disk-tab.collapse#dfbytes[data-tabid=Data.ClientState.DFTABS.DFbytes]
-              [class="in"] ? (json(Data.ClientState.TabDF) == json(Data.ClientState.DFTABS.DFbytes))
+            div.disk-tab.collapse#dfbytes
+              [class="in"] ? (json(Data.DFTABS.DFbytes) == json(Data.ClientState.TabDF))
+              [data-title=Data.DFTABS.DFbytesTitle]
+              [data-tabid=Data.DFTABS.DFbytes]
               span#dfbytes-table
                 [[template "define_dfbytes_table" .]]
 

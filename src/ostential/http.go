@@ -468,6 +468,9 @@ type PageData struct {
 	HTTP_HOST   string
 
     ClientState clientState
+
+	IFTABS iftabs
+	DFTABS dftabs
 }
 
 type pageUpdate struct {
@@ -731,6 +734,9 @@ func pageData(req *http.Request) PageData {
 	data.VagrantMachines = updates.VagrantMachines
 	data.VagrantError    = updates.VagrantError
 	data.VagrantErrord   = updates.VagrantErrord
+
+	data.DFTABS = DFTABS // from tabs.go
+	data.IFTABS = IFTABS // from tabs.go
 
 	return data
 }

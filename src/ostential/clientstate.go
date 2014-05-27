@@ -27,9 +27,8 @@ type clientState struct {
 
 	TabIF *types.SEQ `json:",omitempty"`
 	TabDF *types.SEQ `json:",omitempty"`
-
-	IFTABS *iftabs `json:",omitempty"` // immutable, constant
-	DFTABS *dftabs `json:",omitempty"` // immutable, constant
+	TabIFtitle string
+	TabDFtitle string
 
 	// PSusers []string `json:omitempty`
 
@@ -39,17 +38,6 @@ type clientState struct {
 	HideconfigDF  *bool `json:",omitempty"`
 	HideconfigPS  *bool `json:",omitempty"`
 	HideconfigVG  *bool `json:",omitempty"`
-}
-
-type dftabs struct {
-	DFbytes  types.SEQ
-	DFinodes types.SEQ
-}
-
-type iftabs struct {
-	IFpackets types.SEQ
-	IFerrors  types.SEQ
-	IFbytes   types.SEQ
 }
 
 func(_  clientState) merge_bool(dest, src *bool)    { if src != nil { *dest = *src } }
@@ -70,6 +58,8 @@ func(cs *clientState) Merge(ps clientState) {
 
 	cs.mergeSEQ(cs.TabIF, ps.TabIF)
 	cs.mergeSEQ(cs.TabDF, ps.TabDF)
+	cs.TabIFtitle = IFTABS.Title(*cs.TabIF)
+	cs.TabDFtitle = DFTABS.Title(*cs.TabDF)
 
 	cs.merge_bool(cs.HideconfigMEM, ps.HideconfigMEM)
 	cs.merge_bool(cs.HideconfigIF,  ps.HideconfigIF)
@@ -77,30 +67,6 @@ func(cs *clientState) Merge(ps clientState) {
 	cs.merge_bool(cs.HideconfigDF,  ps.HideconfigDF)
 	cs.merge_bool(cs.HideconfigPS,  ps.HideconfigPS)
 	cs.merge_bool(cs.HideconfigVG,  ps.HideconfigVG)
-}
-
-const (
-	____IFTABID types.SEQ = iota
-	IFPACKETS_TABID
-	 IFERRORS_TABID
-	  IFBYTES_TABID
-)
-
-var IF_TABS = []types.SEQ{
-	IFPACKETS_TABID,
-	 IFERRORS_TABID,
-	  IFBYTES_TABID,
-}
-
-const (
-	____DFTABID types.SEQ = iota
-	DFINODES_TABID
-	 DFBYTES_TABID
-)
-
-var DF_TABS = []types.SEQ{
-	DFINODES_TABID,
-	 DFBYTES_TABID,
 }
 
 func newfalse() *bool { return new(bool) }
@@ -130,17 +96,8 @@ func defaultClientState() clientState {
 
 	cs.TabIF = newseq(IFBYTES_TABID)
 	cs.TabDF = newseq(DFBYTES_TABID)
-
-	cs.DFTABS = &dftabs{ // immutable, constant
-		DFbytes:  DFBYTES_TABID,
-		DFinodes: DFINODES_TABID,
-	}
-
-	cs.IFTABS = &iftabs{ // immutable, constant
-		IFpackets: IFPACKETS_TABID,
-		IFerrors:  IFERRORS_TABID,
-		IFbytes:   IFBYTES_TABID,
-	}
+	cs.TabIFtitle = IFTABS.Title(*cs.TabIF)
+	cs.TabDFtitle = DFTABS.Title(*cs.TabDF)
 
 	hideconfig := true
 	// hideconfig = false // DEVELOPMENT
