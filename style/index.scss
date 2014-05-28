@@ -111,7 +111,19 @@ table thead tr .header a {
   &.state.current {
     white-space: nowrap;
     font-weight: bold;
+    // https://stackoverflow.com/q/8376795
+    vertical-align: middle; // this DOES NOT make the line 1px higher
   }
+}
+
+.table > thead > tr > th,
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > td,
+.table > tfoot > tr > td {
+    // same as the table theader tr .header a.state.current
+    vertical-align: middle;
 }
 
 // .badge-default { @extend .badge; background:

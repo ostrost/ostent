@@ -6216,7 +6216,26 @@ table thead tr .header a {
     text-decoration: none; }
   table thead tr .header a.state.current {
     white-space: nowrap;
-    font-weight: bold; }
+    font-weight: bold;
+    vertical-align: middle; }
+
+.table > thead > tr > th, .table2 > thead > tr > th, .table1 > thead > tr > th,
+.table > tbody > tr > th,
+.table2 > tbody > tr > th,
+.table1 > tbody > tr > th,
+.table > tfoot > tr > th,
+.table2 > tfoot > tr > th,
+.table1 > tfoot > tr > th,
+.table > thead > tr > td,
+.table2 > thead > tr > td,
+.table1 > thead > tr > td,
+.table > tbody > tr > td,
+.table2 > tbody > tr > td,
+.table1 > tbody > tr > td,
+.table > tfoot > tr > td,
+.table2 > tfoot > tr > td,
+.table1 > tfoot > tr > td {
+  vertical-align: middle; }
 
 .badge-primary {
   background: #428bca; }
