@@ -62,11 +62,9 @@ html
         div.collapse.navbar-collapse#navbar-collapse
           ul.nav.navbar-nav
             li
-              a[href="https://ostrost.com/ostent/releases/latest"][title="version "+ Data.VERSION] OSTENT
-            //- li
-            //-   a[href="#top"] #top
-            //- li
-            //-   a[href="#vagrant"] #vagrant
+              a[href="#top"] #top
+            li
+              a[href="#vagrant"] #vagrant
 
             //- li
             //-   ul.list-inline.navbar-text
@@ -74,6 +72,10 @@ html
             //-     li OS: #{Data.DISTRIBHTML}
             //-     li uptime: #{Data.Generic.Uptime}
             //-     li load averages: #{Data.Generic.LA}
+
+          ul.nav.navbar-nav.navbar-right
+            li.active
+              a[href="https://ostrost.com/ostent/releases/latest"][title="version "+ Data.VERSION] OSTENT
 
     //- div.container-fluid.padding-top34
     //-   div.row
@@ -84,7 +86,7 @@ html
     //-           li uptime: #{Data.Generic.Uptime}
     //-           li load averages: #{Data.Generic.LA}
 
-    div.container-fluid.padding-top71
+    div.container-fluid.padding-top71#top
       div.row
         div.block.col-md-2.col-md-offset-1
           div.panel1
