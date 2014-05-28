@@ -4,6 +4,25 @@ body {
   font-size: 12px;
 }
 
+// https://stackoverflow.com/q/9742166
+* {
+  -webkit-border-radius: 0 !important;
+     -moz-border-radius: 0 !important;
+          border-radius: 0 !important;
+}
+
+// https://stackoverflow.com/q/20648451
+.headroom {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  transition: all .2s ease-in-out;
+}
+.headroom--pinned   { top: 0; }
+.headroom--unpinned { top: -100px; }
+
+.padding-top34 { padding-top: 34px; }
+.padding-top71 { padding-top: 71px; } // 20px when .padding-top34 is in use; // 71 is absolute value
+
 .panel1 {
   @extend .panel;
   @extend .panel-default;
@@ -104,10 +123,6 @@ table thead tr .header a {
 
 span.tooltipabledots {
   cursor: pointer;
-}
-
-.padding-top15 {
-  padding-top: 15px;
 }
 
 .btn-header { // panel-heading colors

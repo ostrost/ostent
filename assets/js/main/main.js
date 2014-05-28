@@ -448,6 +448,11 @@ var View = Backbone.View.extend({
 
 function ready() {
 
+    // construct an instance of Headroom, passing the element
+    (new Headroom(document.querySelector("nav"), {
+        offset: 71 - 51 // "padding-top" of the toprow container - navbar height (50px by default) + bottom border (1px)
+    })).init();
+
     $('.collapse').collapse({toggle: false}); // init collapsable objects
 
     // $('span .tooltipable').tooltip();

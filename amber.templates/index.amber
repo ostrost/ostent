@@ -36,6 +36,8 @@ html
     script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/underscore/1.6.0/underscore-min.js"]
     script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/backbone/1.1.2/backbone-min.js"]
 
+    script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/vendor/min/headroom/0.5.0/headroom.min.js"]
+
     script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/gen/jscript.js"]
     script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/main/main.js"]
 
@@ -49,14 +51,42 @@ html
           button.close[type="button"][data-dismiss="alert"][aria-hidden="true"] &times;
           span#alert-message Alert
 
-    div.container-fluid.padding-top15
-      div.row
-        div.block.col-md-1.text-center
-          ul.LINKSnav.nav-pills.nav-stacked
-            li
-              a.code[href="https://ostrost.com/ostent/releases/latest"][title="version "+ Data.VERSION] OSTENT
+    nav.navbar.navbar-default.navbar-fixed-top[role="navigation"]
+      div.container-fluid
+        div.navbar-header
+          button.navbar-toggle[type="button"][data-toggle="collapse"][data-target="#navbar-collapse"]
+            span.sr-only Toggle header
+          div.navbar-brand
+            span#generic-hostname #{Data.Generic.HostnameHTML}
 
-        div.block.col-md-2
+        div.collapse.navbar-collapse#navbar-collapse
+          ul.nav.navbar-nav
+            li
+              a[href="https://ostrost.com/ostent/releases/latest"][title="version "+ Data.VERSION] OSTENT
+            //- li
+            //-   a[href="#top"] #top
+            //- li
+            //-   a[href="#vagrant"] #vagrant
+
+            //- li
+            //-   ul.list-inline.navbar-text
+            //-     li IPv4: #{Data.Generic.IP}
+            //-     li OS: #{Data.DISTRIBHTML}
+            //-     li uptime: #{Data.Generic.Uptime}
+            //-     li load averages: #{Data.Generic.LA}
+
+    //- div.container-fluid.padding-top34
+    //-   div.row
+    //-     div.col-md-12.text-center
+    //-         ul.list-inline.codenowrap
+    //-           li IPv4: #{Data.Generic.IP}
+    //-           li OS: #{Data.DISTRIBHTML}
+    //-           li uptime: #{Data.Generic.Uptime}
+    //-           li load averages: #{Data.Generic.LA}
+
+    div.container-fluid.padding-top71
+      div.row
+        div.block.col-md-2.col-md-offset-1
           div.panel1
             header.draggable
               a[href="#mem"] Memory
@@ -254,12 +284,12 @@ html
       div.row
         div.col-md-2
           ul.nav.nav-pills.nav-stacked
-            li
-              div.row
-                div.col-md-6.cell-right
-                  span.code hostname:
-                div.col-md-6
-                  span.code#generic-hostname #{Data.Generic.HostnameHTML}
+            //- li
+            //-   div.row
+            //-     div.col-md-6.cell-right
+            //-       span.code hostname:
+            //-     div.col-md-6
+            //-       span.code#generic-hostname #{Data.Generic.HostnameHTML}
 
             li
               div.row
