@@ -60,19 +60,19 @@
         th Interface
         th.text-right.nowrap[title="BITS per second"] In
           span.unit
-            b b
+            i b
             | ps
         th.text-right.nowrap[title="BITS per second"] Out
           span.unit
-            b b
+            i b
             | ps
         th.text-right.nowrap[title="total BYTES modulo 4G"] In
           span.unit
-            b B
+            i B
             | %4G
         th.text-right.nowrap[title="total BYTES modulo 4G"] Out
           span.unit
-            b B
+            i B
             | %4G
     tbody
       [[template "define_ifbytes_rows" .]]
