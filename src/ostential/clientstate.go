@@ -27,8 +27,8 @@ type clientState struct {
 
 	TabIF *types.SEQ `json:",omitempty"`
 	TabDF *types.SEQ `json:",omitempty"`
-	TabIFtitle string
-	TabDFtitle string
+	TabIFtitle *string `json:",omitempty"`
+	TabDFtitle *string `json:",omitempty"`
 
 	// PSusers []string `json:omitempty`
 
@@ -58,8 +58,8 @@ func(cs *clientState) Merge(ps clientState) {
 
 	cs.mergeSEQ(cs.TabIF, ps.TabIF)
 	cs.mergeSEQ(cs.TabDF, ps.TabDF)
-	cs.TabIFtitle = IFTABS.Title(*cs.TabIF)
-	cs.TabDFtitle = DFTABS.Title(*cs.TabDF)
+	cs.TabIFtitle = newstring(IFTABS.Title(*cs.TabIF))
+	cs.TabDFtitle = newstring(DFTABS.Title(*cs.TabDF))
 
 	cs.merge_bool(cs.HideconfigMEM, ps.HideconfigMEM)
 	cs.merge_bool(cs.HideconfigIF,  ps.HideconfigIF)
@@ -67,6 +67,12 @@ func(cs *clientState) Merge(ps clientState) {
 	cs.merge_bool(cs.HideconfigDF,  ps.HideconfigDF)
 	cs.merge_bool(cs.HideconfigPS,  ps.HideconfigPS)
 	cs.merge_bool(cs.HideconfigVG,  ps.HideconfigVG)
+}
+
+func newstring(s string) *string {
+	p := new(string)
+	*p = s
+	return p
 }
 
 func newfalse() *bool { return new(bool) }
@@ -96,8 +102,8 @@ func defaultClientState() clientState {
 
 	cs.TabIF = newseq(IFBYTES_TABID)
 	cs.TabDF = newseq(DFBYTES_TABID)
-	cs.TabIFtitle = IFTABS.Title(*cs.TabIF)
-	cs.TabDFtitle = DFTABS.Title(*cs.TabDF)
+	cs.TabIFtitle = newstring(IFTABS.Title(*cs.TabIF))
+	cs.TabDFtitle = newstring(DFTABS.Title(*cs.TabDF))
 
 	hideconfig := true
 	// hideconfig = false // DEVELOPMENT
