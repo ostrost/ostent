@@ -66,27 +66,26 @@ html
             li
               a[href="#vagrant"] #vagrant
 
-            //- li
-            //-   ul.list-inline.navbar-text
-            //-     li IPv4: #{Data.Generic.IP}
-            //-     li OS: #{Data.DISTRIBHTML}
-            //-     li uptime: #{Data.Generic.Uptime}
-            //-     li load averages: #{Data.Generic.LA}
-
           ul.nav.navbar-nav.navbar-right
             li.active
               a[href="https://ostrost.com/ostent/releases/latest"][title="version "+ Data.VERSION] OSTENT
 
-    //- div.container-fluid.padding-top34
-    //-   div.row
-    //-     div.col-md-12.text-center
-    //-         ul.list-inline.codenowrap
-    //-           li IPv4: #{Data.Generic.IP}
-    //-           li OS: #{Data.DISTRIBHTML}
-    //-           li uptime: #{Data.Generic.Uptime}
-    //-           li load averages: #{Data.Generic.LA}
+    div.container-fluid.padding-top52
+      div.row
+        div.col-md-12.text-center
+            ul.list-inline.codenowrap
+              li
+                | IPv4:&nbsp;
+                span#generic-ip #{Data.Generic.IP}
+              li OS: #{Data.DISTRIBHTML}
+              li
+                | uptime:&nbsp;
+                span#generic-uptime #{Data.Generic.Uptime}
+              li
+                | load averages:&nbsp;
+                span#generic-la #{Data.Generic.LA}
 
-    div.container-fluid.padding-top71#top
+    div.container-fluid.padding-top72#top
       div.row
         div.block.col-md-2.col-md-offset-1
           div.panel1
@@ -284,44 +283,7 @@ html
 
     div.container-fluid
       div.row
-        div.col-md-2
-          ul.nav.nav-pills.nav-stacked
-            //- li
-            //-   div.row
-            //-     div.col-md-6.cell-right
-            //-       span.code hostname:
-            //-     div.col-md-6
-            //-       span.code#generic-hostname #{Data.Generic.HostnameHTML}
-
-            li
-              div.row
-                div.col-md-6.cell-right
-                  span.code IPv4:
-                div.col-md-6
-                  span.code#generic-ip #{Data.Generic.IP}
-
-            li
-              div.row
-                div.col-md-6.cell-right
-                  span.code OS:
-                div.col-md-6
-                  span.codenowrap #{Data.DISTRIBHTML}
-
-            li
-              div.row
-                div.col-md-6.cell-right
-                  span.code uptime:
-                div.col-md-6
-                  span.codenowrap#generic-uptime #{Data.Generic.Uptime}
-
-            li
-              div.row
-                div.col-md-6.cell-right
-                  span.code loadavg:
-                div.col-md-6
-                  span.codenowrap#generic-la #{Data.Generic.LA}
-
-        div.block.col-md-8
+        div.block.col-md-8.col-md-offset-2
           div.panel1
             header.NOTdraggable
               a[href="#ps"] Processes

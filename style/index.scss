@@ -20,8 +20,8 @@ body {
 .headroom--pinned   { top: 0; }
 .headroom--unpinned { top: -100px; }
 
-.padding-top34 { padding-top: 34px; }
-.padding-top71 { padding-top: 71px; } // 20px when .padding-top34 is in use; // 71 is absolute value
+.padding-top52 { padding-top: 52px; }
+.padding-top72 { padding-top: 20px; } // 20px when .padding-top52 is in use; // 72 is absolute value
 
 .panel1 {
   @extend .panel;
@@ -78,11 +78,6 @@ body {
 .inlinecode {
   @extend .code;
   padding: 0px 0px;
-}
-
-.cell-right {
-    @extend .text-right;
-    padding-right: 0px;
 }
 
 .unit { // code colors

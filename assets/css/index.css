@@ -485,7 +485,7 @@ cite {
 .text-left {
   text-align: left; }
 
-.text-right, .cell-right {
+.text-right {
   text-align: right; }
 
 .text-center {
@@ -6147,11 +6147,11 @@ body {
 .headroom--unpinned {
   top: -100px; }
 
-.padding-top34 {
-  padding-top: 34px; }
+.padding-top52 {
+  padding-top: 52px; }
 
-.padding-top71 {
-  padding-top: 71px; }
+.padding-top72 {
+  padding-top: 20px; }
 
 .panel1 header {
   padding-right: 5px; }
@@ -6164,7 +6164,7 @@ body {
 
 .table2, .table1 {
   margin-bottom: 0px; }
-  .table2 .text-right sup, .table2 .cell-right sup, .table1 .text-right sup, .table1 .cell-right sup {
+  .table2 .text-right sup, .table1 .text-right sup {
     font-size: 100%; }
 
 .stripe-table > tbody > tr:nth-child(even) > td {
@@ -6184,9 +6184,6 @@ body {
 
 .inlinecode {
   padding: 0px 0px; }
-
-.cell-right {
-  padding-right: 0px; }
 
 .unit {
   color: black;
