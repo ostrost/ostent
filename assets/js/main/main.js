@@ -276,6 +276,11 @@ var View = Backbone.View.extend({
         this.listenhide('HidePS',  $section_ps);
         this.listenhide('HideVG',  $section_vg);
 
+        var $header_if = $('header a[href="'+ $section_if .selector +'"]');
+        var $header_df = $('header a[href="'+ $section_df .selector +'"]');
+        this.listenchange_Textfunc('TabIFtitle', $header_if);
+        this.listenchange_Textfunc('TabDFtitle', $header_df);
+
         var $config_mem = $('#memconfig');
         var $config_if  = $('#ifconfig');
         var $config_cpu = $('#cpuconfig');
@@ -332,10 +337,11 @@ var View = Backbone.View.extend({
         $('[href="'+ $config_ps .selector +'"]').click( B(this.click_expandfunc('HideconfigPS',  'HidePS' )) );
         $('[href="'+ $config_vg .selector +'"]').click( B(this.click_expandfunc('HideconfigVG',  'HideVG' )) );
 
+        $header_if.click( B(this.click_expandfunc('HideIF',  'HideconfigIF',  true)) );
+        $header_df.click( B(this.click_expandfunc('HideDF',  'HideconfigDF',  true)) );
+
         $('header a[href="'+ $section_mem.selector +'"]').click( B(this.click_expandfunc('HideMEM', 'HideconfigMEM', true)) );
-        $('header a[href="'+ $section_if .selector +'"]').click( B(this.click_expandfunc('HideIF',  'HideconfigIF',  true)) );
         $('header a[href="'+ $section_cpu.selector +'"]').click( B(this.click_expandfunc('HideCPU', 'HideconfigCPU', true)) );
-        $('header a[href="'+ $section_df .selector +'"]').click( B(this.click_expandfunc('HideDF',  'HideconfigDF',  true)) );
         $('header a[href="'+ $section_ps .selector +'"]').click( B(this.click_expandfunc('HidePS',  'HideconfigPS',  true)) );
         $('header a[href="'+ $section_vg .selector +'"]').click( B(this.click_expandfunc('HideVG',  'HideconfigVG',  true)) );
 

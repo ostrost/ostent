@@ -133,8 +133,8 @@ func(wc *wclient) waitfor_updates() { // write to  client
 			if rd != nil {
 				if rd.State != nil {
 					rd.State.mergeMorePsignal(&wc.fullState)
-					wc.fullState.Merge(rd.State.clientState)
 					clientdiff = &rd.State.clientState
+					wc.fullState.Merge(rd.State.clientState, clientdiff)
 				}
 				if rd.Search != nil {
 					var err error

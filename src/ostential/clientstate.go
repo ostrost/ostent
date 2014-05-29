@@ -10,6 +10,15 @@ type internalClient struct {
 	psLimit int
 }
 
+type title string
+func (ti *title) merge_title(ns string, dt **title) {
+	if string(*ti) == ns {
+		return
+	}
+	*dt = (*title)(newstring(ns))
+	*ti = **dt
+}
+
 type clientState struct {
 	internalClient `json:"-"` // NB not marshalled
 
@@ -27,8 +36,8 @@ type clientState struct {
 
 	TabIF *types.SEQ `json:",omitempty"`
 	TabDF *types.SEQ `json:",omitempty"`
-	TabIFtitle *string `json:",omitempty"`
-	TabDFtitle *string `json:",omitempty"`
+	TabIFtitle *title `json:",omitempty"`
+	TabDFtitle *title `json:",omitempty"`
 
 	// PSusers []string `json:omitempty`
 
@@ -43,7 +52,7 @@ type clientState struct {
 func(_  clientState) merge_bool(dest, src *bool)    { if src != nil { *dest = *src } }
 func(_  clientState) mergeSEQ(dest, src *types.SEQ) { if src != nil { *dest = *src } }
 
-func(cs *clientState) Merge(ps clientState) {
+func(cs *clientState) Merge(ps clientState, ds *clientState) {
 	cs.merge_bool(cs.HideMEM, ps.HideMEM)
 	cs.merge_bool(cs.HideIF,  ps.HideIF)
 	cs.merge_bool(cs.HideCPU, ps.HideCPU)
@@ -58,8 +67,9 @@ func(cs *clientState) Merge(ps clientState) {
 
 	cs.mergeSEQ(cs.TabIF, ps.TabIF)
 	cs.mergeSEQ(cs.TabDF, ps.TabDF)
-	cs.TabIFtitle = newstring(IFTABS.Title(*cs.TabIF))
-	cs.TabDFtitle = newstring(DFTABS.Title(*cs.TabDF))
+
+	cs.TabIFtitle.merge_title(IFTABS.Title(*cs.TabIF), &ds.TabIFtitle)
+	cs.TabDFtitle.merge_title(DFTABS.Title(*cs.TabDF), &ds.TabDFtitle)
 
 	cs.merge_bool(cs.HideconfigMEM, ps.HideconfigMEM)
 	cs.merge_bool(cs.HideconfigIF,  ps.HideconfigIF)
@@ -102,8 +112,8 @@ func defaultClientState() clientState {
 
 	cs.TabIF = newseq(IFBYTES_TABID)
 	cs.TabDF = newseq(DFBYTES_TABID)
-	cs.TabIFtitle = newstring(IFTABS.Title(*cs.TabIF))
-	cs.TabDFtitle = newstring(DFTABS.Title(*cs.TabDF))
+	cs.TabIFtitle = (*title)(newstring(IFTABS.Title(*cs.TabIF)))
+	cs.TabDFtitle = (*title)(newstring(DFTABS.Title(*cs.TabDF)))
 
 	hideconfig := true
 	// hideconfig = false // DEVELOPMENT
