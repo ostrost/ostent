@@ -3651,52 +3651,48 @@ select[multiple].input-group-sm > .input-group-btn > .btn-header {
 .input-group-btn:last-child > .btn-group {
   margin-left: -1px; }
 
-.nav, .LINKSnav {
+.nav {
   padding-left: 0;
   margin-bottom: 0;
   list-style: none; }
 
-.nav > li, .LINKSnav > li {
+.nav > li {
   position: relative;
   display: block; }
 
-.nav > li > a, .LINKSnav > li > a {
+.nav > li > a {
   position: relative;
   display: block;
   padding: 10px 15px; }
 
-.nav > li > a:hover, .LINKSnav > li > a:hover,
-.nav > li > a:focus,
-.LINKSnav > li > a:focus {
+.nav > li > a:hover,
+.nav > li > a:focus {
   text-decoration: none;
   background-color: #eee; }
 
-.nav > li.disabled > a, .LINKSnav > li.disabled > a {
+.nav > li.disabled > a {
   color: #999; }
 
-.nav > li.disabled > a:hover, .LINKSnav > li.disabled > a:hover,
-.nav > li.disabled > a:focus,
-.LINKSnav > li.disabled > a:focus {
+.nav > li.disabled > a:hover,
+.nav > li.disabled > a:focus {
   color: #999;
   text-decoration: none;
   cursor: not-allowed;
   background-color: transparent; }
 
-.nav .open > a, .LINKSnav .open > a,
+.nav .open > a,
 .nav .open > a:hover,
-.LINKSnav .open > a:hover,
-.nav .open > a:focus,
-.LINKSnav .open > a:focus {
+.nav .open > a:focus {
   background-color: #eee;
   border-color: #428bca; }
 
-.nav .nav-divider, .LINKSnav .nav-divider {
+.nav .nav-divider {
   height: 1px;
   margin: 9px 0;
   overflow: hidden;
   background-color: #e5e5e5; }
 
-.nav > li > a > img, .LINKSnav > li > a > img {
+.nav > li > a > img {
   max-width: none; }
 
 .nav-tabs {
@@ -5970,9 +5966,7 @@ button.close {
 .btn-group-vertical > .btn-group:before,
 .btn-group-vertical > .btn-group:after,
 .nav:before,
-.LINKSnav:before,
 .nav:after,
-.LINKSnav:after,
 .navbar:before,
 .navbar:after,
 .navbar-header:before,
@@ -5998,7 +5992,6 @@ button.close {
 .btn-toolbar:after,
 .btn-group-vertical > .btn-group:after,
 .nav:after,
-.LINKSnav:after,
 .navbar:after,
 .navbar-header:after,
 .navbar-collapse:after,
@@ -6194,10 +6187,6 @@ body {
 
 .cell-right {
   padding-right: 0px; }
-
-.LINKSnav li > a {
-  padding: 0px 0px;
-  display: inline; }
 
 .unit {
   color: black;

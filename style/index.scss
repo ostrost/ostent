@@ -85,14 +85,6 @@ body {
     padding-right: 0px;
 }
 
-.LINKSnav {
-    @extend .nav;
-    li > a {
-	padding: 0px 0px;
-	display: inline;
-    }
-}
-
 .unit { // code colors
   color: black;
   background-color: #f4f4f4;
