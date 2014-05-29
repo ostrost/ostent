@@ -94,6 +94,7 @@ html
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
                   label.btn-header[href="#memconfig"]
+                    [class="active"] ? (json(Data.ClientState.HideconfigMEM) == "false")
                     input[type="checkbox"][name="memconfig"]
                     | #{Data.MEM.Hatch}
 
@@ -127,6 +128,7 @@ html
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
                   label.btn-header[href="#ifconfig"]
+                    [class="active"] ? (json(Data.ClientState.HideconfigIF) == "false")
                     input[type="checkbox"][name="ifconfig"]
                     | #{Data.IF.Hatch}
 
@@ -198,6 +200,7 @@ html
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
                   label.btn-header[href="#cpuconfig"]
+                    [class="active"] ? (json(Data.ClientState.HideconfigCPU) == "false")
                     input[type="checkbox"][name="cpuconfig"]
                     | #{Data.CPU.Hatch}
 
@@ -230,6 +233,7 @@ html
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
                   label.btn-header[href="#dfconfig"]
+                    [class="active"] ? (json(Data.ClientState.HideconfigDF) == "false")
                     input[type="checkbox"][name="dfconfig"]
                     | #{Data.DF.Hatch}
 
@@ -296,6 +300,7 @@ html
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
                   label.btn-header[href="#psconfig"]
+                    [class="active"] ? (json(Data.ClientState.HideconfigPS) == "false")
                     input[type="checkbox"][name="psconfig"]
                     | #{Data.PShatch}
 
@@ -333,6 +338,7 @@ html
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
                   label.btn-header[href="#vgconfig"].disabled
+                    [class="active"] ? (json(Data.ClientState.HideconfigVG) == "false")
                     input[type="checkbox"][name="vgconfig"]
                     | #{Data.VGhatch}
 

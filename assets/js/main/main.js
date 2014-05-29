@@ -288,12 +288,19 @@ var View = Backbone.View.extend({
         var $config_ps  = $('#psconfig');
         var $config_vg  = $('#vgconfig');
 
-        this.listenhide('HideconfigMEM', $config_mem);
-        this.listenhide('HideconfigIF',  $config_if);
-        this.listenhide('HideconfigCPU', $config_cpu);
-        this.listenhide('HideconfigDF',  $config_df);
-        this.listenhide('HideconfigPS',  $config_ps);
-        this.listenhide('HideconfigVG',  $config_vg);
+        var $hatch_mem = $('[href="'+ $config_mem.selector +'"]');
+        var $hatch_if  = $('[href="'+ $config_if .selector +'"]');
+        var $hatch_cpu = $('[href="'+ $config_cpu.selector +'"]');
+        var $hatch_df  = $('[href="'+ $config_df .selector +'"]');
+        var $hatch_ps  = $('[href="'+ $config_ps .selector +'"]');
+        var $hatch_vg  = $('[href="'+ $config_vg .selector +'"]');
+
+        this.listenhide_andactivate('HideconfigMEM', $config_mem, $hatch_mem);
+        this.listenhide_andactivate('HideconfigIF',  $config_if,  $hatch_if);
+        this.listenhide_andactivate('HideconfigCPU', $config_cpu, $hatch_cpu);
+        this.listenhide_andactivate('HideconfigDF',  $config_df,  $hatch_df);
+        this.listenhide_andactivate('HideconfigPS',  $config_ps,  $hatch_ps);
+        this.listenhide_andactivate('HideconfigVG',  $config_vg,  $hatch_vg);
 
         var $tab_if    = $('label.network-switch');
         var $tab_df    = $('label.disk-switch');
@@ -330,12 +337,12 @@ var View = Backbone.View.extend({
             $b.click( B(this.click_expandfunc(K, KK)) );
         }
 
-        $('[href="'+ $config_mem.selector +'"]').click( B(this.click_expandfunc('HideconfigMEM', 'HideMEM')) );
-        $('[href="'+ $config_if .selector +'"]').click( B(this.click_expandfunc('HideconfigIF',  'HideIF' )) );
-        $('[href="'+ $config_cpu.selector +'"]').click( B(this.click_expandfunc('HideconfigCPU', 'HideCPU')) );
-        $('[href="'+ $config_df .selector +'"]').click( B(this.click_expandfunc('HideconfigDF',  'HideDF' )) );
-        $('[href="'+ $config_ps .selector +'"]').click( B(this.click_expandfunc('HideconfigPS',  'HidePS' )) );
-        $('[href="'+ $config_vg .selector +'"]').click( B(this.click_expandfunc('HideconfigVG',  'HideVG' )) );
+        $hatch_mem.click( B(this.click_expandfunc('HideconfigMEM', 'HideMEM')) );
+        $hatch_if .click( B(this.click_expandfunc('HideconfigIF',  'HideIF' )) );
+        $hatch_cpu.click( B(this.click_expandfunc('HideconfigCPU', 'HideCPU')) );
+        $hatch_df .click( B(this.click_expandfunc('HideconfigDF',  'HideDF' )) );
+        $hatch_ps .click( B(this.click_expandfunc('HideconfigPS',  'HidePS' )) );
+        $hatch_vg .click( B(this.click_expandfunc('HideconfigVG',  'HideVG' )) );
 
         $header_if.click( B(this.click_expandfunc('HideIF',  'HideconfigIF',  true)) );
         $header_df.click( B(this.click_expandfunc('HideDF',  'HideconfigDF',  true)) );
@@ -364,6 +371,13 @@ var View = Backbone.View.extend({
     },
     listenhide: function(K, $el) {
         this.listenTo(this.model, 'change:'+ K, this.change_collapsefunc(K, $el));
+    },
+    listenhide_andactivate: function(K, $el, $button_el) {
+        this.listenTo(this.model, 'change:'+ K, function() {
+            var A = this.model.attributes;
+            $el.collapse(A[K] ? 'hide' : 'show'); // do what change_collapsefunc does
+            $button_el[A[K] ? 'removeClass' : 'addClass']('active');
+        });
     },
 
     change_collapsetabfunc: function(K, KK, $el, $tabel) {
