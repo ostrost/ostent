@@ -12,6 +12,7 @@ type internalClient struct {
 
 type title string
 func (ti *title) merge_title(ns string, dt **title) {
+	*dt = nil
 	if string(*ti) == ns {
 		return
 	}
