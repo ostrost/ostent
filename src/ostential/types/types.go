@@ -191,7 +191,7 @@ type Interface struct {
 	DeltaOut string // with units
 }
 
-type Interfaces struct { // TODO Networks
+type Interfaces struct {
 	List []Interface
 }
 

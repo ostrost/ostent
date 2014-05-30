@@ -141,29 +141,29 @@ html
                      div.btn-group[data-toggle="buttons"]
                       label.btn.btn-default.btn-sm.all[href="#if"]
                         [class="disabled"] ? (json(Data.IF.Expandable)) != "true")
-                        input[type="checkbox"][name="expandnetwork"]
+                        input[type="checkbox"][name="expandif"]
                         | #{Data.IF.ExpandText}
 
                 div.form-group
-                  label.col-sm-4.control-label[for="network"] Network
+                  label.col-sm-4.control-label[for="if"] #{Data.ClientState.TabIFtitle}
                   div.col-sm-8
                     div.btn-group.btn-group-sm[data-toggle="buttons"]
-                      label.network-switch.btn.btn-default.nondefault
+                      label.if-switch.btn.btn-default.nondefault
                         [href="#ifpackets"]
                         [data-tabid=Data.IFTABS.IFpackets]
-                        input#radio-network-packets[type="radio"][name="network-radio"]
+                        input[type="radio"][name="if-radio"]
                         | Packets
 
-                      label.network-switch.btn.btn-default.nondefault
+                      label.if-switch.btn.btn-default.nondefault
                         [href="#iferrors"]
                         [data-tabid=Data.IFTABS.IFerrors]
-                        input#radio-network-errors[type="radio"][name="network-radio"]
+                        input[type="radio"][name="if-radio"]
                         | Errors
 
-                      label.network-switch.btn.btn-default.active
+                      label.if-switch.btn.btn-default.active
                         [href="#ifbytes"]
                         [data-tabid=Data.IFTABS.IFbytes]
-                        input#radio-network-bytes[type="radio"][name="network-radio"][checked="checked"]
+                        input[type="radio"][name="if-radio"][checked="checked"]
                         | Bytes
 
                 //- div.form-group
@@ -171,22 +171,22 @@ html
                 //-   div.col-sm-6
                 //-     [[template "define_refresh"]]
 
-            //- panels selected by .network-tab
-            div.network-tab.collapse#ifpackets
+            //- panels selected by .if-tab
+            div.if-tab.collapse#ifpackets
               [class="in"] ? (json(Data.IFTABS.IFpackets) == json(Data.ClientState.TabIF))
               [data-title=Data.IFTABS.IFpacketsTitle]
               [data-tabid=Data.IFTABS.IFpackets]
               span#ifpackets-table
                 [[template "define_ifpackets_table" .]]
 
-            div.network-tab.collapse#iferrors
+            div.if-tab.collapse#iferrors
               [class="in"] ? (json(Data.IFTABS.IFerrors) == json(Data.ClientState.TabIF))
               [data-title=Data.IFTABS.IFerrorsTitle]
               [data-tabid=Data.IFTABS.IFerrors]
               span#iferrors-table
                 [[template "define_iferrors_table" .]]
 
-            div.network-tab.collapse#ifbytes
+            div.if-tab.collapse#ifbytes
               [class="in"] ? (json(Data.IFTABS.IFbytes) == json(Data.ClientState.TabIF))
               [data-title=Data.IFTABS.IFbytesTitle]
               [data-tabid=Data.IFTABS.IFbytes]
@@ -246,23 +246,23 @@ html
                     div.btn-group[data-toggle="buttons"]
                       label.btn.btn-default.btn-sm.all[href="#df"]
                         [class="disabled"] ? (json(Data.DF.Expandable)) != "true")
-                        input[type="checkbox"][name="expandisks"]
+                        input[type="checkbox"][name="expandf"]
                         | #{Data.DF.ExpandText}
 
                 div.form-group
-                  label.col-sm-4.control-label[for="df"] Disks
+                  label.col-sm-4.control-label[for="df"]  #{Data.ClientState.TabDFtitle}
                   div.col-sm-8
                     div.btn-group.btn-group-sm[data-toggle="buttons"]
-                      label.disk-switch.btn.btn-default.nondefault
+                      label.df-switch.btn.btn-default.nondefault
                         [href="#dfinodes"]
                         [data-tabid=Data.DFTABS.DFinodes]
-                        input#radio-disks-inodes[type="radio"][name="disks-radio"]
+                        input[type="radio"][name="df-radio"]
                         | Inodes
 
-                      label.disk-switch.btn.btn-default.active
+                      label.df-switch.btn.btn-default.active
                         [href="#dfbytes"]
                         [data-tabid=Data.DFTABS.DFbytes]
-                        input#radio-disks-bytes[type="radio"][name="disks-radio"][checked="checked"]
+                        input[type="radio"][name="df-radio"][checked="checked"]
                         | Bytes
 
                 //- div.form-group
@@ -270,15 +270,15 @@ html
                 //-   div.col-sm-6
                 //-     [[template "define_refresh"]]
 
-            //- panels selected by .disk-tab
-            div.disk-tab.collapse#dfinodes
+            //- panels selected by .df-tab
+            div.df-tab.collapse#dfinodes
               [class="in"] ? (json(Data.DFTABS.DFinodes) == json(Data.ClientState.TabDF))
               [data-title=Data.DFTABS.DFinodesTitle]
               [data-tabid=Data.DFTABS.DFinodes]
               span#dfinodes-table
                 [[template "define_dfinodes_table" .]]
 
-            div.disk-tab.collapse#dfbytes
+            div.df-tab.collapse#dfbytes
               [class="in"] ? (json(Data.DFTABS.DFbytes) == json(Data.ClientState.TabDF))
               [data-title=Data.DFTABS.DFbytesTitle]
               [data-tabid=Data.DFTABS.DFbytes]

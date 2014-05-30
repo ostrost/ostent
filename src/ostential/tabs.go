@@ -16,9 +16,9 @@ var IFTABS = iftabs{
 	IFerrors:  IFERRORS_TABID,
 	IFbytes:   IFBYTES_TABID,
 
-	IFpacketsTitle: "Network packets",
-	IFerrorsTitle:  "Network errors",
-	IFbytesTitle:   "Network",
+	IFpacketsTitle: "Interfaces packets",
+	IFerrorsTitle:  "Interfaces errors",
+	IFbytesTitle:   "Interfaces",
 }
 
 type dftabs struct {
