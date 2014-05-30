@@ -11,7 +11,7 @@
       [data-placement="auto left"]
       [data-content=Full]
       | #{Short}
-    span.tooltipabledots.inlinecode
+    span.tooltipabledots.unit
       [data-placement="auto left"]
       [data-content=Full]
       | ...

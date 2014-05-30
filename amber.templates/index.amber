@@ -54,38 +54,41 @@ html
     nav.navbar.navbar-default.navbar-fixed-top[role="navigation"]
       div.container-fluid
         div.navbar-header
-          button.navbar-toggle[type="button"][data-toggle="collapse"][data-target="#navbar-collapse"]
-            span.sr-only Toggle header
           div.navbar-brand
-            span#generic-hostname #{Data.Generic.HostnameHTML}
+            a#generic-hostname
+              [href="/"]
+              [data-toggle="popover"]
+              [data-trigger="hover focus"]
+              [data-placement="bottom"]
+              //- "auto bottom" does not do the trick
+              [data-container="#distrib-popover"]
+              [data-content="running "+ Data.DISTRIB]
+              | #{Data.Generic.HostnameHTML}
+          // the span for the popover to attach to
+          span#distrib-popover
 
         div.collapse.navbar-collapse#navbar-collapse
+          //- hidden div for popover to be the content source
+          div.collapse#uptime
+            | uptime&nbsp;
+            span#generic-uptime #{Data.Generic.Uptime}
+
           ul.nav.navbar-nav
-            li
-              a[href="#top"] #top
-            li
-              a[href="#vagrant"] #vagrant
+            li.navbar-text#generic-ip #{Data.Generic.IP}
+            li.navbar-text#generic-la #{Data.Generic.LA}
 
           ul.nav.navbar-nav.navbar-right
+            li.navbar-text
+              ul.list-inline.navbar-nav
+                li
+                  a[href="#top"] #top
+                li
+                  a[href="#vagrant"] #vagrant
+
             li.active
               a[href="https://ostrost.com/ostent/releases/latest"][title="version "+ Data.VERSION] OSTENT
 
-    div.container-fluid.padding-top52
-      div.row
-        div.col-md-12.text-center
-            ul.list-inline.codenowrap
-              li
-                | IPv4:&nbsp;
-                span#generic-ip #{Data.Generic.IP}
-              li OS: #{Data.DISTRIBHTML}
-              li
-                | uptime:&nbsp;
-                span#generic-uptime #{Data.Generic.Uptime}
-              li
-                | load averages:&nbsp;
-                span#generic-la #{Data.Generic.LA}
-
-    div.container-fluid.padding-top72#top
+    div.container-fluid.padding-top71#top
       div.row
         div.block.col-md-2.col-md-offset-1
           div.panel1

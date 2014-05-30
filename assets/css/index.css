@@ -99,7 +99,7 @@ hr {
 pre {
   overflow: auto; }
 
-code, .code, .codenowrap, .inlinecode,
+code,
 kbd,
 pre,
 samp {
@@ -681,13 +681,13 @@ address {
   font-style: normal;
   line-height: 1.42857143; }
 
-code, .code, .codenowrap, .inlinecode,
+code,
 kbd,
 pre,
 samp {
   font-family: Menlo, Monaco, Consolas, "Courier New", monospace; }
 
-code, .code, .codenowrap, .inlinecode {
+code {
   padding: 2px 4px;
   font-size: 90%;
   color: #c7254e;
@@ -716,7 +716,7 @@ pre {
   border: 1px solid #ccc;
   border-radius: 4px; }
 
-pre code, pre .code, pre .codenowrap, pre .inlinecode {
+pre code {
   padding: 0;
   font-size: inherit;
   color: inherit;
@@ -6210,11 +6210,8 @@ body {
 .headroom--unpinned {
   top: -100px; }
 
-.padding-top52 {
-  padding-top: 52px; }
-
-.padding-top72 {
-  padding-top: 20px; }
+.padding-top71 {
+  padding-top: 71px; }
 
 .panel1 header {
   padding-right: 5px; }
@@ -6236,20 +6233,11 @@ body {
 .nowrap {
   white-space: nowrap; }
 
-.code, .codenowrap, .inlinecode {
-  white-space: normal;
-  display: inline;
-  color: black;
-  background-color: #f4f4f4; }
-
-.codenowrap {
-  white-space: nowrap; }
-
-.inlinecode {
-  padding: 0px 0px; }
+#generic-uptime {
+  white-space: pre; }
 
 .unit {
-  color: black;
+  color: #333;
   background-color: #f4f4f4; }
 
 table thead th {

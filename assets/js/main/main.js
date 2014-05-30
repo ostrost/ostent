@@ -236,8 +236,8 @@ function update(currentState, model) {
         model.set(Model.attributes(data));
 
         // update the tooltips
-        // $('span .tooltipable').tooltip();
-        $('span .tooltipable').popover({trigger: 'hover focus'});
+        // $('span .tooltipable') .tooltip();
+        $('span .tooltipable')    .popover({trigger: 'hover focus'});
         $('span .tooltipabledots').popover(); // the clickable dots
     };
     websocket = newwebsocket(onmessage);
@@ -259,7 +259,7 @@ var View = Backbone.View.extend({
     initialize: function() {
 	this.listenchange_Textfunc('IP',           $('#generic-ip'));
 	this.listenchange_HTMLfunc('HostnameHTML', $('#generic-hostname'));
-	this.listenchange_Textfunc('Uptime',       $('#generic-uptime'));
+	this.listenchange_Textfunc('Uptime',       $('#uptime #generic-uptime'));
 	this.listenchange_Textfunc('LA',           $('#generic-la'));
 
         var $hswapb = $('label[href="#showswap"]');
@@ -479,9 +479,18 @@ function ready() {
 
     $('.collapse').collapse({toggle: false}); // init collapsable objects
 
-    // $('span .tooltipable').tooltip();
-    $('span .tooltipable').popover({trigger: 'hover focus'});
-    $('span .tooltipabledots').popover(); // the clickable dots
+    // $('span .tooltipable')   .tooltip();
+    $('span .tooltipable')      .popover({trigger: 'hover focus'});
+    $('span .tooltipabledots')  .popover(); // the clickable dots
+
+    $('[data-toggle="popover"]').popover(); // should be just #generic-hostname
+    $('#generic-la').popover({
+        trigger: 'hover focus',
+        placement: 'right', // not 'auto right' until #generic-la is the last element for it's parent
+        html: true, content: function() {
+            return $('#uptime').html();
+        }
+    });
 
     $('body').on('click', function (e) { // hide the popovers on click outside
         $('span .tooltipabledots').each(function () {

@@ -20,8 +20,7 @@ body {
 .headroom--pinned   { top: 0; }
 .headroom--unpinned { top: -100px; }
 
-.padding-top52 { padding-top: 52px; }
-.padding-top72 { padding-top: 20px; } // 20px when .padding-top52 is in use; // 72 is absolute value
+.padding-top71 { padding-top: 71px; } // 51 for navbar(50+1(border)) + regular 20 padding-top
 
 .panel1 {
   @extend .panel;
@@ -55,33 +54,17 @@ body {
   @extend .table-hover;
 }
 
-// .stripe-table > tbody > tr:nth-child(odd) > th,
+// .stripe-table > tbody > tr:nth-child(odd)  > th,
    .stripe-table > tbody > tr:nth-child(even) > td {
   background-color: #f9f9f9;
 }
 
 .nowrap { white-space: nowrap; }
 
-.code {
-  @extend code;
-  white-space: normal; // pre; // nowrap;
-  display: inline;
-  color: black;
-  background-color: #f4f4f4;
-}
+#generic-uptime { white-space: pre; }
 
-.codenowrap {
-  @extend .code;
-  white-space: nowrap;
-}
-
-.inlinecode {
-  @extend .code;
-  padding: 0px 0px;
-}
-
-.unit { // code colors
-  color: black;
+.unit { // "code" colors
+  color:            #333;
   background-color: #f4f4f4;
 }
 

@@ -21,3 +21,4 @@ defaults read /System/Library/CoreServices/SystemVersion ProductVersion
 	}
 	DISTRIB = "Mac OS X " + strings.TrimRight(string(std), "\n\t ")
 }
+var DISTRIB string

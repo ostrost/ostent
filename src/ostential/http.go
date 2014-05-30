@@ -463,7 +463,7 @@ type PageData struct {
 	VagrantError     string
 	VagrantErrord    bool
 
-	DISTRIBHTML template.HTML
+	DISTRIB     string
 	VERSION     string
 	HTTP_HOST   string
 
@@ -681,7 +681,6 @@ func getUpdates(req *http.Request, new_search bool, clientptr *clientState, clie
 	return pu, base, dflinks.Seq, pslinks.Seq
 }
 
-var DISTRIB string // set with init from init_*.go
 func pageData(req *http.Request) PageData {
 	client := defaultClientState()
 	updates, base, dfseq, psseq := getUpdates(req, false, &client, &client)
@@ -714,7 +713,7 @@ func pageData(req *http.Request) PageData {
 			Links: pla,
 		},
 
-		DISTRIBHTML: tooltipable(11, DISTRIB), // value from init_*.go
+		DISTRIB:     DISTRIB,                  // value from init_*.go
 		VERSION:     VERSION,                  // value from server.go
 		HTTP_HOST:   req.Host,
 	}

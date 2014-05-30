@@ -27,14 +27,15 @@ func init() {
 			}
 		}
 	}
-	if id != "" && release != "" {
-		DISTRIB = id + " " + release
-		return
-	}
 	if id == "" {
 		fmt.Fprintf(os.Stderr, "Could not identify Distributor ID")
 	}
 	if release == "" {
 		fmt.Fprintf(os.Stderr, "Could not identify Release")
 	}
+	if id == "" || release == "" {
+		return
+	}
+	DISTRIB = id + " " + release
 }
+var DISTRIB string
