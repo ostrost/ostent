@@ -93,7 +93,7 @@ html
               a[href="#mem"] Memory
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
-                  label.btn-header[href="#memconfig"]
+                  label.btn-header-xs[href="#memconfig"]
                     [class="active"] ? (json(Data.ClientState.HideconfigMEM) == "false")
                     input[type="checkbox"][name="memconfig"]
                     | #{Data.MEM.Hatch}
@@ -127,7 +127,7 @@ html
               a[href="#if"] #{Data.ClientState.TabIFtitle}
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
-                  label.btn-header[href="#ifconfig"]
+                  label.btn-header-xs[href="#ifconfig"]
                     [class="active"] ? (json(Data.ClientState.HideconfigIF) == "false")
                     input[type="checkbox"][name="ifconfig"]
                     | #{Data.IF.Hatch}
@@ -199,7 +199,7 @@ html
               a[href="#cpu"] CPU
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
-                  label.btn-header[href="#cpuconfig"]
+                  label.btn-header-xs[href="#cpuconfig"]
                     [class="active"] ? (json(Data.ClientState.HideconfigCPU) == "false")
                     input[type="checkbox"][name="cpuconfig"]
                     | #{Data.CPU.Hatch}
@@ -232,7 +232,7 @@ html
               a[href="#df"] #{Data.ClientState.TabDFtitle}
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
-                  label.btn-header[href="#dfconfig"]
+                  label.btn-header-xs[href="#dfconfig"]
                     [class="active"] ? (json(Data.ClientState.HideconfigDF) == "false")
                     input[type="checkbox"][name="dfconfig"]
                     | #{Data.DF.Hatch}
@@ -299,7 +299,7 @@ html
 
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
-                  label.btn-header[href="#psconfig"]
+                  label.btn-header-xs[href="#psconfig"]
                     [class="active"] ? (json(Data.ClientState.HideconfigPS) == "false")
                     input[type="checkbox"][name="psconfig"]
                     | #{Data.PShatch}
@@ -337,7 +337,7 @@ html
 
               div.pull-right
                 div.btn-group[data-toggle="buttons"]
-                  label.btn-header[href="#vgconfig"].disabled
+                  label.btn-header-xs[href="#vgconfig"].disabled
                     [class="active"] ? (json(Data.ClientState.HideconfigVG) == "false")
                     input[type="checkbox"][name="vgconfig"]
                     | #{Data.VGhatch}

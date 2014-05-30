@@ -124,13 +124,20 @@ span.tooltipabledots {
   cursor: pointer;
 }
 
-.btn-header { // panel-heading colors
+.btn-header {
   @extend .btn;
-  @extend .btn-xs;
   @extend .btn-default;
-  color: #333;
+  font-size: 12px; // body font-size
+
+  // panel-heading colors
+  color:            #333;
   background-color: #f5f5f5;
-  border-color: #f5f5f5; // #ddd;
+  border-color:     #f5f5f5; // #ddd;
+}
+
+.btn-header-xs {
+  @extend .btn-header;
+  @extend .btn-xs;
 }
 
 .horizontal-form {
