@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"sort"
 	"sync"
-	"strings"
 	"os/user"
 	"net/url"
 	"net/http"
@@ -112,12 +111,9 @@ func InterfacesDelta(format interfaceFormat, current, previous []InterfaceInfo, 
 func(li lastinfo) MEM(client clientState) *types.MEM {
 	mem := new(types.MEM)
 	mem.List = append(mem.List, li.RAM)
-	rows := 1
 	if !*client.HideSWAP {
 		mem.List = append(mem.List, li.Swap)
-		rows = 2
 	}
-	mem.Hatch = hatch(false, rows)
 	return mem
 }
 
@@ -179,7 +175,6 @@ func(li lastinfo) CPUDelta(client clientState) *types.CPU {
 
 	cpu := new(types.CPU)
 	cpu.DataMeta = types.NewDataMeta()
-	cpu.Hatch = hatch(*client.ExpandCPU, coreno)
 
 	if coreno == 1 {
 		cores[0].N = "#0"
@@ -445,8 +440,6 @@ type PageData struct {
 	MEM     types.MEM
 
 	PStable PStable
-	PShatch *template.HTML `json:",omitempty"`
-	VGhatch *template.HTML `json:",omitempty"`
 
 	DFlinks *DFlinks        `json:",omitempty"`
 	DFbytes  types.DFbytes  `json:",omitempty"`
@@ -488,8 +481,6 @@ type pageUpdate struct {
 
 	// PSlinks *PSlinks `json:",omitempty"`
 	PStable *PStable       `json:",omitempty"`
-	PShatch *template.HTML `json:",omitempty"`
-	VGhatch *template.HTML `json:",omitempty"`
 
 	IFbytes   *types.Interfaces `json:",omitempty"`
 	IFerrors  *types.Interfaces `json:",omitempty"`
@@ -551,38 +542,6 @@ func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Bis
 	}
 }
 
-func muted_hatch(num int) (h *template.HTML) {
-	h = new(template.HTML)
-	*h = template.HTML(`<span class="text-muted">` + strings.Repeat("\\", num) + "</span>")
-	return h
-}
-
-func hatch(expanded bool, primary int) *template.HTML {
-	h := new(template.HTML)
-	shown := 0
-	if !expanded {
-		if primary > TOPROWS {
-			shown = TOPROWS
-		} else {
-			shown = primary
-		}
-		primary -= TOPROWS
-		if primary < 0 {
-			primary = 0
-		}
-	}
-	s := ""
-	if shown + primary < 4 {
-		s += string(*muted_hatch(4 - shown - primary))
-	}
-	s += `<b>` + strings.Repeat("\\", shown) + "</b>"
-	if primary > 0 {
-	s += `<b class="text-primary">` + strings.Repeat("\\", primary) + "</b>"
-	}
-	*h = template.HTML(s)
-	return h
-}
-
 func getUpdates(req *http.Request, new_search bool, clientptr *clientState, clientdiff *clientState) (pageUpdate, url.Values, types.SEQ, types.SEQ) {
 	client := *clientptr
 
@@ -621,13 +580,10 @@ func getUpdates(req *http.Request, new_search bool, clientptr *clientState, clie
 			pu.CPU = lastInfo.CPUDelta(client)
 		}
 	}()
-	pu.PShatch = muted_hatch(4)
-	pu.VGhatch = muted_hatch(4)
 
 	 pu.IF = types.NewDataMeta()
 	*pu.IF.Expandable = len(if_copy) > TOPROWS
 	*pu.IF.ExpandText = fmt.Sprintf("Expanded (%d)", len(if_copy))
-	 pu.IF.Hatch = hatch(*client.ExpandIF, len(if_copy))
 
 	pslinks := PSlinks(linkattrs(req, base, "ps", _PSBIMAP))
 	dflinks := DFlinks(linkattrs(req, base, "df", _DFBIMAP))
@@ -635,7 +591,6 @@ func getUpdates(req *http.Request, new_search bool, clientptr *clientState, clie
 	 pu.DF = types.NewDataMeta()
 	*pu.DF.Expandable = len(df_copy) > TOPROWS
 	*pu.DF.ExpandText = fmt.Sprintf("Expanded (%d)", len(df_copy))
-	 pu.DF.Hatch = hatch(*client.ExpandDF, len(df_copy))
 
 	if !*client.HideDF {
 		orderedDisks := orderDisks(df_copy, dflinks.Seq)
@@ -719,8 +674,6 @@ func pageData(req *http.Request) PageData {
 	}
 	data.DF  = updates.DF
 	data.IF  = updates.IF
-	data.PShatch = updates.PShatch
-	data.VGhatch = updates.VGhatch
 
 	       if updates.DFbytes  != nil { data.DFbytes  = *updates.DFbytes
 	} else if updates.DFinodes != nil { data.DFinodes = *updates.DFinodes

@@ -117,7 +117,7 @@ func defaultClientState() clientState {
 	cs.TabDFtitle = (*title)(newstring(DFTABS.Title(*cs.TabDF)))
 
 	hideconfig := true
-	// hideconfig = false // DEVELOPMENT
+	// hideconfig  = false // DEVELOPMENT
 
 	cs.HideconfigMEM = newbool(hideconfig)
 	cs.HideconfigIF  = newbool(hideconfig)

@@ -2,15 +2,6 @@
 // requires backbone.js
 // requires jquery.js
 
-function default_button(btn) {
-    btn.addClass('btn-default');
-    btn.removeClass('btn-primary');
-}
-function primary_button(btn) {
-    btn.addClass('btn-primary');
-    btn.removeClass('btn-default');
-}
-
 function newwebsocket(onmessage) {
     var conn, connected = false;
     function sendJSON(obj) {
@@ -249,21 +240,23 @@ var Model = Backbone.Model.extend({
 });
 Model.attributes = function(data) {
     var A = _.extend(data.Generic, data.ClientState);
-    A = _.extend(A, {
-        PlusText: data.PStable.PlusText
-    });
+    if (data.PStable !== undefined) {
+        A = _.extend(A, {
+            PlusText: data.PStable.PlusText
+        });
+    }
     return A;
 };
 
 var View = Backbone.View.extend({
     initialize: function() {
-	this.listenchange_Textfunc('IP',           $('#generic-ip'));
-	this.listenchange_HTMLfunc('HostnameHTML', $('#generic-hostname'));
-	this.listenchange_Textfunc('Uptime',       $('#uptime #generic-uptime'));
-	this.listenchange_Textfunc('LA',           $('#generic-la'));
+	this.listenchange_Textfunc('IP',       $('#generic-ip'));
+	this.listenchange_Textfunc('Hostname', $('#generic-hostname'));
+	this.listenchange_Textfunc('Uptime',   $('#uptime #generic-uptime'));
+	this.listenchange_Textfunc('LA',       $('#generic-la'));
 
         var $hswapb = $('label[href="#showswap"]');
-        this.listenchange_buttonfunc('HideSWAP', $hswapb, true);
+        this.listenactivate('HideSWAP', $hswapb, true);
 
         var $section_mem = $('#mem');
         var $section_if  = $('#if');
@@ -271,15 +264,6 @@ var View = Backbone.View.extend({
         var $section_df  = $('#df');
         var $section_ps  = $('#ps');
         var $section_vg  = $('#vagrant');
-        this.listenhide('HideMEM', $section_mem);
-        this.listenhide('HideCPU', $section_cpu);
-        this.listenhide('HidePS',  $section_ps);
-        this.listenhide('HideVG',  $section_vg);
-
-        var $header_if = $('header a[href="'+ $section_if .selector +'"]');
-        var $header_df = $('header a[href="'+ $section_df .selector +'"]');
-        this.listenchange_Textfunc('TabIFtitle', $header_if);
-        this.listenchange_Textfunc('TabDFtitle', $header_df);
 
         var $config_mem = $('#memconfig');
         var $config_if  = $('#ifconfig');
@@ -288,23 +272,38 @@ var View = Backbone.View.extend({
         var $config_ps  = $('#psconfig');
         var $config_vg  = $('#vgconfig');
 
-        var $hatch_mem = $('[href="'+ $config_mem.selector +'"]');
-        var $hatch_if  = $('[href="'+ $config_if .selector +'"]');
-        var $hatch_cpu = $('[href="'+ $config_cpu.selector +'"]');
-        var $hatch_df  = $('[href="'+ $config_df .selector +'"]');
-        var $hatch_ps  = $('[href="'+ $config_ps .selector +'"]');
-        var $hatch_vg  = $('[href="'+ $config_vg .selector +'"]');
+        var $hidden_mem = $config_mem.find('.hiding');
+        var $hidden_if  = $config_if .find('.hiding');
+        var $hidden_cpu = $config_cpu.find('.hiding');
+        var $hidden_df  = $config_df .find('.hiding');
+        var $hidden_ps  = $config_ps .find('.hiding');
+        var $hidden_vg  = $config_vg .find('.hiding');
 
-        this.listenhide_andactivate('HideconfigMEM', $config_mem, $hatch_mem);
-        this.listenhide_andactivate('HideconfigIF',  $config_if,  $hatch_if);
-        this.listenhide_andactivate('HideconfigCPU', $config_cpu, $hatch_cpu);
-        this.listenhide_andactivate('HideconfigDF',  $config_df,  $hatch_df);
-        this.listenhide_andactivate('HideconfigPS',  $config_ps,  $hatch_ps);
-        this.listenhide_andactivate('HideconfigVG',  $config_vg,  $hatch_vg);
+        this.listenhide('HideMEM', $section_mem, $hidden_mem);
+        this.listenhide('HideCPU', $section_cpu, $hidden_cpu);
+        this.listenhide('HidePS',  $section_ps,  $hidden_ps);
+        this.listenhide('HideVG',  $section_vg,  $hidden_vg);
+
+        var $header_mem = $('header a[href="'+ $section_mem.selector +'"]');
+        var $header_if  = $('header a[href="'+ $section_if .selector +'"]');
+        var $header_cpu = $('header a[href="'+ $section_cpu.selector +'"]');
+        var $header_df  = $('header a[href="'+ $section_df .selector +'"]');
+        var $header_ps  = $('header a[href="'+ $section_ps .selector +'"]');
+        var $header_vg  = $('header a[href="'+ $section_vg .selector +'"]');
+
+        this.listenchange_Textfunc('TabIFtitle', $header_if);
+        this.listenchange_Textfunc('TabDFtitle', $header_df);
+
+        this.listenhide('HideconfigMEM', $config_mem, $header_mem, true);
+        this.listenhide('HideconfigIF',  $config_if,  $header_if,  true);
+        this.listenhide('HideconfigCPU', $config_cpu, $header_cpu, true);
+        this.listenhide('HideconfigDF',  $config_df,  $header_df,  true);
+        this.listenhide('HideconfigPS',  $config_ps,  $header_ps,  true);
+        this.listenhide('HideconfigVG',  $config_vg,  $header_vg,  true);
 
         // NB by class
-        var $tab_if    = $('label.if-switch');
-        var $tab_df    = $('label.df-switch');
+        var $tab_if    = $('.if-switch');
+        var $tab_df    = $('.df-switch');
         var $panels_if = $('.if-tab');
         var $panels_df = $('.df-tab');
 
@@ -318,13 +317,8 @@ var View = Backbone.View.extend({
         this.listenchange_Textfunc('PlusText', $psmore);
 
         var B = _.bind(function(c) { return _.bind(c, this); }, this);
-
-        $hswapb.click( B(this.click_expandfunc('HideSWAP')) );
-        $tab_if.click( B(this.click_tabfunc('TabIF', 'HideIF')) );
-        $tab_df.click( B(this.click_tabfunc('TabDF', 'HideDF')) );
-
         var expandable_sections = [
-            [$section_if,  'ExpandIF',  'HideIF'],
+            [$section_if,  'ExpandIF',  'HideIF' ],
             [$section_cpu, 'ExpandCPU', 'HideCPU'],
             [$section_df,  'ExpandDF',  'HideDF' ]
         ];
@@ -332,29 +326,32 @@ var View = Backbone.View.extend({
             var S = expandable_sections[i][0];
             var E = expandable_sections[i][1];
             var H = expandable_sections[i][2];
-            var $b = $('label.all[href="'+ S.selector +'"]');
+            var $b = $('label[href="'+ S.selector +'"]');
 
-            this.listenchange_buttonfunc(E, $b);
+            this.listenactivate(E, $b);
             $b.click( B(this.click_expandfunc(E, H)) );
         }
 
-        $hatch_mem.click( B(this.click_expandfunc('HideconfigMEM', 'HideMEM')) );
-        $hatch_if .click( B(this.click_expandfunc('HideconfigIF',  'HideIF' )) );
-        $hatch_cpu.click( B(this.click_expandfunc('HideconfigCPU', 'HideCPU')) );
-        $hatch_df .click( B(this.click_expandfunc('HideconfigDF',  'HideDF' )) );
-        $hatch_ps .click( B(this.click_expandfunc('HideconfigPS',  'HidePS' )) );
-        $hatch_vg .click( B(this.click_expandfunc('HideconfigVG',  'HideVG' )) );
+        $hswapb    .click( B(this.click_expandfunc('HideSWAP', 'HideMEM')) );
+        $tab_if    .click( B(this.click_tabfunc('TabIF', 'HideIF')) );
+        $tab_df    .click( B(this.click_tabfunc('TabDF', 'HideDF')) );
 
-        $header_if.click( B(this.click_expandfunc('HideIF',  'HideconfigIF',  true)) );
-        $header_df.click( B(this.click_expandfunc('HideDF',  'HideconfigDF',  true)) );
+        $header_mem.click( B(this.click_expandfunc('HideconfigMEM')) );
+        $header_if .click( B(this.click_expandfunc('HideconfigIF' )) );
+        $header_cpu.click( B(this.click_expandfunc('HideconfigCPU')) );
+        $header_df .click( B(this.click_expandfunc('HideconfigDF' )) );
+        $header_ps .click( B(this.click_expandfunc('HideconfigPS' )) );
+        $header_vg .click( B(this.click_expandfunc('HideconfigVG' )) );
 
-        $('header a[href="'+ $section_mem.selector +'"]').click( B(this.click_expandfunc('HideMEM', 'HideconfigMEM', true)) );
-        $('header a[href="'+ $section_cpu.selector +'"]').click( B(this.click_expandfunc('HideCPU', 'HideconfigCPU', true)) );
-        $('header a[href="'+ $section_ps .selector +'"]').click( B(this.click_expandfunc('HidePS',  'HideconfigPS',  true)) );
-        $('header a[href="'+ $section_vg .selector +'"]').click( B(this.click_expandfunc('HideVG',  'HideconfigVG',  true)) );
+        $hidden_mem.click( B(this.click_expandfunc('HideMEM')) );
+        $hidden_if .click( B(this.click_expandfunc('HideIF' )) );
+        $hidden_cpu.click( B(this.click_expandfunc('HideCPU')) );
+        $hidden_df .click( B(this.click_expandfunc('HideDF' )) );
+        $hidden_ps .click( B(this.click_expandfunc('HidePS' )) );
+        $hidden_vg .click( B(this.click_expandfunc('HideVG' )) );
 
-        $psmore.click( B(this.click_psignalfunc('HidePS', true )) );
-        $psless.click( B(this.click_psignalfunc('HidePS', false)) );
+        $psmore    .click( B(this.click_psignalfunc('HidePS', true )) );
+        $psless    .click( B(this.click_psignalfunc('HidePS', false)) );
     },
 
     listenchange_Textfunc: function(K, $el){ this.listenTo(this.model, 'change:'+ K, this.change_Textfunc(K, $el)); },
@@ -362,23 +359,29 @@ var View = Backbone.View.extend({
           change_Textfunc: function(K, $el) { return function() { var A = this.model.attributes; $el.text(A[K]); }; },
           change_HTMLfunc: function(K, $el) { return function() { var A = this.model.attributes; $el.html(A[K]); }; },
 
-    listenchange_buttonfunc: function(K, $el, reverse) {
+    listenactivate: function(K, $el, reverse) {
         this.listenTo(this.model, 'change:'+ K, function() {
             var A = this.model.attributes;
             var V = reverse !== undefined && reverse ? !A[K] : A[K];
-            var c = V ? primary_button : default_button;
-            c($el);
+            $el[V ? 'addClass' : 'removeClass']('active');
         });
     },
-    listenhide: function(H, $el) {
-        this.listenTo(this.model, 'change:'+ H, this.change_collapsefunc(H, $el));
-    },
-    listenhide_andactivate: function(H, $el, $button_el) {
+    listenhide: function(H, $el, $button_el, reverse) {
         this.listenTo(this.model, 'change:'+ H, function() {
             var A = this.model.attributes;
             $el.collapse(A[H] ? 'hide' : 'show'); // do what change_collapsefunc does
-            $button_el[A[H] ? 'removeClass' : 'addClass']('active');
+
+            // do what listenactivate does
+            var V = reverse !== undefined && reverse ? !A[H] : A[H];
+            $button_el[V ? 'addClass' : 'removeClass']('active');
         });
+    },
+
+    change_collapsefunc: function(H, $el) {
+        return function() {
+            var A = this.model.attributes;
+            $el.collapse(A[H] ? 'hide' : 'show');
+        };
     },
 
     change_collapsetabfunc: function(H, T, $el, $tabel) {
@@ -399,36 +402,22 @@ var View = Backbone.View.extend({
 
             _.map($tabel, function(el) {
                 var $el = $(el);
-
-                if (!$el.hasClass('nondefault')) {
-                    return;
-                }
                 var tabid_attr = +$el.attr('data-tabid'); // an int
-                if (tabid_attr === curtabid) {
-                    primary_button($el);
-                } else {
-                    default_button($el);
-                }
+                $el[tabid_attr === curtabid ? 'addClass' : 'removeClass']('active');
             });
         };
     },
-    change_collapsefunc: function(H, $el) {
-        return function() {
-            var A = this.model.attributes;
-            $el.collapse(A[H] ? 'hide' : 'show');
-        };
-    },
 
-    click_psignalfunc: function(H, v) {
+    click_expandfunc: function(H, H2) {
         return function(e) {
-            var newstate = {MorePsignal: v};
             var A = this.model.attributes;
-            if (A[H]) { // if was hidden
-                newstate = _.extend(newstate, _.object([H], [!A[H]]));
+            var newstate = _.object([H], [!A[H]]);
+            if (H2 !== undefined && A[H2]) { // if was hidden
+                newstate = _.extend(newstate, _.object([H2], [!A[H2]]));
             }
             websocket.sendState(newstate);
             e.preventDefault();
-            e.stopPropagation(); // don't check/uncheck the checkbox
+            e.stopPropagation(); // don't change checkbox/radio state
         };
     },
     click_tabfunc: function(T, H) {
@@ -441,28 +430,19 @@ var View = Backbone.View.extend({
             }
             websocket.sendState(newstate);
             e.preventDefault();
+            e.stopPropagation(); // don't change checkbox/radio state
         };
     },
-    click_expandfunc: function(H, H2, isheader) {
-        isheader = isheader !== undefined && isheader;
+    click_psignalfunc: function(H, v) {
         return function(e) {
+            var newstate = {MorePsignal: v};
             var A = this.model.attributes;
-            var V = A[H];
-            var newstate = _.object([H], [!V]);
-            if (H2 !== undefined) {
-                do {
-                    if (V) {
-                        if (isheader || !A[H2]) {
-                            break;
-                        }
-                    } else if (!isheader || A[H2]) {
-                        break;
-                    }
-                    newstate = _.extend(newstate, _.object([H2], [!A[H2]]));
-                } while (0);
+            if (A[H]) { // if was hidden
+                newstate = _.extend(newstate, _.object([H], [!A[H]]));
             }
             websocket.sendState(newstate);
             e.preventDefault();
+            e.stopPropagation(); // don't change checkbox/radio state
         };
     }
 });

@@ -20,7 +20,7 @@
 !!! 5
 html
   head
-    title #{Data.Generic.HostnameString} ostent
+    title #{Data.Generic.Hostname} ostent
     meta[name="viewport"][content="width=device-width, initial-scale=1"]
 
     //- meta[itemprop="image"][content="/favicon.png"]
@@ -63,7 +63,7 @@ html
               //- "auto bottom" does not do the trick
               [data-container="#distrib-popover"]
               [data-content="running "+ Data.DISTRIB]
-              | #{Data.Generic.HostnameHTML}
+              | #{Data.Generic.Hostname}
           // the span for the popover to attach to
           span#distrib-popover
 
@@ -83,6 +83,8 @@ html
                 li
                   a[href="#top"] #top
                 li
+                  a[href="#ps"] #ps
+                li
                   a[href="#vagrant"] #vagrant
 
             li.active
@@ -93,31 +95,26 @@ html
         div.block.col-md-2.col-md-offset-1
           div.panel1
             header.draggable
-              a[href="#mem"] Memory
-              div.pull-right
-                div.btn-group[data-toggle="buttons"]
-                  label.btn-header-xs[href="#memconfig"]
-                    [class="active"] ? (json(Data.ClientState.HideconfigMEM) == "false")
-                    input[type="checkbox"][name="memconfig"]
-                    | #{Data.MEM.Hatch}
+              a.btn-header-block[href="#mem"] Memory
+                [class="active"] ? (json(Data.ClientState.HideconfigMEM) == "false")
 
-            div.collapse#memconfig
-              [class="in"] ? (json(Data.ClientState.HideconfigMEM) == "false")
-              form.horizontal-form
-                div.form-group
-                  label.col-sm-4.control-label[for="input"] swap
-                  div.col-sm-8
-                    div.btn-group[data-toggle="buttons"]
-                      label.btn.btn-sm[href="#showswap"]
-                        [class="btn-primary active"] ? (json(Data.ClientState.HideSWAP)) == "false")
-                        [class="btn-default"]        ? (json(Data.ClientState.HideSWAP)) != "false")
-                        input[type="checkbox"][name="showswap"]
-                        | Show
+            //- a div for collapse to animate properly
+            div
+              div.collapse#memconfig
+                [class="in"] ? (json(Data.ClientState.HideconfigMEM) == "false")
+                form.horizontal-form.border-bottom-form
+                  div.form-group.pad-form-group
+                    div.btn-group.btn-group-sm[data-toggle="buttons"]
+                      label.btn.btn-default.hiding
+                        input[type="checkbox"]
+                        | Hidden
+                      label.btn.btn-default[href="#showswap"]
+                        [class="active"] ? (json(Data.ClientState.HideSWAP)) == "false")
+                        input[type="checkbox"]
+                        | Show swap
 
-                //- div.pad-form-group
-                //-   label[for="refresh"] Refresh
-                //-   div.col-sm-10#memrefresh
-                //-     [[template "define_refresh"]]
+                  //- div.form-group.pad-form-group
+                  //-   [[template "define_refresh"]]
 
             div.collapse#mem
               [class="in"] ? (json(Data.ClientState.HideMEM) == "false")
@@ -127,52 +124,35 @@ html
         div.block.col-md-3
           div.panel1
             header.draggable
-              a[href="#if"] #{Data.ClientState.TabIFtitle}
-              div.pull-right
-                div.btn-group[data-toggle="buttons"]
-                  label.btn-header-xs[href="#ifconfig"]
-                    [class="active"] ? (json(Data.ClientState.HideconfigIF) == "false")
-                    input[type="checkbox"][name="ifconfig"]
-                    | #{Data.IF.Hatch}
+              a.btn-header-block[href="#if"] #{Data.ClientState.TabIFtitle}
+                [class="active"] ? (json(Data.ClientState.HideconfigIF) == "false")
 
             div.collapse#ifconfig
               [class="in"] ? (json(Data.ClientState.HideconfigIF) == "false")
               form.horizontal-form
-                div.form-group
-                  label.col-sm-4.control-label[for="input"] Show
-                  div.col-sm-8
-                     div.btn-group[data-toggle="buttons"]
-                      label.btn.btn-default.btn-sm.all[href="#if"]
-                        [class="disabled"] ? (json(Data.IF.Expandable)) != "true")
-                        input[type="checkbox"][name="expandif"]
-                        | #{Data.IF.ExpandText}
+                div.form-group.pad-form-group
+                   div.btn-group.btn-group-sm[data-toggle="buttons"]
+                    label.btn.btn-default.hiding
+                      input[type="checkbox"]
+                      | Hidden
+                    label.btn.btn-default[href="#if"]
+                      [class="disabled"] ? (json(Data.IF.Expandable)) != "true")
+                      input[type="checkbox"]
+                      | #{Data.IF.ExpandText}
 
-                div.form-group
-                  label.col-sm-4.control-label[for="if"] #{Data.ClientState.TabIFtitle}
-                  div.col-sm-8
-                    div.btn-group.btn-group-sm[data-toggle="buttons"]
-                      label.if-switch.btn.btn-default.nondefault
-                        [href="#ifpackets"]
-                        [data-tabid=Data.IFTABS.IFpackets]
-                        input[type="radio"][name="if-radio"]
-                        | Packets
+                //- div.form-group.pad-form-group
+                //-   [[template "define_refresh"]]
 
-                      label.if-switch.btn.btn-default.nondefault
-                        [href="#iferrors"]
-                        [data-tabid=Data.IFTABS.IFerrors]
-                        input[type="radio"][name="if-radio"]
-                        | Errors
-
-                      label.if-switch.btn.btn-default.active
-                        [href="#ifbytes"]
-                        [data-tabid=Data.IFTABS.IFbytes]
-                        input[type="radio"][name="if-radio"][checked="checked"]
-                        | Bytes
-
-                //- div.form-group
-                //-   label.col-sm-4.control-label[for="refresh"] Refresh
-                //-   div.col-sm-6
-                //-     [[template "define_refresh"]]
+              ul.nav.nav-tabs
+                li.if-switch
+                  [data-tabid=Data.IFTABS.IFpackets]
+                    a[href="#ifpackets"] Packets
+                li.if-switch
+                  [data-tabid=Data.IFTABS.IFerrors]
+                    a[href="#iferrors"] Errors
+                li.if-switch.active
+                  [data-tabid=Data.IFTABS.IFbytes]
+                    a[href="#ifbytes"] Bytes
 
             //- panels selected by .if-tab
             div.if-tab.collapse#ifpackets
@@ -199,30 +179,24 @@ html
         div.block.col-md-2
           div.panel1
             header.draggable
-              a[href="#cpu"] CPU
-              div.pull-right
-                div.btn-group[data-toggle="buttons"]
-                  label.btn-header-xs[href="#cpuconfig"]
-                    [class="active"] ? (json(Data.ClientState.HideconfigCPU) == "false")
-                    input[type="checkbox"][name="cpuconfig"]
-                    | #{Data.CPU.Hatch}
+              a.btn-header-block[href="#cpu"] CPU
+                [class="active"] ? (json(Data.ClientState.HideconfigCPU) == "false")
 
             div.collapse#cpuconfig
               [class="in"] ? (json(Data.ClientState.HideconfigCPU) == "false")
-              form.horizontal-form
-                div.form-group
-                  label.col-sm-4.control-label[for="input"] Show
-                  div.col-sm-8
-                    div.btn-group[data-toggle="buttons"]
-                      label.btn.btn-default.btn-sm.all[href="#cpu"]
-                        [class="disabled"] ? (json(Data.CPU.Expandable)) != "true")
-                        input[type="checkbox"][name="expandcpu"]
-                        | #{Data.CPU.ExpandText}
+              form.horizontal-form.border-bottom-form
+                div.form-group.pad-form-group
+                  div.btn-group.btn-group-sm[data-toggle="buttons"]
+                    label.btn.btn-default.hiding
+                      input[type="checkbox"]
+                      | Hidden
+                    label.btn.btn-default[href="#cpu"]
+                      [class="disabled"] ? (json(Data.CPU.Expandable)) != "true")
+                      input[type="checkbox"]
+                      | #{Data.CPU.ExpandText}
 
-                //- div.pad-form-group
-                //-   label[for="refresh"] Refresh
-                //-   div.col-sm-10
-                //-       [[template "define_refresh"]]
+                //- div.form-group.pad-form-group
+                //-   [[template "define_refresh"]]
 
             div.collapse#cpu
               [class="in"] ? (json(Data.ClientState.HideCPU) == "false")
@@ -232,46 +206,32 @@ html
         div.block.col-md-3
           div.panel1
             header.draggable
-              a[href="#df"] #{Data.ClientState.TabDFtitle}
-              div.pull-right
-                div.btn-group[data-toggle="buttons"]
-                  label.btn-header-xs[href="#dfconfig"]
-                    [class="active"] ? (json(Data.ClientState.HideconfigDF) == "false")
-                    input[type="checkbox"][name="dfconfig"]
-                    | #{Data.DF.Hatch}
+              a.btn-header-block[href="#df"] #{Data.ClientState.TabDFtitle}
+                [class="active"] ? (json(Data.ClientState.HideconfigDF) == "false")
 
             div.collapse#dfconfig
               [class="in"] ? (json(Data.ClientState.HideconfigDF) == "false")
               form.horizontal-form
-                div.form-group
-                  label.col-sm-4.control-label[for="input"] Show
-                  div.col-sm-8
-                    div.btn-group[data-toggle="buttons"]
-                      label.btn.btn-default.btn-sm.all[href="#df"]
-                        [class="disabled"] ? (json(Data.DF.Expandable)) != "true")
-                        input[type="checkbox"][name="expandf"]
-                        | #{Data.DF.ExpandText}
+                div.form-group.pad-form-group
+                  div.btn-group.btn-group-sm[data-toggle="buttons"]
+                    label.btn.btn-default.hiding
+                      input[type="checkbox"]
+                      | Hidden
+                    label.btn.btn-default[href="#df"]
+                      [class="disabled"] ? (json(Data.DF.Expandable)) != "true")
+                      input[type="checkbox"]
+                      | #{Data.DF.ExpandText}
 
-                div.form-group
-                  label.col-sm-4.control-label[for="df"]  #{Data.ClientState.TabDFtitle}
-                  div.col-sm-8
-                    div.btn-group.btn-group-sm[data-toggle="buttons"]
-                      label.df-switch.btn.btn-default.nondefault
-                        [href="#dfinodes"]
-                        [data-tabid=Data.DFTABS.DFinodes]
-                        input[type="radio"][name="df-radio"]
-                        | Inodes
+                //- div.form-group.pad-form-group
+                //-   [[template "define_refresh"]]
 
-                      label.df-switch.btn.btn-default.active
-                        [href="#dfbytes"]
-                        [data-tabid=Data.DFTABS.DFbytes]
-                        input[type="radio"][name="df-radio"][checked="checked"]
-                        | Bytes
-
-                //- div.form-group
-                //-   label.col-sm-4.control-label[for="refresh"] Refresh
-                //-   div.col-sm-6
-                //-     [[template "define_refresh"]]
+              ul.nav.nav-tabs
+                li.df-switch
+                  [data-tabid=Data.DFTABS.DFinodes]
+                    a[href="#dfinodes"] Inodes
+                li.df-switch.active
+                  [data-tabid=Data.DFTABS.DFbytes]
+                    a[href="#dfbytes"] Bytes
 
             //- panels selected by .df-tab
             div.df-tab.collapse#dfinodes
@@ -293,38 +253,33 @@ html
         div.block.col-md-8.col-md-offset-2
           div.panel1
             header.NOTdraggable
-              a[href="#ps"] Processes
+              a.btn-header-block[href="#ps"] Processes
+                [class="active"] ? (json(Data.ClientState.HideconfigPS) == "false")
 
               //- div.btn-group.btn-group-xs
               //-   label.btn.btn-sm.btn-default
               //-     [class="collapse"] ifempty Data.ClientState.UserProcesses
               //-     | User #{Data.ClientState.UserProcesses} &times;
 
-              div.pull-right
-                div.btn-group[data-toggle="buttons"]
-                  label.btn-header-xs[href="#psconfig"]
-                    [class="active"] ? (json(Data.ClientState.HideconfigPS) == "false")
-                    input[type="checkbox"][name="psconfig"]
-                    | #{Data.PShatch}
-
             div.collapse#psconfig
               [class="in"] ? (json(Data.ClientState.HideconfigPS) == "false")
-              form.horizontal-form
-                div.form-group
-                  //- label.col-sm-1.col-sm-offset-6.control-label[for="refresh"] Refresh
-                  //- div.col-sm-2
-                  //-   [[template "define_refresh"]]
+              form.horizontal-form.border-bottom-form
+                div.form-group.pad-form-group.text-right
+                  //- [[template "define_refresh"]]
 
-                  //- NB REMOVE OFFSET WHEN REFRESH ENABLED
-                  label.col-sm-1.col-sm-offset-9.control-label[for="show"] Show
-                  div.col-sm-2
-                    div.btn-group.btn-group-sm[data-toggle="buttons"]
-                      label.btn.btn-default.less[href="#psless"]
-                        input[type="checkbox"][name="psless"]
-                        | -
-                      label.btn.btn-default.more[href="#psmore"]
-                        input[type="checkbox"][name="psmore"]
-                        | #{Data.PStable.PlusText}
+                  //- OUTDATED: NB REMOVE OFFSET WHEN REFRESH ENABLED
+                  //- OUTDATED: label.col-sm-1.col-sm-offset-9.control-label[for="show"] Show
+                  //- OUTDATED: div.col-sm-2
+                  div.btn-group.btn-group-sm[data-toggle="buttons"]
+                    label.btn.btn-default.hiding
+                      input[type="checkbox"]
+                      | Hidden
+                    label.btn.btn-default.less[href="#psless"]
+                      input[type="checkbox"]
+                      | -
+                    label.btn.btn-default.more[href="#psmore"]
+                      input[type="checkbox"]
+                      | #{Data.PStable.PlusText}
 
             div.collapse#ps
               [class="in"] ? (json(Data.ClientState.HidePS) == "false")
@@ -336,20 +291,18 @@ html
         div.block.col-md-8.col-md-offset-2
           div.panel1
             header.NOTdraggable
-              a[href="#vagrant"] Vagrant global-status
-
-              div.pull-right
-                div.btn-group[data-toggle="buttons"]
-                  label.btn-header-xs[href="#vgconfig"].disabled
-                    [class="active"] ? (json(Data.ClientState.HideconfigVG) == "false")
-                    input[type="checkbox"][name="vgconfig"]
-                    | #{Data.VGhatch}
+              a.btn-header-block[href="#vagrant"] Vagrant global-status
+                [class="active"] ? (json(Data.ClientState.HideconfigVG) == "false")
 
             div.collapse#vgconfig
               [class="in"] ? (json(Data.ClientState.HideconfigVG) == "false")
-              form.horizontal-form
-                div.form-group
-                  p Nothing to see here yet.
+              form.horizontal-form.border-bottom-form
+                div.form-group.pad-form-group.text-right
+                  //- [[template "define_refresh"]]
+                  div.btn-group.btn-group-sm[data-toggle="buttons"]
+                    label.btn.btn-default.hiding
+                      input[type="checkbox"]
+                      | Hidden
 
             div.collapse#vagrant
               [class="in"] ? (json(Data.ClientState.HideVG) == "false")

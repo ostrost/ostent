@@ -7,14 +7,13 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"html/template"
+
 	"github.com/rzab/gosigar"
 )
 
 type generic struct { // ex about
-	HostnameHTML   template.HTML
-	HostnameString string // for page title
-	IP             string
+	Hostname string
+	IP       string
 
 	// ex system
 	Uptime string
@@ -31,8 +30,8 @@ func getGeneric() generic { // ex getAbout
 	}
 	// IP, _ := netinterface_ipaddr()
 	g := generic{
-		HostnameString: hostname,
-		HostnameHTML: tooltipable(11, hostname),
+		Hostname: hostname,
+		// HostnameHTML: tooltipable(11, hostname),
 		// IP: IP,
 	}
 	uptime := sigar.Uptime{}; uptime.Get()
