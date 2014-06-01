@@ -242,7 +242,9 @@ Model.attributes = function(data) {
     var A = _.extend(data.Generic, data.ClientState);
     if (data.PStable !== undefined) {
         A = _.extend(A, {
-            PlusText: data.PStable.PlusText
+            PSplusText:       data.PStable.PlusText,
+            PSnotExpandable:  data.PStable.NotExpandable
+//        , PSnotDecreasable: data.PStable.NotDecreasable
         });
     }
     return A;
@@ -250,10 +252,10 @@ Model.attributes = function(data) {
 
 var View = Backbone.View.extend({
     initialize: function() {
-	this.listenchange_Textfunc('IP',       $('#generic-ip'));
-	this.listenchange_Textfunc('Hostname', $('#generic-hostname'));
-	this.listenchange_Textfunc('Uptime',   $('#uptime #generic-uptime'));
-	this.listenchange_Textfunc('LA',       $('#generic-la'));
+	this.listentext('IP',       $('#generic-ip'));
+	this.listentext('Hostname', $('#generic-hostname'));
+	this.listentext('Uptime',   $('#uptime #generic-uptime'));
+	this.listentext('LA',       $('#generic-la'));
 
         var $hswapb = $('label[href="#showswap"]');
         this.listenactivate('HideSWAP', $hswapb, true);
@@ -291,8 +293,8 @@ var View = Backbone.View.extend({
         var $header_ps  = $('header a[href="'+ $section_ps .selector +'"]');
         var $header_vg  = $('header a[href="'+ $section_vg .selector +'"]');
 
-        this.listenchange_Textfunc('TabIFtitle', $header_if);
-        this.listenchange_Textfunc('TabDFtitle', $header_df);
+        this.listentext('TabIFtitle', $header_if);
+        this.listentext('TabDFtitle', $header_df);
 
         this.listenhide('HideconfigMEM', $config_mem, $header_mem, true);
         this.listenhide('HideconfigIF',  $config_if,  $header_if,  true);
@@ -314,7 +316,9 @@ var View = Backbone.View.extend({
 
         var $psmore = $('label.more[href="#psmore"]');
         var $psless = $('label.less[href="#psless"]');
-        this.listenchange_Textfunc('PlusText', $psmore);
+        this.listentext  ('PSplusText', $psmore);
+        this.listenenable('PSnotExpandable',     $psmore);
+//      this.listenenable('PSnotDecreasable',    $psless);
 
         var B = _.bind(function(c) { return _.bind(c, this); }, this);
         var expandable_sections = [
@@ -354,10 +358,20 @@ var View = Backbone.View.extend({
         $psless    .click( B(this.click_psignalfunc('HidePS', false)) );
     },
 
-    listenchange_Textfunc: function(K, $el){ this.listenTo(this.model, 'change:'+ K, this.change_Textfunc(K, $el)); },
-    listenchange_HTMLfunc: function(K, $el){ this.listenTo(this.model, 'change:'+ K, this.change_HTMLfunc(K, $el)); },
-          change_Textfunc: function(K, $el) { return function() { var A = this.model.attributes; $el.text(A[K]); }; },
-          change_HTMLfunc: function(K, $el) { return function() { var A = this.model.attributes; $el.html(A[K]); }; },
+    listentext: function(K, $el) { this.listenTo(this.model, 'change:'+ K, this._text(K, $el)); },
+//  listenHTML: function(K, $el) { this.listenTo(this.model, 'change:'+ K, this._HTML(K, $el)); },
+         _text: function(K, $el) { return function() { var A = this.model.attributes; $el.text(A[K]); }; },
+//       _HTML: function(K, $el) { return function() { var A = this.model.attributes; $el.html(A[K]); }; },
+
+    listenenable: function(K, $el) {
+        this.listenTo(this.model, 'change:'+ K, function() {
+            var A = this.model.attributes;
+            var V = A[K];
+            V = V !== undefined && V;
+            $el.prop('disabled', V);
+            $el[V ? 'addClass' : 'removeClass']('disabled');
+        });
+    },
 
     listenactivate: function(K, $el, reverse) {
         this.listenTo(this.model, 'change:'+ K, function() {

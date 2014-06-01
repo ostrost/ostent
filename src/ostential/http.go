@@ -387,13 +387,17 @@ func orderProc(procs []types.ProcInfo, seq types.SEQ, clientptr *clientState) ([
 		if client.psNotexpandable == nil || !*client.psNotexpandable {
 			clientptr.psNotexpandable = newtrue()
 		}
-	} else if clientptr.psNotexpandable != nil {
+	} else {
+		if clientptr.psNotexpandable != nil {
 
-		if *client.psNotexpandable {
-			*clientptr.psNotexpandable = false
-		} else {
-			clientptr.psNotexpandable = nil
+			if *client.psNotexpandable {
+				*clientptr.psNotexpandable = false
+			} else {
+				clientptr.psNotexpandable = nil
+			}
 		}
+
+		// TODO deal with NotDecreasable here
 	}
 
 	if len(procs) > limitPS {
