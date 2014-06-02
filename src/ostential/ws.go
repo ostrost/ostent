@@ -119,16 +119,15 @@ func(wc *wclient) waitfor_messages() { // read from client
 		wc.ping <- rd // != nil
 	}
 }
-func(wc *wclient) waitfor_updates() { // write to  client
+func(wc *wclient) waitfor_updates() { // write to the client
 	defer func() {
 		unregister <- wc
 		wc.ws.Close()
 	}()
-	var form url.Values // one per client
 	for {
 		select {
 		case rd := <- wc.ping:
-			new_search := false
+			var req *http.Request
 			var clientdiff *clientState
 			if rd != nil {
 				if rd.State != nil {
@@ -137,17 +136,16 @@ func(wc *wclient) waitfor_updates() { // write to  client
 					wc.fullState.Merge(rd.State.clientState, clientdiff)
 				}
 				if rd.Search != nil {
-					var err error
-					form, err = parseSearch(*rd.Search)
+					form, err := parseSearch(*rd.Search)
 					if err != nil {
 						// http.StatusBadRequest
 						continue
 					}
-					new_search = true
+					req = &http.Request{Form: form}
 				}
 			}
 
-			updates, _, _, _ := getUpdates(&http.Request{Form: form}, new_search, &wc.fullState, clientdiff)
+			updates := getUpdates(req, &wc.fullState, clientdiff)
 
 			if wc.ws.WriteJSON(updates) != nil {
 				break

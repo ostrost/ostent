@@ -8,6 +8,9 @@ type internalClient struct {
 
 	psNotexpandable *bool
 	psLimit int
+
+	psSEQ types.SEQ
+	dfSEQ types.SEQ
 }
 
 type title string
@@ -128,6 +131,9 @@ func defaultClientState() clientState {
 
 	cs.psLimit = 8
 	// cs.psNotexpandable = newfalse()
+
+	cs.psSEQ = _PSBIMAP.Default_seq
+	cs.dfSEQ = _DFBIMAP.Default_seq
 
 	return cs
 }

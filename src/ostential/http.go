@@ -537,8 +537,11 @@ func collect() {
 	lastInfo.Previous = previous
 }
 
-func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Biseqmap) types.Linkattrs {
-	return types.Linkattrs{
+func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Biseqmap) *types.Linkattrs {
+	if req == nil {
+		return nil
+	}
+	return &types.Linkattrs{
 		Base:  base,
 		Pname: pname,
 		Bimap: bimap,
@@ -546,11 +549,8 @@ func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Bis
 	}
 }
 
-func getUpdates(req *http.Request, new_search bool, clientptr *clientState, clientdiff *clientState) (pageUpdate, url.Values, types.SEQ, types.SEQ) {
+func getUpdates(req *http.Request, clientptr *clientState, clientdiff *clientState) pageUpdate {
 	client := *clientptr
-
-	req.ParseForm()
-	base := url.Values{}
 
 	var (
 		df_copy []diskInfo
@@ -589,15 +589,27 @@ func getUpdates(req *http.Request, new_search bool, clientptr *clientState, clie
 	*pu.IF.Expandable = len(if_copy) > TOPROWS
 	*pu.IF.ExpandText = fmt.Sprintf("Expanded (%d)", len(if_copy))
 
-	pslinks := PSlinks(linkattrs(req, base, "ps", _PSBIMAP))
-	dflinks := DFlinks(linkattrs(req, base, "df", _DFBIMAP))
-
 	 pu.DF = types.NewDataMeta()
 	*pu.DF.Expandable = len(df_copy) > TOPROWS
 	*pu.DF.ExpandText = fmt.Sprintf("Expanded (%d)", len(df_copy))
 
+	base := url.Values{}
+	if req != nil {
+		req.ParseForm()
+	}
+
+	if pu.PStable == nil {
+		pu.PStable = new(PStable)
+	}
+	if pu.PStable.Links = (*PSlinks)(linkattrs(req, base, "ps", _PSBIMAP)); pu.PStable.Links != nil {
+		clientptr.psSEQ = pu.PStable.Links.Seq
+	}
+	if pu.DFlinks = (*DFlinks)(linkattrs(req, base, "df", _DFBIMAP)); pu.DFlinks != nil {
+		clientptr.dfSEQ = pu.DFlinks.Seq
+	}
+
 	if !*client.HideDF {
-		orderedDisks := orderDisks(df_copy, dflinks.Seq)
+		orderedDisks := orderDisks(df_copy, clientptr.dfSEQ)
 
 		       if *client.TabDF == DFBYTES_TABID  { pu.DFbytes  = dfbytes (orderedDisks, client)
 		} else if *client.TabDF == DFINODES_TABID { pu.DFinodes = dfinodes(orderedDisks, client)
@@ -613,13 +625,11 @@ func getUpdates(req *http.Request, new_search bool, clientptr *clientState, clie
 	}
 
 	if !*client.HidePS {
-		pu.PStable = new(PStable)
-		pu.PStable.List, pu.PStable.PlusText = orderProc(ps_copy, pslinks.Seq, clientptr)
+		if pu.PStable == nil {
+			pu.PStable = new(PStable)
+		}
+		pu.PStable.List, pu.PStable.PlusText = orderProc(ps_copy, clientptr.psSEQ, clientptr)
 		pu.PStable.NotExpandable = clientptr.psNotexpandable
-	}
-	if new_search {
-		pu.PStable.Links = &pslinks
-		pu.DFlinks       = &dflinks
 	}
 
 	if !*client.HideVG {
@@ -637,25 +647,12 @@ func getUpdates(req *http.Request, new_search bool, clientptr *clientState, clie
 		 pu.ClientState = new(clientState)
 		*pu.ClientState = *clientdiff // client
 	}
-	return pu, base, dflinks.Seq, pslinks.Seq
+	return pu
 }
 
 func pageData(req *http.Request) PageData {
 	client := defaultClientState()
-	updates, base, dfseq, psseq := getUpdates(req, false, &client, &client)
-
-	dla := &DFlinks{
-		Base: base,
-		Pname: "df",
-		Bimap: _DFBIMAP,
-		Seq: dfseq,
-	}
-	pla := &PSlinks{
-		Base: base,
-		Pname: "ps",
-		Bimap: _PSBIMAP,
-		Seq: psseq,
-	}
+	updates := getUpdates(req, &client, &client)
 
 	data := PageData{
 		ClientState: *updates.ClientState,
@@ -663,13 +660,13 @@ func pageData(req *http.Request) PageData {
 		CPU:         *updates.CPU,
 		MEM:         *updates.MEM,
 
-		DFlinks:  dla,
+		DFlinks:      updates.DFlinks,
 
 		PStable: PStable{
 			List:          updates.PStable.List,
 			PlusText:      updates.PStable.PlusText,
 			NotExpandable: updates.PStable.NotExpandable,
-			Links: pla,
+			Links:         updates.PStable.Links,
 		},
 
 		DISTRIB:     DISTRIB,                  // value from init_*.go
