@@ -443,7 +443,8 @@ type PageData struct {
 	CPU     types.CPU
 	MEM     types.MEM
 
-	PStable PStable
+	PStable  PStable
+	PSlinks *PSlinks        `json:",omitempty"`
 
 	DFlinks *DFlinks        `json:",omitempty"`
 	DFbytes  types.DFbytes  `json:",omitempty"`
@@ -483,7 +484,7 @@ type pageUpdate struct {
 	DF types.DataMeta // a pointer and `json:",omitempty"` ?
 	IF types.DataMeta // a pointer and `json:",omitempty"` ?
 
-	// PSlinks *PSlinks `json:",omitempty"`
+	PSlinks *PSlinks       `json:",omitempty"`
 	PStable *PStable       `json:",omitempty"`
 
 	IFbytes   *types.Interfaces `json:",omitempty"`
@@ -537,15 +538,12 @@ func collect() {
 	lastInfo.Previous = previous
 }
 
-func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Biseqmap) *types.Linkattrs {
-	if req == nil {
-		return nil
-	}
+func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Biseqmap, seq *types.SEQ) *types.Linkattrs {
+	*seq = valuesSet(req, base, pname, bimap)
 	return &types.Linkattrs{
 		Base:  base,
 		Pname: pname,
 		Bimap: bimap,
-		Seq:   valuesSet(req, base, pname, bimap),
 	}
 }
 
@@ -585,6 +583,13 @@ func getUpdates(req *http.Request, clientptr *clientState, clientdiff *clientSta
 		}
 	}()
 
+	if req != nil {
+		req.ParseForm()
+		base := url.Values{}
+		pu.PSlinks = (*PSlinks)(linkattrs(req, base, "ps", _PSBIMAP, &clientptr.psSEQ))
+		pu.DFlinks = (*DFlinks)(linkattrs(req, base, "df", _DFBIMAP, &clientptr.dfSEQ))
+	}
+
 	 pu.IF = types.NewDataMeta()
 	*pu.IF.Expandable = len(if_copy) > TOPROWS
 	*pu.IF.ExpandText = fmt.Sprintf("Expanded (%d)", len(if_copy))
@@ -592,21 +597,6 @@ func getUpdates(req *http.Request, clientptr *clientState, clientdiff *clientSta
 	 pu.DF = types.NewDataMeta()
 	*pu.DF.Expandable = len(df_copy) > TOPROWS
 	*pu.DF.ExpandText = fmt.Sprintf("Expanded (%d)", len(df_copy))
-
-	base := url.Values{}
-	if req != nil {
-		req.ParseForm()
-	}
-
-	if pu.PStable == nil {
-		pu.PStable = new(PStable)
-	}
-	if pu.PStable.Links = (*PSlinks)(linkattrs(req, base, "ps", _PSBIMAP)); pu.PStable.Links != nil {
-		clientptr.psSEQ = pu.PStable.Links.Seq
-	}
-	if pu.DFlinks = (*DFlinks)(linkattrs(req, base, "df", _DFBIMAP)); pu.DFlinks != nil {
-		clientptr.dfSEQ = pu.DFlinks.Seq
-	}
 
 	if !*client.HideDF {
 		orderedDisks := orderDisks(df_copy, clientptr.dfSEQ)
@@ -625,9 +615,7 @@ func getUpdates(req *http.Request, clientptr *clientState, clientdiff *clientSta
 	}
 
 	if !*client.HidePS {
-		if pu.PStable == nil {
-			pu.PStable = new(PStable)
-		}
+		pu.PStable = new(PStable)
 		pu.PStable.List, pu.PStable.PlusText = orderProc(ps_copy, clientptr.psSEQ, clientptr)
 		pu.PStable.NotExpandable = clientptr.psNotexpandable
 	}
@@ -661,12 +649,12 @@ func pageData(req *http.Request) PageData {
 		MEM:         *updates.MEM,
 
 		DFlinks:      updates.DFlinks,
+		PSlinks:      updates.PSlinks,
 
 		PStable: PStable{
 			List:          updates.PStable.List,
 			PlusText:      updates.PStable.PlusText,
 			NotExpandable: updates.PStable.NotExpandable,
-			Links:         updates.PStable.Links,
 		},
 
 		DISTRIB:     DISTRIB,                  // value from init_*.go

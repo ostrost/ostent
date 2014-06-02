@@ -172,7 +172,6 @@ type Linkattrs struct {
 	Base url.Values
 	Pname string
 	Bimap Biseqmap
-	Seq SEQ
 }
 
 type InterfaceMeta struct {

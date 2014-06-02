@@ -141,10 +141,10 @@ var CPUtableCLASS = React.createClass({
 });
 
 var PStableCLASS = React.createClass({
-  getInitialState: function() { return Data.PStable; },
+  getInitialState: function() { return {PStable: Data.PStable, PSlinks: Data.PSlinks}; },
 
   render: function() {
-    var Data = {PStable: this.state};
+    var Data = this.state;
     var rows = emptyK(Data.PStable, 'List') ?'': Data.PStable.List.map(function($proc) { return ps_rows(Data, $proc); });
     return ps_table(Data, rows);
   }
@@ -167,6 +167,15 @@ var VGtableCLASS = React.createClass({
     return vagrant_table(Data, rows);
   }
 });
+
+var setState = function(obj, data, filterundefined) {
+    if (data === undefined) { // null
+        return;
+    }
+    // filter out undefined values
+    data = _.object(_.filter(_.pairs(data), function(a) { return a[1] !== undefined; }));
+    obj.setState(data);
+};
 
 var websocket; // a global
 
@@ -192,21 +201,9 @@ function update(currentState, model) {
     var onmessage = function(event) {
 	var data = JSON.parse(event.data);
 
-        var setState = function(obj, data) {
-            if (data !== undefined) { // null
-                obj.setState(data);
-            }
-        };
-
-        setState(pstable, data.PStable);
-
-	var bytestate = {DFbytes: data.DFbytes};
-	if (data.DFlinks !== undefined) { bytestate.DFlinks = data.DFlinks; }
-	setState(dfbytes, bytestate);
-
-	var inodestate = {DFinodes: data.DFinodes};
-	if (data.DFlinks !== undefined) { inodestate.DFlinks = data.DFlinks; }
-	setState(dfinodes, inodestate);
+        setState(pstable,  {PStable:  data.PStable,  PSlinks: data.PSlinks});
+	setState(dfbytes,  {DFbytes:  data.DFbytes,  DFlinks: data.DFlinks});
+	setState(dfinodes, {DFinodes: data.DFinodes, DFlinks: data.DFlinks});
 
         setState(memtable,  data.MEM);
         setState(cputable,  data.CPU);
@@ -215,8 +212,8 @@ function update(currentState, model) {
 	setState(ifpackets, data.IFpackets);
 	setState(vagrant, {
             VagrantMachines: data.VagrantMachines,
-            VagrantError:  data.VagrantError,
-            VagrantErrord: data.VagrantErrord
+            VagrantError:    data.VagrantError,
+            VagrantErrord:   data.VagrantErrord
         });
 
         if (data.ClientState !== undefined) {

@@ -236,7 +236,7 @@
   table.table2.stripe-table
     thead
       tr
-        $L = Data.PStable.Links
+        $L = Data.PSlinks
         th.header.text-right  <a href=#{$L.PID.Href}      class=#{$L.PID.Class}     >PID<span     class=#{$L.PID.CaretClass}      /></a>
         th.header.text-right  <a href=#{$L.User.Href}     class=#{$L.User.Class}    >USER<span    class=#{$L.User.CaretClass}     /></a>
         th.header.text-right  <a href=#{$L.Priority.Href} class=#{$L.Priority.Class}>PR<span      class=#{$L.Priority.CaretClass} /></a>
