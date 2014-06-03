@@ -13,9 +13,9 @@ type logger struct {
 	production bool
 	logger     *log.Logger
 	handler    http.Handler
-	loggedLOCK sync.Mutex
-	logged     map[string]bool
 }
+var loggedLOCK sync.Mutex
+var logged  =  map[string]bool{}
 
 func Logged(production bool, loglogger *log.Logger, handler http.Handler) http.Handler {
 	return &logger{
@@ -53,13 +53,13 @@ func (lg *logger) productionLog(start time.Time, w loggedResponseWriter, r *http
 		host = r.RemoteAddr
 	}
 
-	lg.loggedLOCK.Lock()
-	if _, ok := lg.logged[host]; ok {
-		lg.loggedLOCK.Unlock()
+	loggedLOCK.Lock()
+	if _, ok := logged[host]; ok {
+		loggedLOCK.Unlock()
 		return
 	}
-	lg.logged[host] = true
-	lg.loggedLOCK.Unlock()
+	logged[host] = true
+	loggedLOCK.Unlock()
 
 	lg.logger.Printf("%s\tRequested from %s; subsequent successful requests will not be logged\n", time.Now().Format("15:04:05"), host)
 }

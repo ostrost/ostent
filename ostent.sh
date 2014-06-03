@@ -16,7 +16,7 @@ if ! test -e "$DEST" ; then
     chmod +x "$DEST"
 fi
 
-for arg in in "$@" ; do
+for arg in "$@" ; do
     test "x$arg" == x-norun &&
     exit # Ok, just install, no run
 done
