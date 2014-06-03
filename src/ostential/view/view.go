@@ -1,6 +1,5 @@
 package view
 import (
-	"fmt"
 	"bytes"
 	"html/template"
 	"github.com/rzab/amber"
@@ -14,11 +13,7 @@ var UsePercentTemplate  = mustTemplate("usepercent.html")
 var TooltipableTemplate = mustTemplate("tooltipable.html")
 
 func mustTemplate(filename string) stringTemplate {
-	reader, ok := _bindata[filename]
-	if !ok {
-		panic(fmt.Errorf("No %q in bindata\n", filename))
-	}
-	text, err := reader()
+	text, err := Asset(filename)
 	if err != nil {
 		panic(err)
 	}
@@ -38,11 +33,13 @@ func(st stringTemplate) Execute(data interface{}) (template.HTML, error) {
 }
 
 func Bincompile() *template.Template {
-	t := template.New("templates.html")
-	template.Must(t.Parse("Empty")) // initial template in case we won't have any
+	t := template.New("templates.html") // root template, must not t.New("templates.html") later, causes redefinition of the template
+	template.Must(t.Parse("Empty"))     // initial template in case we won't have any
 
-	for filename, reader := range _bindata { // from bindata.go
-		text, err := reader()
+	if filename := "index.html"; true {
+		// for cascaded templates do `for filename := range _bindata // range over keys' instead of `if'
+
+		text, err := Asset(filename)
 		if err != nil {
 			panic(err)
 		}

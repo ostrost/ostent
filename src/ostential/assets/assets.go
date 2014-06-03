@@ -1,2 +1,7 @@
 package assets
-var Bindata = _bindata
+func BindataKeys() (keys []string) {
+	for k := range _bindata {
+		keys = append(keys, k)
+	}
+	return
+}
