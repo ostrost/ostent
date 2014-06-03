@@ -62,7 +62,7 @@ func Serve(listen net.Listener, production bool, cbservemux func(ServeMux)) erro
 	logger := log.New(os.Stderr, "[ostent] ", 0)
 	mux := NewMux(production, logger, log.New(os.Stdout, "", 0))
 
-	for _, filename := range assets.BindataKeys() {
+	for _, filename := range assets.AssetNames() {
 		hf := serveContentFunc(filename)
 		mux.HandleFunc("GET",  "/"+ filename, hf)
 		mux.HandleFunc("HEAD", "/"+ filename, hf)

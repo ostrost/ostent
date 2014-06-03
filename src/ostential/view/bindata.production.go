@@ -3,10 +3,11 @@
 package view
 
 import (
-    "bytes"
-    "compress/gzip"
-    "fmt"
-    "io"
+	"bytes"
+	"compress/gzip"
+	"fmt"
+	"io"
+	"strings"
 )
 
 func bindata_read(data []byte, name string) ([]byte, error) {
@@ -472,7 +473,7 @@ func index_html() ([]byte, error) {
 		0xad, 0x58, 0xd8, 0x45, 0x28, 0x28, 0x13, 0xfc, 0x88, 0xfb, 0xbb, 0x88,
 		0x4d, 0x1f, 0xe9, 0x5f, 0x99, 0xfe, 0xd3, 0xff, 0x04, 0x00, 0x00, 0xff,
 		0xff, 0x38, 0xba, 0x01, 0x5a, 0x7c, 0x7a, 0x00, 0x00,
-		},
+	},
 		"index.html",
 	)
 }
@@ -491,7 +492,7 @@ func tooltipable_html() ([]byte, error) {
 		0xd2, 0xbc, 0xcc, 0x12, 0x0a, 0x6d, 0xd6, 0xd3, 0xd3, 0x83, 0x59, 0x09,
 		0xa1, 0xb8, 0x00, 0x01, 0x00, 0x00, 0xff, 0xff, 0xc6, 0xb1, 0x2c, 0x06,
 		0xec, 0x00, 0x00, 0x00,
-		},
+	},
 		"tooltipable.html",
 	)
 }
@@ -504,26 +505,34 @@ func usepercent_html() ([]byte, error) {
 		0xc4, 0x9c, 0xd2, 0xd4, 0xda, 0x5a, 0x55, 0x1b, 0x7d, 0x90, 0x22, 0x3b,
 		0x2e, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0xdf, 0xe8, 0x0d, 0x79, 0x2c,
 		0x00, 0x00, 0x00,
-		},
+	},
 		"usepercent.html",
 	)
 }
-
 
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
 func Asset(name string) ([]byte, error) {
-	if f, ok := _bindata[name]; ok {
+	cannonicalName := strings.Replace(name, "\\", "/", -1)
+	if f, ok := _bindata[cannonicalName]; ok {
 		return f()
 	}
 	return nil, fmt.Errorf("Asset %s not found", name)
 }
 
+// AssetNames returns the names of the assets.
+func AssetNames() []string {
+	names := make([]string, 0, len(_bindata))
+	for name := range _bindata {
+		names = append(names, name)
+	}
+	return names
+}
+
 // _bindata is a table, holding each asset generator, mapped to its name.
-var _bindata = map[string] func() ([]byte, error) {
+var _bindata = map[string]func() ([]byte, error){
 	"index.html": index_html,
 	"tooltipable.html": tooltipable_html,
 	"usepercent.html": usepercent_html,
-
 }

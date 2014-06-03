@@ -37,7 +37,7 @@ func Bincompile() *template.Template {
 	template.Must(t.Parse("Empty"))     // initial template in case we won't have any
 
 	if filename := "index.html"; true {
-		// for cascaded templates do `for filename := range _bindata // range over keys' instead of `if'
+		// for cascaded templates do `for filename := range AssetNames() // range over keys' instead of `if'
 
 		text, err := Asset(filename)
 		if err != nil {
