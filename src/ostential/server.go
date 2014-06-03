@@ -62,10 +62,10 @@ func Serve(listen net.Listener, production bool, cbservemux func(ServeMux)) erro
 	logger := log.New(os.Stderr, "[ostent] ", 0)
 	mux := NewMux(production, logger, log.New(os.Stdout, "", 0))
 
-	for _, filename := range assets.AssetNames() {
-		hf := serveContentFunc(filename)
-		mux.HandleFunc("GET",  "/"+ filename, hf)
-		mux.HandleFunc("HEAD", "/"+ filename, hf)
+	for _, path := range assets.AssetNames() {
+		hf := serveContentFunc(path)
+		mux.HandleFunc("GET",  "/"+ path, hf)
+		mux.HandleFunc("HEAD", "/"+ path, hf)
 	}
 
 	mux.HandleFunc("GET",  "/ws", slashws)
@@ -144,4 +144,4 @@ func banner(listen net.Listener, logger *log.Logger) {
 	logger.Printf("+------------------------------+")
 }
 
-const VERSION = "0.1.6"
+const VERSION = "0.1.7"

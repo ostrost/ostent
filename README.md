@@ -10,8 +10,8 @@ it will self-upgrade whenever there's new release.
 Platforms
 ---------
 
-   - Linux [64-bit](https://github.com/rzab/ostent/releases/download/v0.1.6/Linux.x86_64) | [32-bit](https://github.com/rzab/ostent/releases/download/v0.1.6/Linux.i686)
-   - [Darwin](https://github.com/rzab/ostent/releases/download/v0.1.6/Darwin.x86_64)
+   - Linux [64-bit](https://github.com/rzab/ostent/releases/download/v0.1.7/Linux.x86_64) | [32-bit](https://github.com/rzab/ostent/releases/download/v0.1.7/Linux.i686)
+   - [Darwin](https://github.com/rzab/ostent/releases/download/v0.1.7/Darwin.x86_64)
    - _Expect \*BSD builds surely_
 
 Binaries distributed by [GitHub Releases](https://github.com/rzab/ostent/releases)
@@ -25,7 +25,7 @@ Usage
    - `ostent -bind 192.168.1.10:8051` # port 8051
    - `ostent -bind 8052` # any IP, port 8052
 
-`-update` sets collection interval (1 second by default), append `s` for seconds: `0.5s`, `5s` etc.
+`-update` sets collection interval (1 second by default), append `s` for seconds, `m` for minutes: `5s`, `1m` etc.
 
 Run it, it'll give the link(s) to open in a browser.
 
