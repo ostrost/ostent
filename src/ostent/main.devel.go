@@ -7,7 +7,6 @@ import (
 	"net"
 	"log"
 	"flag"
-	"net/http"
 	pprof "net/http/pprof"
 )
 
@@ -20,7 +19,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Fatal(ostential.Serve(listen, false, map[string]http.HandlerFunc{
+	log.Fatal(ostential.Serve(listen, false, ostential.Muxmap{
 		"/debug/pprof/{name}":  pprof.Index,
 		"/debug/pprof/cmdline": pprof.Cmdline,
 		"/debug/pprof/profile": pprof.Profile,
