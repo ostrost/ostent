@@ -1,44 +1,27 @@
 package ostential
 import (
-	"log"
 	"runtime"
 	"net/http"
 	"html/template"
 )
 
-type recovery struct{
-	production bool
-	logger     *log.Logger
-	handler    http.Handler
-}
+type Recovery bool // true stands for production
 
-func Recovering(production bool, logger *log.Logger, handler http.Handler) http.Handler {
-	return &recovery{
-		production: production,
-		logger:     logger,
-		handler:    handler,
-	}
-}
-
-func RecoveringFunc(production bool, logger *log.Logger) func(http.Handler) http.Handler {
-	return func(handler http.Handler) http.Handler {
-		return Recovering(production, logger, handler)
-	}
-}
-
-func (rc *recovery) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	defer func() {
-		if E := recover(); E != nil {
-			rc.recov(w, E)
-		}
-	}()
-	rc.handler.ServeHTTP(w, r)
+func(rc Recovery) Constructor(HANDLER http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if E := recover(); E != nil {
+				rc.recov(w, E)
+			}
+		}()
+		HANDLER.ServeHTTP(w, r)
+	})
 }
 
 const panicstatuscode = http.StatusInternalServerError
 var   panicstatustext = statusLine(panicstatuscode)
 
-func (rc *recovery) recov(w http.ResponseWriter, E interface{}) {
+func (RC Recovery) recov(w http.ResponseWriter, E interface{}) {
 	w.WriteHeader(panicstatuscode) // NB
 
 	var description string
@@ -46,7 +29,7 @@ func (rc *recovery) recov(w http.ResponseWriter, E interface{}) {
 		description = err.Error()
 	}
 	var stack string
-	if !rc.production {
+	if !RC { // if !production
 		sbuf := make([]byte, 4096 - len(panicstatustext) - len(description))
 		size := runtime.Stack(sbuf, false)
 		stack = string(sbuf[:size])

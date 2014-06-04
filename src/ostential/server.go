@@ -10,6 +10,8 @@ import (
 	"bytes"
 	"strings"
 	"net/http"
+
+	"github.com/justinas/alice"
 )
 
 type bindValue struct {
@@ -58,24 +60,39 @@ func init() {
 	flag.Var(&BindFlag, "bind", "Bind address")
 }
 
-func Serve(listen net.Listener, production bool, cbservemux func(ServeMux)) error {
+type constructors []alice.Constructor
+
+func(cs constructors) Then(h func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
+	return alice.New(cs...).Then(http.HandlerFunc(h)).ServeHTTP
+}
+
+func Serve(listen net.Listener, production bool, pprof map[string]http.HandlerFunc) error {
 	logger := log.New(os.Stderr, "[ostent] ", 0)
-	mux := NewMux(production, logger, log.New(os.Stdout, "", 0))
+	access := log.New(os.Stdout, "", 0)
+	chain := constructors{
+		NewLogged(production, access).Constructor,
+		Recovery (production)        .Constructor,
+	}
+	mux := NewMux(chain.Then)
 
 	for _, path := range assets.AssetNames() {
-		hf := serveContentFunc(path)
+		hf := chain.Then(serveContentFunc(path))
 		mux.HandleFunc("GET",  "/"+ path, hf)
 		mux.HandleFunc("HEAD", "/"+ path, hf)
 	}
 
-	mux.HandleFunc("GET",  "/ws", slashws)
-	mux.HandleFunc("GET",  "/",   index)
-	mux.HandleFunc("HEAD", "/",   index)
+	mux.HandleFunc("GET",  "/ws", chain.Then(slashws))
+	mux.HandleFunc("GET",  "/",   chain.Then(index))
+	mux.HandleFunc("HEAD", "/",   chain.Then(index))
 
-	// mux.HandleFunc("/panic", ... func(http.ResponseWriter, *http.Request) { panic(fmt.Errorf("I'm panicing")) })
+	// mux.HandleFunc("GET", "/panic", chain.Then(func(http.ResponseWriter, *http.Request) { panic(fmt.Errorf("I'm panicing")) }))
 
-	if cbservemux != nil {
-		cbservemux(mux)
+	if pprof != nil {
+		for path, handler := range pprof {
+			for _, METH := range []string{"HEAD", "GET", "POST"} {
+				mux.HandleFunc(METH, path, chain.Then(handler))
+			}
+		}
 	}
 
 	banner(listen, logger)

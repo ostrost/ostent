@@ -11,40 +11,36 @@ import (
 
 type logger struct {
 	production bool
-	logger     *log.Logger
-	handler    http.Handler
+	access     *log.Logger
+	loggedLOCK sync.Mutex
+	logged     map[string]bool
 }
-var loggedLOCK sync.Mutex
-var logged  =  map[string]bool{}
 
-func Logged(production bool, loglogger *log.Logger, handler http.Handler) http.Handler {
+func NewLogged(production bool, access *log.Logger) *logger {
 	return &logger{
 		production: production,
-		logger:     loglogger,
-		handler:    handler,
-	}
-}
-func LoggedFunc(production bool, logger *log.Logger) func(http.Handler) http.Handler {
-	return func(handler http.Handler) http.Handler {
-		return Logged(production, logger, handler)
+		access:     access,
+		logged: map[string]bool{},
 	}
 }
 
-func (lg *logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	start := time.Now()
-	lw := &loggedResponseWriter{ResponseWriter: w}
-	lg.handler.ServeHTTP(lw, r)
+func(lg *logger) Constructor(HANDLER http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		lw := &loggedResponseWriter{ResponseWriter: w}
+		HANDLER.ServeHTTP(lw, r)
 
-	if lg.production {
-		lg.productionLog(start, *lw, r)
-		return
-	}
-	lg.log(start, *lw, r)
+		if lg.production {
+			lg.productionLog(start, *lw, r)
+			return
+		}
+		lg.log(start, "", *lw, r)
+	})
 }
 
 func (lg *logger) productionLog(start time.Time, w loggedResponseWriter, r *http.Request) {
 	if w.status != 200 && w.status != 304 { // && r.URL.Path != "/ws" {}
-		lg.log(start, w, r)
+		lg.log(start, "", w, r)
 		return
 	}
 
@@ -53,20 +49,20 @@ func (lg *logger) productionLog(start time.Time, w loggedResponseWriter, r *http
 		host = r.RemoteAddr
 	}
 
-	loggedLOCK.Lock()
-	if _, ok := logged[host]; ok {
-		loggedLOCK.Unlock()
+	lg.loggedLOCK.Lock()
+	defer lg.loggedLOCK.Unlock()
+	if _, ok := lg.logged[host]; ok {
 		return
 	}
-	logged[host] = true
-	loggedLOCK.Unlock()
+	lg.logged[host] = true
 
-	lg.logger.Printf("%s\tRequested from %s; subsequent successful requests will not be logged\n", time.Now().Format("15:04:05"), host)
+	tail := fmt.Sprintf("\t;subsequent successful requests from %s will not be logged", host)
+	lg.log(start, tail, w, r)
 }
 
 var ZEROTIME, _ = time.Parse("15:04:05", "00:00:00")
 
-func(lg *logger) log(start time.Time, w loggedResponseWriter, r *http.Request) {
+func(lg *logger) log(start time.Time, tail string, w loggedResponseWriter, r *http.Request) {
 	diff := time.Since(start)
 	since := ZEROTIME.Add(diff).Format("5.0000s")
 
@@ -80,7 +76,7 @@ func(lg *logger) log(start time.Time, w loggedResponseWriter, r *http.Request) {
 		host = r.RemoteAddr
 	}
 
-	lg.logger.Printf("%s\t%s\t%s\t%v\t%s\t%s\n", start.Format("15:04:05"), host, since, code, r.Method, r.URL.Path)
+	lg.access.Printf("%s\t%s\t%s\t%v\t%s\t%s%s\n", start.Format("15:04:05"), host, since, code, r.Method, r.URL.Path, tail)
 }
 
 type loggedResponseWriter struct {
