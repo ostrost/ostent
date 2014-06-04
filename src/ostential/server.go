@@ -89,7 +89,7 @@ func Serve(listen net.Listener, production bool, extramap Muxmap) error {
 	mux.Handle("GET",  "/",   chain.ThenFunc(index))
 	mux.Handle("HEAD", "/",   chain.ThenFunc(index))
 
-	mux.Handle("GET", "/panic", chain.ThenFunc(func(http.ResponseWriter, *http.Request) { panic(fmt.Errorf("I'm panicing")) }))
+	// mux.Handle("GET", "/panic", chain.ThenFunc(func(http.ResponseWriter, *http.Request) { panic(fmt.Errorf("I'm panicing")) }))
 
 	if extramap != nil {
 		for path, handler := range extramap {
