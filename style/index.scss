@@ -140,12 +140,30 @@ span.tooltipabledots {
   padding: 10px 15px;
 }
 
-.horizontal-form .pad-form-group {
+.inline-form     {
+  @extend .form-inline;
+  padding: 10px 15px;
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .input-group > .input-group-btn,
+  .input-group > .input-group-addon {
+    width: auto;
+  }
+}
+
+.form-group-padded {
   @extend .form-group;
   padding-right: 15px;
   padding-left:  15px;
-  .col-sm-10 {
-    @extend .col-sm-10;
-    padding-left: 0px;
-  }
+}
+.form-group-padded:last-child {
+  padding-right: 0px;
+}
+
+.refresh-input,
+.input-group > .form-control.refresh-input {
+  width: 4em;
 }

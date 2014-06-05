@@ -1,9 +1,10 @@
 [[/* -*- indent-tabs-mode: nil -*- */]]
 [[define "define_refresh"]]
   div.btn-group[data-toggle="buttons"]
-    div.input-group.input-group-sm#meminput-group
-      input.form-control[type="text"][placeholder="0.5m"]
+    div.input-group.input-group-sm
+      span.input-group-addon Refresh
       div.input-group-btn
+        button.btn.btn-default[type="button"] 1s
         button.btn.btn-default.dropdown-toggle[data-toggle="dropdown"][type="button"]
           span.caret
           span.sr-only Toggle dropdown
@@ -15,7 +16,7 @@
           li
             a[href="#1m"]
               em 1 minute
-        button.btn.btn-default[type="button"] 1s
+      input.form-control.refresh-input[type="text"][placeholder="1s"]
 [[end]]
 !!! 5
 html
@@ -103,7 +104,7 @@ html
               div.collapse#memconfig
                 [class="in"] ? (json(Data.ClientState.HideconfigMEM) == "false")
                 form.horizontal-form.border-bottom-form
-                  div.form-group.pad-form-group
+                  div.form-group-padded
                     div.btn-group.btn-group-sm[data-toggle="buttons"]
                       label.btn.btn-default.hiding
                         input[type="checkbox"]
@@ -113,7 +114,7 @@ html
                         input[type="checkbox"]
                         | Show swap
 
-                  //- div.form-group.pad-form-group
+                  //- div.form-group-padded
                   //-   [[template "define_refresh"]]
 
             div.collapse#mem
@@ -130,7 +131,7 @@ html
             div.collapse#ifconfig
               [class="in"] ? (json(Data.ClientState.HideconfigIF) == "false")
               form.horizontal-form
-                div.form-group.pad-form-group
+                div.form-group-padded
                    div.btn-group.btn-group-sm[data-toggle="buttons"]
                     label.btn.btn-default.hiding
                       input[type="checkbox"]
@@ -140,7 +141,7 @@ html
                       input[type="checkbox"]
                       | #{Data.IF.ExpandText}
 
-                //- div.form-group.pad-form-group
+                //- div.form-group-padded
                 //-   [[template "define_refresh"]]
 
               ul.nav.nav-tabs
@@ -185,7 +186,7 @@ html
             div.collapse#cpuconfig
               [class="in"] ? (json(Data.ClientState.HideconfigCPU) == "false")
               form.horizontal-form.border-bottom-form
-                div.form-group.pad-form-group
+                div.form-group-padded
                   div.btn-group.btn-group-sm[data-toggle="buttons"]
                     label.btn.btn-default.hiding
                       input[type="checkbox"]
@@ -195,7 +196,7 @@ html
                       input[type="checkbox"]
                       | #{Data.CPU.ExpandText}
 
-                //- div.form-group.pad-form-group
+                //- div.form-group-padded
                 //-   [[template "define_refresh"]]
 
             div.collapse#cpu
@@ -212,7 +213,7 @@ html
             div.collapse#dfconfig
               [class="in"] ? (json(Data.ClientState.HideconfigDF) == "false")
               form.horizontal-form
-                div.form-group.pad-form-group
+                div.form-group-padded
                   div.btn-group.btn-group-sm[data-toggle="buttons"]
                     label.btn.btn-default.hiding
                       input[type="checkbox"]
@@ -222,7 +223,7 @@ html
                       input[type="checkbox"]
                       | #{Data.DF.ExpandText}
 
-                //- div.form-group.pad-form-group
+                //- div.form-group-padded
                 //-   [[template "define_refresh"]]
 
               ul.nav.nav-tabs
@@ -263,13 +264,11 @@ html
 
             div.collapse#psconfig
               [class="in"] ? (json(Data.ClientState.HideconfigPS) == "false")
-              form.horizontal-form.border-bottom-form
-                div.form-group.pad-form-group.text-right
-                  //- [[template "define_refresh"]]
+              form.inline-form.border-bottom-form.text-right
+                //- div.form-group-padded
+                //-   [[template "define_refresh"]]
 
-                  //- OUTDATED: NB REMOVE OFFSET WHEN REFRESH ENABLED
-                  //- OUTDATED: label.col-sm-1.col-sm-offset-9.control-label[for="show"] Show
-                  //- OUTDATED: div.col-sm-2
+                div.form-group-padded
                   div.btn-group.btn-group-sm[data-toggle="buttons"]
                     label.btn.btn-default.hiding
                       input[type="checkbox"]
@@ -296,9 +295,10 @@ html
 
             div.collapse#vgconfig
               [class="in"] ? (json(Data.ClientState.HideconfigVG) == "false")
-              form.horizontal-form.border-bottom-form
-                div.form-group.pad-form-group.text-right
-                  //- [[template "define_refresh"]]
+              form.inline-form.border-bottom-form.text-right
+                //- div.form-group-padded
+                //-   [[template "define_refresh"]]
+                div.form-group-padded
                   div.btn-group.btn-group-sm[data-toggle="buttons"]
                     label.btn.btn-default.hiding
                       input[type="checkbox"]
