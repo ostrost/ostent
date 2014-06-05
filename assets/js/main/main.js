@@ -461,11 +461,10 @@ var View = Backbone.View.extend({
 function ready() {
 
     (new Headroom(document.querySelector("nav"), {
-        offset: 52 + 17 + 20 / 2 - 51
-        // + padding-top of the generic line
-        // +      height of the generic line
-        // + half of the toprow padding-top
-        // - (navbar height (50px by default) + bottom border (1px))
+        offset: 71 - 51
+        // "relative"" padding-top of the toprow
+        // 71 is the absolute padding-top of the toprow
+        // 51 is the height of the nav (50 +1px bottom border)
     })).init();
 
     $('.collapse').collapse({toggle: false}); // init collapsable objects
