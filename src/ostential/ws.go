@@ -10,6 +10,7 @@ import (
 
 type periodValue struct {
 	time.Duration
+	above *time.Duration // optional
 }
 
 func(pv periodValue) String() string { return pv.Duration.String(); }
@@ -21,11 +22,14 @@ func(pv *periodValue) Set(input string) error {
 	if v <= 0 {
 		return fmt.Errorf("Negative interval: %s", v)
 	}
-	if v <= time.Second {
+	if v < time.Second { // hard coded
 		return fmt.Errorf("Less than a second: %s", v)
 	}
 	if v % time.Second != 0 {
 		return fmt.Errorf("Not a multiple of a second: %s", v)
+	}
+	if pv.above != nil && v < *pv.above {
+		return fmt.Errorf("Should not be bellow %s: %s", *pv.above, v)
 	}
 	pv.Duration = v
 	return nil
@@ -76,7 +80,7 @@ func parseSearch(search string) (url.Values, error) {
 type wclient struct {
 	ws *gorillawebsocket.Conn
 	ping chan *received
-	fullState clientState
+	fullClient client
 }
 
 var (
@@ -85,11 +89,18 @@ var (
 	unregister = make(chan *wclient)
 )
 
-type recvState struct {
-	clientState
+type recvClient struct {
+	commonClient
 	MorePsignal *bool
+	RefreshSignalMEM *string
+	RefreshSignalIF  *string
+	RefreshSignalCPU *string
+	RefreshSignalDF  *string
+	RefreshSignalPS  *string
+	RefreshSignalVG  *string
 }
-func (rs *recvState) mergeMorePsignal(cs *clientState) {
+
+func (rs *recvClient) mergeMorePsignal(cs *client) {
 	if rs.MorePsignal == nil {
 		return
 	}
@@ -103,20 +114,57 @@ func (rs *recvState) mergeMorePsignal(cs *clientState) {
 	rs.MorePsignal = nil
 }
 
-type received struct {
-	Search *string
-	State *recvState
+func (rs *recvClient) mergeRefreshSignal(ppinput **string, prefresh *refresh, sendr **refresh, senderr **bool) error {
+	if *ppinput == nil {
+		return nil
+	}
+	pv := periodValue{above: &periodFlag.Duration}
+	if err := pv.Set(**ppinput); err != nil {
+		*senderr = newtrue()
+		return err
+	}
+	*senderr = newfalse()
+	prefresh.Duration = pv.Duration
+	*sendr = new(refresh)
+	(**sendr).Duration = pv.Duration
+	*ppinput = nil
+	return nil
 }
 
-func(wc *wclient) waitfor_messages() { // read from client
+func (rs *recvClient) MergeClient(cs *client, sendc *sendClient) error {
+	rs.mergeMorePsignal(cs)
+	if err := rs.mergeRefreshSignal(&rs.RefreshSignalMEM, cs.RefreshMEM, &sendc.RefreshMEM, &sendc.RefreshErrorMEM); err != nil { return err }
+	if err := rs.mergeRefreshSignal(&rs.RefreshSignalIF,  cs.RefreshIF,  &sendc.RefreshIF,  &sendc.RefreshErrorIF);  err != nil { return err }
+	if err := rs.mergeRefreshSignal(&rs.RefreshSignalCPU, cs.RefreshCPU, &sendc.RefreshCPU, &sendc.RefreshErrorCPU); err != nil { return err }
+	if err := rs.mergeRefreshSignal(&rs.RefreshSignalDF,  cs.RefreshDF,  &sendc.RefreshDF,  &sendc.RefreshErrorDF);  err != nil { return err }
+	if err := rs.mergeRefreshSignal(&rs.RefreshSignalPS,  cs.RefreshPS,  &sendc.RefreshPS,  &sendc.RefreshErrorPS);  err != nil { return err }
+	if err := rs.mergeRefreshSignal(&rs.RefreshSignalVG,  cs.RefreshVG,  &sendc.RefreshVG,  &sendc.RefreshErrorVG);  err != nil { return err }
+	return nil
+}
+
+type received struct {
+	Search *string
+	Client *recvClient
+}
+
+func(wc *wclient) writeError(err error) bool {
+	type errorJSON struct {
+		Error string
+	}
+	if wc.ws.WriteJSON(errorJSON{err.Error()}) != nil {
+		return false
+	}
+	return true
+}
+
+func(wc *wclient) waitfor_messages() { // read from the client
 	defer wc.ws.Close()
 	for {
 		rd := new(received)
 		if err := wc.ws.ReadJSON(&rd); err != nil {
-			// fmt.Printf("JSON ERR %s\n", err)
 			break
 		}
-		wc.ping <- rd // != nil
+		wc.ping <- rd
 	}
 }
 func(wc *wclient) waitfor_updates() { // write to the client
@@ -126,26 +174,36 @@ func(wc *wclient) waitfor_updates() { // write to the client
 	}()
 	for {
 		select {
-		case rd := <- wc.ping:
+		case rd, ok := <- wc.ping:
+			if !ok {
+				break
+			}
 			var req *http.Request
-			var clientdiff *clientState
+			var sendc *sendClient
 			if rd != nil {
-				if rd.State != nil {
-					rd.State.mergeMorePsignal(&wc.fullState)
-					clientdiff = &rd.State.clientState
-					wc.fullState.Merge(rd.State.clientState, clientdiff)
+				if rd.Client != nil {
+					sendc = new(sendClient)
+					err := rd.Client.MergeClient(&wc.fullClient, sendc)
+					if err != nil {
+						// if !wc.writeError(err) { break }
+						// wc.writeError(err); continue
+						sendc.DebugError = new(string)
+						*sendc.DebugError = err.Error()
+					}
+					wc.fullClient.Merge(*rd.Client, sendc)
 				}
 				if rd.Search != nil {
 					form, err := parseSearch(*rd.Search)
 					if err != nil {
-						// http.StatusBadRequest
+						// http.StatusBadRequest?
+						// if !wc.writeError(err) { break }
 						continue
 					}
 					req = &http.Request{Form: form}
 				}
 			}
 
-			updates := getUpdates(req, &wc.fullState, clientdiff)
+			updates := getUpdates(req, &wc.fullClient, sendc)
 
 			if wc.ws.WriteJSON(updates) != nil {
 				break
@@ -162,7 +220,7 @@ func slashws(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	wc := &wclient{ws: ws, ping: make(chan *received, 2), fullState: defaultClientState()}
+	wc := &wclient{ws: ws, ping: make(chan *received, 2), fullClient: defaultClient()}
 	register <- wc
 	defer func() {
 		unregister <- wc

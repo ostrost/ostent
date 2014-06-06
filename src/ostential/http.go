@@ -82,7 +82,7 @@ func (ie interfaceNumericals) Delta(id *types.Interface, ii, previousi Interface
 	id.DeltaOut = ps(out, previous_out)
 }
 
-func InterfacesDelta(format interfaceFormat, current, previous []InterfaceInfo, client clientState) *types.Interfaces {
+func InterfacesDelta(format interfaceFormat, current, previous []InterfaceInfo, client client) *types.Interfaces {
 	ifs := make([]types.Interface, len(current))
 
 	for i := range ifs {
@@ -108,7 +108,7 @@ func InterfacesDelta(format interfaceFormat, current, previous []InterfaceInfo, 
 	return ni
 }
 
-func(li lastinfo) MEM(client clientState) *types.MEM {
+func(li lastinfo) MEM(client client) *types.MEM {
 	mem := new(types.MEM)
 	mem.List = append(mem.List, li.RAM)
 	if !*client.HideSWAP {
@@ -137,7 +137,7 @@ func(li lastinfo) cpuListDelta() sigar.CpuList {
 	return cls
 }
 
-func(li lastinfo) CPUDelta(client clientState) *types.CPU {
+func(li lastinfo) CPUDelta(client client) *types.CPU {
 	cls := li.cpuListDelta()
 	coreno := len(cls.List)
 	if coreno == 0 { // wait, what?
@@ -287,7 +287,7 @@ func diskMeta(disk diskInfo) types.DiskMeta {
 	}
 }
 
-func dfbytes(diskinfos []diskInfo, client clientState) *types.DFbytes {
+func dfbytes(diskinfos []diskInfo, client client) *types.DFbytes {
 	var disks []types.DiskBytes
 	for i, disk := range diskinfos {
 		if !*client.ExpandDF && i > 1 {
@@ -312,7 +312,7 @@ func dfbytes(diskinfos []diskInfo, client clientState) *types.DFbytes {
 	return dsb
 }
 
-func dfinodes(diskinfos []diskInfo, client clientState) *types.DFinodes {
+func dfinodes(diskinfos []diskInfo, client client) *types.DFinodes {
 	var disks []types.DiskInodes
 	for i, disk := range diskinfos {
 		if !*client.ExpandDF && i > 1 {
@@ -371,7 +371,7 @@ func username(uids map[uint]string, uid uint) string {
 	return s
 }
 
-func orderProc(procs []types.ProcInfo, seq types.SEQ, clientptr *clientState) ([]types.ProcData, string) {
+func orderProc(procs []types.ProcInfo, seq types.SEQ, clientptr *client) ([]types.ProcData, string) {
 	client := *clientptr
 	sort.Sort(procOrder{ // not sort.Stable
 		procs: procs,
@@ -465,7 +465,7 @@ type PageData struct {
 	VERSION     string
 	HTTP_HOST   string
 
-    ClientState clientState
+    Client client
 
 	IFTABS iftabs
 	DFTABS dftabs
@@ -495,7 +495,7 @@ type pageUpdate struct {
 	VagrantError     string
 	VagrantErrord    bool
 
-	ClientState *clientState `json:",omitempty"`
+	Client *sendClient `json:",omitempty"`
 }
 
 var (
@@ -547,7 +547,7 @@ func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Bis
 	}
 }
 
-func getUpdates(req *http.Request, clientptr *clientState, clientdiff *clientState) pageUpdate {
+func getUpdates(req *http.Request, clientptr *client, sendc *sendClient) pageUpdate {
 	client := *clientptr
 
 	var (
@@ -631,19 +631,16 @@ func getUpdates(req *http.Request, clientptr *clientState, clientdiff *clientSta
 		}
 	}
 
-	if clientdiff != nil {
-		 pu.ClientState = new(clientState)
-		*pu.ClientState = *clientdiff // client
-	}
+	pu.Client = sendc
 	return pu
 }
 
 func pageData(req *http.Request) PageData {
-	client := defaultClientState()
-	updates := getUpdates(req, &client, &client)
+	client := defaultClient()
+	updates := getUpdates(req, &client, nil)
 
 	data := PageData{
-		ClientState: *updates.ClientState,
+		Client:       client,
 		Generic:      updates.Generic,
 		CPU:         *updates.CPU,
 		MEM:         *updates.MEM,

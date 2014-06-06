@@ -15,9 +15,9 @@ function newwebsocket(onmessage) {
 	}
 	conn.send(JSON.stringify(obj));
     }
-    function sendState(dict) {
-	console.log(JSON.stringify(dict), 'sendState');
-	return sendJSON({State: dict});
+    function sendClient(dict) {
+	console.log(JSON.stringify(dict), 'sendClient');
+	return sendJSON({Client: dict});
     }
     function sendSearch(search) {
 	return sendJSON({Search: search});
@@ -55,7 +55,7 @@ function newwebsocket(onmessage) {
     init();
 
     return {
-        sendState: sendState,
+        sendClient: sendClient,
         sendSearch: sendSearch
     };
 }
@@ -179,7 +179,7 @@ var setState = function(obj, data, filterundefined) {
 
 var websocket; // a global
 
-function update(currentState, model) {
+function update(currentClient, model) {
     var params = location.search.substr(1).split("&");
     for (var i in params) {
 	if (params[i].split("=")[0] === "still") {
@@ -200,6 +200,9 @@ function update(currentState, model) {
 
     var onmessage = function(event) {
 	var data = JSON.parse(event.data);
+        if (data.Client !== undefined && data.Client.DebugError !== undefined) {
+            console.log('DEBUG ERROR', data.Client.DebugError);
+        }
 
         setState(pstable,  {PStable:  data.PStable,  PSlinks: data.PSlinks});
 	setState(dfbytes,  {DFbytes:  data.DFbytes,  DFlinks: data.DFlinks});
@@ -216,11 +219,11 @@ function update(currentState, model) {
             VagrantErrord:   data.VagrantErrord
         });
 
-        if (data.ClientState !== undefined) {
-            console.log(JSON.stringify(data.ClientState), 'recvState');
+        if (data.Client !== undefined) {
+            console.log(JSON.stringify(data.Client), 'recvClient');
         }
-        currentState = _.extend(currentState, data.ClientState);
-        data.ClientState = currentState;
+        currentClient = _.extend(currentClient, data.Client);
+        data.Client = currentClient;
         model.set(Model.attributes(data));
 
         // update the tooltips
@@ -236,7 +239,7 @@ var Model = Backbone.Model.extend({
     }
 });
 Model.attributes = function(data) {
-    var A = _.extend(data.Generic, data.ClientState);
+    var A = _.extend(data.Generic, data.Client);
     if (data.PStable !== undefined) {
         A = _.extend(A, {
             PSplusText:       data.PStable.PlusText,
@@ -290,8 +293,8 @@ var View = Backbone.View.extend({
         var $header_ps  = $('header a[href="'+ $section_ps .selector +'"]');
         var $header_vg  = $('header a[href="'+ $section_vg .selector +'"]');
 
-        this.listentext('TabIFtitle', $header_if);
-        this.listentext('TabDFtitle', $header_df);
+        this.listentext('TabTitleIF', $header_if);
+        this.listentext('TabTitleDF', $header_df);
 
         this.listenhide('HideconfigMEM', $config_mem, $header_mem, true);
         this.listenhide('HideconfigIF',  $config_if,  $header_if,  true);
@@ -316,6 +319,20 @@ var View = Backbone.View.extend({
         this.listentext  ('PSplusText', $psmore);
         this.listenenable('PSnotExpandable',     $psmore);
 //      this.listenenable('PSnotDecreasable',    $psless);
+
+        this.listenrefresherror('RefreshErrorMEM', $config_mem.find('.refresh-group'));
+        this.listenrefresherror('RefreshErrorIF',  $config_if .find('.refresh-group'));
+        this.listenrefresherror('RefreshErrorCPU', $config_cpu.find('.refresh-group'));
+        this.listenrefresherror('RefreshErrorDF',  $config_df .find('.refresh-group'));
+        this.listenrefresherror('RefreshErrorPS',  $config_ps .find('.refresh-group'));
+        this.listenrefresherror('RefreshErrorVG',  $config_vg .find('.refresh-group'));
+
+        this.listenrefreshvalue('RefreshMEM',      $config_mem.find('.refresh-input'));
+        this.listenrefreshvalue('RefreshIF',       $config_if .find('.refresh-input'));
+        this.listenrefreshvalue('RefreshCPU',      $config_cpu.find('.refresh-input'));
+        this.listenrefreshvalue('RefreshDF',       $config_df .find('.refresh-input'));
+        this.listenrefreshvalue('RefreshPS',       $config_ps .find('.refresh-input'));
+        this.listenrefreshvalue('RefreshVG',       $config_vg .find('.refresh-input'));
 
         var B = _.bind(function(c) { return _.bind(c, this); }, this);
         var expandable_sections = [
@@ -353,12 +370,38 @@ var View = Backbone.View.extend({
 
         $psmore    .click( B(this.click_psignalfunc('HidePS', true )) );
         $psless    .click( B(this.click_psignalfunc('HidePS', false)) );
+
+        $config_mem.find('.refresh-input').on('input', B(this.submit_rsignalfunc('RefreshSignalMEM')) );
+        $config_if .find('.refresh-input').on('input', B(this.submit_rsignalfunc('RefreshSignalIF' )) );
+        $config_cpu.find('.refresh-input').on('input', B(this.submit_rsignalfunc('RefreshSignalCPU')) );
+        $config_df .find('.refresh-input').on('input', B(this.submit_rsignalfunc('RefreshSignalDF' )) );
+        $config_ps .find('.refresh-input').on('input', B(this.submit_rsignalfunc('RefreshSignalPS' )) );
+        $config_vg .find('.refresh-input').on('input', B(this.submit_rsignalfunc('RefreshSignalVG' )) );
+    },
+    submit_rsignalfunc: function(R) {
+        return function(e) {
+            var sendc = _.object([R], [$(e.target).val()]);
+            websocket.sendClient(sendc);
+        };
     },
 
     listentext: function(K, $el) { this.listenTo(this.model, 'change:'+ K, this._text(K, $el)); },
 //  listenHTML: function(K, $el) { this.listenTo(this.model, 'change:'+ K, this._HTML(K, $el)); },
          _text: function(K, $el) { return function() { var A = this.model.attributes; $el.text(A[K]); }; },
 //       _HTML: function(K, $el) { return function() { var A = this.model.attributes; $el.html(A[K]); }; },
+
+    listenrefresherror: function(E, $el) {
+        this.listenTo(this.model, 'change:'+ E, function() {
+            var A = this.model.attributes;
+            $el[A[E] ? 'addClass' : 'removeClass']('has-warning');
+        });
+    },
+    listenrefreshvalue: function(E, $el) {
+        this.listenTo(this.model, 'change:'+ E, function() {
+            var A = this.model.attributes;
+            $el.prop('value', A[E]);
+        });
+    },
 
     listenenable: function(K, $el) {
         this.listenTo(this.model, 'change:'+ K, function() {
@@ -422,11 +465,11 @@ var View = Backbone.View.extend({
     click_expandfunc: function(H, H2) {
         return function(e) {
             var A = this.model.attributes;
-            var newstate = _.object([H], [!A[H]]);
+            var sendc = _.object([H], [!A[H]]);
             if (H2 !== undefined && A[H2]) { // if was hidden
-                newstate = _.extend(newstate, _.object([H2], [!A[H2]]));
+                sendc = _.extend(sendc, _.object([H2], [!A[H2]]));
             }
-            websocket.sendState(newstate);
+            websocket.sendClient(sendc);
             e.preventDefault();
             e.stopPropagation(); // don't change checkbox/radio state
         };
@@ -434,24 +477,24 @@ var View = Backbone.View.extend({
     click_tabfunc: function(T, H) {
         return function(e) {
             var newtabid = +$( $(e.target).attr('href') ).attr('data-tabid'); // THIS. +string makes an int
-            var newstate = _.object([T], [newtabid]);
+            var sendc = _.object([T], [newtabid]);
             var A = this.model.attributes;
             if (A[H]) { // if was hidden
-                newstate = _.extend(newstate, _.object([H], [!A[H]]));
+                sendc = _.extend(sendc, _.object([H], [!A[H]]));
             }
-            websocket.sendState(newstate);
+            websocket.sendClient(sendc);
             e.preventDefault();
             e.stopPropagation(); // don't change checkbox/radio state
         };
     },
     click_psignalfunc: function(H, v) {
         return function(e) {
-            var newstate = {MorePsignal: v};
+            var sendc = {MorePsignal: v};
             var A = this.model.attributes;
             if (A[H]) { // if was hidden
-                newstate = _.extend(newstate, _.object([H], [!A[H]]));
+                sendc = _.extend(sendc, _.object([H], [!A[H]]));
             }
-            websocket.sendState(newstate);
+            websocket.sendClient(sendc);
             e.preventDefault();
             e.stopPropagation(); // don't change checkbox/radio state
         };
@@ -495,7 +538,7 @@ function ready() {
     var model = new Model(Model.attributes(Data));
     var view  = new View({model: model});
 
-    update(Data.ClientState, model);
+    update(Data.Client, model);
 }
 
 // Local Variables:
