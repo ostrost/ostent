@@ -239,15 +239,7 @@ var Model = Backbone.Model.extend({
     }
 });
 Model.attributes = function(data) {
-    var A = _.extend(data.Generic, data.Client);
-    if (data.PStable !== undefined) {
-        A = _.extend(A, {
-            PSplusText:       data.PStable.PlusText,
-            PSnotExpandable:  data.PStable.NotExpandable
-//        , PSnotDecreasable: data.PStable.NotDecreasable
-        });
-    }
-    return A;
+    return _.extend(data.Generic, data.Client);
 };
 
 var View = Backbone.View.extend({

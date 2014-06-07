@@ -70,7 +70,4 @@ func(la PSlinks) MarshalJSON() ([]byte, error) {
 
 type PStable struct {
 	List []types.ProcData `json:",omitempty"`
-	PlusText       string `json:",omitempty"` // should never be empty, sanity check
-	NotExpandable  *bool  `json:",omitempty"`
-	NotDecreasable *bool  `json:",omitempty"`
 }

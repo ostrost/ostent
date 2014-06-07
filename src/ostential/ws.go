@@ -203,7 +203,7 @@ func(wc *wclient) waitfor_updates() { // write to the client
 				}
 			}
 
-			updates := getUpdates(req, &wc.fullClient, sendc)
+			updates := getUpdates(req, &wc.fullClient, &sendc)
 
 			if wc.ws.WriteJSON(updates) != nil {
 				break

@@ -371,8 +371,7 @@ func username(uids map[uint]string, uid uint) string {
 	return s
 }
 
-func orderProc(procs []types.ProcInfo, seq types.SEQ, clientptr *client) ([]types.ProcData, string) {
-	client := *clientptr
+func orderProc(procs []types.ProcInfo, seq types.SEQ, client client, sendc **sendClient) []types.ProcData {
 	sort.Sort(procOrder{ // not sort.Stable
 		procs: procs,
 		seq: seq,
@@ -381,29 +380,23 @@ func orderProc(procs []types.ProcInfo, seq types.SEQ, clientptr *client) ([]type
 
 	limitPS := client.psLimit
 
+	if *sendc == nil {
+		*sendc = new(sendClient)
+	}
+
 	if len(procs) <= limitPS {
 		limitPS = len(procs)
-
-		if client.psNotexpandable == nil || !*client.psNotexpandable {
-			clientptr.psNotexpandable = newtrue()
-		}
+		(*sendc).PSnotExpandable = newtrue()
 	} else {
-		if clientptr.psNotexpandable != nil {
-
-			if *client.psNotexpandable {
-				*clientptr.psNotexpandable = false
-			} else {
-				clientptr.psNotexpandable = nil
-			}
-		}
-
-		// TODO deal with NotDecreasable here
+		(*sendc).PSnotExpandable = newfalse()
 	}
+	// TODO deal with NotDecreasable here
 
 	if len(procs) > limitPS {
 		procs = procs[:limitPS]
 	}
-	plustext := fmt.Sprintf("%d+", limitPS)
+	 (*sendc).PSplusText = new(string)
+	*(*sendc).PSplusText = fmt.Sprintf("%d+", limitPS)
 
 	uids := map[uint]string{}
 	var list []types.ProcData
@@ -419,7 +412,7 @@ func orderProc(procs []types.ProcInfo, seq types.SEQ, clientptr *client) ([]type
 			Resident:   humanB(proc.Resident),
 		})
 	}
-	return list, plustext
+	return list
 }
 
 type Previous struct {
@@ -475,7 +468,7 @@ type pageUpdate struct {
     Generic  generic
 
 	CPU      *types.CPU      `json:",omitempty"`
-	MEM      *types.MEM      `json:",omitempty"` // TODO empty on HideMEM
+	MEM      *types.MEM      `json:",omitempty"`
 
 	DFlinks  *DFlinks        `json:",omitempty"`
 	DFbytes  *types.DFbytes  `json:",omitempty"`
@@ -547,7 +540,7 @@ func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Bis
 	}
 }
 
-func getUpdates(req *http.Request, clientptr *client, sendc *sendClient) pageUpdate {
+func getUpdates(req *http.Request, clientptr *client, sendc **sendClient) pageUpdate {
 	client := *clientptr
 
 	var (
@@ -616,8 +609,7 @@ func getUpdates(req *http.Request, clientptr *client, sendc *sendClient) pageUpd
 
 	if !*client.HidePS {
 		pu.PStable = new(PStable)
-		pu.PStable.List, pu.PStable.PlusText = orderProc(ps_copy, clientptr.psSEQ, clientptr)
-		pu.PStable.NotExpandable = clientptr.psNotexpandable
+		pu.PStable.List = orderProc(ps_copy, clientptr.psSEQ, client, sendc)
 	}
 
 	if !*client.HideVG {
@@ -631,32 +623,29 @@ func getUpdates(req *http.Request, clientptr *client, sendc *sendClient) pageUpd
 		}
 	}
 
-	pu.Client = sendc
+	pu.Client = *sendc
 	return pu
 }
 
 func pageData(req *http.Request) PageData {
 	client := defaultClient()
-	updates := getUpdates(req, &client, nil)
+	var sendc *sendClient // nil
+	updates := getUpdates(req, &client, &sendc)
 
 	data := PageData{
-		Client:       client,
-		Generic:      updates.Generic,
-		CPU:         *updates.CPU,
-		MEM:         *updates.MEM,
+		Client:     client,
+		Generic:    updates.Generic,
+		CPU:       *updates.CPU,
+		MEM:       *updates.MEM,
 
-		DFlinks:      updates.DFlinks,
-		PSlinks:      updates.PSlinks,
+		DFlinks:    updates.DFlinks,
+		PSlinks:    updates.PSlinks,
 
-		PStable: PStable{
-			List:          updates.PStable.List,
-			PlusText:      updates.PStable.PlusText,
-			NotExpandable: updates.PStable.NotExpandable,
-		},
+		PStable:   *updates.PStable,
 
-		DISTRIB:     DISTRIB,                  // value from init_*.go
-		VERSION:     VERSION,                  // value from server.go
-		HTTP_HOST:   req.Host,
+		DISTRIB:    DISTRIB, // value from init_*.go
+		VERSION:    VERSION, // value from server.go
+		HTTP_HOST:  req.Host,
 	}
 	data.DF  = updates.DF
 	data.IF  = updates.IF

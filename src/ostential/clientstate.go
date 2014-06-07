@@ -24,7 +24,6 @@ func(r refresh) MarshalJSON() ([]byte, error) {
 type internalClient struct {
 	// NB lowercase fields only, NOT to be marshalled/exported
 
-	psNotexpandable *bool
 	psLimit int
 
 	psSEQ types.SEQ
@@ -80,10 +79,15 @@ type client struct {
 	RefreshDF  *refresh `json:",omitempty"`
 	RefreshPS  *refresh `json:",omitempty"`
 	RefreshVG  *refresh `json:",omitempty"`
+
+	PSplusText       *string `json:",omitempty"`
+	PSnotExpandable  *bool   `json:",omitempty"`
+	PSnotDecreasable *bool   `json:",omitempty"`
 }
 
 type sendClient struct {
 	client
+
 	RefreshErrorMEM *bool `json:",omitempty"`
 	RefreshErrorIF  *bool `json:",omitempty"`
 	RefreshErrorCPU *bool `json:",omitempty"`
