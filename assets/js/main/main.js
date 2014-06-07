@@ -310,7 +310,7 @@ var View = Backbone.View.extend({
         var $psless = $('label.less[href="#psless"]');
         this.listentext  ('PSplusText', $psmore);
         this.listenenable('PSnotExpandable',     $psmore);
-//      this.listenenable('PSnotDecreasable',    $psless);
+        this.listenenable('PSnotDecreasable',    $psless);
 
         this.listenrefresherror('RefreshErrorMEM', $config_mem.find('.refresh-group'));
         this.listenrefresherror('RefreshErrorIF',  $config_if .find('.refresh-group'));

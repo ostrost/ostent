@@ -371,7 +371,7 @@ func username(uids map[uint]string, uid uint) string {
 	return s
 }
 
-func orderProc(procs []types.ProcInfo, seq types.SEQ, client client, sendc **sendClient) []types.ProcData {
+func orderProc(procs []types.ProcInfo, seq types.SEQ, client *client, sendc **sendClient) []types.ProcData {
 	sort.Sort(procOrder{ // not sort.Stable
 		procs: procs,
 		seq: seq,
@@ -384,19 +384,42 @@ func orderProc(procs []types.ProcInfo, seq types.SEQ, client client, sendc **sen
 		*sendc = new(sendClient)
 	}
 
-	if len(procs) <= limitPS {
-		limitPS = len(procs)
-		(*sendc).PSnotExpandable = newtrue()
+	if limitPS <= 1 {
+		if client.PSnotDecreasable == nil || *client.PSnotDecreasable == false {
+			client.PSnotDecreasable = newtrue()
+			(*sendc).PSnotDecreasable = client.PSnotDecreasable
+		}
 	} else {
-		(*sendc).PSnotExpandable = newfalse()
+		if client.PSnotDecreasable == nil || *client.PSnotDecreasable == true {
+			client.PSnotDecreasable = newfalse()
+			(*sendc).PSnotDecreasable = client.PSnotDecreasable
+		}
 	}
-	// TODO deal with NotDecreasable here
+
+	if len(procs) <= limitPS {
+		limitPS = len(procs) // NB modified limitPS
+
+		if client.PSnotExpandable == nil || *client.PSnotExpandable == false {
+			client.PSnotExpandable = newtrue()
+			(*sendc).PSnotExpandable = client.PSnotExpandable
+		}
+	} else {
+		if client.PSnotExpandable == nil || *client.PSnotExpandable == true {
+			client.PSnotExpandable = newfalse()
+			(*sendc).PSnotExpandable = client.PSnotExpandable
+		}
+	}
+
+	plustext := fmt.Sprintf("%d+", limitPS)
+	if client.PSplusText == nil || *client.PSplusText != plustext {
+		 (*sendc).PSplusText = new(string)
+		*(*sendc).PSplusText = fmt.Sprintf("%d+", limitPS)
+		   client.PSplusText = (*sendc).PSplusText
+	}
 
 	if len(procs) > limitPS {
 		procs = procs[:limitPS]
 	}
-	 (*sendc).PSplusText = new(string)
-	*(*sendc).PSplusText = fmt.Sprintf("%d+", limitPS)
 
 	uids := map[uint]string{}
 	var list []types.ProcData
@@ -609,7 +632,7 @@ func getUpdates(req *http.Request, clientptr *client, sendc **sendClient) pageUp
 
 	if !*client.HidePS {
 		pu.PStable = new(PStable)
-		pu.PStable.List = orderProc(ps_copy, clientptr.psSEQ, client, sendc)
+		pu.PStable.List = orderProc(ps_copy, clientptr.psSEQ, clientptr, sendc)
 	}
 
 	if !*client.HideVG {

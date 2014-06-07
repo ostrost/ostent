@@ -267,6 +267,7 @@ html
                       input[type="checkbox"]
                       | Hidden
                     label.btn.btn-default.less[href="#psless"]
+                      [class="disabled"] ? json(Data.Client.PSnotDecreasable) != "false")
                       input[type="checkbox"]
                       | -
                     label.btn.btn-default.more[href="#psmore"]
