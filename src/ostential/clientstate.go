@@ -9,6 +9,7 @@ import (
 
 type refresh struct {
 	time.Duration
+	tick int
 }
 func(r refresh) MarshalJSON() ([]byte, error) {
 	s := r.Duration.String()
@@ -19,6 +20,17 @@ func(r refresh) MarshalJSON() ([]byte, error) {
 		s = strings.TrimSuffix(s, "0m")
 	}
 	return json.Marshal(s)
+}
+func(r *refresh) now(cantwait bool) Boole {
+	if cantwait {
+		return Boole(true)
+	}
+	r.tick++
+	if r.tick < int(r.Duration / time.Second) {
+		return Boole(false)
+	}
+	r.tick = 0
+	return Boole(true)
 }
 
 type internalClient struct {
@@ -166,7 +178,7 @@ func newseq(v types.SEQ) *types.SEQ {
 
 func newdefaultrefresh() *refresh {
 	r := new(refresh)
-	*r = refresh{periodFlag.Duration}
+	*r = refresh{Duration: periodFlag.Duration}
 	return r
 }
 

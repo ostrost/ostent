@@ -42,17 +42,22 @@ func init() {
 }
 
 func Loop() {
-	// flags must be parsed by now, `period' is used here
+	// flags must be parsed by now, `periodFlag' is used here
+	go func() {
+		for {
+			now := time.Now()
+			nextupdate := now.Truncate(periodFlag.Duration).Add(periodFlag.Duration).Sub(now)
+			<-time.After(nextupdate)
+			collect()
+		}
+	}()
+
 	for {
 		now := time.Now()
-		next := now.Truncate(periodFlag.Duration).Add(periodFlag.Duration)
-		diff := next.Sub(now)
+		nextsecond := now.Truncate(time.Second).Add(time.Second).Sub(now)
 		select {
 		case wc := <-register:
-			if len(wclients) == 0 {
-				collect() // for at least one new client
-			}
-			wclients[wc] = true
+			wclients[wc] = struct{}{}
 
 		case wc := <-unregister:
 			close(wc.ping)
@@ -61,10 +66,9 @@ func Loop() {
 				reset_prev()
 			}
 
-		case <-time.After(diff):
-			collect()
+		case <-time.After(nextsecond):
 			for wc := range wclients {
-				wc.ping <- nil // false
+				wc.ping <- nil
 			}
 		}
 	}
@@ -84,7 +88,7 @@ type wclient struct {
 }
 
 var (
-	 wclients  = make(map[ *wclient ]bool)
+	  wclients = make(map[ *wclient ]struct{})
 	  register = make(chan *wclient)
 	unregister = make(chan *wclient)
 )
@@ -114,31 +118,31 @@ func (rs *recvClient) mergeMorePsignal(cs *client) {
 	rs.MorePsignal = nil
 }
 
-func (rs *recvClient) mergeRefreshSignal(ppinput **string, prefresh *refresh, sendr **refresh, senderr **bool) error {
-	if *ppinput == nil {
+func (rs *recvClient) mergeRefreshSignal(ppinput *string, prefresh *refresh, sendr **refresh, senderr **bool) error {
+	if ppinput == nil {
 		return nil
 	}
 	pv := periodValue{above: &periodFlag.Duration}
-	if err := pv.Set(**ppinput); err != nil {
+	if err := pv.Set(*ppinput); err != nil {
 		*senderr = newtrue()
 		return err
 	}
 	*senderr = newfalse()
-	prefresh.Duration = pv.Duration
 	*sendr = new(refresh)
 	(**sendr).Duration = pv.Duration
-	*ppinput = nil
+	prefresh.Duration = pv.Duration
+	prefresh.tick = 0
 	return nil
 }
 
 func (rs *recvClient) MergeClient(cs *client, sendc *sendClient) error {
 	rs.mergeMorePsignal(cs)
-	if err := rs.mergeRefreshSignal(&rs.RefreshSignalMEM, cs.RefreshMEM, &sendc.RefreshMEM, &sendc.RefreshErrorMEM); err != nil { return err }
-	if err := rs.mergeRefreshSignal(&rs.RefreshSignalIF,  cs.RefreshIF,  &sendc.RefreshIF,  &sendc.RefreshErrorIF);  err != nil { return err }
-	if err := rs.mergeRefreshSignal(&rs.RefreshSignalCPU, cs.RefreshCPU, &sendc.RefreshCPU, &sendc.RefreshErrorCPU); err != nil { return err }
-	if err := rs.mergeRefreshSignal(&rs.RefreshSignalDF,  cs.RefreshDF,  &sendc.RefreshDF,  &sendc.RefreshErrorDF);  err != nil { return err }
-	if err := rs.mergeRefreshSignal(&rs.RefreshSignalPS,  cs.RefreshPS,  &sendc.RefreshPS,  &sendc.RefreshErrorPS);  err != nil { return err }
-	if err := rs.mergeRefreshSignal(&rs.RefreshSignalVG,  cs.RefreshVG,  &sendc.RefreshVG,  &sendc.RefreshErrorVG);  err != nil { return err }
+	if err := rs.mergeRefreshSignal(rs.RefreshSignalMEM, cs.RefreshMEM, &sendc.RefreshMEM, &sendc.RefreshErrorMEM); err != nil { return err }
+	if err := rs.mergeRefreshSignal(rs.RefreshSignalIF,  cs.RefreshIF,  &sendc.RefreshIF,  &sendc.RefreshErrorIF);  err != nil { return err }
+	if err := rs.mergeRefreshSignal(rs.RefreshSignalCPU, cs.RefreshCPU, &sendc.RefreshCPU, &sendc.RefreshErrorCPU); err != nil { return err }
+	if err := rs.mergeRefreshSignal(rs.RefreshSignalDF,  cs.RefreshDF,  &sendc.RefreshDF,  &sendc.RefreshErrorDF);  err != nil { return err }
+	if err := rs.mergeRefreshSignal(rs.RefreshSignalPS,  cs.RefreshPS,  &sendc.RefreshPS,  &sendc.RefreshErrorPS);  err != nil { return err }
+	if err := rs.mergeRefreshSignal(rs.RefreshSignalVG,  cs.RefreshVG,  &sendc.RefreshVG,  &sendc.RefreshErrorVG);  err != nil { return err }
 	return nil
 }
 
@@ -203,7 +207,7 @@ func(wc *wclient) waitfor_updates() { // write to the client
 				}
 			}
 
-			updates := getUpdates(req, &wc.fullClient, &sendc)
+			updates := getUpdates(req, &wc.fullClient, &sendc, false)
 
 			if wc.ws.WriteJSON(updates) != nil {
 				break

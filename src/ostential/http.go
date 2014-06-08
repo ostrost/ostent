@@ -371,11 +371,11 @@ func username(uids map[uint]string, uid uint) string {
 	return s
 }
 
-func orderProc(procs []types.ProcInfo, seq types.SEQ, client *client, sendc **sendClient) []types.ProcData {
+func orderProc(procs []types.ProcInfo, client *client, sendc **sendClient) []types.ProcData {
 	sort.Sort(procOrder{ // not sort.Stable
-		procs: procs,
-		seq: seq,
-		reverse: _PSBIMAP.SEQ2REVERSE[seq],
+		procs:   procs,
+		seq:     client.psSEQ,
+		reverse: _PSBIMAP.SEQ2REVERSE[client.psSEQ],
 	})
 
 	limitPS := client.psLimit
@@ -451,7 +451,7 @@ type lastinfo struct {
 	DiskList   []diskInfo
 	ProcList   []types.ProcInfo
 	Interfaces []InterfaceInfo
-	Previous Previous
+	Previous *Previous
 }
 
 type PageData struct {
@@ -551,7 +551,7 @@ func collect() {
 	lastInfo.CPU  = cl
 
 	lastInfo.Interfaces = filterInterfaces(ifs)
-	lastInfo.Previous = previous
+	lastInfo.Previous = &previous
 }
 
 func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Biseqmap, seq *types.SEQ) *types.Linkattrs {
@@ -563,15 +563,23 @@ func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Bis
 	}
 }
 
-func getUpdates(req *http.Request, clientptr *client, sendc **sendClient) pageUpdate {
-	client := *clientptr
-
+func getUpdates(req *http.Request, client *client, sendc **sendClient, cantwait bool) pageUpdate {
 	var (
 		df_copy []diskInfo
 		ps_copy []types.ProcInfo
 		if_copy     []InterfaceInfo
 		previf_copy []InterfaceInfo
 	)
+
+	havelast := false
+	func() {
+		lastLock.Lock()
+		defer lastLock.Unlock()
+		havelast = lastInfo.Previous != nil
+	}()
+	if !havelast {
+		collect()
+	}
 
 	var pu pageUpdate
 	func() {
@@ -591,19 +599,19 @@ func getUpdates(req *http.Request, clientptr *client, sendc **sendClient) pageUp
 		pu = pageUpdate{
 			Generic: lastInfo.Generic,
 		}
-		if !*client.HideMEM {
-			pu.MEM  = lastInfo.MEM(client)
+		if !*client.HideMEM && client.RefreshMEM.now(cantwait) {
+			pu.MEM = lastInfo.MEM(*client)
 		}
-		if !*client.HideCPU {
-			pu.CPU = lastInfo.CPUDelta(client)
+		if !*client.HideCPU && client.RefreshCPU.now(cantwait) {
+			pu.CPU = lastInfo.CPUDelta(*client)
 		}
 	}()
 
 	if req != nil {
 		req.ParseForm()
 		base := url.Values{}
-		pu.PSlinks = (*PSlinks)(linkattrs(req, base, "ps", _PSBIMAP, &clientptr.psSEQ))
-		pu.DFlinks = (*DFlinks)(linkattrs(req, base, "df", _DFBIMAP, &clientptr.dfSEQ))
+		pu.PSlinks = (*PSlinks)(linkattrs(req, base, "ps", _PSBIMAP, &client.psSEQ))
+		pu.DFlinks = (*DFlinks)(linkattrs(req, base, "df", _DFBIMAP, &client.dfSEQ))
 	}
 
 	 pu.IF = types.NewDataMeta()
@@ -614,28 +622,28 @@ func getUpdates(req *http.Request, clientptr *client, sendc **sendClient) pageUp
 	*pu.DF.Expandable = len(df_copy) > TOPROWS
 	*pu.DF.ExpandText = fmt.Sprintf("Expanded (%d)", len(df_copy))
 
-	if !*client.HideDF {
-		orderedDisks := orderDisks(df_copy, clientptr.dfSEQ)
+	if !*client.HideDF && client.RefreshDF.now(cantwait) {
+		orderedDisks := orderDisks(df_copy, client.dfSEQ)
 
-		       if *client.TabDF == DFBYTES_TABID  { pu.DFbytes  = dfbytes (orderedDisks, client)
-		} else if *client.TabDF == DFINODES_TABID { pu.DFinodes = dfinodes(orderedDisks, client)
+		       if *client.TabDF == DFBYTES_TABID  { pu.DFbytes  = dfbytes (orderedDisks, *client)
+		} else if *client.TabDF == DFINODES_TABID { pu.DFinodes = dfinodes(orderedDisks, *client)
 		}
 	}
 
-	if !*client.HideIF {
+	if !*client.HideIF && client.RefreshIF.now(cantwait) {
 		switch *client.TabIF {
-		case IFBYTES_TABID:   pu.IFbytes   = InterfacesDelta(interfaceBytes{},                             if_copy, previf_copy, client)
-		case IFERRORS_TABID:  pu.IFerrors  = InterfacesDelta(interfaceNumericals{interfaceInoutErrors{}},  if_copy, previf_copy, client)
-		case IFPACKETS_TABID: pu.IFpackets = InterfacesDelta(interfaceNumericals{interfaceInoutPackets{}}, if_copy, previf_copy, client)
+		case IFBYTES_TABID:   pu.IFbytes   = InterfacesDelta(interfaceBytes{},                             if_copy, previf_copy, *client)
+		case IFERRORS_TABID:  pu.IFerrors  = InterfacesDelta(interfaceNumericals{interfaceInoutErrors{}},  if_copy, previf_copy, *client)
+		case IFPACKETS_TABID: pu.IFpackets = InterfacesDelta(interfaceNumericals{interfaceInoutPackets{}}, if_copy, previf_copy, *client)
 		}
 	}
 
-	if !*client.HidePS {
+	if !*client.HidePS && client.RefreshPS.now(cantwait) {
 		pu.PStable = new(PStable)
-		pu.PStable.List = orderProc(ps_copy, clientptr.psSEQ, clientptr, sendc)
+		pu.PStable.List = orderProc(ps_copy, client, sendc)
 	}
 
-	if !*client.HideVG {
+	if !*client.HideVG && client.RefreshVG.now(cantwait) {
 		machines, err := vagrantmachines()
 		if err != nil {
 			pu.VagrantError = err.Error()
@@ -653,7 +661,7 @@ func getUpdates(req *http.Request, clientptr *client, sendc **sendClient) pageUp
 func pageData(req *http.Request) PageData {
 	client := defaultClient()
 	var sendc *sendClient // nil
-	updates := getUpdates(req, &client, &sendc)
+	updates := getUpdates(req, &client, &sendc, true)
 
 	data := PageData{
 		Client:     client,

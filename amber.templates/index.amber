@@ -102,9 +102,9 @@ html
                         input[type="checkbox"]
                         | Show swap
 
-                  //- div.form-group-padded
-                  //-   $placeholder = Data.Client.RefreshMEM
-                  //-   [[template "define_refresh"]]
+                  div.form-group-padded
+                    $placeholder = Data.Client.RefreshMEM
+                    [[template "define_refresh"]]
 
             div.collapse#mem
               [class="in"] ? (json(Data.Client.HideMEM) == "false")
@@ -130,9 +130,9 @@ html
                       input[type="checkbox"]
                       | #{Data.IF.ExpandText}
 
-                //- div.form-group-padded
-                //-   $placeholder = Data.Client.RefreshIF
-                //-   [[template "define_refresh"]]
+                div.form-group-padded
+                  $placeholder = Data.Client.RefreshIF
+                  [[template "define_refresh"]]
 
               ul.nav.nav-tabs
                 li.if-switch
@@ -186,9 +186,9 @@ html
                       input[type="checkbox"]
                       | #{Data.CPU.ExpandText}
 
-                //- div.form-group-padded
-                //-   $placeholder = Data.Client.RefreshCPU
-                //-   [[template "define_refresh"]]
+                div.form-group-padded
+                  $placeholder = Data.Client.RefreshCPU
+                  [[template "define_refresh"]]
 
             div.collapse#cpu
               [class="in"] ? (json(Data.Client.HideCPU) == "false")
@@ -214,9 +214,9 @@ html
                       input[type="checkbox"]
                       | #{Data.DF.ExpandText}
 
-                //- div.form-group-padded
-                //-   $placeholder = Data.Client.RefreshDF
-                //-   [[template "define_refresh"]]
+                div.form-group-padded
+                  $placeholder = Data.Client.RefreshDF
+                  [[template "define_refresh"]]
 
               ul.nav.nav-tabs
                 li.df-switch
@@ -257,9 +257,9 @@ html
             div.collapse#psconfig
               [class="in"] ? (json(Data.Client.HideconfigPS) == "false")
               form.inline-form.border-bottom-form.text-right
-                //- div.form-group-padded
-                //-   $placeholder = Data.Client.RefreshPS
-                //-   [[template "define_refresh"]]
+                div.form-group-padded
+                  $placeholder = Data.Client.RefreshPS
+                  [[template "define_refresh"]]
 
                 div.form-group-padded
                   div.btn-group.btn-group-sm[data-toggle="buttons"]
@@ -291,9 +291,9 @@ html
             div.collapse#vgconfig
               [class="in"] ? (json(Data.Client.HideconfigVG) == "false")
               form.inline-form.border-bottom-form.text-right
-                //- div.form-group-padded
-                //-   $placeholder = Data.Client.RefreshVG
-                //-   [[template "define_refresh"]]
+                div.form-group-padded
+                  $placeholder = Data.Client.RefreshVG
+                  [[template "define_refresh"]]
                 div.form-group-padded
                   div.btn-group.btn-group-sm[data-toggle="buttons"]
                     label.btn.btn-default.hiding

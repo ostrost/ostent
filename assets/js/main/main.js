@@ -308,9 +308,9 @@ var View = Backbone.View.extend({
 
         var $psmore = $('label.more[href="#psmore"]');
         var $psless = $('label.less[href="#psless"]');
-        this.listentext  ('PSplusText', $psmore);
-        this.listenenable('PSnotExpandable',     $psmore);
-        this.listenenable('PSnotDecreasable',    $psless);
+        this.listentext  ('PSplusText',       $psmore);
+        this.listenenable('PSnotExpandable',  $psmore);
+        this.listenenable('PSnotDecreasable', $psless);
 
         this.listenrefresherror('RefreshErrorMEM', $config_mem.find('.refresh-group'));
         this.listenrefresherror('RefreshErrorIF',  $config_if .find('.refresh-group'));
