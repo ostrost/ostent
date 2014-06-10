@@ -1,8 +1,12 @@
 package ostential
 import (
+	"os"
+	"log"
 	"fmt"
 	"time"
 	"flag"
+	"sync"
+	"strings"
 	"net/url"
 	"net/http"
 	gorillawebsocket "github.com/gorilla/websocket"
@@ -19,9 +23,6 @@ func(pv *periodValue) Set(input string) error {
 	if err != nil {
 		return err
 	}
-	if v <= 0 {
-		return fmt.Errorf("Negative interval: %s", v)
-	}
 	if v < time.Second { // hard coded
 		return fmt.Errorf("Less than a second: %s", v)
 	}
@@ -29,7 +30,7 @@ func(pv *periodValue) Set(input string) error {
 		return fmt.Errorf("Not a multiple of a second: %s", v)
 	}
 	if pv.above != nil && v < *pv.above {
-		return fmt.Errorf("Should not be bellow %s: %s", *pv.above, v)
+		return fmt.Errorf("Should be above %s: %s", *pv.above, v)
 	}
 	pv.Duration = v
 	return nil
@@ -41,56 +42,115 @@ func init() {
 	flag.Var(&periodFlag, "update", "Collection (update) interval")
 }
 
+var _ = os.Stdout
+// var wslog = log.New(os.Stdout, "", log.LstdFlags|log.Lmicroseconds)
+
 func Loop() {
 	// flags must be parsed by now, `periodFlag' is used here
 	go func() {
 		for {
 			now := time.Now()
-			nextupdate := now.Truncate(periodFlag.Duration).Add(periodFlag.Duration).Sub(now)
-			<-time.After(nextupdate)
-			collect()
+			nextsecond := now.Truncate(time.Second).Add(time.Second).Sub(now)
+			<-time.After(nextsecond)
+
+			if wclients.expires() {
+				// wslog.Printf("Have expires, COLLECT\n")
+				collect()
+			} else {
+				// wslog.Printf("NO REFRESH\n")
+			}
+			wclients.ping()
 		}
 	}()
 
 	for {
-		now := time.Now()
-		nextsecond := now.Truncate(time.Second).Add(time.Second).Sub(now)
 		select {
 		case wc := <-register:
-			wclients[wc] = struct{}{}
+			wclients.reg(wc)
 
 		case wc := <-unregister:
 			close(wc.ping)
-			delete(wclients, wc)
-			if len(wclients) == 0 {
+			if wclients.unreg(wc) == 0 { // if no clients left
 				reset_prev()
-			}
-
-		case <-time.After(nextsecond):
-			for wc := range wclients {
-				wc.ping <- nil
 			}
 		}
 	}
-}
-
-func parseSearch(search string) (url.Values, error) {
-	if search != "" && search[0] == '?' {
-		search = search[1:]
-	}
-	return url.ParseQuery(search)
 }
 
 type wclient struct {
 	ws *gorillawebsocket.Conn
 	ping chan *received
 	fullClient client
+	clientMutex sync.Mutex
+}
+
+func(wc *wclient) expires() bool {
+	wc.clientMutex.Lock()
+	defer wc.clientMutex.Unlock()
+
+	refreshes := map[string]*refresh{
+		"expires MEM": wc.fullClient.RefreshMEM,
+		"expires IF":  wc.fullClient.RefreshIF,
+		"expires CPU": wc.fullClient.RefreshCPU,
+		"expires DF":  wc.fullClient.RefreshDF,
+		"expires PS":  wc.fullClient.RefreshPS,
+		"expires VG":  wc.fullClient.RefreshVG,
+	}
+
+	expires := false
+	for lprefix, refresh := range refreshes {
+		if !refresh.expires() {
+			continue
+		}
+		return true
+		log.Println(lprefix, refresh)
+		expires = false
+	}
+	return expires
+}
+
+type clientmap map[*wclient]struct{}
+type clientreg struct {
+	clientmap
+	lock sync.Mutex
+}
+
+func (cr *clientreg) ping() {
+	cr.lock.Lock()
+	defer cr.lock.Unlock()
+	for wc := range cr.clientmap {
+		wc.ping <- nil
+	}
+}
+
+func (cr *clientreg) reg(wc* wclient) {
+	cr.lock.Lock()
+	defer cr.lock.Unlock()
+	cr.clientmap[wc] = struct{}{}
+}
+
+func (cr *clientreg) unreg(wc* wclient) int {
+	cr.lock.Lock()
+	defer cr.lock.Unlock()
+	delete(cr.clientmap, wc)
+	return len(cr.clientmap)
+}
+
+func (cr *clientreg) expires() bool {
+	cr.lock.Lock()
+	defer cr.lock.Unlock()
+	for wc := range cr.clientmap {
+		if wc.expires() {
+			return true
+		}
+	}
+	return false
 }
 
 var (
-	  wclients = make(map[ *wclient ]struct{})
-	  register = make(chan *wclient)
+	wclients = clientreg{clientmap: clientmap{}}
 	unregister = make(chan *wclient)
+	  register = make(chan *wclient)
 )
 
 type recvClient struct {
@@ -171,6 +231,7 @@ func(wc *wclient) waitfor_messages() { // read from the client
 		wc.ping <- rd
 	}
 }
+
 func(wc *wclient) waitfor_updates() { // write to the client
 	defer func() {
 		unregister <- wc
@@ -182,38 +243,52 @@ func(wc *wclient) waitfor_updates() { // write to the client
 			if !ok {
 				break
 			}
-			var req *http.Request
-			var sendc *sendClient
-			if rd != nil {
-				if rd.Client != nil {
-					sendc = new(sendClient)
-					err := rd.Client.MergeClient(&wc.fullClient, sendc)
-					if err != nil {
-						// if !wc.writeError(err) { break }
-						// wc.writeError(err); continue
-						sendc.DebugError = new(string)
-						*sendc.DebugError = err.Error()
-					}
-					wc.fullClient.Merge(*rd.Client, sendc)
+			if next := wc.pong(rd); next != nil {
+				if *next {
+					continue
+				} else {
+					break
 				}
-				if rd.Search != nil {
-					form, err := parseSearch(*rd.Search)
-					if err != nil {
-						// http.StatusBadRequest?
-						// if !wc.writeError(err) { break }
-						continue
-					}
-					req = &http.Request{Form: form}
-				}
-			}
-
-			updates := getUpdates(req, &wc.fullClient, &sendc, false)
-
-			if wc.ws.WriteJSON(updates) != nil {
-				break
 			}
 		}
 	}
+}
+
+func(wc *wclient) pong(rd *received) *bool {
+	wc.clientMutex.Lock()
+	defer wc.clientMutex.Unlock()
+
+	var req *http.Request
+	var sendc *sendClient
+	if rd != nil {
+		if rd.Client != nil {
+			sendc = new(sendClient)
+			err := rd.Client.MergeClient(&wc.fullClient, sendc)
+			if err != nil {
+				// if !wc.writeError(err) { break }
+				// wc.writeError(err); continue
+				sendc.DebugError = new(string)
+				*sendc.DebugError = err.Error()
+			}
+			wc.fullClient.Merge(*rd.Client, sendc)
+		}
+		if rd.Search != nil {
+			form, err := url.ParseQuery(strings.TrimPrefix(*rd.Search, "?"))
+			if err != nil {
+				// http.StatusBadRequest?
+				// if !wc.writeError(err) { break }
+				return newtrue()
+			}
+			req = &http.Request{Form: form}
+		}
+	}
+
+	updates := getUpdates(req, &wc.fullClient, &sendc, false)
+
+	if wc.ws.WriteJSON(updates) != nil {
+		return newfalse()
+	}
+	return nil
 }
 
 func slashws(w http.ResponseWriter, req *http.Request) {
@@ -229,6 +304,6 @@ func slashws(w http.ResponseWriter, req *http.Request) {
 	defer func() {
 		unregister <- wc
 	}()
-	go wc.waitfor_messages() // read from client
-	   wc.waitfor_updates()  // write to  client
+	go wc.waitfor_messages() // read from the client
+	   wc.waitfor_updates()  // write to the client
 }

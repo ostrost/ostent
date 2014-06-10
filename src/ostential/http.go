@@ -563,7 +563,7 @@ func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Bis
 	}
 }
 
-func getUpdates(req *http.Request, client *client, sendc **sendClient, cantwait bool) pageUpdate {
+func getUpdates(req *http.Request, client *client, sendc **sendClient, forcerefresh bool) pageUpdate {
 	var (
 		df_copy []diskInfo
 		ps_copy []types.ProcInfo
@@ -599,10 +599,10 @@ func getUpdates(req *http.Request, client *client, sendc **sendClient, cantwait 
 		pu = pageUpdate{
 			Generic: lastInfo.Generic,
 		}
-		if !*client.HideMEM && client.RefreshMEM.now(cantwait) {
+		if !*client.HideMEM && client.RefreshMEM.refresh(forcerefresh) {
 			pu.MEM = lastInfo.MEM(*client)
 		}
-		if !*client.HideCPU && client.RefreshCPU.now(cantwait) {
+		if !*client.HideCPU && client.RefreshCPU.refresh(forcerefresh) {
 			pu.CPU = lastInfo.CPUDelta(*client)
 		}
 	}()
@@ -622,7 +622,7 @@ func getUpdates(req *http.Request, client *client, sendc **sendClient, cantwait 
 	*pu.DF.Expandable = len(df_copy) > TOPROWS
 	*pu.DF.ExpandText = fmt.Sprintf("Expanded (%d)", len(df_copy))
 
-	if !*client.HideDF && client.RefreshDF.now(cantwait) {
+	if !*client.HideDF && client.RefreshDF.refresh(forcerefresh) {
 		orderedDisks := orderDisks(df_copy, client.dfSEQ)
 
 		       if *client.TabDF == DFBYTES_TABID  { pu.DFbytes  = dfbytes (orderedDisks, *client)
@@ -630,7 +630,7 @@ func getUpdates(req *http.Request, client *client, sendc **sendClient, cantwait 
 		}
 	}
 
-	if !*client.HideIF && client.RefreshIF.now(cantwait) {
+	if !*client.HideIF && client.RefreshIF.refresh(forcerefresh) {
 		switch *client.TabIF {
 		case IFBYTES_TABID:   pu.IFbytes   = InterfacesDelta(interfaceBytes{},                             if_copy, previf_copy, *client)
 		case IFERRORS_TABID:  pu.IFerrors  = InterfacesDelta(interfaceNumericals{interfaceInoutErrors{}},  if_copy, previf_copy, *client)
@@ -638,12 +638,12 @@ func getUpdates(req *http.Request, client *client, sendc **sendClient, cantwait 
 		}
 	}
 
-	if !*client.HidePS && client.RefreshPS.now(cantwait) {
+	if !*client.HidePS && client.RefreshPS.refresh(forcerefresh) {
 		pu.PStable = new(PStable)
 		pu.PStable.List = orderProc(ps_copy, client, sendc)
 	}
 
-	if !*client.HideVG && client.RefreshVG.now(cantwait) {
+	if !*client.HideVG && client.RefreshVG.refresh(forcerefresh) {
 		machines, err := vagrantmachines()
 		if err != nil {
 			pu.VagrantError = err.Error()

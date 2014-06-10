@@ -21,8 +21,9 @@ func(r refresh) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(s)
 }
-func(r *refresh) now(cantwait bool) Boole {
-	if cantwait {
+
+func(r *refresh) refresh(forcerefresh bool) Boole {
+	if forcerefresh {
 		return Boole(true)
 	}
 	r.tick++
@@ -31,6 +32,10 @@ func(r *refresh) now(cantwait bool) Boole {
 	}
 	r.tick = 0
 	return Boole(true)
+}
+
+func(r refresh) expires() bool {
+	return r.tick + 1 >= int(r.Duration / time.Second)
 }
 
 type internalClient struct {
