@@ -531,27 +531,41 @@ func collect() {
 	lastLock.Lock()
 	defer lastLock.Unlock()
 
-	previous := Previous{
-		CPU:        lastInfo.CPU,
-		Interfaces: lastInfo.Interfaces,
-	}
+	gch  := make(chan generic,          1)
+	rch  := make(chan types.Memory,     1)
+	sch  := make(chan types.Memory,     1)
+	cch  := make(chan sigar.CpuList,    1)
+	dch  := make(chan []diskInfo,       1)
+	pch  := make(chan []types.ProcInfo, 1)
+	ifch := make(chan InterfacesInfo,   1)
 
-	ifs, ip := NewInterfaces()
-	generic := getGeneric()
-	generic.IP = ip
+	go getRAM       (rch)
+	go getSwap      (sch)
+	go getGeneric   (gch)
+	go read_disks   (dch)
+	go read_procs   (pch)
+	go NewInterfaces(ifch)
+	go func(CH chan sigar.CpuList) {
+		cl := sigar.CpuList{}; cl.Get()
+		CH <- cl
+	}(cch)
 
 	lastInfo = lastinfo{
-		Generic:  generic,
-		RAM:      getRAM(),
-		Swap:     getSwap(),
-		DiskList: read_disks(),
-		ProcList: read_procs(),
+		Previous: &Previous{
+			CPU:        lastInfo.CPU,
+			Interfaces: lastInfo.Interfaces,
+		},
+		Generic:  <-gch,
+		RAM:      <-rch,
+		Swap:     <-sch,
+		CPU:      <-cch,
+		DiskList: <-dch,
+		ProcList: <-pch,
 	}
-	cl := sigar.CpuList{}; cl.Get()
-	lastInfo.CPU  = cl
 
-	lastInfo.Interfaces = filterInterfaces(ifs)
-	lastInfo.Previous = &previous
+	ii := <-ifch
+	lastInfo.Generic.IP = ii.IP
+	lastInfo.Interfaces = filterInterfaces(ii.List)
 }
 
 func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Biseqmap, seq *types.SEQ) *types.Linkattrs {

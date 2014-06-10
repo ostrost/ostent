@@ -46,10 +46,16 @@ type InterfaceInfo struct{
 	OutErrors  uint
 }
 
-func NewInterfaces() ([]InterfaceInfo, string) {
+type InterfacesInfo struct {
+	List []InterfaceInfo
+	IP string
+}
+
+func NewInterfaces(CH chan InterfacesInfo) {
 	var ifaces *C.struct_ifaddrs
 	if getrc, _ := C.getifaddrs(&ifaces); getrc != 0 {
-		return []InterfaceInfo{}, ""
+		CH <- InterfacesInfo{}
+		return
 	}
 	defer C.freeifaddrs(ifaces)
 
@@ -102,5 +108,8 @@ func NewInterfaces() ([]InterfaceInfo, string) {
 		}
 		ifs = append(ifs, it)
 	}
-	return ifs, IP
+	CH <- InterfacesInfo{
+		List: ifs,
+		IP: IP,
+	}
 }

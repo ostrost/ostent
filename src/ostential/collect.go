@@ -11,41 +11,33 @@ import (
 	"github.com/rzab/gosigar"
 )
 
-type generic struct { // ex about
+type generic struct {
 	Hostname string
 	IP       string
-
-	// ex system
-	Uptime string
-//	La1    string
-//	La5    string
-//	La15   string
-	LA     string
+	LA       string
+	Uptime   string
 }
 
-func getGeneric() generic { // ex getAbout
+func getHostname() (string, error) {
 	hostname, err := os.Hostname()
 	if err == nil {
 		hostname = strings.Split(hostname, ".")[0]
 	}
-	// IP, _ := netinterface_ipaddr()
-	g := generic{
+	return hostname, err
+}
+
+func getGeneric(CH chan generic) {
+	hostname, _ := getHostname()
+
+	uptime := sigar.Uptime{};      uptime.Get()
+	la     := sigar.LoadAverage{}; la    .Get()
+
+	CH <- generic{
 		Hostname: hostname,
-		// HostnameHTML: tooltipable(11, hostname),
-		// IP: IP,
+		// IP: IP, // IP, _ := netinterface_ipaddr()
+		LA: fmt.Sprintf("%.2f %.2f %.2f", la.One, la.Five, la.Fifteen),
+		Uptime: formatUptime(uptime.Length),
 	}
-	uptime := sigar.Uptime{}; uptime.Get()
-	g.Uptime = formatUptime(uptime.Length)
-
-	la := sigar.LoadAverage{}
-	la.Get()
-
-//	g.La1  = fmt.Sprintf("%.2f", la.One)
-//	g.La5  = fmt.Sprintf("%.2f", la.Five)
-//	g.La15 = fmt.Sprintf("%.2f", la.Fifteen)
-	g.LA   = fmt.Sprintf("%.2f %.2f %.2f", la.One, la.Five, la.Fifteen)
-
-	return g
 }
 
 func _getmem(kind string, in sigar.Swap) types.Memory {
@@ -68,20 +60,34 @@ func _getmem(kind string, in sigar.Swap) types.Memory {
 		UsePercentHTML: UPhtml,
 	}
 }
-func getRAM() types.Memory {
+func getRAM(CH chan types.Memory) {
 	got := sigar.Mem{}; got.Get()
-	return _getmem("RAM", sigar.Swap{
+
+	inactive := got.ActualFree - got.Free // == got.Used - got.ActualUsed // "kern"
+	_ = inactive
+
+	// Used = .Total - .Free
+	// | Free |           Used +%         | Total
+	// | Free | Inactive | Active | Wired | Total
+
+	// TODO active := vm_data.active_count << 12 (pagesize)
+	// TODO wired  := vm_data.wire_count   << 12 (pagesoze)
+
+	CH <- _getmem("RAM", sigar.Swap{
 		Total: got.Total,
-		Used:  got.Used,
 		Free:  got.Free,
+
+		Used:  got.Used, // == .Total - .Free
 	})
 }
-func getSwap() types.Memory {
+
+func getSwap(CH chan types.Memory) {
 	got := sigar.Swap{}; got.Get()
-	return _getmem("swap", got)
+	CH <- _getmem("swap", got)
 }
 
-func read_disks() (disks []diskInfo) {
+func read_disks(CH chan []diskInfo) {
+	var disks []diskInfo
 	fls := sigar.FileSystemList{}
 	fls.Get()
 
@@ -134,10 +140,11 @@ func read_disks() (disks []diskInfo) {
 			DirName:     fs.DirName,
 		})
 	}
-	return disks
+	CH <- disks
 }
 
-func read_procs() (procs []types.ProcInfo) {
+func read_procs(CH chan []types.ProcInfo) {
+	var procs []types.ProcInfo
 	pls := sigar.ProcList{}
 	pls.Get()
 
@@ -166,5 +173,5 @@ func read_procs() (procs []types.ProcInfo) {
 			Resident: mem.Resident,
 		})
 	}
-	return procs
+	CH <- procs
 }

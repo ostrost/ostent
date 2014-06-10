@@ -122,7 +122,7 @@ func serveContentFunc(path string) http.HandlerFunc {
 }
 
 func banner(listen net.Listener, logger *log.Logger) {
-	hostname := getGeneric().Hostname
+	hostname, _ := getHostname()
 	logger.Printf("   %s\n", strings.Repeat("-", len(hostname) + 7))
 	if len(hostname) > 19 {
 		hostname = hostname[:16] +"..."
