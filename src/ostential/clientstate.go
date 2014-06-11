@@ -26,8 +26,9 @@ func(r *refresh) refresh(forcerefresh bool) Boole {
 	if forcerefresh {
 		return Boole(true)
 	}
+	expires := r.expires()
 	r.tick++
-	if r.tick < int(r.Duration / time.Second) {
+	if !expires {
 		return Boole(false)
 	}
 	r.tick = 0
