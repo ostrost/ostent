@@ -34,6 +34,8 @@ type internalClient struct {
 
 	psSEQ types.SEQ
 	dfSEQ types.SEQ
+
+	toprows int
 }
 
 type title string
@@ -89,6 +91,10 @@ type client struct {
 	PSplusText       *string `json:",omitempty"`
 	PSnotExpandable  *bool   `json:",omitempty"`
 	PSnotDecreasable *bool   `json:",omitempty"`
+}
+
+func (c *client) recalcrows() {
+	c.toprows = map[bool]int{true: 1, false: 2}[bool(*c.HideSWAP)]
 }
 
 type sendClient struct {
@@ -218,6 +224,8 @@ func defaultClient() client {
 
 	cs.psSEQ = _PSBIMAP.Default_seq
 	cs.dfSEQ = _DFBIMAP.Default_seq
+
+	cs.recalcrows()
 
 	return cs
 }

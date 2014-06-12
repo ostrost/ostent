@@ -33,8 +33,6 @@ func ps(current, previous uint) string {
 	return humanUnitless(uint64(current - previous))
 }
 
-const TOPROWS = 2
-
 func interfaceMeta(ii InterfaceInfo) types.InterfaceMeta {
 	return types.InterfaceMeta{
 		NameKey:  ii.Name,
@@ -99,8 +97,8 @@ func InterfacesDelta(format interfaceFormat, current, previous []InterfaceInfo, 
 	}
 	if len(ifs) > 1 {
 		sort.Sort(interfaceOrder(ifs))
-		if !*client.ExpandIF && len(ifs) > TOPROWS {
-			ifs = ifs[:TOPROWS]
+		if !*client.ExpandIF && len(ifs) > client.toprows {
+			ifs = ifs[:client.toprows]
 		}
 	}
 	ni := new(types.Interfaces)
@@ -185,11 +183,11 @@ func(li lastinfo) CPUDelta(client client) *types.CPU {
 	sort.Sort(cpuOrder(cores))
 
 	*cpu.DataMeta.ExpandText = fmt.Sprintf("Expanded (%d)", coreno)
-	*cpu.DataMeta.Expandable = coreno > TOPROWS-1 // one row reserved for "all N"
+	*cpu.DataMeta.Expandable = coreno > client.toprows-1 // one row reserved for "all N"
 
 	if !*client.ExpandCPU {
-		if coreno > TOPROWS-1 {
-			cores = cores[:TOPROWS-1] // first core(s)
+		if coreno > client.toprows-1 {
+			cores = cores[:client.toprows-1] // first core(s)
 		}
 
 		total := sum.User + sum.Sys + sum.Idle // + sum.Nice
@@ -304,9 +302,6 @@ func dfbytes(diskinfos []diskInfo, client client) *types.DFbytes {
 			UsePercentClass: labelClass_colorPercent(percent(approxused,  approxtotal)),
 		})
 	}
-	// if !*client.ExpandDF && len(disks) > TOPROWS {
-	// 	disks = disks[:TOPROWS]
-	// }
 	dsb := new(types.DFbytes)
 	dsb.List = disks
 	return dsb
@@ -596,6 +591,8 @@ func getUpdates(req *http.Request, client *client, sendc **sendClient, forcerefr
 		collect()
 	}
 
+	// client.recalcrows() // before anything
+
 	var pu pageUpdate
 	func() {
 		lastLock.Lock()
@@ -630,11 +627,11 @@ func getUpdates(req *http.Request, client *client, sendc **sendClient, forcerefr
 	}
 
 	 pu.IF = types.NewDataMeta()
-	*pu.IF.Expandable = len(if_copy) > TOPROWS
+	*pu.IF.Expandable = len(if_copy) > client.toprows
 	*pu.IF.ExpandText = fmt.Sprintf("Expanded (%d)", len(if_copy))
 
 	 pu.DF = types.NewDataMeta()
-	*pu.DF.Expandable = len(df_copy) > TOPROWS
+	*pu.DF.Expandable = len(df_copy) > client.toprows
 	*pu.DF.ExpandText = fmt.Sprintf("Expanded (%d)", len(df_copy))
 
 	if !*client.HideDF && client.RefreshDF.refresh(forcerefresh) {
