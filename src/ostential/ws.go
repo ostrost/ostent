@@ -9,15 +9,32 @@ import (
 	"strings"
 	"net/url"
 	"net/http"
+	"encoding/json"
 	gorillawebsocket "github.com/gorilla/websocket"
 )
 
-type periodValue struct {
-	time.Duration
-	above *time.Duration // optional
+type Duration time.Duration
+
+func(d Duration) String() string {
+	s := time.Duration(d).String()
+	if strings.HasSuffix(s, "m0s") {
+		s = strings.TrimSuffix(s, "0s")
+	}
+	if strings.HasSuffix(s, "h0m") {
+		s = strings.TrimSuffix(s, "0m")
+	}
+	return s
 }
 
-func(pv periodValue) String() string { return pv.Duration.String(); }
+func(d Duration) MarshalJSON() ([]byte, error) {
+	return json.Marshal(d.String())
+}
+
+type periodValue struct {
+	Duration
+	above *Duration // optional
+}
+
 func(pv *periodValue) Set(input string) error {
 	v, err := time.ParseDuration(input)
 	if err != nil {
@@ -29,14 +46,14 @@ func(pv *periodValue) Set(input string) error {
 	if v % time.Second != 0 {
 		return fmt.Errorf("Not a multiple of a second: %s", v)
 	}
-	if pv.above != nil && v < *pv.above {
+	if pv.above != nil && v < time.Duration(*pv.above) {
 		return fmt.Errorf("Should be above %s: %s", *pv.above, v)
 	}
-	pv.Duration = v
+	pv.Duration = Duration(v)
 	return nil
 }
 
-var periodFlag = periodValue{Duration: time.Second} // default
+var periodFlag = periodValue{Duration: Duration(time.Second)} // default
 func init() {
 	flag.Var(&periodFlag, "u",      "Collection (update) interval")
 	flag.Var(&periodFlag, "update", "Collection (update) interval")

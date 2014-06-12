@@ -480,6 +480,7 @@ type PageData struct {
 	DISTRIB     string
 	VERSION     string
 	HTTP_HOST   string
+	PeriodDuration Duration
 
     Client client
 
@@ -691,6 +692,7 @@ func pageData(req *http.Request) PageData {
 		DISTRIB:    DISTRIB, // value from init_*.go
 		VERSION:    VERSION, // value from server.go
 		HTTP_HOST:  req.Host,
+		PeriodDuration: periodFlag.Duration,
 	}
 	data.DF  = updates.DF
 	data.IF  = updates.IF

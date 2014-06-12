@@ -5,6 +5,7 @@
     input.form-control.refresh-input
       [type="text"]
       [placeholder=$placeholder]
+      [value=$value] ? json($value) != json($placeholder)
 [[end]]
 !!! 5
 html
@@ -103,7 +104,8 @@ html
                         | Show swap
 
                   div.form-group-padded
-                    $placeholder = Data.Client.RefreshMEM
+                    $placeholder = Data.PeriodDuration
+                    $value       = Data.Client.RefreshMEM
                     [[template "define_refresh"]]
 
             div.collapse#mem
@@ -114,36 +116,39 @@ html
         div.block.col-md-3
           div.panel1
             header.draggable
-              a.btn-header-block[href="#if"] #{Data.Client.TabTitleDF}
+              a.btn-header-block[href="#if"] #{Data.Client.TabTitleIF}
                 [class="active"] ? (json(Data.Client.HideconfigIF) == "false")
 
-            div.collapse#ifconfig
-              [class="in"] ? (json(Data.Client.HideconfigIF) == "false")
-              form.horizontal-form
-                div.form-group-padded
-                   div.btn-group.btn-group-sm[data-toggle="buttons"]
-                    label.btn.btn-default.hiding
-                      input[type="checkbox"]
-                      | Hidden
-                    label.btn.btn-default[href="#if"]
-                      [class="disabled"] ? (json(Data.IF.Expandable)) != "true")
-                      input[type="checkbox"]
-                      | #{Data.IF.ExpandText}
+            //- a div for collapse to animate properly
+            div
+              div.collapse#ifconfig
+                [class="in"] ? (json(Data.Client.HideconfigIF) == "false")
+                form.horizontal-form
+                  div.form-group-padded
+                     div.btn-group.btn-group-sm[data-toggle="buttons"]
+                      label.btn.btn-default.hiding
+                        input[type="checkbox"]
+                        | Hidden
+                      label.btn.btn-default[href="#if"]
+                        [class="disabled"] ? (json(Data.IF.Expandable)) != "true")
+                        input[type="checkbox"]
+                        | #{Data.IF.ExpandText}
 
-                div.form-group-padded
-                  $placeholder = Data.Client.RefreshIF
-                  [[template "define_refresh"]]
+                  div.form-group-padded
+                    $placeholder = Data.PeriodDuration
+                    $value       = Data.Client.RefreshIF
+                    [[template "define_refresh"]]
 
-              ul.nav.nav-tabs
-                li.if-switch
-                  [data-tabid=Data.IFTABS.IFpackets]
-                    a[href="#ifpackets"] Packets
-                li.if-switch
-                  [data-tabid=Data.IFTABS.IFerrors]
-                    a[href="#iferrors"] Errors
-                li.if-switch.active
-                  [data-tabid=Data.IFTABS.IFbytes]
-                    a[href="#ifbytes"] Bytes
+                ul.nav.nav-tabs
+                  li.if-switch
+                    [data-tabid=Data.IFTABS.IFpackets]
+                      a[href="#ifpackets"] Packets
+                  li.if-switch
+                    [data-tabid=Data.IFTABS.IFerrors]
+                      a[href="#iferrors"] Errors
+                  li.if-switch.active
+                    [data-tabid=Data.IFTABS.IFbytes]
+                      a[href="#ifbytes"] Bytes
 
             //- panels selected by .if-tab
             div.if-tab.collapse#ifpackets
@@ -187,7 +192,8 @@ html
                       | #{Data.CPU.ExpandText}
 
                 div.form-group-padded
-                  $placeholder = Data.Client.RefreshCPU
+                  $placeholder = Data.PeriodDuration
+                  $value       = Data.Client.RefreshCPU
                   [[template "define_refresh"]]
 
             div.collapse#cpu
@@ -201,30 +207,33 @@ html
               a.btn-header-block[href="#df"] #{Data.Client.TabTitleDF}
                 [class="active"] ? (json(Data.Client.HideconfigDF) == "false")
 
-            div.collapse#dfconfig
-              [class="in"] ? (json(Data.Client.HideconfigDF) == "false")
-              form.horizontal-form
-                div.form-group-padded
-                  div.btn-group.btn-group-sm[data-toggle="buttons"]
-                    label.btn.btn-default.hiding
-                      input[type="checkbox"]
-                      | Hidden
-                    label.btn.btn-default[href="#df"]
-                      [class="disabled"] ? (json(Data.DF.Expandable)) != "true")
-                      input[type="checkbox"]
-                      | #{Data.DF.ExpandText}
+            //- a div for collapse to animate properly
+            div
+              div.collapse#dfconfig
+                [class="in"] ? (json(Data.Client.HideconfigDF) == "false")
+                form.horizontal-form
+                  div.form-group-padded
+                    div.btn-group.btn-group-sm[data-toggle="buttons"]
+                      label.btn.btn-default.hiding
+                        input[type="checkbox"]
+                        | Hidden
+                      label.btn.btn-default[href="#df"]
+                        [class="disabled"] ? (json(Data.DF.Expandable)) != "true")
+                        input[type="checkbox"]
+                        | #{Data.DF.ExpandText}
 
-                div.form-group-padded
-                  $placeholder = Data.Client.RefreshDF
-                  [[template "define_refresh"]]
+                  div.form-group-padded
+                    $placeholder = Data.PeriodDuration
+                    $value       = Data.Client.RefreshDF
+                    [[template "define_refresh"]]
 
-              ul.nav.nav-tabs
-                li.df-switch
-                  [data-tabid=Data.DFTABS.DFinodes]
-                    a[href="#dfinodes"] Inodes
-                li.df-switch.active
-                  [data-tabid=Data.DFTABS.DFbytes]
-                    a[href="#dfbytes"] Bytes
+                ul.nav.nav-tabs
+                  li.df-switch
+                    [data-tabid=Data.DFTABS.DFinodes]
+                      a[href="#dfinodes"] Inodes
+                  li.df-switch.active
+                    [data-tabid=Data.DFTABS.DFbytes]
+                      a[href="#dfbytes"] Bytes
 
             //- panels selected by .df-tab
             div.df-tab.collapse#dfinodes
@@ -258,7 +267,8 @@ html
               [class="in"] ? (json(Data.Client.HideconfigPS) == "false")
               form.inline-form.border-bottom-form.text-right
                 div.form-group-padded
-                  $placeholder = Data.Client.RefreshPS
+                  $placeholder = Data.PeriodDuration
+                  $value       = Data.Client.RefreshPS
                   [[template "define_refresh"]]
 
                 div.form-group-padded
@@ -292,7 +302,8 @@ html
               [class="in"] ? (json(Data.Client.HideconfigVG) == "false")
               form.inline-form.border-bottom-form.text-right
                 div.form-group-padded
-                  $placeholder = Data.Client.RefreshVG
+                  $placeholder = Data.PeriodDuration
+                  $value       = Data.Client.RefreshVG
                   [[template "define_refresh"]]
                 div.form-group-padded
                   div.btn-group.btn-group-sm[data-toggle="buttons"]

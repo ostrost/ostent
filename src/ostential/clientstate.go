@@ -3,23 +3,11 @@ import (
 	"ostential/types"
 
 	"time"
-	"strings"
-	"encoding/json"
 )
 
 type refresh struct {
-	time.Duration
+	Duration
 	tick int
-}
-func(r refresh) MarshalJSON() ([]byte, error) {
-	s := r.Duration.String()
-	if strings.HasSuffix(s, "m0s") {
-		s = strings.TrimSuffix(s, "0s")
-	}
-	if strings.HasSuffix(s, "h0m") {
-		s = strings.TrimSuffix(s, "0m")
-	}
-	return json.Marshal(s)
 }
 
 func(r *refresh) refresh(forcerefresh bool) Boole {
@@ -36,7 +24,7 @@ func(r *refresh) refresh(forcerefresh bool) Boole {
 }
 
 func(r refresh) expires() bool {
-	return r.tick + 1 >= int(r.Duration / time.Second)
+	return r.tick + 1 >= int(time.Duration(r.Duration) / time.Second)
 }
 
 type internalClient struct {
