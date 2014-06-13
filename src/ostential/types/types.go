@@ -20,18 +20,6 @@ func(seq SEQ) Sign(t bool) bool { // used in sortable_*.go
 	return !t
 }
 
-type DataMeta struct {
-	Expandable *bool   `json:",omitempty"`
-	ExpandText *string `json:",omitempty"`
-}
-
-func NewDataMeta() DataMeta {
-	return DataMeta{
-		Expandable: new(bool),
-		ExpandText: new(string),
-	}
-}
-
 type Memory struct {
 	Kind           string
 	Total          string
@@ -42,12 +30,10 @@ type Memory struct {
 
 type MEM struct {
 	List []Memory
-	// DataMeta? // unused Expand* by MEM
 }
 
 type CPU struct {
 	List []Core
-	DataMeta
 }
 
 type Core struct {

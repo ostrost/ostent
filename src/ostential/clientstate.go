@@ -57,6 +57,7 @@ type commonClient struct {
 	HideVG  *Boole `json:",omitempty"`
 
 	HideSWAP  *Boole `json:",omitempty"`
+
 	ExpandIF  *Boole `json:",omitempty"`
 	ExpandCPU *Boole `json:",omitempty"`
 	ExpandDF  *Boole `json:",omitempty"`
@@ -81,6 +82,14 @@ type client struct {
 	internalClient `json:"-"` // NB not marshalled
 	commonClient
 
+	ExpandableIF  *bool   `json:",omitempty"`
+	ExpandableCPU *bool   `json:",omitempty"`
+	ExpandableDF  *bool   `json:",omitempty"`
+
+	ExpandtextIF  *string `json:",omitempty"`
+	ExpandtextCPU *string `json:",omitempty"`
+	ExpandtextDF  *string `json:",omitempty"`
+
 	RefreshMEM *refresh `json:",omitempty"`
 	RefreshIF  *refresh `json:",omitempty"`
 	RefreshCPU *refresh `json:",omitempty"`
@@ -95,6 +104,28 @@ type client struct {
 
 func (c *client) recalcrows() {
 	c.toprows = map[bool]int{true: 1, false: 2}[bool(*c.HideSWAP)]
+}
+
+func setBool(b, b2 **bool, v bool) {
+	if *b != nil && **b == v {
+		return // unchanged
+	}
+	if *b == nil {
+		*b = new(bool)
+	}
+	**b = v
+	*b2 = *b
+}
+
+func setString(s, s2 **string, v string) {
+	if *s != nil && **s == v {
+		return // unchanged
+	}
+	if *s == nil {
+		*s = new(string)
+	}
+	**s = v
+	*s2 = *s
 }
 
 type sendClient struct {

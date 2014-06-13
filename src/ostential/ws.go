@@ -212,14 +212,14 @@ func (rs *recvClient) mergeRefreshSignal(ppinput *string, prefresh *refresh, sen
 	return nil
 }
 
-func (rs *recvClient) MergeClient(cs *client, sendc *sendClient) error {
+func (rs *recvClient) MergeClient(cs *client, send *sendClient) error {
 	rs.mergeMorePsignal(cs)
-	if err := rs.mergeRefreshSignal(rs.RefreshSignalMEM, cs.RefreshMEM, &sendc.RefreshMEM, &sendc.RefreshErrorMEM); err != nil { return err }
-	if err := rs.mergeRefreshSignal(rs.RefreshSignalIF,  cs.RefreshIF,  &sendc.RefreshIF,  &sendc.RefreshErrorIF);  err != nil { return err }
-	if err := rs.mergeRefreshSignal(rs.RefreshSignalCPU, cs.RefreshCPU, &sendc.RefreshCPU, &sendc.RefreshErrorCPU); err != nil { return err }
-	if err := rs.mergeRefreshSignal(rs.RefreshSignalDF,  cs.RefreshDF,  &sendc.RefreshDF,  &sendc.RefreshErrorDF);  err != nil { return err }
-	if err := rs.mergeRefreshSignal(rs.RefreshSignalPS,  cs.RefreshPS,  &sendc.RefreshPS,  &sendc.RefreshErrorPS);  err != nil { return err }
-	if err := rs.mergeRefreshSignal(rs.RefreshSignalVG,  cs.RefreshVG,  &sendc.RefreshVG,  &sendc.RefreshErrorVG);  err != nil { return err }
+	if err := rs.mergeRefreshSignal(rs.RefreshSignalMEM, cs.RefreshMEM, &send.RefreshMEM, &send.RefreshErrorMEM); err != nil { return err }
+	if err := rs.mergeRefreshSignal(rs.RefreshSignalIF,  cs.RefreshIF,  &send.RefreshIF,  &send.RefreshErrorIF);  err != nil { return err }
+	if err := rs.mergeRefreshSignal(rs.RefreshSignalCPU, cs.RefreshCPU, &send.RefreshCPU, &send.RefreshErrorCPU); err != nil { return err }
+	if err := rs.mergeRefreshSignal(rs.RefreshSignalDF,  cs.RefreshDF,  &send.RefreshDF,  &send.RefreshErrorDF);  err != nil { return err }
+	if err := rs.mergeRefreshSignal(rs.RefreshSignalPS,  cs.RefreshPS,  &send.RefreshPS,  &send.RefreshErrorPS);  err != nil { return err }
+	if err := rs.mergeRefreshSignal(rs.RefreshSignalVG,  cs.RefreshVG,  &send.RefreshVG,  &send.RefreshErrorVG);  err != nil { return err }
 	return nil
 }
 
@@ -275,19 +275,19 @@ func(wc *wclient) pong(rd *received) *bool {
 	wc.clientMutex.Lock()
 	defer wc.clientMutex.Unlock()
 
+	send := sendClient{}
 	var req *http.Request
-	var sendc *sendClient
+
 	if rd != nil {
 		if rd.Client != nil {
-			sendc = new(sendClient)
-			err := rd.Client.MergeClient(&wc.fullClient, sendc)
+			err := rd.Client.MergeClient(&wc.fullClient, &send)
 			if err != nil {
 				// if !wc.writeError(err) { break }
 				// wc.writeError(err); continue
-				sendc.DebugError = new(string)
-				*sendc.DebugError = err.Error()
+				send.DebugError = new(string)
+				*send.DebugError = err.Error()
 			}
-			wc.fullClient.Merge(*rd.Client, sendc)
+			wc.fullClient.Merge(*rd.Client, &send)
 		}
 		if rd.Search != nil {
 			form, err := url.ParseQuery(strings.TrimPrefix(*rd.Search, "?"))
@@ -300,7 +300,7 @@ func(wc *wclient) pong(rd *received) *bool {
 		}
 	}
 
-	updates := getUpdates(req, &wc.fullClient, &sendc, false)
+	updates := getUpdates(req, &wc.fullClient, send, false)
 
 	if wc.ws.WriteJSON(updates) != nil {
 		return newfalse()

@@ -130,9 +130,9 @@ html
                         input[type="checkbox"]
                         | Hidden
                       label.btn.btn-default[href="#if"]
-                        [class="disabled"] ? (json(Data.IF.Expandable)) != "true")
+                        [class="disabled"] ? (json(Data.Client.ExpandableIF)) != "true")
                         input[type="checkbox"]
-                        | #{Data.IF.ExpandText}
+                        | #{Data.Client.ExpandtextIF}
 
                   div.form-group-padded
                     $placeholder = Data.PeriodDuration
@@ -187,9 +187,9 @@ html
                       input[type="checkbox"]
                       | Hidden
                     label.btn.btn-default[href="#cpu"]
-                      [class="disabled"] ? (json(Data.CPU.Expandable)) != "true")
+                      [class="disabled"] ? (json(Data.Client.ExpandableCPU)) != "true")
                       input[type="checkbox"]
-                      | #{Data.CPU.ExpandText}
+                      | #{Data.Client.ExpandtextCPU}
 
                 div.form-group-padded
                   $placeholder = Data.PeriodDuration
@@ -218,9 +218,9 @@ html
                         input[type="checkbox"]
                         | Hidden
                       label.btn.btn-default[href="#df"]
-                        [class="disabled"] ? (json(Data.DF.Expandable)) != "true")
+                        [class="disabled"] ? (json(Data.Client.ExpandableDF)) != "true")
                         input[type="checkbox"]
-                        | #{Data.DF.ExpandText}
+                        | #{Data.Client.ExpandtextDF}
 
                   div.form-group-padded
                     $placeholder = Data.PeriodDuration

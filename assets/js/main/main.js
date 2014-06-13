@@ -328,16 +328,20 @@ var View = Backbone.View.extend({
 
         var B = _.bind(function(c) { return _.bind(c, this); }, this);
         var expandable_sections = [
-            [$section_if,  'ExpandIF',  'HideIF' ],
-            [$section_cpu, 'ExpandCPU', 'HideCPU'],
-            [$section_df,  'ExpandDF',  'HideDF' ]
+            [$section_if,  'ExpandIF',  'HideIF',  'ExpandableIF',  'ExpandtextIF'],
+            [$section_cpu, 'ExpandCPU', 'HideCPU', 'ExpandableCPU', 'ExpandtextCPU'],
+            [$section_df,  'ExpandDF',  'HideDF',  'ExpandableDF',  'ExpandtextDF']
         ];
         for (var i = 0; i < expandable_sections.length; ++i) {
             var S = expandable_sections[i][0];
             var E = expandable_sections[i][1];
             var H = expandable_sections[i][2];
+            var L = expandable_sections[i][3];
+            var T = expandable_sections[i][4];
             var $b = $('label[href="'+ S.selector +'"]');
 
+            this.listentext(T, $b);
+            this.listenenable(L, $b, true);
             this.listenactivate(E, $b);
             $b.click( B(this.click_expandfunc(E, H)) );
         }
@@ -395,11 +399,12 @@ var View = Backbone.View.extend({
         });
     },
 
-    listenenable: function(K, $el) {
+    listenenable: function(K, $el, reverse) {
         this.listenTo(this.model, 'change:'+ K, function() {
             var A = this.model.attributes;
             var V = A[K];
             V = V !== undefined && V;
+            V = reverse !== undefined && reverse ? !V : V;
             $el.prop('disabled', V);
             $el[V ? 'addClass' : 'removeClass']('disabled');
         });

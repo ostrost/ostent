@@ -135,11 +135,11 @@ func(li lastinfo) cpuListDelta() sigar.CpuList {
 	return cls
 }
 
-func(li lastinfo) CPUDelta(client client) *types.CPU {
+func(li lastinfo) CPUDelta(client client) (*types.CPU, int) {
 	cls := li.cpuListDelta()
 	coreno := len(cls.List)
 	if coreno == 0 { // wait, what?
-		return &types.CPU{}
+		return &types.CPU{}, coreno
 	}
 
 	sum := sigar.Cpu{}
@@ -172,18 +172,14 @@ func(li lastinfo) CPUDelta(client client) *types.CPU {
 	}
 
 	cpu := new(types.CPU)
-	cpu.DataMeta = types.NewDataMeta()
 
 	if coreno == 1 {
 		cores[0].N = "#0"
-		*cpu.DataMeta.ExpandText = "Expanded (1)"
 		cpu.List = cores
-		return cpu
+		return cpu, coreno
 	}
-	sort.Sort(cpuOrder(cores))
 
-	*cpu.DataMeta.ExpandText = fmt.Sprintf("Expanded (%d)", coreno)
-	*cpu.DataMeta.Expandable = coreno > client.toprows-1 // one row reserved for "all N"
+	sort.Sort(cpuOrder(cores))
 
 	if !*client.ExpandCPU {
 		if coreno > client.toprows-1 {
@@ -210,7 +206,7 @@ func(li lastinfo) CPUDelta(client client) *types.CPU {
 	}
 
 	cpu.List = cores
-	return cpu
+	return cpu, coreno
 }
 
 func textClass_colorPercent(p uint) string {
@@ -366,55 +362,28 @@ func username(uids map[uint]string, uid uint) string {
 	return s
 }
 
-func orderProc(procs []types.ProcInfo, client *client, sendc **sendClient) []types.ProcData {
-	sort.Sort(procOrder{ // not sort.Stable
-		procs:   procs,
-		seq:     client.psSEQ,
-		reverse: _PSBIMAP.SEQ2REVERSE[client.psSEQ],
-	})
+func orderProc(procs []types.ProcInfo, client *client, send *sendClient) []types.ProcData {
+	if len(procs) > 1 {
+		sort.Sort(procOrder{ // not sort.Stable
+			procs:   procs,
+			seq:     client.psSEQ,
+			reverse: _PSBIMAP.SEQ2REVERSE[client.psSEQ],
+		})
+	}
 
 	limitPS := client.psLimit
+	notdec := limitPS <= 1
+	notexp := limitPS >= len(procs)
 
-	if *sendc == nil {
-		*sendc = new(sendClient)
-	}
-
-	if limitPS <= 1 {
-		if client.PSnotDecreasable == nil || *client.PSnotDecreasable == false {
-			client.PSnotDecreasable = newtrue()
-			(*sendc).PSnotDecreasable = client.PSnotDecreasable
-		}
-	} else {
-		if client.PSnotDecreasable == nil || *client.PSnotDecreasable == true {
-			client.PSnotDecreasable = newfalse()
-			(*sendc).PSnotDecreasable = client.PSnotDecreasable
-		}
-	}
-
-	if len(procs) <= limitPS {
+	if limitPS >= len(procs) { // notexp
 		limitPS = len(procs) // NB modified limitPS
-
-		if client.PSnotExpandable == nil || *client.PSnotExpandable == false {
-			client.PSnotExpandable = newtrue()
-			(*sendc).PSnotExpandable = client.PSnotExpandable
-		}
 	} else {
-		if client.PSnotExpandable == nil || *client.PSnotExpandable == true {
-			client.PSnotExpandable = newfalse()
-			(*sendc).PSnotExpandable = client.PSnotExpandable
-		}
-	}
-
-	plustext := fmt.Sprintf("%d+", limitPS)
-	if client.PSplusText == nil || *client.PSplusText != plustext {
-		 (*sendc).PSplusText = new(string)
-		*(*sendc).PSplusText = fmt.Sprintf("%d+", limitPS)
-		   client.PSplusText = (*sendc).PSplusText
-	}
-
-	if len(procs) > limitPS {
 		procs = procs[:limitPS]
 	}
+
+	setBool  (&client.PSnotDecreasable, &send.PSnotDecreasable, notdec)
+	setBool  (&client.PSnotExpandable,  &send.PSnotExpandable,  notexp)
+	setString(&client.PSplusText,       &send.PSplusText,       fmt.Sprintf("%d+", limitPS))
 
 	uids := map[uint]string{}
 	var list []types.ProcData
@@ -461,9 +430,6 @@ type PageData struct {
 	DFbytes  types.DFbytes  `json:",omitempty"`
 	DFinodes types.DFinodes `json:",omitempty"`
 
-	DF types.DataMeta
-	IF types.DataMeta
-
 	IFbytes   types.Interfaces
 	IFerrors  types.Interfaces
 	IFpackets types.Interfaces
@@ -492,9 +458,6 @@ type pageUpdate struct {
 	DFlinks  *DFlinks        `json:",omitempty"`
 	DFbytes  *types.DFbytes  `json:",omitempty"`
 	DFinodes *types.DFinodes `json:",omitempty"`
-
-	DF types.DataMeta // a pointer and `json:",omitempty"` ?
-	IF types.DataMeta // a pointer and `json:",omitempty"` ?
 
 	PSlinks *PSlinks       `json:",omitempty"`
 	PStable *PStable       `json:",omitempty"`
@@ -573,14 +536,7 @@ func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Bis
 	}
 }
 
-func getUpdates(req *http.Request, client *client, sendc **sendClient, forcerefresh bool) pageUpdate {
-	var (
-		df_copy []diskInfo
-		ps_copy []types.ProcInfo
-		if_copy     []InterfaceInfo
-		previf_copy []InterfaceInfo
-	)
-
+func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh bool) pageUpdate {
 	havelast := false
 	func() {
 		lastLock.Lock()
@@ -591,8 +547,15 @@ func getUpdates(req *http.Request, client *client, sendc **sendClient, forcerefr
 		collect()
 	}
 
-	// client.recalcrows() // before anything
+	client.recalcrows() // before anything
 
+	var (
+		coreno      int
+		df_copy     []diskInfo
+		ps_copy     []types.ProcInfo
+		if_copy     []InterfaceInfo
+		previf_copy []InterfaceInfo
+	)
 	var pu pageUpdate
 	func() {
 		lastLock.Lock()
@@ -615,7 +578,7 @@ func getUpdates(req *http.Request, client *client, sendc **sendClient, forcerefr
 			pu.MEM = lastInfo.MEM(*client)
 		}
 		if !*client.HideCPU && client.RefreshCPU.refresh(forcerefresh) {
-			pu.CPU = lastInfo.CPUDelta(*client)
+			pu.CPU, coreno = lastInfo.CPUDelta(*client)
 		}
 	}()
 
@@ -626,13 +589,18 @@ func getUpdates(req *http.Request, client *client, sendc **sendClient, forcerefr
 		pu.DFlinks = (*DFlinks)(linkattrs(req, base, "df", _DFBIMAP, &client.dfSEQ))
 	}
 
-	 pu.IF = types.NewDataMeta()
-	*pu.IF.Expandable = len(if_copy) > client.toprows
-	*pu.IF.ExpandText = fmt.Sprintf("Expanded (%d)", len(if_copy))
+	if pu.CPU != nil { // TODO Is it ok to update the *client.Expand*CPU when the CPU is shown only?
+		setBool  (&client.ExpandableCPU, &send.ExpandableCPU, coreno > client.toprows - 1) // one row reserved for "all N"
+		setString(&client.ExpandtextCPU, &send.ExpandtextCPU, fmt.Sprintf("Expanded (%d)", coreno))
+	}
 
-	 pu.DF = types.NewDataMeta()
-	*pu.DF.Expandable = len(df_copy) > client.toprows
-	*pu.DF.ExpandText = fmt.Sprintf("Expanded (%d)", len(df_copy))
+	if true {
+		setBool  (&client.ExpandableIF, &send.ExpandableIF, len(if_copy) > client.toprows)
+		setString(&client.ExpandtextIF, &send.ExpandtextIF, fmt.Sprintf("Expanded (%d)", len(if_copy)))
+
+		setBool  (&client.ExpandableDF, &send.ExpandableDF, len(df_copy) > client.toprows)
+		setString(&client.ExpandtextDF, &send.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(df_copy)))
+	}
 
 	if !*client.HideDF && client.RefreshDF.refresh(forcerefresh) {
 		orderedDisks := orderDisks(df_copy, client.dfSEQ)
@@ -652,7 +620,7 @@ func getUpdates(req *http.Request, client *client, sendc **sendClient, forcerefr
 
 	if !*client.HidePS && client.RefreshPS.refresh(forcerefresh) {
 		pu.PStable = new(PStable)
-		pu.PStable.List = orderProc(ps_copy, client, sendc)
+		pu.PStable.List = orderProc(ps_copy, client, &send)
 	}
 
 	if !*client.HideVG && client.RefreshVG.refresh(forcerefresh) {
@@ -666,14 +634,15 @@ func getUpdates(req *http.Request, client *client, sendc **sendClient, forcerefr
 		}
 	}
 
-	pu.Client = *sendc
+	if send != (sendClient{}) {
+		pu.Client = &send
+	}
 	return pu
 }
 
 func pageData(req *http.Request) PageData {
 	client := defaultClient()
-	var sendc *sendClient // nil
-	updates := getUpdates(req, &client, &sendc, true)
+	updates := getUpdates(req, &client, sendClient{}, true)
 
 	data := PageData{
 		Client:     client,
@@ -691,8 +660,6 @@ func pageData(req *http.Request) PageData {
 		HTTP_HOST:  req.Host,
 		PeriodDuration: periodFlag.Duration,
 	}
-	data.DF  = updates.DF
-	data.IF  = updates.IF
 
 	       if updates.DFbytes  != nil { data.DFbytes  = *updates.DFbytes
 	} else if updates.DFinodes != nil { data.DFinodes = *updates.DFinodes
