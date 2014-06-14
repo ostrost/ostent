@@ -12,6 +12,7 @@ html
   head
     title #{Data.Generic.Hostname} ostent
     meta[name="viewport"][content="width=device-width, initial-scale=1"]
+    meta[charset="utf-8"]
 
     //- meta[itemprop="image"][content="/favicon.png"]
     link[rel="icon"][type="image/png"][href="/favicon.png"]

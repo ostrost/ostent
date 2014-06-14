@@ -196,6 +196,7 @@
   each $i, $core in Data.CPU.List
     |<tr key=#{$core.N}>
       td.text-right.nowrap #{$core.N}
+      //- td.text-right #{$core.UserSpark}
       td.text-right <span class=#{$core.UserClass}>#{$core.User}</span>
       td.text-right <span class=#{$core.SysClass}>#{$core.Sys}</span>
       td.text-right <span class=#{$core.IdleClass}>#{$core.Idle}</span>
@@ -207,6 +208,7 @@
     thead
       tr
         th
+        //- th.text-right.nowrap[colspan="2"] User
         th.text-right.nowrap User
           span.unit %
         th.text-right.nowrap Sys

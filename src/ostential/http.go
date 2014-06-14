@@ -14,6 +14,7 @@ import (
 	"net/url"
 	"net/http"
 	"html/template"
+	"container/ring"
 
 	"github.com/rzab/gosigar"
 )
@@ -115,14 +116,14 @@ func(li lastinfo) MEM(client client) *types.MEM {
 	return mem
 }
 
-func(li lastinfo) cpuListDelta() sigar.CpuList {
+func(li lastinfo) cpuListDelta() (sigar.CpuList, bool) {
 	prev := li.Previous.CPU
 	if len(prev.List) == 0 {
-		return li.CPU
+		return li.CPU, false
 	}
 	coreno := len(li.CPU.List)
 	if coreno == 0 { // wait, what?
-		return sigar.CpuList{}
+		return sigar.CpuList{}, false
 	}
 	cls := sigar.CpuList{List: make([]sigar.Cpu, coreno) }
 	copy(cls.List, li.CPU.List)
@@ -132,11 +133,11 @@ func(li lastinfo) cpuListDelta() sigar.CpuList {
 		cls.List[i].Sys  -= prev.List[i].Sys
 		cls.List[i].Idle -= prev.List[i].Idle
 	}
-	return cls
+	return cls, true
 }
 
 func(li lastinfo) CPUDelta(client client) (*types.CPU, int) {
-	cls := li.cpuListDelta()
+	cls, _ := li.cpuListDelta()
 	coreno := len(cls.List)
 	if coreno == 0 { // wait, what?
 		return &types.CPU{}, coreno
@@ -164,6 +165,9 @@ func(li lastinfo) CPUDelta(client client) (*types.CPU, int) {
 			UserClass:  textClass_colorPercent(user),
 			SysClass:   textClass_colorPercent(sys),
 			IdleClass:  textClass_colorPercent(100 - idle),
+			// UserSpark: li.fiveCPU[i].user.spark(),
+			// SysSpark:  li.fiveCPU[i].sys .spark(),
+			// IdleSpark: li.fiveCPU[i].idle.spark(),
 		}
 
 		sum.User += each.User + each.Nice
@@ -202,6 +206,9 @@ func(li lastinfo) CPUDelta(client client) (*types.CPU, int) {
 			UserClass: textClass_colorPercent(user),
 			SysClass:  textClass_colorPercent(sys),
 			IdleClass: textClass_colorPercent(100 - idle),
+			// UserSpark: .spark(),
+			// SysSpark:  .spark(),
+			// IdleSpark: .spark(),
 		}}, cores...)
 	}
 
@@ -416,6 +423,116 @@ type lastinfo struct {
 	ProcList   []types.ProcInfo
 	Interfaces []InterfaceInfo
 	Previous *Previous
+	lastfive lastfive
+}
+
+type lastfive struct {
+//	CPU []*fiveCPU
+	LA1   *five
+}
+
+type fiveCPU struct {
+	user, sys, idle *five
+}
+
+type five struct {
+	*ring.Ring
+	min, max int
+}
+
+func newFive() *five {
+	return &five{Ring: ring.New(5), min: -1, max: -1}
+}
+
+func(f *five) push(v int) {
+	push(&f, v)
+}
+
+func push(ff **five, v int) {
+	if *ff == nil {
+		*ff = newFive()
+	}
+	f := *ff
+	setmin := f.min == -1 || v < f.min
+	setmax := f.max == -1 || v > f.max
+	if setmin {
+		f.min = v
+	}
+	if setmax {
+		f.max = v
+	}
+
+	r := f.Move(1)
+	r.Move(4).Value = v
+	f.Ring = r // gc please
+
+	// recalc min, max of the remained values
+
+	if !setmin {
+		if f.Ring != nil && f.Ring.Value != nil {
+			f.min = f.Ring.Value.(int)
+		}
+		f.Do(func(o interface{}) {
+			if o == nil {
+				return
+			}
+			v := o.(int)
+			if f.min > v {
+				f.min = v
+			}
+		})
+	}
+	if !setmax {
+		if f.Ring != nil && f.Ring.Value != nil {
+			f.max = f.Ring.Value.(int)
+		}
+		f.Do(func(o interface{}) {
+			if o == nil {
+				return
+			}
+			v := o.(int)
+			if f.max < v {
+				f.max = v
+			}
+		})
+	}
+}
+
+func(f five) spark() string {
+	if f.max == -1 || f.min == -1 { // || f.max == f.min {
+		return ""
+	}
+	spread := f.max - f.min
+
+	bars := []string{
+		"▁",
+		"▂",
+		"▃",
+// 		"▄", // looks bad in browsers
+		"▅",
+		"▆",
+		"▇",
+// 		"█", // looks bad in browsers
+	}
+
+	s := ""
+	f.Do(func(o interface{}) {
+		if o == nil {
+			return
+		}
+		v := o.(int)
+		fi := 0.0
+		if spread != 0 {
+			fi = float64(v - f.min) / float64(spread)
+			if fi > 1.0 {
+				// panic("impossible") // ??
+				fi = 1.0
+			}
+		}
+		i := int(fi * float64(len(bars) - 1))
+		s += bars[ i ]
+	})
+	return s
 }
 
 type PageData struct {
@@ -510,6 +627,7 @@ func collect() {
 	}(cch)
 
 	lastInfo = lastinfo{
+		lastfive: lastInfo.lastfive,
 		Previous: &Previous{
 			CPU:        lastInfo.CPU,
 			Interfaces: lastInfo.Interfaces,
@@ -525,6 +643,30 @@ func collect() {
 	ii := <-ifch
 	lastInfo.Generic.IP = ii.IP
 	lastInfo.Interfaces = filterInterfaces(ii.List)
+
+	push(&lastInfo.lastfive.LA1, lastInfo.Generic.la1)
+	lastInfo.Generic.LA1spark = lastInfo.lastfive.LA1.spark()
+
+	/* delta, isdelta := lastInfo.cpuListDelta()
+	for i, core := range delta.List {
+		var fcpu *fiveCPU
+		if i >= len(lastInfo.lastfive.CPU) {
+			fcpu = &fiveCPU{
+				user: newFive(),
+				sys:  newFive(),
+				idle: newFive(),
+			}
+			lastInfo.lastfive.CPU = append(lastInfo.lastfive.CPU, fcpu)
+		} else {
+			fcpu = lastInfo.lastfive.CPU[i]
+		}
+		if isdelta {
+			_ = core
+			fcpu.user.push(int(core.User))
+			fcpu.sys .push(int(core.Sys))
+			fcpu.idle.push(int(core.Idle))
+		}
+	} // */
 }
 
 func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Biseqmap, seq *types.SEQ) *types.Linkattrs {
@@ -571,8 +713,11 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 		copy(if_copy,     lastInfo.Interfaces)
 		copy(previf_copy, lastInfo.Previous.Interfaces)
 
+		g := lastInfo.Generic
+		g.LA = g.LA1spark + " " + g.LA
+
 		pu = pageUpdate{
-			Generic: lastInfo.Generic,
+			Generic: g, // lastInfo.Generic,
 		}
 		if !*client.HideMEM && client.RefreshMEM.refresh(forcerefresh) {
 			pu.MEM = lastInfo.MEM(*client)

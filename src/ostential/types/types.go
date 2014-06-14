@@ -46,6 +46,10 @@ type Core struct {
 	UserClass string
 	 SysClass string
 	IdleClass string
+
+	// UserSpark string
+	// SysSpark  string
+	// IdleSpark string
 }
 
 type DiskMeta struct {

@@ -16,6 +16,8 @@ type generic struct {
 	IP       string
 	LA       string
 	Uptime   string
+	LA1spark string
+	la1 int
 }
 
 func getHostname() (string, error) {
@@ -37,6 +39,7 @@ func getGeneric(CH chan generic) {
 		// IP: IP, // IP, _ := netinterface_ipaddr()
 		LA: fmt.Sprintf("%.2f %.2f %.2f", la.One, la.Five, la.Fifteen),
 		Uptime: formatUptime(uptime.Length),
+		la1: int(float64(100) * la.One),
 	}
 }
 
