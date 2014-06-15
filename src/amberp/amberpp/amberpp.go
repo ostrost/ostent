@@ -1,12 +1,13 @@
 package main
+
 import (
-	"os"
-	"fmt"
-	"flag"
 	"bytes"
+	"flag"
+	"fmt"
+	"io/ioutil"
+	"os"
 	"regexp"
 	"strings"
-	"io/ioutil"
 	"text/template"
 	"text/template/parse"
 
@@ -14,15 +15,15 @@ import (
 )
 
 type tree struct {
-	name string
+	name   string
 	leaves []*tree // template/parse has nodes, we ought to have leaves
 	parent *tree
 	ranged bool
-	keys []string
-	decl string
+	keys   []string
+	decl   string
 }
 
-func(top *tree) touch(words []string) {
+func (top *tree) touch(words []string) {
 	if len(words) == 0 {
 		return
 	}
@@ -35,7 +36,7 @@ func(top *tree) touch(words []string) {
 	nt.touch(words[1:])
 }
 
-func(top *tree) walk(words []string) *tree {
+func (top *tree) walk(words []string) *tree {
 	if len(words) == 0 {
 		return top
 	}
@@ -47,7 +48,7 @@ func(top *tree) walk(words []string) *tree {
 	return nil
 }
 
-func(top tree) lookup(name string) *tree {
+func (top tree) lookup(name string) *tree {
 	for _, leaf := range top.leaves {
 		if name == leaf.name {
 			return leaf
@@ -68,7 +69,7 @@ func dotted(bottom *tree) string {
 }
 
 func indent(top tree, level int) string {
-	s := strings.Repeat(" ", level) +"["+ top.name +"]\n"
+	s := strings.Repeat(" ", level) + "[" + top.name + "]\n"
 	level += 2
 	for _, leaf := range top.leaves {
 		s += indent(*leaf, level)
@@ -77,7 +78,7 @@ func indent(top tree, level int) string {
 	return s
 }
 
-func(top tree) String() string {
+func (top tree) String() string {
 	return indent(top, 0)
 }
 
@@ -101,7 +102,7 @@ func mkmap(top tree) interface{} {
 			if len(leaf.keys) != 0 {
 				kv := make(map[string]string)
 				for _, k := range leaf.keys {
-					kv[k] = curly(leaf.decl +"."+ k)
+					kv[k] = curly(leaf.decl + "." + k)
 				}
 				h[leaf.name] = []map[string]string{kv}
 			} else {
@@ -121,7 +122,7 @@ func mkmap(top tree) interface{} {
 func hindent(h hash, level int) string {
 	s := ""
 	for k, v := range h {
-		s += strings.Repeat(" ", level) +"("+ k +")\n"
+		s += strings.Repeat(" ", level) + "(" + k + ")\n"
 		vv, ok := v.(hash)
 		if ok && len(vv) > 0 {
 			level += 2
@@ -135,12 +136,15 @@ func hindent(h hash, level int) string {
 } // */
 
 type dotValue struct {
-	s string
+	s     string
 	hashp *hash
 }
 
-func (dv dotValue) GoString() string { return dv.GoString() }
-func (dv dotValue)   String() string {
+func (dv dotValue) GoString() string {
+	return dv.GoString()
+}
+
+func (dv dotValue) String() string {
 	v := dv.s
 	delete(*dv.hashp, "dot")
 	return v
@@ -155,19 +159,25 @@ func dot(dot interface{}, key string) hash {
 var dotFuncs = map[string]interface{}{"dot": dot}
 
 func main() {
-	var  outputFile string
-	var definesFile string
-	var prettyPrint bool
-	var jscriptMode bool
+	var (
+		outputFile  string
+		definesFile string
+		prettyPrint bool
+		jscriptMode bool
+	)
 
-	flag.StringVar(& outputFile, "o",           "",    "Output file")
-	flag.StringVar(& outputFile, "output",      "",    "Output file")
-	flag.StringVar(&definesFile, "d",           "",    "Defines file")
-	flag.StringVar(&definesFile, "defines",     "",    "Defines file")
-	flag.  BoolVar(&prettyPrint, "pp",          false, "Pretty print")
-	flag.  BoolVar(&prettyPrint, "prettyprint", false, "Pretty print")
-	flag.  BoolVar(&jscriptMode, "j",           false, "Javascript mode")
-	flag.  BoolVar(&jscriptMode, "javascript",  false, "Javascript mode")
+	for _, name := range []string{"o", "output"} {
+		flag.StringVar(&outputFile, name, "", "Output file")
+	}
+	for _, name := range []string{"d", "defines"} {
+		flag.StringVar(&definesFile, name, "", "Defines file")
+	}
+	for _, name := range []string{"pp", "prettyprint"} {
+		flag.BoolVar(&prettyPrint, name, false, "Pretty print")
+	}
+	for _, name := range []string{"j", "javascript"} {
+		flag.BoolVar(&jscriptMode, name, false, "Javascript mode")
+	}
 
 	flag.Parse()
 	inputFile := flag.Arg(0)
@@ -183,8 +193,8 @@ func main() {
 		b, err := ioutil.ReadFile(definesFile)
 		check(err)
 		inputText += compile(b, prettyPrint)
-		if inputText[len(inputText) - 1] == '\n' { // amber does add this '\n', which is fine for the end of a file, which inputText is not
-			inputText = inputText[:len(inputText) - 1]
+		if inputText[len(inputText)-1] == '\n' { // amber does add this '\n', which is fine for the end of a file, which inputText is not
+			inputText = inputText[:len(inputText)-1]
 		}
 	}
 	b, err := ioutil.ReadFile(inputFile)
@@ -282,7 +292,7 @@ func data(TREE *parse.Tree) interface{} {
 			}
 		case parse.NodeRange:
 			rangeNode := node.(*parse.RangeNode)
-			decl := rangeNode.Pipe.Decl[len(rangeNode.Pipe.Decl) - 1].String()
+			decl := rangeNode.Pipe.Decl[len(rangeNode.Pipe.Decl)-1].String()
 			keys := []string{}
 
 			for _, ifnode := range rangeNode.List.Nodes {
@@ -337,15 +347,3 @@ func check(err error) {
 		os.Exit(1)
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
