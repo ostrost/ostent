@@ -644,8 +644,8 @@ func collect() {
 	lastInfo.Generic.IP = ii.IP
 	lastInfo.Interfaces = filterInterfaces(ii.List)
 
-	push(&lastInfo.lastfive.LA1, lastInfo.Generic.la1)
-	lastInfo.Generic.LA1spark = lastInfo.lastfive.LA1.spark()
+	// push(&lastInfo.lastfive.LA1, lastInfo.Generic.la1)
+	// lastInfo.Generic.LA1spark = lastInfo.lastfive.LA1.spark()
 
 	/* delta, isdelta := lastInfo.cpuListDelta()
 	for i, core := range delta.List {
@@ -714,7 +714,7 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 		copy(previf_copy, lastInfo.Previous.Interfaces)
 
 		g := lastInfo.Generic
-		g.LA = g.LA1spark + " " + g.LA
+		// g.LA = g.LA1spark + " " + g.LA
 
 		pu = pageUpdate{
 			Generic: g, // lastInfo.Generic,
