@@ -165,4 +165,4 @@ func banner(listen net.Listener, logger *log.Logger) {
 	logger.Printf("+------------------------------+")
 }
 
-const VERSION = "0.1.7"
+const VERSION = "0.1.8"
