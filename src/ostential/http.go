@@ -291,7 +291,7 @@ func diskMeta(disk diskInfo) types.DiskMeta {
 func dfbytes(diskinfos []diskInfo, client client) *types.DFbytes {
 	var disks []types.DiskBytes
 	for i, disk := range diskinfos {
-		if !*client.ExpandDF && i > 1 {
+		if !*client.ExpandDF && i > client.toprows-1 {
 			break
 		}
 		total,  approxtotal  := humanBandback(disk.Total)
@@ -313,7 +313,7 @@ func dfbytes(diskinfos []diskInfo, client client) *types.DFbytes {
 func dfinodes(diskinfos []diskInfo, client client) *types.DFinodes {
 	var disks []types.DiskInodes
 	for i, disk := range diskinfos {
-		if !*client.ExpandDF && i > 1 {
+		if !*client.ExpandDF && i > client.toprows-1 {
 			break
 		}
 		itotal, approxitotal := humanBandback(disk.Inodes)
