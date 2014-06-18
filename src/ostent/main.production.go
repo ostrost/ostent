@@ -104,14 +104,12 @@ func upgrade_once(kill bool) bool {
 }
 
 func main() {
-	var upgradelater bool
-	flag.BoolVar(&upgradelater, "updatelater",  false, "Update later; Deprecated, use -upgradelater") // compability
-	flag.BoolVar(&upgradelater, "upgradelater", false, "Upgrade later")
+	upgradelater := flag.Bool("upgradelater", false, "Upgrade later")
 
 	flag.Parse()
 
 	had_upgrade := false
-	if !upgradelater && os.Getenv("GOAGAIN_PPID") == "" { // not after gone again
+	if !*upgradelater && os.Getenv("GOAGAIN_PPID") == "" { // not after gone again
 		log.Println("Initial check for upgrades; run with -ugradelater to disable")
 		had_upgrade = upgrade_once(false)
 	}
