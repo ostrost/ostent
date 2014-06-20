@@ -38,7 +38,7 @@ function newwebsocket(onmessage) {
 	};
 
         var statesel = 'table thead tr .header a.state';
-	var again = function(_e) {
+	var again = function() { // fst arg is e -- event
             $(statesel).unbind('click');
             window.setTimeout(init, 5000);
 	};
@@ -168,7 +168,7 @@ var VGtableCLASS = React.createClass({
   }
 });
 
-var setState = function(obj, data, filterundefined) {
+var setState = function(obj, data) {
     if (data === undefined) { // null
         return;
     }
@@ -533,7 +533,7 @@ function ready() {
     });
 
     var model = new Model(Model.attributes(Data));
-    var view  = new View({model: model});
+    new View({model: model});
 
     update(Data.Client, model);
 }
