@@ -32,6 +32,8 @@ html
     script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/gen/jscript.js"]
     script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/main/main.js"]
 
+    //- script[type="text/javascript"][charset="utf-8"][src="//"+ Data.HTTP_HOST +"/js/gen/bundle.js"]
+
   body
     script
       $(ready);
@@ -100,7 +102,7 @@ html
                         input[type="checkbox"]
                         | Hidden
                       label.btn.btn-default[href="#showswap"]
-                        [class="active"] ? (json(Data.Client.HideSWAP)) == "false")
+                        [class="active"] ? (json(Data.Client.HideSWAP) == "false")
                         input[type="checkbox"]
                         | Show swap
 
@@ -131,7 +133,7 @@ html
                         input[type="checkbox"]
                         | Hidden
                       label.btn.btn-default[href="#if"]
-                        [class="disabled"] ? (json(Data.Client.ExpandableIF)) != "true")
+                        [class="disabled"] ? (json(Data.Client.ExpandableIF) != "true")
                         input[type="checkbox"]
                         | #{Data.Client.ExpandtextIF}
 
@@ -188,7 +190,7 @@ html
                       input[type="checkbox"]
                       | Hidden
                     label.btn.btn-default[href="#cpu"]
-                      [class="disabled"] ? (json(Data.Client.ExpandableCPU)) != "true")
+                      [class="disabled"] ? (json(Data.Client.ExpandableCPU) != "true")
                       input[type="checkbox"]
                       | #{Data.Client.ExpandtextCPU}
 
@@ -219,7 +221,7 @@ html
                         input[type="checkbox"]
                         | Hidden
                       label.btn.btn-default[href="#df"]
-                        [class="disabled"] ? (json(Data.Client.ExpandableDF)) != "true")
+                        [class="disabled"] ? (json(Data.Client.ExpandableDF) != "true")
                         input[type="checkbox"]
                         | #{Data.Client.ExpandtextDF}
 
@@ -278,11 +280,11 @@ html
                       input[type="checkbox"]
                       | Hidden
                     label.btn.btn-default.less[href="#psless"]
-                      [class="disabled"] ? json(Data.Client.PSnotDecreasable) != "false")
+                      [class="disabled"] ? (json(Data.Client.PSnotDecreasable) != "false")
                       input[type="checkbox"]
                       | -
                     label.btn.btn-default.more[href="#psmore"]
-                      [class="disabled"] ? json(Data.Client.PSnotExpandable) != "false")
+                      [class="disabled"] ? (json(Data.Client.PSnotExpandable) != "false")
                       input[type="checkbox"]
                       | #{Data.Client.PSplusText}
 
