@@ -70,48 +70,49 @@ func Loop() {
 			nextsecond := now.Truncate(time.Second).Add(time.Second).Sub(now)
 			<-time.After(nextsecond)
 
-			if wclients.expires() {
+			if connections.expires() {
 				// wslog.Printf("Have expires, COLLECT\n")
 				lastInfo.collect()
 			} else {
 				// wslog.Printf("NO REFRESH\n")
 			}
-			wclients.ping()
+			connections.ping()
 		}
 	}()
 
 	for {
 		select {
-		case wc := <-register:
-			wclients.reg(wc)
+		case conn := <-register:
+			connections.reg(conn)
 
-		case wc := <-unregister:
-			close(wc.ping)
-			if wclients.unreg(wc) == 0 { // if no clients left
+		case conn := <-unregister:
+			close(conn.ping)
+			if connections.unreg(conn) == 0 { // if no connections left
 				lastInfo.reset_prev()
 			}
 		}
 	}
 }
 
-type wclient struct {
-	ws *gorillawebsocket.Conn
+type conn struct {
+	*gorillawebsocket.Conn
 	ping chan *received
-	fullClient client
-	clientMutex sync.Mutex
+	full client
+	mutex sync.Mutex
 }
 
-func(wc *wclient) expires() bool {
-	wc.clientMutex.Lock()
-	defer wc.clientMutex.Unlock()
+func(c *conn) expires() bool {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
 
 	refreshes := map[string]*refresh{
-		"expires MEM": wc.fullClient.RefreshMEM,
-		"expires IF":  wc.fullClient.RefreshIF,
-		"expires CPU": wc.fullClient.RefreshCPU,
-		"expires DF":  wc.fullClient.RefreshDF,
-		"expires PS":  wc.fullClient.RefreshPS,
-		"expires VG":  wc.fullClient.RefreshVG,
+		// a map by _string_ is for debug only; otherwise that would be a []*refresh
+		"expires MEM": c.full.RefreshMEM,
+		"expires IF":  c.full.RefreshIF,
+		"expires CPU": c.full.RefreshCPU,
+		"expires DF":  c.full.RefreshDF,
+		"expires PS":  c.full.RefreshPS,
+		"expires VG":  c.full.RefreshVG,
 	}
 
 	expires := false
@@ -126,38 +127,42 @@ func(wc *wclient) expires() bool {
 	return expires
 }
 
-type clientmap map[*wclient]struct{}
-type clientreg struct {
-	clientmap
-	lock sync.Mutex
+type connmap map[*conn]struct{}
+type conns struct {
+	connmap
+	mutex sync.Mutex
 }
 
-func (cr *clientreg) ping() {
-	cr.lock.Lock()
-	defer cr.lock.Unlock()
-	for wc := range cr.clientmap {
-		wc.ping <- nil
+func (cs *conns) ping() {
+	cs.mutex.Lock()
+	defer cs.mutex.Unlock()
+
+	for c := range cs.connmap {
+		c.ping <- nil
 	}
 }
 
-func (cr *clientreg) reg(wc* wclient) {
-	cr.lock.Lock()
-	defer cr.lock.Unlock()
-	cr.clientmap[wc] = struct{}{}
+func (cs *conns) reg(c *conn) {
+	cs.mutex.Lock()
+	defer cs.mutex.Unlock()
+
+	cs.connmap[c] = struct{}{}
 }
 
-func (cr *clientreg) unreg(wc* wclient) int {
-	cr.lock.Lock()
-	defer cr.lock.Unlock()
-	delete(cr.clientmap, wc)
-	return len(cr.clientmap)
+func (cs *conns) unreg(c *conn) int {
+	cs.mutex.Lock()
+	defer cs.mutex.Unlock()
+
+	delete(cs.connmap, c)
+	return len(cs.connmap)
 }
 
-func (cr *clientreg) expires() bool {
-	cr.lock.Lock()
-	defer cr.lock.Unlock()
-	for wc := range cr.clientmap {
-		if wc.expires() {
+func (cs *conns) expires() bool {
+	cs.mutex.Lock()
+	defer cs.mutex.Unlock()
+
+	for c := range cs.connmap {
+		if c.expires() {
 			return true
 		}
 	}
@@ -165,9 +170,9 @@ func (cr *clientreg) expires() bool {
 }
 
 var (
-	wclients = clientreg{clientmap: clientmap{}}
-	unregister = make(chan *wclient)
-	  register = make(chan *wclient)
+	connections = conns{connmap: map[*conn]struct{}{}}
+	unregister = make(chan *conn)
+	  register = make(chan *conn)
 )
 
 type recvClient struct {
@@ -228,39 +233,39 @@ type received struct {
 	Client *recvClient
 }
 
-func(wc *wclient) writeError(err error) bool {
+func(c *conn) writeError(err error) bool {
 	type errorJSON struct {
 		Error string
 	}
-	if wc.ws.WriteJSON(errorJSON{err.Error()}) != nil {
+	if c.Conn.WriteJSON(errorJSON{err.Error()}) != nil {
 		return false
 	}
 	return true
 }
 
-func(wc *wclient) waitfor_messages() { // read from the client
-	defer wc.ws.Close()
+func(c *conn) waitfor_messages() { // read from the conn
+	defer c.Conn.Close()
 	for {
 		rd := new(received)
-		if err := wc.ws.ReadJSON(&rd); err != nil {
+		if err := c.Conn.ReadJSON(&rd); err != nil {
 			break
 		}
-		wc.ping <- rd
+		c.ping <- rd
 	}
 }
 
-func(wc *wclient) waitfor_updates() { // write to the client
+func(c *conn) waitfor_updates() { // write to the conn
 	defer func() {
-		unregister <- wc
-		wc.ws.Close()
+		unregister <- c
+		c.Conn.Close()
 	}()
 	for {
 		select {
-		case rd, ok := <- wc.ping:
+		case rd, ok := <- c.ping:
 			if !ok {
 				break
 			}
-			if next := wc.pong(rd); next != nil {
+			if next := c.pong(rd); next != nil {
 				if *next {
 					continue
 				} else {
@@ -271,38 +276,38 @@ func(wc *wclient) waitfor_updates() { // write to the client
 	}
 }
 
-func(wc *wclient) pong(rd *received) *bool {
-	wc.clientMutex.Lock()
-	defer wc.clientMutex.Unlock()
+func(c *conn) pong(rd *received) *bool {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
 
 	send := sendClient{}
 	var req *http.Request
 
 	if rd != nil {
 		if rd.Client != nil {
-			err := rd.Client.MergeClient(&wc.fullClient, &send)
+			err := rd.Client.MergeClient(&c.full, &send)
 			if err != nil {
-				// if !wc.writeError(err) { break }
-				// wc.writeError(err); continue
+				// if !c.writeError(err) { break }
+				// c.writeError(err); continue
 				send.DebugError = new(string)
 				*send.DebugError = err.Error()
 			}
-			wc.fullClient.Merge(*rd.Client, &send)
+			c.full.Merge(*rd.Client, &send)
 		}
 		if rd.Search != nil {
 			form, err := url.ParseQuery(strings.TrimPrefix(*rd.Search, "?"))
 			if err != nil {
 				// http.StatusBadRequest?
-				// if !wc.writeError(err) { break }
+				// if !c.writeError(err) { break }
 				return newtrue()
 			}
 			req = &http.Request{Form: form}
 		}
 	}
 
-	updates := getUpdates(req, &wc.fullClient, send, false)
+	updates := getUpdates(req, &c.full, send, false)
 
-	if wc.ws.WriteJSON(updates) != nil {
+	if c.Conn.WriteJSON(updates) != nil {
 		return newfalse()
 	}
 	return nil
@@ -311,16 +316,16 @@ func(wc *wclient) pong(rd *received) *bool {
 func slashws(w http.ResponseWriter, req *http.Request) {
 	// Upgrader.Upgrade() has Origin check if .CheckOrigin is nil
 	upgrader := gorillawebsocket.Upgrader{}
-	ws, err := upgrader.Upgrade(w, req, nil)
+	wsconn, err := upgrader.Upgrade(w, req, nil)
 	if err != nil { // Upgrade() does http.Error() to the client
 		return
 	}
 
-	wc := &wclient{ws: ws, ping: make(chan *received, 2), fullClient: defaultClient()}
-	register <- wc
+	c := &conn{Conn: wsconn, ping: make(chan *received, 2), full: defaultClient()}
+	register <- c
 	defer func() {
-		unregister <- wc
+		unregister <- c
 	}()
-	go wc.waitfor_messages() // read from the client
-	   wc.waitfor_updates()  // write to the client
+	go c.waitfor_messages() // read from the client
+	   c.waitfor_updates()  // write to the client
 }
