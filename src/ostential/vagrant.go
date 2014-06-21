@@ -26,7 +26,7 @@ type vagrantMachine struct {
 //		Box *struct{
 //			Name     *string
 //			Provider *string
-//			Version  * string
+//			Version  *string
 //		}
 //	}
 }
@@ -71,7 +71,7 @@ func vagrantmachines() (*vagrantMachines, error) {
 
 	status := new(struct {
 		Machines *map[string]vagrantMachine // the key is UUID
-		Version int // unused
+		// Version int // unused
 	})
 	if err := json.Unmarshal(text, status); err != nil {
 		return nil, err
