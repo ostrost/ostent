@@ -416,6 +416,11 @@ type Previous struct {
 	Interfaces []InterfaceInfo
 }
 
+type last struct {
+	lastinfo
+	mutex sync.Mutex
+}
+
 type lastinfo struct {
     Generic generic
 	CPU     sigar.CpuList
@@ -593,22 +598,28 @@ type pageUpdate struct {
 	Client *sendClient `json:",omitempty"`
 }
 
-var (
-	lastLock sync.Mutex
-	lastInfo lastinfo
-)
+var lastInfo last
 
-func reset_prev() {
-	lastLock.Lock()
-	defer lastLock.Unlock()
+func (la *last) reset_prev() {
+	la.mutex.Lock()
+	defer la.mutex.Unlock()
 
-	lastInfo.Previous.CPU        = sigar.CpuList{}
-	lastInfo.Previous.Interfaces = []InterfaceInfo{}
+	la.Previous.CPU        = sigar.CpuList{}
+	la.Previous.Interfaces = []InterfaceInfo{}
 }
 
-func collect() {
-	lastLock.Lock()
-	defer lastLock.Unlock()
+// collected_already checks for last.lastinfo.Previos NOT being nil.
+// last.collect is expected to set the last.lastinfo.Previous to some non-nil value.
+// Exists for the check from page making, when the last.collect has not been scheduled yet
+func (la *last) collected_already() bool {
+	la.mutex.Lock()
+	defer la.mutex.Unlock()
+	return la.Previous != nil
+}
+
+func (la *last) collect() {
+	la.mutex.Lock()
+	defer la.mutex.Unlock()
 
 	gch  := make(chan generic,          1)
 	rch  := make(chan types.Memory,     1)
@@ -629,7 +640,8 @@ func collect() {
 		CH <- cl
 	}(cch)
 
-	lastInfo = lastinfo{
+	// .mutex unchanged
+	la.lastinfo = lastinfo{
 		lastfive: lastInfo.lastfive,
 		Previous: &Previous{
 			CPU:        lastInfo.CPU,
@@ -644,24 +656,24 @@ func collect() {
 	}
 
 	ii := <-ifch
-	lastInfo.Generic.IP = ii.IP
-	lastInfo.Interfaces = filterInterfaces(ii.List)
+	la.Generic.IP = ii.IP
+	la.Interfaces = filterInterfaces(ii.List)
 
-	// push(&lastInfo.lastfive.LA1, lastInfo.Generic.la1)
-	// lastInfo.Generic.LA1spark = lastInfo.lastfive.LA1.spark()
+	// push(&la.lastfive.LA1, la.Generic.la1)
+	// la.Generic.LA1spark = la.lastfive.LA1.spark()
 
-	/* delta, isdelta := lastInfo.cpuListDelta()
+	/* delta, isdelta := la.cpuListDelta()
 	for i, core := range delta.List {
 		var fcpu *fiveCPU
-		if i >= len(lastInfo.lastfive.CPU) {
+		if i >= len(la.lastfive.CPU) {
 			fcpu = &fiveCPU{
 				user: newFive(),
 				sys:  newFive(),
 				idle: newFive(),
 			}
-			lastInfo.lastfive.CPU = append(lastInfo.lastfive.CPU, fcpu)
+			la.lastfive.CPU = append(la.lastfive.CPU, fcpu)
 		} else {
-			fcpu = lastInfo.lastfive.CPU[i]
+			fcpu = la.lastfive.CPU[i]
 		}
 		if isdelta {
 			_ = core
@@ -682,14 +694,8 @@ func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Bis
 }
 
 func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh bool) pageUpdate {
-	havelast := false
-	func() {
-		lastLock.Lock()
-		defer lastLock.Unlock()
-		havelast = lastInfo.Previous != nil
-	}()
-	if !havelast {
-		collect()
+	if !lastInfo.collected_already() {
+		lastInfo.collect()
 	}
 
 	client.recalcrows() // before anything
@@ -703,8 +709,8 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 	)
 	var pu pageUpdate
 	func() {
-		lastLock.Lock()
-		defer lastLock.Unlock()
+		lastInfo.mutex.Lock()
+		defer lastInfo.mutex.Unlock()
 
 		df_copy = make([]diskInfo,       len(lastInfo.DiskList))
 		ps_copy = make([]types.ProcInfo, len(lastInfo.ProcList))

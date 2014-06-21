@@ -72,7 +72,7 @@ func Loop() {
 
 			if wclients.expires() {
 				// wslog.Printf("Have expires, COLLECT\n")
-				collect()
+				lastInfo.collect()
 			} else {
 				// wslog.Printf("NO REFRESH\n")
 			}
@@ -88,7 +88,7 @@ func Loop() {
 		case wc := <-unregister:
 			close(wc.ping)
 			if wclients.unreg(wc) == 0 { // if no clients left
-				reset_prev()
+				lastInfo.reset_prev()
 			}
 		}
 	}
