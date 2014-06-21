@@ -1,11 +1,13 @@
 package ostential
 import (
+	"ostential/assets"
 	"ostential/types"
 	"ostential/view"
 
 	"io"
 	"bytes"
 	"strconv"
+	"strings"
 
 	"fmt"
 	"sort"
@@ -558,6 +560,7 @@ type PageData struct {
 	DISTRIB     string
 	VERSION     string
 	HTTP_HOST   string
+	SCRIPTS     []string
 	PeriodDuration Duration
 
     Client client
@@ -802,6 +805,7 @@ func pageData(req *http.Request) PageData {
 
 		DISTRIB:    DISTRIB, // value from init_*.go
 		VERSION:    VERSION, // value from server.go
+		SCRIPTS:    SCRIPTS, // value computed at init()
 		HTTP_HOST:  req.Host,
 		PeriodDuration: periodFlag.Duration,
 	}
@@ -828,6 +832,55 @@ func statusLine(status int) string {
 	return fmt.Sprintf("%d %s", status, http.StatusText(status))
 }
 
+type sortassets struct {
+	assetnames []string
+	substr_indexfrom []string
+}
+
+func (sa sortassets) Len() int {
+	return len(sa.assetnames)
+}
+
+func (sa sortassets) Less(i, j int) bool {
+	ii, jj := sa.Len(), sa.Len()
+	for w, v := range sa.substr_indexfrom {
+		if strings.Contains(sa.assetnames[i], v) {
+			ii = w
+		}
+		if strings.Contains(sa.assetnames[j], v) {
+			jj = w
+		}
+	}
+	return ii < jj
+}
+
+func (sa sortassets) Swap(i, j int) {
+	sa.assetnames[i], sa.assetnames[j] = sa.assetnames[j], sa.assetnames[i]
+}
+
+func init() {
+	scriptsassets := sortassets{substr_indexfrom: []string{
+		"jquery",
+		"bootstrap",
+		"react",
+		"underscore",
+		"backbone",
+		"headroom",
+
+		"jscript",
+	}}
+	for _, assetname := range assets.AssetNames() {
+		if strings.HasSuffix(assetname, ".js") {
+			scriptsassets.assetnames = append(scriptsassets.assetnames, "/"+assetname)
+		}
+	}
+
+	sort.Stable(scriptsassets)
+
+	SCRIPTS = scriptsassets.assetnames
+}
+
+var SCRIPTS []string
 var indexTemplate = view.Bincompile()
 
 func index(w http.ResponseWriter, r *http.Request) {
