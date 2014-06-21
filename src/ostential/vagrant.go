@@ -9,14 +9,6 @@ import (
 	"html/template"
 )
 
-type vagrantExtra struct {
-	Box *struct{
-		Name     *string
-		Provider *string
-		Version  * string
-	}
-}
-
 type vagrantMachine struct {
 	            UUID     string
 	            UUIDHTML template.HTML // !
@@ -28,29 +20,32 @@ type vagrantMachine struct {
 	State                string
 	Vagrantfile_path     string
 
-// 	Vagrantfile_name *[]string       // unused
-// 	Updated_at         *string       // unused
-// 	Extra_data         *vagrantExtra // unused
+// 	Vagrantfile_name *[]string   // unused
+// 	Updated_at         *string   // unused
+// 	Extra_data         *struct { // unused
+//		Box *struct{
+//			Name     *string
+//			Provider *string
+//			Version  * string
+//		}
+//	}
 }
 
-type vagrantMachinesMap map[string]vagrantMachine // the key is UUID
-
-type vagrantStatus struct {
-	Machines *vagrantMachinesMap
-	Version int // unused
-}
 type vagrantMachines struct {
 	List []vagrantMachine
 }
 
+// satisfying sort.Interface interface
 func (ms vagrantMachines) Len() int {
 	return len(ms.List)
 }
 
+// satisfying sort.Interface interface
 func (ms vagrantMachines) Swap(i, j int) {
 	ms.List[i], ms.List[j] = ms.List[j], ms.List[i]
 }
 
+// satisfying sort.Interface interface
 func (ms vagrantMachines) Less(i, j int) bool {
 	return ms.List[i].UUID < ms.List[j].UUID
 }
@@ -74,7 +69,10 @@ func vagrantmachines() (*vagrantMachines, error) {
 		return nil, err
 	}
 
-	status := new(vagrantStatus)
+	status := new(struct {
+		Machines *map[string]vagrantMachine // the key is UUID
+		Version int // unused
+	})
 	if err := json.Unmarshal(text, status); err != nil {
 		return nil, err
 	}
