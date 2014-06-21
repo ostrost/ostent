@@ -1,6 +1,7 @@
 package ostential
 import (
 	"os"
+	"sort"
 	"syscall"
 	"os/user"
 	"io/ioutil"
@@ -42,6 +43,18 @@ type vagrantMachines struct {
 	List []vagrantMachine
 }
 
+func (ms vagrantMachines) Len() int {
+	return len(ms.List)
+}
+
+func (ms vagrantMachines) Swap(i, j int) {
+	ms.List[i], ms.List[j] = ms.List[j], ms.List[i]
+}
+
+func (ms vagrantMachines) Less(i, j int) bool {
+	return ms.List[i].UUID < ms.List[j].UUID
+}
+
 func vagrantmachines() (*vagrantMachines, error) {
 	currentUser, _ := user.Current()
 	lock_filename  := currentUser.HomeDir + "/.vagrant.d/data/machine-index/index.lock"
@@ -75,5 +88,6 @@ func vagrantmachines() (*vagrantMachines, error) {
 			machines.List = append(machines.List, machine)
 		}
 	}
+	sort.Stable(machines)
 	return machines, nil
 }
