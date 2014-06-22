@@ -604,6 +604,9 @@ func (la *last) reset_prev() {
 	la.mutex.Lock()
 	defer la.mutex.Unlock()
 
+	if la.Previous == nil {
+		return
+	}
 	la.Previous.CPU        = sigar.CpuList{}
 	la.Previous.Interfaces = []InterfaceInfo{}
 }
@@ -737,7 +740,7 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 	}()
 
 	if req != nil {
-		req.ParseForm()
+		req.ParseForm() // do ParseForm even if req.Form == nil, otherwise *links won't be set for page requests without parameters
 		base := url.Values{}
 		pu.PSlinks = (*PSlinks)(linkattrs(req, base, "ps", _PSBIMAP, &client.psSEQ))
 		pu.DFlinks = (*DFlinks)(linkattrs(req, base, "df", _DFBIMAP, &client.dfSEQ))
@@ -887,18 +890,17 @@ func init() {
 }
 
 var SCRIPTS []string
-var indexTemplate = view.Bincompile()
+var INDEXTEMPLATE = view.Bincompile()
 
 func index(w http.ResponseWriter, r *http.Request) {
-	template, err := indexTemplate.Clone()
+	indexTemplate, err := INDEXTEMPLATE.Clone()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	buf := new(bytes.Buffer)
-	err  = template.ExecuteTemplate(buf, "index.html", struct{Data interface{}}{Data: pageData(r),})
-	if err != nil {
+	if err := indexTemplate.ExecuteTemplate(buf, "index.html", struct{Data interface{}}{Data: pageData(r),}); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

@@ -7,10 +7,15 @@ import (
 
 type Recovery bool // true stands for production
 
+func(RC Recovery) ConstructorFunc(hf http.HandlerFunc) http.Handler {
+	return RC.Constructor(http.HandlerFunc(hf))
+}
+
 func(RC Recovery) Constructor(HANDLER http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
+				// TODO panic(err); return for hijacked connection
 				w.WriteHeader(panicstatuscode) // NB
 
 				var description string

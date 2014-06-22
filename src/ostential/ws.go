@@ -76,7 +76,7 @@ func Loop() {
 			} else {
 				// wslog.Printf("NO REFRESH\n")
 			}
-			connections.ping()
+			connections.tack()
 		}
 	}()
 
@@ -86,7 +86,6 @@ func Loop() {
 			connections.reg(conn)
 
 		case conn := <-unregister:
-			close(conn.ping)
 			if connections.unreg(conn) == 0 { // if no connections left
 				lastInfo.reset_prev()
 			}
@@ -95,8 +94,9 @@ func Loop() {
 }
 
 type conn struct {
-	*gorillawebsocket.Conn
-	ping chan *received
+	Conn *gorillawebsocket.Conn
+	requestOrigin *http.Request
+	receive chan *received
 	full client
 	mutex sync.Mutex
 }
@@ -133,12 +133,12 @@ type conns struct {
 	mutex sync.Mutex
 }
 
-func (cs *conns) ping() {
+func (cs *conns) tack() {
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
 
 	for c := range cs.connmap {
-		c.ping <- nil
+		c.receive <- nil
 	}
 }
 
@@ -149,7 +149,25 @@ func (cs *conns) reg(c *conn) {
 	cs.connmap[c] = struct{}{}
 }
 
+func (c *conn) close_chan() {
+	c.mutex.Lock()
+	defer func() {
+		defer c.mutex.Unlock()
+		if e := recover(); e != nil {
+			if err, ok := e.(error); ok {
+				fmt.Printf("CLOSE? PANIC %s\n", err.Error())
+			} else {
+				fmt.Printf("CLOSE? PANIC (UNDESCRIPT) %+v\n", e)
+			}
+			panic(e)
+		}
+	}()
+	close(c.receive)
+}
+
 func (cs *conns) unreg(c *conn) int {
+	c.close_chan()
+
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
 
@@ -233,6 +251,11 @@ type received struct {
 	Client *recvClient
 }
 
+type served struct {
+	conn *conn // passing conn into received.ServeHTTP
+	received *received
+}
+
 func(c *conn) writeError(err error) bool {
 	type errorJSON struct {
 		Error string
@@ -250,7 +273,7 @@ func(c *conn) waitfor_messages() { // read from the conn
 		if err := c.Conn.ReadJSON(&rd); err != nil {
 			break
 		}
-		c.ping <- rd
+		c.receive <- rd
 	}
 }
 
@@ -261,11 +284,11 @@ func(c *conn) waitfor_updates() { // write to the conn
 	}()
 	for {
 		select {
-		case rd, ok := <- c.ping:
+		case rd, ok := <- c.receive:
 			if !ok {
 				break
 			}
-			if next := c.pong(rd); next != nil {
+			if next := c.tack(rd); next != nil {
 				if *next {
 					continue
 				} else {
@@ -276,41 +299,112 @@ func(c *conn) waitfor_updates() { // write to the conn
 	}
 }
 
-func(c *conn) pong(rd *received) *bool {
+func(c *conn) tack(rd *received) *bool {
 	c.mutex.Lock()
-	defer c.mutex.Unlock()
+	defer func() {
+		c.mutex.Unlock()
+		if e := recover(); e != nil {
+			stack := ""
+			/*
+            // The stack to be fmt.Printf-d. Not sure if I should
+			sbuf := make([]byte, 4096)
+			size := runtime.Stack(sbuf, false)
+			stack = string(sbuf[:size])
+			*/
 
-	send := sendClient{}
+			if err, ok := e.(error); ok {
+				c.writeError(err) // an alert for the client
+
+				fmt.Printf("PANIC %s\n%s\n", err.Error(), stack)
+			} else {
+				fmt.Printf("PANIC (UNDESCRIPT) %+v\n%s\n", e, stack)
+			}
+			panic(e)
+		}
+	}()
+
 	var req *http.Request
+	if form, err := rd.form(); err != nil {
+		// if !c.writeError(err) { return newfalse() } // should I write an error?
+		return newtrue() // continue receiving
+	} else if form != nil {
+		// compile an actual Request
+		r := *c.requestOrigin
+		r.Form = form
+		req = &r // http.Request{Form: form}
+	}
 
-	if rd != nil {
-		if rd.Client != nil {
-			err := rd.Client.MergeClient(&c.full, &send)
+	sd := served{conn: c, received: rd}
+	serve := sd.ServeHTTP // sd.ServeHTTP survives req being nil
+	if req != nil { // the only case when req.Form is not nil
+		// a non-nil req is no-go for stdaccess anyway
+		serve = stdaccess.Constructor(sd).ServeHTTP
+	}
+
+	w := dummyStatus{}
+	serve(w, req)
+
+	if w.status == http.StatusBadRequest {
+		return newfalse() // write failure, stop receiving
+	}
+	return nil
+}
+
+func (rd *received) form() (url.Values, error) {
+	if rd == nil {
+		return nil, nil
+	}
+	if rd.Search == nil {
+		return nil, nil
+	}
+	return url.ParseQuery(strings.TrimPrefix(*rd.Search, "?"))
+	// url.ParseQuery should not return a nil url.Values without an error
+}
+
+func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	stop := func() {
+		w.WriteHeader(http.StatusBadRequest) // well, not a bad request but a write failure
+	}
+	send := sendClient{}
+	if sd.received != nil {
+		if sd.received.Client != nil {
+			err := sd.received.Client.MergeClient(&sd.conn.full, &send)
 			if err != nil {
-				// if !c.writeError(err) { break }
-				// c.writeError(err); continue
+				// if !sd.conn.Conn.writeError(err) { stop(); return }
 				send.DebugError = new(string)
 				*send.DebugError = err.Error()
 			}
-			c.full.Merge(*rd.Client, &send)
-		}
-		if rd.Search != nil {
-			form, err := url.ParseQuery(strings.TrimPrefix(*rd.Search, "?"))
-			if err != nil {
-				// http.StatusBadRequest?
-				// if !c.writeError(err) { break }
-				return newtrue()
-			}
-			req = &http.Request{Form: form}
+			sd.conn.full.Merge(*sd.received.Client, &send)
 		}
 	}
 
-	updates := getUpdates(req, &c.full, send, false)
+	updates := getUpdates(r, &sd.conn.full, send, false)
 
-	if c.Conn.WriteJSON(updates) != nil {
-		return newfalse()
+	if sd.conn.Conn.WriteJSON(updates) != nil {
+		stop()
 	}
-	return nil
+	w.WriteHeader(http.StatusSwitchingProtocols) // last change to WriteHeader. 101 is 200
+}
+
+type dummyStatus struct { // yet another ResponseWriter
+	status int
+}
+
+func (w dummyStatus) WriteHeader(s int) {
+	w.status = s
+	// don't expect any actual WriteHeader. This is dummy after all
+}
+
+func (w dummyStatus) Header() http.Header {
+	panic("dummyStatus.Header: SHOULD NOT BE USED")
+// 	return w.ResponseWriter.Header()
+// 	return make(http.Header) // IF TO RETURN ANYTHING, THAT SHOULD BE ONE http.Header PER dummyStatus
+}
+
+func (w dummyStatus) Write(b []byte) (int, error) {
+	panic("dummyStatus.Write: SHOULD NOT BE USED")
+// 	return w.ResponseWriter.Write(b)
+	return len(b), nil
 }
 
 func slashws(w http.ResponseWriter, req *http.Request) {
@@ -321,7 +415,14 @@ func slashws(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	c := &conn{Conn: wsconn, ping: make(chan *received, 2), full: defaultClient()}
+	// req.Method == "GET" asserted by the mux
+	req.Form = nil // reset reused later .Form
+	c := &conn{
+		Conn: wsconn,
+		requestOrigin: req,
+		receive: make(chan *received, 2),
+		full: defaultClient(),
+	}
 	register <- c
 	defer func() {
 		unregister <- c

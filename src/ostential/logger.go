@@ -9,18 +9,22 @@ import (
 	"net/http"
 )
 
+type logged struct {
+	loggedmap map[string]struct{}
+	mutex sync.Mutex
+}
+
 type logger struct {
 	production bool
 	access     *log.Logger
-	loggedLOCK sync.Mutex
-	logged     map[string]bool
+	logged     logged
 }
 
 func NewLogged(production bool, access *log.Logger) *logger {
 	return &logger{
 		production: production,
 		access:     access,
-		logged: map[string]bool{},
+		logged: logged{loggedmap: map[string]struct{}{}},
 	}
 }
 
@@ -39,7 +43,7 @@ func(lg *logger) Constructor(HANDLER http.Handler) http.Handler {
 }
 
 func (lg *logger) productionLog(start time.Time, w loggedResponseWriter, r *http.Request) {
-	if w.status != 200 && w.status != 304 { // && r.URL.Path != "/ws" {}
+	if !w.statusgood() {
 		lg.log(start, "", w, r)
 		return
 	}
@@ -49,12 +53,19 @@ func (lg *logger) productionLog(start time.Time, w loggedResponseWriter, r *http
 		host = r.RemoteAddr
 	}
 
-	lg.loggedLOCK.Lock()
-	defer lg.loggedLOCK.Unlock()
-	if _, ok := lg.logged[host]; ok {
+	log := func() bool {
+		lg.logged.mutex.Lock()
+		defer lg.logged.mutex.Unlock()
+
+		if _, ok := lg.logged.loggedmap[host]; ok {
+			return false
+		}
+		lg.logged.loggedmap[host] = struct{}{}
+		return true
+	}()
+	if !log {
 		return
 	}
-	lg.logged[host] = true
 
 	tail := fmt.Sprintf("\t;subsequent successful requests from %s will not be logged", host)
 	lg.log(start, tail, w, r)
@@ -66,9 +77,11 @@ func(lg *logger) log(start time.Time, tail string, w loggedResponseWriter, r *ht
 	diff := time.Since(start)
 	since := ZEROTIME.Add(diff).Format("5.0000s")
 
-	code := fmt.Sprintf("%d", w.status)
-	if w.status != 200 && w.status != 304 {
+	var code string
+	if !w.statusgood() {
 		code = statusLine(w.status)
+	} else {
+		code = fmt.Sprintf("%d", w.status)
 	}
 
 	host, _, err := net.SplitHostPort(r.RemoteAddr)
@@ -76,13 +89,23 @@ func(lg *logger) log(start time.Time, tail string, w loggedResponseWriter, r *ht
 		host = r.RemoteAddr
 	}
 
-	lg.access.Printf("%s\t%s\t%s\t%v\t%s\t%s%s\n", start.Format("15:04:05"), host, since, code, r.Method, r.URL.Path, tail)
+	uri := r.URL.Path // OR r.RequestURI ??
+	if r.Form != nil && len(r.Form) > 0 {
+		uri += "?"+r.Form.Encode()
+	}
+	lg.access.Printf("%s\t%s\t%s\t%v\t%s\t%s%s\n", start.Format("15:04:05"), host, since, code, r.Method, uri, tail)
 }
 
 type loggedResponseWriter struct {
 	http.ResponseWriter
 	http.Flusher // ?
 	status int
+}
+
+func (w loggedResponseWriter) statusgood() bool {
+	return (w.status == http.StatusSwitchingProtocols || // 101
+			w.status == http.StatusOK                 || // 200
+			w.status == http.StatusNotModified)          // 304
 }
 
 func (w *loggedResponseWriter) Flush() {
@@ -97,7 +120,7 @@ func (w *loggedResponseWriter) WriteHeader(s int) {
 }
 
 func (w *loggedResponseWriter) Write(b []byte) (int, error) {
-	if w.status == 0 {
+	if w.status == 0 { // generic approach to Write-ing before WriteHeader call
 		w.WriteHeader(http.StatusOK)
 	}
 	return w.ResponseWriter.Write(b)

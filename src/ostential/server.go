@@ -60,22 +60,28 @@ func init() {
 	flag.Var(&BindFlag, "bind", "Bind address")
 }
 
-type chain struct {
+type chainin struct {
 	alice.Chain
 }
 
-func(ch *chain) ThenFunc(h func(http.ResponseWriter, *http.Request)) http.Handler {
-	return ch.Then(http.HandlerFunc(h))
+func(c *chainin) ThenFunc(h func(http.ResponseWriter, *http.Request)) http.Handler {
+	return c.Then(http.HandlerFunc(h))
 }
 
 type Muxmap map[string]http.HandlerFunc
 
+var stdaccess *logger // a global, available after Serve call
+
 func Serve(listen net.Listener, production bool, extramap Muxmap) error {
 	logger := log.New(os.Stderr, "[ostent] ", 0)
 	access := log.New(os.Stdout, "", 0)
-	chain := chain{alice.New(
-		NewLogged(production, access).Constructor,
-		Recovery (production)        .Constructor,
+
+	stdaccess = NewLogged(production, access)
+	recovery := Recovery(production)
+
+	chain := chainin{alice.New(
+		stdaccess.Constructor,
+		recovery .Constructor,
 	)}
 	mux := NewMux(chain.Then)
 
@@ -85,7 +91,9 @@ func Serve(listen net.Listener, production bool, extramap Muxmap) error {
 		mux.Handle("HEAD", "/"+ path, hf)
 	}
 
-	mux.Handle("GET",  "/ws", chain.ThenFunc(slashws))
+//	mux.Handle("GET",  "/ws", chain.ThenFunc(slashws)) // that would include stdlogger
+	mux.Handle("GET",  "/ws", recovery.ConstructorFunc(slashws)) // slashws uses stdlogger itself
+
 	mux.Handle("GET",  "/",   chain.ThenFunc(index))
 	mux.Handle("HEAD", "/",   chain.ThenFunc(index))
 
