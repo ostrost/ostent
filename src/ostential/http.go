@@ -575,7 +575,7 @@ type PageData struct {
 }
 
 type pageUpdate struct {
-    Generic  generic
+    Generic  *generic        `json:",omitempty"`
 
 	CPU      *types.CPU      `json:",omitempty"`
 	MEM      *types.MEM      `json:",omitempty"`
@@ -729,7 +729,7 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 		// g.LA = g.LA1spark + " " + g.LA
 
 		pu = pageUpdate{
-			Generic: g, // lastInfo.Generic,
+			Generic: &g, // &lastInfo.Generic,
 		}
 		if !*client.HideMEM && client.RefreshMEM.refresh(forcerefresh) {
 			pu.MEM = lastInfo.MEM(*client)
@@ -803,7 +803,7 @@ func pageData(req *http.Request) PageData {
 
 	data := PageData{
 		Client:     client,
-		Generic:    updates.Generic,
+		Generic:   *updates.Generic,
 		CPU:       *updates.CPU,
 		MEM:       *updates.MEM,
 
