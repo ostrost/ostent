@@ -239,6 +239,9 @@ var Model = Backbone.Model.extend({
     }
 });
 Model.attributes = function(data) {
+    if (data.Generic === undefined) {
+        return data.Client;
+    }
     return _.extend(data.Generic, data.Client);
 };
 
