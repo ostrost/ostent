@@ -84,6 +84,14 @@ func Loop() {
 		}
 	}()
 
+    /* disabled. fsnotify is racy
+	go func() {
+		if err := vgwatch(); err != nil { // vagrant
+			// panic(err)
+			// fsnotify error; skip it
+		}
+	}() */
+
 	for {
 		select {
 		case update := <-pUPDATES:

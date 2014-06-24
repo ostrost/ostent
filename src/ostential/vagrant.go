@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"html/template"
+
+//	"github.com/howeyc/fsnotify"
 )
 
 type vagrantMachine struct {
@@ -89,3 +91,51 @@ func vagrantmachines() (*vagrantMachines, error) {
 	sort.Stable(machines)
 	return machines, nil
 }
+
+/* disabled. fsnotify is racy
+
+func newWatcher() (*fsnotify.Watcher, error) {
+	currentUser, _ := user.Current()
+	index_filename := currentUser.HomeDir + "/.vagrant.d/data/machine-index/index"
+
+	watcher, err := fsnotify.NewWatcher()
+    if err != nil {
+        return nil, err
+    }
+	err = watcher.Watch(index_filename)
+	return watcher, err
+}
+
+func vgdispatch() { // (*fsnotify.FileEvent)
+	machines, err := vagrantmachines()
+	// if err != nil { // the err may be because of inconsistent write by vagrant (although not with the flock). in which case it should be ignored
+	// 	panic(err) // will see how it goes
+	// }
+	pu := pageUpdate{}
+	if err != nil {
+		pu.VagrantError = err.Error()
+		pu.VagrantErrord = true
+	} else {
+		pu.VagrantMachines = machines
+	}
+	pUPDATES <- &pu
+}
+
+func vgwatch() error {
+	watcher, err := newWatcher()
+    if err != nil {
+        return err
+    }
+	for {
+		<-watcher.Event
+		vgdispatch()
+
+		watcher.Close()
+
+		if watcher, err = newWatcher(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+// */
