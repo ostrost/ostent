@@ -13,8 +13,10 @@ import (
 	gorillawebsocket "github.com/gorilla/websocket"
 )
 
+// Duration type derives time.Duration
 type Duration time.Duration
 
+// String returns Duration string representation
 func(d Duration) String() string {
 	s := time.Duration(d).String()
 	if strings.HasSuffix(s, "m0s") {
@@ -26,6 +28,7 @@ func(d Duration) String() string {
 	return s
 }
 
+// MarshalJSON is for encoding/json marshaling into Duration string representation
 func(d Duration) MarshalJSON() ([]byte, error) {
 	return json.Marshal(d.String())
 }
@@ -62,6 +65,7 @@ func init() {
 var _ = os.Stdout
 // var wslog = log.New(os.Stdout, "", log.LstdFlags|log.Lmicroseconds)
 
+// Loop is the ostent background job
 func Loop() {
 	// flags must be parsed by now, `periodFlag' is used here
 	go func() {
@@ -82,6 +86,9 @@ func Loop() {
 
 	for {
 		select {
+		case update := <-pUPDATES:
+			connections.push(update)
+
 		case conn := <-register:
 			connections.reg(conn)
 
@@ -97,11 +104,12 @@ type conn struct {
 	Conn *gorillawebsocket.Conn
 	requestOrigin *http.Request
 	receive chan *received
+	push    chan *pageUpdate
 	full client
 	mutex sync.Mutex
 }
 
-func(c *conn) expires() bool {
+func (c *conn) expires() bool {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
@@ -142,6 +150,15 @@ func (cs *conns) tack() {
 	}
 }
 
+func (cs *conns) push(update *pageUpdate) {
+	cs.mutex.Lock()
+	defer cs.mutex.Unlock()
+
+	for c := range cs.connmap {
+		c.push <- update
+	}
+}
+
 func (cs *conns) reg(c *conn) {
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
@@ -149,7 +166,7 @@ func (cs *conns) reg(c *conn) {
 	cs.connmap[c] = struct{}{}
 }
 
-func (c *conn) close_chan() {
+func (c *conn) closeChans() {
 	c.mutex.Lock()
 	defer func() {
 		defer c.mutex.Unlock()
@@ -163,10 +180,11 @@ func (c *conn) close_chan() {
 		}
 	}()
 	close(c.receive)
+	close(c.push)
 }
 
 func (cs *conns) unreg(c *conn) int {
-	c.close_chan()
+	c.closeChans()
 
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
@@ -188,9 +206,12 @@ func (cs *conns) expires() bool {
 }
 
 var (
-	connections = conns{connmap: map[*conn]struct{}{}}
-	unregister = make(chan *conn)
-	  register = make(chan *conn)
+	connections  = conns{connmap: map[*conn]struct{}{}}
+	unregister   = make(chan *conn)
+	  register   = make(chan *conn)
+
+	// pUPDATES is the channel for off-the-clock pageUpdate[s] to push
+	pUPDATES     = make(chan *pageUpdate)
 )
 
 type recvClient struct {
@@ -260,13 +281,10 @@ func(c *conn) writeError(err error) bool {
 	type errorJSON struct {
 		Error string
 	}
-	if c.Conn.WriteJSON(errorJSON{err.Error()}) != nil {
-		return false
-	}
-	return true
+	return c.Conn.WriteJSON(errorJSON{err.Error()}) == nil
 }
 
-func(c *conn) waitfor_messages() { // read from the conn
+func(c *conn) receiveLoop() { // read from the conn
 	defer c.Conn.Close()
 	for {
 		rd := new(received)
@@ -277,7 +295,7 @@ func(c *conn) waitfor_messages() { // read from the conn
 	}
 }
 
-func(c *conn) waitfor_updates() { // write to the conn
+func(c *conn) updateLoop() { // write to the conn
 	defer func() {
 		unregister <- c
 		c.Conn.Close()
@@ -288,18 +306,25 @@ func(c *conn) waitfor_updates() { // write to the conn
 			if !ok {
 				break
 			}
-			if next := c.tack(rd); next != nil {
+			if next := c.process(rd); next != nil {
 				if *next {
 					continue
 				} else {
 					break
 				}
 			}
+		case update, ok := <- c.push:
+			if !ok {
+				break
+			}
+			if next := c.writeUpdate(*update); !next {
+				break
+			}
 		}
 	}
 }
 
-func(c *conn) tack(rd *received) *bool {
+func(c *conn) process(rd *received) *bool {
 	c.mutex.Lock()
 	defer func() {
 		c.mutex.Unlock()
@@ -351,10 +376,7 @@ func(c *conn) tack(rd *received) *bool {
 }
 
 func (rd *received) form() (url.Values, error) {
-	if rd == nil {
-		return nil, nil
-	}
-	if rd.Search == nil {
+	if rd == nil || rd.Search == nil {
 		return nil, nil
 	}
 	return url.ParseQuery(strings.TrimPrefix(*rd.Search, "?"))
@@ -378,12 +400,21 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	updates := getUpdates(r, &sd.conn.full, send, false)
+	update := getUpdates(r, &sd.conn.full, send, false)
 
-	if sd.conn.Conn.WriteJSON(updates) != nil {
+	if sd.conn.Conn.WriteJSON(update) != nil {
 		stop()
+		return
 	}
 	w.WriteHeader(http.StatusSwitchingProtocols) // last change to WriteHeader. 101 is 200
+}
+
+func (c *conn) writeUpdate(update pageUpdate) bool {
+	if *c.full.HideVG && update.VagrantMachines != nil {
+		// TODO other .Vagrant* fields may not be discarded
+		return true
+	}
+	return c.Conn.WriteJSON(update) == nil
 }
 
 type dummyStatus struct { // yet another ResponseWriter
@@ -420,13 +451,14 @@ func slashws(w http.ResponseWriter, req *http.Request) {
 	c := &conn{
 		Conn: wsconn,
 		requestOrigin: req,
-		receive: make(chan *received, 2),
+		receive: make(chan *received,   2),
+		push:    make(chan *pageUpdate, 2),
 		full: defaultClient(),
 	}
 	register <- c
 	defer func() {
 		unregister <- c
 	}()
-	go c.waitfor_messages() // read from the client
-	   c.waitfor_updates()  // write to the client
+	go c.receiveLoop() // read from the client
+	   c.updateLoop()  // write to the client
 }
