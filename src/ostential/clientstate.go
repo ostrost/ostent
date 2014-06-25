@@ -10,17 +10,17 @@ type refresh struct {
 	tick int
 }
 
-func(r *refresh) refresh(forcerefresh bool) Boole {
+func(r *refresh) refresh(forcerefresh bool) bool {
 	if forcerefresh {
-		return Boole(true)
+		return true
 	}
 	expires := r.expires()
 	r.tick++
 	if !expires {
-		return Boole(false)
+		return false
 	}
 	r.tick = 0
-	return Boole(true)
+	return true
 }
 
 func(r refresh) expires() bool {
@@ -49,18 +49,18 @@ func (ti *title) merge(ns string, dt **title) {
 }
 
 type commonClient struct {
-	HideMEM *Boole `json:",omitempty"`
-	HideIF  *Boole `json:",omitempty"`
-	HideCPU *Boole `json:",omitempty"`
-	HideDF  *Boole `json:",omitempty"`
-	HidePS  *Boole `json:",omitempty"`
-	HideVG  *Boole `json:",omitempty"`
+	HideMEM *bool `json:",omitempty"`
+	HideIF  *bool `json:",omitempty"`
+	HideCPU *bool `json:",omitempty"`
+	HideDF  *bool `json:",omitempty"`
+	HidePS  *bool `json:",omitempty"`
+	HideVG  *bool `json:",omitempty"`
 
-	HideSWAP  *Boole `json:",omitempty"`
+	HideSWAP  *bool `json:",omitempty"`
 
-	ExpandIF  *Boole `json:",omitempty"`
-	ExpandCPU *Boole `json:",omitempty"`
-	ExpandDF  *Boole `json:",omitempty"`
+	ExpandIF  *bool `json:",omitempty"`
+	ExpandCPU *bool `json:",omitempty"`
+	ExpandDF  *bool `json:",omitempty"`
 
 	TabIF *types.SEQ `json:",omitempty"`
 	TabDF *types.SEQ `json:",omitempty"`
@@ -69,12 +69,12 @@ type commonClient struct {
 
 	// PSusers []string `json:omitempty`
 
-	HideconfigMEM *Boole `json:",omitempty"`
-	HideconfigIF  *Boole `json:",omitempty"`
-	HideconfigCPU *Boole `json:",omitempty"`
-	HideconfigDF  *Boole `json:",omitempty"`
-	HideconfigPS  *Boole `json:",omitempty"`
-	HideconfigVG  *Boole `json:",omitempty"`
+	HideconfigMEM *bool `json:",omitempty"`
+	HideconfigIF  *bool `json:",omitempty"`
+	HideconfigCPU *bool `json:",omitempty"`
+	HideconfigDF  *bool `json:",omitempty"`
+	HideconfigPS  *bool `json:",omitempty"`
+	HideconfigVG  *bool `json:",omitempty"`
 }
 
 // server side full client state
@@ -141,17 +141,8 @@ type sendClient struct {
 	DebugError *string  `json:",omitempty"`
 }
 
-type Boole bool
-func (b *Boole) merge(src *Boole, send **Boole) {
-	if src == nil {
-		return
-	}
-	*b = *src
-	*send = src
-}
-
-
-func (_ client) mergeSEQ(dst, src *types.SEQ, send **types.SEQ) {
+func (c client) mergeBool(dst, src *bool, send **bool) {
+	// c is unused
 	if src == nil {
 		return
 	}
@@ -159,31 +150,41 @@ func (_ client) mergeSEQ(dst, src *types.SEQ, send **types.SEQ) {
 	*send = src
 }
 
-func(cs *client) Merge(rc recvClient, sc *sendClient) {
-	cs.HideMEM.merge(rc.HideMEM, &sc.HideMEM)
-	cs.HideIF .merge(rc.HideIF,  &sc.HideIF)
-	cs.HideCPU.merge(rc.HideCPU, &sc.HideCPU)
-	cs.HideDF .merge(rc.HideDF,  &sc.HideDF)
-	cs.HidePS .merge(rc.HidePS,  &sc.HidePS)
-	cs.HideVG .merge(rc.HideVG,  &sc.HideVG)
+func (c client) mergeSEQ(dst, src *types.SEQ, send **types.SEQ) {
+	// c is unused
+	if src == nil {
+		return
+	}
+	*dst = *src
+	*send = src
+}
 
-	cs.HideSWAP .merge(rc.HideSWAP,  &sc.HideSWAP)
-	cs.ExpandIF .merge(rc.ExpandIF,  &sc.ExpandIF)
-	cs.ExpandCPU.merge(rc.ExpandCPU, &sc.ExpandCPU)
-	cs.ExpandDF .merge(rc.ExpandDF,  &sc.ExpandDF)
+func(c *client) Merge(r recvClient, s *sendClient) {
+	c.mergeBool(c.HideMEM, r.HideMEM, &s.HideMEM)
+	c.mergeBool(c.HideIF,  r.HideIF,  &s.HideIF)
+	c.mergeBool(c.HideCPU, r.HideCPU, &s.HideCPU)
+	c.mergeBool(c.HideDF,  r.HideDF,  &s.HideDF)
+	c.mergeBool(c.HidePS,  r.HidePS,  &s.HidePS)
+	c.mergeBool(c.HideVG,  r.HideVG,  &s.HideVG)
 
-	cs.mergeSEQ(cs.TabIF, rc.TabIF, &sc.TabIF)
-	cs.mergeSEQ(cs.TabDF, rc.TabDF, &sc.TabDF)
+	c.mergeBool(c.HideSWAP,  r.HideSWAP,  &s.HideSWAP)
+	c.mergeBool(c.ExpandIF,  r.ExpandIF,  &s.ExpandIF)
+	c.mergeBool(c.ExpandCPU, r.ExpandCPU, &s.ExpandCPU)
+	c.mergeBool(c.ExpandDF,  r.ExpandDF,  &s.ExpandDF)
 
-	cs.TabTitleIF.merge(IFTABS.Title(*cs.TabIF), &sc.TabTitleIF)
-	cs.TabTitleDF.merge(DFTABS.Title(*cs.TabDF), &sc.TabTitleDF)
+	c.mergeBool(c.HideconfigMEM, r.HideconfigMEM, &s.HideconfigMEM)
+	c.mergeBool(c.HideconfigIF,  r.HideconfigIF,  &s.HideconfigIF)
+	c.mergeBool(c.HideconfigCPU, r.HideconfigCPU, &s.HideconfigCPU)
+	c.mergeBool(c.HideconfigDF,  r.HideconfigDF,  &s.HideconfigDF)
+	c.mergeBool(c.HideconfigPS,  r.HideconfigPS,  &s.HideconfigPS)
+	c.mergeBool(c.HideconfigVG,  r.HideconfigVG,  &s.HideconfigVG)
 
-	cs.HideconfigMEM.merge(rc.HideconfigMEM, &sc.HideconfigMEM)
-	cs.HideconfigIF .merge(rc.HideconfigIF,  &sc.HideconfigIF)
-	cs.HideconfigCPU.merge(rc.HideconfigCPU, &sc.HideconfigCPU)
-	cs.HideconfigDF .merge(rc.HideconfigDF,  &sc.HideconfigDF)
-	cs.HideconfigPS .merge(rc.HideconfigPS,  &sc.HideconfigPS)
-	cs.HideconfigVG .merge(rc.HideconfigVG,  &sc.HideconfigVG)
+	c.mergeSEQ (c.TabIF, r.TabIF, &s.TabIF)
+	c.mergeSEQ (c.TabDF, r.TabDF, &s.TabDF)
+
+	// merge NOT from the r
+	c.TabTitleIF.merge(IFTABS.Title(*c.TabIF), &s.TabTitleIF)
+	c.TabTitleDF.merge(DFTABS.Title(*c.TabDF), &s.TabTitleDF)
 }
 
 func newtitle(s string) *title {
@@ -192,14 +193,9 @@ func newtitle(s string) *title {
 	return p
 }
 
-func newfalse()  *bool  { return new(bool); }
-func newtrue()   *bool  { return newbool(true); }
-
-func newfalsee() *Boole { return new(Boole); }
-func newtruee()  *Boole { return newboole(true); }
-
-func newbool (v bool) (b *bool)  { b = new(bool);  *b = v; return }
-func newboole(v bool) (b *Boole) { b = new(Boole); *b = Boole(v); return }
+func newfalse()      *bool { return new(bool); }
+func newtrue()       *bool { return newbool(true); }
+func newbool(v bool) *bool { b := new(bool);  *b = v; return b }
 
 func newseq(v types.SEQ) *types.SEQ {
 	s := new(types.SEQ)
@@ -216,17 +212,17 @@ func newdefaultrefresh() *refresh {
 func defaultClient() client {
 	cs := client{}
 
-	cs.HideMEM = newfalsee()
-	cs.HideIF  = newfalsee()
-	cs.HideCPU = newfalsee()
-	cs.HideDF  = newfalsee()
-	cs.HidePS  = newfalsee()
-	cs.HideVG  = newfalsee()
+	cs.HideMEM = newfalse()
+	cs.HideIF  = newfalse()
+	cs.HideCPU = newfalse()
+	cs.HideDF  = newfalse()
+	cs.HidePS  = newfalse()
+	cs.HideVG  = newfalse()
 
-	cs.HideSWAP  = newfalsee()
-	cs.ExpandIF  = newfalsee()
-	cs.ExpandCPU = newfalsee()
-	cs.ExpandDF  = newfalsee()
+	cs.HideSWAP  = newfalse()
+	cs.ExpandIF  = newfalse()
+	cs.ExpandCPU = newfalse()
+	cs.ExpandDF  = newfalse()
 
 	cs.TabIF = newseq(IFBYTES_TABID)
 	cs.TabDF = newseq(DFBYTES_TABID)
@@ -236,12 +232,12 @@ func defaultClient() client {
 	hideconfig := true
 	// hideconfig  = false // DEVELOPMENT
 
-	cs.HideconfigMEM = newboole(hideconfig)
-	cs.HideconfigIF  = newboole(hideconfig)
-	cs.HideconfigCPU = newboole(hideconfig)
-	cs.HideconfigDF  = newboole(hideconfig)
-	cs.HideconfigPS  = newboole(hideconfig)
-	cs.HideconfigVG  = newboole(hideconfig)
+	cs.HideconfigMEM = newbool(hideconfig)
+	cs.HideconfigIF  = newbool(hideconfig)
+	cs.HideconfigCPU = newbool(hideconfig)
+	cs.HideconfigDF  = newbool(hideconfig)
+	cs.HideconfigPS  = newbool(hideconfig)
+	cs.HideconfigVG  = newbool(hideconfig)
 
 	cs.RefreshMEM = newdefaultrefresh()
 	cs.RefreshIF  = newdefaultrefresh()
@@ -251,7 +247,6 @@ func defaultClient() client {
 	cs.RefreshVG  = newdefaultrefresh()
 
 	cs.psLimit = 8
-	// cs.psNotexpandable = newfalse()
 
 	cs.psSEQ = _PSBIMAP.Default_seq
 	cs.dfSEQ = _DFBIMAP.Default_seq
