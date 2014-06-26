@@ -28,13 +28,15 @@ func(RC Recovery) Constructor(HANDLER http.Handler) http.Handler {
 					size := runtime.Stack(sbuf, false)
 					stack = string(sbuf[:size])
 				}
-				rctemplate.Execute(w, struct {
-					Title, Description, Stack string
-				}{
-					Title:       panicstatustext,
-					Description: description,
-					Stack:       stack,
-				})
+				if tpl, err := rctemplate.Clone(); err == nil { // otherwise bail out
+					tpl.Execute(w, struct {
+						Title, Description, Stack string
+					}{
+						Title:       panicstatustext,
+						Description: description,
+						Stack:       stack,
+					})
+				}
 			}
 		}()
 		HANDLER.ServeHTTP(w, r)
