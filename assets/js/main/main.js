@@ -38,9 +38,11 @@ function newwebsocket(onmessage) {
 	};
 
         var statesel = 'table thead tr .header a.state';
-	var again = function() { // fst arg is e -- event
+	var again = function(e) {
             $(statesel).unbind('click');
-            window.setTimeout(init, 5000);
+            if (!e.wasClean) {
+                window.setTimeout(init, 5000);
+            }
 	};
 	conn.onclose = again;
 	conn.onerror = again;
@@ -56,7 +58,8 @@ function newwebsocket(onmessage) {
 
     return {
         sendClient: sendClient,
-        sendSearch: sendSearch
+        sendSearch: sendSearch,
+        close: function() { conn.close(); }
     };
 }
 
@@ -202,6 +205,13 @@ function update(currentClient, model) {
 	var data = JSON.parse(event.data);
         if (data.Client !== undefined && data.Client.DebugError !== undefined) {
             console.log('DEBUG ERROR', data.Client.DebugError);
+        }
+        if (data.Reload !== undefined && data.Reload === true) {
+            window.setTimeout(function() { location.reload(true); }, 5000);
+            window.setTimeout(websocket.close, 2000);
+            console.log('in 5s: location.reload(true)');
+            console.log('in 2s: websocket.close()');
+            return;
         }
 
         setState(pstable,  {PStable:  data.PStable,  PSlinks: data.PSlinks});

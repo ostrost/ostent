@@ -906,6 +906,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html")
- 	w.Header().Set("Content-Length", strconv.Itoa(len(buf.String())))
+ 	w.Header().Set("Content-Length", strconv.Itoa(buf.Len())) // len(buf.String())
+	// w.Write(buf.Bytes())
 	io.Copy(w, buf)
 }

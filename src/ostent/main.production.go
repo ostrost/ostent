@@ -148,6 +148,13 @@ func main() {
 	if _, err := goagain.Wait(listen); err != nil { // signals before won't be catched
 		log.Fatalln(err)
 	}
+
+	// shutting down
+
+	if ostential.Connections.Reload() {
+		time.Sleep(time.Second)
+	} // */
+
 	if err := listen.Close(); err != nil {
 		log.Fatalln(err)
 	}

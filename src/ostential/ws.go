@@ -74,13 +74,13 @@ func Loop() {
 			nextsecond := now.Truncate(time.Second).Add(time.Second).Sub(now)
 			<-time.After(nextsecond)
 
-			if connections.expires() {
+			if Connections.expires() {
 				// wslog.Printf("Have expires, COLLECT\n")
 				lastInfo.collect()
 			} else {
 				// wslog.Printf("NO REFRESH\n")
 			}
-			connections.tack()
+			Connections.tack()
 		}
 	}()
 
@@ -90,18 +90,18 @@ func Loop() {
 			// panic(err)
 			// fsnotify error; skip it
 		}
-	}() */
+	}() // */
 
 	for {
 		select {
 		case update := <-pUPDATES:
-			connections.push(update)
+			Connections.push(update)
 
 		case conn := <-register:
-			connections.reg(conn)
+			Connections.reg(conn)
 
 		case conn := <-unregister:
-			if connections.unreg(conn) == 0 { // if no connections left
+			if Connections.unreg(conn) == 0 { // if no connections left
 				lastInfo.reset_prev()
 			}
 		}
@@ -111,10 +111,13 @@ func Loop() {
 type conn struct {
 	Conn *gorillawebsocket.Conn
 	requestOrigin *http.Request
+
 	receive chan *received
 	push    chan *pageUpdate
-	full client
-	mutex sync.Mutex
+	full    client
+
+	mutex      sync.Mutex
+	writemutex sync.Mutex
 }
 
 func (c *conn) expires() bool {
@@ -156,6 +159,19 @@ func (cs *conns) tack() {
 	for c := range cs.connmap {
 		c.receive <- nil
 	}
+}
+
+// Reload sends reload signal to all the connections, returns false if there were not connections
+func (cs *conns) Reload() bool {
+	cs.mutex.Lock()
+	defer cs.mutex.Unlock()
+
+	var reloaded bool
+	for c := range cs.connmap {
+		c.writeReload()
+		reloaded = true
+	}
+	return reloaded
 }
 
 func (cs *conns) push(update *pageUpdate) {
@@ -214,7 +230,9 @@ func (cs *conns) expires() bool {
 }
 
 var (
-	connections  = conns{connmap: map[*conn]struct{}{}}
+	// Connections is an instance of an unexported type to hold active websocket connections.
+	// The only exported method is Reload.
+	Connections  = conns{connmap: map[*conn]struct{}{}}
 	unregister   = make(chan *conn)
 	  register   = make(chan *conn)
 
@@ -285,49 +303,59 @@ type served struct {
 	received *received
 }
 
-func(c *conn) writeError(err error) bool {
-	type errorJSON struct {
-		Error string
-	}
-	return c.Conn.WriteJSON(errorJSON{err.Error()}) == nil
+func(c *conn) writeJSON(data interface{}) error {
+	c.writemutex.Lock()
+	defer c.writemutex.Unlock()
+	return c.Conn.WriteJSON(data)
 }
 
-func(c *conn) receiveLoop() { // read from the conn
-	defer c.Conn.Close()
+func(c *conn) writeReload() {
+	c.writeJSON(struct {
+		Reload bool
+	}{true})
+}
+
+func(c *conn) writeError(err error) bool {
+	return nil == c.writeJSON(struct {
+		Error string
+	}{err.Error()})
+}
+
+func(c *conn) receiveLoop(stop chan struct{}) { // read from the conn
 	for {
 		rd := new(received)
 		if err := c.Conn.ReadJSON(&rd); err != nil {
-			break
+			stop <- struct{}{}
+			return
 		}
 		c.receive <- rd
 	}
 }
 
-func(c *conn) updateLoop() { // write to the conn
-	defer func() {
-		unregister <- c
-		c.Conn.Close()
-	}()
+func(c *conn) updateLoop(stop chan struct{}) { // write to the conn
+loop:
 	for {
 		select {
 		case rd, ok := <- c.receive:
 			if !ok {
-				break
+				return
 			}
 			if next := c.process(rd); next != nil {
 				if *next {
-					continue
+					continue loop
 				} else {
-					break
+					return
 				}
 			}
 		case update, ok := <- c.push:
 			if !ok {
-				break
+				return
 			}
 			if next := c.writeUpdate(*update); !next {
-				break
+				return
 			}
+		case _ = <- stop:
+			return
 		}
 	}
 }
@@ -410,7 +438,7 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	update := getUpdates(r, &sd.conn.full, send, false)
 
-	if sd.conn.Conn.WriteJSON(update) != nil {
+	if sd.conn.writeJSON(update) != nil {
 		stop()
 		return
 	}
@@ -418,11 +446,11 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *conn) writeUpdate(update pageUpdate) bool {
-	if *c.full.HideVG && update.VagrantMachines != nil {
+	if *c.full.HideVG {
 		// TODO other .Vagrant* fields may not be discarded
-		return true
+		update.VagrantMachines = nil
 	}
-	return c.Conn.WriteJSON(update) == nil
+	return c.writeJSON(update) == nil
 }
 
 type dummyStatus struct { // yet another ResponseWriter
@@ -466,7 +494,9 @@ func slashws(w http.ResponseWriter, req *http.Request) {
 	register <- c
 	defer func() {
 		unregister <- c
+		c.Conn.Close()
 	}()
-	go c.receiveLoop() // read from the client
-	   c.updateLoop()  // write to the client
+	stop := make(chan struct{}, 1)
+	go c.receiveLoop(stop) // read from the client
+	   c.updateLoop(stop)  // write to the client
 }
