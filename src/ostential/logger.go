@@ -77,13 +77,6 @@ func(lg *logger) log(start time.Time, tail string, w loggedResponseWriter, r *ht
 	diff := time.Since(start)
 	since := ZEROTIME.Add(diff).Format("5.0000s")
 
-	var code string
-	if !w.statusgood() {
-		code = statusLine(w.status)
-	} else {
-		code = fmt.Sprintf("%d", w.status)
-	}
-
 	host, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		host = r.RemoteAddr
@@ -93,13 +86,29 @@ func(lg *logger) log(start time.Time, tail string, w loggedResponseWriter, r *ht
 	if r.Form != nil && len(r.Form) > 0 {
 		uri += "?"+r.Form.Encode()
 	}
-	lg.access.Printf("%s\t%s\t%s\t%v\t%s\t%s%s\n", start.Format("15:04:05"), host, since, code, r.Method, uri, tail)
+	echo := func(s string) string {
+		if s == "" {
+			return "-"
+		}
+		return s
+	}
+	lg.access.Printf("%s - - [%s] %#v %d %d %#v %#v\t;%s%s\n",
+		host,
+		start.Format("02/Jan/2006:15:04:05 -0700"),
+		fmt.Sprintf("%s %s %s", r.Method, uri, r.Proto),
+		w.status,
+		w.size,
+		echo(r.Header.Get("Referer")),
+		echo(r.Header.Get("User-Agent")),
+		since,
+		tail)
 }
 
 type loggedResponseWriter struct {
 	http.ResponseWriter
 	http.Flusher // ?
 	status int
+	size int
 }
 
 func (w loggedResponseWriter) statusgood() bool {
@@ -123,7 +132,11 @@ func (w *loggedResponseWriter) Write(b []byte) (int, error) {
 	if w.status == 0 { // generic approach to Write-ing before WriteHeader call
 		w.WriteHeader(http.StatusOK)
 	}
-	return w.ResponseWriter.Write(b)
+	s, err := w.ResponseWriter.Write(b)
+	if err != nil {
+		w.size += s
+	}
+	return s, err
 }
 
 func (w *loggedResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
