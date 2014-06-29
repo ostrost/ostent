@@ -207,6 +207,13 @@ func (c *conn) closeChans() {
 	close(c.push)
 }
 
+// Len return the number of active connections
+func (cs *conns) Len() int {
+	cs.mutex.Lock()
+	defer cs.mutex.Unlock()
+	return len(cs.connmap)
+}
+
 func (cs *conns) unreg(c *conn) int {
 	c.closeChans()
 

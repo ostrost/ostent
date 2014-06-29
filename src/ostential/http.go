@@ -119,10 +119,10 @@ func(li lastinfo) MEM(client client) *types.MEM {
 }
 
 func(li lastinfo) cpuListDelta() (sigar.CpuList, bool) {
-	prev := li.Previous.CPU
-	if len(prev.List) == 0 {
+	if li.Previous == nil || len(li.Previous.CPU.List) == 0 {
 		return li.CPU, false
 	}
+	prev := li.Previous.CPU
 	coreno := len(li.CPU.List)
 	if coreno == 0 { // wait, what?
 		return sigar.CpuList{}, false
@@ -611,15 +611,6 @@ func (la *last) reset_prev() {
 	la.Previous.Interfaces = []InterfaceInfo{}
 }
 
-// collected_already checks for last.lastinfo.Previos NOT being nil.
-// last.collect is expected to set the last.lastinfo.Previous to some non-nil value.
-// Exists for the check from page making, when the last.collect has not been scheduled yet
-func (la *last) collected_already() bool {
-	la.mutex.Lock()
-	defer la.mutex.Unlock()
-	return la.Previous != nil
-}
-
 func (la *last) collect() {
 	la.mutex.Lock()
 	defer la.mutex.Unlock()
@@ -645,10 +636,10 @@ func (la *last) collect() {
 
 	// .mutex unchanged
 	la.lastinfo = lastinfo{
-		lastfive: lastInfo.lastfive,
+		lastfive: la.lastfive,
 		Previous: &Previous{
-			CPU:        lastInfo.CPU,
-			Interfaces: lastInfo.Interfaces,
+			CPU:        la.CPU,
+			Interfaces: la.Interfaces,
 		},
 		Generic:  <-gch,
 		RAM:      <-rch,
@@ -697,9 +688,6 @@ func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Bis
 }
 
 func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh bool) pageUpdate {
-	if !lastInfo.collected_already() {
-		lastInfo.collect()
-	}
 
 	client.recalcrows() // before anything
 
@@ -717,13 +705,16 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 
 		df_copy = make([]diskInfo,       len(lastInfo.DiskList))
 		ps_copy = make([]types.ProcInfo, len(lastInfo.ProcList))
+		if_copy = make([]InterfaceInfo,  len(lastInfo.Interfaces))
+
 		copy(df_copy, lastInfo.DiskList)
 		copy(ps_copy, lastInfo.ProcList)
+		copy(if_copy, lastInfo.Interfaces)
 
-		if_copy     = make([]InterfaceInfo, len(lastInfo.Interfaces))
-		previf_copy = make([]InterfaceInfo, len(lastInfo.Previous.Interfaces))
-		copy(if_copy,     lastInfo.Interfaces)
-		copy(previf_copy, lastInfo.Previous.Interfaces)
+		if lastInfo.lastinfo.Previous != nil {
+			previf_copy = make([]InterfaceInfo, len(lastInfo.Previous.Interfaces))
+			copy(previf_copy, lastInfo.Previous.Interfaces)
+		}
 
 		g := lastInfo.Generic
 		// g.LA = g.LA1spark + " " + g.LA
@@ -798,6 +789,11 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 }
 
 func pageData(req *http.Request) PageData {
+	if Connections.Len() == 0 {
+		// collect when there're no active connections, so Loop does not collect
+		lastInfo.collect()
+	}
+
 	client := defaultClient()
 	updates := getUpdates(req, &client, sendClient{}, true)
 
@@ -907,6 +903,5 @@ func index(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/html")
  	w.Header().Set("Content-Length", strconv.Itoa(buf.Len())) // len(buf.String())
-	// w.Write(buf.Bytes())
-	io.Copy(w, buf)
+	io.Copy(w, buf) // or w.Write(buf.Bytes())
 }
