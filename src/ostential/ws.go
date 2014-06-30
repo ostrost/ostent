@@ -84,13 +84,11 @@ func Loop() {
 		}
 	}()
 
-    /* disabled. fsnotify is racy
 	go func() {
 		if err := vgwatch(); err != nil { // vagrant
-			// panic(err)
-			// fsnotify error; skip it
+			// ignoring the error
 		}
-	}() // */
+	}()
 
 	for {
 		select {

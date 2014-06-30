@@ -2,13 +2,14 @@ package ostential
 import (
 	"os"
 	"sort"
+	"time"
 	"syscall"
 	"os/user"
 	"io/ioutil"
 	"encoding/json"
 	"html/template"
 
-//	"github.com/howeyc/fsnotify"
+	"github.com/howeyc/fsnotify"
 )
 
 type vagrantMachine struct {
@@ -92,25 +93,18 @@ func vagrantmachines() (*vagrantMachines, error) {
 	return machines, nil
 }
 
-/* disabled. fsnotify is racy
+var vgmachineindexFilename string
 
-func newWatcher() (*fsnotify.Watcher, error) {
+func init() {
 	currentUser, _ := user.Current()
-	index_filename := currentUser.HomeDir + "/.vagrant.d/data/machine-index/index"
-
-	watcher, err := fsnotify.NewWatcher()
-    if err != nil {
-        return nil, err
-    }
-	err = watcher.Watch(index_filename)
-	return watcher, err
+	vgmachineindexFilename = currentUser.HomeDir + "/.vagrant.d/data/machine-index/index"
 }
 
 func vgdispatch() { // (*fsnotify.FileEvent)
 	machines, err := vagrantmachines()
-	// if err != nil { // the err may be because of inconsistent write by vagrant (although not with the flock). in which case it should be ignored
-	// 	panic(err) // will see how it goes
-	// }
+	if err != nil { // an inconsistent write by vagrant? (although not with the flock)
+		return // ignoring the error
+	}
 	pu := pageUpdate{}
 	if err != nil {
 		pu.VagrantError = err.Error()
@@ -121,21 +115,32 @@ func vgdispatch() { // (*fsnotify.FileEvent)
 	pUPDATES <- &pu
 }
 
-func vgwatch() error {
-	watcher, err := newWatcher()
+func vgchange() error {
+	watcher, err := fsnotify.NewWatcher()
     if err != nil {
         return err
     }
-	for {
+	if err := watcher.Watch(vgmachineindexFilename); err != nil {
+		return err
+	}
+
+	stop := make(chan struct{}, 1)
+	go func() {
 		<-watcher.Event
-		vgdispatch()
+		go vgdispatch()
+		stop <- struct{}{}
+	}()
+	<- stop
+	time.Sleep(time.Second) // to overcome possible fsnotify data races
+	watcher.Close()
+	return nil
+}
 
-		watcher.Close()
-
-		if watcher, err = newWatcher(); err != nil {
+func vgwatch() error {
+	for {
+		if err := vgchange(); err != nil {
 			return err
 		}
 	}
 	return nil
 }
-// */
