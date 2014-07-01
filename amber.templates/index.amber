@@ -18,14 +18,14 @@ html
     link[rel="icon"][type="image/png"][href="/favicon.png"]
     link[rel="stylesheet"][type="text/css"][href="/css/index.css"]
 
-    $HTTP_HOST = Data.HTTP_HOST
-    each $script in Data.SCRIPTS
-        script[type="text/javascript"][charset="utf-8"][src="//"+ $HTTP_HOST + $script]
-    //- script[type="text/javascript"][charset="utf-8"][src="http://fb.me/react-0.10.0.js"]
+    each $script in SCRIPTS
+      script[type="text/javascript"][charset="utf-8"][src=$script]
 
   body
     script
       $(ready);
+
+    div#client
 
     div.container-fluid
       div.row.collapse#alert-parent
@@ -309,5 +309,4 @@ html
                 [[template "define_vagrant_table" .]]
 
     script
-      var HTTP_HOST = #{Data.HTTP_HOST};
-      var Data      = #{Data};
+      var Data = #{Data};

@@ -564,8 +564,6 @@ type PageData struct {
 
 	DISTRIB     string
 	VERSION     string
-	HTTP_HOST   string
-	SCRIPTS     []string
 	PeriodDuration Duration
 
     Client client
@@ -810,8 +808,6 @@ func pageData(req *http.Request) PageData {
 
 		DISTRIB:    DISTRIB, // value from init_*.go
 		VERSION:    VERSION, // value from server.go
-		SCRIPTS:    SCRIPTS, // value computed at init()
-		HTTP_HOST:  req.Host,
 		PeriodDuration: periodFlag.Duration,
 	}
 
@@ -874,10 +870,17 @@ func init() {
 
 		"jscript",
 	}}
+	develreact := false
+
 	for _, assetname := range assets.AssetNames() {
-		if strings.HasSuffix(assetname, ".js") {
-			scriptsassets.assetnames = append(scriptsassets.assetnames, "/"+assetname)
+		if !strings.HasSuffix(assetname, ".js") {
+			continue
 		}
+		scriptsrc := "/"+assetname
+		if develreact && strings.Contains(scriptsrc, "react") {
+			scriptsrc = "//fb.me/" + map[bool]string{true:"react-with-addons-0.10.0.js", false:"react-0.10.0.js"}[false]
+		}
+		scriptsassets.assetnames = append(scriptsassets.assetnames, scriptsrc)
 	}
 
 	sort.Stable(scriptsassets)
@@ -888,6 +891,16 @@ func init() {
 var SCRIPTS []string
 var INDEXTEMPLATE = view.Bincompile()
 
+func scripts(r *http.Request) (scripts []string) {
+	for _, s := range SCRIPTS {
+		if !strings.HasPrefix(string(s), "//") {
+			s = "//"+r.Host+s
+		}
+		scripts = append(scripts, s)
+	}
+	return scripts
+}
+
 func index(w http.ResponseWriter, r *http.Request) {
 	indexTemplate, err := INDEXTEMPLATE.Clone()
 	if err != nil {
@@ -896,7 +909,15 @@ func index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	buf := new(bytes.Buffer)
-	if err := indexTemplate.ExecuteTemplate(buf, "index.html", struct{Data interface{}}{Data: pageData(r),}); err != nil {
+	if err := indexTemplate.ExecuteTemplate(buf, "index.html",
+		struct{
+			Data interface{}
+			SCRIPTS []string
+		}{
+			Data: pageData(r),
+			SCRIPTS: scripts(r),
+		},
+	); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
