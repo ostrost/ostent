@@ -171,6 +171,40 @@ var VGtableCLASS = React.createClass({
   }
 });
 
+var ShowSwapClass = React.createClass({
+    getInitialState: function() { return ShowSwapClass.reduce(Data); },
+    statics: {
+        reduce: function(data) {
+            if (data.Client === undefined ||
+                data.Client === null) {
+                return undefined;
+            }
+            var state = {};
+            if (data.Client.HideSWAP !== undefined) {
+                state.HideSWAP = data.Client.HideSWAP;
+            }
+            if (data.Client.HideMEM !== undefined) {
+                state.HideMEM = data.Client.HideMEM;
+            }
+            return state;
+        }
+    },
+
+    componentDidMount: function() { this.props.$el.click(this.click); },
+    render: function() {
+        this.props.$el[!this.state.HideSWAP ? 'addClass' : 'removeClass']('active');
+        return React.DOM.span(null, this.props.$el.text());
+    },
+    click: function(e) {
+        var state = {HideSWAP: !this.state.HideSWAP};
+        if (this.state.HideMEM) {
+            state = _.extend(state, {HideMEM: false});
+        }
+        websocket.sendClient(state);
+        e.preventDefault(); e.stopPropagation(); // preserves checkbox/radio checked/selected state
+    }
+});
+
 var setState = function(obj, data) {
     if (data === undefined) { // null
         return;
@@ -191,6 +225,8 @@ function update(currentClient, model) {
     }
 
     // all *CLASS defined in gen/jscript.js
+    var showswap  = React.renderComponent(ShowSwapClass({$el: $('label[href="#showswap"]')}), $('label[href="#showswap"]')[0]);
+
     var memtable  = React.renderComponent(MEMtableCLASS (null), document.getElementById('mem-table'));
     var pstable   = React.renderComponent(PStableCLASS  (null), document.getElementById('ps-table'));
     var dfbytes   = React.renderComponent(DFbytesCLASS  (null), document.getElementById('dfbytes-table'));
@@ -217,6 +253,8 @@ function update(currentClient, model) {
         setState(pstable,  {PStable:  data.PStable,  PSlinks: data.PSlinks});
 	setState(dfbytes,  {DFbytes:  data.DFbytes,  DFlinks: data.DFlinks});
 	setState(dfinodes, {DFinodes: data.DFinodes, DFlinks: data.DFlinks});
+
+        setState(showswap, ShowSwapClass.reduce(data));
 
         setState(memtable,  data.MEM);
         setState(cputable,  data.CPU);
@@ -262,8 +300,8 @@ var View = Backbone.View.extend({
 	this.listentext('Uptime',   $('#uptime #generic-uptime'));
 	this.listentext('LA',       $('#generic-la'));
 
-        var $hswapb = $('label[href="#showswap"]');
-        this.listenactivate('HideSWAP', $hswapb, true);
+        // var $hswapb = $('label[href="#showswap"]');
+        // this.listenactivate('HideSWAP', $hswapb, true);
 
         var $section_mem = $('#mem');
         var $section_if  = $('#if');
@@ -359,7 +397,7 @@ var View = Backbone.View.extend({
             $b.click( B(this.click_expandfunc(E, H)) );
         }
 
-        $hswapb    .click( B(this.click_expandfunc('HideSWAP', 'HideMEM')) );
+        // $hswapb    .click( B(this.click_expandfunc('HideSWAP', 'HideMEM')) );
         $tab_if    .click( B(this.click_tabfunc('TabIF', 'HideIF')) );
         $tab_df    .click( B(this.click_tabfunc('TabDF', 'HideDF')) );
 
