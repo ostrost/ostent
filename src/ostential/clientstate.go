@@ -90,6 +90,7 @@ type client struct {
 	ExpandtextCPU *string `json:",omitempty"`
 	ExpandtextDF  *string `json:",omitempty"`
 
+	RefreshGeneric *refresh `json:",omitempty"`
 	RefreshMEM *refresh `json:",omitempty"`
 	RefreshIF  *refresh `json:",omitempty"`
 	RefreshCPU *refresh `json:",omitempty"`
@@ -239,6 +240,7 @@ func defaultClient() client {
 	cs.HideconfigPS  = newbool(hideconfig)
 	cs.HideconfigVG  = newbool(hideconfig)
 
+	cs.RefreshGeneric = newdefaultrefresh()
 	cs.RefreshMEM = newdefaultrefresh()
 	cs.RefreshIF  = newdefaultrefresh()
 	cs.RefreshCPU = newdefaultrefresh()

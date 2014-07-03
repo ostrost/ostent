@@ -696,7 +696,7 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 		if_copy     []InterfaceInfo
 		previf_copy []InterfaceInfo
 	)
-	var pu pageUpdate
+	pu := pageUpdate{}
 	func() {
 		lastInfo.mutex.Lock()
 		defer lastInfo.mutex.Unlock()
@@ -714,11 +714,10 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 			copy(previf_copy, lastInfo.Previous.Interfaces)
 		}
 
-		g := lastInfo.Generic
-		// g.LA = g.LA1spark + " " + g.LA
-
-		pu = pageUpdate{
-			Generic: &g, // &lastInfo.Generic,
+		if client.RefreshGeneric.refresh(forcerefresh) {
+			g := lastInfo.Generic
+			// g.LA = g.LA1spark + " " + g.LA
+			pu.Generic = &g // &lastInfo.Generic
 		}
 		if !*client.HideMEM && client.RefreshMEM.refresh(forcerefresh) {
 			pu.MEM = lastInfo.MEM(*client)

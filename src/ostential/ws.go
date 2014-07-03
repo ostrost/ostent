@@ -441,7 +441,10 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	update := getUpdates(r, &sd.conn.full, send, false)
+	update := getUpdates(r, &sd.conn.full, send, sd.received != nil && sd.received.Client != nil)
+	if update == (pageUpdate{}) { // nothing scheduled for the moment, no update
+		return
+	}
 
 	if sd.conn.writeJSON(update) != nil {
 		stop()
