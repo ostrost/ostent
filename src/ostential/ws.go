@@ -150,16 +150,22 @@ type conns struct {
 	mutex sync.Mutex
 }
 
+func (c *conn) tack() {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	c.receive <- nil
+}
+
 func (cs *conns) tack() {
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
 
 	for c := range cs.connmap {
-		c.receive <- nil
+		c.tack()
 	}
 }
 
-// Reload sends reload signal to all the connections, returns false if there were not connections
+// Reload sends reload signal to all the connections, returns false if there were no connections
 func (cs *conns) Reload() bool {
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
