@@ -171,6 +171,33 @@ var VGtableCLASS = React.createClass({
   }
 });
 
+var HideClass = React.createClass({
+    reduce: function(data) {
+        if (data.Client === undefined) {
+            return undefined;
+        }
+        var value = data.Client[this.props.key];
+        if (value === undefined) {
+            return undefined;
+        }
+        return {Hide: value};
+    },
+    getInitialState: function() {
+        return this.reduce(Data);
+    },
+    componentDidMount: function() { this.props.$click_el.click(this.click); },
+    render: function() {
+        this.props.$collapse_el.collapse(this.state.Hide ? 'hide' : 'show');
+        return React.DOM.span(null, null);
+    },
+    click: function(e) {
+        var state = {};
+        state[this.props.key] = !this.state.Hide;
+        websocket.sendClient(state);
+        e.preventDefault(); e.stopPropagation(); // preserves checkbox/radio checked/selected state
+    }
+});
+
 var ShowSwapClass = React.createClass({
     getInitialState: function() { return ShowSwapClass.reduce(Data); },
     statics: {
@@ -216,6 +243,14 @@ var setState = function(obj, data) {
 
 var websocket; // a global
 
+function dummy(sel) {
+    // if (typeof(sel) === "string") { sel = $(sel); }
+    return (sel                                          .
+            append('<span class="dummy display-none" />').
+            find('.dummy')                               .
+            get(0));
+}
+
 function update(currentClient, model) {
     var params = location.search.substr(1).split("&");
     for (var i in params) {
@@ -224,18 +259,30 @@ function update(currentClient, model) {
 	}
     }
 
-    // all *CLASS defined in gen/jscript.js
-    var showswap  = React.renderComponent(ShowSwapClass({$el: $('label[href="#showswap"]')}), $('label[href="#showswap"]')[0]);
+    var $showswap_el = $('label[href="#showswap"]');
+    var showswap = React.renderComponent(ShowSwapClass({$el: $showswap_el}), $showswap_el.get(0));
 
-    var memtable  = React.renderComponent(MEMtableCLASS (null), document.getElementById('mem-table'));
-    var pstable   = React.renderComponent(PStableCLASS  (null), document.getElementById('ps-table'));
-    var dfbytes   = React.renderComponent(DFbytesCLASS  (null), document.getElementById('dfbytes-table'));
-    var dfinodes  = React.renderComponent(DFinodesCLASS (null), document.getElementById('dfinodes-table'));
-    var cputable  = React.renderComponent(CPUtableCLASS (null), document.getElementById('cpu-table'));
-    var ifbytes   = React.renderComponent(IFbytesCLASS  (null), document.getElementById('ifbytes-table'));
-    var iferrors  = React.renderComponent(IFerrorsCLASS (null), document.getElementById('iferrors-table'));
-    var ifpackets = React.renderComponent(IFpacketsCLASS(null), document.getElementById('ifpackets-table'));
-    var vagrant   = React.renderComponent(VGtableCLASS(null),   document.getElementById('vagrant-table'));
+    var $header_mem = $('header a[href="#mem"]');
+    var hideconfigmem = React.renderComponent(HideClass({
+        key:          'HideconfigMEM',
+        $collapse_el: $('#memconfig'),
+        $click_el:    $header_mem }), dummy($header_mem));
+
+    var $hiding_mem = $('#memconfig').find('.hiding');
+    var hidemem = React.renderComponent(HideClass({
+        key:          'HideMEM',
+        $collapse_el: $('#mem'),
+        $click_el:    $hiding_mem }), dummy($hiding_mem));
+
+    var memtable  = React.renderComponent(MEMtableCLASS (null), document.getElementById('mem'       +'-'+ 'table'));
+    var pstable   = React.renderComponent(PStableCLASS  (null), document.getElementById('ps'        +'-'+ 'table'));
+    var dfbytes   = React.renderComponent(DFbytesCLASS  (null), document.getElementById('dfbytes'   +'-'+ 'table'));
+    var dfinodes  = React.renderComponent(DFinodesCLASS (null), document.getElementById('dfinodes'  +'-'+ 'table'));
+    var cputable  = React.renderComponent(CPUtableCLASS (null), document.getElementById('cpu'       +'-'+ 'table'));
+    var ifbytes   = React.renderComponent(IFbytesCLASS  (null), document.getElementById('ifbytes'   +'-'+ 'table'));
+    var iferrors  = React.renderComponent(IFerrorsCLASS (null), document.getElementById('iferrors'  +'-'+ 'table'));
+    var ifpackets = React.renderComponent(IFpacketsCLASS(null), document.getElementById('ifpackets' +'-'+ 'table'));
+    var vagrant   = React.renderComponent(VGtableCLASS  (null), document.getElementById('vagrant'   +'-'+ 'table'));
 
     var onmessage = function(event) {
 	var data = JSON.parse(event.data);
@@ -254,7 +301,9 @@ function update(currentClient, model) {
 	setState(dfbytes,  {DFbytes:  data.DFbytes,  DFlinks: data.DFlinks});
 	setState(dfinodes, {DFinodes: data.DFinodes, DFlinks: data.DFlinks});
 
-        setState(showswap, ShowSwapClass.reduce(data));
+        setState(showswap,      ShowSwapClass.reduce(data));
+        setState(hideconfigmem, hideconfigmem.reduce(data));
+        setState(hidemem,       hidemem      .reduce(data));
 
         setState(memtable,  data.MEM);
         setState(cputable,  data.CPU);
@@ -282,10 +331,7 @@ function update(currentClient, model) {
     websocket = newwebsocket(onmessage);
 }
 
-var Model = Backbone.Model.extend({
-    initialize: function() {
-    }
-});
+var Model = Backbone.Model.extend({});
 Model.attributes = function(data) {
     if (data.Generic === undefined) {
         return data.Client;
@@ -303,33 +349,33 @@ var View = Backbone.View.extend({
         // var $hswapb = $('label[href="#showswap"]');
         // this.listenactivate('HideSWAP', $hswapb, true);
 
-        var $section_mem = $('#mem');
+        //// var $section_mem = $('#mem');
         var $section_if  = $('#if');
         var $section_cpu = $('#cpu');
         var $section_df  = $('#df');
         var $section_ps  = $('#ps');
         var $section_vg  = $('#vagrant');
 
-        var $config_mem = $('#memconfig');
+        //// var $mem_config = $('#memconfig');
         var $config_if  = $('#ifconfig');
         var $config_cpu = $('#cpuconfig');
         var $config_df  = $('#dfconfig');
         var $config_ps  = $('#psconfig');
         var $config_vg  = $('#vgconfig');
 
-        var $hidden_mem = $config_mem.find('.hiding');
+        //// var $hidden_mem = $config_mem.find('.hiding');
         var $hidden_if  = $config_if .find('.hiding');
         var $hidden_cpu = $config_cpu.find('.hiding');
         var $hidden_df  = $config_df .find('.hiding');
         var $hidden_ps  = $config_ps .find('.hiding');
         var $hidden_vg  = $config_vg .find('.hiding');
 
-        this.listenhide('HideMEM', $section_mem, $hidden_mem);
+        //// this.listenhide('HideMEM', $section_mem, $hidden_mem);
         this.listenhide('HideCPU', $section_cpu, $hidden_cpu);
         this.listenhide('HidePS',  $section_ps,  $hidden_ps);
         this.listenhide('HideVG',  $section_vg,  $hidden_vg);
 
-        var $header_mem = $('header a[href="'+ $section_mem.selector +'"]');
+        // var $header_mem = $('header a[href="'+ $section_mem.selector +'"]');
         var $header_if  = $('header a[href="'+ $section_if .selector +'"]');
         var $header_cpu = $('header a[href="'+ $section_cpu.selector +'"]');
         var $header_df  = $('header a[href="'+ $section_df .selector +'"]');
@@ -339,7 +385,7 @@ var View = Backbone.View.extend({
         this.listentext('TabTitleIF', $header_if);
         this.listentext('TabTitleDF', $header_df);
 
-        this.listenhide('HideconfigMEM', $config_mem, $header_mem, true);
+        //// this.listenhide('HideconfigMEM', $mem_config, $header_mem, true);
         this.listenhide('HideconfigIF',  $config_if,  $header_if,  true);
         this.listenhide('HideconfigCPU', $config_cpu, $header_cpu, true);
         this.listenhide('HideconfigDF',  $config_df,  $header_df,  true);
@@ -363,6 +409,7 @@ var View = Backbone.View.extend({
         this.listenenable('PSnotExpandable',  $psmore);
         this.listenenable('PSnotDecreasable', $psless);
 
+        var $config_mem = $('#memconfig');
         this.listenrefresherror('RefreshErrorMEM', $config_mem.find('.refresh-group'));
         this.listenrefresherror('RefreshErrorIF',  $config_if .find('.refresh-group'));
         this.listenrefresherror('RefreshErrorCPU', $config_cpu.find('.refresh-group'));
@@ -401,14 +448,14 @@ var View = Backbone.View.extend({
         $tab_if    .click( B(this.click_tabfunc('TabIF', 'HideIF')) );
         $tab_df    .click( B(this.click_tabfunc('TabDF', 'HideDF')) );
 
-        $header_mem.click( B(this.click_expandfunc('HideconfigMEM')) );
+        // $header_mem.click( B(this.click_expandfunc('HideconfigMEM')) );
         $header_if .click( B(this.click_expandfunc('HideconfigIF' )) );
         $header_cpu.click( B(this.click_expandfunc('HideconfigCPU')) );
         $header_df .click( B(this.click_expandfunc('HideconfigDF' )) );
         $header_ps .click( B(this.click_expandfunc('HideconfigPS' )) );
         $header_vg .click( B(this.click_expandfunc('HideconfigVG' )) );
 
-        $hidden_mem.click( B(this.click_expandfunc('HideMEM')) );
+        //// $hidden_mem.click( B(this.click_expandfunc('HideMEM')) );
         $hidden_if .click( B(this.click_expandfunc('HideIF' )) );
         $hidden_cpu.click( B(this.click_expandfunc('HideCPU')) );
         $hidden_df .click( B(this.click_expandfunc('HideDF' )) );
