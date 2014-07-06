@@ -2,6 +2,7 @@
 // requires backbone.js
 // requires jquery.js
 
+/*
 function newwebsocket(onmessage) {
     var conn, connected = false;
     function sendJSON(obj) {
@@ -61,7 +62,7 @@ function newwebsocket(onmessage) {
         sendSearch: sendSearch,
         close: function() { conn.close(); }
     };
-}
+} // */
 
 // function empty(obj) {
 //     return obj === undefined || obj === null;
@@ -171,6 +172,7 @@ var VGtableCLASS = React.createClass({
   }
 });
 
+/*
 var HideClass = React.createClass({
     reduce: function(data) {
         if (data.Client === undefined) {
@@ -230,7 +232,7 @@ var ShowSwapClass = React.createClass({
         websocket.sendClient(state);
         e.preventDefault(); e.stopPropagation(); // preserves checkbox/radio checked/selected state
     }
-});
+}); // */
 
 var setState = function(obj, data) {
     if (data === undefined) { // null

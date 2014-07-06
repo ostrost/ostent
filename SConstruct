@@ -66,6 +66,7 @@ env = Environment(
         'bindata': Builder(generator=bindata),
         'sass':    Builder(action='sass $SOURCES $TARGETS'),
         'jsx':     Builder(action='jsx <$SOURCES  >/dev/null && jsx <$SOURCES 2>/dev/null >$TARGETS'),
+        'coffee':  Builder(action='coffee -p $SOURCES >/dev/null && coffee -o $TARGETS.dir $SOURCES'),
         'amberpp': Builder(generator=generator('{source[2]} -defines {source[0]} $MODE -output $TARGET {source[1]}')),
     })
 
@@ -113,6 +114,8 @@ jscript_jsx = env.Clone(MODE='-j').amberpp(
      amberpp))
 Default(jscript_jsx)
 Default(env.jsx(target='assets/js/gen/jscript.js', source=jscript_jsx))
+
+Default(env.coffee(target='assets/js/milk/index.js', source='coffee/index.coffee'))
 
 # non-Default
 ostent = go.Clone(TAGSARGS='-tags production').build('%s/ostent' % bindir, (
