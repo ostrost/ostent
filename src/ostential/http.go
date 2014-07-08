@@ -867,7 +867,8 @@ func init() {
 		"backbone",
 		"headroom",
 
-		"jscript",
+		"gen", "jsript", // either /gen/ or /jscript/
+		"milk", // from coffee script
 	}}
 	develreact := false
 
