@@ -133,7 +133,7 @@ func (w *loggedResponseWriter) Write(b []byte) (int, error) {
 		w.WriteHeader(http.StatusOK)
 	}
 	s, err := w.ResponseWriter.Write(b)
-	if err != nil {
+	if err == nil {
 		w.size += s
 	}
 	return s, err
