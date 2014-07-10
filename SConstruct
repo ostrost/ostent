@@ -70,7 +70,7 @@ env = Environment(
         'amberpp': Builder(generator=generator('{source[2]} -defines {source[0]} $MODE -output $TARGET {source[1]}')),
     })
 
-assets    = (Dir('assets/'), Files('assets/')) # , IGNORX='assets/js/bundle'))
+assets    = (Dir('assets/'), Files('assets/', IGNORX='assets/js/main'))
 templates = ('templates.html/index.html',
              'templates.html/usepercent.html',
              'templates.html/tooltipable.html',
@@ -79,9 +79,10 @@ templates = ('templates.html/index.html',
 Default(env.Clone(FLAVOR= 'production')       .bindata(source=templates, target='src/ostential/view/bindata.production.go'))
 Default(env.Clone(FLAVOR='!production -debug').bindata(source=templates, target='src/ostential/view/bindata.devel.go'))
 
-Default(env.Clone(FLAVOR= 'production', IGNORE=('-ignore '+ assets[1].IGNORX if assets[1].IGNORX is not None else None))
+assets_ignore = ('-ignore '+ assets[1].IGNORX if assets[1].IGNORX is not None else None)
+Default(env.Clone(IGNORE=assets_ignore, FLAVOR= 'production')
         .bindata(source=assets, target='src/ostential/assets/bindata.production.go'))
-Default(env.Clone(FLAVOR='!production -debug')
+Default(env.Clone(IGNORE=assets_ignore, FLAVOR='!production -debug')
         .bindata(source=assets, target='src/ostential/assets/bindata.devel.go'))
 
 Default(env.sass('assets/css/index.css', 'style/index.scss'))
