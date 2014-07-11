@@ -346,6 +346,18 @@
     }
   });
 
+  this.NewTextCLASS = function(reduce) {
+    return React.createClass({
+      getInitialState: function() {
+        return reduce(Data);
+      },
+      render: function() {
+        this.props.$el.text(this.state.Text);
+        return React.DOM.span(null, null);
+      }
+    });
+  };
+
   this.setState = function(obj, data) {
     var key;
     if (data != null) {
@@ -363,7 +375,7 @@
   };
 
   this.update = function(currentClient, model) {
-    var $header_mem, $hiding_mem, $showswap_el, cputable, dfbytes, dfinodes, hideconfigmem, hidemem, ifbytes, iferrors, ifpackets, memtable, onmessage, param, pstable, showswap, vagrant;
+    var $header_mem, $hiding_mem, $showswap_el, cputable, data_uptime, dfbytes, dfinodes, hideconfigmem, hidemem, ifbytes, iferrors, ifpackets, memtable, onmessage, param, pstable, showswap, uptime, vagrant;
     if (((function() {
       var _i, _len, _ref, _results;
       _ref = location.search.substr(1).split('&');
@@ -394,6 +406,17 @@
       $collapse_el: $('#mem'),
       $click_el: $hiding_mem
     }), dummy($hiding_mem));
+    data_uptime = function(data) {
+      var _ref;
+      if ((data != null ? (_ref = data.Generic) != null ? _ref.Uptime : void 0 : void 0) != null) {
+        return {
+          Text: data.Generic.Uptime
+        };
+      }
+    };
+    uptime = React.renderComponent(NewTextCLASS(data_uptime)({
+      $el: $('#uptime #generic-uptime')
+    }), dummy($('#uptime')));
     memtable = React.renderComponent(MEMtableCLASS(null), document.getElementById('mem' + '-' + 'table'));
     pstable = React.renderComponent(PStableCLASS(null), document.getElementById('ps' + '-' + 'table'));
     dfbytes = React.renderComponent(DFbytesCLASS(null), document.getElementById('dfbytes' + '-' + 'table'));
@@ -436,6 +459,7 @@
       setState(showswap, ShowSwapClass.reduce(data));
       setState(hideconfigmem, hideconfigmem.reduce(data));
       setState(hidemem, hidemem.reduce(data));
+      setState(uptime, data_uptime(data));
       setState(memtable, data.MEM);
       setState(cputable, data.CPU);
       setState(ifbytes, data.IFbytes);
@@ -483,7 +507,6 @@
       var $config_cpu, $config_df, $config_if, $config_mem, $config_ps, $config_vg, $header_cpu, $header_df, $header_if, $header_ps, $header_vg, $hidden_cpu, $hidden_df, $hidden_if, $hidden_ps, $hidden_vg, $panels_df, $panels_if, $psless, $psmore, $section_cpu, $section_df, $section_if, $section_ps, $section_vg, $tab_df, $tab_if, B, doexpandable, expandable_sections, sections, _i, _len;
       this.listentext('IP', $('#generic-ip'));
       this.listentext('Hostname', $('#generic-hostname'));
-      this.listentext('Uptime', $('#uptime #generic-uptime'));
       this.listentext('LA', $('#generic-la'));
       $section_if = $('#if');
       $section_cpu = $('#cpu');

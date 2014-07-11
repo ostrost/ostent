@@ -157,6 +157,12 @@
                 e.preventDefault()  # checked/selected state
                 undefined
 
+@NewTextCLASS = (reduce) -> React.createClass
+        getInitialState: () -> reduce(Data) # a global Data
+        render: () ->
+                @props.$el.text(@state.Text)
+                return React.DOM.span(null, null)
+
 @setState = (obj, data) ->
         if data?
                 delete data[key] for key of data when !data[key]?
@@ -183,6 +189,9 @@
                 key:          'HideMEM',
                 $collapse_el: $('#mem'),
                 $click_el:    $hiding_mem }), dummy($hiding_mem))
+
+        data_uptime = (data) -> {Text: data.Generic.Uptime} if data?.Generic?.Uptime?
+        uptime  = React.renderComponent(NewTextCLASS(data_uptime)({$el: $('#uptime #generic-uptime')}), dummy($('#uptime')))
 
         memtable  = React.renderComponent(MEMtableCLASS(null),  document.getElementById('mem'       +'-'+ 'table'))
         pstable   = React.renderComponent(PStableCLASS(null),   document.getElementById('ps'        +'-'+ 'table'))
@@ -214,6 +223,7 @@
                 setState(hideconfigmem, hideconfigmem.reduce(data))
                 setState(hidemem,       hidemem      .reduce(data))
 
+                setState(uptime,    data_uptime(data))
                 setState(memtable,  data.MEM)
                 setState(cputable,  data.CPU)
                 setState(ifbytes,   data.IFbytes)
@@ -248,7 +258,7 @@
         initialize: () ->
                 @listentext('IP',       $('#generic-ip'))
                 @listentext('Hostname', $('#generic-hostname'))
-                @listentext('Uptime',   $('#uptime #generic-uptime'))
+              # @listentext('Uptime',   $('#uptime #generic-uptime'))
                 @listentext('LA',       $('#generic-la'))
 
                 # $hswapb = $('label[href="#showswap"]')
