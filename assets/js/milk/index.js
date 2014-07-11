@@ -375,7 +375,7 @@
   };
 
   this.update = function(currentClient, model) {
-    var $header_mem, $hiding_mem, $showswap_el, cputable, data_hostname, data_ip, data_la, data_uptime, dfbytes, dfinodes, hideconfigmem, hidemem, hostname, ifbytes, iferrors, ifpackets, ip, la, memtable, onmessage, param, pstable, showswap, uptime, vagrant;
+    var $header_mem, $hiding_mem, $showswap_el, cputable, data_dftitle, data_hostname, data_iftitle, data_ip, data_la, data_uptime, dfbytes, dfinodes, dftitle, dftitle_el, hideconfigmem, hidemem, hostname, ifbytes, iferrors, ifpackets, iftitle, iftitle_el, ip, la, memtable, onmessage, param, pstable, showswap, uptime, vagrant;
     if (((function() {
       var _i, _len, _ref, _results;
       _ref = location.search.substr(1).split('&');
@@ -450,6 +450,30 @@
     la = React.renderComponent(NewTextCLASS(data_la)({
       $el: $('#la       #generic-la')
     }), dummy($('#la')));
+    data_iftitle = function(data) {
+      var _ref;
+      if ((data != null ? (_ref = data.Client) != null ? _ref.TabTitleIF : void 0 : void 0) != null) {
+        return {
+          Text: data.Client.TabTitleIF
+        };
+      }
+    };
+    data_dftitle = function(data) {
+      var _ref;
+      if ((data != null ? (_ref = data.Client) != null ? _ref.TabTitleDF : void 0 : void 0) != null) {
+        return {
+          Text: data.Client.TabTitleDF
+        };
+      }
+    };
+    iftitle_el = $('header a[href="#if"]');
+    dftitle_el = $('header a[href="#df"]');
+    iftitle = React.renderComponent(NewTextCLASS(data_iftitle)({
+      $el: iftitle_el
+    }), dummy(iftitle_el));
+    dftitle = React.renderComponent(NewTextCLASS(data_dftitle)({
+      $el: dftitle_el
+    }), dummy(dftitle_el));
     memtable = React.renderComponent(MEMtableCLASS(null), document.getElementById('mem' + '-' + 'table'));
     pstable = React.renderComponent(PStableCLASS(null), document.getElementById('ps' + '-' + 'table'));
     dfbytes = React.renderComponent(DFbytesCLASS(null), document.getElementById('dfbytes' + '-' + 'table'));
@@ -496,6 +520,8 @@
       setState(hostname, data_hostname(data));
       setState(uptime, data_uptime(data));
       setState(la, data_la(data));
+      setState(iftitle, data_iftitle(data));
+      setState(dftitle, data_dftitle(data));
       setState(memtable, data.MEM);
       setState(cputable, data.CPU);
       setState(ifbytes, data.IFbytes);
@@ -564,8 +590,6 @@
       $header_df = $('header a[href="' + $section_df.selector + '"]');
       $header_ps = $('header a[href="' + $section_ps.selector + '"]');
       $header_vg = $('header a[href="' + $section_vg.selector + '"]');
-      this.listentext('TabTitleIF', $header_if);
-      this.listentext('TabTitleDF', $header_df);
       this.listenhide('HideconfigIF', $config_if, $header_if, true);
       this.listenhide('HideconfigCPU', $config_cpu, $header_cpu, true);
       this.listenhide('HideconfigDF', $config_df, $header_df, true);
@@ -654,11 +678,6 @@
     _text: function(K, $el) {
       return function() {
         return $el.text(this.model.attributes[K]);
-      };
-    },
-    _HTML: function(K, $el) {
-      return function() {
-        return $el.html(this.model.attributes[K]);
       };
     },
     listenrefresherror: function(E, $el) {

@@ -200,6 +200,15 @@
         uptime   = React.renderComponent(NewTextCLASS(data_uptime)(  {$el: $('#uptime   #generic-uptime')}),   dummy($('#uptime')))
         la       = React.renderComponent(NewTextCLASS(data_la)(      {$el: $('#la       #generic-la')}),       dummy($('#la')))
 
+        data_iftitle = (data) -> {Text: data.Client.TabTitleIF} if data?.Client?.TabTitleIF?
+        data_dftitle = (data) -> {Text: data.Client.TabTitleDF} if data?.Client?.TabTitleDF?
+
+        iftitle_el = $('header a[href="#if"]')
+        dftitle_el = $('header a[href="#df"]')
+
+        iftitle  = React.renderComponent(NewTextCLASS(data_iftitle)({$el: iftitle_el}), dummy(iftitle_el))
+        dftitle  = React.renderComponent(NewTextCLASS(data_dftitle)({$el: dftitle_el}), dummy(dftitle_el))
+
         memtable  = React.renderComponent(MEMtableCLASS(null),  document.getElementById('mem'       +'-'+ 'table'))
         pstable   = React.renderComponent(PStableCLASS(null),   document.getElementById('ps'        +'-'+ 'table'))
         dfbytes   = React.renderComponent(DFbytesCLASS(null),   document.getElementById('dfbytes'   +'-'+ 'table'))
@@ -234,6 +243,9 @@
                 setState(hostname,  data_hostname(data))
                 setState(uptime,    data_uptime  (data))
                 setState(la,        data_la      (data))
+
+                setState(iftitle,   data_iftitle(data))
+                setState(dftitle,   data_dftitle(data))
 
                 setState(memtable,  data.MEM)
                 setState(cputable,  data.CPU)
@@ -308,8 +320,8 @@
                 $header_ps  = $('header a[href="'+ $section_ps .selector + '"]')
                 $header_vg  = $('header a[href="'+ $section_vg .selector + '"]')
 
-                @listentext('TabTitleIF', $header_if)
-                @listentext('TabTitleDF', $header_df)
+              # @listentext('TabTitleIF', $header_if)
+              # @listentext('TabTitleDF', $header_df)
 
                 ## @listenhide('HideconfigMEM', $mem_config, $header_mem, true)
                 @listenhide('HideconfigIF',  $config_if,  $header_if,  true)
@@ -422,7 +434,7 @@
         listentext: (K, $el) -> @listenTo(@model, 'change:'+ K, @_text(K, $el))
 #       listenHTML: (K, $el) -> @listenTo(@model, 'change:'+ K, @_HTML(K, $el))
         _text:      (K, $el) -> () -> $el.text(@model.attributes[K])
-        _HTML:      (K, $el) -> () -> $el.html(@model.attributes[K])
+#       _HTML:      (K, $el) -> () -> $el.html(@model.attributes[K])
 
         listenrefresherror: (E, $el) ->
                 @listenTo(@model, 'change:'+ E, () ->
