@@ -878,7 +878,7 @@ func init() {
 		}
 		scriptsrc := "/"+assetname
 		if develreact && strings.Contains(scriptsrc, "react") {
-			scriptsrc = "//fb.me/" + map[bool]string{true:"react-with-addons-0.10.0.js", false:"react-0.10.0.js"}[false]
+			scriptsrc = "//fb.me/" + map[bool]string{true:"react-with-addons-0.10.0.js", false:"react-0.10.0.js"}[true]
 		}
 		scriptsassets.assetnames = append(scriptsassets.assetnames, scriptsrc)
 	}
