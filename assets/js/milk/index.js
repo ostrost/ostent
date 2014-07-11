@@ -375,7 +375,7 @@
   };
 
   this.update = function(currentClient, model) {
-    var $header_mem, $hiding_mem, $showswap_el, cputable, data_uptime, dfbytes, dfinodes, hideconfigmem, hidemem, ifbytes, iferrors, ifpackets, memtable, onmessage, param, pstable, showswap, uptime, vagrant;
+    var $header_mem, $hiding_mem, $showswap_el, cputable, data_hostname, data_ip, data_la, data_uptime, dfbytes, dfinodes, hideconfigmem, hidemem, hostname, ifbytes, iferrors, ifpackets, ip, la, memtable, onmessage, param, pstable, showswap, uptime, vagrant;
     if (((function() {
       var _i, _len, _ref, _results;
       _ref = location.search.substr(1).split('&');
@@ -406,6 +406,22 @@
       $collapse_el: $('#mem'),
       $click_el: $hiding_mem
     }), dummy($hiding_mem));
+    data_ip = function(data) {
+      var _ref;
+      if ((data != null ? (_ref = data.Generic) != null ? _ref.IP : void 0 : void 0) != null) {
+        return {
+          Text: data.Generic.IP
+        };
+      }
+    };
+    data_hostname = function(data) {
+      var _ref;
+      if ((data != null ? (_ref = data.Generic) != null ? _ref.Hostname : void 0 : void 0) != null) {
+        return {
+          Text: data.Generic.Hostname
+        };
+      }
+    };
     data_uptime = function(data) {
       var _ref;
       if ((data != null ? (_ref = data.Generic) != null ? _ref.Uptime : void 0 : void 0) != null) {
@@ -414,9 +430,26 @@
         };
       }
     };
+    data_la = function(data) {
+      var _ref;
+      if ((data != null ? (_ref = data.Generic) != null ? _ref.LA : void 0 : void 0) != null) {
+        return {
+          Text: data.Generic.LA
+        };
+      }
+    };
+    ip = React.renderComponent(NewTextCLASS(data_ip)({
+      $el: $('#ip       #generic-ip')
+    }), dummy($('#ip')));
+    hostname = React.renderComponent(NewTextCLASS(data_hostname)({
+      $el: $('#hostname #generic-hostname')
+    }), dummy($('#hostname')));
     uptime = React.renderComponent(NewTextCLASS(data_uptime)({
-      $el: $('#uptime #generic-uptime')
+      $el: $('#uptime   #generic-uptime')
     }), dummy($('#uptime')));
+    la = React.renderComponent(NewTextCLASS(data_la)({
+      $el: $('#la       #generic-la')
+    }), dummy($('#la')));
     memtable = React.renderComponent(MEMtableCLASS(null), document.getElementById('mem' + '-' + 'table'));
     pstable = React.renderComponent(PStableCLASS(null), document.getElementById('ps' + '-' + 'table'));
     dfbytes = React.renderComponent(DFbytesCLASS(null), document.getElementById('dfbytes' + '-' + 'table'));
@@ -459,7 +492,10 @@
       setState(showswap, ShowSwapClass.reduce(data));
       setState(hideconfigmem, hideconfigmem.reduce(data));
       setState(hidemem, hidemem.reduce(data));
+      setState(ip, data_ip(data));
+      setState(hostname, data_hostname(data));
       setState(uptime, data_uptime(data));
+      setState(la, data_la(data));
       setState(memtable, data.MEM);
       setState(cputable, data.CPU);
       setState(ifbytes, data.IFbytes);
@@ -505,9 +541,6 @@
   this.View = Backbone.View.extend({
     initialize: function() {
       var $config_cpu, $config_df, $config_if, $config_mem, $config_ps, $config_vg, $header_cpu, $header_df, $header_if, $header_ps, $header_vg, $hidden_cpu, $hidden_df, $hidden_if, $hidden_ps, $hidden_vg, $panels_df, $panels_if, $psless, $psmore, $section_cpu, $section_df, $section_if, $section_ps, $section_vg, $tab_df, $tab_if, B, doexpandable, expandable_sections, sections, _i, _len;
-      this.listentext('IP', $('#generic-ip'));
-      this.listentext('Hostname', $('#generic-hostname'));
-      this.listentext('LA', $('#generic-la'));
       $section_if = $('#if');
       $section_cpu = $('#cpu');
       $section_df = $('#df');

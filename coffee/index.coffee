@@ -190,8 +190,15 @@
                 $collapse_el: $('#mem'),
                 $click_el:    $hiding_mem }), dummy($hiding_mem))
 
-        data_uptime = (data) -> {Text: data.Generic.Uptime} if data?.Generic?.Uptime?
-        uptime  = React.renderComponent(NewTextCLASS(data_uptime)({$el: $('#uptime #generic-uptime')}), dummy($('#uptime')))
+        data_ip       = (data) -> {Text: data.Generic.IP}       if data?.Generic?.IP?
+        data_hostname = (data) -> {Text: data.Generic.Hostname} if data?.Generic?.Hostname?
+        data_uptime   = (data) -> {Text: data.Generic.Uptime}   if data?.Generic?.Uptime?
+        data_la       = (data) -> {Text: data.Generic.LA}       if data?.Generic?.LA?
+
+        ip       = React.renderComponent(NewTextCLASS(data_ip)(      {$el: $('#ip       #generic-ip')}),       dummy($('#ip')))
+        hostname = React.renderComponent(NewTextCLASS(data_hostname)({$el: $('#hostname #generic-hostname')}), dummy($('#hostname')))
+        uptime   = React.renderComponent(NewTextCLASS(data_uptime)(  {$el: $('#uptime   #generic-uptime')}),   dummy($('#uptime')))
+        la       = React.renderComponent(NewTextCLASS(data_la)(      {$el: $('#la       #generic-la')}),       dummy($('#la')))
 
         memtable  = React.renderComponent(MEMtableCLASS(null),  document.getElementById('mem'       +'-'+ 'table'))
         pstable   = React.renderComponent(PStableCLASS(null),   document.getElementById('ps'        +'-'+ 'table'))
@@ -223,7 +230,11 @@
                 setState(hideconfigmem, hideconfigmem.reduce(data))
                 setState(hidemem,       hidemem      .reduce(data))
 
-                setState(uptime,    data_uptime(data))
+                setState(ip,        data_ip      (data))
+                setState(hostname,  data_hostname(data))
+                setState(uptime,    data_uptime  (data))
+                setState(la,        data_la      (data))
+
                 setState(memtable,  data.MEM)
                 setState(cputable,  data.CPU)
                 setState(ifbytes,   data.IFbytes)
@@ -256,10 +267,10 @@
 
 @View = Backbone.View.extend({
         initialize: () ->
-                @listentext('IP',       $('#generic-ip'))
-                @listentext('Hostname', $('#generic-hostname'))
+              # @listentext('IP',       $('#generic-ip'))
+              # @listentext('Hostname', $('#generic-hostname'))
               # @listentext('Uptime',   $('#uptime #generic-uptime'))
-                @listentext('LA',       $('#generic-la'))
+              # @listentext('LA',       $('#generic-la'))
 
                 # $hswapb = $('label[href="#showswap"]')
                 # @listenactivate('HideSWAP', $hswapb, true)
