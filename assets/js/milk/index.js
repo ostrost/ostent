@@ -348,12 +348,20 @@
 
   this.NewTextCLASS = function(reduce) {
     return React.createClass({
+      newstate: function(data) {
+        var v;
+        v = reduce(data);
+        if (v != null) {
+          return {
+            Text: v
+          };
+        }
+      },
       getInitialState: function() {
-        return reduce(Data);
+        return this.newstate(Data);
       },
       render: function() {
-        this.props.$el.text(this.state.Text);
-        return React.DOM.span(null, null);
+        return React.DOM.span(null, this.state.Text);
       }
     });
   };
@@ -375,7 +383,7 @@
   };
 
   this.update = function(currentClient, model) {
-    var $header_mem, $hiding_mem, $showswap_el, cputable, data_dftitle, data_hostname, data_iftitle, data_ip, data_la, data_uptime, dfbytes, dfinodes, dftitle, dftitle_el, hideconfigmem, hidemem, hostname, ifbytes, iferrors, ifpackets, iftitle, iftitle_el, ip, la, memtable, onmessage, param, pstable, showswap, uptime, vagrant;
+    var $header_mem, $hiding_mem, $showswap_el, cputable, dfbytes, dfinodes, dftitle, hideconfigmem, hidemem, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, pstable, showswap, uptime, vagrant;
     if (((function() {
       var _i, _len, _ref, _results;
       _ref = location.search.substr(1).split('&');
@@ -406,74 +414,30 @@
       $collapse_el: $('#mem'),
       $click_el: $hiding_mem
     }), dummy($hiding_mem));
-    data_ip = function(data) {
+    ip = React.renderComponent(NewTextCLASS(function(data) {
       var _ref;
-      if ((data != null ? (_ref = data.Generic) != null ? _ref.IP : void 0 : void 0) != null) {
-        return {
-          Text: data.Generic.IP
-        };
-      }
-    };
-    data_hostname = function(data) {
+      return data != null ? (_ref = data.Generic) != null ? _ref.IP : void 0 : void 0;
+    })(), $('#generic-ip').get(0));
+    hostname = React.renderComponent(NewTextCLASS(function(data) {
       var _ref;
-      if ((data != null ? (_ref = data.Generic) != null ? _ref.Hostname : void 0 : void 0) != null) {
-        return {
-          Text: data.Generic.Hostname
-        };
-      }
-    };
-    data_uptime = function(data) {
+      return data != null ? (_ref = data.Generic) != null ? _ref.Hostname : void 0 : void 0;
+    })(), $('#generic-hostname').get(0));
+    uptime = React.renderComponent(NewTextCLASS(function(data) {
       var _ref;
-      if ((data != null ? (_ref = data.Generic) != null ? _ref.Uptime : void 0 : void 0) != null) {
-        return {
-          Text: data.Generic.Uptime
-        };
-      }
-    };
-    data_la = function(data) {
+      return data != null ? (_ref = data.Generic) != null ? _ref.Uptime : void 0 : void 0;
+    })(), $('#generic-uptime').get(0));
+    la = React.renderComponent(NewTextCLASS(function(data) {
       var _ref;
-      if ((data != null ? (_ref = data.Generic) != null ? _ref.LA : void 0 : void 0) != null) {
-        return {
-          Text: data.Generic.LA
-        };
-      }
-    };
-    ip = React.renderComponent(NewTextCLASS(data_ip)({
-      $el: $('#ip       #generic-ip')
-    }), dummy($('#ip')));
-    hostname = React.renderComponent(NewTextCLASS(data_hostname)({
-      $el: $('#hostname #generic-hostname')
-    }), dummy($('#hostname')));
-    uptime = React.renderComponent(NewTextCLASS(data_uptime)({
-      $el: $('#uptime   #generic-uptime')
-    }), dummy($('#uptime')));
-    la = React.renderComponent(NewTextCLASS(data_la)({
-      $el: $('#la       #generic-la')
-    }), dummy($('#la')));
-    data_iftitle = function(data) {
+      return data != null ? (_ref = data.Generic) != null ? _ref.LA : void 0 : void 0;
+    })(), $('#generic-la').get(0));
+    iftitle = React.renderComponent(NewTextCLASS(function(data) {
       var _ref;
-      if ((data != null ? (_ref = data.Client) != null ? _ref.TabTitleIF : void 0 : void 0) != null) {
-        return {
-          Text: data.Client.TabTitleIF
-        };
-      }
-    };
-    data_dftitle = function(data) {
+      return data != null ? (_ref = data.Client) != null ? _ref.TabTitleIF : void 0 : void 0;
+    })(), $('header a[href="#if"]').get(0));
+    dftitle = React.renderComponent(NewTextCLASS(function(data) {
       var _ref;
-      if ((data != null ? (_ref = data.Client) != null ? _ref.TabTitleDF : void 0 : void 0) != null) {
-        return {
-          Text: data.Client.TabTitleDF
-        };
-      }
-    };
-    iftitle_el = $('header a[href="#if"]');
-    dftitle_el = $('header a[href="#df"]');
-    iftitle = React.renderComponent(NewTextCLASS(data_iftitle)({
-      $el: iftitle_el
-    }), dummy(iftitle_el));
-    dftitle = React.renderComponent(NewTextCLASS(data_dftitle)({
-      $el: dftitle_el
-    }), dummy(dftitle_el));
+      return data != null ? (_ref = data.Client) != null ? _ref.TabTitleDF : void 0 : void 0;
+    })(), $('header a[href="#df"]').get(0));
     memtable = React.renderComponent(MEMtableCLASS(null), document.getElementById('mem' + '-' + 'table'));
     pstable = React.renderComponent(PStableCLASS(null), document.getElementById('ps' + '-' + 'table'));
     dfbytes = React.renderComponent(DFbytesCLASS(null), document.getElementById('dfbytes' + '-' + 'table'));
@@ -516,12 +480,12 @@
       setState(showswap, ShowSwapClass.reduce(data));
       setState(hideconfigmem, hideconfigmem.reduce(data));
       setState(hidemem, hidemem.reduce(data));
-      setState(ip, data_ip(data));
-      setState(hostname, data_hostname(data));
-      setState(uptime, data_uptime(data));
-      setState(la, data_la(data));
-      setState(iftitle, data_iftitle(data));
-      setState(dftitle, data_dftitle(data));
+      setState(ip, ip.newstate(data));
+      setState(hostname, hostname.newstate(data));
+      setState(uptime, uptime.newstate(data));
+      setState(la, la.newstate(data));
+      setState(iftitle, iftitle.newstate(data));
+      setState(dftitle, iftitle.newstate(data));
       setState(memtable, data.MEM);
       setState(cputable, data.CPU);
       setState(ifbytes, data.IFbytes);

@@ -158,10 +158,12 @@
                 undefined
 
 @NewTextCLASS = (reduce) -> React.createClass
-        getInitialState: () -> reduce(Data) # a global Data
+        newstate: (data) ->
+                v = reduce(data)
+                {Text: v} if v?
+        getInitialState: () -> @newstate(Data) # a global Data
         render: () ->
-                @props.$el.text(@state.Text)
-                return React.DOM.span(null, null)
+                return React.DOM.span(null, @state.Text)
 
 @setState = (obj, data) ->
         if data?
@@ -190,24 +192,13 @@
                 $collapse_el: $('#mem'),
                 $click_el:    $hiding_mem }), dummy($hiding_mem))
 
-        data_ip       = (data) -> {Text: data.Generic.IP}       if data?.Generic?.IP?
-        data_hostname = (data) -> {Text: data.Generic.Hostname} if data?.Generic?.Hostname?
-        data_uptime   = (data) -> {Text: data.Generic.Uptime}   if data?.Generic?.Uptime?
-        data_la       = (data) -> {Text: data.Generic.LA}       if data?.Generic?.LA?
+        ip       = React.renderComponent(NewTextCLASS((data) -> data?.Generic?.IP       )(), $('#generic-ip'      )   .get(0))
+        hostname = React.renderComponent(NewTextCLASS((data) -> data?.Generic?.Hostname )(), $('#generic-hostname')   .get(0))
+        uptime   = React.renderComponent(NewTextCLASS((data) -> data?.Generic?.Uptime   )(), $('#generic-uptime'  )   .get(0))
+        la       = React.renderComponent(NewTextCLASS((data) -> data?.Generic?.LA       )(), $('#generic-la'      )   .get(0))
 
-        ip       = React.renderComponent(NewTextCLASS(data_ip)(      {$el: $('#ip       #generic-ip')}),       dummy($('#ip')))
-        hostname = React.renderComponent(NewTextCLASS(data_hostname)({$el: $('#hostname #generic-hostname')}), dummy($('#hostname')))
-        uptime   = React.renderComponent(NewTextCLASS(data_uptime)(  {$el: $('#uptime   #generic-uptime')}),   dummy($('#uptime')))
-        la       = React.renderComponent(NewTextCLASS(data_la)(      {$el: $('#la       #generic-la')}),       dummy($('#la')))
-
-        data_iftitle = (data) -> {Text: data.Client.TabTitleIF} if data?.Client?.TabTitleIF?
-        data_dftitle = (data) -> {Text: data.Client.TabTitleDF} if data?.Client?.TabTitleDF?
-
-        iftitle_el = $('header a[href="#if"]')
-        dftitle_el = $('header a[href="#df"]')
-
-        iftitle  = React.renderComponent(NewTextCLASS(data_iftitle)({$el: iftitle_el}), dummy(iftitle_el))
-        dftitle  = React.renderComponent(NewTextCLASS(data_dftitle)({$el: dftitle_el}), dummy(dftitle_el))
+        iftitle  = React.renderComponent(NewTextCLASS((data) -> data?.Client?.TabTitleIF)(), $('header a[href="#if"]').get(0))
+        dftitle  = React.renderComponent(NewTextCLASS((data) -> data?.Client?.TabTitleDF)(), $('header a[href="#df"]').get(0))
 
         memtable  = React.renderComponent(MEMtableCLASS(null),  document.getElementById('mem'       +'-'+ 'table'))
         pstable   = React.renderComponent(PStableCLASS(null),   document.getElementById('ps'        +'-'+ 'table'))
@@ -239,13 +230,13 @@
                 setState(hideconfigmem, hideconfigmem.reduce(data))
                 setState(hidemem,       hidemem      .reduce(data))
 
-                setState(ip,        data_ip      (data))
-                setState(hostname,  data_hostname(data))
-                setState(uptime,    data_uptime  (data))
-                setState(la,        data_la      (data))
+                setState(ip,        ip      .newstate(data))
+                setState(hostname,  hostname.newstate(data))
+                setState(uptime,    uptime  .newstate(data))
+                setState(la,        la      .newstate(data))
 
-                setState(iftitle,   data_iftitle(data))
-                setState(dftitle,   data_dftitle(data))
+                setState(iftitle,   iftitle .newstate(data))
+                setState(dftitle,   iftitle .newstate(data))
 
                 setState(memtable,  data.MEM)
                 setState(cputable,  data.CPU)

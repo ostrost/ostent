@@ -36,7 +36,7 @@ html
     nav.navbar.navbar-default.navbar-fixed-top[role="navigation"]
       div.container-fluid
         div.navbar-header
-          div.navbar-brand#hostname
+          div.navbar-brand
             a#generic-hostname
               [href="/"]
               [data-toggle="popover"]
@@ -56,10 +56,8 @@ html
             span#generic-uptime #{Data.Generic.Uptime}
 
           ul.nav.navbar-nav
-            li.navbar-text#ip
-              span#generic-ip #{Data.Generic.IP}
-            li.navbar-text#la
-              span#generic-la #{Data.Generic.LA}
+            li.navbar-text#generic-ip #{Data.Generic.IP}
+            li.navbar-text#generic-la #{Data.Generic.LA}
 
           ul.nav.navbar-nav.navbar-right
             li.navbar-text
