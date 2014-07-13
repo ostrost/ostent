@@ -200,6 +200,8 @@
         iftitle  = React.renderComponent(NewTextCLASS((data) -> data?.Client?.TabTitleIF)(), $('header a[href="#if"]').get(0))
         dftitle  = React.renderComponent(NewTextCLASS((data) -> data?.Client?.TabTitleDF)(), $('header a[href="#df"]').get(0))
 
+        psplus   = React.renderComponent(NewTextCLASS((data) -> data?.Client?.PSplusText)(), $('label.more[href="#psmore"]').get(0))
+
         memtable  = React.renderComponent(MEMtableCLASS(null),  document.getElementById('mem'       +'-'+ 'table'))
         pstable   = React.renderComponent(PStableCLASS(null),   document.getElementById('ps'        +'-'+ 'table'))
         dfbytes   = React.renderComponent(DFbytesCLASS(null),   document.getElementById('dfbytes'   +'-'+ 'table'))
@@ -237,6 +239,8 @@
 
                 setState(iftitle,   iftitle .newstate(data))
                 setState(dftitle,   iftitle .newstate(data))
+
+                setState(psplus,    psplus  .newstate(data))
 
                 setState(memtable,  data.MEM)
                 setState(cputable,  data.CPU)
@@ -334,7 +338,7 @@
 
                 $psmore = $('label.more[href="#psmore"]')
                 $psless = $('label.less[href="#psless"]')
-                @listentext('PSplusText',         $psmore)
+              # @listentext('PSplusText',         $psmore)
                 @listenenable('PSnotExpandable',  $psmore)
                 @listenenable('PSnotDecreasable', $psless)
 
@@ -379,7 +383,7 @@
                     T = sections[4]
                     $b = $('label[href="'+ S.selector + '"]')
 
-                    @listentext(T, $b)
+                    @listentext(T, $b) # Expandtext*, the text of label[href="#{if,cpu,df}"]
                     @listenenable(L, $b, true)
                     @listenactivate(E, $b)
                     $b.click( B(@click_expandfunc(E, H)) )

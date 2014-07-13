@@ -383,7 +383,7 @@
   };
 
   this.update = function(currentClient, model) {
-    var $header_mem, $hiding_mem, $showswap_el, cputable, dfbytes, dfinodes, dftitle, hideconfigmem, hidemem, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, pstable, showswap, uptime, vagrant;
+    var $header_mem, $hiding_mem, $showswap_el, cputable, dfbytes, dfinodes, dftitle, hideconfigmem, hidemem, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psplus, pstable, showswap, uptime, vagrant;
     if (((function() {
       var _i, _len, _ref, _results;
       _ref = location.search.substr(1).split('&');
@@ -438,6 +438,10 @@
       var _ref;
       return data != null ? (_ref = data.Client) != null ? _ref.TabTitleDF : void 0 : void 0;
     })(), $('header a[href="#df"]').get(0));
+    psplus = React.renderComponent(NewTextCLASS(function(data) {
+      var _ref;
+      return data != null ? (_ref = data.Client) != null ? _ref.PSplusText : void 0 : void 0;
+    })(), $('label.more[href="#psmore"]').get(0));
     memtable = React.renderComponent(MEMtableCLASS(null), document.getElementById('mem' + '-' + 'table'));
     pstable = React.renderComponent(PStableCLASS(null), document.getElementById('ps' + '-' + 'table'));
     dfbytes = React.renderComponent(DFbytesCLASS(null), document.getElementById('dfbytes' + '-' + 'table'));
@@ -486,6 +490,7 @@
       setState(la, la.newstate(data));
       setState(iftitle, iftitle.newstate(data));
       setState(dftitle, iftitle.newstate(data));
+      setState(psplus, psplus.newstate(data));
       setState(memtable, data.MEM);
       setState(cputable, data.CPU);
       setState(ifbytes, data.IFbytes);
@@ -569,7 +574,6 @@
       this.listenTo(this.model, 'change:TabDF', this.change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df));
       $psmore = $('label.more[href="#psmore"]');
       $psless = $('label.less[href="#psless"]');
-      this.listentext('PSplusText', $psmore);
       this.listenenable('PSnotExpandable', $psmore);
       this.listenenable('PSnotDecreasable', $psless);
       $config_mem = $('#memconfig');
