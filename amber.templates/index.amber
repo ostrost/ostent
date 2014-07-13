@@ -1,12 +1,13 @@
 [[/* -*- indent-tabs-mode: nil -*- */]]
-[[define "define_refresh"]]
+
+mixin refresh_input($placeholder, $value)
   div.input-group.input-group-sm.refresh-group
     span.input-group-addon Refresh
     input.form-control.refresh-input
       [type="text"]
       [placeholder=$placeholder]
       [value=$value] ? json($value) != json($placeholder)
-[[end]]
+
 !!! 5
 html
   head
@@ -46,7 +47,7 @@ html
               [data-container="#distrib-popover"]
               [data-content="running "+ Data.DISTRIB]
               | #{Data.Generic.Hostname}
-          // the span for the popover to attach to
+          //- the span for the popover to attach to
           span#distrib-popover
 
         div.collapse.navbar-collapse#navbar-collapse
@@ -96,9 +97,7 @@ html
                         | Show swap
 
                   div.form-group-padded
-                    $placeholder = Data.PeriodDuration
-                    $value       = Data.Client.RefreshMEM
-                    [[template "define_refresh"]]
+                    +refresh_input(Data.PeriodDuration, Data.Client.RefreshMEM)
 
             div.collapse#mem
               [class="in"] ? (json(Data.Client.HideMEM) == "false")
@@ -127,9 +126,7 @@ html
                         | #{Data.Client.ExpandtextIF}
 
                   div.form-group-padded
-                    $placeholder = Data.PeriodDuration
-                    $value       = Data.Client.RefreshIF
-                    [[template "define_refresh"]]
+                    +refresh_input(Data.PeriodDuration, Data.Client.RefreshIF)
 
                 ul.nav.nav-tabs
                   li.if-switch
@@ -184,9 +181,7 @@ html
                       | #{Data.Client.ExpandtextCPU}
 
                 div.form-group-padded
-                  $placeholder = Data.PeriodDuration
-                  $value       = Data.Client.RefreshCPU
-                  [[template "define_refresh"]]
+                  +refresh_input(Data.PeriodDuration, Data.Client.RefreshCPU)
 
             div.collapse#cpu
               [class="in"] ? (json(Data.Client.HideCPU) == "false")
@@ -215,9 +210,7 @@ html
                         | #{Data.Client.ExpandtextDF}
 
                   div.form-group-padded
-                    $placeholder = Data.PeriodDuration
-                    $value       = Data.Client.RefreshDF
-                    [[template "define_refresh"]]
+                    +refresh_input(Data.PeriodDuration, Data.Client.RefreshDF)
 
                 ul.nav.nav-tabs
                   li.df-switch
@@ -259,9 +252,7 @@ html
               [class="in"] ? (json(Data.Client.HideconfigPS) == "false")
               form.inline-form.border-bottom-form.text-right
                 div.form-group-padded
-                  $placeholder = Data.PeriodDuration
-                  $value       = Data.Client.RefreshPS
-                  [[template "define_refresh"]]
+                  +refresh_input(Data.PeriodDuration, Data.Client.RefreshPS)
 
                 div.form-group-padded
                   div.btn-group.btn-group-sm[data-toggle="buttons"]
@@ -294,9 +285,8 @@ html
               [class="in"] ? (json(Data.Client.HideconfigVG) == "false")
               form.inline-form.border-bottom-form.text-right
                 div.form-group-padded
-                  $placeholder = Data.PeriodDuration
-                  $value       = Data.Client.RefreshVG
-                  [[template "define_refresh"]]
+                  +refresh_input(Data.PeriodDuration, Data.Client.RefreshVG)
+
                 div.form-group-padded
                   div.btn-group.btn-group-sm[data-toggle="buttons"]
                     label.btn.btn-default.hiding
