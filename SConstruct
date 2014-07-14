@@ -70,7 +70,7 @@ env = Environment(
         'amberpp': Builder(generator=generator('{source[2]} -defines {source[0]} $MODE -output $TARGET {source[1]}')),
     })
 
-assets    = (Dir('assets/'), Files('assets/', IGNORX='assets/js/main'))
+assets    = (Dir('assets/'), Files('assets/')) # IGNORX='assets/js/main'
 templates = ('templates.html/index.html',
              'templates.html/usepercent.html',
              'templates.html/tooltipable.html',
