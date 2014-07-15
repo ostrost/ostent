@@ -163,6 +163,7 @@
                                 S.HideSWAP = data.Client.HideSWAP if data.Client.HideSWAP isnt undefined
                                 S.HideMEM  = data.Client.HideMEM  if data.Client.HideMEM  isnt undefined
                                 S
+                component: (opt) -> React.renderComponent(ShowSwapClass(opt), opt.$el.get(0))
 
         componentDidMount: () -> @props.$el.click(@click)
         render: () ->
@@ -192,8 +193,7 @@
 @update = (currentClient, model) ->
         return if (42 for param in location.search.substr(1).split('&') when param.split('=')[0] == 'still').length
 
-        $showswap_el = $('label[href="#showswap"]')
-        showswap = React.renderComponent(ShowSwapClass({$el: $showswap_el}), $showswap_el.get(0))
+        showswap  = ShowSwapClass.component({$el: $('label[href="#showswap"]')})
 
         hideconfigmem = HideClass.component({key: 'HideconfigMEM', $collapse_el: $('#memconfig'), $parent_el: $('header a[href="#mem"]'), reverseActive: true})
         hideconfigif  = HideClass.component({key: 'HideconfigIF',  $collapse_el: $('#ifconfig'),  $parent_el: $('header a[href="#if"]'),  reverseActive: true})

@@ -342,6 +342,9 @@
           }
           return S;
         }
+      },
+      component: function(opt) {
+        return React.renderComponent(ShowSwapClass(opt), opt.$el.get(0));
       }
     },
     componentDidMount: function() {
@@ -399,7 +402,7 @@
   };
 
   this.update = function(currentClient, model) {
-    var $showswap_el, cputable, dfbytes, dfinodes, dftitle, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hidemem, hideps, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psplus, pstable, showswap, uptime, vgtable;
+    var cputable, dfbytes, dfinodes, dftitle, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hidemem, hideps, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psplus, pstable, showswap, uptime, vgtable;
     if (((function() {
       var _i, _len, _ref, _results;
       _ref = location.search.substr(1).split('&');
@@ -414,10 +417,9 @@
     })()).length) {
       return;
     }
-    $showswap_el = $('label[href="#showswap"]');
-    showswap = React.renderComponent(ShowSwapClass({
-      $el: $showswap_el
-    }), $showswap_el.get(0));
+    showswap = ShowSwapClass.component({
+      $el: $('label[href="#showswap"]')
+    });
     hideconfigmem = HideClass.component({
       key: 'HideconfigMEM',
       $collapse_el: $('#memconfig'),
