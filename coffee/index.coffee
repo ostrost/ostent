@@ -195,12 +195,12 @@
         $showswap_el = $('label[href="#showswap"]')
         showswap = React.renderComponent(ShowSwapClass({$el: $showswap_el}), $showswap_el.get(0))
 
-        hideconfigmem = HideClass.component({
-                key:           'HideconfigMEM',
-                $collapse_el:  $('#memconfig'),
-                $parent_el:    $('header a[href="#mem"]'),
-                reverseActive: true
-        })
+        hideconfigmem = HideClass.component({key: 'HideconfigMEM', $collapse_el: $('#memconfig'), $parent_el: $('header a[href="#mem"]'), reverseActive: true})
+        hideconfigif  = HideClass.component({key: 'HideconfigIF',  $collapse_el: $('#ifconfig'),  $parent_el: $('header a[href="#if"]'),  reverseActive: true})
+        hideconfigcpu = HideClass.component({key: 'HideconfigCPU', $collapse_el: $('#cpuconfig'), $parent_el: $('header a[href="#cpu"]'), reverseActive: true})
+        hideconfigdf  = HideClass.component({key: 'HideconfigDF',  $collapse_el: $('#dfconfig'),  $parent_el: $('header a[href="#df"]'),  reverseActive: true})
+        hideconfigps  = HideClass.component({key: 'HideconfigPS',  $collapse_el: $('#psconfig'),  $parent_el: $('header a[href="#ps"]'),  reverseActive: true})
+        hideconfigvg  = HideClass.component({key: 'HideconfigVG',  $collapse_el: $('#vgconfig'),  $parent_el: $('header a[href="#vg"]'),  reverseActive: true})
 
         hidemem = HideClass.component({
                 key:          'HideMEM',
@@ -263,7 +263,14 @@
                 setState(dfinodes, {DFinodes: data.DFinodes, DFlinks: data.DFlinks})
 
                 setState(showswap,      ShowSwapClass.reduce(data))
+
                 setState(hideconfigmem, hideconfigmem.reduce(data))
+                setState(hideconfigif,  hideconfigif .reduce(data))
+                setState(hideconfigcpu, hideconfigcpu.reduce(data))
+                setState(hideconfigdf,  hideconfigdf .reduce(data))
+                setState(hideconfigps,  hideconfigps .reduce(data))
+                setState(hideconfigvg,  hideconfigvg .reduce(data))
+
                 setState(hidemem,       hidemem      .reduce(data))
                 setState(hidecpu,       hidecpu      .reduce(data))
                 setState(hideps,        hideps       .reduce(data))
@@ -275,7 +282,7 @@
                 setState(la,        la      .newstate(data))
 
                 setState(iftitle,   iftitle .newstate(data))
-                setState(dftitle,   iftitle .newstate(data))
+                setState(dftitle,   dftitle .newstate(data))
 
                 setState(psplus,    psplus  .newstate(data))
 
@@ -316,27 +323,18 @@
               # @listentext('Uptime',   $('#uptime #generic-uptime'))
               # @listentext('LA',       $('#generic-la'))
 
-                # $hswapb = $('label[href="#showswap"]')
-                # @listenactivate('HideSWAP', $hswapb, true)
+              # $hswapb = $('label[href="#showswap"]')
+              # @listenactivate('HideSWAP', $hswapb, true)
 
-                ## var $section_mem = $('#mem')
-                $section_if  = $('#if')
-                $section_cpu = $('#cpu')
-                $section_df  = $('#df')
+              # $section_* were here
 
-                ## $mem_config = $('#memconfig')
+              # the $config_{mem,cpu,ps,vg} were here
                 $config_if  = $('#ifconfig')
-                $config_cpu = $('#cpuconfig')
                 $config_df  = $('#dfconfig')
-                $config_ps  = $('#psconfig')
-                $config_vg  = $('#vgconfig')
 
-              # $hidden_mem = $config_mem.find('.hiding')
+              # the $hidden_{mem,cpu,ps,vg} were here
                 $hidden_if  = $config_if .find('.hiding')
-              # $hidden_cpu = $config_cpu.find('.hiding')
                 $hidden_df  = $config_df .find('.hiding')
-              # $hidden_ps  = $config_ps .find('.hiding')
-              # $hidden_vg  = $config_vg .find('.hiding')
 
               # the 4th argument to @listenhide used to be optional and `false' by default
               # @listenhide('HideMEM', $section_mem, $hidden_mem, false)
@@ -344,23 +342,23 @@
               # @listenhide('HidePS',  $section_ps,  $hidden_ps,  false) # $section_ps used to be $('#ps')
               # @listenhide('HideVG',  $section_vg,  $hidden_vg,  false) # $section_vg used to be $('#vg')
 
-                # $header_mem = $('header a[href="'+ $section_mem.selector + '"]')
-                $header_if  = $('header a[href="'+ $section_if .selector + '"]')
-                $header_cpu = $('header a[href="'+ $section_cpu.selector + '"]')
-                $header_df  = $('header a[href="'+ $section_df .selector + '"]')
+              # $header_mem = $('header a[href="'+ $section_mem.selector + '"]')
+              # $header_if  = $('header a[href="'+ $section_if .selector + '"]')
+              # $header_cpu = $('header a[href="'+ $section_cpu.selector + '"]')
+              # $header_df  = $('header a[href="'+ $section_df .selector + '"]')
 
-                $header_ps  = $('header a[href="#ps"]') # remember $section_ps
-                $header_vg  = $('header a[href="#vg"]') # remember $section_vg
+              # $header_ps  = $('header a[href="#ps"]') # remember $section_ps
+              # $header_vg  = $('header a[href="#vg"]') # remember $section_vg
 
               # @listentext('TabTitleIF', $header_if)
               # @listentext('TabTitleDF', $header_df)
 
-              # @listenhide('HideconfigMEM', $mem_config, $header_mem) #, true)
-                @listenhide('HideconfigIF',  $config_if,  $header_if)  #, true)
-                @listenhide('HideconfigCPU', $config_cpu, $header_cpu) #, true)
-                @listenhide('HideconfigDF',  $config_df,  $header_df)  #, true)
-                @listenhide('HideconfigPS',  $config_ps,  $header_ps)  #, true)
-                @listenhide('HideconfigVG',  $config_vg,  $header_vg)  #, true)
+              # @listenhide('HideconfigMEM', $config_mem, $header_mem) #, true)
+              # @listenhide('HideconfigIF',  $config_if,  $header_if)  #, true)
+              # @listenhide('HideconfigCPU', $config_cpu, $header_cpu) #, true)
+              # @listenhide('HideconfigDF',  $config_df,  $header_df)  #, true)
+              # @listenhide('HideconfigPS',  $config_ps,  $header_ps)  #, true)
+              # @listenhide('HideconfigVG',  $config_vg,  $header_vg)  #, true)
 
                 # NB by class
                 $tab_if    = $('.if-switch')
@@ -379,7 +377,12 @@
                 @listenenable('PSnotExpandable',  $psmore)
                 @listenenable('PSnotDecreasable', $psless)
 
+                # $config_{if,df} defined previously
                 $config_mem = $('#memconfig')
+                $config_cpu = $('#cpuconfig')
+                $config_ps  = $('#psconfig')
+                $config_vg  = $('#vgconfig')
+
                 @listenrefresherror('RefreshErrorMEM', $config_mem.find('.refresh-group'))
                 @listenrefresherror('RefreshErrorIF',  $config_if .find('.refresh-group'))
                 @listenrefresherror('RefreshErrorCPU', $config_cpu.find('.refresh-group'))
@@ -401,6 +404,12 @@
                 # B((e) -> return e)
                 # click_expandfunc: (H, H2) -> (e) ->
                 #     $b.click( B(@click_expandfunc(E, H)) )
+
+
+              # $section_mem = $('#mem') # other $section_* were here
+                $section_if  = $('#if')
+                $section_cpu = $('#cpu')
+                $section_df  = $('#df')
 
                 expandable_sections = [
                     [$section_if,  'ExpandIF',  'HideIF',  'ExpandableIF',  'ExpandtextIF'],
@@ -433,11 +442,11 @@
                 $tab_df    .click( B(@click_tabfunc('TabDF', 'HideDF')) )
 
               # $header_mem.click( B(@click_expandfunc('HideconfigMEM')) )
-                $header_if .click( B(@click_expandfunc('HideconfigIF' )) )
-                $header_cpu.click( B(@click_expandfunc('HideconfigCPU')) )
-                $header_df .click( B(@click_expandfunc('HideconfigDF' )) )
-                $header_ps .click( B(@click_expandfunc('HideconfigPS' )) )
-                $header_vg .click( B(@click_expandfunc('HideconfigVG' )) )
+              # $header_if .click( B(@click_expandfunc('HideconfigIF' )) )
+              # $header_cpu.click( B(@click_expandfunc('HideconfigCPU')) )
+              # $header_df .click( B(@click_expandfunc('HideconfigDF' )) )
+              # $header_ps .click( B(@click_expandfunc('HideconfigPS' )) )
+              # $header_vg .click( B(@click_expandfunc('HideconfigVG' )) )
 
               # $hidden_mem.click( B(@click_expandfunc('HideMEM')) )
                 $hidden_if .click( B(@click_expandfunc('HideIF' )) )

@@ -399,7 +399,7 @@
   };
 
   this.update = function(currentClient, model) {
-    var $showswap_el, cputable, dfbytes, dfinodes, dftitle, hideconfigmem, hidecpu, hidemem, hideps, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psplus, pstable, showswap, uptime, vgtable;
+    var $showswap_el, cputable, dfbytes, dfinodes, dftitle, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hidemem, hideps, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psplus, pstable, showswap, uptime, vgtable;
     if (((function() {
       var _i, _len, _ref, _results;
       _ref = location.search.substr(1).split('&');
@@ -422,6 +422,36 @@
       key: 'HideconfigMEM',
       $collapse_el: $('#memconfig'),
       $parent_el: $('header a[href="#mem"]'),
+      reverseActive: true
+    });
+    hideconfigif = HideClass.component({
+      key: 'HideconfigIF',
+      $collapse_el: $('#ifconfig'),
+      $parent_el: $('header a[href="#if"]'),
+      reverseActive: true
+    });
+    hideconfigcpu = HideClass.component({
+      key: 'HideconfigCPU',
+      $collapse_el: $('#cpuconfig'),
+      $parent_el: $('header a[href="#cpu"]'),
+      reverseActive: true
+    });
+    hideconfigdf = HideClass.component({
+      key: 'HideconfigDF',
+      $collapse_el: $('#dfconfig'),
+      $parent_el: $('header a[href="#df"]'),
+      reverseActive: true
+    });
+    hideconfigps = HideClass.component({
+      key: 'HideconfigPS',
+      $collapse_el: $('#psconfig'),
+      $parent_el: $('header a[href="#ps"]'),
+      reverseActive: true
+    });
+    hideconfigvg = HideClass.component({
+      key: 'HideconfigVG',
+      $collapse_el: $('#vgconfig'),
+      $parent_el: $('header a[href="#vg"]'),
       reverseActive: true
     });
     hidemem = HideClass.component({
@@ -513,6 +543,11 @@
       });
       setState(showswap, ShowSwapClass.reduce(data));
       setState(hideconfigmem, hideconfigmem.reduce(data));
+      setState(hideconfigif, hideconfigif.reduce(data));
+      setState(hideconfigcpu, hideconfigcpu.reduce(data));
+      setState(hideconfigdf, hideconfigdf.reduce(data));
+      setState(hideconfigps, hideconfigps.reduce(data));
+      setState(hideconfigvg, hideconfigvg.reduce(data));
       setState(hidemem, hidemem.reduce(data));
       setState(hidecpu, hidecpu.reduce(data));
       setState(hideps, hideps.reduce(data));
@@ -522,7 +557,7 @@
       setState(uptime, uptime.newstate(data));
       setState(la, la.newstate(data));
       setState(iftitle, iftitle.newstate(data));
-      setState(dftitle, iftitle.newstate(data));
+      setState(dftitle, dftitle.newstate(data));
       setState(psplus, psplus.newstate(data));
       setState(memtable, data.MEM);
       setState(cputable, data.CPU);
@@ -568,27 +603,11 @@
 
   this.View = Backbone.View.extend({
     initialize: function() {
-      var $config_cpu, $config_df, $config_if, $config_mem, $config_ps, $config_vg, $header_cpu, $header_df, $header_if, $header_ps, $header_vg, $hidden_df, $hidden_if, $panels_df, $panels_if, $psless, $psmore, $section_cpu, $section_df, $section_if, $tab_df, $tab_if, B, doexpandable, expandable_sections, sections, _i, _len;
-      $section_if = $('#if');
-      $section_cpu = $('#cpu');
-      $section_df = $('#df');
+      var $config_cpu, $config_df, $config_if, $config_mem, $config_ps, $config_vg, $hidden_df, $hidden_if, $panels_df, $panels_if, $psless, $psmore, $section_cpu, $section_df, $section_if, $tab_df, $tab_if, B, doexpandable, expandable_sections, sections, _i, _len;
       $config_if = $('#ifconfig');
-      $config_cpu = $('#cpuconfig');
       $config_df = $('#dfconfig');
-      $config_ps = $('#psconfig');
-      $config_vg = $('#vgconfig');
       $hidden_if = $config_if.find('.hiding');
       $hidden_df = $config_df.find('.hiding');
-      $header_if = $('header a[href="' + $section_if.selector + '"]');
-      $header_cpu = $('header a[href="' + $section_cpu.selector + '"]');
-      $header_df = $('header a[href="' + $section_df.selector + '"]');
-      $header_ps = $('header a[href="#ps"]');
-      $header_vg = $('header a[href="#vg"]');
-      this.listenhide('HideconfigIF', $config_if, $header_if);
-      this.listenhide('HideconfigCPU', $config_cpu, $header_cpu);
-      this.listenhide('HideconfigDF', $config_df, $header_df);
-      this.listenhide('HideconfigPS', $config_ps, $header_ps);
-      this.listenhide('HideconfigVG', $config_vg, $header_vg);
       $tab_if = $('.if-switch');
       $tab_df = $('.df-switch');
       $panels_if = $('.if-tab');
@@ -602,6 +621,9 @@
       this.listenenable('PSnotExpandable', $psmore);
       this.listenenable('PSnotDecreasable', $psless);
       $config_mem = $('#memconfig');
+      $config_cpu = $('#cpuconfig');
+      $config_ps = $('#psconfig');
+      $config_vg = $('#vgconfig');
       this.listenrefresherror('RefreshErrorMEM', $config_mem.find('.refresh-group'));
       this.listenrefresherror('RefreshErrorIF', $config_if.find('.refresh-group'));
       this.listenrefresherror('RefreshErrorCPU', $config_cpu.find('.refresh-group'));
@@ -617,6 +639,9 @@
       B = function(c) {
         return c;
       };
+      $section_if = $('#if');
+      $section_cpu = $('#cpu');
+      $section_df = $('#df');
       expandable_sections = [[$section_if, 'ExpandIF', 'HideIF', 'ExpandableIF', 'ExpandtextIF'], [$section_cpu, 'ExpandCPU', 'HideCPU', 'ExpandableCPU', 'ExpandtextCPU'], [$section_df, 'ExpandDF', 'HideDF', 'ExpandableDF', 'ExpandtextDF']];
       doexpandable = (function(_this) {
         return function(sections) {
@@ -639,11 +664,6 @@
       }
       $tab_if.click(B(this.click_tabfunc('TabIF', 'HideIF')));
       $tab_df.click(B(this.click_tabfunc('TabDF', 'HideDF')));
-      $header_if.click(B(this.click_expandfunc('HideconfigIF')));
-      $header_cpu.click(B(this.click_expandfunc('HideconfigCPU')));
-      $header_df.click(B(this.click_expandfunc('HideconfigDF')));
-      $header_ps.click(B(this.click_expandfunc('HideconfigPS')));
-      $header_vg.click(B(this.click_expandfunc('HideconfigVG')));
       $hidden_if.click(B(this.click_expandfunc('HideIF')));
       $hidden_df.click(B(this.click_expandfunc('HideDF')));
       $psmore.click(B(this.click_psignalfunc('HidePS', true)));
