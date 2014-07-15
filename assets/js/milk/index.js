@@ -286,10 +286,18 @@
       return this.reduce(Data);
     },
     componentDidMount: function() {
-      return this.props.$click_el.click(this.click);
+      return this.props.$button_el.click(this.click);
     },
     render: function() {
+      var buttonstate;
       this.props.$collapse_el.collapse(this.state.Hide ? 'hide' : 'show');
+      buttonstate = this.state.Hide;
+      if ((this.props.reverse_button != null) && this.props.reverse_button) {
+        buttonstate = !this.state.Hide;
+      }
+      if (this.props.$button_el != null) {
+        this.props.$button_el[buttonstate ? 'addClass' : 'removeClass']('active');
+      }
       return React.DOM.span();
     },
     click: function(e) {
@@ -380,7 +388,7 @@
   };
 
   this.update = function(currentClient, model) {
-    var $header_mem, $hiding_mem, $showswap_el, cputable, dfbytes, dfinodes, dftitle, hideconfigmem, hidemem, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psplus, pstable, showswap, uptime, vagrant;
+    var $header_mem, $hiding_cpu, $hiding_mem, $hiding_ps, $hiding_vg, $showswap_el, cputable, dfbytes, dfinodes, dftitle, hideconfigmem, hidecpu, hidemem, hideps, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psplus, pstable, showswap, uptime, vagrant;
     if (((function() {
       var _i, _len, _ref, _results;
       _ref = location.search.substr(1).split('&');
@@ -403,14 +411,33 @@
     hideconfigmem = React.renderComponent(HideClass({
       key: 'HideconfigMEM',
       $collapse_el: $('#memconfig'),
-      $click_el: $header_mem
+      reverse_button: true,
+      $button_el: $header_mem
     }), dummy($header_mem));
     $hiding_mem = $('#memconfig').find('.hiding');
     hidemem = React.renderComponent(HideClass({
       key: 'HideMEM',
       $collapse_el: $('#mem'),
-      $click_el: $hiding_mem
+      $button_el: $hiding_mem
     }), dummy($hiding_mem));
+    $hiding_cpu = $('#cpuconfig').find('.hiding');
+    hidecpu = React.renderComponent(HideClass({
+      key: 'HideCPU',
+      $collapse_el: $('#cpu'),
+      $button_el: $hiding_cpu
+    }), dummy($hiding_cpu));
+    $hiding_ps = $('#psconfig').find('.hiding');
+    hideps = React.renderComponent(HideClass({
+      key: 'HidePS',
+      $collapse_el: $('#ps'),
+      $button_el: $hiding_ps
+    }), dummy($hiding_ps));
+    $hiding_vg = $('#vgconfig').find('.hiding');
+    hidevg = React.renderComponent(HideClass({
+      key: 'HideVG',
+      $collapse_el: $('#vagrant'),
+      $button_el: $hiding_vg
+    }), dummy($hiding_vg));
     ip = React.renderComponent(NewTextCLASS(function(data) {
       var _ref;
       return data != null ? (_ref = data.Generic) != null ? _ref.IP : void 0 : void 0;
@@ -481,6 +508,9 @@
       setState(showswap, ShowSwapClass.reduce(data));
       setState(hideconfigmem, hideconfigmem.reduce(data));
       setState(hidemem, hidemem.reduce(data));
+      setState(hidecpu, hidecpu.reduce(data));
+      setState(hideps, hideps.reduce(data));
+      setState(hidevg, hidevg.reduce(data));
       setState(ip, ip.newstate(data));
       setState(hostname, hostname.newstate(data));
       setState(uptime, uptime.newstate(data));
@@ -532,43 +562,35 @@
 
   this.View = Backbone.View.extend({
     initialize: function() {
-      var $config_cpu, $config_df, $config_if, $config_mem, $config_ps, $config_vg, $header_cpu, $header_df, $header_if, $header_ps, $header_vg, $hidden_cpu, $hidden_df, $hidden_if, $hidden_ps, $hidden_vg, $panels_df, $panels_if, $psless, $psmore, $section_cpu, $section_df, $section_if, $section_ps, $section_vg, $tab_df, $tab_if, B, doexpandable, expandable_sections, sections, _i, _len;
+      var $config_cpu, $config_df, $config_if, $config_mem, $config_ps, $config_vg, $header_cpu, $header_df, $header_if, $header_ps, $header_vg, $hidden_df, $hidden_if, $panels_df, $panels_if, $psless, $psmore, $section_cpu, $section_df, $section_if, $tab_df, $tab_if, B, doexpandable, expandable_sections, sections, _i, _len;
       $section_if = $('#if');
       $section_cpu = $('#cpu');
       $section_df = $('#df');
-      $section_ps = $('#ps');
-      $section_vg = $('#vagrant');
       $config_if = $('#ifconfig');
       $config_cpu = $('#cpuconfig');
       $config_df = $('#dfconfig');
       $config_ps = $('#psconfig');
       $config_vg = $('#vgconfig');
       $hidden_if = $config_if.find('.hiding');
-      $hidden_cpu = $config_cpu.find('.hiding');
       $hidden_df = $config_df.find('.hiding');
-      $hidden_ps = $config_ps.find('.hiding');
-      $hidden_vg = $config_vg.find('.hiding');
-      this.listenhide('HideCPU', $section_cpu, $hidden_cpu);
-      this.listenhide('HidePS', $section_ps, $hidden_ps);
-      this.listenhide('HideVG', $section_vg, $hidden_vg);
       $header_if = $('header a[href="' + $section_if.selector + '"]');
       $header_cpu = $('header a[href="' + $section_cpu.selector + '"]');
       $header_df = $('header a[href="' + $section_df.selector + '"]');
-      $header_ps = $('header a[href="' + $section_ps.selector + '"]');
-      $header_vg = $('header a[href="' + $section_vg.selector + '"]');
-      this.listenhide('HideconfigIF', $config_if, $header_if, true);
-      this.listenhide('HideconfigCPU', $config_cpu, $header_cpu, true);
-      this.listenhide('HideconfigDF', $config_df, $header_df, true);
-      this.listenhide('HideconfigPS', $config_ps, $header_ps, true);
-      this.listenhide('HideconfigVG', $config_vg, $header_vg, true);
+      $header_ps = $('header a[href="#ps"]');
+      $header_vg = $('header a[href="#vagrant"]');
+      this.listenhide('HideconfigIF', $config_if, $header_if);
+      this.listenhide('HideconfigCPU', $config_cpu, $header_cpu);
+      this.listenhide('HideconfigDF', $config_df, $header_df);
+      this.listenhide('HideconfigPS', $config_ps, $header_ps);
+      this.listenhide('HideconfigVG', $config_vg, $header_vg);
       $tab_if = $('.if-switch');
       $tab_df = $('.df-switch');
       $panels_if = $('.if-tab');
       $panels_df = $('.df-tab');
-      this.listenTo(this.model, 'change:HideIF', this.change_collapsetabfunc('HideIF', 'TabIF', $panels_if, $tab_if));
-      this.listenTo(this.model, 'change:HideDF', this.change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df));
-      this.listenTo(this.model, 'change:TabIF', this.change_collapsetabfunc('HideIF', 'TabIF', $panels_if, $tab_if));
-      this.listenTo(this.model, 'change:TabDF', this.change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df));
+      this.listenTo(this.model, 'change:HideIF', this.change_collapsetabfunc('HideIF', 'TabIF', $panels_if, $tab_if, $hidden_if));
+      this.listenTo(this.model, 'change:HideDF', this.change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df, $hidden_df));
+      this.listenTo(this.model, 'change:TabIF', this.change_collapsetabfunc('HideIF', 'TabIF', $panels_if, $tab_if, $hidden_if));
+      this.listenTo(this.model, 'change:TabDF', this.change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df, $hidden_df));
       $psmore = $('label.more[href="#psmore"]');
       $psless = $('label.less[href="#psless"]');
       this.listenenable('PSnotExpandable', $psmore);
@@ -617,10 +639,7 @@
       $header_ps.click(B(this.click_expandfunc('HideconfigPS')));
       $header_vg.click(B(this.click_expandfunc('HideconfigVG')));
       $hidden_if.click(B(this.click_expandfunc('HideIF')));
-      $hidden_cpu.click(B(this.click_expandfunc('HideCPU')));
       $hidden_df.click(B(this.click_expandfunc('HideDF')));
-      $hidden_ps.click(B(this.click_expandfunc('HidePS')));
-      $hidden_vg.click(B(this.click_expandfunc('HideVG')));
       $psmore.click(B(this.click_psignalfunc('HidePS', true)));
       $psless.click(B(this.click_psignalfunc('HidePS', false)));
       $config_mem.find('.refresh-input').on('input', B(this.submit_rsignalfunc('RefreshSignalMEM')));
@@ -676,14 +695,12 @@
         return $el[V ? 'addClass' : 'removeClass']('active');
       });
     },
-    listenhide: function(H, $el, $button_el, reverse) {
+    listenhide: function(H, $el, $button_el) {
       return this.listenTo(this.model, 'change:' + H, function() {
         var V;
         V = (this.model.attributes[H] != null) && this.model.attributes[H];
         $el.collapse(V ? 'hide' : 'show');
-        if ((reverse == null) && reverse) {
-          V = !V;
-        }
+        V = !V;
         return $button_el[V ? 'addClass' : 'removeClass']('active');
       });
     },
@@ -692,14 +709,16 @@
         return $el.collapse(this.model.attributes[H] ? 'hide' : 'show');
       };
     },
-    change_collapsetabfunc: function(H, T, $el, $tabel) {
+    change_collapsetabfunc: function(H, T, $el, $tabel, $buttonel) {
       return function() {
         var A, activeClass, curtabid, el, nots, _i, _j, _len, _len1;
         A = this.model.attributes;
         if (A[H]) {
           $el.collapse('hide');
+          $buttonel.addClass('active');
           return;
         }
+        $buttonel.removeClass('active');
         curtabid = A[T];
         nots = $el.not('[data-tabid="' + curtabid + '"]');
         for (_i = 0, _len = nots.length; _i < _len; _i++) {

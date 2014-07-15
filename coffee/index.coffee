@@ -123,9 +123,12 @@
                         value = data.Client[@props.key]
                         return {Hide: value} if value isnt undefined
         getInitialState:   () -> @reduce(Data) # a global Data
-        componentDidMount: () -> @props.$click_el.click(@click)
+        componentDidMount: () -> @props.$button_el.click(@click)
         render: () ->
                 @props.$collapse_el.collapse(if @state.Hide then 'hide' else 'show')
+                buttonstate =  @state.Hide
+                buttonstate = !@state.Hide if @props.reverse_button? and @props.reverse_button
+                @props.$button_el[if buttonstate then 'addClass' else 'removeClass']('active') if @props.$button_el?
                 return React.DOM.span() # (null, null)
         click: (e) ->
                 (S = {})[@props.key] = !@state.Hide
@@ -183,13 +186,32 @@
         hideconfigmem = React.renderComponent(HideClass({
                 key:          'HideconfigMEM',
                 $collapse_el: $('#memconfig'),
-                $click_el:    $header_mem }), dummy($header_mem))
+                reverse_button: true,
+                $button_el:   $header_mem }), dummy($header_mem))
 
         $hiding_mem = $('#memconfig').find('.hiding')
         hidemem = React.renderComponent(HideClass({
                 key:          'HideMEM',
                 $collapse_el: $('#mem'),
-                $click_el:    $hiding_mem }), dummy($hiding_mem))
+                $button_el:   $hiding_mem }), dummy($hiding_mem))
+
+        $hiding_cpu = $('#cpuconfig').find('.hiding')
+        hidecpu = React.renderComponent(HideClass({
+                key:          'HideCPU',
+                $collapse_el: $('#cpu'),
+                $button_el:   $hiding_cpu }), dummy($hiding_cpu))
+
+        $hiding_ps = $('#psconfig').find('.hiding')
+        hideps  = React.renderComponent(HideClass({
+                key:          'HidePS',
+                $collapse_el: $('#ps'),
+                $button_el:   $hiding_ps }), dummy($hiding_ps))
+
+        $hiding_vg = $('#vgconfig').find('.hiding')
+        hidevg  = React.renderComponent(HideClass({
+                key:          'HideVG',
+                $collapse_el: $('#vagrant'),
+                $button_el:   $hiding_vg }), dummy($hiding_vg))
 
         ip       = React.renderComponent(NewTextCLASS((data) -> data?.Generic?.IP       )(), $('#generic-ip'      )   .get(0))
         hostname = React.renderComponent(NewTextCLASS((data) -> data?.Generic?.Hostname )(), $('#generic-hostname')   .get(0))
@@ -211,8 +233,6 @@
         ifpackets = React.renderComponent(IFpacketsCLASS(), document.getElementById('ifpackets' +'-'+ 'table'))
         vagrant   = React.renderComponent(VGtableCLASS(),   document.getElementById('vagrant'   +'-'+ 'table'))
 
-      # cpu       = React.renderComponent(CPUCLASS(), document.getElementById('cpu'))
-
         onmessage = (event) ->
                 data = JSON.parse(event.data)
                 return if !data?
@@ -232,6 +252,9 @@
                 setState(showswap,      ShowSwapClass.reduce(data))
                 setState(hideconfigmem, hideconfigmem.reduce(data))
                 setState(hidemem,       hidemem      .reduce(data))
+                setState(hidecpu,       hidecpu      .reduce(data))
+                setState(hideps,        hideps       .reduce(data))
+                setState(hidevg,        hidevg       .reduce(data))
 
                 setState(ip,        ip      .newstate(data))
                 setState(hostname,  hostname.newstate(data))
@@ -287,8 +310,6 @@
                 $section_if  = $('#if')
                 $section_cpu = $('#cpu')
                 $section_df  = $('#df')
-                $section_ps  = $('#ps')
-                $section_vg  = $('#vagrant')
 
                 ## $mem_config = $('#memconfig')
                 $config_if  = $('#ifconfig')
@@ -297,34 +318,36 @@
                 $config_ps  = $('#psconfig')
                 $config_vg  = $('#vgconfig')
 
-                ## $hidden_mem = $config_mem.find('.hiding')
+              # $hidden_mem = $config_mem.find('.hiding')
                 $hidden_if  = $config_if .find('.hiding')
-                $hidden_cpu = $config_cpu.find('.hiding')
+              # $hidden_cpu = $config_cpu.find('.hiding')
                 $hidden_df  = $config_df .find('.hiding')
-                $hidden_ps  = $config_ps .find('.hiding')
-                $hidden_vg  = $config_vg .find('.hiding')
+              # $hidden_ps  = $config_ps .find('.hiding')
+              # $hidden_vg  = $config_vg .find('.hiding')
 
-                ## this.listenhide('HideMEM', $section_mem, $hidden_mem)
-                @listenhide('HideCPU', $section_cpu, $hidden_cpu)
-                @listenhide('HidePS',  $section_ps,  $hidden_ps)
-                @listenhide('HideVG',  $section_vg,  $hidden_vg)
+              # the 4th argument to @listenhide used to be optional and `false' by default
+              # @listenhide('HideMEM', $section_mem, $hidden_mem, false)
+              # @listenhide('HideCPU', $section_cpu, $hidden_cpu, false)
+              # @listenhide('HidePS',  $section_ps,  $hidden_ps,  false) # $section_ps used to be $('#ps')
+              # @listenhide('HideVG',  $section_vg,  $hidden_vg,  false) # $section_vg used to be $('#vagrant')
 
                 # $header_mem = $('header a[href="'+ $section_mem.selector + '"]')
                 $header_if  = $('header a[href="'+ $section_if .selector + '"]')
                 $header_cpu = $('header a[href="'+ $section_cpu.selector + '"]')
                 $header_df  = $('header a[href="'+ $section_df .selector + '"]')
-                $header_ps  = $('header a[href="'+ $section_ps .selector + '"]')
-                $header_vg  = $('header a[href="'+ $section_vg .selector + '"]')
+
+                $header_ps  = $('header a[href="#ps"]') # remember $section_ps
+                $header_vg  = $('header a[href="#vagrant"]') # remember $section_vg
 
               # @listentext('TabTitleIF', $header_if)
               # @listentext('TabTitleDF', $header_df)
 
-                ## @listenhide('HideconfigMEM', $mem_config, $header_mem, true)
-                @listenhide('HideconfigIF',  $config_if,  $header_if,  true)
-                @listenhide('HideconfigCPU', $config_cpu, $header_cpu, true)
-                @listenhide('HideconfigDF',  $config_df,  $header_df,  true)
-                @listenhide('HideconfigPS',  $config_ps,  $header_ps,  true)
-                @listenhide('HideconfigVG',  $config_vg,  $header_vg,  true)
+              # @listenhide('HideconfigMEM', $mem_config, $header_mem) #, true)
+                @listenhide('HideconfigIF',  $config_if,  $header_if)  #, true)
+                @listenhide('HideconfigCPU', $config_cpu, $header_cpu) #, true)
+                @listenhide('HideconfigDF',  $config_df,  $header_df)  #, true)
+                @listenhide('HideconfigPS',  $config_ps,  $header_ps)  #, true)
+                @listenhide('HideconfigVG',  $config_vg,  $header_vg)  #, true)
 
                 # NB by class
                 $tab_if    = $('.if-switch')
@@ -332,10 +355,10 @@
                 $panels_if = $('.if-tab')
                 $panels_df = $('.df-tab')
 
-                @listenTo(@model, 'change:HideIF', @change_collapsetabfunc('HideIF', 'TabIF', $panels_if, $tab_if))
-                @listenTo(@model, 'change:HideDF', @change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df))
-                @listenTo(@model, 'change:TabIF',  @change_collapsetabfunc('HideIF', 'TabIF', $panels_if, $tab_if))
-                @listenTo(@model, 'change:TabDF',  @change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df))
+                @listenTo(@model, 'change:HideIF', @change_collapsetabfunc('HideIF', 'TabIF', $panels_if, $tab_if, $hidden_if))
+                @listenTo(@model, 'change:HideDF', @change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df, $hidden_df))
+                @listenTo(@model, 'change:TabIF',  @change_collapsetabfunc('HideIF', 'TabIF', $panels_if, $tab_if, $hidden_if))
+                @listenTo(@model, 'change:TabDF',  @change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df, $hidden_df))
 
                 $psmore = $('label.more[href="#psmore"]')
                 $psless = $('label.less[href="#psless"]')
@@ -403,12 +426,12 @@
                 $header_ps .click( B(@click_expandfunc('HideconfigPS' )) )
                 $header_vg .click( B(@click_expandfunc('HideconfigVG' )) )
 
-             ## $hidden_mem.click( B(@click_expandfunc('HideMEM')) )
+              # $hidden_mem.click( B(@click_expandfunc('HideMEM')) )
                 $hidden_if .click( B(@click_expandfunc('HideIF' )) )
-                $hidden_cpu.click( B(@click_expandfunc('HideCPU')) )
+              # $hidden_cpu.click( B(@click_expandfunc('HideCPU')) )
                 $hidden_df .click( B(@click_expandfunc('HideDF' )) )
-                $hidden_ps .click( B(@click_expandfunc('HidePS' )) )
-                $hidden_vg .click( B(@click_expandfunc('HideVG' )) )
+              # $hidden_ps .click( B(@click_expandfunc('HidePS' )) )
+              # $hidden_vg .click( B(@click_expandfunc('HideVG' )) )
 
                 $psmore    .click( B(@click_psignalfunc('HidePS', true )) )
                 $psless    .click( B(@click_psignalfunc('HidePS', false)) )
@@ -453,21 +476,24 @@
                     V = !V if !reverse? && reverse
                     $el[if V then 'addClass' else 'removeClass']('active'))
 
-        listenhide: (H, $el, $button_el, reverse) ->
+        listenhide: (H, $el, $button_el) ->
+                # the 4th argument used to be `reverse'
                 @listenTo(@model, 'change:'+ H, () ->
                         V = @model.attributes[H]? and @model.attributes[H]
                         $el.collapse(if V then 'hide' else 'show') # do what change_collapsefunc does
 
-                        V = !V if !reverse? && reverse
+                        V = !V # if !reverse? && reverse
                         $button_el[if V then 'addClass' else 'removeClass']('active')) # do what listenactivate does
 
         change_collapsefunc: (H, $el) -> () -> $el.collapse(if @model.attributes[H] then 'hide' else 'show')
 
-        change_collapsetabfunc: (H, T, $el, $tabel) -> () ->
+        change_collapsetabfunc: (H, T, $el, $tabel, $buttonel) -> () ->
                 A = @model.attributes
                 if A[H] # hiding all
                         $el.collapse('hide') # do what change_collapsefunc does
+                        $buttonel.addClass('active')
                         return
+                $buttonel.removeClass('active')
 
                 # $el is $('.if-tab')
                 # $tabel is $('.if-switch')
