@@ -53,7 +53,6 @@
                 sendClient: sendClient
                 sendSearch: sendSearch
                 close: () -> conn.close()
-                getconn: () -> conn
         }
 
 @IFbytesCLASS = React.createClass
@@ -127,7 +126,7 @@
         componentDidMount: () -> @props.$click_el.click(@click)
         render: () ->
                 @props.$collapse_el.collapse(if @state.Hide then 'hide' else 'show')
-                return React.DOM.span(null, null)
+                return React.DOM.span() # (null, null)
         click: (e) ->
                 (S = {})[@props.key] = !@state.Hide
                 websocket.sendClient(S)
@@ -175,7 +174,7 @@
         sel.append('<span class="dummy display-none" />').find('.dummy').get(0)
 
 @update = (currentClient, model) ->
-        return if (null for param in location.search.substr(1).split('&') when param.split('=')[0] == 'still').length
+        return if (42 for param in location.search.substr(1).split('&') when param.split('=')[0] == 'still').length
 
         $showswap_el = $('label[href="#showswap"]')
         showswap = React.renderComponent(ShowSwapClass({$el: $showswap_el}), $showswap_el.get(0))
@@ -202,15 +201,17 @@
 
         psplus   = React.renderComponent(NewTextCLASS((data) -> data?.Client?.PSplusText)(), $('label.more[href="#psmore"]').get(0))
 
-        memtable  = React.renderComponent(MEMtableCLASS(null),  document.getElementById('mem'       +'-'+ 'table'))
-        pstable   = React.renderComponent(PStableCLASS(null),   document.getElementById('ps'        +'-'+ 'table'))
-        dfbytes   = React.renderComponent(DFbytesCLASS(null),   document.getElementById('dfbytes'   +'-'+ 'table'))
-        dfinodes  = React.renderComponent(DFinodesCLASS(null),  document.getElementById('dfinodes'  +'-'+ 'table'))
-        cputable  = React.renderComponent(CPUtableCLASS(null),  document.getElementById('cpu'       +'-'+ 'table'))
-        ifbytes   = React.renderComponent(IFbytesCLASS(null),   document.getElementById('ifbytes'   +'-'+ 'table'))
-        iferrors  = React.renderComponent(IFerrorsCLASS(null),  document.getElementById('iferrors'  +'-'+ 'table'))
-        ifpackets = React.renderComponent(IFpacketsCLASS(null), document.getElementById('ifpackets' +'-'+ 'table'))
-        vagrant   = React.renderComponent(VGtableCLASS(null),   document.getElementById('vagrant'   +'-'+ 'table'))
+        memtable  = React.renderComponent(MEMtableCLASS(),  document.getElementById('mem'       +'-'+ 'table'))
+        pstable   = React.renderComponent(PStableCLASS(),   document.getElementById('ps'        +'-'+ 'table'))
+        dfbytes   = React.renderComponent(DFbytesCLASS(),   document.getElementById('dfbytes'   +'-'+ 'table'))
+        dfinodes  = React.renderComponent(DFinodesCLASS(),  document.getElementById('dfinodes'  +'-'+ 'table'))
+        cputable  = React.renderComponent(CPUtableCLASS(),  document.getElementById('cpu'       +'-'+ 'table'))
+        ifbytes   = React.renderComponent(IFbytesCLASS(),   document.getElementById('ifbytes'   +'-'+ 'table'))
+        iferrors  = React.renderComponent(IFerrorsCLASS(),  document.getElementById('iferrors'  +'-'+ 'table'))
+        ifpackets = React.renderComponent(IFpacketsCLASS(), document.getElementById('ifpackets' +'-'+ 'table'))
+        vagrant   = React.renderComponent(VGtableCLASS(),   document.getElementById('vagrant'   +'-'+ 'table'))
+
+      # cpu       = React.renderComponent(CPUCLASS(), document.getElementById('cpu'))
 
         onmessage = (event) ->
                 data = JSON.parse(event.data)

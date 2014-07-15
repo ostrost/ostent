@@ -58,9 +58,6 @@
       sendSearch: sendSearch,
       close: function() {
         return conn.close();
-      },
-      getconn: function() {
-        return conn;
       }
     };
   };
@@ -293,7 +290,7 @@
     },
     render: function() {
       this.props.$collapse_el.collapse(this.state.Hide ? 'hide' : 'show');
-      return React.DOM.span(null, null);
+      return React.DOM.span();
     },
     click: function(e) {
       var S;
@@ -391,7 +388,7 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         param = _ref[_i];
         if (param.split('=')[0] === 'still') {
-          _results.push(null);
+          _results.push(42);
         }
       }
       return _results;
@@ -442,15 +439,15 @@
       var _ref;
       return data != null ? (_ref = data.Client) != null ? _ref.PSplusText : void 0 : void 0;
     })(), $('label.more[href="#psmore"]').get(0));
-    memtable = React.renderComponent(MEMtableCLASS(null), document.getElementById('mem' + '-' + 'table'));
-    pstable = React.renderComponent(PStableCLASS(null), document.getElementById('ps' + '-' + 'table'));
-    dfbytes = React.renderComponent(DFbytesCLASS(null), document.getElementById('dfbytes' + '-' + 'table'));
-    dfinodes = React.renderComponent(DFinodesCLASS(null), document.getElementById('dfinodes' + '-' + 'table'));
-    cputable = React.renderComponent(CPUtableCLASS(null), document.getElementById('cpu' + '-' + 'table'));
-    ifbytes = React.renderComponent(IFbytesCLASS(null), document.getElementById('ifbytes' + '-' + 'table'));
-    iferrors = React.renderComponent(IFerrorsCLASS(null), document.getElementById('iferrors' + '-' + 'table'));
-    ifpackets = React.renderComponent(IFpacketsCLASS(null), document.getElementById('ifpackets' + '-' + 'table'));
-    vagrant = React.renderComponent(VGtableCLASS(null), document.getElementById('vagrant' + '-' + 'table'));
+    memtable = React.renderComponent(MEMtableCLASS(), document.getElementById('mem' + '-' + 'table'));
+    pstable = React.renderComponent(PStableCLASS(), document.getElementById('ps' + '-' + 'table'));
+    dfbytes = React.renderComponent(DFbytesCLASS(), document.getElementById('dfbytes' + '-' + 'table'));
+    dfinodes = React.renderComponent(DFinodesCLASS(), document.getElementById('dfinodes' + '-' + 'table'));
+    cputable = React.renderComponent(CPUtableCLASS(), document.getElementById('cpu' + '-' + 'table'));
+    ifbytes = React.renderComponent(IFbytesCLASS(), document.getElementById('ifbytes' + '-' + 'table'));
+    iferrors = React.renderComponent(IFerrorsCLASS(), document.getElementById('iferrors' + '-' + 'table'));
+    ifpackets = React.renderComponent(IFpacketsCLASS(), document.getElementById('ifpackets' + '-' + 'table'));
+    vagrant = React.renderComponent(VGtableCLASS(), document.getElementById('vagrant' + '-' + 'table'));
     onmessage = function(event) {
       var data, _ref;
       data = JSON.parse(event.data);
