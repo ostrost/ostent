@@ -271,6 +271,17 @@
   });
 
   this.HideClass = React.createClass({
+    statics: {
+      dummy: function(sel) {
+        return sel.append('<span class="dummy display-none" />').find('.dummy').get(0);
+      },
+      component: function(opt) {
+        var con;
+        con = opt.$parent_el;
+        delete opt.$parent_el;
+        return React.renderComponent(HideClass(opt), HideClass.dummy(con));
+      }
+    },
     reduce: function(data) {
       var value;
       if ((data != null ? data.Client : void 0) != null) {
@@ -285,18 +296,22 @@
     getInitialState: function() {
       return this.reduce(Data);
     },
+    componentWillUnmount: function() {
+      return console.log('componentWillUnmount');
+    },
     componentDidMount: function() {
-      return this.props.$button_el.click(this.click);
+      this.$button_el = $(this.getDOMNode()).parent().parent();
+      return this.$button_el.click(this.click);
     },
     render: function() {
-      var buttonstate;
+      var buttonactive;
       this.props.$collapse_el.collapse(this.state.Hide ? 'hide' : 'show');
-      buttonstate = this.state.Hide;
-      if ((this.props.reverse_button != null) && this.props.reverse_button) {
-        buttonstate = !this.state.Hide;
+      buttonactive = this.state.Hide;
+      if ((this.props.reverseActive != null) && this.props.reverseActive) {
+        buttonactive = !this.state.Hide;
       }
-      if (this.props.$button_el != null) {
-        this.props.$button_el[buttonstate ? 'addClass' : 'removeClass']('active');
+      if (this.$button_el != null) {
+        this.$button_el[buttonactive ? 'addClass' : 'removeClass']('active');
       }
       return React.DOM.span();
     },
@@ -383,12 +398,8 @@
     }
   };
 
-  this.dummy = function(sel) {
-    return sel.append('<span class="dummy display-none" />').find('.dummy').get(0);
-  };
-
   this.update = function(currentClient, model) {
-    var $header_mem, $hiding_cpu, $hiding_mem, $hiding_ps, $hiding_vg, $showswap_el, cputable, dfbytes, dfinodes, dftitle, hideconfigmem, hidecpu, hidemem, hideps, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psplus, pstable, showswap, uptime, vgtable;
+    var $showswap_el, cputable, dfbytes, dfinodes, dftitle, hideconfigmem, hidecpu, hidemem, hideps, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psplus, pstable, showswap, uptime, vgtable;
     if (((function() {
       var _i, _len, _ref, _results;
       _ref = location.search.substr(1).split('&');
@@ -407,37 +418,32 @@
     showswap = React.renderComponent(ShowSwapClass({
       $el: $showswap_el
     }), $showswap_el.get(0));
-    $header_mem = $('header a[href="#mem"]');
-    hideconfigmem = React.renderComponent(HideClass({
+    hideconfigmem = HideClass.component({
       key: 'HideconfigMEM',
       $collapse_el: $('#memconfig'),
-      reverse_button: true,
-      $button_el: $header_mem
-    }), dummy($header_mem));
-    $hiding_mem = $('#memconfig').find('.hiding');
-    hidemem = React.renderComponent(HideClass({
+      $parent_el: $('header a[href="#mem"]'),
+      reverseActive: true
+    });
+    hidemem = HideClass.component({
       key: 'HideMEM',
       $collapse_el: $('#mem'),
-      $button_el: $hiding_mem
-    }), dummy($hiding_mem));
-    $hiding_cpu = $('#cpuconfig').find('.hiding');
-    hidecpu = React.renderComponent(HideClass({
+      $parent_el: $('#memconfig').find('.hiding')
+    });
+    hidecpu = HideClass.component({
       key: 'HideCPU',
       $collapse_el: $('#cpu'),
-      $button_el: $hiding_cpu
-    }), dummy($hiding_cpu));
-    $hiding_ps = $('#psconfig').find('.hiding');
-    hideps = React.renderComponent(HideClass({
+      $parent_el: $('#cpuconfig').find('.hiding')
+    });
+    hideps = HideClass.component({
       key: 'HidePS',
       $collapse_el: $('#ps'),
-      $button_el: $hiding_ps
-    }), dummy($hiding_ps));
-    $hiding_vg = $('#vgconfig').find('.hiding');
-    hidevg = React.renderComponent(HideClass({
+      $parent_el: $('#psconfig').find('.hiding')
+    });
+    hidevg = HideClass.component({
       key: 'HideVG',
       $collapse_el: $('#vg'),
-      $button_el: $hiding_vg
-    }), dummy($hiding_vg));
+      $parent_el: $('#vgconfig').find('.hiding')
+    });
     ip = React.renderComponent(NewTextCLASS(function(data) {
       var _ref;
       return data != null ? (_ref = data.Generic) != null ? _ref.IP : void 0 : void 0;

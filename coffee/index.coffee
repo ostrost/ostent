@@ -118,17 +118,34 @@
                 vagrant_table(Data, rows)
 
 @HideClass = React.createClass
+        statics:
+                dummy: (sel) ->
+                      # sel = $(sel) if typeof(sel) == 'string'
+                        sel.append('<span class="dummy display-none" />').find('.dummy').get(0)
+                component: (opt) ->
+                        con = opt.$parent_el; delete opt.$parent_el # the container
+                      # con = $(con) if typeof(con) == 'string'
+                        React.renderComponent(HideClass(opt), HideClass.dummy(con))
+
         reduce: (data) ->
                 if data?.Client?
                         value = data.Client[@props.key]
                         return {Hide: value} if value isnt undefined
         getInitialState:   () -> @reduce(Data) # a global Data
-        componentDidMount: () -> @props.$button_el.click(@click)
+        componentWillUnmount: () ->
+                console.log('componentWillUnmount')
+                # TODO if necessary: @$button_el = null
+        componentDidMount: () ->
+                @$button_el = $(@getDOMNode()).
+                        parent(). # react node
+                        parent()  # non-dummy level
+                @$button_el.click(@click)
         render: () ->
                 @props.$collapse_el.collapse(if @state.Hide then 'hide' else 'show')
-                buttonstate =  @state.Hide
-                buttonstate = !@state.Hide if @props.reverse_button? and @props.reverse_button
-                @props.$button_el[if buttonstate then 'addClass' else 'removeClass']('active') if @props.$button_el?
+                buttonactive =  @state.Hide
+                buttonactive = !@state.Hide if @props.reverseActive? and @props.reverseActive
+                @$button_el[if buttonactive then 'addClass' else 'removeClass']('active') if @$button_el?
+                # the first time `render' called before componentDidMount, so @$button_el may be undefined/null
                 return React.DOM.span() # (null, null)
         click: (e) ->
                 (S = {})[@props.key] = !@state.Hide
@@ -172,46 +189,42 @@
                 delete data[key] for key of data when !data[key]?
                 obj.setState(data)
 
-@dummy = (sel) ->
-      # sel = $(sel) if typeof(sel) == 'string'
-        sel.append('<span class="dummy display-none" />').find('.dummy').get(0)
-
 @update = (currentClient, model) ->
         return if (42 for param in location.search.substr(1).split('&') when param.split('=')[0] == 'still').length
 
         $showswap_el = $('label[href="#showswap"]')
         showswap = React.renderComponent(ShowSwapClass({$el: $showswap_el}), $showswap_el.get(0))
 
-        $header_mem = $('header a[href="#mem"]')
-        hideconfigmem = React.renderComponent(HideClass({
-                key:          'HideconfigMEM',
-                $collapse_el: $('#memconfig'),
-                reverse_button: true,
-                $button_el:   $header_mem }), dummy($header_mem))
+        hideconfigmem = HideClass.component({
+                key:           'HideconfigMEM',
+                $collapse_el:  $('#memconfig'),
+                $parent_el:    $('header a[href="#mem"]'),
+                reverseActive: true
+        })
 
-        $hiding_mem = $('#memconfig').find('.hiding')
-        hidemem = React.renderComponent(HideClass({
+        hidemem = HideClass.component({
                 key:          'HideMEM',
                 $collapse_el: $('#mem'),
-                $button_el:   $hiding_mem }), dummy($hiding_mem))
+                $parent_el:   $('#memconfig').find('.hiding')
+        })
 
-        $hiding_cpu = $('#cpuconfig').find('.hiding')
-        hidecpu = React.renderComponent(HideClass({
+        hidecpu = HideClass.component({
                 key:          'HideCPU',
                 $collapse_el: $('#cpu'),
-                $button_el:   $hiding_cpu }), dummy($hiding_cpu))
+                $parent_el:   $('#cpuconfig').find('.hiding')
+        })
 
-        $hiding_ps = $('#psconfig').find('.hiding')
-        hideps  = React.renderComponent(HideClass({
+        hideps  = HideClass.component({
                 key:          'HidePS',
                 $collapse_el: $('#ps'),
-                $button_el:   $hiding_ps }), dummy($hiding_ps))
+                $parent_el:   $('#psconfig').find('.hiding')
+        })
 
-        $hiding_vg = $('#vgconfig').find('.hiding')
-        hidevg  = React.renderComponent(HideClass({
+        hidevg  = HideClass.component({
                 key:          'HideVG',
                 $collapse_el: $('#vg'),
-                $button_el:   $hiding_vg }), dummy($hiding_vg))
+                $parent_el:   $('#vgconfig').find('.hiding')
+        })
 
         ip       = React.renderComponent(NewTextCLASS((data) -> data?.Generic?.IP       )(), $('#generic-ip'      )   .get(0))
         hostname = React.renderComponent(NewTextCLASS((data) -> data?.Generic?.Hostname )(), $('#generic-hostname')   .get(0))
