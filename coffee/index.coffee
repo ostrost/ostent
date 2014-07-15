@@ -210,7 +210,7 @@
         $hiding_vg = $('#vgconfig').find('.hiding')
         hidevg  = React.renderComponent(HideClass({
                 key:          'HideVG',
-                $collapse_el: $('#vagrant'),
+                $collapse_el: $('#vg'),
                 $button_el:   $hiding_vg }), dummy($hiding_vg))
 
         ip       = React.renderComponent(NewTextCLASS((data) -> data?.Generic?.IP       )(), $('#generic-ip'      )   .get(0))
@@ -231,7 +231,7 @@
         ifbytes   = React.renderComponent(IFbytesCLASS(),   document.getElementById('ifbytes'   +'-'+ 'table'))
         iferrors  = React.renderComponent(IFerrorsCLASS(),  document.getElementById('iferrors'  +'-'+ 'table'))
         ifpackets = React.renderComponent(IFpacketsCLASS(), document.getElementById('ifpackets' +'-'+ 'table'))
-        vagrant   = React.renderComponent(VGtableCLASS(),   document.getElementById('vagrant'   +'-'+ 'table'))
+        vgtable   = React.renderComponent(VGtableCLASS(),   document.getElementById('vg'        +'-'+ 'table'))
 
         onmessage = (event) ->
                 data = JSON.parse(event.data)
@@ -271,7 +271,7 @@
                 setState(ifbytes,   data.IFbytes)
                 setState(iferrors,  data.IFerrors)
                 setState(ifpackets, data.IFpackets)
-                setState(vagrant, {
+                setState(vgtable, {
                     VagrantMachines: data.VagrantMachines,
                     VagrantError:    data.VagrantError,
                     VagrantErrord:   data.VagrantErrord
@@ -329,7 +329,7 @@
               # @listenhide('HideMEM', $section_mem, $hidden_mem, false)
               # @listenhide('HideCPU', $section_cpu, $hidden_cpu, false)
               # @listenhide('HidePS',  $section_ps,  $hidden_ps,  false) # $section_ps used to be $('#ps')
-              # @listenhide('HideVG',  $section_vg,  $hidden_vg,  false) # $section_vg used to be $('#vagrant')
+              # @listenhide('HideVG',  $section_vg,  $hidden_vg,  false) # $section_vg used to be $('#vg')
 
                 # $header_mem = $('header a[href="'+ $section_mem.selector + '"]')
                 $header_if  = $('header a[href="'+ $section_if .selector + '"]')
@@ -337,7 +337,7 @@
                 $header_df  = $('header a[href="'+ $section_df .selector + '"]')
 
                 $header_ps  = $('header a[href="#ps"]') # remember $section_ps
-                $header_vg  = $('header a[href="#vagrant"]') # remember $section_vg
+                $header_vg  = $('header a[href="#vg"]') # remember $section_vg
 
               # @listentext('TabTitleIF', $header_if)
               # @listentext('TabTitleDF', $header_df)

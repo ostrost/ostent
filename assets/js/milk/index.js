@@ -388,7 +388,7 @@
   };
 
   this.update = function(currentClient, model) {
-    var $header_mem, $hiding_cpu, $hiding_mem, $hiding_ps, $hiding_vg, $showswap_el, cputable, dfbytes, dfinodes, dftitle, hideconfigmem, hidecpu, hidemem, hideps, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psplus, pstable, showswap, uptime, vagrant;
+    var $header_mem, $hiding_cpu, $hiding_mem, $hiding_ps, $hiding_vg, $showswap_el, cputable, dfbytes, dfinodes, dftitle, hideconfigmem, hidecpu, hidemem, hideps, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psplus, pstable, showswap, uptime, vgtable;
     if (((function() {
       var _i, _len, _ref, _results;
       _ref = location.search.substr(1).split('&');
@@ -435,7 +435,7 @@
     $hiding_vg = $('#vgconfig').find('.hiding');
     hidevg = React.renderComponent(HideClass({
       key: 'HideVG',
-      $collapse_el: $('#vagrant'),
+      $collapse_el: $('#vg'),
       $button_el: $hiding_vg
     }), dummy($hiding_vg));
     ip = React.renderComponent(NewTextCLASS(function(data) {
@@ -474,7 +474,7 @@
     ifbytes = React.renderComponent(IFbytesCLASS(), document.getElementById('ifbytes' + '-' + 'table'));
     iferrors = React.renderComponent(IFerrorsCLASS(), document.getElementById('iferrors' + '-' + 'table'));
     ifpackets = React.renderComponent(IFpacketsCLASS(), document.getElementById('ifpackets' + '-' + 'table'));
-    vagrant = React.renderComponent(VGtableCLASS(), document.getElementById('vagrant' + '-' + 'table'));
+    vgtable = React.renderComponent(VGtableCLASS(), document.getElementById('vg' + '-' + 'table'));
     onmessage = function(event) {
       var data, _ref;
       data = JSON.parse(event.data);
@@ -523,7 +523,7 @@
       setState(ifbytes, data.IFbytes);
       setState(iferrors, data.IFerrors);
       setState(ifpackets, data.IFpackets);
-      setState(vagrant, {
+      setState(vgtable, {
         VagrantMachines: data.VagrantMachines,
         VagrantError: data.VagrantError,
         VagrantErrord: data.VagrantErrord
@@ -577,7 +577,7 @@
       $header_cpu = $('header a[href="' + $section_cpu.selector + '"]');
       $header_df = $('header a[href="' + $section_df.selector + '"]');
       $header_ps = $('header a[href="#ps"]');
-      $header_vg = $('header a[href="#vagrant"]');
+      $header_vg = $('header a[href="#vg"]');
       this.listenhide('HideconfigIF', $config_if, $header_if);
       this.listenhide('HideconfigCPU', $config_cpu, $header_cpu);
       this.listenhide('HideconfigDF', $config_df, $header_df);

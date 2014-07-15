@@ -68,7 +68,7 @@ html
                 li
                   a[href="#ps"] #ps
                 li
-                  a[href="#vagrant"] #vagrant
+                  a[href="#vg"] #vagrant
 
             li.active
               a[href="https://ostrost.com/ostent/releases/latest"][title="version "+ Data.VERSION] OSTENT
@@ -278,7 +278,7 @@ html
         div.block.col-md-8.col-md-offset-2
           div.panel1
             header.NOTdraggable
-              a.btn-header-block[href="#vagrant"] Vagrant global-status
+              a.btn-header-block[href="#vg"] Vagrant global-status
                 [class="active"] ? (json(Data.Client.HideconfigVG) == "false")
 
             div.collapse#vgconfig
@@ -293,10 +293,10 @@ html
                       input[type="checkbox"]
                       | Hidden
 
-            div.collapse#vagrant
+            div.collapse#vg
               [class="in"] ? (json(Data.Client.HideVG) == "false")
-              span#vagrant-table
-                [[template "define_vagrant_table" .]]
+              span#vg-table
+                [[template "define_vgtable" .]]
 
     script
       var Data = #{Data};
