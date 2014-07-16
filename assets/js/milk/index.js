@@ -325,6 +325,58 @@
     }
   });
 
+  this.ButtonClass = React.createClass({
+    statics: {
+      dummy: function(sel) {
+        return sel.append('<span class="dummy display-none" />').find('.dummy').get(0);
+      },
+      component: function(opt) {
+        var con;
+        con = opt.$parent_el;
+        delete opt.$parent_el;
+        return React.renderComponent(ButtonClass(opt), ButtonClass.dummy(con));
+      }
+    },
+    reduce: function(data) {
+      var S;
+      if ((data != null ? data.Client : void 0) != null) {
+        S = {};
+        if (data.Client[this.props.key] !== void 0) {
+          S.Not = data.Client[this.props.key];
+        }
+        if (data.Client[this.props.hideKey] !== void 0) {
+          S.Hide = data.Client[this.props.hideKey];
+        }
+        return S;
+      }
+    },
+    getInitialState: function() {
+      return this.reduce(Data);
+    },
+    componentDidMount: function() {
+      this.$button_el = $(this.getDOMNode()).parent().parent();
+      return this.$button_el.click(this.click);
+    },
+    render: function() {
+      if (this.$button_el != null) {
+        this.$button_el.prop('disabled', this.state.Not);
+        this.$button_el[this.state.Not ? 'addClass' : 'removeClass']('disabled');
+      }
+      return React.DOM.span();
+    },
+    click: function(e) {
+      var S;
+      (S = {})[this.props.sigkey] = this.props.sigval;
+      if ((this.state.Hide != null) && this.state.Hide) {
+        S[this.state.Hide] = !this.state.Hide;
+      }
+      websocket.sendClient(S);
+      e.stopPropagation();
+      e.preventDefault();
+      return void 0;
+    }
+  });
+
   this.ShowSwapClass = React.createClass({
     getInitialState: function() {
       return ShowSwapClass.reduce(Data);
@@ -402,7 +454,7 @@
   };
 
   this.update = function(currentClient, model) {
-    var cputable, dfbytes, dfinodes, dftitle, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hidemem, hideps, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psplus, pstable, showswap, uptime, vgtable;
+    var cputable, dfbytes, dfinodes, dftitle, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hidemem, hideps, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psless, psmore, psplus, pstable, showswap, uptime, vgtable;
     if (((function() {
       var _i, _len, _ref, _results;
       _ref = location.search.substr(1).split('&');
@@ -504,6 +556,20 @@
       var _ref;
       return data != null ? (_ref = data.Client) != null ? _ref.PSplusText : void 0 : void 0;
     })(), $('label.more[href="#psmore"]').get(0));
+    psmore = ButtonClass.component({
+      sigkey: 'MorePsignal',
+      sigval: true,
+      hideKey: 'HidePS',
+      key: 'PSnotExpandable',
+      $parent_el: $('label.more[href="#psmore"]')
+    });
+    psless = ButtonClass.component({
+      sigkey: 'MorePsignal',
+      sigval: false,
+      hideKey: 'HidePS',
+      key: 'PSnotDecreasable',
+      $parent_el: $('label.less[href="#psless"]')
+    });
     memtable = React.renderComponent(MEMtableCLASS(), document.getElementById('mem' + '-' + 'table'));
     pstable = React.renderComponent(PStableCLASS(), document.getElementById('ps' + '-' + 'table'));
     dfbytes = React.renderComponent(DFbytesCLASS(), document.getElementById('dfbytes' + '-' + 'table'));
@@ -561,6 +627,8 @@
       setState(iftitle, iftitle.newstate(data));
       setState(dftitle, dftitle.newstate(data));
       setState(psplus, psplus.newstate(data));
+      setState(psmore, psmore.reduce(data));
+      setState(psless, psless.reduce(data));
       setState(memtable, data.MEM);
       setState(cputable, data.CPU);
       setState(ifbytes, data.IFbytes);
@@ -605,7 +673,7 @@
 
   this.View = Backbone.View.extend({
     initialize: function() {
-      var $config_cpu, $config_df, $config_if, $config_mem, $config_ps, $config_vg, $hidden_df, $hidden_if, $panels_df, $panels_if, $psless, $psmore, $section_cpu, $section_df, $section_if, $tab_df, $tab_if, B, doexpandable, expandable_sections, sections, _i, _len;
+      var $config_cpu, $config_df, $config_if, $config_mem, $config_ps, $config_vg, $hidden_df, $hidden_if, $panels_df, $panels_if, $section_cpu, $section_df, $section_if, $tab_df, $tab_if, B, doexpandable, expandable_sections, sections, _i, _len;
       $config_if = $('#ifconfig');
       $config_df = $('#dfconfig');
       $hidden_if = $config_if.find('.hiding');
@@ -618,10 +686,6 @@
       this.listenTo(this.model, 'change:HideDF', this.change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df, $hidden_df));
       this.listenTo(this.model, 'change:TabIF', this.change_collapsetabfunc('HideIF', 'TabIF', $panels_if, $tab_if, $hidden_if));
       this.listenTo(this.model, 'change:TabDF', this.change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df, $hidden_df));
-      $psmore = $('label.more[href="#psmore"]');
-      $psless = $('label.less[href="#psless"]');
-      this.listenenable('PSnotExpandable', $psmore);
-      this.listenenable('PSnotDecreasable', $psless);
       $config_mem = $('#memconfig');
       $config_cpu = $('#cpuconfig');
       $config_ps = $('#psconfig');
@@ -668,8 +732,6 @@
       $tab_df.click(B(this.click_tabfunc('TabDF', 'HideDF')));
       $hidden_if.click(B(this.click_expandfunc('HideIF')));
       $hidden_df.click(B(this.click_expandfunc('HideDF')));
-      $psmore.click(B(this.click_psignalfunc('HidePS', true)));
-      $psless.click(B(this.click_psignalfunc('HidePS', false)));
       $config_mem.find('.refresh-input').on('input', B(this.submit_rsignalfunc('RefreshSignalMEM')));
       $config_if.find('.refresh-input').on('input', B(this.submit_rsignalfunc('RefreshSignalIF')));
       $config_cpu.find('.refresh-input').on('input', B(this.submit_rsignalfunc('RefreshSignalCPU')));

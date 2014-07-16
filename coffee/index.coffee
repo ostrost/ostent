@@ -131,7 +131,7 @@
                 if data?.Client?
                         value = data.Client[@props.key]
                         return {Hide: value} if value isnt undefined
-        getInitialState:   () -> @reduce(Data) # a global Data
+        getInitialState: () -> @reduce(Data) # a global Data
         componentWillUnmount: () ->
                 console.log('componentWillUnmount')
                 # TODO if necessary: @$button_el = null
@@ -154,6 +154,42 @@
                 e.preventDefault()  # checked/selected state
                 undefined
 
+@ButtonClass = React.createClass
+        statics:
+                dummy: (sel) ->
+                      # sel = $(sel) if typeof(sel) == 'string'
+                        sel.append('<span class="dummy display-none" />').find('.dummy').get(0)
+                component: (opt) ->
+                        con = opt.$parent_el; delete opt.$parent_el # the container
+                      # con = $(con) if typeof(con) == 'string'
+                        React.renderComponent(ButtonClass(opt), ButtonClass.dummy(con))
+
+        reduce: (data) ->
+                if data?.Client?
+                        S = {}
+                        S.Not  = data.Client[@props.key]     if data.Client[@props.key]     isnt undefined
+                        S.Hide = data.Client[@props.hideKey] if data.Client[@props.hideKey] isnt undefined
+                        return S
+        getInitialState: () -> @reduce(Data) # a global Data
+        componentDidMount: () ->
+                @$button_el = $(@getDOMNode()).
+                        parent(). # react node
+                        parent()  # non-dummy level
+                @$button_el.click(@click)
+        render: () ->
+                if @$button_el?
+                        # the first time `render' called before componentDidMount, so @$button_el may be undefined/null
+                        @$button_el.prop('disabled', @state.Not)
+                        @$button_el[if @state.Not then 'addClass' else 'removeClass']('disabled')
+                return React.DOM.span()
+        click: (e) ->
+                (S = {})[@props.sigkey] = @props.sigval
+                S[@state.Hide] = !@state.Hide if @state.Hide? and @state.Hide
+                websocket.sendClient(S)
+                e.stopPropagation() # preserves checkbox/radio
+                e.preventDefault()  # checked/selected state
+                undefined
+
 @ShowSwapClass = React.createClass
         getInitialState: () -> ShowSwapClass.reduce(Data) # a global Data
         statics:
@@ -162,7 +198,7 @@
                                 S = {}
                                 S.HideSWAP = data.Client.HideSWAP if data.Client.HideSWAP isnt undefined
                                 S.HideMEM  = data.Client.HideMEM  if data.Client.HideMEM  isnt undefined
-                                S
+                                return S
                 component: (opt) -> React.renderComponent(ShowSwapClass(opt), opt.$el.get(0))
 
         componentDidMount: () -> @props.$el.click(@click)
@@ -202,29 +238,10 @@
         hideconfigps  = HideClass.component({key: 'HideconfigPS',  $collapse_el: $('#psconfig'),  $parent_el: $('header a[href="#ps"]'),  reverseActive: true})
         hideconfigvg  = HideClass.component({key: 'HideconfigVG',  $collapse_el: $('#vgconfig'),  $parent_el: $('header a[href="#vg"]'),  reverseActive: true})
 
-        hidemem = HideClass.component({
-                key:          'HideMEM',
-                $collapse_el: $('#mem'),
-                $parent_el:   $('#memconfig').find('.hiding')
-        })
-
-        hidecpu = HideClass.component({
-                key:          'HideCPU',
-                $collapse_el: $('#cpu'),
-                $parent_el:   $('#cpuconfig').find('.hiding')
-        })
-
-        hideps  = HideClass.component({
-                key:          'HidePS',
-                $collapse_el: $('#ps'),
-                $parent_el:   $('#psconfig').find('.hiding')
-        })
-
-        hidevg  = HideClass.component({
-                key:          'HideVG',
-                $collapse_el: $('#vg'),
-                $parent_el:   $('#vgconfig').find('.hiding')
-        })
+        hidemem = HideClass.component({key: 'HideMEM', $collapse_el: $('#mem'), $parent_el: $('#memconfig').find('.hiding')})
+        hidecpu = HideClass.component({key: 'HideCPU', $collapse_el: $('#cpu'), $parent_el: $('#cpuconfig').find('.hiding')})
+        hideps  = HideClass.component({key: 'HidePS',  $collapse_el: $('#ps'),  $parent_el: $('#psconfig') .find('.hiding')})
+        hidevg  = HideClass.component({key: 'HideVG',  $collapse_el: $('#vg'),  $parent_el: $('#vgconfig') .find('.hiding')})
 
         ip       = React.renderComponent(NewTextCLASS((data) -> data?.Generic?.IP       )(), $('#generic-ip'      )   .get(0))
         hostname = React.renderComponent(NewTextCLASS((data) -> data?.Generic?.Hostname )(), $('#generic-hostname')   .get(0))
@@ -235,6 +252,8 @@
         dftitle  = React.renderComponent(NewTextCLASS((data) -> data?.Client?.TabTitleDF)(), $('header a[href="#df"]').get(0))
 
         psplus   = React.renderComponent(NewTextCLASS((data) -> data?.Client?.PSplusText)(), $('label.more[href="#psmore"]').get(0))
+        psmore   = ButtonClass.component({sigkey: 'MorePsignal', sigval: true,  hideKey: 'HidePS', key: 'PSnotExpandable',  $parent_el: $('label.more[href="#psmore"]')})
+        psless   = ButtonClass.component({sigkey: 'MorePsignal', sigval: false, hideKey: 'HidePS', key: 'PSnotDecreasable', $parent_el: $('label.less[href="#psless"]')})
 
         memtable  = React.renderComponent(MEMtableCLASS(),  document.getElementById('mem'       +'-'+ 'table'))
         pstable   = React.renderComponent(PStableCLASS(),   document.getElementById('ps'        +'-'+ 'table'))
@@ -285,6 +304,8 @@
                 setState(dftitle,   dftitle .newstate(data))
 
                 setState(psplus,    psplus  .newstate(data))
+                setState(psmore,    psmore  .reduce(data))
+                setState(psless,    psless  .reduce(data))
 
                 setState(memtable,  data.MEM)
                 setState(cputable,  data.CPU)
@@ -371,11 +392,11 @@
                 @listenTo(@model, 'change:TabIF',  @change_collapsetabfunc('HideIF', 'TabIF', $panels_if, $tab_if, $hidden_if))
                 @listenTo(@model, 'change:TabDF',  @change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df, $hidden_df))
 
-                $psmore = $('label.more[href="#psmore"]')
-                $psless = $('label.less[href="#psless"]')
+              # $psmore = $('label.more[href="#psmore"]')
+              # $psless = $('label.less[href="#psless"]')
               # @listentext('PSplusText',         $psmore)
-                @listenenable('PSnotExpandable',  $psmore)
-                @listenenable('PSnotDecreasable', $psless)
+              # @listenenable('PSnotExpandable',  $psmore)
+              # @listenenable('PSnotDecreasable', $psless)
 
                 # $config_{if,df} defined previously
                 $config_mem = $('#memconfig')
@@ -455,8 +476,8 @@
               # $hidden_ps .click( B(@click_expandfunc('HidePS' )) )
               # $hidden_vg .click( B(@click_expandfunc('HideVG' )) )
 
-                $psmore    .click( B(@click_psignalfunc('HidePS', true )) )
-                $psless    .click( B(@click_psignalfunc('HidePS', false)) )
+              # $psmore    .click( B(@click_psignalfunc('HidePS', true )) )
+              # $psless    .click( B(@click_psignalfunc('HidePS', false)) )
 
                 $config_mem.find('.refresh-input').on('input', B(@submit_rsignalfunc('RefreshSignalMEM')) )
                 $config_if .find('.refresh-input').on('input', B(@submit_rsignalfunc('RefreshSignalIF' )) )
