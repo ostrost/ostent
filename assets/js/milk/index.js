@@ -344,8 +344,14 @@
         if (data.Client[this.props.key] !== void 0) {
           S.Not = data.Client[this.props.key];
         }
-        if (data.Client[this.props.hideKey] !== void 0) {
-          S.Hide = data.Client[this.props.hideKey];
+        if (data.Client[this.props.Khide] !== void 0) {
+          S.Hide = data.Client[this.props.Khide];
+        }
+        if (data.Client[this.props.Ksend] !== void 0) {
+          S.Send = data.Client[this.props.Ksend];
+        }
+        if (data.Client[this.props.Ktext] !== void 0) {
+          S.Text = data.Client[this.props.Ktext];
         }
         return S;
       }
@@ -358,17 +364,34 @@
       return this.$button_el.click(this.click);
     },
     render: function() {
+      var Not;
       if (this.$button_el != null) {
-        this.$button_el.prop('disabled', this.state.Not);
-        this.$button_el[this.state.Not ? 'addClass' : 'removeClass']('disabled');
+        Not = this.state.Not;
+        if (!(this.props.key.indexOf('not') > -1)) {
+          Not = !Not;
+        }
+        this.$button_el.prop('disabled', Not);
+        this.$button_el[Not ? 'addClass' : 'removeClass']('disabled');
+        if (this.props.Ksend != null) {
+          this.$button_el[this.state.Send ? 'addClass' : 'removeClass']('active');
+        }
+        if (this.props.Ktext != null) {
+          this.$button_el.text(this.state.Text);
+        }
       }
       return React.DOM.span();
     },
     click: function(e) {
       var S;
-      (S = {})[this.props.sigkey] = this.props.sigval;
+      S = {};
+      if (this.props.sigkey != null) {
+        S[this.props.sigkey] = this.props.sigval;
+      }
       if ((this.state.Hide != null) && this.state.Hide) {
-        S[this.state.Hide] = !this.state.Hide;
+        S[this.props.Khide] = !this.state.Hide;
+      }
+      if (this.state.Send != null) {
+        S[this.props.Ksend] = !this.state.Send;
       }
       websocket.sendClient(S);
       e.stopPropagation();
@@ -454,7 +477,7 @@
   };
 
   this.update = function(currentClient, model) {
-    var cputable, dfbytes, dfinodes, dftitle, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hidemem, hideps, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psless, psmore, psplus, pstable, showswap, uptime, vgtable;
+    var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hidemem, hideps, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psless, psmore, psplus, pstable, showswap, uptime, vgtable;
     if (((function() {
       var _i, _len, _ref, _results;
       _ref = location.search.substr(1).split('&');
@@ -559,16 +582,37 @@
     psmore = ButtonClass.component({
       sigkey: 'MorePsignal',
       sigval: true,
-      hideKey: 'HidePS',
+      Khide: 'HidePS',
       key: 'PSnotExpandable',
       $parent_el: $('label.more[href="#psmore"]')
     });
     psless = ButtonClass.component({
       sigkey: 'MorePsignal',
       sigval: false,
-      hideKey: 'HidePS',
+      Khide: 'HidePS',
       key: 'PSnotDecreasable',
       $parent_el: $('label.less[href="#psless"]')
+    });
+    expandif = ButtonClass.component({
+      Khide: 'HideIF',
+      Ksend: 'ExpandIF',
+      Ktext: 'ExpandtextIF',
+      key: 'ExpandableIF',
+      $parent_el: $('label[href="#if"]')
+    });
+    expandcpu = ButtonClass.component({
+      Khide: 'HideCPU',
+      Ksend: 'ExpandCPU',
+      Ktext: 'ExpandtextCPU',
+      key: 'ExpandableCPU',
+      $parent_el: $('label[href="#cpu"]')
+    });
+    expanddf = ButtonClass.component({
+      Khide: 'HideDF',
+      Ksend: 'ExpandDF',
+      Ktext: 'ExpandtextDF',
+      key: 'ExpandableDF',
+      $parent_el: $('label[href="#df"]')
     });
     memtable = React.renderComponent(MEMtableCLASS(), document.getElementById('mem' + '-' + 'table'));
     pstable = React.renderComponent(PStableCLASS(), document.getElementById('ps' + '-' + 'table'));
@@ -629,6 +673,9 @@
       setState(psplus, psplus.newstate(data));
       setState(psmore, psmore.reduce(data));
       setState(psless, psless.reduce(data));
+      setState(expandif, expandif.reduce(data));
+      setState(expandcpu, expandcpu.reduce(data));
+      setState(expanddf, expanddf.reduce(data));
       setState(memtable, data.MEM);
       setState(cputable, data.CPU);
       setState(ifbytes, data.IFbytes);
@@ -673,7 +720,7 @@
 
   this.View = Backbone.View.extend({
     initialize: function() {
-      var $config_cpu, $config_df, $config_if, $config_mem, $config_ps, $config_vg, $hidden_df, $hidden_if, $panels_df, $panels_if, $section_cpu, $section_df, $section_if, $tab_df, $tab_if, B, doexpandable, expandable_sections, sections, _i, _len;
+      var $config_cpu, $config_df, $config_if, $config_mem, $config_ps, $config_vg, $hidden_df, $hidden_if, $panels_df, $panels_if, $tab_df, $tab_if, B, doexpandable, expandable_sections;
       $config_if = $('#ifconfig');
       $config_df = $('#dfconfig');
       $hidden_if = $config_if.find('.hiding');
@@ -705,10 +752,7 @@
       B = function(c) {
         return c;
       };
-      $section_if = $('#if');
-      $section_cpu = $('#cpu');
-      $section_df = $('#df');
-      expandable_sections = [[$section_if, 'ExpandIF', 'HideIF', 'ExpandableIF', 'ExpandtextIF'], [$section_cpu, 'ExpandCPU', 'HideCPU', 'ExpandableCPU', 'ExpandtextCPU'], [$section_df, 'ExpandDF', 'HideDF', 'ExpandableDF', 'ExpandtextDF']];
+      expandable_sections = [];
       doexpandable = (function(_this) {
         return function(sections) {
           var $b, E, H, L, S, T;
@@ -724,10 +768,6 @@
           $b.click(B(_this.click_expandfunc(E, H)));
         };
       })(this);
-      for (_i = 0, _len = expandable_sections.length; _i < _len; _i++) {
-        sections = expandable_sections[_i];
-        doexpandable(sections);
-      }
       $tab_if.click(B(this.click_tabfunc('TabIF', 'HideIF')));
       $tab_df.click(B(this.click_tabfunc('TabDF', 'HideDF')));
       $hidden_if.click(B(this.click_expandfunc('HideIF')));
@@ -809,7 +849,7 @@
           return;
         }
         $buttonel.removeClass('active');
-        curtabid = A[T];
+        curtabid = +A[T];
         nots = $el.not('[data-tabid="' + curtabid + '"]');
         for (_i = 0, _len = nots.length; _i < _len; _i++) {
           el = nots[_i];

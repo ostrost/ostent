@@ -167,8 +167,10 @@
         reduce: (data) ->
                 if data?.Client?
                         S = {}
-                        S.Not  = data.Client[@props.key]     if data.Client[@props.key]     isnt undefined
-                        S.Hide = data.Client[@props.hideKey] if data.Client[@props.hideKey] isnt undefined
+                        S.Not  = data.Client[@props.key]   if data.Client[@props.key]   isnt undefined
+                        S.Hide = data.Client[@props.Khide] if data.Client[@props.Khide] isnt undefined
+                        S.Send = data.Client[@props.Ksend] if data.Client[@props.Ksend] isnt undefined
+                        S.Text = data.Client[@props.Ktext] if data.Client[@props.Ktext] isnt undefined
                         return S
         getInitialState: () -> @reduce(Data) # a global Data
         componentDidMount: () ->
@@ -179,16 +181,22 @@
         render: () ->
                 if @$button_el?
                         # the first time `render' called before componentDidMount, so @$button_el may be undefined/null
-                        @$button_el.prop('disabled', @state.Not)
-                        @$button_el[if @state.Not then 'addClass' else 'removeClass']('disabled')
+                        Not = @state.Not
+                        Not = !Not if not (@props.key.indexOf('not') > -1)
+                        @$button_el.prop('disabled', Not)
+                        @$button_el[if Not         then 'addClass' else 'removeClass']('disabled')
+                        @$button_el[if @state.Send then 'addClass' else 'removeClass']('active') if @props.Ksend?
+                        @$button_el.text(@state.Text) if @props.Ktext?
                 return React.DOM.span()
         click: (e) ->
-                (S = {})[@props.sigkey] = @props.sigval
-                S[@state.Hide] = !@state.Hide if @state.Hide? and @state.Hide
+                S = {}
+                S[@props.sigkey]  =  @props.sigval if @props.sigkey?
+                S[@props.Khide] = !@state.Hide if @state.Hide? and @state.Hide
+                S[@props.Ksend] = !@state.Send if @state.Send?
                 websocket.sendClient(S)
                 e.stopPropagation() # preserves checkbox/radio
                 e.preventDefault()  # checked/selected state
-                undefined
+                return undefined
 
 @ShowSwapClass = React.createClass
         getInitialState: () -> ShowSwapClass.reduce(Data) # a global Data
@@ -252,8 +260,12 @@
         dftitle  = React.renderComponent(NewTextCLASS((data) -> data?.Client?.TabTitleDF)(), $('header a[href="#df"]').get(0))
 
         psplus   = React.renderComponent(NewTextCLASS((data) -> data?.Client?.PSplusText)(), $('label.more[href="#psmore"]').get(0))
-        psmore   = ButtonClass.component({sigkey: 'MorePsignal', sigval: true,  hideKey: 'HidePS', key: 'PSnotExpandable',  $parent_el: $('label.more[href="#psmore"]')})
-        psless   = ButtonClass.component({sigkey: 'MorePsignal', sigval: false, hideKey: 'HidePS', key: 'PSnotDecreasable', $parent_el: $('label.less[href="#psless"]')})
+        psmore   = ButtonClass.component({sigkey: 'MorePsignal', sigval: true,  Khide: 'HidePS', key: 'PSnotExpandable',  $parent_el: $('label.more[href="#psmore"]')})
+        psless   = ButtonClass.component({sigkey: 'MorePsignal', sigval: false, Khide: 'HidePS', key: 'PSnotDecreasable', $parent_el: $('label.less[href="#psless"]')})
+
+        expandif = ButtonClass.component({Khide: 'HideIF',  Ksend: 'ExpandIF',  Ktext: 'ExpandtextIF',  key: 'ExpandableIF',  $parent_el: $('label[href="#if"]')})
+        expandcpu= ButtonClass.component({Khide: 'HideCPU', Ksend: 'ExpandCPU', Ktext: 'ExpandtextCPU', key: 'ExpandableCPU', $parent_el: $('label[href="#cpu"]')})
+        expanddf = ButtonClass.component({Khide: 'HideDF',  Ksend: 'ExpandDF',  Ktext: 'ExpandtextDF',  key: 'ExpandableDF',  $parent_el: $('label[href="#df"]')})
 
         memtable  = React.renderComponent(MEMtableCLASS(),  document.getElementById('mem'       +'-'+ 'table'))
         pstable   = React.renderComponent(PStableCLASS(),   document.getElementById('ps'        +'-'+ 'table'))
@@ -306,6 +318,9 @@
                 setState(psplus,    psplus  .newstate(data))
                 setState(psmore,    psmore  .reduce(data))
                 setState(psless,    psless  .reduce(data))
+                setState(expandif,  expandif.reduce(data))
+                setState(expandcpu, expandcpu.reduce(data))
+                setState(expanddf,  expanddf.reduce(data))
 
                 setState(memtable,  data.MEM)
                 setState(cputable,  data.CPU)
@@ -398,7 +413,7 @@
               # @listenenable('PSnotExpandable',  $psmore)
               # @listenenable('PSnotDecreasable', $psless)
 
-                # $config_{if,df} defined previously
+              # $config_{if,df} defined previously
                 $config_mem = $('#memconfig')
                 $config_cpu = $('#cpuconfig')
                 $config_ps  = $('#psconfig')
@@ -428,21 +443,16 @@
 
 
               # $section_mem = $('#mem') # other $section_* were here
-                $section_if  = $('#if')
-                $section_cpu = $('#cpu')
-                $section_df  = $('#df')
+              # $section_if  = $('#if')
+              # $section_cpu = $('#cpu')
+              # $section_df  = $('#df')
 
                 expandable_sections = [
-                    [$section_if,  'ExpandIF',  'HideIF',  'ExpandableIF',  'ExpandtextIF'],
-                    [$section_cpu, 'ExpandCPU', 'HideCPU', 'ExpandableCPU', 'ExpandtextCPU'],
-                    [$section_df,  'ExpandDF',  'HideDF',  'ExpandableDF',  'ExpandtextDF']
+                  # [$section_if,  'ExpandIF',  'HideIF',  'ExpandableIF',  'ExpandtextIF'],
+                  # [$section_cpu, 'ExpandCPU', 'HideCPU', 'ExpandableCPU', 'ExpandtextCPU'],
+                  # [$section_df,  'ExpandDF',  'HideDF',  'ExpandableDF',  'ExpandtextDF']
                 ]
                 doexpandable = (sections) =>
-                    # S = expandable_sections[i][0]
-                    # E = expandable_sections[i][1]
-                    # H = expandable_sections[i][2]
-                    # L = expandable_sections[i][3]
-                    # T = expandable_sections[i][4]
                     S = sections[0]
                     E = sections[1]
                     H = sections[2]
@@ -456,7 +466,7 @@
                     $b.click( B(@click_expandfunc(E, H)) )
                     return
 
-                doexpandable(sections) for sections in expandable_sections
+              # doexpandable(sections) for sections in expandable_sections
 
               # $hswapb    .click( B(@click_expandfunc('HideSWAP', 'HideMEM')) )
                 $tab_if    .click( B(@click_tabfunc('TabIF', 'HideIF')) )
@@ -541,7 +551,7 @@
                 # $el is $('.if-tab')
                 # $tabel is $('.if-switch')
 
-                curtabid = A[T] # MUST be an int
+                curtabid = +A[T] # MUST be an int
                 nots = $el.not('[data-tabid="'+ curtabid + '"]')
 
                 $(el).collapse('hide') for el in nots
@@ -583,7 +593,7 @@
 @ready = () ->
         (new Headroom(document.querySelector('nav'), {
                 offset: 71 - 51
-                # "relative"" padding-top of the toprow
+                # "relative" padding-top of the toprow
                 # 71 is the absolute padding-top of the toprow
                 # 51 is the height of the nav (50 +1px bottom border)
         })).init()
