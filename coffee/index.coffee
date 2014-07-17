@@ -167,10 +167,10 @@
         reduce: (data) ->
                 if data?.Client?
                         S = {}
-                        S.Not  = data.Client[@props.key]   if data.Client[@props.key]   isnt undefined
-                        S.Hide = data.Client[@props.Khide] if data.Client[@props.Khide] isnt undefined
-                        S.Send = data.Client[@props.Ksend] if data.Client[@props.Ksend] isnt undefined
-                        S.Text = data.Client[@props.Ktext] if data.Client[@props.Ktext] isnt undefined
+                        S.Hide = data.Client[@props.Khide] if                   data.Client[@props.Khide] isnt undefined # Khide is a required prop
+                        S.Able = data.Client[@props.Kable] if @props.Kable? and data.Client[@props.Kable] isnt undefined
+                        S.Send = data.Client[@props.Ksend] if @props.Ksend? and data.Client[@props.Ksend] isnt undefined
+                        S.Text = data.Client[@props.Ktext] if @props.Ktext? and data.Client[@props.Ktext] isnt undefined
                         return S
         getInitialState: () -> @reduce(Data) # a global Data
         componentDidMount: () ->
@@ -181,45 +181,23 @@
         render: () ->
                 if @$button_el?
                         # the first time `render' called before componentDidMount, so @$button_el may be undefined/null
-                        Not = @state.Not
-                        Not = !Not if not (@props.key.indexOf('not') > -1)
-                        @$button_el.prop('disabled', Not)
-                        @$button_el[if Not         then 'addClass' else 'removeClass']('disabled')
-                        @$button_el[if @state.Send then 'addClass' else 'removeClass']('active') if @props.Ksend?
-                        @$button_el.text(@state.Text) if @props.Ktext?
+                        if @props.Kable
+                                able = @state.Able
+                                able = !able if not (@props.Kable.indexOf('not') > -1) # That's a hack
+                                @$button_el.prop('disabled', able)
+                                @$button_el[if able then 'addClass' else 'removeClass']('disabled')
+                         @$button_el[if @state.Send then 'addClass' else 'removeClass']('active') if @props.Ksend?
+                         @$button_el.text(@state.Text) if @props.Ktext?
                 return React.DOM.span()
         click: (e) ->
                 S = {}
-                S[@props.sigkey]  =  @props.sigval if @props.sigkey?
-                S[@props.Khide] = !@state.Hide if @state.Hide? and @state.Hide
-                S[@props.Ksend] = !@state.Send if @state.Send?
+                S[@props.Khide] = !@state.Hide if @state.Hide?  and @state.Hide # if the panel was hidden
+                S[@props.Ksend] = !@state.Send if @props.Ksend? and @state.Send? # Q is a @state.Send? check excessive?
+                S[@props.Ksig]  =  @props.Vsig if @props.Ksig?
                 websocket.sendClient(S)
                 e.stopPropagation() # preserves checkbox/radio
                 e.preventDefault()  # checked/selected state
                 return undefined
-
-@ShowSwapClass = React.createClass
-        getInitialState: () -> ShowSwapClass.reduce(Data) # a global Data
-        statics:
-                reduce: (data) ->
-                        if data?.Client?
-                                S = {}
-                                S.HideSWAP = data.Client.HideSWAP if data.Client.HideSWAP isnt undefined
-                                S.HideMEM  = data.Client.HideMEM  if data.Client.HideMEM  isnt undefined
-                                return S
-                component: (opt) -> React.renderComponent(ShowSwapClass(opt), opt.$el.get(0))
-
-        componentDidMount: () -> @props.$el.click(@click)
-        render: () ->
-                @props.$el[if !@state.HideSWAP then 'addClass' else 'removeClass']('active')
-                return React.DOM.span(null, @props.$el.text())
-        click: (e) ->
-                S = {HideSWAP: !@state.HideSWAP}
-                S.HideMEM = false if @state.HideMEM
-                websocket.sendClient(S)
-                e.stopPropagation() # preserves checkbox/radio
-                e.preventDefault()  # checked/selected state
-                undefined
 
 @NewTextCLASS = (reduce) -> React.createClass
         newstate: (data) ->
@@ -236,8 +214,6 @@
 
 @update = (currentClient, model) ->
         return if (42 for param in location.search.substr(1).split('&') when param.split('=')[0] == 'still').length
-
-        showswap  = ShowSwapClass.component({$el: $('label[href="#showswap"]')})
 
         hideconfigmem = HideClass.component({key: 'HideconfigMEM', $collapse_el: $('#memconfig'), $parent_el: $('header a[href="#mem"]'), reverseActive: true})
         hideconfigif  = HideClass.component({key: 'HideconfigIF',  $collapse_el: $('#ifconfig'),  $parent_el: $('header a[href="#if"]'),  reverseActive: true})
@@ -260,12 +236,14 @@
         dftitle  = React.renderComponent(NewTextCLASS((data) -> data?.Client?.TabTitleDF)(), $('header a[href="#df"]').get(0))
 
         psplus   = React.renderComponent(NewTextCLASS((data) -> data?.Client?.PSplusText)(), $('label.more[href="#psmore"]').get(0))
-        psmore   = ButtonClass.component({sigkey: 'MorePsignal', sigval: true,  Khide: 'HidePS', key: 'PSnotExpandable',  $parent_el: $('label.more[href="#psmore"]')})
-        psless   = ButtonClass.component({sigkey: 'MorePsignal', sigval: false, Khide: 'HidePS', key: 'PSnotDecreasable', $parent_el: $('label.less[href="#psless"]')})
+        psmore   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: true,  Khide: 'HidePS', Kable: 'PSnotExpandable',  $parent_el: $('label.more[href="#psmore"]')})
+        psless   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: false, Khide: 'HidePS', Kable: 'PSnotDecreasable', $parent_el: $('label.less[href="#psless"]')})
 
-        expandif = ButtonClass.component({Khide: 'HideIF',  Ksend: 'ExpandIF',  Ktext: 'ExpandtextIF',  key: 'ExpandableIF',  $parent_el: $('label[href="#if"]')})
-        expandcpu= ButtonClass.component({Khide: 'HideCPU', Ksend: 'ExpandCPU', Ktext: 'ExpandtextCPU', key: 'ExpandableCPU', $parent_el: $('label[href="#cpu"]')})
-        expanddf = ButtonClass.component({Khide: 'HideDF',  Ksend: 'ExpandDF',  Ktext: 'ExpandtextDF',  key: 'ExpandableDF',  $parent_el: $('label[href="#df"]')})
+        hideswap = ButtonClass.component({Khide: 'HideMEM', Ksend: 'HideSWAP', $parent_el: $('label[href="#hideswap"]')})
+
+        expandif = ButtonClass.component({Khide: 'HideIF',  Ksend: 'ExpandIF',  Ktext: 'ExpandtextIF',  Kable: 'ExpandableIF',  $parent_el: $('label[href="#if"]')})
+        expandcpu= ButtonClass.component({Khide: 'HideCPU', Ksend: 'ExpandCPU', Ktext: 'ExpandtextCPU', Kable: 'ExpandableCPU', $parent_el: $('label[href="#cpu"]')})
+        expanddf = ButtonClass.component({Khide: 'HideDF',  Ksend: 'ExpandDF',  Ktext: 'ExpandtextDF',  Kalbe: 'ExpandableDF',  $parent_el: $('label[href="#df"]')})
 
         memtable  = React.renderComponent(MEMtableCLASS(),  document.getElementById('mem'       +'-'+ 'table'))
         pstable   = React.renderComponent(PStableCLASS(),   document.getElementById('ps'        +'-'+ 'table'))
@@ -293,8 +271,6 @@
                 setState(dfbytes,  {DFbytes:  data.DFbytes,  DFlinks: data.DFlinks})
                 setState(dfinodes, {DFinodes: data.DFinodes, DFlinks: data.DFlinks})
 
-                setState(showswap,      ShowSwapClass.reduce(data))
-
                 setState(hideconfigmem, hideconfigmem.reduce(data))
                 setState(hideconfigif,  hideconfigif .reduce(data))
                 setState(hideconfigcpu, hideconfigcpu.reduce(data))
@@ -318,6 +294,9 @@
                 setState(psplus,    psplus  .newstate(data))
                 setState(psmore,    psmore  .reduce(data))
                 setState(psless,    psless  .reduce(data))
+
+                setState(hideswap,  hideswap.reduce(data))
+
                 setState(expandif,  expandif.reduce(data))
                 setState(expandcpu, expandcpu.reduce(data))
                 setState(expanddf,  expanddf.reduce(data))

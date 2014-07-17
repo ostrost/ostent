@@ -341,16 +341,16 @@
       var S;
       if ((data != null ? data.Client : void 0) != null) {
         S = {};
-        if (data.Client[this.props.key] !== void 0) {
-          S.Not = data.Client[this.props.key];
-        }
         if (data.Client[this.props.Khide] !== void 0) {
           S.Hide = data.Client[this.props.Khide];
         }
-        if (data.Client[this.props.Ksend] !== void 0) {
+        if ((this.props.Kable != null) && data.Client[this.props.Kable] !== void 0) {
+          S.Able = data.Client[this.props.Kable];
+        }
+        if ((this.props.Ksend != null) && data.Client[this.props.Ksend] !== void 0) {
           S.Send = data.Client[this.props.Ksend];
         }
-        if (data.Client[this.props.Ktext] !== void 0) {
+        if ((this.props.Ktext != null) && data.Client[this.props.Ktext] !== void 0) {
           S.Text = data.Client[this.props.Ktext];
         }
         return S;
@@ -364,14 +364,16 @@
       return this.$button_el.click(this.click);
     },
     render: function() {
-      var Not;
+      var able;
       if (this.$button_el != null) {
-        Not = this.state.Not;
-        if (!(this.props.key.indexOf('not') > -1)) {
-          Not = !Not;
+        if (this.props.Kable) {
+          able = this.state.Able;
+          if (!(this.props.Kable.indexOf('not') > -1)) {
+            able = !able;
+          }
+          this.$button_el.prop('disabled', able);
+          this.$button_el[able ? 'addClass' : 'removeClass']('disabled');
         }
-        this.$button_el.prop('disabled', Not);
-        this.$button_el[Not ? 'addClass' : 'removeClass']('disabled');
         if (this.props.Ksend != null) {
           this.$button_el[this.state.Send ? 'addClass' : 'removeClass']('active');
         }
@@ -384,58 +386,14 @@
     click: function(e) {
       var S;
       S = {};
-      if (this.props.sigkey != null) {
-        S[this.props.sigkey] = this.props.sigval;
-      }
       if ((this.state.Hide != null) && this.state.Hide) {
         S[this.props.Khide] = !this.state.Hide;
       }
-      if (this.state.Send != null) {
+      if ((this.props.Ksend != null) && (this.state.Send != null)) {
         S[this.props.Ksend] = !this.state.Send;
       }
-      websocket.sendClient(S);
-      e.stopPropagation();
-      e.preventDefault();
-      return void 0;
-    }
-  });
-
-  this.ShowSwapClass = React.createClass({
-    getInitialState: function() {
-      return ShowSwapClass.reduce(Data);
-    },
-    statics: {
-      reduce: function(data) {
-        var S;
-        if ((data != null ? data.Client : void 0) != null) {
-          S = {};
-          if (data.Client.HideSWAP !== void 0) {
-            S.HideSWAP = data.Client.HideSWAP;
-          }
-          if (data.Client.HideMEM !== void 0) {
-            S.HideMEM = data.Client.HideMEM;
-          }
-          return S;
-        }
-      },
-      component: function(opt) {
-        return React.renderComponent(ShowSwapClass(opt), opt.$el.get(0));
-      }
-    },
-    componentDidMount: function() {
-      return this.props.$el.click(this.click);
-    },
-    render: function() {
-      this.props.$el[!this.state.HideSWAP ? 'addClass' : 'removeClass']('active');
-      return React.DOM.span(null, this.props.$el.text());
-    },
-    click: function(e) {
-      var S;
-      S = {
-        HideSWAP: !this.state.HideSWAP
-      };
-      if (this.state.HideMEM) {
-        S.HideMEM = false;
+      if (this.props.Ksig != null) {
+        S[this.props.Ksig] = this.props.Vsig;
       }
       websocket.sendClient(S);
       e.stopPropagation();
@@ -477,7 +435,7 @@
   };
 
   this.update = function(currentClient, model) {
-    var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hidemem, hideps, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psless, psmore, psplus, pstable, showswap, uptime, vgtable;
+    var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hidemem, hideps, hideswap, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psless, psmore, psplus, pstable, uptime, vgtable;
     if (((function() {
       var _i, _len, _ref, _results;
       _ref = location.search.substr(1).split('&');
@@ -492,9 +450,6 @@
     })()).length) {
       return;
     }
-    showswap = ShowSwapClass.component({
-      $el: $('label[href="#showswap"]')
-    });
     hideconfigmem = HideClass.component({
       key: 'HideconfigMEM',
       $collapse_el: $('#memconfig'),
@@ -580,38 +535,43 @@
       return data != null ? (_ref = data.Client) != null ? _ref.PSplusText : void 0 : void 0;
     })(), $('label.more[href="#psmore"]').get(0));
     psmore = ButtonClass.component({
-      sigkey: 'MorePsignal',
-      sigval: true,
+      Ksig: 'MorePsignal',
+      Vsig: true,
       Khide: 'HidePS',
-      key: 'PSnotExpandable',
+      Kable: 'PSnotExpandable',
       $parent_el: $('label.more[href="#psmore"]')
     });
     psless = ButtonClass.component({
-      sigkey: 'MorePsignal',
-      sigval: false,
+      Ksig: 'MorePsignal',
+      Vsig: false,
       Khide: 'HidePS',
-      key: 'PSnotDecreasable',
+      Kable: 'PSnotDecreasable',
       $parent_el: $('label.less[href="#psless"]')
+    });
+    hideswap = ButtonClass.component({
+      Khide: 'HideMEM',
+      Ksend: 'HideSWAP',
+      $parent_el: $('label[href="#hideswap"]')
     });
     expandif = ButtonClass.component({
       Khide: 'HideIF',
       Ksend: 'ExpandIF',
       Ktext: 'ExpandtextIF',
-      key: 'ExpandableIF',
+      Kable: 'ExpandableIF',
       $parent_el: $('label[href="#if"]')
     });
     expandcpu = ButtonClass.component({
       Khide: 'HideCPU',
       Ksend: 'ExpandCPU',
       Ktext: 'ExpandtextCPU',
-      key: 'ExpandableCPU',
+      Kable: 'ExpandableCPU',
       $parent_el: $('label[href="#cpu"]')
     });
     expanddf = ButtonClass.component({
       Khide: 'HideDF',
       Ksend: 'ExpandDF',
       Ktext: 'ExpandtextDF',
-      key: 'ExpandableDF',
+      Kalbe: 'ExpandableDF',
       $parent_el: $('label[href="#df"]')
     });
     memtable = React.renderComponent(MEMtableCLASS(), document.getElementById('mem' + '-' + 'table'));
@@ -653,7 +613,6 @@
         DFinodes: data.DFinodes,
         DFlinks: data.DFlinks
       });
-      setState(showswap, ShowSwapClass.reduce(data));
       setState(hideconfigmem, hideconfigmem.reduce(data));
       setState(hideconfigif, hideconfigif.reduce(data));
       setState(hideconfigcpu, hideconfigcpu.reduce(data));
@@ -673,6 +632,7 @@
       setState(psplus, psplus.newstate(data));
       setState(psmore, psmore.reduce(data));
       setState(psless, psless.reduce(data));
+      setState(hideswap, hideswap.reduce(data));
       setState(expandif, expandif.reduce(data));
       setState(expandcpu, expandcpu.reduce(data));
       setState(expanddf, expanddf.reduce(data));

@@ -91,10 +91,10 @@ html
                       label.btn.btn-default.hiding
                         input[type="checkbox"]
                         | Hidden
-                      label.btn.btn-default[href="#showswap"]
+                      label.btn.btn-default[href="#hideswap"]
                         [class="active"] ? (json(Data.Client.HideSWAP) == "false")
                         input[type="checkbox"]
-                        | Show swap
+                        | Hide swap
 
                   div.form-group-padded
                     +refresh_input(Data.PeriodDuration, Data.Client.RefreshMEM)
