@@ -16,6 +16,7 @@ import (
 	"net/url"
 	"net/http"
 	"html/template"
+	"path/filepath"
 	"container/ring"
 
 	"github.com/rzab/gosigar"
@@ -873,12 +874,18 @@ func init() {
 	develreact := false
 
 	for _, assetname := range assets.AssetNames() {
-		if !strings.HasSuffix(assetname, ".js") {
+		dotjs := ".js"
+		if !strings.HasSuffix(assetname, dotjs) {
 			continue
 		}
 		scriptsrc := "/"+assetname
 		if develreact && strings.Contains(scriptsrc, "react") {
-			scriptsrc = "//fb.me/" + map[bool]string{true:"react-with-addons-0.10.0.js", false:"react-0.10.0.js"}[true]
+			ver  := filepath.Base(filepath.Dir(scriptsrc))
+			base := filepath.Base(scriptsrc)
+
+			cutlen := len(dotjs) // asserted strings.HasSuffix(base, dotjs)
+			cutlen += map[bool]int{true:len(".min")}[strings.HasSuffix(base[:len(base) - cutlen], ".min")]
+			scriptsrc = fmt.Sprintf("//fb.me/%s-%s%s", base[:len(base) - cutlen], ver, dotjs)
 		}
 		scriptsassets.assetnames = append(scriptsassets.assetnames, scriptsrc)
 	}
