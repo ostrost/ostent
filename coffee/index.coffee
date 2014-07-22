@@ -117,36 +117,23 @@
                         rows = (vagrant_rows(Data, $machine) for $machine in Data?.VagrantMachines?.List ? [])
                 vagrant_table(Data, rows)
 
+@addNoscript = ($) -> $.append('<noscript />').find('noscript').get(0)
+
 @HideClass = React.createClass
-        statics:
-                dummy: (sel) ->
-                      # sel = $(sel) if typeof(sel) == 'string'
-                        sel.append('<span class="dummy display-none" />').find('.dummy').get(0)
-                component: (opt) ->
-                        con = opt.$parent_el; delete opt.$parent_el # the container
-                      # con = $(con) if typeof(con) == 'string'
-                        React.renderComponent(HideClass(opt), HideClass.dummy(con))
+        statics: component: (opt) -> React.renderComponent(HideClass(opt), addNoscript(opt.$button_el))
 
         reduce: (data) ->
                 if data?.Client?
                         value = data.Client[@props.key]
                         return {Hide: value} if value isnt undefined
         getInitialState: () -> @reduce(Data) # a global Data
-        componentWillUnmount: () ->
-                console.log('componentWillUnmount')
-                # TODO if necessary: @$button_el = null
-        componentDidMount: () ->
-                @$button_el = $(@getDOMNode()).
-                        parent(). # react node
-                        parent()  # non-dummy level
-                @$button_el.click(@click)
+        componentDidMount: () -> @props.$button_el.click(@click)
         render: () ->
                 @props.$collapse_el.collapse(if @state.Hide then 'hide' else 'show')
                 buttonactive =  @state.Hide
                 buttonactive = !@state.Hide if @props.reverseActive? and @props.reverseActive
-                @$button_el[if buttonactive then 'addClass' else 'removeClass']('active') if @$button_el?
-                # the first time `render' called before componentDidMount, so @$button_el may be undefined/null
-                return React.DOM.span() # (null, null)
+                @props.$button_el[if buttonactive then 'addClass' else 'removeClass']('active')
+                return null
         click: (e) ->
                 (S = {})[@props.key] = !@state.Hide
                 websocket.sendClient(S)
@@ -155,14 +142,7 @@
                 undefined
 
 @ButtonClass = React.createClass
-        statics:
-                dummy: (sel) ->
-                      # sel = $(sel) if typeof(sel) == 'string'
-                        sel.append('<span class="dummy display-none" />').find('.dummy').get(0)
-                component: (opt) ->
-                        con = opt.$parent_el; delete opt.$parent_el # the container
-                      # con = $(con) if typeof(con) == 'string'
-                        React.renderComponent(ButtonClass(opt), ButtonClass.dummy(con))
+        statics: component: (opt) -> React.renderComponent(ButtonClass(opt), addNoscript(opt.$button_el))
 
         reduce: (data) ->
                 if data?.Client?
@@ -173,22 +153,16 @@
                         S.Text = data.Client[@props.Ktext] if @props.Ktext? and data.Client[@props.Ktext] isnt undefined
                         return S
         getInitialState: () -> @reduce(Data) # a global Data
-        componentDidMount: () ->
-                @$button_el = $(@getDOMNode()).
-                        parent(). # react node
-                        parent()  # non-dummy level
-                @$button_el.click(@click)
+        componentDidMount: () -> @props.$button_el.click(@click)
         render: () ->
-                if @$button_el?
-                        # the first time `render' called before componentDidMount, so @$button_el may be undefined/null
-                        if @props.Kable
-                                able = @state.Able
-                                able = !able if not (@props.Kable.indexOf('not') > -1) # That's a hack
-                                @$button_el.prop('disabled', able)
-                                @$button_el[if able then 'addClass' else 'removeClass']('disabled')
-                         @$button_el[if @state.Send then 'addClass' else 'removeClass']('active') if @props.Ksend?
-                         @$button_el.text(@state.Text) if @props.Ktext?
-                return React.DOM.span()
+                if @props.Kable
+                        able = @state.Able
+                        able = !able if not (@props.Kable.indexOf('not') > -1) # That's a hack
+                        @props.$button_el.prop('disabled', able)
+                        @props.$button_el[if able then 'addClass' else 'removeClass']('disabled')
+                @props.$button_el[if @state.Send then 'addClass' else 'removeClass']('active') if @props.Ksend?
+                @props.$button_el.text(@state.Text) if @props.Ktext?
+                return null
         click: (e) ->
                 S = {}
                 S[@props.Khide] = !@state.Hide if @state.Hide?  and @state.Hide # if the panel was hidden
@@ -215,17 +189,17 @@
 @update = (currentClient, model) ->
         return if (42 for param in location.search.substr(1).split('&') when param.split('=')[0] == 'still').length
 
-        hideconfigmem = HideClass.component({key: 'HideconfigMEM', $collapse_el: $('#memconfig'), $parent_el: $('header a[href="#mem"]'), reverseActive: true})
-        hideconfigif  = HideClass.component({key: 'HideconfigIF',  $collapse_el: $('#ifconfig'),  $parent_el: $('header a[href="#if"]'),  reverseActive: true})
-        hideconfigcpu = HideClass.component({key: 'HideconfigCPU', $collapse_el: $('#cpuconfig'), $parent_el: $('header a[href="#cpu"]'), reverseActive: true})
-        hideconfigdf  = HideClass.component({key: 'HideconfigDF',  $collapse_el: $('#dfconfig'),  $parent_el: $('header a[href="#df"]'),  reverseActive: true})
-        hideconfigps  = HideClass.component({key: 'HideconfigPS',  $collapse_el: $('#psconfig'),  $parent_el: $('header a[href="#ps"]'),  reverseActive: true})
-        hideconfigvg  = HideClass.component({key: 'HideconfigVG',  $collapse_el: $('#vgconfig'),  $parent_el: $('header a[href="#vg"]'),  reverseActive: true})
+        hideconfigmem = HideClass.component({key: 'HideconfigMEM', $collapse_el: $('#memconfig'), $button_el: $('header a[href="#mem"]'), reverseActive: true})
+        hideconfigif  = HideClass.component({key: 'HideconfigIF',  $collapse_el: $('#ifconfig'),  $button_el: $('header a[href="#if"]'),  reverseActive: true})
+        hideconfigcpu = HideClass.component({key: 'HideconfigCPU', $collapse_el: $('#cpuconfig'), $button_el: $('header a[href="#cpu"]'), reverseActive: true})
+        hideconfigdf  = HideClass.component({key: 'HideconfigDF',  $collapse_el: $('#dfconfig'),  $button_el: $('header a[href="#df"]'),  reverseActive: true})
+        hideconfigps  = HideClass.component({key: 'HideconfigPS',  $collapse_el: $('#psconfig'),  $button_el: $('header a[href="#ps"]'),  reverseActive: true})
+        hideconfigvg  = HideClass.component({key: 'HideconfigVG',  $collapse_el: $('#vgconfig'),  $button_el: $('header a[href="#vg"]'),  reverseActive: true})
 
-        hidemem = HideClass.component({key: 'HideMEM', $collapse_el: $('#mem'), $parent_el: $('#memconfig').find('.hiding')})
-        hidecpu = HideClass.component({key: 'HideCPU', $collapse_el: $('#cpu'), $parent_el: $('#cpuconfig').find('.hiding')})
-        hideps  = HideClass.component({key: 'HidePS',  $collapse_el: $('#ps'),  $parent_el: $('#psconfig') .find('.hiding')})
-        hidevg  = HideClass.component({key: 'HideVG',  $collapse_el: $('#vg'),  $parent_el: $('#vgconfig') .find('.hiding')})
+        hidemem = HideClass.component({key: 'HideMEM', $collapse_el: $('#mem'), $button_el: $('#memconfig').find('.hiding')})
+        hidecpu = HideClass.component({key: 'HideCPU', $collapse_el: $('#cpu'), $button_el: $('#cpuconfig').find('.hiding')})
+        hideps  = HideClass.component({key: 'HidePS',  $collapse_el: $('#ps'),  $button_el: $('#psconfig') .find('.hiding')})
+        hidevg  = HideClass.component({key: 'HideVG',  $collapse_el: $('#vg'),  $button_el: $('#vgconfig') .find('.hiding')})
 
         ip       = React.renderComponent(NewTextCLASS((data) -> data?.Generic?.IP       )(), $('#generic-ip'      )   .get(0))
         hostname = React.renderComponent(NewTextCLASS((data) -> data?.Generic?.Hostname )(), $('#generic-hostname')   .get(0))
@@ -236,14 +210,14 @@
         dftitle  = React.renderComponent(NewTextCLASS((data) -> data?.Client?.TabTitleDF)(), $('header a[href="#df"]').get(0))
 
         psplus   = React.renderComponent(NewTextCLASS((data) -> data?.Client?.PSplusText)(), $('label.more[href="#psmore"]').get(0))
-        psmore   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: true,  Khide: 'HidePS', Kable: 'PSnotExpandable',  $parent_el: $('label.more[href="#psmore"]')})
-        psless   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: false, Khide: 'HidePS', Kable: 'PSnotDecreasable', $parent_el: $('label.less[href="#psless"]')})
+        psmore   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: true,  Khide: 'HidePS', Kable: 'PSnotExpandable',  $button_el: $('label.more[href="#psmore"]')})
+        psless   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: false, Khide: 'HidePS', Kable: 'PSnotDecreasable', $button_el: $('label.less[href="#psless"]')})
 
-        hideswap = ButtonClass.component({Khide: 'HideMEM', Ksend: 'HideSWAP', $parent_el: $('label[href="#hideswap"]')})
+        hideswap = ButtonClass.component({Khide: 'HideMEM', Ksend: 'HideSWAP', $button_el: $('label[href="#hideswap"]')})
 
-        expandif = ButtonClass.component({Khide: 'HideIF',  Ksend: 'ExpandIF',  Ktext: 'ExpandtextIF',  Kable: 'ExpandableIF',  $parent_el: $('label[href="#if"]')})
-        expandcpu= ButtonClass.component({Khide: 'HideCPU', Ksend: 'ExpandCPU', Ktext: 'ExpandtextCPU', Kable: 'ExpandableCPU', $parent_el: $('label[href="#cpu"]')})
-        expanddf = ButtonClass.component({Khide: 'HideDF',  Ksend: 'ExpandDF',  Ktext: 'ExpandtextDF',  Kalbe: 'ExpandableDF',  $parent_el: $('label[href="#df"]')})
+        expandif = ButtonClass.component({Khide: 'HideIF',  Ksend: 'ExpandIF',  Ktext: 'ExpandtextIF',  Kable: 'ExpandableIF',  $button_el: $('label[href="#if"]')})
+        expandcpu= ButtonClass.component({Khide: 'HideCPU', Ksend: 'ExpandCPU', Ktext: 'ExpandtextCPU', Kable: 'ExpandableCPU', $button_el: $('label[href="#cpu"]')})
+        expanddf = ButtonClass.component({Khide: 'HideDF',  Ksend: 'ExpandDF',  Ktext: 'ExpandtextDF',  Kalbe: 'ExpandableDF',  $button_el: $('label[href="#df"]')})
 
         memtable  = React.renderComponent(MEMtableCLASS(),  document.getElementById('mem'       +'-'+ 'table'))
         pstable   = React.renderComponent(PStableCLASS(),   document.getElementById('ps'        +'-'+ 'table'))

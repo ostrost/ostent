@@ -270,16 +270,14 @@
     }
   });
 
+  this.addNoscript = function($) {
+    return $.append('<noscript />').find('noscript').get(0);
+  };
+
   this.HideClass = React.createClass({
     statics: {
-      dummy: function(sel) {
-        return sel.append('<span class="dummy display-none" />').find('.dummy').get(0);
-      },
       component: function(opt) {
-        var con;
-        con = opt.$parent_el;
-        delete opt.$parent_el;
-        return React.renderComponent(HideClass(opt), HideClass.dummy(con));
+        return React.renderComponent(HideClass(opt), addNoscript(opt.$button_el));
       }
     },
     reduce: function(data) {
@@ -296,12 +294,8 @@
     getInitialState: function() {
       return this.reduce(Data);
     },
-    componentWillUnmount: function() {
-      return console.log('componentWillUnmount');
-    },
     componentDidMount: function() {
-      this.$button_el = $(this.getDOMNode()).parent().parent();
-      return this.$button_el.click(this.click);
+      return this.props.$button_el.click(this.click);
     },
     render: function() {
       var buttonactive;
@@ -310,10 +304,8 @@
       if ((this.props.reverseActive != null) && this.props.reverseActive) {
         buttonactive = !this.state.Hide;
       }
-      if (this.$button_el != null) {
-        this.$button_el[buttonactive ? 'addClass' : 'removeClass']('active');
-      }
-      return React.DOM.span();
+      this.props.$button_el[buttonactive ? 'addClass' : 'removeClass']('active');
+      return null;
     },
     click: function(e) {
       var S;
@@ -327,14 +319,8 @@
 
   this.ButtonClass = React.createClass({
     statics: {
-      dummy: function(sel) {
-        return sel.append('<span class="dummy display-none" />').find('.dummy').get(0);
-      },
       component: function(opt) {
-        var con;
-        con = opt.$parent_el;
-        delete opt.$parent_el;
-        return React.renderComponent(ButtonClass(opt), ButtonClass.dummy(con));
+        return React.renderComponent(ButtonClass(opt), addNoscript(opt.$button_el));
       }
     },
     reduce: function(data) {
@@ -360,28 +346,25 @@
       return this.reduce(Data);
     },
     componentDidMount: function() {
-      this.$button_el = $(this.getDOMNode()).parent().parent();
-      return this.$button_el.click(this.click);
+      return this.props.$button_el.click(this.click);
     },
     render: function() {
       var able;
-      if (this.$button_el != null) {
-        if (this.props.Kable) {
-          able = this.state.Able;
-          if (!(this.props.Kable.indexOf('not') > -1)) {
-            able = !able;
-          }
-          this.$button_el.prop('disabled', able);
-          this.$button_el[able ? 'addClass' : 'removeClass']('disabled');
+      if (this.props.Kable) {
+        able = this.state.Able;
+        if (!(this.props.Kable.indexOf('not') > -1)) {
+          able = !able;
         }
-        if (this.props.Ksend != null) {
-          this.$button_el[this.state.Send ? 'addClass' : 'removeClass']('active');
-        }
-        if (this.props.Ktext != null) {
-          this.$button_el.text(this.state.Text);
-        }
+        this.props.$button_el.prop('disabled', able);
+        this.props.$button_el[able ? 'addClass' : 'removeClass']('disabled');
       }
-      return React.DOM.span();
+      if (this.props.Ksend != null) {
+        this.props.$button_el[this.state.Send ? 'addClass' : 'removeClass']('active');
+      }
+      if (this.props.Ktext != null) {
+        this.props.$button_el.text(this.state.Text);
+      }
+      return null;
     },
     click: function(e) {
       var S;
@@ -453,58 +436,58 @@
     hideconfigmem = HideClass.component({
       key: 'HideconfigMEM',
       $collapse_el: $('#memconfig'),
-      $parent_el: $('header a[href="#mem"]'),
+      $button_el: $('header a[href="#mem"]'),
       reverseActive: true
     });
     hideconfigif = HideClass.component({
       key: 'HideconfigIF',
       $collapse_el: $('#ifconfig'),
-      $parent_el: $('header a[href="#if"]'),
+      $button_el: $('header a[href="#if"]'),
       reverseActive: true
     });
     hideconfigcpu = HideClass.component({
       key: 'HideconfigCPU',
       $collapse_el: $('#cpuconfig'),
-      $parent_el: $('header a[href="#cpu"]'),
+      $button_el: $('header a[href="#cpu"]'),
       reverseActive: true
     });
     hideconfigdf = HideClass.component({
       key: 'HideconfigDF',
       $collapse_el: $('#dfconfig'),
-      $parent_el: $('header a[href="#df"]'),
+      $button_el: $('header a[href="#df"]'),
       reverseActive: true
     });
     hideconfigps = HideClass.component({
       key: 'HideconfigPS',
       $collapse_el: $('#psconfig'),
-      $parent_el: $('header a[href="#ps"]'),
+      $button_el: $('header a[href="#ps"]'),
       reverseActive: true
     });
     hideconfigvg = HideClass.component({
       key: 'HideconfigVG',
       $collapse_el: $('#vgconfig'),
-      $parent_el: $('header a[href="#vg"]'),
+      $button_el: $('header a[href="#vg"]'),
       reverseActive: true
     });
     hidemem = HideClass.component({
       key: 'HideMEM',
       $collapse_el: $('#mem'),
-      $parent_el: $('#memconfig').find('.hiding')
+      $button_el: $('#memconfig').find('.hiding')
     });
     hidecpu = HideClass.component({
       key: 'HideCPU',
       $collapse_el: $('#cpu'),
-      $parent_el: $('#cpuconfig').find('.hiding')
+      $button_el: $('#cpuconfig').find('.hiding')
     });
     hideps = HideClass.component({
       key: 'HidePS',
       $collapse_el: $('#ps'),
-      $parent_el: $('#psconfig').find('.hiding')
+      $button_el: $('#psconfig').find('.hiding')
     });
     hidevg = HideClass.component({
       key: 'HideVG',
       $collapse_el: $('#vg'),
-      $parent_el: $('#vgconfig').find('.hiding')
+      $button_el: $('#vgconfig').find('.hiding')
     });
     ip = React.renderComponent(NewTextCLASS(function(data) {
       var _ref;
@@ -539,40 +522,40 @@
       Vsig: true,
       Khide: 'HidePS',
       Kable: 'PSnotExpandable',
-      $parent_el: $('label.more[href="#psmore"]')
+      $button_el: $('label.more[href="#psmore"]')
     });
     psless = ButtonClass.component({
       Ksig: 'MorePsignal',
       Vsig: false,
       Khide: 'HidePS',
       Kable: 'PSnotDecreasable',
-      $parent_el: $('label.less[href="#psless"]')
+      $button_el: $('label.less[href="#psless"]')
     });
     hideswap = ButtonClass.component({
       Khide: 'HideMEM',
       Ksend: 'HideSWAP',
-      $parent_el: $('label[href="#hideswap"]')
+      $button_el: $('label[href="#hideswap"]')
     });
     expandif = ButtonClass.component({
       Khide: 'HideIF',
       Ksend: 'ExpandIF',
       Ktext: 'ExpandtextIF',
       Kable: 'ExpandableIF',
-      $parent_el: $('label[href="#if"]')
+      $button_el: $('label[href="#if"]')
     });
     expandcpu = ButtonClass.component({
       Khide: 'HideCPU',
       Ksend: 'ExpandCPU',
       Ktext: 'ExpandtextCPU',
       Kable: 'ExpandableCPU',
-      $parent_el: $('label[href="#cpu"]')
+      $button_el: $('label[href="#cpu"]')
     });
     expanddf = ButtonClass.component({
       Khide: 'HideDF',
       Ksend: 'ExpandDF',
       Ktext: 'ExpandtextDF',
       Kalbe: 'ExpandableDF',
-      $parent_el: $('label[href="#df"]')
+      $button_el: $('label[href="#df"]')
     });
     memtable = React.renderComponent(MEMtableCLASS(), document.getElementById('mem' + '-' + 'table'));
     pstable = React.renderComponent(PStableCLASS(), document.getElementById('ps' + '-' + 'table'));
