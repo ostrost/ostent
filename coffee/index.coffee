@@ -4,7 +4,7 @@
         sendSearch = (search) -> sendJSON({Search: search})
         sendClient = (client) ->
                 console.log(JSON.stringify(client), 'sendClient')
-                sendJSON({Client: client})
+                return sendJSON({Client: client})
         sendJSON = (obj) ->
                 # 0 conn.CONNECTING
                 # 1 conn.OPEN
@@ -18,12 +18,9 @@
                    conn.readyState != conn.OPEN
                         console.log('Not connected, cannot send', obj)
                         return
-                conn.send(JSON.stringify(obj))
+                return conn.send(JSON.stringify(obj))
         init = () ->
-                hostport = window.location.hostname + (
-                        if location.port
-                                ':' + location.port
-                        else '')
+                hostport = window.location.hostname + (if location.port then ':' + location.port else '')
                 conn = new WebSocket('ws://' + hostport + '/ws')
                 conn.onopen = () ->
                         sendSearch(location.search)
@@ -45,7 +42,7 @@
                 $(statesel).click(() ->
                         history.pushState({path: @path}, '', @href)
                         sendSearch(@search)
-                        false)
+                        return false)
                 return
 
         init()
@@ -59,49 +56,49 @@
         getInitialState: () -> Data.IFbytes # a global Data
         render: () ->
                 Data = {IFbytes: @state}
-                ifbytes_table(Data, (ifbytes_rows(Data, $if) for $if in Data?.IFbytes?.List ? []))
+                return ifbytes_table(Data, (ifbytes_rows(Data, $if) for $if in Data?.IFbytes?.List ? []))
 
 @IFerrorsCLASS = React.createClass
         getInitialState: () -> Data.IFerrors # a global Data
         render: () ->
                 Data = {IFerrors: @state}
-                iferrors_table(Data, (iferrors_rows(Data, $if) for $if in Data?.IFerrors?.List ? []))
+                return iferrors_table(Data, (iferrors_rows(Data, $if) for $if in Data?.IFerrors?.List ? []))
 
 @IFpacketsCLASS = React.createClass
         getInitialState: () -> Data.IFpackets # a global Data
         render: () ->
                 Data = {IFpackets: @state}
-                ifpackets_table(Data, (ifpackets_rows(Data, $if) for $if in Data?.IFpackets?.List ? []))
+                return ifpackets_table(Data, (ifpackets_rows(Data, $if) for $if in Data?.IFpackets?.List ? []))
 
 @DFbytesCLASS = React.createClass
         getInitialState: () -> {DFlinks: Data.DFlinks, DFbytes: Data.DFbytes} # a global Data
         render: () ->
                 Data = @state
-                dfbytes_table(Data, (dfbytes_rows(Data, $disk) for $disk in Data?.DFbytes?.List ? []))
+                return dfbytes_table(Data, (dfbytes_rows(Data, $disk) for $disk in Data?.DFbytes?.List ? []))
 
 @DFinodesCLASS = React.createClass
         getInitialState: () -> {DFlinks: Data.DFlinks, DFinodes: Data.DFinodes} # a global Data
         render: () ->
                 Data = @state
-                dfinodes_table(Data, (dfinodes_rows(Data, $disk) for $disk in Data?.DFinodes?.List ? []))
+                return dfinodes_table(Data, (dfinodes_rows(Data, $disk) for $disk in Data?.DFinodes?.List ? []))
 
 @MEMtableCLASS = React.createClass
         getInitialState: () -> Data.MEM # a global Data
         render: () ->
                 Data = {MEM: @state}
-                mem_table(Data, (mem_rows(Data, $mem) for $mem in Data?.MEM?.List ? []))
+                return mem_table(Data, (mem_rows(Data, $mem) for $mem in Data?.MEM?.List ? []))
 
 @CPUtableCLASS = React.createClass
         getInitialState: () -> Data.CPU # a global Data
         render: () ->
                 Data = {CPU: @state}
-                cpu_table(Data, (cpu_rows(Data, $core) for $core in Data?.CPU?.List ? []))
+                return cpu_table(Data, (cpu_rows(Data, $core) for $core in Data?.CPU?.List ? []))
 
 @PStableCLASS = React.createClass
         getInitialState: () -> {PStable: Data.PStable, PSlinks: Data.PSlinks} # a global Data
         render: () ->
                 Data = @state
-                ps_table(Data, (ps_rows(Data, $proc) for $proc in Data?.PStable?.List ? []))
+                return ps_table(Data, (ps_rows(Data, $proc) for $proc in Data?.PStable?.List ? []))
 
 @VGtableCLASS = React.createClass
         getInitialState: () -> { # a global Data:
@@ -115,7 +112,7 @@
                         rows = [vagrant_error(Data)]
                 else
                         rows = (vagrant_rows(Data, $machine) for $machine in Data?.VagrantMachines?.List ? [])
-                vagrant_table(Data, rows)
+                return vagrant_table(Data, rows)
 
 @addNoscript = ($) -> $.append('<noscript />').find('noscript').get(0)
 
@@ -139,7 +136,7 @@
                 websocket.sendClient(S)
                 e.stopPropagation() # preserves checkbox/radio
                 e.preventDefault()  # checked/selected state
-                undefined
+                return undefined
 
 @ButtonClass = React.createClass
         statics: component: (opt) -> React.renderComponent(ButtonClass(opt), addNoscript(opt.$button_el))
@@ -176,15 +173,14 @@
 @NewTextCLASS = (reduce) -> React.createClass
         newstate: (data) ->
                 v = reduce(data)
-                {Text: v} if v?
+                return {Text: v} if v?
         getInitialState: () -> @newstate(Data) # a global Data
-        render: () ->
-                return React.DOM.span(null, @state.Text)
+        render: () -> React.DOM.span(null, @state.Text)
 
 @setState = (obj, data) ->
         if data?
                 delete data[key] for key of data when !data[key]?
-                obj.setState(data)
+                return obj.setState(data)
 
 @update = (currentClient, model) ->
         return if (42 for param in location.search.substr(1).split('&') when param.split('=')[0] == 'still').length
@@ -295,6 +291,7 @@
                 # update the tooltips
                 $('span .tooltipable')    .popover({trigger: 'hover focus'})
                 $('span .tooltipabledots').popover() # the clickable dots
+                return
 
         @websocket = newwebsocket(onmessage)
         return
@@ -303,7 +300,7 @@
 @Model.attributes = (data) ->
         return data.Client if !data.Generic?
         return data.Generic if !data.Client?
-        React.addons.update(data.Generic, {$merge: data.Client})
+        return React.addons.update(data.Generic, {$merge: data.Client})
 
 @View = Backbone.View.extend({
         initialize: () ->
@@ -474,13 +471,15 @@
                     V = @model.attributes[K]? and @model.attributes[K]
                     V = !V if reverse? && reverse
                     $el.prop('disabled', V)
-                    $el[if V then 'addClass' else 'removeClass']('disabled'))
+                    $el[if V then 'addClass' else 'removeClass']('disabled')
+                    return)
 
         listenactivate: (K, $el, reverse) ->
                 @listenTo(@model, 'change:'+ K, () ->
                     V = @model.attributes[K]? and @model.attributes[K]
                     V = !V if !reverse? && reverse
-                    $el[if V then 'addClass' else 'removeClass']('active'))
+                    $el[if V then 'addClass' else 'removeClass']('active')
+                    return)
 
         listenhide: (H, $el, $button_el) ->
                 # the 4th argument used to be `reverse'
@@ -489,7 +488,8 @@
                         $el.collapse(if V then 'hide' else 'show') # do what change_collapsefunc does
 
                         V = !V # if !reverse? && reverse
-                        $button_el[if V then 'addClass' else 'removeClass']('active')) # do what listenactivate does
+                        $button_el[if V then 'addClass' else 'removeClass']('active') # do what listenactivate does
+                        return)
 
         change_collapsefunc: (H, $el) -> () -> $el.collapse(if @model.attributes[H] then 'hide' else 'show')
 
@@ -514,6 +514,7 @@
                         xel = $(el)
                         tabid_attr = +xel.attr('data-tabid') # an int
                         xel[if tabid_attr == curtabid then 'addClass' else 'removeClass']('active')
+                        return
                 activeClass(el) for el in $tabel
                 return
 
@@ -524,6 +525,7 @@
                 websocket.sendClient(S)
                 e.preventDefault()
                 e.stopPropagation() # don't change checkbox/radio state
+                return undefined
 
         click_tabfunc: (T, H) -> (e) =>
                 newtabid = +$( $(e.target).attr('href') ).attr('data-tabid') # THIS. +string makes an int
@@ -533,6 +535,7 @@
                 websocket.sendClient(S)
                 e.preventDefault()
                 e.stopPropagation() # don't change checkbox/radio state
+                return undefined
 
         click_psignalfunc: (H, v) -> (e) =>
                 S = {MorePsignal: v}
@@ -541,6 +544,7 @@
                 websocket.sendClient(S)
                 e.preventDefault()
                 e.stopPropagation() # don't change checkbox/radio state
+                return undefined
 })
 
 @ready = () ->

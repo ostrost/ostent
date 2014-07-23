@@ -642,7 +642,7 @@
       $('span .tooltipable').popover({
         trigger: 'hover focus'
       });
-      return $('span .tooltipabledots').popover();
+      $('span .tooltipabledots').popover();
     };
     this.websocket = newwebsocket(onmessage);
   };
@@ -755,7 +755,7 @@
           V = !V;
         }
         $el.prop('disabled', V);
-        return $el[V ? 'addClass' : 'removeClass']('disabled');
+        $el[V ? 'addClass' : 'removeClass']('disabled');
       });
     },
     listenactivate: function(K, $el, reverse) {
@@ -765,7 +765,7 @@
         if ((reverse == null) && reverse) {
           V = !V;
         }
-        return $el[V ? 'addClass' : 'removeClass']('active');
+        $el[V ? 'addClass' : 'removeClass']('active');
       });
     },
     listenhide: function(H, $el, $button_el) {
@@ -774,7 +774,7 @@
         V = (this.model.attributes[H] != null) && this.model.attributes[H];
         $el.collapse(V ? 'hide' : 'show');
         V = !V;
-        return $button_el[V ? 'addClass' : 'removeClass']('active');
+        $button_el[V ? 'addClass' : 'removeClass']('active');
       });
     },
     change_collapsefunc: function(H, $el) {
@@ -803,7 +803,7 @@
           var tabid_attr, xel;
           xel = $(el);
           tabid_attr = +xel.attr('data-tabid');
-          return xel[tabid_attr === curtabid ? 'addClass' : 'removeClass']('active');
+          xel[tabid_attr === curtabid ? 'addClass' : 'removeClass']('active');
         };
         for (_j = 0, _len1 = $tabel.length; _j < _len1; _j++) {
           el = $tabel[_j];
@@ -822,7 +822,8 @@
           }
           websocket.sendClient(S);
           e.preventDefault();
-          return e.stopPropagation();
+          e.stopPropagation();
+          return void 0;
         };
       })(this);
     },
@@ -838,7 +839,8 @@
           }
           websocket.sendClient(S);
           e.preventDefault();
-          return e.stopPropagation();
+          e.stopPropagation();
+          return void 0;
         };
       })(this);
     },
@@ -855,7 +857,8 @@
           }
           websocket.sendClient(S);
           e.preventDefault();
-          return e.stopPropagation();
+          e.stopPropagation();
+          return void 0;
         };
       })(this);
     }
