@@ -366,13 +366,11 @@
 
               # $section_* were here
 
-              # the $config_{mem,cpu,ps,vg} were here
-                $config_if  = $('#ifconfig')
-                $config_df  = $('#dfconfig')
+              # the $config_* were here
 
               # the $hidden_{mem,cpu,ps,vg} were here
-                $hidden_if  = $config_if .find('.hiding')
-                $hidden_df  = $config_df .find('.hiding')
+              # $hidden_if  = $config_if .find('.hiding')
+              # $hidden_df  = $config_df .find('.hiding')
 
               # the 4th argument to @listenhide used to be optional and `false' by default
               # @listenhide('HideMEM', $section_mem, $hidden_mem, false)
@@ -415,7 +413,9 @@
               # @listenenable('PSnotExpandable',  $psmore)
               # @listenenable('PSnotDecreasable', $psless)
 
-              # $config_{if,df} defined previously
+              # $config_* used to be defined earlier
+                $config_if  = $('#ifconfig')
+                $config_df  = $('#dfconfig')
                 $config_mem = $('#memconfig')
                 $config_cpu = $('#cpuconfig')
                 $config_ps  = $('#psconfig')

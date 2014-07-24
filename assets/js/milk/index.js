@@ -755,15 +755,13 @@
 
   this.View = Backbone.View.extend({
     initialize: function() {
-      var $config_cpu, $config_df, $config_if, $config_mem, $config_ps, $config_vg, $hidden_df, $hidden_if, $panels_df, $panels_if, $tab_df, $tab_if, B, doexpandable, expandable_sections;
-      $config_if = $('#ifconfig');
-      $config_df = $('#dfconfig');
-      $hidden_if = $config_if.find('.hiding');
-      $hidden_df = $config_df.find('.hiding');
+      var $config_cpu, $config_df, $config_if, $config_mem, $config_ps, $config_vg, $panels_df, $panels_if, $tab_df, $tab_if, B, doexpandable, expandable_sections;
       $tab_if = $('.if-switch');
       $tab_df = $('.df-switch');
       $panels_if = $('.if-tab');
       $panels_df = $('.df-tab');
+      $config_if = $('#ifconfig');
+      $config_df = $('#dfconfig');
       $config_mem = $('#memconfig');
       $config_cpu = $('#cpuconfig');
       $config_ps = $('#psconfig');
