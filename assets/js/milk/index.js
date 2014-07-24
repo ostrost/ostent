@@ -385,6 +385,82 @@
     }
   });
 
+  this.TabsClass = React.createClass({
+    statics: {
+      component: function(opt) {
+        return React.renderComponent(TabsClass(opt), addNoscript(opt.$button_el));
+      }
+    },
+    reduce: function(data) {
+      var S;
+      if ((data != null ? data.Client : void 0) != null) {
+        S = {};
+        if (data.Client[this.props.Khide] !== void 0) {
+          S.Hide = data.Client[this.props.Khide];
+        }
+        if ((this.props.Ksend != null) && data.Client[this.props.Ksend] !== void 0) {
+          S.Send = data.Client[this.props.Ksend];
+        }
+        return S;
+      }
+    },
+    getInitialState: function() {
+      return this.reduce(Data);
+    },
+    componentDidMount: function() {
+      this.props.$button_el.click(this.clicktab);
+      return this.props.$hidebutton_el.click(this.clickhide);
+    },
+    render: function() {
+      var activeClass, curtabid, el, nots, _i, _j, _len, _len1, _ref;
+      if (this.state.Hide) {
+        this.props.$collapse_el.collapse('hide');
+        this.props.$hidebutton_el.addClass('active');
+        return null;
+      }
+      this.props.$hidebutton_el.removeClass('active');
+      curtabid = +this.state.Send;
+      nots = this.props.$collapse_el.not('[data-tabid="' + curtabid + '"]');
+      for (_i = 0, _len = nots.length; _i < _len; _i++) {
+        el = nots[_i];
+        $(el).collapse('hide');
+      }
+      $(this.props.$collapse_el.not(nots)).collapse('show');
+      activeClass = function(el) {
+        var tabid_attr, xel;
+        xel = $(el);
+        tabid_attr = +xel.attr('data-tabid');
+        xel[tabid_attr === curtabid ? 'addClass' : 'removeClass']('active');
+      };
+      _ref = this.props.$button_el;
+      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+        el = _ref[_j];
+        activeClass(el);
+      }
+      return null;
+    },
+    clicktab: function(e) {
+      var S;
+      S = {};
+      S[this.props.Ksend] = +$($(e.target).attr('href')).attr('data-tabid');
+      if ((this.state.Hide != null) && this.state.Hide) {
+        S[this.props.Khide] = false;
+      }
+      websocket.sendClient(S);
+      e.preventDefault();
+      e.stopPropagation();
+      return void 0;
+    },
+    clickhide: function(e) {
+      var S;
+      (S = {})[this.props.Khide] = !this.state.Hide;
+      websocket.sendClient(S);
+      e.stopPropagation();
+      e.preventDefault();
+      return void 0;
+    }
+  });
+
   this.NewTextCLASS = function(reduce) {
     return React.createClass({
       newstate: function(data) {
@@ -418,7 +494,7 @@
   };
 
   this.update = function(currentClient, model) {
-    var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hidemem, hideps, hideswap, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psless, psmore, psplus, pstable, uptime, vgtable;
+    var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hidemem, hideps, hideswap, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psless, psmore, psplus, pstable, tabsdf, tabsif, uptime, vgtable;
     if (((function() {
       var _i, _len, _ref, _results;
       _ref = location.search.substr(1).split('&');
@@ -557,6 +633,20 @@
       Kalbe: 'ExpandableDF',
       $button_el: $('label[href="#df"]')
     });
+    tabsif = TabsClass.component({
+      Khide: 'HideIF',
+      Ksend: 'TabIF',
+      $collapse_el: $('.if-tab'),
+      $button_el: $('.if-switch'),
+      $hidebutton_el: $('#ifconfig').find('.hiding')
+    });
+    tabsdf = TabsClass.component({
+      Khide: 'HideDF',
+      Ksend: 'TabDF',
+      $collapse_el: $('.df-tab'),
+      $button_el: $('.df-switch'),
+      $hidebutton_el: $('#dfconfig').find('.hiding')
+    });
     memtable = React.renderComponent(MEMtableCLASS(), document.getElementById('mem' + '-' + 'table'));
     pstable = React.renderComponent(PStableCLASS(), document.getElementById('ps' + '-' + 'table'));
     dfbytes = React.renderComponent(DFbytesCLASS(), document.getElementById('dfbytes' + '-' + 'table'));
@@ -619,6 +709,8 @@
       setState(expandif, expandif.reduce(data));
       setState(expandcpu, expandcpu.reduce(data));
       setState(expanddf, expanddf.reduce(data));
+      setState(tabsif, tabsif.reduce(data));
+      setState(tabsdf, tabsdf.reduce(data));
       setState(memtable, data.MEM);
       setState(cputable, data.CPU);
       setState(ifbytes, data.IFbytes);
@@ -672,10 +764,6 @@
       $tab_df = $('.df-switch');
       $panels_if = $('.if-tab');
       $panels_df = $('.df-tab');
-      this.listenTo(this.model, 'change:HideIF', this.change_collapsetabfunc('HideIF', 'TabIF', $panels_if, $tab_if, $hidden_if));
-      this.listenTo(this.model, 'change:HideDF', this.change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df, $hidden_df));
-      this.listenTo(this.model, 'change:TabIF', this.change_collapsetabfunc('HideIF', 'TabIF', $panels_if, $tab_if, $hidden_if));
-      this.listenTo(this.model, 'change:TabDF', this.change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df, $hidden_df));
       $config_mem = $('#memconfig');
       $config_cpu = $('#cpuconfig');
       $config_ps = $('#psconfig');
@@ -711,10 +799,6 @@
           $b.click(B(_this.click_expandfunc(E, H)));
         };
       })(this);
-      $tab_if.click(B(this.click_tabfunc('TabIF', 'HideIF')));
-      $tab_df.click(B(this.click_tabfunc('TabDF', 'HideDF')));
-      $hidden_if.click(B(this.click_expandfunc('HideIF')));
-      $hidden_df.click(B(this.click_expandfunc('HideDF')));
       $config_mem.find('.refresh-input').on('input', B(this.submit_rsignalfunc('RefreshSignalMEM')));
       $config_if.find('.refresh-input').on('input', B(this.submit_rsignalfunc('RefreshSignalIF')));
       $config_cpu.find('.refresh-input').on('input', B(this.submit_rsignalfunc('RefreshSignalCPU')));

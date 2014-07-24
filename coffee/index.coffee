@@ -170,6 +170,51 @@
                 e.preventDefault()  # checked/selected state
                 return undefined
 
+@TabsClass = React.createClass
+        statics: component: (opt) -> React.renderComponent(TabsClass(opt), addNoscript(opt.$button_el))
+
+        reduce: (data) ->
+                if data?.Client?
+                        S = {}
+                        S.Hide = data.Client[@props.Khide] if                   data.Client[@props.Khide] isnt undefined # Khide is a required prop
+                        S.Send = data.Client[@props.Ksend] if @props.Ksend? and data.Client[@props.Ksend] isnt undefined
+                        return S
+        getInitialState: () -> @reduce(Data) # a global Data
+        componentDidMount: () ->
+                @props.$button_el.click(@clicktab)
+                @props.$hidebutton_el.click(@clickhide)
+        render: () ->
+                if @state.Hide
+                        @props.$collapse_el.collapse('hide')
+                        @props.$hidebutton_el.addClass('active')
+                        return null
+                @props.$hidebutton_el.removeClass('active')
+                curtabid = +@state.Send # MUST be an int
+                nots = @props.$collapse_el.not('[data-tabid="'+ curtabid + '"]')
+                $(el).collapse('hide') for el in nots
+                $(@props.$collapse_el.not(nots)).collapse('show')
+                activeClass = (el) ->
+                        xel = $(el)
+                        tabid_attr = +xel.attr('data-tabid') # an int
+                        xel[if tabid_attr == curtabid then 'addClass' else 'removeClass']('active')
+                        return
+                activeClass(el) for el in @props.$button_el
+                return null
+        clicktab: (e) ->
+                S = {}
+                S[@props.Ksend] = +$( $(e.target).attr('href') ).attr('data-tabid') # THIS. +string makes an int
+                S[@props.Khide] = false if @state.Hide? and @state.Hide # if the panel was hidden
+                websocket.sendClient(S)
+                e.preventDefault()
+                e.stopPropagation() # don't change checkbox/radio state
+                return undefined
+        clickhide: (e) ->
+                (S = {})[@props.Khide] = !@state.Hide
+                websocket.sendClient(S)
+                e.stopPropagation() # preserves checkbox/radio
+                e.preventDefault()  # checked/selected state
+                return undefined
+
 @NewTextCLASS = (reduce) -> React.createClass
         newstate: (data) ->
                 v = reduce(data)
@@ -214,6 +259,10 @@
         expandif = ButtonClass.component({Khide: 'HideIF',  Ksend: 'ExpandIF',  Ktext: 'ExpandtextIF',  Kable: 'ExpandableIF',  $button_el: $('label[href="#if"]')})
         expandcpu= ButtonClass.component({Khide: 'HideCPU', Ksend: 'ExpandCPU', Ktext: 'ExpandtextCPU', Kable: 'ExpandableCPU', $button_el: $('label[href="#cpu"]')})
         expanddf = ButtonClass.component({Khide: 'HideDF',  Ksend: 'ExpandDF',  Ktext: 'ExpandtextDF',  Kalbe: 'ExpandableDF',  $button_el: $('label[href="#df"]')})
+
+        # NB buttons and collapses selected by class
+        tabsif = TabsClass.component({Khide: 'HideIF', Ksend: 'TabIF', $collapse_el: $('.if-tab'), $button_el: $('.if-switch'), $hidebutton_el: $('#ifconfig').find('.hiding')})
+        tabsdf = TabsClass.component({Khide: 'HideDF', Ksend: 'TabDF', $collapse_el: $('.df-tab'), $button_el: $('.df-switch'), $hidebutton_el: $('#dfconfig').find('.hiding')})
 
         memtable  = React.renderComponent(MEMtableCLASS(),  document.getElementById('mem'       +'-'+ 'table'))
         pstable   = React.renderComponent(PStableCLASS(),   document.getElementById('ps'        +'-'+ 'table'))
@@ -270,6 +319,9 @@
                 setState(expandif,  expandif.reduce(data))
                 setState(expandcpu, expandcpu.reduce(data))
                 setState(expanddf,  expanddf.reduce(data))
+
+                setState(tabsif,    tabsif.reduce(data))
+                setState(tabsdf,    tabsdf.reduce(data))
 
                 setState(memtable,  data.MEM)
                 setState(cputable,  data.CPU)
@@ -352,10 +404,10 @@
                 $panels_if = $('.if-tab')
                 $panels_df = $('.df-tab')
 
-                @listenTo(@model, 'change:HideIF', @change_collapsetabfunc('HideIF', 'TabIF', $panels_if, $tab_if, $hidden_if))
-                @listenTo(@model, 'change:HideDF', @change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df, $hidden_df))
-                @listenTo(@model, 'change:TabIF',  @change_collapsetabfunc('HideIF', 'TabIF', $panels_if, $tab_if, $hidden_if))
-                @listenTo(@model, 'change:TabDF',  @change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df, $hidden_df))
+              # @listenTo(@model, 'change:HideIF', @change_collapsetabfunc('HideIF', 'TabIF', $panels_if, $tab_if, $hidden_if))
+              # @listenTo(@model, 'change:HideDF', @change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df, $hidden_df))
+              # @listenTo(@model, 'change:TabIF',  @change_collapsetabfunc('HideIF', 'TabIF', $panels_if, $tab_if, $hidden_if))
+              # @listenTo(@model, 'change:TabDF',  @change_collapsetabfunc('HideDF', 'TabDF', $panels_df, $tab_df, $hidden_df))
 
               # $psmore = $('label.more[href="#psmore"]')
               # $psless = $('label.less[href="#psless"]')
@@ -419,8 +471,8 @@
               # doexpandable(sections) for sections in expandable_sections
 
               # $hswapb    .click( B(@click_expandfunc('HideSWAP', 'HideMEM')) )
-                $tab_if    .click( B(@click_tabfunc('TabIF', 'HideIF')) )
-                $tab_df    .click( B(@click_tabfunc('TabDF', 'HideDF')) )
+              # $tab_if    .click( B(@click_tabfunc('TabIF', 'HideIF')) )
+              # $tab_df    .click( B(@click_tabfunc('TabDF', 'HideDF')) )
 
               # $header_mem.click( B(@click_expandfunc('HideconfigMEM')) )
               # $header_if .click( B(@click_expandfunc('HideconfigIF' )) )
@@ -430,9 +482,9 @@
               # $header_vg .click( B(@click_expandfunc('HideconfigVG' )) )
 
               # $hidden_mem.click( B(@click_expandfunc('HideMEM')) )
-                $hidden_if .click( B(@click_expandfunc('HideIF' )) )
+              # $hidden_if .click( B(@click_expandfunc('HideIF' )) )
               # $hidden_cpu.click( B(@click_expandfunc('HideCPU')) )
-                $hidden_df .click( B(@click_expandfunc('HideDF' )) )
+              # $hidden_df .click( B(@click_expandfunc('HideDF' )) )
               # $hidden_ps .click( B(@click_expandfunc('HidePS' )) )
               # $hidden_vg .click( B(@click_expandfunc('HideVG' )) )
 
