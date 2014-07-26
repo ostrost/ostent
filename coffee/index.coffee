@@ -215,6 +215,38 @@
                 e.preventDefault()  # checked/selected state
                 return undefined
 
+@RefreshInputClass = React.createClass
+        statics: component: (opt) ->
+                $ = opt.$; delete opt.$
+                opt.$input_el = $.find('.refresh-input')
+                opt.$group_el = $.find('.refresh-group')
+                React.renderComponent(RefreshInputClass(opt), addNoscript(opt.$input_el))
+
+        reduce: (data) ->
+                if data?.Client? and (data.Client[@props.K]? or data.Client[@props.Kerror]?)
+                        S = {}
+                        S.Value = data.Client[@props.K]      if data.Client[@props.K]?
+                        S.Error = data.Client[@props.Kerror] if data.Client[@props.Kerror]?
+                        # console.log('newState', S)
+                        return S
+        getInitialState: () ->
+                S = @reduce(Data) # a global Data
+                # console.log('initialState', S)
+                return S
+
+        componentDidMount: () -> @props.$input_el.on('input', @submit)
+        render: () ->
+                # console.log('RefreshInputClass.render', @isMounted(), @state)
+                @props.$input_el.prop('value', @state.Value) if @isMounted() and !@state.Error
+                @props.$group_el[if @state.Error then 'addClass' else 'removeClass']('has-warning')
+                return null
+        submit: (e) ->
+                (S = {})[@props.Ksig] = $(e.target).val()
+                websocket.sendClient(S)
+                e.preventDefault()
+                e.stopPropagation() # don't change checkbox/radio state
+                return undefined
+
 @NewTextCLASS = (reduce) -> React.createClass
         newstate: (data) ->
                 v = reduce(data)
@@ -263,6 +295,13 @@
         # NB buttons and collapses selected by class
         tabsif = TabsClass.component({Khide: 'HideIF', Ksend: 'TabIF', $collapse_el: $('.if-tab'), $button_el: $('.if-switch'), $hidebutton_el: $('#ifconfig').find('.hiding')})
         tabsdf = TabsClass.component({Khide: 'HideDF', Ksend: 'TabDF', $collapse_el: $('.df-tab'), $button_el: $('.df-switch'), $hidebutton_el: $('#dfconfig').find('.hiding')})
+
+        refresh_mem = RefreshInputClass.component({K: 'RefreshMEM', Kerror: 'RefreshErrorMEM', Ksig: 'RefreshSignalMEM', $: $('#memconfig')})
+        refresh_if  = RefreshInputClass.component({K: 'RefreshIF',  Kerror: 'RefreshErrorIF',  Ksig: 'RefreshSignalIF',  $: $('#ifconfig')})
+        refresh_cpu = RefreshInputClass.component({K: 'RefreshCPU', Kerror: 'RefreshErrorCPU', Ksig: 'RefreshSignalCPU', $: $('#cpuconfig')})
+        refresh_df  = RefreshInputClass.component({K: 'RefreshDF',  Kerror: 'RefreshErrorDF',  Ksig: 'RefreshSignalDF',  $: $('#dfconfig')})
+        refresh_ps  = RefreshInputClass.component({K: 'RefreshPS',  Kerror: 'RefreshErrorPS',  Ksig: 'RefreshSignalPS',  $: $('#psconfig')})
+        refresh_vg  = RefreshInputClass.component({K: 'RefreshVG',  Kerror: 'RefreshErrorVG',  Ksig: 'RefreshSignalVG',  $: $('#vgconfig')})
 
         memtable  = React.renderComponent(MEMtableCLASS(),  document.getElementById('mem'       +'-'+ 'table'))
         pstable   = React.renderComponent(PStableCLASS(),   document.getElementById('ps'        +'-'+ 'table'))
@@ -322,6 +361,13 @@
 
                 setState(tabsif,    tabsif.reduce(data))
                 setState(tabsdf,    tabsdf.reduce(data))
+
+                setState(refresh_mem, refresh_mem.reduce(data))
+                setState(refresh_if,  refresh_if .reduce(data))
+                setState(refresh_cpu, refresh_cpu.reduce(data))
+                setState(refresh_df,  refresh_df .reduce(data))
+                setState(refresh_ps,  refresh_ps .reduce(data))
+                setState(refresh_vg,  refresh_vg .reduce(data))
 
                 setState(memtable,  data.MEM)
                 setState(cputable,  data.CPU)
@@ -414,26 +460,26 @@
               # @listenenable('PSnotDecreasable', $psless)
 
               # $config_* used to be defined earlier
-                $config_if  = $('#ifconfig')
-                $config_df  = $('#dfconfig')
-                $config_mem = $('#memconfig')
-                $config_cpu = $('#cpuconfig')
-                $config_ps  = $('#psconfig')
-                $config_vg  = $('#vgconfig')
+              # $config_mem = $('#memconfig')
+              # $config_if  = $('#ifconfig')
+              # $config_cpu = $('#cpuconfig')
+              # $config_df  = $('#dfconfig')
+              # $config_ps  = $('#psconfig')
+              # $config_vg  = $('#vgconfig')
 
-                @listenrefresherror('RefreshErrorMEM', $config_mem.find('.refresh-group'))
-                @listenrefresherror('RefreshErrorIF',  $config_if .find('.refresh-group'))
-                @listenrefresherror('RefreshErrorCPU', $config_cpu.find('.refresh-group'))
-                @listenrefresherror('RefreshErrorDF',  $config_df .find('.refresh-group'))
-                @listenrefresherror('RefreshErrorPS',  $config_ps .find('.refresh-group'))
-                @listenrefresherror('RefreshErrorVG',  $config_vg .find('.refresh-group'))
+              # @listenrefresherror('RefreshErrorMEM', $config_mem.find('.refresh-group'))
+              # @listenrefresherror('RefreshErrorIF',  $config_if .find('.refresh-group'))
+              # @listenrefresherror('RefreshErrorCPU', $config_cpu.find('.refresh-group'))
+              # @listenrefresherror('RefreshErrorDF',  $config_df .find('.refresh-group'))
+              # @listenrefresherror('RefreshErrorPS',  $config_ps .find('.refresh-group'))
+              # @listenrefresherror('RefreshErrorVG',  $config_vg .find('.refresh-group'))
 
-                @listenrefreshvalue('RefreshMEM',      $config_mem.find('.refresh-input'))
-                @listenrefreshvalue('RefreshIF',       $config_if .find('.refresh-input'))
-                @listenrefreshvalue('RefreshCPU',      $config_cpu.find('.refresh-input'))
-                @listenrefreshvalue('RefreshDF',       $config_df .find('.refresh-input'))
-                @listenrefreshvalue('RefreshPS',       $config_ps .find('.refresh-input'))
-                @listenrefreshvalue('RefreshVG',       $config_vg .find('.refresh-input'))
+              # @listenrefreshvalue('RefreshMEM',      $config_mem.find('.refresh-input'))
+              # @listenrefreshvalue('RefreshIF',       $config_if .find('.refresh-input'))
+              # @listenrefreshvalue('RefreshCPU',      $config_cpu.find('.refresh-input'))
+              # @listenrefreshvalue('RefreshDF',       $config_df .find('.refresh-input'))
+              # @listenrefreshvalue('RefreshPS',       $config_ps .find('.refresh-input'))
+              # @listenrefreshvalue('RefreshVG',       $config_vg .find('.refresh-input'))
 
                 # var B = _.bind(function(c) { return _.bind(c, this); }, this);
                 # B = _.bind(((c) -> _.bind(c, @)), @)
@@ -491,12 +537,12 @@
               # $psmore    .click( B(@click_psignalfunc('HidePS', true )) )
               # $psless    .click( B(@click_psignalfunc('HidePS', false)) )
 
-                $config_mem.find('.refresh-input').on('input', B(@submit_rsignalfunc('RefreshSignalMEM')) )
-                $config_if .find('.refresh-input').on('input', B(@submit_rsignalfunc('RefreshSignalIF' )) )
-                $config_cpu.find('.refresh-input').on('input', B(@submit_rsignalfunc('RefreshSignalCPU')) )
-                $config_df .find('.refresh-input').on('input', B(@submit_rsignalfunc('RefreshSignalDF' )) )
-                $config_ps .find('.refresh-input').on('input', B(@submit_rsignalfunc('RefreshSignalPS' )) )
-                $config_vg .find('.refresh-input').on('input', B(@submit_rsignalfunc('RefreshSignalVG' )) )
+              # $config_mem.find('.refresh-input').on('input', B(@submit_rsignalfunc('RefreshSignalMEM')) )
+              # $config_if .find('.refresh-input').on('input', B(@submit_rsignalfunc('RefreshSignalIF' )) )
+              # $config_cpu.find('.refresh-input').on('input', B(@submit_rsignalfunc('RefreshSignalCPU')) )
+              # $config_df .find('.refresh-input').on('input', B(@submit_rsignalfunc('RefreshSignalDF' )) )
+              # $config_ps .find('.refresh-input').on('input', B(@submit_rsignalfunc('RefreshSignalPS' )) )
+              # $config_vg .find('.refresh-input').on('input', B(@submit_rsignalfunc('RefreshSignalVG' )) )
                 return
 
         submit_rsignalfunc: (R) ->

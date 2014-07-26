@@ -461,6 +461,55 @@
     }
   });
 
+  this.RefreshInputClass = React.createClass({
+    statics: {
+      component: function(opt) {
+        var $;
+        $ = opt.$;
+        delete opt.$;
+        opt.$input_el = $.find('.refresh-input');
+        opt.$group_el = $.find('.refresh-group');
+        return React.renderComponent(RefreshInputClass(opt), addNoscript(opt.$input_el));
+      }
+    },
+    reduce: function(data) {
+      var S;
+      if (((data != null ? data.Client : void 0) != null) && ((data.Client[this.props.K] != null) || (data.Client[this.props.Kerror] != null))) {
+        S = {};
+        if (data.Client[this.props.K] != null) {
+          S.Value = data.Client[this.props.K];
+        }
+        if (data.Client[this.props.Kerror] != null) {
+          S.Error = data.Client[this.props.Kerror];
+        }
+        return S;
+      }
+    },
+    getInitialState: function() {
+      var S;
+      S = this.reduce(Data);
+      return S;
+    },
+    componentDidMount: function() {
+      return this.props.$input_el.on('input', this.submit);
+    },
+    render: function() {
+      if (this.isMounted() && !this.state.Error) {
+        this.props.$input_el.prop('value', this.state.Value);
+      }
+      this.props.$group_el[this.state.Error ? 'addClass' : 'removeClass']('has-warning');
+      return null;
+    },
+    submit: function(e) {
+      var S;
+      (S = {})[this.props.Ksig] = $(e.target).val();
+      websocket.sendClient(S);
+      e.preventDefault();
+      e.stopPropagation();
+      return void 0;
+    }
+  });
+
   this.NewTextCLASS = function(reduce) {
     return React.createClass({
       newstate: function(data) {
@@ -494,7 +543,7 @@
   };
 
   this.update = function(currentClient, model) {
-    var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hidemem, hideps, hideswap, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psless, psmore, psplus, pstable, tabsdf, tabsif, uptime, vgtable;
+    var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hidemem, hideps, hideswap, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psless, psmore, psplus, pstable, refresh_cpu, refresh_df, refresh_if, refresh_mem, refresh_ps, refresh_vg, tabsdf, tabsif, uptime, vgtable;
     if (((function() {
       var _i, _len, _ref, _results;
       _ref = location.search.substr(1).split('&');
@@ -647,6 +696,42 @@
       $button_el: $('.df-switch'),
       $hidebutton_el: $('#dfconfig').find('.hiding')
     });
+    refresh_mem = RefreshInputClass.component({
+      K: 'RefreshMEM',
+      Kerror: 'RefreshErrorMEM',
+      Ksig: 'RefreshSignalMEM',
+      $: $('#memconfig')
+    });
+    refresh_if = RefreshInputClass.component({
+      K: 'RefreshIF',
+      Kerror: 'RefreshErrorIF',
+      Ksig: 'RefreshSignalIF',
+      $: $('#ifconfig')
+    });
+    refresh_cpu = RefreshInputClass.component({
+      K: 'RefreshCPU',
+      Kerror: 'RefreshErrorCPU',
+      Ksig: 'RefreshSignalCPU',
+      $: $('#cpuconfig')
+    });
+    refresh_df = RefreshInputClass.component({
+      K: 'RefreshDF',
+      Kerror: 'RefreshErrorDF',
+      Ksig: 'RefreshSignalDF',
+      $: $('#dfconfig')
+    });
+    refresh_ps = RefreshInputClass.component({
+      K: 'RefreshPS',
+      Kerror: 'RefreshErrorPS',
+      Ksig: 'RefreshSignalPS',
+      $: $('#psconfig')
+    });
+    refresh_vg = RefreshInputClass.component({
+      K: 'RefreshVG',
+      Kerror: 'RefreshErrorVG',
+      Ksig: 'RefreshSignalVG',
+      $: $('#vgconfig')
+    });
     memtable = React.renderComponent(MEMtableCLASS(), document.getElementById('mem' + '-' + 'table'));
     pstable = React.renderComponent(PStableCLASS(), document.getElementById('ps' + '-' + 'table'));
     dfbytes = React.renderComponent(DFbytesCLASS(), document.getElementById('dfbytes' + '-' + 'table'));
@@ -711,6 +796,12 @@
       setState(expanddf, expanddf.reduce(data));
       setState(tabsif, tabsif.reduce(data));
       setState(tabsdf, tabsdf.reduce(data));
+      setState(refresh_mem, refresh_mem.reduce(data));
+      setState(refresh_if, refresh_if.reduce(data));
+      setState(refresh_cpu, refresh_cpu.reduce(data));
+      setState(refresh_df, refresh_df.reduce(data));
+      setState(refresh_ps, refresh_ps.reduce(data));
+      setState(refresh_vg, refresh_vg.reduce(data));
       setState(memtable, data.MEM);
       setState(cputable, data.CPU);
       setState(ifbytes, data.IFbytes);
@@ -755,29 +846,11 @@
 
   this.View = Backbone.View.extend({
     initialize: function() {
-      var $config_cpu, $config_df, $config_if, $config_mem, $config_ps, $config_vg, $panels_df, $panels_if, $tab_df, $tab_if, B, doexpandable, expandable_sections;
+      var $panels_df, $panels_if, $tab_df, $tab_if, B, doexpandable, expandable_sections;
       $tab_if = $('.if-switch');
       $tab_df = $('.df-switch');
       $panels_if = $('.if-tab');
       $panels_df = $('.df-tab');
-      $config_if = $('#ifconfig');
-      $config_df = $('#dfconfig');
-      $config_mem = $('#memconfig');
-      $config_cpu = $('#cpuconfig');
-      $config_ps = $('#psconfig');
-      $config_vg = $('#vgconfig');
-      this.listenrefresherror('RefreshErrorMEM', $config_mem.find('.refresh-group'));
-      this.listenrefresherror('RefreshErrorIF', $config_if.find('.refresh-group'));
-      this.listenrefresherror('RefreshErrorCPU', $config_cpu.find('.refresh-group'));
-      this.listenrefresherror('RefreshErrorDF', $config_df.find('.refresh-group'));
-      this.listenrefresherror('RefreshErrorPS', $config_ps.find('.refresh-group'));
-      this.listenrefresherror('RefreshErrorVG', $config_vg.find('.refresh-group'));
-      this.listenrefreshvalue('RefreshMEM', $config_mem.find('.refresh-input'));
-      this.listenrefreshvalue('RefreshIF', $config_if.find('.refresh-input'));
-      this.listenrefreshvalue('RefreshCPU', $config_cpu.find('.refresh-input'));
-      this.listenrefreshvalue('RefreshDF', $config_df.find('.refresh-input'));
-      this.listenrefreshvalue('RefreshPS', $config_ps.find('.refresh-input'));
-      this.listenrefreshvalue('RefreshVG', $config_vg.find('.refresh-input'));
       B = function(c) {
         return c;
       };
@@ -797,12 +870,6 @@
           $b.click(B(_this.click_expandfunc(E, H)));
         };
       })(this);
-      $config_mem.find('.refresh-input').on('input', B(this.submit_rsignalfunc('RefreshSignalMEM')));
-      $config_if.find('.refresh-input').on('input', B(this.submit_rsignalfunc('RefreshSignalIF')));
-      $config_cpu.find('.refresh-input').on('input', B(this.submit_rsignalfunc('RefreshSignalCPU')));
-      $config_df.find('.refresh-input').on('input', B(this.submit_rsignalfunc('RefreshSignalDF')));
-      $config_ps.find('.refresh-input').on('input', B(this.submit_rsignalfunc('RefreshSignalPS')));
-      $config_vg.find('.refresh-input').on('input', B(this.submit_rsignalfunc('RefreshSignalVG')));
     },
     submit_rsignalfunc: function(R) {
       return function(e) {
