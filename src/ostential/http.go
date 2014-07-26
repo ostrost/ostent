@@ -864,8 +864,6 @@ func init() {
 		"jquery",
 		"bootstrap",
 		"react",
-		"underscore",
-		"backbone",
 		"headroom",
 
 		"gen", "jsript", // either /gen/ or /jscript/
