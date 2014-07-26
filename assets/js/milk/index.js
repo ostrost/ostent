@@ -542,7 +542,7 @@
     }
   };
 
-  this.update = function(currentClient, model) {
+  this.update = function() {
     var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hidemem, hideps, hideswap, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psless, psmore, psplus, pstable, refresh_cpu, refresh_df, refresh_if, refresh_mem, refresh_ps, refresh_vg, tabsdf, tabsif, uptime, vgtable;
     if (((function() {
       var _i, _len, _ref, _results;
@@ -815,13 +815,6 @@
       if (data.Client != null) {
         console.log(JSON.stringify(data.Client), 'recvClient');
       }
-      if (data.Client != null) {
-        currentClient = React.addons.update(currentClient, {
-          $merge: data.Client
-        });
-      }
-      data.Client = currentClient;
-      model.set(Model.attributes(data));
       $('span .tooltipable').popover({
         trigger: 'hover focus'
       });
@@ -830,191 +823,7 @@
     this.websocket = newwebsocket(onmessage);
   };
 
-  this.Model = Backbone.Model.extend({});
-
-  this.Model.attributes = function(data) {
-    if (data.Generic == null) {
-      return data.Client;
-    }
-    if (data.Client == null) {
-      return data.Generic;
-    }
-    return React.addons.update(data.Generic, {
-      $merge: data.Client
-    });
-  };
-
-  this.View = Backbone.View.extend({
-    initialize: function() {
-      var $panels_df, $panels_if, $tab_df, $tab_if, B, doexpandable, expandable_sections;
-      $tab_if = $('.if-switch');
-      $tab_df = $('.df-switch');
-      $panels_if = $('.if-tab');
-      $panels_df = $('.df-tab');
-      B = function(c) {
-        return c;
-      };
-      expandable_sections = [];
-      doexpandable = (function(_this) {
-        return function(sections) {
-          var $b, E, H, L, S, T;
-          S = sections[0];
-          E = sections[1];
-          H = sections[2];
-          L = sections[3];
-          T = sections[4];
-          $b = $('label[href="' + S.selector + '"]');
-          _this.listentext(T, $b);
-          _this.listenenable(L, $b, true);
-          _this.listenactivate(E, $b);
-          $b.click(B(_this.click_expandfunc(E, H)));
-        };
-      })(this);
-    },
-    submit_rsignalfunc: function(R) {
-      return function(e) {
-        var S;
-        (S = {})[R] = $(e.target).val();
-        websocket.sendClient(S);
-      };
-    },
-    listentext: function(K, $el) {
-      return this.listenTo(this.model, 'change:' + K, this._text(K, $el));
-    },
-    _text: function(K, $el) {
-      return function() {
-        return $el.text(this.model.attributes[K]);
-      };
-    },
-    listenrefresherror: function(E, $el) {
-      return this.listenTo(this.model, 'change:' + E, function() {
-        return $el[this.model.attributes[E] ? 'addClass' : 'removeClass']('has-warning');
-      });
-    },
-    listenrefreshvalue: function(E, $el) {
-      return this.listenTo(this.model, 'change:' + E, function() {
-        return $el.prop('value', this.model.attributes[E]);
-      });
-    },
-    listenenable: function(K, $el, reverse) {
-      return this.listenTo(this.model, 'change:' + K, function() {
-        var V;
-        V = (this.model.attributes[K] != null) && this.model.attributes[K];
-        if ((reverse != null) && reverse) {
-          V = !V;
-        }
-        $el.prop('disabled', V);
-        $el[V ? 'addClass' : 'removeClass']('disabled');
-      });
-    },
-    listenactivate: function(K, $el, reverse) {
-      return this.listenTo(this.model, 'change:' + K, function() {
-        var V;
-        V = (this.model.attributes[K] != null) && this.model.attributes[K];
-        if ((reverse == null) && reverse) {
-          V = !V;
-        }
-        $el[V ? 'addClass' : 'removeClass']('active');
-      });
-    },
-    listenhide: function(H, $el, $button_el) {
-      return this.listenTo(this.model, 'change:' + H, function() {
-        var V;
-        V = (this.model.attributes[H] != null) && this.model.attributes[H];
-        $el.collapse(V ? 'hide' : 'show');
-        V = !V;
-        $button_el[V ? 'addClass' : 'removeClass']('active');
-      });
-    },
-    change_collapsefunc: function(H, $el) {
-      return function() {
-        return $el.collapse(this.model.attributes[H] ? 'hide' : 'show');
-      };
-    },
-    change_collapsetabfunc: function(H, T, $el, $tabel, $buttonel) {
-      return function() {
-        var A, activeClass, curtabid, el, nots, _i, _j, _len, _len1;
-        A = this.model.attributes;
-        if (A[H]) {
-          $el.collapse('hide');
-          $buttonel.addClass('active');
-          return;
-        }
-        $buttonel.removeClass('active');
-        curtabid = +A[T];
-        nots = $el.not('[data-tabid="' + curtabid + '"]');
-        for (_i = 0, _len = nots.length; _i < _len; _i++) {
-          el = nots[_i];
-          $(el).collapse('hide');
-        }
-        $($el.not(nots)).collapse('show');
-        activeClass = function(el) {
-          var tabid_attr, xel;
-          xel = $(el);
-          tabid_attr = +xel.attr('data-tabid');
-          xel[tabid_attr === curtabid ? 'addClass' : 'removeClass']('active');
-        };
-        for (_j = 0, _len1 = $tabel.length; _j < _len1; _j++) {
-          el = $tabel[_j];
-          activeClass(el);
-        }
-      };
-    },
-    click_expandfunc: function(H, H2) {
-      return (function(_this) {
-        return function(e) {
-          var A, S;
-          A = _this.model.attributes;
-          (S = {})[H] = !A[H];
-          if ((H2 != null) && A[H2]) {
-            S[H2] = !A[H2];
-          }
-          websocket.sendClient(S);
-          e.preventDefault();
-          e.stopPropagation();
-          return void 0;
-        };
-      })(this);
-    },
-    click_tabfunc: function(T, H) {
-      return (function(_this) {
-        return function(e) {
-          var S, V, newtabid;
-          newtabid = +$($(e.target).attr('href')).attr('data-tabid');
-          (S = {})[T] = newtabid;
-          V = _this.model.attributes[H];
-          if (V) {
-            S[H] = !V;
-          }
-          websocket.sendClient(S);
-          e.preventDefault();
-          e.stopPropagation();
-          return void 0;
-        };
-      })(this);
-    },
-    click_psignalfunc: function(H, v) {
-      return (function(_this) {
-        return function(e) {
-          var S, V;
-          S = {
-            MorePsignal: v
-          };
-          V = _this.model.attributes[H];
-          if (V) {
-            S[H] = !V;
-          }
-          websocket.sendClient(S);
-          e.preventDefault();
-          e.stopPropagation();
-          return void 0;
-        };
-      })(this);
-    }
-  });
-
   this.ready = function() {
-    var model;
     (new Headroom(document.querySelector('nav'), {
       offset: 71 - 51
     })).init();
@@ -1041,11 +850,7 @@
         }
       });
     });
-    model = new Model(Model.attributes(Data));
-    new View({
-      model: model
-    });
-    update(Data.Client, model);
+    update();
   };
 
 }).call(this);
