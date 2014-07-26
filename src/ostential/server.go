@@ -60,14 +60,6 @@ func init() {
 	flag.Var(&BindFlag, "bind", "Bind address")
 }
 
-type chainin struct {
-	alice.Chain
-}
-
-func(c *chainin) ThenFunc(h func(http.ResponseWriter, *http.Request)) http.Handler {
-	return c.Then(http.HandlerFunc(h))
-}
-
 type Muxmap map[string]http.HandlerFunc
 
 var stdaccess *logger // a global, available after Serve call
@@ -79,10 +71,10 @@ func Serve(listen net.Listener, production bool, extramap Muxmap) error {
 	stdaccess = NewLogged(production, access)
 	recovery := Recovery(production)
 
-	chain := chainin{alice.New(
+	chain := alice.New(
 		stdaccess.Constructor,
 		recovery .Constructor,
-	)}
+	)
 	mux := NewMux(chain.Then)
 
 	for _, path := range assets.AssetNames() {
