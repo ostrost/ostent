@@ -107,17 +107,17 @@ func Serve(listen net.Listener, production bool, extramap Muxmap) error {
 
 func serveContentFunc(path string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		text, err := assets.Asset(path)
+		text, err := assets.Uncompressedasset(path)
 		if err != nil {
 			panic(err)
 		}
-		reader := bytes.NewReader(text)
 		modtime, err := assets.ModTime("assets", path)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		http.ServeContent(w, r, path, modtime, reader)
+
+		http.ServeContent(w, r, path, modtime, bytes.NewReader(text))
 	}
 }
 
