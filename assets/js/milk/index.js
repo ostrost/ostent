@@ -290,6 +290,7 @@
           };
         }
       }
+      return null;
     },
     getInitialState: function() {
       return this.reduce(Data);

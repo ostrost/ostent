@@ -123,6 +123,7 @@
                 if data?.Client?
                         value = data.Client[@props.key]
                         return {Hide: value} if value isnt undefined
+                return null
         getInitialState: () -> @reduce(Data) # a global Data
         componentDidMount: () -> @props.$button_el.click(@click)
         render: () ->
