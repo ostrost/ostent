@@ -29,6 +29,9 @@ func newBind(defstring, defport string) bindValue {
 // satisfying flag.Value interface
 func(bv bindValue) String() string { return string(bv.string); }
 func(bv *bindValue) Set(input string) error {
+	if input == "" {
+		return nil
+	}
 	if !strings.Contains(input, ":") {
 		input = ":" + input
 	}
@@ -54,10 +57,13 @@ func(bv *bindValue) Set(input string) error {
 	return nil
 }
 
-var BindFlag = newBind(":8050", "8050")
+var OstentBindFlag   = newBind(":8050", "8050")
+// var CollectdBindFlag = newBind("",      "8051") // "" by default meaning DO NOT BIND
 func init() {
-	flag.Var(&BindFlag, "b",    "Bind address")
-	flag.Var(&BindFlag, "bind", "Bind address")
+	flag.Var(&OstentBindFlag,   "b",            "Bind address")
+	flag.Var(&OstentBindFlag,   "bind",         "Bind address")
+	// flag.Var(&CollectdBindFlag, "collectdb",    "Bind address for collectd receiving")
+	// flag.Var(&CollectdBindFlag, "collectdbind", "Bind address for collectd receiving")
 }
 
 type Muxmap map[string]http.HandlerFunc

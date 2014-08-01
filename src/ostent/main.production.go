@@ -116,11 +116,12 @@ func main() {
 
 	if !had_upgrade { // start the background routine unless just had an upgrade and gonna relaunch anyway
 		go ostential.Loop()
+		// go ostential.CollectdLoop()
 	}
 
 	listen, err := goagain.Listener()
 	if err != nil {
-		listen, err = net.Listen("tcp", ostential.BindFlag.String())
+		listen, err = net.Listen("tcp", ostential.OstentBindFlag.String())
 		if err != nil {
 			log.Fatalln(err)
 		}

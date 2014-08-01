@@ -14,8 +14,9 @@ func main() {
 	flag.Parse()
 
 	go ostential.Loop()
+	// go ostential.CollectdLoop()
 
-	listen, err := net.Listen("tcp", ostential.BindFlag.String())
+	listen, err := net.Listen("tcp", ostential.OstentBindFlag.String())
 	if err != nil {
 		log.Fatal(err)
 	}
