@@ -1,0 +1,1 @@
+assets/js/production/ugly/index.js: assets/js/devel/vendor/min/jquery/2.1.1/jquery-2.1.1.min.js assets/js/devel/vendor/min/bootstrap/3.1.1/bootstrap.min.js assets/js/devel/vendor/min/react/0.11.0/react.min.js assets/js/devel/vendor/min/headroom/0.5.0/headroom.min.js assets/js/devel/gen/jscript.js assets/js/devel/milk/index.js
