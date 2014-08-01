@@ -16,7 +16,6 @@ import (
 	"net/url"
 	"net/http"
 	"html/template"
-	"path/filepath"
 	"container/ring"
 
 	"github.com/rzab/gosigar"
@@ -833,64 +832,8 @@ func statusLine(status int) string {
 	return fmt.Sprintf("%d %s", status, http.StatusText(status))
 }
 
-type sortassets struct {
-	assetnames []string
-	substr_indexfrom []string
-}
-
-func (sa sortassets) Len() int {
-	return len(sa.assetnames)
-}
-
-func (sa sortassets) Less(i, j int) bool {
-	ii, jj := sa.Len(), sa.Len()
-	for w, v := range sa.substr_indexfrom {
-		if strings.Contains(sa.assetnames[i], v) {
-			ii = w
-		}
-		if strings.Contains(sa.assetnames[j], v) {
-			jj = w
-		}
-	}
-	return ii < jj
-}
-
-func (sa sortassets) Swap(i, j int) {
-	sa.assetnames[i], sa.assetnames[j] = sa.assetnames[j], sa.assetnames[i]
-}
-
 func init() {
-	scriptsassets := sortassets{substr_indexfrom: []string{
-		"jquery",
-		"bootstrap",
-		"react",
-		"headroom",
-
-		"gen", "jsript", // either /gen/ or /jscript/
-		"milk", // from coffee script
-	}}
-	develreact := false
-
-	for _, assetname := range assets.AssetNames() {
-		dotjs := ".js"
-		if !strings.HasSuffix(assetname, dotjs) {
-			continue
-		}
-		scriptsrc := "/"+assetname
-		if develreact && strings.Contains(scriptsrc, "react") {
-			ver  := filepath.Base(filepath.Dir(scriptsrc))
-			base := filepath.Base(scriptsrc)
-
-			cutlen := len(dotjs) // asserted strings.HasSuffix(base, dotjs)
-			cutlen += map[bool]int{true:len(".min")}[strings.HasSuffix(base[:len(base) - cutlen], ".min")]
-			scriptsrc = fmt.Sprintf("//fb.me/%s-%s%s", base[:len(base) - cutlen], ver, dotjs)
-		}
-		scriptsassets.assetnames = append(scriptsassets.assetnames, scriptsrc)
-	}
-
-	sort.Stable(scriptsassets)
-
-	SCRIPTS = scriptsassets.assetnames
+	SCRIPTS = assets.JsAssetNames()
 }
 
 var SCRIPTS []string
