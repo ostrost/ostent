@@ -14,7 +14,7 @@ sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 #	@echo '* Sources:' $^
 	go build -o $@ amberp/amberpp
 
-$(bindir)/ostent: $(shell \
+$(bindir)/ostent: $(shell go get github.com/{inconshreveable/go-update,rcrowley/goagain}; \
 go list -tags production -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' ostent | xargs \
 go list -tags production -f '{{if and (not .Standard) (not .Goroot)}}\
 {{$$dir := .Dir}}\
@@ -24,7 +24,7 @@ sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 #	@echo '* Sources:' $^
 	go build -tags production -o $@ ostent
 
-$(bindir)/jsmakerule: $(shell \
+$(bindir)/jsmakerule: src/ostential/assets/bindata.devel.go $(shell \
 go list -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' ostential/assets/jsmakerule | xargs \
 go list -f '{{if and (not .Standard) (not .Goroot)}}\
 {{$$dir := .Dir}}\
