@@ -27,13 +27,15 @@ class Files(list):
 def bindata(target, source, env, for_signature):
     fix = source[0].path         if isinstance(source[0], SCons.Node.FS.Dir) else os.path.dirname(source[0].path)
     src = source[0].path +'/...' if isinstance(source[0], SCons.Node.FS.Dir) else os.path.dirname(source[0].path)
+    ignore = env.get('IGNORE')
+    ignore = '-ignore ' + ignore if ignore is not None else ''
     return ' '.join(shlex.split('''
 go-bindata
   -pkg    {pkg}
   -o      {target[0]}
   -tags   $FLAVOR
   -prefix {prefix}
-  $IGNORE
+  {ignore}
           {src}
 '''.format(
     pkg = os.path.basename(
@@ -43,6 +45,7 @@ go-bindata
     prefix = fix,
     src    = src,
     target = target,
+    ignore = ignore,
 )))
 
 def generator(s):
@@ -52,7 +55,7 @@ def generator(s):
 
 go = Environment(
     BUILDERS={
-        'build': Builder(generator=generator('go build $TAGSARGS -o $TARGETS {source[0]}'))
+        'build': Builder(generator=generator('go build $TAGSARGS -o $TARGETS {source[0]} $AND'))
     }, ENV={
           'PATH': os.environ[  'PATH'] +':'+ os.environ['GOROOT'] +'/bin',
         'GOPATH': os.environ['GOPATH'] +':'+ os.getcwd()
@@ -68,9 +71,10 @@ env = Environment(
         'jsx':     Builder(action='jsx <$SOURCES  >/dev/null && jsx <$SOURCES 2>/dev/null >$TARGETS'),
         'coffee':  Builder(action='coffee -p $SOURCES >/dev/null && coffee -o $TARGETS.dir $SOURCES'),
         'amberpp': Builder(generator=generator('{source[2]} -defines {source[0]} $MODE -output $TARGET {source[1]}')),
+        'jsassets':Builder(generator=generator('{source[0]} >$TARGET')),
+        'uglify':  Builder(action='uglifyjs -c -o $TARGET $SOURCES'),
     })
 
-assets    = (Dir('assets/'), Files('assets/')) # IGNORX='assets/js/main'
 templates = ('templates.html/index.html',
              'templates.html/usepercent.html',
              'templates.html/tooltipable.html',
@@ -79,10 +83,10 @@ templates = ('templates.html/index.html',
 Default(env.Clone(FLAVOR= 'production')       .bindata(source=templates, target='src/ostential/view/bindata.production.go'))
 Default(env.Clone(FLAVOR='!production -debug').bindata(source=templates, target='src/ostential/view/bindata.devel.go'))
 
-assets_ignore = ('-ignore '+ assets[1].IGNORX if assets[1].IGNORX is not None else None)
-Default(env.Clone(IGNORE=assets_ignore, FLAVOR= 'production')
+assets = (Dir('assets/'), Files('assets/'))
+Default(env.Clone(IGNORE='assets/js/devel', FLAVOR='production')
         .bindata(source=assets, target='src/ostential/assets/bindata.production.go'))
-Default(env.Clone(IGNORE=assets_ignore, FLAVOR='!production -debug')
+Default(env.Clone(IGNORE='assets/js/production', FLAVOR='!production -debug')
         .bindata(source=assets, target='src/ostential/assets/bindata.devel.go'))
 
 Default(env.sass('assets/css/index.css', 'style/index.scss'))
@@ -114,9 +118,18 @@ jscript_jsx = env.Clone(MODE='-j').amberpp(
      'amber.templates/jscript.amber',
      amberpp))
 Default(jscript_jsx)
-Default(env.jsx(target='assets/js/gen/jscript.js', source=jscript_jsx))
+Default(env.jsx(target='assets/js/devel/gen/jscript.js', source=jscript_jsx))
 
-Default(env.coffee(target='assets/js/milk/index.js', source='coffee/index.coffee'))
+Default(env.coffee(target='assets/js/devel/milk/index.js', source='coffee/index.coffee'))
+
+jsassets = go.Clone(AND='&& %s/jsassets assets assets/js/production/ugly/index.js >jsassets.d' % bindir).\
+           build('%s/jsassets' % bindir, source=(Dir('ostential/assets/jsassets'), Glob('src/ostential/assets/jsassets/*.go'), Glob('src/ostential/*.go')))
+Default(jsassets)
+ParseDepends('jsassets.d')
+SideEffect('jsassets.d', '%s/jsassets' % bindir)
+
+# Default(env.jsassets(target='jsassets.d', source=(jsassets,)))
+Default(env.uglify(target='assets/js/production/ugly/index.js', source=(Dir('assets/js/devel'), )))
 
 # non-Default
 ostent = go.Clone(TAGSARGS='-tags production').build('%s/ostent' % bindir, (
