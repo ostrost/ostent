@@ -5,7 +5,9 @@ templates_html=$(shell echo templates.html/{index,usepercent,tooltipable}.html)
 
 .PHONY: all devel
 all: $(bindir)/ostent
-devel: $(shell echo src/ostential/{view/bindata.devel.go,assets/bindata.devel.go})
+devel: # $(shell echo src/ostential/{view,assets}/bindata.devel.go)
+	go-bindata -pkg assets -o src/ostential/assets/bindata.devel.go -tags '!production' -debug -prefix assets -ignore assets/js/production/ assets/...
+	go-bindata -pkg view   -o src/ostential/view/bindata.devel.go   -tags '!production' -debug -prefix templates.html templates.html/...
 
 $(bindir)/amberpp: $(shell go list -f '\
 {{$$dir := .Dir}}\
