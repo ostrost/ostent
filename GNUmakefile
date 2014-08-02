@@ -39,7 +39,7 @@ sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 
 tmp/jsassets.d: # $(bindir)/jsmakerule
 	@echo '* Prerequisite: tmp/jsassets.d'
-	$(MAKE) $(MFLAGS) $(bindir)/jsmakerule
+#	$(MAKE) $(MFLAGS) $(bindir)/jsmakerule
 	$(bindir)/jsmakerule assets/js/production/ugly/index.js >$@
 #	$^ assets/js/production/ugly/index.js >$@
 include tmp/jsassets.d
