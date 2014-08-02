@@ -38,22 +38,11 @@ Running the code
 
 3. **`export GOPATH=$GOPATH:$PWD`** `# the current directory into $GOPATH`
 
-4. **`go get github.com/jteeuwen/go-bindata/go-bindata github.com/rzab/amber`**
+4. **`go get -v ostent ostent/boot; go get -v -tags production ostent`
 
-5. **`scons`** to generate required `src/ostential/{assets,view}/bindata.devel.go`. These files will contain absolute local paths.
-   It's either scons, or run **manually**:
-   ```sh
-      go-bindata -pkg view   -o src/ostential/view/bindata.devel.go   -tags '!production' -debug -prefix templates.html templates.html
-      go-bindata -pkg assets -o src/ostential/assets/bindata.devel.go -tags '!production' -debug -prefix assets         assets/...
-   ```
+5. **`make devel`** to generate required `src/ostential/{assets,view}/bindata.devel.go`. These files will contain absolute local paths.
 
-   See [SCons](#scons) and [Assets](#the-assets) on topics.
-
-6. Using [rerun](https://github.com/skelterjohn/rerun), it'll go get the remaining Go dependecies:
-
-	**`go get github.com/skelterjohn/rerun`**
-
-7. **`rerun ostent`**
+6. Either `rerun ostent` (see [rerun](https://github.com/skelterjohn/rerun)) to run or `make` to build.
 
 Go packages
 -----------
@@ -65,31 +54,36 @@ rerun will find `main.devel.go` file; the other `main.production.go` (used when 
 is the init code for the distributed binaries: also includes
 [goagain](https://github.com/rcrowley/goagain) recovering and self-upgrading via [go-update](https://github.com/inconshreveable/go-update).
 
-`[src/]amberp/amberpp` is templates compiler, used with scons.
+`[src/]amberp/amberpp` is templates compiler, used with make.
 
-SCons
------
+Make
+----
+
+GNU make to rebuild the assets and build the program.
 
 Additional required tools here:
 - [Sass](http://sass-lang.com/install)
 - [react-tools](https://www.npmjs.org/package/react-tools) for jsx(1): `npm install react-tools #--global`
+- [uglify-js](https://www.npmjs.org/package/uglify-js) for production js assets:  `npm install uglify-js #--global`
 
-`scons` makes these **commited to the repo** files:
-- `src/ostential/view/bindata.devel.go`
-- `src/ostential/assets/bindata.devel.go`
+`make` rebuilds these **commited to the repo** files:
+- `src/ostential/assets/bindata.production.go`
+- `src/ostential/view/bindata.production.go`
 - `assets/css/index.css`
-- `assets/js/gen/jscript.js`
+- `assets/js/devel/milk/index.js`
+- `assets/js/devel/gen/jscript.js`
 - `tmp/jscript.jsx`
+- `tmp/jsassets.d`
 
 If you don't change source files, content re-generated should not differ from the commited.
-Whenever amber.templates or assets or style change, you have to re-run `scons`.
+Whenever amber.templates or style of coffee change, you have to re-run `make`.
 
-`scons build` compiles everything and produces final binary.
+`make` compiles everything and produces final binary.
 
 The assets
 ----------
 
 The binaries, to be stand-alone, have the assets (including `templates.html/`) embeded.
-Unless you specifically `go build` with `-tags production` (e.g with scons),
+Unless you specifically `go build` with `-tags production` (e.g with make),
 they are not embeded for the ease of development:
 with `rerun ostent`, asset requests are served from the actual files.
