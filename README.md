@@ -1,6 +1,6 @@
 `ostent` displays current system metrics. [**Demo** here](http://demo.ostrost.com/)
 
-![screenshot](https://ostrost.com/ostent/screenshot.png)
+![screenshot](https://www.ostrost.com/ostent/screenshot.png)
 
 Install & run with `curl -sSL https://github.com/rzab/ostent/raw/master/ostent.sh | sh`
 
