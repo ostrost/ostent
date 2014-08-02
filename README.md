@@ -38,11 +38,11 @@ Running the code
 
 3. **`export GOPATH=$GOPATH:$PWD`** `# the current directory into $GOPATH`
 
-4. **`go get -v ostent ostent/boot; go get -v -tags production ostent`
+4. **`go get -v ostent ostent/boot; go get -v -tags production ostent`**
 
 5. **`make devel`** to generate required `src/ostential/{assets,view}/bindata.devel.go`. These files will contain absolute local paths.
 
-6. Either `rerun ostent` (see [rerun](https://github.com/skelterjohn/rerun)) to run or `make` to build.
+6. Either **`rerun ostent`** (see [rerun](https://github.com/skelterjohn/rerun)) to run or **`make`** to build.
 
 Go packages
 -----------
