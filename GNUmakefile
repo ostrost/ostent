@@ -14,7 +14,7 @@ sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 #	@echo '* Sources:' $^
 	go build -o $@ amberp/amberpp
 
-$(bindir)/ostent: $(shell go get github.com/{inconshreveable/go-update,rcrowley/goagain}; \
+$(bindir)/ostent: $(shell \
 go list -tags production -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' ostent | xargs \
 go list -tags production -f '{{if and (not .Standard) (not .Goroot)}}\
 {{$$dir := .Dir}}\
