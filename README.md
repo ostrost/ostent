@@ -41,6 +41,7 @@ Running the code
 4. **`go get -v ostent ostent/boot; go get -v -tags production ostent`**
 
 5. **`make devel`** to generate required `src/ostential/{assets,view}/bindata.devel.go`. These files will contain absolute local paths.
+   GNU make is assumed.
 
 6. Either **`rerun ostent`** (see [rerun](https://github.com/skelterjohn/rerun)) to run or **`make`** to build.
 
@@ -69,11 +70,12 @@ Additional required tools here:
 `make` rebuilds these **commited to the repo** files:
 - `src/ostential/assets/bindata.production.go`
 - `src/ostential/view/bindata.production.go`
-- `assets/css/index.css`
-- `assets/js/devel/milk/index.js`
-- `assets/js/devel/gen/jscript.js`
-- `tmp/jscript.jsx`
+- `assets/js/devel/milk/*.js`
+- `assets/js/devel/gen/*.js`
+- `templates.html/*.html`
+- `assets/css/*.css`
 - `tmp/jsassets.d`
+- `tmp/*.jsx`
 
 If you don't change source files, content re-generated should not differ from the commited.
 Whenever amber.templates or style of coffee change, you have to re-run `make`.
