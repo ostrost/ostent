@@ -37,9 +37,11 @@ sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 	@echo '* Prerequisite: bin-jsmakerule'
 	go build -o $@ ostential/assets/jsmakerule
 
-tmp/jsassets.d: $(bindir)/jsmakerule
+tmp/jsassets.d: # $(bindir)/jsmakerule
 	@echo '* Prerequisite: tmp/jsassets.d'
-	$^ assets/js/production/ugly/index.js >$@
+	$(MAKE) $(MFLAGS) $(bindir)/jsmakerule
+	$(bindir)/jsmakerule assets/js/production/ugly/index.js >$@
+#	$^ assets/js/production/ugly/index.js >$@
 include tmp/jsassets.d
 assets/js/production/ugly/index.js:
 	@echo    @uglifyjs -c -o $@ [devel-jsassets]
