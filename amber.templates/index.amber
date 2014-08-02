@@ -71,7 +71,7 @@ html
                   a[href="#vg"] #vagrant
 
             li.active
-              a[href="https://ostrost.com/ostent/releases/latest"][title="version "+ Data.VERSION] OSTENT
+              a[href="https://www.ostrost.com/ostent/releases/latest"][title="version "+ Data.VERSION] OSTENT
 
     div.container-fluid.padding-top71#top
       div.row
