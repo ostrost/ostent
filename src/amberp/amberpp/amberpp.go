@@ -92,7 +92,7 @@ func curly(s string) string {
 	return "{" + s + "}"
 }
 
-func mkmap(top tree) interface{} {
+func mkmap(top tree, jscriptMode bool, level int) interface{} {
 	if len(top.leaves) == 0 {
 		return curly(dotted(&top))
 	}
@@ -109,8 +109,11 @@ func mkmap(top tree) interface{} {
 				h[leaf.name] = []string{}
 			}
 		} else {
-			h[leaf.name] = mkmap(*leaf)
+			h[leaf.name] = mkmap(*leaf, jscriptMode, level+1)
 		}
+	}
+	if jscriptMode && level == 0 {
+		h["CLASSNAME"] = "className"
 	}
 	return h
 }
@@ -192,14 +195,14 @@ func main() {
 	if definesFile != "" {
 		b, err := ioutil.ReadFile(definesFile)
 		check(err)
-		inputText += compile(b, prettyPrint)
+		inputText += compile(b, prettyPrint, jscriptMode)
 		if inputText[len(inputText)-1] == '\n' { // amber does add this '\n', which is fine for the end of a file, which inputText is not
 			inputText = inputText[:len(inputText)-1]
 		}
 	}
 	b, err := ioutil.ReadFile(inputFile)
 	check(err)
-	inputText += compile(b, prettyPrint)
+	inputText += compile(b, prettyPrint, jscriptMode)
 
 	fstplate, err := template.New("fst").Funcs(dotFuncs).Delims("[[", "]]").Parse(inputText)
 	check(err)
@@ -213,11 +216,9 @@ func main() {
 	sndplate, err := template.New("snd").Funcs(template.FuncMap(amber.FuncMap)).Parse(fst)
 	check(err)
 
-	m := data(sndplate.Tree) //; fmt.Printf("data => %+v\nstring_hash(data) => %+v", m, string_hash(m))
+	m := data(sndplate.Tree, jscriptMode) //; fmt.Printf("data => %+v\nstring_hash(data) => %+v", m, string_hash(m))
 	snd := execute(sndplate, m)
-
 	snd = regexp.MustCompile("</?script>").ReplaceAllLiteralString(snd, "")
-	snd = strings.Replace(snd, " class=", " className=", -1) // fingers crossed
 
 	writeFile(outputFile, snd)
 }
@@ -231,9 +232,12 @@ func writeFile(optFilename, s string) {
 	}
 }
 
-func compile(input []byte, prettyPrint bool) string {
+func compile(input []byte, prettyPrint, jscriptMode bool) string {
 	compiler := amber.New()
 	compiler.PrettyPrint = prettyPrint // compiler.Options.PrettyPrint?
+	if jscriptMode {
+		compiler.ClassName = "className"
+	}
 
 	check(compiler.Parse(string(input)))
 	s, err := compiler.CompileString()
@@ -247,7 +251,7 @@ func execute(emplate *template.Template, data interface{}) string {
 	return buf.String()
 }
 
-func data(TREE *parse.Tree) interface{} {
+func data(TREE *parse.Tree, jscriptMode bool) interface{} {
 	if TREE == nil || TREE.Root == nil {
 		return "{}" // mkmap(tree{})
 	}
@@ -319,7 +323,7 @@ func data(TREE *parse.Tree) interface{} {
 			}
 		}
 	}
-	return mkmap(data)
+	return mkmap(data, jscriptMode, 0)
 }
 
 func getKeys(decl string, parseNode parse.Node) (keys []string) {

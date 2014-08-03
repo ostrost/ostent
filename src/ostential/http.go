@@ -861,6 +861,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 		struct{
 			Data interface{}
 			SCRIPTS []string
+			CLASSNAME string
 		}{
 			Data: pageData(r),
 			SCRIPTS: scripts(r),

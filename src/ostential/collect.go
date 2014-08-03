@@ -49,7 +49,7 @@ func _getmem(kind string, in sigar.Swap) types.Memory {
 	usepercent := percent(approxused, approxtotal)
 
 	UPhtml, _ := view.UsePercentTemplate.Execute(struct{
-		Class, Value string
+		Class, Value, CLASSNAME string
 	}{
 		Value: strconv.Itoa(int(usepercent)), // without "%"
 		Class: labelClass_colorPercent(usepercent),
