@@ -1,1 +1,4 @@
 language: go
+install:
+  - export GOPATH="$GOPATH:$PWD"
+  - make
