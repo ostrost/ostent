@@ -9,12 +9,19 @@ devel: # $(shell echo src/ostential/{view,assets}/bindata.devel.go)
 	go-bindata -pkg assets -o src/ostential/assets/bindata.devel.go -tags '!production' -debug -prefix assets -ignore assets/js/production/ assets/...
 	go-bindata -pkg view   -o src/ostential/view/bindata.devel.go   -tags '!production' -debug -prefix templates.html templates.html/...
 
+%: %.sh # clear the implicit *.sh rule covering ./ostent.sh
+
+$(bindir)/%:
+	@echo '* Sources:' $^
+	go build -o $@ $(patsubst src////%,%,$|)
+
+$(bindir)/amberpp: | src////amberp/amberpp
+$(bindir)/ostent:  | src////ostent
+
 $(bindir)/amberpp: $(shell go list -f '\
 {{$$dir := .Dir}}\
 {{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}' amberp/amberpp | \
 sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
-#	@echo '* Sources:' $^
-	go build -o $@ amberp/amberpp
 
 $(bindir)/ostent: $(shell \
 go list -tags production -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' ostent | xargs \
@@ -42,7 +49,9 @@ tmp/jsassets.d: # $(bindir)/jsmakerule
 #	$(MAKE) $(MFLAGS) $(bindir)/jsmakerule
 	$(bindir)/jsmakerule assets/js/production/ugly/index.js >$@
 #	$^ assets/js/production/ugly/index.js >$@
+ifneq ($(MAKECMDGOALS), clean)
 include tmp/jsassets.d
+endif
 assets/js/production/ugly/index.js:
 	@echo    @uglifyjs -c -o $@ [devel-jsassets]
 	@cat $^ | uglifyjs -c -o $@ -
