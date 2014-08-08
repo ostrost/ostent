@@ -65,6 +65,9 @@ templates.html/%.html: amber.templates/%.amber amber.templates/defines.amber $(b
 tmp/jscript.jsx: amber.templates/jscript.amber amber.templates/defines.amber $(bindir)/amberpp
 	$(bindir)/amberpp -defines amber.templates/defines.amber -j -output $@ $<
 
+assets/js/devel/milk/index.js: coffee/index.coffee
+	coffee -p $^ >/dev/null && coffee -o $(@D)/ $^
+
 assets/js/devel/gen/jscript.js: tmp/jscript.jsx
 	jsx <$^ >/dev/null && jsx <$^ 2>/dev/null >$@
 
