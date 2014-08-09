@@ -3,11 +3,16 @@
 bindir=bin/$(shell uname -sm | awk '{ sub(/x86_64/, "amd64", $$2); print tolower($$1) "_" $$2; }')
 templates_html=$(shell echo templates.html/{index,usepercent,tooltipable}.html)
 
+binassets_develgo        =src/ostential/assets/bindata.devel.go
+binassets_productiongo   =src/ostential/assets/bindata.production.go
+bintemplates_develgo     =src/ostential/view/bindata.devel.go
+bintemplates_productiongo=src/ostential/view/bindata.production.go
+
 .PHONY: all devel
 all: $(bindir)/ostent
 devel: # $(shell echo src/ostential/{view,assets}/bindata.devel.go)
-	go-bindata -pkg assets -o src/ostential/assets/bindata.devel.go -tags '!production' -debug -prefix assets -ignore assets/js/production/ assets/...
-	go-bindata -pkg view   -o src/ostential/view/bindata.devel.go   -tags '!production' -debug -prefix templates.html templates.html/...
+	go-bindata -pkg assets -o $(binassets_develgo) -tags '!production' -debug -prefix assets -ignore assets/js/production/ assets/...
+	cd $(dir $(word 1, $(templates_html))) && go-bindata -pkg view -tags '!production' -debug -o ../$(bintemplates_develgo) $(notdir $(templates_html))
 
 %: %.sh # clear the implicit *.sh rule covering ./ostent.sh
 
@@ -33,7 +38,7 @@ sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 #	@echo '* Sources:' $^
 	go build -tags production -o $@ ostent
 
-$(bindir)/jsmakerule: src/ostential/assets/bindata.devel.go $(shell \
+$(bindir)/jsmakerule: $(binassets_develgo) $(shell \
 go list -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' ostential/assets/jsmakerule | xargs \
 go list -f '{{if and (not .Standard) (not .Goroot)}}\
 {{$$dir := .Dir}}\
@@ -71,12 +76,12 @@ assets/js/devel/milk/index.js: coffee/index.coffee
 assets/js/devel/gen/jscript.js: tmp/jscript.jsx
 	jsx <$^ >/dev/null && jsx <$^ 2>/dev/null >$@
 
-src/ostential/view/bindata.production.go: $(templates_html)
+$(bintemplates_productiongo): $(templates_html)
 	cd $(<D) && go-bindata -pkg view -tags production -o ../$@ $(^F)
-src/ostential/view/bindata.devel.go: $(templates_html)
+$(bintemplates_develgo): $(templates_html)
 	cd $(<D) && go-bindata -pkg view -tags '!production' -debug -o ../$@ $(^F)
 
-src/ostential/assets/bindata.production.go: assets/css/index.css $(shell find assets -type f | grep -v assets/js/devel/) assets/js/production/ugly/index.js
+$(binasseets_productiongo): assets/css/index.css $(shell find assets -type f | grep -v assets/js/devel/) assets/js/production/ugly/index.js
 	go-bindata -pkg assets -o $@ -tags production -prefix assets -ignore assets/js/devel/ assets/...
-src/ostential/assets/bindata.devel.go: assets/css/index.css $(shell find assets -type f | grep -v assets/js/production/) assets/js/devel/gen/jscript.js
+$(binasseets_develgo): assets/css/index.css $(shell find assets -type f | grep -v assets/js/production/) assets/js/devel/gen/jscript.js
 	go-bindata -pkg assets -o $@ -tags '!production' -debug -prefix assets -ignore assets/js/production/ assets/...
