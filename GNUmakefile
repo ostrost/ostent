@@ -1,17 +1,17 @@
 #!/usr/bin/env make -f
 
-bindir=bin/$(shell uname -sm | awk '{ sub(/x86_64/, "amd64", $$2); print tolower($$1) "_" $$2; }')
-templates_html=$(shell echo templates.html/{index,usepercent,tooltipable}.html)
-
+templates_html           =$(shell echo share/templates.html/{index,usepercent,tooltipable}.html)
 binassets_develgo        =src/ostential/assets/bindata.devel.go
 binassets_productiongo   =src/ostential/assets/bindata.production.go
 bintemplates_develgo     =src/ostential/view/bindata.devel.go
 bintemplates_productiongo=src/ostential/view/bindata.production.go
 
+bindir=bin/$(shell uname -sm | awk '{ sub(/x86_64/, "amd64", $$2); print tolower($$1) "_" $$2; }')
+
 .PHONY: all devel
 all: $(bindir)/ostent
 devel: # $(shell echo src/ostential/{view,assets}/bindata.devel.go)
-	go-bindata -pkg assets -o $(binassets_develgo) -tags '!production' -debug -prefix assets -ignore assets/js/production/ assets/...
+	go-bindata -pkg assets -o $(binassets_develgo) -tags '!production' -debug -prefix share/assets -ignore share/assets/js/production/ share/assets/...
 	cd $(dir $(word 1, $(templates_html))) && go-bindata -pkg view -tags '!production' -debug -o ../$(bintemplates_develgo) $(notdir $(templates_html))
 
 %: %.sh # clear the implicit *.sh rule covering ./ostent.sh
@@ -49,39 +49,39 @@ sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 	@echo '* Prerequisite: bin-jsmakerule'
 	go build -o $@ ostential/assets/jsmakerule
 
-tmp/jsassets.d: # $(bindir)/jsmakerule
-	@echo '* Prerequisite: tmp/jsassets.d'
+share/tmp/jsassets.d: # $(bindir)/jsmakerule
+	@echo '* Prerequisite: share/tmp/jsassets.d'
 #	$(MAKE) $(MFLAGS) $(bindir)/jsmakerule
-	$(bindir)/jsmakerule assets/js/production/ugly/index.js >$@
-#	$^ assets/js/production/ugly/index.js >$@
+	$(bindir)/jsmakerule share/assets/js/production/ugly/index.js >$@
+#	$^ share/assets/js/production/ugly/index.js >$@
 ifneq ($(MAKECMDGOALS), clean)
-include tmp/jsassets.d
+include share/tmp/jsassets.d
 endif
-assets/js/production/ugly/index.js:
+share/assets/js/production/ugly/index.js:
 	@echo    @uglifyjs -c -o $@ [devel-jsassets]
 	@cat $^ | uglifyjs -c -o $@ -
 #	uglifyjs -c -o $@ $^
 
-assets/css/index.css: style/index.scss
+share/assets/css/index.css: share/style/index.scss
 	sass $< $@
 
-templates.html/%.html: amber.templates/%.amber amber.templates/defines.amber $(bindir)/amberpp
-	$(bindir)/amberpp -defines amber.templates/defines.amber -output $@ $<
-tmp/jscript.jsx: amber.templates/jscript.amber amber.templates/defines.amber $(bindir)/amberpp
-	$(bindir)/amberpp -defines amber.templates/defines.amber -j -output $@ $<
+share/templates.html/%.html: share/amber.templates/%.amber share/amber.templates/defines.amber $(bindir)/amberpp
+	$(bindir)/amberpp -defines share/amber.templates/defines.amber -output $@ $<
+share/tmp/jscript.jsx: share/amber.templates/jscript.amber share/amber.templates/defines.amber $(bindir)/amberpp
+	$(bindir)/amberpp -defines share/amber.templates/defines.amber -j -output $@ $<
 
-assets/js/devel/milk/index.js: coffee/index.coffee
+share/assets/js/devel/milk/index.js: share/coffee/index.coffee
 	coffee -p $^ >/dev/null && coffee -o $(@D)/ $^
 
-assets/js/devel/gen/jscript.js: tmp/jscript.jsx
+share/assets/js/devel/gen/jscript.js: share/tmp/jscript.jsx
 	jsx <$^ >/dev/null && jsx <$^ 2>/dev/null >$@
 
 $(bintemplates_productiongo): $(templates_html)
-	cd $(<D) && go-bindata -pkg view -tags production -o ../$@ $(^F)
+	cd $(<D) && go-bindata -ignore '.*\.go' -pkg view -tags production -o ../../$@ $(^F)
 $(bintemplates_develgo): $(templates_html)
-	cd $(<D) && go-bindata -pkg view -tags '!production' -debug -o ../$@ $(^F)
+	cd $(<D) && go-bindata -ignore '.*\.go' -pkg view -tags '!production' -debug -o ../../$@ $(^F)
 
-$(binasseets_productiongo): assets/css/index.css $(shell find assets -type f | grep -v assets/js/devel/) assets/js/production/ugly/index.js
-	go-bindata -pkg assets -o $@ -tags production -prefix assets -ignore assets/js/devel/ assets/...
-$(binasseets_develgo): assets/css/index.css $(shell find assets -type f | grep -v assets/js/production/) assets/js/devel/gen/jscript.js
-	go-bindata -pkg assets -o $@ -tags '!production' -debug -prefix assets -ignore assets/js/production/ assets/...
+$(binassets_productiongo): share/assets/css/index.css $(shell find share/assets -type f | grep -v share/assets/js/devel/) share/assets/js/production/ugly/index.js
+	go-bindata -ignore '.*\.go' -ignore jsmakerule -pkg assets -o $@ -tags production -prefix share/assets -ignore share/assets/js/devel/ share/assets/...
+$(binassets_develgo): share/assets/css/index.css $(shell find share/assets -type f | grep -v share/assets/js/production/) share/assets/js/devel/gen/jscript.js
+	go-bindata -ignore '.*\.go' -ignore jsmakerule -pkg assets -o $@ -tags '!production' -debug -prefix share/assets -ignore share/assets/js/production/ share/assets/...

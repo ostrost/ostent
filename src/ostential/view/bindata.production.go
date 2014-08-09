@@ -611,10 +611,10 @@ type _bintree_t struct {
 	Children map[string]*_bintree_t
 }
 var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
+	"tooltipable.html": &_bintree_t{tooltipable_html, map[string]*_bintree_t{
+	}},
 	"index.html": &_bintree_t{index_html, map[string]*_bintree_t{
 	}},
 	"usepercent.html": &_bintree_t{usepercent_html, map[string]*_bintree_t{
-	}},
-	"tooltipable.html": &_bintree_t{tooltipable_html, map[string]*_bintree_t{
 	}},
 }}

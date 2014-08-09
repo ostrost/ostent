@@ -9,7 +9,7 @@ import (
 
 	"ostential/assets"
 )
-const packageName = "assets" // ostential/assets <- this assets
+const packageName = "share/assets" // ostential/assets <- this assets
 
 func main() {
 	flag.Parse()
@@ -17,6 +17,7 @@ func main() {
 
 	var lines []string
 	for _, line := range assets.JsAssetNames() {
+		// lines = append(lines, packageName +"/" + line)
 		lines = append(lines, filepath.Join(packageName, line))
 	}
 
