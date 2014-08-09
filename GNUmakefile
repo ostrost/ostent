@@ -71,10 +71,10 @@ assets/js/devel/milk/index.js: coffee/index.coffee
 assets/js/devel/gen/jscript.js: tmp/jscript.jsx
 	jsx <$^ >/dev/null && jsx <$^ 2>/dev/null >$@
 
-src/ostential/view/bindata.production.go: $(templates_html) # $(wildcard templates.html/*.html)
-	go-bindata -pkg view -o $@ -tags production -prefix templates.html templates.html/...
-src/ostential/view/bindata.devel.go: $(templates_html) # $(wildcard templates.html/*.html)
-	go-bindata -pkg view -o $@ -tags '!production' -debug -prefix templates.html templates.html/...
+src/ostential/view/bindata.production.go: $(templates_html)
+	cd $(<D) && go-bindata -pkg view -tags production -o ../$@ $(^F)
+src/ostential/view/bindata.devel.go: $(templates_html)
+	cd $(<D) && go-bindata -pkg view -tags '!production' -debug -o ../$@ $(^F)
 
 src/ostential/assets/bindata.production.go: assets/css/index.css $(shell find assets -type f | grep -v assets/js/devel/) assets/js/production/ugly/index.js
 	go-bindata -pkg assets -o $@ -tags production -prefix assets -ignore assets/js/devel/ assets/...

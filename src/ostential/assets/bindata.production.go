@@ -8485,3 +8485,60 @@ var _bindata = map[string]func() ([]byte, error){
 	"js/production/ugly/index.js": js_production_ugly_index_js,
 	"robots.txt": robots_txt,
 }
+// AssetDir returns the file names below a certain
+// directory embedded in the file by go-bindata.
+// For example if you run go-bindata on data/... and data contains the
+// following hierarchy:
+//     data/
+//       foo.txt
+//       img/
+//         a.png
+//         b.png
+// then AssetDir("data") would return []string{"foo.txt", "img"}
+// AssetDir("data/img") would return []string{"a.png", "b.png"}
+// AssetDir("foo.txt") and AssetDir("notexist") would return an error
+// AssetDir("") will return []string{"data"}.
+func AssetDir(name string) ([]string, error) {
+	node := _bintree
+	if len(name) != 0 {
+		cannonicalName := strings.Replace(name, "\\", "/", -1)
+		pathList := strings.Split(cannonicalName, "/")
+		for _, p := range pathList {
+			node = node.Children[p]
+			if node == nil {
+				return nil, fmt.Errorf("Asset %s not found", name)
+			}
+		}
+	}
+	if node.Func != nil {
+		return nil, fmt.Errorf("Asset %s not found", name)
+	}
+	rv := make([]string, 0, len(node.Children))
+	for name := range node.Children {
+		rv = append(rv, name)
+	}
+	return rv, nil
+}
+
+type _bintree_t struct {
+	Func func() ([]byte, error)
+	Children map[string]*_bintree_t
+}
+var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
+	"css": &_bintree_t{nil, map[string]*_bintree_t{
+		"index.css": &_bintree_t{css_index_css, map[string]*_bintree_t{
+		}},
+	}},
+	"favicon.png": &_bintree_t{favicon_png, map[string]*_bintree_t{
+	}},
+	"js": &_bintree_t{nil, map[string]*_bintree_t{
+		"production": &_bintree_t{nil, map[string]*_bintree_t{
+			"ugly": &_bintree_t{nil, map[string]*_bintree_t{
+				"index.js": &_bintree_t{js_production_ugly_index_js, map[string]*_bintree_t{
+				}},
+			}},
+		}},
+	}},
+	"robots.txt": &_bintree_t{robots_txt, map[string]*_bintree_t{
+	}},
+}}
