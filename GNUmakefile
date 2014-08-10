@@ -66,17 +66,17 @@ include src/share/tmp/jsassets.d
 endif
 src/share/assets/js/production/ugly/index.js:
 	@echo @uglifyjs -c -o $@ ...
-	@type uglifyjs >/dev/null && cat $^ | uglifyjs -c -o $@ -
+	@if type uglifyjs >/dev/null; then cat $^ | uglifyjs -c -o $@ -; fi
 #	uglifyjs -c -o $@ $^
 
 src/share/assets/css/index.css: src/share/style/index.scss
-	type sass >/dev/null && sass $< $@
+	if type sass >/dev/null; then sass $< $@; fi
 
 src/share/assets/js/devel/milk/index.js: src/share/coffee/index.coffee
-	type coffee >/dev/null && coffee -p $^ >/dev/null && coffee -o $(@D)/ $^
+	if coffee >/dev/null; then coffee -p $^ >/dev/null && coffee -o $(@D)/ $^; fi
 
 src/share/assets/js/devel/gen/jscript.js: src/share/tmp/jscript.jsx
-	type jsx >/dev/null && jsx <$^ >/dev/null && jsx <$^ 2>/dev/null >$@
+	if type jsx >/dev/null; then jsx <$^ >/dev/null && jsx <$^ 2>/dev/null >$@; fi
 
 src/share/templates.html/%.html: src/share/amber.templates/%.amber src/share/amber.templates/defines.amber $(bindir)/amberpp
 	$(bindir)/amberpp -defines src/share/amber.templates/defines.amber -output $@ $<
