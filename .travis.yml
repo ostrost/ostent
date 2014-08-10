@@ -1,5 +1,6 @@
 language: go
 install:
+  - export PATH="$PATH:$HOME/gopath/bin"
   - export GOPATH="$GOPATH:$PWD"
   - make bootstrap
 # - go get -v ostent ostent/boot
