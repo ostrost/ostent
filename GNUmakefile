@@ -14,7 +14,6 @@ all: $(bindir)/ostent
 bootstrap:
 	go get -v github.com/jteeuwen/go-bindata/go-bindata
 	$(MAKE) $(MFLAGS) bootstrap_develgo
-#	go get -v ostent/boot
 	go get -v ostent github.com/skelterjohn/rerun
 	go get -v -tags production ostent
 bootstrap_develgo: $(binassets_develgo) $(bintemplates_develgo)

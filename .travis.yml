@@ -3,6 +3,6 @@ install:
   - export PATH="$PATH:$HOME/gopath/bin"
   - export GOPATH="$GOPATH:$PWD"
   - make bootstrap
-# - go get -v ostent ostent/boot
-# - go get -v -tags production ostent
-  - make
+script:
+  - go test -v ./...
+  - make # test the build
