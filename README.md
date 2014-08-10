@@ -66,8 +66,8 @@ GNU make to rebuild the assets and build the program.
 
 Additional required tools here:
 - [Sass](http://sass-lang.com/install)
-- [react-tools](https://www.npmjs.org/package/react-tools) for jsx(1): `npm install react-tools #--global`
-- [uglify-js](https://www.npmjs.org/package/uglify-js) for production js assets:  `npm install uglify-js #--global`
+- [react-tools](https://www.npmjs.org/package/react-tools)
+- [uglify-js](https://www.npmjs.org/package/uglify-js) (for builds)
 
 `make` rebuilds these **commited to the repo** files:
 - `src/share/templates.html/bindata.production.go`
@@ -80,14 +80,14 @@ Additional required tools here:
 - `src/share/tmp/*.jsx`
 
 If you don't change source files, content re-generated should not differ from the commited.
-Whenever amber.templates or style of coffee change, you have to re-run `make`.
+Whenever src/share/{amber.templates,style,coffee} modified, you have to re-run `make`.
 
 `make` compiles everything and produces final binary.
 
 The assets
 ----------
 
-The binaries, to be stand-alone, have the assets (including `templates.html/`) embeded.
+The binaries, to be stand-alone, have the assets and templates embeded.
 Unless you specifically `go build` with `-tags production` (e.g with make),
 they are not embeded for the ease of development:
 with `rerun ostent`, asset requests are served from the actual files.
