@@ -1,11 +1,11 @@
-#!/bin/sh -e
-set -e # yeah, won't ignore errors
+#!/bin/sh
+set -euo pipefail # strict mode
 
 DEST="${DEST:-$HOME/bin/ostent}" # change if you wish. the directory must be writable for ostent to self-upgrade
 
-hadinstall=
+runflags=
 if ! test -e "$DEST" ; then
-    hadinstall=-upgradelater
+    runflags=-upgradelater
 
     LATEST=https://github.com/rzab/ostent/releases/latest # Location header -> basename of it == version
     VERSION=$(curl -sSI $LATEST | awk -F:\  '$1 == "Location" { L=$2 } END { sub(/\r$/, "", L); sub(/^.*\//, "", L); print L }')
@@ -21,4 +21,4 @@ for arg in "$@" ; do
     exit # Ok, just install, no run
 done
 
-exec "$DEST" $hadinstall "$@"
+exec "$DEST" $runflags "$@"
