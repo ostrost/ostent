@@ -1,6 +1,8 @@
+[![Build status](https://secure.travis-ci.org/rzab/ostent.png?branch=master)](http://travis-ci.org/rzab/ostent)
+
 `ostent` displays current system metrics. [**Demo** here](http://demo.ostrost.com/)
 
-![screenshot](https://www.ostrost.com/ostent/screenshot.png)
+![Screenshot](https://www.ostrost.com/ostent/screenshot.png)
 
 Install & run with `curl -sSL https://github.com/rzab/ostent/raw/master/ostent.sh | sh`
 
@@ -39,9 +41,10 @@ Running the code
 3. **`export GOPATH=$GOPATH:$PWD`** `# the current directory into $GOPATH`
 
 4. **`make bootstrap`**
-   GNU make here. Will:
+
+  **GNU make**, to:
    - install required Go packages
-   - generate required `src/share/{assets,templates.html}/bindata.devel.go`
+   - generate `src/share/{assets,templates.html}/bindata.devel.go`
      These files will contain absolute local paths.
 
 5. Either **`rerun ostent`** (see [rerun](https://github.com/skelterjohn/rerun)) to run or **`make`** to build.
