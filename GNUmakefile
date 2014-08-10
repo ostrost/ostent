@@ -73,7 +73,7 @@ src/share/assets/css/index.css: src/share/style/index.scss
 	if type sass >/dev/null; then sass $< $@; fi
 
 src/share/assets/js/devel/milk/index.js: src/share/coffee/index.coffee
-	if coffee >/dev/null; then coffee -p $^ >/dev/null && coffee -o $(@D)/ $^; fi
+	if type coffee >/dev/null; then coffee -p $^ >/dev/null && coffee -o $(@D)/ $^; fi
 
 src/share/assets/js/devel/gen/jscript.js: src/share/tmp/jscript.jsx
 	if type jsx >/dev/null; then jsx <$^ >/dev/null && jsx <$^ 2>/dev/null >$@; fi
