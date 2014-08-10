@@ -3,11 +3,11 @@ import (
 	"os"
 	"os/exec"
 	"testing"
-	_"ostential"
+	_"ostent"
 )
 
-func Test_ostential(t *testing.T) {
-	cmd := exec.Command("go", "test", "ostential")
+func Test_ostent(t *testing.T) {
+	cmd := exec.Command("go", "test", ".") // "ostent"
 	cmd.Stdout = os.Stdout
     cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {

@@ -5,5 +5,5 @@
 /bin/
 /pkg/
 
-/src/ostential/assets/bindata.devel.go
-/src/ostential/view/bindata.devel.go
+src/share/assets/bindata.devel.go
+src/share/templates.html/bindata.devel.go

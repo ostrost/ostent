@@ -2,7 +2,7 @@
 
 package main
 import (
-	"ostential"
+	"libostent"
 
 	"net"
 	"log"
@@ -13,14 +13,14 @@ import (
 func main() {
 	flag.Parse()
 
-	go ostential.Loop()
-	// go ostential.CollectdLoop()
+	go ostent.Loop()
+	// go ostent.CollectdLoop()
 
-	listen, err := net.Listen("tcp", ostential.OstentBindFlag.String())
+	listen, err := net.Listen("tcp", ostent.OstentBindFlag.String())
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Fatal(ostential.Serve(listen, false, ostential.Muxmap{
+	log.Fatal(ostent.Serve(listen, false, ostent.Muxmap{
 		"/debug/pprof/{name}":  pprof.Index,
 		"/debug/pprof/cmdline": pprof.Cmdline,
 		"/debug/pprof/profile": pprof.Profile,

@@ -2,7 +2,7 @@
 
 package main
 import (
-	"ostential"
+	"libostent"
 
 	"os"
 	"net"
@@ -85,10 +85,10 @@ func upgrade_once(kill bool) bool {
 		mach = "i686"
 	}
 	new_version := newer_version()
-	if new_version == "" || new_version == "v"+ ostential.VERSION {
+	if new_version == "" || new_version == "v"+ ostent.VERSION {
 		return false
 	}
-// 	url := fmt.Sprintf("https://ostrost.com"+ "/ostent/releases/%s/%s %s/newer",    ostential.VERSION, strings.Title(runtime.GOOS), mach) // before v0.1.3
+// 	url := fmt.Sprintf("https://ostrost.com"+ "/ostent/releases/%s/%s %s/newer",    ostent.VERSION, strings.Title(runtime.GOOS), mach) // before v0.1.3
 	url := fmt.Sprintf("https://github.com/rzab/ostent/releases/download/%s/%s.%s", new_version,  strings.Title(runtime.GOOS), mach)
 
 	err, _ := update.New().FromUrl(url) // , snderr
@@ -115,13 +115,13 @@ func main() {
 	}
 
 	if !had_upgrade { // start the background routine unless just had an upgrade and gonna relaunch anyway
-		go ostential.Loop()
-		// go ostential.CollectdLoop()
+		go ostent.Loop()
+		// go ostent.CollectdLoop()
 	}
 
 	listen, err := goagain.Listener()
 	if err != nil {
-		listen, err = net.Listen("tcp", ostential.OstentBindFlag.String())
+		listen, err = net.Listen("tcp", ostent.OstentBindFlag.String())
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -134,12 +134,12 @@ func main() {
 			}()
 		} else {
 			go upgrade_loop()
-			go ostential.Serve(listen, true, nil)
+			go ostent.Serve(listen, true, nil)
 		}
 
 	} else {
 		go upgrade_loop()
-		go ostential.Serve(listen, true, nil)
+		go ostent.Serve(listen, true, nil)
 
 		if err := goagain.Kill(); err != nil {
 			log.Fatalln(err)
@@ -152,7 +152,7 @@ func main() {
 
 	// shutting down
 
-	if ostential.Connections.Reload() {
+	if ostent.Connections.Reload() {
 		time.Sleep(time.Second)
 	} // */
 
