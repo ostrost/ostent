@@ -7,12 +7,15 @@ bintemplates_productiongo = src/share/templates.html/bindata.production.go
 templates_html=$(shell echo src/share/templates.html/{index,usepercent,tooltipable}.html)
 bindir=bin/$(shell uname -sm | awk '{ sub(/x86_64/, "amd64", $$2); print tolower($$1) "_" $$2; }')
 
-.PHONY: all bootstrap
+.PHONY: all bootstrap bootstrap_develgo
 all: $(bindir)/ostent
-# bootstrap: # $(shell echo src/share/{templates.html,assets}/bindata.devel.go)
-bootstrap: $(binassets_develgo) $(bintemplates_develgo)
-# 	go-bindata -ignore '.*\.go' -ignore jsmakerule -pkg assets -o $(binassets_develgo) -tags '!production' -debug -prefix src/share/assets -ignore src/share/assets/js/production/ src/share/assets/...
-# 	cd $(dir $(word 1, $(templates_html))) && go-bindata -pkg view -tags '!production' -debug -o ../$(bintemplates_develgo) $(notdir $(templates_html))
+bootstrap:
+#	go get -v ostent ostent/boot
+	go get -v ./... github.com/jteeuwen/go-bindata/go-bindata github.com/skelterjohn/rerun
+#	go get -v -tags production ostent
+	go get -v -tags production ./...
+	$(MAKE) $(MFLAGS) bootstrap_develgo
+bootstrap_develgo: $(binassets_develgo) $(bintemplates_develgo)
 
 %: %.sh # clear the implicit *.sh rule covering ./ostent.sh
 
@@ -80,6 +83,7 @@ $(bintemplates_productiongo): $(templates_html)
 	cd $(<D) && go-bindata -ignore '.*\.go' -pkg view -tags production -o $(@F) $(^F)
 $(bintemplates_develgo): $(templates_html)
 	cd $(<D) && go-bindata -ignore '.*\.go' -pkg view -tags '!production' -debug -o $(@F) $(^F)
+# 	cd $(dir $(word 1, $(templates_html))) && go-bindata -pkg view -tags '!production' -debug -o ../$(bintemplates_develgo) $(notdir $(templates_html))
 
 $(binassets_productiongo):
 	go-bindata -ignore '.*\.go' -ignore jsmakerule -pkg assets -o $@ -tags production -prefix src/share/assets -ignore src/share/assets/js/devel/ src/share/assets/...
@@ -90,7 +94,7 @@ $(binassets_productiongo): $(shell find src/share/assets -type f \! -name '*.go'
 $(binassets_productiongo): src/share/assets/css/index.css
 $(binassets_productiongo): src/share/assets/js/production/ugly/index.js
 
-ifneq ($(MAKECMDGOALS), bootstrap)
+ifeq (, $(findstring bootstrap, $(MAKECMDGOALS)))
 $(binassets_develgo): $(shell find src/share/assets -type f \! -name '*.go' \! -path src/share/assets/js/production/)
 $(binassets_develgo): src/share/assets/css/index.css
 $(binassets_develgo): src/share/assets/js/devel/gen/jscript.js

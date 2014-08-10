@@ -1,7 +1,7 @@
 language: go
 install:
   - export GOPATH="$GOPATH:$PWD"
-  - make devel
-  - go get -v ostent ostent/boot
-  - go get -v -tags production ostent
+  - make bootstrap
+# - go get -v ostent ostent/boot
+# - go get -v -tags production ostent
   - make

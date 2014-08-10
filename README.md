@@ -38,17 +38,16 @@ Running the code
 
 3. **`export GOPATH=$GOPATH:$PWD`** `# the current directory into $GOPATH`
 
-4. **`go get -v ostent ostent/boot; go get -v -tags production ostent`**
+4. **`make bootstrap`**
+   GNU make here. Will:
+   - install required Go packages
+   - generate required `src/share/{assets,templates.html}/bindata.devel.go`
+     These files will contain absolute local paths.
 
-5. **`make devel`** to generate required `src/ostential/{assets,view}/bindata.devel.go`. These files will contain absolute local paths.
-   GNU make is assumed.
-
-6. Either **`rerun ostent`** (see [rerun](https://github.com/skelterjohn/rerun)) to run or **`make`** to build.
+5. Either **`rerun ostent`** (see [rerun](https://github.com/skelterjohn/rerun)) to run or **`make`** to build.
 
 Go packages
 -----------
-
-`[src/]ostential` is the core package.
 
 `[src/]ostent` is the main (_as in [Go Program execution](http://golang.org/ref/spec#Program_execution)_) package:
 rerun will find `main.devel.go` file; the other `main.production.go` (used when building with `-tags production`)
@@ -68,14 +67,14 @@ Additional required tools here:
 - [uglify-js](https://www.npmjs.org/package/uglify-js) for production js assets:  `npm install uglify-js #--global`
 
 `make` rebuilds these **commited to the repo** files:
-- `src/ostential/assets/bindata.production.go`
-- `src/ostential/view/bindata.production.go`
-- `assets/js/devel/milk/*.js`
-- `assets/js/devel/gen/*.js`
-- `templates.html/*.html`
-- `assets/css/*.css`
-- `tmp/jsassets.d`
-- `tmp/*.jsx`
+- `src/share/templates.html/bindata.production.go`
+- `src/share/assets/bindata.production.go`
+- `src/share/assets/js/devel/milk/*.js`
+- `src/share/assets/js/devel/gen/*.js`
+- `src/share/templates.html/*.html`
+- `src/share/assets/css/*.css`
+- `src/share/tmp/jsassets.d`
+- `src/share/tmp/*.jsx`
 
 If you don't change source files, content re-generated should not differ from the commited.
 Whenever amber.templates or style of coffee change, you have to re-run `make`.
