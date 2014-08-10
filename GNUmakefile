@@ -4,7 +4,9 @@ binassets_develgo         = src/share/assets/bindata.devel.go
 binassets_productiongo    = src/share/assets/bindata.production.go
 bintemplates_develgo      = src/share/templates.html/bindata.devel.go
 bintemplates_productiongo = src/share/templates.html/bindata.production.go
-templates_html=$(addprefix  src/share/templates.html/, index.html usepercent.html tooltipable.html)
+templates_dir             = src/share/templates.html/
+templates_files           = index.html usepercent.html tooltipable.html
+templates_html=$(addprefix $(templates_dir), $(templates_files))
 bindir=bin/$(shell uname -sm | awk '{ sub(/x86_64/, "amd64", $$2); print tolower($$1) "_" $$2; }')
 
 .PHONY: all bootstrap bootstrap_develgo
@@ -12,10 +14,9 @@ all: $(bindir)/ostent
 bootstrap:
 	go get -v github.com/jteeuwen/go-bindata/go-bindata
 	$(MAKE) $(MFLAGS) bootstrap_develgo
-#	go get -v ostent ostent/boot
-	go get -v ./... github.com/skelterjohn/rerun
-#	go get -v -tags production ostent
-	go get -v -tags production ./...
+#	go get -v ostent/boot
+	go get -v ostent github.com/skelterjohn/rerun
+	go get -v -tags production ostent
 bootstrap_develgo: $(binassets_develgo) $(bintemplates_develgo)
 
 %: %.sh # clear the implicit *.sh rule covering ./ostent.sh
@@ -84,9 +85,14 @@ src/share/assets/js/devel/gen/jscript.js: src/share/tmp/jscript.jsx
 
 $(bintemplates_productiongo): $(templates_html)
 	cd $(<D) && go-bindata -ignore '.*\.go' -pkg view -tags production -o $(@F) $(^F)
-$(bintemplates_develgo): $(templates_html)
-	cd $(<D) && go-bindata -ignore '.*\.go' -pkg view -tags '!production' -debug -o $(@F) $(^F)
+$(bintemplates_develgo): # $(templates_html)
+#	$(templates_dir)   instead of $(<D)
+#	$(templates_files) instead of $(^F)
+	cd $(templates_dir) && go-bindata -ignore '.*\.go' -pkg view -tags '!production' -debug -o $(@F) $(templates_files)
 # 	cd $(dir $(word 1, $(templates_html))) && go-bindata -pkg view -tags '!production' -debug -o ../$(bintemplates_develgo) $(notdir $(templates_html))
+ifeq (, $(findstring bootstrap, $(MAKECMDGOALS)))
+$(bintemplates_develgo): $(templates_html)
+endif
 
 $(binassets_productiongo):
 	go-bindata -ignore '.*\.go' -ignore jsmakerule -pkg assets -o $@ -tags production -prefix src/share/assets -ignore src/share/assets/js/devel/ src/share/assets/...
