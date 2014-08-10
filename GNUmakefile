@@ -65,23 +65,23 @@ ifneq ($(MAKECMDGOALS), clean)
 include src/share/tmp/jsassets.d
 endif
 src/share/assets/js/production/ugly/index.js:
-	@echo    @uglifyjs -c -o $@ [devel-jsassets]
-	@cat $^ | uglifyjs -c -o $@ -
+	@echo @uglifyjs -c -o $@ ...
+	@type uglifyjs >/dev/null && cat $^ | uglifyjs -c -o $@ -
 #	uglifyjs -c -o $@ $^
 
 src/share/assets/css/index.css: src/share/style/index.scss
-	sass $< $@
+	type sass >/dev/null && sass $< $@
+
+src/share/assets/js/devel/milk/index.js: src/share/coffee/index.coffee
+	type coffee >/dev/null && coffee -p $^ >/dev/null && coffee -o $(@D)/ $^
+
+src/share/assets/js/devel/gen/jscript.js: src/share/tmp/jscript.jsx
+	type jsx >/dev/null && jsx <$^ >/dev/null && jsx <$^ 2>/dev/null >$@
 
 src/share/templates.html/%.html: src/share/amber.templates/%.amber src/share/amber.templates/defines.amber $(bindir)/amberpp
 	$(bindir)/amberpp -defines src/share/amber.templates/defines.amber -output $@ $<
 src/share/tmp/jscript.jsx: src/share/amber.templates/jscript.amber src/share/amber.templates/defines.amber $(bindir)/amberpp
 	$(bindir)/amberpp -defines src/share/amber.templates/defines.amber -j -output $@ $<
-
-src/share/assets/js/devel/milk/index.js: src/share/coffee/index.coffee
-	coffee -p $^ >/dev/null && coffee -o $(@D)/ $^
-
-src/share/assets/js/devel/gen/jscript.js: src/share/tmp/jscript.jsx
-	jsx <$^ >/dev/null && jsx <$^ 2>/dev/null >$@
 
 $(bintemplates_productiongo): $(templates_html)
 	cd $(<D) && go-bindata -ignore '.*\.go' -pkg view -tags production -o $(@F) $(^F)
