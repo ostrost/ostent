@@ -10,11 +10,12 @@ bindir=bin/$(shell uname -sm | awk '{ sub(/x86_64/, "amd64", $$2); print tolower
 .PHONY: all bootstrap bootstrap_develgo
 all: $(bindir)/ostent
 bootstrap:
+	go get -v github.com/jteeuwen/go-bindata/go-bindata
+	$(MAKE) $(MFLAGS) bootstrap_develgo
 #	go get -v ostent ostent/boot
-	go get -v ./... github.com/jteeuwen/go-bindata/go-bindata github.com/skelterjohn/rerun
+	go get -v ./... github.com/skelterjohn/rerun
 #	go get -v -tags production ostent
 	go get -v -tags production ./...
-	$(MAKE) $(MFLAGS) bootstrap_develgo
 bootstrap_develgo: $(binassets_develgo) $(bintemplates_develgo)
 
 %: %.sh # clear the implicit *.sh rule covering ./ostent.sh
@@ -26,6 +27,7 @@ $(bindir)/%:
 $(bindir)/amberpp: | src////amberp/amberpp
 $(bindir)/ostent:  | src////ostent
 
+ifeq (, $(findstring bootstrap, $(MAKECMDGOALS)))
 $(bindir)/amberpp: $(shell go list -f '\
 {{$$dir := .Dir}}\
 {{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}' amberp/amberpp | \
@@ -51,6 +53,7 @@ sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 #	@echo '* Sources:' $^
 	@echo '* Prerequisite: bin-jsmakerule'
 	go build -o $@ share/assets/jsmakerule
+endif
 
 src/share/tmp/jsassets.d: # $(bindir)/jsmakerule
 	@echo '* Prerequisite: src/share/tmp/jsassets.d'
