@@ -4,7 +4,7 @@ binassets_develgo         = src/share/assets/bindata.devel.go
 binassets_productiongo    = src/share/assets/bindata.production.go
 bintemplates_develgo      = src/share/templates.html/bindata.devel.go
 bintemplates_productiongo = src/share/templates.html/bindata.production.go
-templates_html=$(shell echo src/share/templates.html/{index,usepercent,tooltipable}.html)
+templates_html=$(addprefix  src/share/templates.html/, index.html usepercent.html tooltipable.html)
 bindir=bin/$(shell uname -sm | awk '{ sub(/x86_64/, "amd64", $$2); print tolower($$1) "_" $$2; }')
 
 .PHONY: all bootstrap bootstrap_develgo
