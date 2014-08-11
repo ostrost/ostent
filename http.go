@@ -714,7 +714,7 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 			copy(previf_copy, lastInfo.Previous.Interfaces)
 		}
 
-		if client.RefreshGeneric.refresh(forcerefresh) {
+		if true { // client.RefreshGeneric.refresh(forcerefresh)
 			g := lastInfo.Generic
 			// g.LA = g.LA1spark + " " + g.LA
 			pu.Generic = &g // &lastInfo.Generic
