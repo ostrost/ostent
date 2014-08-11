@@ -1,4 +1,5 @@
 package ostent
+
 import (
 	"libostent/types"
 
@@ -10,7 +11,7 @@ type refresh struct {
 	tick int
 }
 
-func(r *refresh) refresh(forcerefresh bool) bool {
+func (r *refresh) refresh(forcerefresh bool) bool {
 	if forcerefresh {
 		return true
 	}
@@ -23,8 +24,8 @@ func(r *refresh) refresh(forcerefresh bool) bool {
 	return true
 }
 
-func(r refresh) expires() bool {
-	return r.tick + 1 >= int(time.Duration(r.Duration) / time.Second)
+func (r refresh) expires() bool {
+	return r.tick+1 >= int(time.Duration(r.Duration)/time.Second)
 }
 
 type internalClient struct {
@@ -38,34 +39,33 @@ type internalClient struct {
 	toprows int
 }
 
-type title string
-func (ti *title) merge(ns string, dt **title) {
-	*dt = nil
-	if string(*ti) == ns {
+func (c client) mergeTitle(dst *string, src string, send **string) {
+	// *send = nil
+	if *dst == src {
 		return
 	}
-	*dt = newtitle(ns)
-	*ti = **dt
+	*send = new(string)
+	**send = src
+	*dst = **send
 }
 
 type commonClient struct {
-	HideMEM *bool `json:",omitempty"`
-	HideIF  *bool `json:",omitempty"`
-	HideCPU *bool `json:",omitempty"`
-	HideDF  *bool `json:",omitempty"`
-	HidePS  *bool `json:",omitempty"`
-	HideVG  *bool `json:",omitempty"`
-
+	HideMEM   *bool `json:",omitempty"`
+	HideIF    *bool `json:",omitempty"`
+	HideCPU   *bool `json:",omitempty"`
+	HideDF    *bool `json:",omitempty"`
+	HidePS    *bool `json:",omitempty"`
+	HideVG    *bool `json:",omitempty"`
 	HideSWAP  *bool `json:",omitempty"`
-
 	ExpandIF  *bool `json:",omitempty"`
 	ExpandCPU *bool `json:",omitempty"`
 	ExpandDF  *bool `json:",omitempty"`
 
 	TabIF *types.SEQ `json:",omitempty"`
 	TabDF *types.SEQ `json:",omitempty"`
-	TabTitleIF *title `json:",omitempty"`
-	TabTitleDF *title `json:",omitempty"`
+
+	TabTitleIF *string `json:",omitempty"`
+	TabTitleDF *string `json:",omitempty"`
 
 	// PSusers []string `json:omitempty`
 
@@ -82,15 +82,15 @@ type client struct {
 	internalClient `json:"-"` // NB not marshalled
 	commonClient
 
-	ExpandableIF  *bool   `json:",omitempty"`
-	ExpandableCPU *bool   `json:",omitempty"`
-	ExpandableDF  *bool   `json:",omitempty"`
+	ExpandableIF  *bool `json:",omitempty"`
+	ExpandableCPU *bool `json:",omitempty"`
+	ExpandableDF  *bool `json:",omitempty"`
 
 	ExpandtextIF  *string `json:",omitempty"`
 	ExpandtextCPU *string `json:",omitempty"`
 	ExpandtextDF  *string `json:",omitempty"`
 
-	RefreshGeneric *refresh `json:",omitempty"`
+	// RefreshGeneric *refresh `json:",omitempty"`
 	RefreshMEM *refresh `json:",omitempty"`
 	RefreshIF  *refresh `json:",omitempty"`
 	RefreshCPU *refresh `json:",omitempty"`
@@ -139,7 +139,7 @@ type sendClient struct {
 	RefreshErrorPS  *bool `json:",omitempty"`
 	RefreshErrorVG  *bool `json:",omitempty"`
 
-	DebugError *string  `json:",omitempty"`
+	DebugError *string `json:",omitempty"`
 }
 
 func (c client) mergeBool(dst, src *bool, send **bool) {
@@ -160,7 +160,7 @@ func (c client) mergeSEQ(dst, src *types.SEQ, send **types.SEQ) {
 	*send = src
 }
 
-func(c *client) Merge(r recvClient, s *sendClient) {
+func (c *client) Merge(r recvClient, s *sendClient) {
 	c.mergeBool(c.HideMEM, r.HideMEM, &s.HideMEM)
 	c.mergeBool(c.HideIF,  r.HideIF,  &s.HideIF)
 	c.mergeBool(c.HideCPU, r.HideCPU, &s.HideCPU)
@@ -184,14 +184,8 @@ func(c *client) Merge(r recvClient, s *sendClient) {
 	c.mergeSEQ (c.TabDF, r.TabDF, &s.TabDF)
 
 	// merge NOT from the r
-	c.TabTitleIF.merge(IFTABS.Title(*c.TabIF), &s.TabTitleIF)
-	c.TabTitleDF.merge(DFTABS.Title(*c.TabDF), &s.TabTitleDF)
-}
-
-func newtitle(s string) *title {
-	p := new(title)
-	*p = title(s)
-	return p
+	c.mergeTitle(c.TabTitleIF, IFTABS.Title(*c.TabIF), &s.TabTitleIF)
+	c.mergeTitle(c.TabTitleDF, DFTABS.Title(*c.TabDF), &s.TabTitleDF)
 }
 
 func newfalse()      *bool { return new(bool); }
@@ -227,8 +221,11 @@ func defaultClient() client {
 
 	cs.TabIF = newseq(IFBYTES_TABID)
 	cs.TabDF = newseq(DFBYTES_TABID)
-	cs.TabTitleIF = newtitle(IFTABS.Title(*cs.TabIF))
-	cs.TabTitleDF = newtitle(DFTABS.Title(*cs.TabDF))
+
+	cs.TabTitleIF = new(string)
+	*cs.TabTitleIF = IFTABS.Title(*cs.TabIF)
+	cs.TabTitleDF = new(string)
+	*cs.TabTitleDF = DFTABS.Title(*cs.TabDF)
 
 	hideconfig := true
 	// hideconfig  = false // DEVELOPMENT
@@ -240,13 +237,13 @@ func defaultClient() client {
 	cs.HideconfigPS  = newbool(hideconfig)
 	cs.HideconfigVG  = newbool(hideconfig)
 
-	cs.RefreshGeneric = newdefaultrefresh()
-	cs.RefreshMEM = newdefaultrefresh()
-	cs.RefreshIF  = newdefaultrefresh()
-	cs.RefreshCPU = newdefaultrefresh()
-	cs.RefreshDF  = newdefaultrefresh()
-	cs.RefreshPS  = newdefaultrefresh()
-	cs.RefreshVG  = newdefaultrefresh()
+//	cs.RefreshGeneric = newdefaultrefresh()
+	cs.RefreshMEM     = newdefaultrefresh()
+	cs.RefreshIF      = newdefaultrefresh()
+	cs.RefreshCPU     = newdefaultrefresh()
+	cs.RefreshDF      = newdefaultrefresh()
+	cs.RefreshPS      = newdefaultrefresh()
+	cs.RefreshVG      = newdefaultrefresh()
 
 	cs.psLimit = 8
 
