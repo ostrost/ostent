@@ -171,7 +171,7 @@ func read_procs(CH chan []types.ProcInfo) {
 			// `procname' defined proc_{darwin,linux}.go
 			Name:     procname(pid, state.Name),
 			// Name:     strings.Join(append([]string{procname(pid, state.Name)}, args.List[1:]...), " "),
-			Uid:      state.Uid,
+			UID:      state.Uid,
 			Size:     mem.Size,
 			Resident: mem.Resident,
 		})

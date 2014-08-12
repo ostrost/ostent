@@ -26,7 +26,7 @@ func(po procOrder) Less(i, j int) bool {
 	case PSRES,  -PSRES:  t = po.seq.Sign(po.procs[i].Resident < po.procs[j].Resident)
 	case PSTIME, -PSTIME: t = po.seq.Sign(po.procs[i].Time     < po.procs[j].Time)
 	case PSNAME, -PSNAME: t = po.seq.Sign(po.procs[i].Name     < po.procs[j].Name)
-	case PSUID,  -PSUID:  t = po.seq.Sign(po.procs[i].Uid      < po.procs[j].Uid)
+	case PSUID,  -PSUID:  t = po.seq.Sign(po.procs[i].UID      < po.procs[j].UID)
 	}
 	if po.reverse {
 		return !t

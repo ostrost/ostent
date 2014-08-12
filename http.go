@@ -403,7 +403,7 @@ func orderProc(procs []types.ProcInfo, client *client, send *sendClient) []types
 			Nice:       proc.Nice,
 			Time:       formatTime(proc.Time),
 			NameHTML:   tooltipable(42, proc.Name),
-			UserHTML:   tooltipable(12, username(uids, proc.Uid)),
+			UserHTML:   tooltipable(12, username(uids, proc.UID)),
 			Size:       humanB(proc.Size),
 			Resident:   humanB(proc.Resident),
 		})

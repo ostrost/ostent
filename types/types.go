@@ -209,7 +209,7 @@ type ProcInfo struct {
 	Nice     int
 	Time     uint64
 	Name     string
-	Uid      uint
+	UID      uint
 	Size     uint64
 	Resident uint64
 }
