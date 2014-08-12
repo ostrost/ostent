@@ -1,9 +1,10 @@
 package ostent
+
 import (
 	"fmt"
 	"testing"
-// 	"strconv"
-// 	"github.com/dustin/go-humanize"
+	// "strconv"
+	// "github.com/dustin/go-humanize"
 	"github.com/rzab/gosigar"
 )
 
@@ -19,8 +20,8 @@ import (
 } // */
 
 func Test_humanB(t *testing.T) {
-	for _, v := range []struct{
-		a uint64
+	for _, v := range []struct {
+		a   uint64
 		cmp string
 	}{
 		{117649480 * 1024, "112G" /* "iB" */}, // sigar.FileSystemUsage....[uint64] value is /1024
@@ -35,11 +36,11 @@ func Test_humanB(t *testing.T) {
 } // */
 
 func Test_humanUnitless(t *testing.T) {
-	for _, v := range []struct{
-		a uint64
+	for _, v := range []struct {
+		a   uint64
 		cmp string
 	}{
-		{999,  "999"},
+		{999, "999"},
 		{1000, "1.0k"},
 		{1001, "1.0k"},
 	} {
@@ -51,22 +52,22 @@ func Test_humanUnitless(t *testing.T) {
 }
 
 func Test_percent(t *testing.T) {
-	for _, v := range []struct{
+	for _, v := range []struct {
 		a, b uint64
-		cmp uint
+		cmp  uint
 	}{
-		{ 201, 1000,  21},
-		{ 800, 1000,  80},
-		{ 890, 1000,  89},
-		{ 891, 1000,  90},
-		{ 899, 1000,  90},
-		{ 900, 1000,  90},
-		{ 901, 1000,  91},
-		{ 990, 1000,  99},
-		{ 991, 1000,  99},
-		{ 995, 1000,  99},
-		{ 996, 1000,  99},
-		{ 999, 1000,  99},
+		{201, 1000, 21},
+		{800, 1000, 80},
+		{890, 1000, 89},
+		{891, 1000, 90},
+		{899, 1000, 90},
+		{900, 1000, 90},
+		{901, 1000, 91},
+		{990, 1000, 99},
+		{991, 1000, 99},
+		{995, 1000, 99},
+		{996, 1000, 99},
+		{999, 1000, 99},
 		{1000, 1000, 100},
 	} {
 		cmp := percent(v.a, v.b)
@@ -77,14 +78,14 @@ func Test_percent(t *testing.T) {
 }
 
 func Test_formatUptime(t *testing.T) {
-	for _, v := range []struct{
-		a float64
+	for _, v := range []struct {
+		a   float64
 		cmp string
 	}{
-		{ 1080720, "12 days, 12:12"},
-		{ 1069920, "12 days,  9:12"},
-		{ 43920,   "12:12"},
-		{ 33120,   " 9:12"},
+		{1080720, "12 days, 12:12"},
+		{1069920, "12 days,  9:12"},
+		{43920, "12:12"},
+		{33120, " 9:12"},
 	} {
 		cmp := formatUptime(v.a)
 		if cmp != v.cmp {
@@ -97,9 +98,9 @@ func sigarUptime(t *testing.B) *sigar.Uptime {
 	return &sigar.Uptime{Length: 1080720 + float64(t.N)}
 }
 
-func BenchmarkUptimeFormat		(t *testing.B) { 						  sigarUptime(t).Format() }
-func BenchmarkFormatUptime		(t *testing.B) { formatUptime		   ((*sigarUptime(t)).Length) }
-func BenchmarkSigarUptimeFormat	(t *testing.B) { sigarUptimeFormatString(*sigarUptime(t)) }
+func BenchmarkUptimeFormat(t *testing.B)      { sigarUptime(t).Format() }
+func BenchmarkFormatUptime(t *testing.B)      { formatUptime((*sigarUptime(t)).Length) }
+func BenchmarkSigarUptimeFormat(t *testing.B) { sigarUptimeFormatString(*sigarUptime(t)) }
 
 // the way sigar.Uptime.Format implemented
 // sans bytes.Buffer, bufio.NewWriter stuff
