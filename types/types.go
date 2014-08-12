@@ -135,7 +135,7 @@ func (la Linkattrs) _attr(base url.Values, seq SEQ) *bool {
 	}
 
 	if la.Pname == "" {
-		if seq == la.Bimap.Default_seq {
+		if seq == la.Bimap.DefaultSeq {
 			return unlessreverse(false)
 		}
 		return nil
@@ -146,7 +146,7 @@ func (la Linkattrs) _attr(base url.Values, seq SEQ) *bool {
 	base.Set(la.Pname, seqstring)
 
 	if !haveParam { // no parameter in url
-		if seq == la.Bimap.Default_seq {
+		if seq == la.Bimap.DefaultSeq {
 			return unlessreverse(false)
 		}
 		return nil
@@ -163,13 +163,13 @@ func (la Linkattrs) _attr(base url.Values, seq SEQ) *bool {
 	var ascr *bool
 	if pos == seqstring {
 		t := neg[0] != '-'
-		if seq == la.Bimap.Default_seq {
+		if seq == la.Bimap.DefaultSeq {
 			t = true
 		}
 		ascr = unlessreverse(t)
 		base.Set(la.Pname, neg)
 	}
-	if seq == la.Bimap.Default_seq {
+	if seq == la.Bimap.DefaultSeq {
 		base.Del(la.Pname)
 	}
 	return ascr

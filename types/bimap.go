@@ -8,7 +8,7 @@ type Biseqmap struct {
 	SEQ2STRING  Seq2string
 	STRING2SEQ  map[string]SEQ
 	SEQ2REVERSE map[SEQ]bool
-	Default_seq SEQ
+	DefaultSeq  SEQ
 }
 
 func contains(thiss SEQ, lists []SEQ) bool {
@@ -27,7 +27,7 @@ func Seq2bimap(defSeq SEQ, s2s Seq2string, reverse []SEQ) Biseqmap {
 		STRING2SEQ:  map[string]SEQ{},
 		SEQ2REVERSE: map[SEQ]bool{},
 	}
-	bi.Default_seq = defSeq
+	bi.DefaultSeq = defSeq
 
 	for seq, str := range s2s {
 		isreverse := contains(seq, reverse)

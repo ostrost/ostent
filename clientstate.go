@@ -247,8 +247,8 @@ func defaultClient() client {
 
 	cs.psLimit = 8
 
-	cs.psSEQ = _PSBIMAP.Default_seq
-	cs.dfSEQ = _DFBIMAP.Default_seq
+	cs.psSEQ = _PSBIMAP.DefaultSeq
+	cs.dfSEQ = _DFBIMAP.DefaultSeq
 
 	cs.recalcrows()
 

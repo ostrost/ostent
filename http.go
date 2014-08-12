@@ -253,7 +253,7 @@ func valuesSet(req *http.Request, base url.Values, pname string, bimap types.Bis
 			return seq
 		}
 	}
-	return bimap.Default_seq
+	return bimap.DefaultSeq
 }
 
 func tooltipable(limit int, full string) template.HTML {
