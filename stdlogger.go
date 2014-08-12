@@ -1,4 +1,5 @@
 package ostent
+
 import (
 	"io"
 	"os"
@@ -16,10 +17,9 @@ func init() {
 	log.SetOutput(&lf)
 }
 
-type logFiltered struct{
+type logFiltered struct {
 	writer  io.Writer
 	scanner *bufio.Scanner
-	ping chan bool
 }
 
 func (lf *logFiltered) Write(p []byte) (int, error) {
@@ -38,16 +38,6 @@ func (lf *logFiltered) read() {
 		if strings.Contains(text, " handling ") {
 			continue
 		}
-		os.Stderr.WriteString(text +"\n")
+		os.Stderr.WriteString(text + "\n")
 	}
 }
-
-
-
-
-
-
-
-
-
-
