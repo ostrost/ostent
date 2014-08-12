@@ -1,4 +1,5 @@
 package ostent
+
 import (
 	"fmt"
 	"time"
@@ -9,7 +10,7 @@ import (
 func formatUptime(seconds float64) string { // "seconds" is expected to be sigar.Uptime.Length
 	d := time.Duration(seconds) * time.Second
 	s := ""
-	if d > time.Duration(24) * time.Hour {
+	if d > time.Duration(24)*time.Hour {
 		days := d / time.Hour / 24
 		end := ""
 		if days > 1 {
@@ -47,7 +48,7 @@ func humanUnitless(n uint64) string {
 }
 
 func humanBmany(n uint64, bits ...bool) (string, string, float64, float64) { // almost humanize.IBytes
-	sizes    := []string{"B", "K", "M", "G", "T", "P", "E"}
+	sizes := []string{"B", "K", "M", "G", "T", "P", "E"}
 	if len(bits) > 0 && bits[0] { // bits instead of bytes
 		sizes = []string{"b", "k", "m", "g", "t", "p", "e"}
 	}
@@ -70,11 +71,15 @@ func humanBmany(n uint64, bits ...bool) (string, string, float64, float64) { // 
 }
 
 func humanbits(n uint64) string {
-	s, _, _, _ := humanBmany(n, true); return s
+	s, _, _, _ := humanBmany(n, true)
+	return s
 }
+
 func humanB(n uint64, bits ...bool) string {
-	s, _, _, _ := humanBmany(n, bits...); return s
+	s, _, _, _ := humanBmany(n, bits...)
+	return s
 }
+
 func humanBandback(n uint64, bits ...bool) (string, uint64) {
 	s, f, val, pow := humanBmany(n, bits...)
 	d, err := strconv.ParseFloat(fmt.Sprintf(f, val), 64)
@@ -90,8 +95,8 @@ func percent(used, total uint64) uint {
 	}
 	used *= 100
 	pct := uint64(used / total)
-	if pct != 99 && used % total != 0 {
-		pct += 1
+	if pct != 99 && used%total != 0 {
+		pct++
 	}
 	return uint(pct)
 }
@@ -101,10 +106,12 @@ func formatPercent(used, total uint64) string {
 }
 
 func formatTime(T uint64) string {
-// 	ms := T % 60
-	t  := T / 1000
-	ss := t % 60; t /= 60
-	mm := t % 60; t /= 60
+	// 	ms := T % 60
+	t := T / 1000
+	ss := t % 60
+	t /= 60 // fst t shift
+	mm := t % 60
+	t /= 60 // snd t shift
 	hh := t % 24
 	if hh > 0 {
 		return fmt.Sprintf("%02d:%02d:%02d", hh, mm, ss)
