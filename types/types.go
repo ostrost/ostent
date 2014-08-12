@@ -1,11 +1,15 @@
 package types
+
 import (
-	"net/url"
 	"html/template"
+	"net/url"
 )
 
+// SEQ is a distinct int type for consts and other uses.
 type SEQ int
-func(seq SEQ) AnyOf(list []SEQ) bool {
+
+// AnyOf returns true if the seq is present in the list.
+func (seq SEQ) AnyOf(list []SEQ) bool {
 	for _, s := range list {
 		if s == seq {
 			return true
@@ -13,13 +17,16 @@ func(seq SEQ) AnyOf(list []SEQ) bool {
 	}
 	return false
 }
-func(seq SEQ) Sign(t bool) bool { // used in sortable_*.go
+
+// Sign is a logical operator, useful for sorting.
+func (seq SEQ) Sign(t bool) bool { // used in sortable_*.go
 	if seq < 0 {
 		return t
 	}
 	return !t
 }
 
+// Memory type is a struct of memory metrics.
 type Memory struct {
 	Kind           string
 	Total          string
@@ -28,57 +35,63 @@ type Memory struct {
 	UsePercentHTML template.HTML
 }
 
+// MEM type has a list of Memory.
 type MEM struct {
 	List []Memory
 }
 
+// CPU type has a list of Core.
 type CPU struct {
 	List []Core
 }
 
+// Core type is a struct of core metrics.
 type Core struct {
-	N    string
-
-	User uint // percent without "%"
-	Sys  uint // percent without "%"
-	Idle uint // percent without "%"
-
+	N         string
+	User      uint // percent without "%"
+	Sys       uint // percent without "%"
+	Idle      uint // percent without "%"
 	UserClass string
-	 SysClass string
+	SysClass  string
 	IdleClass string
-
 	// UserSpark string
 	// SysSpark  string
 	// IdleSpark string
 }
 
+// DiskMeta type has common for DiskBytes and DiskInodes fields.
 type DiskMeta struct {
 	DiskNameHTML template.HTML
 	DirNameHTML  template.HTML
-	DirNameKey string
+	DirNameKey   string
 }
 
+// DiskBytes type is a struct of disk bytes metrics.
 type DiskBytes struct {
 	DiskMeta
-	Total       string // with units
-	Used        string // with units
-	Avail       string // with units
-	UsePercent  string // as a string, with "%"
+	Total           string // with units
+	Used            string // with units
+	Avail           string // with units
+	UsePercent      string // as a string, with "%"
 	UsePercentClass string
 }
 
+// DiskInodes type is a struct of disk inodes metrics.
 type DiskInodes struct {
 	DiskMeta
-	Inodes      string // with units
-	Iused       string // with units
-	Ifree       string // with units
-	IusePercent string // as a string, with "%"
+	Inodes           string // with units
+	Iused            string // with units
+	Ifree            string // with units
+	IusePercent      string // as a string, with "%"
 	IusePercentClass string
 }
 
+// DFbytes type has a list of DiskBytes.
 type DFbytes struct {
 	List []DiskBytes
 }
+
+// DFinodes type has a list of DiskInodes.
 type DFinodes struct {
 	List []DiskInodes
 }
@@ -89,15 +102,18 @@ type DFinodes struct {
 // 	HaveCollapsed bool
 // }
 
+// Attr type keeps link attributes.
 type Attr struct {
 	Href, Class, CaretClass string
 }
-func(la Linkattrs) Attr(seq SEQ) Attr {
+
+// Attr returns a seq applied Attr taking the la link and updating/setting the parameter.
+func (la Linkattrs) Attr(seq SEQ) Attr {
 	base := url.Values{}
 	for k, v := range la.Base {
 		base[k] = v
 	}
-	attr := Attr{Class: "state",}
+	attr := Attr{Class: "state"}
 	if ascp := la._attr(base, seq); ascp != nil {
 		attr.CaretClass = "caret"
 		attr.Class += " current"
@@ -105,11 +121,12 @@ func(la Linkattrs) Attr(seq SEQ) Attr {
 			attr.Class += " dropup"
 		}
 	}
-	attr.Href = "?" + base.Encode() // la._attr modifies base, DO NOT use before to the call
+	attr.Href = "?" + base.Encode() // la._attr modifies base, DO NOT use prior to the call
 	return attr
 }
 
-func(la Linkattrs) _attr(base url.Values, seq SEQ) *bool {
+// _attr side effect: modifies the base
+func (la Linkattrs) _attr(base url.Values, seq SEQ) *bool {
 	unlessreverse := func(t bool) *bool {
 		if la.Bimap.SEQ2REVERSE[seq] {
 			t = !t
@@ -125,10 +142,10 @@ func(la Linkattrs) _attr(base url.Values, seq SEQ) *bool {
 	}
 
 	seqstring := la.Bimap.SEQ2STRING[seq]
-	values, have_param := base[la.Pname]
+	values, haveParam := base[la.Pname]
 	base.Set(la.Pname, seqstring)
 
-	if !have_param { // no parameter in url
+	if !haveParam { // no parameter in url
 		if seq == la.Bimap.Default_seq {
 			return unlessreverse(false)
 		}
@@ -158,17 +175,20 @@ func(la Linkattrs) _attr(base url.Values, seq SEQ) *bool {
 	return ascr
 }
 
+// Linkattrs type for link making.
 type Linkattrs struct {
-	Base url.Values
+	Base  url.Values
 	Pname string
 	Bimap Biseqmap
 }
 
+// InterfaceMeta type has common Interface fields.
 type InterfaceMeta struct {
 	NameKey  string
 	NameHTML template.HTML
 }
 
+// Interface type is a struct of interface metrics.
 type Interface struct {
 	InterfaceMeta
 	In       string // with units
@@ -177,35 +197,31 @@ type Interface struct {
 	DeltaOut string // with units
 }
 
+// Interfaces type has a list of Interface.
 type Interfaces struct {
 	List []Interface
 }
 
+// ProcInfo type is an internal account of a process.
 type ProcInfo struct {
 	PID      uint
-
 	Priority int
 	Nice     int
-
 	Time     uint64
 	Name     string
-
 	Uid      uint
-
-	Size        uint64
-	Resident    uint64
+	Size     uint64
+	Resident uint64
 }
 
+// ProcData type is a public (for page context, json marshaling) account of a process.
 type ProcData struct {
 	PID      uint
-
 	Priority int
 	Nice     int
-
 	Time     string
 	NameRaw  string
 	NameHTML template.HTML
-
 	UserHTML template.HTML
 	Size     string // with units
 	Resident string // with units
