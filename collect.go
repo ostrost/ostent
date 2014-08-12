@@ -29,7 +29,7 @@ func getHostname() (string, error) {
 	return hostname, err
 }
 
-func getGeneric(CH chan generic) {
+func getGeneric(CH chan<- generic) {
 	hostname, _ := getHostname()
 
 	uptime := sigar.Uptime{}
@@ -69,7 +69,7 @@ func _getmem(kind string, in sigar.Swap) types.Memory {
 		UsePercentHTML: UPhtml,
 	}
 }
-func getRAM(CH chan types.Memory) {
+func getRAM(CH chan<- types.Memory) {
 	got := sigar.Mem{}
 	got.Get()
 
@@ -90,14 +90,14 @@ func getRAM(CH chan types.Memory) {
 	})
 }
 
-func getSwap(CH chan types.Memory) {
+func getSwap(CH chan<- types.Memory) {
 	got := sigar.Swap{}
 	got.Get()
 
 	CH <- _getmem("swap", got)
 }
 
-func read_disks(CH chan []diskInfo) {
+func read_disks(CH chan<- []diskInfo) {
 	var disks []diskInfo
 	fls := sigar.FileSystemList{}
 	fls.Get()
@@ -153,7 +153,7 @@ func read_disks(CH chan []diskInfo) {
 	CH <- disks
 }
 
-func read_procs(CH chan []types.ProcInfo) {
+func read_procs(CH chan<- []types.ProcInfo) {
 	var procs []types.ProcInfo
 	pls := sigar.ProcList{}
 	pls.Get()

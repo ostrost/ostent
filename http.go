@@ -627,7 +627,7 @@ func (la *last) collect() {
 	go read_disks   (dch)
 	go read_procs   (pch)
 	go NewInterfaces(ifch)
-	go func(CH chan sigar.CpuList) {
+	go func(CH chan<- sigar.CpuList) {
 		cl := sigar.CpuList{}; cl.Get()
 		CH <- cl
 	}(cch)

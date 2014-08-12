@@ -332,7 +332,7 @@ func(c *conn) writeError(err error) bool {
 	}{err.Error()})
 }
 
-func(c *conn) receiveLoop(stop chan struct{}) { // read from the conn
+func(c *conn) receiveLoop(stop chan<- struct{}) { // read from the conn
 	for {
 		rd := new(received)
 		if err := c.Conn.ReadJSON(&rd); err != nil {
@@ -343,7 +343,7 @@ func(c *conn) receiveLoop(stop chan struct{}) { // read from the conn
 	}
 }
 
-func(c *conn) updateLoop(stop chan struct{}) { // write to the conn
+func(c *conn) updateLoop(stop <-chan struct{}) { // write to the conn
 loop:
 	for {
 		select {

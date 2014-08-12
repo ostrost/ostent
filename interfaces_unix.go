@@ -51,7 +51,7 @@ type InterfacesInfo struct {
 	IP string
 }
 
-func NewInterfaces(CH chan InterfacesInfo) {
+func NewInterfaces(CH chan<- InterfacesInfo) {
 	var ifaces *C.struct_ifaddrs
 	if getrc, _ := C.getifaddrs(&ifaces); getrc != 0 {
 		CH <- InterfacesInfo{}
