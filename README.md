@@ -42,9 +42,8 @@ Running the code
 
 4. **`make bootstrap`**
 
-  **GNU make**, to:
-   - install required Go packages
-   - generate `src/share/{assets,templates.html}/bindata.devel.go`
+   - installs required Go packages
+   - generates `src/share/{assets,templates}/bindata.devel.go`
      These files will contain absolute local paths.
 
 5. Either **`rerun ostent`** (see [rerun](https://github.com/skelterjohn/rerun)) to run or **`make`** to build.
@@ -70,11 +69,11 @@ Additional required tools here:
 - [uglify-js](https://www.npmjs.org/package/uglify-js) (for builds)
 
 `make` rebuilds these **commited to the repo** files:
-- `src/share/templates.html/bindata.production.go`
+- `src/share/templates/bindata.production.go`
 - `src/share/assets/bindata.production.go`
 - `src/share/assets/js/devel/milk/*.js`
 - `src/share/assets/js/devel/gen/*.js`
-- `src/share/templates.html/*.html`
+- `src/share/templates/*.html`
 - `src/share/assets/css/*.css`
 - `src/share/tmp/jsassets.d`
 - `src/share/tmp/*.jsx`
@@ -89,5 +88,5 @@ The assets
 
 The binaries, to be stand-alone, have the assets and templates embeded.
 Unless you specifically `go build` with `-tags production` (e.g with make),
-they are not embeded for the ease of development:
+the content is not embeded for the ease of development:
 with `rerun ostent`, asset requests are served from the actual files.
