@@ -1,4 +1,5 @@
 package ostent
+
 import (
 	"libostent/types"
 )
@@ -31,8 +32,10 @@ type dftabs struct {
 
 func (df dftabs) Title(s types.SEQ) string {
 	switch {
-	case s == df.DFinodes: return df.DFinodesTitle
-	case s == df.DFbytes:  return df.DFbytesTitle
+	case s == df.DFinodes:
+		return df.DFinodesTitle
+	case s == df.DFbytes:
+		return df.DFbytesTitle
 	}
 	panic("SHOUND NOT HAPPEN")
 	return ""
@@ -50,9 +53,12 @@ type iftabs struct {
 
 func (fi iftabs) Title(s types.SEQ) string {
 	switch {
-	case s == fi.IFpackets:  return fi.IFpacketsTitle
-	case s == fi.IFerrors:   return fi.IFerrorsTitle
-	case s == fi.IFbytes:    return fi.IFbytesTitle
+	case s == fi.IFpackets:
+		return fi.IFpacketsTitle
+	case s == fi.IFerrors:
+		return fi.IFerrorsTitle
+	case s == fi.IFbytes:
+		return fi.IFbytesTitle
 	}
 	panic("SHOUND NOT HAPPEN")
 	return ""
@@ -61,14 +67,14 @@ func (fi iftabs) Title(s types.SEQ) string {
 const (
 	____IFTABID types.SEQ = iota
 	IFPACKETS_TABID
-	 IFERRORS_TABID
-	  IFBYTES_TABID
+	IFERRORS_TABID
+	IFBYTES_TABID
 )
 
 const (
 	____DFTABID types.SEQ = iota
 	DFINODES_TABID
-	 DFBYTES_TABID
+	DFBYTES_TABID
 )
 
 /* UNUSED ?
