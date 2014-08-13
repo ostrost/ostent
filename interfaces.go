@@ -1,4 +1,5 @@
 package ostent
+
 import (
 	"regexp"
 	"runtime"
@@ -16,15 +17,14 @@ var (
 
 func realInterfaceName(name string) bool {
 	bname := []byte(name)
-	if  RX_bridge .Match(bname) ||
+	if RX_bridge.Match(bname) ||
 		RX_vboxnet.Match(bname) {
 		return false
 	}
-	is_darwin := runtime.GOOS == "darwin"
-	if is_darwin {
-		if  RX_fw     .Match(bname) ||
-			RX_gif    .Match(bname) ||
-			RX_stf    .Match(bname) ||
+	if runtime.GOOS == "darwin" {
+		if RX_fw.Match(bname) ||
+			RX_gif.Match(bname) ||
+			RX_stf.Match(bname) ||
 			RX_airdrop.Match(bname) {
 			return false
 		}
