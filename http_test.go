@@ -1,4 +1,5 @@
 package ostent
+
 import (
 	"testing"
 	"bytes"
@@ -46,36 +47,45 @@ func Test_templatecomparison(t *testing.T) {
 		*b = value
 		return b
 	}
-	for i, v := range []struct{
-		in string
+	for i, v := range []struct {
+		in   string
 		data interface{}
-		cmp string
+		cmp  string
 	}{
-		{`{{if .This }}That{{end}}`, struct{This string}{""},  ""},
-		{`{{if .This }}That{{end}}`, struct{This string}{"a"}, "That"},
-		{`{{if .This }}That{{end}}`, struct{This *bool}{}, ""},
-		{`{{if .This }}Thta{{end}}`, struct{This *bool}{newbool(true)}, "Thta"},
-//		{`{{if .This }}That{{end}}`, struct{This *bool}{newbool(false)}, ""}, // should fail
+		{`{{if .This }}That{{end}}`, struct{ This string }{""}, ""},
+		{`{{if .This }}That{{end}}`, struct{ This string }{"a"}, "That"},
+		{`{{if .This }}That{{end}}`, struct{ This *bool }{}, ""},
+		{`{{if .This }}Thta{{end}}`, struct{ This *bool }{newbool(true)}, "Thta"},
+		// {`{{if .This }}That{{end}}`, struct{ This *bool }{newbool(false)}, ""}, // should fail
 
-		{`{{not .This}}`, struct{This *bool}{newbool(true),}, "false"},
-		{`{{not .This}}`, struct{This bool}{false,}, "true"},
-// 		{`{{not .This}}`, struct{This *bool}{newbool(false),}, "true"}, // should fail
+		{`{{not .This}}`, struct{ This *bool }{newbool(true)}, "false"},
+		{`{{not .This}}`, struct{ This bool }{false}, "true"},
+		// {`{{not .This}}`, struct{ This *bool }{newbool(false)}, "true"}, // should fail
 
-		{`{{and .This}}`, struct{This  bool}{true}, "true"},
-		{`{{and .This}}`, struct{This  bool}{false}, "false"},
-		{`{{and .This}}`, struct{This *bool}{newbool(true),}, "true"},
-		{`{{and .This}}`, struct{This *bool}{newbool(false),}, "false"},
+		{`{{and .This}}`, struct{ This bool }{true}, "true"},
+		{`{{and .This}}`, struct{ This bool }{false}, "false"},
+		{`{{and .This}}`, struct{ This *bool }{newbool(true)}, "true"},
+		{`{{and .This}}`, struct{ This *bool }{newbool(false)}, "false"},
 
-		{`{{and .This .That}}`, struct{This *bool; That *bool}{newbool(true),newbool(true),}, "true"},
-		{`{{and .This .That}}`, struct{This *bool; That *bool}{newbool(true),newbool(false),}, "false"},
-		{`{{and .This .That}}`, struct{This *bool; That *bool}{newbool(false),newbool(false),}, "false"},
+		{`{{and .This .That}}`, struct {
+			This *bool
+			That *bool
+		}{newbool(true), newbool(true)}, "true"},
+		{`{{and .This .That}}`, struct {
+			This *bool
+			That *bool
+		}{newbool(true), newbool(false)}, "false"},
+		{`{{and .This .That}}`, struct {
+			This *bool
+			That *bool
+		}{newbool(false), newbool(false)}, "false"},
 
-		{`{{json .This}}`, struct{This bool}{true}, "true"},
-		{`{{json .This}}`, struct{This bool}{false}, "false"},
-		{`{{json .This}}`, struct{This bool}{},      "false"},
-		{`{{json .This.That}}`, struct{This that}{that{newbool(true)}},  "true"},
-		{`{{json .This.That}}`, struct{This that}{that{newbool(false)}}, "false"},
-		{`{{json .This.That}}`, struct{This that}{that{}},               "null"}, // NB
+		{`{{json .This}}`, struct{ This bool }{true}, "true"},
+		{`{{json .This}}`, struct{ This bool }{false}, "false"},
+		{`{{json .This}}`, struct{ This bool }{}, "false"},
+		{`{{json .This.That}}`, struct{ This that }{that{newbool(true)}}, "true"},
+		{`{{json .This.That}}`, struct{ This that }{that{newbool(false)}}, "false"},
+		{`{{json .This.That}}`, struct{ This that }{that{}}, "null"}, // NB
 	} {
 		cmp, err := execute_template(v.in, v.data)
 		if err != nil {
