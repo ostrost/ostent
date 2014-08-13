@@ -1,4 +1,5 @@
 package ostent
+
 import (
 	"runtime"
 	"net/http"
@@ -7,11 +8,11 @@ import (
 
 type Recovery bool // true stands for production
 
-func(RC Recovery) ConstructorFunc(hf http.HandlerFunc) http.Handler {
+func (RC Recovery) ConstructorFunc(hf http.HandlerFunc) http.Handler {
 	return RC.Constructor(http.HandlerFunc(hf))
 }
 
-func(RC Recovery) Constructor(HANDLER http.Handler) http.Handler {
+func (RC Recovery) Constructor(HANDLER http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
@@ -24,7 +25,7 @@ func(RC Recovery) Constructor(HANDLER http.Handler) http.Handler {
 				}
 				var stack string
 				if !RC { // if !production
-					sbuf := make([]byte, 4096 - len(panicstatustext) - len(description))
+					sbuf := make([]byte, 4096-len(panicstatustext)-len(description))
 					size := runtime.Stack(sbuf, false)
 					stack = string(sbuf[:size])
 				}
@@ -44,7 +45,8 @@ func(RC Recovery) Constructor(HANDLER http.Handler) http.Handler {
 }
 
 const panicstatuscode = http.StatusInternalServerError
-var   panicstatustext = statusLine(panicstatuscode)
+
+var panicstatustext = statusLine(panicstatuscode)
 
 var rctemplate = template.Must(template.New("recovery.html").Parse(`
 <html>
