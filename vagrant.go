@@ -1,4 +1,5 @@
 package ostent
+
 import (
 	"os"
 	"sort"
@@ -13,25 +14,26 @@ import (
 )
 
 type vagrantMachine struct {
-	            UUID     string
-	            UUIDHTML template.HTML // !
+	UUID     string
+	UUIDHTML template.HTML // !
+
 	Vagrantfile_pathHTML template.HTML // !
-
-	Local_data_path      string
-	Name                 string
-	Provider             string
-	State                string
 	Vagrantfile_path     string
+	Local_data_path      string
 
-// 	Vagrantfile_name *[]string   // unused
-// 	Updated_at         *string   // unused
-// 	Extra_data         *struct { // unused
-//		Box *struct{
-//			Name     *string
-//			Provider *string
-//			Version  *string
-//		}
-//	}
+	Name     string
+	Provider string
+	State    string
+
+	// 	Vagrantfile_name *[]string   // unused
+	// 	Updated_at         *string   // unused
+	// 	Extra_data         *struct { // unused
+	//		Box *struct{
+	//			Name     *string
+	//			Provider *string
+	//			Version  *string
+	//		}
+	//	}
 }
 
 type vagrantMachines struct {
@@ -55,10 +57,10 @@ func (ms vagrantMachines) Less(i, j int) bool {
 
 func vagrantmachines() (*vagrantMachines, error) {
 	currentUser, _ := user.Current()
-	lock_filename  := currentUser.HomeDir + "/.vagrant.d/data/machine-index/index.lock"
-	index_filename := currentUser.HomeDir + "/.vagrant.d/data/machine-index/index"
+	lockFilename := currentUser.HomeDir + "/.vagrant.d/data/machine-index/index.lock"
+	indexFilename := currentUser.HomeDir + "/.vagrant.d/data/machine-index/index"
 
-	lock_file, err := os.Open(lock_filename);
+	lock_file, err := os.Open(lockFilename)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +69,7 @@ func vagrantmachines() (*vagrantMachines, error) {
 	}
 	defer syscall.Flock(int(lock_file.Fd()), syscall.LOCK_UN)
 
-	text, err := ioutil.ReadFile(index_filename)
+	text, err := ioutil.ReadFile(indexFilename)
 	if err != nil {
 		return nil, err
 	}
@@ -82,8 +84,8 @@ func vagrantmachines() (*vagrantMachines, error) {
 	machines := new(vagrantMachines)
 	if status.Machines != nil {
 		for uuid, machine := range *status.Machines {
-			machine.UUID                 = uuid
-			machine.UUIDHTML             = tooltipable(7, uuid)
+			machine.UUID = uuid
+			machine.UUIDHTML = tooltipable(7, uuid)
 			machine.Vagrantfile_pathHTML = tooltipable(50, machine.Vagrantfile_path)
 			// (*status.Machines)[uuid] = machine
 			machines.List = append(machines.List, machine)
@@ -117,9 +119,9 @@ func vgdispatch() { // (*fsnotify.FileEvent)
 
 func vgchange() error {
 	watcher, err := fsnotify.NewWatcher()
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 	if err := watcher.Watch(vgmachineindexFilename); err != nil {
 		return err
 	}
@@ -130,7 +132,7 @@ func vgchange() error {
 		go vgdispatch()
 		stop <- struct{}{}
 	}()
-	<- stop
+	<-stop
 	time.Sleep(time.Second) // to overcome possible fsnotify data races
 	watcher.Close()
 	return nil
