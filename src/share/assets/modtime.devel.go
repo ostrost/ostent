@@ -1,11 +1,12 @@
 // +build !production
 
 package assets
+
 import (
 	"os"
-	"time"
-	"sync"
 	"path/filepath"
+	"sync"
+	"time"
 )
 
 var statstatus struct {

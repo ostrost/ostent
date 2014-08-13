@@ -1,9 +1,10 @@
 // +build production
 
 package assets
+
 import (
-	"time"
 	"sync"
+	"time"
 )
 
 var uncompressedassets struct {
@@ -25,6 +26,7 @@ func Uncompressedasset(name string) ([]byte, error) {
 }
 
 var STARTIME = time.Now()
+
 func ModTime(string, string) (time.Time, error) {
 	return STARTIME, nil
 }

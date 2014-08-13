@@ -1,14 +1,16 @@
 // +build !production
 
 package main
+
 import (
-	"fmt"
 	"flag"
-	"strings"
+	"fmt"
 	"path/filepath"
+	"strings"
 
 	"share/assets"
 )
+
 const packageName = "src/share/assets" // ostential/assets <- this assets
 
 func main() {

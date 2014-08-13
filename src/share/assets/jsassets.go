@@ -1,13 +1,14 @@
 package assets
+
 import (
 	"fmt"
+	"path/filepath"
 	"sort"
 	"strings"
-	"path/filepath"
 )
 
 type sortassets struct {
-	names []string
+	names            []string
 	substr_indexfrom []string
 }
 
@@ -53,14 +54,14 @@ func JsAssetNames() []string {
 		if !strings.HasSuffix(name, dotjs) {
 			continue
 		}
-		src := "/"+name
+		src := "/" + name
 		if develreact && strings.Contains(src, "react") {
-			ver  := filepath.Base(filepath.Dir(src))
+			ver := filepath.Base(filepath.Dir(src))
 			base := filepath.Base(src)
 
 			cutlen := len(dotjs) // asserted strings.HasSuffix(base, dotjs)
-			cutlen += map[bool]int{true:len(".min")}[strings.HasSuffix(base[:len(base) - cutlen], ".min")]
-			src = fmt.Sprintf("//fb.me/%s-%s%s", base[:len(base) - cutlen], ver, dotjs)
+			cutlen += map[bool]int{true: len(".min")}[strings.HasSuffix(base[:len(base)-cutlen], ".min")]
+			src = fmt.Sprintf("//fb.me/%s-%s%s", base[:len(base)-cutlen], ver, dotjs)
 		}
 		sa.names = append(sa.names, src)
 	}
