@@ -1,6 +1,6 @@
 package ostent
+
 import (
-	"os"
 	"log"
 	"fmt"
 	"time"
@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"net/http"
 	"encoding/json"
+
 	gorillawebsocket "github.com/gorilla/websocket"
 )
 
@@ -17,7 +18,7 @@ import (
 type Duration time.Duration
 
 // String returns Duration string representation
-func(d Duration) String() string {
+func (d Duration) String() string {
 	s := time.Duration(d).String()
 	if strings.HasSuffix(s, "m0s") {
 		s = strings.TrimSuffix(s, "0s")
@@ -29,7 +30,7 @@ func(d Duration) String() string {
 }
 
 // MarshalJSON is for encoding/json marshaling into Duration string representation
-func(d Duration) MarshalJSON() ([]byte, error) {
+func (d Duration) MarshalJSON() ([]byte, error) {
 	return json.Marshal(d.String())
 }
 
@@ -38,7 +39,7 @@ type periodValue struct {
 	above *Duration // optional
 }
 
-func(pv *periodValue) Set(input string) error {
+func (pv *periodValue) Set(input string) error {
 	v, err := time.ParseDuration(input)
 	if err != nil {
 		return err
@@ -46,7 +47,7 @@ func(pv *periodValue) Set(input string) error {
 	if v < time.Second { // hard coded
 		return fmt.Errorf("Less than a second: %s", v)
 	}
-	if v % time.Second != 0 {
+	if v%time.Second != 0 {
 		return fmt.Errorf("Not a multiple of a second: %s", v)
 	}
 	if pv.above != nil && v < time.Duration(*pv.above) {
@@ -58,11 +59,10 @@ func(pv *periodValue) Set(input string) error {
 
 var periodFlag = periodValue{Duration: Duration(time.Second)} // default
 func init() {
-	flag.Var(&periodFlag, "u",      "Collection (update) interval")
+	flag.Var(&periodFlag, "u", "Collection (update) interval")
 	flag.Var(&periodFlag, "update", "Collection (update) interval")
 }
 
-var _ = os.Stdout
 // var wslog = log.New(os.Stdout, "", log.LstdFlags|log.Lmicroseconds)
 
 // Loop is the ostent background job
@@ -108,6 +108,7 @@ func Loop() {
 
 type conn struct {
 	Conn *gorillawebsocket.Conn
+
 	requestOrigin *http.Request
 
 	receive chan *received
@@ -240,20 +241,21 @@ func (cs *conns) expires() bool {
 	return false
 }
 
+// Cnnections is an instance of an unexported type to hold active websocket connections.
+// The only exported method is Reload.
+//
+// UpPDATES is the channel for off-the-clock pageUpdate[s] to push
 var (
-	// Connections is an instance of an unexported type to hold active websocket connections.
-	// The only exported method is Reload.
-	Connections  = conns{connmap: map[*conn]struct{}{}}
-	unregister   = make(chan *conn)
-	  register   = make(chan *conn)
+	Connections = conns{connmap: map[*conn]struct{}{}}
 
-	// pUPDATES is the channel for off-the-clock pageUpdate[s] to push
-	pUPDATES     = make(chan *pageUpdate)
+	unregister = make(chan *conn)
+	register   = make(chan *conn)
+	pUPDATES   = make(chan *pageUpdate)
 )
 
 type recvClient struct {
 	commonClient
-	MorePsignal *bool
+	MorePsignal      *bool
 	RefreshSignalMEM *string
 	RefreshSignalIF  *string
 	RefreshSignalCPU *string
@@ -295,12 +297,24 @@ func (rs *recvClient) mergeRefreshSignal(ppinput *string, prefresh *refresh, sen
 
 func (rs *recvClient) MergeClient(cs *client, send *sendClient) error {
 	rs.mergeMorePsignal(cs)
-	if err := rs.mergeRefreshSignal(rs.RefreshSignalMEM, cs.RefreshMEM, &send.RefreshMEM, &send.RefreshErrorMEM); err != nil { return err }
-	if err := rs.mergeRefreshSignal(rs.RefreshSignalIF,  cs.RefreshIF,  &send.RefreshIF,  &send.RefreshErrorIF);  err != nil { return err }
-	if err := rs.mergeRefreshSignal(rs.RefreshSignalCPU, cs.RefreshCPU, &send.RefreshCPU, &send.RefreshErrorCPU); err != nil { return err }
-	if err := rs.mergeRefreshSignal(rs.RefreshSignalDF,  cs.RefreshDF,  &send.RefreshDF,  &send.RefreshErrorDF);  err != nil { return err }
-	if err := rs.mergeRefreshSignal(rs.RefreshSignalPS,  cs.RefreshPS,  &send.RefreshPS,  &send.RefreshErrorPS);  err != nil { return err }
-	if err := rs.mergeRefreshSignal(rs.RefreshSignalVG,  cs.RefreshVG,  &send.RefreshVG,  &send.RefreshErrorVG);  err != nil { return err }
+	if err := rs.mergeRefreshSignal(rs.RefreshSignalMEM, cs.RefreshMEM, &send.RefreshMEM, &send.RefreshErrorMEM); err != nil {
+		return err
+	}
+	if err := rs.mergeRefreshSignal(rs.RefreshSignalIF, cs.RefreshIF, &send.RefreshIF, &send.RefreshErrorIF); err != nil {
+		return err
+	}
+	if err := rs.mergeRefreshSignal(rs.RefreshSignalCPU, cs.RefreshCPU, &send.RefreshCPU, &send.RefreshErrorCPU); err != nil {
+		return err
+	}
+	if err := rs.mergeRefreshSignal(rs.RefreshSignalDF, cs.RefreshDF, &send.RefreshDF, &send.RefreshErrorDF); err != nil {
+		return err
+	}
+	if err := rs.mergeRefreshSignal(rs.RefreshSignalPS, cs.RefreshPS, &send.RefreshPS, &send.RefreshErrorPS); err != nil {
+		return err
+	}
+	if err := rs.mergeRefreshSignal(rs.RefreshSignalVG, cs.RefreshVG, &send.RefreshVG, &send.RefreshErrorVG); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -310,29 +324,29 @@ type received struct {
 }
 
 type served struct {
-	conn *conn // passing conn into received.ServeHTTP
+	conn     *conn // passing conn into received.ServeHTTP
 	received *received
 }
 
-func(c *conn) writeJSON(data interface{}) error {
+func (c *conn) writeJSON(data interface{}) error {
 	c.writemutex.Lock()
 	defer c.writemutex.Unlock()
 	return c.Conn.WriteJSON(data)
 }
 
-func(c *conn) writeReload() {
+func (c *conn) writeReload() {
 	c.writeJSON(struct {
 		Reload bool
 	}{true})
 }
 
-func(c *conn) writeError(err error) bool {
+func (c *conn) writeError(err error) bool {
 	return nil == c.writeJSON(struct {
 		Error string
 	}{err.Error()})
 }
 
-func(c *conn) receiveLoop(stop chan<- struct{}) { // read from the conn
+func (c *conn) receiveLoop(stop chan<- struct{}) { // read from the conn
 	for {
 		rd := new(received)
 		if err := c.Conn.ReadJSON(&rd); err != nil {
@@ -343,11 +357,11 @@ func(c *conn) receiveLoop(stop chan<- struct{}) { // read from the conn
 	}
 }
 
-func(c *conn) updateLoop(stop <-chan struct{}) { // write to the conn
+func (c *conn) updateLoop(stop <-chan struct{}) { // write to the conn
 loop:
 	for {
 		select {
-		case rd, ok := <- c.receive:
+		case rd, ok := <-c.receive:
 			if !ok {
 				return
 			}
@@ -358,27 +372,26 @@ loop:
 					return
 				}
 			}
-		case update, ok := <- c.push:
+		case update, ok := <-c.push:
 			if !ok {
 				return
 			}
 			if next := c.writeUpdate(*update); !next {
 				return
 			}
-		case _ = <- stop:
+		case _ = <-stop:
 			return
 		}
 	}
 }
 
-func(c *conn) process(rd *received) *bool {
+func (c *conn) process(rd *received) *bool {
 	c.mutex.Lock()
 	defer func() {
 		c.mutex.Unlock()
 		if e := recover(); e != nil {
 			stack := ""
-			/*
-            // The stack to be fmt.Printf-d. Not sure if I should
+			/* The stack to be fmt.Printf-d. Not sure if I should
 			sbuf := make([]byte, 4096)
 			size := runtime.Stack(sbuf, false)
 			stack = string(sbuf[:size])
@@ -408,6 +421,7 @@ func(c *conn) process(rd *received) *bool {
 
 	sd := served{conn: c, received: rd}
 	serve := sd.ServeHTTP // sd.ServeHTTP survives req being nil
+
 	if req != nil { // the only case when req.Form is not nil
 		// a non-nil req is no-go for stdaccess anyway
 		serve = stdaccess.Constructor(sd).ServeHTTP
@@ -478,13 +492,13 @@ func (w dummyStatus) WriteHeader(s int) {
 
 func (w dummyStatus) Header() http.Header {
 	panic("dummyStatus.Header: SHOULD NOT BE USED")
-// 	return w.ResponseWriter.Header()
-// 	return make(http.Header) // IF TO RETURN ANYTHING, THAT SHOULD BE ONE http.Header PER dummyStatus
+	// return w.ResponseWriter.Header()
+	// return make(http.Header) // IF TO RETURN ANYTHING, THAT SHOULD BE ONE http.Header PER dummyStatus
 }
 
 func (w dummyStatus) Write(b []byte) (int, error) {
 	panic("dummyStatus.Write: SHOULD NOT BE USED")
-// 	return w.ResponseWriter.Write(b)
+	// return w.ResponseWriter.Write(b)
 	return len(b), nil
 }
 
@@ -500,10 +514,12 @@ func slashws(w http.ResponseWriter, req *http.Request) {
 	req.Form = nil // reset reused later .Form
 	c := &conn{
 		Conn: wsconn,
+
 		requestOrigin: req,
-		receive: make(chan *received,   2),
+
+		receive: make(chan *received, 2),
 		push:    make(chan *pageUpdate, 2),
-		full: defaultClient(),
+		full:    defaultClient(),
 	}
 	register <- c
 	defer func() {
@@ -512,5 +528,5 @@ func slashws(w http.ResponseWriter, req *http.Request) {
 	}()
 	stop := make(chan struct{}, 1)
 	go c.receiveLoop(stop) // read from the client
-	   c.updateLoop(stop)  // write to the client
+	c.updateLoop(stop)     // write to the client
 }
