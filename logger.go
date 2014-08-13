@@ -1,13 +1,13 @@
 package ostent
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"sync"
 	"time"
-	"bufio"
-	"net/http"
 )
 
 type logged struct {

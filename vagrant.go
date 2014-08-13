@@ -1,14 +1,14 @@
 package ostent
 
 import (
-	"os"
-	"sort"
-	"time"
-	"syscall"
-	"os/user"
-	"io/ioutil"
 	"encoding/json"
 	"html/template"
+	"io/ioutil"
+	"os"
+	"os/user"
+	"sort"
+	"syscall"
+	"time"
 
 	"github.com/howeyc/fsnotify"
 )

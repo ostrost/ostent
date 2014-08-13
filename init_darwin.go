@@ -1,8 +1,8 @@
 package ostent
 
 import (
-	"os"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 )

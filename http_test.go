@@ -1,10 +1,11 @@
 package ostent
 
 import (
-	"testing"
 	"bytes"
-	"reflect"
 	"html/template"
+	"reflect"
+	"testing"
+
 	"github.com/rzab/amber"
 )
 

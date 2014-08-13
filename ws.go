@@ -1,15 +1,15 @@
 package ostent
 
 import (
-	"log"
-	"fmt"
-	"time"
-	"flag"
-	"sync"
-	"strings"
-	"net/url"
-	"net/http"
 	"encoding/json"
+	"flag"
+	"fmt"
+	"log"
+	"net/http"
+	"net/url"
+	"strings"
+	"sync"
+	"time"
 
 	gorillawebsocket "github.com/gorilla/websocket"
 )

@@ -2,9 +2,9 @@ package ostent
 
 import (
 	"fmt"
-	"time"
 	"math"
 	"strconv"
+	"time"
 )
 
 func formatUptime(seconds float64) string { // "seconds" is expected to be sigar.Uptime.Length

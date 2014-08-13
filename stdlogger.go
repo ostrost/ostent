@@ -1,10 +1,10 @@
 package ostent
 
 import (
-	"io"
-	"os"
-	"log"
 	"bufio"
+	"io"
+	"log"
+	"os"
 	"strings"
 )
 

@@ -4,7 +4,8 @@ package ostent
 import "C"
 import (
 	"path/filepath"
-	"github.com/rzab/gosigar"
+
+	sigar "github.com/rzab/gosigar"
 )
 
 // ProcState returns chopped proc name, in which case

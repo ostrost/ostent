@@ -1,9 +1,9 @@
 package ostent
 
 import (
-	"runtime"
-	"net/http"
 	"html/template"
+	"net/http"
+	"runtime"
 )
 
 type Recovery bool // true stands for production
