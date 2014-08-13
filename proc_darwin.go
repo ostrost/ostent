@@ -1,4 +1,5 @@
 package ostent
+
 // #include <sys/param.h>
 import "C"
 import (
@@ -9,7 +10,7 @@ import (
 // ProcState returns chopped proc name, in which case
 // get the ProcExe and return basename of executable path
 func procname(pid int, pbi_comm string) string {
-	if len(pbi_comm) + 1 < C.MAXCOMLEN {
+	if len(pbi_comm)+1 < C.MAXCOMLEN {
 		return pbi_comm
 	}
 	exe := sigar.ProcExe{}
