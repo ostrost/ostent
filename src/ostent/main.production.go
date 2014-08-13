@@ -1,30 +1,30 @@
 // +build production
 
 package main
-import (
-	"libostent"
 
-	"os"
-	"net"
-	"log"
-	"fmt"
+import (
+	ostent "libostent"
+
 	"flag"
-	"time"
- 	"syscall"
+	"fmt"
+	"log"
+	"math/rand"
+	"net"
+	"net/http"
+	"net/url"
+	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
-	"net/url"
-	"net/http"
-	"math/rand"
-	"path/filepath"
+	"syscall"
+	"time"
 
+	update "github.com/inconshreveable/go-update"
 	"github.com/rcrowley/goagain"
-
-	"github.com/inconshreveable/go-update"
 )
 
 func init() {
-// 	log.SetFlags(log.Lmicroseconds | log.Lshortfile)
+	// log.SetFlags(log.Lmicroseconds | log.Lshortfile)
 	log.SetPrefix(fmt.Sprintf("[%d] ", os.Getpid()))
 }
 
@@ -33,7 +33,7 @@ func upgrade_loop() {
 	delta := time.Duration(rand.Int63n(int64(dlimit)))
 	for {
 		select {
-		case <-time.After(time.Hour * 1 + delta): // 1.5 +- 0.5 h
+		case <-time.After(time.Hour*1 + delta): // 1.5 +- 0.5 h
 			if upgrade_once(true) {
 				break
 			}
@@ -51,10 +51,10 @@ func newer_version() string {
 		url url.URL
 	}
 	checkRedirect := func(req *http.Request, _via []*http.Request) error {
-		return redirected{url: *req.URL,}
+		return redirected{url: *req.URL}
 	}
 
-	client := &http.Client{CheckRedirect: checkRedirect,}
+	client := &http.Client{CheckRedirect: checkRedirect}
 	resp, err := client.Get("https://github.com/rzab/ostent/releases/latest")
 	if err == nil {
 		resp.Body.Close()
@@ -85,14 +85,13 @@ func upgrade_once(kill bool) bool {
 		mach = "i686"
 	}
 	new_version := newer_version()
-	if new_version == "" || new_version == "v"+ ostent.VERSION {
+	if new_version == "" || new_version == "v"+ostent.VERSION {
 		return false
 	}
-// 	url := fmt.Sprintf("https://ostrost.com"+ "/ostent/releases/%s/%s %s/newer",    ostent.VERSION, strings.Title(runtime.GOOS), mach) // before v0.1.3
-	url := fmt.Sprintf("https://github.com/rzab/ostent/releases/download/%s/%s.%s", new_version,  strings.Title(runtime.GOOS), mach)
+	url := fmt.Sprintf("https://github.com/rzab/ostent/releases/download/%s/%s.%s", new_version, strings.Title(runtime.GOOS), mach)
 
 	err, _ := update.New().FromUrl(url) // , snderr
-	if err != nil ||  err != nil {
+	if err != nil {                     // || snderr != nil
 		// log.Printf("Upgrade failed: %v|%v\n", err, snderr)
 		return false
 	}

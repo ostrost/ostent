@@ -1,12 +1,13 @@
 // +build !production
 
 package main
-import (
-	"libostent"
 
-	"net"
-	"log"
+import (
+	ostent "libostent"
+
 	"flag"
+	"log"
+	"net"
 	pprof "net/http/pprof"
 )
 
@@ -27,7 +28,3 @@ func main() {
 		"/debug/pprof/symbol":  pprof.Symbol,
 	}))
 }
-
-
-
-
