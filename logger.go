@@ -1,4 +1,5 @@
 package ostent
+
 import (
 	"fmt"
 	"log"
@@ -11,7 +12,7 @@ import (
 
 type logged struct {
 	loggedmap map[string]struct{}
-	mutex sync.Mutex
+	mutex     sync.Mutex
 }
 
 type logger struct {
@@ -24,11 +25,11 @@ func NewLogged(production bool, access *log.Logger) *logger {
 	return &logger{
 		production: production,
 		access:     access,
-		logged: logged{loggedmap: map[string]struct{}{}},
+		logged:     logged{loggedmap: map[string]struct{}{}},
 	}
 }
 
-func(lg *logger) Constructor(HANDLER http.Handler) http.Handler {
+func (lg *logger) Constructor(HANDLER http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		lw := &loggedResponseWriter{ResponseWriter: w}
@@ -73,7 +74,7 @@ func (lg *logger) productionLog(start time.Time, w loggedResponseWriter, r *http
 
 var ZEROTIME, _ = time.Parse("15:04:05", "00:00:00")
 
-func(lg *logger) log(start time.Time, tail string, w loggedResponseWriter, r *http.Request) {
+func (lg *logger) log(start time.Time, tail string, w loggedResponseWriter, r *http.Request) {
 	diff := time.Since(start)
 	since := ZEROTIME.Add(diff).Format("5.0000s")
 
@@ -84,7 +85,7 @@ func(lg *logger) log(start time.Time, tail string, w loggedResponseWriter, r *ht
 
 	uri := r.URL.Path // OR r.RequestURI ??
 	if r.Form != nil && len(r.Form) > 0 {
-		uri += "?"+r.Form.Encode()
+		uri += "?" + r.Form.Encode()
 	}
 	echo := func(s string) string {
 		if s == "" {
@@ -107,14 +108,14 @@ func(lg *logger) log(start time.Time, tail string, w loggedResponseWriter, r *ht
 type loggedResponseWriter struct {
 	http.ResponseWriter
 	http.Flusher // ?
-	status int
-	size int
+	status       int
+	size         int
 }
 
 func (w loggedResponseWriter) statusgood() bool {
 	return (w.status == http.StatusSwitchingProtocols || // 101
-			w.status == http.StatusOK                 || // 200
-			w.status == http.StatusNotModified)          // 304
+		w.status == http.StatusOK || // 200
+		w.status == http.StatusNotModified) // 304
 }
 
 func (w *loggedResponseWriter) Flush() {
