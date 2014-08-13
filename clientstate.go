@@ -162,35 +162,35 @@ func (c client) mergeSEQ(dst, src *types.SEQ, send **types.SEQ) {
 
 func (c *client) Merge(r recvClient, s *sendClient) {
 	c.mergeBool(c.HideMEM, r.HideMEM, &s.HideMEM)
-	c.mergeBool(c.HideIF,  r.HideIF,  &s.HideIF)
+	c.mergeBool(c.HideIF, r.HideIF, &s.HideIF)
 	c.mergeBool(c.HideCPU, r.HideCPU, &s.HideCPU)
-	c.mergeBool(c.HideDF,  r.HideDF,  &s.HideDF)
-	c.mergeBool(c.HidePS,  r.HidePS,  &s.HidePS)
-	c.mergeBool(c.HideVG,  r.HideVG,  &s.HideVG)
+	c.mergeBool(c.HideDF, r.HideDF, &s.HideDF)
+	c.mergeBool(c.HidePS, r.HidePS, &s.HidePS)
+	c.mergeBool(c.HideVG, r.HideVG, &s.HideVG)
 
-	c.mergeBool(c.HideSWAP,  r.HideSWAP,  &s.HideSWAP)
-	c.mergeBool(c.ExpandIF,  r.ExpandIF,  &s.ExpandIF)
+	c.mergeBool(c.HideSWAP, r.HideSWAP, &s.HideSWAP)
+	c.mergeBool(c.ExpandIF, r.ExpandIF, &s.ExpandIF)
 	c.mergeBool(c.ExpandCPU, r.ExpandCPU, &s.ExpandCPU)
-	c.mergeBool(c.ExpandDF,  r.ExpandDF,  &s.ExpandDF)
+	c.mergeBool(c.ExpandDF, r.ExpandDF, &s.ExpandDF)
 
 	c.mergeBool(c.HideconfigMEM, r.HideconfigMEM, &s.HideconfigMEM)
-	c.mergeBool(c.HideconfigIF,  r.HideconfigIF,  &s.HideconfigIF)
+	c.mergeBool(c.HideconfigIF, r.HideconfigIF, &s.HideconfigIF)
 	c.mergeBool(c.HideconfigCPU, r.HideconfigCPU, &s.HideconfigCPU)
-	c.mergeBool(c.HideconfigDF,  r.HideconfigDF,  &s.HideconfigDF)
-	c.mergeBool(c.HideconfigPS,  r.HideconfigPS,  &s.HideconfigPS)
-	c.mergeBool(c.HideconfigVG,  r.HideconfigVG,  &s.HideconfigVG)
+	c.mergeBool(c.HideconfigDF, r.HideconfigDF, &s.HideconfigDF)
+	c.mergeBool(c.HideconfigPS, r.HideconfigPS, &s.HideconfigPS)
+	c.mergeBool(c.HideconfigVG, r.HideconfigVG, &s.HideconfigVG)
 
-	c.mergeSEQ (c.TabIF, r.TabIF, &s.TabIF)
-	c.mergeSEQ (c.TabDF, r.TabDF, &s.TabDF)
+	c.mergeSEQ(c.TabIF, r.TabIF, &s.TabIF)
+	c.mergeSEQ(c.TabDF, r.TabDF, &s.TabDF)
 
 	// merge NOT from the r
 	c.mergeTitle(c.TabTitleIF, IFTABS.Title(*c.TabIF), &s.TabTitleIF)
 	c.mergeTitle(c.TabTitleDF, DFTABS.Title(*c.TabDF), &s.TabTitleDF)
 }
 
-func newfalse()      *bool { return new(bool); }
-func newtrue()       *bool { return newbool(true); }
-func newbool(v bool) *bool { b := new(bool);  *b = v; return b }
+func newfalse() *bool      { return new(bool) }
+func newtrue() *bool       { return newbool(true) }
+func newbool(v bool) *bool { b := new(bool); *b = v; return b }
 
 func newseq(v types.SEQ) *types.SEQ {
 	s := new(types.SEQ)
@@ -208,16 +208,16 @@ func defaultClient() client {
 	cs := client{}
 
 	cs.HideMEM = newfalse()
-	cs.HideIF  = newfalse()
+	cs.HideIF = newfalse()
 	cs.HideCPU = newfalse()
-	cs.HideDF  = newfalse()
-	cs.HidePS  = newfalse()
-	cs.HideVG  = newfalse()
+	cs.HideDF = newfalse()
+	cs.HidePS = newfalse()
+	cs.HideVG = newfalse()
 
-	cs.HideSWAP  = newfalse()
-	cs.ExpandIF  = newfalse()
+	cs.HideSWAP = newfalse()
+	cs.ExpandIF = newfalse()
 	cs.ExpandCPU = newfalse()
-	cs.ExpandDF  = newfalse()
+	cs.ExpandDF = newfalse()
 
 	cs.TabIF = newseq(IFBYTES_TABID)
 	cs.TabDF = newseq(DFBYTES_TABID)
@@ -231,19 +231,19 @@ func defaultClient() client {
 	// hideconfig  = false // DEVELOPMENT
 
 	cs.HideconfigMEM = newbool(hideconfig)
-	cs.HideconfigIF  = newbool(hideconfig)
+	cs.HideconfigIF = newbool(hideconfig)
 	cs.HideconfigCPU = newbool(hideconfig)
-	cs.HideconfigDF  = newbool(hideconfig)
-	cs.HideconfigPS  = newbool(hideconfig)
-	cs.HideconfigVG  = newbool(hideconfig)
+	cs.HideconfigDF = newbool(hideconfig)
+	cs.HideconfigPS = newbool(hideconfig)
+	cs.HideconfigVG = newbool(hideconfig)
 
-//	cs.RefreshGeneric = newdefaultrefresh()
-	cs.RefreshMEM     = newdefaultrefresh()
-	cs.RefreshIF      = newdefaultrefresh()
-	cs.RefreshCPU     = newdefaultrefresh()
-	cs.RefreshDF      = newdefaultrefresh()
-	cs.RefreshPS      = newdefaultrefresh()
-	cs.RefreshVG      = newdefaultrefresh()
+	//cs.RefreshGeneric = newdefaultrefresh()
+	cs.RefreshMEM = newdefaultrefresh()
+	cs.RefreshIF = newdefaultrefresh()
+	cs.RefreshCPU = newdefaultrefresh()
+	cs.RefreshDF = newdefaultrefresh()
+	cs.RefreshPS = newdefaultrefresh()
+	cs.RefreshVG = newdefaultrefresh()
 
 	cs.psLimit = 8
 
