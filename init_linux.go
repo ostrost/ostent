@@ -1,4 +1,5 @@
 package ostent
+
 import (
 	"fmt"
 	"os"
@@ -38,4 +39,5 @@ func init() {
 	}
 	DISTRIB = id + " " + release
 }
+
 var DISTRIB string
