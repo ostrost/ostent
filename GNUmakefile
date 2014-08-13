@@ -2,9 +2,9 @@
 
 binassets_develgo         = src/share/assets/bindata.devel.go
 binassets_productiongo    = src/share/assets/bindata.production.go
-bintemplates_develgo      = src/share/templates.html/bindata.devel.go
-bintemplates_productiongo = src/share/templates.html/bindata.production.go
-templates_dir             = src/share/templates.html/
+bintemplates_develgo      = src/share/templates/bindata.devel.go
+bintemplates_productiongo = src/share/templates/bindata.production.go
+templates_dir             = src/share/templates/
 templates_files           = index.html usepercent.html tooltipable.html
 templates_html=$(addprefix $(templates_dir), $(templates_files))
 bindir=bin/$(shell uname -sm | awk '{ sub(/x86_64/, "amd64", $$2); print tolower($$1) "_" $$2; }')
@@ -77,18 +77,18 @@ src/share/assets/js/devel/milk/index.js: src/share/coffee/index.coffee
 src/share/assets/js/devel/gen/jscript.js: src/share/tmp/jscript.jsx
 	if type jsx >/dev/null; then jsx <$^ >/dev/null && jsx <$^ 2>/dev/null >$@; fi
 
-src/share/templates.html/%.html: src/share/amber.templates/%.amber src/share/amber.templates/defines.amber $(bindir)/amberpp
+src/share/templates/%.html: src/share/amber.templates/%.amber src/share/amber.templates/defines.amber $(bindir)/amberpp
 	$(bindir)/amberpp -defines src/share/amber.templates/defines.amber -output $@ $<
 src/share/tmp/jscript.jsx: src/share/amber.templates/jscript.amber src/share/amber.templates/defines.amber $(bindir)/amberpp
 	$(bindir)/amberpp -defines src/share/amber.templates/defines.amber -j -output $@ $<
 
 $(bintemplates_productiongo): $(templates_html)
-	cd $(<D) && go-bindata -ignore '.*\.go' -pkg view -tags production -o $(@F) $(^F)
+	cd $(<D) && go-bindata -ignore '.*\.go' -pkg templates -tags production -o $(@F) $(^F)
 $(bintemplates_develgo): # $(templates_html)
 #	$(templates_dir)   instead of $(<D)
 #	$(templates_files) instead of $(^F)
-	cd $(templates_dir) && go-bindata -ignore '.*\.go' -pkg view -tags '!production' -debug -o $(@F) $(templates_files)
-# 	cd $(dir $(word 1, $(templates_html))) && go-bindata -pkg view -tags '!production' -debug -o ../$(bintemplates_develgo) $(notdir $(templates_html))
+	cd $(templates_dir) && go-bindata -ignore '.*\.go' -pkg templates -tags '!production' -debug -o $(@F) $(templates_files)
+# 	cd $(dir $(word 1, $(templates_html))) && go-bindata -pkg templates -tags '!production' -debug -o ../$(bintemplates_develgo) $(notdir $(templates_html))
 ifeq (, $(findstring bootstrap, $(MAKECMDGOALS)))
 $(bintemplates_develgo): $(templates_html)
 endif

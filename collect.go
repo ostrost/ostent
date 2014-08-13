@@ -2,14 +2,14 @@ package ostent
 
 import (
 	"libostent/types"
-	"share/templates.html"
+	"share/templates"
 
-	"os"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 
-	"github.com/rzab/gosigar"
+	sigar "github.com/rzab/gosigar"
 )
 
 type generic struct {
@@ -54,7 +54,7 @@ func _getmem(kind string, in sigar.Swap) types.Memory {
 	used, approxused := humanBandback(in.Used)
 	usepercent := percent(approxused, approxtotal)
 
-	UPhtml, _ := view.UsePercentTemplate.Execute(struct {
+	UPhtml, _ := templates.UsePercentTemplate.Execute(struct {
 		Class, Value, CLASSNAME string
 	}{
 		Value: strconv.Itoa(int(usepercent)), // without "%"

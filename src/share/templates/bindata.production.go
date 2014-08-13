@@ -1,6 +1,6 @@
 // +build production
 
-package view
+package templates
 
 import (
 	"bytes"

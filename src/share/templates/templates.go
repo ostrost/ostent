@@ -1,7 +1,9 @@
-package view
+package templates
+
 import (
 	"bytes"
 	"html/template"
+
 	"github.com/rzab/amber"
 )
 
@@ -9,7 +11,7 @@ type stringTemplate struct {
 	*template.Template
 }
 
-var UsePercentTemplate  = mustTemplate("usepercent.html")
+var UsePercentTemplate = mustTemplate("usepercent.html")
 var TooltipableTemplate = mustTemplate("tooltipable.html")
 
 func mustTemplate(filename string) stringTemplate {
@@ -20,7 +22,7 @@ func mustTemplate(filename string) stringTemplate {
 	return stringTemplate{template.Must(template.New(filename).Parse(string(text)))}
 }
 
-func(st stringTemplate) Execute(data interface{}) (template.HTML, error) {
+func (st stringTemplate) Execute(data interface{}) (template.HTML, error) {
 	clone, err := st.Template.Clone()
 	if err != nil {
 		return "", err

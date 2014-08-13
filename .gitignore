@@ -6,4 +6,4 @@
 /pkg/
 
 src/share/assets/bindata.devel.go
-src/share/templates.html/bindata.devel.go
+src/share/templates/bindata.devel.go

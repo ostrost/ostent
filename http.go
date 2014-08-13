@@ -3,23 +3,22 @@ package ostent
 import (
 	"libostent/types"
 	"share/assets"
-	"share/templates.html"
+	"share/templates"
 
-	"io"
 	"bytes"
+	"container/ring"
+	"fmt"
+	"html/template"
+	"io"
+	"net/http"
+	"net/url"
+	"os/user"
+	"sort"
 	"strconv"
 	"strings"
-
-	"fmt"
-	"sort"
 	"sync"
-	"os/user"
-	"net/url"
-	"net/http"
-	"html/template"
-	"container/ring"
 
-	"github.com/rzab/gosigar"
+	sigar "github.com/rzab/gosigar"
 )
 
 func bps(factor int, current, previous uint) string {
@@ -274,7 +273,7 @@ func valuesSet(req *http.Request, base url.Values, pname string, bimap types.Bis
 func tooltipable(limit int, full string) template.HTML {
 	if len(full) > limit {
 		short := full[:limit]
-		if html, err := view.TooltipableTemplate.Execute(struct {
+		if html, err := templates.TooltipableTemplate.Execute(struct {
 			Full, Short string
 		}{
 			Full:  full,
@@ -861,7 +860,7 @@ func init() {
 }
 
 var SCRIPTS []string
-var INDEXTEMPLATE = view.Bincompile()
+var INDEXTEMPLATE = templates.Bincompile()
 
 func scripts(r *http.Request) (scripts []string) {
 	for _, s := range SCRIPTS {
