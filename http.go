@@ -1,4 +1,5 @@
 package ostent
+
 import (
 	"libostent/types"
 	"share/assets"
@@ -45,42 +46,50 @@ func interfaceMeta(ii InterfaceInfo) types.InterfaceMeta {
 
 type interfaceFormat interface {
 	Current(*types.Interface, InterfaceInfo)
-	Delta  (*types.Interface, InterfaceInfo, InterfaceInfo)
+	Delta(*types.Interface, InterfaceInfo, InterfaceInfo)
 }
+
 type interfaceInout interface {
 	InOut(InterfaceInfo) (uint, uint)
 }
 
 type interfaceBytes struct{}
+
 func (_ interfaceBytes) Current(id *types.Interface, ii InterfaceInfo) {
-	id.In  = humanB(uint64(ii. InBytes))
+	id.In = humanB(uint64(ii.InBytes))
 	id.Out = humanB(uint64(ii.OutBytes))
 }
+
 func (_ interfaceBytes) Delta(id *types.Interface, ii, pi InterfaceInfo) {
-	id.DeltaIn  = bps(8, ii. InBytes, pi. InBytes)
+	id.DeltaIn = bps(8, ii.InBytes, pi.InBytes)
 	id.DeltaOut = bps(8, ii.OutBytes, pi.OutBytes)
 }
 
 type interfaceInoutErrors struct{}
+
 func (_ interfaceInoutErrors) InOut(ii InterfaceInfo) (uint, uint) {
 	return ii.InErrors, ii.OutErrors
 }
+
 type interfaceInoutPackets struct{}
+
 func (_ interfaceInoutPackets) InOut(ii InterfaceInfo) (uint, uint) {
 	return ii.InPackets, ii.OutPackets
 }
 
-type interfaceNumericals struct{interfaceInout}
+type interfaceNumericals struct{ interfaceInout }
+
 func (ie interfaceNumericals) Current(id *types.Interface, ii InterfaceInfo) {
 	in, out := ie.InOut(ii)
-	id.In  = humanUnitless(uint64(in))
+	id.In = humanUnitless(uint64(in))
 	id.Out = humanUnitless(uint64(out))
 }
+
 func (ie interfaceNumericals) Delta(id *types.Interface, ii, previousi InterfaceInfo) {
-	in, out                   := ie.InOut(ii)
-	previous_in, previous_out := ie.InOut(previousi)
-	id.DeltaIn  = ps(in,  previous_in)
-	id.DeltaOut = ps(out, previous_out)
+	in, out := ie.InOut(ii)
+	previousIn, previousOut := ie.InOut(previousi)
+	id.DeltaIn = ps(in, previousIn)
+	id.DeltaOut = ps(out, previousOut)
 }
 
 func InterfacesDelta(format interfaceFormat, current, previous []InterfaceInfo, client client) *types.Interfaces {
@@ -109,7 +118,7 @@ func InterfacesDelta(format interfaceFormat, current, previous []InterfaceInfo, 
 	return ni
 }
 
-func(li lastinfo) MEM(client client) *types.MEM {
+func (li lastinfo) MEM(client client) *types.MEM {
 	mem := new(types.MEM)
 	mem.List = append(mem.List, li.RAM)
 	if !*client.HideSWAP {
@@ -118,7 +127,7 @@ func(li lastinfo) MEM(client client) *types.MEM {
 	return mem
 }
 
-func(li lastinfo) cpuListDelta() (sigar.CpuList, bool) {
+func (li lastinfo) cpuListDelta() (sigar.CpuList, bool) {
 	if li.Previous == nil || len(li.Previous.CPU.List) == 0 {
 		return li.CPU, false
 	}
@@ -127,18 +136,18 @@ func(li lastinfo) cpuListDelta() (sigar.CpuList, bool) {
 	if coreno == 0 { // wait, what?
 		return sigar.CpuList{}, false
 	}
-	cls := sigar.CpuList{List: make([]sigar.Cpu, coreno) }
+	cls := sigar.CpuList{List: make([]sigar.Cpu, coreno)}
 	copy(cls.List, li.CPU.List)
 	for i := range cls.List {
 		cls.List[i].User -= prev.List[i].User
 		cls.List[i].Nice -= prev.List[i].Nice
-		cls.List[i].Sys  -= prev.List[i].Sys
+		cls.List[i].Sys -= prev.List[i].Sys
 		cls.List[i].Idle -= prev.List[i].Idle
 	}
 	return cls, true
 }
 
-func(li lastinfo) CPUDelta(client client) (*types.CPU, int) {
+func (li lastinfo) CPUDelta(client client) (*types.CPU, int) {
 	cls, _ := li.cpuListDelta()
 	coreno := len(cls.List)
 	if coreno == 0 { // wait, what?
@@ -152,28 +161,28 @@ func(li lastinfo) CPUDelta(client client) (*types.CPU, int) {
 		total := each.User + each.Nice + each.Sys + each.Idle
 
 		user := percent(each.User, total)
-		sys  := percent(each.Sys,  total)
+		sys := percent(each.Sys, total)
 
 		idle := uint(0)
-		if user + sys < 100 {
+		if user+sys < 100 {
 			idle = 100 - user - sys
 		}
 
 		cores[i] = types.Core{
-			N: fmt.Sprintf("#%d", i),
-			User: user,
-			Sys:  sys,
-			Idle: idle,
-			UserClass:  textClass_colorPercent(user),
-			SysClass:   textClass_colorPercent(sys),
-			IdleClass:  textClass_colorPercent(100 - idle),
+			N:         fmt.Sprintf("#%d", i),
+			User:      user,
+			Sys:       sys,
+			Idle:      idle,
+			UserClass: textClass_colorPercent(user),
+			SysClass:  textClass_colorPercent(sys),
+			IdleClass: textClass_colorPercent(100 - idle),
 			// UserSpark: li.fiveCPU[i].user.spark(),
 			// SysSpark:  li.fiveCPU[i].sys .spark(),
 			// IdleSpark: li.fiveCPU[i].idle.spark(),
 		}
 
 		sum.User += each.User + each.Nice
-		sum.Sys  += each.Sys
+		sum.Sys += each.Sys
 		sum.Idle += each.Idle
 	}
 
@@ -195,16 +204,16 @@ func(li lastinfo) CPUDelta(client client) (*types.CPU, int) {
 		total := sum.User + sum.Sys + sum.Idle // + sum.Nice
 
 		user := percent(sum.User, total)
-		sys  := percent(sum.Sys,  total)
+		sys := percent(sum.Sys, total)
 		idle := uint(0)
-		if user + sys < 100 {
+		if user+sys < 100 {
 			idle = 100 - user - sys
 		}
 		cores = append([]types.Core{{ // "all N"
-			N: fmt.Sprintf("all %d", coreno),
-			User: user,
-			Sys:  sys,
-			Idle: idle,
+			N:         fmt.Sprintf("all %d", coreno),
+			User:      user,
+			Sys:       sys,
+			Idle:      idle,
 			UserClass: textClass_colorPercent(user),
 			SysClass:  textClass_colorPercent(sys),
 			IdleClass: textClass_colorPercent(100 - idle),
@@ -227,9 +236,15 @@ func labelClass_colorPercent(p uint) string {
 }
 
 func colorPercent(p uint) string {
-	if p > 90 { return "danger"  }
-	if p > 80 { return "warning" }
-	if p > 20 { return "info"    }
+	if p > 90 {
+		return "danger"
+	}
+	if p > 80 {
+		return "warning"
+	}
+	if p > 20 {
+		return "info"
+	}
 	return "success"
 }
 
@@ -262,7 +277,7 @@ func tooltipable(limit int, full string) template.HTML {
 		if html, err := view.TooltipableTemplate.Execute(struct {
 			Full, Short string
 		}{
-			Full: full,
+			Full:  full,
 			Short: short,
 		}); err == nil {
 			return html
@@ -274,8 +289,8 @@ func tooltipable(limit int, full string) template.HTML {
 func orderDisks(disks []diskInfo, seq types.SEQ) []diskInfo {
 	if len(disks) > 1 {
 		sort.Stable(diskOrder{
-			disks: disks,
-			seq: seq,
+			disks:   disks,
+			seq:     seq,
 			reverse: _DFBIMAP.SEQ2REVERSE[seq],
 		})
 	}
@@ -296,15 +311,15 @@ func dfbytes(diskinfos []diskInfo, client client) *types.DFbytes {
 		if !*client.ExpandDF && i > client.toprows-1 {
 			break
 		}
-		total,  approxtotal  := humanBandback(disk.Total)
-		used,   approxused   := humanBandback(disk.Used)
+		total, approxtotal := humanBandback(disk.Total)
+		used, approxused := humanBandback(disk.Used)
 		disks = append(disks, types.DiskBytes{
-			DiskMeta: diskMeta(disk),
-			Total:       total,
-			Used:        used,
-			Avail:       humanB(disk.Avail),
-			UsePercent:  formatPercent(approxused, approxtotal),
-			UsePercentClass: labelClass_colorPercent(percent(approxused,  approxtotal)),
+			DiskMeta:        diskMeta(disk),
+			Total:           total,
+			Used:            used,
+			Avail:           humanB(disk.Avail),
+			UsePercent:      formatPercent(approxused, approxtotal),
+			UsePercentClass: labelClass_colorPercent(percent(approxused, approxtotal)),
 		})
 	}
 	dsb := new(types.DFbytes)
@@ -319,13 +334,13 @@ func dfinodes(diskinfos []diskInfo, client client) *types.DFinodes {
 			break
 		}
 		itotal, approxitotal := humanBandback(disk.Inodes)
-		iused,  approxiused  := humanBandback(disk.Iused)
+		iused, approxiused := humanBandback(disk.Iused)
 		disks = append(disks, types.DiskInodes{
-			DiskMeta: diskMeta(disk),
-			Inodes:      itotal,
-			Iused:       iused,
-			Ifree:       humanB(disk.Ifree),
-			IusePercent: formatPercent(approxiused, approxitotal),
+			DiskMeta:         diskMeta(disk),
+			Inodes:           itotal,
+			Iused:            iused,
+			Ifree:            humanB(disk.Ifree),
+			IusePercent:      formatPercent(approxiused, approxitotal),
 			IusePercentClass: labelClass_colorPercent(percent(approxiused, approxitotal)),
 		})
 	}
@@ -336,25 +351,25 @@ func dfinodes(diskinfos []diskInfo, client client) *types.DFinodes {
 
 var _DFBIMAP = types.Seq2bimap(DFFS, // the default seq for ordering
 	types.Seq2string{
-		DFFS:      "fs",
-		DFSIZE:    "size",
-		DFUSED:    "used",
-		DFAVAIL:   "avail",
-		DFMP:      "mp",
+		DFFS:    "fs",
+		DFSIZE:  "size",
+		DFUSED:  "used",
+		DFAVAIL: "avail",
+		DFMP:    "mp",
 	}, []types.SEQ{
 		DFFS, DFMP,
 	})
 
 var _PSBIMAP = types.Seq2bimap(PSPID, // the default seq for ordering
 	types.Seq2string{
-		PSPID:   "pid",
-		PSPRI:   "pri",
-		PSNICE:  "nice",
-		PSSIZE:  "size",
-		PSRES:   "res",
-		PSTIME:  "time",
-		PSNAME:  "name",
-		PSUID:   "user",
+		PSPID:  "pid",
+		PSPRI:  "pri",
+		PSNICE: "nice",
+		PSSIZE: "size",
+		PSRES:  "res",
+		PSTIME: "time",
+		PSNAME: "name",
+		PSUID:  "user",
 	}, []types.SEQ{
 		PSNAME, PSUID,
 	})
@@ -390,22 +405,22 @@ func orderProc(procs []types.ProcInfo, client *client, send *sendClient) []types
 		procs = procs[:limitPS]
 	}
 
-	setBool  (&client.PSnotDecreasable, &send.PSnotDecreasable, notdec)
-	setBool  (&client.PSnotExpandable,  &send.PSnotExpandable,  notexp)
-	setString(&client.PSplusText,       &send.PSplusText,       fmt.Sprintf("%d+", limitPS))
+	setBool(&client.PSnotDecreasable, &send.PSnotDecreasable, notdec)
+	setBool(&client.PSnotExpandable, &send.PSnotExpandable, notexp)
+	setString(&client.PSplusText, &send.PSplusText, fmt.Sprintf("%d+", limitPS))
 
 	uids := map[uint]string{}
 	var list []types.ProcData
 	for _, proc := range procs {
 		list = append(list, types.ProcData{
-			PID:        proc.PID,
-			Priority:   proc.Priority,
-			Nice:       proc.Nice,
-			Time:       formatTime(proc.Time),
-			NameHTML:   tooltipable(42, proc.Name),
-			UserHTML:   tooltipable(12, username(uids, proc.UID)),
-			Size:       humanB(proc.Size),
-			Resident:   humanB(proc.Resident),
+			PID:      proc.PID,
+			Priority: proc.Priority,
+			Nice:     proc.Nice,
+			Time:     formatTime(proc.Time),
+			NameHTML: tooltipable(42, proc.Name),
+			UserHTML: tooltipable(12, username(uids, proc.UID)),
+			Size:     humanB(proc.Size),
+			Resident: humanB(proc.Resident),
 		})
 	}
 	return list
@@ -422,20 +437,20 @@ type last struct {
 }
 
 type lastinfo struct {
-    Generic generic
-	CPU     sigar.CpuList
-	RAM     types.Memory
-	Swap    types.Memory
+	Generic    generic
+	CPU        sigar.CpuList
+	RAM        types.Memory
+	Swap       types.Memory
 	DiskList   []diskInfo
 	ProcList   []types.ProcInfo
 	Interfaces []InterfaceInfo
-	Previous *Previous
-	lastfive lastfive
+	Previous   *Previous
+	lastfive   lastfive
 }
 
 type lastfive struct {
-//	CPU []*fiveCPU
-	LA1   *five
+	// CPU []*fiveCPU
+	LA1 *five
 }
 
 type fiveCPU struct {
@@ -451,7 +466,7 @@ func newFive() *five {
 	return &five{Ring: ring.New(5), min: -1, max: -1}
 }
 
-func(f *five) push(v int) {
+func (f *five) push(v int) {
 	push(&f, v)
 }
 
@@ -505,7 +520,7 @@ func push(ff **five, v int) {
 	}
 }
 
-func(f five) spark() string {
+func (f five) spark() string {
 	if f.max == -1 || f.min == -1 { // || f.max == f.min {
 		return ""
 	}
@@ -515,11 +530,11 @@ func(f five) spark() string {
 		"▁",
 		"▂",
 		"▃",
-// 		"▄", // looks bad in browsers
+		// "▄", // looks bad in browsers
 		"▅",
 		"▆",
 		"▇",
-// 		"█", // looks bad in browsers
+		// "█", // looks bad in browsers
 	}
 
 	s := ""
@@ -530,27 +545,27 @@ func(f five) spark() string {
 		v := o.(int)
 		fi := 0.0
 		if spread != 0 {
-			fi = float64(v - f.min) / float64(spread)
+			fi = float64(v-f.min) / float64(spread)
 			if fi > 1.0 {
 				// panic("impossible") // ??
 				fi = 1.0
 			}
 		}
-		i := int(fi * float64(len(bars) - 1))
-		s += bars[ i ]
+		i := int(fi * float64(len(bars)-1))
+		s += bars[i]
 	})
 	return s
 }
 
 type PageData struct {
-    Generic generic
+	Generic generic
 	CPU     types.CPU
 	MEM     types.MEM
 
-	PStable  PStable
-	PSlinks *PSlinks        `json:",omitempty"`
+	PStable PStable
+	PSlinks *PSlinks `json:",omitempty"`
 
-	DFlinks *DFlinks        `json:",omitempty"`
+	DFlinks  *DFlinks       `json:",omitempty"`
 	DFbytes  types.DFbytes  `json:",omitempty"`
 	DFinodes types.DFinodes `json:",omitempty"`
 
@@ -559,39 +574,36 @@ type PageData struct {
 	IFpackets types.Interfaces
 
 	VagrantMachines *vagrantMachines
-	VagrantError     string
-	VagrantErrord    bool
+	VagrantError    string
+	VagrantErrord   bool
 
-	DISTRIB     string
-	VERSION     string
+	DISTRIB        string
+	VERSION        string
 	PeriodDuration Duration
 
-    Client client
+	Client client
 
 	IFTABS iftabs
 	DFTABS dftabs
 }
 
 type pageUpdate struct {
-    Generic  *generic        `json:",omitempty"`
-
+	Generic  *generic        `json:",omitempty"`
 	CPU      *types.CPU      `json:",omitempty"`
 	MEM      *types.MEM      `json:",omitempty"`
-
 	DFlinks  *DFlinks        `json:",omitempty"`
 	DFbytes  *types.DFbytes  `json:",omitempty"`
 	DFinodes *types.DFinodes `json:",omitempty"`
-
-	PSlinks *PSlinks       `json:",omitempty"`
-	PStable *PStable       `json:",omitempty"`
+	PSlinks  *PSlinks        `json:",omitempty"`
+	PStable  *PStable        `json:",omitempty"`
 
 	IFbytes   *types.Interfaces `json:",omitempty"`
 	IFerrors  *types.Interfaces `json:",omitempty"`
 	IFpackets *types.Interfaces `json:",omitempty"`
 
 	VagrantMachines *vagrantMachines `json:",omitempty"`
-	VagrantError     string
-	VagrantErrord    bool
+	VagrantError    string
+	VagrantErrord   bool
 
 	Client *sendClient `json:",omitempty"`
 }
@@ -605,7 +617,7 @@ func (la *last) reset_prev() {
 	if la.Previous == nil {
 		return
 	}
-	la.Previous.CPU        = sigar.CpuList{}
+	la.Previous.CPU = sigar.CpuList{}
 	la.Previous.Interfaces = []InterfaceInfo{}
 }
 
@@ -613,22 +625,23 @@ func (la *last) collect() {
 	la.mutex.Lock()
 	defer la.mutex.Unlock()
 
-	gch  := make(chan generic,          1)
-	rch  := make(chan types.Memory,     1)
-	sch  := make(chan types.Memory,     1)
-	cch  := make(chan sigar.CpuList,    1)
-	dch  := make(chan []diskInfo,       1)
-	pch  := make(chan []types.ProcInfo, 1)
-	ifch := make(chan InterfacesInfo,   1)
+	gch := make(chan generic, 1)
+	rch := make(chan types.Memory, 1)
+	sch := make(chan types.Memory, 1)
+	cch := make(chan sigar.CpuList, 1)
+	dch := make(chan []diskInfo, 1)
+	pch := make(chan []types.ProcInfo, 1)
+	ifch := make(chan InterfacesInfo, 1)
 
-	go getRAM       (rch)
-	go getSwap      (sch)
-	go getGeneric   (gch)
-	go read_disks   (dch)
-	go read_procs   (pch)
+	go getRAM(rch)
+	go getSwap(sch)
+	go getGeneric(gch)
+	go read_disks(dch)
+	go read_procs(pch)
 	go NewInterfaces(ifch)
 	go func(CH chan<- sigar.CpuList) {
-		cl := sigar.CpuList{}; cl.Get()
+		cl := sigar.CpuList{}
+		cl.Get()
 		CH <- cl
 	}(cch)
 
@@ -701,9 +714,9 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 		lastInfo.mutex.Lock()
 		defer lastInfo.mutex.Unlock()
 
-		df_copy = make([]diskInfo,       len(lastInfo.DiskList))
+		df_copy = make([]diskInfo, len(lastInfo.DiskList))
 		ps_copy = make([]types.ProcInfo, len(lastInfo.ProcList))
-		if_copy = make([]InterfaceInfo,  len(lastInfo.Interfaces))
+		if_copy = make([]InterfaceInfo, len(lastInfo.Interfaces))
 
 		copy(df_copy, lastInfo.DiskList)
 		copy(ps_copy, lastInfo.ProcList)
@@ -735,31 +748,36 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 	}
 
 	if pu.CPU != nil { // TODO Is it ok to update the *client.Expand*CPU when the CPU is shown only?
-		setBool  (&client.ExpandableCPU, &send.ExpandableCPU, coreno > client.toprows - 1) // one row reserved for "all N"
+		setBool(&client.ExpandableCPU, &send.ExpandableCPU, coreno > client.toprows-1) // one row reserved for "all N"
 		setString(&client.ExpandtextCPU, &send.ExpandtextCPU, fmt.Sprintf("Expanded (%d)", coreno))
 	}
 
 	if true {
-		setBool  (&client.ExpandableIF, &send.ExpandableIF, len(if_copy) > client.toprows)
+		setBool(&client.ExpandableIF, &send.ExpandableIF, len(if_copy) > client.toprows)
 		setString(&client.ExpandtextIF, &send.ExpandtextIF, fmt.Sprintf("Expanded (%d)", len(if_copy)))
 
-		setBool  (&client.ExpandableDF, &send.ExpandableDF, len(df_copy) > client.toprows)
+		setBool(&client.ExpandableDF, &send.ExpandableDF, len(df_copy) > client.toprows)
 		setString(&client.ExpandtextDF, &send.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(df_copy)))
 	}
 
 	if !*client.HideDF && client.RefreshDF.refresh(forcerefresh) {
 		orderedDisks := orderDisks(df_copy, client.dfSEQ)
 
-		       if *client.TabDF == DFBYTES_TABID  { pu.DFbytes  = dfbytes (orderedDisks, *client)
-		} else if *client.TabDF == DFINODES_TABID { pu.DFinodes = dfinodes(orderedDisks, *client)
+		if *client.TabDF == DFBYTES_TABID {
+			pu.DFbytes = dfbytes(orderedDisks, *client)
+		} else if *client.TabDF == DFINODES_TABID {
+			pu.DFinodes = dfinodes(orderedDisks, *client)
 		}
 	}
 
 	if !*client.HideIF && client.RefreshIF.refresh(forcerefresh) {
 		switch *client.TabIF {
-		case IFBYTES_TABID:   pu.IFbytes   = InterfacesDelta(interfaceBytes{},                             if_copy, previf_copy, *client)
-		case IFERRORS_TABID:  pu.IFerrors  = InterfacesDelta(interfaceNumericals{interfaceInoutErrors{}},  if_copy, previf_copy, *client)
-		case IFPACKETS_TABID: pu.IFpackets = InterfacesDelta(interfaceNumericals{interfaceInoutPackets{}}, if_copy, previf_copy, *client)
+		case IFBYTES_TABID:
+			pu.IFbytes = InterfacesDelta(interfaceBytes{}, if_copy, previf_copy, *client)
+		case IFERRORS_TABID:
+			pu.IFerrors = InterfacesDelta(interfaceNumericals{interfaceInoutErrors{}}, if_copy, previf_copy, *client)
+		case IFPACKETS_TABID:
+			pu.IFpackets = InterfacesDelta(interfaceNumericals{interfaceInoutPackets{}}, if_copy, previf_copy, *client)
 		}
 	}
 
@@ -795,32 +813,38 @@ func pageData(req *http.Request) PageData {
 	updates := getUpdates(req, &client, sendClient{}, true)
 
 	data := PageData{
-		Client:     client,
-		Generic:   *updates.Generic,
-		CPU:       *updates.CPU,
-		MEM:       *updates.MEM,
+		Client:  client,
+		Generic: *updates.Generic,
+		CPU:     *updates.CPU,
+		MEM:     *updates.MEM,
 
-		DFlinks:    updates.DFlinks,
-		PSlinks:    updates.PSlinks,
+		DFlinks: updates.DFlinks,
+		PSlinks: updates.PSlinks,
 
-		PStable:   *updates.PStable,
+		PStable: *updates.PStable,
 
-		DISTRIB:    DISTRIB, // value from init_*.go
-		VERSION:    VERSION, // value from server.go
+		DISTRIB: DISTRIB, // value from init_*.go
+		VERSION: VERSION, // value from server.go
+
 		PeriodDuration: periodFlag.Duration,
 	}
 
-	       if updates.DFbytes  != nil { data.DFbytes  = *updates.DFbytes
-	} else if updates.DFinodes != nil { data.DFinodes = *updates.DFinodes
+	if updates.DFbytes != nil {
+		data.DFbytes = *updates.DFbytes
+	} else if updates.DFinodes != nil {
+		data.DFinodes = *updates.DFinodes
 	}
 
-	       if updates.IFbytes   != nil { data.IFbytes   = *updates.IFbytes
-	} else if updates.IFerrors  != nil { data.IFerrors  = *updates.IFerrors
-	} else if updates.IFpackets != nil { data.IFpackets = *updates.IFpackets
+	if updates.IFbytes != nil {
+		data.IFbytes = *updates.IFbytes
+	} else if updates.IFerrors != nil {
+		data.IFerrors = *updates.IFerrors
+	} else if updates.IFpackets != nil {
+		data.IFpackets = *updates.IFpackets
 	}
 	data.VagrantMachines = updates.VagrantMachines
-	data.VagrantError    = updates.VagrantError
-	data.VagrantErrord   = updates.VagrantErrord
+	data.VagrantError = updates.VagrantError
+	data.VagrantErrord = updates.VagrantErrord
 
 	data.DFTABS = DFTABS // from tabs.go
 	data.IFTABS = IFTABS // from tabs.go
@@ -842,7 +866,7 @@ var INDEXTEMPLATE = view.Bincompile()
 func scripts(r *http.Request) (scripts []string) {
 	for _, s := range SCRIPTS {
 		if !strings.HasPrefix(string(s), "//") {
-			s = "//"+r.Host+s
+			s = "//" + r.Host + s
 		}
 		scripts = append(scripts, s)
 	}
@@ -858,12 +882,12 @@ func index(w http.ResponseWriter, r *http.Request) {
 
 	buf := new(bytes.Buffer)
 	if err := indexTemplate.ExecuteTemplate(buf, "index.html",
-		struct{
-			Data interface{}
-			SCRIPTS []string
+		struct {
+			Data      interface{}
+			SCRIPTS   []string
 			CLASSNAME string
 		}{
-			Data: pageData(r),
+			Data:    pageData(r),
 			SCRIPTS: scripts(r),
 		},
 	); err != nil {
@@ -872,6 +896,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/html")
- 	w.Header().Set("Content-Length", strconv.Itoa(buf.Len())) // len(buf.String())
+	w.Header().Set("Content-Length", strconv.Itoa(buf.Len())) // len(buf.String())
+
 	io.Copy(w, buf) // or w.Write(buf.Bytes())
 }
