@@ -1,4 +1,5 @@
 package ostent
+
 /*
 #include <sys/socket.h>
 #include <net/if.h>
@@ -36,19 +37,19 @@ char ADDR[INET_ADDRSTRLEN];
 import "C"
 import "unsafe"
 
-type InterfaceInfo struct{
-	Name string
-	 InBytes   uint
+type InterfaceInfo struct {
+	Name       string
+	InBytes    uint
 	OutBytes   uint
-	 InPackets uint
+	InPackets  uint
 	OutPackets uint
-	 InErrors  uint
+	InErrors   uint
 	OutErrors  uint
 }
 
 type InterfacesInfo struct {
 	List []InterfaceInfo
-	IP string
+	IP   string
 }
 
 func NewInterfaces(CH chan<- InterfacesInfo) {
@@ -60,7 +61,7 @@ func NewInterfaces(CH chan<- InterfacesInfo) {
 	defer C.freeifaddrs(ifaces)
 
 	ifs := []InterfaceInfo{}
-	IP  := ""
+	IP := ""
 
 	for fi := ifaces; fi != nil; fi = fi.ifa_next {
 		if fi.ifa_addr == nil {
@@ -69,9 +70,9 @@ func NewInterfaces(CH chan<- InterfacesInfo) {
 
 		ifa_name := C.GoString(fi.ifa_name)
 		if IP == "" &&
-			fi.ifa_addr.sa_family == C.AF_INET   &&
-			!rx_lo.Match([]byte(ifa_name))       &&
-			realInterfaceName(  ifa_name  ) {
+			fi.ifa_addr.sa_family == C.AF_INET &&
+			!rx_lo.Match([]byte(ifa_name)) &&
+			realInterfaceName(ifa_name) {
 
 			sa_in := (*C.struct_sockaddr_in)(unsafe.Pointer(fi.ifa_addr))
 			if C.inet_ntop(
@@ -80,8 +81,8 @@ func NewInterfaces(CH chan<- InterfacesInfo) {
 				&C.ADDR[0],
 				C.socklen_t(unsafe.Sizeof(C.ADDR))) != nil {
 
-					IP = C.GoString((*C.char)(unsafe.Pointer(&C.ADDR)))
-				}
+				IP = C.GoString((*C.char)(unsafe.Pointer(&C.ADDR)))
+			}
 		}
 
 		if fi.ifa_addr.sa_family != C.AF_LINK {
@@ -90,26 +91,26 @@ func NewInterfaces(CH chan<- InterfacesInfo) {
 
 		data := fi.ifa_data
 		it := InterfaceInfo{
-			Name: ifa_name,
-			 InBytes:   uint(C.Ibytes(data)),
+			Name:       ifa_name,
+			InBytes:    uint(C.Ibytes(data)),
 			OutBytes:   uint(C.Obytes(data)),
-			 InPackets: uint(C.Ipackets(data)),
+			InPackets:  uint(C.Ipackets(data)),
 			OutPackets: uint(C.Opackets(data)),
-			 InErrors:  uint(C.Ierrors(data)),
+			InErrors:   uint(C.Ierrors(data)),
 			OutErrors:  uint(C.Oerrors(data)),
 		}
-		if  it. InBytes   == 0 &&
-			it.OutBytes   == 0 &&
-			it. InPackets == 0 &&
+		if it.InBytes == 0 &&
+			it.OutBytes == 0 &&
+			it.InPackets == 0 &&
 			it.OutPackets == 0 &&
-			it. InErrors  == 0 &&
-			it.OutErrors  == 0 {
+			it.InErrors == 0 &&
+			it.OutErrors == 0 {
 			continue
 		}
 		ifs = append(ifs, it)
 	}
 	CH <- InterfacesInfo{
 		List: ifs,
-		IP: IP,
+		IP:   IP,
 	}
 }
