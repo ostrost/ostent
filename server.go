@@ -89,7 +89,7 @@ func Serve(l net.Listener, production bool, extramap Muxmap) error {
 
 	chain := alice.New(
 		stdaccess.Constructor,
-		 recovery.Constructor,
+		recovery.Constructor,
 	)
 	mux := NewMux(chain.Then)
 
