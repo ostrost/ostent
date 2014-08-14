@@ -43,7 +43,6 @@ Running the code
    Adds ./ to GOPATH and ./bin to PATH.
 
 4. **`make bootstrap`**
-
    - installs required Go packages
    - generates `src/share/{assets,templates}/bindata.devel.go`
      These files will contain absolute local paths.
