@@ -9,7 +9,7 @@ templates_files           = index.html usepercent.html tooltipable.html
 templates_html=$(addprefix $(templates_dir), $(templates_files))
 bindir=bin/$(shell uname -sm | awk '{ sub(/x86_64/, "amd64", $$2); print tolower($$1) "_" $$2; }')
 GOPATH=$(shell echo $$GOPATH):$(PWD)
-PATH=$(shell echo $$PATH:$$GOPATH/bin):$(bindir)
+PATH=$(shell printf %s: $$PATH; echo $$GOPATH | awk -F: 'BEGIN { OFS="/bin:"; } { print $$1,$$2,$$3,$$4,$$5,$$6,$$7,$$8,$$9 "/bin"}')
 
 gobindata=go-bindata -ignore '.*\.go'
 
