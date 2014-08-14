@@ -34,14 +34,14 @@ $(bindir)/amberpp: | src////amberp/amberpp
 $(bindir)/ostent:  | src////ostent
 
 ifeq (, $(findstring bootstrap, $(MAKECMDGOALS)))
-$(bindir)/amberpp: $(shell go list -f '\
+$(bindir)/amberpp: $(shell env GOPATH=$(GOPATH) go list -f '\
 {{$$dir := .Dir}}\
 {{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}' amberp/amberpp | \
 sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 
 $(bindir)/ostent: $(shell \
-go list -tags production -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' ostent | xargs \
-go list -tags production -f '{{if and (not .Standard) (not .Goroot)}}\
+env GOPATH=$(GOPATH) go list -tags production -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' ostent | xargs \
+env GOPATH=$(GOPATH) go list -tags production -f '{{if and (not .Standard) (not .Goroot)}}\
 {{$$dir := .Dir}}\
 {{range .GoFiles     }}{{$$dir}}/{{.}}{{"\n"}}{{end}}\
 {{range .CgoFiles    }}{{$$dir}}/{{.}}{{"\n"}}{{end}}{{end}}' | \
@@ -50,8 +50,8 @@ sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 	go build -tags production -o $@ ostent
 
 $(bindir)/jsmakerule: $(binassets_develgo) $(shell \
-go list -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' share/assets/jsmakerule | xargs \
-go list -f '{{if and (not .Standard) (not .Goroot)}}\
+env GOPATH=$(GOPATH) go list -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' share/assets/jsmakerule | xargs \
+env GOPATH=$(GOPATH) go list -f '{{if and (not .Standard) (not .Goroot)}}\
 {{$$dir := .Dir}}\
 {{range .GoFiles     }}{{$$dir}}/{{.}}{{"\n"}}{{end}}\
 {{range .CgoFiles    }}{{$$dir}}/{{.}}{{"\n"}}{{end}}{{end}}' | \
