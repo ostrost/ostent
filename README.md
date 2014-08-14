@@ -36,9 +36,11 @@ Running the code
 
 1. **`git clone https://github.com/rzab/ostent.git`**
 
-2. **`cd ostent`** `# the project directory`
+2. **`cd ostent`**
 
-3. **`export GOPATH=$GOPATH:$PWD`** `# the current directory into $GOPATH`
+3. **`export GOPATH=${GOPATH:-$PWD}:$PWD PATH=$PATH:$PWD/bin`**
+
+   Adds ./ to GOPATH and ./bin to PATH.
 
 4. **`make bootstrap`**
 
@@ -46,7 +48,7 @@ Running the code
    - generates `src/share/{assets,templates}/bindata.devel.go`
      These files will contain absolute local paths.
 
-5. Either **`rerun ostent`** (see [rerun](https://github.com/skelterjohn/rerun)) to run or **`make`** to build.
+5. Either **`make`** to build or **[`rerun`](https://github.com/skelterjohn/rerun)` ostent`** for live-reloading run.
 
 Go packages
 -----------

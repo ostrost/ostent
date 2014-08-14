@@ -22,7 +22,7 @@ bootstrap:
 	$(MAKE) $(MFLAGS) bootstrap_develgo
 	go get -v github.com/skelterjohn/rerun ostent
 	go get -v -tags production ostent
-	rm -f bin/ostent
+	@rm -f bin/ostent
 bootstrap_develgo: $(binassets_develgo) $(bintemplates_develgo)
 
 %: %.sh # clear the implicit *.sh rule covering ./ostent.sh
