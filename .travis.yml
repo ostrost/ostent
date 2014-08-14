@@ -2,10 +2,6 @@ language: go
 go:
   - 1.3
   - tip
-install:
-  - export PATH="$PATH:$HOME/gopath/bin"
-  - export GOPATH="$GOPATH:$PWD"
-  - make bootstrap
-script:
-  - go test -v ./...
-  - make # test the build
+
+install: make bootstrap
+script: make test all # go test then the build

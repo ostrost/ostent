@@ -8,9 +8,15 @@ templates_dir             = src/share/templates/
 templates_files           = index.html usepercent.html tooltipable.html
 templates_html=$(addprefix $(templates_dir), $(templates_files))
 bindir=bin/$(shell uname -sm | awk '{ sub(/x86_64/, "amd64", $$2); print tolower($$1) "_" $$2; }')
+GOPATH=$(shell echo $$GOPATH):$(PWD)
+PATH=$(shell echo $$PATH:$$GOPATH/bin):$(bindir)
 
-.PHONY: all bootstrap bootstrap_develgo
+gobindata=go-bindata -ignore '.*\.go'
+
+.PHONY: all test bootstrap bootstrap_develgo
 all: $(bindir)/ostent
+test:
+	go test -v ./...
 bootstrap:
 	go get -v github.com/jteeuwen/go-bindata/go-bindata
 	$(MAKE) $(MFLAGS) bootstrap_develgo
@@ -83,20 +89,20 @@ src/share/tmp/jscript.jsx: src/share/amber.templates/jscript.amber src/share/amb
 	$(bindir)/amberpp -defines src/share/amber.templates/defines.amber -j -output $@ $<
 
 $(bintemplates_productiongo): $(templates_html)
-	cd $(<D) && go-bindata -ignore '.*\.go' -pkg templates -tags production -o $(@F) $(^F)
+	cd $(<D) && $(gobindata) -pkg templates -tags production -o $(@F) $(^F)
 $(bintemplates_develgo): # $(templates_html)
 #	$(templates_dir)   instead of $(<D)
 #	$(templates_files) instead of $(^F)
-	cd $(templates_dir) && go-bindata -ignore '.*\.go' -pkg templates -tags '!production' -debug -o $(@F) $(templates_files)
-# 	cd $(dir $(word 1, $(templates_html))) && go-bindata -pkg templates -tags '!production' -debug -o ../$(bintemplates_develgo) $(notdir $(templates_html))
+	cd $(templates_dir) && $(gobindata) -pkg templates -tags '!production' -debug -o $(@F) $(templates_files)
+# 	cd $(dir $(word 1, $(templates_html))) && $(gobindata) -pkg templates -tags '!production' -debug -o ../$(bintemplates_develgo) $(notdir $(templates_html))
 ifeq (, $(findstring bootstrap, $(MAKECMDGOALS)))
 $(bintemplates_develgo): $(templates_html)
 endif
 
 $(binassets_productiongo):
-	go-bindata -ignore '.*\.go' -ignore jsmakerule -pkg assets -o $@ -tags production -prefix src/share/assets -ignore src/share/assets/js/devel/ src/share/assets/...
+	$(gobindata) -ignore jsmakerule -pkg assets -o $@ -tags production -prefix src/share/assets -ignore src/share/assets/js/devel/ src/share/assets/...
 $(binassets_develgo):
-	go-bindata -ignore '.*\.go' -ignore jsmakerule -pkg assets -o $@ -tags '!production' -debug -prefix src/share/assets -ignore src/share/assets/js/production/ src/share/assets/...
+	$(gobindata) -ignore jsmakerule -pkg assets -o $@ -tags '!production' -debug -prefix src/share/assets -ignore src/share/assets/js/production/ src/share/assets/...
 
 $(binassets_productiongo): $(shell find src/share/assets -type f \! -name '*.go' \! -path src/share/assets/js/devel/)
 $(binassets_productiongo): src/share/assets/css/index.css
