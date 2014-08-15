@@ -131,7 +131,7 @@ func serveContentFunc(path string) http.HandlerFunc {
 		if err != nil {
 			panic(err)
 		}
-		modtime, err := assets.ModTime("assets", path)
+		modtime, err := assets.ModTime("src/share/assets", path)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
