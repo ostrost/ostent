@@ -3,7 +3,6 @@ package ostent
 import (
 	"encoding/json"
 	"html/template"
-	"io/ioutil"
 	"os"
 	"os/user"
 	"sort"
@@ -69,7 +68,7 @@ func vagrantmachines() (*vagrantMachines, error) {
 	}
 	defer syscall.Flock(int(lock_file.Fd()), syscall.LOCK_UN)
 
-	text, err := ioutil.ReadFile(indexFilename)
+	open, err := os.Open(indexFilename) // text, err := ioutil.ReadFile(indexFilename)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +77,7 @@ func vagrantmachines() (*vagrantMachines, error) {
 		Machines *map[string]vagrantMachine // the key is UUID
 		// Version int // unused
 	})
-	if err := json.Unmarshal(text, status); err != nil {
+	if err := json.NewDecoder(open).Decode(status); err != nil { // json.Unmarshal(text, status)
 		return nil, err
 	}
 	machines := new(vagrantMachines)
