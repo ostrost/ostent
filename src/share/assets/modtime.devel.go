@@ -30,7 +30,7 @@ func ModTime(prefix, path string) (time.Time, error) {
 			defer statstatus.mutex.Unlock()
 			statstatus.fails = true
 		}()
-		return now, err
+		return time.Time{}, err
 	}
 	return fi.ModTime(), nil
 }

@@ -94,7 +94,7 @@ func Serve(l net.Listener, production bool, extramap Muxmap) error {
 	mux := NewMux(chain.Then)
 
 	for _, path := range assets.AssetNames() {
-		hf := chain.Then(serveContentFunc(path))
+		hf := chain.Then(serveContentFunc(path, logger))
 		mux.Handle("GET", "/"+path, hf)
 		mux.Handle("HEAD", "/"+path, hf)
 	}
@@ -125,7 +125,7 @@ func Serve(l net.Listener, production bool, extramap Muxmap) error {
 	return server.Serve(l)
 }
 
-func serveContentFunc(path string) http.HandlerFunc {
+func serveContentFunc(path string, logger *log.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		text, err := assets.Uncompressedasset(path)
 		if err != nil {
@@ -133,8 +133,9 @@ func serveContentFunc(path string) http.HandlerFunc {
 		}
 		modtime, err := assets.ModTime("src/share/assets", path)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+			logger.Println(err)
+			// http.Error(w, err.Error(), http.StatusInternalServerError)
+			// return
 		}
 
 		http.ServeContent(w, r, path, modtime, bytes.NewReader(text))
