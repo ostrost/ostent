@@ -20,9 +20,10 @@ type vagrantMachine struct {
 	Vagrantfile_path     string
 	Local_data_path      string
 
-	Name     string
-	Provider string
-	State    string
+	Name      string
+	Provider  string
+	State     string
+	StateHTML template.HTML
 
 	// 	Vagrantfile_name *[]string   // unused
 	// 	Updated_at         *string   // unused
@@ -86,6 +87,7 @@ func vagrantmachines() (*vagrantMachines, error) {
 			machine.UUID = uuid
 			machine.UUIDHTML = tooltipable(7, uuid)
 			machine.Vagrantfile_pathHTML = tooltipable(50, machine.Vagrantfile_path)
+			machine.StateHTML = tooltipable(8, machine.State)
 			// (*status.Machines)[uuid] = machine
 			machines.List = append(machines.List, machine)
 		}

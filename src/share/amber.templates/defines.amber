@@ -278,7 +278,7 @@
       td #{$machine.UUIDHTML}
       td #{$machine.Name}
       td #{$machine.Provider}
-      td #{$machine.State}
+      td #{$machine.StateHTML}
       td.nowrap #{$machine.Vagrantfile_pathHTML}
     | </tr>
 [[end]]
