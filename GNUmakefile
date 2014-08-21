@@ -65,6 +65,7 @@ endif
 src/share/tmp/jsassets.d: # $(bindir)/jsmakerule
 	@echo '* Prerequisite: src/share/tmp/jsassets.d'
 #	$(MAKE) $(MFLAGS) $(bindir)/jsmakerule
+	$(bindir)/jsmakerule src/share/assets/js/production/ugly/index.js >/dev/null &&\
 	$(bindir)/jsmakerule src/share/assets/js/production/ugly/index.js >$@
 #	$^ src/share/assets/js/production/ugly/index.js >$@
 ifneq ($(MAKECMDGOALS), clean)
