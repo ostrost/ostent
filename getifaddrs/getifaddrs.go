@@ -1,4 +1,9 @@
-package ostent
+/*
+Package getifaddrs does getifaddrs(3) for Go.
+*/
+package getifaddrs
+
+// +build unix
 
 /*
 #include <sys/socket.h>
@@ -37,7 +42,9 @@ char ADDR[INET_ADDRSTRLEN];
 import "C"
 import "unsafe"
 
-type InterfaceInfo struct {
+// IfData is a struct with interface info.
+type IfData struct {
+	IP         string
 	Name       string
 	InBytes    uint
 	OutBytes   uint
@@ -47,42 +54,45 @@ type InterfaceInfo struct {
 	OutErrors  uint
 }
 
-type InterfacesInfo struct {
-	List []InterfaceInfo
-	IP   string
+func ntop(fi *C.struct_ifaddrs) (string, bool) {
+	if fi.ifa_addr == nil {
+		return "", false
+	}
+	if fi.ifa_addr.sa_family != C.AF_INET {
+		return "", false
+	}
+	saIn := (*C.struct_sockaddr_in)(unsafe.Pointer(fi.ifa_addr))
+	if nil == C.inet_ntop(
+		C.int(fi.ifa_addr.sa_family), // C.AF_INET,
+		unsafe.Pointer(&saIn.sin_addr),
+		&C.ADDR[0],
+		C.socklen_t(unsafe.Sizeof(C.ADDR))) {
+		return "", false
+	}
+	return C.GoString((*C.char)(unsafe.Pointer(&C.ADDR))), true
 }
 
-func newInterfaces(CH chan<- InterfacesInfo) {
+// Getifaddrs returns a list of IfData. Unlike with getifaddrs(3) the
+// IfData has merged link level and interface address data.
+func Getifaddrs() ([]IfData, error) {
 	var ifaces *C.struct_ifaddrs
-	if getrc, _ := C.getifaddrs(&ifaces); getrc != 0 {
-		CH <- InterfacesInfo{}
-		return
+	if rc, err := C.getifaddrs(&ifaces); rc != 0 {
+		return []IfData{}, err
 	}
 	defer C.freeifaddrs(ifaces)
 
-	ifs := []InterfaceInfo{}
-	IP := ""
+	ips := make(map[string]string)
+	ifs := []IfData{}
 
 	for fi := ifaces; fi != nil; fi = fi.ifa_next {
 		if fi.ifa_addr == nil {
 			continue
 		}
 
-		ifa_name := C.GoString(fi.ifa_name)
-		if IP == "" &&
-			fi.ifa_addr.sa_family == C.AF_INET &&
-			!rx_lo.Match([]byte(ifa_name)) &&
-			realInterfaceName(ifa_name) {
-
-			sa_in := (*C.struct_sockaddr_in)(unsafe.Pointer(fi.ifa_addr))
-			if C.inet_ntop(
-				C.int(fi.ifa_addr.sa_family), // C.AF_INET,
-				unsafe.Pointer(&sa_in.sin_addr),
-				&C.ADDR[0],
-				C.socklen_t(unsafe.Sizeof(C.ADDR))) != nil {
-
-				IP = C.GoString((*C.char)(unsafe.Pointer(&C.ADDR)))
-			}
+		ifaName := C.GoString(fi.ifa_name)
+		if ip, ok := ntop(fi); ok {
+			ips[ifaName] = ip
+			continue // fi.ifa_addr.sa_family == C.AF_INET
 		}
 
 		if fi.ifa_addr.sa_family != C.AF_LINK {
@@ -90,8 +100,8 @@ func newInterfaces(CH chan<- InterfacesInfo) {
 		}
 
 		data := fi.ifa_data
-		it := InterfaceInfo{
-			Name:       ifa_name,
+		it := IfData{
+			Name:       ifaName,
 			InBytes:    uint(C.Ibytes(data)),
 			OutBytes:   uint(C.Obytes(data)),
 			InPackets:  uint(C.Ipackets(data)),
@@ -99,18 +109,18 @@ func newInterfaces(CH chan<- InterfacesInfo) {
 			InErrors:   uint(C.Ierrors(data)),
 			OutErrors:  uint(C.Oerrors(data)),
 		}
-		if it.InBytes == 0 &&
-			it.OutBytes == 0 &&
-			it.InPackets == 0 &&
-			it.OutPackets == 0 &&
-			it.InErrors == 0 &&
-			it.OutErrors == 0 {
-			continue
+		if ip, ok := ips[ifaName]; ok {
+			it.IP = ip
 		}
 		ifs = append(ifs, it)
 	}
-	CH <- InterfacesInfo{
-		List: ifs,
-		IP:   IP,
+	for i, ifdata := range ifs {
+		if ifdata.IP != "" {
+			continue
+		}
+		if ip, ok := ips[ifdata.Name]; ok {
+			ifs[i].IP = ip
+		}
 	}
+	return ifs, nil
 }

@@ -1,6 +1,7 @@
 package ostent
 
 import (
+	"libostent/getifaddrs"
 	"libostent/types"
 	"share/assets"
 	"share/templates"
@@ -36,62 +37,62 @@ func ps(current, previous uint) string {
 	return humanUnitless(uint64(current - previous))
 }
 
-func interfaceMeta(ii InterfaceInfo) types.InterfaceMeta {
+func interfaceMeta(ifdata getifaddrs.IfData) types.InterfaceMeta {
 	return types.InterfaceMeta{
-		NameKey:  ii.Name,
-		NameHTML: tooltipable(12, ii.Name),
+		NameKey:  ifdata.Name,
+		NameHTML: tooltipable(12, ifdata.Name),
 	}
 }
 
 type interfaceFormat interface {
-	Current(*types.Interface, InterfaceInfo)
-	Delta(*types.Interface, InterfaceInfo, InterfaceInfo)
+	Current(*types.Interface, getifaddrs.IfData)
+	Delta(*types.Interface, getifaddrs.IfData, getifaddrs.IfData)
 }
 
 type interfaceInout interface {
-	InOut(InterfaceInfo) (uint, uint)
+	InOut(getifaddrs.IfData) (uint, uint)
 }
 
 type interfaceBytes struct{}
 
-func (_ interfaceBytes) Current(id *types.Interface, ii InterfaceInfo) {
-	id.In = humanB(uint64(ii.InBytes))
-	id.Out = humanB(uint64(ii.OutBytes))
+func (_ interfaceBytes) Current(id *types.Interface, ifdata getifaddrs.IfData) {
+	id.In = humanB(uint64(ifdata.InBytes))
+	id.Out = humanB(uint64(ifdata.OutBytes))
 }
 
-func (_ interfaceBytes) Delta(id *types.Interface, ii, pi InterfaceInfo) {
-	id.DeltaIn = bps(8, ii.InBytes, pi.InBytes)
-	id.DeltaOut = bps(8, ii.OutBytes, pi.OutBytes)
+func (_ interfaceBytes) Delta(id *types.Interface, ii, ifdata getifaddrs.IfData) {
+	id.DeltaIn = bps(8, ii.InBytes, ifdata.InBytes)
+	id.DeltaOut = bps(8, ii.OutBytes, ifdata.OutBytes)
 }
 
 type interfaceInoutErrors struct{}
 
-func (_ interfaceInoutErrors) InOut(ii InterfaceInfo) (uint, uint) {
-	return ii.InErrors, ii.OutErrors
+func (_ interfaceInoutErrors) InOut(ifdata getifaddrs.IfData) (uint, uint) {
+	return ifdata.InErrors, ifdata.OutErrors
 }
 
 type interfaceInoutPackets struct{}
 
-func (_ interfaceInoutPackets) InOut(ii InterfaceInfo) (uint, uint) {
-	return ii.InPackets, ii.OutPackets
+func (_ interfaceInoutPackets) InOut(ifdata getifaddrs.IfData) (uint, uint) {
+	return ifdata.InPackets, ifdata.OutPackets
 }
 
 type interfaceNumericals struct{ interfaceInout }
 
-func (ie interfaceNumericals) Current(id *types.Interface, ii InterfaceInfo) {
-	in, out := ie.InOut(ii)
+func (ie interfaceNumericals) Current(id *types.Interface, ifdata getifaddrs.IfData) {
+	in, out := ie.InOut(ifdata)
 	id.In = humanUnitless(uint64(in))
 	id.Out = humanUnitless(uint64(out))
 }
 
-func (ie interfaceNumericals) Delta(id *types.Interface, ii, previousi InterfaceInfo) {
+func (ie interfaceNumericals) Delta(id *types.Interface, ii, previousIfdata getifaddrs.IfData) {
 	in, out := ie.InOut(ii)
-	previousIn, previousOut := ie.InOut(previousi)
+	previousIn, previousOut := ie.InOut(previousIfdata)
 	id.DeltaIn = ps(in, previousIn)
 	id.DeltaOut = ps(out, previousOut)
 }
 
-func interfacesDelta(format interfaceFormat, current, previous []InterfaceInfo, client client) *types.Interfaces {
+func interfacesDelta(format interfaceFormat, current, previous []getifaddrs.IfData, client client) *types.Interfaces {
 	ifs := make([]types.Interface, len(current))
 
 	for i := range ifs {
@@ -427,7 +428,7 @@ func orderProc(procs []types.ProcInfo, client *client, send *sendClient) []types
 
 type Previous struct {
 	CPU        sigar.CpuList
-	Interfaces []InterfaceInfo
+	Interfaces []getifaddrs.IfData
 }
 
 type last struct {
@@ -442,7 +443,7 @@ type lastinfo struct {
 	Swap       types.Memory
 	DiskList   []diskInfo
 	ProcList   []types.ProcInfo
-	Interfaces []InterfaceInfo
+	Interfaces []getifaddrs.IfData
 	Previous   *Previous
 	lastfive   lastfive
 }
@@ -617,7 +618,7 @@ func (la *last) reset_prev() {
 		return
 	}
 	la.Previous.CPU = sigar.CpuList{}
-	la.Previous.Interfaces = []InterfaceInfo{}
+	la.Previous.Interfaces = []getifaddrs.IfData{}
 }
 
 func (la *last) collect() {
@@ -630,7 +631,7 @@ func (la *last) collect() {
 	cch := make(chan sigar.CpuList, 1)
 	dch := make(chan []diskInfo, 1)
 	pch := make(chan []types.ProcInfo, 1)
-	ifch := make(chan InterfacesInfo, 1)
+	ifch := make(chan IfInfo, 1)
 
 	go getRAM(rch)
 	go getSwap(sch)
@@ -661,7 +662,7 @@ func (la *last) collect() {
 
 	ii := <-ifch
 	la.Generic.IP = ii.IP
-	la.Interfaces = filterInterfaces(ii.List)
+	la.Interfaces = ii.List
 
 	// push(&la.lastfive.LA1, la.Generic.la1)
 	// la.Generic.LA1spark = la.lastfive.LA1.spark()
@@ -705,8 +706,8 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 		coreno      int
 		df_copy     []diskInfo
 		ps_copy     []types.ProcInfo
-		if_copy     []InterfaceInfo
-		previf_copy []InterfaceInfo
+		if_copy     []getifaddrs.IfData
+		previf_copy []getifaddrs.IfData
 	)
 	pu := pageUpdate{}
 	func() {
@@ -715,14 +716,14 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 
 		df_copy = make([]diskInfo, len(lastInfo.DiskList))
 		ps_copy = make([]types.ProcInfo, len(lastInfo.ProcList))
-		if_copy = make([]InterfaceInfo, len(lastInfo.Interfaces))
+		if_copy = make([]getifaddrs.IfData, len(lastInfo.Interfaces))
 
 		copy(df_copy, lastInfo.DiskList)
 		copy(ps_copy, lastInfo.ProcList)
 		copy(if_copy, lastInfo.Interfaces)
 
 		if lastInfo.lastinfo.Previous != nil {
-			previf_copy = make([]InterfaceInfo, len(lastInfo.Previous.Interfaces))
+			previf_copy = make([]getifaddrs.IfData, len(lastInfo.Previous.Interfaces))
 			copy(previf_copy, lastInfo.Previous.Interfaces)
 		}
 

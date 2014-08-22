@@ -3,7 +3,15 @@ package ostent
 import (
 	"regexp"
 	"runtime"
+
+	"libostent/getifaddrs"
 )
+
+// IfInfo is a struct with List of getifaddrs.IfData and first non-loopback IP.
+type IfInfo struct {
+	List []getifaddrs.IfData
+	IP   string
+}
 
 var (
 	rx_lo      = regexp.MustCompile("lo\\d*") // "lo" & lo\d+; used in interfaces_unix.go, sortable.go
@@ -15,21 +23,48 @@ var (
 	RX_airdrop = regexp.MustCompile("p2p\\d+")
 )
 
-func realInterfaceName(name string) bool {
-	bname := []byte(name)
-	if RX_bridge.Match(bname) ||
-		RX_vboxnet.Match(bname) {
+func realInterface(name string) bool {
+	if RX_bridge.MatchString(name) ||
+		RX_vboxnet.MatchString(name) {
 		return false
 	}
 	if runtime.GOOS == "darwin" {
-		if RX_fw.Match(bname) ||
-			RX_gif.Match(bname) ||
-			RX_stf.Match(bname) ||
-			RX_airdrop.Match(bname) {
+		if RX_fw.MatchString(name) ||
+			RX_gif.MatchString(name) ||
+			RX_stf.MatchString(name) ||
+			RX_airdrop.MatchString(name) {
 			return false
 		}
 	}
 	return true
+}
+
+func newInterfaces(CH chan<- IfInfo) {
+	iflist, _ := getifaddrs.Getifaddrs()
+	ifreal := []getifaddrs.IfData{}
+	IP := ""
+	for _, ifdata := range iflist {
+		if !realInterface(ifdata.Name) {
+			continue
+		}
+		if ifdata.InBytes == 0 &&
+			ifdata.OutBytes == 0 &&
+			ifdata.InPackets == 0 &&
+			ifdata.OutPackets == 0 &&
+			ifdata.InErrors == 0 &&
+			ifdata.OutErrors == 0 {
+			continue
+		}
+		if IP == "" && !rx_lo.MatchString(ifdata.Name) {
+			// first non-loopback IP
+			IP = ifdata.IP
+		}
+		ifreal = append(ifreal, ifdata)
+	}
+	CH <- IfInfo{
+		List: ifreal,
+		IP:   IP,
+	}
 }
 
 /*
@@ -72,14 +107,3 @@ func netinterface_ipaddr() (string, error) {
 	}
 	return addr[0], nil
 } // */
-
-func filterInterfaces(ifs []InterfaceInfo) []InterfaceInfo {
-	fifs := []InterfaceInfo{}
-	for _, fi := range ifs {
-		if !realInterfaceName(fi.Name) {
-			continue
-		}
-		fifs = append(fifs, fi)
-	}
-	return fifs
-}
