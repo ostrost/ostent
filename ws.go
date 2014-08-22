@@ -59,6 +59,7 @@ func (pv *periodValue) Set(input string) error {
 
 var periodFlag = periodValue{Duration: Duration(time.Second)} // default
 func init() {
+	Connections = conns{connmap: map[*conn]struct{}{}}
 	flag.Var(&periodFlag, "u", "Collection (update) interval")
 	flag.Var(&periodFlag, "update", "Collection (update) interval")
 }
@@ -241,16 +242,14 @@ func (cs *conns) expires() bool {
 	return false
 }
 
-// Cnnections is an instance of an unexported type to hold active websocket connections.
-// The only exported method is Reload.
-//
-// UpPDATES is the channel for off-the-clock pageUpdate[s] to push
 var (
-	Connections = conns{connmap: map[*conn]struct{}{}}
+	// Connections is an instance of unexported conns type to hold
+	// active websocket connections. The only method is Reload.
+	Connections conns
 
+	pUPDATES   = make(chan *pageUpdate) // the channel for off-the-clock pageUpdate[s] to push
 	unregister = make(chan *conn)
 	register   = make(chan *conn)
-	pUPDATES   = make(chan *pageUpdate)
 )
 
 type recvClient struct {

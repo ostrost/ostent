@@ -84,8 +84,8 @@ func Serve(l net.Listener, production bool, extramap Muxmap) error {
 	logger := log.New(os.Stderr, "[ostent] ", 0)
 	access := log.New(os.Stdout, "", 0)
 
-	stdaccess = NewLogged(production, access)
-	recovery := Recovery(production)
+	stdaccess = newLogged(production, access)
+	recovery := recovery(production)
 
 	chain := alice.New(
 		stdaccess.Constructor,

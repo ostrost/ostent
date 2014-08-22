@@ -91,7 +91,7 @@ func (ie interfaceNumericals) Delta(id *types.Interface, ii, previousi Interface
 	id.DeltaOut = ps(out, previousOut)
 }
 
-func InterfacesDelta(format interfaceFormat, current, previous []InterfaceInfo, client client) *types.Interfaces {
+func interfacesDelta(format interfaceFormat, current, previous []InterfaceInfo, client client) *types.Interfaces {
 	ifs := make([]types.Interface, len(current))
 
 	for i := range ifs {
@@ -637,7 +637,7 @@ func (la *last) collect() {
 	go getGeneric(gch)
 	go read_disks(dch)
 	go read_procs(pch)
-	go NewInterfaces(ifch)
+	go newInterfaces(ifch)
 	go func(CH chan<- sigar.CpuList) {
 		cl := sigar.CpuList{}
 		cl.Get()
@@ -772,11 +772,11 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 	if !*client.HideIF && client.RefreshIF.refresh(forcerefresh) {
 		switch *client.TabIF {
 		case IFBYTES_TABID:
-			pu.IFbytes = InterfacesDelta(interfaceBytes{}, if_copy, previf_copy, *client)
+			pu.IFbytes = interfacesDelta(interfaceBytes{}, if_copy, previf_copy, *client)
 		case IFERRORS_TABID:
-			pu.IFerrors = InterfacesDelta(interfaceNumericals{interfaceInoutErrors{}}, if_copy, previf_copy, *client)
+			pu.IFerrors = interfacesDelta(interfaceNumericals{interfaceInoutErrors{}}, if_copy, previf_copy, *client)
 		case IFPACKETS_TABID:
-			pu.IFpackets = InterfacesDelta(interfaceNumericals{interfaceInoutPackets{}}, if_copy, previf_copy, *client)
+			pu.IFpackets = interfacesDelta(interfaceNumericals{interfaceInoutPackets{}}, if_copy, previf_copy, *client)
 		}
 	}
 

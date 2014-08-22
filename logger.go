@@ -21,7 +21,7 @@ type logger struct {
 	logged     logged
 }
 
-func NewLogged(production bool, access *log.Logger) *logger {
+func newLogged(production bool, access *log.Logger) *logger {
 	return &logger{
 		production: production,
 		access:     access,
