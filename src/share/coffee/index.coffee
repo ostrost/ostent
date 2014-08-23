@@ -255,6 +255,25 @@
         getInitialState: () -> @newstate(Data) # a global Data
         render: () -> React.DOM.span(null, @state.Text)
 
+@AlertClass = React.createClass
+        show: () -> return @state.Error?
+        newstate: (data) ->
+                error = data.Client?.DebugError # data.Error
+                a = { # return
+                        Error: error
+                        ErrorText: @state?.ErrorText
+                        Changed: @state? and error? and error != @state.Error
+                }
+                a.ErrorText = a.Error if a.Changed and a.Error?
+                console.log('newstate', a)
+                return a
+        getInitialState: () -> @newstate(Data) # a global Data
+        render: () ->
+                if @state.Changed
+                        console.log('show', @state) # (if @show() then 'show' else 'hide'), @state)
+                        @props.$collapse_el.collapse('show') if @show() # then 'show' else 'hide'
+                return React.DOM.span(null, @state.ErrorText)
+
 @setState = (obj, data) ->
         if data?
                 delete data[key] for key of data when !data[key]?
@@ -314,9 +333,17 @@
         ifpackets = React.renderComponent(IFpacketsCLASS(), document.getElementById('ifpackets' +'-'+ 'table'))
         vgtable   = React.renderComponent(VGtableCLASS(),   document.getElementById('vg'        +'-'+ 'table'))
 
+        # alertComp = React.renderComponent(AlertClass({
+        #         $collapse_el: $('#alert-parent')
+        #         }), document.getElementById('alert-message'))
+
         onmessage = (event) ->
                 data = JSON.parse(event.data)
                 return if !data?
+
+                # alertComp.setState(alertComp.newstate(data))
+                # if alertComp.show()
+                #         return
 
                 console.log('DEBUG ERROR', data.Client.DebugError) if data.Client?.DebugError?
                 if data.Reload? and data.Reload

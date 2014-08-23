@@ -531,6 +531,38 @@
     });
   };
 
+  this.AlertClass = React.createClass({
+    show: function() {
+      return this.state.Error != null;
+    },
+    newstate: function(data) {
+      var a, error, _ref, _ref1;
+      error = (_ref = data.Client) != null ? _ref.DebugError : void 0;
+      a = {
+        Error: error,
+        ErrorText: (_ref1 = this.state) != null ? _ref1.ErrorText : void 0,
+        Changed: (this.state != null) && (error != null) && error !== this.state.Error
+      };
+      if (a.Changed && (a.Error != null)) {
+        a.ErrorText = a.Error;
+      }
+      console.log('newstate', a);
+      return a;
+    },
+    getInitialState: function() {
+      return this.newstate(Data);
+    },
+    render: function() {
+      if (this.state.Changed) {
+        console.log('show', this.state);
+        if (this.show()) {
+          this.props.$collapse_el.collapse('show');
+        }
+      }
+      return React.DOM.span(null, this.state.ErrorText);
+    }
+  });
+
   this.setState = function(obj, data) {
     var key;
     if (data != null) {

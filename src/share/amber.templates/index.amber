@@ -28,12 +28,6 @@ html
 
     div#client
 
-    div.container-fluid
-      div.row.collapse#alert-parent
-        div.alert.alert-danger.alert-dismissable
-          button.close[type="button"][data-dismiss="alert"][aria-hidden="true"] &times;
-          span#alert-message Alert
-
     nav.navbar.navbar-default.navbar-fixed-top[role="navigation"]
       div.container-fluid
         div.navbar-header
@@ -72,6 +66,12 @@ html
 
             li.active
               a[href="https://www.ostrost.com/ostent/releases/latest"][title="version "+ Data.VERSION] OSTENT
+
+      div.container-fluid
+        div.row.collapse#alert-parent
+          div.alert.alert-danger.alert-dismissable
+            button.close[type="button"][data-dismiss="alert"][aria-hidden="true"] &times;
+            span#alert-message Alert
 
     div.container-fluid.padding-top71#top
       div.row
