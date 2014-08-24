@@ -1,10 +1,10 @@
-[![Build status](https://secure.travis-ci.org/rzab/ostent.png?branch=master)](http://travis-ci.org/rzab/ostent)
+[![Build status](https://secure.travis-ci.org/ostrost/ostent.png?branch=master)](http://travis-ci.org/ostrost/ostent)
 
 `ostent` displays current system metrics. [**Demo** here](http://demo.ostrost.com/)
 
 ![Screenshot](https://www.ostrost.com/ostent/screenshot.png)
 
-Install & run with `curl -sSL https://github.com/rzab/ostent/raw/master/ostent.sh | sh`
+Install & run with `curl -sSL https://github.com/ostrost/ostent/raw/master/ostent.sh | sh`
 
 It's a single executable without dependecies. Once installed,
 it will self-upgrade whenever there's new release.
@@ -12,11 +12,11 @@ it will self-upgrade whenever there's new release.
 Platforms
 ---------
 
-   - Linux [64-bit](https://github.com/rzab/ostent/releases/download/v0.1.8/Linux.x86_64) | [32-bit](https://github.com/rzab/ostent/releases/download/v0.1.8/Linux.i686)
-   - [Darwin](https://github.com/rzab/ostent/releases/download/v0.1.8/Darwin.x86_64)
+   - Linux [64-bit](https://github.com/ostrost/ostent/releases/download/v0.1.8/Linux.x86_64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.1.8/Linux.i686)
+   - [Darwin](https://github.com/ostrost/ostent/releases/download/v0.1.8/Darwin.x86_64)
    - _Expect \*BSD builds surely_
 
-Binaries distributed by [GitHub Releases](https://github.com/rzab/ostent/releases)
+Binaries distributed by [GitHub Releases](https://github.com/ostrost/ostent/releases)
 
 Usage
 -----
@@ -34,7 +34,7 @@ Run it, it'll give the link(s) to open in a browser.
 Running the code
 ----------------
 
-1. **`git clone https://github.com/rzab/ostent.git`**
+1. **`git clone https://github.com/ostrost/ostent.git`**
 
 2. **`cd ostent`**
 

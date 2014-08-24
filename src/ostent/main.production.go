@@ -42,8 +42,8 @@ func upgrade_loop() {
 }
 
 func newer_version() string {
-	// 1. https://github.com/rzab/ostent/releases/latest # redirects, NOT followed
-	// 2. https://github.com/rzab/ostent/releases/vX.Y.Z # Redirect location
+	// 1. https://github.com/ostrost/ostent/releases/latest # redirects, NOT followed
+	// 2. https://github.com/ostrost/ostent/releases/vX.Y.Z # Redirect location
 	// 3. return "vX.Y.Z" # basename of the location
 
 	type redirected struct {
@@ -55,7 +55,7 @@ func newer_version() string {
 	}
 
 	client := &http.Client{CheckRedirect: checkRedirect}
-	resp, err := client.Get("https://github.com/rzab/ostent/releases/latest")
+	resp, err := client.Get("https://github.com/ostrost/ostent/releases/latest")
 	if err == nil {
 		resp.Body.Close()
 		return ""
@@ -88,7 +88,7 @@ func upgrade_once(kill bool) bool {
 	if new_version == "" || new_version == "v"+ostent.VERSION {
 		return false
 	}
-	url := fmt.Sprintf("https://github.com/rzab/ostent/releases/download/%s/%s.%s", new_version, strings.Title(runtime.GOOS), mach)
+	url := fmt.Sprintf("https://github.com/ostrost/ostent/releases/download/%s/%s.%s", new_version, strings.Title(runtime.GOOS), mach)
 
 	err, _ := update.New().FromUrl(url) // , snderr
 	if err != nil {                     // || snderr != nil
