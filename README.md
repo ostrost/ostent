@@ -36,6 +36,10 @@ Running the code
 
 1. **`git clone https://github.com/ostrost/ostent.git`**
 
+   If you've cloned (or forked) the repo while it was [github.com/rzab/ostent](https://github.com/rzab/ostent)
+   please check the output of `git remote -v`. For any remote names (e.g. origin or upstream) pointing to the old location
+   set it to the new: `git remote set-url origin https://github.com/ostrost/ostent.git` for the `origin` etc.
+
 2. **`cd ostent`**
 
 3. **`export GOPATH=${GOPATH:-$PWD}:$PWD PATH=$PATH:$PWD/bin`**
