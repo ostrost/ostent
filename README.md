@@ -1,4 +1,4 @@
-[![Build status](https://secure.travis-ci.org/ostrost/ostent.png?branch=master)](http://travis-ci.org/ostrost/ostent)
+[![Build status](https://secure.travis-ci.org/ostrost/ostent.png?branch=master)](https://travis-ci.org/ostrost/ostent)
 
 `ostent` displays current system metrics. [**Demo** here](http://demo.ostrost.com/)
 
