@@ -11,6 +11,15 @@ bindir=bin/$(shell uname -sm | awk '{ sub(/x86_64/, "amd64", $$2); print tolower
 GOPATH=$(shell echo $$GOPATH):$(PWD)
 PATH=$(shell printf %s: $$PATH; echo $$GOPATH | awk -F: 'BEGIN { OFS="/bin:"; } { print $$1,$$2,$$3,$$4,$$5,$$6,$$7,$$8,$$9 "/bin"}')
 
+sedata=sed
+# sed -i flag difference between linux/bsd
+ifeq (, $(findstring linux, $(bindir))) # $(bindir) contains uname -s lowercased
+sedata+= -i ''
+else
+sedata+= -i''
+endif
+sedata+= -e 's,"$(PWD)/,",g' -e '/^\/\/ AssetDir /,$$d'
+
 gobindata=go-bindata -ignore '.*\.go'
 
 .PHONY: all test bootstrap bootstrap_develgo
@@ -65,7 +74,7 @@ endif
 src/share/tmp/jsassets.d: # $(bindir)/jsmakerule
 	@echo '* Prerequisite: src/share/tmp/jsassets.d'
 #	$(MAKE) $(MFLAGS) $(bindir)/jsmakerule
-	$(bindir)/jsmakerule src/share/assets/js/production/ugly/index.js >/dev/null &&\
+	$(bindir)/jsmakerule src/share/assets/js/production/ugly/index.js >/dev/null && \
 	$(bindir)/jsmakerule src/share/assets/js/production/ugly/index.js >$@
 #	$^ src/share/assets/js/production/ugly/index.js >$@
 ifneq ($(MAKECMDGOALS), clean)
@@ -91,27 +100,31 @@ src/share/tmp/jscript.jsx: src/share/amber.templates/jscript.amber src/share/amb
 	$(bindir)/amberpp -defines src/share/amber.templates/defines.amber -j -output $@ $<
 
 $(bintemplates_productiongo): $(templates_html)
-	cd $(<D) && $(gobindata) -pkg templates -tags production -o $(@F) $(^F)
-$(bintemplates_develgo): # $(templates_html)
-#	$(templates_dir)   instead of $(<D)
-#	$(templates_files) instead of $(^F)
-##	cd $(templates_dir) && $(gobindata) -pkg templates -tags '!production' -debug -o $(@F) $(templates_files) # TODO inline bindata.sh
-# 	cd $(dir $(word 1, $(templates_html))) && $(gobindata) -pkg templates -tags '!production' -debug -o ../$(bintemplates_develgo) $(notdir $(templates_html))
+	cd $(<D) && $(gobindata) -pkg templates -tags production -o $(@F) $(^F) && $(sedata) $(@F)
+$(bintemplates_develgo):
+	cd $(templates_dir) && $(gobindata) -pkg templates -tags '!production' -debug -o $(@F) $(templates_files) && $(sedata) $(@F)
+#	# the target has no prerequisites ($(templates_html)):
+#	# $(templates_dir)   instead of $(<D)
+#	# $(templates_files) instead of $(^F)
 ifeq (, $(findstring bootstrap, $(MAKECMDGOALS)))
 $(bintemplates_develgo): $(templates_html)
 endif
 
 $(binassets_productiongo):
-	$(gobindata) -ignore jsmakerule -pkg assets -o $@ -tags production -prefix src/share/assets -ignore src/share/assets/js/devel/ src/share/assets/...
+	cd src/share/assets && $(gobindata) -pkg assets -o $(@F) -tags production -ignore js/devel/ ./... && $(sedata) $(@F)
 $(binassets_develgo):
-##	$(gobindata) -ignore jsmakerule -pkg assets -o $@ -tags '!production' -debug -prefix src/share/assets -ignore src/share/assets/js/production/ src/share/assets/... # TODO inline bindata.sh
+	cd src/share/assets && $(gobindata) -pkg assets -o $(@F) -tags '!production' -debug -ignore js/production/ ./... && $(sedata) $(@F)
 
-$(binassets_productiongo): $(shell find src/share/assets -type f \! -name '*.go' \! -path src/share/assets/js/devel/)
+$(binassets_productiongo): $(shell find \
+                           src/share/assets -type f \! -name '*.go' \! -path \
+                           src/share/assets/js/devel/)
 $(binassets_productiongo): src/share/assets/css/index.css
 $(binassets_productiongo): src/share/assets/js/production/ugly/index.js
 
 ifeq (, $(findstring bootstrap, $(MAKECMDGOALS)))
-$(binassets_develgo): $(shell find src/share/assets -type f \! -name '*.go' \! -path src/share/assets/js/production/)
+$(binassets_develgo): $(shell find \
+                      src/share/assets -type f \! -name '*.go' \! -path \
+                      src/share/assets/js/production/)
 $(binassets_develgo): src/share/assets/css/index.css
 $(binassets_develgo): src/share/assets/js/devel/gen/jscript.js
 endif
