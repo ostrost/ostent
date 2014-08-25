@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"runtime"
 
-	"libostent/getifaddrs"
+	"github.com/ostrost/ostent/getifaddrs"
 )
 
 // IfInfo is a struct with List of getifaddrs.IfData and first non-loopback IP.

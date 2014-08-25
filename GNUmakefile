@@ -95,7 +95,7 @@ $(bintemplates_productiongo): $(templates_html)
 $(bintemplates_develgo): # $(templates_html)
 #	$(templates_dir)   instead of $(<D)
 #	$(templates_files) instead of $(^F)
-	cd $(templates_dir) && $(gobindata) -pkg templates -tags '!production' -debug -o $(@F) $(templates_files)
+##	cd $(templates_dir) && $(gobindata) -pkg templates -tags '!production' -debug -o $(@F) $(templates_files) # TODO inline bindata.sh
 # 	cd $(dir $(word 1, $(templates_html))) && $(gobindata) -pkg templates -tags '!production' -debug -o ../$(bintemplates_develgo) $(notdir $(templates_html))
 ifeq (, $(findstring bootstrap, $(MAKECMDGOALS)))
 $(bintemplates_develgo): $(templates_html)
@@ -104,7 +104,7 @@ endif
 $(binassets_productiongo):
 	$(gobindata) -ignore jsmakerule -pkg assets -o $@ -tags production -prefix src/share/assets -ignore src/share/assets/js/devel/ src/share/assets/...
 $(binassets_develgo):
-	$(gobindata) -ignore jsmakerule -pkg assets -o $@ -tags '!production' -debug -prefix src/share/assets -ignore src/share/assets/js/production/ src/share/assets/...
+##	$(gobindata) -ignore jsmakerule -pkg assets -o $@ -tags '!production' -debug -prefix src/share/assets -ignore src/share/assets/js/production/ src/share/assets/... # TODO inline bindata.sh
 
 $(binassets_productiongo): $(shell find src/share/assets -type f \! -name '*.go' \! -path src/share/assets/js/devel/)
 $(binassets_productiongo): src/share/assets/css/index.css

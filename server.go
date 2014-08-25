@@ -1,8 +1,6 @@
 package ostent
 
 import (
-	"share/assets"
-
 	"bytes"
 	"flag"
 	"fmt"
@@ -13,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/justinas/alice"
+	"github.com/ostrost/ostent/src/share/assets"
 )
 
 type bindValue struct {

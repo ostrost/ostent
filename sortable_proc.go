@@ -1,9 +1,9 @@
 package ostent
 
 import (
-	"libostent/types"
-
 	"encoding/json"
+
+	"github.com/ostrost/ostent/types"
 )
 
 type procOrder struct {

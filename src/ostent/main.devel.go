@@ -3,12 +3,12 @@
 package main
 
 import (
-	ostent "libostent"
-
 	"flag"
 	"log"
 	"net"
-	pprof "net/http/pprof"
+	"net/http/pprof"
+
+	"github.com/ostrost/ostent"
 )
 
 func main() {

@@ -1,9 +1,9 @@
 package ostent
 
 import (
-	"libostent/types"
-
 	"time"
+
+	"github.com/ostrost/ostent/types"
 )
 
 type refresh struct {

@@ -1,7 +1,7 @@
 package ostent
 
 import (
-	"libostent/types"
+	"github.com/ostrost/ostent/types"
 )
 
 type cpuOrder []types.Core

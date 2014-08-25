@@ -1,14 +1,13 @@
 package ostent
 
 import (
-	"libostent/types"
-	"share/templates"
-
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
 
+	"github.com/ostrost/ostent/src/share/templates"
+	"github.com/ostrost/ostent/types"
 	sigar "github.com/rzab/gosigar"
 )
 

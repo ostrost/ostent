@@ -3,8 +3,6 @@
 package main
 
 import (
-	ostent "libostent"
-
 	"flag"
 	"fmt"
 	"log"
@@ -20,6 +18,7 @@ import (
 	"time"
 
 	update "github.com/inconshreveable/go-update"
+	"github.com/ostrost/ostent"
 	"github.com/rcrowley/goagain"
 )
 
