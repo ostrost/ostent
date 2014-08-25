@@ -19,6 +19,7 @@ import (
 
 	update "github.com/inconshreveable/go-update"
 	"github.com/ostrost/ostent"
+	"github.com/ostrost/ostent/src/share/templates"
 	"github.com/rcrowley/goagain"
 )
 
@@ -132,11 +133,13 @@ func main() {
 			}()
 		} else {
 			go upgrade_loop()
+			go templates.InitTemplates() // preventive
 			go ostent.Serve(listen, true, nil)
 		}
 
 	} else {
 		go upgrade_loop()
+		go templates.InitTemplates() // preventive
 		go ostent.Serve(listen, true, nil)
 
 		if err := goagain.Kill(); err != nil {

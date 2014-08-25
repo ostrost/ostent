@@ -1,7 +1,6 @@
 package ostent
 
 import (
-	"bytes"
 	"container/ring"
 	"fmt"
 	"html/template"
@@ -271,18 +270,21 @@ func valuesSet(req *http.Request, base url.Values, pname string, bimap types.Bis
 }
 
 func tooltipable(limit int, full string) template.HTML {
+	html := "ERROR"
 	if len(full) > limit {
 		short := full[:limit]
-		if html, err := templates.TooltipableTemplate.Execute(struct {
+		if buf, err := templates.TooltipableTemplate.Execute(struct {
 			Full, Short string
 		}{
 			Full:  full,
 			Short: short,
 		}); err == nil {
-			return html
+			html = buf.String()
 		}
+	} else {
+		html = template.HTMLEscapeString(full)
 	}
-	return template.HTML(template.HTMLEscapeString(full))
+	return template.HTML(html)
 }
 
 func orderDisks(disks []diskInfo, seq types.SEQ) []diskInfo {
@@ -860,7 +862,6 @@ func init() {
 }
 
 var SCRIPTS []string
-var INDEXTEMPLATE = templates.Bincompile()
 
 func scripts(r *http.Request) (scripts []string) {
 	for _, s := range SCRIPTS {
@@ -873,23 +874,15 @@ func scripts(r *http.Request) (scripts []string) {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	indexTemplate, err := INDEXTEMPLATE.Clone()
+	buf, err := templates.IndexTemplate.Execute(struct {
+		Data      interface{}
+		SCRIPTS   []string
+		CLASSNAME string
+	}{
+		Data:    pageData(r),
+		SCRIPTS: scripts(r),
+	})
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	buf := new(bytes.Buffer)
-	if err := indexTemplate.ExecuteTemplate(buf, "index.html",
-		struct {
-			Data      interface{}
-			SCRIPTS   []string
-			CLASSNAME string
-		}{
-			Data:    pageData(r),
-			SCRIPTS: scripts(r),
-		},
-	); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

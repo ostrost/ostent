@@ -4,16 +4,24 @@ package main
 
 import (
 	"flag"
+	"go/build"
 	"log"
 	"net"
 	"net/http/pprof"
+	"os"
 
 	"github.com/ostrost/ostent"
+	"github.com/ostrost/ostent/src/share/templates"
 )
 
 func main() {
 	flag.Parse()
-
+	if pkg, err := build.Import("github.com/ostrost/ostent", "", build.FindOnly); err != nil {
+		log.Fatal(err)
+	} else if err := os.Chdir(pkg.Dir); err != nil {
+		log.Fatal(err)
+	}
+	go templates.InitTemplates() // after chdir
 	go ostent.Loop()
 	// go ostent.CollectdLoop()
 

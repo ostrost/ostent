@@ -2,6 +2,7 @@ package ostent
 
 import (
 	"fmt"
+	"html/template"
 	"os"
 	"strconv"
 	"strings"
@@ -53,19 +54,22 @@ func _getmem(kind string, in sigar.Swap) types.Memory {
 	used, approxused := humanBandback(in.Used)
 	usepercent := percent(approxused, approxtotal)
 
-	UPhtml, _ := templates.UsePercentTemplate.Execute(struct {
+	html := "ERROR"
+	if buf, err := templates.UsePercentTemplate.Execute(struct {
 		Class, Value, CLASSNAME string
 	}{
 		Value: strconv.Itoa(int(usepercent)), // without "%"
 		Class: labelClass_colorPercent(usepercent),
-	})
+	}); err == nil {
+		html = buf.String()
+	}
 
 	return types.Memory{
 		Kind:           kind,
 		Total:          total,
 		Used:           used,
 		Free:           humanB(in.Free),
-		UsePercentHTML: UPhtml,
+		UsePercentHTML: template.HTML(html),
 	}
 }
 func getRAM(CH chan<- types.Memory) {
