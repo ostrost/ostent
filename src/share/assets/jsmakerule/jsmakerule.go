@@ -8,10 +8,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"share/assets"
+	"github.com/ostrost/ostent/src/share/assets"
 )
 
-const packageName = "src/share/assets" // ostential/assets <- this assets
+const packageName = "src/share/assets"
 
 func main() {
 	flag.Parse()
@@ -19,7 +19,6 @@ func main() {
 
 	var lines []string
 	for _, line := range assets.JsAssetNames() {
-		// lines = append(lines, packageName +"/" + line)
 		lines = append(lines, filepath.Join(packageName, line))
 	}
 
