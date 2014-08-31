@@ -14,8 +14,8 @@ it will self-upgrade whenever there's new release.
 Platforms
 ---------
 
-   - Linux [64-bit](https://github.com/ostrost/ostent/releases/download/v0.1.8/Linux.x86_64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.1.8/Linux.i686)
-   - [Darwin](https://github.com/ostrost/ostent/releases/download/v0.1.8/Darwin.x86_64)
+   - Linux [64-bit](https://github.com/ostrost/ostent/releases/download/v0.1.9/Linux.x86_64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.1.9/Linux.i686)
+   - [Darwin](https://github.com/ostrost/ostent/releases/download/v0.1.9/Darwin.x86_64)
    - _Expect \*BSD builds surely_
 
 Binaries distributed by [GitHub Releases](https://github.com/ostrost/ostent/releases)

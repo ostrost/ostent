@@ -188,4 +188,4 @@ func banner(listen net.Listener, logger *log.Logger) {
 // VERSION of the latest known release.
 // Unused in non-production mode.
 // Compared with in main.production.go.
-const VERSION = "0.1.8"
+const VERSION = "0.1.9"
