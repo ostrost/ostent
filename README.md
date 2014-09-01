@@ -48,10 +48,9 @@ Running the code
 
    Adds ./ to GOPATH and ./bin to PATH.
 
-4. **`make bootstrap`**
-   - installs required Go packages
-   - generates `src/share/{assets,templates}/bindata.devel.go`
-     These files will contain absolute local paths.
+4. **`make init`**
+
+   Installs required Go packages.
 
 5. Either **`make`** to build or **[`rerun`](https://github.com/skelterjohn/rerun)` ostent`** for live-reloading run.
 
@@ -76,8 +75,8 @@ Additional required tools here:
 - [uglify-js](https://www.npmjs.org/package/uglify-js) (for builds)
 
 `make` rebuilds these **commited to the repo** files:
-- `src/share/templates/bindata.production.go`
-- `src/share/assets/bindata.production.go`
+- `src/share/templates/bindata.*.go`
+- `src/share/assets/bindata.*.go`
 - `src/share/assets/js/devel/milk/*.js`
 - `src/share/assets/js/devel/gen/*.js`
 - `src/share/templates/*.html`
