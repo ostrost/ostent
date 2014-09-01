@@ -1,5 +1,7 @@
 #!/usr/bin/env make -f
 
+fqostent=github.com/ostrost/ostent
+
 binassets_develgo         = src/share/assets/bindata.devel.go
 binassets_productiongo    = src/share/assets/bindata.production.go
 bintemplates_develgo      = src/share/templates/bindata.devel.go
@@ -8,19 +10,17 @@ templates_dir             = src/share/templates/
 templates_files           = index.html usepercent.html tooltipable.html
 templates_html=$(addprefix $(templates_dir), $(templates_files))
 bindir=bin/$(shell uname -sm | awk '{ sub(/x86_64/, "amd64", $$2); print tolower($$1) "_" $$2; }')
-GOPATH=$(shell echo $$GOPATH):$(PWD)
+
 PATH=$(shell printf %s: $$PATH; echo $$GOPATH | awk -F: 'BEGIN { OFS="/bin:"; } { print $$1,$$2,$$3,$$4,$$5,$$6,$$7,$$8,$$9 "/bin"}')
 
-sedata=sed
 # sed -i flag difference between linux/bsd
-ifeq (, $(findstring linux, $(bindir))) # $(bindir) contains uname -s lowercased
-sedata+= -i ''
+ifeq (, $(findstring Linux, $(shell uname -s)))
+sed-i=sed -i ''
 else
-sedata+= -i''
+sed-i=sed -i''
 endif
-sedata+= -e 's,"$(PWD)/,",g' -e '/^\/\/ AssetDir /,$$d'
-
-gobindata=go-bindata -ignore '.*\.go'
+sed-i-bindata=$(sed-i) -e 's,"$(PWD)/,",g' -e '/^\/\/ AssetDir /,$$d'
+go-bindata=go-bindata -ignore '.*\.go'
 
 .PHONY: all test bootstrap bootstrap_develgo
 all: $(bindir)/ostent
@@ -29,46 +29,47 @@ test:
 bootstrap:
 	go get -v github.com/jteeuwen/go-bindata/go-bindata
 	$(MAKE) $(MFLAGS) bootstrap_develgo
-	go get -v github.com/skelterjohn/rerun ostent
-	go get -v -tags production ostent
+	go get -v github.com/skelterjohn/rerun $(fqostent)/src/ostent
+	go get -v -tags production $(fqostent)/src/ostent
 	@rm -f bin/ostent
 bootstrap_develgo: $(binassets_develgo) $(bintemplates_develgo)
 
 %: %.sh # clear the implicit *.sh rule covering ./ostent.sh
 
+# TODO $(dir $(shell go list -f '{{.Target}}' $(fqostent)/src/ostent))/%:
 $(bindir)/%:
 	@echo '* Sources:' $^
-	go build -o $@ $(patsubst src////%,%,$|)
+	go build -o $@ $(fqostent)/$|
 
-$(bindir)/amberpp: | src////amberp/amberpp
-$(bindir)/ostent:  | src////ostent
+$(bindir)/amberpp: | src/amberp/amberpp
+$(bindir)/ostent:  | src/ostent
 
 ifeq (, $(findstring bootstrap, $(MAKECMDGOALS)))
-$(bindir)/amberpp: $(shell env GOPATH=$(GOPATH) go list -f '\
+$(bindir)/amberpp: $(shell go list -f '\
 {{$$dir := .Dir}}\
-{{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}' amberp/amberpp | \
+{{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}' $(fqostent)/src/amberp/amberpp | \
 sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 
 $(bindir)/ostent: $(shell \
-env GOPATH=$(GOPATH) go list -tags production -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' ostent | xargs \
-env GOPATH=$(GOPATH) go list -tags production -f '{{if and (not .Standard) (not .Goroot)}}\
+go list -tags production -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(fqostent)/src/ostent | xargs \
+go list -tags production -f '{{if and (not .Standard) (not .Goroot)}}\
 {{$$dir := .Dir}}\
 {{range .GoFiles     }}{{$$dir}}/{{.}}{{"\n"}}{{end}}\
 {{range .CgoFiles    }}{{$$dir}}/{{.}}{{"\n"}}{{end}}{{end}}' | \
 sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 #	@echo '* Sources:' $^
-	go build -tags production -o $@ ostent
+	go build -tags production -o $@ $(fqostent)/src/ostent
 
 $(bindir)/jsmakerule: $(binassets_develgo) $(shell \
-env GOPATH=$(GOPATH) go list -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' share/assets/jsmakerule | xargs \
-env GOPATH=$(GOPATH) go list -f '{{if and (not .Standard) (not .Goroot)}}\
+go list -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(fqostent)/src/share/assets/jsmakerule | xargs \
+go list -f '{{if and (not .Standard) (not .Goroot)}}\
 {{$$dir := .Dir}}\
 {{range .GoFiles     }}{{$$dir}}/{{.}}{{"\n"}}{{end}}\
 {{range .CgoFiles    }}{{$$dir}}/{{.}}{{"\n"}}{{end}}{{end}}' | \
 sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 #	@echo '* Sources:' $^
 	@echo '* Prerequisite: bin-jsmakerule'
-	go build -o $@ share/assets/jsmakerule
+	go build -o $@ $(fqostent)/src/share/assets/jsmakerule
 endif
 
 src/share/tmp/jsassets.d: # $(bindir)/jsmakerule
@@ -100,9 +101,9 @@ src/share/tmp/jscript.jsx: src/share/amber.templates/jscript.amber src/share/amb
 	$(bindir)/amberpp -defines src/share/amber.templates/defines.amber -j -output $@ $<
 
 $(bintemplates_productiongo): $(templates_html)
-	cd $(<D) && $(gobindata) -pkg templates -tags production -o $(@F) $(^F) && $(sedata) $(@F)
+	cd $(<D) && $(go-bindata) -pkg templates -tags production -o $(@F) $(^F) && $(sed-i-bindata) $(@F)
 $(bintemplates_develgo):
-	cd $(templates_dir) && $(gobindata) -pkg templates -tags '!production' -debug -o $(@F) $(templates_files) && $(sedata) $(@F)
+	cd $(templates_dir) && $(go-bindata) -pkg templates -tags '!production' -debug -o $(@F) $(templates_files) && $(sed-i-bindata) $(@F)
 #	# the target has no prerequisites ($(templates_html)):
 #	# $(templates_dir)   instead of $(<D)
 #	# $(templates_files) instead of $(^F)
@@ -111,9 +112,9 @@ $(bintemplates_develgo): $(templates_html)
 endif
 
 $(binassets_productiongo):
-	cd src/share/assets && $(gobindata) -pkg assets -o $(@F) -tags production -ignore js/devel/ ./... && $(sedata) $(@F)
+	cd src/share/assets && $(go-bindata) -pkg assets -o $(@F) -tags production -ignore js/devel/ ./... && $(sed-i-bindata) $(@F)
 $(binassets_develgo):
-	cd src/share/assets && $(gobindata) -pkg assets -o $(@F) -tags '!production' -debug -ignore js/production/ ./... && $(sedata) $(@F)
+	cd src/share/assets && $(go-bindata) -pkg assets -o $(@F) -tags '!production' -debug -ignore js/production/ ./... && $(sed-i-bindata) $(@F)
 
 $(binassets_productiongo): $(shell find \
                            src/share/assets -type f \! -name '*.go' \! -path \
