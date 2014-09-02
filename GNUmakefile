@@ -9,7 +9,6 @@ bintemplates_productiongo = src/share/templates/bindata.production.go
 templates_dir             = src/share/templates/
 templates_files           = index.html usepercent.html tooltipable.html
 templates_html=$(addprefix $(templates_dir), $(templates_files))
-bindir=bin/$(shell uname -sm | awk '{ sub(/x86_64/, "amd64", $$2); print tolower($$1) "_" $$2; }')
 
 PATH=$(shell printf %s: $$PATH; echo $$GOPATH | awk -F: 'BEGIN { OFS="/bin:"; } { print $$1,$$2,$$3,$$4,$$5,$$6,$$7,$$8,$$9 "/bin"}')
 
@@ -18,41 +17,46 @@ ifeq (Linux, $(shell uname -s))
 sed-i=sed -i'' # GNU sed -i opt, not a flag
 endif
 sed-i-bindata=$(sed-i) -e 's,"$(PWD)/,",g' -e '/^\/\/ AssetDir /,$$d'
-go-bindata=go-bindata -ignore '.*\.go'
+go-bindata=go-bindata -ignore '.*\.go' # go regexp syntax for -ignore
 
-.PHONY: all test init bindata-devel
-all: $(bindir)/ostent
-test:
-	go test -v ./...
+.PHONY: all init test bindata-devel
+ifneq (init, $(MAKECMDGOALS))
+# before init:
+# - go list would fail => unknown $(destbin)
+# - go test fails without dependencies installed
+# - go-bindata is not installed yet
+
+destbin=$(dir $(shell go list -f '{{.Target}}' $(fqostent)/src/ostent))
+all: $(destbin)/ostent
+endif
 init:
-	go get -v \
+	go get -u -v \
 github.com/jteeuwen/go-bindata/go-bindata \
-github.com/skelterjohn/rerun \
+github.com/skelterjohn/rerun
+	go get -u -v -tags production \
 $(fqostent)/src/ostent
-	go get -v -tags production \
+	go get -u -v -a \
 $(fqostent)/src/ostent
-
-# $(bin*_develgo) are in dependency tree, so this is a spare shortcut
-bindata-devel: $(binassets_develgo) $(bintemplates_develgo)
 
 %: %.sh # clear the implicit *.sh rule covering ./ostent.sh
 
-# TODO $(dir $(shell go list -f '{{.Target}}' $(fqostent)/src/ostent))/%:
-$(bindir)/%:
+ifneq (init, $(MAKECMDGOALS))
+test:
+	go test -v ./...
+
+# init required before go list
+$(destbin)/%:
 	go build -o $@ $(fqostent)/$|
 
-$(bindir)/amberpp: | src/amberp/amberpp
-$(bindir)/ostent:  | src/ostent
+$(destbin)/amberpp: | src/amberp/amberpp
+$(destbin)/ostent:  | src/ostent
 
-ifneq (init, $(MAKECMDGOALS))
-# init required before go list
-
-$(bindir)/amberpp: $(shell go list -f '\
+$(destbin)/amberpp: $(shell go list -f '\
 {{$$dir := .Dir}}\
 {{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}' $(fqostent)/src/amberp/amberpp | \
 sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 
-$(bindir)/ostent: $(shell \
+$(destbin)/ostent: $(shell \
 go list -tags production -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(fqostent)/src/ostent | xargs \
 go list -tags production -f '{{if and (not .Standard) (not .Goroot)}}\
 {{$$dir := .Dir}}\
@@ -61,7 +65,7 @@ go list -tags production -f '{{if and (not .Standard) (not .Goroot)}}\
 sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 	go build -tags production -o $@ $(fqostent)/src/ostent
 
-$(bindir)/jsmakerule: $(binassets_develgo) $(shell \
+$(destbin)/jsmakerule: $(binassets_develgo) $(shell \
 go list -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(fqostent)/src/share/assets/jsmakerule | xargs \
 go list -f '{{if and (not .Standard) (not .Goroot)}}\
 {{$$dir := .Dir}}\
@@ -70,21 +74,20 @@ go list -f '{{if and (not .Standard) (not .Goroot)}}\
 sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 	@echo '* Prerequisite: bin-jsmakerule'
 	go build -o $@ $(fqostent)/src/share/assets/jsmakerule
-endif
 
-src/share/tmp/jsassets.d: # $(bindir)/jsmakerule
+src/share/tmp/jsassets.d: # $(destbin)/jsmakerule
 	@echo '* Prerequisite: src/share/tmp/jsassets.d'
-#	$(MAKE) $(MFLAGS) $(bindir)/jsmakerule
-	$(bindir)/jsmakerule src/share/assets/js/production/ugly/index.js >/dev/null && \
-	$(bindir)/jsmakerule src/share/assets/js/production/ugly/index.js >$@
+#	$(MAKE) $(MFLAGS) $(destbin)/jsmakerule
+	$(destbin)/jsmakerule src/share/assets/js/production/ugly/index.js >/dev/null && \
+	$(destbin)/jsmakerule src/share/assets/js/production/ugly/index.js >$@
 #	$^ src/share/assets/js/production/ugly/index.js >$@
 ifneq ($(MAKECMDGOALS), clean)
 include src/share/tmp/jsassets.d
 endif
 
+# these four rules are actually independant of $(destbin) and could be set when the goal is `init', but we're keeping it simple
 src/share/assets/js/production/ugly/index.js: # the prerequisites from included jsassets.d
 	if type uglifyjs >/dev/null; then cat $^ | uglifyjs -c -o $@ -; fi
-
 src/share/assets/css/index.css: src/share/style/index.scss
 	if type sass >/dev/null; then sass $< $@; fi
 src/share/assets/js/devel/milk/index.js: src/share/coffee/index.coffee
@@ -92,21 +95,18 @@ src/share/assets/js/devel/milk/index.js: src/share/coffee/index.coffee
 src/share/assets/js/devel/gen/jscript.js: src/share/tmp/jscript.jsx
 	if type jsx >/dev/null; then jsx <$^ >/dev/null && jsx <$^ 2>/dev/null >$@; fi
 
-src/share/templates/%.html: src/share/amber.templates/%.amber src/share/amber.templates/defines.amber $(bindir)/amberpp
-	$(bindir)/amberpp -defines src/share/amber.templates/defines.amber -output $@ $<
-src/share/tmp/jscript.jsx: src/share/amber.templates/jscript.amber src/share/amber.templates/defines.amber $(bindir)/amberpp
-	$(bindir)/amberpp -defines src/share/amber.templates/defines.amber -j -output $@ $<
+src/share/templates/%.html: src/share/amber.templates/%.amber src/share/amber.templates/defines.amber $(destbin)/amberpp
+	$(destbin)/amberpp -defines src/share/amber.templates/defines.amber -output $@ $<
+src/share/tmp/jscript.jsx: src/share/amber.templates/jscript.amber src/share/amber.templates/defines.amber $(destbin)/amberpp
+	$(destbin)/amberpp -defines src/share/amber.templates/defines.amber -j -output $@ $<
 
 $(bintemplates_productiongo): $(templates_html)
 	cd $(<D) && $(go-bindata) -pkg templates -tags production -o $(@F) $(^F) && $(sed-i-bindata) $(@F)
-$(bintemplates_develgo):
+$(bintemplates_develgo): $(templates_html)
 	cd $(templates_dir) && $(go-bindata) -pkg templates -tags '!production' -debug -o $(@F) $(templates_files) && $(sed-i-bindata) $(@F)
 #	# the target has no prerequisites e.g. $(templates_html):
 #	# $(templates_dir)   instead of $(<D)
 #	# $(templates_files) instead of $(^F)
-ifneq (init, $(MAKECMDGOALS))
-$(bintemplates_develgo): $(templates_html)
-endif
 
 $(binassets_productiongo):
 	cd src/share/assets && $(go-bindata) -pkg assets -o $(@F) -tags production -ignore js/devel/ ./... && $(sed-i-bindata) $(@F)
@@ -119,10 +119,13 @@ $(binassets_productiongo): $(shell find \
 $(binassets_productiongo): src/share/assets/css/index.css
 $(binassets_productiongo): src/share/assets/js/production/ugly/index.js
 
-ifneq (init, $(MAKECMDGOALS))
 $(binassets_develgo): $(shell find \
                       src/share/assets -type f \! -name '*.go' \! -path \
                       src/share/assets/js/production/)
 $(binassets_develgo): src/share/assets/css/index.css
 $(binassets_develgo): src/share/assets/js/devel/gen/jscript.js
-endif
+
+# $(bin*_develgo) are in dependency tree, so this is a spare shortcut
+bindata-devel: $(binassets_develgo) $(bintemplates_develgo)
+
+endif # END OF ifneq (init, $(MAKECMDGOALS))
