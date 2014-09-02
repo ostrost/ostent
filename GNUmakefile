@@ -19,7 +19,7 @@ endif
 sed-i-bindata=$(sed-i) -e 's,"$(PWD)/,",g' -e '/^\/\/ AssetDir /,$$d'
 go-bindata=go-bindata -ignore '.*\.go' # go regexp syntax for -ignore
 
-.PHONY: all nobuild init test bindata-devel
+.PHONY: all al init test bindata-devel
 ifneq (init, $(MAKECMDGOALS))
 # before init:
 # - go list would fail => unknown $(destbin)
@@ -52,31 +52,30 @@ ifneq (init, $(MAKECMDGOALS))
 test:
 	go test -v ./...
 
-# init required before go list
+al: $(ostent_files)
+# al: like `all' but without final go build ostent. For when rerun does the build
+
+$(destbin)/ostent: $(ostent_files)
+	go build -tags production -o $@ $(fqostent)/src/ostent
+
 $(destbin)/%:
 	go build -o $@ $(fqostent)/$|
-
-$(destbin)/amberpp: | src/amberp/amberpp
-$(destbin)/ostent:  | src/ostent
+$(destbin)/amberpp:    | src/amberp/amberpp
+$(destbin)/jsmakerule: | src/share/assets/jsmakerule
 
 $(destbin)/amberpp: $(shell go list -f '\
 {{$$dir := .Dir}}\
 {{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}' $(fqostent)/src/amberp/amberpp | \
 sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 
-nobuild: $(ostent_files)
-$(destbin)/ostent: $(ostent_files)
-	go build -tags production -o $@ $(fqostent)/src/ostent
-
-$(destbin)/jsmakerule: $(binassets_develgo) $(shell \
+$(destbin)/jsmakerule: $(binassets_develgo)
+$(destbin)/jsmakerule: $(shell \
 go list -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(fqostent)/src/share/assets/jsmakerule | xargs \
 go list -f '{{if and (not .Standard) (not .Goroot)}}\
 {{$$dir := .Dir}}\
 {{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}\
 {{range .CgoFiles}}{{$$dir}}/{{.}}{{"\n"}}{{end}}{{end}}' | \
 sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
-	@echo '* Prerequisite: bin-jsmakerule'
-	go build -o $@ $(fqostent)/src/share/assets/jsmakerule
 
 src/share/tmp/jsassets.d: # $(destbin)/jsmakerule
 	@echo '* Prerequisite: src/share/tmp/jsassets.d'
