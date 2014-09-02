@@ -19,7 +19,7 @@ endif
 sed-i-bindata=$(sed-i) -e 's,"$(PWD)/,",g' -e '/^\/\/ AssetDir /,$$d'
 go-bindata=go-bindata -ignore '.*\.go' # go regexp syntax for -ignore
 
-.PHONY: all init test bindata-devel
+.PHONY: all nobuild init test bindata-devel
 ifneq (init, $(MAKECMDGOALS))
 # before init:
 # - go list would fail => unknown $(destbin)
@@ -27,6 +27,14 @@ ifneq (init, $(MAKECMDGOALS))
 # - go-bindata is not installed yet
 
 destbin=$(dir $(shell go list -f '{{.Target}}' $(fqostent)/src/ostent))
+ostent_files=$(shell \
+go list -tags production -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(fqostent)/src/ostent | xargs \
+go list -tags production -f '{{if and (not .Standard) (not .Goroot)}}\
+{{$$dir := .Dir}}\
+{{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}\
+{{range .CgoFiles}}{{$$dir}}/{{.}}{{"\n"}}{{end}}{{end}}' | \
+sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
+
 all: $(destbin)/ostent
 endif
 init:
@@ -56,13 +64,8 @@ $(destbin)/amberpp: $(shell go list -f '\
 {{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}' $(fqostent)/src/amberp/amberpp | \
 sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 
-$(destbin)/ostent: $(shell \
-go list -tags production -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(fqostent)/src/ostent | xargs \
-go list -tags production -f '{{if and (not .Standard) (not .Goroot)}}\
-{{$$dir := .Dir}}\
-{{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}\
-{{range .CgoFiles}}{{$$dir}}/{{.}}{{"\n"}}{{end}}{{end}}' | \
-sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
+nobuild: $(ostent_files)
+$(destbin)/ostent: $(ostent_files)
 	go build -tags production -o $@ $(fqostent)/src/ostent
 
 $(destbin)/jsmakerule: $(binassets_develgo) $(shell \
