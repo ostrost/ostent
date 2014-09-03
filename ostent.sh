@@ -1,5 +1,8 @@
 #!/bin/sh
-set -euo pipefail # strict mode
+# strict mode
+test -n "$BASH" -o -n "$ZSH_VERSION" &&
+set -o pipefail 2>/dev/null
+set -eu
 
 DEST="${DEST:-$HOME/bin/ostent}" # change if you wish. the directory must be writable for ostent to self-upgrade
 
