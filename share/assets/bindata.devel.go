@@ -20,7 +20,7 @@ func bindata_read(path, name string) ([]byte, error) {
 // css_index_css reads file data from disk. It returns an error on failure.
 func css_index_css() ([]byte, error) {
 	return bindata_read(
-		"src/share/assets/css/index.css",
+		"share/assets/css/index.css",
 		"css/index.css",
 	)
 }
@@ -28,7 +28,7 @@ func css_index_css() ([]byte, error) {
 // css_index_css_map reads file data from disk. It returns an error on failure.
 func css_index_css_map() ([]byte, error) {
 	return bindata_read(
-		"src/share/assets/css/index.css.map",
+		"share/assets/css/index.css.map",
 		"css/index.css.map",
 	)
 }
@@ -36,7 +36,7 @@ func css_index_css_map() ([]byte, error) {
 // favicon_png reads file data from disk. It returns an error on failure.
 func favicon_png() ([]byte, error) {
 	return bindata_read(
-		"src/share/assets/favicon.png",
+		"share/assets/favicon.png",
 		"favicon.png",
 	)
 }
@@ -44,7 +44,7 @@ func favicon_png() ([]byte, error) {
 // js_devel_gen_jscript_js reads file data from disk. It returns an error on failure.
 func js_devel_gen_jscript_js() ([]byte, error) {
 	return bindata_read(
-		"src/share/assets/js/devel/gen/jscript.js",
+		"share/assets/js/devel/gen/jscript.js",
 		"js/devel/gen/jscript.js",
 	)
 }
@@ -52,7 +52,7 @@ func js_devel_gen_jscript_js() ([]byte, error) {
 // js_devel_milk_index_js reads file data from disk. It returns an error on failure.
 func js_devel_milk_index_js() ([]byte, error) {
 	return bindata_read(
-		"src/share/assets/js/devel/milk/index.js",
+		"share/assets/js/devel/milk/index.js",
 		"js/devel/milk/index.js",
 	)
 }
@@ -60,7 +60,7 @@ func js_devel_milk_index_js() ([]byte, error) {
 // js_devel_vendor_min_bootstrap_3_2_0_bootstrap_min_js reads file data from disk. It returns an error on failure.
 func js_devel_vendor_min_bootstrap_3_2_0_bootstrap_min_js() ([]byte, error) {
 	return bindata_read(
-		"src/share/assets/js/devel/vendor/min/bootstrap/3.2.0/bootstrap.min.js",
+		"share/assets/js/devel/vendor/min/bootstrap/3.2.0/bootstrap.min.js",
 		"js/devel/vendor/min/bootstrap/3.2.0/bootstrap.min.js",
 	)
 }
@@ -68,7 +68,7 @@ func js_devel_vendor_min_bootstrap_3_2_0_bootstrap_min_js() ([]byte, error) {
 // js_devel_vendor_min_headroom_0_5_0_headroom_min_js reads file data from disk. It returns an error on failure.
 func js_devel_vendor_min_headroom_0_5_0_headroom_min_js() ([]byte, error) {
 	return bindata_read(
-		"src/share/assets/js/devel/vendor/min/headroom/0.5.0/headroom.min.js",
+		"share/assets/js/devel/vendor/min/headroom/0.5.0/headroom.min.js",
 		"js/devel/vendor/min/headroom/0.5.0/headroom.min.js",
 	)
 }
@@ -76,7 +76,7 @@ func js_devel_vendor_min_headroom_0_5_0_headroom_min_js() ([]byte, error) {
 // js_devel_vendor_min_jquery_2_1_1_jquery_2_1_1_min_js reads file data from disk. It returns an error on failure.
 func js_devel_vendor_min_jquery_2_1_1_jquery_2_1_1_min_js() ([]byte, error) {
 	return bindata_read(
-		"src/share/assets/js/devel/vendor/min/jquery/2.1.1/jquery-2.1.1.min.js",
+		"share/assets/js/devel/vendor/min/jquery/2.1.1/jquery-2.1.1.min.js",
 		"js/devel/vendor/min/jquery/2.1.1/jquery-2.1.1.min.js",
 	)
 }
@@ -84,7 +84,7 @@ func js_devel_vendor_min_jquery_2_1_1_jquery_2_1_1_min_js() ([]byte, error) {
 // js_devel_vendor_min_react_0_11_0_react_min_js reads file data from disk. It returns an error on failure.
 func js_devel_vendor_min_react_0_11_0_react_min_js() ([]byte, error) {
 	return bindata_read(
-		"src/share/assets/js/devel/vendor/min/react/0.11.0/react.min.js",
+		"share/assets/js/devel/vendor/min/react/0.11.0/react.min.js",
 		"js/devel/vendor/min/react/0.11.0/react.min.js",
 	)
 }
@@ -92,7 +92,7 @@ func js_devel_vendor_min_react_0_11_0_react_min_js() ([]byte, error) {
 // robots_txt reads file data from disk. It returns an error on failure.
 func robots_txt() ([]byte, error) {
 	return bindata_read(
-		"src/share/assets/robots.txt",
+		"share/assets/robots.txt",
 		"robots.txt",
 	)
 }

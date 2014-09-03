@@ -19,7 +19,7 @@ import (
 
 	update "github.com/inconshreveable/go-update"
 	"github.com/ostrost/ostent"
-	"github.com/ostrost/ostent/src/share/templates"
+	"github.com/ostrost/ostent/share/templates"
 	"github.com/rcrowley/goagain"
 )
 

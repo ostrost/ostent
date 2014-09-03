@@ -8,10 +8,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ostrost/ostent/src/share/assets"
+	"github.com/ostrost/ostent/share/assets"
 )
 
-const packageName = "src/share/assets"
+const packageName = "share/assets"
 
 func main() {
 	flag.Parse()

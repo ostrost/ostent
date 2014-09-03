@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ostrost/ostent/src/share/templates"
+	"github.com/ostrost/ostent/share/templates"
 	"github.com/ostrost/ostent/types"
 	sigar "github.com/rzab/gosigar"
 )

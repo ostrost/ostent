@@ -11,7 +11,7 @@ import (
 	"os"
 
 	"github.com/ostrost/ostent"
-	"github.com/ostrost/ostent/src/share/templates"
+	"github.com/ostrost/ostent/share/templates"
 )
 
 func main() {

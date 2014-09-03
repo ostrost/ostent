@@ -2,11 +2,11 @@
 
 fqostent=github.com/ostrost/ostent
 
-binassets_develgo         = src/share/assets/bindata.devel.go
-binassets_productiongo    = src/share/assets/bindata.production.go
-bintemplates_develgo      = src/share/templates/bindata.devel.go
-bintemplates_productiongo = src/share/templates/bindata.production.go
-templates_dir             = src/share/templates/
+binassets_develgo         = share/assets/bindata.devel.go
+binassets_productiongo    = share/assets/bindata.production.go
+bintemplates_develgo      = share/templates/bindata.devel.go
+bintemplates_productiongo = share/templates/bindata.production.go
+templates_dir             = share/templates/
 templates_files           = index.html usepercent.html tooltipable.html
 templates_html=$(addprefix $(templates_dir), $(templates_files))
 
@@ -60,48 +60,47 @@ $(destbin)/ostent: $(ostent_files)
 
 $(destbin)/%:
 	go build -o $@ $(fqostent)/$|
-$(destbin)/amberpp:    | src/amberp/amberpp
-$(destbin)/jsmakerule: | src/share/assets/jsmakerule
+$(destbin)/amberpp:    | amberp/amberpp
+$(destbin)/jsmakerule: | share/assets/jsmakerule
 
 $(destbin)/amberpp: $(shell go list -f '\
 {{$$dir := .Dir}}\
-{{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}' $(fqostent)/src/amberp/amberpp | \
+{{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}' $(fqostent)/amberp/amberpp | \
 sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 
 $(destbin)/jsmakerule: $(binassets_develgo)
 $(destbin)/jsmakerule: $(shell \
-go list -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(fqostent)/src/share/assets/jsmakerule | xargs \
+go list -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(fqostent)/share/assets/jsmakerule | xargs \
 go list -f '{{if and (not .Standard) (not .Goroot)}}\
 {{$$dir := .Dir}}\
 {{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}\
 {{range .CgoFiles}}{{$$dir}}/{{.}}{{"\n"}}{{end}}{{end}}' | \
 sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 
-src/share/tmp/jsassets.d: # $(destbin)/jsmakerule
-	@echo '* Prerequisite: src/share/tmp/jsassets.d'
+share/tmp/jsassets.d: # $(destbin)/jsmakerule
 #	$(MAKE) $(MFLAGS) $(destbin)/jsmakerule
 	true && \
-$(destbin)/jsmakerule src/share/assets/js/production/ugly/index.js >/dev/null && \
-$(destbin)/jsmakerule src/share/assets/js/production/ugly/index.js >$@
-#	$^ src/share/assets/js/production/ugly/index.js >$@
+$(destbin)/jsmakerule share/assets/js/production/ugly/index.js >/dev/null && \
+$(destbin)/jsmakerule share/assets/js/production/ugly/index.js >$@
+#	$^ share/assets/js/production/ugly/index.js >$@
 ifneq ($(MAKECMDGOALS), clean)
-include src/share/tmp/jsassets.d
+include share/tmp/jsassets.d
 endif
 
 # these four rules are actually independant of $(destbin) and could be set when the goal is `init', but we're keeping it simple
-src/share/assets/js/production/ugly/index.js: # the prerequisites from included jsassets.d
+share/assets/js/production/ugly/index.js: # the prerequisites from included jsassets.d
 	if type uglifyjs >/dev/null; then cat $^ | uglifyjs -c -o $@ -; fi
-src/share/assets/css/index.css: src/share/style/index.scss
+share/assets/css/index.css: share/style/index.scss
 	if type sass >/dev/null; then sass $< $@; fi
-src/share/assets/js/devel/milk/index.js: src/share/coffee/index.coffee
+share/assets/js/devel/milk/index.js: share/coffee/index.coffee
 	if type coffee >/dev/null; then coffee -p $^ >/dev/null && coffee -o $(@D)/ $^; fi
-src/share/assets/js/devel/gen/jscript.js: src/share/tmp/jscript.jsx
+share/assets/js/devel/gen/jscript.js: share/tmp/jscript.jsx
 	if type jsx >/dev/null; then jsx <$^ >/dev/null && jsx <$^ 2>/dev/null >$@; fi
 
-src/share/templates/%.html: src/share/amber.templates/%.amber src/share/amber.templates/defines.amber $(destbin)/amberpp
-	$(destbin)/amberpp -defines src/share/amber.templates/defines.amber -output $@ $<
-src/share/tmp/jscript.jsx: src/share/amber.templates/jscript.amber src/share/amber.templates/defines.amber $(destbin)/amberpp
-	$(destbin)/amberpp -defines src/share/amber.templates/defines.amber -j -output $@ $<
+share/templates/%.html: share/amber.templates/%.amber share/amber.templates/defines.amber $(destbin)/amberpp
+	$(destbin)/amberpp -defines share/amber.templates/defines.amber -output $@ $<
+share/tmp/jscript.jsx: share/amber.templates/jscript.amber share/amber.templates/defines.amber $(destbin)/amberpp
+	$(destbin)/amberpp -defines share/amber.templates/defines.amber -j -output $@ $<
 
 $(bintemplates_productiongo): $(templates_html)
 	cd $(<D) && $(go-bindata) -pkg templates -tags production -o $(@F) $(^F) && $(sed-i-bindata) $(@F)
@@ -112,21 +111,21 @@ $(bintemplates_develgo): $(templates_html)
 #	# $(templates_files) instead of $(^F)
 
 $(binassets_productiongo):
-	cd src/share/assets && $(go-bindata) -pkg assets -o $(@F) -tags production -ignore js/devel/ ./... && $(sed-i-bindata) $(@F)
+	cd share/assets && $(go-bindata) -pkg assets -o $(@F) -tags production -ignore js/devel/ ./... && $(sed-i-bindata) $(@F)
 $(binassets_develgo):
-	cd src/share/assets && $(go-bindata) -pkg assets -o $(@F) -tags '!production' -debug -ignore js/production/ ./... && $(sed-i-bindata) $(@F)
+	cd share/assets && $(go-bindata) -pkg assets -o $(@F) -tags '!production' -debug -ignore js/production/ ./... && $(sed-i-bindata) $(@F)
 
 $(binassets_productiongo): $(shell find \
-                           src/share/assets -type f \! -name '*.go' \! -path \
-                           src/share/assets/js/devel/)
-$(binassets_productiongo): src/share/assets/css/index.css
-$(binassets_productiongo): src/share/assets/js/production/ugly/index.js
+                           share/assets -type f \! -name '*.go' \! -path \
+                           share/assets/js/devel/)
+$(binassets_productiongo): share/assets/css/index.css
+$(binassets_productiongo): share/assets/js/production/ugly/index.js
 
 $(binassets_develgo): $(shell find \
-                      src/share/assets -type f \! -name '*.go' \! -path \
-                      src/share/assets/js/production/)
-$(binassets_develgo): src/share/assets/css/index.css
-$(binassets_develgo): src/share/assets/js/devel/gen/jscript.js
+                      share/assets -type f \! -name '*.go' \! -path \
+                      share/assets/js/production/)
+$(binassets_develgo): share/assets/css/index.css
+$(binassets_develgo): share/assets/js/devel/gen/jscript.js
 
 # $(bin*_develgo) are in dependency tree, so this is a spare shortcut
 bindata-devel: $(binassets_develgo) $(bintemplates_develgo)

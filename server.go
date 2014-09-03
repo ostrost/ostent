@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/justinas/alice"
-	"github.com/ostrost/ostent/src/share/assets"
+	"github.com/ostrost/ostent/share/assets"
 )
 
 type bindValue struct {
@@ -130,7 +130,7 @@ func serveContentFunc(path string, logger *log.Logger) http.HandlerFunc {
 		if err != nil {
 			panic(err)
 		}
-		modtime, err := assets.ModTime("src/share/assets", path)
+		modtime, err := assets.ModTime("share/assets", path)
 		if err != nil {
 			logger.Println(err)
 			// http.Error(w, err.Error(), http.StatusInternalServerError)

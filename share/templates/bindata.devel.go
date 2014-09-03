@@ -20,7 +20,7 @@ func bindata_read(path, name string) ([]byte, error) {
 // index_html reads file data from disk. It returns an error on failure.
 func index_html() ([]byte, error) {
 	return bindata_read(
-		"src/share/templates/index.html",
+		"share/templates/index.html",
 		"index.html",
 	)
 }
@@ -28,7 +28,7 @@ func index_html() ([]byte, error) {
 // usepercent_html reads file data from disk. It returns an error on failure.
 func usepercent_html() ([]byte, error) {
 	return bindata_read(
-		"src/share/templates/usepercent.html",
+		"share/templates/usepercent.html",
 		"usepercent.html",
 	)
 }
@@ -36,7 +36,7 @@ func usepercent_html() ([]byte, error) {
 // tooltipable_html reads file data from disk. It returns an error on failure.
 func tooltipable_html() ([]byte, error) {
 	return bindata_read(
-		"src/share/templates/tooltipable.html",
+		"share/templates/tooltipable.html",
 		"tooltipable.html",
 	)
 }
