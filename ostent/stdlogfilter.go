@@ -1,4 +1,4 @@
-package ostent
+package main
 
 import (
 	"bufio"
@@ -9,12 +9,16 @@ import (
 )
 
 func init() {
+	log.SetOutput(newlogger())
+}
+
+func newlogger() io.Writer {
 	lf := logFiltered{}
 	var reader io.Reader
 	reader, lf.writer = io.Pipe()
 	lf.scanner = bufio.NewScanner(reader)
 	go lf.read()
-	log.SetOutput(&lf)
+	return &lf
 }
 
 type logFiltered struct {
