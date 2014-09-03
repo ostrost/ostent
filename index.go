@@ -824,7 +824,7 @@ func indexData(req *http.Request) IndexData {
 
 		PStable: *updates.PStable,
 
-		DISTRIB: DISTRIB, // value from init_*.go
+		DISTRIB: DISTRIB, // value set in init()
 		VERSION: VERSION, // value from server.go
 
 		PeriodDuration: periodFlag.Duration,
@@ -858,9 +858,11 @@ func statusLine(status int) string {
 }
 
 func init() {
+	DISTRIB = getDistrib()
 	SCRIPTS = assets.JsAssetNames()
 }
 
+var DISTRIB string
 var SCRIPTS []string
 
 func scripts(r *http.Request) (scripts []string) {

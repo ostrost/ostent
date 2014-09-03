@@ -1,3 +1,5 @@
+// +build linux
+
 package ostent
 
 import (
@@ -7,12 +9,12 @@ import (
 	"strings"
 )
 
-func init() {
+func getDistrib() string {
 	// https://unix.stackexchange.com/q/35183
 	std, err := exec.Command("lsb_release", "-i", "-r").CombinedOutput()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "lsb_release: %s\n", err)
-		return
+		return ""
 	}
 	id, release := "", ""
 	// strings.TrimRight(string(std), "\n\t ")
@@ -35,9 +37,11 @@ func init() {
 		fmt.Fprintf(os.Stderr, "Could not identify Release")
 	}
 	if id == "" || release == "" {
-		return
+		return ""
 	}
-	DISTRIB = id + " " + release
+	return id + " " + release
 }
 
-var DISTRIB string
+func procname(_ int, proc_name string) string {
+	return proc_name // from /proc/_/stat, may be shortened
+}
