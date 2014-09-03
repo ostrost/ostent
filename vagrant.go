@@ -108,14 +108,14 @@ func vgdispatch() { // (*fsnotify.FileEvent)
 	if err != nil { // an inconsistent write by vagrant? (although not with the flock)
 		return // ignoring the error
 	}
-	pu := pageUpdate{}
+	iu := indexUpdate{}
 	if err != nil {
-		pu.VagrantError = err.Error()
-		pu.VagrantErrord = true
+		iu.VagrantError = err.Error()
+		iu.VagrantErrord = true
 	} else {
-		pu.VagrantMachines = machines
+		iu.VagrantMachines = machines
 	}
-	pUPDATES <- &pu
+	iUPDATES <- &iu
 }
 
 func vgchange() error {

@@ -214,7 +214,7 @@ type ProcInfo struct {
 	Resident uint64
 }
 
-// ProcData type is a public (for page context, json marshaling) account of a process.
+// ProcData type is a public (for index context, json marshaling) account of a process.
 type ProcData struct {
 	PID      uint
 	Priority int

@@ -12,7 +12,7 @@ import (
 // Traverses the type, fails on any pointer field
 // Intended to reveal the pointers, they're not comparable in templates (see amber/runtime.go)
 // Ruled to use json() in the templates to compare values
-func test_pagedatatype(t *testing.T, typ reflect.Type) {
+func test_indexdatatype(t *testing.T, typ reflect.Type) {
 	for i := 0; i < typ.NumField(); i++ {
 		field := typ.Field(i)
 		ftyp := field.Type
@@ -21,14 +21,14 @@ func test_pagedatatype(t *testing.T, typ reflect.Type) {
 			t.Errorf("%s.%s\tis a pointer", typ.Name(), field.Name)
 		}
 		if kind == reflect.Struct {
-			test_pagedatatype(t, ftyp)
+			test_indexdatatype(t, ftyp)
 		}
 	}
 }
 
-func Test_pageDataType(t *testing.T) {
+func Test_indexDataType(t *testing.T) {
 	return // disabled for now // disabled henceforth
-	test_pagedatatype(t, reflect.TypeOf(PageData{}))
+	test_indexdatatype(t, reflect.TypeOf(IndexData{}))
 }
 
 func execute_template(IN string, DATA interface{}) (string, error) {

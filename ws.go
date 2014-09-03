@@ -93,7 +93,7 @@ func Loop() {
 
 	for {
 		select {
-		case update := <-pUPDATES:
+		case update := <-iUPDATES:
 			Connections.push(update)
 
 		case conn := <-register:
@@ -113,7 +113,7 @@ type conn struct {
 	requestOrigin *http.Request
 
 	receive chan *received
-	push    chan *pageUpdate
+	push    chan *indexUpdate
 	full    client
 
 	mutex      sync.Mutex
@@ -180,7 +180,7 @@ func (cs *conns) Reload() bool {
 	return reloaded
 }
 
-func (cs *conns) push(update *pageUpdate) {
+func (cs *conns) push(update *indexUpdate) {
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
 
@@ -247,7 +247,7 @@ var (
 	// active websocket connections. The only method is Reload.
 	Connections conns
 
-	pUPDATES   = make(chan *pageUpdate) // the channel for off-the-clock pageUpdate[s] to push
+	iUPDATES   = make(chan *indexUpdate) // the channel for off-the-clock indexUpdate[s] to push
 	unregister = make(chan *conn)
 	register   = make(chan *conn)
 )
@@ -461,7 +461,7 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	update := getUpdates(r, &sd.conn.full, send, sd.received != nil && sd.received.Client != nil)
-	if update == (pageUpdate{}) { // nothing scheduled for the moment, no update
+	if update == (indexUpdate{}) { // nothing scheduled for the moment, no update
 		return
 	}
 
@@ -472,7 +472,7 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusSwitchingProtocols) // last change to WriteHeader. 101 is 200
 }
 
-func (c *conn) writeUpdate(update pageUpdate) bool {
+func (c *conn) writeUpdate(update indexUpdate) bool {
 	if *c.full.HideVG {
 		// TODO other .Vagrant* fields may not be discarded
 		update.VagrantMachines = nil
@@ -517,7 +517,7 @@ func slashws(w http.ResponseWriter, req *http.Request) {
 		requestOrigin: req,
 
 		receive: make(chan *received, 2),
-		push:    make(chan *pageUpdate, 2),
+		push:    make(chan *indexUpdate, 2),
 		full:    defaultClient(),
 	}
 	register <- c

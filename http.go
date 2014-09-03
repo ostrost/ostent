@@ -558,7 +558,7 @@ func (f five) spark() string {
 	return s
 }
 
-type PageData struct {
+type IndexData struct {
 	Generic generic
 	CPU     types.CPU
 	MEM     types.MEM
@@ -588,7 +588,7 @@ type PageData struct {
 	DFTABS dftabs
 }
 
-type pageUpdate struct {
+type indexUpdate struct {
 	Generic  *generic        `json:",omitempty"`
 	CPU      *types.CPU      `json:",omitempty"`
 	MEM      *types.MEM      `json:",omitempty"`
@@ -699,7 +699,7 @@ func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Bis
 	}
 }
 
-func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh bool) pageUpdate {
+func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh bool) indexUpdate {
 
 	client.recalcrows() // before anything
 
@@ -710,7 +710,7 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 		if_copy     []getifaddrs.IfData
 		previf_copy []getifaddrs.IfData
 	)
-	pu := pageUpdate{}
+	iu := indexUpdate{}
 	func() {
 		lastInfo.mutex.Lock()
 		defer lastInfo.mutex.Unlock()
@@ -731,24 +731,24 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 		if true { // client.RefreshGeneric.refresh(forcerefresh)
 			g := lastInfo.Generic
 			// g.LA = g.LA1spark + " " + g.LA
-			pu.Generic = &g // &lastInfo.Generic
+			iu.Generic = &g // &lastInfo.Generic
 		}
 		if !*client.HideMEM && client.RefreshMEM.refresh(forcerefresh) {
-			pu.MEM = lastInfo.MEM(*client)
+			iu.MEM = lastInfo.MEM(*client)
 		}
 		if !*client.HideCPU && client.RefreshCPU.refresh(forcerefresh) {
-			pu.CPU, coreno = lastInfo.CPUDelta(*client)
+			iu.CPU, coreno = lastInfo.CPUDelta(*client)
 		}
 	}()
 
 	if req != nil {
-		req.ParseForm() // do ParseForm even if req.Form == nil, otherwise *links won't be set for page requests without parameters
+		req.ParseForm() // do ParseForm even if req.Form == nil, otherwise *links won't be set for index requests without parameters
 		base := url.Values{}
-		pu.PSlinks = (*PSlinks)(linkattrs(req, base, "ps", _PSBIMAP, &client.psSEQ))
-		pu.DFlinks = (*DFlinks)(linkattrs(req, base, "df", _DFBIMAP, &client.dfSEQ))
+		iu.PSlinks = (*PSlinks)(linkattrs(req, base, "ps", _PSBIMAP, &client.psSEQ))
+		iu.DFlinks = (*DFlinks)(linkattrs(req, base, "df", _DFBIMAP, &client.dfSEQ))
 	}
 
-	if pu.CPU != nil { // TODO Is it ok to update the *client.Expand*CPU when the CPU is shown only?
+	if iu.CPU != nil { // TODO Is it ok to update the *client.Expand*CPU when the CPU is shown only?
 		setBool(&client.ExpandableCPU, &send.ExpandableCPU, coreno > client.toprows-1) // one row reserved for "all N"
 		setString(&client.ExpandtextCPU, &send.ExpandtextCPU, fmt.Sprintf("Expanded (%d)", coreno))
 	}
@@ -765,46 +765,46 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 		orderedDisks := orderDisks(df_copy, client.dfSEQ)
 
 		if *client.TabDF == DFBYTES_TABID {
-			pu.DFbytes = dfbytes(orderedDisks, *client)
+			iu.DFbytes = dfbytes(orderedDisks, *client)
 		} else if *client.TabDF == DFINODES_TABID {
-			pu.DFinodes = dfinodes(orderedDisks, *client)
+			iu.DFinodes = dfinodes(orderedDisks, *client)
 		}
 	}
 
 	if !*client.HideIF && client.RefreshIF.refresh(forcerefresh) {
 		switch *client.TabIF {
 		case IFBYTES_TABID:
-			pu.IFbytes = interfacesDelta(interfaceBytes{}, if_copy, previf_copy, *client)
+			iu.IFbytes = interfacesDelta(interfaceBytes{}, if_copy, previf_copy, *client)
 		case IFERRORS_TABID:
-			pu.IFerrors = interfacesDelta(interfaceNumericals{interfaceInoutErrors{}}, if_copy, previf_copy, *client)
+			iu.IFerrors = interfacesDelta(interfaceNumericals{interfaceInoutErrors{}}, if_copy, previf_copy, *client)
 		case IFPACKETS_TABID:
-			pu.IFpackets = interfacesDelta(interfaceNumericals{interfaceInoutPackets{}}, if_copy, previf_copy, *client)
+			iu.IFpackets = interfacesDelta(interfaceNumericals{interfaceInoutPackets{}}, if_copy, previf_copy, *client)
 		}
 	}
 
 	if !*client.HidePS && client.RefreshPS.refresh(forcerefresh) {
-		pu.PStable = new(PStable)
-		pu.PStable.List = orderProc(ps_copy, client, &send)
+		iu.PStable = new(PStable)
+		iu.PStable.List = orderProc(ps_copy, client, &send)
 	}
 
 	if !*client.HideVG && client.RefreshVG.refresh(forcerefresh) {
 		machines, err := vagrantmachines()
 		if err != nil {
-			pu.VagrantError = err.Error()
-			pu.VagrantErrord = true
+			iu.VagrantError = err.Error()
+			iu.VagrantErrord = true
 		} else {
-			pu.VagrantMachines = machines
-			pu.VagrantErrord = false
+			iu.VagrantMachines = machines
+			iu.VagrantErrord = false
 		}
 	}
 
 	if send != (sendClient{}) {
-		pu.Client = &send
+		iu.Client = &send
 	}
-	return pu
+	return iu
 }
 
-func pageData(req *http.Request) PageData {
+func indexData(req *http.Request) IndexData {
 	if Connections.Len() == 0 {
 		// collect when there're no active connections, so Loop does not collect
 		lastInfo.collect()
@@ -813,7 +813,7 @@ func pageData(req *http.Request) PageData {
 	client := defaultClient()
 	updates := getUpdates(req, &client, sendClient{}, true)
 
-	data := PageData{
+	data := IndexData{
 		Client:  client,
 		Generic: *updates.Generic,
 		CPU:     *updates.CPU,
@@ -879,7 +879,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 		SCRIPTS   []string
 		CLASSNAME string
 	}{
-		Data:    pageData(r),
+		Data:    indexData(r),
 		SCRIPTS: scripts(r),
 	})
 	if err != nil {
