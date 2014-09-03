@@ -26,9 +26,9 @@ ifneq (init, $(MAKECMDGOALS))
 # - go test fails without dependencies installed
 # - go-bindata is not installed yet
 
-destbin=$(dir $(shell go list -f '{{.Target}}' $(fqostent)/src/ostent))
+destbin=$(dir $(shell go list -f '{{.Target}}' $(fqostent)/ostent))
 ostent_files=$(shell \
-go list -tags production -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(fqostent)/src/ostent | xargs \
+go list -tags production -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(fqostent)/ostent | xargs \
 go list -tags production -f '{{if and (not .Standard) (not .Goroot)}}\
 {{$$dir := .Dir}}\
 {{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}\
@@ -42,9 +42,9 @@ init:
 github.com/jteeuwen/go-bindata/go-bindata \
 github.com/skelterjohn/rerun
 	go get -u -v -tags production \
-$(fqostent)/src/ostent
+$(fqostent)/ostent
 	go get -u -v -a \
-$(fqostent)/src/ostent
+$(fqostent)/ostent
 
 %: %.sh # clear the implicit *.sh rule covering ./ostent.sh
 
@@ -56,7 +56,7 @@ al: $(ostent_files)
 # al: like `all' but without final go build ostent. For when rerun does the build
 
 $(destbin)/ostent: $(ostent_files)
-	go build -tags production -o $@ $(fqostent)/src/ostent
+	go build -tags production -o $@ $(fqostent)/ostent
 
 $(destbin)/%:
 	go build -o $@ $(fqostent)/$|
@@ -80,8 +80,9 @@ sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 src/share/tmp/jsassets.d: # $(destbin)/jsmakerule
 	@echo '* Prerequisite: src/share/tmp/jsassets.d'
 #	$(MAKE) $(MFLAGS) $(destbin)/jsmakerule
-	$(destbin)/jsmakerule src/share/assets/js/production/ugly/index.js >/dev/null && \
-	$(destbin)/jsmakerule src/share/assets/js/production/ugly/index.js >$@
+	true && \
+$(destbin)/jsmakerule src/share/assets/js/production/ugly/index.js >/dev/null && \
+$(destbin)/jsmakerule src/share/assets/js/production/ugly/index.js >$@
 #	$^ src/share/assets/js/production/ugly/index.js >$@
 ifneq ($(MAKECMDGOALS), clean)
 include src/share/tmp/jsassets.d
