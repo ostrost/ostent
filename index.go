@@ -312,8 +312,8 @@ func dfbytes(diskinfos []diskInfo, client client) *types.DFbytes {
 		if !*client.ExpandDF && i > client.toprows-1 {
 			break
 		}
-		total, approxtotal := humanBandback(disk.Total)
-		used, approxused := humanBandback(disk.Used)
+		total, approxtotal, _ := humanBandback(disk.Total)
+		used, approxused, _ := humanBandback(disk.Used)
 		disks = append(disks, types.DiskBytes{
 			DiskMeta:        diskMeta(disk),
 			Total:           total,
@@ -334,8 +334,8 @@ func dfinodes(diskinfos []diskInfo, client client) *types.DFinodes {
 		if !*client.ExpandDF && i > client.toprows-1 {
 			break
 		}
-		itotal, approxitotal := humanBandback(disk.Inodes)
-		iused, approxiused := humanBandback(disk.Iused)
+		itotal, approxitotal, _ := humanBandback(disk.Inodes)
+		iused, approxiused, _ := humanBandback(disk.Iused)
 		disks = append(disks, types.DiskInodes{
 			DiskMeta:         diskMeta(disk),
 			Inodes:           itotal,

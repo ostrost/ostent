@@ -5,7 +5,7 @@ import (
 	"testing"
 	// "strconv"
 	// "github.com/dustin/go-humanize"
-	"github.com/rzab/gosigar"
+	sigar "github.com/rzab/gosigar"
 )
 
 /* func Test_humanizeParseBytes(t *testing.T) {
@@ -21,19 +21,54 @@ import (
 
 func Test_humanB(t *testing.T) {
 	for _, v := range []struct {
+		a    uint64
+		cmp  string
+		back uint64
+	}{
+		{1023, "1023B", 1023},
+		{1024, "1.0K", 1024},
+		{117649480 * 1024, "112G", 120259084288},
+	} {
+		cmp := humanB(v.a)
+		if cmp[0] == ' ' {
+			t.Errorf("Unexpected: starts with a space: %q", cmp)
+		}
+		if cmp != v.cmp {
+			t.Errorf("Mismatch: humanB(%v) == %v != %v\n", v.a, v.cmp, cmp)
+		}
+		bcmp, back, err := humanBandback(v.a)
+		if err != nil {
+			t.Error(err)
+		}
+		if bcmp[0] == ' ' {
+			t.Errorf("Unexpected: starts with a space: %q", bcmp)
+		}
+		if bcmp != v.cmp {
+			t.Errorf("Mismatch: humanBandback(%v) == %v != %v\n", v.a, v.cmp, bcmp)
+		}
+		if back != v.back {
+			t.Errorf("Mismatch: humanBandback(%v) == %v != %v\n", v.a, v.back, back)
+		}
+	}
+}
+
+func Test_humanbits(t *testing.T) {
+	for _, v := range []struct {
 		a   uint64
 		cmp string
 	}{
-		{117649480 * 1024, "112G" /* "iB" */}, // sigar.FileSystemUsage....[uint64] value is /1024
-		{1023, "1023B"},
-		{1024, "1.0K"},
+		{1023, "1023b"},
+		{1024, "1.0k"},
 	} {
-		cmp := humanB(v.a)
+		cmp := humanbits(v.a)
+		if cmp[0] == ' ' {
+			t.Errorf("Unexpected: starts with a space: %q", cmp)
+		}
 		if cmp != v.cmp {
 			t.Errorf("Mismatch: humanB(%v) == %v != %v\n", v.a, v.cmp, cmp)
 		}
 	}
-} // */
+}
 
 func Test_humanUnitless(t *testing.T) {
 	for _, v := range []struct {
@@ -43,8 +78,12 @@ func Test_humanUnitless(t *testing.T) {
 		{999, "999"},
 		{1000, "1.0k"},
 		{1001, "1.0k"},
+		{1050, "1.1k"},
 	} {
 		cmp := humanUnitless(v.a)
+		if cmp[0] == ' ' {
+			t.Errorf("Unexpected: starts with a space: %q", cmp)
+		}
 		if cmp != v.cmp {
 			t.Errorf("Mismatch: humanUnitless(%v) == %v != %v\n", v.a, v.cmp, cmp)
 		}
@@ -55,24 +94,45 @@ func Test_percent(t *testing.T) {
 	for _, v := range []struct {
 		a, b uint64
 		cmp  uint
+		fcmp string
 	}{
-		{201, 1000, 21},
-		{800, 1000, 80},
-		{890, 1000, 89},
-		{891, 1000, 90},
-		{899, 1000, 90},
-		{900, 1000, 90},
-		{901, 1000, 91},
-		{990, 1000, 99},
-		{991, 1000, 99},
-		{995, 1000, 99},
-		{996, 1000, 99},
-		{999, 1000, 99},
-		{1000, 1000, 100},
+		{1, 0, 0, "0"},
+		{201, 1000, 21, "21"},
+		{800, 1000, 80, "80"},
+		{890, 1000, 89, "89"},
+		{891, 1000, 90, "90"},
+		{899, 1000, 90, "90"},
+		{900, 1000, 90, "90"},
+		{901, 1000, 91, "91"},
+		{990, 1000, 99, "99"},
+		{991, 1000, 99, "99"},
+		{995, 1000, 99, "99"},
+		{996, 1000, 99, "99"},
+		{999, 1000, 99, "99"},
+		{1000, 1000, 100, "100"},
 	} {
 		cmp := percent(v.a, v.b)
 		if cmp != v.cmp {
 			t.Errorf("Mismatch: percent(%v, %v) == %v != %v\n", v.a, v.b, v.cmp, cmp)
+		}
+		fcmp := formatPercent(v.a, v.b)
+		if fcmp != v.fcmp {
+			t.Errorf("Mismatch: formatPercent(%v, %v) == %v != %v\n", v.a, v.b, v.fcmp, fcmp)
+		}
+	}
+}
+
+func Test_formatTime(t *testing.T) {
+	for _, v := range []struct {
+		a   int
+		cmp string
+	}{
+		{1000 * 62, "   01:02"},
+		{1000 * 60 * 60, "01:00:00"},
+	} {
+		cmp := formatTime(uint64(v.a))
+		if cmp != v.cmp {
+			t.Errorf("Mismatch: formatTime(%v) == %v != %v\n", v.a, v.cmp, cmp)
 		}
 	}
 }

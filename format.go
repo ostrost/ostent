@@ -29,10 +29,10 @@ func formatUptime(seconds float64) string { // "seconds" is expected to be sigar
 
 func humanUnitless(n uint64) string {
 	sizes := []string{"", "k", "M", "G", "T", "P", "E"}
-	if n < 10 {
+	base := float64(1000)
+	if float64(n) < base { // small number
 		return fmt.Sprintf("%d%s", n, sizes[0])
 	}
-	base := float64(1000)
 	e := math.Floor(math.Log(float64(n)) / math.Log(base))
 	pow := math.Pow(base, math.Floor(e))
 	val := float64(n) / pow
@@ -40,22 +40,18 @@ func humanUnitless(n uint64) string {
 	if val < 10 {
 		f = "%.1f"
 	}
-	s := fmt.Sprintf(f+"%s", val, sizes[int(e)])
-	if s[0] == ' ' {
-		panic(fmt.Errorf("UNEXPECTED: starts with a space: \"%v\"", s))
-	}
-	return s
+	return fmt.Sprintf(f+"%s", val, sizes[int(e)])
 }
 
-func humanBmany(n uint64, bits ...bool) (string, string, float64, float64) { // almost humanize.IBytes
+func _formatOctet(n uint64, bits bool) (string, string, float64, float64) { // almost humanize.IBytes
 	sizes := []string{"B", "K", "M", "G", "T", "P", "E"}
-	if len(bits) > 0 && bits[0] { // bits instead of bytes
+	if bits { // bits instead of bytes
 		sizes = []string{"b", "k", "m", "g", "t", "p", "e"}
 	}
-	if n < 10 {
-		return fmt.Sprintf("%d%s", n, sizes[0]) /* "%dB" */, "%.0f", float64(n), float64(1)
-	}
 	base := float64(1024)
+	if float64(n) < base { // small number
+		return fmt.Sprintf("%d%s", n, sizes[0]), "%.0f", float64(n), float64(1)
+	}
 	e := math.Floor(math.Log(float64(n)) / math.Log(base))
 	pow := math.Pow(base, math.Floor(e))
 	val := float64(n) / pow
@@ -64,29 +60,23 @@ func humanBmany(n uint64, bits ...bool) (string, string, float64, float64) { // 
 		f = "%.1f"
 	}
 	s := fmt.Sprintf(f+"%s", val, sizes[int(e)])
-	if s[0] == ' ' {
-		panic(fmt.Errorf("UNEXPECTED: starts with a space: \"%v\"", s))
-	}
 	return s, f, val, pow
 }
 
 func humanbits(n uint64) string {
-	s, _, _, _ := humanBmany(n, true)
+	s, _, _, _ := _formatOctet(n, true)
 	return s
 }
 
-func humanB(n uint64, bits ...bool) string {
-	s, _, _, _ := humanBmany(n, bits...)
+func humanB(n uint64) string {
+	s, _, _, _ := _formatOctet(n, false)
 	return s
 }
 
-func humanBandback(n uint64, bits ...bool) (string, uint64) {
-	s, f, val, pow := humanBmany(n, bits...)
+func humanBandback(n uint64) (string, uint64, error) {
+	s, f, val, pow := _formatOctet(n, false)
 	d, err := strconv.ParseFloat(fmt.Sprintf(f, val), 64)
-	if err != nil {
-		panic(err)
-	}
-	return s, uint64(d * pow)
+	return s, uint64(d * pow), err
 }
 
 func percent(used, total uint64) uint {

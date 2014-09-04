@@ -50,8 +50,8 @@ func getGeneric(CH chan<- generic) {
 }
 
 func _getmem(kind string, in sigar.Swap) types.Memory {
-	total, approxtotal := humanBandback(in.Total)
-	used, approxused := humanBandback(in.Used)
+	total, approxtotal, _ := humanBandback(in.Total)
+	used, approxused, _ := humanBandback(in.Used)
 	usepercent := percent(approxused, approxtotal)
 
 	html := "ERROR"
