@@ -31,27 +31,28 @@ func newBind(defstring, defport string) bindValue {
 func (bv bindValue) String() string { return string(bv.string) }
 func (bv *bindValue) Set(input string) error {
 	if input == "" {
-		return nil
-	}
-	if !strings.Contains(input, ":") {
-		input = ":" + input
-	}
-	var err error
-	bv.Host, bv.Port, err = net.SplitHostPort(input)
-	if err != nil {
-		return err
-	}
-	if bv.Host == "*" {
-		bv.Host = ""
-	} else if bv.Port == "127" {
-		bv.Host = "127.0.0.1"
 		bv.Port = bv.defport
-	}
-	if _, err = net.LookupPort("tcp", bv.Port); err != nil {
-		if bv.Host != "" {
+	} else {
+		if !strings.Contains(input, ":") {
+			input = ":" + input
+		}
+		var err error
+		bv.Host, bv.Port, err = net.SplitHostPort(input)
+		if err != nil {
 			return err
 		}
-		bv.Host, bv.Port = bv.Port, bv.defport
+		if bv.Host == "*" {
+			bv.Host = ""
+		} else if bv.Port == "127" {
+			bv.Host = "127.0.0.1"
+			bv.Port = bv.defport
+		}
+		if _, err = net.LookupPort("tcp", bv.Port); err != nil {
+			if bv.Host != "" {
+				return err
+			}
+			bv.Host, bv.Port = bv.Port, bv.defport
+		}
 	}
 
 	bv.string = bv.Host + ":" + bv.Port
@@ -118,7 +119,12 @@ func Serve(l net.Listener, production bool, extramap Muxmap) error {
 		}
 	}
 
-	banner(l, logger)
+	hostname, _ := getHostname()
+	var addrsp *[]net.Addr
+	if addrs, err := net.InterfaceAddrs(); err == nil {
+		addrsp = &addrs
+	}
+	banner(l.Addr().String(), hostname, addrsp, logger)
 
 	server := &http.Server{Addr: l.Addr().String(), Handler: mux}
 	return server.Serve(l)
@@ -141,48 +147,47 @@ func serveContentFunc(path string, logger *log.Logger) http.HandlerFunc {
 	}
 }
 
-func banner(listen net.Listener, logger *log.Logger) {
-	hostname, _ := getHostname()
-	logger.Printf("   %s\n", strings.Repeat("-", len(hostname)+7))
+type loggerPrint interface {
+	Print(v ...interface{})
+}
+
+func banner(listenaddr, hostname string, addrsp *[]net.Addr, logger loggerPrint) {
+	logger.Print(fmt.Sprintf("   %s\n", strings.Repeat("-", len(hostname)+7)))
 	if len(hostname) > 19 {
 		hostname = hostname[:16] + "..."
 	}
-	logger.Printf(" / %s ostent \\ \n", hostname)
-	logger.Printf("+------------------------------+")
+	logger.Print(fmt.Sprintf(" / %s ostent \\\n", hostname))
+	logger.Print("+------------------------------+\n")
 
-	addr := listen.Addr()
-	if h, port, err := net.SplitHostPort(addr.String()); err == nil && h == "::" {
+	if h, port, err := net.SplitHostPort(listenaddr); err == nil && h == "::" && addrsp != nil {
 		// wildcard bind
-
-		/* _, IP := NewInterfaces()
-		logger.Printf("        http://%s", IP) // */
-		addrs, err := net.InterfaceAddrs()
-		if err == nil {
-			fst := true
-			for _, a := range addrs {
-				ipnet, ok := a.(*net.IPNet)
-				if !ok || strings.Contains(ipnet.IP.String(), ":") {
-					continue // no IPv6 for now
-				}
-				f := fmt.Sprintf("http://%s:%s", ipnet.IP.String(), port)
-				if len(f) < 28 {
-					f += strings.Repeat(" ", 28-len(f))
-				}
-				if !fst {
-					logger.Printf("|------------------------------|")
-				}
-				fst = false
-				logger.Printf("| %s |", f)
+		fst := true
+		for _, a := range *addrsp {
+			ip := a.String()
+			if ipnet, ok := a.(*net.IPNet); ok {
+				ip = ipnet.IP.String()
 			}
+			if strings.Contains(ip, ":") { // IPv6, skip for now
+				continue
+			}
+			f := fmt.Sprintf("http://%s:%s", ip, port)
+			if len(f) < 28 {
+				f += strings.Repeat(" ", 28-len(f))
+			}
+			if !fst {
+				logger.Print("|------------------------------|\n")
+			}
+			fst = false
+			logger.Print(fmt.Sprintf("| %s |\n", f))
 		}
 	} else {
-		f := fmt.Sprintf("http://%s", addr.String())
+		f := fmt.Sprintf("http://%s", listenaddr)
 		if len(f) < 28 {
 			f += strings.Repeat(" ", 28-len(f))
 		}
-		logger.Printf("| %s |", f)
+		logger.Print(fmt.Sprintf("| %s |\n", f))
 	}
-	logger.Printf("+------------------------------+")
+	logger.Print("+------------------------------+\n")
 }
 
 // VERSION of the latest known release.
