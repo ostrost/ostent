@@ -580,7 +580,7 @@ type IndexData struct {
 
 	DISTRIB        string
 	VERSION        string
-	PeriodDuration Duration
+	PeriodDuration types.Duration
 
 	Client client
 

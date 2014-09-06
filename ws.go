@@ -1,7 +1,6 @@
 package ostent
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -12,52 +11,10 @@ import (
 	"time"
 
 	gorillawebsocket "github.com/gorilla/websocket"
+	"github.com/ostrost/ostent/types"
 )
 
-// Duration type derives time.Duration
-type Duration time.Duration
-
-// String returns Duration string representation
-func (d Duration) String() string {
-	s := time.Duration(d).String()
-	if strings.HasSuffix(s, "m0s") {
-		s = strings.TrimSuffix(s, "0s")
-	}
-	if strings.HasSuffix(s, "h0m") {
-		s = strings.TrimSuffix(s, "0m")
-	}
-	return s
-}
-
-// MarshalJSON is for encoding/json marshaling into Duration string representation
-func (d Duration) MarshalJSON() ([]byte, error) {
-	return json.Marshal(d.String())
-}
-
-type periodValue struct {
-	Duration
-	above *Duration // optional
-}
-
-func (pv *periodValue) Set(input string) error {
-	v, err := time.ParseDuration(input)
-	if err != nil {
-		return err
-	}
-	if v < time.Second { // hard coded
-		return fmt.Errorf("Less than a second: %s", v)
-	}
-	if v%time.Second != 0 {
-		return fmt.Errorf("Not a multiple of a second: %s", v)
-	}
-	if pv.above != nil && v < time.Duration(*pv.above) {
-		return fmt.Errorf("Should be above %s: %s", *pv.above, v)
-	}
-	pv.Duration = Duration(v)
-	return nil
-}
-
-var periodFlag = periodValue{Duration: Duration(time.Second)} // default
+var periodFlag = types.PeriodValue{Duration: types.Duration(time.Second)} // default
 func init() {
 	Connections = conns{connmap: map[*conn]struct{}{}}
 	flag.Var(&periodFlag, "u", "Collection (update) interval")
@@ -281,7 +238,7 @@ func (rs *recvClient) mergeRefreshSignal(ppinput *string, prefresh *refresh, sen
 	if ppinput == nil {
 		return nil
 	}
-	pv := periodValue{above: &periodFlag.Duration}
+	pv := types.PeriodValue{Above: &periodFlag.Duration}
 	if err := pv.Set(*ppinput); err != nil {
 		*senderr = newtrue()
 		return err

@@ -7,7 +7,7 @@ import (
 )
 
 type refresh struct {
-	Duration
+	types.Duration
 	tick int
 }
 
