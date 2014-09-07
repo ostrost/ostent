@@ -26,7 +26,7 @@ ifneq (init, $(MAKECMDGOALS))
 # - go test fails without dependencies installed
 # - go-bindata is not installed yet
 
-destbin=$(dir $(shell go list -f '{{.Target}}' $(fqostent)/ostent))
+destbin=$(abspath $(dir $(shell go list -f '{{.Target}}' $(fqostent)/ostent)))
 ostent_files=$(shell \
 go list -tags production -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(fqostent)/ostent | xargs \
 go list -tags production -f '{{if and (not .Standard) (not .Goroot)}}\
