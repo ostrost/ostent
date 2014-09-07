@@ -104,8 +104,12 @@ func upgrade_once(kill bool) bool {
 
 func main() {
 	upgradelater := flag.Bool("upgradelater", false, "Upgrade later")
-
 	flag.Parse()
+
+	if command, ok := argCommand(); ok {
+		command.Run()
+		return
+	}
 
 	had_upgrade := false
 	if !*upgradelater && os.Getenv("GOAGAIN_PPID") == "" { // not after gone again

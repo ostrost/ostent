@@ -16,6 +16,13 @@ import (
 
 func main() {
 	flag.Parse()
+
+	// MAYBE the only command extract-assets is for production only
+	if command, ok := argCommand(); ok {
+		command.Run()
+		return
+	}
+
 	if pkg, err := build.Import("github.com/ostrost/ostent", "", build.FindOnly); err != nil {
 		log.Fatal(err)
 	} else if err := os.Chdir(pkg.Dir); err != nil {
