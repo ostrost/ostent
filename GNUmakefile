@@ -19,7 +19,7 @@ endif
 sed-i-bindata=$(sed-i) -e 's,"$(PWD)/,",g' -e '/^\/\/ AssetDir /,$$d'
 go-bindata=go-bindata -ignore '.*\.go' # go regexp syntax for -ignore
 
-.PHONY: all al init test bindata-devel
+.PHONY: all al init test covertest coverfunc coverhtml bindata-devel
 ifneq (init, $(MAKECMDGOALS))
 # before init:
 # - go list would fail => unknown $(destbin)
@@ -51,6 +51,12 @@ $(fqostent)/ostent
 ifneq (init, $(MAKECMDGOALS))
 test:
 	go test -v ./...
+covertest:
+	go test -v -covermode=count -coverprofile=coverage.out $(fqostent)
+coverfunc:
+	go tool cover -func=coverage.out
+coverhtml:
+	go tool cover -html=coverage.out
 
 al: $(ostent_files)
 # al: like `all' but without final go build ostent. For when rerun does the build
