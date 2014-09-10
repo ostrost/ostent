@@ -74,69 +74,37 @@ func init() {
 // Muxmap is a type of a map of pattern to HandlerFunc.
 type Muxmap map[string]http.HandlerFunc
 
-var stdaccess *logger // a global, available after Serve call
-
-// Serve does http.Serve with the listener l and constructed *TrieServeMux.
-// production is passed to logging and recoverying middleware.
-// Non-nil extramap is passed to the mux.
-// Returns http.Serve result.
-func Serve(l net.Listener, production bool, extramap Muxmap) error {
-	logger := log.New(os.Stderr, "[ostent] ", 0)
-	access := log.New(os.Stdout, "", 0)
-
-	stdaccess = newLogged(production, access)
-	recovery := recovery(production)
-
-	chain := alice.New(
-		stdaccess.Constructor,
-		recovery.Constructor,
-	)
-	mux := NewMux(chain.Then)
-
-	for _, path := range assets.AssetNames() {
-		hf := chain.Then(serveContentFunc(path, logger))
-		mux.Handle("GET", "/"+path, hf)
-		mux.Handle("HEAD", "/"+path, hf)
-	}
-
-	//	chain.ThenFunc(slashws)) handler would include stdlogger
-	//  slashws uses stdlogger itself
-	mux.Handle("GET", "/ws", recovery.ConstructorFunc(slashws))
-
-	mux.Handle("GET", "/", chain.ThenFunc(index))
-	mux.Handle("HEAD", "/", chain.ThenFunc(index))
-
-	/* panics := func(http.ResponseWriter, *http.Request) {
-		panic(fmt.Errorf("I'm panicing"))
-	}
-	mux.Handle("GET", "/panic", chain.ThenFunc(panics)) // */
-
-	if extramap != nil {
-		for path, handler := range extramap {
-			for _, METH := range []string{"HEAD", "GET", "POST"} {
-				mux.Handle(METH, path, chain.Then(handler))
-			}
-		}
-	}
-
-	hostname, _ := getHostname()
-	var addrsp *[]net.Addr
-	if addrs, err := net.InterfaceAddrs(); err == nil {
-		addrsp = &addrs
-	}
-	banner(l.Addr().String(), hostname, addrsp, logger)
-
-	server := &http.Server{Addr: l.Addr().String(), Handler: mux}
-	return server.Serve(l)
+type Server struct {
+	http.Server
+	Access *logger
+	MUX    *TrieServeMux
+	Chain  alice.Chain
 }
 
-func serveContentFunc(path string, logger *log.Logger) http.HandlerFunc {
+func NewServer(listener net.Listener, production bool) *Server {
+	access := newLogged(production, log.New(os.Stdout, "", 0))
+	recovery := recovery(production)
+	chain := alice.New(
+		access.Constructor,
+		recovery.Constructor,
+	)
+	mux := NewMux(recovery, chain.Then)
+	return &Server{
+		Server: http.Server{Addr: listener.Addr().String(), Handler: mux},
+		Access: access,
+		Chain:  chain,
+		MUX:    mux,
+	}
+}
+
+// ServeContentFunc does http.ServeContent the asset by path
+func ServeContentFunc(prefix, path string, logger *log.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		text, err := assets.Uncompressedasset(path)
 		if err != nil {
 			panic(err)
 		}
-		modtime, err := assets.ModTime("share/assets", path)
+		modtime, err := assets.ModTime(prefix, path)
 		if err != nil {
 			logger.Println(err)
 			// http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -151,7 +119,16 @@ type loggerPrint interface {
 	Print(v ...interface{})
 }
 
-func banner(listenaddr, hostname string, addrsp *[]net.Addr, logger loggerPrint) {
+func Banner(listenaddr string, logger loggerPrint) {
+	hostname, _ := getHostname()
+	var addrsp *[]net.Addr
+	if addrs, err := net.InterfaceAddrs(); err == nil {
+		addrsp = &addrs
+	}
+	bannerText(listenaddr, hostname, addrsp, logger)
+}
+
+func bannerText(listenaddr, hostname string, addrsp *[]net.Addr, logger loggerPrint) {
 	logger.Print(fmt.Sprintf("   %s\n", strings.Repeat("-", len(hostname)+7)))
 	if len(hostname) > 19 {
 		hostname = hostname[:16] + "..."

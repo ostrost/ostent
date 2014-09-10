@@ -875,7 +875,7 @@ func scripts(r *http.Request) (scripts []string) {
 	return scripts
 }
 
-func index(w http.ResponseWriter, r *http.Request) {
+func Index(w http.ResponseWriter, r *http.Request) {
 	buf, err := templates.IndexTemplate.Execute(struct {
 		Data      interface{}
 		SCRIPTS   []string

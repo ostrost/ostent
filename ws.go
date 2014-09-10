@@ -72,6 +72,7 @@ type conn struct {
 	receive chan *received
 	push    chan *indexUpdate
 	full    client
+	access  *logger
 
 	mutex      sync.Mutex
 	writemutex sync.Mutex
@@ -378,9 +379,9 @@ func (c *conn) process(rd *received) *bool {
 	sd := served{conn: c, received: rd}
 	serve := sd.ServeHTTP // sd.ServeHTTP survives req being nil
 
-	if req != nil { // the only case when req.Form is not nil
-		// a non-nil req is no-go for stdaccess anyway
-		serve = stdaccess.Constructor(sd).ServeHTTP
+	if req != nil && c.access != nil { // the only case when req.Form is not nil
+		// a non-nil req is no-go for access anyway
+		serve = c.access.Constructor(sd).ServeHTTP
 	}
 
 	w := dummyStatus{}
@@ -458,7 +459,13 @@ func (w dummyStatus) Write(b []byte) (int, error) {
 	return len(b), nil
 }
 
-func slashws(w http.ResponseWriter, req *http.Request) {
+func SlashwsFunc(access *logger) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, req *http.Request) {
+		Slashws(access, w, req)
+	}
+}
+
+func Slashws(access *logger, w http.ResponseWriter, req *http.Request) {
 	// Upgrader.Upgrade() has Origin check if .CheckOrigin is nil
 	upgrader := gorillawebsocket.Upgrader{}
 	wsconn, err := upgrader.Upgrade(w, req, nil)
@@ -476,6 +483,7 @@ func slashws(w http.ResponseWriter, req *http.Request) {
 		receive: make(chan *received, 2),
 		push:    make(chan *indexUpdate, 2),
 		full:    defaultClient(),
+		access:  access,
 	}
 	register <- c
 	defer func() {

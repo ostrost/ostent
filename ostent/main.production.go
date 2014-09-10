@@ -138,13 +138,13 @@ func main() {
 		} else {
 			go upgrade_loop()
 			go templates.InitTemplates() // preventive
-			go ostent.Serve(listen, true, nil)
+			go Serve(listen, true, nil)
 		}
 
 	} else {
 		go upgrade_loop()
 		go templates.InitTemplates() // preventive
-		go ostent.Serve(listen, true, nil)
+		go Serve(listen, true, nil)
 
 		if err := goagain.Kill(); err != nil {
 			log.Fatalln(err)

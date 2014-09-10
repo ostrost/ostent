@@ -3,7 +3,7 @@ package ostent
 import (
 	"net/http"
 
-	"github.com/rcrowley/go-tigertonic"
+	tigertonic "github.com/rcrowley/go-tigertonic"
 )
 
 type ServeMux interface {
@@ -13,12 +13,14 @@ type ServeMux interface {
 type TrieServeMux struct {
 	*tigertonic.TrieServeMux
 	constructor func(http.Handler) http.Handler
+	Recovery    recovery
 }
 
-func NewMux(constructor func(http.Handler) http.Handler) *TrieServeMux {
+func NewMux(rec recovery, constructor func(http.Handler) http.Handler) *TrieServeMux {
 	return &TrieServeMux{
 		TrieServeMux: tigertonic.NewTrieServeMux(),
 		constructor:  constructor,
+		Recovery:     rec,
 	}
 }
 
