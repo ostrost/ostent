@@ -88,7 +88,7 @@ func TestBanner(t *testing.T) {
 `,
 	}} {
 		logger := &testLogger{tester: t}
-		banner(v.listenip, v.hostname, v.addrsp, logger)
+		bannerText(v.listenip, v.hostname, v.addrsp, logger)
 		if logger.buffer != v.cmp {
 			t.Error(Mismatch{logger.buffer, v.cmp})
 		}
