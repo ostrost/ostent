@@ -1,45 +1,10 @@
 package ostent
 
 import (
-	"errors"
 	"fmt"
 	"net"
 	"testing"
 )
-
-func TestParseArgs(t *testing.T) {
-	const defport = "9050"
-	for _, v := range []struct {
-		a   string
-		cmp string
-		err error
-	}{
-		{"a:b:", "", errors.New("too many colons in address a:b:")},
-		{"localhost:nonexistent", "", errors.New("unknown port tcp/nonexistent")},
-		{"localhost", "localhost:9050", nil},
-		{"", ":9050", nil},
-		{"8001", ":8001", nil},
-		{"8001", ":8001", nil},
-		{":8001", ":8001", nil},
-		{"*:8001", ":8001", nil},
-		{"127.1:8001", "127.1:8001", nil},
-		{"127.0.0.1:8001", "127.0.0.1:8001", nil},
-		{"127.0.0.1", "127.0.0.1:" + defport, nil},
-		{"127", "127.0.0.1:" + defport, nil},
-		{"127.1", "127.1:" + defport, nil},
-	} {
-		bv := newBind(v.a, defport) // double Set, should be ok
-		if err := bv.Set(v.a); err != nil {
-			if err.Error() != v.err.Error() {
-				t.Errorf("Error: %s\nMismatch: %s\n", err, v.err)
-			}
-			continue
-		}
-		if bv.string != v.cmp {
-			t.Errorf("Mismatch: bindFlag %v == %v != %v\n", v.a, v.cmp, bv.string)
-		}
-	}
-}
 
 type testLogger struct {
 	tester *testing.T

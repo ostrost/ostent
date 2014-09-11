@@ -580,7 +580,7 @@ type IndexData struct {
 
 	DISTRIB        string
 	VERSION        string
-	PeriodDuration types.Duration
+	PeriodDuration types.Duration // default refresh value for placeholder
 
 	Client client
 
@@ -804,13 +804,13 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 	return iu
 }
 
-func indexData(req *http.Request) IndexData {
+func indexData(minrefresh types.Duration, req *http.Request) IndexData {
 	if Connections.Len() == 0 {
 		// collect when there're no active connections, so Loop does not collect
 		lastInfo.collect()
 	}
 
-	client := defaultClient()
+	client := defaultClient(minrefresh)
 	updates := getUpdates(req, &client, sendClient{}, true)
 
 	data := IndexData{
@@ -827,7 +827,7 @@ func indexData(req *http.Request) IndexData {
 		DISTRIB: DISTRIB, // value set in init()
 		VERSION: VERSION, // value from server.go
 
-		PeriodDuration: periodFlag.Duration,
+		PeriodDuration: minrefresh, // default refresh value for placeholder
 	}
 
 	if updates.DFbytes != nil {
@@ -875,13 +875,19 @@ func scripts(r *http.Request) (scripts []string) {
 	return scripts
 }
 
-func Index(w http.ResponseWriter, r *http.Request) {
+func IndexFunc(minrefresh types.Duration) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		index(minrefresh, w, r)
+	}
+}
+
+func index(minrefresh types.Duration, w http.ResponseWriter, r *http.Request) {
 	buf, err := templates.IndexTemplate.Execute(struct {
 		Data      interface{}
 		SCRIPTS   []string
 		CLASSNAME string
 	}{
-		Data:    indexData(r),
+		Data:    indexData(minrefresh, r),
 		SCRIPTS: scripts(r),
 	})
 	if err != nil {

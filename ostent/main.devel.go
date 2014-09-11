@@ -32,7 +32,7 @@ func main() {
 	go ostent.Loop()
 	// go ostent.CollectdLoop()
 
-	listen, err := net.Listen("tcp", ostent.OstentBindFlag.String())
+	listen, err := net.Listen("tcp", ostentBindFlag.String())
 	if err != nil {
 		log.Fatal(err)
 	}

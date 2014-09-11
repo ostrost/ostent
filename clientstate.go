@@ -198,13 +198,7 @@ func newseq(v types.SEQ) *types.SEQ {
 	return s
 }
 
-func newdefaultrefresh() *refresh {
-	r := new(refresh)
-	*r = refresh{Duration: periodFlag.Duration}
-	return r
-}
-
-func defaultClient() client {
+func defaultClient(minrefresh types.Duration) client {
 	cs := client{}
 
 	cs.HideMEM = newfalse()
@@ -237,13 +231,13 @@ func defaultClient() client {
 	cs.HideconfigPS = newbool(hideconfig)
 	cs.HideconfigVG = newbool(hideconfig)
 
-	//cs.RefreshGeneric = newdefaultrefresh()
-	cs.RefreshMEM = newdefaultrefresh()
-	cs.RefreshIF = newdefaultrefresh()
-	cs.RefreshCPU = newdefaultrefresh()
-	cs.RefreshDF = newdefaultrefresh()
-	cs.RefreshPS = newdefaultrefresh()
-	cs.RefreshVG = newdefaultrefresh()
+	//cs.RefreshGeneric = &refresh{Duration: minrefresh}
+	cs.RefreshMEM = &refresh{Duration: minrefresh}
+	cs.RefreshIF = &refresh{Duration: minrefresh}
+	cs.RefreshCPU = &refresh{Duration: minrefresh}
+	cs.RefreshDF = &refresh{Duration: minrefresh}
+	cs.RefreshPS = &refresh{Duration: minrefresh}
+	cs.RefreshVG = &refresh{Duration: minrefresh}
 
 	cs.psLimit = 8
 

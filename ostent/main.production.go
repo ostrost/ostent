@@ -124,7 +124,7 @@ func main() {
 
 	listen, err := goagain.Listener()
 	if err != nil {
-		listen, err = net.Listen("tcp", ostent.OstentBindFlag.String())
+		listen, err = net.Listen("tcp", ostentBindFlag.String())
 		if err != nil {
 			log.Fatalln(err)
 		}

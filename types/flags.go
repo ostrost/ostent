@@ -3,6 +3,7 @@ package types
 import (
 	"encoding/json"
 	"fmt"
+	"net"
 	"strings"
 	"time"
 )
@@ -47,5 +48,50 @@ func (pv *PeriodValue) Set(input string) error {
 		return fmt.Errorf("Should be above %s: %s", *pv.Above, v)
 	}
 	pv.Duration = Duration(v)
+	return nil
+}
+
+type BindValue struct {
+	string
+	defport string // const
+	Host    string // available after flag.Parse()
+	Port    string // available after flag.Parse()
+}
+
+func NewBindValue(defstring, defport string) BindValue {
+	bv := BindValue{defport: defport}
+	bv.Set(defstring)
+	return bv
+}
+
+// satisfying flag.Value interface
+func (bv BindValue) String() string { return string(bv.string) }
+func (bv *BindValue) Set(input string) error {
+	if input == "" {
+		bv.Port = bv.defport
+	} else {
+		if !strings.Contains(input, ":") {
+			input = ":" + input
+		}
+		var err error
+		bv.Host, bv.Port, err = net.SplitHostPort(input)
+		if err != nil {
+			return err
+		}
+		if bv.Host == "*" {
+			bv.Host = ""
+		} else if bv.Port == "127" {
+			bv.Host = "127.0.0.1"
+			bv.Port = bv.defport
+		}
+		if _, err = net.LookupPort("tcp", bv.Port); err != nil {
+			if bv.Host != "" {
+				return err
+			}
+			bv.Host, bv.Port = bv.Port, bv.defport
+		}
+	}
+
+	bv.string = bv.Host + ":" + bv.Port
 	return nil
 }

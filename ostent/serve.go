@@ -24,10 +24,11 @@ func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error
 	}
 
 	// no logger-wrapping for slashws, because it logs by itself once a query received via websocket
-	mux.Handle("GET", "/ws", recovery.ConstructorFunc(ostent.SlashwsFunc(access)))
+	mux.Handle("GET", "/ws", recovery.ConstructorFunc(ostent.SlashwsFunc(access, periodFlag.Duration)))
 
-	mux.Handle("GET", "/", chain.ThenFunc(ostent.Index))
-	mux.Handle("HEAD", "/", chain.ThenFunc(ostent.Index))
+	index := chain.ThenFunc(ostent.IndexFunc(periodFlag.Duration))
+	mux.Handle("GET", "/", index)
+	mux.Handle("HEAD", "/", index)
 
 	/* panics := func(http.ResponseWriter, *http.Request) {
 		panic(fmt.Errorf("I'm panicing"))
