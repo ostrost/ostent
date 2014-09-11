@@ -61,21 +61,23 @@ type loggerPrint interface {
 	Print(v ...interface{})
 }
 
-func Banner(listenaddr string, logger loggerPrint) {
+func Banner(listenaddr string, suffix string, logger loggerPrint) {
 	hostname, _ := getHostname()
 	var addrsp *[]net.Addr
 	if addrs, err := net.InterfaceAddrs(); err == nil {
 		addrsp = &addrs
+	} else {
+		logger.Print(fmt.Sprintf("%s\n", err))
 	}
-	bannerText(listenaddr, hostname, addrsp, logger)
+	bannerText(listenaddr, hostname, suffix, addrsp, logger)
 }
 
-func bannerText(listenaddr, hostname string, addrsp *[]net.Addr, logger loggerPrint) {
-	logger.Print(fmt.Sprintf("   %s\n", strings.Repeat("-", len(hostname)+7)))
-	if len(hostname) > 19 {
-		hostname = hostname[:16] + "..."
+func bannerText(listenaddr, hostname, suffix string, addrsp *[]net.Addr, logger loggerPrint) {
+	if limit := 32 /* width */ - 6 /* const chars */ - len(suffix); len(hostname) >= limit {
+		hostname = hostname[:limit-4] + "..."
 	}
-	logger.Print(fmt.Sprintf(" / %s ostent \\\n", hostname))
+	logger.Print(fmt.Sprintf("   %s\n", strings.Repeat("-", len(hostname)+1 /* space */ +len(suffix))))
+	logger.Print(fmt.Sprintf(" / %s %s \\\n", hostname, suffix))
 	logger.Print("+------------------------------+\n")
 
 	if h, port, err := net.SplitHostPort(listenaddr); err == nil && h == "::" && addrsp != nil {

@@ -33,7 +33,7 @@ func TestBanner(t *testing.T) {
 	}{{
 		hostname: "testhostname24charswidth",
 		listenip: "127.0.0.1",
-		cmp: `   -------------------------------
+		cmp: `   --------------------------
  / testhostname24ch... ostent \
 +------------------------------+
 | http://127.0.0.1             |
@@ -53,7 +53,7 @@ func TestBanner(t *testing.T) {
 `,
 	}} {
 		logger := &testLogger{tester: t}
-		bannerText(v.listenip, v.hostname, v.addrsp, logger)
+		bannerText(v.listenip, v.hostname, "ostent", v.addrsp, logger)
 		if logger.buffer != v.cmp {
 			t.Error(Mismatch{logger.buffer, v.cmp})
 		}

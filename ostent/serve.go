@@ -42,6 +42,6 @@ func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error
 			}
 		}
 	}
-	ostent.Banner(listener.Addr().String(), logger)
+	ostent.Banner(listener.Addr().String(), "ostent", logger)
 	return server.Serve(listener)
 }
