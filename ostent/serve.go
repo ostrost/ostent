@@ -35,13 +35,6 @@ func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error
 	}
 	mux.Handle("GET", "/panic", chain.ThenFunc(panics)) // */
 
-	if extramap != nil {
-		for path, handler := range extramap {
-			for _, METH := range []string{"HEAD", "GET", "POST"} {
-				mux.Handle(METH, path, chain.Then(handler))
-			}
-		}
-	}
 	ostent.Banner(listener.Addr().String(), "ostent", logger)
-	return server.Serve(listener)
+	return server.ServeExtra(listener, extramap)
 }

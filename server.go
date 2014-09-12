@@ -23,6 +23,17 @@ type Server struct {
 	Chain  alice.Chain
 }
 
+func (s *Server) ServeExtra(listener net.Listener, extramap Muxmap) error {
+	if extramap != nil {
+		for path, handler := range extramap {
+			for _, METH := range []string{"HEAD", "GET", "POST"} {
+				s.MUX.Handle(METH, path, s.Chain.Then(handler))
+			}
+		}
+	}
+	return s.Serve(listener)
+}
+
 func NewServer(listener net.Listener, production bool) *Server {
 	access := newLogged(production, log.New(os.Stdout, "", 0))
 	recovery := recovery(production)
