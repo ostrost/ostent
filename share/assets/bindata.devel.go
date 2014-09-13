@@ -65,11 +65,11 @@ func js_devel_vendor_min_bootstrap_3_2_0_bootstrap_min_js() ([]byte, error) {
 	)
 }
 
-// js_devel_vendor_min_headroom_0_5_0_headroom_min_js reads file data from disk. It returns an error on failure.
-func js_devel_vendor_min_headroom_0_5_0_headroom_min_js() ([]byte, error) {
+// js_devel_vendor_min_headroom_0_7_0_headroom_min_js reads file data from disk. It returns an error on failure.
+func js_devel_vendor_min_headroom_0_7_0_headroom_min_js() ([]byte, error) {
 	return bindata_read(
-		"share/assets/js/devel/vendor/min/headroom/0.5.0/headroom.min.js",
-		"js/devel/vendor/min/headroom/0.5.0/headroom.min.js",
+		"share/assets/js/devel/vendor/min/headroom/0.7.0/headroom.min.js",
+		"js/devel/vendor/min/headroom/0.7.0/headroom.min.js",
 	)
 }
 
@@ -125,7 +125,7 @@ var _bindata = map[string]func() ([]byte, error){
 	"js/devel/gen/jscript.js": js_devel_gen_jscript_js,
 	"js/devel/milk/index.js": js_devel_milk_index_js,
 	"js/devel/vendor/min/bootstrap/3.2.0/bootstrap.min.js": js_devel_vendor_min_bootstrap_3_2_0_bootstrap_min_js,
-	"js/devel/vendor/min/headroom/0.5.0/headroom.min.js": js_devel_vendor_min_headroom_0_5_0_headroom_min_js,
+	"js/devel/vendor/min/headroom/0.7.0/headroom.min.js": js_devel_vendor_min_headroom_0_7_0_headroom_min_js,
 	"js/devel/vendor/min/jquery/2.1.1/jquery-2.1.1.min.js": js_devel_vendor_min_jquery_2_1_1_jquery_2_1_1_min_js,
 	"js/devel/vendor/min/react/0.11.1/react.min.js": js_devel_vendor_min_react_0_11_1_react_min_js,
 	"robots.txt": robots_txt,
