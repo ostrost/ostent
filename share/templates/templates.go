@@ -3,6 +3,9 @@ package templates
 import (
 	"bytes"
 	"html/template"
+	"io"
+	"net/http"
+	"strconv"
 	"sync"
 
 	"github.com/rzab/amber"
@@ -79,4 +82,35 @@ func (bt *binTemplate) Execute(data interface{}) (*bytes.Buffer, error) {
 		return nil, err
 	}
 	return buf, nil
+}
+
+type httpResponse struct {
+	writer http.ResponseWriter
+	buf    *bytes.Buffer
+	err    error
+}
+
+func (bt *binTemplate) Response(w http.ResponseWriter, data interface{}) httpResponse {
+	r := httpResponse{writer: w}
+	r.buf, r.err = bt.Execute(data)
+	return r
+}
+
+func (r *httpResponse) SetHeader(name, value string) {
+	if r.err != nil {
+		return
+	}
+	r.writer.Header().Set(name, value)
+}
+
+func (r *httpResponse) SetContentLength() {
+	r.SetHeader("Content-Length", strconv.Itoa(r.buf.Len()))
+}
+
+func (r *httpResponse) Send() {
+	if r.err != nil {
+		http.Error(r.writer, r.err.Error(), http.StatusInternalServerError)
+	} else {
+		io.Copy(r.writer, r.buf) // or w.Write(buf.Bytes())
+	}
 }

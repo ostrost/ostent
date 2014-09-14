@@ -4,12 +4,10 @@ import (
 	"container/ring"
 	"fmt"
 	"html/template"
-	"io"
 	"net/http"
 	"net/url"
 	"os/user"
 	"sort"
-	"strconv"
 	"strings"
 	"sync"
 
@@ -882,7 +880,7 @@ func IndexFunc(minrefresh types.Duration) func(http.ResponseWriter, *http.Reques
 }
 
 func index(minrefresh types.Duration, w http.ResponseWriter, r *http.Request) {
-	buf, err := templates.IndexTemplate.Execute(struct {
+	response := templates.IndexTemplate.Response(w, struct {
 		Data      interface{}
 		SCRIPTS   []string
 		CLASSNAME string
@@ -890,13 +888,7 @@ func index(minrefresh types.Duration, w http.ResponseWriter, r *http.Request) {
 		Data:    indexData(minrefresh, r),
 		SCRIPTS: scripts(r),
 	})
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "text/html")
-	w.Header().Set("Content-Length", strconv.Itoa(buf.Len())) // len(buf.String())
-
-	io.Copy(w, buf) // or w.Write(buf.Bytes())
+	response.SetHeader("Content-Type", "text/html")
+	response.SetContentLength()
+	response.Send()
 }
