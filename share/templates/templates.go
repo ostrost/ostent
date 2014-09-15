@@ -8,34 +8,35 @@ import (
 	"strconv"
 	"sync"
 
+	// "github.com/ostrost/ostent/templates"
 	"github.com/rzab/amber"
 )
 
 var (
-	UsePercentTemplate  = binTemplate{filename: "usepercent.html"}
-	TooltipableTemplate = binTemplate{filename: "tooltipable.html"}
-	IndexTemplate       = binTemplate{filename: "index.html"}
+	UsePercentTemplate  = BinTemplate{filename: "usepercent.html"}
+	TooltipableTemplate = BinTemplate{filename: "tooltipable.html"}
+	IndexTemplate       = BinTemplate{filename: "index.html"}
 )
 
 func InitTemplates() {
-	UsePercentTemplate.init()
-	TooltipableTemplate.init()
-	IndexTemplate.init()
+	UsePercentTemplate.Init()
+	TooltipableTemplate.Init()
+	IndexTemplate.Init()
 }
 
-type binTemplate struct {
+type BinTemplate struct {
 	template *template.Template
 	filename string
 	mutex    sync.Mutex
 }
 
-func (bt *binTemplate) init() {
+func (bt *BinTemplate) Init() {
 	bt.mutex.Lock()
 	defer bt.mutex.Unlock()
 	bt.initUnlocked()
 }
 
-func (bt *binTemplate) initUnlocked() { // panics (explicit and template.Must) on any error
+func (bt *BinTemplate) initUnlocked() { // panics (explicit and template.Must) on any error
 	text, err := Asset(bt.filename)
 	if err != nil {
 		panic(err)
@@ -59,7 +60,7 @@ func (bt *binTemplate) initUnlocked() { // panics (explicit and template.Must) o
 	bt.template = t
 }
 
-func (bt *binTemplate) Execute(data interface{}) (*bytes.Buffer, error) {
+func (bt *BinTemplate) Execute(data interface{}) (*bytes.Buffer, error) {
 	var (
 		filename string
 		clone    *template.Template
@@ -84,33 +85,33 @@ func (bt *binTemplate) Execute(data interface{}) (*bytes.Buffer, error) {
 	return buf, nil
 }
 
-type httpResponse struct {
+type templateWriter struct {
 	writer http.ResponseWriter
 	buf    *bytes.Buffer
 	err    error
 }
 
-func (bt *binTemplate) Response(w http.ResponseWriter, data interface{}) httpResponse {
-	r := httpResponse{writer: w}
-	r.buf, r.err = bt.Execute(data)
-	return r
+func (bt *BinTemplate) Response(w http.ResponseWriter, data interface{}) templateWriter {
+	tw := templateWriter{writer: w}
+	tw.buf, tw.err = bt.Execute(data)
+	return tw
 }
 
-func (r *httpResponse) SetHeader(name, value string) {
-	if r.err != nil {
+func (tw *templateWriter) SetHeader(name, value string) {
+	if tw.err != nil {
 		return
 	}
-	r.writer.Header().Set(name, value)
+	tw.writer.Header().Set(name, value)
 }
 
-func (r *httpResponse) SetContentLength() {
-	r.SetHeader("Content-Length", strconv.Itoa(r.buf.Len()))
+func (tw *templateWriter) SetContentLength() {
+	tw.SetHeader("Content-Length", strconv.Itoa(tw.buf.Len()))
 }
 
-func (r *httpResponse) Send() {
-	if r.err != nil {
-		http.Error(r.writer, r.err.Error(), http.StatusInternalServerError)
+func (tw *templateWriter) Send() {
+	if tw.err != nil {
+		http.Error(tw.writer, tw.err.Error(), http.StatusInternalServerError)
 	} else {
-		io.Copy(r.writer, r.buf) // or w.Write(buf.Bytes())
+		io.Copy(tw.writer, tw.buf) // or w.Write(buf.Bytes())
 	}
 }

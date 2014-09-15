@@ -881,7 +881,7 @@ func IndexFunc(minrefresh types.Duration) func(http.ResponseWriter, *http.Reques
 
 func index(minrefresh types.Duration, w http.ResponseWriter, r *http.Request) {
 	response := templates.IndexTemplate.Response(w, struct {
-		Data      interface{}
+		Data      IndexData
 		SCRIPTS   []string
 		CLASSNAME string
 	}{
