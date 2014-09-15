@@ -68,7 +68,7 @@ func (bt *BinTemplate) newtemplate(newfunc func(string) *template.Template, file
 	return t.Parse(string(text))
 }
 
-func (bt *BinTemplate) Execute(data interface{}) (*bytes.Buffer, error) {
+func (bt *BinTemplate) CloneExecute(data interface{}) (*bytes.Buffer, error) {
 	var (
 		filename string
 		clone    *template.Template
@@ -103,7 +103,7 @@ type templateWriter struct {
 
 func (bt *BinTemplate) Response(w http.ResponseWriter, data interface{}) templateWriter {
 	tw := templateWriter{writer: w}
-	tw.buf, tw.err = bt.Execute(data)
+	tw.buf, tw.err = bt.CloneExecute(data)
 	return tw
 }
 

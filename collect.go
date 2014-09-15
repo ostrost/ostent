@@ -3,11 +3,12 @@ package ostent
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"os"
 	"strconv"
 	"strings"
 
-	"github.com/ostrost/ostent/share/templates"
+	"github.com/ostrost/ostent/templates"
 	"github.com/ostrost/ostent/types"
 	sigar "github.com/rzab/gosigar"
 )
@@ -49,13 +50,17 @@ func getGeneric(CH chan<- generic) {
 	CH <- g
 }
 
+var UsePercentTemplate *templates.BinTemplate
+
 func _getmem(kind string, in sigar.Swap) types.Memory {
 	total, approxtotal, _ := humanBandback(in.Total)
 	used, approxused, _ := humanBandback(in.Used)
 	usepercent := percent(approxused, approxtotal)
 
 	html := "ERROR"
-	if buf, err := templates.UsePercentTemplate.Execute(struct {
+	if TooltipableTemplate == nil {
+		log.Printf("TooltipableTemplate hasn't been set")
+	} else if buf, err := UsePercentTemplate.CloneExecute(struct {
 		Class, Value, CLASSNAME string
 	}{
 		Value: strconv.Itoa(int(usepercent)), // without "%"

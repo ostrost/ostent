@@ -8,7 +8,13 @@ import (
 	"github.com/ostrost/ostent"
 	"github.com/ostrost/ostent/assets"
 	shareassets "github.com/ostrost/ostent/share/assets"
+	sharetemplates "github.com/ostrost/ostent/share/templates"
 )
+
+func init() {
+	ostent.UsePercentTemplate = &sharetemplates.UsePercentTemplate
+	ostent.TooltipableTemplate = &sharetemplates.TooltipableTemplate
+}
 
 func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error {
 	server := ostent.NewServer(listener, production)
@@ -27,7 +33,7 @@ func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error
 	// no logger-wrapping for slashws, because it logs by itself once a query received via websocket
 	mux.Handle("GET", "/ws", recovery.ConstructorFunc(ostent.SlashwsFunc(access, periodFlag.Duration)))
 
-	index := chain.ThenFunc(ostent.IndexFunc(shareassets.JsAssetNames(false), periodFlag.Duration))
+	index := chain.ThenFunc(ostent.IndexFunc(sharetemplates.IndexTemplate, shareassets.JsAssetNames(false), periodFlag.Duration))
 	mux.Handle("GET", "/", index)
 	mux.Handle("HEAD", "/", index)
 

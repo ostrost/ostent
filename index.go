@@ -4,6 +4,7 @@ import (
 	"container/ring"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"net/url"
 	"os/user"
@@ -12,7 +13,7 @@ import (
 	"sync"
 
 	"github.com/ostrost/ostent/getifaddrs"
-	"github.com/ostrost/ostent/share/templates"
+	"github.com/ostrost/ostent/templates"
 	"github.com/ostrost/ostent/types"
 	sigar "github.com/rzab/gosigar"
 )
@@ -266,11 +267,15 @@ func valuesSet(req *http.Request, base url.Values, pname string, bimap types.Bis
 	return bimap.DefaultSeq
 }
 
+var TooltipableTemplate *templates.BinTemplate
+
 func tooltipable(limit int, full string) template.HTML {
 	html := "ERROR"
 	if len(full) > limit {
 		short := full[:limit]
-		if buf, err := templates.TooltipableTemplate.Execute(struct {
+		if TooltipableTemplate == nil {
+			log.Printf("tooltipableTemplate hasn't been set")
+		} else if buf, err := TooltipableTemplate.CloneExecute(struct {
 			Full, Short string
 		}{
 			Full:  full,
@@ -870,14 +875,14 @@ func fqscripts(list []string, r *http.Request) (scripts []string) {
 	return scripts
 }
 
-func IndexFunc(scripts []string, minrefresh types.Duration) func(http.ResponseWriter, *http.Request) {
+func IndexFunc(template templates.BinTemplate, scripts []string, minrefresh types.Duration) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		index(scripts, minrefresh, w, r)
+		index(template, scripts, minrefresh, w, r)
 	}
 }
 
-func index(scripts []string, minrefresh types.Duration, w http.ResponseWriter, r *http.Request) {
-	response := templates.IndexTemplate.Response(w, struct {
+func index(template templates.BinTemplate, scripts []string, minrefresh types.Duration, w http.ResponseWriter, r *http.Request) {
+	response := template.Response(w, struct {
 		Data      IndexData
 		SCRIPTS   []string
 		CLASSNAME string
