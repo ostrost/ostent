@@ -6,7 +6,8 @@ import (
 	"os"
 
 	"github.com/ostrost/ostent"
-	"github.com/ostrost/ostent/share/assets"
+	"github.com/ostrost/ostent/assets"
+	shareassets "github.com/ostrost/ostent/share/assets"
 )
 
 func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error {
@@ -17,8 +18,8 @@ func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error
 	recovery := mux.Recovery
 
 	logger := log.New(os.Stderr, "[ostent] ", 0)
-	for _, path := range assets.AssetNames() {
-		hf := chain.Then(ostent.ServeContentFunc("share/assets", path, logger))
+	for _, path := range shareassets.AssetNames() {
+		hf := chain.Then(ostent.ServeContentFunc("share/assets", assets.UncompressedAssetFunc(shareassets.Asset), path, logger))
 		mux.Handle("GET", "/"+path, hf)
 		mux.Handle("HEAD", "/"+path, hf)
 	}
@@ -26,7 +27,7 @@ func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error
 	// no logger-wrapping for slashws, because it logs by itself once a query received via websocket
 	mux.Handle("GET", "/ws", recovery.ConstructorFunc(ostent.SlashwsFunc(access, periodFlag.Duration)))
 
-	index := chain.ThenFunc(ostent.IndexFunc(periodFlag.Duration))
+	index := chain.ThenFunc(ostent.IndexFunc(shareassets.JsAssetNames(false), periodFlag.Duration))
 	mux.Handle("GET", "/", index)
 	mux.Handle("HEAD", "/", index)
 

@@ -35,4 +35,6 @@ func ModTime(prefix, path string) (time.Time, error) {
 	return fi.ModTime(), nil
 }
 
-var Uncompressedasset = Asset
+func UncompressedAssetFunc(Readfunc func(string) ([]byte, error)) func(string) ([]byte, error) {
+	return Readfunc
+}

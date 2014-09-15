@@ -12,7 +12,6 @@ import (
 	"sync"
 
 	"github.com/ostrost/ostent/getifaddrs"
-	"github.com/ostrost/ostent/share/assets"
 	"github.com/ostrost/ostent/share/templates"
 	"github.com/ostrost/ostent/types"
 	sigar "github.com/rzab/gosigar"
@@ -857,14 +856,12 @@ func statusLine(status int) string {
 
 func init() {
 	DISTRIB = getDistrib()
-	SCRIPTS = assets.JsAssetNames()
 }
 
 var DISTRIB string
-var SCRIPTS []string
 
-func scripts(r *http.Request) (scripts []string) {
-	for _, s := range SCRIPTS {
+func fqscripts(list []string, r *http.Request) (scripts []string) {
+	for _, s := range list {
 		if !strings.HasPrefix(string(s), "//") {
 			s = "//" + r.Host + s
 		}
@@ -873,20 +870,20 @@ func scripts(r *http.Request) (scripts []string) {
 	return scripts
 }
 
-func IndexFunc(minrefresh types.Duration) func(http.ResponseWriter, *http.Request) {
+func IndexFunc(scripts []string, minrefresh types.Duration) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		index(minrefresh, w, r)
+		index(scripts, minrefresh, w, r)
 	}
 }
 
-func index(minrefresh types.Duration, w http.ResponseWriter, r *http.Request) {
+func index(scripts []string, minrefresh types.Duration, w http.ResponseWriter, r *http.Request) {
 	response := templates.IndexTemplate.Response(w, struct {
 		Data      IndexData
 		SCRIPTS   []string
 		CLASSNAME string
 	}{
 		Data:    indexData(minrefresh, r),
-		SCRIPTS: scripts(r),
+		SCRIPTS: fqscripts(scripts, r),
 	})
 	response.SetHeader("Content-Type", "text/html")
 	response.SetContentLength()

@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/justinas/alice"
-	"github.com/ostrost/ostent/share/assets"
+	"github.com/ostrost/ostent/assets"
 )
 
 // Muxmap is a type of a map of pattern to HandlerFunc.
@@ -50,10 +50,10 @@ func NewServer(listener net.Listener, production bool) *Server {
 	}
 }
 
-// ServeContentFunc does http.ServeContent the asset by path
-func ServeContentFunc(prefix, path string, logger *log.Logger) http.HandlerFunc {
+// ServeContentFunc does http.ServeContent the Readfunc (Asset or UncompressedAsset) result
+func ServeContentFunc(prefix string, Readfunc func(string) ([]byte, error), path string, logger *log.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		text, err := assets.Uncompressedasset(path)
+		text, err := Readfunc(path)
 		if err != nil {
 			panic(err)
 		}

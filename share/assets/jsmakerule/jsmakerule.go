@@ -18,7 +18,7 @@ func main() {
 	target := flag.Arg(0)
 
 	var lines []string
-	for _, line := range assets.JsAssetNames() {
+	for _, line := range assets.JsAssetNames(false) {
 		lines = append(lines, filepath.Join(packageName, line))
 	}
 

@@ -26,16 +26,14 @@ func (sa sortassets) Less(i, j int) bool {
 			jj = w
 		}
 	}
-	// fmt.Printf("Less %t ((%d) %d vs %d) %s vs %s\n", ii < jj, sa.Len(), ii, jj, sa.names[i], sa.names[j])
 	return ii < jj
 }
 
 func (sa sortassets) Swap(i, j int) {
-	// fmt.Printf("Swap %d and %d; %s and %s\n", i, j, sa.names[i], sa.names[j])
 	sa.names[i], sa.names[j] = sa.names[j], sa.names[i]
 }
 
-func JsAssetNames() []string {
+func JsAssetNames(develreact bool) []string {
 	sa := sortassets{
 		substr_indexfrom: []string{
 			"jquery",
@@ -47,7 +45,6 @@ func JsAssetNames() []string {
 			"milk", // from coffee script
 		},
 	}
-	develreact := false
 
 	for _, name := range AssetNames() {
 		const dotjs = ".js"
