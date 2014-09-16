@@ -95,7 +95,7 @@ endif
 
 # these four rules are actually independant of $(destbin) and could be set when the goal is `init', but we're keeping it simple
 share/assets/js/production/ugly/index.js: # the prerequisites from included jsassets.d
-	if type uglifyjs >/dev/null; then cat $^ | uglifyjs -c -o $@ -; fi
+	if type uglifyjs >/dev/null; then cat /dev/null $^ | uglifyjs -c -o $@ -; fi
 share/assets/css/index.css: share/style/index.scss
 	if type sass >/dev/null; then sass $< $@; fi
 share/assets/js/devel/milk/index.js: share/coffee/index.coffee
