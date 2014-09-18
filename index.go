@@ -2,9 +2,11 @@ package ostent
 
 import (
 	"container/ring"
+	"errors"
 	"fmt"
 	"html/template"
 	"log"
+	"math"
 	"net/http"
 	"net/url"
 	"os/user"
@@ -487,6 +489,19 @@ func push(ff **five, v int) {
 		f.max = v
 	}
 
+	if f.Len() != 0 {
+		prev := f.Prev().Value
+		if prev != nil {
+			// Don't push if the bars for the current and previous are equal
+
+			i, _, e1 := f.bar(prev.(int))
+			j, _, e2 := f.bar(v)
+			if e1 == nil && e2 == nil && i == j {
+				return
+			}
+		}
+	}
+
 	r := f.Move(1)
 	r.Move(4).Value = v
 	f.Ring = r // gc please
@@ -523,21 +538,50 @@ func push(ff **five, v int) {
 	}
 }
 
-func (f five) spark() string {
+var bARS = []string{
+	"▁",
+	"▂",
+	"▃",
+	// "▄", // looks bad in browsers
+	"▅",
+	"▆",
+	"▇",
+	// "█", // looks bad in browsers
+}
+
+func (f five) bar(v int) (int, string, error) {
 	if f.max == -1 || f.min == -1 { // || f.max == f.min {
-		return ""
+		return -1, "", errors.New("Unknown min or max")
 	}
 	spread := f.max - f.min
 
-	bars := []string{
-		"▁",
-		"▂",
-		"▃",
-		// "▄", // looks bad in browsers
-		"▅",
-		"▆",
-		"▇",
-		// "█", // looks bad in browsers
+	fi := 0.0
+	if spread != 0 {
+		// fi = float64(v-f.min) / float64(spread)
+		fi = float64(f.round(v)-float64(f.min)) / float64(spread)
+		if fi > 1.0 {
+			// panic("impossible") // ??
+			fi = 1.0
+		}
+	}
+	i := int(round(fi * float64(len(bARS)-1)))
+	return i, bARS[i], nil
+}
+
+func (f five) round(v int) float64 {
+	unit := float64(f.max-f.min) /* spread */ / float64(len(bARS)-1)
+	times := round((float64(v) - float64(f.min)) / unit)
+	return float64(f.min) + unit*times
+}
+
+func round(val float64) float64 {
+	_, d := math.Modf(val)
+	return map[bool]func(float64) float64{true: math.Ceil, false: math.Floor}[d >= 0.5](val)
+}
+
+func (f five) spark() string {
+	if f.max == -1 || f.min == -1 { // || f.max == f.min {
+		return ""
 	}
 
 	s := ""
@@ -545,17 +589,9 @@ func (f five) spark() string {
 		if o == nil {
 			return
 		}
-		v := o.(int)
-		fi := 0.0
-		if spread != 0 {
-			fi = float64(v-f.min) / float64(spread)
-			if fi > 1.0 {
-				// panic("impossible") // ??
-				fi = 1.0
-			}
+		if _, c, err := f.bar(o.(int)); err == nil {
+			s += c
 		}
-		i := int(fi * float64(len(bars)-1))
-		s += bars[i]
 	})
 	return s
 }
@@ -667,8 +703,8 @@ func (la *last) collect() {
 	la.Generic.IP = ii.IP
 	la.Interfaces = ii.List
 
-	// push(&la.lastfive.LA1, la.Generic.la1)
-	// la.Generic.LA1spark = la.lastfive.LA1.spark()
+	push(&la.lastfive.LA1, la.Generic.la1)
+	la.Generic.LA1spark = la.lastfive.LA1.spark()
 
 	/* delta, isdelta := la.cpuListDelta()
 	for i, core := range delta.List {
@@ -732,7 +768,7 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 
 		if true { // client.RefreshGeneric.refresh(forcerefresh)
 			g := lastInfo.Generic
-			// g.LA = g.LA1spark + " " + g.LA
+			g.LA = g.LA1spark + " " + g.LA
 			iu.Generic = &g // &lastInfo.Generic
 		}
 		if !*client.HideMEM && client.RefreshMEM.refresh(forcerefresh) {
