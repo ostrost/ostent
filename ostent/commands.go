@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/ostrost/ostent"
 	"github.com/ostrost/ostent/share/assets"
@@ -22,7 +23,7 @@ func extractAssets() {
 	if _, err := os.Stat(dest); err == nil {
 		logger.Fatalf("%s: File exists\n", dest)
 	}
-	logger.fatal(os.Mkdir(dest, os.ModePerm))
+	logger.fatalif(os.Mkdir(dest, os.ModePerm))
 	for _, path := range assets.AssetNames() {
 		text, err := assets.Asset(path)
 		if err != nil {
@@ -32,15 +33,14 @@ func extractAssets() {
 		full := filepath.Join(dest, path)
 		dir := filepath.Dir(full)
 		if _, err := os.Stat(dir); err != nil {
-			logger.fatal(os.MkdirAll(dir, os.ModePerm))
+			logger.fatalif(os.MkdirAll(dir, os.ModePerm))
 		}
 
 		file, err := os.Create(full)
-		logger.fatal(err)
+		logger.fatalif(err)
 
-		if _, err := file.Write(text); err != nil {
-			logger.fatal(err)
-		}
+		_, err = file.Write(text)
+		logger.fatalif(err)
 		file.Close()
 
 		gz := len(text) > 1024
@@ -49,12 +49,12 @@ func extractAssets() {
 		}
 
 		gzfile, err := os.Create(full + ".gz")
-		logger.fatal(err)
+		logger.fatalif(err)
 
 		gzwriter := gzip.NewWriter(gzfile)
-		if _, err := gzwriter.Write(text); err != nil {
-			logger.fatal(err)
-		}
+		_, err = gzwriter.Write(text)
+		logger.fatalif(err)
+
 		gzwriter.Close()
 		gzfile.Close()
 	}
@@ -64,28 +64,44 @@ type localLog struct {
 	*log.Logger
 }
 
-func (l *localLog) fatal(err error) {
+func (l *localLog) fatalif(err error) {
 	if err != nil {
 		l.Fatalln(err)
 	}
 }
 
-type command struct{}
-
-func (c *command) Run() {
-	if c == nil {
-		log.Fatalf("No such command")
-	}
-	extractAssets()
+func init() {
+	AddCommand("extract-assets", extractAssets)
 }
 
-var commands = map[string]*command{
-	"extract-assets": &command{},
+type command func()
+
+var (
+	comutex  sync.Mutex
+	commands = make(map[string]command)
+)
+
+func AddCommand(name string, fun func()) {
+	comutex.Lock()
+	defer comutex.Unlock()
+	commands[name] = fun
 }
 
-func argCommand() (*command, bool) {
+func ArgCommand() command {
 	if flag.NArg() == 0 {
-		return nil, false
+		return nil
 	}
-	return commands[flag.Arg(0)], true
+	name := flag.Arg(0)
+	enoent := func() {
+		log.Fatalln("%s: No such command", name)
+	}
+	if name == "" {
+		return enoent
+	}
+	comutex.Lock()
+	defer comutex.Unlock()
+	if fun, ok := commands[name]; ok {
+		return fun
+	}
+	return enoent
 }

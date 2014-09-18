@@ -18,8 +18,8 @@ func main() {
 	flag.Parse()
 
 	// MAYBE the only command extract-assets is for production only
-	if command, ok := argCommand(); ok {
-		command.Run()
+	if command := ArgCommand(); command != nil {
+		command()
 		return
 	}
 
