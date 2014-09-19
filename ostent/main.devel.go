@@ -11,6 +11,7 @@ import (
 	"os"
 
 	"github.com/ostrost/ostent"
+	"github.com/ostrost/ostent/commands"
 	"github.com/ostrost/ostent/share/templates"
 )
 
@@ -18,7 +19,7 @@ func main() {
 	flag.Parse()
 
 	// MAYBE the only command extract-assets is for production only
-	if command := ArgCommand(); command != nil {
+	if command := commands.ArgCommand(); command != nil {
 		command()
 		return
 	}

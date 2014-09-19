@@ -19,6 +19,7 @@ import (
 
 	update "github.com/inconshreveable/go-update"
 	"github.com/ostrost/ostent"
+	"github.com/ostrost/ostent/commands"
 	"github.com/ostrost/ostent/share/templates"
 	"github.com/rcrowley/goagain"
 )
@@ -106,7 +107,7 @@ func main() {
 	upgradelater := flag.Bool("upgradelater", false, "Upgrade later")
 	flag.Parse()
 
-	if command := ArgCommand(); command != nil {
+	if command := commands.ArgCommand(); command != nil {
 		command()
 		return
 	}
