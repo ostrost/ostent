@@ -107,8 +107,7 @@ func main() {
 	upgradelater := flag.Bool("upgradelater", false, "Upgrade later")
 	flag.Parse()
 
-	if command := commands.ArgCommand(); command != nil {
-		command()
+	if errd := commands.ArgCommands(); errd {
 		return
 	}
 

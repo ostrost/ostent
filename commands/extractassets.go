@@ -2,6 +2,7 @@ package commands
 
 import (
 	"compress/gzip"
+	"flag"
 	"log"
 	"os"
 	"path/filepath"
@@ -10,12 +11,28 @@ import (
 	"github.com/ostrost/ostent/share/assets"
 )
 
+func newAssetsExtract(fs *flag.FlagSet, arguments []string) (runnable, error, []string) {
+	ae := assetsExtract{logger: &loggerWriter{log.New(os.Stderr,
+		"[ostent extract-assets] ", log.LstdFlags)}}
+	fs.SetOutput(ae.logger)
+	err := fs.Parse(arguments)
+	return ae, err, fs.Args()
+}
+
+type assetsExtract struct {
+	logger *loggerWriter
+}
+
+func (ae assetsExtract) Run() {
+	extractAssets(ae.logger.Logger)
+}
+
 // extractAssets into `ostent.VERSION' dir:
 // - the dir is created, otherwise bails out
 // - every asset is saved as a file
 // - every asset is gzipped saved as a file + .gz if it's size is above threshold
-func extractAssets() {
-	logger := localLog{log.New(os.Stderr, "[ostent extract-assets] ", log.LstdFlags)}
+func extractAssets(loglogger *log.Logger) {
+	logger := localLog{loglogger}
 
 	dest := ostent.VERSION
 	if _, err := os.Stat(dest); err == nil {
@@ -69,5 +86,5 @@ func (l *localLog) fatalif(err error) {
 }
 
 func init() {
-	AddCommand("extract-assets", extractAssets)
+	AddCommand("extract-assets", newAssetsExtract)
 }
