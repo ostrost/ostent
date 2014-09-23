@@ -1,3 +1,5 @@
+// !build production
+
 package commands
 
 import (
@@ -11,19 +13,19 @@ import (
 	"github.com/ostrost/ostent/share/assets"
 )
 
-func newAssetsExtract(fs *flag.FlagSet, arguments []string) (runnable, error, []string) {
+func newAssetsExtract(fs *flag.FlagSet, arguments []string) (sub, error, []string) {
 	ae := assetsExtract{logger: &loggerWriter{log.New(os.Stderr,
 		"[ostent extract-assets] ", log.LstdFlags)}}
 	fs.SetOutput(ae.logger)
 	err := fs.Parse(arguments)
-	return ae, err, fs.Args()
+	return ae.run, err, fs.Args()
 }
 
 type assetsExtract struct {
 	logger *loggerWriter
 }
 
-func (ae assetsExtract) Run() {
+func (ae assetsExtract) run() {
 	extractAssets(ae.logger.Logger)
 }
 

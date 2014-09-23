@@ -6,56 +6,54 @@ import (
 	"sync"
 )
 
-type runnable interface {
-	Run()
-}
+type sub func()
 
-type commandMaker func(*flag.FlagSet, []string) (runnable, error, []string)
+type makeSub func(*flag.FlagSet, []string) (sub, error, []string)
 
 var (
 	comutex  sync.Mutex
-	COMMANDS = make(map[string]commandMaker)
+	COMMANDS = make(map[string]makeSub)
 )
 
-func AddCommand(name string, fun commandMaker) {
+func AddCommand(name string, makes makeSub) {
 	comutex.Lock()
 	defer comutex.Unlock()
-	COMMANDS[name] = fun
+	COMMANDS[name] = makes
 }
 
-func parseCommand(runs []runnable, args []string) ([]runnable, bool) {
+func parseCommand(subs []sub, args []string) ([]sub, bool) {
 	if len(args) == 0 || args[0] == "" {
-		return runs, false
+		return subs, false
 	}
 	name := args[0]
 	if ctor, ok := COMMANDS[name]; ok {
 		fs := flag.NewFlagSet(name, flag.ContinueOnError)
-		if run, err, nextargs := ctor(fs, args[1:]); err == nil {
-			return parseCommand(append(runs, run), nextargs)
+		if sub, err, nextargs := ctor(fs, args[1:]); err == nil {
+			return parseCommand(append(subs, sub), nextargs)
 		} // else { /* log.Printf("%s: %s\n", name, err) // printed already by flag package // */ }
 	} else {
 		log.Fatalf("%s: No such command\n", name)
 	}
-	return runs, true
+	return subs, true
 }
 
-func parseCommands() ([]runnable, bool) {
+func parseCommands() ([]sub, bool) {
 	comutex.Lock()
 	defer comutex.Unlock()
-	return parseCommand([]runnable{}, flag.Args())
+	return parseCommand([]sub{}, flag.Args())
 }
 
 // true is when to abort
 func ArgCommands() bool {
-	runs, errd := parseCommands()
+	subs, errd := parseCommands()
 	if errd {
 		return true
 	}
-	if len(runs) == 0 {
+	if len(subs) == 0 {
 		return false
 	}
-	for _, cmd := range runs {
-		cmd.Run()
+	for _, sub := range subs {
+		sub()
 	}
 	return true
 }
