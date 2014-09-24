@@ -8,6 +8,8 @@ import (
 	"log"
 	"net/http/pprof"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/ostrost/ostent"
 	"github.com/ostrost/ostent/commands"
@@ -17,6 +19,7 @@ import (
 func main() {
 	webserver := commands.FlagSetNewWebserver(flag.CommandLine)
 	flag.Parse()
+	defer commands.Defaults()()
 
 	if errd := commands.ArgCommands(); errd { // explicit commands
 		return
@@ -35,10 +38,28 @@ func main() {
 	go templates.InitTemplates() // ServeFunc; NB after chdir
 
 	listen := webserver.NetListen()
-	log.Fatal(Serve(listen, false, ostent.Muxmap{
-		"/debug/pprof/{name}":  pprof.Index,
-		"/debug/pprof/cmdline": pprof.Cmdline,
-		"/debug/pprof/profile": pprof.Profile,
-		"/debug/pprof/symbol":  pprof.Symbol,
-	}))
+	errch := make(chan error, 2)
+	go func(ch chan<- error) {
+		ch <- Serve(listen, false, ostent.Muxmap{
+			"/debug/pprof/{name}":  pprof.Index,
+			"/debug/pprof/cmdline": pprof.Cmdline,
+			"/debug/pprof/profile": pprof.Profile,
+			"/debug/pprof/symbol":  pprof.Symbol,
+		})
+	}(errch)
+	sigch := make(chan os.Signal, 2)
+	signal.Notify(sigch,
+		syscall.SIGINT,
+		syscall.SIGQUIT,
+		syscall.SIGTERM,
+	)
+wait:
+	for {
+		select {
+		case _ = <-sigch:
+			break wait
+		case err := <-errch:
+			log.Fatal(err)
+		}
+	}
 }

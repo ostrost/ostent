@@ -24,6 +24,7 @@ func main() {
 	upgrade := commands.FlagSetNewUpgrade(flag.CommandLine)
 	webserver := commands.FlagSetNewWebserver(flag.CommandLine)
 	flag.Parse()
+	defer commands.Defaults()()
 
 	if errd := commands.ArgCommands(); errd { // explicit commands
 		return

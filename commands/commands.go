@@ -7,18 +7,56 @@ import (
 )
 
 type sub func()
+type deferred func()
+
+type deferrerMaker interface {
+	MakeDeferrer() deferred
+}
 
 type makeSub func(*flag.FlagSet, []string) (sub, error, []string)
 
 var (
-	comutex  sync.Mutex
-	COMMANDS = make(map[string]makeSub)
+	commands = struct {
+		mutex  sync.Mutex
+		mapsub map[string]makeSub
+	}{
+		mapsub: make(map[string]makeSub),
+	}
+
+	defaults = struct {
+		mutex  sync.Mutex
+		mapdef map[string]deferrerMaker
+	}{
+		mapdef: make(map[string]deferrerMaker),
+	}
 )
 
 func AddCommand(name string, makes makeSub) {
-	comutex.Lock()
-	defer comutex.Unlock()
-	COMMANDS[name] = makes
+	commands.mutex.Lock()
+	defer commands.mutex.Unlock()
+	commands.mapsub[name] = makes
+}
+
+func AddDefault(name string, def deferrerMaker) {
+	defaults.mutex.Lock()
+	defer defaults.mutex.Unlock()
+	defaults.mapdef[name] = def
+}
+
+func Defaults() deferred {
+	defaults.mutex.Lock()
+	defer defaults.mutex.Unlock()
+	finish := []deferred{}
+	for _, ding := range defaults.mapdef {
+		if fin := ding.MakeDeferrer(); fin != nil {
+			finish = append(finish, fin)
+		}
+	}
+	return func() {
+		for _, fin := range finish {
+			fin()
+		}
+	}
 }
 
 func parseCommand(subs []sub, args []string) ([]sub, bool) {
@@ -26,7 +64,7 @@ func parseCommand(subs []sub, args []string) ([]sub, bool) {
 		return subs, false
 	}
 	name := args[0]
-	if ctor, ok := COMMANDS[name]; ok {
+	if ctor, ok := commands.mapsub[name]; ok {
 		fs := flag.NewFlagSet(name, flag.ContinueOnError)
 		if sub, err, nextargs := ctor(fs, args[1:]); err == nil {
 			return parseCommand(append(subs, sub), nextargs)
@@ -38,8 +76,8 @@ func parseCommand(subs []sub, args []string) ([]sub, bool) {
 }
 
 func parseCommands() ([]sub, bool) {
-	comutex.Lock()
-	defer comutex.Unlock()
+	commands.mutex.Lock()
+	defer commands.mutex.Unlock()
 	return parseCommand([]sub{}, flag.Args())
 }
 
