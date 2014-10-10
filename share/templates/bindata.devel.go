@@ -25,19 +25,19 @@ func index_html() ([]byte, error) {
 	)
 }
 
-// usepercent_html reads file data from disk. It returns an error on failure.
-func usepercent_html() ([]byte, error) {
-	return bindata_read(
-		"share/templates/usepercent.html",
-		"usepercent.html",
-	)
-}
-
 // tooltipable_html reads file data from disk. It returns an error on failure.
 func tooltipable_html() ([]byte, error) {
 	return bindata_read(
 		"share/templates/tooltipable.html",
 		"tooltipable.html",
+	)
+}
+
+// usepercent_html reads file data from disk. It returns an error on failure.
+func usepercent_html() ([]byte, error) {
+	return bindata_read(
+		"share/templates/usepercent.html",
+		"usepercent.html",
 	)
 }
 
@@ -64,6 +64,6 @@ func AssetNames() []string {
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() ([]byte, error){
 	"index.html": index_html,
-	"usepercent.html": usepercent_html,
 	"tooltipable.html": tooltipable_html,
+	"usepercent.html": usepercent_html,
 }
