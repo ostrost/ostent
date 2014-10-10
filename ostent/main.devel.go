@@ -18,10 +18,15 @@ import (
 
 func main() {
 	webserver := commands.FlagSetNewWebserver(flag.CommandLine)
+	version := commands.FlagSetNewVersion(flag.CommandLine)
 	flag.Parse()
 	defer commands.Defaults()()
 
 	if errd := commands.ArgCommands(); errd { // explicit commands
+		return
+	}
+	if version.Flag {
+		version.Run()
 		return
 	}
 
