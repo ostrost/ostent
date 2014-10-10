@@ -15,12 +15,27 @@ type deferrerMaker interface {
 
 type makeSub func(*flag.FlagSet, []string) (sub, error, []string)
 
+type submap struct {
+	submap map[string]makeSub
+	keys   []string
+}
+
+func (sm submap) Len() int {
+	return len(sm.keys)
+}
+func (sm submap) Swap(i, j int) {
+	sm.keys[i], sm.keys[j] = sm.keys[j], sm.keys[i]
+}
+func (sm submap) Less(i, j int) bool {
+	return sm.keys[i] < sm.keys[j]
+}
+
 var (
 	commands = struct {
 		mutex  sync.Mutex
-		mapsub map[string]makeSub
+		mapsub submap
 	}{
-		mapsub: make(map[string]makeSub),
+		mapsub: submap{submap: make(map[string]makeSub)},
 	}
 
 	defaults = struct {
@@ -34,7 +49,8 @@ var (
 func AddCommand(name string, makes makeSub) {
 	commands.mutex.Lock()
 	defer commands.mutex.Unlock()
-	commands.mapsub[name] = makes
+	commands.mapsub.submap[name] = makes
+	commands.mapsub.keys = append(commands.mapsub.keys, name)
 }
 
 func AddDefault(name string, def deferrerMaker) {
@@ -64,7 +80,7 @@ func parseCommand(subs []sub, args []string) ([]sub, bool) {
 		return subs, false
 	}
 	name := args[0]
-	if ctor, ok := commands.mapsub[name]; ok {
+	if ctor, ok := commands.mapsub.submap[name]; ok {
 		fs := flag.NewFlagSet(name, flag.ContinueOnError)
 		if sub, err, nextargs := ctor(fs, args[1:]); err == nil {
 			return parseCommand(append(subs, sub), nextargs)

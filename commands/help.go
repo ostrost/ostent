@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"os"
+	"sort"
 )
 
 type help struct {
@@ -17,8 +18,9 @@ func (h help) Run() {
 	}
 	commands.mutex.Lock()
 	defer commands.mutex.Unlock()
+	sort.Stable(commands.mapsub)
 	h.logger.Println("Commands available:")
-	for k := range commands.mapsub {
+	for _, k := range commands.mapsub.keys {
 		h.logger.Printf("\t%s\n", k)
 	}
 }
