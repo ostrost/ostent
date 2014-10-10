@@ -41,6 +41,7 @@ init:
 	go get -u -v \
 github.com/jteeuwen/go-bindata/go-bindata \
 github.com/skelterjohn/rerun
+	git remote set-url origin https://$(fqostent) # travis & tip & https://code.google.com/p/go/issues/detail?id=8850
 	go get -u -v -tags production \
 $(fqostent)/ostent
 	go get -u -v -a \
