@@ -123,13 +123,13 @@ $(binassets_develgo):
 
 $(binassets_productiongo): $(shell find \
                            share/assets -type f \! -name '*.go' \! -path \
-                           share/assets/js/devel/)
+                          'share/assets/js/devel/*')
 $(binassets_productiongo): share/assets/css/index.css
 $(binassets_productiongo): share/assets/js/production/ugly/index.js
 
 $(binassets_develgo): $(shell find \
                       share/assets -type f \! -name '*.go' \! -path \
-                      share/assets/js/production/)
+                     'share/assets/js/production/*')
 $(binassets_develgo): share/assets/css/index.css
 $(binassets_develgo): share/assets/js/devel/gen/jscript.js
 
