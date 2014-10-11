@@ -2,40 +2,51 @@ package commands
 
 import (
 	"flag"
+	"fmt"
+	"io"
 	"log"
 	"os"
 	"sort"
 )
 
+func UsageFunc(fs *flag.FlagSet) func() {
+	return func() {
+		// default usage
+		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+		fs.PrintDefaults() // flag.PrintDefaults()
+		// continued usage:
+		flagSetNewHelp(fs, os.Stderr).Run()
+	}
+}
+
 type help struct {
-	logger *loggerWriter
-	Flag   bool
+	logger    *loggerWriter
+	isCommand bool
 }
 
 func (h help) Run() {
-	if !h.Flag {
-		return
-	}
 	commands.mutex.Lock()
 	defer commands.mutex.Unlock()
 	sort.Stable(commands.mapsub)
-	h.logger.Println("Commands available:")
+	fstline := "Commands available:"
+	if !h.isCommand {
+		fstline = fmt.Sprintf("Commands of %s:", os.Args[0]) // as in usage
+	}
+	h.logger.Println(fstline)
 	for _, k := range commands.mapsub.keys {
-		h.logger.Printf("\t%s\n", k)
+		h.logger.Printf("   %s\n", k)
 	}
 }
 
-func FlagSetNewHelp(fs *flag.FlagSet) *help {
-	h := help{
-		logger: &loggerWriter{log.New(os.Stdout, "", 0)},
+func flagSetNewHelp(fs *flag.FlagSet, logout io.Writer) *help {
+	return &help{
+		logger: &loggerWriter{log.New(logout, "", 0)},
 	}
-	// fs.BoolVar(&v.Flag, "h", false, "help")
-	return &h
 }
 
 func helpCommand(fs *flag.FlagSet, arguments []string) (sub, error, []string) {
-	h := FlagSetNewHelp(fs)
-	h.Flag = true
+	h := flagSetNewHelp(fs, os.Stdout)
+	h.isCommand = true
 	fs.SetOutput(h.logger)
 	err := fs.Parse(arguments)
 	return h.Run, err, fs.Args()

@@ -17,6 +17,7 @@ import (
 )
 
 func main() {
+	flag.Usage = commands.UsageFunc(flag.CommandLine)
 	webserver := commands.FlagSetNewWebserver(flag.CommandLine)
 	version := commands.FlagSetNewVersion(flag.CommandLine)
 	flag.Parse()

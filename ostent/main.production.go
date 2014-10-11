@@ -21,9 +21,10 @@ func init() {
 }
 
 func main() {
-	upgrade := commands.FlagSetNewUpgrade(flag.CommandLine)
+	flag.Usage = commands.UsageFunc(flag.CommandLine)
 	webserver := commands.FlagSetNewWebserver(flag.CommandLine)
 	version := commands.FlagSetNewVersion(flag.CommandLine)
+	upgrade := commands.FlagSetNewUpgrade(flag.CommandLine)
 	flag.Parse()
 	defer commands.Defaults()()
 
