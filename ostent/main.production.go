@@ -4,10 +4,7 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"log"
 	"net"
-	"os"
 
 	"github.com/ostrost/ostent"
 	"github.com/ostrost/ostent/commands"
@@ -15,9 +12,7 @@ import (
 )
 
 func init() {
-	// log.SetFlags(log.Lmicroseconds | log.Lshortfile)
-	log.SetPrefix(fmt.Sprintf("[%d] ", os.Getpid()))
-	// goagain logging is useless without pid prefix
+	commands.InitStdLog()
 }
 
 func main() {

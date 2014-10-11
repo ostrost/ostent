@@ -77,9 +77,19 @@ func (wr webserver) Run() {
 	time.Sleep(time.Second)
 }
 
+// LogInit sets up global log
+func InitStdLog() {
+	log.SetPrefix(fmt.Sprintf("[%d][ostent] ", os.Getpid()))
+	// goagain logging is useless without pid prefix
+	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
+}
+
 func FlagSetNewWebserver(fs *flag.FlagSet) *webserver {
+	logger := log.New(os.Stderr,
+		fmt.Sprintf("[%d][ostent webserver] ", os.Getpid()),
+		log.LstdFlags|log.Lmicroseconds)
 	wr := webserver{
-		logger:    &loggerWriter{log.New(os.Stderr, fmt.Sprintf("[%d][ostent webserver] ", os.Getpid()), log.LstdFlags)},
+		logger:    &loggerWriter{logger},
 		BindValue: types.NewBindValue(":8050", "8050"),
 	}
 	fs.Var(&wr.BindValue, "b", "short for bind")
