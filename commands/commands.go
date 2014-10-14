@@ -2,6 +2,7 @@ package commands
 
 import (
 	"flag"
+	"io"
 	"log"
 	"sync"
 )
@@ -14,9 +15,11 @@ type deferrerMaker interface {
 }
 
 type makeSub func(*flag.FlagSet, []string) (sub, error, []string)
+type setupFunc func(*flag.FlagSet) (sub, io.Writer)
 
 type submap struct {
 	submap map[string]makeSub
+	setups map[string]setupFunc
 	keys   []string
 }
 
@@ -35,7 +38,10 @@ var (
 		mutex  sync.Mutex
 		mapsub submap
 	}{
-		mapsub: submap{submap: make(map[string]makeSub)},
+		mapsub: submap{
+			submap: make(map[string]makeSub),
+			setups: make(map[string]setupFunc),
+		},
 	}
 
 	defaults = struct {
@@ -45,6 +51,28 @@ var (
 		mapdef: make(map[string]deferrerMaker),
 	}
 )
+
+func AddFlaggedCommand(name string, sfunc setupFunc) {
+	commands.mutex.Lock()
+	defer commands.mutex.Unlock()
+	commands.mapsub.setups[name] = sfunc
+	commands.mapsub.keys = append(commands.mapsub.keys, name)
+}
+
+func setupFlagset(name string, sfunc setupFunc) (*flag.FlagSet, sub, io.Writer) {
+	fs := flag.NewFlagSet(name, flag.ContinueOnError)
+	run, output := sfunc(fs)
+	return fs, run, output
+}
+
+func setup(name string, sfunc setupFunc, arguments []string) (sub, error, []string) {
+	fs, run, output := setupFlagset(name, sfunc)
+	err := fs.Parse(arguments)
+	if err == nil && output != nil {
+		fs.SetOutput(output)
+	}
+	return run, err, fs.Args()
+}
 
 func AddCommand(name string, makes makeSub) {
 	commands.mutex.Lock()
@@ -80,7 +108,11 @@ func parseCommand(subs []sub, args []string) ([]sub, bool) {
 		return subs, false
 	}
 	name := args[0]
-	if ctor, ok := commands.mapsub.submap[name]; ok {
+	if ctor, ok := commands.mapsub.setups[name]; ok {
+		if sub, err, nextargs := setup(name, ctor, args[1:]); err == nil {
+			return parseCommand(append(subs, sub), nextargs)
+		}
+	} else if ctor, ok := commands.mapsub.submap[name]; ok {
 		fs := flag.NewFlagSet(name, flag.ContinueOnError)
 		if sub, err, nextargs := ctor(fs, args[1:]); err == nil {
 			return parseCommand(append(subs, sub), nextargs)
