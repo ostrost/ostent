@@ -97,7 +97,7 @@ func FlagSetNewWebserver(fs *flag.FlagSet) *webserver {
 	return &wr
 }
 
-var _ = /* webserverCommand */ func(fs *flag.FlagSet, arguments []string) (sub, error, []string) {
+var _ = /* webserverCommand */ func(fs *flag.FlagSet, arguments []string) (commandHandler, error, []string) {
 	wr := FlagSetNewWebserver(fs)
 	fs.SetOutput(wr.logger)
 	err := fs.Parse(arguments)

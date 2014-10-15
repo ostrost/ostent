@@ -27,7 +27,7 @@ func FlagSetNewVersion(fs *flag.FlagSet) *version {
 	return &v
 }
 
-func versionCommand(fs *flag.FlagSet, arguments []string) (sub, error, []string) {
+func versionCommand(fs *flag.FlagSet, arguments []string) (commandHandler, error, []string) {
 	v := FlagSetNewVersion(fs)
 	v.Flag = true
 	fs.SetOutput(v.logger)
@@ -42,7 +42,7 @@ func newVersion() *version {
 	}
 }
 
-func versionCommand(_ *flag.FlagSet) (sub, io.Writer) {
+func versionCommand(_ *flag.FlagSet) (commandHandler, io.Writer) {
 	v := newVersion()
 	return v.Run, v.logger
 }

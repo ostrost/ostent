@@ -151,7 +151,7 @@ func FlagSetNewUpgrade(fs *flag.FlagSet) *upgrade { // fs better be flag.Command
 	return &up
 }
 
-func upgradeCommand(fs *flag.FlagSet, arguments []string) (sub, error, []string) {
+func upgradeCommand(fs *flag.FlagSet, arguments []string) (commandHandler, error, []string) {
 	up := FlagSetNewUpgrade(fs)
 	up.isCommand = true
 	// this Var bound to fs, thus doesn't make it into flag.CommandLine set

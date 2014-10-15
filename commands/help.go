@@ -25,8 +25,8 @@ type help struct {
 	listing   string
 }
 
-func (h help) usage(k string, sfunc setupFunc) {
-	fs, _, _ := setupFlagset(k, sfunc)
+func (h help) usage(k string, makes makeCommandHandler) {
+	fs, _, _ := setupFlagset(k, makes)
 	// fs.Usage is ignored
 	fs.VisitAll(func(f *flag.Flag) { // mimics fs.PrintDefaults
 		format := "  -%s=%s: %s\n"
@@ -43,8 +43,8 @@ func (h *help) Run() {
 	defer commands.mutex.Unlock()
 	if h.listing != "" {
 		found := false
-		for _, x := range commands.mapsub.keys {
-			if x == h.listing {
+		for _, name := range commands.added.names {
+			if name == h.listing {
 				found = true
 				break
 			}
@@ -54,22 +54,22 @@ func (h *help) Run() {
 		} else {
 			h.logger.Println("Usage of command:")
 			h.logger.Printf("   %s\n", h.listing)
-			if sfunc, ok := commands.mapsub.setups[h.listing]; ok {
-				h.usage(h.listing, sfunc)
+			if makes, ok := commands.added.setups[h.listing]; ok {
+				h.usage(h.listing, makes)
 			}
 		}
 		return
 	}
-	sort.Stable(commands.mapsub)
+	sort.Stable(commands.added)
 	fstline := "Commands available:"
 	if !h.isCommand {
 		fstline = fmt.Sprintf("Commands of %s:", os.Args[0]) // as in usage
 	}
 	h.logger.Println(fstline)
-	for _, k := range commands.mapsub.keys {
-		h.logger.Printf("   %s\n", k)
-		if sfunc, ok := commands.mapsub.setups[k]; ok {
-			h.usage(k, sfunc)
+	for _, name := range commands.added.names {
+		h.logger.Printf("   %s\n", name)
+		if makes, ok := commands.added.setups[name]; ok {
+			h.usage(name, makes)
 		}
 	}
 }
@@ -80,7 +80,7 @@ func newHelp(logout io.Writer) *help {
 	}
 }
 
-func setupCommands(fs *flag.FlagSet) (sub, io.Writer) {
+func setupCommands(fs *flag.FlagSet) (commandHandler, io.Writer) {
 	h := newHelp(os.Stdout)
 	h.isCommand = true
 	fs.StringVar(&h.listing, "h", "", "A command")

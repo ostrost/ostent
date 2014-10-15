@@ -21,7 +21,7 @@ func FlagSetNewMEMProfile(fs *flag.FlagSet) *memprofile { // fs better be flag.C
 	return &mp
 }
 
-func (mp memprofile) MakeDeferrer() deferred {
+func (mp memprofile) makeAtexitHandler() atexitHandler {
 	if mp.output == "" {
 		return nil
 	}
@@ -51,7 +51,7 @@ func FlagSetNewCPUProfile(fs *flag.FlagSet) *cpuprofile { // fs better be flag.C
 	return &cp
 }
 
-func (cp cpuprofile) MakeDeferrer() deferred {
+func (cp cpuprofile) makeAtexitHandler() atexitHandler {
 	if cp.output == "" {
 		return nil
 	}

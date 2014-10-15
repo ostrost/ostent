@@ -13,7 +13,7 @@ import (
 	"github.com/ostrost/ostent/share/assets"
 )
 
-func newAssetsExtract(fs *flag.FlagSet, arguments []string) (sub, error, []string) {
+func newAssetsExtract(fs *flag.FlagSet, arguments []string) (commandHandler, error, []string) {
 	ae := assetsExtract{logger: &loggerWriter{log.New(os.Stderr,
 		"[ostent extract-assets] ", log.LstdFlags)}}
 	fs.SetOutput(ae.logger)
