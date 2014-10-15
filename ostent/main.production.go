@@ -18,7 +18,7 @@ func init() {
 func main() {
 	flag.Usage = commands.UsageFunc(flag.CommandLine)
 	webserver := commands.FlagSetNewWebserver(flag.CommandLine)
-	version := commands.FlagSetNewVersion(flag.CommandLine)
+	// version := commands.FlagSetNewVersion(flag.CommandLine)
 	upgrade := commands.FlagSetNewUpgrade(flag.CommandLine)
 	flag.Parse()
 	defer commands.Defaults()()
@@ -26,10 +26,7 @@ func main() {
 	if errd := commands.ArgCommands(); errd { // explicit commands
 		return
 	}
-	if version.Flag {
-		version.Run()
-		return
-	}
+	// if version.Flag { version.Run(); return }
 
 	webserver.ShutdownFunc = ostent.Connections.Reload
 	webserver.ServeFunc = func(listen net.Listener) {

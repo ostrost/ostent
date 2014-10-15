@@ -19,21 +19,18 @@ import (
 func main() {
 	flag.Usage = commands.UsageFunc(flag.CommandLine)
 	webserver := commands.FlagSetNewWebserver(flag.CommandLine)
-	version := commands.FlagSetNewVersion(flag.CommandLine)
+	// version := commands.FlagSetNewVersion(flag.CommandLine)
 	flag.Parse()
 	defer commands.Defaults()()
 
 	if errd := commands.ArgCommands(); errd { // explicit commands
 		return
 	}
-	if version.Flag {
-		version.Run()
-		return
-	}
+	// if version.Flag { version.Run(); return }
 
+	// Chdir into ostent package directory for templates loading
 	if pkg, err := build.Import("github.com/ostrost/ostent", "", build.FindOnly); err != nil {
 		log.Fatal(err)
-		// chdir for templates loading
 	} else if err := os.Chdir(pkg.Dir); err != nil {
 		log.Fatal(err)
 	}

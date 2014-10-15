@@ -9,6 +9,7 @@ import (
 
 type sub func()
 type deferred func()
+type commandLineHandler func() bool
 
 type deferrerMaker interface {
 	MakeDeferrer() deferred
@@ -18,9 +19,10 @@ type makeSub func(*flag.FlagSet, []string) (sub, error, []string)
 type setupFunc func(*flag.FlagSet) (sub, io.Writer)
 
 type submap struct {
-	submap map[string]makeSub
-	setups map[string]setupFunc
-	keys   []string
+	submap              map[string]makeSub
+	setups              map[string]setupFunc
+	commandLineHandlers []commandLineHandler
+	keys                []string
 }
 
 func (sm submap) Len() int {
@@ -51,6 +53,17 @@ var (
 		mapdef: make(map[string]deferrerMaker),
 	}
 )
+
+func AddCommandLine(hfunc func(*flag.FlagSet) commandLineHandler) {
+	s := hfunc(flag.CommandLine) // NB global flag.CommandLine
+	if s == nil {
+		return
+	}
+	commands.mutex.Lock()
+	defer commands.mutex.Unlock()
+	commands.mapsub.commandLineHandlers = append(
+		commands.mapsub.commandLineHandlers, s)
+}
 
 func AddFlaggedCommand(name string, sfunc setupFunc) {
 	commands.mutex.Lock()
@@ -116,7 +129,9 @@ func parseCommand(subs []sub, args []string) ([]sub, bool) {
 		fs := flag.NewFlagSet(name, flag.ContinueOnError)
 		if sub, err, nextargs := ctor(fs, args[1:]); err == nil {
 			return parseCommand(append(subs, sub), nextargs)
-		} // else { /* log.Printf("%s: %s\n", name, err) // printed already by flag package // */ }
+		}
+		// else { /* log.Printf("%s: %s\n", name, err)
+		// printed already by flag package // */ }
 	} else {
 		log.Fatalf("%s: No such command\n", name)
 	}
@@ -134,6 +149,18 @@ func ArgCommands() bool {
 	subs, errd := parseCommands()
 	if errd {
 		return true
+	}
+	commandLineHandlers := commands.mapsub.commandLineHandlers
+	if len(commandLineHandlers) > 0 {
+		stop := false
+		for _, clh := range commandLineHandlers {
+			if clh() {
+				stop = true
+			}
+		}
+		if stop {
+			return true
+		}
 	}
 	if len(subs) == 0 {
 		return false
