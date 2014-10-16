@@ -14,27 +14,9 @@ type version struct {
 	logger *loggerWriter
 }
 
-func (v version) Run() {
+func (v version) run() {
 	v.logger.Println(ostent.VERSION)
 }
-
-/*
-func FlagSetNewVersion(fs *flag.FlagSet) *version {
-	v := version{
-		logger: &loggerWriter{log.New(os.Stdout, "", 0)},
-	}
-	fs.BoolVar(&v.Flag, "v", false, "version")
-	return &v
-}
-
-func versionCommand(fs *flag.FlagSet, arguments []string) (commandHandler, error, []string) {
-	v := FlagSetNewVersion(fs)
-	v.Flag = true
-	fs.SetOutput(v.logger)
-	err := fs.Parse(arguments)
-	return v.Run, err, fs.Args()
-}
-// */
 
 func newVersion() *version {
 	return &version{
@@ -44,29 +26,29 @@ func newVersion() *version {
 
 func versionCommand(_ *flag.FlagSet) (commandHandler, io.Writer) {
 	v := newVersion()
-	return v.Run, v.logger
+	return v.run, v.logger
 }
 
 func versionCommandLine(cli *flag.FlagSet) commandLineHandler {
 	var fv bool
 	cli.BoolVar(&fv, "v", false, "version")
-	return func() bool {
+	return func() (atexitHandler, bool, error) {
 		if fv {
-			newVersion().Run()
-			return true
+			newVersion().run()
+			return nil, true, nil
 		}
-		return false
+		return nil, false, nil
 	}
 }
 
 func testCommandLine(cli *flag.FlagSet) commandLineHandler {
 	var fv bool
 	cli.BoolVar(&fv, "z", false, "z test")
-	return func() bool {
+	return func() (atexitHandler, bool, error) {
 		if fv {
 			fmt.Println("Z")
 		}
-		return false
+		return nil, false, nil
 	}
 }
 

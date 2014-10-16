@@ -13,7 +13,7 @@ type atexitMaker interface {
 
 type atexitHandler func()
 type commandHandler func()
-type commandLineHandler func() bool
+type commandLineHandler func() (atexitHandler, bool, error)
 
 type makeSub func(*flag.FlagSet, []string) (commandHandler, error, []string)
 type makeCommandHandler func(*flag.FlagSet) (commandHandler, io.Writer)
@@ -45,13 +45,6 @@ var (
 			submap: make(map[string]makeSub),
 			setups: make(map[string]makeCommandHandler),
 		},
-	}
-
-	defaults = struct {
-		mutex sync.Mutex
-		added map[string]atexitMaker
-	}{
-		added: make(map[string]atexitMaker),
 	}
 )
 
@@ -95,28 +88,6 @@ func AddCommand(name string, makes makeSub) {
 	commands.added.names = append(commands.added.names, name)
 }
 
-func AddDefault(name string, def atexitMaker) {
-	defaults.mutex.Lock()
-	defer defaults.mutex.Unlock()
-	defaults.added[name] = def
-}
-
-func Defaults() atexitHandler {
-	defaults.mutex.Lock()
-	defer defaults.mutex.Unlock()
-	finish := []atexitHandler{}
-	for _, maker := range defaults.added {
-		if fin := maker.makeAtexitHandler(); fin != nil {
-			finish = append(finish, fin)
-		}
-	}
-	return func() {
-		for _, fin := range finish {
-			fin()
-		}
-	}
-}
-
 func parseCommand(handlers []commandHandler, args []string) ([]commandHandler, bool) {
 	if len(args) == 0 || args[0] == "" {
 		return handlers, false
@@ -146,11 +117,19 @@ func parseCommands() ([]commandHandler, bool) {
 }
 
 // true is when to abort
-func ArgCommands() bool {
+func ArgCommands() (bool, atexitHandler) {
+	finish := []atexitHandler{}
+	atexit := func() {
+		for _, exit := range finish {
+			exit()
+		}
+	}
+
 	handlers, errd := parseCommands()
 	if errd {
-		return true
+		return true, atexit
 	}
+
 	if stop := func() bool {
 		commands.mutex.Lock()
 		defer commands.mutex.Unlock()
@@ -158,8 +137,17 @@ func ArgCommands() bool {
 		if len(commands.added.commandLineHandlers) > 0 {
 			stop := false
 			for _, clh := range commands.added.commandLineHandlers {
-				if clh() {
+				if clh == nil {
+					continue
+				}
+				atexit, term, err := clh()
+				if err != nil {
+					// the err must have been logged by clh
 					stop = true
+				} else if term {
+					stop = true
+				} else if atexit != nil {
+					finish = append(finish, atexit)
 				}
 			}
 			if stop {
@@ -168,16 +156,16 @@ func ArgCommands() bool {
 		}
 		return false
 	}(); stop {
-		return true
+		return true, atexit
 	}
 
 	if len(handlers) == 0 {
-		return false
+		return false, atexit
 	}
 	for _, handler := range handlers {
 		handler()
 	}
-	return true
+	return true, atexit
 }
 
 type loggerWriter struct {
@@ -187,4 +175,10 @@ type loggerWriter struct {
 func (lw *loggerWriter) Write(p []byte) (int, error) {
 	lw.Logger.Printf("%s", p)
 	return len(p), nil
+}
+
+func (lw *loggerWriter) fatalif(err error) {
+	if err != nil {
+		lw.Fatalln(err)
+	}
 }

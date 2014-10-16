@@ -17,16 +17,16 @@ func init() {
 
 func main() {
 	flag.Usage = commands.UsageFunc(flag.CommandLine)
-	webserver := commands.FlagSetNewWebserver(flag.CommandLine)
-	// version := commands.FlagSetNewVersion(flag.CommandLine)
-	upgrade := commands.FlagSetNewUpgrade(flag.CommandLine)
+	webserver := commands.NewWebserver().AddCommandLine()
+	upgrade := commands.NewUpgrade().AddCommandLine()
 	flag.Parse()
-	defer commands.Defaults()()
 
-	if errd := commands.ArgCommands(); errd { // explicit commands
+	errd, atexit := commands.ArgCommands()
+	defer atexit()
+
+	if errd {
 		return
 	}
-	// if version.Flag { version.Run(); return }
 
 	webserver.ShutdownFunc = ostent.Connections.Reload
 	webserver.ServeFunc = func(listen net.Listener) {

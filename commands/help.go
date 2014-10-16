@@ -89,5 +89,4 @@ func setupCommands(fs *flag.FlagSet) (commandHandler, io.Writer) {
 
 func init() {
 	AddFlaggedCommand("commands", setupCommands)
-	// AddCommand("help", helpCommand)
 }

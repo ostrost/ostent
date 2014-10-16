@@ -6,6 +6,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"math/rand"
 	"net/http"
@@ -145,22 +146,29 @@ func (up upgrade) HadUpgrade() bool {
 	return up.hadUpgrade
 }
 
-func FlagSetNewUpgrade(fs *flag.FlagSet) *upgrade { // fs better be flag.CommandLine
-	up := upgrade{logger: &loggerWriter{log.New(os.Stderr, "[ostent upgrade] ", log.LstdFlags)}}
-	fs.BoolVar(&up.UpgradeLater, "upgradelater", false, "Upgrade later.")
-	return &up
+func (up *upgrade) AddCommandLine() *upgrade {
+	AddCommandLine(func(cli *flag.FlagSet) commandLineHandler {
+		cli.BoolVar(&up.UpgradeLater, "upgradelater", false, "Upgrade later.")
+		return nil
+	})
+	return up
 }
 
-func upgradeCommand(fs *flag.FlagSet, arguments []string) (commandHandler, error, []string) {
-	up := FlagSetNewUpgrade(fs)
+func NewUpgrade() *upgrade {
+	return &upgrade{
+		logger: &loggerWriter{
+			log.New(os.Stderr, "[ostent upgrade] ", log.LstdFlags),
+		},
+	}
+}
+
+func upgradeCommand(fs *flag.FlagSet) (commandHandler, io.Writer) {
+	up := NewUpgrade()
 	up.isCommand = true
-	// this Var bound to fs, thus doesn't make it into flag.CommandLine set
 	fs.BoolVar(&up.DonotUpgrade, "n", false, "Do not upgrade, just log if there's an upgrade.")
-	fs.SetOutput(up.logger)
-	err := fs.Parse(arguments)
-	return up.Run, err, fs.Args()
+	return up.Run, up.logger
 }
 
 func init() {
-	AddCommand("upgrade", upgradeCommand)
+	AddFlaggedCommand("upgrade", upgradeCommand)
 }

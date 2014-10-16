@@ -13,29 +13,40 @@ import (
 type memprofile struct {
 	logger *loggerWriter
 	output string
+	_f     *os.File
 }
 
-func FlagSetNewMEMProfile(fs *flag.FlagSet) *memprofile { // fs better be flag.CommandLine
-	mp := memprofile{logger: &loggerWriter{log.New(os.Stderr, "[ostent memprofile] ", log.LstdFlags)}}
-	fs.StringVar(&mp.output, "memprofile", "", "MEM profile output file.")
-	return &mp
-}
-
-func (mp memprofile) makeAtexitHandler() atexitHandler {
-	if mp.output == "" {
-		return nil
+func memProfileCommandLine(cli *flag.FlagSet) commandLineHandler {
+	mp := &memprofile{
+		logger: &loggerWriter{
+			log.New(os.Stderr, "[ostent memprofile] ", log.LstdFlags),
+		},
 	}
+	cli.StringVar(&mp.output, "memprofile", "", "MEM profile output file")
+	return func() (atexitHandler, bool, error) {
+		if mp.output == "" {
+			return nil, false, nil
+		}
+		return mp.atexit, false, mp.run()
+	}
+}
 
-	f, err := os.Create(mp.output)
+func (mp *memprofile) atexit() {
+	mp.logger.Print("Writing MEM profile")
+	if err := pprof.WriteHeapProfile(mp._f); err != nil {
+		mp.logger.Print(err) // just print
+	}
+	if err := mp._f.Close(); err != nil {
+		mp.logger.Print(err) // just print
+	}
+}
+
+func (mp *memprofile) run() (err error) {
+	mp._f, err = os.Create(mp.output)
 	if err != nil {
-		mp.logger.Fatal(err)
+		mp.logger.Fatal(err) // log with the mp logger
 	}
-
-	return func() {
-		mp.logger.Print("Writing MEM profile")
-		pprof.WriteHeapProfile(f)
-		f.Close()
-	}
+	return err
 }
 
 /* ******************************************************************************** */
@@ -43,41 +54,44 @@ func (mp memprofile) makeAtexitHandler() atexitHandler {
 type cpuprofile struct {
 	logger *loggerWriter
 	output string
+	_f     *os.File
 }
 
-func FlagSetNewCPUProfile(fs *flag.FlagSet) *cpuprofile { // fs better be flag.CommandLine
-	cp := cpuprofile{logger: &loggerWriter{log.New(os.Stderr, "[ostent cpuprofile] ", log.LstdFlags)}}
-	fs.StringVar(&cp.output, "cpuprofile", "", "CPU profile output file.")
-	return &cp
-}
-
-func (cp cpuprofile) makeAtexitHandler() atexitHandler {
-	if cp.output == "" {
-		return nil
+func cpuProfileCommandLine(cli *flag.FlagSet) commandLineHandler {
+	cp := &cpuprofile{
+		logger: &loggerWriter{
+			log.New(os.Stderr, "[ostent cpuprofile] ", log.LstdFlags),
+		},
 	}
+	cli.StringVar(&cp.output, "cpuprofile", "", "CPU profile output file")
+	return func() (atexitHandler, bool, error) {
+		if cp.output == "" {
+			return nil, false, nil
+		}
+		return cp.atexit, false, cp.run()
+	}
+}
 
-	f, err := os.Create(cp.output)
+func (cp *cpuprofile) atexit() {
+	cp.logger.Print("Writing CPU profile")
+	pprof.StopCPUProfile()
+	if err := cp._f.Close(); err != nil {
+		cp.logger.Print(err) // just print
+	}
+}
+
+func (cp *cpuprofile) run() (err error) {
+	cp._f, err = os.Create(cp.output)
+	if err == nil {
+		err = pprof.StartCPUProfile(cp._f)
+	}
 	if err != nil {
-		cp.logger.Fatal(err)
+		cp.logger.Fatal(err) // log with the cp logger
 	}
-	pprof.StartCPUProfile(f)
-	return func() {
-		cp.logger.Print("Writing CPU profile")
-		pprof.StopCPUProfile()
-		f.Close()
-	}
+	return err
 }
-
-/*
-func cpuprofileCommand(fs *flag.FlagSet, arguments []string) (deferredFunc, error, []string) {
-	cp := FlagSetNewCPUProfile(fs)
-	// no flags
-	fs.SetOutput(cp.logger)
-	err := fs.Parse(arguments)
-	return cp..., err, fs.Args()
-} // */
 
 func init() {
-	AddDefault("cpuprofile", FlagSetNewCPUProfile(flag.CommandLine))
-	AddDefault("memprofile", FlagSetNewMEMProfile(flag.CommandLine))
+	AddCommandLine(cpuProfileCommandLine)
+	AddCommandLine(memProfileCommandLine)
 }
