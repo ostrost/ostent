@@ -54,7 +54,7 @@ func (h *help) Run() {
 		} else {
 			h.logger.Println("Usage of command:")
 			h.logger.Printf("   %s\n", h.listing)
-			if makes, ok := commands.added.setups[h.listing]; ok {
+			if makes, ok := commands.added.makes[h.listing]; ok {
 				h.usage(h.listing, makes)
 			}
 		}
@@ -68,7 +68,7 @@ func (h *help) Run() {
 	h.logger.Println(fstline)
 	for _, name := range commands.added.names {
 		h.logger.Printf("   %s\n", name)
-		if makes, ok := commands.added.setups[name]; ok {
+		if makes, ok := commands.added.makes[name]; ok {
 			h.usage(name, makes)
 		}
 	}
@@ -88,5 +88,5 @@ func setupCommands(fs *flag.FlagSet) (commandHandler, io.Writer) {
 }
 
 func init() {
-	AddFlaggedCommand("commands", setupCommands)
+	AddCommand("commands", setupCommands)
 }

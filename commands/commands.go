@@ -19,10 +19,8 @@ type makeSub func(*flag.FlagSet, []string) (commandHandler, error, []string)
 type makeCommandHandler func(*flag.FlagSet) (commandHandler, io.Writer)
 
 type addedCommands struct {
-	submap              map[string]makeSub
-	setups              map[string]makeCommandHandler
-	commandLineHandlers []commandLineHandler
-	names               []string
+	makes map[string]makeCommandHandler
+	names []string
 }
 
 // conforms to sort.Interface
@@ -42,10 +40,13 @@ var (
 		added addedCommands
 	}{
 		added: addedCommands{
-			submap: make(map[string]makeSub),
-			setups: make(map[string]makeCommandHandler),
+			makes: make(map[string]makeCommandHandler),
 		},
 	}
+	commandline = struct {
+		mutex sync.Mutex
+		added []commandLineHandler
+	}{}
 )
 
 func AddCommandLine(hfunc func(*flag.FlagSet) commandLineHandler) {
@@ -53,16 +54,15 @@ func AddCommandLine(hfunc func(*flag.FlagSet) commandLineHandler) {
 	if s == nil {
 		return
 	}
-	commands.mutex.Lock()
-	defer commands.mutex.Unlock()
-	commands.added.commandLineHandlers = append(
-		commands.added.commandLineHandlers, s)
+	commandline.mutex.Lock()
+	defer commandline.mutex.Unlock()
+	commandline.added = append(commandline.added, s)
 }
 
-func AddFlaggedCommand(name string, makes makeCommandHandler) {
+func AddCommand(name string, makes makeCommandHandler) {
 	commands.mutex.Lock()
 	defer commands.mutex.Unlock()
-	commands.added.setups[name] = makes
+	commands.added.makes[name] = makes
 	commands.added.names = append(commands.added.names, name)
 }
 
@@ -81,29 +81,15 @@ func setup(name string, makes makeCommandHandler, arguments []string) (commandHa
 	return run, err, fs.Args()
 }
 
-func AddCommand(name string, makes makeSub) {
-	commands.mutex.Lock()
-	defer commands.mutex.Unlock()
-	commands.added.submap[name] = makes
-	commands.added.names = append(commands.added.names, name)
-}
-
 func parseCommand(handlers []commandHandler, args []string) ([]commandHandler, bool) {
 	if len(args) == 0 || args[0] == "" {
 		return handlers, false
 	}
 	name := args[0]
-	if ctor, ok := commands.added.setups[name]; ok {
+	if ctor, ok := commands.added.makes[name]; ok {
 		if handler, err, nextargs := setup(name, ctor, args[1:]); err == nil {
 			return parseCommand(append(handlers, handler), nextargs)
 		}
-	} else if ctor, ok := commands.added.submap[name]; ok {
-		fs := flag.NewFlagSet(name, flag.ContinueOnError)
-		if handler, err, nextargs := ctor(fs, args[1:]); err == nil {
-			return parseCommand(append(handlers, handler), nextargs)
-		}
-		// else { /* log.Printf("%s: %s\n", name, err)
-		// printed already by flag package // */ }
 	} else {
 		log.Fatalf("%s: No such command\n", name)
 	}
@@ -131,12 +117,12 @@ func ArgCommands() (bool, atexitHandler) {
 	}
 
 	if stop := func() bool {
-		commands.mutex.Lock()
-		defer commands.mutex.Unlock()
+		commandline.mutex.Lock()
+		defer commandline.mutex.Unlock()
 
-		if len(commands.added.commandLineHandlers) > 0 {
+		if len(commandline.added) > 0 {
 			stop := false
-			for _, clh := range commands.added.commandLineHandlers {
+			for _, clh := range commandline.added {
 				if clh == nil {
 					continue
 				}

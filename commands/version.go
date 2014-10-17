@@ -53,7 +53,7 @@ func testCommandLine(cli *flag.FlagSet) commandLineHandler {
 }
 
 func init() {
-	AddFlaggedCommand("version", versionCommand)
+	AddCommand("version", versionCommand)
 	AddCommandLine(versionCommandLine)
 	// AddCommandLine(testCommandLine)
 }

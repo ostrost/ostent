@@ -76,5 +76,5 @@ func (ae *assetsExtract) run() {
 }
 
 func init() {
-	AddFlaggedCommand("extract-assets", assetsExtractCommand)
+	AddCommand("extract-assets", assetsExtractCommand)
 }

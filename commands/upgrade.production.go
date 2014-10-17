@@ -170,5 +170,5 @@ func upgradeCommand(fs *flag.FlagSet) (commandHandler, io.Writer) {
 }
 
 func init() {
-	AddFlaggedCommand("upgrade", upgradeCommand)
+	AddCommand("upgrade", upgradeCommand)
 }
