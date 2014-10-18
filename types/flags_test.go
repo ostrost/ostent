@@ -3,6 +3,7 @@ package types
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 )
@@ -74,7 +75,8 @@ func TestPeriodValue(t *testing.T) {
 }
 
 func TestParseArgs(t *testing.T) {
-	const defport = "9050"
+	const defportint = 9050
+	defport := fmt.Sprintf("%d", defportint)
 	for _, v := range []struct {
 		a   string
 		cmp string
@@ -94,7 +96,7 @@ func TestParseArgs(t *testing.T) {
 		{"127", "127.0.0.1:" + defport, nil},
 		{"127.1", "127.1:" + defport, nil},
 	} {
-		bv := NewBindValue(v.a, defport) // double Set, should be ok
+		bv := NewBindValue(defportint)
 		if err := bv.Set(v.a); err != nil {
 			if err.Error() != v.err.Error() {
 				t.Errorf("Error: %s\nMismatch: %s\n", err, v.err)

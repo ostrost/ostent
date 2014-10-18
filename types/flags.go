@@ -58,9 +58,9 @@ type BindValue struct {
 	Port    string // available after flag.Parse()
 }
 
-func NewBindValue(defstring, defport string) BindValue {
-	bv := BindValue{defport: defport}
-	bv.Set(defstring)
+func NewBindValue(defport int) BindValue {
+	bv := BindValue{defport: fmt.Sprintf("%d", defport)}
+	bv.Set("")
 	return bv
 }
 

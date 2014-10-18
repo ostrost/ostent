@@ -33,14 +33,14 @@ func InitStdLog() {
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 }
 
-func NewWebserver() *webserver {
+func NewWebserver(defport int) *webserver {
 	return &webserver{
 		logger: &loggerWriter{
 			log.New(os.Stderr,
 				fmt.Sprintf("[%d][ostent webserver] ", os.Getpid()),
 				log.LstdFlags|log.Lmicroseconds),
 		},
-		BindValue: types.NewBindValue(":8050", "8050"),
+		BindValue: types.NewBindValue(defport),
 	}
 }
 

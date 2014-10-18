@@ -18,7 +18,7 @@ import (
 
 func main() {
 	flag.Usage = commands.UsageFunc(flag.CommandLine)
-	webserver := commands.NewWebserver().AddCommandLine()
+	webserver := commands.NewWebserver(8050).AddCommandLine()
 	flag.Parse()
 
 	errd, atexit := commands.ArgCommands()
