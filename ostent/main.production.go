@@ -40,9 +40,8 @@ func main() {
 
 	webserver.FirstRunFunc = upgrade.HadUpgrade
 	if !upgrade.HadUpgrade() {
-		// start the background job(s) unless just had an upgrade and gonna relaunch anyway
-		go ostent.Loop()
-		// go ostent.CollectdLoop()
+		// RunBackground unless just had an upgrade and gonna relaunch anyway
+		ostent.RunBackground()
 	}
 	webserver.Run()
 }

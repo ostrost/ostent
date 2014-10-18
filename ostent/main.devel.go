@@ -34,9 +34,7 @@ func main() {
 	} else if err := os.Chdir(pkg.Dir); err != nil {
 		log.Fatal(err)
 	}
-	// the background job(s)
-	go ostent.Loop()
-	// go ostent.CollectdLoop()
+	ostent.RunBackground()
 
 	go templates.InitTemplates() // ServeFunc; NB after chdir
 

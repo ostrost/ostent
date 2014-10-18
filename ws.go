@@ -2,7 +2,6 @@ package ostent
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -13,6 +12,33 @@ import (
 	"github.com/ostrost/ostent/types"
 )
 
+type backgroundHandler func()
+
+var (
+	jobs = struct {
+		mutex sync.Mutex
+		added []backgroundHandler
+	}{}
+)
+
+func addBackground(j backgroundHandler) {
+	jobs.mutex.Lock()
+	defer jobs.mutex.Unlock()
+	jobs.added = append(jobs.added, j)
+}
+
+func RunBackground() {
+	jobs.mutex.Lock()
+	defer jobs.mutex.Unlock()
+	for _, j := range jobs.added {
+		go j()
+	}
+}
+
+func init() {
+	addBackground(Loop)
+}
+
 // Loop is the ostent background job
 func Loop() {
 	go func() {
@@ -22,10 +48,7 @@ func Loop() {
 			<-time.After(nextsecond)
 
 			if Connections.expires() {
-				// wslog.Printf("Have expires, COLLECT\n")
 				lastInfo.collect()
-			} else {
-				// wslog.Printf("NO REFRESH\n")
 			}
 			Connections.tack()
 		}
@@ -72,26 +95,21 @@ func (c *conn) expires() bool {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 
-	refreshes := map[string]*refresh{
-		// a map by _string_ is for debug only; otherwise that would be a []*refresh
-		"expires MEM": c.full.RefreshMEM,
-		"expires IF":  c.full.RefreshIF,
-		"expires CPU": c.full.RefreshCPU,
-		"expires DF":  c.full.RefreshDF,
-		"expires PS":  c.full.RefreshPS,
-		"expires VG":  c.full.RefreshVG,
+	refreshes := []*refresh{
+		c.full.RefreshMEM,
+		c.full.RefreshIF,
+		c.full.RefreshCPU,
+		c.full.RefreshDF,
+		c.full.RefreshPS,
+		c.full.RefreshVG,
 	}
 
-	expires := false
-	for lprefix, refresh := range refreshes {
-		if !refresh.expires() {
-			continue
+	for _, refresh := range refreshes {
+		if refresh.expires() {
+			return true
 		}
-		return true
-		log.Println(lprefix, refresh)
-		expires = false
 	}
-	return expires
+	return false
 }
 
 type connmap map[*conn]struct{}
