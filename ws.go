@@ -82,7 +82,7 @@ type conn struct {
 	requestOrigin *http.Request
 
 	receive    chan *received
-	push       chan *indexUpdate
+	pushch     chan *indexUpdate
 	full       client
 	minrefresh types.Duration
 	access     *logger
@@ -112,16 +112,29 @@ func (c *conn) expires() bool {
 	return false
 }
 
-type connmap map[*conn]struct{}
-type conns struct {
-	connmap
-	mutex sync.Mutex
-}
-
 func (c *conn) tack() {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 	c.receive <- nil
+}
+
+func (c *conn) push(update *indexUpdate) {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	c.pushch <- update
+}
+
+type receiver interface {
+	tack()
+	push(*indexUpdate)
+	reload()
+	expires() bool
+}
+
+type connmap map[receiver]struct{}
+type conns struct {
+	connmap
+	mutex sync.Mutex
 }
 
 func (cs *conns) tack() {
@@ -140,7 +153,7 @@ func (cs *conns) Reload() bool {
 
 	var reloaded bool
 	for c := range cs.connmap {
-		c.writeReload()
+		c.reload()
 		reloaded = true
 	}
 	return reloaded
@@ -151,15 +164,15 @@ func (cs *conns) push(update *indexUpdate) {
 	defer cs.mutex.Unlock()
 
 	for c := range cs.connmap {
-		c.push <- update
+		c.push(update)
 	}
 }
 
-func (cs *conns) reg(c *conn) {
+func (cs *conns) reg(r receiver) {
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
 
-	cs.connmap[c] = struct{}{}
+	cs.connmap[r] = struct{}{}
 }
 
 func (c *conn) closeChans() {
@@ -176,7 +189,7 @@ func (c *conn) closeChans() {
 		}
 	}()
 	close(c.receive)
-	close(c.push)
+	close(c.pushch)
 }
 
 // Len return the number of active connections
@@ -211,7 +224,7 @@ func (cs *conns) expires() bool {
 var (
 	// Connections is an instance of unexported conns type to hold
 	// active websocket connections. The only method is Reload.
-	Connections = conns{connmap: make(map[*conn]struct{})}
+	Connections = conns{connmap: make(map[receiver]struct{})}
 
 	iUPDATES   = make(chan *indexUpdate) // the channel for off-the-clock indexUpdate[s] to push
 	unregister = make(chan *conn)
@@ -300,7 +313,7 @@ func (c *conn) writeJSON(data interface{}) error {
 	return c.Conn.WriteJSON(data)
 }
 
-func (c *conn) writeReload() {
+func (c *conn) reload() {
 	c.writeJSON(struct {
 		Reload bool
 	}{true})
@@ -338,7 +351,7 @@ loop:
 					return
 				}
 			}
-		case update, ok := <-c.push:
+		case update, ok := <-c.pushch:
 			if !ok {
 				return
 			}
@@ -490,7 +503,7 @@ func Slashws(access *logger, minrefresh types.Duration, w http.ResponseWriter, r
 		requestOrigin: req,
 
 		receive:    make(chan *received, 2),
-		push:       make(chan *indexUpdate, 2),
+		pushch:     make(chan *indexUpdate, 2),
 		full:       defaultClient(minrefresh),
 		minrefresh: minrefresh,
 		access:     access,
