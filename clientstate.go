@@ -28,6 +28,22 @@ func (r refresh) expires() bool {
 	return r.tick+1 >= int(time.Duration(r.Duration)/time.Second)
 }
 
+func (c client) expires() bool {
+	for _, refresh := range []*refresh{
+		c.RefreshMEM,
+		c.RefreshIF,
+		c.RefreshCPU,
+		c.RefreshDF,
+		c.RefreshPS,
+		c.RefreshVG,
+	} {
+		if refresh.expires() {
+			return true
+		}
+	}
+	return false
+}
+
 type internalClient struct {
 	// NB lowercase fields only, NOT to be marshalled/exported
 

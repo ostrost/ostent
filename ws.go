@@ -94,22 +94,7 @@ type conn struct {
 func (c *conn) expires() bool {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
-
-	refreshes := []*refresh{
-		c.full.RefreshMEM,
-		c.full.RefreshIF,
-		c.full.RefreshCPU,
-		c.full.RefreshDF,
-		c.full.RefreshPS,
-		c.full.RefreshVG,
-	}
-
-	for _, refresh := range refreshes {
-		if refresh.expires() {
-			return true
-		}
-	}
-	return false
+	return c.full.expires()
 }
 
 func (c *conn) tack() {
