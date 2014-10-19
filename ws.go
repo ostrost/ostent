@@ -114,6 +114,7 @@ type receiver interface {
 	push(*indexUpdate)
 	reload()
 	expires() bool
+	closeChans()
 }
 
 type connmap map[receiver]struct{}
@@ -184,13 +185,13 @@ func (cs *conns) Len() int {
 	return len(cs.connmap)
 }
 
-func (cs *conns) unreg(c *conn) int {
-	c.closeChans()
+func (cs *conns) unreg(r receiver) int { // (c *conn)
+	r.closeChans()
 
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
 
-	delete(cs.connmap, c)
+	delete(cs.connmap, r)
 	return len(cs.connmap)
 }
 
@@ -212,8 +213,8 @@ var (
 	Connections = conns{connmap: make(map[receiver]struct{})}
 
 	iUPDATES   = make(chan *indexUpdate) // the channel for off-the-clock indexUpdate[s] to push
-	unregister = make(chan *conn)
-	register   = make(chan *conn)
+	unregister = make(chan receiver)     // (chan *conn)
+	register   = make(chan receiver)     // (chan *conn)
 )
 
 type recvClient struct {
