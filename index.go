@@ -703,7 +703,7 @@ func (la *last) collect() {
 	la.Generic.IP = ii.IP
 	la.Interfaces = ii.List
 
-	push(&la.lastfive.LA1, la.Generic.la1)
+	push(&la.lastfive.LA1, la.Generic.LA1)
 	la.Generic.LA1spark = la.lastfive.LA1.spark()
 
 	/* delta, isdelta := la.cpuListDelta()
