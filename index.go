@@ -455,7 +455,7 @@ type lastinfo struct {
 
 type lastfive struct {
 	// CPU []*fiveCPU
-	LA1 *five
+	milliLA1 *five
 }
 
 type fiveCPU struct {
@@ -703,8 +703,8 @@ func (la *last) collect() {
 	la.Generic.IP = ii.IP
 	la.Interfaces = ii.List
 
-	push(&la.lastfive.LA1, la.Generic.LA1)
-	la.Generic.LA1spark = la.lastfive.LA1.spark()
+	push(&la.lastfive.milliLA1, int(float64(100)*la.Generic.LoadAverage.One))
+	la.Generic.LA1spark = la.lastfive.milliLA1.spark()
 
 	/* delta, isdelta := la.cpuListDelta()
 	for i, core := range delta.List {
@@ -737,7 +737,7 @@ func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Bis
 	}
 }
 
-func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh bool) indexUpdate {
+func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh bool) (indexUpdate, last) {
 
 	client.recalcrows() // before anything
 
@@ -839,7 +839,7 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 	if send != (sendClient{}) {
 		iu.Client = &send
 	}
-	return iu
+	return iu, lastInfo
 }
 
 func indexData(minrefresh types.Duration, req *http.Request) IndexData {
@@ -849,7 +849,7 @@ func indexData(minrefresh types.Duration, req *http.Request) IndexData {
 	}
 
 	client := defaultClient(minrefresh)
-	updates := getUpdates(req, &client, sendClient{}, true)
+	updates, _ := getUpdates(req, &client, sendClient{}, true)
 
 	data := IndexData{
 		Client:  client,

@@ -14,12 +14,12 @@ import (
 )
 
 type generic struct {
-	Hostname string
-	IP       string
-	LA       string
-	Uptime   string
-	LA1spark string
-	LA1      int
+	Hostname    string
+	IP          string
+	LA          string
+	Uptime      string
+	LA1spark    string
+	LoadAverage sigar.LoadAverage
 }
 
 func getHostname() (string, error) {
@@ -40,10 +40,10 @@ func getGeneric(CH chan<- generic) {
 	la.Get()
 
 	g := generic{
-		Hostname: hostname,
-		LA:       fmt.Sprintf("%.2f %.2f %.2f", la.One, la.Five, la.Fifteen),
-		Uptime:   formatUptime(uptime.Length),
-		LA1:      int(float64(100) * la.One),
+		Hostname:    hostname,
+		LA:          fmt.Sprintf("%.2f %.2f %.2f", la.One, la.Five, la.Fifteen),
+		Uptime:      formatUptime(uptime.Length),
+		LoadAverage: la, // int(float64(100) * la.One),
 	}
 	// IP, _ := netinterface_ipaddr()
 	// g.IP = IP
