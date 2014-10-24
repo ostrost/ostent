@@ -125,6 +125,7 @@ func (li lastinfo) MEM(client client) *types.MEM {
 	return mem
 }
 
+/*
 func (li lastinfo) cpuListDelta() (sigar.CpuList, bool) {
 	if li.Previous == nil || len(li.Previous.CPU.List) == 0 {
 		return li.CPU, false
@@ -143,14 +144,11 @@ func (li lastinfo) cpuListDelta() (sigar.CpuList, bool) {
 		cls.List[i].Idle -= prev.List[i].Idle
 	}
 	return cls, true
-}
+} // */
 
 func (li lastinfo) CPUDelta(client client) (*types.CPU, int) {
-	cls, _ := li.cpuListDelta()
+	cls := li.CPU.List()
 	coreno := len(cls.List)
-	if coreno == 0 { // wait, what?
-		return &types.CPU{}, coreno
-	}
 
 	sum := sigar.Cpu{}
 	cores := make([]types.Core, coreno)
@@ -432,7 +430,7 @@ func orderProc(procs []types.ProcInfo, client *client, send *sendClient) []types
 }
 
 type Previous struct {
-	CPU        sigar.CpuList
+	CPU        *sigar.CpuList
 	Interfaces []getifaddrs.IfData
 }
 
@@ -443,7 +441,7 @@ type last struct {
 
 type lastinfo struct {
 	Generic    generic
-	CPU        sigar.CpuList
+	CPU        types.CpuList
 	RAM        types.Memory
 	Swap       types.Memory
 	DiskList   []diskInfo
@@ -656,18 +654,15 @@ func (la *last) reset_prev() {
 	if la.Previous == nil {
 		return
 	}
-	la.Previous.CPU = sigar.CpuList{}
+	la.Previous.CPU = nil
 	la.Previous.Interfaces = []getifaddrs.IfData{}
 }
 
 func (la *last) collect() {
-	la.mutex.Lock()
-	defer la.mutex.Unlock()
-
 	gch := make(chan generic, 1)
 	rch := make(chan types.Memory, 1)
 	sch := make(chan types.Memory, 1)
-	cch := make(chan sigar.CpuList, 1)
+	cch := make(chan types.CpuList, 1)
 	dch := make(chan []diskInfo, 1)
 	pch := make(chan []types.ProcInfo, 1)
 	ifch := make(chan IfInfo, 1)
@@ -678,17 +673,26 @@ func (la *last) collect() {
 	go read_disks(dch)
 	go read_procs(pch)
 	go newInterfaces(ifch)
-	go func(CH chan<- sigar.CpuList) {
-		cl := sigar.CpuList{}
-		cl.Get()
-		CH <- cl
-	}(cch)
 
-	// .mutex unchanged
+	func() {
+		la.mutex.Lock()
+		defer la.mutex.Unlock()
+
+		var prevCpuList *sigar.CpuList
+		if la.Previous != nil {
+			prevCpuList = la.Previous.CPU
+		}
+		go getCPU(cch, prevCpuList)
+	}()
+
+	la.mutex.Lock()
+	defer la.mutex.Unlock()
+
+	// NB .mutex unchanged
 	la.lastinfo = lastinfo{
 		lastfive: la.lastfive,
 		Previous: &Previous{
-			CPU:        la.CPU,
+			CPU:        la.CPU.SigarList(),
 			Interfaces: la.Interfaces,
 		},
 		Generic:  <-gch,

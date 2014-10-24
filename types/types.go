@@ -3,6 +3,8 @@ package types
 import (
 	"html/template"
 	"net/url"
+
+	sigar "github.com/rzab/gosigar"
 )
 
 // SEQ is a distinct int type for consts and other uses.
@@ -38,6 +40,43 @@ type Memory struct {
 // MEM type has a list of Memory.
 type MEM struct {
 	List []Memory
+}
+
+type CpuList struct {
+	cpuList   sigar.CpuList
+	deltaList *sigar.CpuList
+}
+
+func NewCpuList() CpuList {
+	cl := sigar.CpuList{}
+	cl.Get()
+	return CpuList{cpuList: cl}
+}
+
+func (cl CpuList) List() sigar.CpuList {
+	if cl.deltaList != nil {
+		return *cl.deltaList
+	}
+	return cl.cpuList
+}
+
+func (cl CpuList) SigarList() *sigar.CpuList {
+	return &cl.cpuList
+}
+
+func (cl *CpuList) CalculateDelta(other sigar.CpuList) {
+	if len(other.List) == 0 {
+		return
+	}
+	if len(other.List) != len(cl.cpuList.List) {
+		return
+	}
+	cl.deltaList = &sigar.CpuList{
+		List: make([]sigar.Cpu, len(cl.cpuList.List)),
+	}
+	for i := range cl.cpuList.List {
+		cl.deltaList.List[i] = cl.cpuList.List[i].Delta(other.List[i])
+	}
 }
 
 // CPU type has a list of Core.
