@@ -42,3 +42,16 @@ func procname(pid int, pbi_comm string) string {
 	}
 	return filepath.Base(exe.Name)
 }
+
+func cpuTotal(c *sigar.Cpu) uint64 {
+	return c.User + c.Nice + c.Sys + c.Idle
+}
+
+func cpuFields(tc totalCpu) []namefloat64 {
+	return []namefloat64{
+		{"user", tc.fraction(tc.User)},
+		{"nice", tc.fraction(tc.Nice)},
+		{"system", tc.fraction(tc.Sys)},
+		{"idle", tc.fraction(tc.Idle)},
+	}
+}
