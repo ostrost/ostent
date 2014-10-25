@@ -206,3 +206,17 @@ func getCPU(CH chan<- types.CpuList, prevCpuList *sigar.CpuList) {
 	}
 	CH <- cl
 }
+
+type namefloat64 struct {
+	string
+	float64
+}
+
+type totalCpu struct {
+	sigar.Cpu
+	total uint64
+}
+
+func (tc totalCpu) fraction(n uint64) float64 {
+	return float64(n) / float64(tc.total)
+}
