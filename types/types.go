@@ -64,19 +64,20 @@ func (cl CpuList) SigarList() *sigar.CpuList {
 	return &cl.sigarList
 }
 
-func (cl *CpuList) CalculateDelta(other sigar.CpuList) {
-	if len(other.List) == 0 {
+func (cl *CpuList) CalculateDelta(other []sigar.Cpu) {
+	if len(other) == 0 {
 		return
 	}
-	if len(other.List) != len(cl.sigarList.List) {
+	cores := cl.sigarList.List
+	coreno := len(cores)
+	if len(other) != coreno {
 		return
 	}
-	cl.deltaList = &sigar.CpuList{
-		List: make([]sigar.Cpu, len(cl.sigarList.List)),
+	deltaList := make([]sigar.Cpu, coreno)
+	for i, sigarCpu := range cores {
+		deltaList[i] = sigarCpu.Delta(other[i])
 	}
-	for i, sigarCpu := range cl.sigarList.List {
-		cl.deltaList.List[i] = sigarCpu.Delta(other.List[i])
-	}
+	cl.deltaList = &sigar.CpuList{List: deltaList}
 }
 
 // CPU type has a list of Core.

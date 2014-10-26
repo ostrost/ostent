@@ -202,7 +202,7 @@ func read_procs(CH chan<- []types.ProcInfo) {
 func getCPU(CH chan<- types.CpuList, prevCpuList *sigar.CpuList) {
 	cl := types.NewCpuList()
 	if prevCpuList != nil {
-		cl.CalculateDelta(*prevCpuList)
+		cl.CalculateDelta(prevCpuList.List)
 	}
 	CH <- cl
 }
