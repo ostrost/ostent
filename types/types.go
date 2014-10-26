@@ -43,39 +43,39 @@ type MEM struct {
 }
 
 type CpuList struct {
-	cpuList   sigar.CpuList
+	sigarList sigar.CpuList
 	deltaList *sigar.CpuList
 }
 
 func NewCpuList() CpuList {
 	cl := sigar.CpuList{}
 	cl.Get()
-	return CpuList{cpuList: cl}
+	return CpuList{sigarList: cl}
 }
 
 func (cl CpuList) List() sigar.CpuList {
 	if cl.deltaList != nil {
 		return *cl.deltaList
 	}
-	return cl.cpuList
+	return cl.sigarList
 }
 
 func (cl CpuList) SigarList() *sigar.CpuList {
-	return &cl.cpuList
+	return &cl.sigarList
 }
 
 func (cl *CpuList) CalculateDelta(other sigar.CpuList) {
 	if len(other.List) == 0 {
 		return
 	}
-	if len(other.List) != len(cl.cpuList.List) {
+	if len(other.List) != len(cl.sigarList.List) {
 		return
 	}
 	cl.deltaList = &sigar.CpuList{
-		List: make([]sigar.Cpu, len(cl.cpuList.List)),
+		List: make([]sigar.Cpu, len(cl.sigarList.List)),
 	}
-	for i := range cl.cpuList.List {
-		cl.deltaList.List[i] = cl.cpuList.List[i].Delta(other.List[i])
+	for i, sigarCpu := range cl.sigarList.List {
+		cl.deltaList.List[i] = sigarCpu.Delta(other.List[i])
 	}
 }
 
