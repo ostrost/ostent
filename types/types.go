@@ -80,13 +80,13 @@ func (cl *CpuList) CalculateDelta(other []sigar.Cpu) {
 	cl.deltaList = &sigar.CpuList{List: deltaList}
 }
 
-// CPU type has a list of Core.
-type CPU struct {
-	List []Core
+// CPUInfo type has a list of CoreInfo.
+type CPUInfo struct {
+	List []CoreInfo // TODO rename to Cores
 }
 
-// Core type is a struct of core metrics.
-type Core struct {
+// CoreInfo type is a struct of core metrics.
+type CoreInfo struct {
 	N         string
 	User      uint // percent without "%"
 	Sys       uint // percent without "%"

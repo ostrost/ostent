@@ -4,7 +4,7 @@ import (
 	"github.com/ostrost/ostent/types"
 )
 
-type cpuOrder []types.Core
+type cpuOrder []types.CoreInfo
 
 func (co cpuOrder) Len() int {
 	return len(co)

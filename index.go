@@ -146,12 +146,12 @@ func (li lastinfo) cpuListDelta() (sigar.CpuList, bool) {
 	return cls, true
 } // */
 
-func (li lastinfo) CPUDelta(client client) (*types.CPU, int) {
+func (li lastinfo) CPUDelta(client client) (*types.CPUInfo, int) {
 	cls := li.CPU.List()
 	coreno := len(cls.List)
 
 	sum := sigar.Cpu{}
-	cores := make([]types.Core, coreno)
+	cores := make([]types.CoreInfo, coreno)
 	for i, each := range cls.List {
 
 		total := each.User + each.Nice + each.Sys + each.Idle
@@ -164,7 +164,7 @@ func (li lastinfo) CPUDelta(client client) (*types.CPU, int) {
 			idle = 100 - user - sys
 		}
 
-		cores[i] = types.Core{
+		cores[i] = types.CoreInfo{
 			N:         fmt.Sprintf("#%d", i),
 			User:      user,
 			Sys:       sys,
@@ -182,7 +182,7 @@ func (li lastinfo) CPUDelta(client client) (*types.CPU, int) {
 		sum.Idle += each.Idle
 	}
 
-	cpu := new(types.CPU)
+	cpu := new(types.CPUInfo)
 
 	if coreno == 1 {
 		cores[0].N = "#0"
@@ -205,7 +205,7 @@ func (li lastinfo) CPUDelta(client client) (*types.CPU, int) {
 		if user+sys < 100 {
 			idle = 100 - user - sys
 		}
-		cores = append([]types.Core{{ // "all N"
+		cores = append([]types.CoreInfo{{ // "all N"
 			N:         fmt.Sprintf("all %d", coreno),
 			User:      user,
 			Sys:       sys,
@@ -596,7 +596,7 @@ func (f five) spark() string {
 
 type IndexData struct {
 	Generic generic
-	CPU     types.CPU
+	CPU     types.CPUInfo
 	MEM     types.MEM
 
 	PStable PStable
@@ -626,7 +626,7 @@ type IndexData struct {
 
 type indexUpdate struct {
 	Generic  *generic        `json:",omitempty"`
-	CPU      *types.CPU      `json:",omitempty"`
+	CPU      *types.CPUInfo  `json:",omitempty"`
 	MEM      *types.MEM      `json:",omitempty"`
 	DFlinks  *DFlinks        `json:",omitempty"`
 	DFbytes  *types.DFbytes  `json:",omitempty"`
