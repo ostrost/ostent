@@ -14,26 +14,12 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/getifaddrs"
 	"github.com/ostrost/ostent/templates"
 	"github.com/ostrost/ostent/types"
 	sigar "github.com/rzab/gosigar"
 )
-
-func bps(factor int, current, previous uint) string {
-	if current < previous { // counters got reset
-		return ""
-	}
-	diff := (current - previous) * uint(factor) // bits now if the factor is 8
-	return humanbits(uint64(diff))
-}
-
-func ps(current, previous uint) string {
-	if current < previous { // counters got reset
-		return ""
-	}
-	return humanUnitless(uint64(current - previous))
-}
 
 func interfaceMeta(ifdata getifaddrs.IfData) types.InterfaceMeta {
 	return types.InterfaceMeta{
@@ -54,13 +40,13 @@ type interfaceInout interface {
 type interfaceBytes struct{}
 
 func (_ interfaceBytes) Current(id *types.Interface, ifdata getifaddrs.IfData) {
-	id.In = humanB(uint64(ifdata.InBytes))
-	id.Out = humanB(uint64(ifdata.OutBytes))
+	id.In = format.HumanB(uint64(ifdata.InBytes))
+	id.Out = format.HumanB(uint64(ifdata.OutBytes))
 }
 
 func (_ interfaceBytes) Delta(id *types.Interface, ii, ifdata getifaddrs.IfData) {
-	id.DeltaIn = bps(8, ii.InBytes, ifdata.InBytes)
-	id.DeltaOut = bps(8, ii.OutBytes, ifdata.OutBytes)
+	id.DeltaIn = format.Bps(8, ii.InBytes, ifdata.InBytes)
+	id.DeltaOut = format.Bps(8, ii.OutBytes, ifdata.OutBytes)
 }
 
 type interfaceInoutErrors struct{}
@@ -79,15 +65,15 @@ type interfaceNumericals struct{ interfaceInout }
 
 func (ie interfaceNumericals) Current(id *types.Interface, ifdata getifaddrs.IfData) {
 	in, out := ie.InOut(ifdata)
-	id.In = humanUnitless(uint64(in))
-	id.Out = humanUnitless(uint64(out))
+	id.In = format.HumanUnitless(uint64(in))
+	id.Out = format.HumanUnitless(uint64(out))
 }
 
 func (ie interfaceNumericals) Delta(id *types.Interface, ii, previousIfdata getifaddrs.IfData) {
 	in, out := ie.InOut(ii)
 	previousIn, previousOut := ie.InOut(previousIfdata)
-	id.DeltaIn = ps(in, previousIn)
-	id.DeltaOut = ps(out, previousOut)
+	id.DeltaIn = format.Ps(in, previousIn)
+	id.DeltaOut = format.Ps(out, previousOut)
 }
 
 func interfacesDelta(format interfaceFormat, current, previous []getifaddrs.IfData, client client) *types.Interfaces {
@@ -156,8 +142,8 @@ func (li lastinfo) CPUDelta(client client) (*types.CPUInfo, int) {
 
 		total := each.User + each.Nice + each.Sys + each.Idle
 
-		user := percent(each.User, total)
-		sys := percent(each.Sys, total)
+		user := format.Percent(each.User, total)
+		sys := format.Percent(each.Sys, total)
 
 		idle := uint(0)
 		if user+sys < 100 {
@@ -169,9 +155,9 @@ func (li lastinfo) CPUDelta(client client) (*types.CPUInfo, int) {
 			User:      user,
 			Sys:       sys,
 			Idle:      idle,
-			UserClass: textClass_colorPercent(user),
-			SysClass:  textClass_colorPercent(sys),
-			IdleClass: textClass_colorPercent(100 - idle),
+			UserClass: format.TextClassColorPercent(user),
+			SysClass:  format.TextClassColorPercent(sys),
+			IdleClass: format.TextClassColorPercent(100 - idle),
 			// UserSpark: li.fiveCPU[i].user.spark(),
 			// SysSpark:  li.fiveCPU[i].sys .spark(),
 			// IdleSpark: li.fiveCPU[i].idle.spark(),
@@ -199,8 +185,8 @@ func (li lastinfo) CPUDelta(client client) (*types.CPUInfo, int) {
 
 		total := sum.User + sum.Sys + sum.Idle // + sum.Nice
 
-		user := percent(sum.User, total)
-		sys := percent(sum.Sys, total)
+		user := format.Percent(sum.User, total)
+		sys := format.Percent(sum.Sys, total)
 		idle := uint(0)
 		if user+sys < 100 {
 			idle = 100 - user - sys
@@ -210,9 +196,9 @@ func (li lastinfo) CPUDelta(client client) (*types.CPUInfo, int) {
 			User:      user,
 			Sys:       sys,
 			Idle:      idle,
-			UserClass: textClass_colorPercent(user),
-			SysClass:  textClass_colorPercent(sys),
-			IdleClass: textClass_colorPercent(100 - idle),
+			UserClass: format.TextClassColorPercent(user),
+			SysClass:  format.TextClassColorPercent(sys),
+			IdleClass: format.TextClassColorPercent(100 - idle),
 			// UserSpark: .spark(),
 			// SysSpark:  .spark(),
 			// IdleSpark: .spark(),
@@ -221,27 +207,6 @@ func (li lastinfo) CPUDelta(client client) (*types.CPUInfo, int) {
 
 	cpu.List = cores
 	return cpu, coreno
-}
-
-func textClass_colorPercent(p uint) string {
-	return "text-" + colorPercent(p)
-}
-
-func labelClass_colorPercent(p uint) string {
-	return "label label-" + colorPercent(p)
-}
-
-func colorPercent(p uint) string {
-	if p > 90 {
-		return "danger"
-	}
-	if p > 80 {
-		return "warning"
-	}
-	if p > 20 {
-		return "info"
-	}
-	return "success"
 }
 
 type diskInfo struct {
@@ -314,15 +279,15 @@ func dfbytes(diskinfos []diskInfo, client client) *types.DFbytes {
 		if !*client.ExpandDF && i > client.toprows-1 {
 			break
 		}
-		total, approxtotal, _ := humanBandback(disk.Total)
-		used, approxused, _ := humanBandback(disk.Used)
+		total, approxtotal, _ := format.HumanBandback(disk.Total)
+		used, approxused, _ := format.HumanBandback(disk.Used)
 		disks = append(disks, types.DiskBytes{
 			DiskMeta:        diskMeta(disk),
 			Total:           total,
 			Used:            used,
-			Avail:           humanB(disk.Avail),
-			UsePercent:      formatPercent(approxused, approxtotal),
-			UsePercentClass: labelClass_colorPercent(percent(approxused, approxtotal)),
+			Avail:           format.HumanB(disk.Avail),
+			UsePercent:      format.FormatPercent(approxused, approxtotal),
+			UsePercentClass: format.LabelClassColorPercent(format.Percent(approxused, approxtotal)),
 		})
 	}
 	dsb := new(types.DFbytes)
@@ -336,15 +301,15 @@ func dfinodes(diskinfos []diskInfo, client client) *types.DFinodes {
 		if !*client.ExpandDF && i > client.toprows-1 {
 			break
 		}
-		itotal, approxitotal, _ := humanBandback(disk.Inodes)
-		iused, approxiused, _ := humanBandback(disk.Iused)
+		itotal, approxitotal, _ := format.HumanBandback(disk.Inodes)
+		iused, approxiused, _ := format.HumanBandback(disk.Iused)
 		disks = append(disks, types.DiskInodes{
 			DiskMeta:         diskMeta(disk),
 			Inodes:           itotal,
 			Iused:            iused,
-			Ifree:            humanB(disk.Ifree),
-			IusePercent:      formatPercent(approxiused, approxitotal),
-			IusePercentClass: labelClass_colorPercent(percent(approxiused, approxitotal)),
+			Ifree:            format.HumanB(disk.Ifree),
+			IusePercent:      format.FormatPercent(approxiused, approxitotal),
+			IusePercentClass: format.LabelClassColorPercent(format.Percent(approxiused, approxitotal)),
 		})
 	}
 	dsi := new(types.DFinodes)
@@ -419,11 +384,11 @@ func orderProc(procs []types.ProcInfo, client *client, send *sendClient) []types
 			PID:      proc.PID,
 			Priority: proc.Priority,
 			Nice:     proc.Nice,
-			Time:     formatTime(proc.Time),
+			Time:     format.FormatTime(proc.Time),
 			NameHTML: tooltipable(42, proc.Name),
 			UserHTML: tooltipable(12, username(uids, proc.UID)),
-			Size:     humanB(proc.Size),
-			Resident: humanB(proc.Resident),
+			Size:     format.HumanB(proc.Size),
+			Resident: format.HumanB(proc.Resident),
 		})
 	}
 	return list

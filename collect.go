@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/templates"
 	"github.com/ostrost/ostent/types"
 	sigar "github.com/rzab/gosigar"
@@ -42,7 +43,7 @@ func getGeneric(CH chan<- generic) {
 	g := generic{
 		Hostname:    hostname,
 		LA:          fmt.Sprintf("%.2f %.2f %.2f", la.One, la.Five, la.Fifteen),
-		Uptime:      formatUptime(uptime.Length),
+		Uptime:      format.FormatUptime(uptime.Length),
 		LoadAverage: la, // int(float64(100) * la.One),
 	}
 	// IP, _ := netinterface_ipaddr()
@@ -53,9 +54,9 @@ func getGeneric(CH chan<- generic) {
 var UsePercentTemplate *templates.BinTemplate
 
 func _getmem(kind string, in sigar.Swap) types.Memory {
-	total, approxtotal, _ := humanBandback(in.Total)
-	used, approxused, _ := humanBandback(in.Used)
-	usepercent := percent(approxused, approxtotal)
+	total, approxtotal, _ := format.HumanBandback(in.Total)
+	used, approxused, _ := format.HumanBandback(in.Used)
+	usepercent := format.Percent(approxused, approxtotal)
 
 	html := "ERROR"
 	if TooltipableTemplate == nil {
@@ -64,7 +65,7 @@ func _getmem(kind string, in sigar.Swap) types.Memory {
 		Class, Value, CLASSNAME string
 	}{
 		Value: strconv.Itoa(int(usepercent)), // without "%"
-		Class: labelClass_colorPercent(usepercent),
+		Class: format.LabelClassColorPercent(usepercent),
 	}); err == nil {
 		html = buf.String()
 	}
@@ -73,7 +74,7 @@ func _getmem(kind string, in sigar.Swap) types.Memory {
 		Kind:           kind,
 		Total:          total,
 		Used:           used,
-		Free:           humanB(in.Free),
+		Free:           format.HumanB(in.Free),
 		UsePercentHTML: template.HTML(html),
 	}
 }

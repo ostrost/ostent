@@ -1,4 +1,4 @@
-package ostent
+package format
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func formatUptime(seconds float64) string { // "seconds" is expected to be sigar.Uptime.Length
+func FormatUptime(seconds float64) string { // "seconds" is expected to be sigar.Uptime.Length
 	d := time.Duration(seconds) * time.Second
 	s := ""
 	if d > time.Duration(24)*time.Hour {
@@ -27,7 +27,7 @@ func formatUptime(seconds float64) string { // "seconds" is expected to be sigar
 	return s
 }
 
-func humanUnitless(n uint64) string {
+func HumanUnitless(n uint64) string {
 	sizes := []string{"", "k", "M", "G", "T", "P", "E"}
 	base := float64(1000)
 	if float64(n) < base { // small number
@@ -68,18 +68,18 @@ func humanbits(n uint64) string {
 	return s
 }
 
-func humanB(n uint64) string {
+func HumanB(n uint64) string {
 	s, _, _, _ := _formatOctet(n, false)
 	return s
 }
 
-func humanBandback(n uint64) (string, uint64, error) {
+func HumanBandback(n uint64) (string, uint64, error) {
 	s, f, val, pow := _formatOctet(n, false)
 	d, err := strconv.ParseFloat(fmt.Sprintf(f, val), 64)
 	return s, uint64(d * pow), err
 }
 
-func percent(used, total uint64) uint {
+func Percent(used, total uint64) uint {
 	if total == 0 {
 		return 0
 	}
@@ -91,11 +91,11 @@ func percent(used, total uint64) uint {
 	return uint(pct)
 }
 
-func formatPercent(used, total uint64) string {
-	return strconv.Itoa(int(percent(used, total))) // without "%"
+func FormatPercent(used, total uint64) string {
+	return strconv.Itoa(int(Percent(used, total))) // without "%"
 }
 
-func formatTime(T uint64) string {
+func FormatTime(T uint64) string {
 	// 	ms := T % 60
 	t := T / 1000
 	ss := t % 60
@@ -107,4 +107,40 @@ func formatTime(T uint64) string {
 		return fmt.Sprintf("%02d:%02d:%02d", hh, mm, ss)
 	}
 	return fmt.Sprintf("   %02d:%02d", mm, ss)
+}
+
+func Bps(factor int, current, previous uint) string {
+	if current < previous { // counters got reset
+		return ""
+	}
+	diff := (current - previous) * uint(factor) // bits now if the factor is 8
+	return humanbits(uint64(diff))
+}
+
+func Ps(current, previous uint) string {
+	if current < previous { // counters got reset
+		return ""
+	}
+	return HumanUnitless(uint64(current - previous))
+}
+
+func TextClassColorPercent(p uint) string {
+	return "text-" + colorPercent(p)
+}
+
+func LabelClassColorPercent(p uint) string {
+	return "label label-" + colorPercent(p)
+}
+
+func colorPercent(p uint) string {
+	if p > 90 {
+		return "danger"
+	}
+	if p > 80 {
+		return "warning"
+	}
+	if p > 20 {
+		return "info"
+	}
+	return "success"
 }
