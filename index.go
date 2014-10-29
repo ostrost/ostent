@@ -14,6 +14,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/ostrost/ostent/client"
+	"github.com/ostrost/ostent/cpu"
 	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/getifaddrs"
 	"github.com/ostrost/ostent/templates"
@@ -76,7 +78,7 @@ func (ie interfaceNumericals) Delta(id *types.Interface, ii, previousIfdata geti
 	id.DeltaOut = format.Ps(out, previousOut)
 }
 
-func interfacesDelta(format interfaceFormat, current, previous []getifaddrs.IfData, client client) *types.Interfaces {
+func interfacesDelta(format interfaceFormat, current, previous []getifaddrs.IfData, client client.Client) *types.Interfaces {
 	ifs := make([]types.Interface, len(current))
 
 	for i := range ifs {
@@ -93,8 +95,8 @@ func interfacesDelta(format interfaceFormat, current, previous []getifaddrs.IfDa
 	}
 	if len(ifs) > 1 {
 		sort.Sort(interfaceOrder(ifs))
-		if !*client.ExpandIF && len(ifs) > client.toprows {
-			ifs = ifs[:client.toprows]
+		if !*client.ExpandIF && len(ifs) > client.Toprows {
+			ifs = ifs[:client.Toprows]
 		}
 	}
 	ni := new(types.Interfaces)
@@ -102,111 +104,13 @@ func interfacesDelta(format interfaceFormat, current, previous []getifaddrs.IfDa
 	return ni
 }
 
-func (li lastinfo) MEM(client client) *types.MEM {
+func (li lastinfo) MEM(client client.Client) *types.MEM {
 	mem := new(types.MEM)
 	mem.List = append(mem.List, li.RAM)
 	if !*client.HideSWAP {
 		mem.List = append(mem.List, li.Swap)
 	}
 	return mem
-}
-
-/*
-func (li lastinfo) cpuListDelta() (sigar.CpuList, bool) {
-	if li.Previous == nil || len(li.Previous.CPU.List) == 0 {
-		return li.CPU, false
-	}
-	prev := li.Previous.CPU
-	coreno := len(li.CPU.List)
-	if coreno == 0 { // wait, what?
-		return sigar.CpuList{}, false
-	}
-	cls := sigar.CpuList{List: make([]sigar.Cpu, coreno)}
-	copy(cls.List, li.CPU.List)
-	for i := range cls.List {
-		cls.List[i].User -= prev.List[i].User
-		cls.List[i].Nice -= prev.List[i].Nice
-		cls.List[i].Sys -= prev.List[i].Sys
-		cls.List[i].Idle -= prev.List[i].Idle
-	}
-	return cls, true
-} // */
-
-func (li lastinfo) CPUDelta(client client) (*types.CPUInfo, int) {
-	cls := li.CPU.List()
-	coreno := len(cls.List)
-
-	sum := sigar.Cpu{}
-	cores := make([]types.CoreInfo, coreno)
-	for i, each := range cls.List {
-
-		total := each.User + each.Nice + each.Sys + each.Idle
-
-		user := format.Percent(each.User, total)
-		sys := format.Percent(each.Sys, total)
-
-		idle := uint(0)
-		if user+sys < 100 {
-			idle = 100 - user - sys
-		}
-
-		cores[i] = types.CoreInfo{
-			N:         fmt.Sprintf("#%d", i),
-			User:      user,
-			Sys:       sys,
-			Idle:      idle,
-			UserClass: format.TextClassColorPercent(user),
-			SysClass:  format.TextClassColorPercent(sys),
-			IdleClass: format.TextClassColorPercent(100 - idle),
-			// UserSpark: li.fiveCPU[i].user.spark(),
-			// SysSpark:  li.fiveCPU[i].sys .spark(),
-			// IdleSpark: li.fiveCPU[i].idle.spark(),
-		}
-
-		sum.User += each.User + each.Nice
-		sum.Sys += each.Sys
-		sum.Idle += each.Idle
-	}
-
-	cpu := new(types.CPUInfo)
-
-	if coreno == 1 {
-		cores[0].N = "#0"
-		cpu.List = cores
-		return cpu, coreno
-	}
-
-	sort.Sort(cpuOrder(cores))
-
-	if !*client.ExpandCPU {
-		if coreno > client.toprows-1 {
-			cores = cores[:client.toprows-1] // first core(s)
-		}
-
-		total := sum.User + sum.Sys + sum.Idle // + sum.Nice
-
-		user := format.Percent(sum.User, total)
-		sys := format.Percent(sum.Sys, total)
-		idle := uint(0)
-		if user+sys < 100 {
-			idle = 100 - user - sys
-		}
-		cores = append([]types.CoreInfo{{ // "all N"
-			N:         fmt.Sprintf("all %d", coreno),
-			User:      user,
-			Sys:       sys,
-			Idle:      idle,
-			UserClass: format.TextClassColorPercent(user),
-			SysClass:  format.TextClassColorPercent(sys),
-			IdleClass: format.TextClassColorPercent(100 - idle),
-			// UserSpark: .spark(),
-			// SysSpark:  .spark(),
-			// IdleSpark: .spark(),
-		}}, cores...)
-	}
-
-	cpu.List = cores
-	return cpu, coreno
 }
 
 type diskInfo struct {
@@ -259,7 +163,7 @@ func orderDisks(disks []diskInfo, seq types.SEQ) []diskInfo {
 		sort.Stable(diskOrder{
 			disks:   disks,
 			seq:     seq,
-			reverse: _DFBIMAP.SEQ2REVERSE[seq],
+			reverse: client.DFBIMAP.SEQ2REVERSE[seq],
 		})
 	}
 	return disks
@@ -273,10 +177,10 @@ func diskMeta(disk diskInfo) types.DiskMeta {
 	}
 }
 
-func dfbytes(diskinfos []diskInfo, client client) *types.DFbytes {
+func dfbytes(diskinfos []diskInfo, client client.Client) *types.DFbytes {
 	var disks []types.DiskBytes
 	for i, disk := range diskinfos {
-		if !*client.ExpandDF && i > client.toprows-1 {
+		if !*client.ExpandDF && i > client.Toprows-1 {
 			break
 		}
 		total, approxtotal, _ := format.HumanBandback(disk.Total)
@@ -295,10 +199,10 @@ func dfbytes(diskinfos []diskInfo, client client) *types.DFbytes {
 	return dsb
 }
 
-func dfinodes(diskinfos []diskInfo, client client) *types.DFinodes {
+func dfinodes(diskinfos []diskInfo, client client.Client) *types.DFinodes {
 	var disks []types.DiskInodes
 	for i, disk := range diskinfos {
-		if !*client.ExpandDF && i > client.toprows-1 {
+		if !*client.ExpandDF && i > client.Toprows-1 {
 			break
 		}
 		itotal, approxitotal, _ := format.HumanBandback(disk.Inodes)
@@ -317,31 +221,6 @@ func dfinodes(diskinfos []diskInfo, client client) *types.DFinodes {
 	return dsi
 }
 
-var _DFBIMAP = types.Seq2bimap(DFFS, // the default seq for ordering
-	types.Seq2string{
-		DFFS:    "fs",
-		DFSIZE:  "size",
-		DFUSED:  "used",
-		DFAVAIL: "avail",
-		DFMP:    "mp",
-	}, []types.SEQ{
-		DFFS, DFMP,
-	})
-
-var _PSBIMAP = types.Seq2bimap(PSPID, // the default seq for ordering
-	types.Seq2string{
-		PSPID:  "pid",
-		PSPRI:  "pri",
-		PSNICE: "nice",
-		PSSIZE: "size",
-		PSRES:  "res",
-		PSTIME: "time",
-		PSNAME: "name",
-		PSUID:  "user",
-	}, []types.SEQ{
-		PSNAME, PSUID,
-	})
-
 func username(uids map[uint]string, uid uint) string {
 	if s, ok := uids[uid]; ok {
 		return s
@@ -354,16 +233,16 @@ func username(uids map[uint]string, uid uint) string {
 	return s
 }
 
-func orderProc(procs []types.ProcInfo, client *client, send *sendClient) []types.ProcData {
+func orderProc(procs []types.ProcInfo, cl *client.Client, send *client.SendClient) []types.ProcData {
 	if len(procs) > 1 {
 		sort.Sort(procOrder{ // not sort.Stable
 			procs:   procs,
-			seq:     client.psSEQ,
-			reverse: _PSBIMAP.SEQ2REVERSE[client.psSEQ],
+			seq:     cl.PSSEQ,
+			reverse: client.PSBIMAP.SEQ2REVERSE[cl.PSSEQ],
 		})
 	}
 
-	limitPS := client.psLimit
+	limitPS := cl.PSlimit
 	notdec := limitPS <= 1
 	notexp := limitPS >= len(procs)
 
@@ -373,9 +252,9 @@ func orderProc(procs []types.ProcInfo, client *client, send *sendClient) []types
 		procs = procs[:limitPS]
 	}
 
-	setBool(&client.PSnotDecreasable, &send.PSnotDecreasable, notdec)
-	setBool(&client.PSnotExpandable, &send.PSnotExpandable, notexp)
-	setString(&client.PSplusText, &send.PSplusText, fmt.Sprintf("%d+", limitPS))
+	client.SetBool(&cl.PSnotDecreasable, &send.PSnotDecreasable, notdec)
+	client.SetBool(&cl.PSnotExpandable, &send.PSnotExpandable, notexp)
+	client.SetString(&cl.PSplusText, &send.PSplusText, fmt.Sprintf("%d+", limitPS))
 
 	uids := map[uint]string{}
 	var list []types.ProcData
@@ -406,7 +285,7 @@ type last struct {
 
 type lastinfo struct {
 	Generic    generic
-	CPU        types.CpuList
+	CPU        cpu.CPUData
 	RAM        types.Memory
 	Swap       types.Memory
 	DiskList   []diskInfo
@@ -561,7 +440,7 @@ func (f five) spark() string {
 
 type IndexData struct {
 	Generic generic
-	CPU     types.CPUInfo
+	CPU     cpu.CPUInfo
 	MEM     types.MEM
 
 	PStable PStable
@@ -583,15 +462,15 @@ type IndexData struct {
 	VERSION        string
 	PeriodDuration types.Duration // default refresh value for placeholder
 
-	Client client
+	Client client.Client
 
-	IFTABS iftabs
-	DFTABS dftabs
+	IFTABS client.IFtabs
+	DFTABS client.DFtabs
 }
 
 type indexUpdate struct {
 	Generic  *generic        `json:",omitempty"`
-	CPU      *types.CPUInfo  `json:",omitempty"`
+	CPU      *cpu.CPUInfo    `json:",omitempty"`
 	MEM      *types.MEM      `json:",omitempty"`
 	DFlinks  *DFlinks        `json:",omitempty"`
 	DFbytes  *types.DFbytes  `json:",omitempty"`
@@ -607,7 +486,7 @@ type indexUpdate struct {
 	VagrantError    string
 	VagrantErrord   bool
 
-	Client *sendClient `json:",omitempty"`
+	Client *client.SendClient `json:",omitempty"`
 }
 
 var lastInfo last
@@ -627,7 +506,7 @@ func (la *last) collect() {
 	gch := make(chan generic, 1)
 	rch := make(chan types.Memory, 1)
 	sch := make(chan types.Memory, 1)
-	cch := make(chan types.CpuList, 1)
+	cch := make(chan cpu.CPUData, 1)
 	dch := make(chan []diskInfo, 1)
 	pch := make(chan []types.ProcInfo, 1)
 	ifch := make(chan IfInfo, 1)
@@ -643,11 +522,11 @@ func (la *last) collect() {
 		la.mutex.Lock()
 		defer la.mutex.Unlock()
 
-		var prevCpuList *sigar.CpuList
+		var prevcl *sigar.CpuList
 		if la.Previous != nil {
-			prevCpuList = la.Previous.CPU
+			prevcl = la.Previous.CPU
 		}
-		go getCPU(cch, prevCpuList)
+		go cpu.CollectCPU(cch, prevcl)
 	}()
 
 	la.mutex.Lock()
@@ -706,9 +585,9 @@ func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Bis
 	}
 }
 
-func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh bool) (indexUpdate, last) {
+func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (indexUpdate, last) {
 
-	client.recalcrows() // before anything
+	cl.RecalcRows() // before anything
 
 	var (
 		coreno      int
@@ -735,66 +614,66 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 			copy(previf_copy, lastInfo.Previous.Interfaces)
 		}
 
-		if true { // client.RefreshGeneric.refresh(forcerefresh)
+		if true { // cl.RefreshGeneric.Refresh(forcerefresh)
 			g := lastInfo.Generic
 			g.LA = g.LA1spark + " " + g.LA
 			iu.Generic = &g // &lastInfo.Generic
 		}
-		if !*client.HideMEM && client.RefreshMEM.refresh(forcerefresh) {
-			iu.MEM = lastInfo.MEM(*client)
+		if !*cl.HideMEM && cl.RefreshMEM.Refresh(forcerefresh) {
+			iu.MEM = lastInfo.MEM(*cl)
 		}
-		if !*client.HideCPU && client.RefreshCPU.refresh(forcerefresh) {
-			iu.CPU, coreno = lastInfo.CPUDelta(*client)
+		if !*cl.HideCPU && cl.RefreshCPU.Refresh(forcerefresh) {
+			iu.CPU, coreno = lastInfo.CPU.CPUInfo(*cl)
 		}
 	}()
 
 	if req != nil {
 		req.ParseForm() // do ParseForm even if req.Form == nil, otherwise *links won't be set for index requests without parameters
 		base := url.Values{}
-		iu.PSlinks = (*PSlinks)(linkattrs(req, base, "ps", _PSBIMAP, &client.psSEQ))
-		iu.DFlinks = (*DFlinks)(linkattrs(req, base, "df", _DFBIMAP, &client.dfSEQ))
+		iu.PSlinks = (*PSlinks)(linkattrs(req, base, "ps", client.PSBIMAP, &cl.PSSEQ))
+		iu.DFlinks = (*DFlinks)(linkattrs(req, base, "df", client.DFBIMAP, &cl.DFSEQ))
 	}
 
-	if iu.CPU != nil { // TODO Is it ok to update the *client.Expand*CPU when the CPU is shown only?
-		setBool(&client.ExpandableCPU, &send.ExpandableCPU, coreno > client.toprows-1) // one row reserved for "all N"
-		setString(&client.ExpandtextCPU, &send.ExpandtextCPU, fmt.Sprintf("Expanded (%d)", coreno))
+	if iu.CPU != nil { // TODO Is it ok to update the *cl.Expand*CPU when the CPU is shown only?
+		client.SetBool(&cl.ExpandableCPU, &send.ExpandableCPU, coreno > cl.Toprows-1) // one row reserved for "all N"
+		client.SetString(&cl.ExpandtextCPU, &send.ExpandtextCPU, fmt.Sprintf("Expanded (%d)", coreno))
 	}
 
 	if true {
-		setBool(&client.ExpandableIF, &send.ExpandableIF, len(if_copy) > client.toprows)
-		setString(&client.ExpandtextIF, &send.ExpandtextIF, fmt.Sprintf("Expanded (%d)", len(if_copy)))
+		client.SetBool(&cl.ExpandableIF, &send.ExpandableIF, len(if_copy) > cl.Toprows)
+		client.SetString(&cl.ExpandtextIF, &send.ExpandtextIF, fmt.Sprintf("Expanded (%d)", len(if_copy)))
 
-		setBool(&client.ExpandableDF, &send.ExpandableDF, len(df_copy) > client.toprows)
-		setString(&client.ExpandtextDF, &send.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(df_copy)))
+		client.SetBool(&cl.ExpandableDF, &send.ExpandableDF, len(df_copy) > cl.Toprows)
+		client.SetString(&cl.ExpandtextDF, &send.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(df_copy)))
 	}
 
-	if !*client.HideDF && client.RefreshDF.refresh(forcerefresh) {
-		orderedDisks := orderDisks(df_copy, client.dfSEQ)
+	if !*cl.HideDF && cl.RefreshDF.Refresh(forcerefresh) {
+		orderedDisks := orderDisks(df_copy, cl.DFSEQ)
 
-		if *client.TabDF == DFBYTES_TABID {
-			iu.DFbytes = dfbytes(orderedDisks, *client)
-		} else if *client.TabDF == DFINODES_TABID {
-			iu.DFinodes = dfinodes(orderedDisks, *client)
+		if *cl.TabDF == client.DFBYTES_TABID {
+			iu.DFbytes = dfbytes(orderedDisks, *cl)
+		} else if *cl.TabDF == client.DFINODES_TABID {
+			iu.DFinodes = dfinodes(orderedDisks, *cl)
 		}
 	}
 
-	if !*client.HideIF && client.RefreshIF.refresh(forcerefresh) {
-		switch *client.TabIF {
-		case IFBYTES_TABID:
-			iu.IFbytes = interfacesDelta(interfaceBytes{}, if_copy, previf_copy, *client)
-		case IFERRORS_TABID:
-			iu.IFerrors = interfacesDelta(interfaceNumericals{interfaceInoutErrors{}}, if_copy, previf_copy, *client)
-		case IFPACKETS_TABID:
-			iu.IFpackets = interfacesDelta(interfaceNumericals{interfaceInoutPackets{}}, if_copy, previf_copy, *client)
+	if !*cl.HideIF && cl.RefreshIF.Refresh(forcerefresh) {
+		switch *cl.TabIF {
+		case client.IFBYTES_TABID:
+			iu.IFbytes = interfacesDelta(interfaceBytes{}, if_copy, previf_copy, *cl)
+		case client.IFERRORS_TABID:
+			iu.IFerrors = interfacesDelta(interfaceNumericals{interfaceInoutErrors{}}, if_copy, previf_copy, *cl)
+		case client.IFPACKETS_TABID:
+			iu.IFpackets = interfacesDelta(interfaceNumericals{interfaceInoutPackets{}}, if_copy, previf_copy, *cl)
 		}
 	}
 
-	if !*client.HidePS && client.RefreshPS.refresh(forcerefresh) {
+	if !*cl.HidePS && cl.RefreshPS.Refresh(forcerefresh) {
 		iu.PStable = new(PStable)
-		iu.PStable.List = orderProc(ps_copy, client, &send)
+		iu.PStable.List = orderProc(ps_copy, cl, &send)
 	}
 
-	if !*client.HideVG && client.RefreshVG.refresh(forcerefresh) {
+	if !*cl.HideVG && cl.RefreshVG.Refresh(forcerefresh) {
 		machines, err := vagrantmachines()
 		if err != nil {
 			iu.VagrantError = err.Error()
@@ -805,7 +684,7 @@ func getUpdates(req *http.Request, client *client, send sendClient, forcerefresh
 		}
 	}
 
-	if send != (sendClient{}) {
+	if send != (client.SendClient{}) {
 		iu.Client = &send
 	}
 	return iu, lastInfo
@@ -817,11 +696,11 @@ func indexData(minrefresh types.Duration, req *http.Request) IndexData {
 		lastInfo.collect()
 	}
 
-	client := defaultClient(minrefresh)
-	updates, _ := getUpdates(req, &client, sendClient{}, true)
+	cl := client.DefaultClient(minrefresh)
+	updates, _ := getUpdates(req, &cl, client.SendClient{}, true)
 
 	data := IndexData{
-		Client:  client,
+		Client:  cl,
 		Generic: *updates.Generic,
 		CPU:     *updates.CPU,
 		MEM:     *updates.MEM,
@@ -854,8 +733,8 @@ func indexData(minrefresh types.Duration, req *http.Request) IndexData {
 	data.VagrantError = updates.VagrantError
 	data.VagrantErrord = updates.VagrantErrord
 
-	data.DFTABS = DFTABS // from tabs.go
-	data.IFTABS = IFTABS // from tabs.go
+	data.DFTABS = client.DFTABS // const
+	data.IFTABS = client.IFTABS // const
 
 	return data
 }

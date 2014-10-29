@@ -1,4 +1,4 @@
-package ostent
+package client
 
 import (
 	"time"
@@ -11,7 +11,7 @@ type refresh struct {
 	tick int
 }
 
-func (r *refresh) refresh(forcerefresh bool) bool {
+func (r *refresh) Refresh(forcerefresh bool) bool {
 	if forcerefresh {
 		return true
 	}
@@ -28,7 +28,7 @@ func (r refresh) expires() bool {
 	return r.tick+1 >= int(time.Duration(r.Duration)/time.Second)
 }
 
-func (c client) expires() bool {
+func (c Client) Expires() bool {
 	for _, refresh := range []*refresh{
 		c.RefreshMEM,
 		c.RefreshIF,
@@ -47,15 +47,15 @@ func (c client) expires() bool {
 type internalClient struct {
 	// NB lowercase fields only, NOT to be marshalled/exported
 
-	psLimit int
+	PSlimit int
 
-	psSEQ types.SEQ
-	dfSEQ types.SEQ
+	PSSEQ types.SEQ
+	DFSEQ types.SEQ
 
-	toprows int
+	Toprows int
 }
 
-func (c client) mergeTitle(dst *string, src string, send **string) {
+func (c Client) mergeTitle(dst *string, src string, send **string) {
 	// *send = nil
 	if *dst == src {
 		return
@@ -94,7 +94,7 @@ type commonClient struct {
 }
 
 // server side full client state
-type client struct {
+type Client struct {
 	internalClient `json:"-"` // NB not marshalled
 	commonClient
 
@@ -119,11 +119,11 @@ type client struct {
 	PSnotDecreasable *bool   `json:",omitempty"`
 }
 
-func (c *client) recalcrows() {
-	c.toprows = map[bool]int{true: 1, false: 2}[bool(*c.HideSWAP)]
+func (c *Client) RecalcRows() {
+	c.Toprows = map[bool]int{true: 1, false: 2}[bool(*c.HideSWAP)]
 }
 
-func setBool(b, b2 **bool, v bool) {
+func SetBool(b, b2 **bool, v bool) {
 	if *b != nil && **b == v {
 		return // unchanged
 	}
@@ -134,7 +134,7 @@ func setBool(b, b2 **bool, v bool) {
 	*b2 = *b
 }
 
-func setString(s, s2 **string, v string) {
+func SetString(s, s2 **string, v string) {
 	if *s != nil && **s == v {
 		return // unchanged
 	}
@@ -145,8 +145,8 @@ func setString(s, s2 **string, v string) {
 	*s2 = *s
 }
 
-type sendClient struct {
-	client
+type SendClient struct {
+	Client
 
 	RefreshErrorMEM *bool `json:",omitempty"`
 	RefreshErrorIF  *bool `json:",omitempty"`
@@ -158,7 +158,7 @@ type sendClient struct {
 	DebugError *string `json:",omitempty"`
 }
 
-func (c client) mergeBool(dst, src *bool, send **bool) {
+func (c Client) mergeBool(dst, src *bool, send **bool) {
 	// c is unused
 	if src == nil {
 		return
@@ -167,7 +167,7 @@ func (c client) mergeBool(dst, src *bool, send **bool) {
 	*send = src
 }
 
-func (c client) mergeSEQ(dst, src *types.SEQ, send **types.SEQ) {
+func (c Client) mergeSEQ(dst, src *types.SEQ, send **types.SEQ) {
 	// c is unused
 	if src == nil {
 		return
@@ -176,7 +176,7 @@ func (c client) mergeSEQ(dst, src *types.SEQ, send **types.SEQ) {
 	*send = src
 }
 
-func (c *client) Merge(r recvClient, s *sendClient) {
+func (c *Client) Merge(r RecvClient, s *SendClient) {
 	c.mergeBool(c.HideMEM, r.HideMEM, &s.HideMEM)
 	c.mergeBool(c.HideIF, r.HideIF, &s.HideIF)
 	c.mergeBool(c.HideCPU, r.HideCPU, &s.HideCPU)
@@ -214,8 +214,8 @@ func newseq(v types.SEQ) *types.SEQ {
 	return s
 }
 
-func defaultClient(minrefresh types.Duration) client {
-	cs := client{}
+func DefaultClient(minrefresh types.Duration) Client {
+	cs := Client{}
 
 	cs.HideMEM = newfalse()
 	cs.HideIF = newfalse()
@@ -255,12 +255,77 @@ func defaultClient(minrefresh types.Duration) client {
 	cs.RefreshPS = &refresh{Duration: minrefresh}
 	cs.RefreshVG = &refresh{Duration: minrefresh}
 
-	cs.psLimit = 8
+	cs.PSlimit = 8
 
-	cs.psSEQ = _PSBIMAP.DefaultSeq
-	cs.dfSEQ = _DFBIMAP.DefaultSeq
+	cs.PSSEQ = PSBIMAP.DefaultSeq
+	cs.DFSEQ = DFBIMAP.DefaultSeq
 
-	cs.recalcrows()
+	cs.RecalcRows()
 
 	return cs
+}
+
+type RecvClient struct {
+	commonClient
+	MorePsignal      *bool
+	RefreshSignalMEM *string
+	RefreshSignalIF  *string
+	RefreshSignalCPU *string
+	RefreshSignalDF  *string
+	RefreshSignalPS  *string
+	RefreshSignalVG  *string
+}
+
+func (rs *RecvClient) mergeMorePsignal(cs *Client) {
+	if rs.MorePsignal == nil {
+		return
+	}
+	if *rs.MorePsignal {
+		if cs.PSlimit < 65536 {
+			cs.PSlimit *= 2
+		}
+	} else if cs.PSlimit >= 2 {
+		cs.PSlimit /= 2
+	}
+	rs.MorePsignal = nil
+}
+
+func (rs *RecvClient) mergeRefreshSignal(above types.Duration, ppinput *string, prefresh *refresh, sendr **refresh, senderr **bool) error {
+	if ppinput == nil {
+		return nil
+	}
+	pv := types.PeriodValue{Above: &above}
+	if err := pv.Set(*ppinput); err != nil {
+		*senderr = newtrue()
+		return err
+	}
+	*senderr = newfalse()
+	*sendr = new(refresh)
+	(**sendr).Duration = pv.Duration
+	prefresh.Duration = pv.Duration
+	prefresh.tick = 0
+	return nil
+}
+
+func (rs *RecvClient) MergeClient(minrefresh types.Duration, cs *Client, send *SendClient) error {
+	rs.mergeMorePsignal(cs)
+	if err := rs.mergeRefreshSignal(minrefresh, rs.RefreshSignalMEM, cs.RefreshMEM, &send.RefreshMEM, &send.RefreshErrorMEM); err != nil {
+		return err
+	}
+	if err := rs.mergeRefreshSignal(minrefresh, rs.RefreshSignalIF, cs.RefreshIF, &send.RefreshIF, &send.RefreshErrorIF); err != nil {
+		return err
+	}
+	if err := rs.mergeRefreshSignal(minrefresh, rs.RefreshSignalCPU, cs.RefreshCPU, &send.RefreshCPU, &send.RefreshErrorCPU); err != nil {
+		return err
+	}
+	if err := rs.mergeRefreshSignal(minrefresh, rs.RefreshSignalDF, cs.RefreshDF, &send.RefreshDF, &send.RefreshErrorDF); err != nil {
+		return err
+	}
+	if err := rs.mergeRefreshSignal(minrefresh, rs.RefreshSignalPS, cs.RefreshPS, &send.RefreshPS, &send.RefreshErrorPS); err != nil {
+		return err
+	}
+	if err := rs.mergeRefreshSignal(minrefresh, rs.RefreshSignalVG, cs.RefreshVG, &send.RefreshVG, &send.RefreshErrorVG); err != nil {
+		return err
+	}
+	return nil
 }

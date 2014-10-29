@@ -9,6 +9,8 @@ import (
 	"time"
 
 	gorillawebsocket "github.com/gorilla/websocket"
+
+	"github.com/ostrost/ostent/client"
 	"github.com/ostrost/ostent/types"
 )
 
@@ -83,7 +85,7 @@ type conn struct {
 
 	receive    chan *received
 	pushch     chan *indexUpdate
-	full       client
+	full       client.Client
 	minrefresh types.Duration
 	access     *logger
 
@@ -94,7 +96,7 @@ type conn struct {
 func (c *conn) expires() bool {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
-	return c.full.expires()
+	return c.full.Expires()
 }
 
 func (c *conn) tack() {
@@ -217,75 +219,9 @@ var (
 	register   = make(chan receiver)     // (chan *conn)
 )
 
-type recvClient struct {
-	commonClient
-	MorePsignal      *bool
-	RefreshSignalMEM *string
-	RefreshSignalIF  *string
-	RefreshSignalCPU *string
-	RefreshSignalDF  *string
-	RefreshSignalPS  *string
-	RefreshSignalVG  *string
-}
-
-func (rs *recvClient) mergeMorePsignal(cs *client) {
-	if rs.MorePsignal == nil {
-		return
-	}
-	if *rs.MorePsignal {
-		if cs.psLimit < 65536 {
-			cs.psLimit *= 2
-		}
-	} else if cs.psLimit >= 2 {
-		cs.psLimit /= 2
-	}
-	rs.MorePsignal = nil
-}
-
-func (rs *recvClient) mergeRefreshSignal(above types.Duration, ppinput *string, prefresh *refresh, sendr **refresh, senderr **bool) error {
-	if ppinput == nil {
-		return nil
-	}
-	pv := types.PeriodValue{Above: &above}
-	if err := pv.Set(*ppinput); err != nil {
-		*senderr = newtrue()
-		return err
-	}
-	*senderr = newfalse()
-	*sendr = new(refresh)
-	(**sendr).Duration = pv.Duration
-	prefresh.Duration = pv.Duration
-	prefresh.tick = 0
-	return nil
-}
-
-func (rs *recvClient) MergeClient(c *conn, send *sendClient) error {
-	cs := &c.full
-	rs.mergeMorePsignal(cs)
-	if err := rs.mergeRefreshSignal(c.minrefresh, rs.RefreshSignalMEM, cs.RefreshMEM, &send.RefreshMEM, &send.RefreshErrorMEM); err != nil {
-		return err
-	}
-	if err := rs.mergeRefreshSignal(c.minrefresh, rs.RefreshSignalIF, cs.RefreshIF, &send.RefreshIF, &send.RefreshErrorIF); err != nil {
-		return err
-	}
-	if err := rs.mergeRefreshSignal(c.minrefresh, rs.RefreshSignalCPU, cs.RefreshCPU, &send.RefreshCPU, &send.RefreshErrorCPU); err != nil {
-		return err
-	}
-	if err := rs.mergeRefreshSignal(c.minrefresh, rs.RefreshSignalDF, cs.RefreshDF, &send.RefreshDF, &send.RefreshErrorDF); err != nil {
-		return err
-	}
-	if err := rs.mergeRefreshSignal(c.minrefresh, rs.RefreshSignalPS, cs.RefreshPS, &send.RefreshPS, &send.RefreshErrorPS); err != nil {
-		return err
-	}
-	if err := rs.mergeRefreshSignal(c.minrefresh, rs.RefreshSignalVG, cs.RefreshVG, &send.RefreshVG, &send.RefreshErrorVG); err != nil {
-		return err
-	}
-	return nil
-}
-
 type received struct {
 	Search *string
-	Client *recvClient
+	Client *client.RecvClient
 }
 
 type served struct {
@@ -413,10 +349,10 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	stop := func() {
 		w.WriteHeader(http.StatusBadRequest) // well, not a bad request but a write failure
 	}
-	send := sendClient{}
+	send := client.SendClient{}
 	if sd.received != nil {
 		if sd.received.Client != nil {
-			err := sd.received.Client.MergeClient(sd.conn, &send)
+			err := sd.received.Client.MergeClient(sd.conn.minrefresh, &sd.conn.full, &send)
 			if err != nil {
 				// if !sd.conn.Conn.writeError(err) { stop(); return }
 				send.DebugError = new(string)
@@ -490,7 +426,7 @@ func Slashws(access *logger, minrefresh types.Duration, w http.ResponseWriter, r
 
 		receive:    make(chan *received, 2),
 		pushch:     make(chan *indexUpdate, 2),
-		full:       defaultClient(minrefresh),
+		full:       client.DefaultClient(minrefresh),
 		minrefresh: minrefresh,
 		access:     access,
 	}
@@ -503,3 +439,7 @@ func Slashws(access *logger, minrefresh types.Duration, w http.ResponseWriter, r
 	go c.receiveLoop(stop) // read from the client
 	c.updateLoop(stop)     // write to the client
 }
+
+func newfalse() *bool      { return new(bool) }
+func newtrue() *bool       { return newbool(true) }
+func newbool(v bool) *bool { b := new(bool); *b = v; return b }

@@ -1,10 +1,10 @@
-package ostent
+package client
 
 import (
 	"github.com/ostrost/ostent/types"
 )
 
-var DFTABS = dftabs{
+var DFTABS = DFtabs{
 	DFinodes: DFINODES_TABID,
 	DFbytes:  DFBYTES_TABID,
 
@@ -12,7 +12,7 @@ var DFTABS = dftabs{
 	DFbytesTitle:  "Disks",
 }
 
-var IFTABS = iftabs{
+var IFTABS = IFtabs{
 	IFpackets: IFPACKETS_TABID,
 	IFerrors:  IFERRORS_TABID,
 	IFbytes:   IFBYTES_TABID,
@@ -22,7 +22,7 @@ var IFTABS = iftabs{
 	IFbytesTitle:   "Interfaces",
 }
 
-type dftabs struct {
+type DFtabs struct {
 	DFinodes types.SEQ
 	DFbytes  types.SEQ
 
@@ -30,7 +30,7 @@ type dftabs struct {
 	DFbytesTitle  string
 }
 
-func (df dftabs) Title(s types.SEQ) string {
+func (df DFtabs) Title(s types.SEQ) string {
 	switch {
 	case s == df.DFinodes:
 		return df.DFinodesTitle
@@ -41,7 +41,7 @@ func (df dftabs) Title(s types.SEQ) string {
 	return ""
 }
 
-type iftabs struct {
+type IFtabs struct {
 	IFpackets types.SEQ
 	IFerrors  types.SEQ
 	IFbytes   types.SEQ
@@ -51,7 +51,7 @@ type iftabs struct {
 	IFbytesTitle   string
 }
 
-func (fi iftabs) Title(s types.SEQ) string {
+func (fi IFtabs) Title(s types.SEQ) string {
 	switch {
 	case s == fi.IFpackets:
 		return fi.IFpacketsTitle
@@ -89,3 +89,49 @@ var DF_TABS = []types.SEQ{
 	 DFBYTES_TABID,
 }
 */
+
+var DFBIMAP = types.Seq2bimap(DFFS, // the default seq for ordering
+	types.Seq2string{
+		DFFS:    "fs",
+		DFSIZE:  "size",
+		DFUSED:  "used",
+		DFAVAIL: "avail",
+		DFMP:    "mp",
+	}, []types.SEQ{
+		DFFS, DFMP,
+	})
+
+var PSBIMAP = types.Seq2bimap(PSPID, // the default seq for ordering
+	types.Seq2string{
+		PSPID:  "pid",
+		PSPRI:  "pri",
+		PSNICE: "nice",
+		PSSIZE: "size",
+		PSRES:  "res",
+		PSTIME: "time",
+		PSNAME: "name",
+		PSUID:  "user",
+	}, []types.SEQ{
+		PSNAME, PSUID,
+	})
+
+const (
+	____DFIOTA types.SEQ = iota
+	DFFS
+	DFSIZE
+	DFUSED
+	DFAVAIL
+	DFMP
+)
+
+const (
+	____PSIOTA types.SEQ = iota
+	PSPID
+	PSPRI
+	PSNICE
+	PSSIZE
+	PSRES
+	PSTIME
+	PSNAME
+	PSUID
+)

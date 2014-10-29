@@ -199,25 +199,3 @@ func read_procs(CH chan<- []types.ProcInfo) {
 	}
 	CH <- procs
 }
-
-func getCPU(CH chan<- types.CpuList, prevCpuList *sigar.CpuList) {
-	cl := types.NewCpuList()
-	if prevCpuList != nil {
-		cl.CalculateDelta(prevCpuList.List)
-	}
-	CH <- cl
-}
-
-type namefloat64 struct {
-	string
-	float64
-}
-
-type totalCpu struct {
-	sigar.Cpu
-	total uint64
-}
-
-func (tc totalCpu) fraction(n uint64) float64 {
-	return float64(n) / float64(tc.total)
-}

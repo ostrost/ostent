@@ -3,8 +3,6 @@ package types
 import (
 	"html/template"
 	"net/url"
-
-	sigar "github.com/rzab/gosigar"
 )
 
 // SEQ is a distinct int type for consts and other uses.
@@ -40,63 +38,6 @@ type Memory struct {
 // MEM type has a list of Memory.
 type MEM struct {
 	List []Memory
-}
-
-type CpuList struct {
-	sigarList sigar.CpuList
-	deltaList *sigar.CpuList
-}
-
-func NewCpuList() CpuList {
-	cl := sigar.CpuList{}
-	cl.Get()
-	return CpuList{sigarList: cl}
-}
-
-func (cl CpuList) List() sigar.CpuList {
-	if cl.deltaList != nil {
-		return *cl.deltaList
-	}
-	return cl.sigarList
-}
-
-func (cl CpuList) SigarList() *sigar.CpuList {
-	return &cl.sigarList
-}
-
-func (cl *CpuList) CalculateDelta(other []sigar.Cpu) {
-	if len(other) == 0 {
-		return
-	}
-	cores := cl.sigarList.List
-	coreno := len(cores)
-	if len(other) != coreno {
-		return
-	}
-	deltaList := make([]sigar.Cpu, coreno)
-	for i, sigarCpu := range cores {
-		deltaList[i] = sigarCpu.Delta(other[i])
-	}
-	cl.deltaList = &sigar.CpuList{List: deltaList}
-}
-
-// CPUInfo type has a list of CoreInfo.
-type CPUInfo struct {
-	List []CoreInfo // TODO rename to Cores
-}
-
-// CoreInfo type is a struct of core metrics.
-type CoreInfo struct {
-	N         string
-	User      uint // percent without "%"
-	Sys       uint // percent without "%"
-	Idle      uint // percent without "%"
-	UserClass string
-	SysClass  string
-	IdleClass string
-	// UserSpark string
-	// SysSpark  string
-	// IdleSpark string
 }
 
 // DiskMeta type has common for DiskBytes and DiskInodes fields.
@@ -265,4 +206,9 @@ type ProcData struct {
 	UserHTML template.HTML
 	Size     string // with units
 	Resident string // with units
+}
+
+type NameFloat64 struct {
+	String  string
+	Float64 float64
 }

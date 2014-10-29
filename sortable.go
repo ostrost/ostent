@@ -4,20 +4,6 @@ import (
 	"github.com/ostrost/ostent/types"
 )
 
-type cpuOrder []types.CoreInfo
-
-func (co cpuOrder) Len() int {
-	return len(co)
-}
-
-func (co cpuOrder) Less(i, j int) bool {
-	return (co[j].User + co[j].Sys) < (co[i].User + co[i].Sys)
-}
-
-func (co cpuOrder) Swap(i, j int) {
-	co[i], co[j] = co[j], co[i]
-}
-
 type interfaceOrder []types.Interface
 
 func (io interfaceOrder) Len() int {
