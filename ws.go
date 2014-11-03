@@ -362,7 +362,7 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	update, _ := getUpdates(r, &sd.conn.full, send, sd.received != nil && sd.received.Client != nil)
+	update := getUpdates(r, &sd.conn.full, send, sd.received != nil && sd.received.Client != nil)
 	if update == (indexUpdate{}) { // nothing scheduled for the moment, no update
 		return
 	}

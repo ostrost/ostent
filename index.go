@@ -585,7 +585,7 @@ func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Bis
 	}
 }
 
-func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (indexUpdate, last) {
+func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) indexUpdate {
 
 	cl.RecalcRows() // before anything
 
@@ -687,7 +687,7 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 	if send != (client.SendClient{}) {
 		iu.Client = &send
 	}
-	return iu, lastInfo
+	return iu
 }
 
 func indexData(minrefresh types.Duration, req *http.Request) IndexData {
@@ -697,7 +697,7 @@ func indexData(minrefresh types.Duration, req *http.Request) IndexData {
 	}
 
 	cl := client.DefaultClient(minrefresh)
-	updates, _ := getUpdates(req, &cl, client.SendClient{}, true)
+	updates := getUpdates(req, &cl, client.SendClient{}, true)
 
 	data := IndexData{
 		Client:  cl,
