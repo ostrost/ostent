@@ -93,7 +93,7 @@ type conn struct {
 	writemutex sync.Mutex
 }
 
-func (c *conn) expires() bool {
+func (c *conn) Expires() bool {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 	return c.full.Expires()
@@ -115,7 +115,7 @@ type receiver interface {
 	tack()
 	push(*indexUpdate)
 	reload()
-	expires() bool
+	Expires() bool
 	closeChans()
 }
 
@@ -202,7 +202,7 @@ func (cs *conns) expires() bool {
 	defer cs.mutex.Unlock()
 
 	for c := range cs.connmap {
-		if c.expires() {
+		if c.Expires() {
 			return true
 		}
 	}

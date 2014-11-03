@@ -212,3 +212,8 @@ type NameFloat64 struct {
 	String  string
 	Float64 float64
 }
+
+type NameString struct {
+	String      string
+	StringValue string
+}

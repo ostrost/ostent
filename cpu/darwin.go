@@ -2,20 +2,18 @@
 
 package cpu
 
-import (
-	"github.com/ostrost/ostent/types"
-	sigar "github.com/rzab/gosigar"
-)
+import "github.com/ostrost/ostent/types"
 
-func cpuTotal(c *sigar.Cpu) uint64 {
-	return c.User + c.Nice + c.Sys + c.Idle
+func (se Send) calcTotal() uint64 {
+	return se.cpu.User + se.cpu.Nice + se.cpu.Sys + se.cpu.Idle
 }
 
-func cpuFields(tc totalCpu) []types.NameFloat64 {
-	return []types.NameFloat64{
-		{"user", tc.fraction(tc.User)},
-		{"nice", tc.fraction(tc.Nice)},
-		{"system", tc.fraction(tc.Sys)},
-		{"idle", tc.fraction(tc.Idle)},
+func (se Send) Fields() []types.NameString {
+	cpu := se.raw()
+	return []types.NameString{
+		{"user", se.fraction(cpu.User)},
+		{"nice", se.fraction(cpu.Nice)},
+		{"system", se.fraction(cpu.Sys)},
+		{"idle", se.fraction(cpu.Idle)},
 	}
 }

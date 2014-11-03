@@ -51,7 +51,9 @@ func (cd *CPUData) CalculateDelta(other []sigar.Cpu) {
 
 // CPUInfo type has a list of CoreInfo.
 type CPUInfo struct {
-	List []CoreInfo // TODO rename to Cores
+	List    []CoreInfo     // TODO rename to Cores
+	RawInfo []CoreInfo     `json:"-"`
+	RawList *sigar.CpuList `json:"-"`
 }
 
 // CoreInfo type is a struct of core metrics.
@@ -80,14 +82,18 @@ func (cd *CPUData) CPUInfo(client client.Client) (*CPUInfo, int) {
 		cd.cpuInfo, cd.coreno = cd.newcpuInfo()
 	}
 	cl := cd.cpuInfo.List
-	if *client.ExpandCPU {
-		cl = cl[1:len(cl)] // all but "all"
-	} else { // "collapsed" view
-		if cd.coreno > client.Toprows-1 {
-			cl = cl[:client.Toprows] // first core(s)
+	cp := &CPUInfo{RawInfo: cl, RawList: cd.deltaList}
+	if cd.coreno != 1 { // all but "all"
+		cp.RawInfo = cl[1:len(cl)]
+		if *client.ExpandCPU {
+			cl = cl[1:len(cl)]
 		}
 	}
-	return &CPUInfo{List: cl}, cd.coreno
+	if !*client.ExpandCPU && cd.coreno > client.Toprows-1 {
+		cl = cl[:client.Toprows] // "collapsed" view, head of the list
+	}
+	cp.List = cl
+	return cp, cd.coreno
 }
 
 // newcpuInfo produces a cpuInfo
@@ -155,11 +161,33 @@ func CollectCPU(CH chan<- CPUData, prevcl *sigar.CpuList) {
 	CH <- cd
 }
 
-type totalCpu struct {
-	sigar.Cpu
-	total uint64
+type Send struct {
+	cpu   *sigar.Cpu
+	total *uint64
 }
 
-func (tc totalCpu) fraction(n uint64) float64 {
-	return float64(n) / float64(tc.total)
+func NewSend(ci CPUInfo, coreno int) Send {
+	var cpu *sigar.Cpu
+	if ci.RawList != nil {
+		cpu = &ci.RawList.List[coreno]
+	}
+	return Send{cpu: cpu}
+}
+
+func (se Send) raw() sigar.Cpu {
+	if se.cpu != nil {
+		return *se.cpu
+	}
+	return sigar.Cpu{}
+}
+
+func (se *Send) fraction(value uint64) string {
+	if se.cpu == nil {
+		return "nan"
+	}
+	if se.total == nil {
+		se.total = new(uint64)
+		*se.total = se.calcTotal()
+	}
+	return fmt.Sprintf("%f", float64(value)/float64(*se.total))
 }
