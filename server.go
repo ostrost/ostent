@@ -16,13 +16,15 @@ import (
 // Muxmap is a type of a map of pattern to HandlerFunc.
 type Muxmap map[string]http.HandlerFunc
 
+// Server is a http.Server with auxiliaries
 type Server struct {
 	http.Server
-	Access *logger
-	MUX    *TrieServeMux
-	Chain  alice.Chain
+	Access *logger       // the access_log
+	MUX    *TrieServeMux // the mux
+	Chain  alice.Chain   // the chain
 }
 
+// ServeExtra .Serve's with the extramap in the mux.
 func (s *Server) ServeExtra(listener net.Listener, extramap Muxmap) error {
 	if extramap != nil {
 		for path, handler := range extramap {
@@ -34,6 +36,7 @@ func (s *Server) ServeExtra(listener net.Listener, extramap Muxmap) error {
 	return s.Serve(listener)
 }
 
+// NewServer creates a Server.
 func NewServer(listener net.Listener, production bool) *Server {
 	access := newLogged(production, log.New(os.Stdout, "", 0))
 	recovery := recovery(production)
@@ -72,6 +75,7 @@ type loggerPrint interface {
 	Print(v ...interface{})
 }
 
+// Banner prints a banner with the logger.
 func Banner(listenaddr string, suffix string, logger loggerPrint) {
 	hostname, _ := getHostname()
 	var addrsp *[]net.Addr
@@ -124,5 +128,5 @@ func bannerText(listenaddr, hostname, suffix string, addrsp *[]net.Addr, logger 
 
 // VERSION of the latest known release.
 // Unused in non-production mode.
-// Compared with in main.production.go.
+// Compared with in github.com/ostrost/ostent/ostent[+build production]
 const VERSION = "0.1.9"
