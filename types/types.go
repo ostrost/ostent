@@ -3,6 +3,8 @@ package types
 import (
 	"html/template"
 	"net/url"
+
+	sigar "github.com/rzab/gosigar"
 )
 
 // SEQ is a distinct int type for consts and other uses.
@@ -28,6 +30,7 @@ func (seq SEQ) Sign(t bool) bool { // used in sortable_*.go
 
 // Memory type is a struct of memory metrics.
 type Memory struct {
+	Raw            sigar.Swap `json:"-"`
 	Kind           string
 	Total          string
 	Used           string

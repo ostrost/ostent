@@ -71,6 +71,7 @@ func _getmem(kind string, in sigar.Swap) types.Memory {
 	}
 
 	return types.Memory{
+		Raw:            in,
 		Kind:           kind,
 		Total:          total,
 		Used:           used,
