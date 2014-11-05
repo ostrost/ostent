@@ -71,7 +71,6 @@ func _getmem(kind string, in sigar.Swap) types.Memory {
 	}
 
 	return types.Memory{
-		Raw:            in,
 		Kind:           kind,
 		Total:          total,
 		Used:           used,
@@ -79,12 +78,13 @@ func _getmem(kind string, in sigar.Swap) types.Memory {
 		UsePercentHTML: template.HTML(html),
 	}
 }
-func getRAM(CH chan<- types.Memory) {
-	got := sigar.Mem{}
-	got.Get()
 
-	inactive := got.ActualFree - got.Free // == got.Used - got.ActualUsed // "kern"
-	_ = inactive
+func getRAM(CH chan<- types.RAM) {
+	got := sigar.Mem{}
+	extra1, extra2, _ := sigar.GetExtra(&got)
+
+	// inactive := got.ActualFree - got.Free // == got.Used - got.ActualUsed // "kern"
+	// _ = inactive
 
 	// Used = .Total - .Free
 	// | Free |           Used +%         | Total
@@ -93,11 +93,16 @@ func getRAM(CH chan<- types.Memory) {
 	// TODO active := vm_data.active_count << 12 (pagesize)
 	// TODO wired  := vm_data.wire_count   << 12 (pagesoze)
 
-	CH <- _getmem("RAM", sigar.Swap{
-		Total: got.Total,
-		Free:  got.Free,
-		Used:  got.Used, // == .Total - .Free
-	})
+	CH <- types.RAM{
+		Memory: _getmem("RAM", sigar.Swap{
+			Total: got.Total,
+			Free:  got.Free,
+			Used:  got.Used, // == .Total - .Free
+		}),
+		Raw:    got,
+		Extra1: extra1,
+		Extra2: extra2,
+	}
 }
 
 func getSwap(CH chan<- types.Memory) {

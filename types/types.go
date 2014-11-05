@@ -30,7 +30,6 @@ func (seq SEQ) Sign(t bool) bool { // used in sortable_*.go
 
 // Memory type is a struct of memory metrics.
 type Memory struct {
-	Raw            sigar.Swap `json:"-"`
 	Kind           string
 	Total          string
 	Used           string
@@ -40,7 +39,15 @@ type Memory struct {
 
 // MEM type has a list of Memory.
 type MEM struct {
-	List []Memory
+	List   []Memory
+	RawRAM RAM `json:"-"`
+}
+
+type RAM struct {
+	Memory
+	Raw    sigar.Mem
+	Extra1 uint64 // linux:buffered // darwin:wired
+	Extra2 uint64 // linux:cached   // darwin:active
 }
 
 // DiskMeta type has common for DiskBytes and DiskInodes fields.

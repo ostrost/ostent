@@ -106,7 +106,8 @@ func interfacesDelta(format interfaceFormat, current, previous []getifaddrs.IfDa
 
 func (li lastinfo) MEM(client client.Client) *types.MEM {
 	mem := new(types.MEM)
-	mem.List = append(mem.List, li.RAM)
+	mem.RawRAM = li.RAM
+	mem.List = append(mem.List, li.RAM.Memory)
 	if !*client.HideSWAP {
 		mem.List = append(mem.List, li.Swap)
 	}
@@ -286,7 +287,7 @@ type last struct {
 type lastinfo struct {
 	Generic    generic
 	CPU        cpu.CPUData
-	RAM        types.Memory
+	RAM        types.RAM
 	Swap       types.Memory
 	DiskList   []diskInfo
 	ProcList   []types.ProcInfo
@@ -504,7 +505,7 @@ func (la *last) reset_prev() {
 
 func (la *last) collect() {
 	gch := make(chan generic, 1)
-	rch := make(chan types.Memory, 1)
+	rch := make(chan types.RAM, 1)
 	sch := make(chan types.Memory, 1)
 	cch := make(chan cpu.CPUData, 1)
 	dch := make(chan []diskInfo, 1)
