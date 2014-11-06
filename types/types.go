@@ -55,6 +55,7 @@ type DiskMeta struct {
 	DiskNameHTML template.HTML
 	DirNameHTML  template.HTML
 	DirNameKey   string
+	DevName      string `json:"-"`
 }
 
 // DiskBytes type is a struct of disk bytes metrics.
@@ -65,6 +66,8 @@ type DiskBytes struct {
 	Avail           string // with units
 	UsePercent      string // as a string, with "%"
 	UsePercentClass string
+	RawUsed         uint64 `json:"-"`
+	RawFree         uint64 `json:"-"`
 }
 
 // DiskInodes type is a struct of disk inodes metrics.

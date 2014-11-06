@@ -82,9 +82,7 @@ func interfacesDelta(format interfaceFormat, current, previous []getifaddrs.IfDa
 	ifs := make([]types.Interface, len(current))
 
 	for i := range ifs {
-		di := types.Interface{
-			InterfaceMeta: interfaceMeta(current[i]),
-		}
+		di := types.Interface{InterfaceMeta: interfaceMeta(current[i])}
 		format.Current(&di, current[i])
 
 		if len(previous) > i {
@@ -99,9 +97,7 @@ func interfacesDelta(format interfaceFormat, current, previous []getifaddrs.IfDa
 			ifs = ifs[:client.Toprows]
 		}
 	}
-	ni := new(types.Interfaces)
-	ni.List = ifs
-	return ni
+	return &types.Interfaces{List: ifs}
 }
 
 func (li lastinfo) MEM(client client.Client) *types.MEM {
@@ -175,6 +171,7 @@ func diskMeta(disk diskInfo) types.DiskMeta {
 		DiskNameHTML: tooltipable(12, disk.DevName),
 		DirNameHTML:  tooltipable(6, disk.DirName),
 		DirNameKey:   disk.DirName,
+		DevName:      disk.DevName,
 	}
 }
 
@@ -193,11 +190,11 @@ func dfbytes(diskinfos []diskInfo, client client.Client) *types.DFbytes {
 			Avail:           format.HumanB(disk.Avail),
 			UsePercent:      format.FormatPercent(approxused, approxtotal),
 			UsePercentClass: format.LabelClassColorPercent(format.Percent(approxused, approxtotal)),
+			RawUsed:         disk.Used,
+			RawFree:         disk.Avail, // TODO free is not avail
 		})
 	}
-	dsb := new(types.DFbytes)
-	dsb.List = disks
-	return dsb
+	return &types.DFbytes{List: disks}
 }
 
 func dfinodes(diskinfos []diskInfo, client client.Client) *types.DFinodes {
@@ -217,9 +214,7 @@ func dfinodes(diskinfos []diskInfo, client client.Client) *types.DFinodes {
 			IusePercentClass: format.LabelClassColorPercent(format.Percent(approxiused, approxitotal)),
 		})
 	}
-	dsi := new(types.DFinodes)
-	dsi.List = disks
-	return dsi
+	return &types.DFinodes{List: disks}
 }
 
 func username(uids map[uint]string, uid uint) string {
@@ -670,8 +665,7 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 	}
 
 	if !*cl.HidePS && cl.RefreshPS.Refresh(forcerefresh) {
-		iu.PStable = new(PStable)
-		iu.PStable.List = orderProc(ps_copy, cl, &send)
+		iu.PStable = &PStable{List: orderProc(ps_copy, cl, &send)}
 	}
 
 	if !*cl.HideVG && cl.RefreshVG.Refresh(forcerefresh) {
