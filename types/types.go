@@ -66,8 +66,9 @@ type DiskBytes struct {
 	Avail           string // with units
 	UsePercent      string // as a string, with "%"
 	UsePercentClass string
+	RawTotal        uint64 `json:"-"`
 	RawUsed         uint64 `json:"-"`
-	RawFree         uint64 `json:"-"`
+	RawAvail        uint64 `json:"-"`
 }
 
 // DiskInodes type is a struct of disk inodes metrics.

@@ -190,8 +190,9 @@ func dfbytes(diskinfos []diskInfo, client client.Client) *types.DFbytes {
 			Avail:           format.HumanB(disk.Avail),
 			UsePercent:      format.FormatPercent(approxused, approxtotal),
 			UsePercentClass: format.LabelClassColorPercent(format.Percent(approxused, approxtotal)),
+			RawTotal:        disk.Total,
 			RawUsed:         disk.Used,
-			RawFree:         disk.Avail, // TODO free is not avail
+			RawAvail:        disk.Avail,
 		})
 	}
 	return &types.DFbytes{List: disks}
