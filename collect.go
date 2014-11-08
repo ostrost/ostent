@@ -35,7 +35,7 @@ func getGeneric(CH chan<- generic) {
 	hostname, _ := getHostname()
 
 	uptime := sigar.Uptime{}
-	uptime.Get()
+	getUptime(&uptime)
 
 	la := sigar.LoadAverage{}
 	la.Get()

@@ -14,6 +14,15 @@ import (
 	sigar "github.com/rzab/gosigar"
 )
 
+type getsUptime interface {
+	Get() error
+	Get32() error
+}
+
+var getUptime = func(gu getsUptime) error {
+	return gu.Get()
+}
+
 func getDistrib() string {
 	/* various cli to show the mac version
 	sw_vers
@@ -27,7 +36,13 @@ func getDistrib() string {
 		fmt.Fprintf(os.Stderr, "sw_vers: %s\n", err)
 		return ""
 	}
-	return "Mac OS X " + strings.TrimRight(string(std), "\n\t ")
+	ver := strings.TrimRight(string(std), "\n\t ")
+	if ver == "10.10" {
+		getUptime = func(gu getsUptime) error {
+			return gu.Get32()
+		}
+	}
+	return "Mac OS X " + ver
 }
 
 // ProcState returns chopped proc name, in which case

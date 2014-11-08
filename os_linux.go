@@ -9,6 +9,14 @@ import (
 	"strings"
 )
 
+type getsUptime interface {
+	Get() error
+}
+
+func getUptime(gu getsUptime) error {
+	return gu.Get()
+}
+
 func getDistrib() string {
 	// https://unix.stackexchange.com/q/35183
 	std, err := exec.Command("lsb_release", "-i", "-r").CombinedOutput()
