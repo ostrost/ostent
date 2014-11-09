@@ -2,6 +2,7 @@ package types
 
 import (
 	"html/template"
+	"net/http"
 	"net/url"
 
 	sigar "github.com/rzab/gosigar"
@@ -175,6 +176,25 @@ type Linkattrs struct {
 	Base  url.Values
 	Pname string
 	Bimap Biseqmap
+}
+
+func valuesSet(req *http.Request, base url.Values, pname string, bimap Biseqmap) SEQ {
+	if params, ok := req.Form[pname]; ok && len(params) > 0 {
+		if seq, ok := bimap.STRING2SEQ[params[0]]; ok {
+			base.Set(pname, params[0])
+			return seq
+		}
+	}
+	return bimap.DefaultSeq
+}
+
+func NewLinkAttrs(req *http.Request, base url.Values, pname string, bimap Biseqmap, seq *SEQ) *Linkattrs {
+	*seq = valuesSet(req, base, pname, bimap)
+	return &Linkattrs{
+		Base:  base,
+		Pname: pname,
+		Bimap: bimap,
+	}
 }
 
 // InterfaceMeta type has common Interface fields.

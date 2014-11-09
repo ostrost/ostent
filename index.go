@@ -24,9 +24,13 @@ import (
 )
 
 func interfaceMeta(ifdata getifaddrs.IfData) types.InterfaceMeta {
+	return interfaceMetaFromString(ifdata.Name)
+}
+
+func interfaceMetaFromString(name string) types.InterfaceMeta {
 	return types.InterfaceMeta{
-		NameKey:  ifdata.Name,
-		NameHTML: tooltipable(12, ifdata.Name),
+		NameKey:  name,
+		NameHTML: tooltipable(12, name),
 	}
 }
 
@@ -121,16 +125,6 @@ type diskInfo struct {
 	Ifree       uint64
 	IusePercent float64
 	DirName     string
-}
-
-func valuesSet(req *http.Request, base url.Values, pname string, bimap types.Biseqmap) types.SEQ {
-	if params, ok := req.Form[pname]; ok && len(params) > 0 {
-		if seq, ok := bimap.STRING2SEQ[params[0]]; ok {
-			base.Set(pname, params[0])
-			return seq
-		}
-	}
-	return bimap.DefaultSeq
 }
 
 var TooltipableTemplate *templates.BinTemplate
@@ -573,15 +567,6 @@ func (la *last) collect() {
 	} // */
 }
 
-func linkattrs(req *http.Request, base url.Values, pname string, bimap types.Biseqmap, seq *types.SEQ) *types.Linkattrs {
-	*seq = valuesSet(req, base, pname, bimap)
-	return &types.Linkattrs{
-		Base:  base,
-		Pname: pname,
-		Bimap: bimap,
-	}
-}
-
 func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) indexUpdate {
 
 	cl.RecalcRows() // before anything
@@ -627,8 +612,8 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 	if req != nil {
 		req.ParseForm() // do ParseForm even if req.Form == nil, otherwise *links won't be set for index requests without parameters
 		base := url.Values{}
-		iu.PSlinks = (*PSlinks)(linkattrs(req, base, "ps", client.PSBIMAP, &cl.PSSEQ))
-		iu.DFlinks = (*DFlinks)(linkattrs(req, base, "df", client.DFBIMAP, &cl.DFSEQ))
+		iu.PSlinks = (*PSlinks)(types.NewLinkAttrs(req, base, "ps", client.PSBIMAP, &cl.PSSEQ))
+		iu.DFlinks = (*DFlinks)(types.NewLinkAttrs(req, base, "df", client.DFBIMAP, &cl.DFSEQ))
 	}
 
 	if iu.CPU != nil { // TODO Is it ok to update the *cl.Expand*CPU when the CPU is shown only?
