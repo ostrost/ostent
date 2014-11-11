@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 
+	metrics "github.com/rcrowley/go-metrics"
 	sigar "github.com/rzab/gosigar"
 )
 
@@ -250,4 +251,43 @@ type NameFloat64 struct {
 type NameString struct {
 	String      string
 	StringValue string
+}
+
+type GaugeRAMCommon struct {
+	Total metrics.Gauge
+}
+
+func NewGaugeRAMCommon() GaugeRAMCommon {
+	return GaugeRAMCommon{
+		Total: metrics.NewRegisteredGauge("memory.memory-total", metrics.NewRegistry()),
+	}
+}
+
+func (grc *GaugeRAMCommon) UpdateCommon(got sigar.Mem) {
+	grc.Total.Update(int64(got.Total))
+}
+
+func (gr *GaugeRAM) UsedValue() uint64 { // Total - Free
+	return uint64(gr.Total.Snapshot().Value() - gr.Free.Snapshot().Value())
+}
+
+type GaugeSwap struct {
+	Free metrics.Gauge
+	Used metrics.Gauge
+}
+
+func NewGaugeSwap(r metrics.Registry) GaugeSwap {
+	return GaugeSwap{
+		Free: metrics.NewRegisteredGauge("swap.swap-free", r),
+		Used: metrics.NewRegisteredGauge("swap.swap-used", r),
+	}
+}
+
+func (gs *GaugeSwap) TotalValue() uint64 { // Free + Used
+	return uint64(gs.Free.Snapshot().Value() + gs.Used.Snapshot().Value())
+}
+
+func (gs *GaugeSwap) Update(got sigar.Swap) {
+	gs.Free.Update(int64(got.Free))
+	gs.Used.Update(int64(got.Free))
 }

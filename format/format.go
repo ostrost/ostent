@@ -63,7 +63,7 @@ func _formatOctet(n uint64, bits bool) (string, string, float64, float64) { // a
 	return s, f, val, pow
 }
 
-func humanbits(n uint64) string {
+func HumanBits(n uint64) string {
 	s, _, _, _ := _formatOctet(n, true)
 	return s
 }
@@ -109,20 +109,22 @@ func FormatTime(T uint64) string {
 	return fmt.Sprintf("   %02d:%02d", mm, ss)
 }
 
-func Bps(factor int, current, previous uint) string {
+/* unused
+func Bps(factor int, current, previous uint64) string {
 	if current < previous { // counters got reset
 		return ""
 	}
-	diff := (current - previous) * uint(factor) // bits now if the factor is 8
-	return humanbits(uint64(diff))
+	diff := (current - previous) * uint64(factor) // bits now if the factor is 8
+	return HumanBits(diff)
 }
 
-func Ps(current, previous uint) string {
+func Ps(current, previous uint64) string {
 	if current < previous { // counters got reset
 		return ""
 	}
-	return HumanUnitless(uint64(current - previous))
+	return HumanUnitless(current - previous)
 }
+// */
 
 func TextClassColorPercent(p uint) string {
 	return "text-" + colorPercent(p)

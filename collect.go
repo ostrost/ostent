@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/templates"
@@ -39,6 +40,13 @@ func getGeneric(CH chan<- generic) {
 
 	la := sigar.LoadAverage{}
 	la.Get()
+
+	/*
+		if reg := metrics.NewRegistry(); reg != nil {
+			metrics.GetOrRegisterGaugeFloat64("load.shortterm", reg).Update(la.One)
+			metrics.GetOrRegisterGaugeFloat64("load.midterm", reg).Update(la.Five)
+			metrics.GetOrRegisterGaugeFloat64("load.longterm", reg).Update(la.Fifteen)
+		} // */
 
 	g := generic{
 		Hostname:    hostname,
@@ -79,9 +87,11 @@ func _getmem(kind string, in sigar.Swap) types.Memory {
 	}
 }
 
-func getRAM(CH chan<- types.RAM) {
+func getRAM(wg *sync.WaitGroup) {
 	got := sigar.Mem{}
 	extra1, extra2, _ := sigar.GetExtra(&got)
+	Reg1s.RAM.Update(got, extra1, extra2)
+	wg.Done()
 
 	// inactive := got.ActualFree - got.Free // == got.Used - got.ActualUsed // "kern"
 	// _ = inactive
@@ -92,24 +102,13 @@ func getRAM(CH chan<- types.RAM) {
 
 	// TODO active := vm_data.active_count << 12 (pagesize)
 	// TODO wired  := vm_data.wire_count   << 12 (pagesoze)
-
-	CH <- types.RAM{
-		Memory: _getmem("RAM", sigar.Swap{
-			Total: got.Total,
-			Free:  got.Free,
-			Used:  got.Used, // == .Total - .Free
-		}),
-		Raw:    got,
-		Extra1: extra1,
-		Extra2: extra2,
-	}
 }
 
-func getSwap(CH chan<- types.Memory) {
+func getSwap(wg *sync.WaitGroup) {
 	got := sigar.Swap{}
 	got.Get()
-
-	CH <- _getmem("swap", got)
+	Reg1s.Swap.Update(got)
+	wg.Done()
 }
 
 func read_disks(CH chan<- []diskInfo) {

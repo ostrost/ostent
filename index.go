@@ -20,6 +20,7 @@ import (
 	"github.com/ostrost/ostent/getifaddrs"
 	"github.com/ostrost/ostent/templates"
 	"github.com/ostrost/ostent/types"
+	metrics "github.com/rcrowley/go-metrics"
 	sigar "github.com/rzab/gosigar"
 )
 
@@ -32,86 +33,6 @@ func interfaceMetaFromString(name string) types.InterfaceMeta {
 		NameKey:  name,
 		NameHTML: tooltipable(12, name),
 	}
-}
-
-type interfaceFormat interface {
-	Current(*types.Interface, getifaddrs.IfData)
-	Delta(*types.Interface, getifaddrs.IfData, getifaddrs.IfData)
-}
-
-type interfaceInout interface {
-	InOut(getifaddrs.IfData) (uint, uint)
-}
-
-type interfaceBytes struct{}
-
-func (_ interfaceBytes) Current(id *types.Interface, ifdata getifaddrs.IfData) {
-	id.In = format.HumanB(uint64(ifdata.InBytes))
-	id.Out = format.HumanB(uint64(ifdata.OutBytes))
-}
-
-func (_ interfaceBytes) Delta(id *types.Interface, ii, ifdata getifaddrs.IfData) {
-	id.DeltaIn = format.Bps(8, ii.InBytes, ifdata.InBytes)
-	id.DeltaOut = format.Bps(8, ii.OutBytes, ifdata.OutBytes)
-}
-
-type interfaceInoutErrors struct{}
-
-func (_ interfaceInoutErrors) InOut(ifdata getifaddrs.IfData) (uint, uint) {
-	return ifdata.InErrors, ifdata.OutErrors
-}
-
-type interfaceInoutPackets struct{}
-
-func (_ interfaceInoutPackets) InOut(ifdata getifaddrs.IfData) (uint, uint) {
-	return ifdata.InPackets, ifdata.OutPackets
-}
-
-type interfaceNumericals struct{ interfaceInout }
-
-func (ie interfaceNumericals) Current(id *types.Interface, ifdata getifaddrs.IfData) {
-	in, out := ie.InOut(ifdata)
-	id.In = format.HumanUnitless(uint64(in))
-	id.Out = format.HumanUnitless(uint64(out))
-}
-
-func (ie interfaceNumericals) Delta(id *types.Interface, ii, previousIfdata getifaddrs.IfData) {
-	in, out := ie.InOut(ii)
-	previousIn, previousOut := ie.InOut(previousIfdata)
-	id.DeltaIn = format.Ps(in, previousIn)
-	id.DeltaOut = format.Ps(out, previousOut)
-}
-
-func interfacesDelta(format interfaceFormat, current, previous []getifaddrs.IfData, client client.Client) *types.Interfaces {
-	ifs := make([]types.Interface, len(current))
-
-	for i := range ifs {
-		di := types.Interface{InterfaceMeta: interfaceMeta(current[i])}
-		format.Current(&di, current[i])
-
-		if len(previous) > i {
-			format.Delta(&di, current[i], previous[i])
-		}
-
-		ifs[i] = di
-	}
-	if len(ifs) > 1 {
-		sort.Sort(interfaceOrder(ifs))
-		if !*client.ExpandIF && len(ifs) > client.Toprows {
-			ifs = ifs[:client.Toprows]
-		}
-	}
-	return &types.Interfaces{List: ifs}
-}
-
-func (li lastinfo) MEM(client client.Client) *types.MEM {
-	mem := new(types.MEM)
-	mem.RawRAM = li.RAM
-	mem.List = append(mem.List, li.RAM.Memory)
-	if !*client.HideSWAP {
-		mem.List = append(mem.List, li.Swap)
-	}
-	return mem
 }
 
 type diskInfo struct {
@@ -265,8 +186,7 @@ func orderProc(procs []types.ProcInfo, cl *client.Client, send *client.SendClien
 }
 
 type Previous struct {
-	CPU        *sigar.CpuList
-	Interfaces []getifaddrs.IfData
+	CPU *sigar.CpuList
 }
 
 type last struct {
@@ -275,15 +195,12 @@ type last struct {
 }
 
 type lastinfo struct {
-	Generic    generic
-	CPU        cpu.CPUData
-	RAM        types.RAM
-	Swap       types.Memory
-	DiskList   []diskInfo
-	ProcList   []types.ProcInfo
-	Interfaces []getifaddrs.IfData
-	Previous   *Previous
-	lastfive   lastfive
+	Generic  generic
+	CPU      cpu.CPUData
+	DiskList []diskInfo
+	ProcList []types.ProcInfo
+	Previous *Previous
+	lastfive lastfive
 }
 
 type lastfive struct {
@@ -490,24 +407,24 @@ func (la *last) reset_prev() {
 		return
 	}
 	la.Previous.CPU = nil
-	la.Previous.Interfaces = []getifaddrs.IfData{}
 }
 
 func (la *last) collect() {
 	gch := make(chan generic, 1)
-	rch := make(chan types.RAM, 1)
-	sch := make(chan types.Memory, 1)
 	cch := make(chan cpu.CPUData, 1)
 	dch := make(chan []diskInfo, 1)
 	pch := make(chan []types.ProcInfo, 1)
-	ifch := make(chan IfInfo, 1)
+	ifch := make(chan string, 1)
 
-	go getRAM(rch)
-	go getSwap(sch)
+	var wg sync.WaitGroup
+	wg.Add(2) // two so far
+	go getRAM(&wg)
+	go getSwap(&wg)
+
 	go getGeneric(gch)
 	go read_disks(dch)
 	go read_procs(pch)
-	go newInterfaces(ifch)
+	go getInterfaces(Reg1s, ifch)
 
 	func() {
 		la.mutex.Lock()
@@ -527,20 +444,16 @@ func (la *last) collect() {
 	la.lastinfo = lastinfo{
 		lastfive: la.lastfive,
 		Previous: &Previous{
-			CPU:        la.CPU.SigarList(),
-			Interfaces: la.Interfaces,
+			CPU: la.CPU.SigarList(),
 		},
 		Generic:  <-gch,
-		RAM:      <-rch,
-		Swap:     <-sch,
 		CPU:      <-cch,
 		DiskList: <-dch,
 		ProcList: <-pch,
 	}
 
-	ii := <-ifch
-	la.Generic.IP = ii.IP
-	la.Interfaces = ii.List
+	la.Generic.IP = <-ifch
+	wg.Wait()
 
 	push(&la.lastfive.milliLA1, int(float64(100)*la.Generic.LoadAverage.One))
 	la.Generic.LA1spark = la.lastfive.milliLA1.spark()
@@ -567,16 +480,213 @@ func (la *last) collect() {
 	} // */
 }
 
+// GaugeDiff holds two Gauge metrics: the first is the exported one.
+// Caveat: The exported metric value is 0 initially, not "nan", until updated.
+type GaugeDiff struct {
+	Delta    metrics.Gauge // Delta as the primary metric.
+	Absolute metrics.Gauge // Absolute keeps the absolute value, not exported as it's registered in private registry.
+	Previous metrics.Gauge // Previous keeps the previous absolute value, not exported as it's registered in private registry.
+	Mutex    sync.Mutex
+}
+
+func NewGaugeDiff(name string, r metrics.Registry) GaugeDiff {
+	return GaugeDiff{
+		Delta:    metrics.NewRegisteredGauge(name, r),
+		Absolute: metrics.NewRegisteredGauge(name+"-absolute", metrics.NewRegistry()),
+		Previous: metrics.NewRegisteredGauge(name+"-previous", metrics.NewRegistry()),
+	}
+}
+
+func (gd *GaugeDiff) Values() (int64, int64) {
+	gd.Mutex.Lock()
+	defer gd.Mutex.Unlock()
+	return gd.Delta.Snapshot().Value(), gd.Absolute.Snapshot().Value()
+}
+
+func (gd *GaugeDiff) UpdateAbsolute(absolute int64) {
+	gd.Mutex.Lock()
+	defer gd.Mutex.Unlock()
+	previous := gd.Previous.Snapshot().Value()
+	gd.Absolute.Update(absolute)
+	gd.Previous.Update(absolute)
+	if previous != 0 { // otherwise do not update
+		if absolute < previous { // counters got reset
+			previous = 0
+		}
+		gd.Delta.Update(absolute - previous)
+	}
+}
+
+type ListMetricInterface []MetricInterface  // satisfying sort.Interface
+func (x ListMetricInterface) Len() int      { return len(x) }
+func (x ListMetricInterface) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
+func (x ListMetricInterface) Less(i, j int) bool {
+	if rx_lo.Match([]byte(x[i].Name)) {
+		return false
+	}
+	return x[i].Name < x[j].Name
+}
+
+type MetricInterface struct {
+	metrics.Healthcheck // derive from one of (go-)metric types, otherwise it won't be registered
+	Name                string
+	BytesIn             GaugeDiff
+	BytesOut            GaugeDiff
+	ErrorsIn            GaugeDiff
+	ErrorsOut           GaugeDiff
+	PacketsIn           GaugeDiff
+	PacketsOut          GaugeDiff
+}
+
+func (mi *MetricInterface) Update(ifdata getifaddrs.IfData) {
+	mi.BytesIn.UpdateAbsolute(int64(ifdata.InBytes))
+	mi.BytesOut.UpdateAbsolute(int64(ifdata.OutBytes))
+	mi.ErrorsIn.UpdateAbsolute(int64(ifdata.InErrors))
+	mi.ErrorsOut.UpdateAbsolute(int64(ifdata.OutErrors))
+	mi.PacketsIn.UpdateAbsolute(int64(ifdata.InPackets))
+	mi.PacketsOut.UpdateAbsolute(int64(ifdata.OutPackets))
+}
+
+func (mi MetricInterface) FormatInterface(ip InterfaceParts) types.Interface {
+	ing, outg, isbytes := ip(mi)
+	deltain, in := ing.Values()
+	deltaout, out := outg.Values()
+	form := format.HumanUnitless
+	deltaForm := format.HumanUnitless // format.Ps
+	if isbytes {
+		form = format.HumanB
+		deltaForm = func(c uint64) string { // , p uint64
+			// return format.Bps(8, c, p) // format.Bps64(8, {in,out}, 0)
+			return format.HumanBits(c * 8) // passing the bits
+		}
+	}
+	return types.Interface{
+		InterfaceMeta: interfaceMetaFromString(mi.Name),
+		In:            form(uint64(in)),            // format.HumanB(uint64(in)),  // with units
+		Out:           form(uint64(out)),           // format.HumanB(uint64(out)), // with units
+		DeltaIn:       deltaForm(uint64(deltain)),  // format.Bps64(8, in, 0),     // with units
+		DeltaOut:      deltaForm(uint64(deltaout)), // format.Bps64(8, out, 0),    // with units
+	}
+}
+
+type InterfaceParts func(MetricInterface) (GaugeDiff, GaugeDiff, bool)
+
+func (_ Registry) InterfaceBytes(mi MetricInterface) (GaugeDiff, GaugeDiff, bool) {
+	return mi.BytesIn, mi.BytesOut, true
+}
+func (_ Registry) InterfaceErrors(mi MetricInterface) (GaugeDiff, GaugeDiff, bool) {
+	return mi.ErrorsIn, mi.ErrorsOut, false
+}
+func (_ Registry) InterfacePackets(mi MetricInterface) (GaugeDiff, GaugeDiff, bool) {
+	return mi.PacketsIn, mi.PacketsOut, false
+}
+
+func (r Registry) Interfaces(cli *client.Client, send *client.SendClient, ip InterfaceParts) []types.Interface {
+	private := r.ListPrivateInterface()
+	var public []types.Interface
+
+	client.SetBool(&cli.ExpandableIF, &send.ExpandableIF, len(private) > cli.Toprows)
+	client.SetString(&cli.ExpandtextIF, &send.ExpandtextIF, fmt.Sprintf("Expanded (%d)", len(private)))
+
+	if len(private) == 0 || len(private) == 1 {
+		return public
+	}
+	sort.Sort(ListMetricInterface(private))
+	// MAYBE have a measure not to make full list in r.ListPrivateInterface
+	for i, p := range private {
+		if !*cli.ExpandIF && i >= cli.Toprows {
+			break
+		}
+		public = append(public, p.FormatInterface(ip))
+	}
+	return public
+}
+
+func (r *Registry) ListPrivateInterface() []MetricInterface {
+	var mi []MetricInterface
+	r.PrivateRegistry.Each(func(name string, i interface{}) {
+		mi = append(mi, i.(MetricInterface))
+	})
+	return mi
+}
+
+func (r *Registry) GetOrRegisterPrivateInterface(name string) *MetricInterface {
+	r.PrivateMutex.Lock()
+	defer r.PrivateMutex.Unlock()
+	if metric := r.PrivateRegistry.Get(name); metric != nil {
+		i := metric.(MetricInterface)
+		return &i
+	}
+	i := MetricInterface{
+		Name:       name,
+		BytesIn:    NewGaugeDiff("interface-"+name+".if_octets.rx", r.Registry),
+		BytesOut:   NewGaugeDiff("interface-"+name+".if_octets.tx", r.Registry),
+		ErrorsIn:   NewGaugeDiff("interface-"+name+".if_errors.rx", r.Registry),
+		ErrorsOut:  NewGaugeDiff("interface-"+name+".if_errors.tx", r.Registry),
+		PacketsIn:  NewGaugeDiff("interface-"+name+".if_packets.rx", r.Registry),
+		PacketsOut: NewGaugeDiff("interface-"+name+".if_packets.tx", r.Registry),
+	}
+	r.PrivateRegistry.Register(name, i) // error is ignored
+	// errs when the type is not derived from (go-)metrics types
+	return &i
+}
+
+func (r Registry) MEM(client client.Client) *types.MEM {
+	gr := r.RAM
+	mem := new(types.MEM)
+	mem.List = []types.Memory{
+		_getmem("RAM", sigar.Swap{
+			Total: uint64(gr.Total.Snapshot().Value()),
+			Free:  uint64(gr.Free.Snapshot().Value()),
+			Used:  gr.UsedValue(), // == .Total - .Free
+		}),
+	}
+	if !*client.HideSWAP {
+		gs := r.Swap
+		mem.List = append(mem.List,
+			_getmem("swap", sigar.Swap{
+				Total: gs.TotalValue(),
+				Free:  uint64(gs.Free.Snapshot().Value()),
+				Used:  uint64(gs.Used.Snapshot().Value()),
+			}))
+	}
+	return mem
+}
+
+type Registry struct {
+	Registry        metrics.Registry
+	PrivateRegistry metrics.Registry
+	PrivateMutex    sync.Mutex
+
+	// set of MetricInterfaces is handled as a metric in PrivateRegistry
+
+	RAM  types.GaugeRAM
+	Swap types.GaugeSwap
+}
+
+var Reg1s Registry
+
+func init() {
+	reg1s := metrics.NewRegistry()
+	Reg1s = Registry{
+		Registry:        reg1s,
+		PrivateRegistry: metrics.NewRegistry(),
+	}
+	Reg1s.RAM = types.NewGaugeRAM(Reg1s.Registry)
+	Reg1s.Swap = types.NewGaugeSwap(Reg1s.Registry)
+
+	// addr, _ := net.ResolveTCPAddr("tcp", "127.0.0.1:2003")
+	// go metrics.Graphite(reg, 1*time.Second, "ostent", addr)
+}
+
 func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) indexUpdate {
 
 	cl.RecalcRows() // before anything
 
 	var (
-		coreno      int
-		df_copy     []diskInfo
-		ps_copy     []types.ProcInfo
-		if_copy     []getifaddrs.IfData
-		previf_copy []getifaddrs.IfData
+		coreno  int
+		df_copy []diskInfo
+		ps_copy []types.ProcInfo
 	)
 	iu := indexUpdate{}
 	func() {
@@ -585,16 +695,9 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 
 		df_copy = make([]diskInfo, len(lastInfo.DiskList))
 		ps_copy = make([]types.ProcInfo, len(lastInfo.ProcList))
-		if_copy = make([]getifaddrs.IfData, len(lastInfo.Interfaces))
 
 		copy(df_copy, lastInfo.DiskList)
 		copy(ps_copy, lastInfo.ProcList)
-		copy(if_copy, lastInfo.Interfaces)
-
-		if lastInfo.lastinfo.Previous != nil {
-			previf_copy = make([]getifaddrs.IfData, len(lastInfo.Previous.Interfaces))
-			copy(previf_copy, lastInfo.Previous.Interfaces)
-		}
 
 		if true { // cl.RefreshGeneric.Refresh(forcerefresh)
 			g := lastInfo.Generic
@@ -602,7 +705,7 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 			iu.Generic = &g // &lastInfo.Generic
 		}
 		if !*cl.HideMEM && cl.RefreshMEM.Refresh(forcerefresh) {
-			iu.MEM = lastInfo.MEM(*cl)
+			iu.MEM = Reg1s.MEM(*cl)
 		}
 		if !*cl.HideCPU && cl.RefreshCPU.Refresh(forcerefresh) {
 			iu.CPU, coreno = lastInfo.CPU.CPUInfo(*cl)
@@ -622,9 +725,6 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 	}
 
 	if true {
-		client.SetBool(&cl.ExpandableIF, &send.ExpandableIF, len(if_copy) > cl.Toprows)
-		client.SetString(&cl.ExpandtextIF, &send.ExpandtextIF, fmt.Sprintf("Expanded (%d)", len(if_copy)))
-
 		client.SetBool(&cl.ExpandableDF, &send.ExpandableDF, len(df_copy) > cl.Toprows)
 		client.SetString(&cl.ExpandtextDF, &send.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(df_copy)))
 	}
@@ -642,11 +742,11 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 	if !*cl.HideIF && cl.RefreshIF.Refresh(forcerefresh) {
 		switch *cl.TabIF {
 		case client.IFBYTES_TABID:
-			iu.IFbytes = interfacesDelta(interfaceBytes{}, if_copy, previf_copy, *cl)
+			iu.IFbytes = &types.Interfaces{List: Reg1s.Interfaces(cl, &send, Reg1s.InterfaceBytes)}
 		case client.IFERRORS_TABID:
-			iu.IFerrors = interfacesDelta(interfaceNumericals{interfaceInoutErrors{}}, if_copy, previf_copy, *cl)
+			iu.IFerrors = &types.Interfaces{List: Reg1s.Interfaces(cl, &send, Reg1s.InterfaceErrors)}
 		case client.IFPACKETS_TABID:
-			iu.IFpackets = interfacesDelta(interfaceNumericals{interfaceInoutPackets{}}, if_copy, previf_copy, *cl)
+			iu.IFpackets = &types.Interfaces{List: Reg1s.Interfaces(cl, &send, Reg1s.InterfacePackets)}
 		}
 	}
 

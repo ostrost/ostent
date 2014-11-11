@@ -52,7 +52,7 @@ func Test_HumanB(t *testing.T) {
 	}
 }
 
-func Test_humanbits(t *testing.T) {
+func Test_HumanBits(t *testing.T) {
 	for _, v := range []struct {
 		a   uint64
 		cmp string
@@ -60,12 +60,12 @@ func Test_humanbits(t *testing.T) {
 		{1023, "1023b"},
 		{1024, "1.0k"},
 	} {
-		cmp := humanbits(v.a)
+		cmp := HumanBits(v.a)
 		if cmp[0] == ' ' {
 			t.Errorf("Unexpected: starts with a space: %q", cmp)
 		}
 		if cmp != v.cmp {
-			t.Errorf("Mismatch: humanB(%v) == %v != %v\n", v.a, v.cmp, cmp)
+			t.Errorf("Mismatch: HumanBits(%v) == %v != %v\n", v.a, v.cmp, cmp)
 		}
 	}
 }

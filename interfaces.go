@@ -7,17 +7,12 @@ import (
 	"github.com/ostrost/ostent/getifaddrs"
 )
 
-// IfInfo is a struct with List of getifaddrs.IfData and first non-loopback IP.
-type IfInfo struct {
-	List []getifaddrs.IfData
-	IP   string
-}
-
 var (
 	rx_lo      = regexp.MustCompile("lo\\d*") // "lo" & lo\d+; used in interfaces_unix.go, sortable.go
 	RX_fw      = regexp.MustCompile("fw\\d+")
 	RX_gif     = regexp.MustCompile("gif\\d+")
 	RX_stf     = regexp.MustCompile("stf\\d+")
+	RX_wdl     = regexp.MustCompile("awdl\\d+")
 	RX_bridge  = regexp.MustCompile("bridge\\d+")
 	RX_vboxnet = regexp.MustCompile("vboxnet\\d+")
 	RX_airdrop = regexp.MustCompile("p2p\\d+")
@@ -32,6 +27,7 @@ func realInterface(name string) bool {
 		if RX_fw.MatchString(name) ||
 			RX_gif.MatchString(name) ||
 			RX_stf.MatchString(name) ||
+			RX_wdl.MatchString(name) ||
 			RX_airdrop.MatchString(name) {
 			return false
 		}
@@ -39,9 +35,9 @@ func realInterface(name string) bool {
 	return true
 }
 
-func newInterfaces(CH chan<- IfInfo) {
+// getInterfaces registers the interfaces with the reg and send first non-loopback IP to the chan
+func getInterfaces(reg Registry, CH chan<- string) {
 	iflist, _ := getifaddrs.Getifaddrs()
-	ifreal := []getifaddrs.IfData{}
 	IP := ""
 	for _, ifdata := range iflist {
 		if !realInterface(ifdata.Name) {
@@ -59,12 +55,9 @@ func newInterfaces(CH chan<- IfInfo) {
 			// first non-loopback IP
 			IP = ifdata.IP
 		}
-		ifreal = append(ifreal, ifdata)
+		reg.GetOrRegisterPrivateInterface(ifdata.Name).Update(ifdata)
 	}
-	CH <- IfInfo{
-		List: ifreal,
-		IP:   IP,
-	}
+	CH <- IP
 }
 
 /*
