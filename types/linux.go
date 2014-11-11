@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	metrics "github.com/rcrowley/go-metrics"
+	sigar "github.com/rzab/gosigar"
 )
 
 func RAMFields(ram RAM) []NameString {
