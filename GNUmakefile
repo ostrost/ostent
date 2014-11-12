@@ -12,8 +12,10 @@ templates_html=$(addprefix $(templates_dir), $(templates_files))
 
 PATH=$(shell printf %s: $$PATH; echo $$GOPATH | awk -F: 'BEGIN { OFS="/bin:"; } { print $$1,$$2,$$3,$$4,$$5,$$6,$$7,$$8,$$9 "/bin"}')
 
+xargs=xargs
 sed-i=sed -i ''
 ifeq (Linux, $(shell uname -s))
+xargs=xargs --no-run-if-empty
 sed-i=sed -i'' # GNU sed -i opt, not a flag
 endif
 sed-i-bindata=$(sed-i) -e 's,"$(PWD)/,",g' -e '/^\/\/ AssetDir /,$$d'
@@ -44,8 +46,10 @@ github.com/skelterjohn/rerun
 	git remote set-url origin https://$(fqostent) # travis & tip & https://code.google.com/p/go/issues/detail?id=8850
 	go get -u -v -tags production \
 $(fqostent)/ostent
+	go list -f '{{.Target}}' $(fqostent) | $(xargs) rm # clean the library archive
 	go get -u -v -a \
 $(fqostent)/ostent
+	go list -f '{{.Target}}' $(fqostent) | $(xargs) rm # clean the library archive
 
 %: %.sh # clear the implicit *.sh rule covering ./ostent.sh
 
