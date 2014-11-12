@@ -653,6 +653,14 @@ func (r Registry) MEM(client client.Client) *types.MEM {
 	return mem
 }
 
+func (r Registry) LA() string {
+	gl := r.Load
+	return fmt.Sprintf("%.2f %.2f %.2f",
+		gl.Short.Snapshot().Value(),
+		gl.Mid.Snapshot().Value(),
+		gl.Long.Snapshot().Value())
+}
+
 type Registry struct {
 	Registry        metrics.Registry
 	PrivateRegistry metrics.Registry
@@ -662,6 +670,7 @@ type Registry struct {
 
 	RAM  types.GaugeRAM
 	Swap types.GaugeSwap
+	Load types.GaugeLoad
 }
 
 var Reg1s Registry
@@ -674,6 +683,7 @@ func init() {
 	}
 	Reg1s.RAM = types.NewGaugeRAM(Reg1s.Registry)
 	Reg1s.Swap = types.NewGaugeSwap(Reg1s.Registry)
+	Reg1s.Load = types.NewGaugeLoad(Reg1s.Registry)
 
 	// addr, _ := net.ResolveTCPAddr("tcp", "127.0.0.1:2003")
 	// go metrics.Graphite(reg, 1*time.Second, "ostent", addr)
@@ -701,7 +711,7 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 
 		if true { // cl.RefreshGeneric.Refresh(forcerefresh)
 			g := lastInfo.Generic
-			g.LA = g.LA1spark + " " + g.LA
+			g.LA = g.LA1spark + " " + Reg1s.LA()
 			iu.Generic = &g // &lastInfo.Generic
 		}
 		if !*cl.HideMEM && cl.RefreshMEM.Refresh(forcerefresh) {

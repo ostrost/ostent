@@ -41,12 +41,9 @@ func getGeneric(CH chan<- generic) {
 	la := sigar.LoadAverage{}
 	la.Get()
 
-	/*
-		if reg := metrics.NewRegistry(); reg != nil {
-			metrics.GetOrRegisterGaugeFloat64("load.shortterm", reg).Update(la.One)
-			metrics.GetOrRegisterGaugeFloat64("load.midterm", reg).Update(la.Five)
-			metrics.GetOrRegisterGaugeFloat64("load.longterm", reg).Update(la.Fifteen)
-		} // */
+	Reg1s.Load.Short.Update(la.One)
+	Reg1s.Load.Mid.Update(la.Five)
+	Reg1s.Load.Long.Update(la.Fifteen)
 
 	g := generic{
 		Hostname:    hostname,

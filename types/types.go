@@ -271,6 +271,39 @@ func (gr *GaugeRAM) UsedValue() uint64 { // Total - Free
 	return uint64(gr.Total.Snapshot().Value() - gr.Free.Snapshot().Value())
 }
 
+/*
+type GaugeShortLoad struct {
+	metrics.GaugeFloat64
+	Ring *ring.Ring
+	Min, Max float64
+}
+
+func (gsl *GaugeShortLoad) Update(float64) {
+	// 	push(&la.lastfive.milliLA1, int(float64(100)*la.Generic.LoadAverage.One))
+} // */
+
+type GaugeLoad struct {
+	Short metrics.GaugeFloat64 // GaugeShortLoad
+	Mid   metrics.GaugeFloat64
+	Long  metrics.GaugeFloat64
+}
+
+func NewGaugeLoad(r metrics.Registry) GaugeLoad {
+	/*
+		short := GaugeShortLoad{
+			Ring: ring.New(5),
+			Min: -1.0,
+			Max: -1.0,
+		}
+		metrics.Register("load.shortterm", short..., r...) // */
+	short := metrics.NewRegisteredGaugeFloat64("load.shortterm", r)
+	return GaugeLoad{
+		Short: short,
+		Mid:   metrics.NewRegisteredGaugeFloat64("load.midterm", r),
+		Long:  metrics.NewRegisteredGaugeFloat64("load.longterm", r),
+	}
+}
+
 type GaugeSwap struct {
 	Free metrics.Gauge
 	Used metrics.Gauge
