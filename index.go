@@ -271,8 +271,8 @@ func (la *last) collect() {
 
 	var wg sync.WaitGroup
 	wg.Add(2) // two so far
-	go getRAM(&wg)
-	go getSwap(&wg)
+	go getRAM(&Reg1s, &wg)
+	go getSwap(&Reg1s, &wg)
 
 	go getGeneric(&Reg1s, gch)
 	go read_disks(dch)
@@ -492,6 +492,20 @@ func (ir IndexRegistry) LA() string {
 type Registry interface {
 	UpdateIFdata(getifaddrs.IfData)
 	UpdateLoadAverage(sigar.LoadAverage)
+	UpdateSwap(sigar.Swap)
+	UpdateRAM(sigar.Mem, uint64, uint64)
+}
+
+func (ir *IndexRegistry) UpdateRAM(got sigar.Mem, extra1, extra2 uint64) {
+	ir.Mutex.Lock()
+	defer ir.Mutex.Unlock()
+	ir.RAM.Update(got, extra1, extra2)
+}
+
+func (ir *IndexRegistry) UpdateSwap(got sigar.Swap) {
+	ir.Mutex.Lock()
+	defer ir.Mutex.Unlock()
+	ir.Swap.Update(got)
 }
 
 func (ir *IndexRegistry) UpdateLoadAverage(la sigar.LoadAverage) {

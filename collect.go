@@ -76,10 +76,10 @@ func _getmem(kind string, in sigar.Swap) types.Memory {
 	}
 }
 
-func getRAM(wg *sync.WaitGroup) {
+func getRAM(reg Registry, wg *sync.WaitGroup) {
 	got := sigar.Mem{}
 	extra1, extra2, _ := sigar.GetExtra(&got)
-	Reg1s.RAM.Update(got, extra1, extra2)
+	reg.UpdateRAM(got, extra1, extra2)
 	wg.Done()
 
 	// inactive := got.ActualFree - got.Free // == got.Used - got.ActualUsed // "kern"
@@ -93,10 +93,10 @@ func getRAM(wg *sync.WaitGroup) {
 	// TODO wired  := vm_data.wire_count   << 12 (pagesoze)
 }
 
-func getSwap(wg *sync.WaitGroup) {
+func getSwap(reg Registry, wg *sync.WaitGroup) {
 	got := sigar.Swap{}
 	got.Get()
-	Reg1s.Swap.Update(got)
+	reg.UpdateSwap(got)
 	wg.Done()
 }
 
