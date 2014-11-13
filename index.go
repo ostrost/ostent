@@ -399,18 +399,18 @@ func (mi MetricInterface) FormatInterface(ip InterfaceParts) types.Interface {
 
 type InterfaceParts func(MetricInterface) (GaugeDiff, GaugeDiff, bool)
 
-func (_ Registry) InterfaceBytes(mi MetricInterface) (GaugeDiff, GaugeDiff, bool) {
+func (_ IndexRegistry) InterfaceBytes(mi MetricInterface) (GaugeDiff, GaugeDiff, bool) {
 	return mi.BytesIn, mi.BytesOut, true
 }
-func (_ Registry) InterfaceErrors(mi MetricInterface) (GaugeDiff, GaugeDiff, bool) {
+func (_ IndexRegistry) InterfaceErrors(mi MetricInterface) (GaugeDiff, GaugeDiff, bool) {
 	return mi.ErrorsIn, mi.ErrorsOut, false
 }
-func (_ Registry) InterfacePackets(mi MetricInterface) (GaugeDiff, GaugeDiff, bool) {
+func (_ IndexRegistry) InterfacePackets(mi MetricInterface) (GaugeDiff, GaugeDiff, bool) {
 	return mi.PacketsIn, mi.PacketsOut, false
 }
 
-func (r Registry) Interfaces(cli *client.Client, send *client.SendClient, ip InterfaceParts) []types.Interface {
-	private := r.ListPrivateInterface()
+func (ir IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient, ip InterfaceParts) []types.Interface {
+	private := ir.ListPrivateInterface()
 	var public []types.Interface
 
 	client.SetBool(&cli.ExpandableIF, &send.ExpandableIF, len(private) > cli.Toprows)
@@ -420,7 +420,7 @@ func (r Registry) Interfaces(cli *client.Client, send *client.SendClient, ip Int
 		return public
 	}
 	sort.Sort(ListMetricInterface(private))
-	// MAYBE have a measure not to make full list in r.ListPrivateInterface
+	// MAYBE have a measure not to make full list in ir.ListPrivateInterface
 	for i, p := range private {
 		if !*cli.ExpandIF && i >= cli.Toprows {
 			break
@@ -430,37 +430,37 @@ func (r Registry) Interfaces(cli *client.Client, send *client.SendClient, ip Int
 	return public
 }
 
-func (r *Registry) ListPrivateInterface() []MetricInterface {
+func (ir *IndexRegistry) ListPrivateInterface() []MetricInterface {
 	var mi []MetricInterface
-	r.PrivateRegistry.Each(func(name string, i interface{}) {
+	ir.PrivateRegistry.Each(func(name string, i interface{}) {
 		mi = append(mi, i.(MetricInterface))
 	})
 	return mi
 }
 
-func (r *Registry) GetOrRegisterPrivateInterface(name string) *MetricInterface {
-	r.PrivateMutex.Lock()
-	defer r.PrivateMutex.Unlock()
-	if metric := r.PrivateRegistry.Get(name); metric != nil {
+func (ir *IndexRegistry) GetOrRegisterPrivateInterface(name string) *MetricInterface {
+	ir.PrivateMutex.Lock()
+	defer ir.PrivateMutex.Unlock()
+	if metric := ir.PrivateRegistry.Get(name); metric != nil {
 		i := metric.(MetricInterface)
 		return &i
 	}
 	i := MetricInterface{
 		Name:       name,
-		BytesIn:    NewGaugeDiff("interface-"+name+".if_octets.rx", r.Registry),
-		BytesOut:   NewGaugeDiff("interface-"+name+".if_octets.tx", r.Registry),
-		ErrorsIn:   NewGaugeDiff("interface-"+name+".if_errors.rx", r.Registry),
-		ErrorsOut:  NewGaugeDiff("interface-"+name+".if_errors.tx", r.Registry),
-		PacketsIn:  NewGaugeDiff("interface-"+name+".if_packets.rx", r.Registry),
-		PacketsOut: NewGaugeDiff("interface-"+name+".if_packets.tx", r.Registry),
+		BytesIn:    NewGaugeDiff("interface-"+name+".if_octets.rx", ir.Registry),
+		BytesOut:   NewGaugeDiff("interface-"+name+".if_octets.tx", ir.Registry),
+		ErrorsIn:   NewGaugeDiff("interface-"+name+".if_errors.rx", ir.Registry),
+		ErrorsOut:  NewGaugeDiff("interface-"+name+".if_errors.tx", ir.Registry),
+		PacketsIn:  NewGaugeDiff("interface-"+name+".if_packets.rx", ir.Registry),
+		PacketsOut: NewGaugeDiff("interface-"+name+".if_packets.tx", ir.Registry),
 	}
-	r.PrivateRegistry.Register(name, i) // error is ignored
+	ir.PrivateRegistry.Register(name, i) // error is ignored
 	// errs when the type is not derived from (go-)metrics types
 	return &i
 }
 
-func (r Registry) MEM(client client.Client) *types.MEM {
-	gr := r.RAM
+func (ir IndexRegistry) MEM(client client.Client) *types.MEM {
+	gr := ir.RAM
 	mem := new(types.MEM)
 	mem.List = []types.Memory{
 		_getmem("RAM", sigar.Swap{
@@ -470,7 +470,7 @@ func (r Registry) MEM(client client.Client) *types.MEM {
 		}),
 	}
 	if !*client.HideSWAP {
-		gs := r.Swap
+		gs := ir.Swap
 		mem.List = append(mem.List,
 			_getmem("swap", sigar.Swap{
 				Total: gs.TotalValue(),
@@ -481,34 +481,34 @@ func (r Registry) MEM(client client.Client) *types.MEM {
 	return mem
 }
 
-func (r Registry) LA() string {
-	gl := r.Load
+func (ir IndexRegistry) LA() string {
+	gl := ir.Load
 	return gl.Short.Sparkline() + " " + fmt.Sprintf("%.2f %.2f %.2f",
 		gl.Short.Snapshot().Value(),
 		gl.Mid.Snapshot().Value(),
 		gl.Long.Snapshot().Value())
 }
 
-type Register interface {
+type Registry interface {
 	UpdateIFdata(getifaddrs.IfData)
 	UpdateLoadAverage(sigar.LoadAverage)
 }
 
-func (r *Registry) UpdateLoadAverage(la sigar.LoadAverage) {
-	r.Mutex.Lock()
-	defer r.Mutex.Unlock()
-	r.Load.Short.Update(la.One)
-	r.Load.Mid.Update(la.Five)
-	r.Load.Long.Update(la.Fifteen)
+func (ir *IndexRegistry) UpdateLoadAverage(la sigar.LoadAverage) {
+	ir.Mutex.Lock()
+	defer ir.Mutex.Unlock()
+	ir.Load.Short.Update(la.One)
+	ir.Load.Mid.Update(la.Five)
+	ir.Load.Long.Update(la.Fifteen)
 }
 
-func (r *Registry) UpdateIFdata(ifdata getifaddrs.IfData) {
-	r.Mutex.Lock()
-	defer r.Mutex.Unlock()
-	r.GetOrRegisterPrivateInterface(ifdata.Name).Update(ifdata)
+func (ir *IndexRegistry) UpdateIFdata(ifdata getifaddrs.IfData) {
+	ir.Mutex.Lock()
+	defer ir.Mutex.Unlock()
+	ir.GetOrRegisterPrivateInterface(ifdata.Name).Update(ifdata)
 }
 
-type Registry struct {
+type IndexRegistry struct {
 	Registry        metrics.Registry
 	PrivateRegistry metrics.Registry
 	PrivateMutex    sync.Mutex
@@ -522,11 +522,11 @@ type Registry struct {
 	Mutex sync.Mutex
 }
 
-var Reg1s Registry
+var Reg1s IndexRegistry
 
 func init() {
 	reg1s := metrics.NewRegistry()
-	Reg1s = Registry{
+	Reg1s = IndexRegistry{
 		Registry:        reg1s,
 		PrivateRegistry: metrics.NewRegistry(),
 	}

@@ -29,7 +29,7 @@ func getHostname() (string, error) {
 	return hostname, err
 }
 
-func getGeneric(reg Register, CH chan<- generic) {
+func getGeneric(reg Registry, CH chan<- generic) {
 	hostname, _ := getHostname()
 
 	uptime := sigar.Uptime{}

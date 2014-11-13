@@ -36,7 +36,7 @@ func realInterface(name string) bool {
 }
 
 // getInterfaces registers the interfaces with the reg and send first non-loopback IP to the chan
-func getInterfaces(reg Register, CH chan<- string) {
+func getInterfaces(reg Registry, CH chan<- string) {
 	iflist, _ := getifaddrs.Getifaddrs()
 	IP := ""
 	for _, ifdata := range iflist {
