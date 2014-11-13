@@ -1,7 +1,6 @@
 package ostent
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"os"
@@ -16,12 +15,10 @@ import (
 )
 
 type generic struct {
-	Hostname    string
-	IP          string
-	LA          string
-	Uptime      string
-	LA1spark    string
-	LoadAverage sigar.LoadAverage
+	Hostname string
+	Uptime   string
+	IP       string // not filled by getGeneric
+	LA       string // not filled by getGeneric
 }
 
 func getHostname() (string, error) {
@@ -32,7 +29,7 @@ func getHostname() (string, error) {
 	return hostname, err
 }
 
-func getGeneric(CH chan<- generic) {
+func getGeneric(reg Register, CH chan<- generic) {
 	hostname, _ := getHostname()
 
 	uptime := sigar.Uptime{}
@@ -41,18 +38,13 @@ func getGeneric(CH chan<- generic) {
 	la := sigar.LoadAverage{}
 	la.Get()
 
-	Reg1s.Load.Short.Update(la.One)
-	Reg1s.Load.Mid.Update(la.Five)
-	Reg1s.Load.Long.Update(la.Fifteen)
+	reg.UpdateLoadAverage(la)
 
 	g := generic{
-		Hostname:    hostname,
-		LA:          fmt.Sprintf("%.2f %.2f %.2f", la.One, la.Five, la.Fifteen),
-		Uptime:      format.FormatUptime(uptime.Length),
-		LoadAverage: la, // int(float64(100) * la.One),
+		Hostname: hostname,
+		Uptime:   format.FormatUptime(uptime.Length),
 	}
-	// IP, _ := netinterface_ipaddr()
-	// g.IP = IP
+	// IP, _ := netinterface_ipaddr(); CH <- g
 	CH <- g
 }
 

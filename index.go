@@ -1,12 +1,9 @@
 package ostent
 
 import (
-	"container/ring"
-	"errors"
 	"fmt"
 	"html/template"
 	"log"
-	"math"
 	"net/http"
 	"net/url"
 	"os/user"
@@ -200,150 +197,6 @@ type lastinfo struct {
 	DiskList []diskInfo
 	ProcList []types.ProcInfo
 	Previous *Previous
-	lastfive lastfive
-}
-
-type lastfive struct {
-	// CPU []*fiveCPU
-	milliLA1 *five
-}
-
-type fiveCPU struct {
-	user, sys, idle *five
-}
-
-type five struct {
-	*ring.Ring
-	min, max int
-}
-
-func newFive() *five {
-	return &five{Ring: ring.New(5), min: -1, max: -1}
-}
-
-func (f *five) push(v int) {
-	push(&f, v)
-}
-
-func push(ff **five, v int) {
-	if *ff == nil {
-		*ff = newFive()
-	}
-	f := *ff
-	setmin := f.min == -1 || v < f.min
-	setmax := f.max == -1 || v > f.max
-	if setmin {
-		f.min = v
-	}
-	if setmax {
-		f.max = v
-	}
-
-	if f.Len() != 0 {
-		prev := f.Prev().Value
-		if prev != nil {
-			// Don't push if the bars for the current and previous are equal
-
-			i, _, e1 := f.bar(prev.(int))
-			j, _, e2 := f.bar(v)
-			if e1 == nil && e2 == nil && i == j {
-				return
-			}
-		}
-	}
-
-	r := f.Move(1)
-	r.Move(4).Value = v
-	f.Ring = r // gc please
-
-	// recalc min, max of the remained values
-
-	if !setmin {
-		if f.Ring != nil && f.Ring.Value != nil {
-			f.min = f.Ring.Value.(int)
-		}
-		f.Do(func(o interface{}) {
-			if o == nil {
-				return
-			}
-			v := o.(int)
-			if f.min > v {
-				f.min = v
-			}
-		})
-	}
-	if !setmax {
-		if f.Ring != nil && f.Ring.Value != nil {
-			f.max = f.Ring.Value.(int)
-		}
-		f.Do(func(o interface{}) {
-			if o == nil {
-				return
-			}
-			v := o.(int)
-			if f.max < v {
-				f.max = v
-			}
-		})
-	}
-}
-
-var bARS = []string{
-	"▁",
-	"▂",
-	"▃",
-	// "▄", // looks bad in browsers
-	"▅",
-	"▆",
-	"▇",
-	// "█", // looks bad in browsers
-}
-
-func (f five) bar(v int) (int, string, error) {
-	if f.max == -1 || f.min == -1 { // || f.max == f.min {
-		return -1, "", errors.New("Unknown min or max")
-	}
-	spread := f.max - f.min
-
-	fi := 0.0
-	if spread != 0 {
-		// fi = float64(v-f.min) / float64(spread)
-		fi = float64(f.round(v)-float64(f.min)) / float64(spread)
-		if fi > 1.0 {
-			// panic("impossible") // ??
-			fi = 1.0
-		}
-	}
-	i := int(round(fi * float64(len(bARS)-1)))
-	return i, bARS[i], nil
-}
-
-func (f five) round(v int) float64 {
-	unit := float64(f.max-f.min) /* spread */ / float64(len(bARS)-1)
-	times := round((float64(v) - float64(f.min)) / unit)
-	return float64(f.min) + unit*times
-}
-
-func round(val float64) float64 {
-	_, d := math.Modf(val)
-	return map[bool]func(float64) float64{true: math.Ceil, false: math.Floor}[d >= 0.5](val)
-}
-
-func (f five) spark() string {
-	if f.max == -1 || f.min == -1 { // || f.max == f.min {
-		return ""
-	}
-
-	s := ""
-	f.Do(func(o interface{}) {
-		if o == nil {
-			return
-		}
-		if _, c, err := f.bar(o.(int)); err == nil {
-			s += c
-		}
-	})
-	return s
 }
 
 type IndexData struct {
@@ -421,10 +274,10 @@ func (la *last) collect() {
 	go getRAM(&wg)
 	go getSwap(&wg)
 
-	go getGeneric(gch)
+	go getGeneric(&Reg1s, gch)
 	go read_disks(dch)
 	go read_procs(pch)
-	go getInterfaces(Reg1s, ifch)
+	go getInterfaces(&Reg1s, ifch)
 
 	func() {
 		la.mutex.Lock()
@@ -442,7 +295,6 @@ func (la *last) collect() {
 
 	// NB .mutex unchanged
 	la.lastinfo = lastinfo{
-		lastfive: la.lastfive,
 		Previous: &Previous{
 			CPU: la.CPU.SigarList(),
 		},
@@ -454,30 +306,6 @@ func (la *last) collect() {
 
 	la.Generic.IP = <-ifch
 	wg.Wait()
-
-	push(&la.lastfive.milliLA1, int(float64(100)*la.Generic.LoadAverage.One))
-	la.Generic.LA1spark = la.lastfive.milliLA1.spark()
-
-	/* delta, isdelta := la.cpuListDelta()
-	for i, core := range delta.List {
-		var fcpu *fiveCPU
-		if i >= len(la.lastfive.CPU) {
-			fcpu = &fiveCPU{
-				user: newFive(),
-				sys:  newFive(),
-				idle: newFive(),
-			}
-			la.lastfive.CPU = append(la.lastfive.CPU, fcpu)
-		} else {
-			fcpu = la.lastfive.CPU[i]
-		}
-		if isdelta {
-			_ = core
-			fcpu.user.push(int(core.User))
-			fcpu.sys .push(int(core.Sys))
-			fcpu.idle.push(int(core.Idle))
-		}
-	} // */
 }
 
 // GaugeDiff holds two Gauge metrics: the first is the exported one.
@@ -655,10 +483,29 @@ func (r Registry) MEM(client client.Client) *types.MEM {
 
 func (r Registry) LA() string {
 	gl := r.Load
-	return fmt.Sprintf("%.2f %.2f %.2f",
+	return gl.Short.Sparkline() + " " + fmt.Sprintf("%.2f %.2f %.2f",
 		gl.Short.Snapshot().Value(),
 		gl.Mid.Snapshot().Value(),
 		gl.Long.Snapshot().Value())
+}
+
+type Register interface {
+	UpdateIFdata(getifaddrs.IfData)
+	UpdateLoadAverage(sigar.LoadAverage)
+}
+
+func (r *Registry) UpdateLoadAverage(la sigar.LoadAverage) {
+	r.Mutex.Lock()
+	defer r.Mutex.Unlock()
+	r.Load.Short.Update(la.One)
+	r.Load.Mid.Update(la.Five)
+	r.Load.Long.Update(la.Fifteen)
+}
+
+func (r *Registry) UpdateIFdata(ifdata getifaddrs.IfData) {
+	r.Mutex.Lock()
+	defer r.Mutex.Unlock()
+	r.GetOrRegisterPrivateInterface(ifdata.Name).Update(ifdata)
 }
 
 type Registry struct {
@@ -671,6 +518,8 @@ type Registry struct {
 	RAM  types.GaugeRAM
 	Swap types.GaugeSwap
 	Load types.GaugeLoad
+
+	Mutex sync.Mutex
 }
 
 var Reg1s Registry
@@ -711,7 +560,7 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 
 		if true { // cl.RefreshGeneric.Refresh(forcerefresh)
 			g := lastInfo.Generic
-			g.LA = g.LA1spark + " " + Reg1s.LA()
+			g.LA = Reg1s.LA()
 			iu.Generic = &g // &lastInfo.Generic
 		}
 		if !*cl.HideMEM && cl.RefreshMEM.Refresh(forcerefresh) {

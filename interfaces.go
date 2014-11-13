@@ -36,7 +36,7 @@ func realInterface(name string) bool {
 }
 
 // getInterfaces registers the interfaces with the reg and send first non-loopback IP to the chan
-func getInterfaces(reg Registry, CH chan<- string) {
+func getInterfaces(reg Register, CH chan<- string) {
 	iflist, _ := getifaddrs.Getifaddrs()
 	IP := ""
 	for _, ifdata := range iflist {
@@ -55,16 +55,15 @@ func getInterfaces(reg Registry, CH chan<- string) {
 			// first non-loopback IP
 			IP = ifdata.IP
 		}
-		reg.GetOrRegisterPrivateInterface(ifdata.Name).Update(ifdata)
+		reg.UpdateIFdata(ifdata)
 	}
 	CH <- IP
 }
 
-/*
+/* using net.Interfaces
 func netinterface_ipaddr() (string, error) {
 	// list of the system's network interfaces.
 	list_iface, err := net.Interfaces()
-	// var ifaces ost_api.Interfaces
 	if err != nil {
 		return "", err
 	}
