@@ -6,6 +6,7 @@ import (
 
 	"github.com/ostrost/ostent/client"
 	"github.com/ostrost/ostent/format"
+	"github.com/ostrost/ostent/registry"
 	sigar "github.com/rzab/gosigar"
 )
 
@@ -153,11 +154,12 @@ func (cs _cores) Less(i, j int) bool {
 	return (cs[j].User + cs[j].Sys) < (cs[i].User + cs[i].Sys)
 }
 
-func CollectCPU(CH chan<- CPUData, prevcl *sigar.CpuList) {
+func CollectCPU(reg registry.Registry, CH chan<- CPUData, prevcl *sigar.CpuList) {
 	cd := NewCPUData()
 	if prevcl != nil {
 		cd.CalculateDelta(prevcl.List)
 	}
+	reg.UpdateCPU(cd.sigarList.List)
 	CH <- cd
 }
 
@@ -190,4 +192,8 @@ func (se *Send) fraction(value uint64) string {
 		*se.total = se.calcTotal()
 	}
 	return fmt.Sprintf("%f", float64(value)/float64(*se.total))
+}
+
+func (se Send) calcTotal() uint64 {
+	return CalcTotal(*se.cpu)
 }

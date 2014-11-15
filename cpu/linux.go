@@ -2,10 +2,15 @@
 
 package cpu
 
-import "github.com/ostrost/ostent/types"
+import (
+	"github.com/ostrost/ostent/types"
+	sigar "github.com/rzab/gosigar"
+)
 
-func (se Send) calcTotal() uint64 {
-	return se.cpu.User + se.cpu.Nice + se.cpu.Sys + se.cpu.Idle
+func CalcTotal(cpu sigar.Cpu) uint64 {
+	return cpu.Total() // gosigar implementation aka:
+	// 	return cpu.User + cpu.Nice + cpu.Sys + cpu.Idle +
+	// 		cpu.Wait + cpu.Irq + cpu.SoftIrq + cpu.Stolen
 }
 
 func (se Send) Fields() []types.NameString {

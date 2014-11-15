@@ -2,10 +2,14 @@
 
 package cpu
 
-import "github.com/ostrost/ostent/types"
+import (
+	"github.com/ostrost/ostent/types"
+	sigar "github.com/rzab/gosigar"
+)
 
-func (se Send) calcTotal() uint64 {
-	return se.cpu.User + se.cpu.Nice + se.cpu.Sys + se.cpu.Idle
+func CalcTotal(cpu sigar.Cpu) uint64 {
+	return cpu.User + cpu.Nice + cpu.Sys + cpu.Idle
+	// gosigar cpu.Total() implementation adds .{Wait,{,Soft}Irq,Stolen} which is zero for darwin
 }
 
 func (se Send) Fields() []types.NameString {

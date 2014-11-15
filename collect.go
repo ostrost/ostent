@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/ostrost/ostent/format"
+	"github.com/ostrost/ostent/registry"
 	"github.com/ostrost/ostent/templates"
 	"github.com/ostrost/ostent/types"
 	sigar "github.com/rzab/gosigar"
@@ -29,7 +30,7 @@ func getHostname() (string, error) {
 	return hostname, err
 }
 
-func getGeneric(reg Registry, CH chan<- generic) {
+func getGeneric(reg registry.Registry, CH chan<- generic) {
 	hostname, _ := getHostname()
 
 	uptime := sigar.Uptime{}
@@ -76,7 +77,7 @@ func _getmem(kind string, in sigar.Swap) types.Memory {
 	}
 }
 
-func getRAM(reg Registry, wg *sync.WaitGroup) {
+func getRAM(reg registry.Registry, wg *sync.WaitGroup) {
 	got := sigar.Mem{}
 	extra1, extra2, _ := sigar.GetExtra(&got)
 	reg.UpdateRAM(got, extra1, extra2)
@@ -93,7 +94,7 @@ func getRAM(reg Registry, wg *sync.WaitGroup) {
 	// TODO wired  := vm_data.wire_count   << 12 (pagesoze)
 }
 
-func getSwap(reg Registry, wg *sync.WaitGroup) {
+func getSwap(reg registry.Registry, wg *sync.WaitGroup) {
 	got := sigar.Swap{}
 	got.Get()
 	reg.UpdateSwap(got)

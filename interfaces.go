@@ -5,6 +5,7 @@ import (
 	"runtime"
 
 	"github.com/ostrost/ostent/getifaddrs"
+	"github.com/ostrost/ostent/registry"
 )
 
 var (
@@ -36,7 +37,7 @@ func realInterface(name string) bool {
 }
 
 // getInterfaces registers the interfaces with the reg and send first non-loopback IP to the chan
-func getInterfaces(reg Registry, CH chan<- string) {
+func getInterfaces(reg registry.Registry, CH chan<- string) {
 	iflist, _ := getifaddrs.Getifaddrs()
 	IP := ""
 	for _, ifdata := range iflist {
