@@ -71,9 +71,11 @@ func Loop() {
 			Connections.reg(conn)
 
 		case conn := <-unregister:
-			if Connections.unreg(conn) == 0 { // if no connections left
-				lastInfo.reset_prev()
-			}
+			Connections.unreg(conn)
+			/*
+				if Connections.unreg(conn) == 0 { // if no connections left
+					lastInfo.reset_prev()
+				} // */
 		}
 	}
 }
@@ -187,14 +189,13 @@ func (cs *conns) Len() int {
 	return len(cs.connmap)
 }
 
-func (cs *conns) unreg(r receiver) int { // (c *conn)
+func (cs *conns) unreg(r receiver) {
 	r.closeChans()
 
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
 
 	delete(cs.connmap, r)
-	return len(cs.connmap)
 }
 
 func (cs *conns) expires() bool {

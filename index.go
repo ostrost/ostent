@@ -182,10 +182,6 @@ func orderProc(procs []types.ProcInfo, cl *client.Client, send *client.SendClien
 	return list
 }
 
-type Previous struct {
-	CPU *sigar.CpuList
-}
-
 type last struct {
 	lastinfo
 	mutex sync.Mutex
@@ -193,10 +189,8 @@ type last struct {
 
 type lastinfo struct {
 	Generic  generic
-	CPU      cpu.CPUData
 	DiskList []diskInfo
 	ProcList []types.ProcInfo
-	Previous *Previous
 }
 
 type IndexData struct {
@@ -252,25 +246,14 @@ type indexUpdate struct {
 
 var lastInfo last
 
-func (la *last) reset_prev() {
-	la.mutex.Lock()
-	defer la.mutex.Unlock()
-
-	if la.Previous == nil {
-		return
-	}
-	la.Previous.CPU = nil
-}
-
 func (la *last) collect() {
 	gch := make(chan generic, 1)
-	cch := make(chan cpu.CPUData, 1)
 	dch := make(chan []diskInfo, 1)
 	pch := make(chan []types.ProcInfo, 1)
 	ifch := make(chan string, 1)
 
 	var wg sync.WaitGroup
-	wg.Add(2) // two so far
+	wg.Add(3) // three so far
 	go getRAM(&Reg1s, &wg)
 	go getSwap(&Reg1s, &wg)
 
@@ -278,104 +261,20 @@ func (la *last) collect() {
 	go read_disks(dch)
 	go read_procs(pch)
 	go getInterfaces(&Reg1s, ifch)
-
-	func() {
-		la.mutex.Lock()
-		defer la.mutex.Unlock()
-
-		var prevcl *sigar.CpuList
-		if la.Previous != nil {
-			prevcl = la.Previous.CPU
-		}
-		go cpu.CollectCPU(&Reg1s, cch, prevcl)
-	}()
+	go CollectCPU(&Reg1s, &wg)
 
 	la.mutex.Lock()
 	defer la.mutex.Unlock()
 
 	// NB .mutex unchanged
 	la.lastinfo = lastinfo{
-		Previous: &Previous{
-			CPU: la.CPU.SigarList(),
-		},
 		Generic:  <-gch,
-		CPU:      <-cch,
 		DiskList: <-dch,
 		ProcList: <-pch,
 	}
 
 	la.Generic.IP = <-ifch
 	wg.Wait()
-}
-
-type GaugePercent struct {
-	Percent  metrics.GaugeFloat64 // Percent as the primary metric.
-	Previous metrics.Gauge
-	Mutex    sync.Mutex
-}
-
-func NewGaugePercent(name string, r metrics.Registry) GaugePercent {
-	return GaugePercent{
-		Percent:  metrics.NewRegisteredGaugeFloat64(name, r),
-		Previous: metrics.NewRegisteredGauge(name+"-previous", metrics.NewRegistry()),
-	}
-}
-
-func (gp *GaugePercent) UpdatePercent(totalDelta int64, uabsolute uint64) {
-	gp.Mutex.Lock()
-	defer gp.Mutex.Unlock()
-	previous := gp.Previous.Snapshot().Value()
-	absolute := int64(uabsolute)
-	gp.Previous.Update(absolute)
-	if previous != 0 /* otherwise do not update */ &&
-		absolute >= previous /* otherwise counters got reset */ &&
-		totalDelta != 0 /* otherwise there were no previous value for Total */ {
-		percent := float64(100) * float64(absolute-previous) / float64(totalDelta) // TODO rounding good?
-		if percent > 100.0 {
-			percent = 100.0
-		}
-		gp.Percent.Update(percent)
-	}
-}
-
-// GaugeDiff holds two Gauge metrics: the first is the exported one.
-// Caveat: The exported metric value is 0 initially, not "nan", until updated.
-type GaugeDiff struct {
-	Delta    metrics.Gauge // Delta as the primary metric.
-	Absolute metrics.Gauge // Absolute keeps the absolute value, not exported as it's registered in private registry.
-	Previous metrics.Gauge // Previous keeps the previous absolute value, not exported as it's registered in private registry.
-	Mutex    sync.Mutex
-}
-
-func NewGaugeDiff(name string, r metrics.Registry) GaugeDiff {
-	return GaugeDiff{
-		Delta:    metrics.NewRegisteredGauge(name, r),
-		Absolute: metrics.NewRegisteredGauge(name+"-absolute", metrics.NewRegistry()),
-		Previous: metrics.NewRegisteredGauge(name+"-previous", metrics.NewRegistry()),
-	}
-}
-
-func (gd *GaugeDiff) Values() (int64, int64) {
-	gd.Mutex.Lock()
-	defer gd.Mutex.Unlock()
-	return gd.Delta.Snapshot().Value(), gd.Absolute.Snapshot().Value()
-}
-
-func (gd *GaugeDiff) UpdateAbsolute(absolute int64) int64 {
-	gd.Mutex.Lock()
-	defer gd.Mutex.Unlock()
-	previous := gd.Previous.Snapshot().Value()
-	gd.Absolute.Update(absolute)
-	gd.Previous.Update(absolute)
-	if previous == 0 { // do not .Update
-		return 0
-	}
-	if absolute < previous { // counters got reset
-		previous = 0
-	}
-	delta := absolute - previous
-	gd.Delta.Update(delta)
-	return delta
 }
 
 type ListMetricInterface []MetricInterface  // satisfying sort.Interface
@@ -391,12 +290,12 @@ func (x ListMetricInterface) Less(i, j int) bool {
 type MetricInterface struct {
 	metrics.Healthcheck // derive from one of (go-)metric types, otherwise it won't be registered
 	Name                string
-	BytesIn             GaugeDiff
-	BytesOut            GaugeDiff
-	ErrorsIn            GaugeDiff
-	ErrorsOut           GaugeDiff
-	PacketsIn           GaugeDiff
-	PacketsOut          GaugeDiff
+	BytesIn             types.GaugeDiff
+	BytesOut            types.GaugeDiff
+	ErrorsIn            types.GaugeDiff
+	ErrorsOut           types.GaugeDiff
+	PacketsIn           types.GaugeDiff
+	PacketsOut          types.GaugeDiff
 }
 
 func (mi *MetricInterface) Update(ifdata getifaddrs.IfData) {
@@ -430,31 +329,15 @@ func (mi MetricInterface) FormatInterface(ip InterfaceParts) types.Interface {
 	}
 }
 
-type MetricCPU struct {
-	metrics.Healthcheck        // derive from one of (go-)metric types, otherwise it won't be registered
-	N                   string // The "#N"
-	User                GaugePercent
-	Sys                 GaugePercent
-	Idle                GaugePercent
-	Total               GaugeDiff
-}
+type InterfaceParts func(MetricInterface) (types.GaugeDiff, types.GaugeDiff, bool)
 
-func (mc *MetricCPU) Update(sigarCpu sigar.Cpu) {
-	totalDelta := mc.Total.UpdateAbsolute(int64(cpu.CalcTotal(sigarCpu)))
-	mc.User.UpdatePercent(totalDelta, sigarCpu.User)
-	mc.Sys.UpdatePercent(totalDelta, sigarCpu.Sys)
-	mc.Idle.UpdatePercent(totalDelta, sigarCpu.Idle)
-}
-
-type InterfaceParts func(MetricInterface) (GaugeDiff, GaugeDiff, bool)
-
-func (_ IndexRegistry) InterfaceBytes(mi MetricInterface) (GaugeDiff, GaugeDiff, bool) {
+func (_ IndexRegistry) InterfaceBytes(mi MetricInterface) (types.GaugeDiff, types.GaugeDiff, bool) {
 	return mi.BytesIn, mi.BytesOut, true
 }
-func (_ IndexRegistry) InterfaceErrors(mi MetricInterface) (GaugeDiff, GaugeDiff, bool) {
+func (_ IndexRegistry) InterfaceErrors(mi MetricInterface) (types.GaugeDiff, types.GaugeDiff, bool) {
 	return mi.ErrorsIn, mi.ErrorsOut, false
 }
-func (_ IndexRegistry) InterfacePackets(mi MetricInterface) (GaugeDiff, GaugeDiff, bool) {
+func (_ IndexRegistry) InterfacePackets(mi MetricInterface) (types.GaugeDiff, types.GaugeDiff, bool) {
 	return mi.PacketsIn, mi.PacketsOut, false
 }
 
@@ -494,29 +377,31 @@ func (ir *IndexRegistry) GetOrRegisterPrivateInterface(name string) *MetricInter
 	}
 	i := MetricInterface{
 		Name:       name,
-		BytesIn:    NewGaugeDiff("interface-"+name+".if_octets.rx", ir.Registry),
-		BytesOut:   NewGaugeDiff("interface-"+name+".if_octets.tx", ir.Registry),
-		ErrorsIn:   NewGaugeDiff("interface-"+name+".if_errors.rx", ir.Registry),
-		ErrorsOut:  NewGaugeDiff("interface-"+name+".if_errors.tx", ir.Registry),
-		PacketsIn:  NewGaugeDiff("interface-"+name+".if_packets.rx", ir.Registry),
-		PacketsOut: NewGaugeDiff("interface-"+name+".if_packets.tx", ir.Registry),
+		BytesIn:    types.NewGaugeDiff("interface-"+name+".if_octets.rx", ir.Registry),
+		BytesOut:   types.NewGaugeDiff("interface-"+name+".if_octets.tx", ir.Registry),
+		ErrorsIn:   types.NewGaugeDiff("interface-"+name+".if_errors.rx", ir.Registry),
+		ErrorsOut:  types.NewGaugeDiff("interface-"+name+".if_errors.tx", ir.Registry),
+		PacketsIn:  types.NewGaugeDiff("interface-"+name+".if_packets.rx", ir.Registry),
+		PacketsOut: types.NewGaugeDiff("interface-"+name+".if_packets.tx", ir.Registry),
 	}
 	ir.PrivateInterfaceRegistry.Register(name, i) // error is ignored
 	// errs when the type is not derived from (go-)metrics types
 	return &i
 }
 
-type ListMetricCPU []MetricCPU        // satisfying sort.Interface
+type ListMetricCPU []types.MetricCPU  // satisfying sort.Interface
 func (x ListMetricCPU) Len() int      { return len(x) }
 func (x ListMetricCPU) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
 func (x ListMetricCPU) Less(i, j int) bool {
 	var (
 		juser = x[j].User.Percent.Snapshot().Value()
+		jnice = x[j].Nice.Percent.Snapshot().Value()
 		jsys  = x[j].Sys.Percent.Snapshot().Value()
 		iuser = x[i].User.Percent.Snapshot().Value()
+		inice = x[i].Nice.Percent.Snapshot().Value()
 		isys  = x[i].Sys.Percent.Snapshot().Value()
 	)
-	return (juser + jsys) < (iuser + isys)
+	return (juser + jnice + jsys) < (iuser + inice + isys)
 }
 
 func (ir IndexRegistry) CPU(cli *client.Client, send *client.SendClient) []cpu.CoreInfo {
@@ -531,20 +416,21 @@ func (ir IndexRegistry) CPU(cli *client.Client, send *client.SendClient) []cpu.C
 	}
 	sort.Sort(ListMetricCPU(private))
 	if !*cli.ExpandCPU {
-		public = append(public, ir.PrivateCPUAll.FormatCPU())
+		public = append(public, FormatCPU(ir.PrivateCPUAll))
 	}
 	for i, mc := range private {
 		if !*cli.ExpandCPU && i > cli.Toprows-2 {
 			// "collapsed" view, head of the list
 			break
 		}
-		public = append(public, mc.FormatCPU())
+		public = append(public, FormatCPU(mc))
 	}
 	return public
 }
 
-func (mc MetricCPU) FormatCPU() cpu.CoreInfo {
+func FormatCPU(mc types.MetricCPU) cpu.CoreInfo {
 	user := uint(mc.User.Percent.Snapshot().Value()) // rounding
+	// .Nice is unused
 	sys := uint(mc.Sys.Percent.Snapshot().Value())   // rounding
 	idle := uint(mc.Idle.Percent.Snapshot().Value()) // rounding
 	N := mc.N
@@ -562,32 +448,26 @@ func (mc MetricCPU) FormatCPU() cpu.CoreInfo {
 	}
 }
 
-func (ir *IndexRegistry) ListPrivateCPU() (lmc []MetricCPU) {
+func (ir *IndexRegistry) ListPrivateCPU() (lmc []types.MetricCPU) {
 	ir.PrivateCPURegistry.Each(func(name string, i interface{}) {
-		lmc = append(lmc, i.(MetricCPU))
+		lmc = append(lmc, i.(types.MetricCPU))
 	})
 	return lmc
 }
 
-func (ir *IndexRegistry) RegisterCPU(r metrics.Registry, name string) *MetricCPU {
-	i := MetricCPU{
-		N:     name,
-		User:  NewGaugePercent(name+".user", ir.Registry),
-		Sys:   NewGaugePercent(name+".sys", ir.Registry),
-		Idle:  NewGaugePercent(name+".idle", ir.Registry),
-		Total: NewGaugeDiff(name+"-total", metrics.NewRegistry()),
-	}
+func (ir *IndexRegistry) RegisterCPU(r metrics.Registry, name string) *types.MetricCPU {
+	i := types.NewMetricCPU(ir.Registry /* OR r ? */, name)
 	r.Register(name, i) // error is ignored
 	// errs when the type is not derived from (go-)metrics types
 	return &i
 }
 
-func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) *MetricCPU {
+func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) *types.MetricCPU {
 	ir.PrivateMutex.Lock()
 	defer ir.PrivateMutex.Unlock()
 	name := fmt.Sprintf("cpu-%d", coreno)
 	if metric := ir.PrivateCPURegistry.Get(name); metric != nil {
-		i := metric.(MetricCPU)
+		i := metric.(types.MetricCPU)
 		return &i
 	}
 	return ir.RegisterCPU(ir.PrivateCPURegistry, name)
@@ -649,9 +529,7 @@ func (ir *IndexRegistry) UpdateCPU(cpus []sigar.Cpu) {
 	all := sigar.Cpu{}
 	for coreno, core := range cpus {
 		ir.GetOrRegisterPrivateCPU(coreno).Update(core)
-		all.User += core.User
-		all.Sys += core.Sys
-		all.Idle += core.Idle
+		types.CPUAdd(&all, core)
 	}
 	if ir.PrivateCPUAll.N == "all" {
 		ir.PrivateCPUAll.N = fmt.Sprintf("all %d", len(cpus))
@@ -667,7 +545,7 @@ func (ir *IndexRegistry) UpdateIFdata(ifdata getifaddrs.IfData) {
 
 type IndexRegistry struct {
 	Registry                 metrics.Registry
-	PrivateCPUAll            MetricCPU
+	PrivateCPUAll            types.MetricCPU
 	PrivateCPURegistry       metrics.Registry // set of MetricCPUs is handled as a metric in this registry
 	PrivateInterfaceRegistry metrics.Registry // set of MetricInterfaces is handled as a metric in this registry
 	PrivateMutex             sync.Mutex

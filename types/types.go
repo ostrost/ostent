@@ -442,3 +442,103 @@ func (gs *GaugeSwap) Update(got sigar.Swap) {
 	gs.Free.Update(int64(got.Free))
 	gs.Used.Update(int64(got.Free))
 }
+
+// GaugeDiff holds two Gauge metrics: the first is the exported one.
+// Caveat: The exported metric value is 0 initially, not "nan", until updated.
+type GaugeDiff struct {
+	Delta    metrics.Gauge // Delta as the primary metric.
+	Absolute metrics.Gauge // Absolute keeps the absolute value, not exported as it's registered in private registry.
+	Previous metrics.Gauge // Previous keeps the previous absolute value, not exported as it's registered in private registry.
+	Mutex    sync.Mutex
+}
+
+func NewGaugeDiff(name string, r metrics.Registry) GaugeDiff {
+	return GaugeDiff{
+		Delta:    metrics.NewRegisteredGauge(name, r),
+		Absolute: metrics.NewRegisteredGauge(name+"-absolute", metrics.NewRegistry()),
+		Previous: metrics.NewRegisteredGauge(name+"-previous", metrics.NewRegistry()),
+	}
+}
+
+func (gd *GaugeDiff) Values() (int64, int64) {
+	gd.Mutex.Lock()
+	defer gd.Mutex.Unlock()
+	return gd.Delta.Snapshot().Value(), gd.Absolute.Snapshot().Value()
+}
+
+func (gd *GaugeDiff) UpdateAbsolute(absolute int64) int64 {
+	gd.Mutex.Lock()
+	defer gd.Mutex.Unlock()
+	previous := gd.Previous.Snapshot().Value()
+	gd.Absolute.Update(absolute)
+	gd.Previous.Update(absolute)
+	if previous == 0 { // do not .Update
+		return 0
+	}
+	if absolute < previous { // counters got reset
+		previous = 0
+	}
+	delta := absolute - previous
+	gd.Delta.Update(delta)
+	return delta
+}
+
+type GaugePercent struct {
+	Percent  metrics.GaugeFloat64 // Percent as the primary metric.
+	Previous metrics.Gauge
+	Mutex    sync.Mutex
+}
+
+func NewGaugePercent(name string, r metrics.Registry) GaugePercent {
+	return GaugePercent{
+		Percent:  metrics.NewRegisteredGaugeFloat64(name, r),
+		Previous: metrics.NewRegisteredGauge(name+"-previous", metrics.NewRegistry()),
+	}
+}
+
+func (gp *GaugePercent) UpdatePercent(totalDelta int64, uabsolute uint64) {
+	gp.Mutex.Lock()
+	defer gp.Mutex.Unlock()
+	previous := gp.Previous.Snapshot().Value()
+	absolute := int64(uabsolute)
+	gp.Previous.Update(absolute)
+	if previous != 0 /* otherwise do not update */ &&
+		absolute >= previous /* otherwise counters got reset */ &&
+		totalDelta != 0 /* otherwise there were no previous value for Total */ {
+		percent := float64(100) * float64(absolute-previous) / float64(totalDelta) // TODO rounding good?
+		if percent > 100.0 {
+			percent = 100.0
+		}
+		gp.Percent.Update(percent)
+	}
+}
+
+type MetricCPUCommon struct {
+	metrics.Healthcheck        // derive from one of (go-)metric types, otherwise it won't be registered
+	N                   string // The "cpu-N"
+	User                GaugePercent
+	Nice                GaugePercent
+	Sys                 GaugePercent
+	Idle                GaugePercent
+	Total               GaugeDiff
+}
+
+func (mcc *MetricCPUCommon) UpdateCommon(sigarCpu sigar.Cpu) int64 {
+	totalDelta := mcc.Total.UpdateAbsolute(int64(CPUTotal(sigarCpu)))
+	mcc.User.UpdatePercent(totalDelta, sigarCpu.User)
+	mcc.Nice.UpdatePercent(totalDelta, sigarCpu.Nice)
+	mcc.Sys.UpdatePercent(totalDelta, sigarCpu.Sys)
+	mcc.Idle.UpdatePercent(totalDelta, sigarCpu.Idle)
+	return totalDelta
+}
+
+func NewMetricCPUCommon(r metrics.Registry, name string) MetricCPUCommon {
+	return MetricCPUCommon{
+		N:     name,
+		User:  NewGaugePercent(name+".user", r),
+		Nice:  NewGaugePercent(name+".nice", r),
+		Sys:   NewGaugePercent(name+".system", r),
+		Idle:  NewGaugePercent(name+".idle", r),
+		Total: NewGaugeDiff(name+"-total", metrics.NewRegistry()),
+	}
+}

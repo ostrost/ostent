@@ -194,3 +194,10 @@ func read_procs(CH chan<- []types.ProcInfo) {
 	}
 	CH <- procs
 }
+
+func CollectCPU(reg registry.Registry, wg *sync.WaitGroup) {
+	cl := sigar.CpuList{}
+	cl.Get()
+	reg.UpdateCPU(cl.List)
+	wg.Done()
+}

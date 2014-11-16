@@ -9,6 +9,11 @@ import (
 	sigar "github.com/rzab/gosigar"
 )
 
+func CPUTotal(cpu sigar.Cpu) uint64 {
+	return cpu.User + cpu.Nice + cpu.Sys + cpu.Idle
+	// gosigar cpu.Total() implementation adds .{Wait,{,Soft}Irq,Stolen} which is zero for darwin
+}
+
 func RAMFields(ram RAM) []NameString {
 	return []NameString{
 		{"memory-free", fmt.Sprintf("%d", ram.Raw.Free)},
@@ -42,4 +47,25 @@ func (gr *GaugeRAM) Update(got sigar.Mem, extra1, extra2 uint64) {
 	gr.Inactive.Update(int64(got.ActualFree - got.Free))
 	gr.Wired.Update(int64(extra1))
 	gr.Active.Update(int64(extra2))
+}
+
+type MetricCPU struct {
+	MetricCPUCommon
+}
+
+func (mc *MetricCPU) Update(sigarCpu sigar.Cpu) {
+	mc.UpdateCommon(sigarCpu)
+}
+
+func NewMetricCPU(r metrics.Registry, name string) MetricCPU {
+	return MetricCPU{
+		MetricCPUCommon: NewMetricCPUCommon(r, name),
+	}
+}
+
+func CPUAdd(sum *sigar.Cpu, other sigar.Cpu) {
+	sum.User += other.User
+	sum.Nice += other.Nice
+	sum.Sys += other.Sys
+	sum.Idle += other.Idle
 }
