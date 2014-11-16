@@ -13,30 +13,30 @@ func CPUTotal(cpu sigar.Cpu) uint64 {
 	// 		cpu.Wait + cpu.Irq + cpu.SoftIrq + cpu.Stolen
 }
 
-type GaugeRAM struct {
-	GaugeRAMCommon
+type MetricRAM struct {
+	MetricRAMCommon
 	Free     metrics.Gauge
 	Used     metrics.Gauge
 	Buffered metrics.Gauge
 	Cached   metrics.Gauge
 }
 
-func NewGaugeRAM(r metrics.Registry) GaugeRAM {
-	return GaugeRAM{
-		GaugeRAMCommon: NewGaugeRAMCommon(),
-		Free:           metrics.NewRegisteredGauge("memory.memory-free", r),
-		Used:           metrics.NewRegisteredGauge("memory.memory-used", r),
-		Buffered:       metrics.NewRegisteredGauge("memory.memory-buffered", r),
-		Cached:         metrics.NewRegisteredGauge("memory.memory-cached", r),
+func NewMetricRAM(r metrics.Registry) MetricRAM {
+	return MetricRAM{
+		MetricRAMCommon: NewMetricRAMCommon(),
+		Free:            metrics.NewRegisteredGauge("memory.memory-free", r),
+		Used:            metrics.NewRegisteredGauge("memory.memory-used", r),
+		Buffered:        metrics.NewRegisteredGauge("memory.memory-buffered", r),
+		Cached:          metrics.NewRegisteredGauge("memory.memory-cached", r),
 	}
 }
 
-func (gr *GaugeRAM) Update(got sigar.Mem, extra1, extra2 uint64) {
-	gr.GaugeRAMCommon.UpdateCommon(got)
-	gr.Free.Update(int64(got.Free))
-	gr.Used.Update(int64(got.ActualUsed))
-	gr.Buffered.Update(int64(extra1))
-	gr.Cached.Update(int64(extra2))
+func (mr *MetricRAM) Update(got sigar.Mem, extra1, extra2 uint64) {
+	mr.MetricRAMCommon.UpdateCommon(got)
+	mr.Free.Update(int64(got.Free))
+	mr.Used.Update(int64(got.ActualUsed))
+	mr.Buffered.Update(int64(extra1))
+	mr.Cached.Update(int64(extra2))
 }
 
 type MetricCPU struct {

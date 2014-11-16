@@ -277,6 +277,7 @@ func (la *last) collect() {
 	wg.Wait()
 }
 
+// ListMetricInterface is a list of types.MetricInterface type. Used for sorting.
 type ListMetricInterface []MetricInterface  // satisfying sort.Interface
 func (x ListMetricInterface) Len() int      { return len(x) }
 func (x ListMetricInterface) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
@@ -287,6 +288,7 @@ func (x ListMetricInterface) Less(i, j int) bool {
 	return x[i].Name < x[j].Name
 }
 
+// MetricInterface is a set of interface metrics.
 type MetricInterface struct {
 	metrics.Healthcheck // derive from one of (go-)metric types, otherwise it won't be registered
 	Name                string
@@ -298,6 +300,7 @@ type MetricInterface struct {
 	PacketsOut          types.GaugeDiff
 }
 
+// Update reads ifdata and updates the corresponding fields.
 func (mi *MetricInterface) Update(ifdata getifaddrs.IfData) {
 	mi.BytesIn.UpdateAbsolute(int64(ifdata.InBytes))
 	mi.BytesOut.UpdateAbsolute(int64(ifdata.OutBytes))
@@ -364,6 +367,7 @@ func (ir IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient, 
 	return public
 }
 
+// ListPrivateInterface returns list of MetricInterface's by traversing the PrivateInterfaceRegistry.
 func (ir *IndexRegistry) ListPrivateInterface() (lmi []MetricInterface) {
 	ir.PrivateInterfaceRegistry.Each(func(name string, i interface{}) {
 		lmi = append(lmi, i.(MetricInterface))
@@ -371,6 +375,7 @@ func (ir *IndexRegistry) ListPrivateInterface() (lmi []MetricInterface) {
 	return lmi
 }
 
+// GetOrRegisterPrivateInterface produces a registered in PrivateInterfaceRegistry MetricInterface.
 func (ir *IndexRegistry) GetOrRegisterPrivateInterface(name string) *MetricInterface {
 	ir.PrivateMutex.Lock()
 	defer ir.PrivateMutex.Unlock()
@@ -392,6 +397,7 @@ func (ir *IndexRegistry) GetOrRegisterPrivateInterface(name string) *MetricInter
 	return &i
 }
 
+// ListMetricCPU is a list of types.MetricCPU type. Used for sorting.
 type ListMetricCPU []types.MetricCPU  // satisfying sort.Interface
 func (x ListMetricCPU) Len() int      { return len(x) }
 func (x ListMetricCPU) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
@@ -454,6 +460,7 @@ func FormatCPU(mc types.MetricCPU) cpu.CoreInfo {
 	}
 }
 
+// ListPrivateCPU returns list of types.MetricCPU's by traversing the PrivateCPURegistry.
 func (ir *IndexRegistry) ListPrivateCPU() (lmc []types.MetricCPU) {
 	ir.PrivateCPURegistry.Each(func(name string, i interface{}) {
 		lmc = append(lmc, i.(types.MetricCPU))
@@ -461,6 +468,7 @@ func (ir *IndexRegistry) ListPrivateCPU() (lmc []types.MetricCPU) {
 	return lmc
 }
 
+// RegisterCPU creates a MetricCPU registering it with the r registry
 func (ir *IndexRegistry) RegisterCPU(r metrics.Registry, name string) *types.MetricCPU {
 	i := types.NewMetricCPU(ir.Registry /* OR r ? */, name)
 	r.Register(name, i) // error is ignored
@@ -468,6 +476,7 @@ func (ir *IndexRegistry) RegisterCPU(r metrics.Registry, name string) *types.Met
 	return &i
 }
 
+// GetOrRegisterPrivateCPU produces a registered in PrivateCPURegistry MetricCPU.
 func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) *types.MetricCPU {
 	ir.PrivateMutex.Lock()
 	defer ir.PrivateMutex.Unlock()
@@ -515,6 +524,7 @@ func (ir *IndexRegistry) UpdateRAM(got sigar.Mem, extra1, extra2 uint64) {
 	ir.RAM.Update(got, extra1, extra2)
 }
 
+// UpdateSwap reads got and updates the ir.Swap. TODO Bad description.
 func (ir *IndexRegistry) UpdateSwap(got sigar.Swap) {
 	ir.Mutex.Lock()
 	defer ir.Mutex.Unlock()
@@ -556,9 +566,9 @@ type IndexRegistry struct {
 	PrivateInterfaceRegistry metrics.Registry // set of MetricInterfaces is handled as a metric in this registry
 	PrivateMutex             sync.Mutex
 
-	RAM  types.GaugeRAM
-	Swap types.GaugeSwap
-	Load types.GaugeLoad
+	RAM  types.MetricRAM
+	Swap types.MetricSwap
+	Load types.MetricLoad
 
 	Mutex sync.Mutex
 }
@@ -574,9 +584,9 @@ func init() {
 	}
 	Reg1s.PrivateCPUAll = *Reg1s.RegisterCPU(metrics.NewRegistry(), "all")
 
-	Reg1s.RAM = types.NewGaugeRAM(Reg1s.Registry)
-	Reg1s.Swap = types.NewGaugeSwap(Reg1s.Registry)
-	Reg1s.Load = types.NewGaugeLoad(Reg1s.Registry)
+	Reg1s.RAM = types.NewMetricRAM(Reg1s.Registry)
+	Reg1s.Swap = types.NewMetricSwap(Reg1s.Registry)
+	Reg1s.Load = types.NewMetricLoad(Reg1s.Registry)
 
 	// addr, _ := net.ResolveTCPAddr("tcp", "127.0.0.1:2003")
 	// go metrics.Graphite(reg, 1*time.Second, "ostent", addr)

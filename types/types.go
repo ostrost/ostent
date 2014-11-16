@@ -247,22 +247,22 @@ type ProcData struct {
 	Resident string // with units
 }
 
-type GaugeRAMCommon struct {
+type MetricRAMCommon struct {
 	Total metrics.Gauge
 }
 
-func NewGaugeRAMCommon() GaugeRAMCommon {
-	return GaugeRAMCommon{
+func NewMetricRAMCommon() MetricRAMCommon {
+	return MetricRAMCommon{
 		Total: metrics.NewRegisteredGauge("memory.memory-total", metrics.NewRegistry()),
 	}
 }
 
-func (grc *GaugeRAMCommon) UpdateCommon(got sigar.Mem) {
-	grc.Total.Update(int64(got.Total))
+func (mrc *MetricRAMCommon) UpdateCommon(got sigar.Mem) {
+	mrc.Total.Update(int64(got.Total))
 }
 
-func (gr *GaugeRAM) UsedValue() uint64 { // Total - Free
-	return uint64(gr.Total.Snapshot().Value() - gr.Free.Snapshot().Value())
+func (mr *MetricRAM) UsedValue() uint64 { // Total - Free
+	return uint64(mr.Total.Snapshot().Value() - mr.Free.Snapshot().Value())
 }
 
 type GaugeShortLoad struct {
@@ -390,13 +390,13 @@ func (gsl GaugeShortLoad) Sparkline() string {
 	return s
 }
 
-type GaugeLoad struct {
+type MetricLoad struct {
 	Short GaugeShortLoad
 	Mid   metrics.GaugeFloat64
 	Long  metrics.GaugeFloat64
 }
 
-func NewGaugeLoad(r metrics.Registry) GaugeLoad {
+func NewMetricLoad(r metrics.Registry) MetricLoad {
 	short := GaugeShortLoad{
 		GaugeFloat64: metrics.NewGaugeFloat64(),
 		Ring:         ring.New(5), // 5 values
@@ -405,32 +405,32 @@ func NewGaugeLoad(r metrics.Registry) GaugeLoad {
 	}
 	// short := metrics.NewRegisteredGaugeFloat64("load.shortterm", r)
 	r.Register("load.shortterm", short)
-	return GaugeLoad{
+	return MetricLoad{
 		Short: short,
 		Mid:   metrics.NewRegisteredGaugeFloat64("load.midterm", r),
 		Long:  metrics.NewRegisteredGaugeFloat64("load.longterm", r),
 	}
 }
 
-type GaugeSwap struct {
+type MetricSwap struct {
 	Free metrics.Gauge
 	Used metrics.Gauge
 }
 
-func NewGaugeSwap(r metrics.Registry) GaugeSwap {
-	return GaugeSwap{
+func NewMetricSwap(r metrics.Registry) MetricSwap {
+	return MetricSwap{
 		Free: metrics.NewRegisteredGauge("swap.swap-free", r),
 		Used: metrics.NewRegisteredGauge("swap.swap-used", r),
 	}
 }
 
-func (gs *GaugeSwap) TotalValue() uint64 { // Free + Used
-	return uint64(gs.Free.Snapshot().Value() + gs.Used.Snapshot().Value())
+func (ms *MetricSwap) TotalValue() uint64 { // Free + Used
+	return uint64(ms.Free.Snapshot().Value() + ms.Used.Snapshot().Value())
 }
 
-func (gs *GaugeSwap) Update(got sigar.Swap) {
-	gs.Free.Update(int64(got.Free))
-	gs.Used.Update(int64(got.Free))
+func (ms *MetricSwap) Update(got sigar.Swap) {
+	ms.Free.Update(int64(got.Free))
+	ms.Used.Update(int64(got.Free))
 }
 
 // GaugeDiff holds two Gauge metrics: the first is the exported one.
