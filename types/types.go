@@ -247,16 +247,6 @@ type ProcData struct {
 	Resident string // with units
 }
 
-type NameFloat64 struct {
-	String  string
-	Float64 float64
-}
-
-type NameString struct {
-	String      string
-	StringValue string
-}
-
 type GaugeRAMCommon struct {
 	Total metrics.Gauge
 }

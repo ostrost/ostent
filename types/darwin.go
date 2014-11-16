@@ -3,8 +3,6 @@
 package types
 
 import (
-	"fmt"
-
 	metrics "github.com/rcrowley/go-metrics"
 	sigar "github.com/rzab/gosigar"
 )
@@ -12,15 +10,6 @@ import (
 func CPUTotal(cpu sigar.Cpu) uint64 {
 	return cpu.User + cpu.Nice + cpu.Sys + cpu.Idle
 	// gosigar cpu.Total() implementation adds .{Wait,{,Soft}Irq,Stolen} which is zero for darwin
-}
-
-func RAMFields(ram RAM) []NameString {
-	return []NameString{
-		{"memory-free", fmt.Sprintf("%d", ram.Raw.Free)},
-		{"memory-inactive", fmt.Sprintf("%d", ram.Raw.ActualFree-ram.Raw.Free)},
-		{"memory-wired", fmt.Sprintf("%d", ram.Extra1)},
-		{"memory-active", fmt.Sprintf("%d", ram.Extra2)},
-	}
 }
 
 type GaugeRAM struct {
