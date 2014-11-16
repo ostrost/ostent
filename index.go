@@ -343,15 +343,18 @@ func (_ IndexRegistry) InterfacePackets(mi MetricInterface) (types.GaugeDiff, ty
 
 func (ir IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient, ip InterfaceParts) []types.Interface {
 	private := ir.ListPrivateInterface()
-	var public []types.Interface
 
 	client.SetBool(&cli.ExpandableIF, &send.ExpandableIF, len(private) > cli.Toprows)
 	client.SetString(&cli.ExpandtextIF, &send.ExpandtextIF, fmt.Sprintf("Expanded (%d)", len(private)))
 
-	if len(private) == 0 || len(private) == 1 {
-		return public
+	if len(private) == 0 {
+		return []types.Interface{}
+	}
+	if len(private) == 1 {
+		return []types.Interface{private[0].FormatInterface(ip)}
 	}
 	sort.Sort(ListMetricInterface(private))
+	var public []types.Interface
 	for i, mi := range private {
 		if !*cli.ExpandIF && i >= cli.Toprows {
 			break
@@ -406,15 +409,18 @@ func (x ListMetricCPU) Less(i, j int) bool {
 
 func (ir IndexRegistry) CPU(cli *client.Client, send *client.SendClient) []cpu.CoreInfo {
 	private := ir.ListPrivateCPU()
-	var public []cpu.CoreInfo
 
 	client.SetBool(&cli.ExpandableCPU, &send.ExpandableCPU, len(private) > cli.Toprows) // one row reserved for "all N"
 	client.SetString(&cli.ExpandtextCPU, &send.ExpandtextCPU, fmt.Sprintf("Expanded (%d)", len(private)))
 
-	if len(private) == 0 || len(private) == 1 {
-		return public
+	if len(private) == 0 { // no cpu?
+		return []cpu.CoreInfo{}
+	}
+	if len(private) == 1 {
+		return []cpu.CoreInfo{FormatCPU(private[0])}
 	}
 	sort.Sort(ListMetricCPU(private))
+	var public []cpu.CoreInfo
 	if !*cli.ExpandCPU {
 		public = append(public, FormatCPU(ir.PrivateCPUAll))
 	}
