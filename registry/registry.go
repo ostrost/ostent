@@ -11,4 +11,5 @@ type Registry interface {
 	UpdateLoadAverage(sigar.LoadAverage)
 	UpdateSwap(sigar.Swap)
 	UpdateRAM(sigar.Mem, uint64, uint64)
+	UpdateDF(sigar.FileSystem, sigar.FileSystemUsage)
 }

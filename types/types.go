@@ -45,13 +45,11 @@ type Memory struct {
 
 // MEM type has a list of Memory.
 type MEM struct {
-	List   []Memory
-	RawRAM RAM `json:"-"`
+	List []Memory
 }
 
 type RAM struct {
 	Memory
-	Raw    sigar.Mem
 	Extra1 uint64 // linux:buffered // darwin:wired
 	Extra2 uint64 // linux:cached   // darwin:active
 }
@@ -72,9 +70,6 @@ type DiskBytes struct {
 	Avail           string // with units
 	UsePercent      string // as a string, with "%"
 	UsePercentClass string
-	RawTotal        uint64 `json:"-"`
-	RawUsed         uint64 `json:"-"`
-	RawAvail        uint64 `json:"-"`
 }
 
 // DiskInodes type is a struct of disk inodes metrics.

@@ -101,8 +101,7 @@ func getSwap(reg registry.Registry, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func read_disks(CH chan<- []diskInfo) {
-	var disks []diskInfo
+func read_disks(reg registry.Registry, wg *sync.WaitGroup) {
 	fls := sigar.FileSystemList{}
 	fls.Get()
 
@@ -137,24 +136,9 @@ func read_disks(CH chan<- []diskInfo) {
 		// devnames[fs.DevName] = true
 		dirnames[fs.DirName] = true
 
-		iusePercent := 0.0
-		if usage.Files != 0 {
-			iusePercent = float64(100) * float64(usage.Files-usage.FreeFiles) / float64(usage.Files)
-		}
-		disks = append(disks, diskInfo{
-			DevName:     fs.DevName,
-			Total:       usage.Total << 10, // * 1024
-			Used:        usage.Used << 10,  // == Total - Free
-			Avail:       usage.Avail << 10,
-			UsePercent:  usage.UsePercent(),
-			Inodes:      usage.Files,
-			Iused:       usage.Files - usage.FreeFiles,
-			Ifree:       usage.FreeFiles,
-			IusePercent: iusePercent,
-			DirName:     fs.DirName,
-		})
+		reg.UpdateDF(fs, usage)
 	}
-	CH <- disks
+	wg.Done()
 }
 
 func read_procs(CH chan<- []types.ProcInfo) {

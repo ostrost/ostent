@@ -67,67 +67,15 @@ func tooltipable(limit int, full string) template.HTML {
 	return template.HTML(html)
 }
 
-func orderDisks(disks []diskInfo, seq types.SEQ) []diskInfo {
-	if len(disks) > 1 {
-		sort.Stable(diskOrder{
-			disks:   disks,
-			seq:     seq,
-			reverse: client.DFBIMAP.SEQ2REVERSE[seq],
-		})
-	}
-	return disks
-}
-
-func diskMeta(disk diskInfo) types.DiskMeta {
+func diskMeta(disk MetricDF) types.DiskMeta {
+	devname := disk.DevName.Snapshot().Value()
+	dirname := disk.DirName.Snapshot().Value()
 	return types.DiskMeta{
-		DiskNameHTML: tooltipable(12, disk.DevName),
-		DirNameHTML:  tooltipable(6, disk.DirName),
-		DirNameKey:   disk.DirName,
-		DevName:      disk.DevName,
+		DiskNameHTML: tooltipable(12, devname),
+		DirNameHTML:  tooltipable(6, dirname),
+		DirNameKey:   dirname,
+		DevName:      devname,
 	}
-}
-
-func dfbytes(diskinfos []diskInfo, client client.Client) *types.DFbytes {
-	var disks []types.DiskBytes
-	for i, disk := range diskinfos {
-		if !*client.ExpandDF && i > client.Toprows-1 {
-			break
-		}
-		total, approxtotal, _ := format.HumanBandback(disk.Total)
-		used, approxused, _ := format.HumanBandback(disk.Used)
-		disks = append(disks, types.DiskBytes{
-			DiskMeta:        diskMeta(disk),
-			Total:           total,
-			Used:            used,
-			Avail:           format.HumanB(disk.Avail),
-			UsePercent:      format.FormatPercent(approxused, approxtotal),
-			UsePercentClass: format.LabelClassColorPercent(format.Percent(approxused, approxtotal)),
-			RawTotal:        disk.Total,
-			RawUsed:         disk.Used,
-			RawAvail:        disk.Avail,
-		})
-	}
-	return &types.DFbytes{List: disks}
-}
-
-func dfinodes(diskinfos []diskInfo, client client.Client) *types.DFinodes {
-	var disks []types.DiskInodes
-	for i, disk := range diskinfos {
-		if !*client.ExpandDF && i > client.Toprows-1 {
-			break
-		}
-		itotal, approxitotal, _ := format.HumanBandback(disk.Inodes)
-		iused, approxiused, _ := format.HumanBandback(disk.Iused)
-		disks = append(disks, types.DiskInodes{
-			DiskMeta:         diskMeta(disk),
-			Inodes:           itotal,
-			Iused:            iused,
-			Ifree:            format.HumanB(disk.Ifree),
-			IusePercent:      format.FormatPercent(approxiused, approxitotal),
-			IusePercentClass: format.LabelClassColorPercent(format.Percent(approxiused, approxitotal)),
-		})
-	}
-	return &types.DFinodes{List: disks}
 }
 
 func username(uids map[uint]string, uid uint) string {
@@ -189,7 +137,6 @@ type last struct {
 
 type lastinfo struct {
 	Generic  generic
-	DiskList []diskInfo
 	ProcList []types.ProcInfo
 }
 
@@ -248,17 +195,16 @@ var lastInfo last
 
 func (la *last) collect() {
 	gch := make(chan generic, 1)
-	dch := make(chan []diskInfo, 1)
 	pch := make(chan []types.ProcInfo, 1)
 	ifch := make(chan string, 1)
 
 	var wg sync.WaitGroup
-	wg.Add(3) // three so far
+	wg.Add(4) // four so far
 	go getRAM(&Reg1s, &wg)
 	go getSwap(&Reg1s, &wg)
 
 	go getGeneric(&Reg1s, gch)
-	go read_disks(dch)
+	go read_disks(&Reg1s, &wg)
 	go read_procs(pch)
 	go getInterfaces(&Reg1s, ifch)
 	go CollectCPU(&Reg1s, &wg)
@@ -269,7 +215,6 @@ func (la *last) collect() {
 	// NB .mutex unchanged
 	la.lastinfo = lastinfo{
 		Generic:  <-gch,
-		DiskList: <-dch,
 		ProcList: <-pch,
 	}
 
@@ -300,7 +245,7 @@ type MetricInterface struct {
 	PacketsOut          types.GaugeDiff
 }
 
-// Update reads ifdata and updates the corresponding fields.
+// Update reads ifdata and updates the corresponding fields in MetricInterface.
 func (mi *MetricInterface) Update(ifdata getifaddrs.IfData) {
 	mi.BytesIn.UpdateAbsolute(int64(ifdata.InBytes))
 	mi.BytesOut.UpdateAbsolute(int64(ifdata.OutBytes))
@@ -397,6 +342,41 @@ func (ir *IndexRegistry) GetOrRegisterPrivateInterface(name string) *MetricInter
 	return &i
 }
 
+func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) *MetricDF {
+	ir.PrivateMutex.Lock()
+	defer ir.PrivateMutex.Unlock()
+	if fs.DirName == "/" {
+		fs.DevName = "root"
+	} else {
+		fs.DevName = strings.Replace(strings.TrimPrefix(fs.DevName, "/dev/"), "/", "-", -1)
+	}
+	if metric := ir.PrivateDFRegistry.Get(fs.DevName); metric != nil {
+		i := metric.(MetricDF)
+		return &i
+	}
+	label := func(tail string) string {
+		return fmt.Sprintf("df-%s.df_complex-%s", fs.DevName, tail)
+	}
+	r, unusedr := ir.Registry, metrics.NewRegistry()
+	i := MetricDF{
+		DevName:     &StandardMetricString{}, // unregistered
+		DirName:     &StandardMetricString{}, // unregistered
+		Free:        metrics.NewRegisteredGaugeFloat64(label("free"), r),
+		Reserved:    metrics.NewRegisteredGaugeFloat64(label("reserved"), r),
+		Total:       metrics.NewRegisteredGauge(label("total"), unusedr),
+		Used:        metrics.NewRegisteredGaugeFloat64(label("used"), r),
+		Avail:       metrics.NewRegisteredGauge(label("avail"), unusedr),
+		UsePercent:  metrics.NewRegisteredGaugeFloat64(label("usepercent"), unusedr),
+		Inodes:      metrics.NewRegisteredGauge(label("inodes"), unusedr),
+		Iused:       metrics.NewRegisteredGauge(label("iused"), unusedr),
+		Ifree:       metrics.NewRegisteredGauge(label("ifree"), unusedr),
+		IusePercent: metrics.NewRegisteredGaugeFloat64(label("iusepercent"), unusedr),
+	}
+	ir.PrivateDFRegistry.Register(fs.DevName, i) // error is ignored
+	// errs when the type is not derived from (go-)metrics types
+	return &i
+}
+
 // ListMetricCPU is a list of types.MetricCPU type. Used for sorting.
 type ListMetricCPU []types.MetricCPU  // satisfying sort.Interface
 func (x ListMetricCPU) Len() int      { return len(x) }
@@ -411,6 +391,98 @@ func (x ListMetricCPU) Less(i, j int) bool {
 		isys  = x[i].Sys.Percent.Snapshot().Value()
 	)
 	return (juser + jnice + jsys) < (iuser + inice + isys)
+}
+
+func (ir IndexRegistry) DFbytes(seq types.SEQ, cli *client.Client, send *client.SendClient) []types.DiskBytes {
+	private := ir.ListPrivateDisk()
+
+	client.SetBool(&cli.ExpandableDF, &send.ExpandableDF, len(private) > cli.Toprows)
+	client.SetString(&cli.ExpandtextDF, &send.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(private)))
+
+	if len(private) == 0 {
+		return []types.DiskBytes{}
+	}
+	if len(private) == 1 {
+		return []types.DiskBytes{private[0].FormatDFbytes()}
+	}
+	sort.Stable(diskOrder{
+		disks:   private,
+		seq:     seq,
+		reverse: client.DFBIMAP.SEQ2REVERSE[seq],
+	})
+
+	var public []types.DiskBytes
+	for i, disk := range private {
+		if !*cli.ExpandDF && i > cli.Toprows-1 {
+			break
+		}
+		public = append(public, disk.FormatDFbytes())
+	}
+	return public
+}
+
+func (md MetricDF) FormatDFbytes() types.DiskBytes {
+	var (
+		diskTotal = md.Total.Snapshot().Value()
+		diskUsed  = md.Used.Snapshot().Value()
+		diskAvail = md.Avail.Snapshot().Value()
+	)
+	total, approxtotal, _ := format.HumanBandback(uint64(diskTotal))
+	used, approxused, _ := format.HumanBandback(uint64(diskUsed))
+	return types.DiskBytes{
+		DiskMeta:        diskMeta(md),
+		Total:           total,
+		Used:            used,
+		Avail:           format.HumanB(uint64(diskAvail)),
+		UsePercent:      format.FormatPercent(approxused, approxtotal),
+		UsePercentClass: format.LabelClassColorPercent(format.Percent(approxused, approxtotal)),
+	}
+}
+
+func (ir IndexRegistry) DFinodes(seq types.SEQ, cli *client.Client, send *client.SendClient) []types.DiskInodes {
+	private := ir.ListPrivateDisk()
+
+	client.SetBool(&cli.ExpandableDF, &send.ExpandableDF, len(private) > cli.Toprows)
+	client.SetString(&cli.ExpandtextDF, &send.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(private)))
+
+	if len(private) == 0 {
+		return []types.DiskInodes{}
+	}
+	if len(private) == 1 {
+		return []types.DiskInodes{private[0].FormatDFinodes()}
+	}
+	sort.Stable(diskOrder{
+		disks:   private,
+		seq:     seq,
+		reverse: client.DFBIMAP.SEQ2REVERSE[seq],
+	})
+
+	var public []types.DiskInodes
+	for i, disk := range private {
+		if !*cli.ExpandDF && i > cli.Toprows-1 {
+			break
+		}
+		public = append(public, disk.FormatDFinodes())
+	}
+	return public
+}
+
+func (md MetricDF) FormatDFinodes() types.DiskInodes {
+	var (
+		diskInodes = md.Inodes.Snapshot().Value()
+		diskIused  = md.Iused.Snapshot().Value()
+		diskIfree  = md.Ifree.Snapshot().Value()
+	)
+	itotal, approxitotal, _ := format.HumanBandback(uint64(diskInodes))
+	iused, approxiused, _ := format.HumanBandback(uint64(diskIused))
+	return types.DiskInodes{
+		DiskMeta:         diskMeta(md),
+		Inodes:           itotal,
+		Iused:            iused,
+		Ifree:            format.HumanB(uint64(diskIfree)),
+		IusePercent:      format.FormatPercent(approxiused, approxitotal),
+		IusePercentClass: format.LabelClassColorPercent(format.Percent(approxiused, approxitotal)),
+	}
 }
 
 func (ir IndexRegistry) CPU(cli *client.Client, send *client.SendClient) []cpu.CoreInfo {
@@ -468,6 +540,14 @@ func (ir *IndexRegistry) ListPrivateCPU() (lmc []types.MetricCPU) {
 	return lmc
 }
 
+// ListPrivateDisk returns list of types.MetricDF's by traversing the PrivateDFRegistry.
+func (ir *IndexRegistry) ListPrivateDisk() (lmd []MetricDF) {
+	ir.PrivateDFRegistry.Each(func(name string, i interface{}) {
+		lmd = append(lmd, i.(MetricDF))
+	})
+	return lmd
+}
+
 // RegisterCPU creates a MetricCPU registering it with the r registry
 func (ir *IndexRegistry) RegisterCPU(r metrics.Registry, name string) *types.MetricCPU {
 	i := types.NewMetricCPU(ir.Registry /* OR r ? */, name)
@@ -518,6 +598,12 @@ func (ir IndexRegistry) LA() string {
 		gl.Long.Snapshot().Value())
 }
 
+func (ir *IndexRegistry) UpdateDF(fs sigar.FileSystem, usage sigar.FileSystemUsage) {
+	ir.Mutex.Lock()
+	defer ir.Mutex.Unlock()
+	ir.GetOrRegisterPrivateDF(fs).Update(fs, usage)
+}
+
 func (ir *IndexRegistry) UpdateRAM(got sigar.Mem, extra1, extra2 uint64) {
 	ir.Mutex.Lock()
 	defer ir.Mutex.Unlock()
@@ -564,6 +650,7 @@ type IndexRegistry struct {
 	PrivateCPUAll            types.MetricCPU
 	PrivateCPURegistry       metrics.Registry // set of MetricCPUs is handled as a metric in this registry
 	PrivateInterfaceRegistry metrics.Registry // set of MetricInterfaces is handled as a metric in this registry
+	PrivateDFRegistry        metrics.Registry // set of MetricDFs is handled as a metric in this registry
 	PrivateMutex             sync.Mutex
 
 	RAM  types.MetricRAM
@@ -576,11 +663,11 @@ type IndexRegistry struct {
 var Reg1s IndexRegistry
 
 func init() {
-	reg1s := metrics.NewRegistry()
 	Reg1s = IndexRegistry{
-		Registry:                 reg1s,
+		Registry:                 metrics.NewRegistry(),
 		PrivateCPURegistry:       metrics.NewRegistry(),
 		PrivateInterfaceRegistry: metrics.NewRegistry(),
+		PrivateDFRegistry:        metrics.NewRegistry(),
 	}
 	Reg1s.PrivateCPUAll = *Reg1s.RegisterCPU(metrics.NewRegistry(), "all")
 
@@ -596,31 +683,19 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 
 	cl.RecalcRows() // before anything
 
-	var (
-		df_copy []diskInfo
-		ps_copy []types.ProcInfo
-	)
+	var ps_copy []types.ProcInfo
 	iu := indexUpdate{}
 	func() {
 		lastInfo.mutex.Lock()
 		defer lastInfo.mutex.Unlock()
 
-		df_copy = make([]diskInfo, len(lastInfo.DiskList))
 		ps_copy = make([]types.ProcInfo, len(lastInfo.ProcList))
-
-		copy(df_copy, lastInfo.DiskList)
 		copy(ps_copy, lastInfo.ProcList)
 
 		if true { // cl.RefreshGeneric.Refresh(forcerefresh)
 			g := lastInfo.Generic
 			g.LA = Reg1s.LA()
 			iu.Generic = &g // &lastInfo.Generic
-		}
-		if !*cl.HideMEM && cl.RefreshMEM.Refresh(forcerefresh) {
-			iu.MEM = Reg1s.MEM(*cl)
-		}
-		if !*cl.HideCPU && cl.RefreshCPU.Refresh(forcerefresh) {
-			iu.CPU = &cpu.CPUInfo{List: Reg1s.CPU(cl, &send)}
 		}
 	}()
 
@@ -631,18 +706,18 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 		iu.DFlinks = (*DFlinks)(types.NewLinkAttrs(req, base, "df", client.DFBIMAP, &cl.DFSEQ))
 	}
 
-	if true {
-		client.SetBool(&cl.ExpandableDF, &send.ExpandableDF, len(df_copy) > cl.Toprows)
-		client.SetString(&cl.ExpandtextDF, &send.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(df_copy)))
+	if !*cl.HideMEM && cl.RefreshMEM.Refresh(forcerefresh) {
+		iu.MEM = Reg1s.MEM(*cl)
+	}
+	if !*cl.HideCPU && cl.RefreshCPU.Refresh(forcerefresh) {
+		iu.CPU = &cpu.CPUInfo{List: Reg1s.CPU(cl, &send)}
 	}
 
 	if !*cl.HideDF && cl.RefreshDF.Refresh(forcerefresh) {
-		orderedDisks := orderDisks(df_copy, cl.DFSEQ)
-
 		if *cl.TabDF == client.DFBYTES_TABID {
-			iu.DFbytes = dfbytes(orderedDisks, *cl)
+			iu.DFbytes = &types.DFbytes{List: Reg1s.DFbytes(cl.DFSEQ, cl, &send)}
 		} else if *cl.TabDF == client.DFINODES_TABID {
-			iu.DFinodes = dfinodes(orderedDisks, *cl)
+			iu.DFinodes = &types.DFinodes{List: Reg1s.DFinodes(cl.DFSEQ, cl, &send)}
 		}
 	}
 
@@ -765,4 +840,69 @@ func index(template templates.BinTemplate, scripts []string, minrefresh types.Du
 	response.SetHeader("Content-Type", "text/html")
 	response.SetContentLength()
 	response.Send()
+}
+
+type MetricString interface {
+	Snapshot() MetricString
+	Value() string
+	Update(string)
+}
+
+type StandardMetricString struct {
+	string
+	Mutex sync.Mutex
+}
+
+type MetricStringSnapshot StandardMetricString
+
+func (mss MetricStringSnapshot) Snapshot() MetricString { return mss }
+func (mss MetricStringSnapshot) Value() string          { return mss.string }
+func (MetricStringSnapshot) Update(string)              { panic("Update called on a MetricStringSnapshot") }
+
+func (sms StandardMetricString) Snapshot() MetricString { return MetricStringSnapshot(sms) }
+func (sms StandardMetricString) Value() string {
+	sms.Mutex.Lock()
+	defer sms.Mutex.Unlock()
+	return sms.string
+}
+
+func (sms *StandardMetricString) Update(new string) {
+	sms.Mutex.Lock()
+	defer sms.Mutex.Unlock()
+	sms.string = new
+}
+
+type MetricDF struct {
+	metrics.Healthcheck // derive from one of (go-)metric types, otherwise it won't be registered
+	DevName             MetricString
+	Free                metrics.GaugeFloat64
+	Reserved            metrics.GaugeFloat64
+	Total               metrics.Gauge
+	Used                metrics.GaugeFloat64
+	Avail               metrics.Gauge
+	UsePercent          metrics.GaugeFloat64
+	Inodes              metrics.Gauge
+	Iused               metrics.Gauge
+	Ifree               metrics.Gauge
+	IusePercent         metrics.GaugeFloat64
+	DirName             MetricString
+}
+
+// Update reads usage and fs and updates the corresponding fields in MetricDF.
+func (md *MetricDF) Update(fs sigar.FileSystem, usage sigar.FileSystemUsage) {
+	md.DevName.Update(fs.DevName)
+	md.DirName.Update(fs.DirName)
+	md.Free.Update(float64(usage.Free << 10))
+	md.Reserved.Update(float64((usage.Free - usage.Avail) << 10))
+	md.Total.Update(int64(usage.Total << 10))
+	md.Used.Update(float64(usage.Used << 10))
+	md.Avail.Update(int64(usage.Avail << 10))
+	md.UsePercent.Update(usage.UsePercent())
+	md.Inodes.Update(int64(usage.Files))
+	md.Iused.Update(int64(usage.Files - usage.FreeFiles))
+	md.Ifree.Update(int64(usage.FreeFiles))
+	if iusePercent := 0.0; usage.Files != 0 {
+		iusePercent = float64(100) * float64(usage.Files-usage.FreeFiles) / float64(usage.Files)
+		md.IusePercent.Update(iusePercent)
+	}
 }

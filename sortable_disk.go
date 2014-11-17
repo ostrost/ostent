@@ -8,7 +8,7 @@ import (
 )
 
 type diskOrder struct {
-	disks   []diskInfo
+	disks   []MetricDF
 	seq     types.SEQ
 	reverse bool
 }
@@ -25,15 +25,15 @@ func (do diskOrder) Less(i, j int) bool {
 	t := false
 	switch do.seq {
 	case client.DFFS, -client.DFFS:
-		t = do.seq.Sign(do.disks[i].DevName < do.disks[j].DevName)
+		t = do.seq.Sign(do.disks[i].DevName.Snapshot().Value() < do.disks[j].DevName.Snapshot().Value())
 	case client.DFSIZE, -client.DFSIZE:
-		t = do.seq.Sign(do.disks[i].Total < do.disks[j].Total)
+		t = do.seq.Sign(do.disks[i].Total.Snapshot().Value() < do.disks[j].Total.Snapshot().Value())
 	case client.DFUSED, -client.DFUSED:
-		t = do.seq.Sign(do.disks[i].Used < do.disks[j].Used)
+		t = do.seq.Sign(do.disks[i].Used.Snapshot().Value() < do.disks[j].Used.Snapshot().Value())
 	case client.DFAVAIL, -client.DFAVAIL:
-		t = do.seq.Sign(do.disks[i].Avail < do.disks[j].Avail)
+		t = do.seq.Sign(do.disks[i].Avail.Snapshot().Value() < do.disks[j].Avail.Snapshot().Value())
 	case client.DFMP, -client.DFMP:
-		t = do.seq.Sign(do.disks[i].DirName < do.disks[j].DirName)
+		t = do.seq.Sign(do.disks[i].DirName.Snapshot().Value() < do.disks[j].DirName.Snapshot().Value())
 	}
 	if do.reverse {
 		return !t
