@@ -1,8 +1,9 @@
 language: go
 go:
   - 1.3.3
-  - go1.4beta1
-# - tip
+  - go1.4rc1
+# http://golang.org/dl/
+# - tip # fails because the archive for gvm to fetch became unavailable
 
 install: make init
 script: make test all # go test then the build
