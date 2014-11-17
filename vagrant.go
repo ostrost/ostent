@@ -108,7 +108,7 @@ func vgdispatch() { // (*fsnotify.FileEvent)
 	if err != nil { // an inconsistent write by vagrant? (although not with the flock)
 		return // ignoring the error
 	}
-	iu := indexUpdate{}
+	iu := IndexUpdate{}
 	if err != nil {
 		iu.VagrantError = err.Error()
 		iu.VagrantErrord = true

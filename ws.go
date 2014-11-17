@@ -23,7 +23,7 @@ var (
 	}{}
 )
 
-func addBackground(j backgroundHandler) {
+func AddBackground(j backgroundHandler) {
 	jobs.mutex.Lock()
 	defer jobs.mutex.Unlock()
 	jobs.added = append(jobs.added, j)
@@ -38,7 +38,7 @@ func RunBackground() {
 }
 
 func init() {
-	addBackground(Loop)
+	AddBackground(Loop)
 }
 
 // Loop is the ostent background job
@@ -52,7 +52,7 @@ func Loop() {
 			if Connections.expires() {
 				lastInfo.collect()
 			}
-			Connections.tack()
+			Connections.Tack()
 		}
 	}()
 
@@ -65,9 +65,9 @@ func Loop() {
 	for {
 		select {
 		case update := <-iUPDATES:
-			Connections.push(update)
+			Connections.Push(update)
 
-		case conn := <-register:
+		case conn := <-Register:
 			Connections.reg(conn)
 
 		case conn := <-unregister:
@@ -86,7 +86,7 @@ type conn struct {
 	requestOrigin *http.Request
 
 	receive    chan *received
-	pushch     chan *indexUpdate
+	pushch     chan *IndexUpdate
 	full       client.Client
 	minrefresh types.Duration
 	access     *logger
@@ -101,24 +101,24 @@ func (c *conn) Expires() bool {
 	return c.full.Expires()
 }
 
-func (c *conn) tack() {
+func (c *conn) Tack() {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 	c.receive <- nil
 }
 
-func (c *conn) push(update *indexUpdate) {
+func (c *conn) Push(update *IndexUpdate) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 	c.pushch <- update
 }
 
 type receiver interface {
-	tack()
-	push(*indexUpdate)
-	reload()
+	Tack()
+	Push(*IndexUpdate)
+	Reload()
 	Expires() bool
-	closeChans()
+	CloseChans()
 }
 
 type connmap map[receiver]struct{}
@@ -127,12 +127,12 @@ type conns struct {
 	mutex sync.Mutex
 }
 
-func (cs *conns) tack() {
+func (cs *conns) Tack() {
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
 
 	for c := range cs.connmap {
-		c.tack()
+		c.Tack()
 	}
 }
 
@@ -143,18 +143,18 @@ func (cs *conns) Reload() bool {
 
 	var reloaded bool
 	for c := range cs.connmap {
-		c.reload()
+		c.Reload()
 		reloaded = true
 	}
 	return reloaded
 }
 
-func (cs *conns) push(update *indexUpdate) {
+func (cs *conns) Push(update *IndexUpdate) {
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
 
 	for c := range cs.connmap {
-		c.push(update)
+		c.Push(update)
 	}
 }
 
@@ -165,7 +165,7 @@ func (cs *conns) reg(r receiver) {
 	cs.connmap[r] = struct{}{}
 }
 
-func (c *conn) closeChans() {
+func (c *conn) CloseChans() {
 	c.mutex.Lock()
 	defer func() {
 		defer c.mutex.Unlock()
@@ -190,7 +190,7 @@ func (cs *conns) Len() int {
 }
 
 func (cs *conns) unreg(r receiver) {
-	r.closeChans()
+	r.CloseChans()
 
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
@@ -215,9 +215,9 @@ var (
 	// active websocket connections. The only method is Reload.
 	Connections = conns{connmap: make(map[receiver]struct{})}
 
-	iUPDATES   = make(chan *indexUpdate) // the channel for off-the-clock indexUpdate[s] to push
+	iUPDATES   = make(chan *IndexUpdate) // the channel for off-the-clock IndexUpdate to push
 	unregister = make(chan receiver)     // (chan *conn)
-	register   = make(chan receiver)     // (chan *conn)
+	Register   = make(chan receiver)     // (chan *conn)
 )
 
 type received struct {
@@ -236,7 +236,7 @@ func (c *conn) writeJSON(data interface{}) error {
 	return c.Conn.WriteJSON(data)
 }
 
-func (c *conn) reload() {
+func (c *conn) Reload() {
 	c.writeJSON(struct {
 		Reload bool
 	}{true})
@@ -364,7 +364,7 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	update := getUpdates(r, &sd.conn.full, send, sd.received != nil && sd.received.Client != nil)
-	if update == (indexUpdate{}) { // nothing scheduled for the moment, no update
+	if update == (IndexUpdate{}) { // nothing scheduled for the moment, no update
 		return
 	}
 
@@ -375,7 +375,7 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusSwitchingProtocols) // last change to WriteHeader. 101 is 200
 }
 
-func (c *conn) writeUpdate(update indexUpdate) bool {
+func (c *conn) writeUpdate(update IndexUpdate) bool {
 	if *c.full.HideVG {
 		// TODO other .Vagrant* fields may not be discarded
 		update.VagrantMachines = nil
@@ -426,12 +426,12 @@ func Slashws(access *logger, minrefresh types.Duration, w http.ResponseWriter, r
 		requestOrigin: req,
 
 		receive:    make(chan *received, 2),
-		pushch:     make(chan *indexUpdate, 2),
+		pushch:     make(chan *IndexUpdate, 2),
 		full:       client.DefaultClient(minrefresh),
 		minrefresh: minrefresh,
 		access:     access,
 	}
-	register <- c
+	Register <- c
 	defer func() {
 		unregister <- c
 		c.Conn.Close()

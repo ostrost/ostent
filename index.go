@@ -170,7 +170,7 @@ type IndexData struct {
 	DFTABS client.DFtabs
 }
 
-type indexUpdate struct {
+type IndexUpdate struct {
 	Generic  *generic        `json:",omitempty"`
 	CPU      *cpu.CPUInfo    `json:",omitempty"`
 	MEM      *types.MEM      `json:",omitempty"`
@@ -679,12 +679,12 @@ func init() {
 	// go metrics.Graphite(reg, 1*time.Second, "ostent", addr)
 }
 
-func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) indexUpdate {
+func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) IndexUpdate {
 
 	cl.RecalcRows() // before anything
 
 	var ps_copy []types.ProcInfo
-	iu := indexUpdate{}
+	iu := IndexUpdate{}
 	func() {
 		lastInfo.mutex.Lock()
 		defer lastInfo.mutex.Unlock()
