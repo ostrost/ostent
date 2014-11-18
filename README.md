@@ -14,8 +14,10 @@ The metrics:
   - Interfaces bytes, packets, errors ins and outs
   - CPU usage
   - Disk usage
+  - Load average
 - **On display only**:
-  - Processes
+  - System's OS, IP and uptime
+  - Processes top
   - vagrant global-status
 
 The exporting to Graphite and InfluxDB is kept on par with [collectd](https://collectd.org/)
