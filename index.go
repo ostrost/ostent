@@ -548,14 +548,6 @@ func (ir *IndexRegistry) ListPrivateDisk() (lmd []MetricDF) {
 	return lmd
 }
 
-// RegisterCPU creates a MetricCPU registering it with the r registry
-func (ir *IndexRegistry) RegisterCPU(r metrics.Registry, name string) *types.MetricCPU {
-	i := types.NewMetricCPU(ir.Registry /* OR r ? */, name)
-	r.Register(name, i) // error is ignored
-	// errs when the type is not derived from (go-)metrics types
-	return &i
-}
-
 // GetOrRegisterPrivateCPU produces a registered in PrivateCPURegistry MetricCPU.
 func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) *types.MetricCPU {
 	ir.PrivateMutex.Lock()
@@ -565,7 +557,10 @@ func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) *types.MetricCPU {
 		i := metric.(types.MetricCPU)
 		return &i
 	}
-	return ir.RegisterCPU(ir.PrivateCPURegistry, name)
+	i := types.NewMetricCPU(ir.Registry, name)
+	ir.PrivateCPURegistry.Register(name, i) // error is ignored
+	// errs when the type is not derived from (go-)metrics types
+	return &i
 }
 
 func (ir IndexRegistry) MEM(client client.Client) *types.MEM {
@@ -669,7 +664,9 @@ func init() {
 		PrivateInterfaceRegistry: metrics.NewRegistry(),
 		PrivateDFRegistry:        metrics.NewRegistry(),
 	}
-	Reg1s.PrivateCPUAll = *Reg1s.RegisterCPU(metrics.NewRegistry(), "all")
+	// Reg1s.PrivateCPUAll = *Reg1s.RegisterCPU(metrics.NewRegistry(), "all")
+	Reg1s.PrivateCPUAll = types.NewMetricCPU( /* pcreg := */ metrics.NewRegistry(), "all")
+	// pcreg.Register("all", Reg1s.PrivateCPUAll)
 
 	Reg1s.RAM = types.NewMetricRAM(Reg1s.Registry)
 	Reg1s.Swap = types.NewMetricSwap(Reg1s.Registry)
