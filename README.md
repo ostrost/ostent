@@ -2,38 +2,83 @@
 [![Sourcegraph](https://sourcegraph.com/api/repos/github.com/ostrost/ostent/.badges/status.png)](https://sourcegraph.com/github.com/ostrost/ostent)
 [![GoDoc](https://godoc.org/github.com/ostrost/ostent?status.svg)](https://godoc.org/github.com/ostrost/ostent)
 
-`ostent` displays current system metrics. [**Demo** here](http://demo.ostrost.com/)
+`ostent` collects and displays system metrics and optionally relays to Graphite and/or InfluxDB.
+
+The displaying part ([**demo**](http://demo.ostrost.com/)) is interactive and customizable.
 
 ![Screenshot](https://www.ostrost.com/ostent/screenshot.png)
 
+The metrics:
+- **Collected and exported**:
+  - RAM, swap usage
+  - Interfaces bytes, packets, errors ins and outs
+  - CPU usage
+  - Disk usage
+- **On display only**:
+  - Processes
+  - vagrant global-status
+
+The exporting to Graphite and InfluxDB is kept on par with [collectd](https://collectd.org/)
+[reporting](https://collectd.org/wiki/index.php/Plugin:Write_Graphite) to Graphite with `StoreRates true`,
+although the metrics naming is slightly different.
+
+Running
+-------
+
+ostent a single executable without dependecies, no extra files required (everything is builtin).
+Drop it in and just run; being root is unnecesary. There're [flags](#usage) if you have to.
+
+[Run the code](#running-the-code) if you want to, otherwise grab a binary.
+
+Install Release binaries
+========================
+
+These binaries self-upgrade whenever there's new stable release and
+distributed by [GitHub Releases](https://github.com/ostrost/ostent/releases).
+
 Install & run with `curl -sSL https://github.com/ostrost/ostent/raw/master/ostent.sh | sh`
 
-It's a single executable without dependecies. Once installed,
-it will self-upgrade whenever there's new release.
-
 Platforms
----------
 
    - Linux [64-bit](https://github.com/ostrost/ostent/releases/download/v0.1.9/Linux.x86_64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.1.9/Linux.i686)
-   - [Darwin](https://github.com/ostrost/ostent/releases/download/v0.1.9/Darwin.x86_64)
+   - [Mac OS X](https://github.com/ostrost/ostent/releases/download/v0.1.9/Darwin.x86_64) (64-bit)
    - _Expect \*BSD builds surely_
-
-Binaries distributed by [GitHub Releases](https://github.com/ostrost/ostent/releases)
 
 Usage
 -----
 
-`ostent` accepts optional `-bind` argument to set specific IP and/or
-port to bind to, otherwise any machine IP and port 8050 by default.
+```
+Usage of ostent:
+  -bind=:8050: Bind address
+  -update=1s: Collection interval
 
-   - `ostent -bind 127.1` # [http://127.0.0.1:8050/](http://127.0.0.1:8050/)
-   - `ostent -bind 192.168.1.10:8051` # port 8051
-   - `ostent -bind 8052` # any IP, port 8052
+  -sendto-graphite=: Graphite server address
+  -graphite-refresh=10s: Graphite refresh interval
 
-`-update` sets collection interval (1 second by default),
-append `s` for seconds, `m` for minutes: `5s`, `1m` etc.
+  -sendto-influxdb=: InfluxDB server address
+  -influxdb-database="ostent": InfluxDB database
+  -influxdb-password="": InfluxDB password
+  -influxdb-refresh=10s: InfluxDB refresh interval
+  -influxdb-username="": InfluxDB username
+```
 
-Run it, it'll give the link(s) to open in a browser.
+Unless `-bind` (`-b` for short) is set, ostent binds to `*:8050`.
+The bind, Graphite and InfluxDB addresses are specified like `IP[:port]`.
+The respective default ports are 8050, 2003 and 8086.
+An interval is a number and a unit: `s` for seconds, `m` for minutes etc.
+
+Here's how it goes:
+
+```
+$ ostent                                     ________________
+[ostent]    -------------                   < Spot the links >
+[ostent]  / server ostent \                  ----------------
+[ostent] +------------------------------+           \   ^__^
+[ostent] | http://127.0.0.1:8050        |            \  (oo)\_______
+[ostent] |------------------------------|               (__)\       )\/\
+[ostent] | http://192.168.1.2:8050      |                   ||----w |
+[ostent] +------------------------------+                   ||     ||
+```
 
 Running the code
 ----------------
@@ -66,18 +111,18 @@ Make
 ----
 
 `make` rebuilds these **commited to the repo** files:
-- `src/share/templates/bindata.*.go`
-- `src/share/assets/bindata.*.go`
-- `src/share/assets/js/devel/milk/*.js`
-- `src/share/assets/js/devel/gen/*.js`
-- `src/share/templates/*.html`
-- `src/share/assets/css/*.css`
-- `src/share/tmp/jsassets.d`
-- `src/share/tmp/*.jsx`
+- `share/templates/bindata.*.go`
+- `share/assets/bindata.*.go`
+- `share/assets/js/devel/milk/*.js`
+- `share/assets/js/devel/gen/*.js`
+- `share/templates/*.html`
+- `share/assets/css/*.css`
+- `share/tmp/jsassets.d`
+- `share/tmp/*.jsx`
 
 If you don't change source files, content re-generated
 should not differ from the commited. Whenever
-src/share/{amber.templates,style,coffee} modified,
+share/{amber.templates,style,coffee} modified,
 you have to re-make.
 
 Additional tools required for assets rebuilding:
@@ -85,17 +130,15 @@ Additional tools required for assets rebuilding:
 - [react-tools](https://www.npmjs.org/package/react-tools)
 - [uglify-js](https://www.npmjs.org/package/uglify-js)
 
-Go packages
------------
+The main package
+----------------
 
-`./ostent` is the main (_as in [Go Program execution](http://golang.org/ref/spec#Program_execution)_) package:
-rerun will find `main.devel.go` file; the other `main.production.go`
+`github.com/ostrost/ostent/ostent` has two main.go files:
+rerun will find `main.devel.go`; the other `main.production.go`
 (used when building with `-tags production`) is the init code for
 the distributed binaries: also includes
 [goagain](https://github.com/rcrowley/goagain) recovering and
 self-upgrading via [go-update](https://github.com/inconshreveable/go-update).
-
-`src/amberp/amberpp` is templates compiler, used with make.
 
 The assets
 ----------
