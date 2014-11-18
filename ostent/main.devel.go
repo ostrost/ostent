@@ -34,7 +34,7 @@ func main() {
 	} else if err := os.Chdir(pkg.Dir); err != nil {
 		log.Fatal(err)
 	}
-	ostent.RunBackground()
+	ostent.RunBackground(periodFlag)
 
 	go templates.InitTemplates() // ServeFunc; NB after chdir
 

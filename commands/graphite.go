@@ -14,8 +14,9 @@ import (
 )
 
 type graphite struct {
-	logger     *loggerWriter
-	ServerAddr types.BindValue
+	logger      *loggerWriter
+	RefreshFlag types.PeriodValue
+	ServerAddr  types.BindValue
 }
 
 func graphiteCommandLine(cli *flag.FlagSet) commandLineHandler {
@@ -23,18 +24,23 @@ func graphiteCommandLine(cli *flag.FlagSet) commandLineHandler {
 		logger: &loggerWriter{
 			log.New(os.Stderr, "[ostent sendto-graphite] ", log.LstdFlags),
 		},
-		ServerAddr: types.NewBindValue(2003),
+		RefreshFlag: types.PeriodValue{Duration: types.Duration(10 * time.Second)}, // 10s default
+		ServerAddr:  types.NewBindValue(2003),
 	}
+	cli.Var(&gr.RefreshFlag, "graphite-refresh", "Graphite refresh interval")
 	cli.Var(&gr.ServerAddr, "sendto-graphite", "Graphite server address")
 	return func() (atexitHandler, bool, error) {
 		if gr.ServerAddr.Host == "" {
 			return nil, false, nil
 		}
-		ostent.AddBackground(func() {
+		ostent.AddBackground(func(defaultPeriod types.PeriodValue) {
+			/* if gr.RefreshFlag.Duration == 0 { // if .RefreshFlag had no default
+				gr.RefreshFlag = defaultPeriod
+			} */
 			gc := &carbond{
 				logger:     gr.logger,
 				serveraddr: gr.ServerAddr.String(),
-				Client:     client.DefaultClient(types.Duration(time.Second)),
+				Client:     client.DefaultClient(types.Duration(gr.RefreshFlag.Duration)),
 			}
 			ostent.Register <- gc
 		})

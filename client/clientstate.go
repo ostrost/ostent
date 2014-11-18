@@ -8,40 +8,47 @@ import (
 
 type refresh struct {
 	types.Duration
-	tick int
+	tick int // .Tick() must be called once per second; .tick is 1 when the refresh expired
 }
 
 func (r *refresh) Refresh(forcerefresh bool) bool {
 	if forcerefresh {
 		return true
 	}
-	expires := r.expires()
-	r.tick++
-	if !expires {
-		return false
+	return r.expired()
+}
+
+func (r refresh) expired() bool {
+	return r.tick <= 1
+}
+
+func (c *Client) Tick() {
+	for _, r := range c.refreshes() {
+		r.tick++
+		if r.tick-1 >= int(time.Duration(r.Duration)/time.Second) {
+			r.tick = 1 // expired
+		}
 	}
-	r.tick = 0
-	return true
 }
 
-func (r refresh) expires() bool {
-	return r.tick+1 >= int(time.Duration(r.Duration)/time.Second)
+func (c Client) Expired() bool {
+	for _, r := range c.refreshes() {
+		if r.expired() {
+			return true
+		}
+	}
+	return false
 }
 
-func (c Client) Expires() bool {
-	for _, refresh := range []*refresh{
+func (c *Client) refreshes() []*refresh {
+	return []*refresh{
 		c.RefreshMEM,
 		c.RefreshIF,
 		c.RefreshCPU,
 		c.RefreshDF,
 		c.RefreshPS,
 		c.RefreshVG,
-	} {
-		if refresh.expires() {
-			return true
-		}
 	}
-	return false
 }
 
 type internalClient struct {

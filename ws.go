@@ -14,7 +14,7 @@ import (
 	"github.com/ostrost/ostent/types"
 )
 
-type backgroundHandler func()
+type backgroundHandler func(types.PeriodValue)
 
 var (
 	jobs = struct {
@@ -29,11 +29,11 @@ func AddBackground(j backgroundHandler) {
 	jobs.added = append(jobs.added, j)
 }
 
-func RunBackground() {
+func RunBackground(defaultPeriod types.PeriodValue) {
 	jobs.mutex.Lock()
 	defer jobs.mutex.Unlock()
 	for _, j := range jobs.added {
-		go j()
+		go j(defaultPeriod)
 	}
 }
 
@@ -42,17 +42,21 @@ func init() {
 }
 
 // Loop is the ostent background job
-func Loop() {
+func Loop(types.PeriodValue) {
 	go func() {
 		for {
 			now := time.Now()
 			nextsecond := now.Truncate(time.Second).Add(time.Second).Sub(now)
 			<-time.After(nextsecond)
 
-			if Connections.expires() {
+			Connections.tick()
+
+			if exes := Connections.expired(); len(exes) != 0 {
 				lastInfo.collect()
+				for _, c := range exes {
+					c.Tack()
+				}
 			}
-			Connections.Tack()
 		}
 	}()
 
@@ -95,10 +99,16 @@ type conn struct {
 	writemutex sync.Mutex
 }
 
-func (c *conn) Expires() bool {
+func (c *conn) Expired() bool {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
-	return c.full.Expires()
+	return c.full.Expired()
+}
+
+func (c *conn) Tick() {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	c.full.Tick()
 }
 
 func (c *conn) Tack() {
@@ -114,10 +124,11 @@ func (c *conn) Push(update *IndexUpdate) {
 }
 
 type receiver interface {
+	Tick()
 	Tack()
 	Push(*IndexUpdate)
 	Reload()
-	Expires() bool
+	Expired() bool
 	CloseChans()
 }
 
@@ -198,16 +209,25 @@ func (cs *conns) unreg(r receiver) {
 	delete(cs.connmap, r)
 }
 
-func (cs *conns) expires() bool {
+func (cs *conns) tick() {
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
+	for c := range cs.connmap {
+		c.Tick()
+	}
+}
+
+func (cs *conns) expired() []receiver {
+	cs.mutex.Lock()
+	defer cs.mutex.Unlock()
+	exes := []receiver{}
 
 	for c := range cs.connmap {
-		if c.Expires() {
-			return true
+		if c.Expired() {
+			exes = append(exes, c)
 		}
 	}
-	return false
+	return exes
 }
 
 var (

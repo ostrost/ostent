@@ -12,11 +12,12 @@ import (
 )
 
 type influx struct {
-	logger     *loggerWriter
-	ServerAddr types.BindValue
-	Database   string
-	Username   string
-	Password   string
+	logger      *loggerWriter
+	RefreshFlag types.PeriodValue
+	ServerAddr  types.BindValue
+	Database    string
+	Username    string
+	Password    string
 }
 
 func influxdbCommandLine(cli *flag.FlagSet) commandLineHandler {
@@ -24,8 +25,10 @@ func influxdbCommandLine(cli *flag.FlagSet) commandLineHandler {
 		logger: &loggerWriter{
 			log.New(os.Stderr, "[ostent sendto-influxdb] ", log.LstdFlags),
 		},
-		ServerAddr: types.NewBindValue(8086),
+		RefreshFlag: types.PeriodValue{Duration: types.Duration(10 * time.Second)}, // 10s default
+		ServerAddr:  types.NewBindValue(8086),
 	}
+	cli.Var(&ix.RefreshFlag, "influxdb-refresh", "InfluxDB refresh interval")
 	cli.Var(&ix.ServerAddr, "sendto-influxdb", "InfluxDB server address")
 	cli.StringVar(&ix.Database, "influxdb-database", "ostent", "InfluxDB database")
 	cli.StringVar(&ix.Username, "influxdb-username", "", "InfluxDB username")
@@ -34,8 +37,11 @@ func influxdbCommandLine(cli *flag.FlagSet) commandLineHandler {
 		if ix.ServerAddr.Host == "" {
 			return nil, false, nil
 		}
-		ostent.AddBackground(func() {
-			go influxdb.Influxdb(ostent.Reg1s.Registry, 1*time.Second, &influxdb.Config{
+		ostent.AddBackground(func(defaultPeriod types.PeriodValue) {
+			/* if ix.RefreshFlag.Duration == 0 { // if .RefreshFlag had no default
+				ix.RefreshFlag = defaultPeriod
+			} */
+			go influxdb.Influxdb(ostent.Reg1s.Registry, time.Duration(ix.RefreshFlag.Duration), &influxdb.Config{
 				Host:     ix.ServerAddr.String(),
 				Database: ix.Database,
 				Username: ix.Username,
