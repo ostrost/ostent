@@ -42,8 +42,8 @@ Install & run with `curl -sSL https://github.com/ostrost/ostent/raw/master/osten
 
 Platforms
 
-   - Linux [64-bit](https://github.com/ostrost/ostent/releases/download/v0.1.9/Linux.x86_64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.1.9/Linux.i686)
-   - [Mac OS X](https://github.com/ostrost/ostent/releases/download/v0.1.9/Darwin.x86_64) (64-bit)
+   - Linux [64-bit](https://github.com/ostrost/ostent/releases/download/v0.2.0/Linux.x86_64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.2.0/Linux.i686)
+   - [Mac OS X](https://github.com/ostrost/ostent/releases/download/v0.2.0/Darwin.x86_64) (64-bit)
    - _Expect \*BSD builds surely_
 
 Usage
