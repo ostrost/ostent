@@ -117,11 +117,11 @@
 @addNoscript = ($) -> $.append('<noscript />').find('noscript').get(0)
 
 @HideClass = React.createClass
-        statics: component: (opt) -> React.renderComponent(HideClass(opt), addNoscript(opt.$button_el))
+        statics: component: (opt) -> React.render(HideClass(opt), addNoscript(opt.$button_el))
 
         reduce: (data) ->
                 if data?.Client?
-                        value = data.Client[@props.key]
+                        value = data.Client[@props.xkey]
                         return {Hide: value} if value isnt undefined
                 return null
         getInitialState: () -> @reduce(Data) # a global Data
@@ -133,14 +133,14 @@
                 @props.$button_el[if buttonactive then 'addClass' else 'removeClass']('active')
                 return null
         click: (e) ->
-                (S = {})[@props.key] = !@state.Hide
+                (S = {})[@props.xkey] = !@state.Hide
                 websocket.sendClient(S)
                 e.stopPropagation() # preserves checkbox/radio
                 e.preventDefault()  # checked/selected state
                 return undefined
 
 @ButtonClass = React.createClass
-        statics: component: (opt) -> React.renderComponent(ButtonClass(opt), addNoscript(opt.$button_el))
+        statics: component: (opt) -> React.render(ButtonClass(opt), addNoscript(opt.$button_el))
 
         reduce: (data) ->
                 if data?.Client?
@@ -172,7 +172,7 @@
                 return undefined
 
 @TabsClass = React.createClass
-        statics: component: (opt) -> React.renderComponent(TabsClass(opt), addNoscript(opt.$button_el))
+        statics: component: (opt) -> React.render(TabsClass(opt), addNoscript(opt.$button_el))
 
         reduce: (data) ->
                 if data?.Client?
@@ -221,7 +221,7 @@
                 $ = opt.$; delete opt.$
                 opt.$input_el = $.find('.refresh-input')
                 opt.$group_el = $.find('.refresh-group')
-                React.renderComponent(RefreshInputClass(opt), addNoscript(opt.$input_el))
+                React.render(RefreshInputClass(opt), addNoscript(opt.$input_el))
 
         reduce: (data) ->
                 if data?.Client? and (data.Client[@props.K]? or data.Client[@props.Kerror]?)
@@ -282,27 +282,27 @@
 @update = () -> # currentClient
         return if (42 for param in location.search.substr(1).split('&') when param.split('=')[0] == 'still').length
 
-        hideconfigmem = HideClass.component({key: 'HideconfigMEM', $collapse_el: $('#memconfig'), $button_el: $('header a[href="#mem"]'), reverseActive: true})
-        hideconfigif  = HideClass.component({key: 'HideconfigIF',  $collapse_el: $('#ifconfig'),  $button_el: $('header a[href="#if"]'),  reverseActive: true})
-        hideconfigcpu = HideClass.component({key: 'HideconfigCPU', $collapse_el: $('#cpuconfig'), $button_el: $('header a[href="#cpu"]'), reverseActive: true})
-        hideconfigdf  = HideClass.component({key: 'HideconfigDF',  $collapse_el: $('#dfconfig'),  $button_el: $('header a[href="#df"]'),  reverseActive: true})
-        hideconfigps  = HideClass.component({key: 'HideconfigPS',  $collapse_el: $('#psconfig'),  $button_el: $('header a[href="#ps"]'),  reverseActive: true})
-        hideconfigvg  = HideClass.component({key: 'HideconfigVG',  $collapse_el: $('#vgconfig'),  $button_el: $('header a[href="#vg"]'),  reverseActive: true})
+        hideconfigmem = HideClass.component({xkey: 'HideconfigMEM', $collapse_el: $('#memconfig'), $button_el: $('header a[href="#mem"]'), reverseActive: true})
+        hideconfigif  = HideClass.component({xkey: 'HideconfigIF',  $collapse_el: $('#ifconfig'),  $button_el: $('header a[href="#if"]'),  reverseActive: true})
+        hideconfigcpu = HideClass.component({xkey: 'HideconfigCPU', $collapse_el: $('#cpuconfig'), $button_el: $('header a[href="#cpu"]'), reverseActive: true})
+        hideconfigdf  = HideClass.component({xkey: 'HideconfigDF',  $collapse_el: $('#dfconfig'),  $button_el: $('header a[href="#df"]'),  reverseActive: true})
+        hideconfigps  = HideClass.component({xkey: 'HideconfigPS',  $collapse_el: $('#psconfig'),  $button_el: $('header a[href="#ps"]'),  reverseActive: true})
+        hideconfigvg  = HideClass.component({xkey: 'HideconfigVG',  $collapse_el: $('#vgconfig'),  $button_el: $('header a[href="#vg"]'),  reverseActive: true})
 
-        hidemem = HideClass.component({key: 'HideMEM', $collapse_el: $('#mem'), $button_el: $('#memconfig').find('.hiding')})
-        hidecpu = HideClass.component({key: 'HideCPU', $collapse_el: $('#cpu'), $button_el: $('#cpuconfig').find('.hiding')})
-        hideps  = HideClass.component({key: 'HidePS',  $collapse_el: $('#ps'),  $button_el: $('#psconfig') .find('.hiding')})
-        hidevg  = HideClass.component({key: 'HideVG',  $collapse_el: $('#vg'),  $button_el: $('#vgconfig') .find('.hiding')})
+        hidemem = HideClass.component({xkey: 'HideMEM', $collapse_el: $('#mem'), $button_el: $('#memconfig').find('.hiding')})
+        hidecpu = HideClass.component({xkey: 'HideCPU', $collapse_el: $('#cpu'), $button_el: $('#cpuconfig').find('.hiding')})
+        hideps  = HideClass.component({xkey: 'HidePS',  $collapse_el: $('#ps'),  $button_el: $('#psconfig') .find('.hiding')})
+        hidevg  = HideClass.component({xkey: 'HideVG',  $collapse_el: $('#vg'),  $button_el: $('#vgconfig') .find('.hiding')})
 
-        ip       = React.renderComponent(NewTextCLASS((data) -> data?.Generic?.IP       )(), $('#generic-ip'      )   .get(0))
-        hostname = React.renderComponent(NewTextCLASS((data) -> data?.Generic?.Hostname )(), $('#generic-hostname')   .get(0))
-        uptime   = React.renderComponent(NewTextCLASS((data) -> data?.Generic?.Uptime   )(), $('#generic-uptime'  )   .get(0))
-        la       = React.renderComponent(NewTextCLASS((data) -> data?.Generic?.LA       )(), $('#generic-la'      )   .get(0))
+        ip       = React.render(NewTextCLASS((data) -> data?.Generic?.IP       )(), $('#generic-ip'      )   .get(0))
+        hostname = React.render(NewTextCLASS((data) -> data?.Generic?.Hostname )(), $('#generic-hostname')   .get(0))
+        uptime   = React.render(NewTextCLASS((data) -> data?.Generic?.Uptime   )(), $('#generic-uptime'  )   .get(0))
+        la       = React.render(NewTextCLASS((data) -> data?.Generic?.LA       )(), $('#generic-la'      )   .get(0))
 
-        iftitle  = React.renderComponent(NewTextCLASS((data) -> data?.Client?.TabTitleIF)(), $('header a[href="#if"]').get(0))
-        dftitle  = React.renderComponent(NewTextCLASS((data) -> data?.Client?.TabTitleDF)(), $('header a[href="#df"]').get(0))
+        iftitle  = React.render(NewTextCLASS((data) -> data?.Client?.TabTitleIF)(), $('header a[href="#if"]').get(0))
+        dftitle  = React.render(NewTextCLASS((data) -> data?.Client?.TabTitleDF)(), $('header a[href="#df"]').get(0))
 
-        psplus   = React.renderComponent(NewTextCLASS((data) -> data?.Client?.PSplusText)(), $('label.more[href="#psmore"]').get(0))
+        psplus   = React.render(NewTextCLASS((data) -> data?.Client?.PSplusText)(), $('label.more[href="#psmore"]').get(0))
         psmore   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: true,  Khide: 'HidePS', Kable: 'PSnotExpandable',  $button_el: $('label.more[href="#psmore"]')})
         psless   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: false, Khide: 'HidePS', Kable: 'PSnotDecreasable', $button_el: $('label.less[href="#psless"]')})
 
@@ -323,17 +323,17 @@
         refresh_ps  = RefreshInputClass.component({K: 'RefreshPS',  Kerror: 'RefreshErrorPS',  Ksig: 'RefreshSignalPS',  $: $('#psconfig')})
         refresh_vg  = RefreshInputClass.component({K: 'RefreshVG',  Kerror: 'RefreshErrorVG',  Ksig: 'RefreshSignalVG',  $: $('#vgconfig')})
 
-        memtable  = React.renderComponent(MEMtableCLASS(),  document.getElementById('mem'       +'-'+ 'table'))
-        pstable   = React.renderComponent(PStableCLASS(),   document.getElementById('ps'        +'-'+ 'table'))
-        dfbytes   = React.renderComponent(DFbytesCLASS(),   document.getElementById('dfbytes'   +'-'+ 'table'))
-        dfinodes  = React.renderComponent(DFinodesCLASS(),  document.getElementById('dfinodes'  +'-'+ 'table'))
-        cputable  = React.renderComponent(CPUtableCLASS(),  document.getElementById('cpu'       +'-'+ 'table'))
-        ifbytes   = React.renderComponent(IFbytesCLASS(),   document.getElementById('ifbytes'   +'-'+ 'table'))
-        iferrors  = React.renderComponent(IFerrorsCLASS(),  document.getElementById('iferrors'  +'-'+ 'table'))
-        ifpackets = React.renderComponent(IFpacketsCLASS(), document.getElementById('ifpackets' +'-'+ 'table'))
-        vgtable   = React.renderComponent(VGtableCLASS(),   document.getElementById('vg'        +'-'+ 'table'))
+        memtable  = React.render(MEMtableCLASS(),  document.getElementById('mem'       +'-'+ 'table'))
+        pstable   = React.render(PStableCLASS(),   document.getElementById('ps'        +'-'+ 'table'))
+        dfbytes   = React.render(DFbytesCLASS(),   document.getElementById('dfbytes'   +'-'+ 'table'))
+        dfinodes  = React.render(DFinodesCLASS(),  document.getElementById('dfinodes'  +'-'+ 'table'))
+        cputable  = React.render(CPUtableCLASS(),  document.getElementById('cpu'       +'-'+ 'table'))
+        ifbytes   = React.render(IFbytesCLASS(),   document.getElementById('ifbytes'   +'-'+ 'table'))
+        iferrors  = React.render(IFerrorsCLASS(),  document.getElementById('iferrors'  +'-'+ 'table'))
+        ifpackets = React.render(IFpacketsCLASS(), document.getElementById('ifpackets' +'-'+ 'table'))
+        vgtable   = React.render(VGtableCLASS(),   document.getElementById('vg'        +'-'+ 'table'))
 
-        # alertComp = React.renderComponent(AlertClass({
+        # alertComp = React.render(AlertClass({
         #         $collapse_el: $('#alert-parent')
         #         }), document.getElementById('alert-message'))
 

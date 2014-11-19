@@ -1,4 +1,4 @@
-/** @jsx React.DOM */ [[/* -*- indent-tabs-mode: nil -*- */]]
+[[/* -*- indent-tabs-mode: nil -*- */]]
 script
   function mem_rows       (Data, $mem)  { return ([[template "define_memrows"         .]]); }
   function mem_table      (Data, rows)  { return ([[template "define_memtable"        (dot . `rows`)]]); }

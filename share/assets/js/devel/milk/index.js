@@ -277,13 +277,13 @@
   this.HideClass = React.createClass({
     statics: {
       component: function(opt) {
-        return React.renderComponent(HideClass(opt), addNoscript(opt.$button_el));
+        return React.render(HideClass(opt), addNoscript(opt.$button_el));
       }
     },
     reduce: function(data) {
       var value;
       if ((data != null ? data.Client : void 0) != null) {
-        value = data.Client[this.props.key];
+        value = data.Client[this.props.xkey];
         if (value !== void 0) {
           return {
             Hide: value
@@ -310,7 +310,7 @@
     },
     click: function(e) {
       var S;
-      (S = {})[this.props.key] = !this.state.Hide;
+      (S = {})[this.props.xkey] = !this.state.Hide;
       websocket.sendClient(S);
       e.stopPropagation();
       e.preventDefault();
@@ -321,7 +321,7 @@
   this.ButtonClass = React.createClass({
     statics: {
       component: function(opt) {
-        return React.renderComponent(ButtonClass(opt), addNoscript(opt.$button_el));
+        return React.render(ButtonClass(opt), addNoscript(opt.$button_el));
       }
     },
     reduce: function(data) {
@@ -389,7 +389,7 @@
   this.TabsClass = React.createClass({
     statics: {
       component: function(opt) {
-        return React.renderComponent(TabsClass(opt), addNoscript(opt.$button_el));
+        return React.render(TabsClass(opt), addNoscript(opt.$button_el));
       }
     },
     reduce: function(data) {
@@ -470,7 +470,7 @@
         delete opt.$;
         opt.$input_el = $.find('.refresh-input');
         opt.$group_el = $.find('.refresh-group');
-        return React.renderComponent(RefreshInputClass(opt), addNoscript(opt.$input_el));
+        return React.render(RefreshInputClass(opt), addNoscript(opt.$input_el));
       }
     },
     reduce: function(data) {
@@ -592,86 +592,86 @@
       return;
     }
     hideconfigmem = HideClass.component({
-      key: 'HideconfigMEM',
+      xkey: 'HideconfigMEM',
       $collapse_el: $('#memconfig'),
       $button_el: $('header a[href="#mem"]'),
       reverseActive: true
     });
     hideconfigif = HideClass.component({
-      key: 'HideconfigIF',
+      xkey: 'HideconfigIF',
       $collapse_el: $('#ifconfig'),
       $button_el: $('header a[href="#if"]'),
       reverseActive: true
     });
     hideconfigcpu = HideClass.component({
-      key: 'HideconfigCPU',
+      xkey: 'HideconfigCPU',
       $collapse_el: $('#cpuconfig'),
       $button_el: $('header a[href="#cpu"]'),
       reverseActive: true
     });
     hideconfigdf = HideClass.component({
-      key: 'HideconfigDF',
+      xkey: 'HideconfigDF',
       $collapse_el: $('#dfconfig'),
       $button_el: $('header a[href="#df"]'),
       reverseActive: true
     });
     hideconfigps = HideClass.component({
-      key: 'HideconfigPS',
+      xkey: 'HideconfigPS',
       $collapse_el: $('#psconfig'),
       $button_el: $('header a[href="#ps"]'),
       reverseActive: true
     });
     hideconfigvg = HideClass.component({
-      key: 'HideconfigVG',
+      xkey: 'HideconfigVG',
       $collapse_el: $('#vgconfig'),
       $button_el: $('header a[href="#vg"]'),
       reverseActive: true
     });
     hidemem = HideClass.component({
-      key: 'HideMEM',
+      xkey: 'HideMEM',
       $collapse_el: $('#mem'),
       $button_el: $('#memconfig').find('.hiding')
     });
     hidecpu = HideClass.component({
-      key: 'HideCPU',
+      xkey: 'HideCPU',
       $collapse_el: $('#cpu'),
       $button_el: $('#cpuconfig').find('.hiding')
     });
     hideps = HideClass.component({
-      key: 'HidePS',
+      xkey: 'HidePS',
       $collapse_el: $('#ps'),
       $button_el: $('#psconfig').find('.hiding')
     });
     hidevg = HideClass.component({
-      key: 'HideVG',
+      xkey: 'HideVG',
       $collapse_el: $('#vg'),
       $button_el: $('#vgconfig').find('.hiding')
     });
-    ip = React.renderComponent(NewTextCLASS(function(data) {
+    ip = React.render(NewTextCLASS(function(data) {
       var _ref;
       return data != null ? (_ref = data.Generic) != null ? _ref.IP : void 0 : void 0;
     })(), $('#generic-ip').get(0));
-    hostname = React.renderComponent(NewTextCLASS(function(data) {
+    hostname = React.render(NewTextCLASS(function(data) {
       var _ref;
       return data != null ? (_ref = data.Generic) != null ? _ref.Hostname : void 0 : void 0;
     })(), $('#generic-hostname').get(0));
-    uptime = React.renderComponent(NewTextCLASS(function(data) {
+    uptime = React.render(NewTextCLASS(function(data) {
       var _ref;
       return data != null ? (_ref = data.Generic) != null ? _ref.Uptime : void 0 : void 0;
     })(), $('#generic-uptime').get(0));
-    la = React.renderComponent(NewTextCLASS(function(data) {
+    la = React.render(NewTextCLASS(function(data) {
       var _ref;
       return data != null ? (_ref = data.Generic) != null ? _ref.LA : void 0 : void 0;
     })(), $('#generic-la').get(0));
-    iftitle = React.renderComponent(NewTextCLASS(function(data) {
+    iftitle = React.render(NewTextCLASS(function(data) {
       var _ref;
       return data != null ? (_ref = data.Client) != null ? _ref.TabTitleIF : void 0 : void 0;
     })(), $('header a[href="#if"]').get(0));
-    dftitle = React.renderComponent(NewTextCLASS(function(data) {
+    dftitle = React.render(NewTextCLASS(function(data) {
       var _ref;
       return data != null ? (_ref = data.Client) != null ? _ref.TabTitleDF : void 0 : void 0;
     })(), $('header a[href="#df"]').get(0));
-    psplus = React.renderComponent(NewTextCLASS(function(data) {
+    psplus = React.render(NewTextCLASS(function(data) {
       var _ref;
       return data != null ? (_ref = data.Client) != null ? _ref.PSplusText : void 0 : void 0;
     })(), $('label.more[href="#psmore"]').get(0));
@@ -765,15 +765,15 @@
       Ksig: 'RefreshSignalVG',
       $: $('#vgconfig')
     });
-    memtable = React.renderComponent(MEMtableCLASS(), document.getElementById('mem' + '-' + 'table'));
-    pstable = React.renderComponent(PStableCLASS(), document.getElementById('ps' + '-' + 'table'));
-    dfbytes = React.renderComponent(DFbytesCLASS(), document.getElementById('dfbytes' + '-' + 'table'));
-    dfinodes = React.renderComponent(DFinodesCLASS(), document.getElementById('dfinodes' + '-' + 'table'));
-    cputable = React.renderComponent(CPUtableCLASS(), document.getElementById('cpu' + '-' + 'table'));
-    ifbytes = React.renderComponent(IFbytesCLASS(), document.getElementById('ifbytes' + '-' + 'table'));
-    iferrors = React.renderComponent(IFerrorsCLASS(), document.getElementById('iferrors' + '-' + 'table'));
-    ifpackets = React.renderComponent(IFpacketsCLASS(), document.getElementById('ifpackets' + '-' + 'table'));
-    vgtable = React.renderComponent(VGtableCLASS(), document.getElementById('vg' + '-' + 'table'));
+    memtable = React.render(MEMtableCLASS(), document.getElementById('mem' + '-' + 'table'));
+    pstable = React.render(PStableCLASS(), document.getElementById('ps' + '-' + 'table'));
+    dfbytes = React.render(DFbytesCLASS(), document.getElementById('dfbytes' + '-' + 'table'));
+    dfinodes = React.render(DFinodesCLASS(), document.getElementById('dfinodes' + '-' + 'table'));
+    cputable = React.render(CPUtableCLASS(), document.getElementById('cpu' + '-' + 'table'));
+    ifbytes = React.render(IFbytesCLASS(), document.getElementById('ifbytes' + '-' + 'table'));
+    iferrors = React.render(IFerrorsCLASS(), document.getElementById('iferrors' + '-' + 'table'));
+    ifpackets = React.render(IFpacketsCLASS(), document.getElementById('ifpackets' + '-' + 'table'));
+    vgtable = React.render(VGtableCLASS(), document.getElementById('vg' + '-' + 'table'));
     onmessage = function(event) {
       var data, _ref;
       data = JSON.parse(event.data);
