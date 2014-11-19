@@ -227,8 +227,14 @@ type ListMetricInterface []MetricInterface  // satisfying sort.Interface
 func (x ListMetricInterface) Len() int      { return len(x) }
 func (x ListMetricInterface) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
 func (x ListMetricInterface) Less(i, j int) bool {
-	if rx_lo.Match([]byte(x[i].Name)) {
-		return false
+	a := rx_lo.Match([]byte(x[i].Name))
+	b := rx_lo.Match([]byte(x[j].Name))
+	if !(a && b) {
+		if a {
+			return false
+		} else if b {
+			return true
+		}
 	}
 	return x[i].Name < x[j].Name
 }
