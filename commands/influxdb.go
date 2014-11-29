@@ -20,9 +20,7 @@ type influx struct {
 
 func influxdbCommandLine(cli *flag.FlagSet) commandLineHandler {
 	ix := &influx{
-		logger: NewLogger(func(l *Logger) {
-			l.Prefix = "[ostent sendto-influxdb] "
-		}),
+		logger:      NewLogger("[ostent sendto-influxdb] "),
 		RefreshFlag: types.PeriodValue{Duration: types.Duration(10 * time.Second)}, // 10s default
 		ServerAddr:  types.NewBindValue(8086),
 	}

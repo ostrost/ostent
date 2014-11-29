@@ -19,7 +19,7 @@ func (v version) run() {
 
 func newVersion() *version {
 	return &version{
-		logger: NewLogger(func(l *Logger) {
+		logger: NewLogger("", func(l *Logger) {
 			l.Out = os.Stdout
 			l.Flag = 0
 		}),

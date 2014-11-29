@@ -17,9 +17,7 @@ type memprofile struct {
 
 func memProfileCommandLine(cli *flag.FlagSet) commandLineHandler {
 	mp := &memprofile{
-		logger: NewLogger(func(l *Logger) {
-			l.Prefix = "[ostent memprofile] "
-		}),
+		logger: NewLogger("[ostent memprofile] "),
 	}
 	cli.StringVar(&mp.output, "memprofile", "", "MEM profile output file")
 	return func() (atexitHandler, bool, error) {
@@ -58,9 +56,7 @@ type cpuprofile struct {
 
 func cpuProfileCommandLine(cli *flag.FlagSet) commandLineHandler {
 	cp := &cpuprofile{
-		logger: NewLogger(func(l *Logger) {
-			l.Prefix = "[ostent cpuprofile] "
-		}),
+		logger: NewLogger("[ostent cpuprofile] "),
 	}
 	cli.StringVar(&cp.output, "cpuprofile", "", "CPU profile output file")
 	return func() (atexitHandler, bool, error) {

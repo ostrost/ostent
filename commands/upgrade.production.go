@@ -154,9 +154,7 @@ func (up *upgrade) AddCommandLine() *upgrade {
 
 func NewUpgrade() *upgrade {
 	return &upgrade{
-		logger: NewLogger(func(l *Logger) {
-			l.Prefix = "[ostent upgrade] "
-		}),
+		logger: NewLogger("[ostent upgrade] "),
 	}
 }
 

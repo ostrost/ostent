@@ -21,9 +21,7 @@ type assetsExtract struct {
 func assetsExtractCommand(fs *flag.FlagSet) (CommandHandler, io.Writer) {
 	ae := &assetsExtract{
 		destdir: ostent.VERSION,
-		logger: NewLogger(func(l *Logger) {
-			l.Prefix = "[ostent extract-assets] "
-		}),
+		logger:  NewLogger("[ostent extract-assets] "),
 	}
 	fs.StringVar(&ae.destdir, "d", ae.destdir, "Destination directory")
 	return ae.run, ae.logger

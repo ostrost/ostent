@@ -155,7 +155,7 @@ func ArgCommands() (bool, atexitHandler) {
 	return true, atexit
 }
 
-func NewLogger(options ...func(*Logger)) *Logger {
+func NewLogger(prefix string, options ...func(*Logger)) *Logger {
 	logger := &Logger{ // defaults
 		Out:  os.Stderr,
 		Flag: log.LstdFlags,
@@ -165,7 +165,7 @@ func NewLogger(options ...func(*Logger)) *Logger {
 	}
 	logger.Logger = log.New(
 		logger.Out,
-		logger.Prefix,
+		prefix,
 		logger.Flag,
 	)
 	return logger
@@ -174,7 +174,6 @@ func NewLogger(options ...func(*Logger)) *Logger {
 type Logger struct { // also an io.Writer
 	*log.Logger           // wrapping a *log.Logger
 	Out         io.Writer // an argument for log.New
-	Prefix      string    // an argument for log.New
 	Flag        int       // an argument for log.New
 }
 

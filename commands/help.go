@@ -76,7 +76,7 @@ func (h *help) Run() {
 
 func newHelp(logout io.Writer) *help {
 	return &help{
-		logger: NewLogger(func(l *Logger) {
+		logger: NewLogger("", func(l *Logger) {
 			l.Out = logout
 			l.Flag = 0
 		}),

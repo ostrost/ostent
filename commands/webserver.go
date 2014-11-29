@@ -35,8 +35,7 @@ func InitStdLog() {
 
 func NewWebserver(defport int) *webserver {
 	return &webserver{
-		logger: NewLogger(func(l *Logger) {
-			l.Prefix = fmt.Sprintf("[%d][ostent webserver] ", os.Getpid())
+		logger: NewLogger(fmt.Sprintf("[%d][ostent webserver] ", os.Getpid()), func(l *Logger) {
 			l.Flag |= log.Lmicroseconds
 		}),
 		BindValue: types.NewBindValue(defport),
