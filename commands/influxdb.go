@@ -18,7 +18,7 @@ type influx struct {
 	Password    string
 }
 
-func influxdbCommandLine(cli *flag.FlagSet) commandLineHandler {
+func influxdbCommandLine(cli *flag.FlagSet) CommandLineHandler {
 	ix := &influx{
 		logger:      NewLogger("[ostent sendto-influxdb] "),
 		RefreshFlag: types.PeriodValue{Duration: types.Duration(10 * time.Second)}, // 10s default
@@ -29,7 +29,7 @@ func influxdbCommandLine(cli *flag.FlagSet) commandLineHandler {
 	cli.StringVar(&ix.Database, "influxdb-database", "ostent", "InfluxDB database")
 	cli.StringVar(&ix.Username, "influxdb-username", "", "InfluxDB username")
 	cli.StringVar(&ix.Password, "influxdb-password", "", "InfluxDB password")
-	return func() (atexitHandler, bool, error) {
+	return func() (AtexitHandler, bool, error) {
 		if ix.ServerAddr.Host == "" {
 			return nil, false, nil
 		}

@@ -10,12 +10,12 @@ import (
 )
 
 type atexitMaker interface {
-	makeAtexitHandler() atexitHandler
+	makeAtexitHandler() AtexitHandler
 }
 
-type atexitHandler func()
+type AtexitHandler func()
 type CommandHandler func()
-type commandLineHandler func() (atexitHandler, bool, error)
+type CommandLineHandler func() (AtexitHandler, bool, error)
 
 type makeSub func(*flag.FlagSet, []string) (CommandHandler, error, []string)
 type makeCommandHandler func(*flag.FlagSet, ...SetupLogger) (CommandHandler, io.Writer)
@@ -47,11 +47,11 @@ var (
 	}
 	commandline = struct {
 		mutex sync.Mutex
-		added []commandLineHandler
+		added []CommandLineHandler
 	}{}
 )
 
-func AddCommandLine(hfunc func(*flag.FlagSet) commandLineHandler) {
+func AddCommandLine(hfunc func(*flag.FlagSet) CommandLineHandler) {
 	s := hfunc(flag.CommandLine) // NB global flag.CommandLine
 	if s == nil {
 		return
@@ -106,14 +106,14 @@ func parseCommands() ([]CommandHandler, error) {
 }
 
 // true is when to abort
-func ArgCommands() (bool, atexitHandler) {
+func ArgCommands() (bool, AtexitHandler) {
 	handlers, err := parseCommands()
 	if err != nil {
 		log.Fatal(err)
 		return true, func() {} // useless return
 	}
 
-	finish := []atexitHandler{}
+	finish := []AtexitHandler{}
 	atexit := func() {
 		for _, exit := range finish {
 			exit()

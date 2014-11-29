@@ -17,7 +17,7 @@ type graphite struct {
 	ServerAddr  types.BindValue
 }
 
-func graphiteCommandLine(cli *flag.FlagSet) commandLineHandler {
+func graphiteCommandLine(cli *flag.FlagSet) CommandLineHandler {
 	gr := &graphite{
 		logger:      NewLogger("[ostent sendto-graphite] "),
 		RefreshFlag: types.PeriodValue{Duration: types.Duration(10 * time.Second)}, // 10s default
@@ -25,7 +25,7 @@ func graphiteCommandLine(cli *flag.FlagSet) commandLineHandler {
 	}
 	cli.Var(&gr.RefreshFlag, "graphite-refresh", "Graphite refresh interval")
 	cli.Var(&gr.ServerAddr, "sendto-graphite", "Graphite server address")
-	return func() (atexitHandler, bool, error) {
+	return func() (AtexitHandler, bool, error) {
 		if gr.ServerAddr.Host == "" {
 			return nil, false, nil
 		}

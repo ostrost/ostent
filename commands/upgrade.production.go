@@ -145,7 +145,7 @@ func (up upgrade) HadUpgrade() bool {
 }
 
 func (up *upgrade) AddCommandLine() *upgrade {
-	AddCommandLine(func(cli *flag.FlagSet) commandLineHandler {
+	AddCommandLine(func(cli *flag.FlagSet) CommandLineHandler {
 		cli.BoolVar(&up.UpgradeLater, "upgradelater", false, "Upgrade later.")
 		return nil
 	})

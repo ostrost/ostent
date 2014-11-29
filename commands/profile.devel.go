@@ -15,12 +15,12 @@ type memprofile struct {
 	_f     *os.File
 }
 
-func memProfileCommandLine(cli *flag.FlagSet) commandLineHandler {
+func memProfileCommandLine(cli *flag.FlagSet) CommandLineHandler {
 	mp := &memprofile{
 		logger: NewLogger("[ostent memprofile] "),
 	}
 	cli.StringVar(&mp.output, "memprofile", "", "MEM profile output file")
-	return func() (atexitHandler, bool, error) {
+	return func() (AtexitHandler, bool, error) {
 		if mp.output == "" {
 			return nil, false, nil
 		}
@@ -54,12 +54,12 @@ type cpuprofile struct {
 	_f     *os.File
 }
 
-func cpuProfileCommandLine(cli *flag.FlagSet) commandLineHandler {
+func cpuProfileCommandLine(cli *flag.FlagSet) CommandLineHandler {
 	cp := &cpuprofile{
 		logger: NewLogger("[ostent cpuprofile] "),
 	}
 	cli.StringVar(&cp.output, "cpuprofile", "", "CPU profile output file")
-	return func() (atexitHandler, bool, error) {
+	return func() (AtexitHandler, bool, error) {
 		if cp.output == "" {
 			return nil, false, nil
 		}
