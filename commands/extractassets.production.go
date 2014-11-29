@@ -18,10 +18,10 @@ type assetsExtract struct {
 	destdir string
 }
 
-func assetsExtractCommand(fs *flag.FlagSet) (CommandHandler, io.Writer) {
+func assetsExtractCommand(fs *flag.FlagSet, loggerOptions ...SetupLogger) (CommandHandler, io.Writer) {
 	ae := &assetsExtract{
 		destdir: ostent.VERSION,
-		logger:  NewLogger("[ostent extract-assets] "),
+		logger:  NewLogger("[ostent extract-assets] ", loggerOptions...),
 	}
 	fs.StringVar(&ae.destdir, "d", ae.destdir, "Destination directory")
 	return ae.run, ae.logger

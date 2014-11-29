@@ -2,6 +2,7 @@ package commands
 
 import (
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -17,7 +18,7 @@ type CommandHandler func()
 type commandLineHandler func() (atexitHandler, bool, error)
 
 type makeSub func(*flag.FlagSet, []string) (CommandHandler, error, []string)
-type makeCommandHandler func(*flag.FlagSet) (CommandHandler, io.Writer)
+type makeCommandHandler func(*flag.FlagSet, ...SetupLogger) (CommandHandler, io.Writer)
 
 type addedCommands struct {
 	makes map[string]makeCommandHandler
@@ -67,14 +68,14 @@ func AddCommand(name string, makes makeCommandHandler) {
 	commands.added.names = append(commands.added.names, name)
 }
 
-func setupFlagset(name string, makes makeCommandHandler) (*flag.FlagSet, CommandHandler, io.Writer) {
+func setupFlagset(name string, makes makeCommandHandler, loggerSetups []SetupLogger) (*flag.FlagSet, CommandHandler, io.Writer) {
 	fs := flag.NewFlagSet(name, flag.ContinueOnError)
-	run, output := makes(fs)
+	run, output := makes(fs, loggerSetups...)
 	return fs, run, output
 }
 
-func setup(name string, makes makeCommandHandler, arguments []string) (CommandHandler, error, []string) {
-	fs, run, output := setupFlagset(name, makes)
+func setup(name string, arguments []string, makes makeCommandHandler, loggerSetups []SetupLogger) (CommandHandler, error, []string) {
+	fs, run, output := setupFlagset(name, makes, loggerSetups)
 	err := fs.Parse(arguments)
 	if err == nil && output != nil {
 		fs.SetOutput(output)
@@ -82,39 +83,41 @@ func setup(name string, makes makeCommandHandler, arguments []string) (CommandHa
 	return run, err, fs.Args()
 }
 
-func parseCommand(handlers []CommandHandler, args []string) ([]CommandHandler, bool) {
+func ParseCommand(handlers []CommandHandler, args []string, loggerOptions ...SetupLogger) ([]CommandHandler, error) {
 	if len(args) == 0 || args[0] == "" {
-		return handlers, false
+		return handlers, nil
 	}
 	name := args[0]
-	if ctor, ok := commands.added.makes[name]; ok {
-		if handler, err, nextargs := setup(name, ctor, args[1:]); err == nil {
-			return parseCommand(append(handlers, handler), nextargs)
-		}
-	} else {
-		log.Fatalf("%s: No such command\n", name)
+	ctor, ok := commands.added.makes[name]
+	if !ok {
+		return handlers, fmt.Errorf("%s: No such command\n", name)
 	}
-	return handlers, true
+	handler, err, nextargs := setup(name, args[1:], ctor, loggerOptions)
+	if err != nil {
+		return handlers, err
+	}
+	return ParseCommand(append(handlers, handler), nextargs)
 }
 
-func parseCommands() ([]CommandHandler, bool) {
+func parseCommands() ([]CommandHandler, error) {
 	commands.mutex.Lock()
 	defer commands.mutex.Unlock()
-	return parseCommand([]CommandHandler{}, flag.Args())
+	return ParseCommand([]CommandHandler{}, flag.Args() /* no SetupLogger passed */)
 }
 
 // true is when to abort
 func ArgCommands() (bool, atexitHandler) {
+	handlers, err := parseCommands()
+	if err != nil {
+		log.Fatal(err)
+		return true, func() {} // useless return
+	}
+
 	finish := []atexitHandler{}
 	atexit := func() {
 		for _, exit := range finish {
 			exit()
 		}
-	}
-
-	handlers, errd := parseCommands()
-	if errd {
-		return true, atexit
 	}
 
 	if stop := func() bool {
@@ -155,7 +158,9 @@ func ArgCommands() (bool, atexitHandler) {
 	return true, atexit
 }
 
-func NewLogger(prefix string, options ...func(*Logger)) *Logger {
+type SetupLogger func(*Logger)
+
+func NewLogger(prefix string, options ...SetupLogger) *Logger {
 	logger := &Logger{ // defaults
 		Out:  os.Stderr,
 		Flag: log.LstdFlags,

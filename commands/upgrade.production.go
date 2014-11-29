@@ -152,14 +152,14 @@ func (up *upgrade) AddCommandLine() *upgrade {
 	return up
 }
 
-func NewUpgrade() *upgrade {
+func NewUpgrade(loggerOptions ...SetupLogger) *upgrade {
 	return &upgrade{
-		logger: NewLogger("[ostent upgrade] "),
+		logger: NewLogger("[ostent upgrade] ", loggerOptions...),
 	}
 }
 
-func upgradeCommand(fs *flag.FlagSet) (CommandHandler, io.Writer) {
-	up := NewUpgrade()
+func upgradeCommand(fs *flag.FlagSet, loggerOptions ...SetupLogger) (CommandHandler, io.Writer) {
+	up := NewUpgrade(loggerOptions...)
 	up.isCommand = true
 	fs.BoolVar(&up.DonotUpgrade, "n", false, "Do not upgrade, just log if there's an upgrade.")
 	return up.Run, up.logger

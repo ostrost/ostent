@@ -17,17 +17,19 @@ func (v version) run() {
 	v.logger.Println(ostent.VERSION)
 }
 
-func newVersion() *version {
+func newVersion(loggerOptions ...SetupLogger) *version {
 	return &version{
-		logger: NewLogger("", func(l *Logger) {
-			l.Out = os.Stdout
-			l.Flag = 0
-		}),
+		logger: NewLogger("", append([]SetupLogger{
+			func(l *Logger) {
+				l.Out = os.Stdout
+				l.Flag = 0
+			},
+		}, loggerOptions...)...),
 	}
 }
 
-func versionCommand(_ *flag.FlagSet) (CommandHandler, io.Writer) {
-	v := newVersion()
+func versionCommand(_ *flag.FlagSet, loggerOptions ...SetupLogger) (CommandHandler, io.Writer) {
+	v := newVersion(loggerOptions...)
 	return v.run, v.logger
 }
 

@@ -26,7 +26,9 @@ type help struct {
 }
 
 func (h help) usage(k string, makes makeCommandHandler) {
-	fs, _, _ := setupFlagset(k, makes)
+	fs, _, _ := setupFlagset(k, makes, []SetupLogger{func(l *Logger) {
+		l.Out = h.logger.Out // although `makes' must not use l.Out outside the Run
+	}})
 	// fs.Usage is ignored
 	fs.VisitAll(func(f *flag.Flag) { // mimics fs.PrintDefaults
 		format := "  -%s=%s: %s\n"
@@ -74,17 +76,19 @@ func (h *help) Run() {
 	}
 }
 
-func newHelp(logout io.Writer) *help {
+func newHelp(logout io.Writer, loggerOptions ...SetupLogger) *help {
 	return &help{
-		logger: NewLogger("", func(l *Logger) {
-			l.Out = logout
-			l.Flag = 0
-		}),
+		logger: NewLogger("", append([]SetupLogger{
+			func(l *Logger) {
+				l.Out = logout
+				l.Flag = 0
+			},
+		}, loggerOptions...)...),
 	}
 }
 
-func setupCommands(fs *flag.FlagSet) (CommandHandler, io.Writer) {
-	h := newHelp(os.Stdout)
+func setupCommands(fs *flag.FlagSet, loggerOptions ...SetupLogger) (CommandHandler, io.Writer) {
+	h := newHelp(os.Stdout, loggerOptions...)
 	h.isCommand = true
 	fs.StringVar(&h.listing, "h", "", "A command")
 	return h.Run, h.logger
