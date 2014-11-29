@@ -2,8 +2,6 @@ package commands
 
 import (
 	"flag"
-	"log"
-	"os"
 	"time"
 
 	"github.com/ostrost/ostent"
@@ -12,7 +10,7 @@ import (
 )
 
 type influx struct {
-	logger      *loggerWriter
+	logger      *Logger
 	RefreshFlag types.PeriodValue
 	ServerAddr  types.BindValue
 	Database    string
@@ -22,9 +20,9 @@ type influx struct {
 
 func influxdbCommandLine(cli *flag.FlagSet) commandLineHandler {
 	ix := &influx{
-		logger: &loggerWriter{
-			log.New(os.Stderr, "[ostent sendto-influxdb] ", log.LstdFlags),
-		},
+		logger: NewLogger(func(l *Logger) {
+			l.Prefix = "[ostent sendto-influxdb] "
+		}),
 		RefreshFlag: types.PeriodValue{Duration: types.Duration(10 * time.Second)}, // 10s default
 		ServerAddr:  types.NewBindValue(8086),
 	}

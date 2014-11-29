@@ -6,7 +6,6 @@ import (
 	"compress/gzip"
 	"flag"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -15,16 +14,16 @@ import (
 )
 
 type assetsExtract struct {
-	logger  *loggerWriter
+	logger  *Logger
 	destdir string
 }
 
-func assetsExtractCommand(fs *flag.FlagSet) (commandHandler, io.Writer) {
+func assetsExtractCommand(fs *flag.FlagSet) (CommandHandler, io.Writer) {
 	ae := &assetsExtract{
 		destdir: ostent.VERSION,
-		logger: &loggerWriter{
-			log.New(os.Stderr, "[ostent extract-assets] ", log.LstdFlags),
-		},
+		logger: NewLogger(func(l *Logger) {
+			l.Prefix = "[ostent extract-assets] "
+		}),
 	}
 	fs.StringVar(&ae.destdir, "d", ae.destdir, "Destination directory")
 	return ae.run, ae.logger

@@ -20,7 +20,7 @@ func UsageFunc(fs *flag.FlagSet) func() {
 }
 
 type help struct {
-	logger    *loggerWriter
+	logger    *Logger
 	isCommand bool
 	listing   string
 }
@@ -76,11 +76,14 @@ func (h *help) Run() {
 
 func newHelp(logout io.Writer) *help {
 	return &help{
-		logger: &loggerWriter{log.New(logout, "", 0)},
+		logger: NewLogger(func(l *Logger) {
+			l.Out = logout
+			l.Flag = 0
+		}),
 	}
 }
 
-func setupCommands(fs *flag.FlagSet) (commandHandler, io.Writer) {
+func setupCommands(fs *flag.FlagSet) (CommandHandler, io.Writer) {
 	h := newHelp(os.Stdout)
 	h.isCommand = true
 	fs.StringVar(&h.listing, "h", "", "A command")

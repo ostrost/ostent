@@ -4,14 +4,13 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"log"
 	"os"
 
 	"github.com/ostrost/ostent"
 )
 
 type version struct {
-	logger *loggerWriter
+	logger *Logger
 }
 
 func (v version) run() {
@@ -20,11 +19,14 @@ func (v version) run() {
 
 func newVersion() *version {
 	return &version{
-		logger: &loggerWriter{log.New(os.Stdout, "", 0)},
+		logger: NewLogger(func(l *Logger) {
+			l.Out = os.Stdout
+			l.Flag = 0
+		}),
 	}
 }
 
-func versionCommand(_ *flag.FlagSet) (commandHandler, io.Writer) {
+func versionCommand(_ *flag.FlagSet) (CommandHandler, io.Writer) {
 	v := newVersion()
 	return v.run, v.logger
 }

@@ -2,9 +2,7 @@ package commands
 
 import (
 	"flag"
-	"log"
 	"net"
-	"os"
 	"time"
 
 	"github.com/ostrost/ostent"
@@ -14,16 +12,16 @@ import (
 )
 
 type graphite struct {
-	logger      *loggerWriter
+	logger      *Logger
 	RefreshFlag types.PeriodValue
 	ServerAddr  types.BindValue
 }
 
 func graphiteCommandLine(cli *flag.FlagSet) commandLineHandler {
 	gr := &graphite{
-		logger: &loggerWriter{
-			log.New(os.Stderr, "[ostent sendto-graphite] ", log.LstdFlags),
-		},
+		logger: NewLogger(func(l *Logger) {
+			l.Prefix = "[ostent sendto-graphite] "
+		}),
 		RefreshFlag: types.PeriodValue{Duration: types.Duration(10 * time.Second)}, // 10s default
 		ServerAddr:  types.NewBindValue(2003),
 	}
@@ -49,7 +47,7 @@ func graphiteCommandLine(cli *flag.FlagSet) commandLineHandler {
 }
 
 type carbond struct {
-	logger        *loggerWriter
+	logger        *Logger
 	serveraddr    string
 	conn          net.Conn
 	client.Client // expires() bool method

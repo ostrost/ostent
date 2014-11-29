@@ -5,22 +5,21 @@ package commands
 
 import (
 	"flag"
-	"log"
 	"os"
 	"runtime/pprof"
 )
 
 type memprofile struct {
-	logger *loggerWriter
+	logger *Logger
 	output string
 	_f     *os.File
 }
 
 func memProfileCommandLine(cli *flag.FlagSet) commandLineHandler {
 	mp := &memprofile{
-		logger: &loggerWriter{
-			log.New(os.Stderr, "[ostent memprofile] ", log.LstdFlags),
-		},
+		logger: NewLogger(func(l *Logger) {
+			l.Prefix = "[ostent memprofile] "
+		}),
 	}
 	cli.StringVar(&mp.output, "memprofile", "", "MEM profile output file")
 	return func() (atexitHandler, bool, error) {
@@ -52,16 +51,16 @@ func (mp *memprofile) run() (err error) {
 /* ******************************************************************************** */
 
 type cpuprofile struct {
-	logger *loggerWriter
+	logger *Logger
 	output string
 	_f     *os.File
 }
 
 func cpuProfileCommandLine(cli *flag.FlagSet) commandLineHandler {
 	cp := &cpuprofile{
-		logger: &loggerWriter{
-			log.New(os.Stderr, "[ostent cpuprofile] ", log.LstdFlags),
-		},
+		logger: NewLogger(func(l *Logger) {
+			l.Prefix = "[ostent cpuprofile] "
+		}),
 	}
 	cli.StringVar(&cp.output, "cpuprofile", "", "CPU profile output file")
 	return func() (atexitHandler, bool, error) {

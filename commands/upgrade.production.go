@@ -7,11 +7,9 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"log"
 	"math/rand"
 	"net/http"
 	"net/url"
-	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -135,7 +133,7 @@ func (up upgrade) Run() {
 type upgrade struct {
 	DonotUpgrade        bool
 	UpgradeLater        bool
-	logger              *loggerWriter
+	logger              *Logger
 	hadUpgrade          bool
 	FirstUpgradeStopper func() bool
 	AfterUpgradeFunc    func()
@@ -156,13 +154,13 @@ func (up *upgrade) AddCommandLine() *upgrade {
 
 func NewUpgrade() *upgrade {
 	return &upgrade{
-		logger: &loggerWriter{
-			log.New(os.Stderr, "[ostent upgrade] ", log.LstdFlags),
-		},
+		logger: NewLogger(func(l *Logger) {
+			l.Prefix = "[ostent upgrade] "
+		}),
 	}
 }
 
-func upgradeCommand(fs *flag.FlagSet) (commandHandler, io.Writer) {
+func upgradeCommand(fs *flag.FlagSet) (CommandHandler, io.Writer) {
 	up := NewUpgrade()
 	up.isCommand = true
 	fs.BoolVar(&up.DonotUpgrade, "n", false, "Do not upgrade, just log if there's an upgrade.")

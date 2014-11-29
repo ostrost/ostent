@@ -11,7 +11,7 @@ import (
 )
 
 type webserver struct {
-	logger       *loggerWriter
+	logger       *Logger
 	BindValue    types.BindValue
 	ServeFunc    func(net.Listener)
 	FirstRunFunc func() bool
@@ -35,11 +35,10 @@ func InitStdLog() {
 
 func NewWebserver(defport int) *webserver {
 	return &webserver{
-		logger: &loggerWriter{
-			log.New(os.Stderr,
-				fmt.Sprintf("[%d][ostent webserver] ", os.Getpid()),
-				log.LstdFlags|log.Lmicroseconds),
-		},
+		logger: NewLogger(func(l *Logger) {
+			l.Prefix = fmt.Sprintf("[%d][ostent webserver] ", os.Getpid())
+			l.Flag |= log.Lmicroseconds
+		}),
 		BindValue: types.NewBindValue(defport),
 	}
 }
