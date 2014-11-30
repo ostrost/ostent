@@ -2,10 +2,21 @@ package assets
 
 import (
 	"fmt"
+	"net/http"
 	"path/filepath"
 	"sort"
 	"strings"
 )
+
+func FQscripts(list []string, r *http.Request) (scripts []string) {
+	for _, s := range list {
+		if !strings.HasPrefix(string(s), "//") {
+			s = "//" + r.Host + s
+		}
+		scripts = append(scripts, s)
+	}
+	return scripts
+}
 
 type sortassets struct {
 	names            []string

@@ -11,6 +11,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/ostrost/ostent/assets"
 	"github.com/ostrost/ostent/client"
 	"github.com/ostrost/ostent/cpu"
 	"github.com/ostrost/ostent/format"
@@ -815,16 +816,6 @@ func init() {
 
 var DISTRIB string
 
-func fqscripts(list []string, r *http.Request) (scripts []string) {
-	for _, s := range list {
-		if !strings.HasPrefix(string(s), "//") {
-			s = "//" + r.Host + s
-		}
-		scripts = append(scripts, s)
-	}
-	return scripts
-}
-
 func IndexFunc(template templates.BinTemplate, scripts []string, minrefresh types.Duration) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		index(template, scripts, minrefresh, w, r)
@@ -838,7 +829,7 @@ func index(template templates.BinTemplate, scripts []string, minrefresh types.Du
 		CLASSNAME string
 	}{
 		Data:    indexData(minrefresh, r),
-		SCRIPTS: fqscripts(scripts, r),
+		SCRIPTS: assets.FQscripts(scripts, r),
 	})
 	response.SetHeader("Content-Type", "text/html")
 	response.SetContentLength()
