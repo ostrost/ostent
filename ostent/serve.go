@@ -33,7 +33,7 @@ func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error
 	// no logger-wrapping for slashws, because it logs by itself once a query received via websocket
 	mux.Handle("GET", "/ws", recovery.ConstructorFunc(ostent.SlashwsFunc(access, periodFlag.Duration)))
 
-	index := chain.ThenFunc(ostent.IndexFunc(sharetemplates.IndexTemplate, shareassets.JsAssetNames(false), periodFlag.Duration))
+	index := chain.ThenFunc(ostent.IndexFunc(sharetemplates.IndexTemplate, assets.JsAssetNames(shareassets.AssetNames(), false), periodFlag.Duration))
 	mux.Handle("GET", "/", index)
 	mux.Handle("HEAD", "/", index)
 

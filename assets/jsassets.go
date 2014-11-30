@@ -33,7 +33,7 @@ func (sa sortassets) Swap(i, j int) {
 	sa.names[i], sa.names[j] = sa.names[j], sa.names[i]
 }
 
-func JsAssetNames(develreact bool) []string {
+func JsAssetNames(assetnames []string, develreact bool) []string {
 	sa := sortassets{
 		substr_indexfrom: []string{
 			"jquery",
@@ -46,7 +46,7 @@ func JsAssetNames(develreact bool) []string {
 		},
 	}
 
-	for _, name := range AssetNames() {
+	for _, name := range assetnames {
 		const dotjs = ".js"
 		if !strings.HasSuffix(name, dotjs) {
 			continue
