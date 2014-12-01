@@ -37,7 +37,7 @@ func getDistrib() string {
 		return ""
 	}
 	ver := strings.TrimRight(string(std), "\n\t ")
-	if ver == "10.10" {
+	if ver == "10.10" || strings.HasPrefix(ver, "10.10.") {
 		getUptime = func(gu getsUptime) error {
 			return gu.Get32()
 		}
