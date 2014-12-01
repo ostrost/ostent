@@ -399,7 +399,7 @@ func NewMetricLoad(r metrics.Registry) MetricLoad {
 		Max:          -1.0,
 	}
 	// short := metrics.NewRegisteredGaugeFloat64("load.shortterm", r)
-	r.Register("load.shortterm", short)
+	r.Register("load.shortterm", short.GaugeFloat64)
 	return MetricLoad{
 		Short: short,
 		Mid:   metrics.NewRegisteredGaugeFloat64("load.midterm", r),
