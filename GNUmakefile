@@ -18,7 +18,7 @@ ifeq (Linux, $(shell uname -s))
 xargs=xargs --no-run-if-empty
 sed-i=sed -i'' # GNU sed -i opt, not a flag
 endif
-sed-i-bindata=$(sed-i) -e 's,"$(PWD)/,",g' -e '/^\/\/ AssetDir /,$$d'
+sed-i-bindata=$(sed-i) -e 's,"$(PWD)/,",g' -E -e 's/time\.Unix\([0-9]+,/time.Unix(1400000000,/g' # -e '/^\/\/ AssetDir /,$$d'
 go-bindata=go-bindata -ignore '.*\.go' # go regexp syntax for -ignore
 
 .PHONY: all al init test covertest coverfunc coverhtml bindata-devel
