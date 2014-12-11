@@ -8,20 +8,21 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/ostrost/ostent"
 	"github.com/ostrost/ostent/share/assets"
 )
 
-type assetsExtract struct {
+type assetsRestore struct {
 	logger  *Logger
 	destdir string
 }
 
-func assetsExtractCommand(fs *flag.FlagSet, loggerOptions ...SetupLogger) (CommandHandler, io.Writer) {
-	ae := &assetsExtract{
+func assetsRestoreCommand(fs *flag.FlagSet, loggerOptions ...SetupLogger) (CommandHandler, io.Writer) {
+	ae := &assetsRestore{
 		destdir: ostent.VERSION,
-		logger:  NewLogger("[ostent extract-assets] ", loggerOptions...),
+		logger:  NewLogger("[ostent restore-assets] ", loggerOptions...),
 	}
 	fs.StringVar(&ae.destdir, "d", ae.destdir, "Destination directory")
 	return ae.run, ae.logger
@@ -31,19 +32,20 @@ func assetsExtractCommand(fs *flag.FlagSet, loggerOptions ...SetupLogger) (Comma
 // - creates the dest directory
 // - every asset is saved as a file
 // - every asset is gzipped saved as a file + .gz if it's size is above threshold
-func (ae *assetsExtract) run() {
+func (ae *assetsRestore) run() {
 	if _, err := os.Stat(ae.destdir); err == nil {
 		ae.logger.Fatalf("%s: File exists\n", ae.destdir)
 	}
-	ae.logger.fatalif(os.Mkdir(ae.destdir, os.ModePerm))
-	for _, path := range assets.AssetNames() {
-		text, err := assets.Asset(path)
+	ae.logger.fatalif(assets.RestoreAssets(ae.destdir, ""))
+	// ae.logger.fatalif(os.Mkdir(ae.destdir, os.ModePerm))
+	for _, name := range assets.AssetNames() {
+		text, err := assets.Asset(name)
 		if err != nil {
-			ae.logger.Printf("Unexpected: %s: %s", path, err)
+			ae.logger.Printf("assets.Asset: %s: %s", name, err)
 			continue
 		}
-		full := filepath.Join(ae.destdir, path)
-		dir := filepath.Dir(full)
+		full := filepath.Join(ae.destdir, name)
+		/* dir := filepath.Dir(full)
 		if _, err := os.Stat(dir); err != nil {
 			ae.logger.fatalif(os.MkdirAll(dir, os.ModePerm))
 		}
@@ -53,10 +55,12 @@ func (ae *assetsExtract) run() {
 
 		_, err = file.Write(text)
 		ae.logger.fatalif(err)
-		file.Close()
+		file.Close() // */
 
-		gz := len(text) > 1024
-		if !gz {
+		now := time.Now()
+		ae.logger.fatalif(os.Chtimes(full, now, now))
+
+		if len(text) <= 1024 {
 			continue
 		}
 
@@ -69,9 +73,11 @@ func (ae *assetsExtract) run() {
 
 		gzwriter.Close()
 		gzfile.Close()
+
+		ae.logger.fatalif(os.Chtimes(full+".gz", now, now))
 	}
 }
 
 func init() {
-	AddCommand("extract-assets", assetsExtractCommand)
+	AddCommand("restore-assets", assetsRestoreCommand)
 }
