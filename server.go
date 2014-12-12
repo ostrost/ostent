@@ -53,10 +53,10 @@ func NewServer(listener net.Listener, production bool) *Server {
 	}
 }
 
-// ServeContentFunc does http.ServeContent the Readfunc (Asset or UncompressedAsset) result
-func ServeContentFunc(prefix string, Readfunc func(string) ([]byte, error), path string, logger *log.Logger) http.HandlerFunc {
+// ServeContentFunc does http.ServeContent the readfunc (Asset or UncompressedAsset) result
+func ServeContentFunc(prefix string, readfunc func(string) ([]byte, error), path string, logger *log.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		text, err := Readfunc(path)
+		text, err := readfunc(path)
 		if err != nil {
 			panic(err)
 		}

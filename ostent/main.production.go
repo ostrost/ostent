@@ -32,8 +32,11 @@ func main() {
 	webserver.ShutdownFunc = ostent.Connections.Reload
 	webserver.ServeFunc = func(listen net.Listener) {
 		go upgrade.UntilUpgrade()
-		go templates.InitTemplates() // preventive
-		go Serve(listen, true, nil)  // true stands for production
+		go func() {
+			templates.InitTemplates(nil) // preventive
+			// sequential, because Serve must wait until InitTemplates is done
+			Serve(listen, true, nil) // true stands for production
+		}()
 	}
 	upgrade.FirstUpgradeStopper = webserver.GoneAgain // initial upgrade skipped after gone again
 	upgrade.AfterUpgradeFunc = webserver.GoAgain

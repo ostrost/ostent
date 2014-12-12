@@ -37,11 +37,13 @@ func main() {
 	}
 	ostent.RunBackground(periodFlag)
 
-	go templates.InitTemplates() // ServeFunc; NB after chdir
+	templatesLoaded := make(chan struct{}, 1)
+	go templates.InitTemplates(templatesLoaded) // NB after chdir
 
 	listen := webserver.NetListen()
 	errch := make(chan error, 2)
 	go func(ch chan<- error) {
+		<-templatesLoaded
 		ch <- Serve(listen, false, ostent.Muxmap{
 			"/debug/pprof/{name}":  pprof.Index,
 			"/debug/pprof/cmdline": pprof.Cmdline,

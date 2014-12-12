@@ -20,7 +20,7 @@ type BinTemplate struct {
 	mutex    sync.Mutex
 }
 
-func (bt *BinTemplate) MustInit() {
+func MustInit(bt *BinTemplate) {
 	bt.mutex.Lock()
 	defer bt.mutex.Unlock()
 	template.Must(bt.initUnlocked())
@@ -28,44 +28,31 @@ func (bt *BinTemplate) MustInit() {
 
 func (bt *BinTemplate) initUnlocked() (*template.Template, error) {
 	if bt.Readfunc == nil {
-		return nil, errors.New("BinTemplate must have .Readfunc")
+		return nil, errors.New("BinTemplate must have non-nil .Readfunc")
 	}
 	text, err := bt.Readfunc(bt.Filename)
 	if err != nil {
 		return nil, err
 	}
 	if !bt.Cascade { // the simple case
-		t, err := bt.newtemplate(nil, "", text)
+		t, err := template.New(bt.Filename).Parse(string(text))
 		if err == nil {
 			bt.template = t
 		}
 		return t, err
 	}
-	// MUST NOT bt.template.New("cascaded.html") later, causes redefinition of the template
-	T, err := bt.newtemplate(nil, "cascaded.html", []byte(`Empty`))
+	t, err := template.New("./" + bt.Filename).Parse(`Empty`)
 	if err != nil {
 		return nil, err
-	} else {
-		bt.template = T
 	}
-	if _, err := bt.newtemplate(bt.template.New, "", text); err != nil {
-		return nil, err
-	}
-	return bt.template, nil
-}
-
-func (bt *BinTemplate) newtemplate(newfunc func(string) *template.Template, filename string, text []byte) (*template.Template, error) {
-	if newfunc == nil {
-		newfunc = template.New
-	}
-	if filename == "" {
-		filename = bt.Filename
-	}
-	t := newfunc(filename)
 	if bt.Funcmap != nil {
 		t.Funcs(bt.Funcmap)
 	}
-	return t.Parse(string(text))
+	if _, err := t.New(bt.Filename).Parse(string(text)); err != nil {
+		return nil, err
+	}
+	bt.template = t
+	return bt.template, nil
 }
 
 func (bt *BinTemplate) CloneExecute(data interface{}) (*bytes.Buffer, error) {

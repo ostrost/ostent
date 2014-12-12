@@ -816,13 +816,13 @@ func init() {
 
 var DISTRIB string
 
-func IndexFunc(template templates.BinTemplate, scripts []string, minrefresh types.Duration) func(http.ResponseWriter, *http.Request) {
+func IndexFunc(template *templates.BinTemplate, scripts []string, minrefresh types.Duration) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		index(template, scripts, minrefresh, w, r)
 	}
 }
 
-func index(template templates.BinTemplate, scripts []string, minrefresh types.Duration, w http.ResponseWriter, r *http.Request) {
+func index(template *templates.BinTemplate, scripts []string, minrefresh types.Duration, w http.ResponseWriter, r *http.Request) {
 	response := template.Response(w, struct {
 		Data      IndexData
 		SCRIPTS   []string

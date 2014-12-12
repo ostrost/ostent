@@ -12,8 +12,8 @@ import (
 )
 
 func init() {
-	ostent.UsePercentTemplate = &sharetemplates.UsePercentTemplate
-	ostent.TooltipableTemplate = &sharetemplates.TooltipableTemplate
+	ostent.UsePercentTemplate = sharetemplates.UsePercentTemplate
+	ostent.TooltipableTemplate = sharetemplates.TooltipableTemplate
 }
 
 func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error {

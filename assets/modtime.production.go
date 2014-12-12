@@ -12,19 +12,19 @@ var uncompressedassets struct {
 	mutex sync.Mutex
 }
 
-func UncompressedAssetFunc(Readfunc func(string) ([]byte, error)) func(string) ([]byte, error) {
+func UncompressedAssetFunc(readfunc func(string) ([]byte, error)) func(string) ([]byte, error) {
 	return func(name string) ([]byte, error) {
-		return uncompressedasset(Readfunc, name)
+		return uncompressedasset(readfunc, name)
 	}
 }
 
-func uncompressedasset(Readfunc func(string) ([]byte, error), name string) ([]byte, error) {
+func uncompressedasset(readfunc func(string) ([]byte, error), name string) ([]byte, error) {
 	uncompressedassets.mutex.Lock()
 	defer uncompressedassets.mutex.Unlock()
 	if text, ok := uncompressedassets.cache[name]; ok {
 		return text, nil
 	}
-	text, err := Readfunc(name)
+	text, err := readfunc(name)
 	if err != nil {
 		uncompressedassets.cache[name] = text
 	}
