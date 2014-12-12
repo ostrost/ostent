@@ -34,7 +34,7 @@ func getGeneric(reg registry.Registry, CH chan<- generic) {
 	hostname, _ := getHostname()
 
 	uptime := sigar.Uptime{}
-	getUptime(&uptime)
+	uptime.Get()
 
 	la := sigar.LoadAverage{}
 	la.Get()
