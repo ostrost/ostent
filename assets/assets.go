@@ -48,9 +48,12 @@ func JsAssetNames(assetnames []string, develreact bool) []string {
 	sa := sortassets{
 		substr_indexfrom: []string{
 			"jquery",
-			"bootstrap",
-			"react",
-			"headroom",
+			"bootstrap",       // depends on jquery
+			"d3",              // no dependencies?
+			"metricsgraphics", // depends on d3, bootstrap
+
+			"react",    // no dependencies
+			"headroom", // no dependencies? maybe jquery
 
 			"gen", "jsript", // either /gen/ or /jscript/
 			"milk", // from coffee script
