@@ -65,6 +65,7 @@ al: $(ostent_files)
 # al: like `all' but without final go build ostent. For when rerun does the build
 
 $(destbin)/ostent: $(ostent_files)
+	go get -tags production $(fqostent)/ostent # rebuild the library archive
 	go build -tags production -o $@ $(fqostent)
 
 $(destbin)/%:
