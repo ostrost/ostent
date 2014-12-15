@@ -16,7 +16,7 @@ import (
 	"time"
 
 	update "github.com/inconshreveable/go-update"
-	"github.com/ostrost/ostent"
+	"github.com/ostrost/ostent/ostent"
 )
 
 func (u upgrade) newerVersion() (string, error) {

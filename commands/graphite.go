@@ -5,8 +5,8 @@ import (
 	"net"
 	"time"
 
-	"github.com/ostrost/ostent"
 	"github.com/ostrost/ostent/client"
+	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/types"
 	metrics "github.com/rcrowley/go-metrics"
 )

@@ -6,9 +6,9 @@ import (
 	"flag"
 	"net"
 
-	"github.com/ostrost/ostent"
 	"github.com/ostrost/ostent/commands"
 	_ "github.com/ostrost/ostent/commands/ostent"
+	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/share/templates"
 )
 

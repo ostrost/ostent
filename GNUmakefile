@@ -28,9 +28,9 @@ ifneq (init, $(MAKECMDGOALS))
 # - go test fails without dependencies installed
 # - go-bindata is not installed yet
 
-destbin=$(abspath $(dir $(shell go list -f '{{.Target}}' $(fqostent)/ostent)))
+destbin=$(abspath $(dir $(shell go list -f '{{.Target}}' $(fqostent))))
 ostent_files=$(shell \
-go list -tags production -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(fqostent)/ostent | xargs \
+go list -tags production -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(fqostent) | xargs \
 go list -tags production -f '{{if and (not .Standard) (not .Goroot)}}\
 {{$$dir := .Dir}}\
 {{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}\
@@ -44,11 +44,9 @@ init:
 github.com/jteeuwen/go-bindata/go-bindata \
 github.com/skelterjohn/rerun
 	git remote set-url origin https://$(fqostent) # travis & tip & https://code.google.com/p/go/issues/detail?id=8850
-	go get -u -v -tags production \
-$(fqostent)/ostent
+	go get -u -v -tags production $(fqostent)
 	go list -f '{{.Target}}' $(fqostent) | $(xargs) rm # clean the library archive
-	go get -u -v -a \
-$(fqostent)/ostent
+	go get -u -v -a $(fqostent)
 	go list -f '{{.Target}}' $(fqostent) | $(xargs) rm # clean the library archive
 
 %: %.sh # clear the implicit *.sh rule covering ./ostent.sh
@@ -67,7 +65,7 @@ al: $(ostent_files)
 # al: like `all' but without final go build ostent. For when rerun does the build
 
 $(destbin)/ostent: $(ostent_files)
-	go build -tags production -o $@ $(fqostent)/ostent
+	go build -tags production -o $@ $(fqostent)
 
 $(destbin)/%:
 	go build -o $@ $(fqostent)/$|

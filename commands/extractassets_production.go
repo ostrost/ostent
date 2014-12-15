@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/ostrost/ostent"
+	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/share/assets"
 )
 

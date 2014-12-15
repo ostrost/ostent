@@ -88,7 +88,7 @@ Running the code
 Have your GOPATH environment set,
 [gvm](https://github.com/moovweb/gvm) is a must.
 
-1. **`go get github.com/ostrost/ostent/ostent`**
+1. **`go get github.com/ostrost/ostent`**
 2. `ostent` to run.
 
 For rebuilding the code and assets:
@@ -99,12 +99,12 @@ For rebuilding the code and assets:
 
 Repeat 3. every time sources (esp. assets) change.
 [rerun](https://github.com/skelterjohn/rerun) does live-reloading run:
-`rerun github.com/ostrost/ostent/ostent`
+`rerun github.com/ostrost/ostent`
 
 **For a fork**, to preserve import paths and packages namespace,
 clone your fork as if it was `github.com/ostrost/ostent` package for Go:
 
-1. `go get github.com/ostrost/ostent/ostent`
+1. `go get github.com/ostrost/ostent`
 2. Find `src/github.com/ostrost/ostent` directory in GOPATH.
 3. Replace it with you fork clone.
 4. Continue with rebuilding steps above.
@@ -135,7 +135,7 @@ Additional tools required for assets rebuilding:
 The main package
 ----------------
 
-`github.com/ostrost/ostent/ostent` has two main.go files:
+`github.com/ostrost/ostent` has two main.go files:
 rerun will find `main.devel.go`; the other `main.production.go`
 (used when building with `-tags production`) is the init code for
 the distributed binaries: also includes

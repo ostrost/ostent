@@ -4,7 +4,7 @@ import (
 	"flag"
 	"time"
 
-	"github.com/ostrost/ostent"
+	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/types"
 	"github.com/rcrowley/go-metrics/influxdb"
 )

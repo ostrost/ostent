@@ -5,8 +5,8 @@ import (
 	"io"
 	"os"
 
-	"github.com/ostrost/ostent"
 	"github.com/ostrost/ostent/commands"
+	"github.com/ostrost/ostent/ostent"
 )
 
 type version struct {

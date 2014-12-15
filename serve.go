@@ -5,8 +5,8 @@ import (
 	"net"
 	"os"
 
-	"github.com/ostrost/ostent"
 	"github.com/ostrost/ostent/assets"
+	"github.com/ostrost/ostent/ostent"
 	shareassets "github.com/ostrost/ostent/share/assets"
 	sharetemplates "github.com/ostrost/ostent/share/templates"
 )
