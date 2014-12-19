@@ -1,4 +1,7 @@
-package main
+// Package stdlogfilter patches "log" package standard Logger so that
+// any logging of lines containing " handling " via the logger are discarded.
+// "github.com/rcrowley/go-tigertonic" is to blame.
+package stdlogfilter
 
 import (
 	"bufio"
