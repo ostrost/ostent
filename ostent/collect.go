@@ -113,20 +113,7 @@ func read_disks(reg registry.Registry, wg *sync.WaitGroup) {
 		usage := sigar.FileSystemUsage{}
 		usage.Get(fs.DirName)
 
-		if fs.DevName == "shm" ||
-			fs.DevName == "none" ||
-			fs.DevName == "proc" ||
-			fs.DevName == "udev" ||
-			fs.DevName == "devfs" ||
-			fs.DevName == "sysfs" ||
-			fs.DevName == "tmpfs" ||
-			fs.DevName == "devpts" ||
-			fs.DevName == "cgroup" ||
-			fs.DevName == "rootfs" ||
-			fs.DevName == "rpc_pipefs" ||
-
-			fs.DirName == "/dev" ||
-			strings.HasPrefix(fs.DevName, "map ") {
+		if !strings.HasPrefix(fs.DevName, "/") {
 			continue
 		}
 		// if _, ok := devnames[fs.DevName]; ok
