@@ -1,8 +1,7 @@
 language: go
 go:
   - 1.4
-  - tip
-# https://golang.org/dl/
+# - tip
 
 install: make init
 script: make test all # go test then the build
