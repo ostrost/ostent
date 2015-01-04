@@ -423,10 +423,7 @@
 
 @ready = () ->
         (new Headroom(document.querySelector('nav'), {
-                offset: 71 - 51
-                # "relative" padding-top of the toprow
-                # 71 is the absolute padding-top of the toprow
-                # 51 is the height of the nav (50 +1px bottom border)
+                offset: 20 # ~padding-top of a container row
         })).init()
 
         $('.collapse').collapse({toggle: false}) # init collapsable objects

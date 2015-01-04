@@ -20,7 +20,10 @@ body {
 .headroom--pinned   { top: 0; }
 .headroom--unpinned { top: -100px; }
 
-.padding-top71 { padding-top: 71px; } // 51 for navbar(50+1(border)) + regular 20 padding-top
+.padding-topseventysh {
+  // 51 for navbar(50+1(border)) (depends on theme) + regular 20 padding-top
+  padding-top: 71px;
+}
 
 .panel1 {
   @extend .panel;

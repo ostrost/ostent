@@ -74,7 +74,7 @@ html
             button.close[type="button"][data-dismiss="alert"][aria-hidden="true"] &times;
             span#alert-message Alert
 
-    div.container-fluid.padding-top71#top
+    div.container-fluid.padding-topseventysh#top
       div.row
         div.block.col-md-2.col-md-offset-1
           div.panel1

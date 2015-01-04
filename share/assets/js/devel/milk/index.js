@@ -858,7 +858,7 @@
 
   this.ready = function() {
     (new Headroom(document.querySelector('nav'), {
-      offset: 71 - 51
+      offset: 20
     })).init();
     $('.collapse').collapse({
       toggle: false
