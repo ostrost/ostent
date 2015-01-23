@@ -1,7 +1,7 @@
 # language: go
 # go:
-#   - 1.4
-# - tip
+#   - release
+#   - tip
 
 # install: make init
 # script: make test all # go test then the build
@@ -12,12 +12,12 @@ os: [osx]
 
 install: [true]
 script:
-# - test x$TRAVIS_OS_NAME = xosx && brew install
-  - test x$TRAVIS_OS_NAME = xosx && export GCC=gcc CC=gcc
-  - bash < <(curl -sSL https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer)
+  - curl -sSL https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer | bash
   - source ~/.gvm/scripts/gvm
   - gvm install go1.4 -B
   - gvm use go1.4
+  - test x$TRAVIS_OS_NAME = xosx && export GCC=gcc CC=gcc
+  - go env; echo PRINTENV; printenv
   - make init
   - make test all
 
