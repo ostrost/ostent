@@ -28,7 +28,8 @@ ifneq (init, $(MAKECMDGOALS))
 # - go test fails without dependencies installed
 # - go-bindata is not installed yet
 
-destbin=$(abspath $(dir $(shell go list -f '{{.Target}}' $(fqostent))))
+destbin=$(shell echo $(GOPATH) | awk -F: '{ print $$1 "/bin" }')
+# destbin=$(abspath $(dir $(shell go list -f '{{.Target}}' $(fqostent))))
 ostent_files=$(shell \
 go list -tags production -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(fqostent) | xargs \
 go list -tags production -f '{{if and (not .Standard) (not .Goroot)}}\
@@ -65,7 +66,7 @@ al: $(ostent_files)
 # al: like `all' but without final go build ostent. For when rerun does the build
 
 $(destbin)/ostent: $(ostent_files)
-	go build -a -tags production -o $@ $(fqostent)
+	go build -ldflags -w -a -tags production -o $@ $(fqostent)
 
 $(destbin)/%:
 	go build -o $@ $(fqostent)/$|
