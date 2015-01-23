@@ -13,8 +13,7 @@ os: [osx]
 install: [true]
 script:
 # - test x$TRAVIS_OS_NAME = xosx && brew install
-  - test x$TRAVIS_OS_NAME = xosx && man make | head
-  - test x$TRAVIS_OS_NAME = xosx && export CC=cc
+  - test x$TRAVIS_OS_NAME = xosx && export GCC=gcc CC=gcc
   - bash < <(curl -sSL https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer)
   - source ~/.gvm/scripts/gvm
   - gvm install go1.4 -B
@@ -22,5 +21,5 @@ script:
   - make init
   - make test all
 
-after_failure:
-  - cat $HOME/.gvm/logs/go-go1.4-install.log
+# after_failure:
+#   - cat $HOME/.gvm/logs/go-go1.4-install.log
