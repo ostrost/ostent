@@ -355,7 +355,7 @@ html
       .top-bar-left
         ul.menu
           li
-            h2.h4(style='margin-bottom: 0')
+            h2.h4.margin-bottom-0
               span.updates(data-define='define_hostname')
                 | {{template "define_hostname" .}}
               |  
@@ -367,7 +367,7 @@ html
       .top-bar-right
         ul.menu
           li
-            a.button.secondary.hollow(style='margin: 0', href='https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}') ostent
+            a.button.secondary.hollow.margin-0(href='https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}') ostent
 
     | {{if ne (len .Exporting) 0}}
     .grid-block.hr-top

@@ -332,14 +332,14 @@
       <div class="top-bar-left">
         <ul class="menu">
           <li>
-            <h2 style="margin-bottom: 0" class="h4"><span data-define="define_hostname" class="updates">{{template "define_hostname" .}}</span> <small>{{.Distrib}}</small></h2>
+            <h2 class="h4 margin-bottom-0"><span data-define="define_hostname" class="updates">{{template "define_hostname" .}}</span> <small>{{.Distrib}}</small></h2>
           </li>
           <li><span class="col">up</span><span data-define="define_uptime" class="col updates whitespace-pre">{{template "define_uptime" .}}</span></li>
         </ul>
       </div>
       <div class="top-bar-right">
         <ul class="menu">
-          <li><a style="margin: 0" href="https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}" class="button secondary hollow">ostent</a></li>
+          <li><a href="https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}" class="button secondary hollow margin-0">ostent</a></li>
         </ul>
       </div>
     </div>{{if ne (len .Exporting) 0}}
