@@ -7,12 +7,14 @@
 # script: make test all # go test then the build
 
 language: c
-os: [linux, osx]
+os: [osx]
+# os: [linux, osx]
 
 install: [true]
 script:
-# - test x$TRAVIS_OS_NAME =xosx && brew install
-  - test x$TRAVIS_OS_NAME =xosx && man make | head
+# - test x$TRAVIS_OS_NAME = xosx && brew install
+  - test x$TRAVIS_OS_NAME = xosx && man make | head
+  - test x$TRAVIS_OS_NAME = xosx && export CC=cc
   - bash < <(curl -sSL https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer)
   - source ~/.gvm/scripts/gvm
   - gvm install go1.4 -B
