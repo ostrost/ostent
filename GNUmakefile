@@ -45,9 +45,9 @@ init:
 github.com/jteeuwen/go-bindata/go-bindata \
 github.com/skelterjohn/rerun
 	git remote set-url origin https://$(fqostent) # travis & tip & https://code.google.com/p/go/issues/detail?id=8850
-	go get -u -v -tags production $(fqostent)
+	go get -v -tags production $(fqostent)
 	go list -f '{{.Target}}' $(fqostent) | $(xargs) rm # clean the library archive
-	go get -u -v -a $(fqostent)
+	go get -v -a $(fqostent)
 	go list -f '{{.Target}}' $(fqostent) | $(xargs) rm # clean the library archive
 
 %: %.sh # clear the implicit *.sh rule covering ./ostent.sh
