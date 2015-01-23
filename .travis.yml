@@ -16,7 +16,8 @@ script:
   - source ~/.gvm/scripts/gvm
   - gvm install go1.4 -B
   - gvm use go1.4
-  - test x$TRAVIS_OS_NAME = xosx && export CXX=g++ # GCC=gcc
+# - test x$TRAVIS_OS_NAME = xosx && export CXX=g++ # GCC=gcc
+  - test x$TRAVIS_OS_NAME = xosx && export CC=clang # GCC=gcc
   - go env; echo PRINTENV; printenv
   - make init
   - make test all
