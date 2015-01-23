@@ -1,7 +1,24 @@
-language: go
-go:
-  - 1.4
+# language: go
+# go:
+#   - 1.4
 # - tip
 
-install: make init
-script: make test all # go test then the build
+# install: make init
+# script: make test all # go test then the build
+
+language: c
+os: [linux, osx]
+
+install: [true]
+script:
+# - test x$TRAVIS_OS_NAME =xosx && brew install
+  - test x$TRAVIS_OS_NAME =xosx && man make | head
+  - bash < <(curl -sSL https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer)
+  - source ~/.gvm/scripts/gvm
+  - gvm install go1.4 -B
+  - gvm use go1.4
+  - make init
+  - make test all
+
+after_failure:
+  - cat $HOME/.gvm/logs/go-go1.4-install.log
