@@ -1,13 +1,13 @@
 os: [linux, osx]
 env:
   matrix:
-    - GVM_GO=go1.4 # release
+    - GVM_GO=go1.4.1 # release
   # - GVM_GO=tip # pre-release
   global:
     - GVMINSTALLER_URL=https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer
 language: c
 install:
-  - test x$TRAVIS_OS_NAME = xosx && export CXX=clang++ CC=clang || true # default CC=gcc
+  - test x$TRAVIS_OS_NAME = xosx && export CXX=clang++ CC=clang || true # default CC=gcc for `language: c'
   - if type -t gvm; then gvm get; else curl -sSL $GVMINSTALLER_URL | bash; fi
   - source ~/.gvm/scripts/gvm
   - gvm version
@@ -19,6 +19,3 @@ install:
   - make init
 script:
   - make test all # go test then the build
-
-# after_failure: []
-# after_success: []

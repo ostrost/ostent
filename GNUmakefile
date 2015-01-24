@@ -41,7 +41,6 @@ sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 all: $(destbin)/ostent
 endif
 init:
-	go get -u -x github.com/rzab/gosigar
 	go get -u -v \
 github.com/jteeuwen/go-bindata/go-bindata \
 github.com/skelterjohn/rerun
