@@ -1,26 +1,26 @@
-# language: go
-# go:
-#   - release
-#   - tip
-
-# install: make init
-# script: make test all # go test then the build
-
+os: [linux, osx]
+env:
+  - GVM_GO=go1.4 # release
+  - GVM_GO=tip
 language: c
-os: [osx]
-# os: [linux, osx]
-
-install: [true]
-script:
+install:
+  - test x$TRAVIS_OS_NAME = xosx && export CXX=clang++ CC=clang # default CC=gcc
+  - type gvm    || true # test
+  - gvm get     || true # test
+  - gvm update  || true # test
+  - gvm version || true # test
+  - gvm install $GVM_GO --binary || gvm install $GVM_GO --binary || true # test
+  - gvm use $GVM_GO || true
   - curl -sSL https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer | bash
-  - source ~/.gvm/scripts/gvm
-  - gvm install go1.4 -B
-  - gvm use go1.4
-# - test x$TRAVIS_OS_NAME = xosx && export CXX=g++ # GCC=gcc
-  - test x$TRAVIS_OS_NAME = xosx && export CC=clang # GCC=gcc
-  - go env; echo PRINTENV; printenv
+  - set -e; source ~/.gvm/scripts/gvm; gvm install $GVM_GO --binary; gvm use $GVM_GO
+  - export GOPATH=$HOME/gopath:$GOPATH PATH=$HOME/gopath/bin:$PATH
+  - cd $HOME/gopath/src/github.com/$TRAVIS_REPO_SLUG
+  - gvm version
+  - go version
+  - go env
   - make init
-  - make test all
+script:
+  - make test all # go test then the build
 
-# after_failure:
-#   - cat $HOME/.gvm/logs/go-go1.4-install.log
+# after_failure: []
+# after_success: []
