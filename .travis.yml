@@ -1,20 +1,21 @@
 os: [linux, osx]
 env:
   - GVM_GO=go1.4 # release
+  # travis env has go1.4 preinstalled
   - GVM_GO=tip
 language: c
 install:
-  - test x$TRAVIS_OS_NAME = xosx && export CXX=clang++ CC=clang # default CC=gcc
-  - type gvm    || true # test
-  - gvm get     || true # test
-  - gvm update  || true # test
-  - gvm version || true # test
-  - gvm install $GVM_GO --binary || gvm install $GVM_GO --binary || true # test
-  - gvm use $GVM_GO || true
+  - test x$TRAVIS_OS_NAME = xosx && export CXX=clang++ CC=clang || true # default CC=gcc
   - curl -sSL https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer | bash
-  - set -e; source ~/.gvm/scripts/gvm; gvm install $GVM_GO --binary; gvm use $GVM_GO
+  - source ~/.gvm/scripts/gvm #; gvm get; gvm update
+# - gvm version # below
+  - gvm list # test
+  - gvm install $GVM_GO --binary || gvm install $GVM_GO
+  - gvm list # test
+  - gvm use $GVM_GO
   - export GOPATH=$HOME/gopath:$GOPATH PATH=$HOME/gopath/bin:$PATH
-  - cd $HOME/gopath/src/github.com/$TRAVIS_REPO_SLUG
+  - pwd
+# - cd $HOME/gopath/src/github.com/$TRAVIS_REPO_SLUG
   - gvm version
   - go version
   - go env
