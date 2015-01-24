@@ -8,14 +8,13 @@ env:
 language: c
 install:
   - test x$TRAVIS_OS_NAME = xosx && export CXX=clang++ CC=clang || true # default CC=gcc
-  - if type gvm; then gvm get; else curl -sSL $GVMINSTALLER_URL; fi
+  - if type gvm | head -1; then gvm get; else curl -sSL $GVMINSTALLER_URL | bash; fi
   - source ~/.gvm/scripts/gvm
   - gvm version
   - gvm install $GVM_GO --binary # || gvm install $GVM_GO
-  - gvm use $GVM_GO
-  - cd; mkdir src; mv build src/github.com
-  - cd $HOME/src/github.com/$TRAVIS_REPO_SLUG
-  - export GOPATH=$HOME:$GOPATH PATH=$HOME/bin:$PATH
+  - gvm use $GVM_GO; gvm list
+  - cd; mkdir -p gopath/src; mv build gopath/src/github.com; cd gopath/src/github.com/$TRAVIS_REPO_SLUG
+  - export GOPATH=~/gopath:$GOPATH PATH=~/gopath/bin:$PATH
   - go version; go env
   - make init
 script:
