@@ -6,7 +6,7 @@ import (
 
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/types"
-	"github.com/rcrowley/go-metrics/influxdb"
+	"github.com/rzab/go-metrics/influxdb"
 )
 
 type influx struct {
