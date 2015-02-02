@@ -425,7 +425,7 @@ func (ms *MetricSwap) TotalValue() uint64 { // Free + Used
 
 func (ms *MetricSwap) Update(got sigar.Swap) {
 	ms.Free.Update(int64(got.Free))
-	ms.Used.Update(int64(got.Free))
+	ms.Used.Update(int64(got.Used))
 }
 
 // GaugeDiff holds two Gauge metrics: the first is the exported one.
