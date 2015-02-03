@@ -27,7 +27,7 @@ type asset struct {
 
 // index_html reads file data from disk. It returns an error on failure.
 func index_html() (*asset, error) {
-	path := "share/templates/index.html"
+	path := filepath.Join(rootDir, "index.html")
 	name := "index.html"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
@@ -45,7 +45,7 @@ func index_html() (*asset, error) {
 
 // usepercent_html reads file data from disk. It returns an error on failure.
 func usepercent_html() (*asset, error) {
-	path := "share/templates/usepercent.html"
+	path := filepath.Join(rootDir, "usepercent.html")
 	name := "usepercent.html"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
@@ -63,7 +63,7 @@ func usepercent_html() (*asset, error) {
 
 // tooltipable_html reads file data from disk. It returns an error on failure.
 func tooltipable_html() (*asset, error) {
-	path := "share/templates/tooltipable.html"
+	path := filepath.Join(rootDir, "tooltipable.html")
 	name := "tooltipable.html"
 	bytes, err := bindata_read(path, name)
 	if err != nil {

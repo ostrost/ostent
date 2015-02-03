@@ -27,7 +27,7 @@ type asset struct {
 
 // css_index_css reads file data from disk. It returns an error on failure.
 func css_index_css() (*asset, error) {
-	path := "share/assets/css/index.css"
+	path := filepath.Join(rootDir, "css/index.css")
 	name := "css/index.css"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
@@ -45,7 +45,7 @@ func css_index_css() (*asset, error) {
 
 // css_index_css_map reads file data from disk. It returns an error on failure.
 func css_index_css_map() (*asset, error) {
-	path := "share/assets/css/index.css.map"
+	path := filepath.Join(rootDir, "css/index.css.map")
 	name := "css/index.css.map"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
@@ -63,7 +63,7 @@ func css_index_css_map() (*asset, error) {
 
 // favicon_png reads file data from disk. It returns an error on failure.
 func favicon_png() (*asset, error) {
-	path := "share/assets/favicon.png"
+	path := filepath.Join(rootDir, "favicon.png")
 	name := "favicon.png"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
@@ -81,7 +81,7 @@ func favicon_png() (*asset, error) {
 
 // js_devel_gen_jscript_js reads file data from disk. It returns an error on failure.
 func js_devel_gen_jscript_js() (*asset, error) {
-	path := "share/assets/js/devel/gen/jscript.js"
+	path := filepath.Join(rootDir, "js/devel/gen/jscript.js")
 	name := "js/devel/gen/jscript.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
@@ -99,7 +99,7 @@ func js_devel_gen_jscript_js() (*asset, error) {
 
 // js_devel_milk_index_js reads file data from disk. It returns an error on failure.
 func js_devel_milk_index_js() (*asset, error) {
-	path := "share/assets/js/devel/milk/index.js"
+	path := filepath.Join(rootDir, "js/devel/milk/index.js")
 	name := "js/devel/milk/index.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
@@ -117,7 +117,7 @@ func js_devel_milk_index_js() (*asset, error) {
 
 // js_devel_vendor_min_bootstrap_3_3_1_bootstrap_min_js reads file data from disk. It returns an error on failure.
 func js_devel_vendor_min_bootstrap_3_3_1_bootstrap_min_js() (*asset, error) {
-	path := "share/assets/js/devel/vendor/min/bootstrap/3.3.1/bootstrap.min.js"
+	path := filepath.Join(rootDir, "js/devel/vendor/min/bootstrap/3.3.1/bootstrap.min.js")
 	name := "js/devel/vendor/min/bootstrap/3.3.1/bootstrap.min.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
@@ -135,7 +135,7 @@ func js_devel_vendor_min_bootstrap_3_3_1_bootstrap_min_js() (*asset, error) {
 
 // js_devel_vendor_min_headroom_0_7_0_headroom_min_js reads file data from disk. It returns an error on failure.
 func js_devel_vendor_min_headroom_0_7_0_headroom_min_js() (*asset, error) {
-	path := "share/assets/js/devel/vendor/min/headroom/0.7.0/headroom.min.js"
+	path := filepath.Join(rootDir, "js/devel/vendor/min/headroom/0.7.0/headroom.min.js")
 	name := "js/devel/vendor/min/headroom/0.7.0/headroom.min.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
@@ -153,7 +153,7 @@ func js_devel_vendor_min_headroom_0_7_0_headroom_min_js() (*asset, error) {
 
 // js_devel_vendor_min_jquery_2_1_1_jquery_2_1_1_min_js reads file data from disk. It returns an error on failure.
 func js_devel_vendor_min_jquery_2_1_1_jquery_2_1_1_min_js() (*asset, error) {
-	path := "share/assets/js/devel/vendor/min/jquery/2.1.1/jquery-2.1.1.min.js"
+	path := filepath.Join(rootDir, "js/devel/vendor/min/jquery/2.1.1/jquery-2.1.1.min.js")
 	name := "js/devel/vendor/min/jquery/2.1.1/jquery-2.1.1.min.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
@@ -171,7 +171,7 @@ func js_devel_vendor_min_jquery_2_1_1_jquery_2_1_1_min_js() (*asset, error) {
 
 // js_devel_vendor_min_react_0_12_1_react_min_js reads file data from disk. It returns an error on failure.
 func js_devel_vendor_min_react_0_12_1_react_min_js() (*asset, error) {
-	path := "share/assets/js/devel/vendor/min/react/0.12.1/react.min.js"
+	path := filepath.Join(rootDir, "js/devel/vendor/min/react/0.12.1/react.min.js")
 	name := "js/devel/vendor/min/react/0.12.1/react.min.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
@@ -189,7 +189,7 @@ func js_devel_vendor_min_react_0_12_1_react_min_js() (*asset, error) {
 
 // robots_txt reads file data from disk. It returns an error on failure.
 func robots_txt() (*asset, error) {
-	path := "share/assets/robots.txt"
+	path := filepath.Join(rootDir, "robots.txt")
 	name := "robots.txt"
 	bytes, err := bindata_read(path, name)
 	if err != nil {

@@ -15,6 +15,7 @@ import (
 	_ "github.com/ostrost/ostent/commands/ostent"
 	_ "github.com/ostrost/ostent/init-stdlogfilter"
 	"github.com/ostrost/ostent/ostent"
+	"github.com/ostrost/ostent/share/assets"
 	"github.com/ostrost/ostent/share/templates"
 )
 
@@ -30,12 +31,21 @@ func main() {
 		return
 	}
 
-	// Chdir into ostent package directory for templates loading
-	if pkg, err := build.Import("github.com/ostrost/ostent", "", build.FindOnly); err != nil {
-		log.Fatal(err)
-	} else if err := os.Chdir(pkg.Dir); err != nil {
-		log.Fatal(err)
+	// RootDir's of packages having dev bindata
+	for _, binPkg := range []struct {
+		pkgPath string
+		RootDir func(string)
+	}{
+		{"github.com/ostrost/ostent/share/assets", assets.RootDir},
+		{"github.com/ostrost/ostent/share/templates", templates.RootDir},
+	} {
+		pkg, err := build.Import(binPkg.pkgPath, "", build.FindOnly)
+		if err != nil {
+			log.Fatal(err)
+		}
+		binPkg.RootDir(pkg.Dir)
 	}
+
 	ostent.RunBackground(periodFlag)
 
 	templatesLoaded := make(chan struct{}, 1)

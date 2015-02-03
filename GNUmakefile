@@ -18,10 +18,12 @@ ifeq (Linux, $(shell uname -s))
 xargs=xargs --no-run-if-empty
 sed-i=sed -i'' # GNU sed -i opt, not a flag
 endif
-sed-i-bindata=$(sed-i) -e 's,"$(PWD)/,",g' -E -e 's/time\.Unix\([0-9]+,/time.Unix(1400000000,/g' # -e '/^\/\/ AssetDir /,$$d'
-go-bindata=go-bindata -ignore '.*\.go' # go regexp syntax for -ignore
+sed-i-production-bindata=$(sed-i) -Ee 's/time\.Unix\([0-9]+,/time.Unix(1400000000,/g'
+# -e '/^\/\/ AssetDir /,$$d' # applicable for devel assets and both templates \
+# but then there're `imported and not used: "{path/filepath,io/ioutil}"`
+go-bindata=go-bindata -ignore '.*\.go' # Go regexp syntax for -ignore
 
-.PHONY: all al init test covertest coverfunc coverhtml bindata-devel
+.PHONY: all al init test covertest coverfunc coverhtml bindata bindata-devel bindata-production
 ifneq (init, $(MAKECMDGOALS))
 # before init:
 # - go list would fail => unknown $(destbin)
@@ -113,17 +115,17 @@ share/tmp/jscript.jsx: share/amber.templates/jscript.amber share/amber.templates
 	$(destbin)/amberpp -defines share/amber.templates/defines.amber -j -output $@ $<
 
 $(bintemplates_productiongo): $(templates_html)
-	cd $(<D) && $(go-bindata) -pkg templates -tags production -o $(@F) $(^F) && $(sed-i-bindata) $(@F)
+	cd $(<D) && $(go-bindata) -pkg templates -tags production -o $(@F) $(^F) && $(sed-i-production-bindata) $(@F)
 $(bintemplates_develgo): $(templates_html)
-	cd $(templates_dir) && $(go-bindata) -pkg templates -tags '!production' -debug -o $(@F) $(templates_files) && $(sed-i-bindata) $(@F)
+	cd $(templates_dir) && $(go-bindata) -pkg templates -tags '!production' -dev -o $(@F) $(templates_files)
 #	# the target has no prerequisites e.g. $(templates_html):
 #	# $(templates_dir)   instead of $(<D)
 #	# $(templates_files) instead of $(^F)
 
 $(binassets_productiongo):
-	cd share/assets && $(go-bindata) -pkg assets -o $(@F) -tags production -ignore js/devel/ ./... && $(sed-i-bindata) $(@F)
+	cd share/assets && $(go-bindata) -pkg assets -o $(@F) -tags production -ignore js/devel/ ./... && $(sed-i-production-bindata) $(@F)
 $(binassets_develgo):
-	cd share/assets && $(go-bindata) -pkg assets -o $(@F) -tags '!production' -debug -ignore js/production/ ./... && $(sed-i-bindata) $(@F)
+	cd share/assets && $(go-bindata) -pkg assets -o $(@F) -tags '!production' -dev -ignore js/production/ ./...
 
 $(binassets_productiongo): $(shell find \
                            share/assets -type f \! -name '*.go' \! -path \
@@ -137,7 +139,9 @@ $(binassets_develgo): $(shell find \
 $(binassets_develgo): share/assets/css/index.css
 $(binassets_develgo): share/assets/js/devel/gen/jscript.js
 
-# $(bin*_develgo) are in dependency tree, so this is a spare shortcut
+# spare shortcuts
+bindata-production: $(binassets_productiongo) $(bintemplates_productiongo)
 bindata-devel: $(binassets_develgo) $(bintemplates_develgo)
+bindata: bindata-devel bindata-production
 
 endif # END OF ifneq (init, $(MAKECMDGOALS))
