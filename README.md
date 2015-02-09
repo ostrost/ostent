@@ -44,7 +44,9 @@ Platforms
 
    - Linux [64-bit](https://github.com/ostrost/ostent/releases/download/v0.2.0/Linux.x86_64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.2.0/Linux.i686)
    - [Mac OS X](https://github.com/ostrost/ostent/releases/download/v0.2.0/Darwin.x86_64) (64-bit)
-   - _Expect \*BSD builds surely_
+
+FreeBSD (10 amd64 and i386 probably) is to be published with a new release.
+The master code is runnable already.
 
 Usage
 -----
