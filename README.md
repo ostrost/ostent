@@ -57,7 +57,7 @@ Usage of ostent:
   -sendto-graphite=: Graphite server address
   -graphite-refresh=10s: Graphite refresh interval
 
-  -sendto-influxdb=: InfluxDB server address
+  -sendto-influxdb=: InfluxDB server URL
   -influxdb-database="ostent": InfluxDB database
   -influxdb-password="": InfluxDB password
   -influxdb-refresh=10s: InfluxDB refresh interval
@@ -65,8 +65,9 @@ Usage of ostent:
 ```
 
 Unless `-bind` (`-b` for short) is set, ostent binds to `*:8050`.
-The bind, Graphite and InfluxDB addresses are specified like `IP[:port]`.
-The respective default ports are 8050, 2003 and 8086.
+The bind and Graphite addresses are specified like `IP[:port]`
+(default ports being 8050 and 2003 respectively).
+InfluxDB server must be specified as an URL `http://ADDRESS`.
 An interval is a number and a unit: `s` for seconds, `m` for minutes etc.
 
 Here's how it goes:
