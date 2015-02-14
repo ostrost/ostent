@@ -52,7 +52,7 @@ func Loop(types.PeriodValue) {
 			Connections.tick()
 
 			if exes := Connections.expired(); len(exes) != 0 {
-				lastInfo.collect()
+				lastInfo.collect(&Machine{})
 				for _, c := range exes {
 					c.Tack()
 				}

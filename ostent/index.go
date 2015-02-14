@@ -194,21 +194,21 @@ type IndexUpdate struct {
 
 var lastInfo last
 
-func (la *last) collect() {
+func (la *last) collect(c Collector) {
 	gch := make(chan generic, 1)
 	pch := make(chan []types.ProcInfo, 1)
 	ifch := make(chan string, 1)
 
 	var wg sync.WaitGroup
 	wg.Add(4) // four so far
-	go getRAM(&Reg1s, &wg)
-	go getSwap(&Reg1s, &wg)
 
-	go getGeneric(&Reg1s, gch)
-	go read_disks(&Reg1s, &wg)
-	go read_procs(pch)
-	go getInterfaces(&Reg1s, ifch)
-	go CollectCPU(&Reg1s, &wg)
+	go c.CPU(&Reg1s, &wg)   // one
+	go c.RAM(&Reg1s, &wg)   // two
+	go c.Swap(&Reg1s, &wg)  // three
+	go c.Disks(&Reg1s, &wg) // four
+	go c.Generic(&Reg1s, gch)
+	go c.Interfaces(&Reg1s, ifch)
+	go c.Procs(pch)
 
 	la.mutex.Lock()
 	defer la.mutex.Unlock()
@@ -228,8 +228,8 @@ type ListMetricInterface []MetricInterface  // satisfying sort.Interface
 func (x ListMetricInterface) Len() int      { return len(x) }
 func (x ListMetricInterface) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
 func (x ListMetricInterface) Less(i, j int) bool {
-	a := rx_lo.Match([]byte(x[i].Name))
-	b := rx_lo.Match([]byte(x[j].Name))
+	a := RXlo.Match([]byte(x[i].Name))
+	b := RXlo.Match([]byte(x[j].Name))
 	if !(a && b) {
 		if a {
 			return false
@@ -760,7 +760,7 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 func indexData(minrefresh types.Duration, req *http.Request) IndexData {
 	if Connections.Len() == 0 {
 		// collect when there're no active connections, so Loop does not collect
-		lastInfo.collect()
+		lastInfo.collect(&Machine{})
 	}
 
 	cl := client.DefaultClient(minrefresh)
