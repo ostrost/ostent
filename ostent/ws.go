@@ -421,7 +421,7 @@ func (w dummyStatus) Header() http.Header {
 func (w dummyStatus) Write(b []byte) (int, error) {
 	panic("dummyStatus.Write: SHOULD NOT BE USED")
 	// return w.ResponseWriter.Write(b)
-	return len(b), nil
+	// return len(b), nil
 }
 
 func SlashwsFunc(access *logger, minrefresh types.Duration) func(http.ResponseWriter, *http.Request) {

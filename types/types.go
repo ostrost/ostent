@@ -339,7 +339,7 @@ var bARS = []string{
 	// "█", // looks bad in browsers
 }
 
-func (gsl GaugeShortLoad) Bar(v int) (int, string, error) {
+func (gsl *GaugeShortLoad) Bar(v int) (int, string, error) {
 	if gsl.Max == -1 || gsl.Min == -1 { // || f.max == f.min {
 		return -1, "", errors.New("Unknown min or max")
 	}
@@ -358,7 +358,7 @@ func (gsl GaugeShortLoad) Bar(v int) (int, string, error) {
 	return i, bARS[i], nil
 }
 
-func (gsl GaugeShortLoad) round(v int) float64 {
+func (gsl *GaugeShortLoad) round(v int) float64 {
 	unit := float64(gsl.Max-gsl.Min) /* spread */ / float64(len(bARS)-1)
 	times := round((float64(v) - float64(gsl.Min)) / unit)
 	return float64(gsl.Min) + unit*times
@@ -369,7 +369,7 @@ func round(val float64) float64 {
 	return map[bool]func(float64) float64{true: math.Ceil, false: math.Floor}[d >= 0.5](val)
 }
 
-func (gsl GaugeShortLoad) Sparkline() string {
+func (gsl *GaugeShortLoad) Sparkline() string {
 	if gsl.Max == -1 || gsl.Min == -1 { // || gsl.Max == gsl.Min {
 		return ""
 	}
@@ -391,7 +391,7 @@ type MetricLoad struct {
 	Long  metrics.GaugeFloat64
 }
 
-func NewMetricLoad(r metrics.Registry) MetricLoad {
+func NewMetricLoad(r metrics.Registry) *MetricLoad {
 	short := GaugeShortLoad{
 		GaugeFloat64: metrics.NewGaugeFloat64(),
 		Ring:         ring.New(5), // 5 values
@@ -400,7 +400,7 @@ func NewMetricLoad(r metrics.Registry) MetricLoad {
 	}
 	// short := metrics.NewRegisteredGaugeFloat64("load.shortterm", r)
 	r.Register("load.shortterm", short.GaugeFloat64)
-	return MetricLoad{
+	return &MetricLoad{
 		Short: short,
 		Mid:   metrics.NewRegisteredGaugeFloat64("load.midterm", r),
 		Long:  metrics.NewRegisteredGaugeFloat64("load.longterm", r),
@@ -437,8 +437,8 @@ type GaugeDiff struct {
 	Mutex    sync.Mutex
 }
 
-func NewGaugeDiff(name string, r metrics.Registry) GaugeDiff {
-	return GaugeDiff{
+func NewGaugeDiff(name string, r metrics.Registry) *GaugeDiff {
+	return &GaugeDiff{
 		Delta:    metrics.NewRegisteredGauge(name, r),
 		Absolute: metrics.NewRegisteredGauge(name+"-absolute", metrics.NewRegistry()),
 		Previous: metrics.NewRegisteredGauge(name+"-previous", metrics.NewRegistry()),
@@ -474,8 +474,8 @@ type GaugePercent struct {
 	Mutex    sync.Mutex
 }
 
-func NewGaugePercent(name string, r metrics.Registry) GaugePercent {
-	return GaugePercent{
+func NewGaugePercent(name string, r metrics.Registry) *GaugePercent {
+	return &GaugePercent{
 		Percent:  metrics.NewRegisteredGaugeFloat64(name, r),
 		Previous: metrics.NewRegisteredGauge(name+"-previous", metrics.NewRegistry()),
 	}
@@ -501,11 +501,11 @@ func (gp *GaugePercent) UpdatePercent(totalDelta int64, uabsolute uint64) {
 type MetricCPUCommon struct {
 	metrics.Healthcheck        // derive from one of (go-)metric types, otherwise it won't be registered
 	N                   string // The "cpu-N"
-	User                GaugePercent
-	Nice                GaugePercent
-	Sys                 GaugePercent
-	Idle                GaugePercent
-	Total               GaugeDiff
+	User                *GaugePercent
+	Nice                *GaugePercent
+	Sys                 *GaugePercent
+	Idle                *GaugePercent
+	Total               *GaugeDiff
 }
 
 func (mcc *MetricCPUCommon) UpdateCommon(sigarCpu sigar.Cpu) int64 {
@@ -517,8 +517,8 @@ func (mcc *MetricCPUCommon) UpdateCommon(sigarCpu sigar.Cpu) int64 {
 	return totalDelta
 }
 
-func NewMetricCPUCommon(r metrics.Registry, name string) MetricCPUCommon {
-	return MetricCPUCommon{
+func NewMetricCPUCommon(r metrics.Registry, name string) *MetricCPUCommon {
+	return &MetricCPUCommon{
 		N:     name,
 		User:  NewGaugePercent(name+".user", r),
 		Nice:  NewGaugePercent(name+".nice", r),

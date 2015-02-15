@@ -63,6 +63,9 @@ type internalClient struct {
 }
 
 func (c Client) mergeTitle(dst *string, src string, send **string) {
+	if src == "" { // precautious. should not be the case
+		return
+	}
 	// *send = nil
 	if *dst == src {
 		return

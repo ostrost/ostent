@@ -1,9 +1,7 @@
-/*
-Package getifaddrs does getifaddrs(3) for Go.
-*/
-package getifaddrs
+// +build linux freebsd darwin
 
-// +build unix
+// Package getifaddrs does getifaddrs(3) for Go.
+package getifaddrs
 
 /*
 #include <sys/socket.h>

@@ -39,15 +39,15 @@ func (mr *MetricRAM) Update(got sigar.Mem, extra1, extra2 uint64) {
 }
 
 type MetricCPU struct {
-	MetricCPUCommon
+	*MetricCPUCommon
 }
 
 func (mc *MetricCPU) Update(sigarCpu sigar.Cpu) {
 	mc.UpdateCommon(sigarCpu)
 }
 
-func NewMetricCPU(r metrics.Registry, name string) MetricCPU {
-	return MetricCPU{
+func NewMetricCPU(r metrics.Registry, name string) *MetricCPU {
+	return &MetricCPU{
 		MetricCPUCommon: NewMetricCPUCommon(r, name),
 	}
 }

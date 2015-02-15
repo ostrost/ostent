@@ -30,6 +30,7 @@ type DFtabs struct {
 	DFbytesTitle  string
 }
 
+// Title returns a label. "" return denotes unexpected error.
 func (df DFtabs) Title(s types.SEQ) string {
 	switch {
 	case s == df.DFinodes:
@@ -37,7 +38,6 @@ func (df DFtabs) Title(s types.SEQ) string {
 	case s == df.DFbytes:
 		return df.DFbytesTitle
 	}
-	panic("SHOUND NOT HAPPEN")
 	return ""
 }
 
@@ -51,6 +51,7 @@ type IFtabs struct {
 	IFbytesTitle   string
 }
 
+// Title returns a label. "" return denotes unexpected error.
 func (fi IFtabs) Title(s types.SEQ) string {
 	switch {
 	case s == fi.IFpackets:
@@ -60,7 +61,6 @@ func (fi IFtabs) Title(s types.SEQ) string {
 	case s == fi.IFbytes:
 		return fi.IFbytesTitle
 	}
-	panic("SHOUND NOT HAPPEN")
 	return ""
 }
 

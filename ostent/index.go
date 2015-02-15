@@ -224,7 +224,7 @@ func (la *last) collect(c Collector) {
 }
 
 // ListMetricInterface is a list of types.MetricInterface type. Used for sorting.
-type ListMetricInterface []MetricInterface  // satisfying sort.Interface
+type ListMetricInterface []*MetricInterface // satisfying sort.Interface
 func (x ListMetricInterface) Len() int      { return len(x) }
 func (x ListMetricInterface) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
 func (x ListMetricInterface) Less(i, j int) bool {
@@ -244,12 +244,12 @@ func (x ListMetricInterface) Less(i, j int) bool {
 type MetricInterface struct {
 	metrics.Healthcheck // derive from one of (go-)metric types, otherwise it won't be registered
 	Name                string
-	BytesIn             types.GaugeDiff
-	BytesOut            types.GaugeDiff
-	ErrorsIn            types.GaugeDiff
-	ErrorsOut           types.GaugeDiff
-	PacketsIn           types.GaugeDiff
-	PacketsOut          types.GaugeDiff
+	BytesIn             *types.GaugeDiff
+	BytesOut            *types.GaugeDiff
+	ErrorsIn            *types.GaugeDiff
+	ErrorsOut           *types.GaugeDiff
+	PacketsIn           *types.GaugeDiff
+	PacketsOut          *types.GaugeDiff
 }
 
 // Update reads ifdata and updates the corresponding fields in MetricInterface.
@@ -262,7 +262,7 @@ func (mi *MetricInterface) Update(ifdata getifaddrs.IfData) {
 	mi.PacketsOut.UpdateAbsolute(int64(ifdata.OutPackets))
 }
 
-func (mi MetricInterface) FormatInterface(ip InterfaceParts) types.Interface {
+func (mi *MetricInterface) FormatInterface(ip InterfaceParts) types.Interface {
 	ing, outg, isbytes := ip(mi)
 	deltain, in := ing.Values()
 	deltaout, out := outg.Values()
@@ -284,19 +284,19 @@ func (mi MetricInterface) FormatInterface(ip InterfaceParts) types.Interface {
 	}
 }
 
-type InterfaceParts func(MetricInterface) (types.GaugeDiff, types.GaugeDiff, bool)
+type InterfaceParts func(*MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool)
 
-func (_ IndexRegistry) InterfaceBytes(mi MetricInterface) (types.GaugeDiff, types.GaugeDiff, bool) {
+func (_ *IndexRegistry) InterfaceBytes(mi *MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool) {
 	return mi.BytesIn, mi.BytesOut, true
 }
-func (_ IndexRegistry) InterfaceErrors(mi MetricInterface) (types.GaugeDiff, types.GaugeDiff, bool) {
+func (_ *IndexRegistry) InterfaceErrors(mi *MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool) {
 	return mi.ErrorsIn, mi.ErrorsOut, false
 }
-func (_ IndexRegistry) InterfacePackets(mi MetricInterface) (types.GaugeDiff, types.GaugeDiff, bool) {
+func (_ *IndexRegistry) InterfacePackets(mi *MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool) {
 	return mi.PacketsIn, mi.PacketsOut, false
 }
 
-func (ir IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient, ip InterfaceParts) []types.Interface {
+func (ir *IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient, ip InterfaceParts) []types.Interface {
 	private := ir.ListPrivateInterface()
 
 	client.SetBool(&cli.ExpandableIF, &send.ExpandableIF, len(private) > cli.Toprows)
@@ -320,9 +320,9 @@ func (ir IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient, 
 }
 
 // ListPrivateInterface returns list of MetricInterface's by traversing the PrivateInterfaceRegistry.
-func (ir *IndexRegistry) ListPrivateInterface() (lmi []MetricInterface) {
+func (ir *IndexRegistry) ListPrivateInterface() (lmi []*MetricInterface) {
 	ir.PrivateInterfaceRegistry.Each(func(name string, i interface{}) {
-		lmi = append(lmi, i.(MetricInterface))
+		lmi = append(lmi, i.(*MetricInterface))
 	})
 	return lmi
 }
@@ -332,10 +332,9 @@ func (ir *IndexRegistry) GetOrRegisterPrivateInterface(name string) *MetricInter
 	ir.PrivateMutex.Lock()
 	defer ir.PrivateMutex.Unlock()
 	if metric := ir.PrivateInterfaceRegistry.Get(name); metric != nil {
-		i := metric.(MetricInterface)
-		return &i
+		return metric.(*MetricInterface)
 	}
-	i := MetricInterface{
+	i := &MetricInterface{
 		Name:       name,
 		BytesIn:    types.NewGaugeDiff("interface-"+name+".if_octets.rx", ir.Registry),
 		BytesOut:   types.NewGaugeDiff("interface-"+name+".if_octets.tx", ir.Registry),
@@ -346,7 +345,7 @@ func (ir *IndexRegistry) GetOrRegisterPrivateInterface(name string) *MetricInter
 	}
 	ir.PrivateInterfaceRegistry.Register(name, i) // error is ignored
 	// errs when the type is not derived from (go-)metrics types
-	return &i
+	return i
 }
 
 func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) *MetricDF {
@@ -358,14 +357,13 @@ func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) *MetricDF {
 		fs.DevName = strings.Replace(strings.TrimPrefix(fs.DevName, "/dev/"), "/", "-", -1)
 	}
 	if metric := ir.PrivateDFRegistry.Get(fs.DevName); metric != nil {
-		i := metric.(MetricDF)
-		return &i
+		return metric.(*MetricDF)
 	}
 	label := func(tail string) string {
 		return fmt.Sprintf("df-%s.df_complex-%s", fs.DevName, tail)
 	}
 	r, unusedr := ir.Registry, metrics.NewRegistry()
-	i := MetricDF{
+	i := &MetricDF{
 		DevName:     &StandardMetricString{}, // unregistered
 		DirName:     &StandardMetricString{}, // unregistered
 		Free:        metrics.NewRegisteredGaugeFloat64(label("free"), r),
@@ -381,11 +379,11 @@ func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) *MetricDF {
 	}
 	ir.PrivateDFRegistry.Register(fs.DevName, i) // error is ignored
 	// errs when the type is not derived from (go-)metrics types
-	return &i
+	return i
 }
 
 // ListMetricCPU is a list of types.MetricCPU type. Used for sorting.
-type ListMetricCPU []types.MetricCPU  // satisfying sort.Interface
+type ListMetricCPU []*types.MetricCPU // satisfying sort.Interface
 func (x ListMetricCPU) Len() int      { return len(x) }
 func (x ListMetricCPU) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
 func (x ListMetricCPU) Less(i, j int) bool {
@@ -400,7 +398,7 @@ func (x ListMetricCPU) Less(i, j int) bool {
 	return (juser + jnice + jsys) < (iuser + inice + isys)
 }
 
-func (ir IndexRegistry) DFbytes(seq types.SEQ, cli *client.Client, send *client.SendClient) []types.DiskBytes {
+func (ir *IndexRegistry) DFbytes(seq types.SEQ, cli *client.Client, send *client.SendClient) []types.DiskBytes {
 	private := ir.ListPrivateDisk()
 
 	client.SetBool(&cli.ExpandableDF, &send.ExpandableDF, len(private) > cli.Toprows)
@@ -446,7 +444,7 @@ func (md MetricDF) FormatDFbytes() types.DiskBytes {
 	}
 }
 
-func (ir IndexRegistry) DFinodes(seq types.SEQ, cli *client.Client, send *client.SendClient) []types.DiskInodes {
+func (ir *IndexRegistry) DFinodes(seq types.SEQ, cli *client.Client, send *client.SendClient) []types.DiskInodes {
 	private := ir.ListPrivateDisk()
 
 	client.SetBool(&cli.ExpandableDF, &send.ExpandableDF, len(private) > cli.Toprows)
@@ -492,7 +490,7 @@ func (md MetricDF) FormatDFinodes() types.DiskInodes {
 	}
 }
 
-func (ir IndexRegistry) CPU(cli *client.Client, send *client.SendClient) []cpu.CoreInfo {
+func (ir *IndexRegistry) CPU(cli *client.Client, send *client.SendClient) []cpu.CoreInfo {
 	private := ir.ListPrivateCPU()
 
 	client.SetBool(&cli.ExpandableCPU, &send.ExpandableCPU, len(private) > cli.Toprows) // one row reserved for "all N"
@@ -519,7 +517,7 @@ func (ir IndexRegistry) CPU(cli *client.Client, send *client.SendClient) []cpu.C
 	return public
 }
 
-func FormatCPU(mc types.MetricCPU) cpu.CoreInfo {
+func FormatCPU(mc *types.MetricCPU) cpu.CoreInfo {
 	user := uint(mc.User.Percent.Snapshot().Value()) // rounding
 	// .Nice is unused
 	sys := uint(mc.Sys.Percent.Snapshot().Value())   // rounding
@@ -540,17 +538,17 @@ func FormatCPU(mc types.MetricCPU) cpu.CoreInfo {
 }
 
 // ListPrivateCPU returns list of types.MetricCPU's by traversing the PrivateCPURegistry.
-func (ir *IndexRegistry) ListPrivateCPU() (lmc []types.MetricCPU) {
+func (ir *IndexRegistry) ListPrivateCPU() (lmc []*types.MetricCPU) {
 	ir.PrivateCPURegistry.Each(func(name string, i interface{}) {
-		lmc = append(lmc, i.(types.MetricCPU))
+		lmc = append(lmc, i.(*types.MetricCPU))
 	})
 	return lmc
 }
 
 // ListPrivateDisk returns list of types.MetricDF's by traversing the PrivateDFRegistry.
-func (ir *IndexRegistry) ListPrivateDisk() (lmd []MetricDF) {
+func (ir *IndexRegistry) ListPrivateDisk() (lmd []*MetricDF) {
 	ir.PrivateDFRegistry.Each(func(name string, i interface{}) {
-		lmd = append(lmd, i.(MetricDF))
+		lmd = append(lmd, i.(*MetricDF))
 	})
 	return lmd
 }
@@ -561,16 +559,15 @@ func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) *types.MetricCPU {
 	defer ir.PrivateMutex.Unlock()
 	name := fmt.Sprintf("cpu-%d", coreno)
 	if metric := ir.PrivateCPURegistry.Get(name); metric != nil {
-		i := metric.(types.MetricCPU)
-		return &i
+		return metric.(*types.MetricCPU)
 	}
 	i := types.NewMetricCPU(ir.Registry, name)
 	ir.PrivateCPURegistry.Register(name, i) // error is ignored
 	// errs when the type is not derived from (go-)metrics types
-	return &i
+	return i
 }
 
-func (ir IndexRegistry) MEM(client client.Client) *types.MEM {
+func (ir *IndexRegistry) MEM(client client.Client) *types.MEM {
 	gr := ir.RAM
 	mem := new(types.MEM)
 	mem.List = []types.Memory{
@@ -592,7 +589,7 @@ func (ir IndexRegistry) MEM(client client.Client) *types.MEM {
 	return mem
 }
 
-func (ir IndexRegistry) LA() string {
+func (ir *IndexRegistry) LA() string {
 	gl := ir.Load
 	return gl.Short.Sparkline() + " " + fmt.Sprintf("%.2f %.2f %.2f",
 		gl.Short.Snapshot().Value(),
@@ -649,7 +646,7 @@ func (ir *IndexRegistry) UpdateIFdata(ifdata getifaddrs.IfData) {
 
 type IndexRegistry struct {
 	Registry                 metrics.Registry
-	PrivateCPUAll            types.MetricCPU
+	PrivateCPUAll            *types.MetricCPU
 	PrivateCPURegistry       metrics.Registry // set of MetricCPUs is handled as a metric in this registry
 	PrivateInterfaceRegistry metrics.Registry // set of MetricInterfaces is handled as a metric in this registry
 	PrivateDFRegistry        metrics.Registry // set of MetricDFs is handled as a metric in this registry
@@ -657,7 +654,7 @@ type IndexRegistry struct {
 
 	RAM  types.MetricRAM
 	Swap types.MetricSwap
-	Load types.MetricLoad
+	Load *types.MetricLoad
 
 	Mutex sync.Mutex
 }
@@ -849,12 +846,12 @@ type StandardMetricString struct {
 
 type MetricStringSnapshot StandardMetricString
 
-func (mss MetricStringSnapshot) Snapshot() MetricString { return mss }
-func (mss MetricStringSnapshot) Value() string          { return mss.string }
-func (MetricStringSnapshot) Update(string)              { panic("Update called on a MetricStringSnapshot") }
+func (mss *MetricStringSnapshot) Snapshot() MetricString { return mss }
+func (mss *MetricStringSnapshot) Value() string          { return mss.string }
+func (*MetricStringSnapshot) Update(string)              { panic("Update called on a MetricStringSnapshot") }
 
-func (sms StandardMetricString) Snapshot() MetricString { return MetricStringSnapshot(sms) }
-func (sms StandardMetricString) Value() string {
+func (sms *StandardMetricString) Snapshot() MetricString { return ((*MetricStringSnapshot)(sms)) }
+func (sms *StandardMetricString) Value() string {
 	sms.Mutex.Lock()
 	defer sms.Mutex.Unlock()
 	return sms.string

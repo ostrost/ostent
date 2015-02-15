@@ -40,11 +40,11 @@ func (mr *MetricRAM) Update(got sigar.Mem, extra1, extra2 uint64) {
 }
 
 type MetricCPU struct {
-	MetricCPUCommon
-	Wait    GaugePercent
-	Irq     GaugePercent
-	SoftIrq GaugePercent
-	Stolen  GaugePercent
+	*MetricCPUCommon
+	Wait    *GaugePercent
+	Irq     *GaugePercent
+	SoftIrq *GaugePercent
+	Stolen  *GaugePercent
 }
 
 func (mc *MetricCPU) Update(sigarCpu sigar.Cpu) {
@@ -55,8 +55,8 @@ func (mc *MetricCPU) Update(sigarCpu sigar.Cpu) {
 	mc.Stolen.UpdatePercent(totalDelta, sigarCpu.Stolen)
 }
 
-func NewMetricCPU(r metrics.Registry, name string) MetricCPU {
-	return MetricCPU{
+func NewMetricCPU(r metrics.Registry, name string) *MetricCPU {
+	return &MetricCPU{
 		MetricCPUCommon: NewMetricCPUCommon(r, name),
 		Wait:            NewGaugePercent(name+".wait", r),
 		Irq:             NewGaugePercent(name+".interrupt", r),

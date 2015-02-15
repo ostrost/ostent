@@ -56,6 +56,7 @@ github.com/skelterjohn/rerun
 
 ifneq (init, $(MAKECMDGOALS))
 test:
+	go vet ./...
 	go test -v ./...
 covertest:
 	go test -v -covermode=count -coverprofile=coverage.out $(fqostent)

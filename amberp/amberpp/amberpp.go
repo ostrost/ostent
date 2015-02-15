@@ -87,7 +87,7 @@ type hash map[string]interface{}
 func curly(s string) string {
 	if strings.HasSuffix(s, "HTML") {
 		return "<span dangerouslySetInnerHTML={{__html: " + s + "}} />"
-		return "{<span dangerouslySetInnerHTML={{__html: " + s + "}} />.props.children}"
+		// return "{<span dangerouslySetInnerHTML={{__html: " + s + "}} />.props.children}"
 	}
 	return "{" + s + "}"
 }

@@ -139,11 +139,10 @@ func vgchange() error {
 	return nil
 }
 
-func vgwatch() error {
+func vgwatch() (err error) {
 	for {
-		if err := vgchange(); err != nil {
+		if err = vgchange(); err != nil {
 			return err
 		}
 	}
-	return nil
 }
