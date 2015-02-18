@@ -102,15 +102,15 @@ func (up *upgrade) Upgrade() bool {
 }
 
 func (up *upgrade) UntilUpgrade() {
+	seed := time.Now().UTC().UnixNano()
+	random := rand.New(rand.NewSource(seed))
+
 	wait := time.Hour
-	wait += time.Duration(rand.Int63n(int64(wait))) // 1.5 +- 0.5 h
-	// wait = time.Second * 20 // testing
+	wait += time.Duration(random.Int63n(int64(wait))) // 1.5 +- 0.5 h
 	for {
-		select {
-		case <-time.After(wait):
-			if up.Upgrade() { // (true)
-				break
-			}
+		time.Sleep(wait)
+		if up.Upgrade() {
+			break
 		}
 	}
 }
