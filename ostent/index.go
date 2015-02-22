@@ -131,16 +131,6 @@ func orderProc(procs []types.ProcInfo, cl *client.Client, send *client.SendClien
 	return list
 }
 
-type last struct {
-	lastinfo
-	mutex sync.Mutex
-}
-
-type lastinfo struct {
-	Generic  generic
-	ProcList []types.ProcInfo
-}
-
 type IndexData struct {
 	Generic generic
 	CPU     cpu.CPUInfo
@@ -192,6 +182,16 @@ type IndexUpdate struct {
 	Client *client.SendClient `json:",omitempty"`
 }
 
+type last struct {
+	MU sync.Mutex // guards lastinfo
+	lastinfo
+}
+
+type lastinfo struct {
+	Generic  generic
+	ProcList []types.ProcInfo
+}
+
 var lastInfo last
 
 func (la *last) collect(c Collector) {
@@ -210,17 +210,29 @@ func (la *last) collect(c Collector) {
 	go c.Interfaces(&Reg1s, ifch)
 	go c.Procs(pch)
 
-	la.mutex.Lock()
-	defer la.mutex.Unlock()
-
-	// NB .mutex unchanged
+	la.MU.Lock()
+	defer la.MU.Unlock()
 	la.lastinfo = lastinfo{
 		Generic:  <-gch,
 		ProcList: <-pch,
 	}
-
 	la.Generic.IP = <-ifch
 	wg.Wait()
+}
+
+func (la *last) MakeCopy() ([]types.ProcInfo, *generic) {
+	lastInfo.MU.Lock()
+	defer lastInfo.MU.Unlock()
+
+	psCopy := make([]types.ProcInfo, len(lastInfo.ProcList))
+	copy(psCopy, lastInfo.ProcList)
+
+	// if false { // !cl.RefreshGeneric.Refresh(forcerefresh)
+	// 	return
+	// }
+	g := lastInfo.Generic
+	g.LA = Reg1s.LA()
+	return psCopy, &g // &lastInfo.Generic
 }
 
 // ListMetricInterface is a list of types.MetricInterface type. Used for sorting.
@@ -680,25 +692,11 @@ func init() {
 	// go metrics.Graphite(reg, 1*time.Second, "ostent", addr)
 }
 
-func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) IndexUpdate {
-
+func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (iu IndexUpdate) {
 	cl.RecalcRows() // before anything
 
-	var ps_copy []types.ProcInfo
-	iu := IndexUpdate{}
-	func() {
-		lastInfo.mutex.Lock()
-		defer lastInfo.mutex.Unlock()
-
-		ps_copy = make([]types.ProcInfo, len(lastInfo.ProcList))
-		copy(ps_copy, lastInfo.ProcList)
-
-		if true { // cl.RefreshGeneric.Refresh(forcerefresh)
-			g := lastInfo.Generic
-			g.LA = Reg1s.LA()
-			iu.Generic = &g // &lastInfo.Generic
-		}
-	}()
+	var psCopy []types.ProcInfo
+	psCopy, iu.Generic = lastInfo.MakeCopy()
 
 	if req != nil {
 		req.ParseForm() // do ParseForm even if req.Form == nil, otherwise *links won't be set for index requests without parameters
@@ -734,7 +732,7 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 	}
 
 	if !*cl.HidePS && cl.RefreshPS.Refresh(forcerefresh) {
-		iu.PStable = &PStable{List: orderProc(ps_copy, cl, &send)}
+		iu.PStable = &PStable{List: orderProc(psCopy, cl, &send)}
 	}
 
 	if !*cl.HideVG && cl.RefreshVG.Refresh(forcerefresh) {
