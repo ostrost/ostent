@@ -6,19 +6,19 @@ import (
 	"github.com/ostrost/ostent/types"
 )
 
-type refresh struct {
+type Refresh struct {
 	types.Duration
 	tick int // .Tick() must be called once per second; .tick is 1 when the refresh expired
 }
 
-func (r *refresh) Refresh(forcerefresh bool) bool {
+func (r *Refresh) Refresh(forcerefresh bool) bool {
 	if forcerefresh {
 		return true
 	}
 	return r.expired()
 }
 
-func (r refresh) expired() bool {
+func (r Refresh) expired() bool {
 	return r.tick <= 1
 }
 
@@ -40,8 +40,8 @@ func (c Client) Expired() bool {
 	return false
 }
 
-func (c *Client) refreshes() []*refresh {
-	return []*refresh{
+func (c *Client) refreshes() []*Refresh {
+	return []*Refresh{
 		c.RefreshMEM,
 		c.RefreshIF,
 		c.RefreshCPU,
@@ -117,12 +117,12 @@ type Client struct {
 	ExpandtextDF  *string `json:",omitempty"`
 
 	// RefreshGeneric *refresh `json:",omitempty"`
-	RefreshMEM *refresh `json:",omitempty"`
-	RefreshIF  *refresh `json:",omitempty"`
-	RefreshCPU *refresh `json:",omitempty"`
-	RefreshDF  *refresh `json:",omitempty"`
-	RefreshPS  *refresh `json:",omitempty"`
-	RefreshVG  *refresh `json:",omitempty"`
+	RefreshMEM *Refresh `json:",omitempty"`
+	RefreshIF  *Refresh `json:",omitempty"`
+	RefreshCPU *Refresh `json:",omitempty"`
+	RefreshDF  *Refresh `json:",omitempty"`
+	RefreshPS  *Refresh `json:",omitempty"`
+	RefreshVG  *Refresh `json:",omitempty"`
 
 	PSplusText       *string `json:",omitempty"`
 	PSnotExpandable  *bool   `json:",omitempty"`
@@ -258,12 +258,12 @@ func DefaultClient(minrefresh types.Duration) Client {
 	cs.HideconfigVG = newbool(hideconfig)
 
 	//cs.RefreshGeneric = &refresh{Duration: minrefresh}
-	cs.RefreshMEM = &refresh{Duration: minrefresh}
-	cs.RefreshIF = &refresh{Duration: minrefresh}
-	cs.RefreshCPU = &refresh{Duration: minrefresh}
-	cs.RefreshDF = &refresh{Duration: minrefresh}
-	cs.RefreshPS = &refresh{Duration: minrefresh}
-	cs.RefreshVG = &refresh{Duration: minrefresh}
+	cs.RefreshMEM = &Refresh{Duration: minrefresh}
+	cs.RefreshIF = &Refresh{Duration: minrefresh}
+	cs.RefreshCPU = &Refresh{Duration: minrefresh}
+	cs.RefreshDF = &Refresh{Duration: minrefresh}
+	cs.RefreshPS = &Refresh{Duration: minrefresh}
+	cs.RefreshVG = &Refresh{Duration: minrefresh}
 
 	cs.PSlimit = 8
 
@@ -300,7 +300,7 @@ func (rs *RecvClient) mergeMorePsignal(cs *Client) {
 	rs.MorePsignal = nil
 }
 
-func (rs *RecvClient) mergeRefreshSignal(above types.Duration, ppinput *string, prefresh *refresh, sendr **refresh, senderr **bool) error {
+func (rs *RecvClient) mergeRefreshSignal(above types.Duration, ppinput *string, prefresh *Refresh, sendr **Refresh, senderr **bool) error {
 	if ppinput == nil {
 		return nil
 	}
@@ -310,7 +310,7 @@ func (rs *RecvClient) mergeRefreshSignal(above types.Duration, ppinput *string, 
 		return err
 	}
 	*senderr = newfalse()
-	*sendr = new(refresh)
+	*sendr = new(Refresh)
 	(**sendr).Duration = pv.Duration
 	prefresh.Duration = pv.Duration
 	prefresh.tick = 0
