@@ -35,7 +35,7 @@ func main() {
 		go upgrade.UntilUpgrade()
 		go func() {
 			templates.InitTemplates(nil) // preventive
-			// sequential, because Serve must wait until InitTemplates is done
+			// sequential: Serve must wait for InitTemplates
 			Serve(listen, true, nil) // true stands for production
 		}()
 	}

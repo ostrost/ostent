@@ -49,7 +49,7 @@ func main() {
 	ostent.RunBackground(periodFlag)
 
 	templatesLoaded := make(chan struct{}, 1)
-	go templates.InitTemplates(templatesLoaded) // NB after chdir
+	go templates.InitTemplates(templatesLoaded) // NB after templates.RootDir
 
 	listen := webserver.NetListen()
 	errch := make(chan error, 2)
