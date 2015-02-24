@@ -131,6 +131,12 @@ func orderProc(procs []types.ProcInfo, cl *client.Client, send *client.SendClien
 	return list
 }
 
+type clientData struct {
+	client.Client
+	HideMEM    *bool           `json:",omitempty"` // for template only
+	RefreshMEM *client.Refresh `json:",omitempty"` // for template only
+}
+
 type IndexData struct {
 	Generic generic
 	CPU     cpu.CPUInfo
@@ -155,7 +161,7 @@ type IndexData struct {
 	VERSION        string
 	PeriodDuration types.Duration // default refresh value for placeholder
 
-	Client client.Client
+	Client clientData
 
 	IFTABS client.IFtabs
 	DFTABS client.DFtabs
@@ -579,7 +585,25 @@ func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) *types.MetricCPU {
 	return i
 }
 
-func (ir *IndexRegistry) MEM(client client.Client) *types.MEM {
+func (ir *IndexRegistry) SWAP(client client.Client, iu *IndexUpdate) interface{} {
+	if iu.MEM == nil {
+		iu.MEM = new(types.MEM)
+	}
+	if iu.MEM.List == nil {
+		iu.MEM.List = []types.Memory{}
+	}
+	gs := ir.Swap
+	iu.MEM.List = append(iu.MEM.List,
+		_getmem("swap", sigar.Swap{
+			Total: gs.TotalValue(),
+			Free:  uint64(gs.Free.Snapshot().Value()),
+			Used:  uint64(gs.Used.Snapshot().Value()),
+		}))
+	// did modify iu.MEM
+	return IndexUpdate{MEM: iu.MEM}
+}
+
+func (ir *IndexRegistry) MEM(client client.Client, iu *IndexUpdate) interface{} {
 	gr := ir.RAM
 	mem := new(types.MEM)
 	mem.List = []types.Memory{
@@ -589,16 +613,8 @@ func (ir *IndexRegistry) MEM(client client.Client) *types.MEM {
 			Used:  gr.UsedValue(), // == .Total - .Free
 		}),
 	}
-	if !*client.HideSWAP {
-		gs := ir.Swap
-		mem.List = append(mem.List,
-			_getmem("swap", sigar.Swap{
-				Total: gs.TotalValue(),
-				Free:  uint64(gs.Free.Snapshot().Value()),
-				Used:  uint64(gs.Used.Snapshot().Value()),
-			}))
-	}
-	return mem
+	iu.MEM = mem
+	return IndexUpdate{MEM: mem}
 }
 
 func (ir *IndexRegistry) LA() string {
@@ -692,6 +708,25 @@ func init() {
 	// go metrics.Graphite(reg, 1*time.Second, "ostent", addr)
 }
 
+type Set struct {
+	Hide    bool
+	Refresh *client.Refresh `json:",omitempty"`
+	Update  func(client.Client, *IndexUpdate) interface{}
+}
+
+func (s Set) Hidden() bool { return s.Hide }
+func (s *Set) Expired(forcerefresh bool) bool {
+	return s.Refresh.Refresh(forcerefresh)
+}
+
+/*
+type SetInterface interface {
+	Hidden() bool
+	Expired(bool) bool
+	Update() interface{}
+}
+// */
+
 func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (iu IndexUpdate) {
 	cl.RecalcRows() // before anything
 
@@ -705,8 +740,23 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 		iu.DFlinks = (*DFlinks)(types.NewLinkAttrs(req, base, "df", client.DFBIMAP, &cl.DFSEQ))
 	}
 
-	if !*cl.HideMEM && cl.RefreshMEM.Refresh(forcerefresh) {
-		iu.MEM = Reg1s.MEM(*cl)
+	set := []Set{
+		{*cl.HideRAM, cl.RefreshRAM, Reg1s.MEM},
+		{*cl.HideRAM || *cl.HideSWAP, /* if RAM is hidden, so is SWAP */
+			cl.RefreshSWAP, Reg1s.SWAP},
+	}
+
+	// var additions []interface{}
+	for _, x := range set {
+		if !x.Expired(forcerefresh) { // this has side effect
+			continue
+		}
+		if x.Hidden() {
+			continue
+		}
+		if add := x.Update(*cl, &iu); add != nil {
+			// additions = append(additions, add)
+		}
 	}
 	if !*cl.HideCPU && cl.RefreshCPU.Refresh(forcerefresh) {
 		iu.CPU = &cpu.CPUInfo{List: Reg1s.CPU(cl, &send)}
@@ -762,7 +812,7 @@ func indexData(minrefresh types.Duration, req *http.Request) IndexData {
 	updates := getUpdates(req, &cl, client.SendClient{}, true)
 
 	data := IndexData{
-		Client:  cl,
+		Client:  clientData{Client: cl, HideMEM: cl.HideRAM, RefreshMEM: cl.RefreshRAM},
 		Generic: *updates.Generic,
 		CPU:     *updates.CPU,
 		MEM:     *updates.MEM,

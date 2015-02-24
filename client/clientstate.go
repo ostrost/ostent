@@ -42,7 +42,8 @@ func (c Client) Expired() bool {
 
 func (c *Client) refreshes() []*Refresh {
 	return []*Refresh{
-		c.RefreshMEM,
+		c.RefreshRAM,
+		c.RefreshSWAP,
 		c.RefreshIF,
 		c.RefreshCPU,
 		c.RefreshDF,
@@ -76,7 +77,7 @@ func (c Client) mergeTitle(dst *string, src string, send **string) {
 }
 
 type commonClient struct {
-	HideMEM   *bool `json:",omitempty"`
+	HideRAM   *bool `json:",omitempty"`
 	HideIF    *bool `json:",omitempty"`
 	HideCPU   *bool `json:",omitempty"`
 	HideDF    *bool `json:",omitempty"`
@@ -117,12 +118,13 @@ type Client struct {
 	ExpandtextDF  *string `json:",omitempty"`
 
 	// RefreshGeneric *refresh `json:",omitempty"`
-	RefreshMEM *Refresh `json:",omitempty"`
-	RefreshIF  *Refresh `json:",omitempty"`
-	RefreshCPU *Refresh `json:",omitempty"`
-	RefreshDF  *Refresh `json:",omitempty"`
-	RefreshPS  *Refresh `json:",omitempty"`
-	RefreshVG  *Refresh `json:",omitempty"`
+	RefreshRAM  *Refresh `json:",omitempty"`
+	RefreshSWAP *Refresh `json:",omitempty"`
+	RefreshIF   *Refresh `json:",omitempty"`
+	RefreshCPU  *Refresh `json:",omitempty"`
+	RefreshDF   *Refresh `json:",omitempty"`
+	RefreshPS   *Refresh `json:",omitempty"`
+	RefreshVG   *Refresh `json:",omitempty"`
 
 	PSplusText       *string `json:",omitempty"`
 	PSnotExpandable  *bool   `json:",omitempty"`
@@ -158,12 +160,17 @@ func SetString(s, s2 **string, v string) {
 type SendClient struct {
 	Client
 
-	RefreshErrorMEM *bool `json:",omitempty"`
-	RefreshErrorIF  *bool `json:",omitempty"`
-	RefreshErrorCPU *bool `json:",omitempty"`
-	RefreshErrorDF  *bool `json:",omitempty"`
-	RefreshErrorPS  *bool `json:",omitempty"`
-	RefreshErrorVG  *bool `json:",omitempty"`
+	RefreshErrorMEM  *bool `json:",omitempty"`
+	RefreshErrorSWAP *bool `json:",omitempty"`
+	RefreshErrorIF   *bool `json:",omitempty"`
+	RefreshErrorCPU  *bool `json:",omitempty"`
+	RefreshErrorDF   *bool `json:",omitempty"`
+	RefreshErrorPS   *bool `json:",omitempty"`
+	RefreshErrorVG   *bool `json:",omitempty"`
+
+	RefreshMEM  *Refresh  `json:",omitempty"`  // for frontend only
+	RefreshRAM  *struct{} `json:"-,omitempty"` // shadow
+	RefreshSWAP *struct{} `json:"-,omitempty"` // shadow
 
 	DebugError *string `json:",omitempty"`
 }
@@ -187,7 +194,7 @@ func (c Client) mergeSEQ(dst, src *types.SEQ, send **types.SEQ) {
 }
 
 func (c *Client) Merge(r RecvClient, s *SendClient) {
-	c.mergeBool(c.HideMEM, r.HideMEM, &s.HideMEM)
+	c.mergeBool(c.HideRAM, r.HideRAM, &s.HideRAM)
 	c.mergeBool(c.HideIF, r.HideIF, &s.HideIF)
 	c.mergeBool(c.HideCPU, r.HideCPU, &s.HideCPU)
 	c.mergeBool(c.HideDF, r.HideDF, &s.HideDF)
@@ -227,7 +234,7 @@ func newseq(v types.SEQ) *types.SEQ {
 func DefaultClient(minrefresh types.Duration) Client {
 	cs := Client{}
 
-	cs.HideMEM = newfalse()
+	cs.HideRAM = newfalse()
 	cs.HideIF = newfalse()
 	cs.HideCPU = newfalse()
 	cs.HideDF = newfalse()
@@ -258,7 +265,8 @@ func DefaultClient(minrefresh types.Duration) Client {
 	cs.HideconfigVG = newbool(hideconfig)
 
 	//cs.RefreshGeneric = &refresh{Duration: minrefresh}
-	cs.RefreshMEM = &Refresh{Duration: minrefresh}
+	cs.RefreshRAM = &Refresh{Duration: minrefresh}
+	cs.RefreshSWAP = &Refresh{Duration: minrefresh}
 	cs.RefreshIF = &Refresh{Duration: minrefresh}
 	cs.RefreshCPU = &Refresh{Duration: minrefresh}
 	cs.RefreshDF = &Refresh{Duration: minrefresh}
@@ -319,8 +327,12 @@ func (rs *RecvClient) mergeRefreshSignal(above types.Duration, ppinput *string, 
 
 func (rs *RecvClient) MergeClient(minrefresh types.Duration, cs *Client, send *SendClient) error {
 	rs.mergeMorePsignal(cs)
-	if err := rs.mergeRefreshSignal(minrefresh, rs.RefreshSignalMEM, cs.RefreshMEM, &send.RefreshMEM, &send.RefreshErrorMEM); err != nil {
+	var refreshmem Refresh
+	if err := rs.mergeRefreshSignal(minrefresh, rs.RefreshSignalMEM, &refreshmem, &send.RefreshMEM, &send.RefreshErrorMEM); err != nil {
 		return err
+	} else {
+		*cs.RefreshRAM = refreshmem
+		*cs.RefreshSWAP = refreshmem
 	}
 	if err := rs.mergeRefreshSignal(minrefresh, rs.RefreshSignalIF, cs.RefreshIF, &send.RefreshIF, &send.RefreshErrorIF); err != nil {
 		return err

@@ -289,7 +289,7 @@
         hideconfigps  = HideClass.component({xkey: 'HideconfigPS',  $collapse_el: $('#psconfig'),  $button_el: $('header a[href="#ps"]'),  reverseActive: true})
         hideconfigvg  = HideClass.component({xkey: 'HideconfigVG',  $collapse_el: $('#vgconfig'),  $button_el: $('header a[href="#vg"]'),  reverseActive: true})
 
-        hidemem = HideClass.component({xkey: 'HideMEM', $collapse_el: $('#mem'), $button_el: $('#memconfig').find('.hiding')})
+        hideram = HideClass.component({xkey: 'HideRAM', $collapse_el: $('#mem'), $button_el: $('#memconfig').find('.hiding')})
         hidecpu = HideClass.component({xkey: 'HideCPU', $collapse_el: $('#cpu'), $button_el: $('#cpuconfig').find('.hiding')})
         hideps  = HideClass.component({xkey: 'HidePS',  $collapse_el: $('#ps'),  $button_el: $('#psconfig') .find('.hiding')})
         hidevg  = HideClass.component({xkey: 'HideVG',  $collapse_el: $('#vg'),  $button_el: $('#vgconfig') .find('.hiding')})
@@ -306,7 +306,7 @@
         psmore   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: true,  Khide: 'HidePS', Kable: 'PSnotExpandable',  $button_el: $('label.more[href="#psmore"]')})
         psless   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: false, Khide: 'HidePS', Kable: 'PSnotDecreasable', $button_el: $('label.less[href="#psless"]')})
 
-        hideswap = ButtonClass.component({Khide: 'HideMEM', Ksend: 'HideSWAP', $button_el: $('label[href="#hideswap"]')})
+        hideswap = ButtonClass.component({Khide: 'HideRAM', Ksend: 'HideSWAP', $button_el: $('label[href="#hideswap"]')})
 
         expandif = ButtonClass.component({Khide: 'HideIF',  Ksend: 'ExpandIF',  Ktext: 'ExpandtextIF',  Kable: 'ExpandableIF',  $button_el: $('label[href="#if"]')})
         expandcpu= ButtonClass.component({Khide: 'HideCPU', Ksend: 'ExpandCPU', Ktext: 'ExpandtextCPU', Kable: 'ExpandableCPU', $button_el: $('label[href="#cpu"]')})
@@ -364,7 +364,7 @@
                 setState(hideconfigps,  hideconfigps .reduce(data))
                 setState(hideconfigvg,  hideconfigvg .reduce(data))
 
-                setState(hidemem,       hidemem      .reduce(data))
+                setState(hideram,       hideram      .reduce(data))
                 setState(hidecpu,       hidecpu      .reduce(data))
                 setState(hideps,        hideps       .reduce(data))
                 setState(hidevg,        hidevg       .reduce(data))

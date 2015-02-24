@@ -576,7 +576,7 @@
   };
 
   this.update = function() {
-    var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hidemem, hideps, hideswap, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psless, psmore, psplus, pstable, refresh_cpu, refresh_df, refresh_if, refresh_mem, refresh_ps, refresh_vg, tabsdf, tabsif, uptime, vgtable;
+    var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hideps, hideram, hideswap, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psless, psmore, psplus, pstable, refresh_cpu, refresh_df, refresh_if, refresh_mem, refresh_ps, refresh_vg, tabsdf, tabsif, uptime, vgtable;
     if (((function() {
       var _i, _len, _ref, _results;
       _ref = location.search.substr(1).split('&');
@@ -627,8 +627,8 @@
       $button_el: $('header a[href="#vg"]'),
       reverseActive: true
     });
-    hidemem = HideClass.component({
-      xkey: 'HideMEM',
+    hideram = HideClass.component({
+      xkey: 'HideRAM',
       $collapse_el: $('#mem'),
       $button_el: $('#memconfig').find('.hiding')
     });
@@ -690,7 +690,7 @@
       $button_el: $('label.less[href="#psless"]')
     });
     hideswap = ButtonClass.component({
-      Khide: 'HideMEM',
+      Khide: 'HideRAM',
       Ksend: 'HideSWAP',
       $button_el: $('label[href="#hideswap"]')
     });
@@ -810,7 +810,7 @@
       setState(hideconfigdf, hideconfigdf.reduce(data));
       setState(hideconfigps, hideconfigps.reduce(data));
       setState(hideconfigvg, hideconfigvg.reduce(data));
-      setState(hidemem, hidemem.reduce(data));
+      setState(hideram, hideram.reduce(data));
       setState(hidecpu, hidecpu.reduce(data));
       setState(hideps, hideps.reduce(data));
       setState(hidevg, hidevg.reduce(data));
