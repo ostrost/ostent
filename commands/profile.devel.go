@@ -30,7 +30,7 @@ func memProfileCommandLine(cli *flag.FlagSet) CommandLineHandler {
 
 func (mp *memprofile) atexit() {
 	mp.logger.Print("Writing MEM profile")
-	if err := pprof.WriteHeapProfile(mp._f); err != nil {
+	if err := pprof.Lookup("heap").WriteTo(mp._f, 1); err != nil {
 		mp.logger.Print(err) // just print
 	}
 	if err := mp._f.Close(); err != nil {
