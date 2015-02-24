@@ -92,13 +92,11 @@ func username(uids map[uint]string, uid uint) string {
 }
 
 func orderProc(procs []types.ProcInfo, cl *client.Client, send *client.SendClient) []types.ProcData {
-	if len(procs) > 1 {
-		sort.Sort(procOrder{ // not sort.Stable
-			procs:   procs,
-			seq:     cl.PSSEQ,
-			reverse: client.PSBIMAP.SEQ2REVERSE[cl.PSSEQ],
-		})
-	}
+	sort.Sort(procOrder{ // not sort.Stable
+		procs:   procs,
+		seq:     cl.PSSEQ,
+		reverse: client.PSBIMAP.SEQ2REVERSE[cl.PSSEQ],
+	})
 
 	limitPS := cl.PSlimit
 	notdec := limitPS <= 1
@@ -320,12 +318,6 @@ func (ir *IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient,
 	client.SetBool(&cli.ExpandableIF, &send.ExpandableIF, len(private) > cli.Toprows)
 	client.SetString(&cli.ExpandtextIF, &send.ExpandtextIF, fmt.Sprintf("Expanded (%d)", len(private)))
 
-	if len(private) == 0 {
-		return []types.Interface{}
-	}
-	if len(private) == 1 {
-		return []types.Interface{private[0].FormatInterface(ip)}
-	}
 	sort.Sort(ListMetricInterface(private))
 	var public []types.Interface
 	for i, mi := range private {
@@ -431,12 +423,6 @@ func (ir *IndexRegistry) DFbytesInternal(cli *client.Client, send *client.SendCl
 	client.SetBool(&cli.ExpandableDF, &send.ExpandableDF, len(private) > cli.Toprows)
 	client.SetString(&cli.ExpandtextDF, &send.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(private)))
 
-	if len(private) == 0 {
-		return []types.DiskBytes{}
-	}
-	if len(private) == 1 {
-		return []types.DiskBytes{private[0].FormatDFbytes()}
-	}
 	sort.Stable(diskOrder{
 		disks:   private,
 		seq:     cli.DFSEQ,
@@ -477,12 +463,6 @@ func (ir *IndexRegistry) DFinodes(cli *client.Client, send *client.SendClient) [
 	client.SetBool(&cli.ExpandableDF, &send.ExpandableDF, len(private) > cli.Toprows)
 	client.SetString(&cli.ExpandtextDF, &send.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(private)))
 
-	if len(private) == 0 {
-		return []types.DiskInodes{}
-	}
-	if len(private) == 1 {
-		return []types.DiskInodes{private[0].FormatDFinodes()}
-	}
 	sort.Stable(diskOrder{
 		disks:   private,
 		seq:     cli.DFSEQ,
@@ -529,16 +509,13 @@ func (ir *IndexRegistry) CPUInternal(cli *client.Client, send *client.SendClient
 	client.SetBool(&cli.ExpandableCPU, &send.ExpandableCPU, len(private) > cli.Toprows) // one row reserved for "all N"
 	client.SetString(&cli.ExpandtextCPU, &send.ExpandtextCPU, fmt.Sprintf("Expanded (%d)", len(private)))
 
-	if len(private) == 0 { // no cpu?
-		return []cpu.CoreInfo{}
-	}
 	if len(private) == 1 {
 		return []cpu.CoreInfo{FormatCPU(private[0])}
 	}
 	sort.Sort(ListMetricCPU(private))
 	var public []cpu.CoreInfo
 	if !*cli.ExpandCPU {
-		public = append(public, FormatCPU(ir.PrivateCPUAll))
+		public = []cpu.CoreInfo{FormatCPU(ir.PrivateCPUAll)}
 	}
 	for i, mc := range private {
 		if !*cli.ExpandCPU && i > cli.Toprows-2 {
