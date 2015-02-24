@@ -416,7 +416,16 @@ func (x ListMetricCPU) Less(i, j int) bool {
 	return (juser + jnice + jsys) < (iuser + inice + isys)
 }
 
-func (ir *IndexRegistry) DFbytes(seq types.SEQ, cli *client.Client, send *client.SendClient) []types.DiskBytes {
+func (ir *IndexRegistry) DFbytes(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
+	list := ir.DFbytesInternal(cli, send)
+	if list == nil {
+		return nil
+	}
+	iu.DFbytes = &types.DFbytes{List: list}
+	return IndexUpdate{DFbytes: iu.DFbytes}
+}
+
+func (ir *IndexRegistry) DFbytesInternal(cli *client.Client, send *client.SendClient) []types.DiskBytes {
 	private := ir.ListPrivateDisk()
 
 	client.SetBool(&cli.ExpandableDF, &send.ExpandableDF, len(private) > cli.Toprows)
@@ -430,8 +439,8 @@ func (ir *IndexRegistry) DFbytes(seq types.SEQ, cli *client.Client, send *client
 	}
 	sort.Stable(diskOrder{
 		disks:   private,
-		seq:     seq,
-		reverse: client.DFBIMAP.SEQ2REVERSE[seq],
+		seq:     cli.DFSEQ,
+		reverse: client.DFBIMAP.SEQ2REVERSE[cli.DFSEQ],
 	})
 
 	var public []types.DiskBytes
@@ -462,7 +471,7 @@ func (md MetricDF) FormatDFbytes() types.DiskBytes {
 	}
 }
 
-func (ir *IndexRegistry) DFinodes(seq types.SEQ, cli *client.Client, send *client.SendClient) []types.DiskInodes {
+func (ir *IndexRegistry) DFinodes(cli *client.Client, send *client.SendClient) []types.DiskInodes {
 	private := ir.ListPrivateDisk()
 
 	client.SetBool(&cli.ExpandableDF, &send.ExpandableDF, len(private) > cli.Toprows)
@@ -476,8 +485,8 @@ func (ir *IndexRegistry) DFinodes(seq types.SEQ, cli *client.Client, send *clien
 	}
 	sort.Stable(diskOrder{
 		disks:   private,
-		seq:     seq,
-		reverse: client.DFBIMAP.SEQ2REVERSE[seq],
+		seq:     cli.DFSEQ,
+		reverse: client.DFBIMAP.SEQ2REVERSE[cli.DFSEQ],
 	})
 
 	var public []types.DiskInodes
@@ -508,7 +517,13 @@ func (md MetricDF) FormatDFinodes() types.DiskInodes {
 	}
 }
 
-func (ir *IndexRegistry) CPU(cli *client.Client, send *client.SendClient) []cpu.CoreInfo {
+func (ir *IndexRegistry) CPU(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
+	list := ir.CPUInternal(cli, send)
+	iu.CPU = &cpu.CPUInfo{List: list}
+	return IndexUpdate{CPU: iu.CPU}
+}
+
+func (ir *IndexRegistry) CPUInternal(cli *client.Client, send *client.SendClient) []cpu.CoreInfo {
 	private := ir.ListPrivateCPU()
 
 	client.SetBool(&cli.ExpandableCPU, &send.ExpandableCPU, len(private) > cli.Toprows) // one row reserved for "all N"
@@ -585,7 +600,9 @@ func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) *types.MetricCPU {
 	return i
 }
 
-func (ir *IndexRegistry) SWAP(client client.Client, iu *IndexUpdate) interface{} {
+func (ir *IndexRegistry) SWAP(client *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
+	// client is unused
+	// send is unused
 	if iu.MEM == nil {
 		iu.MEM = new(types.MEM)
 	}
@@ -603,7 +620,9 @@ func (ir *IndexRegistry) SWAP(client client.Client, iu *IndexUpdate) interface{}
 	return IndexUpdate{MEM: iu.MEM}
 }
 
-func (ir *IndexRegistry) MEM(client client.Client, iu *IndexUpdate) interface{} {
+func (ir *IndexRegistry) MEM(client *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
+	// client is unused
+	// send is unused
 	gr := ir.RAM
 	mem := new(types.MEM)
 	mem.List = []types.Memory{
@@ -614,7 +633,7 @@ func (ir *IndexRegistry) MEM(client client.Client, iu *IndexUpdate) interface{} 
 		}),
 	}
 	iu.MEM = mem
-	return IndexUpdate{MEM: mem}
+	return IndexUpdate{MEM: iu.MEM}
 }
 
 func (ir *IndexRegistry) LA() string {
@@ -711,7 +730,7 @@ func init() {
 type Set struct {
 	Hide    bool
 	Refresh *client.Refresh `json:",omitempty"`
-	Update  func(client.Client, *IndexUpdate) interface{}
+	Update  func(*client.Client, *client.SendClient, *IndexUpdate) interface{}
 }
 
 func (s Set) Hidden() bool { return s.Hide }
@@ -723,7 +742,7 @@ func (s *Set) Expired(forcerefresh bool) bool {
 type SetInterface interface {
 	Hidden() bool
 	Expired(bool) bool
-	Update() interface{}
+	Update(*client.Client, *client.SendClient, *IndexUpdate) interface{}
 }
 // */
 
@@ -744,6 +763,7 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 		{*cl.HideRAM, cl.RefreshRAM, Reg1s.MEM},
 		{*cl.HideRAM || *cl.HideSWAP, /* if RAM is hidden, so is SWAP */
 			cl.RefreshSWAP, Reg1s.SWAP},
+		{*cl.HideCPU, cl.RefreshCPU, Reg1s.CPU},
 	}
 
 	// var additions []interface{}
@@ -754,19 +774,21 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 		if x.Hidden() {
 			continue
 		}
-		if add := x.Update(*cl, &iu); add != nil {
+		if add := x.Update(cl, &send, &iu); add != nil {
 			// additions = append(additions, add)
 		}
 	}
-	if !*cl.HideCPU && cl.RefreshCPU.Refresh(forcerefresh) {
-		iu.CPU = &cpu.CPUInfo{List: Reg1s.CPU(cl, &send)}
-	}
+
+	_ = map[types.SEQ]func(){
+		client.DFBYTES_TABID:  func() {}, // Reg1s.DFbytes,
+		client.DFINODES_TABID: func() {}, // Reg1s.DFinodes,
+	}[*cl.TabDF]
 
 	if !*cl.HideDF && cl.RefreshDF.Refresh(forcerefresh) {
 		if *cl.TabDF == client.DFBYTES_TABID {
-			iu.DFbytes = &types.DFbytes{List: Reg1s.DFbytes(cl.DFSEQ, cl, &send)}
+			iu.DFbytes = &types.DFbytes{List: Reg1s.DFbytesInternal(cl, &send)}
 		} else if *cl.TabDF == client.DFINODES_TABID {
-			iu.DFinodes = &types.DFinodes{List: Reg1s.DFinodes(cl.DFSEQ, cl, &send)}
+			iu.DFinodes = &types.DFinodes{List: Reg1s.DFinodes(cl, &send)}
 		}
 	}
 
