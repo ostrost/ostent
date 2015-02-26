@@ -1,10 +1,8 @@
 // +build darwin
 
-package ostent
+package system
 
 import (
-	"fmt"
-	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -12,7 +10,8 @@ import (
 	sigar "github.com/rzab/gosigar"
 )
 
-func getDistrib() string {
+// Distrib returns system distribution and version string.
+func Distrib() (string, error) {
 	/* various cli to show the mac version
 	sw_vers
 	sw_vers -productVersion
@@ -22,21 +21,21 @@ func getDistrib() string {
 	*/
 	std, err := exec.Command("sw_vers", "-productVersion").CombinedOutput()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "sw_vers: %s\n", err)
-		return ""
+		return "", err
 	}
-	return "Mac OS X " + strings.TrimRight(string(std), "\n\t ")
+	return "Mac OS X " + strings.TrimRight(string(std), "\n\t "), nil
 }
 
-// ProcState returns chopped proc name, in which case
-// get the ProcExe and return basename of executable path
-func procname(pid int, pbi_comm string) string {
-	if len(pbi_comm)+1 < sigar.CMAXCOMLEN {
-		return pbi_comm
+// ProcName returns argv[0].
+// pbiComm originating from ProcState may be chopped, in which case
+// sigar.ProcExe gives absolute executable path and the basename of it is returned.
+func ProcName(pid int, pbiComm string) string {
+	if len(pbiComm)+1 < sigar.CMAXCOMLEN {
+		return pbiComm
 	}
 	exe := sigar.ProcExe{}
 	if err := exe.Get(pid); err != nil {
-		return pbi_comm
+		return pbiComm
 	}
 	return filepath.Base(exe.Name)
 }

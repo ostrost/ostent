@@ -16,6 +16,7 @@ import (
 	"github.com/ostrost/ostent/cpu"
 	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/getifaddrs"
+	"github.com/ostrost/ostent/system"
 	"github.com/ostrost/ostent/templates"
 	"github.com/ostrost/ostent/types"
 	metrics "github.com/rcrowley/go-metrics"
@@ -855,9 +856,15 @@ func statusLine(status int) string {
 }
 
 func init() {
-	DISTRIB = getDistrib()
+	var err error
+	DISTRIB, err = system.Distrib()
+	if err != nil {
+		log.Printf("WARN %s\n", err)
+	}
 }
 
+// DISTRIB is distribution string and it's version.
+// Set at init, result of system.Distrib.
 var DISTRIB string
 
 func IndexFunc(template *templates.BinTemplate, scripts []string, minrefresh types.Duration) func(http.ResponseWriter, *http.Request) {

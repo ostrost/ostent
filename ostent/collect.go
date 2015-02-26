@@ -13,6 +13,7 @@ import (
 	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/getifaddrs"
 	"github.com/ostrost/ostent/registry"
+	"github.com/ostrost/ostent/system"
 	"github.com/ostrost/ostent/templates"
 	"github.com/ostrost/ostent/types"
 	sigar "github.com/rzab/gosigar"
@@ -270,8 +271,8 @@ func (m *Machine) Procs(CH chan<- []types.ProcInfo) {
 			Priority: state.Priority,
 			Nice:     state.Nice,
 			Time:     time.Total,
-			Name:     procname(pid, state.Name), // `procname' defined proc_{darwin,linux}.go
-			// Name:     strings.Join(append([]string{procname(pid, state.Name)}, args.List[1:]...), " "),
+			Name:     system.ProcName(pid, state.Name),
+			// Name:  strings.Join(append([]string{system.ProcName(pid, state.Name)}, args.List[1:]...), " "),
 			UID:      state.Uid,
 			Size:     mem.Size,
 			Resident: mem.Resident,
