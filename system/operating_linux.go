@@ -1,20 +1,15 @@
 // +build linux
 
-package types
+package system
 
 import (
+	"github.com/ostrost/ostent/types"
 	metrics "github.com/rcrowley/go-metrics"
 	sigar "github.com/rzab/gosigar"
 )
 
-func CPUTotal(cpu sigar.Cpu) uint64 {
-	return cpu.Total() // gosigar implementation aka:
-	// 	return cpu.User + cpu.Nice + cpu.Sys + cpu.Idle +
-	// 		cpu.Wait + cpu.Irq + cpu.SoftIrq + cpu.Stolen
-}
-
 type MetricRAM struct {
-	MetricRAMCommon
+	types.MetricRAMCommon
 	Free     metrics.Gauge
 	Used     metrics.Gauge
 	Buffered metrics.Gauge
@@ -23,7 +18,7 @@ type MetricRAM struct {
 
 func NewMetricRAM(r metrics.Registry) MetricRAM {
 	return MetricRAM{
-		MetricRAMCommon: NewMetricRAMCommon(),
+		MetricRAMCommon: types.NewMetricRAMCommon(),
 		Free:            metrics.NewRegisteredGauge("memory.memory-free", r),
 		Used:            metrics.NewRegisteredGauge("memory.memory-used", r),
 		Buffered:        metrics.NewRegisteredGauge("memory.memory-buffered", r),
@@ -40,15 +35,17 @@ func (mr *MetricRAM) Update(got sigar.Mem, extra1, extra2 uint64) {
 }
 
 type MetricCPU struct {
-	*MetricCPUCommon
-	Wait    *GaugePercent
-	Irq     *GaugePercent
-	SoftIrq *GaugePercent
-	Stolen  *GaugePercent
+	*types.MetricCPUCommon
+	Wait    *types.GaugePercent
+	Irq     *types.GaugePercent
+	SoftIrq *types.GaugePercent
+	Stolen  *types.GaugePercent
 }
 
 func (mc *MetricCPU) Update(sigarCpu sigar.Cpu) {
-	totalDelta := mc.UpdateCommon(sigarCpu)
+	total := sigarCpu.Total() // gosigar implementation aka:
+	// .User + .Nice + .Sys + .Idle + .Wait + .Irq + .SoftIrq + .Stolen
+	totalDelta := mc.UpdateCommon(sigarCpu, total)
 	mc.Wait.UpdatePercent(totalDelta, sigarCpu.Wait)
 	mc.Irq.UpdatePercent(totalDelta, sigarCpu.Irq)
 	mc.SoftIrq.UpdatePercent(totalDelta, sigarCpu.SoftIrq)
@@ -57,11 +54,11 @@ func (mc *MetricCPU) Update(sigarCpu sigar.Cpu) {
 
 func NewMetricCPU(r metrics.Registry, name string) *MetricCPU {
 	return &MetricCPU{
-		MetricCPUCommon: NewMetricCPUCommon(r, name),
-		Wait:            NewGaugePercent(name+".wait", r),
-		Irq:             NewGaugePercent(name+".interrupt", r),
-		SoftIrq:         NewGaugePercent(name+".softirq", r),
-		Stolen:          NewGaugePercent(name+".steal", r),
+		MetricCPUCommon: types.NewMetricCPUCommon(r, name),
+		Wait:            types.NewGaugePercent(name+".wait", r),
+		Irq:             types.NewGaugePercent(name+".interrupt", r),
+		SoftIrq:         types.NewGaugePercent(name+".softirq", r),
+		Stolen:          types.NewGaugePercent(name+".steal", r),
 	}
 }
 

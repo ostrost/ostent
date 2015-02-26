@@ -256,10 +256,6 @@ func (mrc *MetricRAMCommon) UpdateCommon(got sigar.Mem) {
 	mrc.Total.Update(int64(got.Total))
 }
 
-func (mr *MetricRAM) UsedValue() uint64 { // Total - Free
-	return uint64(mr.Total.Snapshot().Value() - mr.Free.Snapshot().Value())
-}
-
 type GaugeShortLoad struct {
 	metrics.GaugeFloat64
 	Ring  *ring.Ring
@@ -508,8 +504,8 @@ type MetricCPUCommon struct {
 	Total               *GaugeDiff
 }
 
-func (mcc *MetricCPUCommon) UpdateCommon(sigarCpu sigar.Cpu) int64 {
-	totalDelta := mcc.Total.UpdateAbsolute(int64(CPUTotal(sigarCpu)))
+func (mcc *MetricCPUCommon) UpdateCommon(sigarCpu sigar.Cpu, total uint64) int64 {
+	totalDelta := mcc.Total.UpdateAbsolute(int64(total))
 	mcc.User.UpdatePercent(totalDelta, sigarCpu.User)
 	mcc.Nice.UpdatePercent(totalDelta, sigarCpu.Nice)
 	mcc.Sys.UpdatePercent(totalDelta, sigarCpu.Sys)

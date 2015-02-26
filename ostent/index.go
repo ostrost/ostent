@@ -393,10 +393,10 @@ func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) *MetricDF {
 	return i
 }
 
-// ListMetricCPU is a list of types.MetricCPU type. Used for sorting.
-type ListMetricCPU []*types.MetricCPU // satisfying sort.Interface
-func (x ListMetricCPU) Len() int      { return len(x) }
-func (x ListMetricCPU) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
+// ListMetricCPU is a list of system.MetricCPU type. Used for sorting.
+type ListMetricCPU []*system.MetricCPU // satisfying sort.Interface
+func (x ListMetricCPU) Len() int       { return len(x) }
+func (x ListMetricCPU) Swap(i, j int)  { x[i], x[j] = x[j], x[i] }
 func (x ListMetricCPU) Less(i, j int) bool {
 	var (
 		juser = x[j].User.Percent.Snapshot().Value()
@@ -528,7 +528,7 @@ func (ir *IndexRegistry) CPUInternal(cli *client.Client, send *client.SendClient
 	return public
 }
 
-func FormatCPU(mc *types.MetricCPU) cpu.CoreInfo {
+func FormatCPU(mc *system.MetricCPU) cpu.CoreInfo {
 	user := uint(mc.User.Percent.Snapshot().Value()) // rounding
 	// .Nice is unused
 	sys := uint(mc.Sys.Percent.Snapshot().Value())   // rounding
@@ -548,10 +548,10 @@ func FormatCPU(mc *types.MetricCPU) cpu.CoreInfo {
 	}
 }
 
-// ListPrivateCPU returns list of types.MetricCPU's by traversing the PrivateCPURegistry.
-func (ir *IndexRegistry) ListPrivateCPU() (lmc []*types.MetricCPU) {
+// ListPrivateCPU returns list of system.MetricCPU's by traversing the PrivateCPURegistry.
+func (ir *IndexRegistry) ListPrivateCPU() (lmc []*system.MetricCPU) {
 	ir.PrivateCPURegistry.Each(func(name string, i interface{}) {
-		lmc = append(lmc, i.(*types.MetricCPU))
+		lmc = append(lmc, i.(*system.MetricCPU))
 	})
 	return lmc
 }
@@ -565,14 +565,14 @@ func (ir *IndexRegistry) ListPrivateDisk() (lmd []*MetricDF) {
 }
 
 // GetOrRegisterPrivateCPU produces a registered in PrivateCPURegistry MetricCPU.
-func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) *types.MetricCPU {
+func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) *system.MetricCPU {
 	ir.PrivateMutex.Lock()
 	defer ir.PrivateMutex.Unlock()
 	name := fmt.Sprintf("cpu-%d", coreno)
 	if metric := ir.PrivateCPURegistry.Get(name); metric != nil {
-		return metric.(*types.MetricCPU)
+		return metric.(*system.MetricCPU)
 	}
-	i := types.NewMetricCPU(ir.Registry, name)
+	i := system.NewMetricCPU(ir.Registry, name)
 	ir.PrivateCPURegistry.Register(name, i) // error is ignored
 	// errs when the type is not derived from (go-)metrics types
 	return i
@@ -655,7 +655,7 @@ func (ir *IndexRegistry) UpdateCPU(cpus []sigar.Cpu) {
 	all := sigar.Cpu{}
 	for coreno, core := range cpus {
 		ir.GetOrRegisterPrivateCPU(coreno).Update(core)
-		types.CPUAdd(&all, core)
+		system.CPUAdd(&all, core)
 	}
 	if ir.PrivateCPUAll.N == "all" {
 		ir.PrivateCPUAll.N = fmt.Sprintf("all %d", len(cpus))
@@ -671,13 +671,13 @@ func (ir *IndexRegistry) UpdateIFdata(ifdata getifaddrs.IfData) {
 
 type IndexRegistry struct {
 	Registry                 metrics.Registry
-	PrivateCPUAll            *types.MetricCPU
+	PrivateCPUAll            *system.MetricCPU
 	PrivateCPURegistry       metrics.Registry // set of MetricCPUs is handled as a metric in this registry
 	PrivateInterfaceRegistry metrics.Registry // set of MetricInterfaces is handled as a metric in this registry
 	PrivateDFRegistry        metrics.Registry // set of MetricDFs is handled as a metric in this registry
 	PrivateMutex             sync.Mutex
 
-	RAM  types.MetricRAM
+	RAM  system.MetricRAM
 	Swap types.MetricSwap
 	Load *types.MetricLoad
 
@@ -694,10 +694,10 @@ func init() {
 		PrivateDFRegistry:        metrics.NewRegistry(),
 	}
 	// Reg1s.PrivateCPUAll = *Reg1s.RegisterCPU(metrics.NewRegistry(), "all")
-	Reg1s.PrivateCPUAll = types.NewMetricCPU( /* pcreg := */ metrics.NewRegistry(), "all")
+	Reg1s.PrivateCPUAll = system.NewMetricCPU( /* pcreg := */ metrics.NewRegistry(), "all")
 	// pcreg.Register("all", Reg1s.PrivateCPUAll)
 
-	Reg1s.RAM = types.NewMetricRAM(Reg1s.Registry)
+	Reg1s.RAM = system.NewMetricRAM(Reg1s.Registry)
 	Reg1s.Swap = types.NewMetricSwap(Reg1s.Registry)
 	Reg1s.Load = types.NewMetricLoad(Reg1s.Registry)
 

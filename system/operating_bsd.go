@@ -1,19 +1,15 @@
 // +build freebsd darwin
 
-package types
+package system
 
 import (
+	"github.com/ostrost/ostent/types"
 	metrics "github.com/rcrowley/go-metrics"
 	sigar "github.com/rzab/gosigar"
 )
 
-func CPUTotal(cpu sigar.Cpu) uint64 {
-	return cpu.User + cpu.Nice + cpu.Sys + cpu.Idle
-	// gosigar cpu.Total() implementation adds .{Wait,{,Soft}Irq,Stolen} which is zero for darwin
-}
-
 type MetricRAM struct {
-	MetricRAMCommon
+	types.MetricRAMCommon
 	Free     metrics.Gauge
 	Inactive metrics.Gauge
 	Wired    metrics.Gauge
@@ -22,7 +18,7 @@ type MetricRAM struct {
 
 func NewMetricRAM(r metrics.Registry) MetricRAM {
 	return MetricRAM{
-		MetricRAMCommon: NewMetricRAMCommon(),
+		MetricRAMCommon: types.NewMetricRAMCommon(),
 		Free:            metrics.NewRegisteredGauge("memory.memory-free", r),
 		Inactive:        metrics.NewRegisteredGauge("memory.memory-inactive", r),
 		Wired:           metrics.NewRegisteredGauge("memory.memory-wired", r),
@@ -39,16 +35,19 @@ func (mr *MetricRAM) Update(got sigar.Mem, extra1, extra2 uint64) {
 }
 
 type MetricCPU struct {
-	*MetricCPUCommon
+	*types.MetricCPUCommon
 }
 
-func (mc *MetricCPU) Update(sigarCpu sigar.Cpu) {
-	mc.UpdateCommon(sigarCpu)
+func (mc *MetricCPU) Update(cpu sigar.Cpu) {
+	total := cpu.User + cpu.Nice + cpu.Sys + cpu.Idle
+	// gosigar cpu.Total() implementation adds .{Wait,{,Soft}Irq,Stolen}
+	// which is zero for darwin
+	mc.UpdateCommon(cpu, total)
 }
 
 func NewMetricCPU(r metrics.Registry, name string) *MetricCPU {
 	return &MetricCPU{
-		MetricCPUCommon: NewMetricCPUCommon(r, name),
+		MetricCPUCommon: types.NewMetricCPUCommon(r, name),
 	}
 }
 
