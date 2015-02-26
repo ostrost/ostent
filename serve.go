@@ -25,7 +25,11 @@ func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error
 
 	logger := log.New(os.Stderr, "[ostent] ", 0)
 	for _, path := range shareassets.AssetNames() {
-		hf := chain.Then(ostent.ServeContentFunc("share/assets", assets.UncompressedAssetFunc(shareassets.Asset), path, logger))
+		hf := chain.Then(ostent.ServeContentFunc(
+			assets.UncompressedAssetFunc(shareassets.Asset),
+			shareassets.AssetInfo,
+			assets.ModTime,
+			path, logger))
 		mux.Handle("GET", "/"+path, hf)
 		mux.Handle("HEAD", "/"+path, hf)
 	}

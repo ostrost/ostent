@@ -7,11 +7,19 @@ import (
 	"time"
 )
 
-var uncompressedassets struct {
-	cache map[string][]byte
-	mutex sync.Mutex
-}
+var (
+	// boottime is the boot time.
+	boottime           = time.Now()
+	uncompressedassets struct {
+		cache map[string][]byte
+		mutex sync.Mutex
+	}
+)
 
+// ModTime always return boot time.
+func ModTime(_ time.Time) time.Time { return boottime }
+
+// UncompressedAssetFunc returns cached readFunc result.
 func UncompressedAssetFunc(readfunc func(string) ([]byte, error)) func(string) ([]byte, error) {
 	return func(name string) ([]byte, error) {
 		return uncompressedasset(readfunc, name)
@@ -29,10 +37,4 @@ func uncompressedasset(readfunc func(string) ([]byte, error), name string) ([]by
 		uncompressedassets.cache[name] = text
 	}
 	return text, err
-}
-
-var STARTIME = time.Now()
-
-func ModTime(string, string) (time.Time, error) {
-	return STARTIME, nil
 }

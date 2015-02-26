@@ -2,39 +2,12 @@
 
 package assets
 
-import (
-	"os"
-	"path/filepath"
-	"sync"
-	"time"
-)
+import "time"
 
-var statstatus struct {
-	mutex sync.Mutex
-	fails bool
-}
+// ModTime returns t.
+func ModTime(t time.Time) time.Time { return t }
 
-func ModTime(prefix, path string) (time.Time, error) {
-	now := time.Now()
-	if fails := func() bool {
-		statstatus.mutex.Lock()
-		defer statstatus.mutex.Unlock()
-		return statstatus.fails
-	}(); fails {
-		return now, nil
-	}
-	fi, err := os.Stat(filepath.Join(prefix, path))
-	if err != nil {
-		func() {
-			statstatus.mutex.Lock()
-			defer statstatus.mutex.Unlock()
-			statstatus.fails = true
-		}()
-		return time.Time{}, err
-	}
-	return fi.ModTime(), nil
-}
-
-func UncompressedAssetFunc(readfunc func(string) ([]byte, error)) func(string) ([]byte, error) {
-	return readfunc
+// UncompressedAssetFunc returns readFunc.
+func UncompressedAssetFunc(readFunc func(string) ([]byte, error)) func(string) ([]byte, error) {
+	return readFunc
 }
