@@ -1,3 +1,6 @@
+//go:generate gen
+
+// Package types has some types of ostent library.
 package types
 
 import (
@@ -15,6 +18,12 @@ import (
 
 // SEQ is a distinct int type for consts and other uses.
 type SEQ int
+
+// SeqNReverse holds a SEQ and a Reverse bool.
+type SeqNReverse struct {
+	SEQ     SEQ
+	Reverse bool
+}
 
 // AnyOf returns true if the seq is present in the list.
 func (seq SEQ) AnyOf(list []SEQ) bool {
@@ -218,6 +227,7 @@ type Interfaces struct {
 }
 
 // ProcInfo type is an internal account of a process.
+// +gen slice:"PkgSortBy"
 type ProcInfo struct {
 	PID      uint
 	Priority int

@@ -26,7 +26,7 @@ type Collector interface {
 	RAM(registry.Registry, *sync.WaitGroup)
 	Swap(registry.Registry, *sync.WaitGroup)
 	Interfaces(registry.Registry, chan<- string)
-	Procs(chan<- []types.ProcInfo)
+	Procs(chan<- types.ProcInfoSlice)
 	Disks(registry.Registry, *sync.WaitGroup)
 	CPU(registry.Registry, *sync.WaitGroup)
 }
@@ -242,9 +242,9 @@ func (m *Machine) Disks(reg registry.Registry, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (m *Machine) Procs(CH chan<- []types.ProcInfo) {
+func (m *Machine) Procs(CH chan<- types.ProcInfoSlice) {
 	// m is unused
-	var procs []types.ProcInfo
+	var procs types.ProcInfoSlice
 	pls := sigar.ProcList{}
 	pls.Get()
 

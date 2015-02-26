@@ -45,7 +45,10 @@ endif
 init:
 	go get -u -v \
 github.com/jteeuwen/go-bindata/go-bindata \
-github.com/skelterjohn/rerun
+github.com/skelterjohn/rerun \
+github.com/clipperhouse/gen
+# TODO rm {src,pkg/*}/github.com/clipperhouse/slice{,.a}
+	cd types && gen add github.com/rzab/slice
 	git remote set-url origin https://$(fqostent) # travis & tip & https://code.google.com/p/go/issues/detail?id=8850
 	go get -v -tags production $(fqostent)
 	go list -f '{{.Target}}' $(fqostent) | $(xargs) rm # clean the library archive
@@ -64,6 +67,9 @@ coverfunc:
 	go tool cover -func=coverage.out
 coverhtml:
 	go tool cover -html=coverage.out
+
+$(PWD)/types/procinfo_slice.go: $(PWD)/types/types.go
+	cd types && go generate
 
 al: $(ostent_files)
 # al: like `all' but without final go build ostent. For when rerun does the build

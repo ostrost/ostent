@@ -1,3 +1,4 @@
+// Package ostent is the library part of ostent cmd.
 package ostent
 
 import (
@@ -7,41 +8,31 @@ import (
 	"github.com/ostrost/ostent/types"
 )
 
-type procOrder struct {
-	procs   []types.ProcInfo
-	seq     types.SEQ
-	reverse bool
-}
+// SortCritProc is a distinct types.SeqNReverse type.
+type SortCritProc types.SeqNReverse
 
-func (po procOrder) Len() int {
-	return len(po.procs)
-}
-
-func (po procOrder) Swap(i, j int) {
-	po.procs[i], po.procs[j] = po.procs[j], po.procs[i]
-}
-
-func (po procOrder) Less(i, j int) bool {
+// LessProc is a 'less' func for types.ProcInfo comparison.
+func (crit SortCritProc) LessProc(a, b types.ProcInfo) bool {
 	t := false
-	switch po.seq {
+	switch crit.SEQ {
 	case client.PSPID, -client.PSPID:
-		t = po.seq.Sign(po.procs[i].PID < po.procs[j].PID)
+		t = crit.SEQ.Sign(a.PID < b.PID)
 	case client.PSPRI, -client.PSPRI:
-		t = po.seq.Sign(po.procs[i].Priority < po.procs[j].Priority)
+		t = crit.SEQ.Sign(a.Priority < b.Priority)
 	case client.PSNICE, -client.PSNICE:
-		t = po.seq.Sign(po.procs[i].Nice < po.procs[j].Nice)
+		t = crit.SEQ.Sign(a.Nice < b.Nice)
 	case client.PSSIZE, -client.PSSIZE:
-		t = po.seq.Sign(po.procs[i].Size < po.procs[j].Size)
+		t = crit.SEQ.Sign(a.Size < b.Size)
 	case client.PSRES, -client.PSRES:
-		t = po.seq.Sign(po.procs[i].Resident < po.procs[j].Resident)
+		t = crit.SEQ.Sign(a.Resident < b.Resident)
 	case client.PSTIME, -client.PSTIME:
-		t = po.seq.Sign(po.procs[i].Time < po.procs[j].Time)
+		t = crit.SEQ.Sign(a.Time < b.Time)
 	case client.PSNAME, -client.PSNAME:
-		t = po.seq.Sign(po.procs[i].Name < po.procs[j].Name)
+		t = crit.SEQ.Sign(a.Name < b.Name)
 	case client.PSUID, -client.PSUID:
-		t = po.seq.Sign(po.procs[i].UID < po.procs[j].UID)
+		t = crit.SEQ.Sign(a.UID < b.UID)
 	}
-	if po.reverse {
+	if crit.Reverse {
 		return !t
 	}
 	return t

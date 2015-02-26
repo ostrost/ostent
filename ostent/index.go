@@ -1,3 +1,4 @@
+// Package ostent is the library part of ostent cmd.
 package ostent
 
 import (
@@ -92,12 +93,9 @@ func username(uids map[uint]string, uid uint) string {
 	return s
 }
 
-func orderProc(procs []types.ProcInfo, cl *client.Client, send *client.SendClient) []types.ProcData {
-	sort.Sort(procOrder{ // not sort.Stable
-		procs:   procs,
-		seq:     cl.PSSEQ,
-		reverse: client.PSBIMAP.SEQ2REVERSE[cl.PSSEQ],
-	})
+func orderProc(procs types.ProcInfoSlice, cl *client.Client, send *client.SendClient) []types.ProcData {
+	crit := SortCritProc{Reverse: client.PSBIMAP.SEQ2REVERSE[cl.PSSEQ], SEQ: cl.PSSEQ}
+	procs.SortSortBy(crit.LessProc) // not .StableSortBy
 
 	limitPS := cl.PSlimit
 	notdec := limitPS <= 1
@@ -194,14 +192,14 @@ type last struct {
 
 type lastinfo struct {
 	Generic  generic
-	ProcList []types.ProcInfo
+	ProcList types.ProcInfoSlice
 }
 
 var lastInfo last
 
 func (la *last) collect(c Collector) {
 	gch := make(chan generic, 1)
-	pch := make(chan []types.ProcInfo, 1)
+	pch := make(chan types.ProcInfoSlice, 1)
 	ifch := make(chan string, 1)
 
 	var wg sync.WaitGroup
@@ -225,11 +223,11 @@ func (la *last) collect(c Collector) {
 	wg.Wait()
 }
 
-func (la *last) MakeCopy() ([]types.ProcInfo, *generic) {
+func (la *last) MakeCopy() (types.ProcInfoSlice, *generic) {
 	lastInfo.MU.Lock()
 	defer lastInfo.MU.Unlock()
 
-	psCopy := make([]types.ProcInfo, len(lastInfo.ProcList))
+	psCopy := make(types.ProcInfoSlice, len(lastInfo.ProcList))
 	copy(psCopy, lastInfo.ProcList)
 
 	// if false { // !cl.RefreshGeneric.Refresh(forcerefresh)
@@ -727,7 +725,7 @@ type SetInterface interface {
 func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (iu IndexUpdate) {
 	cl.RecalcRows() // before anything
 
-	var psCopy []types.ProcInfo
+	var psCopy types.ProcInfoSlice
 	psCopy, iu.Generic = lastInfo.MakeCopy()
 
 	if req != nil {
