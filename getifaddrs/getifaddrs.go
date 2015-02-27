@@ -53,6 +53,13 @@ type IfData struct {
 	OutErrors  uint
 }
 
+func (id IfData) GetInBytes() uint    { return id.InBytes }
+func (id IfData) GetOutBytes() uint   { return id.OutBytes }
+func (id IfData) GetInErrors() uint   { return id.InErrors }
+func (id IfData) GetOutErrors() uint  { return id.OutErrors }
+func (id IfData) GetInPackets() uint  { return id.InPackets }
+func (id IfData) GetOutPackets() uint { return id.OutPackets }
+
 func ntop(fi *C.struct_ifaddrs) (string, bool) {
 	if fi.ifa_addr == nil {
 		return "", false
