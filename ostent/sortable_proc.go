@@ -11,8 +11,8 @@ import (
 // SortCritProc is a distinct types.SeqNReverse type.
 type SortCritProc types.SeqNReverse
 
-// LessProc is a 'less' func for types.ProcInfo comparison.
-func (crit SortCritProc) LessProc(a, b types.ProcInfo) bool {
+// LessProc is a 'less' func for types.MetricProc comparison.
+func (crit SortCritProc) LessProc(a, b types.MetricProc) bool {
 	t := false
 	switch crit.SEQ {
 	case client.PSPID, -client.PSPID:

@@ -26,7 +26,7 @@ type Collector interface {
 	RAM(registry.Registry, *sync.WaitGroup)
 	Swap(registry.Registry, *sync.WaitGroup)
 	Interfaces(registry.Registry, chan<- string)
-	Procs(chan<- types.ProcInfoSlice)
+	Procs(chan<- types.MetricProcSlice)
 	Disks(registry.Registry, *sync.WaitGroup)
 	CPU(registry.Registry, *sync.WaitGroup)
 }
@@ -242,9 +242,9 @@ func (m *Machine) Disks(reg registry.Registry, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (m *Machine) Procs(CH chan<- types.ProcInfoSlice) {
+func (m *Machine) Procs(CH chan<- types.MetricProcSlice) {
 	// m is unused
-	var procs types.ProcInfoSlice
+	var procs types.MetricProcSlice
 	pls := sigar.ProcList{}
 	pls.Get()
 
@@ -266,16 +266,18 @@ func (m *Machine) Procs(CH chan<- types.ProcInfoSlice) {
 			continue
 		}
 
-		procs = append(procs, types.ProcInfo{
-			PID:      uint(pid),
-			Priority: state.Priority,
-			Nice:     state.Nice,
-			Time:     time.Total,
-			Name:     system.ProcName(pid, state.Name),
-			// Name:  strings.Join(append([]string{system.ProcName(pid, state.Name)}, args.List[1:]...), " "),
-			UID:      state.Uid,
-			Size:     mem.Size,
-			Resident: mem.Resident,
+		procs = append(procs, types.MetricProc{
+			ProcInfo: &types.ProcInfo{
+				PID:      uint(pid),
+				Priority: state.Priority,
+				Nice:     state.Nice,
+				Time:     time.Total,
+				Name:     system.ProcName(pid, state.Name),
+				// Name:  strings.Join(append([]string{system.ProcName(pid, state.Name)}, args.List[1:]...), " "),
+				UID:      state.Uid,
+				Size:     mem.Size,
+				Resident: mem.Resident,
+			},
 		})
 	}
 	CH <- procs

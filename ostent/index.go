@@ -93,7 +93,7 @@ func username(uids map[uint]string, uid uint) string {
 	return s
 }
 
-func orderProc(procs types.ProcInfoSlice, cl *client.Client, send *client.SendClient) []types.ProcData {
+func orderProc(procs types.MetricProcSlice, cl *client.Client, send *client.SendClient) []types.ProcData {
 	crit := SortCritProc{Reverse: client.PSBIMAP.SEQ2REVERSE[cl.PSSEQ], SEQ: cl.PSSEQ}
 	procs.SortSortBy(crit.LessProc) // not .StableSortBy
 
@@ -192,14 +192,14 @@ type last struct {
 
 type lastinfo struct {
 	Generic  generic
-	ProcList types.ProcInfoSlice
+	ProcList types.MetricProcSlice
 }
 
 var lastInfo last
 
 func (la *last) collect(c Collector) {
 	gch := make(chan generic, 1)
-	pch := make(chan types.ProcInfoSlice, 1)
+	pch := make(chan types.MetricProcSlice, 1)
 	ifch := make(chan string, 1)
 
 	var wg sync.WaitGroup
@@ -223,11 +223,11 @@ func (la *last) collect(c Collector) {
 	wg.Wait()
 }
 
-func (la *last) MakeCopy() (types.ProcInfoSlice, *generic) {
+func (la *last) MakeCopy() (types.MetricProcSlice, *generic) {
 	lastInfo.MU.Lock()
 	defer lastInfo.MU.Unlock()
 
-	psCopy := make(types.ProcInfoSlice, len(lastInfo.ProcList))
+	psCopy := make(types.MetricProcSlice, len(lastInfo.ProcList))
 	copy(psCopy, lastInfo.ProcList)
 
 	// if false { // !cl.RefreshGeneric.Refresh(forcerefresh)
@@ -721,7 +721,7 @@ type SetInterface interface {
 func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (iu IndexUpdate) {
 	cl.RecalcRows() // before anything
 
-	var psCopy types.ProcInfoSlice
+	var psCopy types.MetricProcSlice
 	psCopy, iu.Generic = lastInfo.MakeCopy()
 
 	if req != nil {
