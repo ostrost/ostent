@@ -22,18 +22,7 @@ type makeCommandHandler func(*flag.FlagSet, ...SetupLogger) (CommandHandler, io.
 
 type addedCommands struct {
 	makes map[string]makeCommandHandler
-	names []string
-}
-
-// conforms to sort.Interface
-func (ac addedCommands) Len() int {
-	return len(ac.names)
-}
-func (ac addedCommands) Swap(i, j int) {
-	ac.names[i], ac.names[j] = ac.names[j], ac.names[i]
-}
-func (ac addedCommands) Less(i, j int) bool {
-	return ac.names[i] < ac.names[j]
+	Names []string
 }
 
 var (
@@ -65,7 +54,7 @@ func AddCommand(name string, makes makeCommandHandler) {
 	commands.mutex.Lock()
 	defer commands.mutex.Unlock()
 	commands.added.makes[name] = makes
-	commands.added.names = append(commands.added.names, name)
+	commands.added.Names = append(commands.added.Names, name)
 }
 
 func setupFlagset(name string, makes makeCommandHandler, loggerSetups []SetupLogger) (*flag.FlagSet, CommandHandler, io.Writer) {

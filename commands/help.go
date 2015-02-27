@@ -45,7 +45,7 @@ func (h *help) Run() {
 	defer commands.mutex.Unlock()
 	if h.listing != "" {
 		found := false
-		for _, name := range commands.added.names {
+		for _, name := range commands.added.Names {
 			if name == h.listing {
 				found = true
 				break
@@ -62,13 +62,13 @@ func (h *help) Run() {
 		}
 		return
 	}
-	sort.Stable(commands.added)
+	sort.Strings(commands.added.Names)
 	fstline := "Commands available:"
 	if !h.isCommand {
 		fstline = fmt.Sprintf("Commands of %s:", os.Args[0]) // as in usage
 	}
 	h.logger.Println(fstline)
-	for _, name := range commands.added.names {
+	for _, name := range commands.added.Names {
 		h.logger.Printf("   %s\n", name)
 		if makes, ok := commands.added.makes[name]; ok {
 			h.usage(name, makes)
