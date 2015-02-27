@@ -8,7 +8,7 @@ import (
 )
 
 type diskOrder struct {
-	disks   []*MetricDF
+	disks   []*types.MetricDF
 	seq     types.SEQ
 	reverse bool
 }

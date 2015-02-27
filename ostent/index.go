@@ -70,7 +70,7 @@ func tooltipable(limit int, full string) template.HTML {
 	return template.HTML(html)
 }
 
-func diskMeta(disk MetricDF) types.DiskMeta {
+func diskMeta(disk types.MetricDF) types.DiskMeta {
 	devname := disk.DevName.Snapshot().Value()
 	dirname := disk.DirName.Snapshot().Value()
 	return types.DiskMeta{
@@ -357,7 +357,7 @@ func (ir *IndexRegistry) GetOrRegisterPrivateInterface(name string) *MetricInter
 	return i
 }
 
-func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) *MetricDF {
+func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) *types.MetricDF {
 	ir.PrivateMutex.Lock()
 	defer ir.PrivateMutex.Unlock()
 	if fs.DirName == "/" {
@@ -366,15 +366,15 @@ func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) *MetricDF {
 		fs.DevName = strings.Replace(strings.TrimPrefix(fs.DevName, "/dev/"), "/", "-", -1)
 	}
 	if metric := ir.PrivateDFRegistry.Get(fs.DevName); metric != nil {
-		return metric.(*MetricDF)
+		return metric.(*types.MetricDF)
 	}
 	label := func(tail string) string {
 		return fmt.Sprintf("df-%s.df_complex-%s", fs.DevName, tail)
 	}
 	r, unusedr := ir.Registry, metrics.NewRegistry()
-	i := &MetricDF{
-		DevName:     &StandardMetricString{}, // unregistered
-		DirName:     &StandardMetricString{}, // unregistered
+	i := &types.MetricDF{
+		DevName:     &types.StandardMetricString{}, // unregistered
+		DirName:     &types.StandardMetricString{}, // unregistered
 		Free:        metrics.NewRegisteredGaugeFloat64(label("free"), r),
 		Reserved:    metrics.NewRegisteredGaugeFloat64(label("reserved"), r),
 		Total:       metrics.NewRegisteredGauge(label("total"), unusedr),
@@ -433,12 +433,12 @@ func (ir *IndexRegistry) DFbytesInternal(cli *client.Client, send *client.SendCl
 		if !*cli.ExpandDF && i > cli.Toprows-1 {
 			break
 		}
-		public = append(public, disk.FormatDFbytes())
+		public = append(public, FormatDFbytes(*disk))
 	}
 	return public
 }
 
-func (md MetricDF) FormatDFbytes() types.DiskBytes {
+func FormatDFbytes(md types.MetricDF) types.DiskBytes {
 	var (
 		diskTotal = md.Total.Snapshot().Value()
 		diskUsed  = md.Used.Snapshot().Value()
@@ -473,12 +473,12 @@ func (ir *IndexRegistry) DFinodes(cli *client.Client, send *client.SendClient) [
 		if !*cli.ExpandDF && i > cli.Toprows-1 {
 			break
 		}
-		public = append(public, disk.FormatDFinodes())
+		public = append(public, FormatDFinodes(*disk))
 	}
 	return public
 }
 
-func (md MetricDF) FormatDFinodes() types.DiskInodes {
+func FormatDFinodes(md types.MetricDF) types.DiskInodes {
 	var (
 		diskInodes = md.Inodes.Snapshot().Value()
 		diskIused  = md.Iused.Snapshot().Value()
@@ -555,9 +555,9 @@ func (ir *IndexRegistry) ListPrivateCPU() (lmc []*system.MetricCPU) {
 }
 
 // ListPrivateDisk returns list of types.MetricDF's by traversing the PrivateDFRegistry.
-func (ir *IndexRegistry) ListPrivateDisk() (lmd []*MetricDF) {
+func (ir *IndexRegistry) ListPrivateDisk() (lmd []*types.MetricDF) {
 	ir.PrivateDFRegistry.Each(func(name string, i interface{}) {
-		lmd = append(lmd, i.(*MetricDF))
+		lmd = append(lmd, i.(*types.MetricDF))
 	})
 	return lmd
 }
@@ -672,7 +672,7 @@ type IndexRegistry struct {
 	PrivateCPUAll            *system.MetricCPU
 	PrivateCPURegistry       metrics.Registry // set of MetricCPUs is handled as a metric in this registry
 	PrivateInterfaceRegistry metrics.Registry // set of MetricInterfaces is handled as a metric in this registry
-	PrivateDFRegistry        metrics.Registry // set of MetricDFs is handled as a metric in this registry
+	PrivateDFRegistry        metrics.Registry // set of types.MetricDFs is handled as a metric in this registry
 	PrivateMutex             sync.Mutex
 
 	RAM  system.MetricRAM
@@ -883,69 +883,4 @@ func index(template *templates.BinTemplate, scripts []string, minrefresh types.D
 	response.SetHeader("Content-Type", "text/html")
 	response.SetContentLength()
 	response.Send()
-}
-
-type MetricString interface {
-	Snapshot() MetricString
-	Value() string
-	Update(string)
-}
-
-type StandardMetricString struct {
-	string
-	Mutex sync.Mutex
-}
-
-type MetricStringSnapshot StandardMetricString
-
-func (mss *MetricStringSnapshot) Snapshot() MetricString { return mss }
-func (mss *MetricStringSnapshot) Value() string          { return mss.string }
-func (*MetricStringSnapshot) Update(string)              { panic("Update called on a MetricStringSnapshot") }
-
-func (sms *StandardMetricString) Snapshot() MetricString { return ((*MetricStringSnapshot)(sms)) }
-func (sms *StandardMetricString) Value() string {
-	sms.Mutex.Lock()
-	defer sms.Mutex.Unlock()
-	return sms.string
-}
-
-func (sms *StandardMetricString) Update(new string) {
-	sms.Mutex.Lock()
-	defer sms.Mutex.Unlock()
-	sms.string = new
-}
-
-type MetricDF struct {
-	metrics.Healthcheck // derive from one of (go-)metric types, otherwise it won't be registered
-	DevName             MetricString
-	Free                metrics.GaugeFloat64
-	Reserved            metrics.GaugeFloat64
-	Total               metrics.Gauge
-	Used                metrics.GaugeFloat64
-	Avail               metrics.Gauge
-	UsePercent          metrics.GaugeFloat64
-	Inodes              metrics.Gauge
-	Iused               metrics.Gauge
-	Ifree               metrics.Gauge
-	IusePercent         metrics.GaugeFloat64
-	DirName             MetricString
-}
-
-// Update reads usage and fs and updates the corresponding fields in MetricDF.
-func (md *MetricDF) Update(fs sigar.FileSystem, usage sigar.FileSystemUsage) {
-	md.DevName.Update(fs.DevName)
-	md.DirName.Update(fs.DirName)
-	md.Free.Update(float64(usage.Free << 10))
-	md.Reserved.Update(float64((usage.Free - usage.Avail) << 10))
-	md.Total.Update(int64(usage.Total << 10))
-	md.Used.Update(float64(usage.Used << 10))
-	md.Avail.Update(int64(usage.Avail << 10))
-	md.UsePercent.Update(usage.UsePercent())
-	md.Inodes.Update(int64(usage.Files))
-	md.Iused.Update(int64(usage.Files - usage.FreeFiles))
-	md.Ifree.Update(int64(usage.FreeFiles))
-	if iusePercent := 0.0; usage.Files != 0 {
-		iusePercent = float64(100) * float64(usage.Files-usage.FreeFiles) / float64(usage.Files)
-		md.IusePercent.Update(iusePercent)
-	}
 }

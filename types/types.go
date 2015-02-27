@@ -533,3 +533,68 @@ func NewMetricCPUCommon(r metrics.Registry, name string) *MetricCPUCommon {
 		Total: NewGaugeDiff(name+"-total", metrics.NewRegistry()),
 	}
 }
+
+type MetricString interface {
+	Snapshot() MetricString
+	Value() string
+	Update(string)
+}
+
+type StandardMetricString struct {
+	string
+	Mutex sync.Mutex
+}
+
+type MetricStringSnapshot StandardMetricString
+
+func (mss *MetricStringSnapshot) Snapshot() MetricString { return mss }
+func (mss *MetricStringSnapshot) Value() string          { return mss.string }
+func (*MetricStringSnapshot) Update(string)              { panic("Update called on a MetricStringSnapshot") }
+
+func (sms *StandardMetricString) Snapshot() MetricString { return ((*MetricStringSnapshot)(sms)) }
+func (sms *StandardMetricString) Value() string {
+	sms.Mutex.Lock()
+	defer sms.Mutex.Unlock()
+	return sms.string
+}
+
+func (sms *StandardMetricString) Update(new string) {
+	sms.Mutex.Lock()
+	defer sms.Mutex.Unlock()
+	sms.string = new
+}
+
+type MetricDF struct {
+	metrics.Healthcheck // derive from one of (go-)metric types, otherwise it won't be registered
+	DevName             MetricString
+	Free                metrics.GaugeFloat64
+	Reserved            metrics.GaugeFloat64
+	Total               metrics.Gauge
+	Used                metrics.GaugeFloat64
+	Avail               metrics.Gauge
+	UsePercent          metrics.GaugeFloat64
+	Inodes              metrics.Gauge
+	Iused               metrics.Gauge
+	Ifree               metrics.Gauge
+	IusePercent         metrics.GaugeFloat64
+	DirName             MetricString
+}
+
+// Update reads usage and fs and updates the corresponding fields in MetricDF.
+func (md *MetricDF) Update(fs sigar.FileSystem, usage sigar.FileSystemUsage) {
+	md.DevName.Update(fs.DevName)
+	md.DirName.Update(fs.DirName)
+	md.Free.Update(float64(usage.Free << 10))
+	md.Reserved.Update(float64((usage.Free - usage.Avail) << 10))
+	md.Total.Update(int64(usage.Total << 10))
+	md.Used.Update(float64(usage.Used << 10))
+	md.Avail.Update(int64(usage.Avail << 10))
+	md.UsePercent.Update(usage.UsePercent())
+	md.Inodes.Update(int64(usage.Files))
+	md.Iused.Update(int64(usage.Files - usage.FreeFiles))
+	md.Ifree.Update(int64(usage.FreeFiles))
+	if iusePercent := 0.0; usage.Files != 0 {
+		iusePercent = float64(100) * float64(usage.Files-usage.FreeFiles) / float64(usage.Files)
+		md.IusePercent.Update(iusePercent)
+	}
+}
