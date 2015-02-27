@@ -7,35 +7,25 @@ import (
 	"github.com/ostrost/ostent/types"
 )
 
-type diskOrder struct {
-	disks   []*types.MetricDF
-	seq     types.SEQ
-	reverse bool
-}
+// SortCritDisk is a distinct types.SeqNReverse type.
+type SortCritDisk types.SeqNReverse
 
-func (do diskOrder) Len() int {
-	return len(do.disks)
-}
-
-func (do diskOrder) Swap(i, j int) {
-	do.disks[i], do.disks[j] = do.disks[j], do.disks[i]
-}
-
-func (do diskOrder) Less(i, j int) bool {
+// LessDisk is a 'less' func for types.MetricDF comparison.
+func (crit SortCritDisk) LessDisk(a, b types.MetricDF) bool {
 	t := false
-	switch do.seq {
+	switch crit.SEQ {
 	case client.DFFS, -client.DFFS:
-		t = do.seq.Sign(do.disks[i].DevName.Snapshot().Value() < do.disks[j].DevName.Snapshot().Value())
+		t = crit.SEQ.Sign(a.DevName.Snapshot().Value() < b.DevName.Snapshot().Value())
 	case client.DFSIZE, -client.DFSIZE:
-		t = do.seq.Sign(do.disks[i].Total.Snapshot().Value() < do.disks[j].Total.Snapshot().Value())
+		t = crit.SEQ.Sign(a.Total.Snapshot().Value() < b.Total.Snapshot().Value())
 	case client.DFUSED, -client.DFUSED:
-		t = do.seq.Sign(do.disks[i].Used.Snapshot().Value() < do.disks[j].Used.Snapshot().Value())
+		t = crit.SEQ.Sign(a.Used.Snapshot().Value() < b.Used.Snapshot().Value())
 	case client.DFAVAIL, -client.DFAVAIL:
-		t = do.seq.Sign(do.disks[i].Avail.Snapshot().Value() < do.disks[j].Avail.Snapshot().Value())
+		t = crit.SEQ.Sign(a.Avail.Snapshot().Value() < b.Avail.Snapshot().Value())
 	case client.DFMP, -client.DFMP:
-		t = do.seq.Sign(do.disks[i].DirName.Snapshot().Value() < do.disks[j].DirName.Snapshot().Value())
+		t = crit.SEQ.Sign(a.DirName.Snapshot().Value() < b.DirName.Snapshot().Value())
 	}
-	if do.reverse {
+	if crit.Reverse {
 		return !t
 	}
 	return t

@@ -357,7 +357,7 @@ func (ir *IndexRegistry) GetOrRegisterPrivateInterface(name string) *MetricInter
 	return i
 }
 
-func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) *types.MetricDF {
+func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) types.MetricDF {
 	ir.PrivateMutex.Lock()
 	defer ir.PrivateMutex.Unlock()
 	if fs.DirName == "/" {
@@ -366,25 +366,27 @@ func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) *types.Metr
 		fs.DevName = strings.Replace(strings.TrimPrefix(fs.DevName, "/dev/"), "/", "-", -1)
 	}
 	if metric := ir.PrivateDFRegistry.Get(fs.DevName); metric != nil {
-		return metric.(*types.MetricDF)
+		return metric.(types.MetricDF)
 	}
 	label := func(tail string) string {
 		return fmt.Sprintf("df-%s.df_complex-%s", fs.DevName, tail)
 	}
 	r, unusedr := ir.Registry, metrics.NewRegistry()
-	i := &types.MetricDF{
-		DevName:     &types.StandardMetricString{}, // unregistered
-		DirName:     &types.StandardMetricString{}, // unregistered
-		Free:        metrics.NewRegisteredGaugeFloat64(label("free"), r),
-		Reserved:    metrics.NewRegisteredGaugeFloat64(label("reserved"), r),
-		Total:       metrics.NewRegisteredGauge(label("total"), unusedr),
-		Used:        metrics.NewRegisteredGaugeFloat64(label("used"), r),
-		Avail:       metrics.NewRegisteredGauge(label("avail"), unusedr),
-		UsePercent:  metrics.NewRegisteredGaugeFloat64(label("usepercent"), unusedr),
-		Inodes:      metrics.NewRegisteredGauge(label("inodes"), unusedr),
-		Iused:       metrics.NewRegisteredGauge(label("iused"), unusedr),
-		Ifree:       metrics.NewRegisteredGauge(label("ifree"), unusedr),
-		IusePercent: metrics.NewRegisteredGaugeFloat64(label("iusepercent"), unusedr),
+	i := types.MetricDF{
+		DF: &types.DF{
+			DevName:     &types.StandardMetricString{}, // unregistered
+			DirName:     &types.StandardMetricString{}, // unregistered
+			Free:        metrics.NewRegisteredGaugeFloat64(label("free"), r),
+			Reserved:    metrics.NewRegisteredGaugeFloat64(label("reserved"), r),
+			Total:       metrics.NewRegisteredGauge(label("total"), unusedr),
+			Used:        metrics.NewRegisteredGaugeFloat64(label("used"), r),
+			Avail:       metrics.NewRegisteredGauge(label("avail"), unusedr),
+			UsePercent:  metrics.NewRegisteredGaugeFloat64(label("usepercent"), unusedr),
+			Inodes:      metrics.NewRegisteredGauge(label("inodes"), unusedr),
+			Iused:       metrics.NewRegisteredGauge(label("iused"), unusedr),
+			Ifree:       metrics.NewRegisteredGauge(label("ifree"), unusedr),
+			IusePercent: metrics.NewRegisteredGaugeFloat64(label("iusepercent"), unusedr),
+		},
 	}
 	ir.PrivateDFRegistry.Register(fs.DevName, i) // error is ignored
 	// errs when the type is not derived from (go-)metrics types
@@ -422,18 +424,15 @@ func (ir *IndexRegistry) DFbytesInternal(cli *client.Client, send *client.SendCl
 	client.SetBool(&cli.ExpandableDF, &send.ExpandableDF, len(private) > cli.Toprows)
 	client.SetString(&cli.ExpandtextDF, &send.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(private)))
 
-	sort.Stable(diskOrder{
-		disks:   private,
-		seq:     cli.DFSEQ,
-		reverse: client.DFBIMAP.SEQ2REVERSE[cli.DFSEQ],
-	})
+	crit := SortCritDisk{Reverse: client.DFBIMAP.SEQ2REVERSE[cli.DFSEQ], SEQ: cli.DFSEQ}
+	private.StableSortBy(crit.LessDisk)
 
 	var public []types.DiskBytes
 	for i, disk := range private {
 		if !*cli.ExpandDF && i > cli.Toprows-1 {
 			break
 		}
-		public = append(public, FormatDFbytes(*disk))
+		public = append(public, FormatDFbytes(disk))
 	}
 	return public
 }
@@ -462,18 +461,15 @@ func (ir *IndexRegistry) DFinodes(cli *client.Client, send *client.SendClient) [
 	client.SetBool(&cli.ExpandableDF, &send.ExpandableDF, len(private) > cli.Toprows)
 	client.SetString(&cli.ExpandtextDF, &send.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(private)))
 
-	sort.Stable(diskOrder{
-		disks:   private,
-		seq:     cli.DFSEQ,
-		reverse: client.DFBIMAP.SEQ2REVERSE[cli.DFSEQ],
-	})
+	crit := SortCritDisk{Reverse: client.DFBIMAP.SEQ2REVERSE[cli.DFSEQ], SEQ: cli.DFSEQ}
+	private.StableSortBy(crit.LessDisk)
 
 	var public []types.DiskInodes
 	for i, disk := range private {
 		if !*cli.ExpandDF && i > cli.Toprows-1 {
 			break
 		}
-		public = append(public, FormatDFinodes(*disk))
+		public = append(public, FormatDFinodes(disk))
 	}
 	return public
 }
@@ -555,9 +551,9 @@ func (ir *IndexRegistry) ListPrivateCPU() (lmc []*system.MetricCPU) {
 }
 
 // ListPrivateDisk returns list of types.MetricDF's by traversing the PrivateDFRegistry.
-func (ir *IndexRegistry) ListPrivateDisk() (lmd []*types.MetricDF) {
+func (ir *IndexRegistry) ListPrivateDisk() (lmd types.MetricDFSlice) {
 	ir.PrivateDFRegistry.Each(func(name string, i interface{}) {
-		lmd = append(lmd, i.(*types.MetricDF))
+		lmd = append(lmd, i.(types.MetricDF))
 	})
 	return lmd
 }

@@ -564,7 +564,12 @@ func (sms *StandardMetricString) Update(new string) {
 	sms.string = new
 }
 
+// +gen slice:"PkgSortBy"
 type MetricDF struct {
+	*DF
+}
+
+type DF struct {
 	metrics.Healthcheck // derive from one of (go-)metric types, otherwise it won't be registered
 	DevName             MetricString
 	Free                metrics.GaugeFloat64
@@ -580,8 +585,8 @@ type MetricDF struct {
 	DirName             MetricString
 }
 
-// Update reads usage and fs and updates the corresponding fields in MetricDF.
-func (md *MetricDF) Update(fs sigar.FileSystem, usage sigar.FileSystemUsage) {
+// Update reads usage and fs and updates the corresponding fields in DF.
+func (md *DF) Update(fs sigar.FileSystem, usage sigar.FileSystemUsage) {
 	md.DevName.Update(fs.DevName)
 	md.DirName.Update(fs.DirName)
 	md.Free.Update(float64(usage.Free << 10))
