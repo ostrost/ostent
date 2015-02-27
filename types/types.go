@@ -212,8 +212,8 @@ type InterfaceMeta struct {
 	NameHTML template.HTML
 }
 
-// Interface type is a struct of interface metrics.
-type Interface struct {
+// InterfaceInfo type is a struct of interface metrics.
+type InterfaceInfo struct {
 	InterfaceMeta
 	In       string // with units
 	Out      string // with units
@@ -223,7 +223,7 @@ type Interface struct {
 
 // Interfaces type has a list of Interface.
 type Interfaces struct {
-	List []Interface
+	List []InterfaceInfo
 }
 
 // MetricProc hold a pointer to ProcInfo.

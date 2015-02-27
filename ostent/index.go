@@ -255,7 +255,7 @@ func (x ListMetricInterface) Less(i, j int) bool {
 	return x[i].Name < x[j].Name
 }
 
-func FormatInterface(mi *types.MetricInterface, ip InterfaceParts) types.Interface {
+func FormatInterface(mi *types.MetricInterface, ip InterfaceParts) types.InterfaceInfo {
 	ing, outg, isbytes := ip(mi)
 	deltain, in := ing.Values()
 	deltaout, out := outg.Values()
@@ -268,7 +268,7 @@ func FormatInterface(mi *types.MetricInterface, ip InterfaceParts) types.Interfa
 			return format.HumanBits(c * 8) // passing the bits
 		}
 	}
-	return types.Interface{
+	return types.InterfaceInfo{
 		InterfaceMeta: interfaceMetaFromString(mi.Name),
 		In:            form(uint64(in)),            // format.HumanB(uint64(in)),  // with units
 		Out:           form(uint64(out)),           // format.HumanB(uint64(out)), // with units
@@ -289,14 +289,14 @@ func (_ *IndexRegistry) InterfacePackets(mi *types.MetricInterface) (*types.Gaug
 	return mi.PacketsIn, mi.PacketsOut, false
 }
 
-func (ir *IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient, ip InterfaceParts) []types.Interface {
+func (ir *IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient, ip InterfaceParts) []types.InterfaceInfo {
 	private := ir.ListPrivateInterface()
 
 	client.SetBool(&cli.ExpandableIF, &send.ExpandableIF, len(private) > cli.Toprows)
 	client.SetString(&cli.ExpandtextIF, &send.ExpandtextIF, fmt.Sprintf("Expanded (%d)", len(private)))
 
 	sort.Sort(ListMetricInterface(private))
-	var public []types.Interface
+	var public []types.InterfaceInfo
 	for i, mi := range private {
 		if !*cli.ExpandIF && i >= cli.Toprows {
 			break
