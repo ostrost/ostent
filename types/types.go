@@ -608,3 +608,34 @@ func (md *DF) Update(fs sigar.FileSystem, usage sigar.FileSystemUsage) {
 		md.IusePercent.Update(iusePercent)
 	}
 }
+
+// MetricInterface is a set of interface metrics.
+type MetricInterface struct {
+	metrics.Healthcheck // derive from one of (go-)metric types, otherwise it won't be registered
+	Name                string
+	BytesIn             *GaugeDiff
+	BytesOut            *GaugeDiff
+	ErrorsIn            *GaugeDiff
+	ErrorsOut           *GaugeDiff
+	PacketsIn           *GaugeDiff
+	PacketsOut          *GaugeDiff
+}
+
+type Getifdata interface {
+	GetInBytes() uint
+	GetOutBytes() uint
+	GetInErrors() uint
+	GetOutErrors() uint
+	GetInPackets() uint
+	GetOutPackets() uint
+}
+
+// Update reads ifdata and updates the corresponding fields in MetricInterface.
+func (mi *MetricInterface) Update(ifdata Getifdata) {
+	mi.BytesIn.UpdateAbsolute(int64(ifdata.GetInBytes()))
+	mi.BytesOut.UpdateAbsolute(int64(ifdata.GetOutBytes()))
+	mi.ErrorsIn.UpdateAbsolute(int64(ifdata.GetInErrors()))
+	mi.ErrorsOut.UpdateAbsolute(int64(ifdata.GetOutErrors()))
+	mi.PacketsIn.UpdateAbsolute(int64(ifdata.GetInPackets()))
+	mi.PacketsOut.UpdateAbsolute(int64(ifdata.GetOutPackets()))
+}

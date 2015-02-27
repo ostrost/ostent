@@ -239,9 +239,9 @@ func (la *last) MakeCopy() (types.MetricProcSlice, *generic) {
 }
 
 // ListMetricInterface is a list of types.MetricInterface type. Used for sorting.
-type ListMetricInterface []*MetricInterface // satisfying sort.Interface
-func (x ListMetricInterface) Len() int      { return len(x) }
-func (x ListMetricInterface) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
+type ListMetricInterface []*types.MetricInterface // satisfying sort.Interface
+func (x ListMetricInterface) Len() int            { return len(x) }
+func (x ListMetricInterface) Swap(i, j int)       { x[i], x[j] = x[j], x[i] }
 func (x ListMetricInterface) Less(i, j int) bool {
 	a := RXlo.Match([]byte(x[i].Name))
 	b := RXlo.Match([]byte(x[j].Name))
@@ -255,29 +255,7 @@ func (x ListMetricInterface) Less(i, j int) bool {
 	return x[i].Name < x[j].Name
 }
 
-// MetricInterface is a set of interface metrics.
-type MetricInterface struct {
-	metrics.Healthcheck // derive from one of (go-)metric types, otherwise it won't be registered
-	Name                string
-	BytesIn             *types.GaugeDiff
-	BytesOut            *types.GaugeDiff
-	ErrorsIn            *types.GaugeDiff
-	ErrorsOut           *types.GaugeDiff
-	PacketsIn           *types.GaugeDiff
-	PacketsOut          *types.GaugeDiff
-}
-
-// Update reads ifdata and updates the corresponding fields in MetricInterface.
-func (mi *MetricInterface) Update(ifdata getifaddrs.IfData) {
-	mi.BytesIn.UpdateAbsolute(int64(ifdata.InBytes))
-	mi.BytesOut.UpdateAbsolute(int64(ifdata.OutBytes))
-	mi.ErrorsIn.UpdateAbsolute(int64(ifdata.InErrors))
-	mi.ErrorsOut.UpdateAbsolute(int64(ifdata.OutErrors))
-	mi.PacketsIn.UpdateAbsolute(int64(ifdata.InPackets))
-	mi.PacketsOut.UpdateAbsolute(int64(ifdata.OutPackets))
-}
-
-func (mi *MetricInterface) FormatInterface(ip InterfaceParts) types.Interface {
+func FormatInterface(mi *types.MetricInterface, ip InterfaceParts) types.Interface {
 	ing, outg, isbytes := ip(mi)
 	deltain, in := ing.Values()
 	deltaout, out := outg.Values()
@@ -299,15 +277,15 @@ func (mi *MetricInterface) FormatInterface(ip InterfaceParts) types.Interface {
 	}
 }
 
-type InterfaceParts func(*MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool)
+type InterfaceParts func(*types.MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool)
 
-func (_ *IndexRegistry) InterfaceBytes(mi *MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool) {
+func (_ *IndexRegistry) InterfaceBytes(mi *types.MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool) {
 	return mi.BytesIn, mi.BytesOut, true
 }
-func (_ *IndexRegistry) InterfaceErrors(mi *MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool) {
+func (_ *IndexRegistry) InterfaceErrors(mi *types.MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool) {
 	return mi.ErrorsIn, mi.ErrorsOut, false
 }
-func (_ *IndexRegistry) InterfacePackets(mi *MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool) {
+func (_ *IndexRegistry) InterfacePackets(mi *types.MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool) {
 	return mi.PacketsIn, mi.PacketsOut, false
 }
 
@@ -323,27 +301,27 @@ func (ir *IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient,
 		if !*cli.ExpandIF && i >= cli.Toprows {
 			break
 		}
-		public = append(public, mi.FormatInterface(ip))
+		public = append(public, FormatInterface(mi, ip))
 	}
 	return public
 }
 
 // ListPrivateInterface returns list of MetricInterface's by traversing the PrivateInterfaceRegistry.
-func (ir *IndexRegistry) ListPrivateInterface() (lmi []*MetricInterface) {
+func (ir *IndexRegistry) ListPrivateInterface() (lmi []*types.MetricInterface) {
 	ir.PrivateInterfaceRegistry.Each(func(name string, i interface{}) {
-		lmi = append(lmi, i.(*MetricInterface))
+		lmi = append(lmi, i.(*types.MetricInterface))
 	})
 	return lmi
 }
 
-// GetOrRegisterPrivateInterface produces a registered in PrivateInterfaceRegistry MetricInterface.
-func (ir *IndexRegistry) GetOrRegisterPrivateInterface(name string) *MetricInterface {
+// GetOrRegisterPrivateInterface produces a registered in PrivateInterfaceRegistry types.MetricInterface.
+func (ir *IndexRegistry) GetOrRegisterPrivateInterface(name string) *types.MetricInterface {
 	ir.PrivateMutex.Lock()
 	defer ir.PrivateMutex.Unlock()
 	if metric := ir.PrivateInterfaceRegistry.Get(name); metric != nil {
-		return metric.(*MetricInterface)
+		return metric.(*types.MetricInterface)
 	}
-	i := &MetricInterface{
+	i := &types.MetricInterface{
 		Name:       name,
 		BytesIn:    types.NewGaugeDiff("interface-"+name+".if_octets.rx", ir.Registry),
 		BytesOut:   types.NewGaugeDiff("interface-"+name+".if_octets.tx", ir.Registry),
@@ -667,7 +645,7 @@ type IndexRegistry struct {
 	Registry                 metrics.Registry
 	PrivateCPUAll            *system.MetricCPU
 	PrivateCPURegistry       metrics.Registry // set of MetricCPUs is handled as a metric in this registry
-	PrivateInterfaceRegistry metrics.Registry // set of MetricInterfaces is handled as a metric in this registry
+	PrivateInterfaceRegistry metrics.Registry // set of types.MetricInterfaces is handled as a metric in this registry
 	PrivateDFRegistry        metrics.Registry // set of types.MetricDFs is handled as a metric in this registry
 	PrivateMutex             sync.Mutex
 
