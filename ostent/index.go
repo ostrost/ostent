@@ -238,24 +238,20 @@ func (la *last) MakeCopy() (types.MetricProcSlice, *generic) {
 	return psCopy, &g // &lastInfo.Generic
 }
 
-// ListMetricInterface is a list of types.MetricInterface type. Used for sorting.
-type ListMetricInterface []*types.MetricInterface // satisfying sort.Interface
-func (x ListMetricInterface) Len() int            { return len(x) }
-func (x ListMetricInterface) Swap(i, j int)       { x[i], x[j] = x[j], x[i] }
-func (x ListMetricInterface) Less(i, j int) bool {
-	a := RXlo.Match([]byte(x[i].Name))
-	b := RXlo.Match([]byte(x[j].Name))
-	if !(a && b) {
-		if a {
+func LessInterface(a, b types.MetricInterface) bool {
+	amatch := RXlo.Match([]byte(a.Name))
+	bmatch := RXlo.Match([]byte(b.Name))
+	if !(amatch && bmatch) {
+		if amatch {
 			return false
-		} else if b {
+		} else if bmatch {
 			return true
 		}
 	}
-	return x[i].Name < x[j].Name
+	return a.Name < b.Name
 }
 
-func FormatInterface(mi *types.MetricInterface, ip InterfaceParts) types.InterfaceInfo {
+func FormatInterface(mi types.MetricInterface, ip InterfaceParts) types.InterfaceInfo {
 	ing, outg, isbytes := ip(mi)
 	deltain, in := ing.Values()
 	deltaout, out := outg.Values()
@@ -277,15 +273,15 @@ func FormatInterface(mi *types.MetricInterface, ip InterfaceParts) types.Interfa
 	}
 }
 
-type InterfaceParts func(*types.MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool)
+type InterfaceParts func(types.MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool)
 
-func (_ *IndexRegistry) InterfaceBytes(mi *types.MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool) {
+func (_ *IndexRegistry) InterfaceBytes(mi types.MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool) {
 	return mi.BytesIn, mi.BytesOut, true
 }
-func (_ *IndexRegistry) InterfaceErrors(mi *types.MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool) {
+func (_ *IndexRegistry) InterfaceErrors(mi types.MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool) {
 	return mi.ErrorsIn, mi.ErrorsOut, false
 }
-func (_ *IndexRegistry) InterfacePackets(mi *types.MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool) {
+func (_ *IndexRegistry) InterfacePackets(mi types.MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool) {
 	return mi.PacketsIn, mi.PacketsOut, false
 }
 
@@ -295,7 +291,7 @@ func (ir *IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient,
 	client.SetBool(&cli.ExpandableIF, &send.ExpandableIF, len(private) > cli.Toprows)
 	client.SetString(&cli.ExpandtextIF, &send.ExpandtextIF, fmt.Sprintf("Expanded (%d)", len(private)))
 
-	sort.Sort(ListMetricInterface(private))
+	private.SortSortBy(LessInterface)
 	var public []types.InterfaceInfo
 	for i, mi := range private {
 		if !*cli.ExpandIF && i >= cli.Toprows {
@@ -307,28 +303,30 @@ func (ir *IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient,
 }
 
 // ListPrivateInterface returns list of MetricInterface's by traversing the PrivateInterfaceRegistry.
-func (ir *IndexRegistry) ListPrivateInterface() (lmi []*types.MetricInterface) {
+func (ir *IndexRegistry) ListPrivateInterface() (lmi types.MetricInterfaceSlice) {
 	ir.PrivateInterfaceRegistry.Each(func(name string, i interface{}) {
-		lmi = append(lmi, i.(*types.MetricInterface))
+		lmi = append(lmi, i.(types.MetricInterface))
 	})
 	return lmi
 }
 
 // GetOrRegisterPrivateInterface produces a registered in PrivateInterfaceRegistry types.MetricInterface.
-func (ir *IndexRegistry) GetOrRegisterPrivateInterface(name string) *types.MetricInterface {
+func (ir *IndexRegistry) GetOrRegisterPrivateInterface(name string) types.MetricInterface {
 	ir.PrivateMutex.Lock()
 	defer ir.PrivateMutex.Unlock()
 	if metric := ir.PrivateInterfaceRegistry.Get(name); metric != nil {
-		return metric.(*types.MetricInterface)
+		return metric.(types.MetricInterface)
 	}
-	i := &types.MetricInterface{
-		Name:       name,
-		BytesIn:    types.NewGaugeDiff("interface-"+name+".if_octets.rx", ir.Registry),
-		BytesOut:   types.NewGaugeDiff("interface-"+name+".if_octets.tx", ir.Registry),
-		ErrorsIn:   types.NewGaugeDiff("interface-"+name+".if_errors.rx", ir.Registry),
-		ErrorsOut:  types.NewGaugeDiff("interface-"+name+".if_errors.tx", ir.Registry),
-		PacketsIn:  types.NewGaugeDiff("interface-"+name+".if_packets.rx", ir.Registry),
-		PacketsOut: types.NewGaugeDiff("interface-"+name+".if_packets.tx", ir.Registry),
+	i := types.MetricInterface{
+		Interface: &types.Interface{
+			Name:       name,
+			BytesIn:    types.NewGaugeDiff("interface-"+name+".if_octets.rx", ir.Registry),
+			BytesOut:   types.NewGaugeDiff("interface-"+name+".if_octets.tx", ir.Registry),
+			ErrorsIn:   types.NewGaugeDiff("interface-"+name+".if_errors.rx", ir.Registry),
+			ErrorsOut:  types.NewGaugeDiff("interface-"+name+".if_errors.tx", ir.Registry),
+			PacketsIn:  types.NewGaugeDiff("interface-"+name+".if_packets.rx", ir.Registry),
+			PacketsOut: types.NewGaugeDiff("interface-"+name+".if_packets.tx", ir.Registry),
+		},
 	}
 	ir.PrivateInterfaceRegistry.Register(name, i) // error is ignored
 	// errs when the type is not derived from (go-)metrics types

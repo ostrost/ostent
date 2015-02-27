@@ -609,8 +609,14 @@ func (md *DF) Update(fs sigar.FileSystem, usage sigar.FileSystemUsage) {
 	}
 }
 
-// MetricInterface is a set of interface metrics.
+// MetricInterface hold a pointer to Interface.
+// +gen slice:"PkgSortBy"
 type MetricInterface struct {
+	*Interface
+}
+
+// Interface is a set of interface metrics.
+type Interface struct {
 	metrics.Healthcheck // derive from one of (go-)metric types, otherwise it won't be registered
 	Name                string
 	BytesIn             *GaugeDiff
@@ -621,6 +627,16 @@ type MetricInterface struct {
 	PacketsOut          *GaugeDiff
 }
 
+// Update reads ifdata and updates the corresponding fields in Interface.
+func (i *Interface) Update(ifdata Getifdata) {
+	i.BytesIn.UpdateAbsolute(int64(ifdata.GetInBytes()))
+	i.BytesOut.UpdateAbsolute(int64(ifdata.GetOutBytes()))
+	i.ErrorsIn.UpdateAbsolute(int64(ifdata.GetInErrors()))
+	i.ErrorsOut.UpdateAbsolute(int64(ifdata.GetOutErrors()))
+	i.PacketsIn.UpdateAbsolute(int64(ifdata.GetInPackets()))
+	i.PacketsOut.UpdateAbsolute(int64(ifdata.GetOutPackets()))
+}
+
 type Getifdata interface {
 	GetInBytes() uint
 	GetOutBytes() uint
@@ -628,14 +644,4 @@ type Getifdata interface {
 	GetOutErrors() uint
 	GetInPackets() uint
 	GetOutPackets() uint
-}
-
-// Update reads ifdata and updates the corresponding fields in MetricInterface.
-func (mi *MetricInterface) Update(ifdata Getifdata) {
-	mi.BytesIn.UpdateAbsolute(int64(ifdata.GetInBytes()))
-	mi.BytesOut.UpdateAbsolute(int64(ifdata.GetOutBytes()))
-	mi.ErrorsIn.UpdateAbsolute(int64(ifdata.GetInErrors()))
-	mi.ErrorsOut.UpdateAbsolute(int64(ifdata.GetOutErrors()))
-	mi.PacketsIn.UpdateAbsolute(int64(ifdata.GetInPackets()))
-	mi.PacketsOut.UpdateAbsolute(int64(ifdata.GetOutPackets()))
 }
