@@ -14,7 +14,6 @@ import (
 
 	"github.com/ostrost/ostent/assets"
 	"github.com/ostrost/ostent/client"
-	"github.com/ostrost/ostent/cpu"
 	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/getifaddrs"
 	"github.com/ostrost/ostent/system"
@@ -136,7 +135,7 @@ type clientData struct {
 
 type IndexData struct {
 	Generic generic
-	CPU     cpu.CPUInfo
+	CPU     types.CPUInfo
 	MEM     types.MEM
 
 	PStable PStable
@@ -166,7 +165,7 @@ type IndexData struct {
 
 type IndexUpdate struct {
 	Generic  *generic        `json:",omitempty"`
-	CPU      *cpu.CPUInfo    `json:",omitempty"`
+	CPU      *types.CPUInfo  `json:",omitempty"`
 	MEM      *types.MEM      `json:",omitempty"`
 	DFlinks  *DFlinks        `json:",omitempty"`
 	DFbytes  *types.DFbytes  `json:",omitempty"`
@@ -470,23 +469,23 @@ func FormatDFinodes(md types.MetricDF) types.DiskInodes {
 
 func (ir *IndexRegistry) CPU(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
 	list := ir.CPUInternal(cli, send)
-	iu.CPU = &cpu.CPUInfo{List: list}
+	iu.CPU = &types.CPUInfo{List: list}
 	return IndexUpdate{CPU: iu.CPU}
 }
 
-func (ir *IndexRegistry) CPUInternal(cli *client.Client, send *client.SendClient) []cpu.CoreInfo {
+func (ir *IndexRegistry) CPUInternal(cli *client.Client, send *client.SendClient) []types.CoreInfo {
 	private := ir.ListPrivateCPU()
 
 	client.SetBool(&cli.ExpandableCPU, &send.ExpandableCPU, len(private) > cli.Toprows) // one row reserved for "all N"
 	client.SetString(&cli.ExpandtextCPU, &send.ExpandtextCPU, fmt.Sprintf("Expanded (%d)", len(private)))
 
 	if len(private) == 1 {
-		return []cpu.CoreInfo{FormatCPU(private[0])}
+		return []types.CoreInfo{FormatCPU(private[0])}
 	}
 	sort.Sort(ListMetricCPU(private))
-	var public []cpu.CoreInfo
+	var public []types.CoreInfo
 	if !*cli.ExpandCPU {
-		public = []cpu.CoreInfo{FormatCPU(ir.PrivateCPUAll)}
+		public = []types.CoreInfo{FormatCPU(ir.PrivateCPUAll)}
 	}
 	for i, mc := range private {
 		if !*cli.ExpandCPU && i > cli.Toprows-2 {
@@ -498,7 +497,7 @@ func (ir *IndexRegistry) CPUInternal(cli *client.Client, send *client.SendClient
 	return public
 }
 
-func FormatCPU(mc *system.MetricCPU) cpu.CoreInfo {
+func FormatCPU(mc *system.MetricCPU) types.CoreInfo {
 	user := uint(mc.User.Percent.Snapshot().Value()) // rounding
 	// .Nice is unused
 	sys := uint(mc.Sys.Percent.Snapshot().Value())   // rounding
@@ -507,7 +506,7 @@ func FormatCPU(mc *system.MetricCPU) cpu.CoreInfo {
 	if prefix := "cpu-"; strings.HasPrefix(N, prefix) { // true for all but "all"
 		N = "#" + N[len(prefix):] // fmt.Sprintf("#%d", n)
 	}
-	return cpu.CoreInfo{
+	return types.CoreInfo{
 		N:         N,
 		User:      user,
 		Sys:       sys,
