@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/url"
 	"os/user"
-	"sort"
 	"strings"
 	"sync"
 
@@ -368,20 +367,16 @@ func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) types.Metri
 	return i
 }
 
-// ListMetricCPU is a list of types.MetricCPU type. Used for sorting.
-type ListMetricCPU []*types.MetricCPU // satisfying sort.Interface
-func (x ListMetricCPU) Len() int      { return len(x) }
-func (x ListMetricCPU) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
-func (x ListMetricCPU) Less(i, j int) bool {
+func LessCPU(a, b types.MetricCPU) bool {
 	var (
-		juser = x[j].User.Percent.Snapshot().Value()
-		jnice = x[j].Nice.Percent.Snapshot().Value()
-		jsys  = x[j].Sys.Percent.Snapshot().Value()
-		iuser = x[i].User.Percent.Snapshot().Value()
-		inice = x[i].Nice.Percent.Snapshot().Value()
-		isys  = x[i].Sys.Percent.Snapshot().Value()
+		auser = a.User.Percent.Snapshot().Value()
+		anice = a.Nice.Percent.Snapshot().Value()
+		asys  = a.Sys.Percent.Snapshot().Value()
+		buser = b.User.Percent.Snapshot().Value()
+		bnice = b.Nice.Percent.Snapshot().Value()
+		bsys  = b.Sys.Percent.Snapshot().Value()
 	)
-	return (juser + jnice + jsys) < (iuser + inice + isys)
+	return (auser + anice + asys) > (buser + bnice + bsys)
 }
 
 func (ir *IndexRegistry) DFbytes(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
@@ -482,7 +477,7 @@ func (ir *IndexRegistry) CPUInternal(cli *client.Client, send *client.SendClient
 	if len(private) == 1 {
 		return []types.CoreInfo{FormatCPU(private[0])}
 	}
-	sort.Sort(ListMetricCPU(private))
+	private.SortSortBy(LessCPU)
 	var public []types.CoreInfo
 	if !*cli.ExpandCPU {
 		public = []types.CoreInfo{FormatCPU(ir.PrivateCPUAll)}
@@ -497,7 +492,7 @@ func (ir *IndexRegistry) CPUInternal(cli *client.Client, send *client.SendClient
 	return public
 }
 
-func FormatCPU(mc *types.MetricCPU) types.CoreInfo {
+func FormatCPU(mc types.MetricCPU) types.CoreInfo {
 	user := uint(mc.User.Percent.Snapshot().Value()) // rounding
 	// .Nice is unused
 	sys := uint(mc.Sys.Percent.Snapshot().Value())   // rounding
@@ -518,9 +513,9 @@ func FormatCPU(mc *types.MetricCPU) types.CoreInfo {
 }
 
 // ListPrivateCPU returns list of types.MetricCPU's by traversing the PrivateCPURegistry.
-func (ir *IndexRegistry) ListPrivateCPU() (lmc []*types.MetricCPU) {
+func (ir *IndexRegistry) ListPrivateCPU() (lmc types.MetricCPUSlice) {
 	ir.PrivateCPURegistry.Each(func(name string, i interface{}) {
-		lmc = append(lmc, i.(*types.MetricCPU))
+		lmc = append(lmc, i.(types.MetricCPU))
 	})
 	return lmc
 }
@@ -534,14 +529,14 @@ func (ir *IndexRegistry) ListPrivateDisk() (lmd types.MetricDFSlice) {
 }
 
 // GetOrRegisterPrivateCPU produces a registered in PrivateCPURegistry MetricCPU.
-func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) *types.MetricCPU {
+func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) types.MetricCPU {
 	ir.PrivateMutex.Lock()
 	defer ir.PrivateMutex.Unlock()
 	name := fmt.Sprintf("cpu-%d", coreno)
 	if metric := ir.PrivateCPURegistry.Get(name); metric != nil {
-		return metric.(*types.MetricCPU)
+		return metric.(types.MetricCPU)
 	}
-	i := system.NewMetricCPU(ir.Registry, name)
+	i := *system.NewMetricCPU(ir.Registry, name)
 	ir.PrivateCPURegistry.Register(name, i) // error is ignored
 	// errs when the type is not derived from (go-)metrics types
 	return i
@@ -640,7 +635,7 @@ func (ir *IndexRegistry) UpdateIFdata(ifdata getifaddrs.IfData) {
 
 type IndexRegistry struct {
 	Registry                 metrics.Registry
-	PrivateCPUAll            *types.MetricCPU
+	PrivateCPUAll            types.MetricCPU
 	PrivateCPURegistry       metrics.Registry // set of MetricCPUs is handled as a metric in this registry
 	PrivateInterfaceRegistry metrics.Registry // set of types.MetricInterfaces is handled as a metric in this registry
 	PrivateDFRegistry        metrics.Registry // set of types.MetricDFs is handled as a metric in this registry
@@ -663,7 +658,7 @@ func init() {
 		PrivateDFRegistry:        metrics.NewRegistry(),
 	}
 	// Reg1s.PrivateCPUAll = *Reg1s.RegisterCPU(metrics.NewRegistry(), "all")
-	Reg1s.PrivateCPUAll = system.NewMetricCPU( /* pcreg := */ metrics.NewRegistry(), "all")
+	Reg1s.PrivateCPUAll = *system.NewMetricCPU( /* pcreg := */ metrics.NewRegistry(), "all")
 	// pcreg.Register("all", Reg1s.PrivateCPUAll)
 
 	Reg1s.RAM = system.NewMetricRAM(Reg1s.Registry)
