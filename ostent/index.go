@@ -368,10 +368,10 @@ func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) types.Metri
 	return i
 }
 
-// ListMetricCPU is a list of system.MetricCPU type. Used for sorting.
-type ListMetricCPU []*system.MetricCPU // satisfying sort.Interface
-func (x ListMetricCPU) Len() int       { return len(x) }
-func (x ListMetricCPU) Swap(i, j int)  { x[i], x[j] = x[j], x[i] }
+// ListMetricCPU is a list of types.MetricCPU type. Used for sorting.
+type ListMetricCPU []*types.MetricCPU // satisfying sort.Interface
+func (x ListMetricCPU) Len() int      { return len(x) }
+func (x ListMetricCPU) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
 func (x ListMetricCPU) Less(i, j int) bool {
 	var (
 		juser = x[j].User.Percent.Snapshot().Value()
@@ -497,7 +497,7 @@ func (ir *IndexRegistry) CPUInternal(cli *client.Client, send *client.SendClient
 	return public
 }
 
-func FormatCPU(mc *system.MetricCPU) types.CoreInfo {
+func FormatCPU(mc *types.MetricCPU) types.CoreInfo {
 	user := uint(mc.User.Percent.Snapshot().Value()) // rounding
 	// .Nice is unused
 	sys := uint(mc.Sys.Percent.Snapshot().Value())   // rounding
@@ -517,10 +517,10 @@ func FormatCPU(mc *system.MetricCPU) types.CoreInfo {
 	}
 }
 
-// ListPrivateCPU returns list of system.MetricCPU's by traversing the PrivateCPURegistry.
-func (ir *IndexRegistry) ListPrivateCPU() (lmc []*system.MetricCPU) {
+// ListPrivateCPU returns list of types.MetricCPU's by traversing the PrivateCPURegistry.
+func (ir *IndexRegistry) ListPrivateCPU() (lmc []*types.MetricCPU) {
 	ir.PrivateCPURegistry.Each(func(name string, i interface{}) {
-		lmc = append(lmc, i.(*system.MetricCPU))
+		lmc = append(lmc, i.(*types.MetricCPU))
 	})
 	return lmc
 }
@@ -534,12 +534,12 @@ func (ir *IndexRegistry) ListPrivateDisk() (lmd types.MetricDFSlice) {
 }
 
 // GetOrRegisterPrivateCPU produces a registered in PrivateCPURegistry MetricCPU.
-func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) *system.MetricCPU {
+func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) *types.MetricCPU {
 	ir.PrivateMutex.Lock()
 	defer ir.PrivateMutex.Unlock()
 	name := fmt.Sprintf("cpu-%d", coreno)
 	if metric := ir.PrivateCPURegistry.Get(name); metric != nil {
-		return metric.(*system.MetricCPU)
+		return metric.(*types.MetricCPU)
 	}
 	i := system.NewMetricCPU(ir.Registry, name)
 	ir.PrivateCPURegistry.Register(name, i) // error is ignored
@@ -624,7 +624,7 @@ func (ir *IndexRegistry) UpdateCPU(cpus []sigar.Cpu) {
 	all := sigar.Cpu{}
 	for coreno, core := range cpus {
 		ir.GetOrRegisterPrivateCPU(coreno).Update(core)
-		system.CPUAdd(&all, core)
+		types.AddSCPU(&all, core)
 	}
 	if ir.PrivateCPUAll.N == "all" {
 		ir.PrivateCPUAll.N = fmt.Sprintf("all %d", len(cpus))
@@ -640,7 +640,7 @@ func (ir *IndexRegistry) UpdateIFdata(ifdata getifaddrs.IfData) {
 
 type IndexRegistry struct {
 	Registry                 metrics.Registry
-	PrivateCPUAll            *system.MetricCPU
+	PrivateCPUAll            *types.MetricCPU
 	PrivateCPURegistry       metrics.Registry // set of MetricCPUs is handled as a metric in this registry
 	PrivateInterfaceRegistry metrics.Registry // set of types.MetricInterfaces is handled as a metric in this registry
 	PrivateDFRegistry        metrics.Registry // set of types.MetricDFs is handled as a metric in this registry

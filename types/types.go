@@ -528,7 +528,11 @@ type CoreInfo struct {
 	// IdleSpark string
 }
 
-type MetricCPUCommon struct {
+type CPUUpdater interface {
+	UpdateCPU(sigar.Cpu, int64)
+}
+
+type MetricCPU struct {
 	metrics.Healthcheck        // derive from one of (go-)metric types, otherwise it won't be registered
 	N                   string // The "cpu-N"
 	User                *GaugePercent
@@ -536,26 +540,42 @@ type MetricCPUCommon struct {
 	Sys                 *GaugePercent
 	Idle                *GaugePercent
 	Total               *GaugeDiff
+	Extra               CPUUpdater
 }
 
-func (mcc *MetricCPUCommon) UpdateCommon(sigarCpu sigar.Cpu, total uint64) int64 {
-	totalDelta := mcc.Total.UpdateAbsolute(int64(total))
+func (mcc *MetricCPU) Update(sigarCpu sigar.Cpu) {
+	totalDelta := mcc.Total.UpdateAbsolute(int64(sigarCpu.Total()))
 	mcc.User.UpdatePercent(totalDelta, sigarCpu.User)
 	mcc.Nice.UpdatePercent(totalDelta, sigarCpu.Nice)
 	mcc.Sys.UpdatePercent(totalDelta, sigarCpu.Sys)
 	mcc.Idle.UpdatePercent(totalDelta, sigarCpu.Idle)
-	return totalDelta
+	if mcc.Extra != nil {
+		mcc.Extra.UpdateCPU(sigarCpu, totalDelta)
+	}
 }
 
-func NewMetricCPUCommon(r metrics.Registry, name string) *MetricCPUCommon {
-	return &MetricCPUCommon{
+func NewMetricCPU(r metrics.Registry, name string, extra CPUUpdater) *MetricCPU {
+	return &MetricCPU{
 		N:     name,
 		User:  NewGaugePercent(name+".user", r),
 		Nice:  NewGaugePercent(name+".nice", r),
 		Sys:   NewGaugePercent(name+".system", r),
 		Idle:  NewGaugePercent(name+".idle", r),
 		Total: NewGaugeDiff(name+"-total", metrics.NewRegistry()),
+		Extra: extra,
 	}
+}
+
+// AddSCPU adds other to dst field by field.
+func AddSCPU(dst *sigar.Cpu, other sigar.Cpu) {
+	dst.User += other.User
+	dst.Nice += other.Nice
+	dst.Sys += other.Sys
+	dst.Idle += other.Idle
+	dst.Wait += other.Wait
+	dst.Irq += other.Irq
+	dst.SoftIrq += other.SoftIrq
+	dst.Stolen += other.Stolen
 }
 
 type MetricString interface {

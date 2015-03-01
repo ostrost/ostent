@@ -34,26 +34,6 @@ func (mr *MetricRAM) Update(got sigar.Mem, extra1, extra2 uint64) {
 	mr.Active.Update(int64(extra2))
 }
 
-type MetricCPU struct {
-	*types.MetricCPUCommon
-}
-
-func (mc *MetricCPU) Update(cpu sigar.Cpu) {
-	total := cpu.User + cpu.Nice + cpu.Sys + cpu.Idle
-	// gosigar cpu.Total() implementation adds .{Wait,{,Soft}Irq,Stolen}
-	// which is zero for darwin
-	mc.UpdateCommon(cpu, total)
-}
-
-func NewMetricCPU(r metrics.Registry, name string) *MetricCPU {
-	return &MetricCPU{
-		MetricCPUCommon: types.NewMetricCPUCommon(r, name),
-	}
-}
-
-func CPUAdd(sum *sigar.Cpu, other sigar.Cpu) {
-	sum.User += other.User
-	sum.Nice += other.Nice
-	sum.Sys += other.Sys
-	sum.Idle += other.Idle
+func NewMetricCPU(r metrics.Registry, name string) *types.MetricCPU {
+	return types.NewMetricCPU(r, name, nil)
 }

@@ -34,41 +34,25 @@ func (mr *MetricRAM) Update(got sigar.Mem, extra1, extra2 uint64) {
 	mr.Cached.Update(int64(extra2))
 }
 
-type MetricCPU struct {
-	*types.MetricCPUCommon
+type ExtraMetricCPU struct {
 	Wait    *types.GaugePercent
 	Irq     *types.GaugePercent
 	SoftIrq *types.GaugePercent
 	Stolen  *types.GaugePercent
 }
 
-func (mc *MetricCPU) Update(sigarCpu sigar.Cpu) {
-	total := sigarCpu.Total() // gosigar implementation aka:
-	// .User + .Nice + .Sys + .Idle + .Wait + .Irq + .SoftIrq + .Stolen
-	totalDelta := mc.UpdateCommon(sigarCpu, total)
+func (mc *ExtraMetricCPU) UpdateCPU(sigarCpu sigar.Cpu, totalDelta int64) {
 	mc.Wait.UpdatePercent(totalDelta, sigarCpu.Wait)
 	mc.Irq.UpdatePercent(totalDelta, sigarCpu.Irq)
 	mc.SoftIrq.UpdatePercent(totalDelta, sigarCpu.SoftIrq)
 	mc.Stolen.UpdatePercent(totalDelta, sigarCpu.Stolen)
 }
 
-func NewMetricCPU(r metrics.Registry, name string) *MetricCPU {
-	return &MetricCPU{
-		MetricCPUCommon: types.NewMetricCPUCommon(r, name),
-		Wait:            types.NewGaugePercent(name+".wait", r),
-		Irq:             types.NewGaugePercent(name+".interrupt", r),
-		SoftIrq:         types.NewGaugePercent(name+".softirq", r),
-		Stolen:          types.NewGaugePercent(name+".steal", r),
-	}
-}
-
-func CPUAdd(sum *sigar.Cpu, other sigar.Cpu) {
-	sum.User += other.User
-	sum.Nice += other.Nice
-	sum.Sys += other.Sys
-	sum.Idle += other.Idle
-	sum.Wait += other.Wait
-	sum.Irq += other.Irq
-	sum.SoftIrq += other.SoftIrq
-	sum.Stolen += other.Stolen
+func NewMetricCPU(r metrics.Registry, name string) *types.MetricCPU {
+	return types.NewMetricCPU(r, name, &ExtraMetricCPU{
+		Wait:    types.NewGaugePercent(name+".wait", r),
+		Irq:     types.NewGaugePercent(name+".interrupt", r),
+		SoftIrq: types.NewGaugePercent(name+".softirq", r),
+		Stolen:  types.NewGaugePercent(name+".steal", r),
+	})
 }
