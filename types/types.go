@@ -257,18 +257,34 @@ type ProcData struct {
 	Resident string // with units
 }
 
-type MetricRAMCommon struct {
-	Total metrics.Gauge
+type RAMUpdater interface {
+	UpdateRAM(sigar.Mem, uint64, uint64)
 }
 
-func NewMetricRAMCommon() MetricRAMCommon {
-	return MetricRAMCommon{
+type MetricRAM struct {
+	Free  metrics.Gauge
+	Total metrics.Gauge
+	Extra RAMUpdater
+}
+
+func ExtraNewMetricRAM(r metrics.Registry, extra RAMUpdater) *MetricRAM {
+	return &MetricRAM{
+		Free:  metrics.NewRegisteredGauge("memory.memory-free", r),
 		Total: metrics.NewRegisteredGauge("memory.memory-total", metrics.NewRegistry()),
+		Extra: extra,
 	}
 }
 
-func (mrc *MetricRAMCommon) UpdateCommon(got sigar.Mem) {
-	mrc.Total.Update(int64(got.Total))
+func (mr *MetricRAM) Update(got sigar.Mem, extra1, extra2 uint64) {
+	mr.Free.Update(int64(got.Free))
+	mr.Total.Update(int64(got.Total))
+	if mr.Extra != nil {
+		mr.Extra.UpdateRAM(got, extra1, extra2)
+	}
+}
+
+func (mr *MetricRAM) UsedValue() uint64 { // Total - Free
+	return uint64(mr.Total.Snapshot().Value() - mr.Free.Snapshot().Value())
 }
 
 type GaugeShortLoad struct {
@@ -554,7 +570,7 @@ func (mcc *MetricCPU) Update(sigarCpu sigar.Cpu) {
 	}
 }
 
-func NewMetricCPU(r metrics.Registry, name string, extra CPUUpdater) *MetricCPU {
+func ExtraNewMetricCPU(r metrics.Registry, name string, extra CPUUpdater) *MetricCPU {
 	return &MetricCPU{
 		N:     name,
 		User:  NewGaugePercent(name+".user", r),

@@ -646,7 +646,7 @@ type IndexRegistry struct {
 	PrivateDFRegistry        metrics.Registry // set of types.MetricDFs is handled as a metric in this registry
 	PrivateMutex             sync.Mutex
 
-	RAM  system.MetricRAM
+	RAM  *types.MetricRAM
 	Swap types.MetricSwap
 	Load *types.MetricLoad
 
