@@ -2,60 +2,22 @@ package ostent
 
 import (
 	"encoding/json"
-	"html/template"
 	"os"
 	"os/user"
-	"sort"
 	"syscall"
 	"time"
 
 	"github.com/howeyc/fsnotify"
+	"github.com/ostrost/ostent/types"
 )
 
-type vagrantMachine struct {
-	UUID     string
-	UUIDHTML template.HTML // !
-
-	Vagrantfile_pathHTML template.HTML // !
-	Vagrantfile_path     string
-	Local_data_path      string
-
-	Name      string
-	Provider  string
-	State     string
-	StateHTML template.HTML
-
-	// 	Vagrantfile_name *[]string   // unused
-	// 	Updated_at         *string   // unused
-	// 	Extra_data         *struct { // unused
-	//		Box *struct{
-	//			Name     *string
-	//			Provider *string
-	//			Version  *string
-	//		}
-	//	}
+type VagrantMachines struct {
+	List types.VgmachineSlice
 }
 
-type vagrantMachines struct {
-	List []vagrantMachine
-}
+func LessVgmachine(a, b types.Vgmachine) bool { return a.UUID < b.UUID }
 
-// satisfying sort.Interface interface
-func (ms vagrantMachines) Len() int {
-	return len(ms.List)
-}
-
-// satisfying sort.Interface interface
-func (ms vagrantMachines) Swap(i, j int) {
-	ms.List[i], ms.List[j] = ms.List[j], ms.List[i]
-}
-
-// satisfying sort.Interface interface
-func (ms vagrantMachines) Less(i, j int) bool {
-	return ms.List[i].UUID < ms.List[j].UUID
-}
-
-func vagrantmachines() (*vagrantMachines, error) {
+func vagrantmachines() (*VagrantMachines, error) {
 	currentUser, _ := user.Current()
 	lockFilename := currentUser.HomeDir + "/.vagrant.d/data/machine-index/index.lock"
 	indexFilename := currentUser.HomeDir + "/.vagrant.d/data/machine-index/index"
@@ -75,24 +37,24 @@ func vagrantmachines() (*vagrantMachines, error) {
 	}
 
 	status := new(struct {
-		Machines *map[string]vagrantMachine // the key is UUID
+		Machines *map[string]types.Vgmachine // the key is UUID
 		// Version int // unused
 	})
 	if err := json.NewDecoder(open).Decode(status); err != nil { // json.Unmarshal(text, status)
 		return nil, err
 	}
-	machines := new(vagrantMachines)
+	machines := new(VagrantMachines)
 	if status.Machines != nil {
 		for uuid, machine := range *status.Machines {
 			machine.UUID = uuid
 			machine.UUIDHTML = tooltipable(7, uuid)
-			machine.Vagrantfile_pathHTML = tooltipable(50, machine.Vagrantfile_path)
+			machine.VagrantfilePathHTML = tooltipable(50, machine.VagrantfilePath)
 			machine.StateHTML = tooltipable(8, machine.State)
 			// (*status.Machines)[uuid] = machine
 			machines.List = append(machines.List, machine)
 		}
 	}
-	sort.Stable(machines)
+	machines.List.StableSortBy(LessVgmachine)
 	return machines, nil
 }
 

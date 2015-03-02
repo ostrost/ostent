@@ -148,7 +148,7 @@ type IndexData struct {
 	IFerrors  types.Interfaces
 	IFpackets types.Interfaces
 
-	VagrantMachines *vagrantMachines
+	VagrantMachines *VagrantMachines
 	VagrantError    string
 	VagrantErrord   bool
 
@@ -176,7 +176,7 @@ type IndexUpdate struct {
 	IFerrors  *types.Interfaces `json:",omitempty"`
 	IFpackets *types.Interfaces `json:",omitempty"`
 
-	VagrantMachines *vagrantMachines `json:",omitempty"`
+	VagrantMachines *VagrantMachines `json:",omitempty"`
 	VagrantError    string
 	VagrantErrord   bool
 

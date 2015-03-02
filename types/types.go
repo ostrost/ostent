@@ -707,3 +707,28 @@ type Getifdata interface {
 	GetInPackets() uint
 	GetOutPackets() uint
 }
+
+// +gen slice:"PkgSortBy"
+type Vgmachine struct {
+	UUID     string
+	UUIDHTML template.HTML // !
+
+	VagrantfilePathHTML template.HTML // !
+	VagrantfilePath     string        `json:"vagrantfile_path"`
+	LocalDataPath       string        `json:"local_data_path"`
+
+	Name      string
+	Provider  string
+	State     string
+	StateHTML template.HTML
+
+	// 	Vagrantfile_name *[]string   // unused
+	// 	Updated_at         *string   // unused
+	// 	Extra_data         *struct { // unused
+	//		Box *struct{
+	//			Name     *string
+	//			Provider *string
+	//			Version  *string
+	//		}
+	//	}
+}
