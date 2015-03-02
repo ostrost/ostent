@@ -19,7 +19,7 @@ func main() {
 	target := flag.Arg(0)
 
 	var lines []string
-	for _, line := range assets.JsAssetNames(shareassets.AssetNames(), false) {
+	for _, line := range assets.JsAssetNames(shareassets.AssetNames()) {
 		lines = append(lines, filepath.Join(packageName, line))
 	}
 

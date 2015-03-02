@@ -1,9 +1,7 @@
 package assets
 
 import (
-	"fmt"
 	"net/http"
-	"path/filepath"
 	"sort"
 	"strings"
 )
@@ -44,7 +42,7 @@ func (sa sortassets) Swap(i, j int) {
 	sa.names[i], sa.names[j] = sa.names[j], sa.names[i]
 }
 
-func JsAssetNames(assetnames []string, develreact bool) []string {
+func JsAssetNames(assetnames []string) []string {
 	sa := sortassets{
 		substr_indexfrom: []string{
 			"jquery",
@@ -59,24 +57,11 @@ func JsAssetNames(assetnames []string, develreact bool) []string {
 			"milk", // from coffee script
 		},
 	}
-
 	for _, name := range assetnames {
-		const dotjs = ".js"
-		if !strings.HasSuffix(name, dotjs) {
-			continue
+		if strings.HasSuffix(name, ".js") {
+			sa.names = append(sa.names, "/"+name)
 		}
-		src := "/" + name
-		if develreact && strings.Contains(src, "react") {
-			ver := filepath.Base(filepath.Dir(src))
-			base := filepath.Base(src)
-
-			cutlen := len(dotjs) // asserted strings.HasSuffix(base, dotjs)
-			cutlen += map[bool]int{true: len(".min")}[strings.HasSuffix(base[:len(base)-cutlen], ".min")]
-			src = fmt.Sprintf("//fb.me/%s-%s%s", base[:len(base)-cutlen], ver, dotjs)
-		}
-		sa.names = append(sa.names, src)
 	}
-
 	sort.Stable(sa)
 	return sa.names
 }
