@@ -6,11 +6,19 @@ import (
 	"flag"
 	"net"
 
+	"github.com/ostrost/ostent/assets"
 	"github.com/ostrost/ostent/commands"
 	_ "github.com/ostrost/ostent/commands/ostent"
 	_ "github.com/ostrost/ostent/init-stdlogfilter"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/share/templates"
+)
+
+var (
+	// AssetInfoFunc is for wrapping bindata's AssetInfo func.
+	AssetInfoFunc = assets.ProductionAssetInfoFunc
+	// AssetReadFunc is for wrapping bindata's Asset func.
+	AssetReadFunc = assets.ProductionAssetReadFunc
 )
 
 func init() {

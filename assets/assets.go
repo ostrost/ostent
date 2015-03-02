@@ -4,7 +4,12 @@ import (
 	"net/http"
 	"sort"
 	"strings"
+	"time"
 )
+
+type TimeInfo interface {
+	ModTime() time.Time
+}
 
 func FQscripts(list []string, r *http.Request) (scripts []string) {
 	for _, s := range list {

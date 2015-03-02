@@ -19,6 +19,13 @@ import (
 	"github.com/ostrost/ostent/share/templates"
 )
 
+var (
+	// AssetInfoFunc is for wrapping bindata's AssetInfo func.
+	AssetInfoFunc = ostent.AssetInfoFunc
+	// AssetReadFunc is for wrapping bindata's Asset func.
+	AssetReadFunc = ostent.AssetReadFunc
+)
+
 func main() {
 	flag.Usage = commands.UsageFunc(flag.CommandLine)
 	webserver := commands.NewWebserver(8050).AddCommandLine()

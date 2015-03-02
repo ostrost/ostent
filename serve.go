@@ -26,15 +26,14 @@ func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error
 	logger := log.New(os.Stderr, "[ostent] ", 0)
 	for _, path := range shareassets.AssetNames() {
 		hf := chain.Then(ostent.ServeContentFunc(
-			assets.UncompressedAssetFunc(shareassets.Asset),
-			shareassets.AssetInfo,
-			assets.ModTime,
+			AssetReadFunc(shareassets.Asset),
+			AssetInfoFunc(shareassets.AssetInfo),
 			path, logger))
 		mux.Handle("GET", "/"+path, hf)
 		mux.Handle("HEAD", "/"+path, hf)
 	}
 
-	// no logger-wrapping for slashws, because it logs by itself once a query received via websocket
+	// no logger-wrapping for this: it logs itself once a query received via websocket
 	mux.Handle("GET", "/ws", recovery.ConstructorFunc(ostent.SlashwsFunc(access, periodFlag.Duration)))
 
 	index := chain.ThenFunc(ostent.IndexFunc(sharetemplates.IndexTemplate, assets.JsAssetNames(shareassets.AssetNames()), periodFlag.Duration))

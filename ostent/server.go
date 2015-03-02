@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/justinas/alice"
+	"github.com/ostrost/ostent/assets" // type TimeInfo
 )
 
 // Muxmap is a type of a map of pattern to HandlerFunc.
@@ -53,12 +53,23 @@ func NewServer(listener net.Listener, production bool) *Server {
 	}
 }
 
+// AssetInfoFunc wraps bindata's AssetInfo func. Returns typecasted infofunc.
+func AssetInfoFunc(infofunc func(string) (os.FileInfo, error)) func(string) (assets.TimeInfo, error) {
+	return func(name string) (assets.TimeInfo, error) {
+		return infofunc(name)
+	}
+}
+
+// AssetReadFunc wraps bindata's Asset func. Returns readfunc itself.
+func AssetReadFunc(readfunc func(string) ([]byte, error)) func(string) ([]byte, error) {
+	return readfunc
+}
+
 // ServeContentFunc does http.ServeContent the readFunc (Asset or UncompressedAsset) result.
 // infofunc is typically AssetInfo. modtimefunc may override info.Modtime() result.
 func ServeContentFunc(
 	readfunc func(string) ([]byte, error),
-	infofunc func(string) (os.FileInfo, error),
-	modtimefunc func(time.Time) time.Time,
+	infofunc func(string) (assets.TimeInfo, error),
 	path string, logger *log.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		text, err := readfunc(path)
@@ -73,7 +84,7 @@ func ServeContentFunc(
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		http.ServeContent(w, r, path, modtimefunc(info.ModTime()), bytes.NewReader(text))
+		http.ServeContent(w, r, path, info.ModTime(), bytes.NewReader(text))
 	}
 }
 
