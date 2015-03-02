@@ -24,7 +24,8 @@ func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error
 	recovery := mux.Recovery
 
 	logger := log.New(os.Stderr, "[ostent] ", 0)
-	for _, path := range shareassets.AssetNames() {
+	assetnames := shareassets.AssetNames()
+	for _, path := range assetnames {
 		hf := chain.Then(ostent.ServeContentFunc(
 			AssetReadFunc(shareassets.Asset),
 			AssetInfoFunc(shareassets.AssetInfo),
@@ -33,10 +34,13 @@ func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error
 		mux.Handle("HEAD", "/"+path, hf)
 	}
 
-	// no logger-wrapping for this: it logs itself once a query received via websocket
-	mux.Handle("GET", "/ws", recovery.ConstructorFunc(ostent.SlashwsFunc(access, periodFlag.Duration)))
+	// access is passed to log every query received via websocket
+	// recovery.ConstructorFunc used to bypass chain so no double log
+	mux.Handle("GET", "/ws", recovery.
+		ConstructorFunc(ostent.SlashwsFunc(access, periodFlag.Duration)))
 
-	index := chain.ThenFunc(ostent.IndexFunc(sharetemplates.IndexTemplate, assets.JsAssetNames(shareassets.AssetNames()), periodFlag.Duration))
+	index := chain.ThenFunc(ostent.IndexFunc(sharetemplates.IndexTemplate,
+		assets.JSassetNames(assetnames), periodFlag.Duration))
 	mux.Handle("GET", "/", index)
 	mux.Handle("HEAD", "/", index)
 

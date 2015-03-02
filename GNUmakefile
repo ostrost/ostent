@@ -68,8 +68,10 @@ coverfunc:
 coverhtml:
 	go tool cover -html=coverage.out
 
-$(PWD)/types/procinfo_slice.go: $(PWD)/types/types.go
-	cd types && go generate
+$(PWD)/assets/%_slice.go: $(PWD)/assets/assets.go
+	cd $(dir $@) && go generate
+$(PWD)/types/%_slice.go: $(PWD)/types/types.go
+	cd $(dir $@) && go generate
 
 al: $(ostent_files)
 # al: like `all' but without final go build ostent. For when rerun does the build

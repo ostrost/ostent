@@ -1,72 +1,69 @@
+//go:generate gen
+
+// Package assets provides asset utilities.
 package assets
 
 import (
 	"net/http"
-	"sort"
 	"strings"
 	"time"
 )
 
+// TimeInfo is for *Asset{Info,Read}Func: a reduced os.FileInfo.
 type TimeInfo interface {
 	ModTime() time.Time
 }
 
-func FQscripts(list []string, r *http.Request) (scripts []string) {
-	for _, s := range list {
-		if !strings.HasPrefix(string(s), "//") {
-			s = "//" + r.Host + s
+// FQJSANSlice forms absolute urls with r.Host.
+func FQJSANSlice(js JSANSlice, r *http.Request) JSANSlice {
+	return js.SelectJSAN(func(n JSAN) JSAN {
+		if !strings.HasPrefix(string(n), "//") {
+			return JSAN("//"+r.Host) + n
 		}
-		scripts = append(scripts, s)
-	}
-	return scripts
+		return n
+	})
 }
 
-type sortassets struct {
-	names            []string
-	substr_indexfrom []string
-}
-
-func (sa sortassets) Len() int {
-	return len(sa.names)
-}
-
-func (sa sortassets) Less(i, j int) bool {
-	ii, jj := sa.Len(), sa.Len()
-	for w, v := range sa.substr_indexfrom {
-		if strings.Contains(sa.names[i], v) {
-			ii = w
+// LessJSANFunc makes a Less func for JSAN.
+func LessJSANFunc(max int) func(JSAN, JSAN) bool {
+	return func(a, b JSAN) bool {
+		ii, jj := max, max
+		for w, v := range JSORDER {
+			if strings.Contains(string(a), v) {
+				ii = w
+			}
+			if strings.Contains(string(b), v) {
+				jj = w
+			}
 		}
-		if strings.Contains(sa.names[j], v) {
-			jj = w
-		}
+		return ii < jj
 	}
-	return ii < jj
 }
 
-func (sa sortassets) Swap(i, j int) {
-	sa.names[i], sa.names[j] = sa.names[j], sa.names[i]
+// JSORDER defines weight in ordering js filenames/assetnames.
+var JSORDER = []string{
+	"jquery",
+	"bootstrap",       // depends on jquery
+	"d3",              // no dependencies?
+	"metricsgraphics", // depends on d3, bootstrap
+
+	"react",    // no dependencies
+	"headroom", // no dependencies? maybe jquery
+
+	"gen", "jsript", // either /gen/ or /jscript/
+	"milk", // from coffee script
 }
 
-func JsAssetNames(assetnames []string) []string {
-	sa := sortassets{
-		substr_indexfrom: []string{
-			"jquery",
-			"bootstrap",       // depends on jquery
-			"d3",              // no dependencies?
-			"metricsgraphics", // depends on d3, bootstrap
-
-			"react",    // no dependencies
-			"headroom", // no dependencies? maybe jquery
-
-			"gen", "jsript", // either /gen/ or /jscript/
-			"milk", // from coffee script
-		},
+// JSassetNames filters and sorts JSANs.
+func JSassetNames(assetnames []string) (js JSANSlice) {
+	for _, name := range assetnames { // convert from []string
+		js = append(js, JSAN(name))
 	}
-	for _, name := range assetnames {
-		if strings.HasSuffix(name, ".js") {
-			sa.names = append(sa.names, "/"+name)
-		}
-	}
-	sort.Stable(sa)
-	return sa.names
+	js = js.Where(func(n JSAN) bool { return strings.HasSuffix(string(n), ".js") })
+	js.SortSortBy(LessJSANFunc(len(js))) // sort after filter and before the map
+	return js.SelectJSAN(func(n JSAN) JSAN { return JSAN("/") + n })
 }
+
+// JSAN derives string for filtering and sorting JS asset names.
+// +gen slice:"Select[JSAN],Where,PkgSortBy"
+type JSAN string
