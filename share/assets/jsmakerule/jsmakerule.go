@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ostrost/ostent/assets"
-	shareassets "github.com/ostrost/ostent/share/assets"
+	"github.com/ostrost/ostent/assetutil"
+	"github.com/ostrost/ostent/share/assets"
 )
 
 const packageName = "share/assets"
@@ -19,7 +19,7 @@ func main() {
 	target := flag.Arg(0)
 
 	var lines []string
-	for _, line := range assets.JSassetNames(shareassets.AssetNames()) {
+	for _, line := range assetutil.JSassetNames(assets.AssetNames()) {
 		lines = append(lines, filepath.Join(packageName, string(line)))
 	}
 

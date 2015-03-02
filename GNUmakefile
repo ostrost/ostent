@@ -68,7 +68,7 @@ coverfunc:
 coverhtml:
 	go tool cover -html=coverage.out
 
-$(PWD)/assets/%_slice.go: $(PWD)/assets/assets.go
+$(PWD)/assetutil/%_slice.go: $(PWD)/assetutil/assetutil.go
 	cd $(dir $@) && go generate
 $(PWD)/types/%_slice.go: $(PWD)/types/types.go
 	cd $(dir $@) && go generate

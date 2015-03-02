@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/justinas/alice"
-	"github.com/ostrost/ostent/assets" // type TimeInfo
+	"github.com/ostrost/ostent/assetutil" // type TimeInfo
 )
 
 // Muxmap is a type of a map of pattern to HandlerFunc.
@@ -54,8 +54,8 @@ func NewServer(listener net.Listener, production bool) *Server {
 }
 
 // AssetInfoFunc wraps bindata's AssetInfo func. Returns typecasted infofunc.
-func AssetInfoFunc(infofunc func(string) (os.FileInfo, error)) func(string) (assets.TimeInfo, error) {
-	return func(name string) (assets.TimeInfo, error) {
+func AssetInfoFunc(infofunc func(string) (os.FileInfo, error)) func(string) (assetutil.TimeInfo, error) {
+	return func(name string) (assetutil.TimeInfo, error) {
 		return infofunc(name)
 	}
 }
@@ -69,7 +69,7 @@ func AssetReadFunc(readfunc func(string) ([]byte, error)) func(string) ([]byte, 
 // infofunc is typically AssetInfo. modtimefunc may override info.Modtime() result.
 func ServeContentFunc(
 	readfunc func(string) ([]byte, error),
-	infofunc func(string) (assets.TimeInfo, error),
+	infofunc func(string) (assetutil.TimeInfo, error),
 	path string, logger *log.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		text, err := readfunc(path)

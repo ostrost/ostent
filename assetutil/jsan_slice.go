@@ -2,7 +2,7 @@
 // TypeWriter: slice
 // Directive: +gen on JSAN
 
-package assets
+package assetutil
 
 import "sort"
 

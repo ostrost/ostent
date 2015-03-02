@@ -5,9 +5,9 @@ import (
 	"net"
 	"os"
 
-	"github.com/ostrost/ostent/assets"
+	"github.com/ostrost/ostent/assetutil"
 	"github.com/ostrost/ostent/ostent"
-	shareassets "github.com/ostrost/ostent/share/assets"
+	"github.com/ostrost/ostent/share/assets"
 	sharetemplates "github.com/ostrost/ostent/share/templates"
 )
 
@@ -24,11 +24,11 @@ func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error
 	recovery := mux.Recovery
 
 	logger := log.New(os.Stderr, "[ostent] ", 0)
-	assetnames := shareassets.AssetNames()
+	assetnames := assets.AssetNames()
 	for _, path := range assetnames {
 		hf := chain.Then(ostent.ServeContentFunc(
-			AssetReadFunc(shareassets.Asset),
-			AssetInfoFunc(shareassets.AssetInfo),
+			AssetReadFunc(assets.Asset),
+			AssetInfoFunc(assets.AssetInfo),
 			path, logger))
 		mux.Handle("GET", "/"+path, hf)
 		mux.Handle("HEAD", "/"+path, hf)
@@ -40,7 +40,7 @@ func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error
 		ConstructorFunc(ostent.SlashwsFunc(access, periodFlag.Duration)))
 
 	index := chain.ThenFunc(ostent.IndexFunc(sharetemplates.IndexTemplate,
-		assets.JSassetNames(assetnames), periodFlag.Duration))
+		assetutil.JSassetNames(assetnames), periodFlag.Duration))
 	mux.Handle("GET", "/", index)
 	mux.Handle("HEAD", "/", index)
 

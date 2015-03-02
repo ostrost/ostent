@@ -11,7 +11,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ostrost/ostent/assets"
+	"github.com/ostrost/ostent/assetutil"
 	"github.com/ostrost/ostent/client"
 	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/getifaddrs"
@@ -831,20 +831,20 @@ func init() {
 // Set at init, result of system.Distrib.
 var DISTRIB string
 
-func IndexFunc(template *templates.BinTemplate, scripts assets.JSANSlice, minrefresh types.Duration) func(http.ResponseWriter, *http.Request) {
+func IndexFunc(template *templates.BinTemplate, scripts assetutil.JSANSlice, minrefresh types.Duration) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		index(template, scripts, minrefresh, w, r)
 	}
 }
 
-func index(template *templates.BinTemplate, scripts assets.JSANSlice, minrefresh types.Duration, w http.ResponseWriter, r *http.Request) {
+func index(template *templates.BinTemplate, scripts assetutil.JSANSlice, minrefresh types.Duration, w http.ResponseWriter, r *http.Request) {
 	response := template.Response(w, struct {
 		Data      IndexData
-		SCRIPTS   assets.JSANSlice
+		SCRIPTS   assetutil.JSANSlice
 		CLASSNAME string
 	}{
 		Data:    indexData(minrefresh, r),
-		SCRIPTS: assets.FQJSANSlice(scripts, r),
+		SCRIPTS: assetutil.FQJSANSlice(scripts, r),
 	})
 	response.SetHeader("Content-Type", "text/html")
 	response.SetContentLength()

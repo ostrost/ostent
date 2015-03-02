@@ -1,7 +1,7 @@
 //go:generate gen
 
-// Package assets provides asset utilities.
-package assets
+// Package assetutil provides asset utilities.
+package assetutil
 
 import (
 	"net/http"

@@ -1,6 +1,6 @@
 // +build production
 
-package assets
+package assetutil
 
 import (
 	"os"
