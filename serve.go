@@ -10,7 +10,7 @@ import (
 	"github.com/ostrost/ostent/assetutil"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/share/assets"
-	sharetemplates "github.com/ostrost/ostent/share/templates"
+	"github.com/ostrost/ostent/share/templates"
 	"github.com/ostrost/ostent/types"
 )
 
@@ -20,8 +20,8 @@ var PeriodFlag = types.PeriodValue{Duration: types.Duration(time.Second)} // def
 func init() {
 	flag.Var(&PeriodFlag, "u", "Collection (update) interval")
 	flag.Var(&PeriodFlag, "update", "Collection (update) interval")
-	ostent.UsePercentTemplate = sharetemplates.UsePercentTemplate
-	ostent.TooltipableTemplate = sharetemplates.TooltipableTemplate
+	ostent.UsePercentTemplate = templates.UsePercentTemplate
+	ostent.TooltipableTemplate = templates.TooltipableTemplate
 }
 
 func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error {
@@ -47,7 +47,7 @@ func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error
 	mux.Handle("GET", "/ws", recovery.
 		ConstructorFunc(ostent.SlashwsFunc(access, PeriodFlag.Duration)))
 
-	index := chain.ThenFunc(ostent.IndexFunc(sharetemplates.IndexTemplate,
+	index := chain.ThenFunc(ostent.IndexFunc(templates.IndexTemplate,
 		assetutil.JSassetNames(assetnames), PeriodFlag.Duration))
 	mux.Handle("GET", "/", index)
 	mux.Handle("HEAD", "/", index)

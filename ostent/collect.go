@@ -14,7 +14,7 @@ import (
 	"github.com/ostrost/ostent/getifaddrs"
 	"github.com/ostrost/ostent/registry"
 	"github.com/ostrost/ostent/system"
-	"github.com/ostrost/ostent/templates"
+	"github.com/ostrost/ostent/templateutil"
 	"github.com/ostrost/ostent/types"
 	sigar "github.com/rzab/gosigar"
 )
@@ -160,7 +160,7 @@ func (m *Machine) Generic(reg registry.Registry, CH chan<- generic) {
 	CH <- g
 }
 
-var UsePercentTemplate *templates.BinTemplate
+var UsePercentTemplate *templateutil.BinTemplate
 
 func _getmem(kind string, in sigar.Swap) types.Memory {
 	total, approxtotal, _ := format.HumanBandback(in.Total)
