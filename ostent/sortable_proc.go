@@ -8,8 +8,8 @@ import (
 	"github.com/ostrost/ostent/types"
 )
 
-// SortCritProc is a distinct types.SeqNReverse type.
-type SortCritProc types.SeqNReverse
+// SortCritProc is a distinct client.SeqNReverse type.
+type SortCritProc client.SeqNReverse
 
 // LessProc is a 'less' func for types.MetricProc comparison.
 func (crit SortCritProc) LessProc(a, b types.MetricProc) bool {
@@ -38,27 +38,27 @@ func (crit SortCritProc) LessProc(a, b types.MetricProc) bool {
 	return t
 }
 
-type PSlinks types.Linkattrs
+type PSlinks client.Linkattrs
 
-func (la PSlinks) PID() types.Attr      { return types.Linkattrs(la).Attr(client.PSPID) }
-func (la PSlinks) Priority() types.Attr { return types.Linkattrs(la).Attr(client.PSPRI) }
-func (la PSlinks) Nice() types.Attr     { return types.Linkattrs(la).Attr(client.PSNICE) }
-func (la PSlinks) Time() types.Attr     { return types.Linkattrs(la).Attr(client.PSTIME) }
-func (la PSlinks) Name() types.Attr     { return types.Linkattrs(la).Attr(client.PSNAME) }
-func (la PSlinks) User() types.Attr     { return types.Linkattrs(la).Attr(client.PSUID) }
-func (la PSlinks) Size() types.Attr     { return types.Linkattrs(la).Attr(client.PSSIZE) }
-func (la PSlinks) Resident() types.Attr { return types.Linkattrs(la).Attr(client.PSRES) }
+func (la PSlinks) PID() client.Attr      { return client.Linkattrs(la).Attr(client.PSPID) }
+func (la PSlinks) Priority() client.Attr { return client.Linkattrs(la).Attr(client.PSPRI) }
+func (la PSlinks) Nice() client.Attr     { return client.Linkattrs(la).Attr(client.PSNICE) }
+func (la PSlinks) Time() client.Attr     { return client.Linkattrs(la).Attr(client.PSTIME) }
+func (la PSlinks) Name() client.Attr     { return client.Linkattrs(la).Attr(client.PSNAME) }
+func (la PSlinks) User() client.Attr     { return client.Linkattrs(la).Attr(client.PSUID) }
+func (la PSlinks) Size() client.Attr     { return client.Linkattrs(la).Attr(client.PSSIZE) }
+func (la PSlinks) Resident() client.Attr { return client.Linkattrs(la).Attr(client.PSRES) }
 
 func (la PSlinks) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]types.Attr{
-		"PID":      types.Linkattrs(la).Attr(client.PSPID),
-		"Priority": types.Linkattrs(la).Attr(client.PSPRI),
-		"Nice":     types.Linkattrs(la).Attr(client.PSNICE),
-		"Time":     types.Linkattrs(la).Attr(client.PSTIME),
-		"Name":     types.Linkattrs(la).Attr(client.PSNAME),
-		"User":     types.Linkattrs(la).Attr(client.PSUID),
-		"Size":     types.Linkattrs(la).Attr(client.PSSIZE),
-		"Resident": types.Linkattrs(la).Attr(client.PSRES),
+	return json.Marshal(map[string]client.Attr{
+		"PID":      client.Linkattrs(la).Attr(client.PSPID),
+		"Priority": client.Linkattrs(la).Attr(client.PSPRI),
+		"Nice":     client.Linkattrs(la).Attr(client.PSNICE),
+		"Time":     client.Linkattrs(la).Attr(client.PSTIME),
+		"Name":     client.Linkattrs(la).Attr(client.PSNAME),
+		"User":     client.Linkattrs(la).Attr(client.PSUID),
+		"Size":     client.Linkattrs(la).Attr(client.PSSIZE),
+		"Resident": client.Linkattrs(la).Attr(client.PSRES),
 	})
 }
 

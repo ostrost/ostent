@@ -7,8 +7,8 @@ import (
 	"github.com/ostrost/ostent/types"
 )
 
-// SortCritDisk is a distinct types.SeqNReverse type.
-type SortCritDisk types.SeqNReverse
+// SortCritDisk is a distinct client.SeqNReverse type.
+type SortCritDisk client.SeqNReverse
 
 // LessDisk is a 'less' func for types.MetricDF comparison.
 func (crit SortCritDisk) LessDisk(a, b types.MetricDF) bool {
@@ -31,20 +31,20 @@ func (crit SortCritDisk) LessDisk(a, b types.MetricDF) bool {
 	return t
 }
 
-type DFlinks types.Linkattrs
+type DFlinks client.Linkattrs
 
-func (la DFlinks) DiskName() types.Attr { return types.Linkattrs(la).Attr(client.DFFS) }
-func (la DFlinks) Total() types.Attr    { return types.Linkattrs(la).Attr(client.DFSIZE) }
-func (la DFlinks) Used() types.Attr     { return types.Linkattrs(la).Attr(client.DFUSED) }
-func (la DFlinks) Avail() types.Attr    { return types.Linkattrs(la).Attr(client.DFAVAIL) }
-func (la DFlinks) DirName() types.Attr  { return types.Linkattrs(la).Attr(client.DFMP) }
+func (la DFlinks) DiskName() client.Attr { return client.Linkattrs(la).Attr(client.DFFS) }
+func (la DFlinks) Total() client.Attr    { return client.Linkattrs(la).Attr(client.DFSIZE) }
+func (la DFlinks) Used() client.Attr     { return client.Linkattrs(la).Attr(client.DFUSED) }
+func (la DFlinks) Avail() client.Attr    { return client.Linkattrs(la).Attr(client.DFAVAIL) }
+func (la DFlinks) DirName() client.Attr  { return client.Linkattrs(la).Attr(client.DFMP) }
 
 func (la DFlinks) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]types.Attr{
-		"DiskName": types.Linkattrs(la).Attr(client.DFFS),
-		"Total":    types.Linkattrs(la).Attr(client.DFSIZE),
-		"Used":     types.Linkattrs(la).Attr(client.DFUSED),
-		"Avail":    types.Linkattrs(la).Attr(client.DFAVAIL),
-		"DirName":  types.Linkattrs(la).Attr(client.DFMP),
+	return json.Marshal(map[string]client.Attr{
+		"DiskName": client.Linkattrs(la).Attr(client.DFFS),
+		"Total":    client.Linkattrs(la).Attr(client.DFSIZE),
+		"Used":     client.Linkattrs(la).Attr(client.DFUSED),
+		"Avail":    client.Linkattrs(la).Attr(client.DFAVAIL),
+		"DirName":  client.Linkattrs(la).Attr(client.DFMP),
 	})
 }

@@ -698,8 +698,8 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 	if req != nil {
 		req.ParseForm() // do ParseForm even if req.Form == nil, otherwise *links won't be set for index requests without parameters
 		base := url.Values{}
-		iu.PSlinks = (*PSlinks)(types.NewLinkAttrs(req, base, "ps", client.PSBIMAP, &cl.PSSEQ))
-		iu.DFlinks = (*DFlinks)(types.NewLinkAttrs(req, base, "df", client.DFBIMAP, &cl.DFSEQ))
+		iu.PSlinks = (*PSlinks)(client.NewLinkAttrs(req, base, "ps", client.PSBIMAP, &cl.PSSEQ))
+		iu.DFlinks = (*DFlinks)(client.NewLinkAttrs(req, base, "df", client.DFBIMAP, &cl.DFSEQ))
 	}
 
 	set := []Set{
@@ -722,7 +722,7 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 		}
 	}
 
-	_ = map[types.SEQ]func(){
+	_ = map[client.SEQ]func(){
 		client.DFBYTES_TABID:  func() {}, // Reg1s.DFbytes,
 		client.DFINODES_TABID: func() {}, // Reg1s.DFinodes,
 	}[*cl.TabDF]

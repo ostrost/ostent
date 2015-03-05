@@ -8,40 +8,11 @@ import (
 	"errors"
 	"html/template"
 	"math"
-	"net/http"
-	"net/url"
 	"sync"
 
 	metrics "github.com/rcrowley/go-metrics"
 	sigar "github.com/rzab/gosigar"
 )
-
-// SEQ is a distinct int type for consts and other uses.
-type SEQ int
-
-// SeqNReverse holds a SEQ and a Reverse bool.
-type SeqNReverse struct {
-	SEQ     SEQ
-	Reverse bool
-}
-
-// AnyOf returns true if the seq is present in the list.
-func (seq SEQ) AnyOf(list []SEQ) bool {
-	for _, s := range list {
-		if s == seq {
-			return true
-		}
-	}
-	return false
-}
-
-// Sign is a logical operator, useful for sorting.
-func (seq SEQ) Sign(t bool) bool { // used in sortable_*.go
-	if seq < 0 {
-		return t
-	}
-	return !t
-}
 
 // Memory type is a struct of memory metrics.
 type Memory struct {
@@ -99,111 +70,6 @@ type DFbytes struct {
 // DFinodes type has a list of DiskInodes.
 type DFinodes struct {
 	List []DiskInodes
-}
-
-// type DiskTable struct {
-// 	List  []DiskData
-// 	Links *DiskLinkattrs `json:",omitempty"`
-// 	HaveCollapsed bool
-// }
-
-// Attr type keeps link attributes.
-type Attr struct {
-	Href, Class, CaretClass string
-}
-
-// Attr returns a seq applied Attr taking the la link and updating/setting the parameter.
-func (la Linkattrs) Attr(seq SEQ) Attr {
-	base := url.Values{}
-	for k, v := range la.Base {
-		base[k] = v
-	}
-	attr := Attr{Class: "state"}
-	if ascp := la._attr(base, seq); ascp != nil {
-		attr.CaretClass = "caret"
-		attr.Class += " current"
-		if *ascp {
-			attr.Class += " dropup"
-		}
-	}
-	attr.Href = "?" + base.Encode() // la._attr modifies base, DO NOT use prior to the call
-	return attr
-}
-
-// _attr side effect: modifies the base
-func (la Linkattrs) _attr(base url.Values, seq SEQ) *bool {
-	unlessreverse := func(t bool) *bool {
-		if la.Bimap.SEQ2REVERSE[seq] {
-			t = !t
-		}
-		return &t
-	}
-
-	if la.Pname == "" {
-		if seq == la.Bimap.DefaultSeq {
-			return unlessreverse(false)
-		}
-		return nil
-	}
-
-	seqstring := la.Bimap.SEQ2STRING[seq]
-	values, haveParam := base[la.Pname]
-	base.Set(la.Pname, seqstring)
-
-	if !haveParam { // no parameter in url
-		if seq == la.Bimap.DefaultSeq {
-			return unlessreverse(false)
-		}
-		return nil
-	}
-
-	pos, neg := values[0], values[0]
-	if neg[0] == '-' {
-		pos = neg[1:]
-		neg = neg[1:]
-	} else {
-		neg = "-" + neg
-	}
-
-	var ascr *bool
-	if pos == seqstring {
-		t := neg[0] != '-'
-		if seq == la.Bimap.DefaultSeq {
-			t = true
-		}
-		ascr = unlessreverse(t)
-		base.Set(la.Pname, neg)
-	}
-	if seq == la.Bimap.DefaultSeq {
-		base.Del(la.Pname)
-	}
-	return ascr
-}
-
-// Linkattrs type for link making.
-type Linkattrs struct {
-	Base  url.Values
-	Pname string
-	Bimap Biseqmap
-}
-
-func valuesSet(req *http.Request, base url.Values, pname string, bimap Biseqmap) SEQ {
-	if params, ok := req.Form[pname]; ok && len(params) > 0 {
-		if seq, ok := bimap.STRING2SEQ[params[0]]; ok {
-			base.Set(pname, params[0])
-			return seq
-		}
-	}
-	return bimap.DefaultSeq
-}
-
-func NewLinkAttrs(req *http.Request, base url.Values, pname string, bimap Biseqmap, seq *SEQ) *Linkattrs {
-	*seq = valuesSet(req, base, pname, bimap)
-	return &Linkattrs{
-		Base:  base,
-		Pname: pname,
-		Bimap: bimap,
-	}
 }
 
 // InterfaceMeta type has common Interface fields.

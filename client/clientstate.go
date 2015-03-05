@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/ostrost/ostent/flags"
-	"github.com/ostrost/ostent/types"
 )
 
 type Refresh struct {
@@ -58,8 +57,8 @@ type internalClient struct {
 
 	PSlimit int
 
-	PSSEQ types.SEQ
-	DFSEQ types.SEQ
+	PSSEQ SEQ
+	DFSEQ SEQ
 
 	Toprows int
 }
@@ -89,8 +88,8 @@ type commonClient struct {
 	ExpandCPU *bool `json:",omitempty"`
 	ExpandDF  *bool `json:",omitempty"`
 
-	TabIF *types.SEQ `json:",omitempty"`
-	TabDF *types.SEQ `json:",omitempty"`
+	TabIF *SEQ `json:",omitempty"`
+	TabDF *SEQ `json:",omitempty"`
 
 	TabTitleIF *string `json:",omitempty"`
 	TabTitleDF *string `json:",omitempty"`
@@ -185,7 +184,7 @@ func (c Client) mergeBool(dst, src *bool, send **bool) {
 	*send = src
 }
 
-func (c Client) mergeSEQ(dst, src *types.SEQ, send **types.SEQ) {
+func (c Client) mergeSEQ(dst, src *SEQ, send **SEQ) {
 	// c is unused
 	if src == nil {
 		return
@@ -226,8 +225,8 @@ func newfalse() *bool      { return new(bool) }
 func newtrue() *bool       { return newbool(true) }
 func newbool(v bool) *bool { b := new(bool); *b = v; return b }
 
-func newseq(v types.SEQ) *types.SEQ {
-	s := new(types.SEQ)
+func newseq(v SEQ) *SEQ {
+	s := new(SEQ)
 	*s = v
 	return s
 }

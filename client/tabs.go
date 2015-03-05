@@ -1,9 +1,5 @@
 package client
 
-import (
-	"github.com/ostrost/ostent/types"
-)
-
 var DFTABS = DFtabs{
 	DFinodes: DFINODES_TABID,
 	DFbytes:  DFBYTES_TABID,
@@ -23,15 +19,15 @@ var IFTABS = IFtabs{
 }
 
 type DFtabs struct {
-	DFinodes types.SEQ
-	DFbytes  types.SEQ
+	DFinodes SEQ
+	DFbytes  SEQ
 
 	DFinodesTitle string
 	DFbytesTitle  string
 }
 
 // Title returns a label. "" return denotes unexpected error.
-func (df DFtabs) Title(s types.SEQ) string {
+func (df DFtabs) Title(s SEQ) string {
 	switch {
 	case s == df.DFinodes:
 		return df.DFinodesTitle
@@ -42,9 +38,9 @@ func (df DFtabs) Title(s types.SEQ) string {
 }
 
 type IFtabs struct {
-	IFpackets types.SEQ
-	IFerrors  types.SEQ
-	IFbytes   types.SEQ
+	IFpackets SEQ
+	IFerrors  SEQ
+	IFbytes   SEQ
 
 	IFpacketsTitle string
 	IFerrorsTitle  string
@@ -52,7 +48,7 @@ type IFtabs struct {
 }
 
 // Title returns a label. "" return denotes unexpected error.
-func (fi IFtabs) Title(s types.SEQ) string {
+func (fi IFtabs) Title(s SEQ) string {
 	switch {
 	case s == fi.IFpackets:
 		return fi.IFpacketsTitle
@@ -65,44 +61,44 @@ func (fi IFtabs) Title(s types.SEQ) string {
 }
 
 const (
-	____IFTABID types.SEQ = iota
+	____IFTABID SEQ = iota
 	IFPACKETS_TABID
 	IFERRORS_TABID
 	IFBYTES_TABID
 )
 
 const (
-	____DFTABID types.SEQ = iota
+	____DFTABID SEQ = iota
 	DFINODES_TABID
 	DFBYTES_TABID
 )
 
 /* UNUSED ?
-var IF_TABS = []types.SEQ{
+var IF_TABS = []SEQ{
 	IFPACKETS_TABID,
 	 IFERRORS_TABID,
 	  IFBYTES_TABID,
 }
 
-var DF_TABS = []types.SEQ{
+var DF_TABS = []SEQ{
 	DFINODES_TABID,
 	 DFBYTES_TABID,
 }
 */
 
-var DFBIMAP = types.Seq2bimap(DFFS, // the default seq for ordering
-	types.Seq2string{
+var DFBIMAP = Seq2bimap(DFFS, // the default seq for ordering
+	Seq2string{
 		DFFS:    "fs",
 		DFSIZE:  "size",
 		DFUSED:  "used",
 		DFAVAIL: "avail",
 		DFMP:    "mp",
-	}, []types.SEQ{
+	}, []SEQ{
 		DFFS, DFMP,
 	})
 
-var PSBIMAP = types.Seq2bimap(PSPID, // the default seq for ordering
-	types.Seq2string{
+var PSBIMAP = Seq2bimap(PSPID, // the default seq for ordering
+	Seq2string{
 		PSPID:  "pid",
 		PSPRI:  "pri",
 		PSNICE: "nice",
@@ -111,12 +107,12 @@ var PSBIMAP = types.Seq2bimap(PSPID, // the default seq for ordering
 		PSTIME: "time",
 		PSNAME: "name",
 		PSUID:  "user",
-	}, []types.SEQ{
+	}, []SEQ{
 		PSNAME, PSUID,
 	})
 
 const (
-	____DFIOTA types.SEQ = iota
+	____DFIOTA SEQ = iota
 	DFFS
 	DFSIZE
 	DFUSED
@@ -125,7 +121,7 @@ const (
 )
 
 const (
-	____PSIOTA types.SEQ = iota
+	____PSIOTA SEQ = iota
 	PSPID
 	PSPRI
 	PSNICE
