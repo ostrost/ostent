@@ -8,14 +8,14 @@ import (
 	"time"
 
 	"github.com/ostrost/ostent/assetutil"
+	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/share/assets"
 	"github.com/ostrost/ostent/share/templates"
-	"github.com/ostrost/ostent/types"
 )
 
 // PeriodFlag is a minimum refresh period for collection.
-var PeriodFlag = types.PeriodValue{Duration: types.Duration(time.Second)} // default
+var PeriodFlag = flags.Period{Duration: time.Second} // default
 
 func init() {
 	flag.Var(&PeriodFlag, "u", "Collection (update) interval")
@@ -45,10 +45,10 @@ func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error
 	// access is passed to log every query received via websocket
 	// recovery.ConstructorFunc used to bypass chain so no double log
 	mux.Handle("GET", "/ws", recovery.
-		ConstructorFunc(ostent.SlashwsFunc(access, PeriodFlag.Duration)))
+		ConstructorFunc(ostent.SlashwsFunc(access, PeriodFlag)))
 
 	index := chain.ThenFunc(ostent.IndexFunc(templates.IndexTemplate,
-		assetutil.JSassetNames(assetnames), PeriodFlag.Duration))
+		assetutil.JSassetNames(assetnames), PeriodFlag))
 	mux.Handle("GET", "/", index)
 	mux.Handle("HEAD", "/", index)
 

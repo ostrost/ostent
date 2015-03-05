@@ -4,15 +4,15 @@ import (
 	"flag"
 	"time"
 
+	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
-	"github.com/ostrost/ostent/types"
 	"github.com/rzab/go-metrics/influxdb"
 )
 
 type influx struct {
 	logger      *Logger
-	RefreshFlag types.PeriodValue
-	ServerAddr  string // types.BindValue
+	RefreshFlag flags.Period
+	ServerAddr  string // flags.Bind
 	Database    string
 	Username    string
 	Password    string
@@ -21,8 +21,8 @@ type influx struct {
 func influxdbCommandLine(cli *flag.FlagSet) CommandLineHandler {
 	ix := &influx{
 		logger:      NewLogger("[ostent sendto-influxdb] "),
-		RefreshFlag: types.PeriodValue{Duration: types.Duration(10 * time.Second)}, // 10s default
-		// ServerAddr:  types.NewBindValue(8086),
+		RefreshFlag: flags.Period{Duration: 10 * time.Second}, // 10s default
+		// ServerAddr: flags.NewBind(8086),
 	}
 	cli.Var(&ix.RefreshFlag, "influxdb-refresh", "InfluxDB refresh interval")
 	cli.StringVar(&ix.ServerAddr, "sendto-influxdb", "", "InfluxDB server address")
@@ -33,11 +33,11 @@ func influxdbCommandLine(cli *flag.FlagSet) CommandLineHandler {
 		if ix.ServerAddr == "" {
 			return nil, false, nil
 		}
-		ostent.AddBackground(func(defaultPeriod types.PeriodValue) {
+		ostent.AddBackground(func(defaultPeriod flags.Period) {
 			/* if ix.RefreshFlag.Duration == 0 { // if .RefreshFlag had no default
 				ix.RefreshFlag = defaultPeriod
 			} */
-			go influxdb.Influxdb(ostent.Reg1s.Registry, time.Duration(ix.RefreshFlag.Duration), &influxdb.Config{
+			go influxdb.Influxdb(ostent.Reg1s.Registry, ix.RefreshFlag.Duration, &influxdb.Config{
 				Host:     ix.ServerAddr, //.String(),
 				Database: ix.Database,
 				Username: ix.Username,

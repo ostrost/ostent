@@ -7,19 +7,19 @@ import (
 	"net"
 	"os"
 
-	"github.com/ostrost/ostent/types"
+	"github.com/ostrost/ostent/flags"
 )
 
 type webserver struct {
 	logger       *Logger
-	BindValue    types.BindValue
+	Bind         flags.Bind
 	ServeFunc    func(net.Listener)
 	FirstRunFunc func() bool
 	ShutdownFunc func() bool
 }
 
 func (wr webserver) NetListen() net.Listener {
-	listen, err := net.Listen("tcp", wr.BindValue.String())
+	listen, err := net.Listen("tcp", wr.Bind.String())
 	if err != nil {
 		wr.logger.Fatal(err)
 	}
@@ -38,14 +38,14 @@ func NewWebserver(defport int) *webserver {
 		logger: NewLogger(fmt.Sprintf("[%d][ostent webserver] ", os.Getpid()), func(l *Logger) {
 			l.Flag |= log.Lmicroseconds
 		}),
-		BindValue: types.NewBindValue(defport),
+		Bind: flags.NewBind(defport),
 	}
 }
 
 func (ws *webserver) AddCommandLine() *webserver {
 	AddCommandLine(func(cli *flag.FlagSet) CommandLineHandler {
-		cli.Var(&ws.BindValue, "b", "short for bind")
-		cli.Var(&ws.BindValue, "bind", "Bind address")
+		cli.Var(&ws.Bind, "b", "short for bind")
+		cli.Var(&ws.Bind, "bind", "Bind address")
 		return nil
 	})
 	return ws

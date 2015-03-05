@@ -13,6 +13,7 @@ import (
 
 	"github.com/ostrost/ostent/assetutil"
 	"github.com/ostrost/ostent/client"
+	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/getifaddrs"
 	"github.com/ostrost/ostent/system"
@@ -154,7 +155,7 @@ type IndexData struct {
 
 	DISTRIB        string
 	VERSION        string
-	PeriodDuration types.Duration // default refresh value for placeholder
+	PeriodDuration flags.Period // default refresh value for placeholder // TODO rename
 
 	Client clientData
 
@@ -766,13 +767,13 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 	return iu
 }
 
-func indexData(minrefresh types.Duration, req *http.Request) IndexData {
+func indexData(minperiod flags.Period, req *http.Request) IndexData {
 	if Connections.Len() == 0 {
 		// collect when there're no active connections, so Loop does not collect
 		lastInfo.collect(&Machine{})
 	}
 
-	cl := client.DefaultClient(minrefresh)
+	cl := client.DefaultClient(minperiod)
 	updates := getUpdates(req, &cl, client.SendClient{}, true)
 
 	data := IndexData{
@@ -789,7 +790,7 @@ func indexData(minrefresh types.Duration, req *http.Request) IndexData {
 		DISTRIB: DISTRIB, // value set in init()
 		VERSION: VERSION, // value from server.go
 
-		PeriodDuration: minrefresh, // default refresh value for placeholder
+		PeriodDuration: minperiod, // default refresh value for placeholder
 	}
 
 	if updates.DFbytes != nil {
@@ -831,19 +832,19 @@ func init() {
 // Set at init, result of system.Distrib.
 var DISTRIB string
 
-func IndexFunc(template *templateutil.BinTemplate, scripts assetutil.JSANSlice, minrefresh types.Duration) func(http.ResponseWriter, *http.Request) {
+func IndexFunc(template *templateutil.BinTemplate, scripts assetutil.JSANSlice, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		index(template, scripts, minrefresh, w, r)
+		index(template, scripts, minperiod, w, r)
 	}
 }
 
-func index(template *templateutil.BinTemplate, scripts assetutil.JSANSlice, minrefresh types.Duration, w http.ResponseWriter, r *http.Request) {
+func index(template *templateutil.BinTemplate, scripts assetutil.JSANSlice, minperiod flags.Period, w http.ResponseWriter, r *http.Request) {
 	response := template.Response(w, struct {
 		Data      IndexData
 		SCRIPTS   assetutil.JSANSlice
 		CLASSNAME string
 	}{
-		Data:    indexData(minrefresh, r),
+		Data:    indexData(minperiod, r),
 		SCRIPTS: assetutil.FQJSANSlice(scripts, r),
 	})
 	response.SetHeader("Content-Type", "text/html")

@@ -1,4 +1,4 @@
-package types
+package flags
 
 import (
 	"bytes"
@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func TestDuration(t *testing.T) {
+func TestPeriodStr(t *testing.T) {
 	for _, v := range []struct {
 		dstr string
 		cmp  string
@@ -20,12 +20,12 @@ func TestDuration(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		d := Duration(td)
-		cmp := d.String()
+		p := Period{Duration: td}
+		cmp := p.String()
 		if cmp != v.cmp {
 			t.Errorf("Mismatch: %q vs %q", cmp, v.cmp)
 		}
-		j, err := d.MarshalJSON()
+		j, err := p.MarshalJSON()
 		if err != nil {
 			t.Error(err)
 		}
@@ -35,7 +35,7 @@ func TestDuration(t *testing.T) {
 	}
 }
 
-func TestPeriodValue(t *testing.T) {
+func TestPeriodSet(t *testing.T) {
 	for _, v := range []struct {
 		dstr  string
 		above string
@@ -52,13 +52,12 @@ func TestPeriodValue(t *testing.T) {
 		if err != nil && err.Error() != v.err.Error() {
 			t.Error(err)
 		}
-		p := PeriodValue{Duration: Duration(td)}
+		p := Period{Duration: td}
 		if v.above != "" {
 			if ad, err := time.ParseDuration(v.above); err != nil {
 				t.Error(err)
 			} else {
-				ap := Duration(ad)
-				p.Above = &ap
+				p.Above = &ad
 			}
 		}
 		err = p.Set(v.dstr)
@@ -74,7 +73,7 @@ func TestPeriodValue(t *testing.T) {
 	}
 }
 
-func TestParseArgs(t *testing.T) {
+func TestBindSet(t *testing.T) {
 	const defportint = 9050
 	defport := fmt.Sprintf("%d", defportint)
 	for _, v := range []struct {
@@ -96,15 +95,15 @@ func TestParseArgs(t *testing.T) {
 		{"127", "127.0.0.1:" + defport, nil},
 		{"127.1", "127.1:" + defport, nil},
 	} {
-		bv := NewBindValue(defportint)
-		if err := bv.Set(v.a); err != nil {
+		b := NewBind(defportint)
+		if err := b.Set(v.a); err != nil {
 			if err.Error() != v.err.Error() {
 				t.Errorf("Error: %s\nMismatch: %s\n", err, v.err)
 			}
 			continue
 		}
-		if bv.string != v.cmp {
-			t.Errorf("Mismatch: bindFlag %v == %v != %v\n", v.a, v.cmp, bv.string)
+		if b.string != v.cmp {
+			t.Errorf("Mismatch: Bind %v == %v != %v\n", v.a, v.cmp, b.string)
 		}
 	}
 }

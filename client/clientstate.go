@@ -3,11 +3,12 @@ package client
 import (
 	"time"
 
+	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/types"
 )
 
 type Refresh struct {
-	types.Duration
+	flags.Period
 	tick int // .Tick() must be called once per second; .tick is 1 when the refresh expired
 }
 
@@ -231,7 +232,7 @@ func newseq(v types.SEQ) *types.SEQ {
 	return s
 }
 
-func DefaultClient(minrefresh types.Duration) Client {
+func DefaultClient(minperiod flags.Period) Client {
 	cs := Client{}
 
 	cs.HideRAM = newfalse()
@@ -264,14 +265,14 @@ func DefaultClient(minrefresh types.Duration) Client {
 	cs.HideconfigPS = newbool(hideconfig)
 	cs.HideconfigVG = newbool(hideconfig)
 
-	//cs.RefreshGeneric = &refresh{Duration: minrefresh}
-	cs.RefreshRAM = &Refresh{Duration: minrefresh}
-	cs.RefreshSWAP = &Refresh{Duration: minrefresh}
-	cs.RefreshIF = &Refresh{Duration: minrefresh}
-	cs.RefreshCPU = &Refresh{Duration: minrefresh}
-	cs.RefreshDF = &Refresh{Duration: minrefresh}
-	cs.RefreshPS = &Refresh{Duration: minrefresh}
-	cs.RefreshVG = &Refresh{Duration: minrefresh}
+	//cs.RefreshGeneric = &refresh{Period: minperiod}
+	cs.RefreshRAM = &Refresh{Period: minperiod}
+	cs.RefreshSWAP = &Refresh{Period: minperiod}
+	cs.RefreshIF = &Refresh{Period: minperiod}
+	cs.RefreshCPU = &Refresh{Period: minperiod}
+	cs.RefreshDF = &Refresh{Period: minperiod}
+	cs.RefreshPS = &Refresh{Period: minperiod}
+	cs.RefreshVG = &Refresh{Period: minperiod}
 
 	cs.PSlimit = 8
 
@@ -308,11 +309,11 @@ func (rs *RecvClient) mergeMorePsignal(cs *Client) {
 	rs.MorePsignal = nil
 }
 
-func (rs *RecvClient) mergeRefreshSignal(above types.Duration, ppinput *string, prefresh *Refresh, sendr **Refresh, senderr **bool) error {
+func (rs *RecvClient) mergeRefreshSignal(above time.Duration, ppinput *string, prefresh *Refresh, sendr **Refresh, senderr **bool) error {
 	if ppinput == nil {
 		return nil
 	}
-	pv := types.PeriodValue{Above: &above}
+	pv := flags.Period{Above: &above}
 	if err := pv.Set(*ppinput); err != nil {
 		*senderr = newtrue()
 		return err
@@ -325,7 +326,8 @@ func (rs *RecvClient) mergeRefreshSignal(above types.Duration, ppinput *string, 
 	return nil
 }
 
-func (rs *RecvClient) MergeClient(minrefresh types.Duration, cs *Client, send *SendClient) error {
+func (rs *RecvClient) MergeClient(minperiod flags.Period, cs *Client, send *SendClient) error {
+	minrefresh := minperiod.Duration
 	rs.mergeMorePsignal(cs)
 	var refreshmem Refresh
 	if err := rs.mergeRefreshSignal(minrefresh, rs.RefreshSignalMEM, &refreshmem, &send.RefreshMEM, &send.RefreshErrorMEM); err != nil {

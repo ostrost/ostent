@@ -11,10 +11,10 @@ import (
 	gorillawebsocket "github.com/gorilla/websocket"
 
 	"github.com/ostrost/ostent/client"
-	"github.com/ostrost/ostent/types"
+	"github.com/ostrost/ostent/flags"
 )
 
-type backgroundHandler func(types.PeriodValue)
+type backgroundHandler func(flags.Period)
 
 var (
 	jobs = struct {
@@ -29,7 +29,7 @@ func AddBackground(j backgroundHandler) {
 	jobs.added = append(jobs.added, j)
 }
 
-func RunBackground(defaultPeriod types.PeriodValue) {
+func RunBackground(defaultPeriod flags.Period) {
 	jobs.mutex.Lock()
 	defer jobs.mutex.Unlock()
 	for _, j := range jobs.added {
@@ -42,7 +42,7 @@ func init() {
 }
 
 // Loop is the ostent background job
-func Loop(types.PeriodValue) {
+func Loop(flags.Period) {
 	go func() {
 		for {
 			now := time.Now()
@@ -89,11 +89,11 @@ type conn struct {
 
 	requestOrigin *http.Request
 
-	receive    chan *received
-	pushch     chan *IndexUpdate
-	full       client.Client
-	minrefresh types.Duration
-	access     *logger
+	receive   chan *received
+	pushch    chan *IndexUpdate
+	full      client.Client
+	minperiod flags.Period
+	access    *logger
 
 	mutex      sync.Mutex
 	writemutex sync.Mutex
@@ -373,7 +373,7 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	send := client.SendClient{}
 	if sd.received != nil {
 		if sd.received.Client != nil {
-			err := sd.received.Client.MergeClient(sd.conn.minrefresh, &sd.conn.full, &send)
+			err := sd.received.Client.MergeClient(sd.conn.minperiod, &sd.conn.full, &send)
 			if err != nil {
 				// if !sd.conn.Conn.writeError(err) { stop(); return }
 				send.DebugError = new(string)
@@ -424,13 +424,13 @@ func (w dummyStatus) Write(b []byte) (int, error) {
 	// return len(b), nil
 }
 
-func SlashwsFunc(access *logger, minrefresh types.Duration) func(http.ResponseWriter, *http.Request) {
+func SlashwsFunc(access *logger, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
-		Slashws(access, minrefresh, w, req)
+		Slashws(access, minperiod, w, req)
 	}
 }
 
-func Slashws(access *logger, minrefresh types.Duration, w http.ResponseWriter, req *http.Request) {
+func Slashws(access *logger, minperiod flags.Period, w http.ResponseWriter, req *http.Request) {
 	// Upgrader.Upgrade() has Origin check if .CheckOrigin is nil
 	upgrader := gorillawebsocket.Upgrader{}
 	wsconn, err := upgrader.Upgrade(w, req, nil)
@@ -445,11 +445,11 @@ func Slashws(access *logger, minrefresh types.Duration, w http.ResponseWriter, r
 
 		requestOrigin: req,
 
-		receive:    make(chan *received, 2),
-		pushch:     make(chan *IndexUpdate, 2),
-		full:       client.DefaultClient(minrefresh),
-		minrefresh: minrefresh,
-		access:     access,
+		receive:   make(chan *received, 2),
+		pushch:    make(chan *IndexUpdate, 2),
+		full:      client.DefaultClient(minperiod),
+		minperiod: minperiod,
+		access:    access,
 	}
 	Register <- c
 	defer func() {

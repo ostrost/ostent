@@ -6,22 +6,22 @@ import (
 	"time"
 
 	"github.com/ostrost/ostent/client"
+	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
-	"github.com/ostrost/ostent/types"
 	metrics "github.com/rcrowley/go-metrics"
 )
 
 type graphite struct {
 	logger      *Logger
-	RefreshFlag types.PeriodValue
-	ServerAddr  types.BindValue
+	RefreshFlag flags.Period
+	ServerAddr  flags.Bind
 }
 
 func graphiteCommandLine(cli *flag.FlagSet) CommandLineHandler {
 	gr := &graphite{
 		logger:      NewLogger("[ostent sendto-graphite] "),
-		RefreshFlag: types.PeriodValue{Duration: types.Duration(10 * time.Second)}, // 10s default
-		ServerAddr:  types.NewBindValue(2003),
+		RefreshFlag: flags.Period{Duration: 10 * time.Second}, // 10s default
+		ServerAddr:  flags.NewBind(2003),
 	}
 	cli.Var(&gr.RefreshFlag, "graphite-refresh", "Graphite refresh interval")
 	cli.Var(&gr.ServerAddr, "sendto-graphite", "Graphite server address")
@@ -29,14 +29,14 @@ func graphiteCommandLine(cli *flag.FlagSet) CommandLineHandler {
 		if gr.ServerAddr.Host == "" {
 			return nil, false, nil
 		}
-		ostent.AddBackground(func(defaultPeriod types.PeriodValue) {
+		ostent.AddBackground(func(defaultPeriod flags.Period) {
 			/* if gr.RefreshFlag.Duration == 0 { // if .RefreshFlag had no default
 				gr.RefreshFlag = defaultPeriod
 			} */
 			gc := &carbond{
 				logger:     gr.logger,
 				serveraddr: gr.ServerAddr.String(),
-				Client:     client.DefaultClient(types.Duration(gr.RefreshFlag.Duration)),
+				Client:     client.DefaultClient(gr.RefreshFlag),
 			}
 			ostent.Register <- gc
 		})
