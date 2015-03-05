@@ -70,7 +70,7 @@ coverhtml:
 
 $(PWD)/assetutil/%_slice.go: $(PWD)/assetutil/assetutil.go
 	cd $(dir $@) && go generate
-$(PWD)/types/%_slice.go: $(PWD)/types/types.go
+$(PWD)/system/operating/%_slice.go: $(PWD)/system/operating/operating.go
 	cd $(dir $@) && go generate
 
 al: $(ostent_files)

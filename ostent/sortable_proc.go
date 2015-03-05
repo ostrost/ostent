@@ -5,14 +5,14 @@ import (
 	"encoding/json"
 
 	"github.com/ostrost/ostent/client"
-	"github.com/ostrost/ostent/types"
+	"github.com/ostrost/ostent/system/operating"
 )
 
 // SortCritProc is a distinct client.SeqNReverse type.
 type SortCritProc client.SeqNReverse
 
-// LessProc is a 'less' func for types.MetricProc comparison.
-func (crit SortCritProc) LessProc(a, b types.MetricProc) bool {
+// LessProc is a 'less' func for operating.MetricProc comparison.
+func (crit SortCritProc) LessProc(a, b operating.MetricProc) bool {
 	t := false
 	switch crit.SEQ {
 	case client.PSPID, -client.PSPID:
@@ -63,5 +63,5 @@ func (la PSlinks) MarshalJSON() ([]byte, error) {
 }
 
 type PStable struct {
-	List []types.ProcData `json:",omitempty"`
+	List []operating.ProcData `json:",omitempty"`
 }

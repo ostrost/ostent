@@ -1,7 +1,7 @@
 //go:generate gen
 
-// Package types has some types of ostent library.
-package types
+// Package operating (as oppose to system) holds platform-independant code.
+package operating
 
 import (
 	"container/ring"

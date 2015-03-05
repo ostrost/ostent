@@ -17,18 +17,18 @@ import (
 	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/getifaddrs"
 	"github.com/ostrost/ostent/system"
+	"github.com/ostrost/ostent/system/operating"
 	"github.com/ostrost/ostent/templateutil"
-	"github.com/ostrost/ostent/types"
 	metrics "github.com/rcrowley/go-metrics"
 	sigar "github.com/rzab/gosigar"
 )
 
-func interfaceMeta(ifdata getifaddrs.IfData) types.InterfaceMeta {
+func interfaceMeta(ifdata getifaddrs.IfData) operating.InterfaceMeta {
 	return interfaceMetaFromString(ifdata.Name)
 }
 
-func interfaceMetaFromString(name string) types.InterfaceMeta {
-	return types.InterfaceMeta{
+func interfaceMetaFromString(name string) operating.InterfaceMeta {
+	return operating.InterfaceMeta{
 		NameKey:  name,
 		NameHTML: tooltipable(12, name),
 	}
@@ -69,10 +69,10 @@ func tooltipable(limit int, full string) template.HTML {
 	return template.HTML(html)
 }
 
-func diskMeta(disk types.MetricDF) types.DiskMeta {
+func diskMeta(disk operating.MetricDF) operating.DiskMeta {
 	devname := disk.DevName.Snapshot().Value()
 	dirname := disk.DirName.Snapshot().Value()
-	return types.DiskMeta{
+	return operating.DiskMeta{
 		DiskNameHTML: tooltipable(12, devname),
 		DirNameHTML:  tooltipable(6, dirname),
 		DirNameKey:   dirname,
@@ -92,7 +92,7 @@ func username(uids map[uint]string, uid uint) string {
 	return s
 }
 
-func orderProc(procs types.MetricProcSlice, cl *client.Client, send *client.SendClient) []types.ProcData {
+func orderProc(procs operating.MetricProcSlice, cl *client.Client, send *client.SendClient) []operating.ProcData {
 	crit := SortCritProc{Reverse: client.PSBIMAP.SEQ2REVERSE[cl.PSSEQ], SEQ: cl.PSSEQ}
 	procs.SortSortBy(crit.LessProc) // not .StableSortBy
 
@@ -111,9 +111,9 @@ func orderProc(procs types.MetricProcSlice, cl *client.Client, send *client.Send
 	client.SetString(&cl.PSplusText, &send.PSplusText, fmt.Sprintf("%d+", limitPS))
 
 	uids := map[uint]string{}
-	var list []types.ProcData
+	var list []operating.ProcData
 	for _, proc := range procs {
-		list = append(list, types.ProcData{
+		list = append(list, operating.ProcData{
 			PID:      proc.PID,
 			Priority: proc.Priority,
 			Nice:     proc.Nice,
@@ -135,19 +135,19 @@ type clientData struct {
 
 type IndexData struct {
 	Generic generic
-	CPU     types.CPUInfo
-	MEM     types.MEM
+	CPU     operating.CPUInfo
+	MEM     operating.MEM
 
 	PStable PStable
 	PSlinks *PSlinks `json:",omitempty"`
 
-	DFlinks  *DFlinks       `json:",omitempty"`
-	DFbytes  types.DFbytes  `json:",omitempty"`
-	DFinodes types.DFinodes `json:",omitempty"`
+	DFlinks  *DFlinks           `json:",omitempty"`
+	DFbytes  operating.DFbytes  `json:",omitempty"`
+	DFinodes operating.DFinodes `json:",omitempty"`
 
-	IFbytes   types.Interfaces
-	IFerrors  types.Interfaces
-	IFpackets types.Interfaces
+	IFbytes   operating.Interfaces
+	IFerrors  operating.Interfaces
+	IFpackets operating.Interfaces
 
 	VagrantMachines *VagrantMachines
 	VagrantError    string
@@ -164,18 +164,18 @@ type IndexData struct {
 }
 
 type IndexUpdate struct {
-	Generic  *generic        `json:",omitempty"`
-	CPU      *types.CPUInfo  `json:",omitempty"`
-	MEM      *types.MEM      `json:",omitempty"`
-	DFlinks  *DFlinks        `json:",omitempty"`
-	DFbytes  *types.DFbytes  `json:",omitempty"`
-	DFinodes *types.DFinodes `json:",omitempty"`
-	PSlinks  *PSlinks        `json:",omitempty"`
-	PStable  *PStable        `json:",omitempty"`
+	Generic  *generic            `json:",omitempty"`
+	CPU      *operating.CPUInfo  `json:",omitempty"`
+	MEM      *operating.MEM      `json:",omitempty"`
+	DFlinks  *DFlinks            `json:",omitempty"`
+	DFbytes  *operating.DFbytes  `json:",omitempty"`
+	DFinodes *operating.DFinodes `json:",omitempty"`
+	PSlinks  *PSlinks            `json:",omitempty"`
+	PStable  *PStable            `json:",omitempty"`
 
-	IFbytes   *types.Interfaces `json:",omitempty"`
-	IFerrors  *types.Interfaces `json:",omitempty"`
-	IFpackets *types.Interfaces `json:",omitempty"`
+	IFbytes   *operating.Interfaces `json:",omitempty"`
+	IFerrors  *operating.Interfaces `json:",omitempty"`
+	IFpackets *operating.Interfaces `json:",omitempty"`
 
 	VagrantMachines *VagrantMachines `json:",omitempty"`
 	VagrantError    string
@@ -191,14 +191,14 @@ type last struct {
 
 type lastinfo struct {
 	Generic  generic
-	ProcList types.MetricProcSlice
+	ProcList operating.MetricProcSlice
 }
 
 var lastInfo last
 
 func (la *last) collect(c Collector) {
 	gch := make(chan generic, 1)
-	pch := make(chan types.MetricProcSlice, 1)
+	pch := make(chan operating.MetricProcSlice, 1)
 	ifch := make(chan string, 1)
 
 	var wg sync.WaitGroup
@@ -222,11 +222,11 @@ func (la *last) collect(c Collector) {
 	wg.Wait()
 }
 
-func (la *last) MakeCopy() (types.MetricProcSlice, *generic) {
+func (la *last) MakeCopy() (operating.MetricProcSlice, *generic) {
 	lastInfo.MU.Lock()
 	defer lastInfo.MU.Unlock()
 
-	psCopy := make(types.MetricProcSlice, len(lastInfo.ProcList))
+	psCopy := make(operating.MetricProcSlice, len(lastInfo.ProcList))
 	copy(psCopy, lastInfo.ProcList)
 
 	// if false { // !cl.RefreshGeneric.Refresh(forcerefresh)
@@ -237,7 +237,7 @@ func (la *last) MakeCopy() (types.MetricProcSlice, *generic) {
 	return psCopy, &g // &lastInfo.Generic
 }
 
-func LessInterface(a, b types.MetricInterface) bool {
+func LessInterface(a, b operating.MetricInterface) bool {
 	amatch := RXlo.Match([]byte(a.Name))
 	bmatch := RXlo.Match([]byte(b.Name))
 	if !(amatch && bmatch) {
@@ -250,7 +250,7 @@ func LessInterface(a, b types.MetricInterface) bool {
 	return a.Name < b.Name
 }
 
-func FormatInterface(mi types.MetricInterface, ip InterfaceParts) types.InterfaceInfo {
+func FormatInterface(mi operating.MetricInterface, ip InterfaceParts) operating.InterfaceInfo {
 	ing, outg, isbytes := ip(mi)
 	deltain, in := ing.Values()
 	deltaout, out := outg.Values()
@@ -263,7 +263,7 @@ func FormatInterface(mi types.MetricInterface, ip InterfaceParts) types.Interfac
 			return format.HumanBits(c * 8) // passing the bits
 		}
 	}
-	return types.InterfaceInfo{
+	return operating.InterfaceInfo{
 		InterfaceMeta: interfaceMetaFromString(mi.Name),
 		In:            form(uint64(in)),            // format.HumanB(uint64(in)),  // with units
 		Out:           form(uint64(out)),           // format.HumanB(uint64(out)), // with units
@@ -272,26 +272,26 @@ func FormatInterface(mi types.MetricInterface, ip InterfaceParts) types.Interfac
 	}
 }
 
-type InterfaceParts func(types.MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool)
+type InterfaceParts func(operating.MetricInterface) (*operating.GaugeDiff, *operating.GaugeDiff, bool)
 
-func (_ *IndexRegistry) InterfaceBytes(mi types.MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool) {
+func (_ *IndexRegistry) InterfaceBytes(mi operating.MetricInterface) (*operating.GaugeDiff, *operating.GaugeDiff, bool) {
 	return mi.BytesIn, mi.BytesOut, true
 }
-func (_ *IndexRegistry) InterfaceErrors(mi types.MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool) {
+func (_ *IndexRegistry) InterfaceErrors(mi operating.MetricInterface) (*operating.GaugeDiff, *operating.GaugeDiff, bool) {
 	return mi.ErrorsIn, mi.ErrorsOut, false
 }
-func (_ *IndexRegistry) InterfacePackets(mi types.MetricInterface) (*types.GaugeDiff, *types.GaugeDiff, bool) {
+func (_ *IndexRegistry) InterfacePackets(mi operating.MetricInterface) (*operating.GaugeDiff, *operating.GaugeDiff, bool) {
 	return mi.PacketsIn, mi.PacketsOut, false
 }
 
-func (ir *IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient, ip InterfaceParts) []types.InterfaceInfo {
+func (ir *IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient, ip InterfaceParts) []operating.InterfaceInfo {
 	private := ir.ListPrivateInterface()
 
 	client.SetBool(&cli.ExpandableIF, &send.ExpandableIF, len(private) > cli.Toprows)
 	client.SetString(&cli.ExpandtextIF, &send.ExpandtextIF, fmt.Sprintf("Expanded (%d)", len(private)))
 
 	private.SortSortBy(LessInterface)
-	var public []types.InterfaceInfo
+	var public []operating.InterfaceInfo
 	for i, mi := range private {
 		if !*cli.ExpandIF && i >= cli.Toprows {
 			break
@@ -302,29 +302,29 @@ func (ir *IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient,
 }
 
 // ListPrivateInterface returns list of MetricInterface's by traversing the PrivateInterfaceRegistry.
-func (ir *IndexRegistry) ListPrivateInterface() (lmi types.MetricInterfaceSlice) {
+func (ir *IndexRegistry) ListPrivateInterface() (lmi operating.MetricInterfaceSlice) {
 	ir.PrivateInterfaceRegistry.Each(func(name string, i interface{}) {
-		lmi = append(lmi, i.(types.MetricInterface))
+		lmi = append(lmi, i.(operating.MetricInterface))
 	})
 	return lmi
 }
 
-// GetOrRegisterPrivateInterface produces a registered in PrivateInterfaceRegistry types.MetricInterface.
-func (ir *IndexRegistry) GetOrRegisterPrivateInterface(name string) types.MetricInterface {
+// GetOrRegisterPrivateInterface produces a registered in PrivateInterfaceRegistry operating.MetricInterface.
+func (ir *IndexRegistry) GetOrRegisterPrivateInterface(name string) operating.MetricInterface {
 	ir.PrivateMutex.Lock()
 	defer ir.PrivateMutex.Unlock()
 	if metric := ir.PrivateInterfaceRegistry.Get(name); metric != nil {
-		return metric.(types.MetricInterface)
+		return metric.(operating.MetricInterface)
 	}
-	i := types.MetricInterface{
-		Interface: &types.Interface{
+	i := operating.MetricInterface{
+		Interface: &operating.Interface{
 			Name:       name,
-			BytesIn:    types.NewGaugeDiff("interface-"+name+".if_octets.rx", ir.Registry),
-			BytesOut:   types.NewGaugeDiff("interface-"+name+".if_octets.tx", ir.Registry),
-			ErrorsIn:   types.NewGaugeDiff("interface-"+name+".if_errors.rx", ir.Registry),
-			ErrorsOut:  types.NewGaugeDiff("interface-"+name+".if_errors.tx", ir.Registry),
-			PacketsIn:  types.NewGaugeDiff("interface-"+name+".if_packets.rx", ir.Registry),
-			PacketsOut: types.NewGaugeDiff("interface-"+name+".if_packets.tx", ir.Registry),
+			BytesIn:    operating.NewGaugeDiff("interface-"+name+".if_octets.rx", ir.Registry),
+			BytesOut:   operating.NewGaugeDiff("interface-"+name+".if_octets.tx", ir.Registry),
+			ErrorsIn:   operating.NewGaugeDiff("interface-"+name+".if_errors.rx", ir.Registry),
+			ErrorsOut:  operating.NewGaugeDiff("interface-"+name+".if_errors.tx", ir.Registry),
+			PacketsIn:  operating.NewGaugeDiff("interface-"+name+".if_packets.rx", ir.Registry),
+			PacketsOut: operating.NewGaugeDiff("interface-"+name+".if_packets.tx", ir.Registry),
 		},
 	}
 	ir.PrivateInterfaceRegistry.Register(name, i) // error is ignored
@@ -332,7 +332,7 @@ func (ir *IndexRegistry) GetOrRegisterPrivateInterface(name string) types.Metric
 	return i
 }
 
-func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) types.MetricDF {
+func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) operating.MetricDF {
 	ir.PrivateMutex.Lock()
 	defer ir.PrivateMutex.Unlock()
 	if fs.DirName == "/" {
@@ -341,16 +341,16 @@ func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) types.Metri
 		fs.DevName = strings.Replace(strings.TrimPrefix(fs.DevName, "/dev/"), "/", "-", -1)
 	}
 	if metric := ir.PrivateDFRegistry.Get(fs.DevName); metric != nil {
-		return metric.(types.MetricDF)
+		return metric.(operating.MetricDF)
 	}
 	label := func(tail string) string {
 		return fmt.Sprintf("df-%s.df_complex-%s", fs.DevName, tail)
 	}
 	r, unusedr := ir.Registry, metrics.NewRegistry()
-	i := types.MetricDF{
-		DF: &types.DF{
-			DevName:     &types.StandardMetricString{}, // unregistered
-			DirName:     &types.StandardMetricString{}, // unregistered
+	i := operating.MetricDF{
+		DF: &operating.DF{
+			DevName:     &operating.StandardMetricString{}, // unregistered
+			DirName:     &operating.StandardMetricString{}, // unregistered
 			Free:        metrics.NewRegisteredGaugeFloat64(label("free"), r),
 			Reserved:    metrics.NewRegisteredGaugeFloat64(label("reserved"), r),
 			Total:       metrics.NewRegisteredGauge(label("total"), unusedr),
@@ -368,7 +368,7 @@ func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) types.Metri
 	return i
 }
 
-func LessCPU(a, b types.MetricCPU) bool {
+func LessCPU(a, b operating.MetricCPU) bool {
 	var (
 		auser = a.User.Percent.Snapshot().Value()
 		anice = a.Nice.Percent.Snapshot().Value()
@@ -385,11 +385,11 @@ func (ir *IndexRegistry) DFbytes(cli *client.Client, send *client.SendClient, iu
 	if list == nil {
 		return nil
 	}
-	iu.DFbytes = &types.DFbytes{List: list}
+	iu.DFbytes = &operating.DFbytes{List: list}
 	return IndexUpdate{DFbytes: iu.DFbytes}
 }
 
-func (ir *IndexRegistry) DFbytesInternal(cli *client.Client, send *client.SendClient) []types.DiskBytes {
+func (ir *IndexRegistry) DFbytesInternal(cli *client.Client, send *client.SendClient) []operating.DiskBytes {
 	private := ir.ListPrivateDisk()
 
 	client.SetBool(&cli.ExpandableDF, &send.ExpandableDF, len(private) > cli.Toprows)
@@ -398,7 +398,7 @@ func (ir *IndexRegistry) DFbytesInternal(cli *client.Client, send *client.SendCl
 	crit := SortCritDisk{Reverse: client.DFBIMAP.SEQ2REVERSE[cli.DFSEQ], SEQ: cli.DFSEQ}
 	private.StableSortBy(crit.LessDisk)
 
-	var public []types.DiskBytes
+	var public []operating.DiskBytes
 	for i, disk := range private {
 		if !*cli.ExpandDF && i > cli.Toprows-1 {
 			break
@@ -408,7 +408,7 @@ func (ir *IndexRegistry) DFbytesInternal(cli *client.Client, send *client.SendCl
 	return public
 }
 
-func FormatDFbytes(md types.MetricDF) types.DiskBytes {
+func FormatDFbytes(md operating.MetricDF) operating.DiskBytes {
 	var (
 		diskTotal = md.Total.Snapshot().Value()
 		diskUsed  = md.Used.Snapshot().Value()
@@ -416,7 +416,7 @@ func FormatDFbytes(md types.MetricDF) types.DiskBytes {
 	)
 	total, approxtotal, _ := format.HumanBandback(uint64(diskTotal))
 	used, approxused, _ := format.HumanBandback(uint64(diskUsed))
-	return types.DiskBytes{
+	return operating.DiskBytes{
 		DiskMeta:        diskMeta(md),
 		Total:           total,
 		Used:            used,
@@ -426,7 +426,7 @@ func FormatDFbytes(md types.MetricDF) types.DiskBytes {
 	}
 }
 
-func (ir *IndexRegistry) DFinodes(cli *client.Client, send *client.SendClient) []types.DiskInodes {
+func (ir *IndexRegistry) DFinodes(cli *client.Client, send *client.SendClient) []operating.DiskInodes {
 	private := ir.ListPrivateDisk()
 
 	client.SetBool(&cli.ExpandableDF, &send.ExpandableDF, len(private) > cli.Toprows)
@@ -435,7 +435,7 @@ func (ir *IndexRegistry) DFinodes(cli *client.Client, send *client.SendClient) [
 	crit := SortCritDisk{Reverse: client.DFBIMAP.SEQ2REVERSE[cli.DFSEQ], SEQ: cli.DFSEQ}
 	private.StableSortBy(crit.LessDisk)
 
-	var public []types.DiskInodes
+	var public []operating.DiskInodes
 	for i, disk := range private {
 		if !*cli.ExpandDF && i > cli.Toprows-1 {
 			break
@@ -445,7 +445,7 @@ func (ir *IndexRegistry) DFinodes(cli *client.Client, send *client.SendClient) [
 	return public
 }
 
-func FormatDFinodes(md types.MetricDF) types.DiskInodes {
+func FormatDFinodes(md operating.MetricDF) operating.DiskInodes {
 	var (
 		diskInodes = md.Inodes.Snapshot().Value()
 		diskIused  = md.Iused.Snapshot().Value()
@@ -453,7 +453,7 @@ func FormatDFinodes(md types.MetricDF) types.DiskInodes {
 	)
 	itotal, approxitotal, _ := format.HumanBandback(uint64(diskInodes))
 	iused, approxiused, _ := format.HumanBandback(uint64(diskIused))
-	return types.DiskInodes{
+	return operating.DiskInodes{
 		DiskMeta:         diskMeta(md),
 		Inodes:           itotal,
 		Iused:            iused,
@@ -465,23 +465,23 @@ func FormatDFinodes(md types.MetricDF) types.DiskInodes {
 
 func (ir *IndexRegistry) CPU(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
 	list := ir.CPUInternal(cli, send)
-	iu.CPU = &types.CPUInfo{List: list}
+	iu.CPU = &operating.CPUInfo{List: list}
 	return IndexUpdate{CPU: iu.CPU}
 }
 
-func (ir *IndexRegistry) CPUInternal(cli *client.Client, send *client.SendClient) []types.CoreInfo {
+func (ir *IndexRegistry) CPUInternal(cli *client.Client, send *client.SendClient) []operating.CoreInfo {
 	private := ir.ListPrivateCPU()
 
 	client.SetBool(&cli.ExpandableCPU, &send.ExpandableCPU, len(private) > cli.Toprows) // one row reserved for "all N"
 	client.SetString(&cli.ExpandtextCPU, &send.ExpandtextCPU, fmt.Sprintf("Expanded (%d)", len(private)))
 
 	if len(private) == 1 {
-		return []types.CoreInfo{FormatCPU(private[0])}
+		return []operating.CoreInfo{FormatCPU(private[0])}
 	}
 	private.SortSortBy(LessCPU)
-	var public []types.CoreInfo
+	var public []operating.CoreInfo
 	if !*cli.ExpandCPU {
-		public = []types.CoreInfo{FormatCPU(ir.PrivateCPUAll)}
+		public = []operating.CoreInfo{FormatCPU(ir.PrivateCPUAll)}
 	}
 	for i, mc := range private {
 		if !*cli.ExpandCPU && i > cli.Toprows-2 {
@@ -493,7 +493,7 @@ func (ir *IndexRegistry) CPUInternal(cli *client.Client, send *client.SendClient
 	return public
 }
 
-func FormatCPU(mc types.MetricCPU) types.CoreInfo {
+func FormatCPU(mc operating.MetricCPU) operating.CoreInfo {
 	user := uint(mc.User.Percent.Snapshot().Value()) // rounding
 	// .Nice is unused
 	sys := uint(mc.Sys.Percent.Snapshot().Value())   // rounding
@@ -502,7 +502,7 @@ func FormatCPU(mc types.MetricCPU) types.CoreInfo {
 	if prefix := "cpu-"; strings.HasPrefix(N, prefix) { // true for all but "all"
 		N = "#" + N[len(prefix):] // fmt.Sprintf("#%d", n)
 	}
-	return types.CoreInfo{
+	return operating.CoreInfo{
 		N:         N,
 		User:      user,
 		Sys:       sys,
@@ -513,29 +513,29 @@ func FormatCPU(mc types.MetricCPU) types.CoreInfo {
 	}
 }
 
-// ListPrivateCPU returns list of types.MetricCPU's by traversing the PrivateCPURegistry.
-func (ir *IndexRegistry) ListPrivateCPU() (lmc types.MetricCPUSlice) {
+// ListPrivateCPU returns list of operating.MetricCPU's by traversing the PrivateCPURegistry.
+func (ir *IndexRegistry) ListPrivateCPU() (lmc operating.MetricCPUSlice) {
 	ir.PrivateCPURegistry.Each(func(name string, i interface{}) {
-		lmc = append(lmc, i.(types.MetricCPU))
+		lmc = append(lmc, i.(operating.MetricCPU))
 	})
 	return lmc
 }
 
-// ListPrivateDisk returns list of types.MetricDF's by traversing the PrivateDFRegistry.
-func (ir *IndexRegistry) ListPrivateDisk() (lmd types.MetricDFSlice) {
+// ListPrivateDisk returns list of operating.MetricDF's by traversing the PrivateDFRegistry.
+func (ir *IndexRegistry) ListPrivateDisk() (lmd operating.MetricDFSlice) {
 	ir.PrivateDFRegistry.Each(func(name string, i interface{}) {
-		lmd = append(lmd, i.(types.MetricDF))
+		lmd = append(lmd, i.(operating.MetricDF))
 	})
 	return lmd
 }
 
 // GetOrRegisterPrivateCPU produces a registered in PrivateCPURegistry MetricCPU.
-func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) types.MetricCPU {
+func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) operating.MetricCPU {
 	ir.PrivateMutex.Lock()
 	defer ir.PrivateMutex.Unlock()
 	name := fmt.Sprintf("cpu-%d", coreno)
 	if metric := ir.PrivateCPURegistry.Get(name); metric != nil {
-		return metric.(types.MetricCPU)
+		return metric.(operating.MetricCPU)
 	}
 	i := *system.NewMetricCPU(ir.Registry, name)
 	ir.PrivateCPURegistry.Register(name, i) // error is ignored
@@ -547,10 +547,10 @@ func (ir *IndexRegistry) SWAP(client *client.Client, send *client.SendClient, iu
 	// client is unused
 	// send is unused
 	if iu.MEM == nil {
-		iu.MEM = new(types.MEM)
+		iu.MEM = new(operating.MEM)
 	}
 	if iu.MEM.List == nil {
-		iu.MEM.List = []types.Memory{}
+		iu.MEM.List = []operating.Memory{}
 	}
 	gs := ir.Swap
 	iu.MEM.List = append(iu.MEM.List,
@@ -567,8 +567,8 @@ func (ir *IndexRegistry) MEM(client *client.Client, send *client.SendClient, iu 
 	// client is unused
 	// send is unused
 	gr := ir.RAM
-	mem := new(types.MEM)
-	mem.List = []types.Memory{
+	mem := new(operating.MEM)
+	mem.List = []operating.Memory{
 		_getmem("RAM", sigar.Swap{
 			Total: uint64(gr.Total.Snapshot().Value()),
 			Free:  uint64(gr.Free.Snapshot().Value()),
@@ -620,7 +620,7 @@ func (ir *IndexRegistry) UpdateCPU(cpus []sigar.Cpu) {
 	all := sigar.Cpu{}
 	for coreno, core := range cpus {
 		ir.GetOrRegisterPrivateCPU(coreno).Update(core)
-		types.AddSCPU(&all, core)
+		operating.AddSCPU(&all, core)
 	}
 	if ir.PrivateCPUAll.N == "all" {
 		ir.PrivateCPUAll.N = fmt.Sprintf("all %d", len(cpus))
@@ -636,15 +636,15 @@ func (ir *IndexRegistry) UpdateIFdata(ifdata getifaddrs.IfData) {
 
 type IndexRegistry struct {
 	Registry                 metrics.Registry
-	PrivateCPUAll            types.MetricCPU
+	PrivateCPUAll            operating.MetricCPU
 	PrivateCPURegistry       metrics.Registry // set of MetricCPUs is handled as a metric in this registry
-	PrivateInterfaceRegistry metrics.Registry // set of types.MetricInterfaces is handled as a metric in this registry
-	PrivateDFRegistry        metrics.Registry // set of types.MetricDFs is handled as a metric in this registry
+	PrivateInterfaceRegistry metrics.Registry // set of operating.MetricInterfaces is handled as a metric in this registry
+	PrivateDFRegistry        metrics.Registry // set of operating.MetricDFs is handled as a metric in this registry
 	PrivateMutex             sync.Mutex
 
-	RAM  *types.MetricRAM
-	Swap types.MetricSwap
-	Load *types.MetricLoad
+	RAM  *operating.MetricRAM
+	Swap operating.MetricSwap
+	Load *operating.MetricLoad
 
 	Mutex sync.Mutex
 }
@@ -663,8 +663,8 @@ func init() {
 	// pcreg.Register("all", Reg1s.PrivateCPUAll)
 
 	Reg1s.RAM = system.NewMetricRAM(Reg1s.Registry)
-	Reg1s.Swap = types.NewMetricSwap(Reg1s.Registry)
-	Reg1s.Load = types.NewMetricLoad(Reg1s.Registry)
+	Reg1s.Swap = operating.NewMetricSwap(Reg1s.Registry)
+	Reg1s.Load = operating.NewMetricLoad(Reg1s.Registry)
 
 	// addr, _ := net.ResolveTCPAddr("tcp", "127.0.0.1:2003")
 	// go metrics.Graphite(reg, 1*time.Second, "ostent", addr)
@@ -692,7 +692,7 @@ type SetInterface interface {
 func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (iu IndexUpdate) {
 	cl.RecalcRows() // before anything
 
-	var psCopy types.MetricProcSlice
+	var psCopy operating.MetricProcSlice
 	psCopy, iu.Generic = lastInfo.MakeCopy()
 
 	if req != nil {
@@ -729,20 +729,20 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 
 	if !*cl.HideDF && cl.RefreshDF.Refresh(forcerefresh) {
 		if *cl.TabDF == client.DFBYTES_TABID {
-			iu.DFbytes = &types.DFbytes{List: Reg1s.DFbytesInternal(cl, &send)}
+			iu.DFbytes = &operating.DFbytes{List: Reg1s.DFbytesInternal(cl, &send)}
 		} else if *cl.TabDF == client.DFINODES_TABID {
-			iu.DFinodes = &types.DFinodes{List: Reg1s.DFinodes(cl, &send)}
+			iu.DFinodes = &operating.DFinodes{List: Reg1s.DFinodes(cl, &send)}
 		}
 	}
 
 	if !*cl.HideIF && cl.RefreshIF.Refresh(forcerefresh) {
 		switch *cl.TabIF {
 		case client.IFBYTES_TABID:
-			iu.IFbytes = &types.Interfaces{List: Reg1s.Interfaces(cl, &send, Reg1s.InterfaceBytes)}
+			iu.IFbytes = &operating.Interfaces{List: Reg1s.Interfaces(cl, &send, Reg1s.InterfaceBytes)}
 		case client.IFERRORS_TABID:
-			iu.IFerrors = &types.Interfaces{List: Reg1s.Interfaces(cl, &send, Reg1s.InterfaceErrors)}
+			iu.IFerrors = &operating.Interfaces{List: Reg1s.Interfaces(cl, &send, Reg1s.InterfaceErrors)}
 		case client.IFPACKETS_TABID:
-			iu.IFpackets = &types.Interfaces{List: Reg1s.Interfaces(cl, &send, Reg1s.InterfacePackets)}
+			iu.IFpackets = &operating.Interfaces{List: Reg1s.Interfaces(cl, &send, Reg1s.InterfacePackets)}
 		}
 	}
 

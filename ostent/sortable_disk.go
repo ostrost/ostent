@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 
 	"github.com/ostrost/ostent/client"
-	"github.com/ostrost/ostent/types"
+	"github.com/ostrost/ostent/system/operating"
 )
 
 // SortCritDisk is a distinct client.SeqNReverse type.
 type SortCritDisk client.SeqNReverse
 
-// LessDisk is a 'less' func for types.MetricDF comparison.
-func (crit SortCritDisk) LessDisk(a, b types.MetricDF) bool {
+// LessDisk is a 'less' func for operating.MetricDF comparison.
+func (crit SortCritDisk) LessDisk(a, b operating.MetricDF) bool {
 	t := false
 	switch crit.SEQ {
 	case client.DFFS, -client.DFFS:

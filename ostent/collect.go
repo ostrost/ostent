@@ -14,8 +14,8 @@ import (
 	"github.com/ostrost/ostent/getifaddrs"
 	"github.com/ostrost/ostent/registry"
 	"github.com/ostrost/ostent/system"
+	"github.com/ostrost/ostent/system/operating"
 	"github.com/ostrost/ostent/templateutil"
-	"github.com/ostrost/ostent/types"
 	sigar "github.com/rzab/gosigar"
 )
 
@@ -26,7 +26,7 @@ type Collector interface {
 	RAM(registry.Registry, *sync.WaitGroup)
 	Swap(registry.Registry, *sync.WaitGroup)
 	Interfaces(registry.Registry, chan<- string)
-	Procs(chan<- types.MetricProcSlice)
+	Procs(chan<- operating.MetricProcSlice)
 	Disks(registry.Registry, *sync.WaitGroup)
 	CPU(registry.Registry, *sync.WaitGroup)
 }
@@ -162,7 +162,7 @@ func (m *Machine) Generic(reg registry.Registry, CH chan<- generic) {
 
 var UsePercentTemplate *templateutil.BinTemplate
 
-func _getmem(kind string, in sigar.Swap) types.Memory {
+func _getmem(kind string, in sigar.Swap) operating.Memory {
 	total, approxtotal, _ := format.HumanBandback(in.Total)
 	used, approxused, _ := format.HumanBandback(in.Used)
 	usepercent := format.Percent(approxused, approxtotal)
@@ -179,7 +179,7 @@ func _getmem(kind string, in sigar.Swap) types.Memory {
 		html = buf.String()
 	}
 
-	return types.Memory{
+	return operating.Memory{
 		Kind:           kind,
 		Total:          total,
 		Used:           used,
@@ -242,9 +242,9 @@ func (m *Machine) Disks(reg registry.Registry, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (m *Machine) Procs(CH chan<- types.MetricProcSlice) {
+func (m *Machine) Procs(CH chan<- operating.MetricProcSlice) {
 	// m is unused
-	var procs types.MetricProcSlice
+	var procs operating.MetricProcSlice
 	pls := sigar.ProcList{}
 	pls.Get()
 
@@ -266,8 +266,8 @@ func (m *Machine) Procs(CH chan<- types.MetricProcSlice) {
 			continue
 		}
 
-		procs = append(procs, types.MetricProc{
-			ProcInfo: &types.ProcInfo{
+		procs = append(procs, operating.MetricProc{
+			ProcInfo: &operating.ProcInfo{
 				PID:      uint(pid),
 				Priority: state.Priority,
 				Nice:     state.Nice,

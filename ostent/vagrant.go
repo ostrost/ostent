@@ -8,14 +8,14 @@ import (
 	"time"
 
 	"github.com/howeyc/fsnotify"
-	"github.com/ostrost/ostent/types"
+	"github.com/ostrost/ostent/system/operating"
 )
 
 type VagrantMachines struct {
-	List types.VgmachineSlice
+	List operating.VgmachineSlice
 }
 
-func LessVgmachine(a, b types.Vgmachine) bool { return a.UUID < b.UUID }
+func LessVgmachine(a, b operating.Vgmachine) bool { return a.UUID < b.UUID }
 
 func vagrantmachines() (*VagrantMachines, error) {
 	currentUser, _ := user.Current()
@@ -37,7 +37,7 @@ func vagrantmachines() (*VagrantMachines, error) {
 	}
 
 	status := new(struct {
-		Machines *map[string]types.Vgmachine // the key is UUID
+		Machines *map[string]operating.Vgmachine // the key is UUID
 		// Version int // unused
 	})
 	if err := json.NewDecoder(open).Decode(status); err != nil { // json.Unmarshal(text, status)

@@ -3,7 +3,7 @@
 package system
 
 import (
-	"github.com/ostrost/ostent/types"
+	"github.com/ostrost/ostent/system/operating"
 	metrics "github.com/rcrowley/go-metrics"
 	sigar "github.com/rzab/gosigar"
 )
@@ -14,8 +14,8 @@ type ExtraMetricRAM struct {
 	Active   metrics.Gauge
 }
 
-func NewMetricRAM(r metrics.Registry) *types.MetricRAM {
-	return types.ExtraNewMetricRAM(r, &ExtraMetricRAM{
+func NewMetricRAM(r metrics.Registry) *operating.MetricRAM {
+	return operating.ExtraNewMetricRAM(r, &ExtraMetricRAM{
 		Inactive: metrics.NewRegisteredGauge("memory.memory-inactive", r),
 		Wired:    metrics.NewRegisteredGauge("memory.memory-wired", r),
 		Active:   metrics.NewRegisteredGauge("memory.memory-active", r),
@@ -28,6 +28,6 @@ func (emr *ExtraMetricRAM) UpdateRAM(got sigar.Mem, extra1, extra2 uint64) {
 	emr.Active.Update(int64(extra2))
 }
 
-func NewMetricCPU(r metrics.Registry, name string) *types.MetricCPU {
-	return types.ExtraNewMetricCPU(r, name, nil)
+func NewMetricCPU(r metrics.Registry, name string) *operating.MetricCPU {
+	return operating.ExtraNewMetricCPU(r, name, nil)
 }

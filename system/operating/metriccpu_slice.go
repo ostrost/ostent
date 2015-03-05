@@ -2,7 +2,7 @@
 // TypeWriter: slice
 // Directive: +gen on MetricCPU
 
-package types
+package operating
 
 import "sort"
 
