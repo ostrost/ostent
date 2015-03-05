@@ -48,7 +48,7 @@ github.com/jteeuwen/go-bindata/go-bindata \
 github.com/skelterjohn/rerun \
 github.com/clipperhouse/gen
 # TODO rm {src,pkg/*}/github.com/clipperhouse/slice{,.a}
-	cd types && gen add github.com/rzab/slice
+	cd system/operating && gen add github.com/rzab/slice
 	git remote set-url origin https://$(fqostent) # travis & tip & https://code.google.com/p/go/issues/detail?id=8850
 	go get -v -tags production $(fqostent)
 	go list -f '{{.Target}}' $(fqostent) | $(xargs) rm # clean the library archive
