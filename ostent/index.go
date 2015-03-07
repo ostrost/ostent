@@ -92,16 +92,17 @@ func username(uids map[uint]string, uid uint) string {
 	return s
 }
 
-func orderProc(procs operating.MetricProcSlice, cl *client.Client, send *client.SendClient) []operating.ProcData {
+func (procs MPSlice) Ordered(cl *client.Client, send *client.SendClient) []operating.ProcData {
 	crit := SortCritProc{Reverse: client.PSBIMAP.SEQ2REVERSE[cl.PSSEQ], SEQ: cl.PSSEQ}
-	procs.SortSortBy(crit.LessProc) // not .StableSortBy
+	operating.MetricProcSlice(procs).SortSortBy(crit.LessProc) // not .StableSortBy
 
+	pslen := len(procs)
 	limitPS := cl.PSlimit
 	notdec := limitPS <= 1
-	notexp := limitPS >= len(procs)
+	notexp := limitPS >= pslen
 
-	if limitPS >= len(procs) { // notexp
-		limitPS = len(procs) // NB modified limitPS
+	if limitPS >= pslen { // notexp
+		limitPS = pslen // NB modified limitPS
 	} else {
 		procs = procs[:limitPS]
 	}
@@ -222,11 +223,11 @@ func (la *last) collect(c Collector) {
 	wg.Wait()
 }
 
-func (la *last) MakeCopy() (operating.MetricProcSlice, *generic) {
+func (la *last) MakeCopy() (MPSlice, *generic) {
 	lastInfo.MU.Lock()
 	defer lastInfo.MU.Unlock()
 
-	psCopy := make(operating.MetricProcSlice, len(lastInfo.ProcList))
+	psCopy := make(MPSlice, len(lastInfo.ProcList))
 	copy(psCopy, lastInfo.ProcList)
 
 	// if false { // !cl.RefreshGeneric.Refresh(forcerefresh)
@@ -380,16 +381,18 @@ func LessCPU(a, b operating.MetricCPU) bool {
 	return (auser + anice + asys) > (buser + bnice + bsys)
 }
 
-func (ir *IndexRegistry) DFbytes(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
-	list := ir.DFbytesInternal(cli, send)
-	if list == nil {
-		return nil
+func (ir *IndexRegistry) DF(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
+	if *cli.TabDF == client.DFBYTES_TABID {
+		iu.DFbytes = &operating.DFbytes{List: ir.DFbytes(cli, send)}
+		return IndexUpdate{DFbytes: iu.DFbytes}
+	} else if *cli.TabDF == client.DFINODES_TABID {
+		iu.DFinodes = &operating.DFinodes{List: ir.DFinodes(cli, send)}
+		return IndexUpdate{DFinodes: iu.DFinodes}
 	}
-	iu.DFbytes = &operating.DFbytes{List: list}
-	return IndexUpdate{DFbytes: iu.DFbytes}
+	return nil
 }
 
-func (ir *IndexRegistry) DFbytesInternal(cli *client.Client, send *client.SendClient) []operating.DiskBytes {
+func (ir *IndexRegistry) DFbytes(cli *client.Client, send *client.SendClient) []operating.DiskBytes {
 	private := ir.ListPrivateDisk()
 
 	client.SetBool(&cli.ExpandableDF, &send.ExpandableDF, len(private) > cli.Toprows)
@@ -461,6 +464,47 @@ func FormatDFinodes(md operating.MetricDF) operating.DiskInodes {
 		IusePercent:      format.FormatPercent(approxiused, approxitotal),
 		IusePercentClass: format.LabelClassColorPercent(format.Percent(approxiused, approxitotal)),
 	}
+}
+
+func (ir *IndexRegistry) VG(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
+	machines, err := vagrantmachines()
+	if err != nil {
+		iu.VagrantErrord = true
+		iu.VagrantError = err.Error()
+		return IndexUpdate{
+			VagrantErrord: iu.VagrantErrord,
+			VagrantError:  iu.VagrantError,
+		}
+	}
+	iu.VagrantErrord = false
+	iu.VagrantMachines = machines
+	return IndexUpdate{
+		VagrantErrord:   iu.VagrantErrord,
+		VagrantMachines: iu.VagrantMachines,
+	}
+}
+
+// MPSlice is a operating.MetricProcSlice with some methods.
+type MPSlice operating.MetricProcSlice
+
+func (procs MPSlice) IU(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
+	iu.PStable = &PStable{List: procs.Ordered(cli, send)}
+	return IndexUpdate{PStable: iu.PStable}
+}
+
+func (ir *IndexRegistry) IF(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
+	switch *cli.TabIF {
+	case client.IFBYTES_TABID:
+		iu.IFbytes = &operating.Interfaces{List: ir.Interfaces(cli, send, ir.InterfaceBytes)}
+		return IndexUpdate{IFbytes: iu.IFbytes}
+	case client.IFERRORS_TABID:
+		iu.IFerrors = &operating.Interfaces{List: Reg1s.Interfaces(cli, send, ir.InterfaceErrors)}
+		return IndexUpdate{IFerrors: iu.IFerrors}
+	case client.IFPACKETS_TABID:
+		iu.IFpackets = &operating.Interfaces{List: Reg1s.Interfaces(cli, send, ir.InterfacePackets)}
+		return IndexUpdate{IFpackets: iu.IFpackets}
+	}
+	return nil
 }
 
 func (ir *IndexRegistry) CPU(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
@@ -658,16 +702,13 @@ func init() {
 		PrivateInterfaceRegistry: metrics.NewRegistry(),
 		PrivateDFRegistry:        metrics.NewRegistry(),
 	}
-	// Reg1s.PrivateCPUAll = *Reg1s.RegisterCPU(metrics.NewRegistry(), "all")
-	Reg1s.PrivateCPUAll = *system.NewMetricCPU( /* pcreg := */ metrics.NewRegistry(), "all")
+	Reg1s.PrivateCPUAll = /* *Reg1s.RegisterCPU */ *system.NewMetricCPU(
+		/* pcreg := */ metrics.NewRegistry(), "all")
 	// pcreg.Register("all", Reg1s.PrivateCPUAll)
 
 	Reg1s.RAM = system.NewMetricRAM(Reg1s.Registry)
 	Reg1s.Swap = operating.NewMetricSwap(Reg1s.Registry)
 	Reg1s.Load = operating.NewMetricLoad(Reg1s.Registry)
-
-	// addr, _ := net.ResolveTCPAddr("tcp", "127.0.0.1:2003")
-	// go metrics.Graphite(reg, 1*time.Second, "ostent", addr)
 }
 
 type Set struct {
@@ -692,7 +733,7 @@ type SetInterface interface {
 func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (iu IndexUpdate) {
 	cl.RecalcRows() // before anything
 
-	var psCopy operating.MetricProcSlice
+	var psCopy MPSlice
 	psCopy, iu.Generic = lastInfo.MakeCopy()
 
 	if req != nil {
@@ -704,9 +745,13 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 
 	set := []Set{
 		{*cl.HideRAM, cl.RefreshRAM, Reg1s.MEM},
-		{*cl.HideRAM || *cl.HideSWAP, /* if RAM is hidden, so is SWAP */
-			cl.RefreshSWAP, Reg1s.SWAP},
+		// if RAM is hidden, so is SWAP:
+		{*cl.HideRAM || *cl.HideSWAP, cl.RefreshSWAP, Reg1s.SWAP},
 		{*cl.HideCPU, cl.RefreshCPU, Reg1s.CPU},
+		{*cl.HideDF, cl.RefreshDF, Reg1s.DF},
+		{*cl.HideIF, cl.RefreshIF, Reg1s.IF},
+		{*cl.HidePS, cl.RefreshPS, psCopy.IU},
+		{*cl.HideVG, cl.RefreshVG, Reg1s.VG},
 	}
 
 	// var additions []interface{}
@@ -719,45 +764,6 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 		}
 		if add := x.Update(cl, &send, &iu); add != nil {
 			// additions = append(additions, add)
-		}
-	}
-
-	_ = map[client.SEQ]func(){
-		client.DFBYTES_TABID:  func() {}, // Reg1s.DFbytes,
-		client.DFINODES_TABID: func() {}, // Reg1s.DFinodes,
-	}[*cl.TabDF]
-
-	if !*cl.HideDF && cl.RefreshDF.Refresh(forcerefresh) {
-		if *cl.TabDF == client.DFBYTES_TABID {
-			iu.DFbytes = &operating.DFbytes{List: Reg1s.DFbytesInternal(cl, &send)}
-		} else if *cl.TabDF == client.DFINODES_TABID {
-			iu.DFinodes = &operating.DFinodes{List: Reg1s.DFinodes(cl, &send)}
-		}
-	}
-
-	if !*cl.HideIF && cl.RefreshIF.Refresh(forcerefresh) {
-		switch *cl.TabIF {
-		case client.IFBYTES_TABID:
-			iu.IFbytes = &operating.Interfaces{List: Reg1s.Interfaces(cl, &send, Reg1s.InterfaceBytes)}
-		case client.IFERRORS_TABID:
-			iu.IFerrors = &operating.Interfaces{List: Reg1s.Interfaces(cl, &send, Reg1s.InterfaceErrors)}
-		case client.IFPACKETS_TABID:
-			iu.IFpackets = &operating.Interfaces{List: Reg1s.Interfaces(cl, &send, Reg1s.InterfacePackets)}
-		}
-	}
-
-	if !*cl.HidePS && cl.RefreshPS.Refresh(forcerefresh) {
-		iu.PStable = &PStable{List: orderProc(psCopy, cl, &send)}
-	}
-
-	if !*cl.HideVG && cl.RefreshVG.Refresh(forcerefresh) {
-		machines, err := vagrantmachines()
-		if err != nil {
-			iu.VagrantError = err.Error()
-			iu.VagrantErrord = true
-		} else {
-			iu.VagrantMachines = machines
-			iu.VagrantErrord = false
 		}
 	}
 
