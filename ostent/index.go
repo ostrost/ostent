@@ -223,19 +223,26 @@ func (la *last) collect(c Collector) {
 	wg.Wait()
 }
 
-func (la *last) MakeCopy() (MPSlice, *generic) {
-	lastInfo.MU.Lock()
-	defer lastInfo.MU.Unlock()
+func (la *last) MakeCopy() Copy {
+	la.MU.Lock()
+	defer la.MU.Unlock()
 
-	psCopy := make(MPSlice, len(lastInfo.ProcList))
-	copy(psCopy, lastInfo.ProcList)
+	psCopy := make(MPSlice, len(la.ProcList))
+	copy(psCopy, la.ProcList)
 
-	// if false { // !cl.RefreshGeneric.Refresh(forcerefresh)
-	// 	return
-	// }
-	g := lastInfo.Generic
-	g.LA = Reg1s.LA()
-	return psCopy, &g // &lastInfo.Generic
+	return Copy{
+		Hostname: la.Generic.Hostname,
+		Uptime:   la.Generic.Uptime,
+		LA:       Reg1s.LA(),
+		MPSlice:  psCopy,
+	}
+}
+
+type Copy struct {
+	Hostname string
+	Uptime   string
+	LA       string
+	MPSlice  MPSlice
 }
 
 func LessInterface(a, b operating.MetricInterface) bool {
@@ -382,10 +389,11 @@ func LessCPU(a, b operating.MetricCPU) bool {
 }
 
 func (ir *IndexRegistry) DF(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
-	if *cli.TabDF == client.DFBYTES_TABID {
+	switch *cli.TabDF {
+	case client.DFBYTES_TABID:
 		iu.DFbytes = &operating.DFbytes{List: ir.DFbytes(cli, send)}
 		return IndexUpdate{DFbytes: iu.DFbytes}
-	} else if *cli.TabDF == client.DFINODES_TABID {
+	case client.DFINODES_TABID:
 		iu.DFinodes = &operating.DFinodes{List: ir.DFinodes(cli, send)}
 		return IndexUpdate{DFinodes: iu.DFinodes}
 	}
@@ -733,8 +741,12 @@ type SetInterface interface {
 func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (iu IndexUpdate) {
 	cl.RecalcRows() // before anything
 
-	var psCopy MPSlice
-	psCopy, iu.Generic = lastInfo.MakeCopy()
+	copy := lastInfo.MakeCopy()
+	iu.Generic = &generic{ // TODO redo .Generic
+		Hostname: copy.Hostname,
+		Uptime:   copy.Uptime,
+		LA:       copy.LA,
+	}
 
 	if req != nil {
 		req.ParseForm() // do ParseForm even if req.Form == nil, otherwise *links won't be set for index requests without parameters
@@ -750,8 +762,10 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 		{*cl.HideCPU, cl.RefreshCPU, Reg1s.CPU},
 		{*cl.HideDF, cl.RefreshDF, Reg1s.DF},
 		{*cl.HideIF, cl.RefreshIF, Reg1s.IF},
-		{*cl.HidePS, cl.RefreshPS, psCopy.IU},
+		{*cl.HidePS, cl.RefreshPS, copy.MPSlice.IU},
 		{*cl.HideVG, cl.RefreshVG, Reg1s.VG},
+		// TODO {nil, cl.RefreshHN, copy.HN},
+		// same for UP, IP, LA
 	}
 
 	// var additions []interface{}
