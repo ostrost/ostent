@@ -107,9 +107,9 @@ func (procs MPSlice) Ordered(cl *client.Client, send *client.SendClient) []opera
 		procs = procs[:limitPS]
 	}
 
-	client.SetBool(&cl.PSnotDecreasable, &send.PSnotDecreasable, notdec)
-	client.SetBool(&cl.PSnotExpandable, &send.PSnotExpandable, notexp)
-	client.SetString(&cl.PSplusText, &send.PSplusText, fmt.Sprintf("%d+", limitPS))
+	send.SetBool(&send.PSnotDecreasable, &cl.PSnotDecreasable, notdec)
+	send.SetBool(&send.PSnotExpandable, &cl.PSnotExpandable, notexp)
+	send.SetString(&send.PSplusText, &cl.PSplusText, fmt.Sprintf("%d+", limitPS))
 
 	uids := map[uint]string{}
 	var list []operating.ProcData
@@ -288,8 +288,8 @@ func (_ *IndexRegistry) InterfacePackets(mi operating.MetricInterface) (*operati
 func (ir *IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient, ip InterfaceParts) []operating.InterfaceInfo {
 	private := ir.ListPrivateInterface()
 
-	client.SetBool(&cli.ExpandableIF, &send.ExpandableIF, len(private) > cli.Toprows)
-	client.SetString(&cli.ExpandtextIF, &send.ExpandtextIF, fmt.Sprintf("Expanded (%d)", len(private)))
+	send.SetBool(&send.ExpandableIF, &cli.ExpandableIF, len(private) > cli.Toprows)
+	send.SetString(&send.ExpandtextIF, &cli.ExpandtextIF, fmt.Sprintf("Expanded (%d)", len(private)))
 
 	private.SortSortBy(LessInterface)
 	var public []operating.InterfaceInfo
@@ -395,8 +395,8 @@ func (ir *IndexRegistry) DF(cli *client.Client, send *client.SendClient, iu *Ind
 func (ir *IndexRegistry) DFbytes(cli *client.Client, send *client.SendClient) []operating.DiskBytes {
 	private := ir.ListPrivateDisk()
 
-	client.SetBool(&cli.ExpandableDF, &send.ExpandableDF, len(private) > cli.Toprows)
-	client.SetString(&cli.ExpandtextDF, &send.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(private)))
+	send.SetBool(&send.ExpandableDF, &cli.ExpandableDF, len(private) > cli.Toprows)
+	send.SetString(&send.ExpandtextDF, &cli.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(private)))
 
 	crit := SortCritDisk{Reverse: client.DFBIMAP.SEQ2REVERSE[cli.DFSEQ], SEQ: cli.DFSEQ}
 	private.StableSortBy(crit.LessDisk)
@@ -432,8 +432,8 @@ func FormatDFbytes(md operating.MetricDF) operating.DiskBytes {
 func (ir *IndexRegistry) DFinodes(cli *client.Client, send *client.SendClient) []operating.DiskInodes {
 	private := ir.ListPrivateDisk()
 
-	client.SetBool(&cli.ExpandableDF, &send.ExpandableDF, len(private) > cli.Toprows)
-	client.SetString(&cli.ExpandtextDF, &send.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(private)))
+	send.SetBool(&send.ExpandableDF, &cli.ExpandableDF, len(private) > cli.Toprows)
+	send.SetString(&send.ExpandtextDF, &cli.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(private)))
 
 	crit := SortCritDisk{Reverse: client.DFBIMAP.SEQ2REVERSE[cli.DFSEQ], SEQ: cli.DFSEQ}
 	private.StableSortBy(crit.LessDisk)
@@ -516,8 +516,8 @@ func (ir *IndexRegistry) CPU(cli *client.Client, send *client.SendClient, iu *In
 func (ir *IndexRegistry) CPUInternal(cli *client.Client, send *client.SendClient) []operating.CoreInfo {
 	private := ir.ListPrivateCPU()
 
-	client.SetBool(&cli.ExpandableCPU, &send.ExpandableCPU, len(private) > cli.Toprows) // one row reserved for "all N"
-	client.SetString(&cli.ExpandtextCPU, &send.ExpandtextCPU, fmt.Sprintf("Expanded (%d)", len(private)))
+	send.SetBool(&send.ExpandableCPU, &cli.ExpandableCPU, len(private) > cli.Toprows) // one row reserved for "all N"
+	send.SetString(&send.ExpandtextCPU, &cli.ExpandtextCPU, fmt.Sprintf("Expanded (%d)", len(private)))
 
 	if len(private) == 1 {
 		return []operating.CoreInfo{FormatCPU(private[0])}
@@ -767,7 +767,7 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 		}
 	}
 
-	if send != (client.SendClient{}) {
+	if send.Modified {
 		iu.Client = &send
 	}
 	return iu
