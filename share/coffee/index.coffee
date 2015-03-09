@@ -294,10 +294,10 @@
         hideps  = HideClass.component({xkey: 'HidePS',  $collapse_el: $('#ps'),  $button_el: $('#psconfig') .find('.hiding')})
         hidevg  = HideClass.component({xkey: 'HideVG',  $collapse_el: $('#vg'),  $button_el: $('#vgconfig') .find('.hiding')})
 
-        ip       = React.render(NewTextCLASS((data) -> data?.Generic?.IP       )(), $('#generic-ip'      )   .get(0))
-        hostname = React.render(NewTextCLASS((data) -> data?.Generic?.Hostname )(), $('#generic-hostname')   .get(0))
-        uptime   = React.render(NewTextCLASS((data) -> data?.Generic?.Uptime   )(), $('#generic-uptime'  )   .get(0))
-        la       = React.render(NewTextCLASS((data) -> data?.Generic?.LA       )(), $('#generic-la'      )   .get(0))
+        ip       = React.render(NewTextCLASS((data) -> data?.IP       )(), $('#ip'      )   .get(0))
+        hostname = React.render(NewTextCLASS((data) -> data?.Hostname )(), $('#hostname')   .get(0))
+        uptime   = React.render(NewTextCLASS((data) -> data?.Uptime   )(), $('#uptime'  )   .get(0))
+        la       = React.render(NewTextCLASS((data) -> data?.LA       )(), $('#la'      )   .get(0))
 
         iftitle  = React.render(NewTextCLASS((data) -> data?.Client?.TabTitleIF)(), $('header a[href="#if"]').get(0))
         dftitle  = React.render(NewTextCLASS((data) -> data?.Client?.TabTitleDF)(), $('header a[href="#df"]').get(0))
@@ -430,11 +430,11 @@
 
         $('span .tooltipable')      .popover({trigger: 'hover focus'})
         $('span .tooltipabledots')  .popover() # the clickable dots
-        $('[data-toggle="popover"]').popover() # should be just #generic-hostname
-        $('#generic-la')            .popover({
+        $('[data-toggle="popover"]').popover() # should be just #hostname
+        $('#la')                    .popover({
                 trigger: 'hover focus',
-                placement: 'right', # not 'auto right' until #generic-la is the last element for it's parent
-                html: true, content: () -> $('#uptime').html()
+                placement: 'right', # not 'auto right' until #la is the last element for it's parent
+                html: true, content: () -> $('#uptime-parent').html()
         })
 
         $('body').on('click', (e) -> # hide the popovers on click outside

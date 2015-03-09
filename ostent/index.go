@@ -135,9 +135,10 @@ type clientData struct {
 }
 
 type IndexData struct {
-	Generic generic
-	CPU     operating.CPUInfo
-	MEM     operating.MEM
+	Generic // inline non-pointer
+
+	CPU operating.CPUInfo
+	MEM operating.MEM
 
 	PStable PStable
 	PSlinks *PSlinks `json:",omitempty"`
@@ -165,7 +166,8 @@ type IndexData struct {
 }
 
 type IndexUpdate struct {
-	Generic  *generic            `json:",omitempty"`
+	Generic // inline non-pointer
+
 	CPU      *operating.CPUInfo  `json:",omitempty"`
 	MEM      *operating.MEM      `json:",omitempty"`
 	DFlinks  *DFlinks            `json:",omitempty"`
@@ -185,64 +187,68 @@ type IndexUpdate struct {
 	Client *client.SendClient `json:",omitempty"`
 }
 
-type last struct {
-	MU sync.Mutex // guards lastinfo
-	lastinfo
+type Generic struct {
+	Hostname string `json:",omitempty"`
+	Uptime   string `json:",omitempty"`
+	LA       string `json:",omitempty"`
+	IP       string `json:",omitempty"`
 }
 
-type lastinfo struct {
-	Generic  generic
+type last struct {
+	MU       sync.Mutex
 	ProcList operating.MetricProcSlice
 }
 
 var lastInfo last
 
 func (la *last) collect(c Collector) {
-	gch := make(chan generic, 1)
-	pch := make(chan operating.MetricProcSlice, 1)
-	ifch := make(chan string, 1)
-
 	var wg sync.WaitGroup
-	wg.Add(4) // four so far
+	wg.Add(8)                            // EIGHT:
+	go c.CPU(&Reg1s, &wg)                // one
+	go c.RAM(&Reg1s, &wg)                // two
+	go c.Swap(&Reg1s, &wg)               // three
+	go c.Disks(&Reg1s, &wg)              // four
+	go c.Hostname(RegMSS, &wg)           // five
+	go c.Uptime(RegMSS, &wg)             // six
+	go c.LA(&Reg1s, &wg)                 // seven
+	go c.Interfaces(&Reg1s, RegMSS, &wg) // eight
 
-	go c.CPU(&Reg1s, &wg)   // one
-	go c.RAM(&Reg1s, &wg)   // two
-	go c.Swap(&Reg1s, &wg)  // three
-	go c.Disks(&Reg1s, &wg) // four
-	go c.Generic(&Reg1s, gch)
-	go c.Interfaces(&Reg1s, ifch)
+	pch := make(chan operating.MetricProcSlice, 1)
 	go c.Procs(pch)
 
 	la.MU.Lock()
 	defer la.MU.Unlock()
-	la.lastinfo = lastinfo{
-		Generic:  <-gch,
-		ProcList: <-pch,
-	}
-	la.Generic.IP = <-ifch
+	la.ProcList = <-pch
 	wg.Wait()
 }
 
-func (la *last) MakeCopy() Copy {
+func (la *last) CopyPS() MPSlice {
 	la.MU.Lock()
 	defer la.MU.Unlock()
-
 	psCopy := make(MPSlice, len(la.ProcList))
 	copy(psCopy, la.ProcList)
-
-	return Copy{
-		Hostname: la.Generic.Hostname,
-		Uptime:   la.Generic.Uptime,
-		LA:       Reg1s.LA(),
-		MPSlice:  psCopy,
-	}
+	return psCopy
 }
 
-type Copy struct {
-	Hostname string
-	Uptime   string
-	LA       string
-	MPSlice  MPSlice
+func (mss *MSS) HN(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
+	iu.Hostname = mss.GetString("hostname")
+	generic := iu.Generic
+	generic.Hostname = iu.Hostname
+	return IndexUpdate{Generic: generic}
+}
+
+func (mss *MSS) UP(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
+	iu.Uptime = mss.GetString("uptime")
+	generic := iu.Generic
+	generic.Uptime = iu.Uptime
+	return IndexUpdate{Generic: generic}
+}
+
+func (mss *MSS) IP(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
+	iu.IP = mss.GetString("ip")
+	generic := iu.Generic
+	generic.IP = iu.IP
+	return IndexUpdate{Generic: generic}
 }
 
 func LessInterface(a, b operating.MetricInterface) bool {
@@ -631,12 +637,15 @@ func (ir *IndexRegistry) MEM(client *client.Client, send *client.SendClient, iu 
 	return IndexUpdate{MEM: iu.MEM}
 }
 
-func (ir *IndexRegistry) LA() string {
+func (ir *IndexRegistry) LA(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
 	gl := ir.Load
-	return gl.Short.Sparkline() + " " + fmt.Sprintf("%.2f %.2f %.2f",
+	iu.LA = gl.Short.Sparkline() + " " + fmt.Sprintf("%.2f %.2f %.2f",
 		gl.Short.Snapshot().Value(),
 		gl.Mid.Snapshot().Value(),
 		gl.Long.Snapshot().Value())
+	generic := iu.Generic
+	generic.LA = iu.LA
+	return IndexUpdate{Generic: generic}
 }
 
 func (ir *IndexRegistry) UpdateDF(fs sigar.FileSystem, usage sigar.FileSystemUsage) {
@@ -686,6 +695,30 @@ func (ir *IndexRegistry) UpdateIFdata(ifdata getifaddrs.IfData) {
 	ir.GetOrRegisterPrivateInterface(ifdata.Name).Update(ifdata)
 }
 
+// S2SRegistry is for string kv storage.
+type S2SRegistry interface {
+	SetString(string, string)
+	GetString(string) string
+}
+
+// MSS implements S2SRegistry in a map[string]string.
+type MSS struct {
+	MU sync.Mutex
+	KV map[string]string
+}
+
+func (mss *MSS) SetString(k, v string) {
+	mss.MU.Lock()
+	defer mss.MU.Unlock()
+	mss.KV[k] = v
+}
+
+func (mss *MSS) GetString(k string) string {
+	mss.MU.Lock()
+	defer mss.MU.Unlock()
+	return mss.KV[k]
+}
+
 type IndexRegistry struct {
 	Registry                 metrics.Registry
 	PrivateCPUAll            operating.MetricCPU
@@ -701,7 +734,10 @@ type IndexRegistry struct {
 	Mutex sync.Mutex
 }
 
-var Reg1s IndexRegistry
+var (
+	Reg1s  IndexRegistry
+	RegMSS = &MSS{KV: map[string]string{}}
+)
 
 func init() {
 	Reg1s = IndexRegistry{
@@ -741,12 +777,7 @@ type SetInterface interface {
 func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (iu IndexUpdate) {
 	cl.RecalcRows() // before anything
 
-	copy := lastInfo.MakeCopy()
-	iu.Generic = &generic{ // TODO redo .Generic
-		Hostname: copy.Hostname,
-		Uptime:   copy.Uptime,
-		LA:       copy.LA,
-	}
+	psCopy := lastInfo.CopyPS()
 
 	if req != nil {
 		req.ParseForm() // do ParseForm even if req.Form == nil, otherwise *links won't be set for index requests without parameters
@@ -762,10 +793,14 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 		{*cl.HideCPU, cl.RefreshCPU, Reg1s.CPU},
 		{*cl.HideDF, cl.RefreshDF, Reg1s.DF},
 		{*cl.HideIF, cl.RefreshIF, Reg1s.IF},
-		{*cl.HidePS, cl.RefreshPS, copy.MPSlice.IU},
+		{*cl.HidePS, cl.RefreshPS, psCopy.IU},
 		{*cl.HideVG, cl.RefreshVG, Reg1s.VG},
-		// TODO {nil, cl.RefreshHN, copy.HN},
-		// same for UP, IP, LA
+
+		// always-shown bits:
+		{false, cl.RefreshHN, RegMSS.HN},
+		{false, cl.RefreshHN, RegMSS.UP},
+		{false, cl.RefreshHN, RegMSS.IP},
+		{false, cl.RefreshHN, Reg1s.LA},
 	}
 
 	// var additions []interface{}
@@ -798,9 +833,10 @@ func indexData(minperiod flags.Period, req *http.Request) IndexData {
 
 	data := IndexData{
 		Client:  clientData{Client: cl, HideMEM: cl.HideRAM, RefreshMEM: cl.RefreshRAM},
-		Generic: *updates.Generic,
-		CPU:     *updates.CPU,
-		MEM:     *updates.MEM,
+		Generic: updates.Generic,
+
+		CPU: *updates.CPU,
+		MEM: *updates.MEM,
 
 		DFlinks: updates.DFlinks,
 		PSlinks: updates.PSlinks,

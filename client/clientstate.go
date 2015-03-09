@@ -49,6 +49,10 @@ func (c *Client) refreshes() []*Refresh {
 		c.RefreshDF,
 		c.RefreshPS,
 		c.RefreshVG,
+		c.RefreshHN,
+		c.RefreshUP,
+		c.RefreshIP,
+		c.RefreshLA,
 	}
 }
 
@@ -126,6 +130,12 @@ type Client struct {
 	RefreshDF   *Refresh `json:",omitempty"`
 	RefreshPS   *Refresh `json:",omitempty"`
 	RefreshVG   *Refresh `json:",omitempty"`
+
+	// un-mergable and hidden refreshes:
+	RefreshHN *Refresh `json:"-"`
+	RefreshUP *Refresh `json:"-"`
+	RefreshIP *Refresh `json:"-"`
+	RefreshLA *Refresh `json:"-"`
 
 	PSplusText       *string `json:",omitempty"`
 	PSnotExpandable  *bool   `json:",omitempty"`
@@ -290,6 +300,12 @@ func DefaultClient(minperiod flags.Period) Client {
 	cs.RefreshPS = &Refresh{Period: minperiod}
 	cs.RefreshVG = &Refresh{Period: minperiod}
 
+	// immutable refreshes:
+	cs.RefreshHN = &Refresh{Period: minperiod}
+	cs.RefreshUP = &Refresh{Period: minperiod}
+	cs.RefreshIP = &Refresh{Period: minperiod}
+	cs.RefreshLA = &Refresh{Period: minperiod}
+
 	cs.PSlimit = 8
 
 	cs.PSSEQ = PSBIMAP.DefaultSeq
@@ -333,6 +349,7 @@ func (sc *SendClient) mergeRefreshSignal(above time.Duration, ppinput *string, p
 	pv := flags.Period{Above: &above}
 	if err := pv.Set(*ppinput); err != nil {
 		*senderr = newtrue()
+		sc.Modified = true // otherwise refresh input error won't be sent
 		return err
 	}
 	*senderr = newfalse()
@@ -370,5 +387,6 @@ func (rs *RecvClient) MergeClient(minperiod flags.Period, cs *Client, send *Send
 	if err := send.mergeRefreshSignal(minrefresh, rs.RefreshSignalVG, cs.RefreshVG, &send.RefreshVG, &send.RefreshErrorVG); err != nil {
 		return err
 	}
+	// Refresh{HN,UP,IP,LA} are not merged
 	return nil
 }

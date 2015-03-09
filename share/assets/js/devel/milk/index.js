@@ -648,21 +648,17 @@
       $button_el: $('#vgconfig').find('.hiding')
     });
     ip = React.render(NewTextCLASS(function(data) {
-      var _ref;
-      return data != null ? (_ref = data.Generic) != null ? _ref.IP : void 0 : void 0;
-    })(), $('#generic-ip').get(0));
+      return data != null ? data.IP : void 0;
+    })(), $('#ip').get(0));
     hostname = React.render(NewTextCLASS(function(data) {
-      var _ref;
-      return data != null ? (_ref = data.Generic) != null ? _ref.Hostname : void 0 : void 0;
-    })(), $('#generic-hostname').get(0));
+      return data != null ? data.Hostname : void 0;
+    })(), $('#hostname').get(0));
     uptime = React.render(NewTextCLASS(function(data) {
-      var _ref;
-      return data != null ? (_ref = data.Generic) != null ? _ref.Uptime : void 0 : void 0;
-    })(), $('#generic-uptime').get(0));
+      return data != null ? data.Uptime : void 0;
+    })(), $('#uptime').get(0));
     la = React.render(NewTextCLASS(function(data) {
-      var _ref;
-      return data != null ? (_ref = data.Generic) != null ? _ref.LA : void 0 : void 0;
-    })(), $('#generic-la').get(0));
+      return data != null ? data.LA : void 0;
+    })(), $('#la').get(0));
     iftitle = React.render(NewTextCLASS(function(data) {
       var _ref;
       return data != null ? (_ref = data.Client) != null ? _ref.TabTitleIF : void 0 : void 0;
@@ -868,12 +864,12 @@
     });
     $('span .tooltipabledots').popover();
     $('[data-toggle="popover"]').popover();
-    $('#generic-la').popover({
+    $('#la').popover({
       trigger: 'hover focus',
       placement: 'right',
       html: true,
       content: function() {
-        return $('#uptime').html();
+        return $('#uptime-parent').html();
       }
     });
     $('body').on('click', function(e) {

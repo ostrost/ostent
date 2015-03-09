@@ -21,11 +21,13 @@ import (
 
 // Collector is collection interface.
 type Collector interface {
-	Hostname() (string, error)
-	Generic(registry.Registry, chan<- generic)
+	GetHostname() (string, error)
+	Hostname(S2SRegistry, *sync.WaitGroup)
+	Uptime(S2SRegistry, *sync.WaitGroup)
+	LA(registry.Registry, *sync.WaitGroup)
 	RAM(registry.Registry, *sync.WaitGroup)
 	Swap(registry.Registry, *sync.WaitGroup)
-	Interfaces(registry.Registry, chan<- string)
+	Interfaces(registry.Registry, S2SRegistry, *sync.WaitGroup)
 	Procs(chan<- operating.MetricProcSlice)
 	Disks(registry.Registry, *sync.WaitGroup)
 	CPU(registry.Registry, *sync.WaitGroup)
@@ -106,7 +108,7 @@ func (fip *FoundIP) Next(ifdata getifaddrs.IfData) bool {
 }
 
 // Interfaces registers the interfaces with the reg and send first non-loopback IP to the chan
-func (m *Machine) Interfaces(reg registry.Registry, CH chan<- string) {
+func (m *Machine) Interfaces(reg registry.Registry, sreg S2SRegistry, wg *sync.WaitGroup) {
 	fip := FoundIP{}
 	m.ApplyperInterface(func(ifdata getifaddrs.IfData) bool {
 		fip.Next(ifdata)
@@ -122,17 +124,11 @@ func (m *Machine) Interfaces(reg registry.Registry, CH chan<- string) {
 		}
 		return true
 	})
-	CH <- fip.string
+	sreg.SetString("ip", fip.string)
+	wg.Done()
 }
 
-type generic struct {
-	Hostname string
-	Uptime   string
-	IP       string // not filled by getGeneric
-	LA       string // not filled by getGeneric
-}
-
-func (m *Machine) Hostname() (string, error) {
+func (m *Machine) GetHostname() (string, error) {
 	// m is unused
 	hostname, err := os.Hostname()
 	if err == nil {
@@ -141,23 +137,25 @@ func (m *Machine) Hostname() (string, error) {
 	return hostname, err
 }
 
-func (m *Machine) Generic(reg registry.Registry, CH chan<- generic) {
-	hostname, _ := m.Hostname()
+func (m *Machine) Hostname(sreg S2SRegistry, wg *sync.WaitGroup) {
+	if hostname, err := m.GetHostname(); err == nil {
+		sreg.SetString("hostname", hostname)
+	}
+	wg.Done()
+}
 
+func (m *Machine) Uptime(sreg S2SRegistry, wg *sync.WaitGroup) {
 	uptime := sigar.Uptime{}
 	uptime.Get()
+	sreg.SetString("uptime", format.FormatUptime(uptime.Length))
+	wg.Done()
+}
 
+func (m *Machine) LA(reg registry.Registry, wg *sync.WaitGroup) {
 	la := sigar.LoadAverage{}
 	la.Get()
-
 	reg.UpdateLoadAverage(la)
-
-	g := generic{
-		Hostname: hostname,
-		Uptime:   format.FormatUptime(uptime.Length),
-	}
-	// IP, _ := netinterface_ipaddr(); CH <- g
-	CH <- g
+	wg.Done()
 }
 
 var UsePercentTemplate *templateutil.BinTemplate

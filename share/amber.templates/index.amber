@@ -14,7 +14,7 @@ html
     meta[charset="utf-8"]
     meta[http-equiv="X-UA-Compatible"][content="IE=edge"]
     meta[name="viewport"][content="width=device-width, initial-scale=1"]
-    title #{Data.Generic.Hostname} ostent
+    title #{Data.Hostname} ostent
 
     //- meta[itemprop="image"][content="/favicon.png"]
     link[rel="icon"][type="image/png"][href="/favicon.png"]
@@ -33,7 +33,7 @@ html
       div.container-fluid
         div.navbar-header
           div.navbar-brand
-            a#generic-hostname
+            a#hostname
               [href="/"]
               [data-toggle="popover"]
               [data-trigger="hover focus"]
@@ -41,19 +41,19 @@ html
               //- "auto bottom" does not do the trick
               [data-container="#distrib-popover"]
               [data-content="running "+ Data.DISTRIB]
-              | #{Data.Generic.Hostname}
+              | #{Data.Hostname}
           //- the span for the popover to attach to
           span#distrib-popover
 
         div.collapse.navbar-collapse#navbar-collapse
           //- hidden div for popover to be the content source
-          div.collapse#uptime
+          div.collapse#uptime-parent
             | uptime&nbsp;
-            span#generic-uptime #{Data.Generic.Uptime}
+            span#uptime #{Data.Uptime}
 
           ul.nav.navbar-nav
-            li.navbar-text#generic-ip #{Data.Generic.IP}
-            li.navbar-text#generic-la #{Data.Generic.LA}
+            li.navbar-text#ip #{Data.IP}
+            li.navbar-text#la #{Data.LA}
 
           ul.nav.navbar-nav.navbar-right
             li.navbar-text
