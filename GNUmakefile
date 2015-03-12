@@ -1,6 +1,7 @@
 #!/usr/bin/env make -f
 
 fqostent=github.com/ostrost/ostent
+testpackage?=./...
 
 binassets_develgo         = share/assets/bindata.devel.go
 binassets_productiongo    = share/assets/bindata.production.go
@@ -13,14 +14,9 @@ templates_html=$(addprefix $(templates_dir), $(templates_files))
 PATH=$(shell printf %s: $$PATH; echo $$GOPATH | awk -F: 'BEGIN { OFS="/bin:"; } { print $$1,$$2,$$3,$$4,$$5,$$6,$$7,$$8,$$9 "/bin"}')
 
 xargs=xargs
-sed-i=sed -i ''
 ifeq (Linux, $(shell uname -s))
 xargs=xargs --no-run-if-empty
-sed-i=sed -i'' # GNU sed -i opt, not a flag
 endif
-sed-i-production-bindata=$(sed-i) -Ee 's/time\.Unix\([0-9]+,/time.Unix(1400000000,/g'
-# -e '/^\/\/ AssetDir /,$$d' # applicable for devel assets and both templates \
-# but then there're `imported and not used: "{path/filepath,io/ioutil}"`
 go-bindata=go-bindata -ignore '.*\.go' # Go regexp syntax for -ignore
 
 .PHONY: all al init test covertest coverfunc coverhtml bindata bindata-devel bindata-production
@@ -59,13 +55,13 @@ github.com/clipperhouse/gen
 
 ifneq (init, $(MAKECMDGOALS))
 test:
-	go vet ./...
-	go test -v ./...
+	go vet $(testpackage)
+	go test -v $(testpackage)
 covertest:
-	go test -v -covermode=count -coverprofile=coverage.out $(fqostent)
-coverfunc:
+	go test -v -covermode=count -coverprofile=coverage.out $(testpackage)
+coverfunc: covertest
 	go tool cover -func=coverage.out
-coverhtml:
+coverhtml: covertest
 	go tool cover -html=coverage.out
 
 $(PWD)/assetutil/%_slice.go: $(PWD)/assetutil/assetutil.go
@@ -124,7 +120,8 @@ share/tmp/jscript.jsx: share/amber.templates/jscript.amber share/amber.templates
 	$(destbin)/amberpp -defines share/amber.templates/defines.amber -j -output $@ $<
 
 $(bintemplates_productiongo): $(templates_html)
-	cd $(<D) && $(go-bindata) -pkg templates -tags production -o $(@F) $(^F) && $(sed-i-production-bindata) $(@F)
+	cd $(<D) && $(go-bindata) -pkg templates -tags production -mode 0600 -modtime 1400000000 -o $(@F) $(^F)
+
 $(bintemplates_develgo): $(templates_html)
 	cd $(templates_dir) && $(go-bindata) -pkg templates -tags '!production' -dev -o $(@F) $(templates_files)
 #	# the target has no prerequisites e.g. $(templates_html):
@@ -132,7 +129,7 @@ $(bintemplates_develgo): $(templates_html)
 #	# $(templates_files) instead of $(^F)
 
 $(binassets_productiongo):
-	cd share/assets && $(go-bindata) -pkg assets -o $(@F) -tags production -ignore js/devel/ ./... && $(sed-i-production-bindata) $(@F)
+	cd share/assets && $(go-bindata) -pkg assets -o $(@F) -tags production -ignore js/devel/ -mode 0600 -modtime 1400000000 ./...
 $(binassets_develgo):
 	cd share/assets && $(go-bindata) -pkg assets -o $(@F) -tags '!production' -dev -ignore js/production/ ./...
 
