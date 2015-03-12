@@ -1,6 +1,6 @@
 #!/bin/sh
 # strict mode
-test -n "$BASH" -o -n "$ZSH_VERSION" &&
+test -n "$BASH" -o -n "$KSH_VERSION" -o -n "$ZSH_VERSION" &&
 set -o pipefail 2>/dev/null
 set -eu
 
