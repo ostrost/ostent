@@ -273,13 +273,13 @@
 [[end]][[end]]
 
 [[define "define_vgrows"]]
-  each $uuid, $machine in Data.VagrantMachines.List
-    | <tr key=#{$machine.UUID}>
-      td #{$machine.UUIDHTML}
-      td #{$machine.Name}
-      td #{$machine.Provider}
-      td #{$machine.StateHTML}
-      td.nowrap #{$machine.Vagrantfile_pathHTML}
+  each $uuid, $mach in Data.VagrantMachines.List
+    | <tr key=#{$mach.UUID}>
+      td #{$mach.UUIDHTML}
+      td #{$mach.Name}
+      td #{$mach.Provider}
+      td #{$mach.StateHTML}
+      td.nowrap #{$mach.Vagrantfile_pathHTML}
     | </tr>
 [[end]]
 

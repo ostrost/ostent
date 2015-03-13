@@ -47,7 +47,7 @@ func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error
 	mux.Handle("GET", "/ws", recovery.
 		ConstructorFunc(ostent.SlashwsFunc(access, PeriodFlag)))
 
-	index := chain.ThenFunc(ostent.IndexFunc(templates.IndexTemplate,
+	index := chain.ThenFunc(ostent.IndexFunc(production, templates.IndexTemplate,
 		assetutil.JSassetNames(assetnames), PeriodFlag))
 	mux.Handle("GET", "/", index)
 	mux.Handle("HEAD", "/", index)

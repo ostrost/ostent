@@ -8,6 +8,9 @@ mixin refresh_input($placeholder, $value)
       [placeholder=$placeholder]
       [value=$value] ? json($value) != json($placeholder)
 
+mixin requirescript($main)
+  script[charset="utf-8"][type="text/javascript"][src="/js/vendor/requirejs/2.1.16/require.min.js"][data-main=$main]
+
 !!! 5
 html
   head
@@ -20,13 +23,12 @@ html
     link[rel="icon"][type="image/png"][href="/favicon.png"]
     link[rel="stylesheet"][type="text/css"][href="/css/index.css"]
 
-    each $script in SCRIPTS
-      script[type="text/javascript"][charset="utf-8"][src=$script]
+    if PRODUCTION
+      +requirescript("/js/production/index.min.js")
+    else
+      +requirescript("/js/devel/milk/index.js")
 
   body
-    script
-      $(ready);
-
     div#client
 
     nav.navbar.navbar-default.navbar-fixed-top[role="navigation"]

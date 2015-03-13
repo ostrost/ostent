@@ -888,20 +888,20 @@ func init() {
 // Set at init, result of system.Distrib.
 var DISTRIB string
 
-func IndexFunc(template *templateutil.BinTemplate, scripts assetutil.JSANSlice, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
+func IndexFunc(production bool, template *templateutil.BinTemplate, scripts assetutil.JSANSlice, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		index(template, scripts, minperiod, w, r)
+		index(production, template, scripts, minperiod, w, r)
 	}
 }
 
-func index(template *templateutil.BinTemplate, scripts assetutil.JSANSlice, minperiod flags.Period, w http.ResponseWriter, r *http.Request) {
+func index(production bool, template *templateutil.BinTemplate, scripts assetutil.JSANSlice, minperiod flags.Period, w http.ResponseWriter, r *http.Request) {
 	response := template.Response(w, struct {
-		Data      IndexData
-		SCRIPTS   assetutil.JSANSlice
-		CLASSNAME string
+		CLASSNAME  string // MUST HAVE
+		PRODUCTION bool
+		Data       IndexData
 	}{
-		Data:    indexData(minperiod, r),
-		SCRIPTS: assetutil.FQJSANSlice(scripts, r),
+		PRODUCTION: production,
+		Data:       indexData(minperiod, r),
 	})
 	response.SetHeader("Content-Type", "text/html")
 	response.SetContentLength()

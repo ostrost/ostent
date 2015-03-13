@@ -97,6 +97,24 @@ func js_devel_gen_jscript_js() (*asset, error) {
 	return a, err
 }
 
+// js_devel_milk_build_js reads file data from disk. It returns an error on failure.
+func js_devel_milk_build_js() (*asset, error) {
+	path := filepath.Join(rootDir, "js/devel/milk/build.js")
+	name := "js/devel/milk/build.js"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // js_devel_milk_index_js reads file data from disk. It returns an error on failure.
 func js_devel_milk_index_js() (*asset, error) {
 	path := filepath.Join(rootDir, "js/devel/milk/index.js")
@@ -187,6 +205,42 @@ func js_devel_vendor_min_react_0_12_2_react_min_js() (*asset, error) {
 	return a, err
 }
 
+// js_devel_vendor_min_requirejs_domready_2_0_1_domready_js reads file data from disk. It returns an error on failure.
+func js_devel_vendor_min_requirejs_domready_2_0_1_domready_js() (*asset, error) {
+	path := filepath.Join(rootDir, "js/devel/vendor/min/requirejs-domReady/2.0.1/domReady.js")
+	name := "js/devel/vendor/min/requirejs-domReady/2.0.1/domReady.js"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// js_vendor_requirejs_2_1_16_require_min_js reads file data from disk. It returns an error on failure.
+func js_vendor_requirejs_2_1_16_require_min_js() (*asset, error) {
+	path := filepath.Join(rootDir, "js/vendor/requirejs/2.1.16/require.min.js")
+	name := "js/vendor/requirejs/2.1.16/require.min.js"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // robots_txt reads file data from disk. It returns an error on failure.
 func robots_txt() (*asset, error) {
 	path := filepath.Join(rootDir, "robots.txt")
@@ -261,11 +315,14 @@ var _bindata = map[string]func() (*asset, error){
 	"css/index.css.map": css_index_css_map,
 	"favicon.png": favicon_png,
 	"js/devel/gen/jscript.js": js_devel_gen_jscript_js,
+	"js/devel/milk/build.js": js_devel_milk_build_js,
 	"js/devel/milk/index.js": js_devel_milk_index_js,
 	"js/devel/vendor/min/bootstrap/3.3.2/bootstrap.min.js": js_devel_vendor_min_bootstrap_3_3_2_bootstrap_min_js,
 	"js/devel/vendor/min/headroom/0.7.0/headroom.min.js": js_devel_vendor_min_headroom_0_7_0_headroom_min_js,
 	"js/devel/vendor/min/jquery/2.1.3/jquery-2.1.3.min.js": js_devel_vendor_min_jquery_2_1_3_jquery_2_1_3_min_js,
 	"js/devel/vendor/min/react/0.12.2/react.min.js": js_devel_vendor_min_react_0_12_2_react_min_js,
+	"js/devel/vendor/min/requirejs-domReady/2.0.1/domReady.js": js_devel_vendor_min_requirejs_domready_2_0_1_domready_js,
+	"js/vendor/requirejs/2.1.16/require.min.js": js_vendor_requirejs_2_1_16_require_min_js,
 	"robots.txt": robots_txt,
 }
 
@@ -324,6 +381,8 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 				}},
 			}},
 			"milk": &_bintree_t{nil, map[string]*_bintree_t{
+				"build.js": &_bintree_t{js_devel_milk_build_js, map[string]*_bintree_t{
+				}},
 				"index.js": &_bintree_t{js_devel_milk_index_js, map[string]*_bintree_t{
 				}},
 			}},
@@ -352,6 +411,20 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 							"react.min.js": &_bintree_t{js_devel_vendor_min_react_0_12_2_react_min_js, map[string]*_bintree_t{
 							}},
 						}},
+					}},
+					"requirejs-domReady": &_bintree_t{nil, map[string]*_bintree_t{
+						"2.0.1": &_bintree_t{nil, map[string]*_bintree_t{
+							"domReady.js": &_bintree_t{js_devel_vendor_min_requirejs_domready_2_0_1_domready_js, map[string]*_bintree_t{
+							}},
+						}},
+					}},
+				}},
+			}},
+		}},
+		"vendor": &_bintree_t{nil, map[string]*_bintree_t{
+			"requirejs": &_bintree_t{nil, map[string]*_bintree_t{
+				"2.1.16": &_bintree_t{nil, map[string]*_bintree_t{
+					"require.min.js": &_bintree_t{js_vendor_requirejs_2_1_16_require_min_js, map[string]*_bintree_t{
 					}},
 				}},
 			}},
