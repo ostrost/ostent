@@ -11,7 +11,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ostrost/ostent/assetutil"
 	"github.com/ostrost/ostent/client"
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/format"
@@ -888,13 +887,13 @@ func init() {
 // Set at init, result of system.Distrib.
 var DISTRIB string
 
-func IndexFunc(production bool, template *templateutil.BinTemplate, scripts assetutil.JSANSlice, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
+func IndexFunc(production bool, template *templateutil.BinTemplate, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		index(production, template, scripts, minperiod, w, r)
+		index(production, template, minperiod, w, r)
 	}
 }
 
-func index(production bool, template *templateutil.BinTemplate, scripts assetutil.JSANSlice, minperiod flags.Period, w http.ResponseWriter, r *http.Request) {
+func index(production bool, template *templateutil.BinTemplate, minperiod flags.Period, w http.ResponseWriter, r *http.Request) {
 	response := template.Response(w, struct {
 		CLASSNAME  string // MUST HAVE
 		PRODUCTION bool

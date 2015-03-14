@@ -7,7 +7,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/ostrost/ostent/assetutil"
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/share/assets"
@@ -47,8 +46,8 @@ func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error
 	mux.Handle("GET", "/ws", recovery.
 		ConstructorFunc(ostent.SlashwsFunc(access, PeriodFlag)))
 
-	index := chain.ThenFunc(ostent.IndexFunc(production, templates.IndexTemplate,
-		assetutil.JSassetNames(assetnames), PeriodFlag))
+	index := chain.ThenFunc(ostent.IndexFunc(production,
+		templates.IndexTemplate, PeriodFlag))
 	mux.Handle("GET", "/", index)
 	mux.Handle("HEAD", "/", index)
 

@@ -64,8 +64,6 @@ coverfunc: covertest
 coverhtml: covertest
 	go tool cover -html=coverage.out
 
-$(PWD)/assetutil/%_slice.go: $(PWD)/assetutil/assetutil.go
-	cd $(dir $@) && go generate
 $(PWD)/system/operating/%_slice.go: $(PWD)/system/operating/operating.go
 	cd $(dir $@) && go generate
 
