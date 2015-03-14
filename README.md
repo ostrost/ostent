@@ -133,7 +133,7 @@ you have to re-make.
 Additional tools required for assets rebuilding:
 - [Sass](http://sass-lang.com/install)
 - [react-tools](https://www.npmjs.org/package/react-tools)
-- [uglify-js](https://www.npmjs.org/package/uglify-js)
+- [requirejs](https://www.npmjs.org/package/requirejs)
 
 The main package
 ----------------
