@@ -122,7 +122,6 @@ Make
 - `share/assets/js/devel/gen/*.js`
 - `share/templates/*.html`
 - `share/assets/css/*.css`
-- `share/tmp/jsassets.d`
 - `share/tmp/*.jsx`
 
 If you don't change source files, content re-generated
@@ -133,6 +132,7 @@ you have to re-make.
 Additional tools required for assets rebuilding:
 - [Sass](http://sass-lang.com/install)
 - [react-tools](https://www.npmjs.org/package/react-tools)
+- [coffee-script](https://www.npmjs.com/package/coffee-script)
 - [requirejs](https://www.npmjs.org/package/requirejs)
 
 The main package
