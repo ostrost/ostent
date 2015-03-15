@@ -41,13 +41,18 @@ func init() {
 	AddBackground(Loop)
 }
 
+// SleepTilNextSecond sleeps til precisely next second.
+func SleepTilNextSecond() {
+	now := time.Now()
+	nextsecond := now.Truncate(time.Second).Add(time.Second).Sub(now)
+	time.Sleep(nextsecond)
+}
+
 // Loop is the ostent background job
 func Loop(flags.Period) {
 	go func() {
 		for {
-			now := time.Now()
-			nextsecond := now.Truncate(time.Second).Add(time.Second).Sub(now)
-			<-time.After(nextsecond)
+			SleepTilNextSecond()
 
 			Connections.tick()
 
@@ -236,8 +241,8 @@ var (
 	Connections = conns{connmap: make(map[receiver]struct{})}
 
 	iUPDATES   = make(chan *IndexUpdate) // the channel for off-the-clock IndexUpdate to push
-	unregister = make(chan receiver)     // (chan *conn)
-	Register   = make(chan receiver)     // (chan *conn)
+	unregister = make(chan receiver)
+	Register   = make(chan receiver, 1)
 )
 
 type received struct {
