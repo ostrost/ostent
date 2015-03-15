@@ -12,25 +12,34 @@ import (
 
 	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/getifaddrs"
-	"github.com/ostrost/ostent/registry"
 	"github.com/ostrost/ostent/system"
 	"github.com/ostrost/ostent/system/operating"
 	"github.com/ostrost/ostent/templateutil"
 	sigar "github.com/rzab/gosigar"
 )
 
+// Registry has updates with sigar values.
+type Registry interface {
+	UpdateIFdata(getifaddrs.IfData)
+	UpdateCPU([]sigar.Cpu)
+	UpdateLoadAverage(sigar.LoadAverage)
+	UpdateSwap(sigar.Swap)
+	UpdateRAM(sigar.Mem, uint64, uint64)
+	UpdateDF(sigar.FileSystem, sigar.FileSystemUsage)
+}
+
 // Collector is collection interface.
 type Collector interface {
 	GetHostname() (string, error)
 	Hostname(S2SRegistry, *sync.WaitGroup)
 	Uptime(S2SRegistry, *sync.WaitGroup)
-	LA(registry.Registry, *sync.WaitGroup)
-	RAM(registry.Registry, *sync.WaitGroup)
-	Swap(registry.Registry, *sync.WaitGroup)
-	Interfaces(registry.Registry, S2SRegistry, *sync.WaitGroup)
+	LA(Registry, *sync.WaitGroup)
+	RAM(Registry, *sync.WaitGroup)
+	Swap(Registry, *sync.WaitGroup)
+	Interfaces(Registry, S2SRegistry, *sync.WaitGroup)
 	Procs(chan<- operating.MetricProcSlice)
-	Disks(registry.Registry, *sync.WaitGroup)
-	CPU(registry.Registry, *sync.WaitGroup)
+	Disks(Registry, *sync.WaitGroup)
+	CPU(Registry, *sync.WaitGroup)
 }
 
 var (
@@ -108,7 +117,7 @@ func (fip *FoundIP) Next(ifdata getifaddrs.IfData) bool {
 }
 
 // Interfaces registers the interfaces with the reg and send first non-loopback IP to the chan
-func (m *Machine) Interfaces(reg registry.Registry, sreg S2SRegistry, wg *sync.WaitGroup) {
+func (m *Machine) Interfaces(reg Registry, sreg S2SRegistry, wg *sync.WaitGroup) {
 	fip := FoundIP{}
 	m.ApplyperInterface(func(ifdata getifaddrs.IfData) bool {
 		fip.Next(ifdata)
@@ -151,7 +160,7 @@ func (m *Machine) Uptime(sreg S2SRegistry, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (m *Machine) LA(reg registry.Registry, wg *sync.WaitGroup) {
+func (m *Machine) LA(reg Registry, wg *sync.WaitGroup) {
 	la := sigar.LoadAverage{}
 	la.Get()
 	reg.UpdateLoadAverage(la)
@@ -186,7 +195,7 @@ func _getmem(kind string, in sigar.Swap) operating.Memory {
 	}
 }
 
-func (m *Machine) RAM(reg registry.Registry, wg *sync.WaitGroup) {
+func (m *Machine) RAM(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	got := sigar.Mem{}
 	extra1, extra2, _ := sigar.GetExtra(&got)
@@ -204,7 +213,7 @@ func (m *Machine) RAM(reg registry.Registry, wg *sync.WaitGroup) {
 	// TODO wired  := vm_data.wire_count   << 12 (pagesoze)
 }
 
-func (m *Machine) Swap(reg registry.Registry, wg *sync.WaitGroup) {
+func (m *Machine) Swap(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	got := sigar.Swap{}
 	got.Get()
@@ -212,7 +221,7 @@ func (m *Machine) Swap(reg registry.Registry, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (m *Machine) Disks(reg registry.Registry, wg *sync.WaitGroup) {
+func (m *Machine) Disks(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	fls := sigar.FileSystemList{}
 	fls.Get()
@@ -281,7 +290,7 @@ func (m *Machine) Procs(CH chan<- operating.MetricProcSlice) {
 	CH <- procs
 }
 
-func (m *Machine) CPU(reg registry.Registry, wg *sync.WaitGroup) {
+func (m *Machine) CPU(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	cl := sigar.CpuList{}
 	cl.Get()
