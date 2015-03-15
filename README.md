@@ -1,6 +1,6 @@
-[![Build status](https://secure.travis-ci.org/ostrost/ostent.png?branch=master)](https://travis-ci.org/ostrost/ostent)
-[![Sourcegraph](https://sourcegraph.com/api/repos/github.com/ostrost/ostent/.badges/status.png)](https://sourcegraph.com/github.com/ostrost/ostent)
+[![Sourcegraph](https://sourcegraph.com/api/repos/github.com/ostrost/ostent/.badges/status.svg)](https://sourcegraph.com/github.com/ostrost/ostent)
 [![GoDoc](https://godoc.org/github.com/ostrost/ostent?status.svg)](https://godoc.org/github.com/ostrost/ostent)
+[![Travis CI](https://travis-ci.org/ostrost/ostent.svg?branch=master)](https://travis-ci.org/ostrost/ostent)
 
 `ostent` collects and displays system metrics and optionally relays to Graphite and/or InfluxDB.
 
@@ -24,16 +24,14 @@ The exporting to Graphite and InfluxDB is kept on par with [collectd](https://co
 [reporting](https://collectd.org/wiki/index.php/Plugin:Write_Graphite) to Graphite with `StoreRates true`,
 although the metrics naming is slightly different.
 
-Running
--------
+## Running
 
 ostent a single executable without dependecies, no extra files required (everything is builtin).
 Drop it in and just run; being root is unnecesary. There're [flags](#usage) if you have to.
 
 [Run the code](#running-the-code) if you want to, otherwise grab a binary.
 
-Install Release binaries
-========================
+## Install Release binaries
 
 These binaries self-upgrade whenever there's new stable release and
 distributed by [GitHub Releases](https://github.com/ostrost/ostent/releases).
@@ -48,8 +46,7 @@ Platforms
 FreeBSD (10 amd64 and i386 probably) is to be published with a new release.
 The master code is runnable already.
 
-Usage
------
+## Usage
 
 ```
 Usage of ostent:
@@ -85,8 +82,7 @@ $ ostent                                     ________________
 [ostent] +------------------------------+                   ||     ||
 ```
 
-Running the code
-----------------
+## Running the code
 
 Have your GOPATH environment set,
 [gvm](https://github.com/moovweb/gvm) is a must.
@@ -112,8 +108,7 @@ clone your fork as if it was `github.com/ostrost/ostent` package for Go:
 3. Replace it with you fork clone.
 4. Continue with rebuilding steps above.
 
-Make
-----
+## Make
 
 `make` rebuilds these **commited to the repo** files:
 - `share/templates/bindata.*.go`
@@ -135,8 +130,7 @@ Additional tools required for assets rebuilding:
 - [coffee-script](https://www.npmjs.com/package/coffee-script)
 - [requirejs](https://www.npmjs.org/package/requirejs)
 
-The main package
-----------------
+## The main package
 
 `github.com/ostrost/ostent` has two main.go files:
 rerun will find `main.devel.go`; the other `main.production.go`
@@ -145,8 +139,7 @@ the distributed binaries: also includes
 [goagain](https://github.com/rcrowley/goagain) recovering and
 self-upgrading via [go-update](https://github.com/inconshreveable/go-update).
 
-The assets
-----------
+## The assets
 
 The binaries, to be stand-alone, have the assets and templates embeded.
 Unless you specifically build with `-tags production` (e.g with make),
