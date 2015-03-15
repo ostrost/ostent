@@ -5,46 +5,49 @@ package stdlogfilter
 
 import (
 	"bufio"
+	"bytes"
 	"io"
 	"log"
 	"os"
-	"strings"
 )
 
 func init() {
-	log.SetOutput(newlogger())
+	log.SetOutput(NewLogFiltered(os.Stderr))
 }
 
-func newlogger() io.Writer {
-	lf := logFiltered{}
-	var reader io.Reader
-	reader, lf.writer = io.Pipe()
-	lf.scanner = bufio.NewScanner(reader)
+func NewLogFiltered(out io.Writer) io.Writer {
+	reader, writer := io.Pipe()
+	lf := LogFiltered{
+		Out:     out,
+		Writer:  writer,
+		Scanner: bufio.NewScanner(reader),
+	}
 	go lf.read()
 	return &lf
 }
 
-type logFiltered struct {
-	writer  io.Writer
-	scanner *bufio.Scanner
+type LogFiltered struct {
+	Out     io.Writer // original out
+	Writer  io.Writer
+	Scanner *bufio.Scanner
 }
 
-func (lf *logFiltered) Write(p []byte) (int, error) {
-	return lf.writer.Write(p)
+func (lf *LogFiltered) Write(p []byte) (int, error) {
+	return lf.Writer.Write(p)
 }
 
-func (lf *logFiltered) read() {
+func (lf *LogFiltered) read() {
 	for {
-		if !lf.scanner.Scan() {
-			if err := lf.scanner.Err(); err != nil {
+		if !lf.Scanner.Scan() {
+			if err := lf.Scanner.Err(); err != nil {
 				log.New(os.Stderr, "", log.LstdFlags).Printf("bufio.Scanner.Scan Err: %s", err)
 			}
 			continue
 		}
-		text := lf.scanner.Text()
-		if strings.Contains(text, " handling ") {
+		text := lf.Scanner.Bytes()
+		if bytes.Contains(text, []byte(" handling ")) {
 			continue
 		}
-		os.Stderr.WriteString(text + "\n")
+		lf.Out.Write(append(text, []byte("\n")...))
 	}
 }
