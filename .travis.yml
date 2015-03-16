@@ -1,7 +1,7 @@
 os: [linux, osx]
 env:
   matrix:
-    - GVM_GO=go1.4.1 # release
+    - GVM_GO=go1.4.2 # release
   # - GVM_GO=tip # pre-release
   global:
     - GVMINSTALLER_URL=https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer
