@@ -41,10 +41,12 @@ func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error
 		mux.Handle("HEAD", "/"+path, hf)
 	}
 
-	// access is passed to log every query received via websocket
-	// recovery.ConstructorFunc used to bypass chain so no double log
-	mux.Handle("GET", "/ws", recovery.
-		ConstructorFunc(ostent.SlashwsFunc(access, PeriodFlag)))
+	// access is passed to Index*Func for them to log with.
+	// recovery.ConstructorFunc used to bypass the chain so no double log.
+	mux.Handle("GET", "/index.ws", recovery.
+		ConstructorFunc(ostent.IndexWSFunc(access, PeriodFlag)))
+	mux.Handle("GET", "/index.sse", recovery.
+		ConstructorFunc(ostent.IndexSSEFunc(access, PeriodFlag)))
 
 	index := chain.ThenFunc(ostent.IndexFunc(production,
 		templates.IndexTemplate, PeriodFlag))

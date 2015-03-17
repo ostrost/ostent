@@ -484,7 +484,12 @@ func (mss *MetricStringSnapshot) Snapshot() MetricString { return mss }
 func (mss *MetricStringSnapshot) Value() string          { return mss.string }
 func (*MetricStringSnapshot) Update(string)              { panic("Update called on a MetricStringSnapshot") }
 
-func (sms *StandardMetricString) Snapshot() MetricString { return ((*MetricStringSnapshot)(sms)) }
+func (sms *StandardMetricString) Snapshot() MetricString {
+	sms.Mutex.Lock()
+	defer sms.Mutex.Unlock()
+	return ((*MetricStringSnapshot)(sms))
+}
+
 func (sms *StandardMetricString) Value() string {
 	sms.Mutex.Lock()
 	defer sms.Mutex.Unlock()

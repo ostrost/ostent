@@ -2,6 +2,7 @@
 package ostent
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
@@ -905,4 +906,62 @@ func index(production bool, template *templateutil.BinTemplate, minperiod flags.
 	response.SetHeader("Content-Type", "text/html")
 	response.SetContentLength()
 	response.Send()
+}
+
+type SSE struct {
+	Writer      http.ResponseWriter // points to the writer
+	MinPeriod   flags.Period
+	SentHeaders bool
+	Errord      bool
+}
+
+// ServeHTTP is a regular serve func except the first argument,
+// passed as a copy, is unused. sse.Writer is there for writes.
+func (sse *SSE) ServeHTTP(_ http.ResponseWriter, r *http.Request) {
+	w := sse.Writer
+	id := indexData(sse.MinPeriod, r)
+	text, err := json.Marshal(id)
+	if err != nil {
+		sse.Errord = true
+		// what would http.Error do
+		if sse.SetHeader("Content-Type", "text/plain; charset=utf-8") {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		fmt.Fprintln(w, err.Error())
+		return
+	}
+	sse.SetHeader("Content-Type", "text/event-stream")
+	if _, err := w.Write(append(append([]byte("data: "), text...), []byte("\n\n")...)); err != nil {
+		sse.Errord = true
+	}
+}
+
+func (sse *SSE) SetHeader(name, value string) bool {
+	if sse.SentHeaders {
+		return false
+	}
+	sse.SentHeaders = true
+	sse.Writer.Header().Set(name, value)
+	return true
+}
+
+func IndexSSEFunc(access *logger, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		IndexSSE(access, minperiod, w, r)
+	}
+}
+
+func IndexSSE(access *logger, minperiod flags.Period, w http.ResponseWriter, r *http.Request) {
+	sse := &SSE{Writer: w, MinPeriod: minperiod}
+	// The request is logged just once.
+	if access.Constructor(sse).ServeHTTP(nil, r); sse.Errord {
+		return
+	}
+	// Loop is access-log-free.
+	for {
+		SleepTilNextSecond() // TODO is it second?
+		if sse.ServeHTTP(nil, r); sse.Errord {
+			break
+		}
+	}
 }

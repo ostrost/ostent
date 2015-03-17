@@ -429,13 +429,13 @@ func (w dummyStatus) Write(b []byte) (int, error) {
 	// return len(b), nil
 }
 
-func SlashwsFunc(access *logger, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
+func IndexWSFunc(access *logger, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
-		Slashws(access, minperiod, w, req)
+		IndexWS(access, minperiod, w, req)
 	}
 }
 
-func Slashws(access *logger, minperiod flags.Period, w http.ResponseWriter, req *http.Request) {
+func IndexWS(access *logger, minperiod flags.Period, w http.ResponseWriter, req *http.Request) {
 	// Upgrader.Upgrade() has Origin check if .CheckOrigin is nil
 	upgrader := gorillawebsocket.Upgrader{}
 	wsconn, err := upgrader.Upgrade(w, req, nil)

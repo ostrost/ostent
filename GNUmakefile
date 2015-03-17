@@ -88,7 +88,7 @@ share/assets/js/devel/gen/jscript.js: share/tmp/jscript.jsx
 	type jsx    >/dev/null || exit 0; jsx <$^ >/dev/null && jsx <$^ 2>/dev/null >$@
 share/assets/js/devel/milk/index.js: share/coffee/index.coffee
 	type coffee >/dev/null || exit 0; coffee -p $^ >/dev/null && coffee -o $(@D)/ $^
-share/assets/js/production/index.min.js: $(find share/assets/js/devel/ -type f)
+share/assets/js/production/index.min.js: $(shell find share/assets/js/devel/ -type f)
 	type r.js   >/dev/null || exit 0; cd share/assets/js/devel/milk && r.js -o build.js
 
 share/templates/%.html: share/amber.templates/%.amber share/amber.templates/defines.amber $(destbin)/amberpp

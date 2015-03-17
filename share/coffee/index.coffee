@@ -11,6 +11,62 @@ require.config
 
 require ['jquery', 'bootstrap', 'react', 'jscript'],
         ($,        _,           React, jscript) ->
+                @neweventsource = (onmessage) ->
+                        conn = null
+                        sendSearch = (search) ->
+                                # conn = new EventSource('/index.sse' + search)
+                                # location.search = search
+                                console.log('SEARCH', search)
+                                conn.close() # if conn?
+                                window.setTimeout(init, 1000)
+                        sendClient = (client) ->
+                                # TODO
+                                return
+                                console.log(JSON.stringify(client), 'sendClient')
+                                obj = {Client: client}
+                                # 0 conn.CONNECTING
+                                # 1 conn.OPEN
+                                # 2 conn.CLOSING
+                                # 3 conn.CLOSED
+                                if !conn? ||
+                                   conn.readyState == conn.CLOSING ||
+                                   conn.readyState == conn.CLOSED
+                                        init()
+                                if !conn? ||
+                                   conn.readyState != conn.OPEN
+                                        console.log('Not connected, cannot send', obj)
+                                        return
+                                return conn.send(JSON.stringify(obj))
+                        init = () ->
+                                conn = new EventSource('/index.sse' + location.search)
+                                conn.onopen = () ->
+                                        $(window).bind('popstate', (() ->
+                                                sendSearch(location.search)
+                                                return))
+                                        return
+
+                                statesel = 'table thead tr .header a.state'
+                                again = (e) ->
+                                        $(statesel).unbind('click')
+                                        window.setTimeout(init, 5000) if !e.wasClean
+                                        return
+
+                                conn.onclose   = () -> console.log('sse closed (should recover)')
+                                conn.onerror   = () -> console.log('sse errord (should recover)')
+                                conn.onmessage = onmessage
+
+                                $(statesel).click(() ->
+                                        history.pushState({path: @path}, '', @href)
+                                        sendSearch(@search)
+                                        return false)
+                                return
+
+                        init()
+                        return {
+                                sendClient: sendClient
+                                sendSearch: sendSearch
+                                close: () -> conn.close()
+                        }
                 @newwebsocket = (onmessage) ->
                         conn = null
                         sendSearch = (search) -> sendJSON({Search: search})
@@ -33,85 +89,85 @@ require ['jquery', 'bootstrap', 'react', 'jscript'],
                                 return conn.send(JSON.stringify(obj))
                         init = () ->
                                 hostport = window.location.hostname + (if location.port then ':' + location.port else '')
-                                conn = new WebSocket('ws://' + hostport + '/ws')
+                                conn = new WebSocket('ws://' + hostport + '/index.ws')
                                 conn.onopen = () ->
                                         sendSearch(location.search)
                                         $(window).bind('popstate', (() ->
                                                 sendSearch(location.search)
                                                 return))
                                         return
-                
+
                                 statesel = 'table thead tr .header a.state'
                                 again = (e) ->
                                         $(statesel).unbind('click')
                                         window.setTimeout(init, 5000) if !e.wasClean
                                         return
-                
+
                                 conn.onclose   = again
                                 conn.onerror   = again
                                 conn.onmessage = onmessage
-                
+
                                 $(statesel).click(() ->
                                         history.pushState({path: @path}, '', @href)
                                         sendSearch(@search)
                                         return false)
                                 return
-                
+
                         init()
                         return {
                                 sendClient: sendClient
                                 sendSearch: sendSearch
                                 close: () -> conn.close()
                         }
-        
+
                 @IFbytesCLASS = React.createClass
                         getInitialState: () -> Data.IFbytes # a global Data
                         render: () ->
                                 Data = {IFbytes: @state}
                                 return jscript.ifbytes_table(Data, (jscript.ifbytes_rows(Data, $if) for $if in Data?.IFbytes?.List ? []))
-                
+
                 @IFerrorsCLASS = React.createClass
                         getInitialState: () -> Data.IFerrors # a global Data
                         render: () ->
                                 Data = {IFerrors: @state}
                                 return jscript.iferrors_table(Data, (jscript.iferrors_rows(Data, $if) for $if in Data?.IFerrors?.List ? []))
-                
+
                 @IFpacketsCLASS = React.createClass
                         getInitialState: () -> Data.IFpackets # a global Data
                         render: () ->
                                 Data = {IFpackets: @state}
                                 return jscript.ifpackets_table(Data, (jscript.ifpackets_rows(Data, $if) for $if in Data?.IFpackets?.List ? []))
-                
+
                 @DFbytesCLASS = React.createClass
                         getInitialState: () -> {DFlinks: Data.DFlinks, DFbytes: Data.DFbytes} # a global Data
                         render: () ->
                                 Data = @state
                                 return jscript.dfbytes_table(Data, (jscript.dfbytes_rows(Data, $disk) for $disk in Data?.DFbytes?.List ? []))
-                
+
                 @DFinodesCLASS = React.createClass
                         getInitialState: () -> {DFlinks: Data.DFlinks, DFinodes: Data.DFinodes} # a global Data
                         render: () ->
                                 Data = @state
                                 return jscript.dfinodes_table(Data, (jscript.dfinodes_rows(Data, $disk) for $disk in Data?.DFinodes?.List ? []))
-                
+
                 @MEMtableCLASS = React.createClass
                         getInitialState: () -> Data.MEM # a global Data
                         render: () ->
                                 Data = {MEM: @state}
                                 return jscript.mem_table(Data, (jscript.mem_rows(Data, $mem) for $mem in Data?.MEM?.List ? []))
-                
+
                 @CPUtableCLASS = React.createClass
                         getInitialState: () -> Data.CPU # a global Data
                         render: () ->
                                 Data = {CPU: @state}
                                 return jscript.cpu_table(Data, (jscript.cpu_rows(Data, $core) for $core in Data?.CPU?.List ? []))
-                
+
                 @PStableCLASS = React.createClass
                         getInitialState: () -> {PStable: Data.PStable, PSlinks: Data.PSlinks} # a global Data
                         render: () ->
                                 Data = @state
                                 return jscript.ps_table(Data, (jscript.ps_rows(Data, $proc) for $proc in Data?.PStable?.List ? []))
-                
+
                 @VGtableCLASS = React.createClass
                         getInitialState: () -> { # a global Data:
                                 VagrantMachines: Data.VagrantMachines
@@ -125,12 +181,12 @@ require ['jquery', 'bootstrap', 'react', 'jscript'],
                                 else
                                         rows = (jscript.vagrant_rows(Data, $mach) for $mach in Data?.VagrantMachines?.List ? [])
                                 return jscript.vagrant_table(Data, rows)
-                
+
                 @addNoscript = ($) -> $.append('<noscript />').find('noscript').get(0)
-                
+
                 @HideClass = React.createClass
                         statics: component: (opt) -> React.render(HideClass(opt), addNoscript(opt.$button_el))
-                
+
                         reduce: (data) ->
                                 if data?.Client?
                                         value = data.Client[@props.xkey]
@@ -146,14 +202,14 @@ require ['jquery', 'bootstrap', 'react', 'jscript'],
                                 return null
                         click: (e) ->
                                 (S = {})[@props.xkey] = !@state.Hide
-                                websocket.sendClient(S)
+                                updates.sendClient(S)
                                 e.stopPropagation() # preserves checkbox/radio
                                 e.preventDefault()  # checked/selected state
                                 return undefined
-                
+
                 @ButtonClass = React.createClass
                         statics: component: (opt) -> React.render(ButtonClass(opt), addNoscript(opt.$button_el))
-                
+
                         reduce: (data) ->
                                 if data?.Client?
                                         S = {}
@@ -178,14 +234,14 @@ require ['jquery', 'bootstrap', 'react', 'jscript'],
                                 S[@props.Khide] = !@state.Hide if @state.Hide?  and @state.Hide # if the panel was hidden
                                 S[@props.Ksend] = !@state.Send if @props.Ksend? and @state.Send? # Q is a @state.Send? check excessive?
                                 S[@props.Ksig]  =  @props.Vsig if @props.Ksig?
-                                websocket.sendClient(S)
+                                updates.sendClient(S)
                                 e.stopPropagation() # preserves checkbox/radio
                                 e.preventDefault()  # checked/selected state
                                 return undefined
-                
+
                 @TabsClass = React.createClass
                         statics: component: (opt) -> React.render(TabsClass(opt), addNoscript(opt.$button_el))
-                
+
                         reduce: (data) ->
                                 if data?.Client?
                                         S = {}
@@ -217,24 +273,24 @@ require ['jquery', 'bootstrap', 'react', 'jscript'],
                                 S = {}
                                 S[@props.Ksend] = +$( $(e.target).attr('href') ).attr('data-tabid') # THIS. +string makes an int
                                 S[@props.Khide] = false if @state.Hide? and @state.Hide # if the panel was hidden
-                                websocket.sendClient(S)
+                                updates.sendClient(S)
                                 e.preventDefault()
                                 e.stopPropagation() # don't change checkbox/radio state
                                 return undefined
                         clickhide: (e) ->
                                 (S = {})[@props.Khide] = !@state.Hide
-                                websocket.sendClient(S)
+                                updates.sendClient(S)
                                 e.stopPropagation() # preserves checkbox/radio
                                 e.preventDefault()  # checked/selected state
                                 return undefined
-                
+
                 @RefreshInputClass = React.createClass
                         statics: component: (opt) ->
                                 sel = opt.sel; delete opt.$
                                 opt.$input_el = sel.find('.refresh-input')
                                 opt.$group_el = sel.find('.refresh-group')
                                 React.render(RefreshInputClass(opt), addNoscript(opt.$input_el))
-                
+
                         reduce: (data) ->
                                 if data?.Client? and (data.Client[@props.K]? or data.Client[@props.Kerror]?)
                                         S = {}
@@ -246,7 +302,7 @@ require ['jquery', 'bootstrap', 'react', 'jscript'],
                                 S = @reduce(Data) # a global Data
                                 # console.log('initialState', S)
                                 return S
-                
+
                         componentDidMount: () -> @props.$input_el.on('input', @submit)
                         render: () ->
                                 # console.log('RefreshInputClass.render', @isMounted(), @state)
@@ -255,18 +311,18 @@ require ['jquery', 'bootstrap', 'react', 'jscript'],
                                 return null
                         submit: (e) ->
                                 (S = {})[@props.Ksig] = $(e.target).val()
-                                websocket.sendClient(S)
+                                updates.sendClient(S)
                                 e.preventDefault()
                                 e.stopPropagation() # don't change checkbox/radio state
                                 return undefined
-                
+
                 @NewTextCLASS = (reduce) -> React.createClass
                         newstate: (data) ->
                                 v = reduce(data)
                                 return {Text: v} if v?
                         getInitialState: () -> @newstate(Data) # a global Data
                         render: () -> React.DOM.span(null, @state.Text)
-                
+
                 @AlertClass = React.createClass
                         show: () -> return @state.Error?
                         newstate: (data) ->
@@ -285,56 +341,56 @@ require ['jquery', 'bootstrap', 'react', 'jscript'],
                                         console.log('show', @state) # (if @show() then 'show' else 'hide'), @state)
                                         @props.$collapse_el.collapse('show') if @show() # then 'show' else 'hide'
                                 return React.DOM.span(null, @state.ErrorText)
-                
+
                 @setState = (obj, data) ->
                         if data?
                                 delete data[key] for key of data when !data[key]?
                                 return obj.setState(data)
-                
+
                 window.update = () -> # currentClient
                         return if (42 for param in location.search.substr(1).split('&') when param.split('=')[0] == 'still').length
-                
+
                         hideconfigmem = HideClass.component({xkey: 'HideconfigMEM', $collapse_el: $('#memconfig'), $button_el: $('header a[href="#mem"]'), reverseActive: true})
                         hideconfigif  = HideClass.component({xkey: 'HideconfigIF',  $collapse_el: $('#ifconfig'),  $button_el: $('header a[href="#if"]'),  reverseActive: true})
                         hideconfigcpu = HideClass.component({xkey: 'HideconfigCPU', $collapse_el: $('#cpuconfig'), $button_el: $('header a[href="#cpu"]'), reverseActive: true})
                         hideconfigdf  = HideClass.component({xkey: 'HideconfigDF',  $collapse_el: $('#dfconfig'),  $button_el: $('header a[href="#df"]'),  reverseActive: true})
                         hideconfigps  = HideClass.component({xkey: 'HideconfigPS',  $collapse_el: $('#psconfig'),  $button_el: $('header a[href="#ps"]'),  reverseActive: true})
                         hideconfigvg  = HideClass.component({xkey: 'HideconfigVG',  $collapse_el: $('#vgconfig'),  $button_el: $('header a[href="#vg"]'),  reverseActive: true})
-                
+
                         hideram = HideClass.component({xkey: 'HideRAM', $collapse_el: $('#mem'), $button_el: $('#memconfig').find('.hiding')})
                         hidecpu = HideClass.component({xkey: 'HideCPU', $collapse_el: $('#cpu'), $button_el: $('#cpuconfig').find('.hiding')})
                         hideps  = HideClass.component({xkey: 'HidePS',  $collapse_el: $('#ps'),  $button_el: $('#psconfig') .find('.hiding')})
                         hidevg  = HideClass.component({xkey: 'HideVG',  $collapse_el: $('#vg'),  $button_el: $('#vgconfig') .find('.hiding')})
-                
+
                         ip       = React.render(NewTextCLASS((data) -> data?.IP       )(), $('#ip'      )   .get(0))
                         hostname = React.render(NewTextCLASS((data) -> data?.Hostname )(), $('#hostname')   .get(0))
                         uptime   = React.render(NewTextCLASS((data) -> data?.Uptime   )(), $('#uptime'  )   .get(0))
                         la       = React.render(NewTextCLASS((data) -> data?.LA       )(), $('#la'      )   .get(0))
-                
+
                         iftitle  = React.render(NewTextCLASS((data) -> data?.Client?.TabTitleIF)(), $('header a[href="#if"]').get(0))
                         dftitle  = React.render(NewTextCLASS((data) -> data?.Client?.TabTitleDF)(), $('header a[href="#df"]').get(0))
-                
+
                         psplus   = React.render(NewTextCLASS((data) -> data?.Client?.PSplusText)(), $('label.more[href="#psmore"]').get(0))
                         psmore   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: true,  Khide: 'HidePS', Kable: 'PSnotExpandable',  $button_el: $('label.more[href="#psmore"]')})
                         psless   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: false, Khide: 'HidePS', Kable: 'PSnotDecreasable', $button_el: $('label.less[href="#psless"]')})
-                
+
                         hideswap = ButtonClass.component({Khide: 'HideRAM', Ksend: 'HideSWAP', $button_el: $('label[href="#hideswap"]')})
-                
+
                         expandif = ButtonClass.component({Khide: 'HideIF',  Ksend: 'ExpandIF',  Ktext: 'ExpandtextIF',  Kable: 'ExpandableIF',  $button_el: $('label[href="#if"]')})
                         expandcpu= ButtonClass.component({Khide: 'HideCPU', Ksend: 'ExpandCPU', Ktext: 'ExpandtextCPU', Kable: 'ExpandableCPU', $button_el: $('label[href="#cpu"]')})
                         expanddf = ButtonClass.component({Khide: 'HideDF',  Ksend: 'ExpandDF',  Ktext: 'ExpandtextDF',  Kalbe: 'ExpandableDF',  $button_el: $('label[href="#df"]')})
-                
+
                         # NB buttons and collapses selected by class
                         tabsif = TabsClass.component({Khide: 'HideIF', Ksend: 'TabIF', $collapse_el: $('.if-tab'), $button_el: $('.if-switch'), $hidebutton_el: $('#ifconfig').find('.hiding')})
                         tabsdf = TabsClass.component({Khide: 'HideDF', Ksend: 'TabDF', $collapse_el: $('.df-tab'), $button_el: $('.df-switch'), $hidebutton_el: $('#dfconfig').find('.hiding')})
-                
+
                         refresh_mem = RefreshInputClass.component({K: 'RefreshMEM', Kerror: 'RefreshErrorMEM', Ksig: 'RefreshSignalMEM', sel: $('#memconfig')})
                         refresh_if  = RefreshInputClass.component({K: 'RefreshIF',  Kerror: 'RefreshErrorIF',  Ksig: 'RefreshSignalIF',  sel: $('#ifconfig')})
                         refresh_cpu = RefreshInputClass.component({K: 'RefreshCPU', Kerror: 'RefreshErrorCPU', Ksig: 'RefreshSignalCPU', sel: $('#cpuconfig')})
                         refresh_df  = RefreshInputClass.component({K: 'RefreshDF',  Kerror: 'RefreshErrorDF',  Ksig: 'RefreshSignalDF',  sel: $('#dfconfig')})
                         refresh_ps  = RefreshInputClass.component({K: 'RefreshPS',  Kerror: 'RefreshErrorPS',  Ksig: 'RefreshSignalPS',  sel: $('#psconfig')})
                         refresh_vg  = RefreshInputClass.component({K: 'RefreshVG',  Kerror: 'RefreshErrorVG',  Ksig: 'RefreshSignalVG',  sel: $('#vgconfig')})
-                
+
                         memtable  = React.render(MEMtableCLASS(),  document.getElementById('mem'       +'-'+ 'table'))
                         pstable   = React.render(PStableCLASS(),   document.getElementById('ps'        +'-'+ 'table'))
                         dfbytes   = React.render(DFbytesCLASS(),   document.getElementById('dfbytes'   +'-'+ 'table'))
@@ -344,19 +400,19 @@ require ['jquery', 'bootstrap', 'react', 'jscript'],
                         iferrors  = React.render(IFerrorsCLASS(),  document.getElementById('iferrors'  +'-'+ 'table'))
                         ifpackets = React.render(IFpacketsCLASS(), document.getElementById('ifpackets' +'-'+ 'table'))
                         vgtable   = React.render(VGtableCLASS(),   document.getElementById('vg'        +'-'+ 'table'))
-                
+
                         # alertComp = React.render(AlertClass({
                         #         $collapse_el: $('#alert-parent')
                         #         }), document.getElementById('alert-message'))
-                
+
                         onmessage = (event) ->
                                 data = JSON.parse(event.data)
                                 return if !data?
-                
+
                                 # alertComp.setState(alertComp.newstate(data))
                                 # if alertComp.show()
                                 #         return
-                
+
                                 console.log('DEBUG ERROR', data.Client.DebugError) if data.Client?.DebugError?
                                 if data.Reload? and data.Reload
                                         window.setTimeout((() -> location.reload(true)), 5000)
@@ -364,51 +420,51 @@ require ['jquery', 'bootstrap', 'react', 'jscript'],
                                         console.log('in 5s: location.reload(true)')
                                         console.log('in 2s: websocket.close()')
                                         return
-                
+
                                 setState(pstable,  {PStable:  data.PStable,  PSlinks: data.PSlinks})
                                 setState(dfbytes,  {DFbytes:  data.DFbytes,  DFlinks: data.DFlinks})
                                 setState(dfinodes, {DFinodes: data.DFinodes, DFlinks: data.DFlinks})
-                
+
                                 setState(hideconfigmem, hideconfigmem.reduce(data))
                                 setState(hideconfigif,  hideconfigif .reduce(data))
                                 setState(hideconfigcpu, hideconfigcpu.reduce(data))
                                 setState(hideconfigdf,  hideconfigdf .reduce(data))
                                 setState(hideconfigps,  hideconfigps .reduce(data))
                                 setState(hideconfigvg,  hideconfigvg .reduce(data))
-                
+
                                 setState(hideram,       hideram      .reduce(data))
                                 setState(hidecpu,       hidecpu      .reduce(data))
                                 setState(hideps,        hideps       .reduce(data))
                                 setState(hidevg,        hidevg       .reduce(data))
-                
+
                                 setState(ip,        ip      .newstate(data))
                                 setState(hostname,  hostname.newstate(data))
                                 setState(uptime,    uptime  .newstate(data))
                                 setState(la,        la      .newstate(data))
-                
+
                                 setState(iftitle,   iftitle .newstate(data))
                                 setState(dftitle,   dftitle .newstate(data))
-                
+
                                 setState(psplus,    psplus  .newstate(data))
                                 setState(psmore,    psmore  .reduce(data))
                                 setState(psless,    psless  .reduce(data))
-                
+
                                 setState(hideswap,  hideswap.reduce(data))
-                
+
                                 setState(expandif,  expandif.reduce(data))
                                 setState(expandcpu, expandcpu.reduce(data))
                                 setState(expanddf,  expanddf.reduce(data))
-                
+
                                 setState(tabsif,    tabsif.reduce(data))
                                 setState(tabsdf,    tabsdf.reduce(data))
-                
+
                                 setState(refresh_mem, refresh_mem.reduce(data))
                                 setState(refresh_if,  refresh_if .reduce(data))
                                 setState(refresh_cpu, refresh_cpu.reduce(data))
                                 setState(refresh_df,  refresh_df .reduce(data))
                                 setState(refresh_ps,  refresh_ps .reduce(data))
                                 setState(refresh_vg,  refresh_vg .reduce(data))
-                
+
                                 setState(memtable,  data.MEM)
                                 setState(cputable,  data.CPU)
                                 setState(ifbytes,   data.IFbytes)
@@ -419,20 +475,21 @@ require ['jquery', 'bootstrap', 'react', 'jscript'],
                                     VagrantError:    data.VagrantError,
                                     VagrantErrord:   data.VagrantErrord
                                 })
-                
+
                                 console.log(JSON.stringify(data.Client), 'recvClient') if data.Client?
-                
+
                               # currentClient = React.addons.update(currentClient, {$merge: data.Client}) if data.Client?
                               # data.Client = currentClient
-                
+
                                 # update the tooltips
                                 $('span .tooltipable')    .popover({trigger: 'hover focus'})
                                 $('span .tooltipabledots').popover() # the clickable dots
                                 return
-                
-                        @websocket = newwebsocket(onmessage)
+
+                        @updates = newwebsocket(onmessage)
+                      # @updates = neweventsource(onmessage)
                         return
-        
+
 @ready = require ['jquery', 'bootstrap', 'headroom'], ($) ->
         # neither bootstrap nor headroom export anything
         (new window.Headroom(document.querySelector('nav'), {

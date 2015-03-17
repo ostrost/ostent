@@ -18,6 +18,69 @@
   });
 
   require(['jquery', 'bootstrap', 'react', 'jscript'], function($, _, React, jscript) {
+    this.neweventsource = function(onmessage) {
+      var conn, init, sendClient, sendSearch;
+      conn = null;
+      sendSearch = function(search) {
+        console.log('SEARCH', search);
+        conn.close();
+        return window.setTimeout(init, 1000);
+      };
+      sendClient = function(client) {
+        var obj;
+        return;
+        console.log(JSON.stringify(client), 'sendClient');
+        obj = {
+          Client: client
+        };
+        if ((conn == null) || conn.readyState === conn.CLOSING || conn.readyState === conn.CLOSED) {
+          init();
+        }
+        if ((conn == null) || conn.readyState !== conn.OPEN) {
+          console.log('Not connected, cannot send', obj);
+          return;
+        }
+        return conn.send(JSON.stringify(obj));
+      };
+      init = function() {
+        var again, statesel;
+        conn = new EventSource('/index.sse' + location.search);
+        conn.onopen = function() {
+          $(window).bind('popstate', (function() {
+            sendSearch(location.search);
+          }));
+        };
+        statesel = 'table thead tr .header a.state';
+        again = function(e) {
+          $(statesel).unbind('click');
+          if (!e.wasClean) {
+            window.setTimeout(init, 5000);
+          }
+        };
+        conn.onclose = function() {
+          return console.log('sse closed (should recover)');
+        };
+        conn.onerror = function() {
+          return console.log('sse errord (should recover)');
+        };
+        conn.onmessage = onmessage;
+        $(statesel).click(function() {
+          history.pushState({
+            path: this.path
+          }, '', this.href);
+          sendSearch(this.search);
+          return false;
+        });
+      };
+      init();
+      return {
+        sendClient: sendClient,
+        sendSearch: sendSearch,
+        close: function() {
+          return conn.close();
+        }
+      };
+    };
     this.newwebsocket = function(onmessage) {
       var conn, init, sendClient, sendJSON, sendSearch;
       conn = null;
@@ -45,7 +108,7 @@
       init = function() {
         var again, hostport, statesel;
         hostport = window.location.hostname + (location.port ? ':' + location.port : '');
-        conn = new WebSocket('ws://' + hostport + '/ws');
+        conn = new WebSocket('ws://' + hostport + '/index.ws');
         conn.onopen = function() {
           sendSearch(location.search);
           $(window).bind('popstate', (function() {
@@ -318,7 +381,7 @@
       click: function(e) {
         var S;
         (S = {})[this.props.xkey] = !this.state.Hide;
-        websocket.sendClient(S);
+        updates.sendClient(S);
         e.stopPropagation();
         e.preventDefault();
         return void 0;
@@ -385,7 +448,7 @@
         if (this.props.Ksig != null) {
           S[this.props.Ksig] = this.props.Vsig;
         }
-        websocket.sendClient(S);
+        updates.sendClient(S);
         e.stopPropagation();
         e.preventDefault();
         return void 0;
@@ -452,7 +515,7 @@
         if ((this.state.Hide != null) && this.state.Hide) {
           S[this.props.Khide] = false;
         }
-        websocket.sendClient(S);
+        updates.sendClient(S);
         e.preventDefault();
         e.stopPropagation();
         return void 0;
@@ -460,7 +523,7 @@
       clickhide: function(e) {
         var S;
         (S = {})[this.props.Khide] = !this.state.Hide;
-        websocket.sendClient(S);
+        updates.sendClient(S);
         e.stopPropagation();
         e.preventDefault();
         return void 0;
@@ -508,7 +571,7 @@
       submit: function(e) {
         var S;
         (S = {})[this.props.Ksig] = $(e.target).val();
-        websocket.sendClient(S);
+        updates.sendClient(S);
         e.preventDefault();
         e.stopPropagation();
         return void 0;
@@ -849,7 +912,7 @@
         });
         $('span .tooltipabledots').popover();
       };
-      this.websocket = newwebsocket(onmessage);
+      this.updates = newwebsocket(onmessage);
     };
   });
 
