@@ -416,9 +416,9 @@ require ['jquery', 'bootstrap', 'react', 'jscript'],
                                 console.log('DEBUG ERROR', data.Client.DebugError) if data.Client?.DebugError?
                                 if data.Reload? and data.Reload
                                         window.setTimeout((() -> location.reload(true)), 5000)
-                                        window.setTimeout(websocket.close, 2000)
+                                        window.setTimeout(updates.close, 2000)
                                         console.log('in 5s: location.reload(true)')
-                                        console.log('in 2s: websocket.close()')
+                                        console.log('in 2s: updates.close()')
                                         return
 
                                 setState(pstable,  {PStable:  data.PStable,  PSlinks: data.PSlinks})
