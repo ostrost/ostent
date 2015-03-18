@@ -369,13 +369,14 @@
         return this.props.$button_el.click(this.click);
       },
       render: function() {
-        var buttonactive;
+        var buttonactive, opclass;
         this.props.$collapse_el.collapse(this.state.Hide ? 'hide' : 'show');
         buttonactive = this.state.Hide;
         if ((this.props.reverseActive != null) && this.props.reverseActive) {
           buttonactive = !this.state.Hide;
         }
-        this.props.$button_el[buttonactive ? 'addClass' : 'removeClass']('active');
+        opclass = buttonactive ? 'addClass' : 'removeClass';
+        this.props.$button_el[opclass]('active');
         return null;
       },
       click: function(e) {
@@ -419,17 +420,19 @@
         return this.props.$button_el.click(this.click);
       },
       render: function() {
-        var able;
+        var able, opclass;
         if (this.props.Kable) {
           able = this.state.Able;
           if (!(this.props.Kable.indexOf('not') > -1)) {
             able = !able;
           }
+          opclass = able ? 'addClass' : 'removeClass';
           this.props.$button_el.prop('disabled', able);
-          this.props.$button_el[able ? 'addClass' : 'removeClass']('disabled');
+          this.props.$button_el[opclass]('disabled');
         }
+        opclass = this.state.Send ? 'addClass' : 'removeClass';
         if (this.props.Ksend != null) {
-          this.props.$button_el[this.state.Send ? 'addClass' : 'removeClass']('active');
+          this.props.$button_el[opclass]('active');
         }
         if (this.props.Ktext != null) {
           this.props.$button_el.text(this.state.Text);
@@ -496,10 +499,11 @@
         }
         $(this.props.$collapse_el.not(nots)).collapse('show');
         activeClass = function(el) {
-          var tabid_attr, xel;
+          var opclass, tabid_attr, xel;
           xel = $(el);
           tabid_attr = +xel.attr('data-tabid');
-          xel[tabid_attr === curtabid ? 'addClass' : 'removeClass']('active');
+          opclass = tabid_attr === curtabid ? 'addClass' : 'removeClass';
+          xel[opclass]('active');
         };
         ref = this.props.$button_el;
         for (j = 0, len1 = ref.length; j < len1; j++) {
@@ -556,16 +560,20 @@
       getInitialState: function() {
         var S;
         S = this.reduce(Data);
+        S.Init = true;
         return S;
       },
       componentDidMount: function() {
         return this.props.$input_el.on('input', this.submit);
       },
       render: function() {
-        if (this.isMounted() && !this.state.Error) {
+        var opclass;
+        if (!((this.state.Init != null) && this.state.Init) && !this.state.Error) {
           this.props.$input_el.prop('value', this.state.Value);
         }
-        this.props.$group_el[this.state.Error ? 'addClass' : 'removeClass']('has-warning');
+        this.state.Init = false;
+        opclass = this.state.Error ? 'addClass' : 'removeClass';
+        this.props.$group_el[opclass]('has-warning');
         return null;
       },
       submit: function(e) {

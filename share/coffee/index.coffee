@@ -218,7 +218,8 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
       buttonactive =  @state.Hide
       buttonactive = !@state.Hide if (
         @props.reverseActive? and @props.reverseActive)
-      @props.$button_el[if buttonactive then 'addClass' else 'removeClass']('active')
+      opclass = if buttonactive then 'addClass' else 'removeClass'
+      @props.$button_el[opclass]('active')
       return null
     click: (e) ->
       (S = {})[@props.xkey] = !@state.Hide
@@ -234,10 +235,12 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
     reduce: (data) ->
       if data?.Client?
         S = {}
+        # coffeelint: disable=max_line_length
         S.Hide = data.Client[@props.Khide] if                   data.Client[@props.Khide] isnt undefined # Khide is a required prop
         S.Able = data.Client[@props.Kable] if @props.Kable? and data.Client[@props.Kable] isnt undefined
         S.Send = data.Client[@props.Ksend] if @props.Ksend? and data.Client[@props.Ksend] isnt undefined
         S.Text = data.Client[@props.Ktext] if @props.Ktext? and data.Client[@props.Ktext] isnt undefined
+        # coffeelint: enable=max_line_length
         return S
     getInitialState: () -> @reduce(Data) # a global Data
     componentDidMount: () -> @props.$button_el.click(@click)
@@ -245,15 +248,17 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
       if @props.Kable
         able = @state.Able
         able = !able if not (@props.Kable.indexOf('not') > -1) # That's a hack
+        opclass = if able then 'addClass' else 'removeClass'
         @props.$button_el.prop('disabled', able)
-        @props.$button_el[if able then 'addClass' else 'removeClass']('disabled')
-      @props.$button_el[if @state.Send then 'addClass' else 'removeClass']('active') if @props.Ksend?
+        @props.$button_el[opclass]('disabled')
+      opclass = if @state.Send then 'addClass' else 'removeClass'
+      @props.$button_el[opclass]('active') if @props.Ksend?
       @props.$button_el.text(@state.Text) if @props.Ktext?
       return null
     click: (e) ->
       S = {}
-      S[@props.Khide] = !@state.Hide if @state.Hide?  and @state.Hide # if the panel was hidden
-      S[@props.Ksend] = !@state.Send if @props.Ksend? and @state.Send? # Q is a @state.Send? check excessive?
+      S[@props.Khide] = !@state.Hide if @state.Hide?  and @state.Hide
+      S[@props.Ksend] = !@state.Send if @props.Ksend? and @state.Send?
       S[@props.Ksig]  =  @props.Vsig if @props.Ksig?
       updates.sendClient(S)
       e.stopPropagation() # preserves checkbox/radio
@@ -267,8 +272,10 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
     reduce: (data) ->
       if data?.Client?
         S = {}
+        # coffeelint: disable=max_line_length
         S.Hide = data.Client[@props.Khide] if                   data.Client[@props.Khide] isnt undefined # Khide is a required prop
         S.Send = data.Client[@props.Ksend] if @props.Ksend? and data.Client[@props.Ksend] isnt undefined
+        # coffeelint: enable=max_line_length
         return S
     getInitialState: () -> @reduce(Data) # a global Data
     componentDidMount: () ->
@@ -287,14 +294,16 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
       activeClass = (el) ->
         xel = $(el)
         tabid_attr = +xel.attr('data-tabid') # an int
-        xel[if tabid_attr == curtabid then 'addClass' else 'removeClass']('active')
+        opclass = if tabid_attr == curtabid then 'addClass' else 'removeClass'
+        xel[opclass]('active')
         return
       activeClass(el) for el in @props.$button_el
       return null
     clicktab: (e) ->
       S = {}
-      S[@props.Ksend] = +$( $(e.target).attr('href') ).attr('data-tabid') # THIS. +string makes an int
-      S[@props.Khide] = false if @state.Hide? and @state.Hide # if the panel was hidden
+      # +"STRING" to make it an int
+      S[@props.Ksend] = +$( $(e.target).attr('href') ).attr('data-tabid')
+      S[@props.Khide] = false if @state.Hide? and @state.Hide
       updates.sendClient(S)
       e.preventDefault()
       e.stopPropagation() # don't change checkbox/radio state
@@ -314,22 +323,25 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
       React.render(RefreshInputClass(opt), addNoscript(opt.$input_el))
 
     reduce: (data) ->
-      if data?.Client? and (data.Client[@props.K]? or data.Client[@props.Kerror]?)
+      if data?.Client? and (
+        data.Client[@props.K]? or
+        data.Client[@props.Kerror]?)
         S = {}
         S.Value = data.Client[@props.K]      if data.Client[@props.K]?
         S.Error = data.Client[@props.Kerror] if data.Client[@props.Kerror]?
-        # console.log('newState', S)
         return S
     getInitialState: () ->
       S = @reduce(Data) # a global Data
-      # console.log('initialState', S)
+      S.Init = true
       return S
 
     componentDidMount: () -> @props.$input_el.on('input', @submit)
     render: () ->
-      # console.log('RefreshInputClass.render', @isMounted(), @state)
-      @props.$input_el.prop('value', @state.Value) if @isMounted() and !@state.Error
-      @props.$group_el[if @state.Error then 'addClass' else 'removeClass']('has-warning')
+      @props.$input_el.prop('value', @state.Value) if (
+        !(@state.Init? and @state.Init) and !@state.Error)
+      @state.Init = false # @isMounted() is deprecated
+      opclass = if @state.Error then 'addClass' else 'removeClass'
+      @props.$group_el[opclass]('has-warning')
       return null
     submit: (e) ->
       (S = {})[@props.Ksig] = $(e.target).val()
@@ -360,8 +372,8 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
     getInitialState: () -> @newstate(Data) # a global Data
     render: () ->
       if @state.Changed
-        console.log('show', @state) # (if @show() then 'show' else 'hide'), @state)
-        @props.$collapse_el.collapse('show') if @show() # then 'show' else 'hide'
+        console.log('show', @state) # , if @show() then 'show' else 'hide')
+        @props.$collapse_el.collapse('show') if @show()
       return React.DOM.span(null, @state.ErrorText)
 
   @setState = (obj, data) ->
@@ -369,10 +381,11 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
       delete data[key] for key of data when !data[key]?
       return obj.setState(data)
 
-  window.update = () -> # currentClient
+  window.update = () ->
     return if (42 for param in location.search.substr(1).split('&') when (
       param.split('=')[0] == 'still')).length
 
+    # coffeelint: disable=max_line_length
     hideconfigmem = HideClass.component({xkey: 'HideconfigMEM', $collapse_el: $('#memconfig'), $button_el: $('header a[href="#mem"]'), reverseActive: true})
     hideconfigif  = HideClass.component({xkey: 'HideconfigIF',  $collapse_el: $('#ifconfig'),  $button_el: $('header a[href="#if"]'),  reverseActive: true})
     hideconfigcpu = HideClass.component({xkey: 'HideconfigCPU', $collapse_el: $('#cpuconfig'), $button_el: $('header a[href="#cpu"]'), reverseActive: true})
@@ -423,6 +436,7 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
     iferrors  = React.render(IFerrorsCLASS(),  document.getElementById('iferrors'  +'-'+ 'table'))
     ifpackets = React.render(IFpacketsCLASS(), document.getElementById('ifpackets' +'-'+ 'table'))
     vgtable   = React.render(VGtableCLASS(),   document.getElementById('vg'        +'-'+ 'table'))
+    # coffeelint: enable=max_line_length
 
     # alertComp = React.render(AlertClass({
     #         $collapse_el: $('#alert-parent')
@@ -502,9 +516,6 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
 
       console.log(JSON.stringify(data.Client), 'recvClient') if data.Client?
 
-    # currentClient = React.addons.update(currentClient, {$merge: data.Client}) if data.Client?
-    # data.Client = currentClient
-
       # update the tooltips
       $('span .tooltipable')    .popover({trigger: 'hover focus'})
       $('span .tooltipabledots').popover() # the clickable dots
@@ -527,7 +538,8 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
   $('[data-toggle="popover"]').popover() # should be just #hostname
   $('#la')                    .popover({
     trigger: 'hover focus',
-    placement: 'right', # not 'auto right' until #la is the last element for it's parent
+    placement: 'right',
+    # NOT placement: 'auto right' until #la is the last element for it's parent
     html: true, content: () -> $('#uptime-parent').html()
   })
 
