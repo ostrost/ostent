@@ -560,7 +560,7 @@
       getInitialState: function() {
         var S;
         S = this.reduce(Data);
-        S.Init = true;
+        delete S.Value;
         return S;
       },
       componentDidMount: function() {
@@ -568,10 +568,9 @@
       },
       render: function() {
         var opclass;
-        if (!((this.state.Init != null) && this.state.Init) && !this.state.Error) {
+        if ((this.state.Value != null) && !this.state.Error) {
           this.props.$input_el.prop('value', this.state.Value);
         }
-        this.state.Init = false;
         opclass = this.state.Error ? 'addClass' : 'removeClass';
         this.props.$group_el[opclass]('has-warning');
         return null;

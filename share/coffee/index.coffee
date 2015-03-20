@@ -332,14 +332,16 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
         return S
     getInitialState: () ->
       S = @reduce(Data) # a global Data
-      S.Init = true
+      delete S.Value # to make input empty initially
       return S
 
     componentDidMount: () -> @props.$input_el.on('input', @submit)
     render: () ->
+      # The initial render should not place a value.
+      # The check relied on @isMounted() until it was deprecated.
+      # getInitialState now deletes .Value.
       @props.$input_el.prop('value', @state.Value) if (
-        !(@state.Init? and @state.Init) and !@state.Error)
-      @state.Init = false # @isMounted() is deprecated
+        @state.Value? and !@state.Error)
       opclass = if @state.Error then 'addClass' else 'removeClass'
       @props.$group_el[opclass]('has-warning')
       return null
