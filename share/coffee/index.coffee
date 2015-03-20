@@ -9,8 +9,10 @@ require.config
     react:     'vendor/min/react/0.12.2/react.min'
     jscript:   'gen/jscript'
 
+# main require
 require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
-  @neweventsource = (onmessage) ->
+  updates = undefined # events source. set later
+  neweventsource = (onmessage) ->
     conn = null
     sendSearch = (search) ->
       # conn = new EventSource('/index.sse' + search)
@@ -66,7 +68,7 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
       sendSearch: sendSearch
       close: () -> conn.close()
     }
-  @newwebsocket = (onmessage) ->
+  newwebsocket = (onmessage) ->
     conn = null
     sendSearch = (search) -> sendJSON({Search: search})
     sendClient = (client) ->
@@ -383,7 +385,7 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
       delete data[key] for key of data when !data[key]?
       return obj.setState(data)
 
-  window.update = () ->
+  update = () ->
     return if (42 for param in location.search.substr(1).split('&') when (
       param.split('=')[0] == 'still')).length
 
@@ -523,43 +525,47 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
       $('span .tooltipabledots').popover() # the clickable dots
       return
 
-    @updates = newwebsocket(onmessage)
-  # @updates = neweventsource(onmessage)
-    return
+    updates = newwebsocket(onmessage)
+  # updates = neweventsource(onmessage)
+    return # end of `update'
 
-@ready = require ['jquery', 'bootstrap', 'headroom'], ($) ->
-  # neither bootstrap nor headroom export anything
-  (new window.Headroom(document.querySelector('nav'), {
-    offset: 20 # ~padding-top of a container row
-  })).init()
+  ready = require ['jquery', 'bootstrap', 'headroom'], ($) ->
+    # neither bootstrap nor headroom export anything
+    (new window.Headroom(document.querySelector('nav'), {
+      offset: 20 # ~padding-top of a container row
+    })).init()
 
-  $('.collapse').collapse({toggle: false}) # init collapsable objects
+    $('.collapse').collapse({toggle: false}) # init collapsable objects
 
-  $('span .tooltipable')      .popover({trigger: 'hover focus'})
-  $('span .tooltipabledots')  .popover() # the clickable dots
-  $('[data-toggle="popover"]').popover() # should be just #hostname
-  $('#la')                    .popover({
-    trigger: 'hover focus',
-    placement: 'right',
-    # NOT placement: 'auto right' until #la is the last element for it's parent
-    html: true, content: () -> $('#uptime-parent').html()
-  })
+    $('span .tooltipable')      .popover({trigger: 'hover focus'})
+    $('span .tooltipabledots')  .popover() # the clickable dots
+    $('[data-toggle="popover"]').popover() # should be just #hostname
+    $('#la')                    .popover({
+      trigger: 'hover focus',
+      placement: 'right',
+      # NOT placement: 'auto right' until #la is the last element for parent
+      html: true, content: () -> $('#uptime-parent').html()
+    })
 
-  $('body').on('click', (e) -> # hide the popovers on click outside
-    $('span .tooltipabledots').each(() ->
-      # the 'is' for buttons that trigger popups
-      # the 'has' for icons within a button that triggers a popup
-      $(this).popover('hide') if (!$(this).is(e.target) and
-        $(this).has(e.target).length == 0 and
-        $('.popover').has(e.target).length == 0)
+    $('body').on('click', (e) -> # hide the popovers on click outside
+      $('span .tooltipabledots').each(() ->
+        # the 'is' for buttons that trigger popups
+        # the 'has' for icons within a button that triggers a popup
+        $(this).popover('hide') if (!$(this).is(e.target) and
+          $(this).has(e.target).length == 0 and
+          $('.popover').has(e.target).length == 0)
+        return)
       return)
-    return)
 
-  window.update() # (Data.Client)
-  return
+    # referencing upper-scope `update'
+    update() # (Data.Client)
+    return # end of `ready'
 
-require ['domReady'], (domReady) ->
-  domReady () -> ready()
+  require ['domReady'], (domReady) ->
+    # referencing upper-scope `ready'
+    domReady () -> ready()
+
+  return # end of main require
 
 # Local variables:
 # coffee-tab-width: 2

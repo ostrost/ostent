@@ -18,7 +18,9 @@
   });
 
   require(['jquery', 'bootstrap', 'react', 'jscript'], function($, _, React, jscript) {
-    this.neweventsource = function(onmessage) {
+    var neweventsource, newwebsocket, ready, update, updates;
+    updates = void 0;
+    neweventsource = function(onmessage) {
       var conn, init, sendClient, sendSearch;
       conn = null;
       sendSearch = function(search) {
@@ -81,7 +83,7 @@
         }
       };
     };
-    this.newwebsocket = function(onmessage) {
+    newwebsocket = function(onmessage) {
       var conn, init, sendClient, sendJSON, sendSearch;
       conn = null;
       sendSearch = function(search) {
@@ -645,7 +647,7 @@
         return obj.setState(data);
       }
     };
-    return window.update = function() {
+    update = function() {
       var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hideps, hideram, hideswap, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psless, psmore, psplus, pstable, refresh_cpu, refresh_df, refresh_if, refresh_mem, refresh_ps, refresh_vg, tabsdf, tabsif, uptime, vgtable;
       if (((function() {
         var i, len, ref, results;
@@ -919,43 +921,41 @@
         });
         $('span .tooltipabledots').popover();
       };
-      this.updates = newwebsocket(onmessage);
+      updates = newwebsocket(onmessage);
     };
-  });
-
-  this.ready = require(['jquery', 'bootstrap', 'headroom'], function($) {
-    (new window.Headroom(document.querySelector('nav'), {
-      offset: 20
-    })).init();
-    $('.collapse').collapse({
-      toggle: false
-    });
-    $('span .tooltipable').popover({
-      trigger: 'hover focus'
-    });
-    $('span .tooltipabledots').popover();
-    $('[data-toggle="popover"]').popover();
-    $('#la').popover({
-      trigger: 'hover focus',
-      placement: 'right',
-      html: true,
-      content: function() {
-        return $('#uptime-parent').html();
-      }
-    });
-    $('body').on('click', function(e) {
-      $('span .tooltipabledots').each(function() {
-        if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-          $(this).popover('hide');
+    ready = require(['jquery', 'bootstrap', 'headroom'], function($) {
+      (new window.Headroom(document.querySelector('nav'), {
+        offset: 20
+      })).init();
+      $('.collapse').collapse({
+        toggle: false
+      });
+      $('span .tooltipable').popover({
+        trigger: 'hover focus'
+      });
+      $('span .tooltipabledots').popover();
+      $('[data-toggle="popover"]').popover();
+      $('#la').popover({
+        trigger: 'hover focus',
+        placement: 'right',
+        html: true,
+        content: function() {
+          return $('#uptime-parent').html();
         }
       });
+      $('body').on('click', function(e) {
+        $('span .tooltipabledots').each(function() {
+          if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+            $(this).popover('hide');
+          }
+        });
+      });
+      update();
     });
-    window.update();
-  });
-
-  require(['domReady'], function(domReady) {
-    return domReady(function() {
-      return ready();
+    require(['domReady'], function(domReady) {
+      return domReady(function() {
+        return ready();
+      });
     });
   });
 
