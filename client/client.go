@@ -64,6 +64,8 @@ type internalClient struct {
 
 	Toprows int
 
+	MergeRSError error
+
 	Modified bool
 }
 
@@ -122,7 +124,6 @@ type Client struct {
 	ExpandtextCPU *string `json:",omitempty"`
 	ExpandtextDF  *string `json:",omitempty"`
 
-	// RefreshGeneric *refresh `json:",omitempty"`
 	RefreshRAM  *Refresh `json:",omitempty"`
 	RefreshSWAP *Refresh `json:",omitempty"`
 	RefreshIF   *Refresh `json:",omitempty"`
@@ -248,31 +249,22 @@ func (c *Client) Merge(r RecvClient, s *SendClient) {
 	s.mergeTitle(c.TabTitleDF, DFTABS.Title(*c.TabDF), &s.TabTitleDF)
 }
 
-func newfalse() *bool      { return new(bool) }
-func newtrue() *bool       { return newbool(true) }
-func newbool(v bool) *bool { b := new(bool); *b = v; return b }
-
-func newseq(v SEQ) *SEQ {
-	s := new(SEQ)
-	*s = v
-	return s
-}
-
 func DefaultClient(minperiod flags.Period) Client {
 	cs := Client{}
 
-	cs.HideRAM = newfalse()
-	cs.HideIF = newfalse()
-	cs.HideCPU = newfalse()
-	cs.HideDF = newfalse()
-	cs.HidePS = newfalse()
-	cs.HideVG = newfalse()
+	// new(bool) is &false
+	cs.HideRAM = new(bool)
+	cs.HideIF = new(bool)
+	cs.HideCPU = new(bool)
+	cs.HideDF = new(bool)
+	cs.HidePS = new(bool)
+	cs.HideVG = new(bool)
+	cs.HideSWAP = new(bool)
+	cs.ExpandIF = new(bool)
+	cs.ExpandCPU = new(bool)
+	cs.ExpandDF = new(bool)
 
-	cs.HideSWAP = newfalse()
-	cs.ExpandIF = newfalse()
-	cs.ExpandCPU = newfalse()
-	cs.ExpandDF = newfalse()
-
+	newseq := func(v SEQ) *SEQ { s := new(SEQ); *s = v; return s }
 	cs.TabIF = newseq(IFBYTES_TABID)
 	cs.TabDF = newseq(DFBYTES_TABID)
 
@@ -281,17 +273,14 @@ func DefaultClient(minperiod flags.Period) Client {
 	cs.TabTitleDF = new(string)
 	*cs.TabTitleDF = DFTABS.Title(*cs.TabDF)
 
-	hideconfig := true
-	// hideconfig  = false // DEVELOPMENT
+	newhc := func() *bool { b := new(bool); *b = true; return b } // *b = false for DEVELOPMENT
+	cs.HideconfigMEM = newhc()
+	cs.HideconfigIF = newhc()
+	cs.HideconfigCPU = newhc()
+	cs.HideconfigDF = newhc()
+	cs.HideconfigPS = newhc()
+	cs.HideconfigVG = newhc()
 
-	cs.HideconfigMEM = newbool(hideconfig)
-	cs.HideconfigIF = newbool(hideconfig)
-	cs.HideconfigCPU = newbool(hideconfig)
-	cs.HideconfigDF = newbool(hideconfig)
-	cs.HideconfigPS = newbool(hideconfig)
-	cs.HideconfigVG = newbool(hideconfig)
-
-	//cs.RefreshGeneric = &refresh{Period: minperiod}
 	cs.RefreshRAM = &Refresh{Period: minperiod}
 	cs.RefreshSWAP = &Refresh{Period: minperiod}
 	cs.RefreshIF = &Refresh{Period: minperiod}
@@ -342,51 +331,46 @@ func (rs *RecvClient) mergeMorePsignal(cs *Client) {
 	rs.MorePsignal = nil
 }
 
-func (sc *SendClient) mergeRefreshSignal(above time.Duration, ppinput *string, prefresh *Refresh, sendr **Refresh, senderr **bool) error {
-	if ppinput == nil {
-		return nil
+// mergeRefreshSignal returns true when prefresh is modified.
+func (sc *SendClient) mergeRefreshSignal(above time.Duration, ppinput *string, prefresh *Refresh, sendr **Refresh, senderr **bool) bool {
+	if sc.MergeRSError != nil {
+		return false
 	}
+	if ppinput == nil {
+		return false
+	}
+	*senderr = new(bool) // false by default
+	sc.Modified = true   // senderr is non-nil, ergo sc is modified
 	pv := flags.Period{Above: &above}
 	if err := pv.Set(*ppinput); err != nil {
-		*senderr = newtrue()
-		sc.Modified = true // otherwise refresh input error won't be sent
-		return err
+		sc.MergeRSError = err
+		**senderr = true
+		return false
 	}
-	*senderr = newfalse()
 	*sendr = new(Refresh)
 	(**sendr).Duration = pv.Duration
 	prefresh.Duration = pv.Duration
 	prefresh.tick = 0
-	sc.Modified = true
-	return nil
+	return true
 }
 
-func (rs *RecvClient) MergeClient(minperiod flags.Period, cs *Client, send *SendClient) error {
-	minrefresh := minperiod.Duration
+// MergeRefresh merges into cs various refresh updates. send is populated with the updates.
+func (rs *RecvClient) MergeRefresh(minrefresh time.Duration, cs *Client, send *SendClient) error {
 	rs.mergeMorePsignal(cs)
-	var refreshmem Refresh
-	if err := send.mergeRefreshSignal(minrefresh, rs.RefreshSignalMEM, &refreshmem, &send.RefreshMEM, &send.RefreshErrorMEM); err != nil {
-		return err
-	}
-	// refreshmem value change
-	*cs.RefreshRAM = refreshmem
-	*cs.RefreshSWAP = refreshmem
 
-	if err := send.mergeRefreshSignal(minrefresh, rs.RefreshSignalIF, cs.RefreshIF, &send.RefreshIF, &send.RefreshErrorIF); err != nil {
-		return err
+	rrammod := send.mergeRefreshSignal(minrefresh, rs.RefreshSignalMEM, cs.RefreshRAM, &send.RefreshMEM, &send.RefreshErrorMEM)
+	if send.MergeRSError == nil && rrammod { // RefreshRAM value change, so should RefreshSWAP
+		*cs.RefreshSWAP = *cs.RefreshRAM
 	}
-	if err := send.mergeRefreshSignal(minrefresh, rs.RefreshSignalCPU, cs.RefreshCPU, &send.RefreshCPU, &send.RefreshErrorCPU); err != nil {
-		return err
-	}
-	if err := send.mergeRefreshSignal(minrefresh, rs.RefreshSignalDF, cs.RefreshDF, &send.RefreshDF, &send.RefreshErrorDF); err != nil {
-		return err
-	}
-	if err := send.mergeRefreshSignal(minrefresh, rs.RefreshSignalPS, cs.RefreshPS, &send.RefreshPS, &send.RefreshErrorPS); err != nil {
-		return err
-	}
-	if err := send.mergeRefreshSignal(minrefresh, rs.RefreshSignalVG, cs.RefreshVG, &send.RefreshVG, &send.RefreshErrorVG); err != nil {
-		return err
-	}
+
+	send.mergeRefreshSignal(minrefresh, rs.RefreshSignalIF, cs.RefreshIF, &send.RefreshIF, &send.RefreshErrorIF)
+	send.mergeRefreshSignal(minrefresh, rs.RefreshSignalCPU, cs.RefreshCPU, &send.RefreshCPU, &send.RefreshErrorCPU)
+	send.mergeRefreshSignal(minrefresh, rs.RefreshSignalDF, cs.RefreshDF, &send.RefreshDF, &send.RefreshErrorDF)
+	send.mergeRefreshSignal(minrefresh, rs.RefreshSignalPS, cs.RefreshPS, &send.RefreshPS, &send.RefreshErrorPS)
+	send.mergeRefreshSignal(minrefresh, rs.RefreshSignalVG, cs.RefreshVG, &send.RefreshVG, &send.RefreshErrorVG)
 	// Refresh{HN,UP,IP,LA} are not merged
-	return nil
+
+	err := send.MergeRSError
+	send.MergeRSError = nil
+	return err
 }

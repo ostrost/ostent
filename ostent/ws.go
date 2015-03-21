@@ -378,8 +378,7 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	send := client.SendClient{}
 	if sd.received != nil {
 		if sd.received.Client != nil {
-			err := sd.received.Client.MergeClient(sd.conn.minperiod, &sd.conn.full, &send)
-			if err != nil {
+			if err := sd.received.Client.MergeRefresh(sd.conn.minperiod.Duration, &sd.conn.full, &send); err != nil {
 				// if !sd.conn.Conn.writeError(err) { stop(); return }
 				send.DebugError = new(string)
 				*send.DebugError = err.Error()
