@@ -6,7 +6,7 @@ require.config
     headroom:  'vendor/min/headroom/0.7.0/headroom.min'
     jquery:    'vendor/min/jquery/2.1.3/jquery-2.1.3.min'
     bootstrap: 'vendor/min/bootstrap/3.3.2/bootstrap.min'
-    react:     'vendor/min/react/0.12.2/react.min'
+    react:     'vendor/min/react/0.13.1/react.min'
     jscript:   'gen/jscript'
 
 # main require
@@ -202,11 +202,12 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
         ) for $mach in Data?.VagrantMachines?.List ? [])
       return jscript.vagrant_table(Data, rows)
 
-  @addNoscript = ($) -> $.append('<noscript />').find('noscript').get(0)
+  @addDiv = (sel) -> sel.append('<div />').find('div').get(0)
 
   @HideClass = React.createClass
-    statics: component: (opt) -> React.render(
-      HideClass(opt), addNoscript(opt.$button_el))
+    statics: component: (opt) ->
+      el = addDiv(opt.$button_el)
+      React.render(React.createElement(HideClass, opt), el)
 
     reduce: (data) ->
       if data?.Client?
@@ -231,8 +232,9 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
       return undefined
 
   @ButtonClass = React.createClass
-    statics: component: (opt) -> React.render(
-      ButtonClass(opt), addNoscript(opt.$button_el))
+    statics: component: (opt) ->
+      el = addDiv(opt.$button_el)
+      React.render(React.createElement(ButtonClass, opt), el)
 
     reduce: (data) ->
       if data?.Client?
@@ -268,8 +270,9 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
       return undefined
 
   @TabsClass = React.createClass
-    statics: component: (opt) -> React.render(
-      TabsClass(opt), addNoscript(opt.$button_el))
+    statics: component: (opt) ->
+      el = addDiv(opt.$button_el)
+      React.render(React.createElement(TabsClass, opt), el)
 
     reduce: (data) ->
       if data?.Client?
@@ -322,7 +325,8 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
       sel = opt.sel; delete opt.$
       opt.$input_el = sel.find('.refresh-input')
       opt.$group_el = sel.find('.refresh-group')
-      React.render(RefreshInputClass(opt), addNoscript(opt.$input_el))
+      el = addDiv(opt.$input_el)
+      React.render(React.createElement(RefreshInputClass, opt), el)
 
     reduce: (data) ->
       if data?.Client? and (
@@ -402,15 +406,15 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
     hideps  = HideClass.component({xkey: 'HidePS',  $collapse_el: $('#ps'),  $button_el: $('#psconfig') .find('.hiding')})
     hidevg  = HideClass.component({xkey: 'HideVG',  $collapse_el: $('#vg'),  $button_el: $('#vgconfig') .find('.hiding')})
 
-    ip       = React.render(NewTextCLASS((data) -> data?.IP       )(), $('#ip'      )   .get(0))
-    hostname = React.render(NewTextCLASS((data) -> data?.Hostname )(), $('#hostname')   .get(0))
-    uptime   = React.render(NewTextCLASS((data) -> data?.Uptime   )(), $('#uptime'  )   .get(0))
-    la       = React.render(NewTextCLASS((data) -> data?.LA       )(), $('#la'      )   .get(0))
+    ip       = React.render(React.createElement(NewTextCLASS((data) -> data?.IP       )), $('#ip'      )   .get(0))
+    hostname = React.render(React.createElement(NewTextCLASS((data) -> data?.Hostname )), $('#hostname')   .get(0))
+    uptime   = React.render(React.createElement(NewTextCLASS((data) -> data?.Uptime   )), $('#uptime'  )   .get(0))
+    la       = React.render(React.createElement(NewTextCLASS((data) -> data?.LA       )), $('#la'      )   .get(0))
 
-    iftitle  = React.render(NewTextCLASS((data) -> data?.Client?.TabTitleIF)(), $('header a[href="#if"]').get(0))
-    dftitle  = React.render(NewTextCLASS((data) -> data?.Client?.TabTitleDF)(), $('header a[href="#df"]').get(0))
+    iftitle  = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.TabTitleIF)), $('header a[href="#if"]').get(0))
+    dftitle  = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.TabTitleDF)), $('header a[href="#df"]').get(0))
 
-    psplus   = React.render(NewTextCLASS((data) -> data?.Client?.PSplusText)(), $('label.more[href="#psmore"]').get(0))
+    psplus   = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.PSplusText)), $('label.more[href="#psmore"]').get(0))
     psmore   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: true,  Khide: 'HidePS', Kable: 'PSnotExpandable',  $button_el: $('label.more[href="#psmore"]')})
     psless   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: false, Khide: 'HidePS', Kable: 'PSnotDecreasable', $button_el: $('label.less[href="#psless"]')})
 
@@ -431,15 +435,15 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
     refresh_ps  = RefreshInputClass.component({K: 'RefreshPS',  Kerror: 'RefreshErrorPS',  Ksig: 'RefreshSignalPS',  sel: $('#psconfig')})
     refresh_vg  = RefreshInputClass.component({K: 'RefreshVG',  Kerror: 'RefreshErrorVG',  Ksig: 'RefreshSignalVG',  sel: $('#vgconfig')})
 
-    memtable  = React.render(MEMtableCLASS(),  document.getElementById('mem'       +'-'+ 'table'))
-    pstable   = React.render(PStableCLASS(),   document.getElementById('ps'        +'-'+ 'table'))
-    dfbytes   = React.render(DFbytesCLASS(),   document.getElementById('dfbytes'   +'-'+ 'table'))
-    dfinodes  = React.render(DFinodesCLASS(),  document.getElementById('dfinodes'  +'-'+ 'table'))
-    cputable  = React.render(CPUtableCLASS(),  document.getElementById('cpu'       +'-'+ 'table'))
-    ifbytes   = React.render(IFbytesCLASS(),   document.getElementById('ifbytes'   +'-'+ 'table'))
-    iferrors  = React.render(IFerrorsCLASS(),  document.getElementById('iferrors'  +'-'+ 'table'))
-    ifpackets = React.render(IFpacketsCLASS(), document.getElementById('ifpackets' +'-'+ 'table'))
-    vgtable   = React.render(VGtableCLASS(),   document.getElementById('vg'        +'-'+ 'table'))
+    memtable  = React.render(React.createElement(MEMtableCLASS),  document.getElementById('mem'       +'-'+ 'table'))
+    pstable   = React.render(React.createElement(PStableCLASS),   document.getElementById('ps'        +'-'+ 'table'))
+    dfbytes   = React.render(React.createElement(DFbytesCLASS),   document.getElementById('dfbytes'   +'-'+ 'table'))
+    dfinodes  = React.render(React.createElement(DFinodesCLASS),  document.getElementById('dfinodes'  +'-'+ 'table'))
+    cputable  = React.render(React.createElement(CPUtableCLASS),  document.getElementById('cpu'       +'-'+ 'table'))
+    ifbytes   = React.render(React.createElement(IFbytesCLASS),   document.getElementById('ifbytes'   +'-'+ 'table'))
+    iferrors  = React.render(React.createElement(IFerrorsCLASS),  document.getElementById('iferrors'  +'-'+ 'table'))
+    ifpackets = React.render(React.createElement(IFpacketsCLASS), document.getElementById('ifpackets' +'-'+ 'table'))
+    vgtable   = React.render(React.createElement(VGtableCLASS),   document.getElementById('vg'        +'-'+ 'table'))
     # coffeelint: enable=max_line_length
 
     # alertComp = React.render(AlertClass({
