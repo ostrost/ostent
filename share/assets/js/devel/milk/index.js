@@ -18,7 +18,7 @@
   });
 
   require(['jquery', 'bootstrap', 'react', 'jscript'], function($, _, React, jscript) {
-    var neweventsource, newwebsocket, ready, update, updates;
+    var neweventsource, newwebsocket, update, updates;
     updates = void 0;
     neweventsource = function(onmessage) {
       var conn, init, sendClient, sendSearch;
@@ -930,38 +930,35 @@
       };
       updates = newwebsocket(onmessage);
     };
-    ready = require(['jquery', 'bootstrap', 'headroom'], function($) {
-      (new window.Headroom(document.querySelector('nav'), {
-        offset: 20
-      })).init();
-      $('.collapse').collapse({
-        toggle: false
-      });
-      $('span .tooltipable').popover({
-        trigger: 'hover focus'
-      });
-      $('span .tooltipabledots').popover();
-      $('[data-toggle="popover"]').popover();
-      $('#la').popover({
-        trigger: 'hover focus',
-        placement: 'right',
-        html: true,
-        content: function() {
-          return $('#uptime-parent').html();
-        }
-      });
-      $('body').on('click', function(e) {
-        $('span .tooltipabledots').each(function() {
-          if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-            $(this).popover('hide');
+    require(['domReady', 'jquery', 'bootstrap', 'headroom'], function(domReady, $) {
+      domReady(function() {
+        (new window.Headroom(document.querySelector('nav'), {
+          offset: 20
+        })).init();
+        $('.collapse').collapse({
+          toggle: false
+        });
+        $('span .tooltipable').popover({
+          trigger: 'hover focus'
+        });
+        $('span .tooltipabledots').popover();
+        $('[data-toggle="popover"]').popover();
+        $('#la').popover({
+          trigger: 'hover focus',
+          placement: 'right',
+          html: true,
+          content: function() {
+            return $('#uptime-parent').html();
           }
         });
-      });
-      update();
-    });
-    require(['domReady'], function(domReady) {
-      return domReady(function() {
-        return ready();
+        $('body').on('click', function(e) {
+          $('span .tooltipabledots').each(function() {
+            if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+              $(this).popover('hide');
+            }
+          });
+        });
+        update();
       });
     });
   });

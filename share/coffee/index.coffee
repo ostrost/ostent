@@ -533,43 +533,41 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
   # updates = neweventsource(onmessage)
     return # end of `update'
 
-  ready = require ['jquery', 'bootstrap', 'headroom'], ($) ->
+  require ['domReady', 'jquery', 'bootstrap', 'headroom'], (domReady, $) ->
     # neither bootstrap nor headroom export anything
-    (new window.Headroom(document.querySelector('nav'), {
-      offset: 20 # ~padding-top of a container row
-    })).init()
+    domReady () ->
+      (new window.Headroom(document.querySelector('nav'), {
+        offset: 20 # ~padding-top of a container row
+      })).init()
 
-    $('.collapse').collapse({toggle: false}) # init collapsable objects
+      $('.collapse').collapse({toggle: false}) # init collapsable objects
 
-    $('span .tooltipable')      .popover({trigger: 'hover focus'})
-    $('span .tooltipabledots')  .popover() # the clickable dots
-    $('[data-toggle="popover"]').popover() # should be just #hostname
-    $('#la')                    .popover({
-      trigger: 'hover focus',
-      placement: 'right',
-      # NOT placement: 'auto right' until #la is the last element for parent
-      html: true, content: () -> $('#uptime-parent').html()
-    })
+      $('span .tooltipable')      .popover({trigger: 'hover focus'})
+      $('span .tooltipabledots')  .popover() # the clickable dots
+      $('[data-toggle="popover"]').popover() # should be just #hostname
+      $('#la')                    .popover({
+        trigger: 'hover focus',
+        placement: 'right',
+        # NOT placement: 'auto right' until #la is the last element for parent
+        html: true, content: () -> $('#uptime-parent').html()
+      })
 
-    $('body').on('click', (e) -> # hide the popovers on click outside
-      $('span .tooltipabledots').each(() ->
-        # the 'is' for buttons that trigger popups
-        # the 'has' for icons within a button that triggers a popup
-        $(this).popover('hide') if (!$(this).is(e.target) and
-          $(this).has(e.target).length == 0 and
-          $('.popover').has(e.target).length == 0)
+      $('body').on('click', (e) -> # hide the popovers on click outside
+        $('span .tooltipabledots').each(() ->
+          # the 'is' for buttons that trigger popups
+          # the 'has' for icons within a button that triggers a popup
+          $(this).popover('hide') if (!$(this).is(e.target) and
+            $(this).has(e.target).length == 0 and
+            $('.popover').has(e.target).length == 0)
+          return)
         return)
-      return)
 
-    # referencing upper-scope `update'
-    update() # (Data.Client)
-    return # end of `ready'
+      # referencing upper-scope `update'
+      update() # (Data.Client)
 
-  require ['domReady'], (domReady) ->
-    # referencing upper-scope `ready'
-    domReady () -> ready()
-
-  return # end of main require
+      return # return from domReady
+    return # end of sub`require'
+  return # end of main `require'
 
 # Local variables:
 # coffee-tab-width: 2
