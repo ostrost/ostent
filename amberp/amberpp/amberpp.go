@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"regexp"
+	"sort"
 	"strings"
 	"text/template"
 	"text/template/parse"
@@ -242,6 +243,17 @@ func main() {
 	check(writeFile(outputFile, snd))
 }
 
+func KeysSorted(trees map[string]*parse.Tree) []string {
+	keys := make([]string, len(trees))
+	i := 0
+	for k := range trees {
+		keys[i] = k
+		i++
+	}
+	sort.Strings(keys)
+	return keys
+}
+
 func saveDefines(outputFile, inputText string) error {
 	T := struct {
 		Name       string
@@ -261,7 +273,8 @@ func saveDefines(outputFile, inputText string) error {
 		return err
 	}
 	var outputText string
-	for name, t := range trees {
+	for _, name := range KeysSorted(trees) {
+		t := trees[name]
 		if name == T.Name { // skip the toplevel
 			continue
 		}
