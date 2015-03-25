@@ -77,14 +77,18 @@ func (l *LazyTemplate) InitClean() error {
 }
 
 // LookupApply wraps ApplyTemplate with l.Template.Lookup(name).
-func (l *LazyTemplate) LookupApply(name string, data interface{}) (*bytes.Buffer, error) {
-	return l.ApplyTemplate(func() (*template.Template, string) {
+func (l *LazyTemplate) LookupApply(name string, data interface{}) (string, error) {
+	buf, err := l.ApplyTemplate(func() (*template.Template, string) {
 		return l.Template.Lookup(name), name
 	}, data)
+	if err != nil {
+		return "", err
+	}
+	return buf.String(), nil
 }
 
-// Apply wraps ApplyTemplate with l.Template.
-func (l *LazyTemplate) Apply(data interface{}) (*bytes.Buffer, error) {
+// BufferApply wraps ApplyTemplate with l.Template.
+func (l *LazyTemplate) BufferApply(data interface{}) (*bytes.Buffer, error) {
 	return l.ApplyTemplate(nil, data)
 }
 
@@ -117,7 +121,7 @@ func (l *LazyTemplate) ApplyTemplate(getter func() (*template.Template, string),
 	return BufferExecute(clone, data)
 }
 
-// BufferExecute does t.Execute into buf returned. Does not clone.
+// BufferExecute does t.Execute into Buffer returned. Does not clone.
 func BufferExecute(t *template.Template, data interface{}) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
 	if err := t.Execute(buf, data); err != nil {
@@ -130,7 +134,7 @@ func BufferExecute(t *template.Template, data interface{}) (*bytes.Buffer, error
 // The Send replies with http.Error if it has preceded in Apply.
 func (l *LazyTemplate) Response(w http.ResponseWriter, data interface{}) TemplateWriter {
 	tw := TemplateWriter{Writer: w}
-	tw.Buf, tw.Err = l.Apply(data)
+	tw.Buf, tw.Err = l.BufferApply(data)
 	return tw
 }
 

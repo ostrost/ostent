@@ -52,15 +52,14 @@ var DefinesTemplate *templateutil.LazyTemplate
 func tooltipable(limit int, full string) template.HTML {
 	var html string
 	if len(full) > limit {
-		buf, err := DefinesTemplate.LookupApply("define_tooltipable", struct {
+		var err error
+		html, err = DefinesTemplate.LookupApply("define_tooltipable", struct {
 			Full, Short string
 		}{
 			Full:  full,
 			Short: full[:limit],
 		})
-		if err == nil {
-			html = buf.String()
-		} else {
+		if err != nil {
 			html = template.HTMLEscapeString(err.Error())
 		}
 	} else {
