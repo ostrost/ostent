@@ -7,9 +7,6 @@ binassets_develgo         = share/assets/bindata.devel.go
 binassets_productiongo    = share/assets/bindata.production.go
 bintemplates_develgo      = share/templates/bindata.devel.go
 bintemplates_productiongo = share/templates/bindata.production.go
-templates_dir             = share/templates/
-templates_files           = index.html usepercent.html tooltipable.html
-templates_html=$(addprefix $(templates_dir), $(templates_files))
 
 PATH=$(shell printf %s: $$PATH; echo $$GOPATH | awk -F: 'BEGIN { OFS="/bin:"; } { print $$1,$$2,$$3,$$4,$$5,$$6,$$7,$$8,$$9 "/bin"}')
 
@@ -17,7 +14,7 @@ xargs=xargs
 ifeq (Linux, $(shell uname -s))
 xargs=xargs --no-run-if-empty
 endif
-go-bindata=go-bindata -ignore '.*\.go' # Go regexp syntax for -ignore
+go-bindata=go-bindata -ignore '.*\.go'# Go regexp syntax for -ignore
 
 .PHONY: all al init test covertest coverfunc coverhtml bindata bindata-devel bindata-production
 ifneq (init, $(MAKECMDGOALS))
@@ -93,31 +90,31 @@ share/assets/js/production/index.min.js: $(shell find share/assets/js/devel/ -ty
 
 share/templates/%.html: share/amber.templates/%.amber share/amber.templates/defines.amber $(destbin)/amberpp
 	$(destbin)/amberpp -defines share/amber.templates/defines.amber -output $@ $<
-share/tmp/jscript.jsx: share/amber.templates/jscript.amber share/amber.templates/defines.amber $(destbin)/amberpp
-	$(destbin)/amberpp -defines share/amber.templates/defines.amber -javascript -output $@ $<
+share/templates/defines.html: share/amber.templates/defines.amber $(destbin)/amberpp
+	$(destbin)/amberpp -defines share/amber.templates/defines.amber -output $@ -savedefines
+share/tmp/jscript.jsx:        share/amber.templates/defines.amber share/amber.templates/jscript.amber $(destbin)/amberpp
+	$(destbin)/amberpp -defines share/amber.templates/defines.amber -output $@ -javascript $<
 
-$(bintemplates_productiongo): $(templates_html)
-	cd $(<D) && $(go-bindata) -pkg templates -tags production -mode 0600 -modtime 1400000000 -o $(@F) $(^F)
+$(bintemplates_productiongo) $(bintemplates_develgo): $(shell find share/templates/ -type f \! -name \*.go)
 
-$(bintemplates_develgo): $(templates_html)
-	cd $(templates_dir) && $(go-bindata) -pkg templates -tags '!production' -dev -o $(@F) $(templates_files)
-#	# the target has no prerequisites e.g. $(templates_html):
-#	# $(templates_dir)   instead of $(<D)
-#	# $(templates_files) instead of $(^F)
+$(bintemplates_productiongo):
+	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags production -mode 0600 -modtime 1400000000 ./...
+$(bintemplates_develgo):
+	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags '!production' -dev ./...
 
 $(binassets_productiongo):
-	cd share/assets && $(go-bindata) -pkg assets -o $(@F) -tags production -ignore js/devel/ -mode 0600 -modtime 1400000000 ./...
+	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags production -mode 0600 -modtime 1400000000 -ignore js/devel/ ./...
 $(binassets_develgo):
-	cd share/assets && $(go-bindata) -pkg assets -o $(@F) -tags '!production' -dev -ignore js/production/ ./...
+	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags '!production' -dev -ignore js/production/ ./...
 
 $(binassets_productiongo): $(shell find \
-                           share/assets -type f \! -name '*.go' \! -path \
+                           share/assets/ -type f \! -name '*.go' \! -path \
                           'share/assets/js/devel/*')
 $(binassets_productiongo): share/assets/css/index.css
 $(binassets_productiongo): share/assets/js/production/index.min.js
 
 $(binassets_develgo): $(shell find \
-                      share/assets -type f \! -name '*.go' \! -path \
+                      share/assets/ -type f \! -name '*.go' \! -path \
                      'share/assets/js/production/*')
 $(binassets_develgo): share/assets/css/index.css
 $(binassets_develgo): share/assets/js/devel/gen/jscript.js

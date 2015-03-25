@@ -25,46 +25,28 @@ type asset struct {
 	info  os.FileInfo
 }
 
+// defines_html reads file data from disk. It returns an error on failure.
+func defines_html() (*asset, error) {
+	path := filepath.Join(rootDir, "defines.html")
+	name := "defines.html"
+	bytes, err := bindata_read(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // index_html reads file data from disk. It returns an error on failure.
 func index_html() (*asset, error) {
 	path := filepath.Join(rootDir, "index.html")
 	name := "index.html"
-	bytes, err := bindata_read(path, name)
-	if err != nil {
-		return nil, err
-	}
-
-	fi, err := os.Stat(path)
-	if err != nil {
-		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
-	}
-
-	a := &asset{bytes: bytes, info: fi}
-	return a, err
-}
-
-// usepercent_html reads file data from disk. It returns an error on failure.
-func usepercent_html() (*asset, error) {
-	path := filepath.Join(rootDir, "usepercent.html")
-	name := "usepercent.html"
-	bytes, err := bindata_read(path, name)
-	if err != nil {
-		return nil, err
-	}
-
-	fi, err := os.Stat(path)
-	if err != nil {
-		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
-	}
-
-	a := &asset{bytes: bytes, info: fi}
-	return a, err
-}
-
-// tooltipable_html reads file data from disk. It returns an error on failure.
-func tooltipable_html() (*asset, error) {
-	path := filepath.Join(rootDir, "tooltipable.html")
-	name := "tooltipable.html"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -131,9 +113,8 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
+	"defines.html": defines_html,
 	"index.html": index_html,
-	"usepercent.html": usepercent_html,
-	"tooltipable.html": tooltipable_html,
 }
 
 // AssetDir returns the file names below a certain
@@ -176,11 +157,9 @@ type _bintree_t struct {
 	Children map[string]*_bintree_t
 }
 var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
+	"defines.html": &_bintree_t{defines_html, map[string]*_bintree_t{
+	}},
 	"index.html": &_bintree_t{index_html, map[string]*_bintree_t{
-	}},
-	"tooltipable.html": &_bintree_t{tooltipable_html, map[string]*_bintree_t{
-	}},
-	"usepercent.html": &_bintree_t{usepercent_html, map[string]*_bintree_t{
 	}},
 }}
 

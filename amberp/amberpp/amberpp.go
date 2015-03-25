@@ -167,6 +167,7 @@ func main() {
 		definesFile string
 		prettyPrint bool
 		jscriptMode bool
+		definesMode bool
 	)
 
 	for _, name := range []string{"o", "output"} {
@@ -181,11 +182,14 @@ func main() {
 	for _, name := range []string{"j", "javascript"} {
 		flag.BoolVar(&jscriptMode, name, false, "Javascript mode")
 	}
+	for _, name := range []string{"s", "savedefines"} {
+		flag.BoolVar(&definesMode, name, false, "Save defines mode")
+	}
 
 	flag.Parse()
 	inputFile := flag.Arg(0)
 
-	if inputFile == "" {
+	if !definesMode && inputFile == "" {
 		fmt.Fprintf(os.Stderr, "No input file specified.")
 		flag.Usage()
 		os.Exit(2)
@@ -200,6 +204,12 @@ func main() {
 			inputText = inputText[:len(inputText)-1]
 		}
 	}
+
+	if definesMode {
+		check(saveDefines(outputFile, inputText))
+		return
+	}
+
 	b, err := ioutil.ReadFile(inputFile)
 	check(err)
 	inputText += compile(b, prettyPrint, jscriptMode)
@@ -223,13 +233,46 @@ func main() {
 	writeFile(outputFile, snd)
 }
 
-func writeFile(optFilename, s string) {
+func saveDefines(outputFile, inputText string) error {
+	T := struct {
+		Name       string
+		LeftDelim  string
+		RightDelim string
+	}{
+		Name:       "zero",
+		LeftDelim:  "[[",
+		RightDelim: "]]",
+	}
+	// _ = template.New(T.Name).Funcs(dotFuncs).Delims(T.LeftDelim, T.RightDelim)
+	trees, err := parse.Parse(T.Name, inputText, T.LeftDelim, T.RightDelim,
+		dotFuncs, // .parseFuncs // template.FuncMap
+		dotFuncs, // builtins // template.FuncMap
+	)
+	if err != nil {
+		return err
+	}
+	var outputText string
+	for name, t := range trees {
+		if name == T.Name { // skip the toplevel
+			continue
+		}
+		if t == nil || t.Root == nil {
+			continue
+		}
+		outputText += fmt.Sprintf("{{define \"%s\"}}%s{{end}}\n", name, t.Root)
+	}
+	return writeFile(outputFile, outputText)
+}
+
+func writeFile(optFilename, s string) error {
 	b := []byte(s)
 	if optFilename != "" {
-		check(ioutil.WriteFile(optFilename, b, 0644))
-	} else {
-		os.Stdout.Write(b)
+		err := ioutil.WriteFile(optFilename, b, 0644)
+		check(err)
+		return err
 	}
+	_, err := os.Stdout.Write(b)
+	return err
 }
 
 func compile(input []byte, prettyPrint, jscriptMode bool) string {

@@ -6,15 +6,15 @@ import (
 )
 
 var (
-	UsePercentTemplate  = &templateutil.BinTemplate{Readfunc: Asset, Filename: "usepercent.html"}
-	TooltipableTemplate = &templateutil.BinTemplate{Readfunc: Asset, Filename: "tooltipable.html"}
-	IndexTemplate       = &templateutil.BinTemplate{Readfunc: Asset, Filename: "index.html", Cascade: true, Funcmap: amber.FuncMap}
+	// IndexTemplate is a templateutil.LazyTemplate of "index.html" asset.
+	IndexTemplate = templateutil.NewLT(Asset, "index.html", amber.FuncMap)
+	// DefinesTemplate is a templateutil.LazyTemplate of "defines.html" asset.
+	DefinesTemplate = templateutil.NewLT(Asset, "defines.html", amber.FuncMap)
 )
 
 func InitTemplates(done chan<- struct{}) {
-	templateutil.MustInit(UsePercentTemplate)
-	templateutil.MustInit(TooltipableTemplate)
 	templateutil.MustInit(IndexTemplate)
+	templateutil.MustInit(DefinesTemplate)
 	if done != nil {
 		done <- struct{}{}
 	}

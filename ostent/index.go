@@ -47,21 +47,21 @@ type diskInfo struct {
 	DirName     string
 }
 
-var TooltipableTemplate *templateutil.BinTemplate
+var DefinesTemplate *templateutil.LazyTemplate
 
 func tooltipable(limit int, full string) template.HTML {
-	html := "ERROR"
+	var html string
 	if len(full) > limit {
-		short := full[:limit]
-		if TooltipableTemplate == nil {
-			log.Printf("tooltipableTemplate hasn't been set")
-		} else if buf, err := TooltipableTemplate.CloneExecute(struct {
+		buf, err := DefinesTemplate.LookupApply("define_tooltipable", struct {
 			Full, Short string
 		}{
 			Full:  full,
-			Short: short,
-		}); err == nil {
+			Short: full[:limit],
+		})
+		if err == nil {
 			html = buf.String()
+		} else {
+			html = template.HTMLEscapeString(err.Error())
 		}
 	} else {
 		html = template.HTMLEscapeString(full)
@@ -888,13 +888,13 @@ func init() {
 // Set at init, result of system.Distrib.
 var DISTRIB string
 
-func IndexFunc(production bool, template *templateutil.BinTemplate, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
+func IndexFunc(production bool, template *templateutil.LazyTemplate, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		index(production, template, minperiod, w, r)
 	}
 }
 
-func index(production bool, template *templateutil.BinTemplate, minperiod flags.Period, w http.ResponseWriter, r *http.Request) {
+func index(production bool, template *templateutil.LazyTemplate, minperiod flags.Period, w http.ResponseWriter, r *http.Request) {
 	response := template.Response(w, struct {
 		CLASSNAME  string // MUST HAVE
 		PRODUCTION bool
@@ -903,7 +903,7 @@ func index(production bool, template *templateutil.BinTemplate, minperiod flags.
 		PRODUCTION: production,
 		Data:       indexData(minperiod, r),
 	})
-	response.SetHeader("Content-Type", "text/html")
+	response.Header().Set("Content-Type", "text/html")
 	response.SetContentLength()
 	response.Send()
 }

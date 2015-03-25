@@ -2,7 +2,6 @@ package ostent
 
 import (
 	"html/template"
-	"log"
 	"os"
 	"regexp"
 	"runtime"
@@ -14,7 +13,6 @@ import (
 	"github.com/ostrost/ostent/getifaddrs"
 	"github.com/ostrost/ostent/system"
 	"github.com/ostrost/ostent/system/operating"
-	"github.com/ostrost/ostent/templateutil"
 	sigar "github.com/rzab/gosigar"
 )
 
@@ -167,23 +165,21 @@ func (m *Machine) LA(reg Registry, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-var UsePercentTemplate *templateutil.BinTemplate
-
 func _getmem(kind string, in sigar.Swap) operating.Memory {
 	total, approxtotal, _ := format.HumanBandback(in.Total)
 	used, approxused, _ := format.HumanBandback(in.Used)
 	usepercent := format.Percent(approxused, approxtotal)
 
-	html := "ERROR"
-	if TooltipableTemplate == nil {
-		log.Printf("TooltipableTemplate hasn't been set")
-	} else if buf, err := UsePercentTemplate.CloneExecute(struct {
+	var html string
+	if buf, err := DefinesTemplate.LookupApply("define_usepercent", struct {
 		Class, Value, CLASSNAME string
 	}{
 		Value: strconv.Itoa(int(usepercent)), // without "%"
 		Class: format.LabelClassColorPercent(usepercent),
 	}); err == nil {
 		html = buf.String()
+	} else {
+		html = template.HTMLEscapeString(err.Error())
 	}
 
 	return operating.Memory{
