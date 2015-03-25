@@ -41,10 +41,10 @@ func (la DFlinks) DirName() client.Attr  { return client.Linkattrs(la).Attr(clie
 
 func (la DFlinks) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]client.Attr{
-		"DiskName": client.Linkattrs(la).Attr(client.DFFS),
-		"Total":    client.Linkattrs(la).Attr(client.DFSIZE),
-		"Used":     client.Linkattrs(la).Attr(client.DFUSED),
-		"Avail":    client.Linkattrs(la).Attr(client.DFAVAIL),
-		"DirName":  client.Linkattrs(la).Attr(client.DFMP),
+		"DiskName": la.DiskName(),
+		"Total":    la.Total(),
+		"Used":     la.Used(),
+		"Avail":    la.Avail(),
+		"DirName":  la.DirName(),
 	})
 }

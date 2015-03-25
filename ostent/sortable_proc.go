@@ -51,14 +51,14 @@ func (la PSlinks) Resident() client.Attr { return client.Linkattrs(la).Attr(clie
 
 func (la PSlinks) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]client.Attr{
-		"PID":      client.Linkattrs(la).Attr(client.PSPID),
-		"Priority": client.Linkattrs(la).Attr(client.PSPRI),
-		"Nice":     client.Linkattrs(la).Attr(client.PSNICE),
-		"Time":     client.Linkattrs(la).Attr(client.PSTIME),
-		"Name":     client.Linkattrs(la).Attr(client.PSNAME),
-		"User":     client.Linkattrs(la).Attr(client.PSUID),
-		"Size":     client.Linkattrs(la).Attr(client.PSSIZE),
-		"Resident": client.Linkattrs(la).Attr(client.PSRES),
+		"PID":      la.PID(),
+		"Priority": la.Priority(),
+		"Nice":     la.Nice(),
+		"Time":     la.Time(),
+		"Name":     la.Name(),
+		"User":     la.User(),
+		"Size":     la.Size(),
+		"Resident": la.Resident(),
 	})
 }
 
