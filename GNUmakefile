@@ -92,7 +92,7 @@ share/templates/%.html: share/amber.templates/%.amber share/amber.templates/defi
 	$(destbin)/amberpp -defines share/amber.templates/defines.amber -output $@ $<
 share/templates/defines.html: share/amber.templates/defines.amber $(destbin)/amberpp
 	$(destbin)/amberpp -defines share/amber.templates/defines.amber -output $@ -savedefines
-share/tmp/jscript.jsx:        share/amber.templates/defines.amber share/amber.templates/jscript.amber $(destbin)/amberpp
+share/tmp/jscript.jsx: share/amber.templates/jscript.amber share/amber.templates/defines.amber $(destbin)/amberpp
 	$(destbin)/amberpp -defines share/amber.templates/defines.amber -output $@ -javascript $<
 
 $(bintemplates_productiongo) $(bintemplates_develgo): $(shell find share/templates/ -type f \! -name \*.go)
