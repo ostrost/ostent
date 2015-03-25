@@ -14,102 +14,104 @@ import (
 	"github.com/rzab/amber"
 )
 
-type tree struct {
-	name   string
-	leaves []*tree // template/parse has nodes, we ought to have leaves
-	parent *tree
-	ranged bool
-	keys   []string
-	decl   string
+// Dotted is a tree.
+type Dotted struct {
+	Parent *Dotted
+	Leaves []*Dotted // template/parse has nodes, we ought to have leaves
+	Name   string
+
+	Ranged bool
+	Keys   []string
+	Decl   string
 }
 
-func (top *tree) touch(words []string) {
+// Append adds words into d.
+func (d *Dotted) Append(words []string) {
 	if len(words) == 0 {
 		return
 	}
-	if nt := top.lookup(words[0]); nt != nil {
-		nt.touch(words[1:])
+	if l := d.Leave(words[0]); l != nil {
+		l.Append(words[1:]) // recursion
 		return
 	}
-	nt := &tree{name: words[0], parent: top}
-	top.leaves = append(top.leaves, nt)
-	nt.touch(words[1:])
+	n := &Dotted{Parent: d, Name: words[0]}
+	d.Leaves = append(d.Leaves, n)
+	n.Append(words[1:]) // recursion
 }
 
-func (top *tree) walk(words []string) *tree {
+// Find traverses d to find by words.
+func (d *Dotted) Find(words []string) *Dotted {
 	if len(words) == 0 {
-		return top
+		return d
 	}
-	for _, leaf := range top.leaves {
-		if leaf.name == words[0] {
-			return leaf.walk(words[1:])
+	for _, l := range d.Leaves {
+		if l.Name == words[0] {
+			return l.Find(words[1:])
 		}
 	}
 	return nil
 }
 
-func (top tree) lookup(name string) *tree {
-	for _, leaf := range top.leaves {
-		if name == leaf.name {
-			return leaf
+func (d Dotted) Leave(name string) *Dotted {
+	for _, l := range d.Leaves {
+		if l.Name == name {
+			return l
 		}
 	}
 	return nil
 }
 
-func dotted(bottom *tree) string {
-	if bottom == nil || bottom.name == "" {
+func (d *Dotted) Notation() string {
+	if d == nil || d.Name == "" {
 		return ""
 	}
-	parent := dotted(bottom.parent)
-	if parent == "" {
-		return bottom.name
+	if s := d.Parent.Notation(); s != "" {
+		return s + "." + d.Name
 	}
-	return parent + "." + bottom.name
+	return d.Name
 }
 
-func indent(top tree, level int) string {
-	s := strings.Repeat(" ", level) + "[" + top.name + "]\n"
+func (d Dotted) DebugString(level int) string {
+	s := strings.Repeat(" ", level) + "[" + d.Name + "]\n"
 	level += 2
-	for _, leaf := range top.leaves {
-		s += indent(*leaf, level)
+	for _, l := range d.Leaves {
+		s += l.DebugString(level)
 	}
 	level -= 2
 	return s
 }
 
-func (top tree) String() string {
-	return indent(top, 0)
+func (d Dotted) GoString() string {
+	return d.DebugString(0)
 }
 
 type hash map[string]interface{}
 
 func curly(s string) string {
 	if strings.HasSuffix(s, "HTML") {
-		return "<span dangerouslySetInnerHTML={{__html: " + s + "}} />"
-		// return "{<span dangerouslySetInnerHTML={{__html: " + s + "}} />.props.children}"
+		return /* "{" + */ "<span dangerouslySetInnerHTML={{__html: " + s + "}} />" // + ".props.children}"
 	}
 	return "{" + s + "}"
 }
 
-func mkmap(top tree, jscriptMode bool, level int) interface{} {
-	if len(top.leaves) == 0 {
-		return curly(dotted(&top))
+func mkmap(top Dotted, jscriptMode bool, level int) interface{} {
+	if len(top.Leaves) == 0 {
+		return curly(top.Notation())
 	}
 	h := make(hash)
-	for _, leaf := range top.leaves {
-		if leaf.ranged {
-			if len(leaf.keys) != 0 {
+	for _, l := range top.Leaves {
+		if l.Ranged {
+			if len(l.Keys) != 0 {
 				kv := make(map[string]string)
-				for _, k := range leaf.keys {
-					kv[k] = curly(leaf.decl + "." + k)
+				for _, k := range l.Keys {
+					kv[k] = curly(l.Decl + "." + k)
 				}
-				h[leaf.name] = []map[string]string{kv}
+				h[l.Name] = []map[string]string{kv}
 			} else {
-				h[leaf.name] = []string{}
+				h[l.Name] = []string{}
 			}
 		} else {
-			h[leaf.name] = mkmap(*leaf, jscriptMode, level+1)
+			h[l.Name] = mkmap(*l, jscriptMode, level+1)
 		}
 	}
 	if jscriptMode && level == 0 {
@@ -170,36 +172,39 @@ func main() {
 		definesMode bool
 	)
 
-	for _, name := range []string{"o", "output"} {
-		flag.StringVar(&outputFile, name, "", "Output file")
-	}
-	for _, name := range []string{"d", "defines"} {
-		flag.StringVar(&definesFile, name, "", "Defines file")
-	}
-	for _, name := range []string{"pp", "prettyprint"} {
-		flag.BoolVar(&prettyPrint, name, false, "Pretty print")
-	}
-	for _, name := range []string{"j", "javascript"} {
-		flag.BoolVar(&jscriptMode, name, false, "Javascript mode")
-	}
-	for _, name := range []string{"s", "savedefines"} {
-		flag.BoolVar(&definesMode, name, false, "Save defines mode")
-	}
-
+	flag.StringVar(&outputFile, "o", "", "Output file")
+	flag.StringVar(&outputFile, "output", "", "Output file")
+	flag.StringVar(&definesFile, "d", "", "Use defines file")
+	flag.StringVar(&definesFile, "defines", "", "Use defines file")
+	flag.BoolVar(&prettyPrint, "pp", false, "Pretty print output")
+	flag.BoolVar(&prettyPrint, "prettyprint", false, "Pretty print output")
+	flag.BoolVar(&jscriptMode, "j", false, "Javascript mode")
+	flag.BoolVar(&jscriptMode, "javascript", false, "Javascript mode")
+	flag.BoolVar(&definesMode, "s", false, "Save defines mode")
+	flag.BoolVar(&definesMode, "savedefines", false, "Save defines mode")
 	flag.Parse()
-	inputFile := flag.Arg(0)
 
+	inputFile := flag.Arg(0)
 	if !definesMode && inputFile == "" {
 		fmt.Fprintf(os.Stderr, "No input file specified.")
 		flag.Usage()
 		os.Exit(2)
 	}
 
+	check := func(err error) {
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}
+
 	inputText := ""
 	if definesFile != "" {
 		b, err := ioutil.ReadFile(definesFile)
 		check(err)
-		inputText += compile(b, prettyPrint, jscriptMode)
+		newText, err := compile(b, prettyPrint, jscriptMode)
+		check(err)
+		inputText += newText
 		if inputText[len(inputText)-1] == '\n' { // amber does add this '\n', which is fine for the end of a file, which inputText is not
 			inputText = inputText[:len(inputText)-1]
 		}
@@ -212,25 +217,29 @@ func main() {
 
 	b, err := ioutil.ReadFile(inputFile)
 	check(err)
-	inputText += compile(b, prettyPrint, jscriptMode)
+	newText, err := compile(b, prettyPrint, jscriptMode)
+	check(err)
+	inputText += newText
 
 	fstplate, err := template.New("fst").Funcs(dotFuncs).Delims("[[", "]]").Parse(inputText)
 	check(err)
-	fst := execute(fstplate, hash{})
+	fst, err := StringExecute(fstplate, hash{})
+	check(err)
 
 	if !jscriptMode {
-		writeFile(outputFile, fst)
+		check(writeFile(outputFile, fst))
 		return
 	}
 
 	sndplate, err := template.New("snd").Funcs(template.FuncMap(amber.FuncMap)).Parse(fst)
 	check(err)
 
-	m := data(sndplate.Tree, jscriptMode) //; fmt.Printf("data => %+v\nstring_hash(data) => %+v", m, string_hash(m))
-	snd := execute(sndplate, m)
+	m := data(sndplate.Tree, jscriptMode)
+	snd, err := StringExecute(sndplate, m)
+	check(err)
 	snd = regexp.MustCompile("</?script>").ReplaceAllLiteralString(snd, "")
 
-	writeFile(outputFile, snd)
+	check(writeFile(outputFile, snd))
 }
 
 func saveDefines(outputFile, inputText string) error {
@@ -267,31 +276,31 @@ func saveDefines(outputFile, inputText string) error {
 func writeFile(optFilename, s string) error {
 	b := []byte(s)
 	if optFilename != "" {
-		err := ioutil.WriteFile(optFilename, b, 0644)
-		check(err)
-		return err
+		return ioutil.WriteFile(optFilename, b, 0644)
 	}
 	_, err := os.Stdout.Write(b)
 	return err
 }
 
-func compile(input []byte, prettyPrint, jscriptMode bool) string {
+func compile(input []byte, prettyPrint, jscriptMode bool) (string, error) {
 	compiler := amber.New()
-	compiler.PrettyPrint = prettyPrint // compiler.Options.PrettyPrint?
+	compiler.PrettyPrint = prettyPrint
 	if jscriptMode {
 		compiler.ClassName = "className"
 	}
-
-	check(compiler.Parse(string(input)))
-	s, err := compiler.CompileString()
-	check(err)
-	return s
+	if err := compiler.Parse(string(input)); err != nil {
+		return "", err
+	}
+	return compiler.CompileString()
 }
 
-func execute(emplate *template.Template, data interface{}) string {
+// StringExecute does t.Execute into string returned. Does not clone.
+func StringExecute(t *template.Template, data interface{}) (string, error) {
 	buf := new(bytes.Buffer)
-	check(emplate.Execute(buf, data))
-	return buf.String()
+	if err := t.Execute(buf, data); err != nil {
+		return "", err
+	}
+	return buf.String(), nil
 }
 
 func data(TREE *parse.Tree, jscriptMode bool) interface{} {
@@ -299,7 +308,7 @@ func data(TREE *parse.Tree, jscriptMode bool) interface{} {
 		return "{}" // mkmap(tree{})
 	}
 
-	data := tree{}
+	data := Dotted{}
 	vars := map[string][]string{}
 
 	for _, node := range TREE.Root.Nodes { // here we go
@@ -322,14 +331,14 @@ func data(TREE *parse.Tree, jscriptMode bool) interface{} {
 						if len(decl) > 0 && len(decl[0].Ident) > 0 {
 							vars[decl[0].Ident[0]] = ident
 						}
-						data.touch(ident)
+						data.Append(ident)
 
 					case parse.NodeVariable:
 						ident = arg.(*parse.VariableNode).Ident
 
 						if words, ok := vars[ident[0]]; ok {
 							words := append(words, ident[1:]...)
-							data.touch(words)
+							data.Append(words)
 							if len(decl) > 0 && len(decl[0].Ident) > 0 {
 								vars[decl[0].Ident[0]] = words
 							}
@@ -358,10 +367,10 @@ func data(TREE *parse.Tree, jscriptMode bool) interface{} {
 			// fml
 			arg0 := rangeNode.Pipe.Cmds[0].Args[0].String()
 			if words, ok := vars[arg0]; ok {
-				if leaf := data.walk(words); leaf != nil {
-					leaf.ranged = true
-					leaf.keys = append(leaf.keys, keys...)
-					leaf.decl = decl // redefined $
+				if leaf := data.Find(words); leaf != nil {
+					leaf.Ranged = true
+					leaf.Keys = append(leaf.Keys, keys...)
+					leaf.Decl = decl // redefined $
 				}
 			}
 		}
@@ -386,11 +395,4 @@ func getKeys(decl string, parseNode parse.Node) (keys []string) {
 		}
 	}
 	return
-}
-
-func check(err error) {
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
 }
