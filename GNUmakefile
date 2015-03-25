@@ -88,7 +88,7 @@ share/assets/js/devel/milk/index.js: share/coffee/index.coffee
 share/assets/js/production/index.min.js: $(shell find share/assets/js/devel/ -type f)
 	type r.js   >/dev/null || exit 0; cd share/assets/js/devel/milk && r.js -o build.js
 
-share/templates/%.html: share/amber.templates/%.amber share/amber.templates/defines.amber $(destbin)/amberpp
+share/templates/index.html: share/amber.templates/index.amber share/amber.templates/defines.amber $(destbin)/amberpp
 	$(destbin)/amberpp -defines share/amber.templates/defines.amber -output $@ $<
 share/templates/defines.html: share/amber.templates/defines.amber $(destbin)/amberpp
 	$(destbin)/amberpp -defines share/amber.templates/defines.amber -output $@ -savedefines
