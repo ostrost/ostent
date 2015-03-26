@@ -146,9 +146,7 @@ type dotValue struct {
 	hashp *hash
 }
 
-func (dv dotValue) GoString() string {
-	return dv.GoString()
-}
+// func (dv dotValue) GoString() string { return dv.GoString() } // WTF?
 
 func (dv dotValue) String() string {
 	v := dv.s
