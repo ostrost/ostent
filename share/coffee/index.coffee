@@ -390,9 +390,6 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
       return obj.setState(data)
 
   update = () ->
-    return if (42 for param in location.search.substr(1).split('&') when (
-      param.split('=')[0] == 'still')).length
-
     # coffeelint: disable=max_line_length
     hideconfigmem = HideClass.component({xkey: 'HideconfigMEM', $collapse_el: $('#memconfig'), $button_el: $('header a[href="#mem"]'), reverseActive: true})
     hideconfigif  = HideClass.component({xkey: 'HideconfigIF',  $collapse_el: $('#ifconfig'),  $button_el: $('header a[href="#if"]'),  reverseActive: true})
@@ -563,7 +560,8 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
         return)
 
       # referencing upper-scope `update'
-      update() # (Data.Client)
+      update() unless (42 for param in location.search.substr(1).split(
+        '&') when (param.split('=')[0] == 'still')).length
 
       return # return from domReady
     return # end of sub`require'

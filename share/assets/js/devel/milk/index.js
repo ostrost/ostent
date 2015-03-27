@@ -655,21 +655,7 @@
       }
     };
     update = function() {
-      var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hideps, hideram, hideswap, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, param, psless, psmore, psplus, pstable, refresh_cpu, refresh_df, refresh_if, refresh_mem, refresh_ps, refresh_vg, tabsdf, tabsif, uptime, vgtable;
-      if (((function() {
-        var i, len, ref, results;
-        ref = location.search.substr(1).split('&');
-        results = [];
-        for (i = 0, len = ref.length; i < len; i++) {
-          param = ref[i];
-          if (param.split('=')[0] === 'still') {
-            results.push(42);
-          }
-        }
-        return results;
-      })()).length) {
-        return;
-      }
+      var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hideps, hideram, hideswap, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, psless, psmore, psplus, pstable, refresh_cpu, refresh_df, refresh_if, refresh_mem, refresh_ps, refresh_vg, tabsdf, tabsif, uptime, vgtable;
       hideconfigmem = HideClass.component({
         xkey: 'HideconfigMEM',
         $collapse_el: $('#memconfig'),
@@ -932,6 +918,7 @@
     };
     require(['domReady', 'jquery', 'bootstrap', 'headroom'], function(domReady, $) {
       domReady(function() {
+        var param;
         (new window.Headroom(document.querySelector('nav'), {
           offset: 20
         })).init();
@@ -958,7 +945,20 @@
             }
           });
         });
-        update();
+        if (!((function() {
+          var i, len, ref, results;
+          ref = location.search.substr(1).split('&');
+          results = [];
+          for (i = 0, len = ref.length; i < len; i++) {
+            param = ref[i];
+            if (param.split('=')[0] === 'still') {
+              results.push(42);
+            }
+          }
+          return results;
+        })()).length) {
+          update();
+        }
       });
     });
   });
