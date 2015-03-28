@@ -89,10 +89,10 @@ var DF_TABS = []SEQ{
 var DFBIMAP = Seq2bimap(DFFS, // the default seq for ordering
 	Seq2string{
 		DFFS:    "fs",
+		DFMP:    "mp",
 		DFSIZE:  "size",
 		DFUSED:  "used",
 		DFAVAIL: "avail",
-		DFMP:    "mp",
 	}, []SEQ{
 		DFFS, DFMP,
 	})
@@ -114,10 +114,10 @@ var PSBIMAP = Seq2bimap(PSPID, // the default seq for ordering
 const (
 	____DFIOTA SEQ = iota
 	DFFS
+	DFMP
 	DFSIZE
 	DFUSED
 	DFAVAIL
-	DFMP
 )
 
 const (

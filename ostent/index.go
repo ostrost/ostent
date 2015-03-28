@@ -139,10 +139,8 @@ type IndexData struct {
 	CPU operating.CPUInfo
 	MEM operating.MEM
 
-	PStable PStable
-	PSlinks *PSlinks `json:",omitempty"`
-
-	DFlinks  *Links             `json:",omitempty"`
+	Links    *Links `json:",omitempty"`
+	PStable  PStable
 	DFbytes  operating.DFbytes  `json:",omitempty"`
 	DFinodes operating.DFinodes `json:",omitempty"`
 
@@ -167,13 +165,13 @@ type IndexData struct {
 type IndexUpdate struct {
 	Generic // inline non-pointer
 
-	CPU      *operating.CPUInfo  `json:",omitempty"`
-	MEM      *operating.MEM      `json:",omitempty"`
-	DFlinks  *Links              `json:",omitempty"`
+	CPU *operating.CPUInfo `json:",omitempty"`
+	MEM *operating.MEM     `json:",omitempty"`
+
+	Links    *Links              `json:",omitempty"`
+	PStable  *PStable            `json:",omitempty"`
 	DFbytes  *operating.DFbytes  `json:",omitempty"`
 	DFinodes *operating.DFinodes `json:",omitempty"`
-	PSlinks  *PSlinks            `json:",omitempty"`
-	PStable  *PStable            `json:",omitempty"`
 
 	IFbytes   *operating.Interfaces `json:",omitempty"`
 	IFerrors  *operating.Interfaces `json:",omitempty"`
@@ -779,10 +777,18 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 	psCopy := lastInfo.CopyPS()
 
 	if req != nil {
-		req.ParseForm() // do ParseForm even if req.Form == nil, otherwise *links won't be set for index requests without parameters
+		req.ParseForm() // do ParseForm even if req.Form == nil
 		base := url.Values{}
-		iu.PSlinks = (*PSlinks)(client.NewLinkAttrs(req, base, "ps", client.PSBIMAP, &cl.PSSEQ))
-		iu.DFlinks = (*Links)(client.NewLinkAttrs(req, base, "df", client.DFBIMAP, &cl.DFSEQ))
+		iu.Links = &Links{
+			Linkattrs: client.Linkattrs{
+				Bimaps: map[string]client.Biseqmap{
+					"df": client.DFBIMAP,
+					"ps": client.PSBIMAP,
+				},
+			},
+		}
+		cl.DFSEQ = iu.Links.Param(req, base, "df")
+		cl.PSSEQ = iu.Links.Param(req, base, "ps")
 	}
 
 	set := []Set{
@@ -837,9 +843,7 @@ func indexData(minperiod flags.Period, req *http.Request) IndexData {
 		CPU: *updates.CPU,
 		MEM: *updates.MEM,
 
-		DFlinks: updates.DFlinks,
-		PSlinks: updates.PSlinks,
-
+		Links:   updates.Links,
 		PStable: *updates.PStable,
 
 		DISTRIB: DISTRIB, // value set in init()

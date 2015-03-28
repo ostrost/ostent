@@ -62,46 +62,49 @@ func (crit SortCritProc) LessProc(a, b operating.MetricProc) bool {
 	return t
 }
 
-type Links client.Linkattrs // TODO MAYBE become a struct with inline map[string]client.Attr and prefill for MarshalJSON
+type Links struct {
+	client.Linkattrs
+	// TODO MAYBE add inline map[string]client.Attr and prefill for MarshalJSON
+}
 
-func (la Links) DiskName() client.Attr { return client.Linkattrs(la).Attr(client.DFFS) }
-func (la Links) Total() client.Attr    { return client.Linkattrs(la).Attr(client.DFSIZE) }
-func (la Links) Used() client.Attr     { return client.Linkattrs(la).Attr(client.DFUSED) }
-func (la Links) Avail() client.Attr    { return client.Linkattrs(la).Attr(client.DFAVAIL) }
-func (la Links) DirName() client.Attr  { return client.Linkattrs(la).Attr(client.DFMP) }
+// DF part
+
+func (la Links) DFdiskName() client.Attr { return la.Attr("df", client.DFFS) }
+func (la Links) DFdirName() client.Attr  { return la.Attr("df", client.DFMP) }
+func (la Links) DFtotal() client.Attr    { return la.Attr("df", client.DFSIZE) }
+func (la Links) DFused() client.Attr     { return la.Attr("df", client.DFUSED) }
+func (la Links) DFavail() client.Attr    { return la.Attr("df", client.DFAVAIL) }
+
+// PS part
+
+func (la Links) PSPID() client.Attr      { return la.Attr("ps", client.PSPID) }
+func (la Links) PSpriority() client.Attr { return la.Attr("ps", client.PSPRI) }
+func (la Links) PSnice() client.Attr     { return la.Attr("ps", client.PSNICE) }
+func (la Links) PStime() client.Attr     { return la.Attr("ps", client.PSTIME) }
+func (la Links) PSname() client.Attr     { return la.Attr("ps", client.PSNAME) }
+func (la Links) PSuser() client.Attr     { return la.Attr("ps", client.PSUID) }
+func (la Links) PSsize() client.Attr     { return la.Attr("ps", client.PSSIZE) }
+func (la Links) PSresident() client.Attr { return la.Attr("ps", client.PSRES) }
 
 // MarshalJSON satisfying json.Marshaler interface.
 func (la Links) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]client.Attr{
-		"DiskName": la.DiskName(),
-		"Total":    la.Total(),
-		"Used":     la.Used(),
-		"Avail":    la.Avail(),
-		"DirName":  la.DirName(),
-	})
-}
+		// DF
+		"DFdiskName": la.DFdiskName(),
+		"DFdirName":  la.DFdirName(),
+		"DFtotal":    la.DFtotal(),
+		"DFused":     la.DFused(),
+		"DFavail":    la.DFavail(),
 
-type PSlinks client.Linkattrs
-
-func (la PSlinks) PID() client.Attr      { return client.Linkattrs(la).Attr(client.PSPID) }
-func (la PSlinks) Priority() client.Attr { return client.Linkattrs(la).Attr(client.PSPRI) }
-func (la PSlinks) Nice() client.Attr     { return client.Linkattrs(la).Attr(client.PSNICE) }
-func (la PSlinks) Time() client.Attr     { return client.Linkattrs(la).Attr(client.PSTIME) }
-func (la PSlinks) Name() client.Attr     { return client.Linkattrs(la).Attr(client.PSNAME) }
-func (la PSlinks) User() client.Attr     { return client.Linkattrs(la).Attr(client.PSUID) }
-func (la PSlinks) Size() client.Attr     { return client.Linkattrs(la).Attr(client.PSSIZE) }
-func (la PSlinks) Resident() client.Attr { return client.Linkattrs(la).Attr(client.PSRES) }
-
-func (la PSlinks) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]client.Attr{
-		"PID":      la.PID(),
-		"Priority": la.Priority(),
-		"Nice":     la.Nice(),
-		"Time":     la.Time(),
-		"Name":     la.Name(),
-		"User":     la.User(),
-		"Size":     la.Size(),
-		"Resident": la.Resident(),
+		// PS
+		"PSPID":      la.PSPID(),
+		"PSpriority": la.PSpriority(),
+		"PSnice":     la.PSnice(),
+		"PStime":     la.PStime(),
+		"PSname":     la.PSname(),
+		"PSuser":     la.PSuser(),
+		"PSsize":     la.PSsize(),
+		"PSresident": la.PSresident(),
 	})
 }
 

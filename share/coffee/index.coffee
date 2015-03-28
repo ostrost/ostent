@@ -145,8 +145,8 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
 
   @DFbytesCLASS = React.createClass
     getInitialState: () -> {
-      DFlinks: Data.DFlinks, # a global Data
-      DFbytes: Data.DFbytes  # a global Data
+      Links:   Data.Links,  # a global Data
+      DFbytes: Data.DFbytes # a global Data
     }
     render: () ->
       Data = @state
@@ -155,7 +155,7 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
 
   @DFinodesCLASS = React.createClass
     getInitialState: () -> {
-      DFlinks:  Data.DFlinks, # a global Data
+      Links:    Data.Links,   # a global Data
       DFinodes: Data.DFinodes # a global Data
     }
     render: () ->
@@ -179,8 +179,8 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
 
   @PStableCLASS = React.createClass
     getInitialState: () -> {
-      PStable: Data.PStable, # a global Data
-      PSlinks: Data.PSlinks  # a global Data
+      Links:   Data.Links,  # a global Data
+      PStable: Data.PStable # a global Data
     }
     render: () ->
       Data = @state
@@ -464,9 +464,9 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
         console.log('in 2s: updates.close()')
         return
 
-      setState(pstable,  {PStable:  data.PStable,  PSlinks: data.PSlinks})
-      setState(dfbytes,  {DFbytes:  data.DFbytes,  DFlinks: data.DFlinks})
-      setState(dfinodes, {DFinodes: data.DFinodes, DFlinks: data.DFlinks})
+      setState(pstable,  {PStable:  data.PStable,  Links: data.Links})
+      setState(dfbytes,  {DFbytes:  data.DFbytes,  Links: data.Links})
+      setState(dfinodes, {DFinodes: data.DFinodes, Links: data.Links})
 
       setState(hideconfigmem, hideconfigmem.reduce(data))
       setState(hideconfigif,  hideconfigif .reduce(data))

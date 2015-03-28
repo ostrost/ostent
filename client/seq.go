@@ -39,14 +39,14 @@ type Attr struct {
 	Href, Class, CaretClass string
 }
 
-// Attr returns a seq applied Attr taking the la link and updating/setting the parameter.
-func (la Linkattrs) Attr(seq SEQ) Attr {
+// Attr returns the seq applied Attr taking the la link and updating/setting the parameter.
+func (la Linkattrs) Attr(pname string, seq SEQ) Attr {
 	base := url.Values{}
 	for k, v := range la.Base {
 		base[k] = v
 	}
 	attr := Attr{Class: "state"}
-	if ascp := la._attr(base, seq); ascp != nil {
+	if ascp := la._attr(base, pname, seq); ascp != nil {
 		attr.CaretClass = "caret"
 		attr.Class += " current"
 		if *ascp {
@@ -58,27 +58,21 @@ func (la Linkattrs) Attr(seq SEQ) Attr {
 }
 
 // _attr side effect: modifies the base
-func (la Linkattrs) _attr(base url.Values, seq SEQ) *bool {
+func (la Linkattrs) _attr(base url.Values, pname string, seq SEQ) *bool {
+	bimap := la.Bimaps[pname]
 	unlessreverse := func(t bool) *bool {
-		if la.Bimap.SEQ2REVERSE[seq] {
+		if bimap.SEQ2REVERSE[seq] {
 			t = !t
 		}
 		return &t
 	}
 
-	if la.Pname == "" {
-		if seq == la.Bimap.DefaultSeq {
-			return unlessreverse(false)
-		}
-		return nil
-	}
-
-	seqstring := la.Bimap.SEQ2STRING[seq]
-	values, haveParam := base[la.Pname]
-	base.Set(la.Pname, seqstring)
+	seqstring := bimap.SEQ2STRING[seq]
+	values, haveParam := base[pname]
+	base.Set(pname, seqstring)
 
 	if !haveParam { // no parameter in url
-		if seq == la.Bimap.DefaultSeq {
+		if seq == bimap.DefaultSeq {
 			return unlessreverse(false)
 		}
 		return nil
@@ -95,42 +89,36 @@ func (la Linkattrs) _attr(base url.Values, seq SEQ) *bool {
 	var ascr *bool
 	if pos == seqstring {
 		t := neg[0] != '-'
-		if seq == la.Bimap.DefaultSeq {
+		if seq == bimap.DefaultSeq {
 			t = true
 		}
 		ascr = unlessreverse(t)
-		base.Set(la.Pname, neg)
+		base.Set(pname, neg)
 	}
-	if seq == la.Bimap.DefaultSeq {
-		base.Del(la.Pname)
+	if seq == bimap.DefaultSeq {
+		base.Del(pname)
 	}
 	return ascr
 }
 
 // Linkattrs type for link making.
 type Linkattrs struct {
-	Base  url.Values
-	Pname string
-	Bimap Biseqmap
+	Base   url.Values
+	Bimaps map[string]Biseqmap
 }
 
-func valuesSet(req *http.Request, base url.Values, pname string, bimap Biseqmap) SEQ {
+// Param returns SEQ found either from req parameter pname or default for bimap by pname.
+func (la *Linkattrs) Param(req *http.Request, base url.Values, pname string) SEQ {
+	bimap := la.Bimaps[pname]
+	seq := bimap.DefaultSeq
 	if params, ok := req.Form[pname]; ok && len(params) > 0 {
-		if seq, ok := bimap.STRING2SEQ[params[0]]; ok {
+		if s, ok := bimap.STRING2SEQ[params[0]]; ok {
 			base.Set(pname, params[0])
-			return seq
+			seq = s
 		}
 	}
-	return bimap.DefaultSeq
-}
-
-func NewLinkAttrs(req *http.Request, base url.Values, pname string, bimap Biseqmap, seq *SEQ) *Linkattrs {
-	*seq = valuesSet(req, base, pname, bimap)
-	return &Linkattrs{
-		Base:  base,
-		Pname: pname,
-		Bimap: bimap,
-	}
+	la.Base = base
+	return seq
 }
 
 /* * bimap.go: **************************************************** */

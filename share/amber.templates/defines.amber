@@ -148,12 +148,12 @@
   table.table1.stripe-table
     thead
       tr
-        $L = Data.DFlinks
-        th.header <a href=#{$L.DiskName.Href} #{$classname}=#{$L.DiskName.Class}>Device<span  #{$classname}=#{$L.DiskName.CaretClass} /></a>
-        th.header <a href=#{$L.DirName.Href}  #{$classname}=#{$L.DirName.Class} >Mounted<span #{$classname}=#{$L.DirName.CaretClass}  /></a>
-        th.header.text-right <a href=#{$L.Avail.Href} #{$classname}=#{$L.Avail.Class}>Avail<span #{$classname}=#{$L.Avail.CaretClass} /></a>
-        th.header.text-right <a href=#{$L.Used.Href}  #{$classname}=#{$L.Used.Class} >Used<span  #{$classname}=#{$L.Used.CaretClass}  /></a>
-        th.header.text-right <a href=#{$L.Total.Href} #{$classname}=#{$L.Total.Class}>Total<span #{$classname}=#{$L.Total.CaretClass} /></a>
+        $L = Data.Links
+        th.header <a href=#{$L.DFdiskName.Href} #{$classname}=#{$L.DFdiskName.Class}>Device<span  #{$classname}=#{$L.DFdiskName.CaretClass} /></a>
+        th.header <a href=#{$L.DFdirName.Href}  #{$classname}=#{$L.DFdirName.Class} >Mounted<span #{$classname}=#{$L.DFdirName.CaretClass}  /></a>
+        th.header.text-right <a href=#{$L.DFavail.Href} #{$classname}=#{$L.DFavail.Class}>Avail<span #{$classname}=#{$L.DFavail.CaretClass} /></a>
+        th.header.text-right <a href=#{$L.DFused.Href}  #{$classname}=#{$L.DFused.Class} >Used<span  #{$classname}=#{$L.DFused.CaretClass}  /></a>
+        th.header.text-right <a href=#{$L.DFtotal.Href} #{$classname}=#{$L.DFtotal.Class}>Total<span #{$classname}=#{$L.DFtotal.CaretClass} /></a>
     tbody
       [[template "define_dfbytes_rows" .]]
 [[end]]
@@ -244,15 +244,15 @@
   table.table2.stripe-table
     thead
       tr
-        $L = Data.PSlinks
-        th.header.text-right <a href=#{$L.PID.Href}      #{$classname}=#{$L.PID.Class}     >PID<span  #{$classname}=#{$L.PID.CaretClass}      /></a>
-        th.header.text-right <a href=#{$L.User.Href}     #{$classname}=#{$L.User.Class}    >USER<span #{$classname}=#{$L.User.CaretClass}     /></a>
-        th.header.text-right <a href=#{$L.Priority.Href} #{$classname}=#{$L.Priority.Class}>PR<span   #{$classname}=#{$L.Priority.CaretClass} /></a>
-        th.header.text-right <a href=#{$L.Nice.Href}     #{$classname}=#{$L.Nice.Class}    >NI<span   #{$classname}=#{$L.Nice.CaretClass}     /></a>
-        th.header.text-right <a href=#{$L.Size.Href}     #{$classname}=#{$L.Size.Class}    >VIRT<span #{$classname}=#{$L.Size.CaretClass}     /></a>
-        th.header.text-right <a href=#{$L.Resident.Href} #{$classname}=#{$L.Resident.Class}>RES<span  #{$classname}=#{$L.Resident.CaretClass} /></a>
-        th.header.text-center <a href=#{$L.Time.Href}     #{$classname}=#{$L.Time.Class}    >TIME<span    #{$classname}=#{$L.Time.CaretClass}    /></a>
-        th.header <a href=#{$L.Name.Href} #{$classname}=#{$L.Name.Class}>COMMAND<span #{$classname}=#{$L.Name.CaretClass} /></a>
+        $L = Data.Links
+        th.header.text-right <a href=#{$L.PSPID.Href}      #{$classname}=#{$L.PSPID.Class}     >PID<span  #{$classname}=#{$L.PSPID.CaretClass}      /></a>
+        th.header.text-right <a href=#{$L.PSuser.Href}     #{$classname}=#{$L.PSuser.Class}    >USER<span #{$classname}=#{$L.PSuser.CaretClass}     /></a>
+        th.header.text-right <a href=#{$L.PSpriority.Href} #{$classname}=#{$L.PSpriority.Class}>PR<span   #{$classname}=#{$L.PSpriority.CaretClass} /></a>
+        th.header.text-right <a href=#{$L.PSnice.Href}     #{$classname}=#{$L.PSnice.Class}    >NI<span   #{$classname}=#{$L.PSnice.CaretClass}     /></a>
+        th.header.text-right <a href=#{$L.PSsize.Href}     #{$classname}=#{$L.PSsize.Class}    >VIRT<span #{$classname}=#{$L.PSsize.CaretClass}     /></a>
+        th.header.text-right <a href=#{$L.PSresident.Href} #{$classname}=#{$L.PSresident.Class}>RES<span  #{$classname}=#{$L.PSresident.CaretClass} /></a>
+        th.header.text-center <a href=#{$L.PStime.Href}     #{$classname}=#{$L.PStime.Class}    >TIME<span    #{$classname}=#{$L.PStime.CaretClass}    /></a>
+        th.header <a href=#{$L.PSname.Href} #{$classname}=#{$L.PSname.Class}>COMMAND<span #{$classname}=#{$L.PSname.CaretClass} /></a>
 
     tbody
       [[template "define_psrows" .]]

@@ -210,7 +210,7 @@
     this.DFbytesCLASS = React.createClass({
       getInitialState: function() {
         return {
-          DFlinks: Data.DFlinks,
+          Links: Data.Links,
           DFbytes: Data.DFbytes
         };
       },
@@ -232,7 +232,7 @@
     this.DFinodesCLASS = React.createClass({
       getInitialState: function() {
         return {
-          DFlinks: Data.DFlinks,
+          Links: Data.Links,
           DFinodes: Data.DFinodes
         };
       },
@@ -296,8 +296,8 @@
     this.PStableCLASS = React.createClass({
       getInitialState: function() {
         return {
-          PStable: Data.PStable,
-          PSlinks: Data.PSlinks
+          Links: Data.Links,
+          PStable: Data.PStable
         };
       },
       render: function() {
@@ -855,15 +855,15 @@
         }
         setState(pstable, {
           PStable: data.PStable,
-          PSlinks: data.PSlinks
+          Links: data.Links
         });
         setState(dfbytes, {
           DFbytes: data.DFbytes,
-          DFlinks: data.DFlinks
+          Links: data.Links
         });
         setState(dfinodes, {
           DFinodes: data.DFinodes,
-          DFlinks: data.DFlinks
+          Links: data.Links
         });
         setState(hideconfigmem, hideconfigmem.reduce(data));
         setState(hideconfigif, hideconfigif.reduce(data));
