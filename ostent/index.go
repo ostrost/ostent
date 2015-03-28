@@ -142,7 +142,7 @@ type IndexData struct {
 	PStable PStable
 	PSlinks *PSlinks `json:",omitempty"`
 
-	DFlinks  *DFlinks           `json:",omitempty"`
+	DFlinks  *Links             `json:",omitempty"`
 	DFbytes  operating.DFbytes  `json:",omitempty"`
 	DFinodes operating.DFinodes `json:",omitempty"`
 
@@ -169,7 +169,7 @@ type IndexUpdate struct {
 
 	CPU      *operating.CPUInfo  `json:",omitempty"`
 	MEM      *operating.MEM      `json:",omitempty"`
-	DFlinks  *DFlinks            `json:",omitempty"`
+	DFlinks  *Links              `json:",omitempty"`
 	DFbytes  *operating.DFbytes  `json:",omitempty"`
 	DFinodes *operating.DFinodes `json:",omitempty"`
 	PSlinks  *PSlinks            `json:",omitempty"`
@@ -782,7 +782,7 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 		req.ParseForm() // do ParseForm even if req.Form == nil, otherwise *links won't be set for index requests without parameters
 		base := url.Values{}
 		iu.PSlinks = (*PSlinks)(client.NewLinkAttrs(req, base, "ps", client.PSBIMAP, &cl.PSSEQ))
-		iu.DFlinks = (*DFlinks)(client.NewLinkAttrs(req, base, "df", client.DFBIMAP, &cl.DFSEQ))
+		iu.DFlinks = (*Links)(client.NewLinkAttrs(req, base, "df", client.DFBIMAP, &cl.DFSEQ))
 	}
 
 	set := []Set{

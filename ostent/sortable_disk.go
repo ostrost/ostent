@@ -31,15 +31,16 @@ func (crit SortCritDisk) LessDisk(a, b operating.MetricDF) bool {
 	return t
 }
 
-type DFlinks client.Linkattrs
+type Links client.Linkattrs // TODO MAYBE become a struct with inline map[string]client.Attr and prefill for MarshalJSON
 
-func (la DFlinks) DiskName() client.Attr { return client.Linkattrs(la).Attr(client.DFFS) }
-func (la DFlinks) Total() client.Attr    { return client.Linkattrs(la).Attr(client.DFSIZE) }
-func (la DFlinks) Used() client.Attr     { return client.Linkattrs(la).Attr(client.DFUSED) }
-func (la DFlinks) Avail() client.Attr    { return client.Linkattrs(la).Attr(client.DFAVAIL) }
-func (la DFlinks) DirName() client.Attr  { return client.Linkattrs(la).Attr(client.DFMP) }
+func (la Links) DiskName() client.Attr { return client.Linkattrs(la).Attr(client.DFFS) }
+func (la Links) Total() client.Attr    { return client.Linkattrs(la).Attr(client.DFSIZE) }
+func (la Links) Used() client.Attr     { return client.Linkattrs(la).Attr(client.DFUSED) }
+func (la Links) Avail() client.Attr    { return client.Linkattrs(la).Attr(client.DFAVAIL) }
+func (la Links) DirName() client.Attr  { return client.Linkattrs(la).Attr(client.DFMP) }
 
-func (la DFlinks) MarshalJSON() ([]byte, error) {
+// MarshalJSON satisfying json.Marshaler interface.
+func (la Links) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]client.Attr{
 		"DiskName": la.DiskName(),
 		"Total":    la.Total(),
