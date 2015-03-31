@@ -5,7 +5,7 @@ require.config
     domReady:  'vendor/min/requirejs-domReady/2.0.1/domReady'
     headroom:  'vendor/min/headroom/0.7.0/headroom.min'
     jquery:    'vendor/min/jquery/2.1.3/jquery-2.1.3.min'
-    bootstrap: 'vendor/min/bootstrap/3.3.2/bootstrap.min'
+    bootstrap: 'vendor/min/bootstrap/3.3.4/bootstrap.min'
     react:     'vendor/min/react/0.13.1/react.min'
     jscript:   'gen/jscript'
 
