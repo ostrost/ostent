@@ -46,20 +46,19 @@ func (la Linkattrs) Attr(pname string, seq SEQ) Attr {
 		base[k] = v
 	}
 	attr := Attr{Class: "state"}
-	if ascp := la._attr(base, pname, seq); ascp != nil {
+	if ascp := _attr(base, pname, la.Bimaps[pname], seq); ascp != nil {
 		attr.CaretClass = "caret"
 		attr.Class += " current"
 		if *ascp {
 			attr.Class += " dropup"
 		}
 	}
-	attr.Href = "?" + base.Encode() // la._attr modifies base, DO NOT use prior to the call
+	attr.Href = "?" + base.Encode() // _attr modifies base, DO NOT use prior to the call
 	return attr
 }
 
 // _attr side effect: modifies the base
-func (la Linkattrs) _attr(base url.Values, pname string, seq SEQ) *bool {
-	bimap := la.Bimaps[pname]
+func _attr(base url.Values, pname string, bimap Biseqmap, seq SEQ) *bool {
 	unlessreverse := func(t bool) *bool {
 		if bimap.SEQ2REVERSE[seq] {
 			t = !t
@@ -152,7 +151,8 @@ func Seq2bimap(defSeq SEQ, s2s Seq2string, reverse []SEQ) Biseqmap {
 	}
 	bi.DefaultSeq = defSeq
 
-	for seq, str := range s2s {
+	for iseq, str := range s2s {
+		seq := SEQ(iseq)
 		isreverse := contains(seq, reverse)
 		bi.SEQ2REVERSE[seq] = isreverse
 		bi.SEQ2REVERSE[-seq] = isreverse

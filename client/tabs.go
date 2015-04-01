@@ -86,15 +86,15 @@ var DF_TABS = []SEQ{
 }
 */
 
-var DFBIMAP = Seq2bimap(DFFS, // the default seq for ordering
+var DFBIMAP = Seq2bimap(SEQ(DFFS), // the default seq for ordering
 	Seq2string{
-		DFFS:    "fs",
-		DFMP:    "mp",
-		DFSIZE:  "size",
-		DFUSED:  "used",
-		DFAVAIL: "avail",
+		SEQ(DFFS):    "fs",
+		SEQ(DFMP):    "mp",
+		SEQ(DFSIZE):  "size",
+		SEQ(DFUSED):  "used",
+		SEQ(DFAVAIL): "avail",
 	}, []SEQ{
-		DFFS, DFMP,
+		SEQ(DFFS), SEQ(DFMP),
 	})
 
 var PSBIMAP = Seq2bimap(PSPID, // the default seq for ordering
@@ -112,12 +112,16 @@ var PSBIMAP = Seq2bimap(PSPID, // the default seq for ordering
 	})
 
 const (
-	____DFIOTA SEQ = iota
+	____DFIOTA SEQ = iota // TODO rename to DFZERO
 	DFFS
 	DFMP
 	DFSIZE
 	DFUSED
 	DFAVAIL
+
+	// DEFDFFS defines default DFSEQ.
+	// The default is to be omitted from link parameters.
+	DEFDFFS = DFFS
 )
 
 const (
