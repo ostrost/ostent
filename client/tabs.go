@@ -1,3 +1,4 @@
+//go:generate sh -c "jsonenums -type=UintDF; jsonenums -type=UintPS"
 package client
 
 var DFTABS = DFtabs{
@@ -19,119 +20,101 @@ var IFTABS = IFtabs{
 }
 
 type DFtabs struct {
-	DFinodes SEQ
-	DFbytes  SEQ
+	DFinodes Uint
+	DFbytes  Uint
 
 	DFinodesTitle string
 	DFbytesTitle  string
 }
 
-// Title returns a label. "" return denotes unexpected error.
-func (df DFtabs) Title(s SEQ) string {
+// Title returns a label. "" return denotes unidentified p.
+func (df DFtabs) Title(u Uint) string {
 	switch {
-	case s == df.DFinodes:
+	case u == df.DFinodes:
 		return df.DFinodesTitle
-	case s == df.DFbytes:
+	case u == df.DFbytes:
 		return df.DFbytesTitle
 	}
 	return ""
 }
 
 type IFtabs struct {
-	IFpackets SEQ
-	IFerrors  SEQ
-	IFbytes   SEQ
+	IFpackets Uint
+	IFerrors  Uint
+	IFbytes   Uint
 
 	IFpacketsTitle string
 	IFerrorsTitle  string
 	IFbytesTitle   string
 }
 
-// Title returns a label. "" return denotes unexpected error.
-func (fi IFtabs) Title(s SEQ) string {
+// Title returns a label. "" return denotes unidentified p.
+func (fi IFtabs) Title(u Uint) string {
 	switch {
-	case s == fi.IFpackets:
+	case u == fi.IFpackets:
 		return fi.IFpacketsTitle
-	case s == fi.IFerrors:
+	case u == fi.IFerrors:
 		return fi.IFerrorsTitle
-	case s == fi.IFbytes:
+	case u == fi.IFbytes:
 		return fi.IFbytesTitle
 	}
 	return ""
 }
 
 const (
-	____IFTABID SEQ = iota
-	IFPACKETS_TABID
+	IFPACKETS_TABID Uint = iota
 	IFERRORS_TABID
 	IFBYTES_TABID
 )
 
 const (
-	____DFTABID SEQ = iota
-	DFINODES_TABID
+	DFINODES_TABID Uint = iota
 	DFBYTES_TABID
 )
 
 /* UNUSED ?
-var IF_TABS = []SEQ{
+var IF_TABS = []Uint{
 	IFPACKETS_TABID,
 	 IFERRORS_TABID,
 	  IFBYTES_TABID,
 }
 
-var DF_TABS = []SEQ{
+var DF_TABS = []Uint{
 	DFINODES_TABID,
 	 DFBYTES_TABID,
 }
 */
 
-var DFBIMAP = Seq2bimap(SEQ(DFFS), // the default seq for ordering
-	Seq2string{
-		SEQ(DFFS):    "fs",
-		SEQ(DFMP):    "mp",
-		SEQ(DFSIZE):  "size",
-		SEQ(DFUSED):  "used",
-		SEQ(DFAVAIL): "avail",
-	}, []SEQ{
-		SEQ(DFFS), SEQ(DFMP),
-	})
-
-var PSBIMAP = Seq2bimap(PSPID, // the default seq for ordering
-	Seq2string{
-		PSPID:  "pid",
-		PSPRI:  "pri",
-		PSNICE: "nice",
-		PSSIZE: "size",
-		PSRES:  "res",
-		PSTIME: "time",
-		PSNAME: "name",
-		PSUID:  "user",
-	}, []SEQ{
-		PSNAME, PSUID,
-	})
-
+// Constants for DF sorting criterion.
 const (
-	____DFIOTA SEQ = iota // TODO rename to DFZERO
-	DFFS
-	DFMP
+	FS UintDF = iota
+	MP
 	DFSIZE
-	DFUSED
-	DFAVAIL
-
-	// DEFDFFS defines default DFSEQ.
-	// The default is to be omitted from link parameters.
-	DEFDFFS = DFFS
+	USED
+	AVAIL
 )
 
+// Constants for PS sorting criterion.
 const (
-	____PSIOTA SEQ = iota
-	PSPID
-	PSPRI
-	PSNICE
+	PID UintPS = iota
+	PRI
+	NICE
 	PSSIZE
-	PSRES
-	PSTIME
-	PSNAME
-	PSUID
+	RES
+	TIME
+	NAME
+	UID
 )
+
+// RenamedConstError denotes an error.
+type RenamedConstError string
+
+func (rc RenamedConstError) Error() string { return string(rc) }
+
+// Uint-derived types:
+
+// UintDF is a derived Uint for constants.
+type UintDF Uint
+
+// UintPS is a derived Uint for constants.
+type UintPS Uint

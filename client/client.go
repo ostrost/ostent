@@ -1,3 +1,4 @@
+// Package client is all about client state.
 package client
 
 import (
@@ -59,8 +60,8 @@ func (c *Client) refreshes() []*Refresh {
 type internalClient struct {
 	PSlimit int
 
-	PSSEQ SEQ
-	DFSEQ SEQ
+	PSSEQ Number
+	DFSEQ Number
 
 	Toprows int
 
@@ -95,8 +96,8 @@ type commonClient struct {
 	ExpandCPU *bool `json:",omitempty"`
 	ExpandDF  *bool `json:",omitempty"`
 
-	TabIF *SEQ `json:",omitempty"`
-	TabDF *SEQ `json:",omitempty"`
+	TabIF *Uint `json:",omitempty"`
+	TabDF *Uint `json:",omitempty"`
 
 	TabTitleIF *string `json:",omitempty"`
 	TabTitleDF *string `json:",omitempty"`
@@ -211,8 +212,7 @@ func (c *Client) mergeBool(dst, src *bool, send **bool) {
 	c.Modified = true
 }
 
-func (c *Client) mergeSEQ(dst, src *SEQ, send **SEQ) {
-	// c is unused
+func (c *Client) mergeUint(dst, src *Uint, send **Uint) {
 	if src == nil {
 		return
 	}
@@ -241,8 +241,8 @@ func (c *Client) Merge(r RecvClient, s *SendClient) {
 	s.mergeBool(c.HideconfigPS, r.HideconfigPS, &s.HideconfigPS)
 	s.mergeBool(c.HideconfigVG, r.HideconfigVG, &s.HideconfigVG)
 
-	s.mergeSEQ(c.TabIF, r.TabIF, &s.TabIF)
-	s.mergeSEQ(c.TabDF, r.TabDF, &s.TabDF)
+	s.mergeUint(c.TabIF, r.TabIF, &s.TabIF)
+	s.mergeUint(c.TabDF, r.TabDF, &s.TabDF)
 
 	// merge NOT from the r
 	s.mergeTitle(c.TabTitleIF, IFTABS.Title(*c.TabIF), &s.TabTitleIF)
@@ -264,9 +264,9 @@ func DefaultClient(minperiod flags.Period) Client {
 	cs.ExpandCPU = new(bool)
 	cs.ExpandDF = new(bool)
 
-	newseq := func(v SEQ) *SEQ { s := new(SEQ); *s = v; return s }
-	cs.TabIF = newseq(IFBYTES_TABID)
-	cs.TabDF = newseq(DFBYTES_TABID)
+	newuint := func(p Uint) *Uint { n := new(Uint); *n = p; return n }
+	cs.TabIF = newuint(IFBYTES_TABID)
+	cs.TabDF = newuint(DFBYTES_TABID)
 
 	cs.TabTitleIF = new(string)
 	*cs.TabTitleIF = IFTABS.Title(*cs.TabIF)
@@ -297,8 +297,8 @@ func DefaultClient(minperiod flags.Period) Client {
 
 	cs.PSlimit = 8
 
-	cs.PSSEQ = PSBIMAP.DefaultSeq
-	cs.DFSEQ = DFBIMAP.DefaultSeq
+	cs.PSSEQ = PS.Default
+	cs.DFSEQ = DF.Default
 
 	cs.RecalcRows()
 

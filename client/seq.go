@@ -1,171 +1,202 @@
 package client
 
-import (
-	"net/http"
-	"net/url"
-)
+import "net/url"
 
-// SEQ is a distinct int type for consts and other uses.
-type SEQ int
+// Uint is a positive or 0 number.
+type Uint uint
 
-// SeqNReverse holds a SEQ and a Reverse bool.
-type SeqNReverse struct {
-	SEQ     SEQ
-	Reverse bool
+type Number struct {
+	Uint
+	Negative bool
 }
 
-// AnyOf returns true if the seq is present in the list.
-func (seq SEQ) AnyOf(list []SEQ) bool {
-	for _, s := range list {
-		if s == seq {
-			return true
-		}
-	}
-	return false
+// Uinter defines required (read-only) methods
+// for all Uint-derived types interface.
+type Uinter interface {
+	Touint() Uint
+	Marshal() (string, error)
+	// MarshalJSON() ([]byte, error)
 }
 
-// Sign is a logical operator, useful for sorting.
-func (seq SEQ) Sign(t bool) bool { // used in sortable_*.go
-	if seq < 0 {
-		return t
-	}
-	return !t
+// Upointer defines required (incl. pointer-) methods
+// for all Uint-derived types interface.
+type Upointer interface {
+	Uinter
+	Unmarshal(string) error
+	// UnmarshalJSON([]byte) error
 }
-
-/* * Attr & Linkattrs: ******************************************** */
 
 // Attr type keeps link attributes.
 type Attr struct {
 	Href, Class, CaretClass string
 }
 
-// Attr returns the seq applied Attr taking the la link and updating/setting the parameter.
-func (la Linkattrs) Attr(pname string, seq SEQ) Attr {
+// Encode returns uinter applied Attr.
+func (links Links) Encode(pname string, uinter Uinter) Attr {
 	base := url.Values{}
-	for k, v := range la.Base {
+	for k, v := range links.Values {
 		base[k] = v
 	}
 	attr := Attr{Class: "state"}
-	if ascp := _attr(base, pname, la.Bimaps[pname], seq); ascp != nil {
+	if cur := links.SetBase(base, pname, uinter); cur != nil {
 		attr.CaretClass = "caret"
 		attr.Class += " current"
-		if *ascp {
+		if *cur {
 			attr.Class += " dropup"
 		}
 	}
-	attr.Href = "?" + base.Encode() // _attr modifies base, DO NOT use prior to the call
+	attr.Href = "?" + base.Encode() // sorted by key
 	return attr
 }
 
-// _attr side effect: modifies the base
-func _attr(base url.Values, pname string, bimap Biseqmap, seq SEQ) *bool {
-	unlessreverse := func(t bool) *bool {
-		if bimap.SEQ2REVERSE[seq] {
-			t = !t
-		}
-		return &t
-	}
+// SetBase modifies the base.
+func (links Links) SetBase(base url.Values, pname string, uinter Uinter) *bool {
+	this := uinter.Touint()
 
-	seqstring := bimap.SEQ2STRING[seq]
-	values, haveParam := base[pname]
-	base.Set(pname, seqstring)
-
-	if !haveParam { // no parameter in url
-		if seq == bimap.DefaultSeq {
-			return unlessreverse(false)
-		}
+	// TODO Better name for Decodes/DecodedMap/Decoded
+	// because they might be not decoded, but default.
+	decoded, haveok := links.Decodes.DecodedMap[pname]
+	if !haveok {
+		// That's unexpected: SetBase (and Encode) is not supposed to be called without pname decoded prior.
 		return nil
 	}
 
-	pos, neg := values[0], values[0]
-	if neg[0] == '-' {
-		pos = neg[1:]
-		neg = neg[1:]
-	} else {
-		neg = "-" + neg
-	}
+	ddef := decoded.Decoder.Default.Uint
+	dnum := decoded.Number
 
-	var ascr *bool
-	if pos == seqstring {
-		t := neg[0] != '-'
-		if seq == bimap.DefaultSeq {
-			t = true
-		}
-		ascr = unlessreverse(t)
-		base.Set(pname, neg)
+	desc := true
+	// Default ordering is desc (values are numeric most of the time).
+	// Alpha values ordering: asc.
+	if decoded.IsAlpha(this) {
+		desc = false
 	}
-	if seq == bimap.DefaultSeq {
+	isdef := this == ddef
+	//  (isdef && decoded.Number != nil) ||
+	if dnum.Negative {
+		desc = !desc
+	}
+	var ret *bool
+	if dnum.Uint == this {
+		ret = new(bool)
+		*ret = !desc
+	}
+	// for default, opposite of having a parameter is it's absence.
+	if isdef && decoded.Specified {
 		base.Del(pname)
+		return ret
 	}
-	return ascr
-}
-
-// Linkattrs type for link making.
-type Linkattrs struct {
-	Base   url.Values
-	Bimaps map[string]Biseqmap
-}
-
-// Param returns SEQ found either from req parameter pname or default for bimap by pname.
-func (la *Linkattrs) Param(req *http.Request, base url.Values, pname string) SEQ {
-	bimap := la.Bimaps[pname]
-	seq := bimap.DefaultSeq
-	if params, ok := req.Form[pname]; ok && len(params) > 0 {
-		if s, ok := bimap.STRING2SEQ[params[0]]; ok {
-			base.Set(pname, params[0])
-			seq = s
-		}
+	low, err := uinter.Marshal()
+	if err != nil { // ignoring the error
+		return nil
 	}
-	la.Base = base
-	return seq
+	if dnum.Uint == this && !isdef && !dnum.Negative {
+		low = "-" + low
+	}
+	base.Set(pname, low)
+	return ret
 }
 
-/* * bimap.go: **************************************************** */
-
-// Seq2string type is a map of string by SEQ
-type Seq2string map[SEQ]string
-
-// Biseqmap type holds bi-directional relations between SEQ and string and a DefaultSeq
-type Biseqmap struct {
-	SEQ2STRING  Seq2string
-	STRING2SEQ  map[string]SEQ
-	SEQ2REVERSE map[SEQ]bool
-	DefaultSeq  SEQ
+// Links type for link making.
+type Links struct {
+	url.Values // provides Set(string, string) for Linker interface.
+	Decodes    // provides SetDecoded(string, Decoded), SetError(error) for Linker interface.
 }
 
-func contains(thiss SEQ, lists []SEQ) bool {
-	for _, s := range lists {
-		if s == thiss {
+type Decoder struct {
+	Default Number
+	Alphas  []Uint
+}
+
+func (d Decoder) IsAlpha(p Uint) bool {
+	for _, u := range d.Alphas {
+		if u == p {
 			return true
 		}
 	}
 	return false
 }
 
-// Seq2bimap makes a Biseqmap with default defSeq. reverse holds a list of SEQ to be reversed.
-func Seq2bimap(defSeq SEQ, s2s Seq2string, reverse []SEQ) Biseqmap {
-	bi := Biseqmap{
-		SEQ2STRING:  Seq2string{},
-		STRING2SEQ:  map[string]SEQ{},
-		SEQ2REVERSE: map[SEQ]bool{},
-	}
-	bi.DefaultSeq = defSeq
-
-	for iseq, str := range s2s {
-		seq := SEQ(iseq)
-		isreverse := contains(seq, reverse)
-		bi.SEQ2REVERSE[seq] = isreverse
-		bi.SEQ2REVERSE[-seq] = isreverse
-
-		bi.SEQ2STRING[seq] = str
-		bi.SEQ2STRING[-seq] = "-" + str
-
-		nseq := seq
-		if seq == defSeq {
-			nseq = -nseq
-		}
-		bi.STRING2SEQ[str] = nseq
-		bi.STRING2SEQ["-"+str] = -nseq
-	}
-	return bi
+var PS = Decoder{
+	Default: Number{Uint: Uint(PID)},
+	Alphas:  []Uint{Uint(NAME), Uint(UID)},
 }
+
+var DF = Decoder{
+	Default: Number{Uint: Uint(FS)},
+	Alphas:  []Uint{Uint(FS), Uint(MP)},
+}
+
+func NewLinks() *Links {
+	return &Links{
+		Values:  make(url.Values),
+		Decodes: Decodes{DecodedMap: make(DecodedMap)},
+	}
+}
+
+type Linker interface {
+	Set(string, string)
+	SetDecoded(string, Decoded)
+	SetError(error)
+}
+
+func (d Decoder) Decode(form url.Values, pname string, linker Linker, setn *Number, uptr Upointer) error {
+	n, spec, err := d.Find(form[pname], pname, linker, uptr)
+	if err != nil {
+		return err
+	}
+	*setn = n
+	linker.SetDecoded(pname, Decoded{Number: n, Decoder: d, Specified: spec})
+	return nil
+}
+
+// Find side effects: ui.Unmarshal (ui.Methods[2]) and linker.Set (eg url.Values{}.Set())
+func (d Decoder) Find(values []string, pname string, linker Linker, uptr Upointer) (Number, bool, error) {
+	if len(values) == 0 || values[0] == "" {
+		return d.Default, false, nil
+	}
+	var negate bool
+	in := values[0]
+	if in[0] == '-' {
+		in = in[1:]
+		negate = true
+	}
+	err := uptr.Unmarshal(in) // .UnmarshalJSON([]byte(fmt.Sprintf("%q", strings.ToUpper(in))))
+	n := Number{}
+	if err != nil {
+		if rerr, ok := err.(RenamedConstError); ok {
+			// The case when err (of type RenamedConstError) is set
+			// AND uptr actually holds corresponding ("renamed") value.
+			if l, err := uptr.Marshal(); err == nil {
+				if negate {
+					l = "-" + l
+				}
+				linker.Set(pname, l)
+			}
+			linker.SetError(rerr)
+		}
+		return n, true, err
+	}
+	n.Uint = uptr.Touint()
+	if negate || d.Default.Uint == n.Uint {
+		n.Negative = true
+	}
+	linker.Set(pname, values[0])
+	return n, true, err
+}
+
+type Decoded struct {
+	Number
+	Decoder
+	Specified bool
+}
+
+type DecodedMap map[string]Decoded
+type Decodes struct {
+	DecodedMap
+	RCError error
+}
+
+// SetDecoded required by Linker interface.
+func (ds *Decodes) SetDecoded(name string, d Decoded) { ds.DecodedMap[name] = d }
+
+func (ds *Decodes) SetError(err error) { ds.RCError = err }

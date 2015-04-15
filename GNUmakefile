@@ -2,6 +2,10 @@
 
 fqostent=github.com/ostrost/ostent
 testpackage?=./...
+singletestpackage=$(testpackage)
+ifeq ($(testpackage), ./...)
+singletestpackage=$(fqostent)
+endif
 
 binassets_develgo         = share/assets/bindata.devel.go
 binassets_productiongo    = share/assets/bindata.production.go
@@ -39,6 +43,7 @@ init:
 	go get -u -v \
 github.com/jteeuwen/go-bindata/go-bindata \
 github.com/skelterjohn/rerun \
+github.com/campoy/jsonenums \
 github.com/clipperhouse/gen
 # TODO rm {src,pkg/*}/github.com/clipperhouse/slice{,.a}
 	cd system/operating && gen add github.com/rzab/slice
@@ -49,29 +54,26 @@ github.com/clipperhouse/gen
 	go list -f '{{.Target}}' $(fqostent) | $(xargs) rm # clean the library archive
 
 %: %.sh # clear the implicit *.sh rule covering ./ostent.sh
+# print-* rule for debugging. http://blog.jgc.org/2015/04/the-one-line-you-should-add-to-every.html :
+print-%: ; @echo $*=$($*)
 
 ifneq (init, $(MAKECMDGOALS))
 test:
 	go vet $(testpackage)
 	go test -v $(testpackage)
-covertest:
-	go test -v -covermode=count -coverprofile=coverage.out $(testpackage)
-coverfunc: covertest
-	go tool cover -func=coverage.out
-coverhtml: covertest
-	go tool cover -html=coverage.out
+covertest:           ; go test -coverprofile=coverage.out -covermode=count -v $(singletestpackage)
+coverfunc: covertest ; go tool  cover  -func=coverage.out
+coverhtml: covertest ; go tool  cover  -html=coverage.out
 
-$(PWD)/system/operating/%_slice.go: $(PWD)/system/operating/operating.go
-	cd $(dir $@) && go generate
+system/operating/%_slice.go: system/operating/operating.go ; cd $(dir $@) && go generate
+client/uint%_jsonenums.go:   client/tabs.go                ; cd $(dir $@) && go generate
 
 al: $(ostent_files)
 # al: like `all' but without final go build ostent. For when rerun does the build
 
 $(destbin)/ostent: $(ostent_files)
 	go build -ldflags -w -a -tags production -o $@ $(fqostent)
-
-$(destbin)/%:
-	go build -o $@ $(fqostent)/$|
+$(destbin)/%: ; go build -o $@ $(fqostent)/$|
 $(destbin)/amberpp: | amberp/amberpp
 
 $(destbin)/amberpp: $(shell go list -f '\

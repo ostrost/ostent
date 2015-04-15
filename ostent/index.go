@@ -7,7 +7,6 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"net/url"
 	"os/user"
 	"strings"
 	"sync"
@@ -92,8 +91,7 @@ func username(uids map[uint]string, uid uint) string {
 }
 
 func (procs MPSlice) Ordered(cl *client.Client, send *client.SendClient) []operating.ProcData {
-	crit := SortCritProc{Reverse: client.PSBIMAP.SEQ2REVERSE[cl.PSSEQ], SEQ: cl.PSSEQ}
-	operating.MetricProcSlice(procs).SortSortBy(crit.LessProc) // not .StableSortBy
+	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(cl.PSSEQ)) // not .StableSortBy
 
 	pslen := len(procs)
 	limitPS := cl.PSlimit
@@ -409,8 +407,7 @@ func (ir *IndexRegistry) DFbytes(cli *client.Client, send *client.SendClient) []
 	send.SetBool(&send.ExpandableDF, &cli.ExpandableDF, len(private) > cli.Toprows)
 	send.SetString(&send.ExpandtextDF, &cli.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(private)))
 
-	crit := SortCritDisk{Reverse: client.DFBIMAP.SEQ2REVERSE[cli.DFSEQ], SEQ: cli.DFSEQ}
-	private.StableSortBy(crit.LessDisk)
+	private.StableSortBy(LessDiskFunc(cli.DFSEQ))
 
 	var public []operating.DiskBytes
 	for i, disk := range private {
@@ -446,8 +443,7 @@ func (ir *IndexRegistry) DFinodes(cli *client.Client, send *client.SendClient) [
 	send.SetBool(&send.ExpandableDF, &cli.ExpandableDF, len(private) > cli.Toprows)
 	send.SetString(&send.ExpandtextDF, &cli.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(private)))
 
-	crit := SortCritDisk{Reverse: client.DFBIMAP.SEQ2REVERSE[cli.DFSEQ], SEQ: cli.DFSEQ}
-	private.StableSortBy(crit.LessDisk)
+	private.StableSortBy(LessDiskFunc(cli.DFSEQ))
 
 	var public []operating.DiskInodes
 	for i, disk := range private {
@@ -771,24 +767,20 @@ type SetInterface interface {
 }
 // */
 
-func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (iu IndexUpdate) {
+func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (iu IndexUpdate, err error) {
 	cl.RecalcRows() // before anything
 
 	psCopy := lastInfo.CopyPS()
 
 	if req != nil {
 		req.ParseForm() // do ParseForm even if req.Form == nil
-		base := url.Values{}
-		iu.Links = &Links{
-			Linkattrs: client.Linkattrs{
-				Bimaps: map[string]client.Biseqmap{
-					"df": client.DFBIMAP,
-					"ps": client.PSBIMAP,
-				},
-			},
+		iu.Links = &Links{*client.NewLinks()}
+		client.DF.Decode(req.Form, "df", iu.Links, &cl.DFSEQ, new(client.UintDF))
+		client.DF.Decode(req.Form, "ps", iu.Links, &cl.PSSEQ, new(client.UintPS))
+
+		if iu.Links.Decodes.RCError != nil {
+			return iu, client.RenamedConstError("?" + iu.Links.Values.Encode())
 		}
-		cl.DFSEQ = iu.Links.Param(req, base, "df")
-		cl.PSSEQ = iu.Links.Param(req, base, "ps")
 	}
 
 	set := []Set{
@@ -824,17 +816,20 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 	if send.Modified {
 		iu.Client = &send
 	}
-	return iu
+	return iu, nil
 }
 
-func indexData(minperiod flags.Period, req *http.Request) IndexData {
+func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 	if Connections.Len() == 0 {
 		// collect when there're no active connections, so Loop does not collect
 		lastInfo.collect(&Machine{})
 	}
 
 	cl := client.DefaultClient(minperiod)
-	updates := getUpdates(req, &cl, client.SendClient{}, true)
+	updates, err := getUpdates(req, &cl, client.SendClient{}, true)
+	if err != nil {
+		return IndexData{}, err
+	}
 
 	data := IndexData{
 		Client:  clientData{Client: cl, HideMEM: cl.HideRAM, RefreshMEM: cl.RefreshRAM},
@@ -872,7 +867,7 @@ func indexData(minperiod flags.Period, req *http.Request) IndexData {
 	data.DFTABS = client.DFTABS // const
 	data.IFTABS = client.IFTABS // const
 
-	return data
+	return data, nil
 }
 
 func statusLine(status int) string {
@@ -898,13 +893,23 @@ func IndexFunc(production bool, template *templateutil.LazyTemplate, minperiod f
 }
 
 func index(production bool, template *templateutil.LazyTemplate, minperiod flags.Period, w http.ResponseWriter, r *http.Request) {
+	id, err := indexData(minperiod, r)
+	if err != nil {
+		if _, ok := err.(client.RenamedConstError); ok {
+			http.Redirect(w, r, err.Error(), http.StatusMovedPermanently)
+			return
+		}
+		http.Error(w, err.Error(), panicstatuscode)
+		return
+	}
+
 	response := template.Response(w, struct {
 		CLASSNAME  string // MUST HAVE
 		PRODUCTION bool
 		Data       IndexData
 	}{
 		PRODUCTION: production,
-		Data:       indexData(minperiod, r),
+		Data:       id,
 	})
 	response.Header().Set("Content-Type", "text/html")
 	response.SetContentLength()
@@ -922,7 +927,10 @@ type SSE struct {
 // passed as a copy, is unused. sse.Writer is there for writes.
 func (sse *SSE) ServeHTTP(_ http.ResponseWriter, r *http.Request) {
 	w := sse.Writer
-	id := indexData(sse.MinPeriod, r)
+	id, err := indexData(sse.MinPeriod, r)
+	if err != nil {
+		http.Error(w, err.Error(), panicstatuscode)
+	}
 	text, err := json.Marshal(id)
 	if err != nil {
 		sse.Errord = true

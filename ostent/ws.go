@@ -387,8 +387,8 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	update := getUpdates(r, &sd.conn.full, send, sd.received != nil && sd.received.Client != nil)
-	if update == (IndexUpdate{}) { // nothing scheduled for the moment, no update
+	update, err := getUpdates(r, &sd.conn.full, send, sd.received != nil && sd.received.Client != nil)
+	if err != nil || update == (IndexUpdate{}) { // nothing scheduled for the moment, no update
 		return
 	}
 
