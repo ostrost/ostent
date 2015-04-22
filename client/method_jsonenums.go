@@ -12,16 +12,20 @@ import (
 // func (r *UintPS) Unmarshal(s string) error { return UnmarshalStringFunc(r.UnmarshalJSON)(s) }
 
 // Unmarshal for UintDF. Knows renamed parameter.
-func (r *UintDF) Unmarshal(data string) error {
+func (r *UintDF) Unmarshal(data string, negate *bool) error {
 	issize := data == "size"
 	if issize {
 		data = "dfsize"
 	}
-	return UnmarshalMaybe(issize, r.UnmarshalJSON, data)
+	isexnondeffs := data == "fs" && !*negate
+	if isexnondeffs { // "df=fs" became "df=-fs"
+		*negate = !*negate
+	}
+	return UnmarshalMaybe(isexnondeffs || issize, r.UnmarshalJSON, data)
 }
 
 // Unmarshal for UintPS. Knows renamed parameter.
-func (r *UintPS) Unmarshal(data string) error {
+func (r *UintPS) Unmarshal(data string, negate *bool) error {
 	issize := data == "size"
 	if issize {
 		data = "pssize"
@@ -30,7 +34,11 @@ func (r *UintPS) Unmarshal(data string) error {
 	if isuser {
 		data = "uid"
 	}
-	return UnmarshalMaybe(issize || isuser, r.UnmarshalJSON, data)
+	isexnondefps := data == "pid" && !*negate
+	if isexnondefps { // "ps=pid" became "ps=-pid"
+		*negate = !*negate
+	}
+	return UnmarshalMaybe(isexnondefps || issize || isuser, r.UnmarshalJSON, data)
 }
 
 // Uinter dictated methods:

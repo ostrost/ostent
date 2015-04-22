@@ -23,8 +23,8 @@ func LessDiskFunc(num client.Number) func(operating.MetricDF, operating.MetricDF
 		case client.MP:
 			r = a.DirName.Snapshot().Value() < b.DirName.Snapshot().Value()
 		}
-		// non-numeric values: reverse "less"
-		if client.DF.IsAlpha(num.Uint) {
+		// numeric values: reverse "less"
+		if !client.DF.IsAlpha(num.Uint) {
 			r = !r
 		}
 		if num.Negative {
@@ -57,7 +57,7 @@ func LessProcFunc(num client.Number) func(operating.MetricProc, operating.Metric
 			r = a.UID < b.UID
 		}
 		// numeric values: reverse "less"
-		if client.PS.IsAlpha(num.Uint) {
+		if !client.PS.IsAlpha(num.Uint) {
 			r = !r
 		}
 		if num.Negative {
@@ -74,22 +74,22 @@ type Links struct {
 
 // DF part
 
-func (la Links) DFdiskName() client.Attr { return la.Encode("df", client.FS) }
-func (la Links) DFdirName() client.Attr  { return la.Encode("df", client.MP) }
-func (la Links) DFtotal() client.Attr    { return la.Encode("df", client.DFSIZE) }
-func (la Links) DFused() client.Attr     { return la.Encode("df", client.USED) }
-func (la Links) DFavail() client.Attr    { return la.Encode("df", client.AVAIL) }
+func (la Links) DFdiskName() client.Attr { return la.EncodeNU("df", client.FS) }
+func (la Links) DFdirName() client.Attr  { return la.EncodeNU("df", client.MP) }
+func (la Links) DFtotal() client.Attr    { return la.EncodeNU("df", client.DFSIZE) }
+func (la Links) DFused() client.Attr     { return la.EncodeNU("df", client.USED) }
+func (la Links) DFavail() client.Attr    { return la.EncodeNU("df", client.AVAIL) }
 
 // PS part
 
-func (la Links) PSPID() client.Attr      { return la.Encode("ps", client.PID) }
-func (la Links) PSpriority() client.Attr { return la.Encode("ps", client.PRI) }
-func (la Links) PSnice() client.Attr     { return la.Encode("ps", client.NICE) }
-func (la Links) PStime() client.Attr     { return la.Encode("ps", client.TIME) }
-func (la Links) PSname() client.Attr     { return la.Encode("ps", client.NAME) }
-func (la Links) PSuser() client.Attr     { return la.Encode("ps", client.UID) }
-func (la Links) PSsize() client.Attr     { return la.Encode("ps", client.PSSIZE) }
-func (la Links) PSresident() client.Attr { return la.Encode("ps", client.RES) }
+func (la Links) PSPID() client.Attr      { return la.EncodeNU("ps", client.PID) }
+func (la Links) PSpriority() client.Attr { return la.EncodeNU("ps", client.PRI) }
+func (la Links) PSnice() client.Attr     { return la.EncodeNU("ps", client.NICE) }
+func (la Links) PStime() client.Attr     { return la.EncodeNU("ps", client.TIME) }
+func (la Links) PSname() client.Attr     { return la.EncodeNU("ps", client.NAME) }
+func (la Links) PSuser() client.Attr     { return la.EncodeNU("ps", client.UID) }
+func (la Links) PSsize() client.Attr     { return la.EncodeNU("ps", client.PSSIZE) }
+func (la Links) PSresident() client.Attr { return la.EncodeNU("ps", client.RES) }
 
 // MarshalJSON satisfying json.Marshaler interface.
 func (la Links) MarshalJSON() ([]byte, error) {

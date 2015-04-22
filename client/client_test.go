@@ -21,10 +21,10 @@ func TestLinks(t *testing.T) {
 		t.Errorf("Decode failed: %+v\n", num)
 	}
 
-	if size := links.Encode("df", DFSIZE); size.Href != "?df=dfsize" || size.Class != "state" || size.CaretClass != "" {
+	if size := links.EncodeNU("df", DFSIZE); size.Href != "?df=dfsize" || size.Class != "state" || size.CaretClass != "" {
 		t.Fatalf("Encode failed: size: %+v", size)
 	}
-	if mp := links.Encode("df", MP); mp.Href != "?df=-mp" || mp.Class != "state current dropup" || mp.CaretClass != "caret" {
+	if mp := links.EncodeNU("df", MP); mp.Href != "?df=-mp" || mp.Class != "state current dropup" || mp.CaretClass != "caret" {
 		t.Fatalf("Encode failed: mp: %+v", mp)
 	}
 
@@ -35,8 +35,8 @@ func TestLinks(t *testing.T) {
 		}
 		req.ParseForm()
 		links := NewLinks()
-		num := Number{}
-		err = DF.Decode(req.Form, "df", links, &num, new(UintDF))
+		unused := Number{}
+		err = DF.Decode(req.Form, "df", links, &unused, new(UintDF))
 		if err == nil || err.Error() != "" {
 			t.Fatalf("Error expected (%q)", err)
 		}
@@ -45,4 +45,32 @@ func TestLinks(t *testing.T) {
 
 		}
 	}
+	checklinks := NewLinks()
+	CheckRedirect(t, checklinks, new(UintDF), DF, "df", "fs", "df=-fs")
+	CheckRedirect(t, checklinks, new(UintPS), PS, "ps", "pid", "df=-fs&ps=-pid")
+	CheckRedirect(t, NewLinks(), new(UintPS), PS, "ps", "pid", "ps=-pid")
+}
+
+func CheckRedirect(t *testing.T, linker LinkerEncoder, uptr Upointer, decoder Decoder, name, qsend, moved string) {
+	req, err := http.NewRequest("GET", "http://localhost/index?"+name+"="+qsend, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	req.ParseForm()
+	unused := Number{}
+	err = decoder.Decode(req.Form, name, linker, &unused, uptr)
+	if err == nil {
+		t.Fatalf("RenamedConstError expected, got nil")
+	}
+	if _, ok := err.(RenamedConstError); !ok {
+		t.Fatalf("RenamedConstError expected, got: %s", err)
+	}
+	if s := linker.Encode(); s != moved {
+		t.Fatalf("Redirect mismatch (%q): %q", moved, s)
+	}
+}
+
+type LinkerEncoder interface {
+	Linker
+	Encode() string // from url.Values
 }

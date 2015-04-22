@@ -22,7 +22,7 @@ type Uinter interface {
 // for all Uint-derived types interface.
 type Upointer interface {
 	Uinter
-	Unmarshal(string) error
+	Unmarshal(string, *bool) error
 	// UnmarshalJSON([]byte) error
 }
 
@@ -31,8 +31,8 @@ type Attr struct {
 	Href, Class, CaretClass string
 }
 
-// Encode returns uinter applied Attr.
-func (links Links) Encode(pname string, uinter Uinter) Attr {
+// EncodeNU returns uinter applied Attr.
+func (links Links) EncodeNU(pname string, uinter Uinter) Attr {
 	base := url.Values{}
 	for k, v := range links.Values {
 		base[k] = v
@@ -64,24 +64,19 @@ func (links Links) SetBase(base url.Values, pname string, uinter Uinter) *bool {
 	ddef := decoded.Decoder.Default.Uint
 	dnum := decoded.Number
 
-	desc := true
 	// Default ordering is desc (values are numeric most of the time).
 	// Alpha values ordering: asc.
-	if decoded.IsAlpha(this) {
-		desc = false
-	}
-	isdef := this == ddef
-	//  (isdef && decoded.Number != nil) ||
+	desc := !decoded.IsAlpha(this)
 	if dnum.Negative {
 		desc = !desc
 	}
 	var ret *bool
-	if dnum.Uint == this {
+	if this == dnum.Uint {
 		ret = new(bool)
 		*ret = !desc
 	}
 	// for default, opposite of having a parameter is it's absence.
-	if isdef && decoded.Specified {
+	if this == ddef && decoded.Specified {
 		base.Del(pname)
 		return ret
 	}
@@ -89,7 +84,7 @@ func (links Links) SetBase(base url.Values, pname string, uinter Uinter) *bool {
 	if err != nil { // ignoring the error
 		return nil
 	}
-	if dnum.Uint == this && !isdef && !dnum.Negative {
+	if this == dnum.Uint && !dnum.Negative {
 		low = "-" + low
 	}
 	base.Set(pname, low)
@@ -160,7 +155,7 @@ func (d Decoder) Find(values []string, pname string, linker Linker, uptr Upointe
 		in = in[1:]
 		negate = true
 	}
-	err := uptr.Unmarshal(in) // .UnmarshalJSON([]byte(fmt.Sprintf("%q", strings.ToUpper(in))))
+	err := uptr.Unmarshal(in, &negate) // .UnmarshalJSON([]byte(fmt.Sprintf("%q", strings.ToUpper(in))))
 	n := Number{}
 	if err != nil {
 		if rerr, ok := err.(RenamedConstError); ok {
@@ -177,7 +172,7 @@ func (d Decoder) Find(values []string, pname string, linker Linker, uptr Upointe
 		return n, true, err
 	}
 	n.Uint = uptr.Touint()
-	if negate || d.Default.Uint == n.Uint {
+	if negate {
 		n.Negative = true
 	}
 	linker.Set(pname, values[0])
