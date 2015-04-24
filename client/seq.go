@@ -113,7 +113,7 @@ func (d Decoder) IsAlpha(p Uint) bool {
 
 var PS = Decoder{
 	Default: Number{Uint: Uint(PID)},
-	Alphas:  []Uint{Uint(NAME), Uint(UID)},
+	Alphas:  []Uint{Uint(NAME), Uint(USER)},
 }
 
 var DF = Decoder{

@@ -91,7 +91,8 @@ func username(uids map[uint]string, uid uint) string {
 }
 
 func (procs MPSlice) Ordered(cl *client.Client, send *client.SendClient) []operating.ProcData {
-	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(cl.PSSEQ)) // not .StableSortBy
+	uids := map[uint]string{}
+	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(uids, cl.PSSEQ)) // not .StableSortBy
 
 	pslen := len(procs)
 	limitPS := cl.PSlimit
@@ -108,11 +109,11 @@ func (procs MPSlice) Ordered(cl *client.Client, send *client.SendClient) []opera
 	send.SetBool(&send.PSnotExpandable, &cl.PSnotExpandable, notexp)
 	send.SetString(&send.PSplusText, &cl.PSplusText, fmt.Sprintf("%d+", limitPS))
 
-	uids := map[uint]string{}
 	var list []operating.ProcData
 	for _, proc := range procs {
 		list = append(list, operating.ProcData{
 			PID:      proc.PID,
+			UID:      proc.UID,
 			Priority: proc.Priority,
 			Nice:     proc.Nice,
 			Time:     format.FormatTime(proc.Time),

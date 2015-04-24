@@ -17,6 +17,7 @@ var (
 		"TIME": TIME,
 		"NAME": NAME,
 		"UID":  UID,
+		"USER": USER,
 	}
 
 	_UintPSValueToName = map[UintPS]string{
@@ -28,6 +29,7 @@ var (
 		TIME: "TIME",
 		NAME: "NAME",
 		UID:  "UID",
+		USER: "USER",
 	}
 )
 
@@ -43,6 +45,7 @@ func init() {
 			interface{}(TIME).(fmt.Stringer).String(): TIME,
 			interface{}(NAME).(fmt.Stringer).String(): NAME,
 			interface{}(UID).(fmt.Stringer).String():  UID,
+			interface{}(USER).(fmt.Stringer).String(): USER,
 		}
 	}
 }

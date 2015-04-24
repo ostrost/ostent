@@ -30,15 +30,15 @@ func (r *UintPS) Unmarshal(data string, negate *bool) error {
 	if issize {
 		data = "virt"
 	}
-	isuser := data == "user"
+	/* isuser := data == "user"
 	if isuser {
 		data = "uid"
-	}
+	} // */
 	isexnondefps := data == "pid" && !*negate
 	if isexnondefps { // "ps=pid" became "ps=-pid"
 		*negate = !*negate
 	}
-	return UnmarshalMaybe(isexnondefps || issize || isuser, r.UnmarshalJSON, data)
+	return UnmarshalMaybe(isexnondefps || issize /* || isuser */, r.UnmarshalJSON, data)
 }
 
 // Uinter dictated methods:

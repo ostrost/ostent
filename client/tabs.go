@@ -104,6 +104,7 @@ const (
 	TIME
 	NAME
 	UID
+	USER
 )
 
 // RenamedConstError denotes an error.

@@ -113,6 +113,7 @@ type ProcInfo struct {
 // ProcData type is a public (for index context, json marshaling) account of a process.
 type ProcData struct {
 	PID      uint
+	UID      uint
 	Priority int
 	Nice     int
 	Time     string
