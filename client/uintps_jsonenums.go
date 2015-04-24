@@ -9,25 +9,25 @@ import (
 
 var (
 	_UintPSNameToValue = map[string]UintPS{
-		"PID":    PID,
-		"PRI":    PRI,
-		"NICE":   NICE,
-		"PSSIZE": PSSIZE,
-		"RES":    RES,
-		"TIME":   TIME,
-		"NAME":   NAME,
-		"UID":    UID,
+		"PID":  PID,
+		"PRI":  PRI,
+		"NICE": NICE,
+		"VIRT": VIRT,
+		"RES":  RES,
+		"TIME": TIME,
+		"NAME": NAME,
+		"UID":  UID,
 	}
 
 	_UintPSValueToName = map[UintPS]string{
-		PID:    "PID",
-		PRI:    "PRI",
-		NICE:   "NICE",
-		PSSIZE: "PSSIZE",
-		RES:    "RES",
-		TIME:   "TIME",
-		NAME:   "NAME",
-		UID:    "UID",
+		PID:  "PID",
+		PRI:  "PRI",
+		NICE: "NICE",
+		VIRT: "VIRT",
+		RES:  "RES",
+		TIME: "TIME",
+		NAME: "NAME",
+		UID:  "UID",
 	}
 )
 
@@ -35,14 +35,14 @@ func init() {
 	var v UintPS
 	if _, ok := interface{}(v).(fmt.Stringer); ok {
 		_UintPSNameToValue = map[string]UintPS{
-			interface{}(PID).(fmt.Stringer).String():    PID,
-			interface{}(PRI).(fmt.Stringer).String():    PRI,
-			interface{}(NICE).(fmt.Stringer).String():   NICE,
-			interface{}(PSSIZE).(fmt.Stringer).String(): PSSIZE,
-			interface{}(RES).(fmt.Stringer).String():    RES,
-			interface{}(TIME).(fmt.Stringer).String():   TIME,
-			interface{}(NAME).(fmt.Stringer).String():   NAME,
-			interface{}(UID).(fmt.Stringer).String():    UID,
+			interface{}(PID).(fmt.Stringer).String():  PID,
+			interface{}(PRI).(fmt.Stringer).String():  PRI,
+			interface{}(NICE).(fmt.Stringer).String(): NICE,
+			interface{}(VIRT).(fmt.Stringer).String(): VIRT,
+			interface{}(RES).(fmt.Stringer).String():  RES,
+			interface{}(TIME).(fmt.Stringer).String(): TIME,
+			interface{}(NAME).(fmt.Stringer).String(): NAME,
+			interface{}(UID).(fmt.Stringer).String():  UID,
 		}
 	}
 }

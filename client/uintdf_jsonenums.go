@@ -9,19 +9,19 @@ import (
 
 var (
 	_UintDFNameToValue = map[string]UintDF{
-		"FS":     FS,
-		"MP":     MP,
-		"DFSIZE": DFSIZE,
-		"USED":   USED,
-		"AVAIL":  AVAIL,
+		"FS":    FS,
+		"MP":    MP,
+		"TOTAL": TOTAL,
+		"USED":  USED,
+		"AVAIL": AVAIL,
 	}
 
 	_UintDFValueToName = map[UintDF]string{
-		FS:     "FS",
-		MP:     "MP",
-		DFSIZE: "DFSIZE",
-		USED:   "USED",
-		AVAIL:  "AVAIL",
+		FS:    "FS",
+		MP:    "MP",
+		TOTAL: "TOTAL",
+		USED:  "USED",
+		AVAIL: "AVAIL",
 	}
 )
 
@@ -29,11 +29,11 @@ func init() {
 	var v UintDF
 	if _, ok := interface{}(v).(fmt.Stringer); ok {
 		_UintDFNameToValue = map[string]UintDF{
-			interface{}(FS).(fmt.Stringer).String():     FS,
-			interface{}(MP).(fmt.Stringer).String():     MP,
-			interface{}(DFSIZE).(fmt.Stringer).String(): DFSIZE,
-			interface{}(USED).(fmt.Stringer).String():   USED,
-			interface{}(AVAIL).(fmt.Stringer).String():  AVAIL,
+			interface{}(FS).(fmt.Stringer).String():    FS,
+			interface{}(MP).(fmt.Stringer).String():    MP,
+			interface{}(TOTAL).(fmt.Stringer).String(): TOTAL,
+			interface{}(USED).(fmt.Stringer).String():  USED,
+			interface{}(AVAIL).(fmt.Stringer).String(): AVAIL,
 		}
 	}
 }

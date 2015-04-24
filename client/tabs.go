@@ -89,7 +89,7 @@ var DF_TABS = []Uint{
 const (
 	FS UintDF = iota
 	MP
-	DFSIZE
+	TOTAL
 	USED
 	AVAIL
 )
@@ -99,7 +99,7 @@ const (
 	PID UintPS = iota
 	PRI
 	NICE
-	PSSIZE
+	VIRT
 	RES
 	TIME
 	NAME

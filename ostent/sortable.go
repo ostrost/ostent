@@ -14,7 +14,7 @@ func LessDiskFunc(num client.Number) func(operating.MetricDF, operating.MetricDF
 		switch client.UintDF(num.Uint) {
 		case client.FS:
 			r = a.DevName.Snapshot().Value() < b.DevName.Snapshot().Value()
-		case client.DFSIZE:
+		case client.TOTAL:
 			r = a.Total.Snapshot().Value() < b.Total.Snapshot().Value()
 		case client.USED:
 			r = a.Used.Snapshot().Value() < b.Used.Snapshot().Value()
@@ -45,7 +45,7 @@ func LessProcFunc(num client.Number) func(operating.MetricProc, operating.Metric
 			r = a.Priority < b.Priority
 		case client.NICE:
 			r = a.Nice < b.Nice
-		case client.PSSIZE:
+		case client.VIRT:
 			r = a.Size < b.Size
 		case client.RES:
 			r = a.Resident < b.Resident
@@ -76,7 +76,7 @@ type Links struct {
 
 func (la Links) DFdiskName() client.Attr { return la.EncodeNU("df", client.FS) }
 func (la Links) DFdirName() client.Attr  { return la.EncodeNU("df", client.MP) }
-func (la Links) DFtotal() client.Attr    { return la.EncodeNU("df", client.DFSIZE) }
+func (la Links) DFtotal() client.Attr    { return la.EncodeNU("df", client.TOTAL) }
 func (la Links) DFused() client.Attr     { return la.EncodeNU("df", client.USED) }
 func (la Links) DFavail() client.Attr    { return la.EncodeNU("df", client.AVAIL) }
 
@@ -88,7 +88,7 @@ func (la Links) PSnice() client.Attr     { return la.EncodeNU("ps", client.NICE)
 func (la Links) PStime() client.Attr     { return la.EncodeNU("ps", client.TIME) }
 func (la Links) PSname() client.Attr     { return la.EncodeNU("ps", client.NAME) }
 func (la Links) PSuser() client.Attr     { return la.EncodeNU("ps", client.UID) }
-func (la Links) PSsize() client.Attr     { return la.EncodeNU("ps", client.PSSIZE) }
+func (la Links) PSsize() client.Attr     { return la.EncodeNU("ps", client.VIRT) }
 func (la Links) PSresident() client.Attr { return la.EncodeNU("ps", client.RES) }
 
 // MarshalJSON satisfying json.Marshaler interface.

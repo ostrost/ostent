@@ -13,9 +13,9 @@ import (
 
 // Unmarshal for UintDF. Knows renamed parameter.
 func (r *UintDF) Unmarshal(data string, negate *bool) error {
-	issize := data == "size"
+	issize := data == "size" || data == "dfsize"
 	if issize {
-		data = "dfsize"
+		data = "total"
 	}
 	isexnondeffs := data == "fs" && !*negate
 	if isexnondeffs { // "df=fs" became "df=-fs"
@@ -26,9 +26,9 @@ func (r *UintDF) Unmarshal(data string, negate *bool) error {
 
 // Unmarshal for UintPS. Knows renamed parameter.
 func (r *UintPS) Unmarshal(data string, negate *bool) error {
-	issize := data == "size"
+	issize := data == "size" || data == "pssize"
 	if issize {
-		data = "pssize"
+		data = "virt"
 	}
 	isuser := data == "user"
 	if isuser {

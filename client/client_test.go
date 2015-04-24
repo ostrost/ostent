@@ -21,8 +21,8 @@ func TestLinks(t *testing.T) {
 		t.Errorf("Decode failed: %+v\n", num)
 	}
 
-	if size := links.EncodeNU("df", DFSIZE); size.Href != "?df=dfsize" || size.Class != "state" || size.CaretClass != "" {
-		t.Fatalf("Encode failed: size: %+v", size)
+	if total := links.EncodeNU("df", TOTAL); total.Href != "?df=total" || total.Class != "state" || total.CaretClass != "" {
+		t.Fatalf("Encode failed: total: %+v", total)
 	}
 	if mp := links.EncodeNU("df", MP); mp.Href != "?df=-mp" || mp.Class != "state current dropup" || mp.CaretClass != "caret" {
 		t.Fatalf("Encode failed: mp: %+v", mp)
@@ -40,7 +40,7 @@ func TestLinks(t *testing.T) {
 		if err == nil || err.Error() != "" {
 			t.Fatalf("Error expected (%q)", err)
 		}
-		if s := links.Values.Encode(); s != "df=dfsize" {
+		if s := links.Values.Encode(); s != "df=total" {
 			t.Fatalf("Expected Encode: %q", s)
 
 		}
