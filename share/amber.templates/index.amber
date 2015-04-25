@@ -9,7 +9,7 @@ mixin refresh_input($placeholder, $value)
       [value=$value] ? json($value) != json($placeholder)
 
 mixin requirescript($main)
-  script[charset="utf-8"][type="text/javascript"][src="/js/vendor/requirejs/2.1.16/require.min.js"][data-main=$main]
+  script[charset="utf-8"][type="text/javascript"][src="/js/vendor/requirejs/2.1.17/require.min.js"][data-main=$main]
 
 !!! 5
 html
