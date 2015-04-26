@@ -292,7 +292,7 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
         @props.$hidebutton_el.addClass('active')
         return null
       @props.$hidebutton_el.removeClass('active')
-      curtabid = +@state.Send # MUST be an int
+      curtabid = +@state.Send.Uint # MUST be an int
       nots = @props.$collapse_el.not('[data-tabid="'+ curtabid + '"]')
       $(el).collapse('hide') for el in nots
       $(@props.$collapse_el.not(nots)).collapse('show')
@@ -307,7 +307,7 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
     clicktab: (e) ->
       S = {}
       # +"STRING" to make it an int
-      S[@props.Ksend] = +$( $(e.target).attr('href') ).attr('data-tabid')
+      S[@props.Ksend] = {Uint: +$($(e.target).attr('href')).attr('data-tabid')}
       S[@props.Khide] = false if @state.Hide? and @state.Hide
       updates.sendClient(S)
       e.preventDefault()
@@ -408,8 +408,8 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
     uptime   = React.render(React.createElement(NewTextCLASS((data) -> data?.Uptime   )), $('#uptime'  )   .get(0))
     la       = React.render(React.createElement(NewTextCLASS((data) -> data?.LA       )), $('#la'      )   .get(0))
 
-    iftitle  = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.TabTitleIF)), $('header a[href="#if"]').get(0))
-    dftitle  = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.TabTitleDF)), $('header a[href="#df"]').get(0))
+    iftitle  = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.TabIF?.Title)), $('header a[href="#if"]').get(0))
+    dftitle  = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.TabDF?.Title)), $('header a[href="#df"]').get(0))
 
     psplus   = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.PSplusText)), $('label.more[href="#psmore"]').get(0))
     psmore   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: true,  Khide: 'HidePS', Kable: 'PSnotExpandable',  $button_el: $('label.more[href="#psmore"]')})

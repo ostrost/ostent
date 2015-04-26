@@ -157,8 +157,8 @@ type IndexData struct {
 
 	Client clientData
 
-	IFTABS client.IFtabs
-	DFTABS client.DFtabs
+	IFTABS client.Tabs
+	DFTABS client.Tabs
 }
 
 type IndexUpdate struct {
@@ -391,11 +391,11 @@ func LessCPU(a, b operating.MetricCPU) bool {
 }
 
 func (ir *IndexRegistry) DF(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
-	switch *cli.TabDF {
-	case client.DFBYTES_TABID:
+	switch cli.TabDF.Uint {
+	case client.DFBYTES:
 		iu.DFbytes = &operating.DFbytes{List: ir.DFbytes(cli, send)}
 		return IndexUpdate{DFbytes: iu.DFbytes}
-	case client.DFINODES_TABID:
+	case client.DFINODES:
 		iu.DFinodes = &operating.DFinodes{List: ir.DFinodes(cli, send)}
 		return IndexUpdate{DFinodes: iu.DFinodes}
 	}
@@ -501,14 +501,14 @@ func (procs MPSlice) IU(cli *client.Client, send *client.SendClient, iu *IndexUp
 }
 
 func (ir *IndexRegistry) IF(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
-	switch *cli.TabIF {
-	case client.IFBYTES_TABID:
+	switch cli.TabIF.Uint {
+	case client.IFBYTES:
 		iu.IFbytes = &operating.Interfaces{List: ir.Interfaces(cli, send, ir.InterfaceBytes)}
 		return IndexUpdate{IFbytes: iu.IFbytes}
-	case client.IFERRORS_TABID:
+	case client.IFERRORS:
 		iu.IFerrors = &operating.Interfaces{List: Reg1s.Interfaces(cli, send, ir.InterfaceErrors)}
 		return IndexUpdate{IFerrors: iu.IFerrors}
-	case client.IFPACKETS_TABID:
+	case client.IFPACKETS:
 		iu.IFpackets = &operating.Interfaces{List: Reg1s.Interfaces(cli, send, ir.InterfacePackets)}
 		return IndexUpdate{IFpackets: iu.IFpackets}
 	}
@@ -842,10 +842,12 @@ func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 		Links:   updates.Links,
 		PStable: *updates.PStable,
 
-		DISTRIB: DISTRIB, // value set in init()
-		VERSION: VERSION, // value from server.go
+		DISTRIB: DISTRIB,       // value set in init()
+		VERSION: VERSION,       // value from server.go
+		DFTABS:  client.DFTABS, // "const"
+		IFTABS:  client.IFTABS, // "const"
 
-		PeriodDuration: minperiod, // default refresh value for placeholder
+		PeriodDuration: minperiod,
 	}
 
 	if updates.DFbytes != nil {
@@ -864,9 +866,6 @@ func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 	data.VagrantMachines = updates.VagrantMachines
 	data.VagrantError = updates.VagrantError
 	data.VagrantErrord = updates.VagrantErrord
-
-	data.DFTABS = client.DFTABS // const
-	data.IFTABS = client.IFTABS // const
 
 	return data, nil
 }

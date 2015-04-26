@@ -1,89 +1,42 @@
 //go:generate sh -c "jsonenums -type=UintDF; jsonenums -type=UintPS"
+
+// Package client is all about client state.
 package client
 
-var DFTABS = DFtabs{
-	DFinodes: DFINODES_TABID,
-	DFbytes:  DFBYTES_TABID,
-
-	DFinodesTitle: "Disks inodes",
-	DFbytesTitle:  "Disks",
+// Tab shadows Uint and has Title string.
+type Tab struct {
+	Uint
+	Title string
 }
 
-var IFTABS = IFtabs{
-	IFpackets: IFPACKETS_TABID,
-	IFerrors:  IFERRORS_TABID,
-	IFbytes:   IFBYTES_TABID,
+// Tabs is to define known tabs by string. In use in templates.
+type Tabs map[string]Tab
 
-	IFpacketsTitle: "Interfaces packets",
-	IFerrorsTitle:  "Interfaces errors",
-	IFbytesTitle:   "Interfaces",
+// DFTABS is a map containing defined DF Tab's.
+var DFTABS = Tabs{
+	"dFINODES": {DFINODES, "Disks inodes"},
+	"dFBYTES":  {DFBYTES, "Disks"},
 }
 
-type DFtabs struct {
-	DFinodes Uint
-	DFbytes  Uint
-
-	DFinodesTitle string
-	DFbytesTitle  string
+// IFTABS is a map containing defined IF Tab's.
+var IFTABS = Tabs{
+	"iFPACKETS": {IFPACKETS, "Interfaces packets"},
+	"iFERRORS":  {IFERRORS, "Interfaces errors"},
+	"iFBYTES":   {IFBYTES, "Interfaces"},
 }
 
-// Title returns a label. "" return denotes unidentified p.
-func (df DFtabs) Title(u Uint) string {
-	switch {
-	case u == df.DFinodes:
-		return df.DFinodesTitle
-	case u == df.DFbytes:
-		return df.DFbytesTitle
-	}
-	return ""
-}
-
-type IFtabs struct {
-	IFpackets Uint
-	IFerrors  Uint
-	IFbytes   Uint
-
-	IFpacketsTitle string
-	IFerrorsTitle  string
-	IFbytesTitle   string
-}
-
-// Title returns a label. "" return denotes unidentified p.
-func (fi IFtabs) Title(u Uint) string {
-	switch {
-	case u == fi.IFpackets:
-		return fi.IFpacketsTitle
-	case u == fi.IFerrors:
-		return fi.IFerrorsTitle
-	case u == fi.IFbytes:
-		return fi.IFbytesTitle
-	}
-	return ""
-}
-
+// Constants for DF tabs.
 const (
-	IFPACKETS_TABID Uint = iota
-	IFERRORS_TABID
-	IFBYTES_TABID
+	DFINODES Uint = iota
+	DFBYTES
 )
 
+// Constants for IF tabs.
 const (
-	DFINODES_TABID Uint = iota
-	DFBYTES_TABID
+	IFPACKETS Uint = iota
+	IFERRORS
+	IFBYTES
 )
-
-/* UNUSED ?
-var IF_TABS = []Uint{
-	IFPACKETS_TABID,
-	 IFERRORS_TABID,
-	  IFBYTES_TABID,
-}
-
-var DF_TABS = []Uint{
-	DFINODES_TABID,
-	 DFBYTES_TABID,
-}
-*/
 
 // Constants for DF sorting criterion.
 const (

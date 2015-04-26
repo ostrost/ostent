@@ -1,4 +1,3 @@
-// Package client is all about client state.
 package client
 
 import (
@@ -70,20 +69,6 @@ type internalClient struct {
 	Modified bool
 }
 
-func (c *Client) mergeTitle(dst *string, src string, send **string) {
-	if src == "" { // precautious. should not be the case
-		return
-	}
-	// *send = nil
-	if *dst == src {
-		return
-	}
-	*send = new(string)
-	**send = src
-	*dst = **send
-	c.Modified = true
-}
-
 type commonClient struct {
 	HideRAM   *bool `json:",omitempty"`
 	HideIF    *bool `json:",omitempty"`
@@ -96,11 +81,8 @@ type commonClient struct {
 	ExpandCPU *bool `json:",omitempty"`
 	ExpandDF  *bool `json:",omitempty"`
 
-	TabIF *Uint `json:",omitempty"`
-	TabDF *Uint `json:",omitempty"`
-
-	TabTitleIF *string `json:",omitempty"`
-	TabTitleDF *string `json:",omitempty"`
+	TabIF *Tab `json:",omitempty"`
+	TabDF *Tab `json:",omitempty"`
 
 	// PSusers []string `json:omitempty`
 
@@ -203,7 +185,6 @@ type SendClient struct {
 }
 
 func (c *Client) mergeBool(dst, src *bool, send **bool) {
-	// c is unused
 	if src == nil {
 		return
 	}
@@ -212,13 +193,37 @@ func (c *Client) mergeBool(dst, src *bool, send **bool) {
 	c.Modified = true
 }
 
-func (c *Client) mergeUint(dst, src *Uint, send **Uint) {
-	if src == nil {
+// MergeTab fills dst and send with src.Uint and title found from tabs.
+// src.Title is disregarded.
+func (c *Client) MergeTab(dst, src *Tab, send **Tab, tabs Tabs) {
+	if src == nil || src.Uint == dst.Uint {
 		return
 	}
-	*dst = *src
-	*send = src
+	var title string
+	for _, v := range tabs {
+		if src.Uint == v.Uint {
+			title = v.Title
+			break
+		}
+	}
+	if title == "" { // no tab with src.Uint found
+		return
+	}
+	if send == nil {
+		s := new(Tab)
+		send = &s // dummy
+	} else {
+		*send = new(Tab)
+	}
+	dst.Uint, (*send).Uint = src.Uint, src.Uint
+	dst.Title, (*send).Title = title, title
 	c.Modified = true
+}
+
+func (c *Client) NewTab(tabs Tabs, u Uint) *Tab {
+	n := new(Tab)
+	c.MergeTab(n, &Tab{Uint: u}, nil, tabs)
+	return n
 }
 
 func (c *Client) Merge(r RecvClient, s *SendClient) {
@@ -241,12 +246,8 @@ func (c *Client) Merge(r RecvClient, s *SendClient) {
 	s.mergeBool(c.HideconfigPS, r.HideconfigPS, &s.HideconfigPS)
 	s.mergeBool(c.HideconfigVG, r.HideconfigVG, &s.HideconfigVG)
 
-	s.mergeUint(c.TabIF, r.TabIF, &s.TabIF)
-	s.mergeUint(c.TabDF, r.TabDF, &s.TabDF)
-
-	// merge NOT from the r
-	s.mergeTitle(c.TabTitleIF, IFTABS.Title(*c.TabIF), &s.TabTitleIF)
-	s.mergeTitle(c.TabTitleDF, DFTABS.Title(*c.TabDF), &s.TabTitleDF)
+	s.MergeTab(c.TabIF, r.TabIF, &s.TabIF, IFTABS)
+	s.MergeTab(c.TabDF, r.TabDF, &s.TabDF, DFTABS)
 }
 
 func DefaultClient(minperiod flags.Period) Client {
@@ -264,14 +265,8 @@ func DefaultClient(minperiod flags.Period) Client {
 	cs.ExpandCPU = new(bool)
 	cs.ExpandDF = new(bool)
 
-	newuint := func(p Uint) *Uint { n := new(Uint); *n = p; return n }
-	cs.TabIF = newuint(IFBYTES_TABID)
-	cs.TabDF = newuint(DFBYTES_TABID)
-
-	cs.TabTitleIF = new(string)
-	*cs.TabTitleIF = IFTABS.Title(*cs.TabIF)
-	cs.TabTitleDF = new(string)
-	*cs.TabTitleDF = DFTABS.Title(*cs.TabDF)
+	cs.TabIF = cs.NewTab(IFTABS, IFBYTES)
+	cs.TabDF = cs.NewTab(DFTABS, DFBYTES)
 
 	newhc := func() *bool { b := new(bool); *b = true; return b } // *b = false for DEVELOPMENT
 	cs.HideconfigMEM = newhc()

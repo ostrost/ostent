@@ -499,7 +499,7 @@
           return null;
         }
         this.props.$hidebutton_el.removeClass('active');
-        curtabid = +this.state.Send;
+        curtabid = +this.state.Send.Uint;
         nots = this.props.$collapse_el.not('[data-tabid="' + curtabid + '"]');
         for (i = 0, len = nots.length; i < len; i++) {
           el = nots[i];
@@ -523,7 +523,9 @@
       clicktab: function(e) {
         var S;
         S = {};
-        S[this.props.Ksend] = +$($(e.target).attr('href')).attr('data-tabid');
+        S[this.props.Ksend] = {
+          Uint: +$($(e.target).attr('href')).attr('data-tabid')
+        };
         if ((this.state.Hide != null) && this.state.Hide) {
           S[this.props.Khide] = false;
         }
@@ -725,12 +727,12 @@
         return data != null ? data.LA : void 0;
       })), $('#la').get(0));
       iftitle = React.render(React.createElement(NewTextCLASS(function(data) {
-        var ref;
-        return data != null ? (ref = data.Client) != null ? ref.TabTitleIF : void 0 : void 0;
+        var ref, ref1;
+        return data != null ? (ref = data.Client) != null ? (ref1 = ref.TabIF) != null ? ref1.Title : void 0 : void 0 : void 0;
       })), $('header a[href="#if"]').get(0));
       dftitle = React.render(React.createElement(NewTextCLASS(function(data) {
-        var ref;
-        return data != null ? (ref = data.Client) != null ? ref.TabTitleDF : void 0 : void 0;
+        var ref, ref1;
+        return data != null ? (ref = data.Client) != null ? (ref1 = ref.TabDF) != null ? ref1.Title : void 0 : void 0 : void 0;
       })), $('header a[href="#df"]').get(0));
       psplus = React.render(React.createElement(NewTextCLASS(function(data) {
         var ref;

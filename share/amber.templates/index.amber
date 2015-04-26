@@ -110,7 +110,7 @@ html
         div.block.col-md-3
           div.panel1
             header.draggable
-              a.btn-header-block[href="#if"] #{Data.Client.TabTitleIF}
+              a.btn-header-block[href="#if"] #{Data.Client.TabIF.Title}
                 [class="active"] ? (json(Data.Client.HideconfigIF) == "false")
 
             //- a div for collapse to animate properly
@@ -133,34 +133,34 @@ html
 
                 ul.nav.nav-tabs
                   li.if-switch
-                    [data-tabid=Data.IFTABS.IFpackets]
+                    [data-tabid=Data.IFTABS.iFPACKETS.Uint]
                       a[href="#ifpackets"] Packets
                   li.if-switch
-                    [data-tabid=Data.IFTABS.IFerrors]
+                    [data-tabid=Data.IFTABS.iFERRORS.Uint]
                       a[href="#iferrors"] Errors
                   li.if-switch.active
-                    [data-tabid=Data.IFTABS.IFbytes]
+                    [data-tabid=Data.IFTABS.iFBYTES.Uint]
                       a[href="#ifbytes"] Bytes
 
             //- panels selected by .if-tab
             div.if-tab.collapse#ifpackets
-              [class="in"] ? (json(Data.IFTABS.IFpackets) == json(Data.Client.TabIF))
-              [data-title=Data.IFTABS.IFpacketsTitle]
-              [data-tabid=Data.IFTABS.IFpackets]
+              [class="in"] ? (json(Data.IFTABS.iFPACKETS.Uint) == json(Data.Client.TabIF.Uint))
+              [data-title=Data.IFTABS.iFPACKETS.Title]
+              [data-tabid=Data.IFTABS.iFPACKETS.Uint]
               span#ifpackets-table
                 [[template "define_ifpackets_table" .]]
 
             div.if-tab.collapse#iferrors
-              [class="in"] ? (json(Data.IFTABS.IFerrors) == json(Data.Client.TabIF))
-              [data-title=Data.IFTABS.IFerrorsTitle]
-              [data-tabid=Data.IFTABS.IFerrors]
+              [class="in"] ? (json(Data.IFTABS.iFERRORS.Uint) == json(Data.Client.TabIF.Uint))
+              [data-title=Data.IFTABS.iFERRORS.Title]
+              [data-tabid=Data.IFTABS.iFERRORS.Uint]
               span#iferrors-table
                 [[template "define_iferrors_table" .]]
 
             div.if-tab.collapse#ifbytes
-              [class="in"] ? (json(Data.IFTABS.IFbytes) == json(Data.Client.TabIF))
-              [data-title=Data.IFTABS.IFbytesTitle]
-              [data-tabid=Data.IFTABS.IFbytes]
+              [class="in"] ? (json(Data.IFTABS.iFBYTES.Uint) == json(Data.Client.TabIF.Uint))
+              [data-title=Data.IFTABS.iFBYTES.Title]
+              [data-tabid=Data.IFTABS.iFBYTES.Uint]
               span#ifbytes-table
                 [[template "define_ifbytes_table" .]]
 
@@ -194,7 +194,7 @@ html
         div.block.col-md-3
           div.panel1
             header.draggable
-              a.btn-header-block[href="#df"] #{Data.Client.TabTitleDF}
+              a.btn-header-block[href="#df"] #{Data.Client.TabDF.Title}
                 [class="active"] ? (json(Data.Client.HideconfigDF) == "false")
 
             //- a div for collapse to animate properly
@@ -217,24 +217,24 @@ html
 
                 ul.nav.nav-tabs
                   li.df-switch
-                    [data-tabid=Data.DFTABS.DFinodes]
+                    [data-tabid=Data.DFTABS.dFINODES.Uint]
                       a[href="#dfinodes"] Inodes
                   li.df-switch.active
-                    [data-tabid=Data.DFTABS.DFbytes]
+                    [data-tabid=Data.DFTABS.dFBYTES.Uint]
                       a[href="#dfbytes"] Bytes
 
             //- panels selected by .df-tab
             div.df-tab.collapse#dfinodes
-              [class="in"] ? (json(Data.DFTABS.DFinodes) == json(Data.Client.TabDF))
-              [data-title=Data.DFTABS.DFinodesTitle]
-              [data-tabid=Data.DFTABS.DFinodes]
+              [class="in"] ? (json(Data.DFTABS.dFINODES.Uint) == json(Data.Client.TabDF.Uint))
+              [data-title=Data.DFTABS.dFINODES.Title]
+              [data-tabid=Data.DFTABS.dFINODES.Uint]
               span#dfinodes-table
                 [[template "define_dfinodes_table" .]]
 
             div.df-tab.collapse#dfbytes
-              [class="in"] ? (json(Data.DFTABS.DFbytes) == json(Data.Client.TabDF))
-              [data-title=Data.DFTABS.DFbytesTitle]
-              [data-tabid=Data.DFTABS.DFbytes]
+              [class="in"] ? (json(Data.DFTABS.dFBYTES.Uint) == json(Data.Client.TabDF.Uint))
+              [data-title=Data.DFTABS.dFBYTES.Title]
+              [data-tabid=Data.DFTABS.dFBYTES.Uint]
               span#dfbytes-table
                 [[template "define_dfbytes_table" .]]
 
