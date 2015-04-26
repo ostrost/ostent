@@ -187,10 +187,10 @@ func js_devel_vendor_min_jquery_2_1_3_jquery_2_1_3_min_js() (*asset, error) {
 	return a, err
 }
 
-// js_devel_vendor_min_react_0_13_1_react_min_js reads file data from disk. It returns an error on failure.
-func js_devel_vendor_min_react_0_13_1_react_min_js() (*asset, error) {
-	path := filepath.Join(rootDir, "js/devel/vendor/min/react/0.13.1/react.min.js")
-	name := "js/devel/vendor/min/react/0.13.1/react.min.js"
+// js_devel_vendor_min_react_0_13_2_react_min_js reads file data from disk. It returns an error on failure.
+func js_devel_vendor_min_react_0_13_2_react_min_js() (*asset, error) {
+	path := filepath.Join(rootDir, "js/devel/vendor/min/react/0.13.2/react.min.js")
+	name := "js/devel/vendor/min/react/0.13.2/react.min.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -320,7 +320,7 @@ var _bindata = map[string]func() (*asset, error){
 	"js/devel/vendor/min/bootstrap/3.3.4/bootstrap.min.js": js_devel_vendor_min_bootstrap_3_3_4_bootstrap_min_js,
 	"js/devel/vendor/min/headroom/0.7.0/headroom.min.js": js_devel_vendor_min_headroom_0_7_0_headroom_min_js,
 	"js/devel/vendor/min/jquery/2.1.3/jquery-2.1.3.min.js": js_devel_vendor_min_jquery_2_1_3_jquery_2_1_3_min_js,
-	"js/devel/vendor/min/react/0.13.1/react.min.js": js_devel_vendor_min_react_0_13_1_react_min_js,
+	"js/devel/vendor/min/react/0.13.2/react.min.js": js_devel_vendor_min_react_0_13_2_react_min_js,
 	"js/devel/vendor/min/requirejs-domReady/2.0.1/domReady.js": js_devel_vendor_min_requirejs_domready_2_0_1_domready_js,
 	"js/vendor/requirejs/2.1.17/require.min.js": js_vendor_requirejs_2_1_17_require_min_js,
 	"robots.txt": robots_txt,
@@ -407,8 +407,8 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 						}},
 					}},
 					"react": &_bintree_t{nil, map[string]*_bintree_t{
-						"0.13.1": &_bintree_t{nil, map[string]*_bintree_t{
-							"react.min.js": &_bintree_t{js_devel_vendor_min_react_0_13_1_react_min_js, map[string]*_bintree_t{
+						"0.13.2": &_bintree_t{nil, map[string]*_bintree_t{
+							"react.min.js": &_bintree_t{js_devel_vendor_min_react_0_13_2_react_min_js, map[string]*_bintree_t{
 							}},
 						}},
 					}},
