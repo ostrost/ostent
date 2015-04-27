@@ -7,9 +7,12 @@ import (
 )
 
 // Refresh is a ticker with period.
+// json.Marshal exposes inline .Period only,
+// .Default is explicitly ignored.
+// .Default is available and used in templates.
 type Refresh struct {
 	flags.Period
-	Default flags.Period // read-only and used in templates
+	Default flags.Period `json:"-"` // not modified ever, including in .Merge* funcs
 	tick    int          // .Tick() must be called once per second; .tick is 1 when the refresh expired
 }
 
@@ -186,9 +189,9 @@ type SendClient struct {
 	RefreshErrorPS   *bool `json:",omitempty"`
 	RefreshErrorVG   *bool `json:",omitempty"`
 
-	RefreshMEM  *Refresh  `json:",omitempty"`  // for frontend only
-	RefreshRAM  *struct{} `json:"-,omitempty"` // shadow
-	RefreshSWAP *struct{} `json:"-,omitempty"` // shadow
+	RefreshMEM  *Refresh  `json:",omitempty"` // for frontend only
+	RefreshRAM  *struct{} `json:"-"`          // shadow
+	RefreshSWAP *struct{} `json:"-"`          // shadow
 
 	DebugError *string `json:",omitempty"`
 }
