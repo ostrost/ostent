@@ -94,11 +94,10 @@ type conn struct {
 
 	requestOrigin *http.Request
 
-	receive   chan *received
-	pushch    chan *IndexUpdate
-	full      client.Client
-	minperiod flags.Period
-	access    *logger
+	receive chan *received
+	pushch  chan *IndexUpdate
+	full    client.Client
+	access  *logger
 
 	mutex      sync.Mutex
 	writemutex sync.Mutex
@@ -378,7 +377,7 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	send := client.SendClient{}
 	if sd.received != nil {
 		if sd.received.Client != nil {
-			if err := sd.received.Client.MergeRefresh(sd.conn.minperiod.Duration, &sd.conn.full, &send); err != nil {
+			if err := sd.received.Client.MergeRefresh(&sd.conn.full, &send); err != nil {
 				// if !sd.conn.Conn.writeError(err) { stop(); return }
 				send.DebugError = new(string)
 				*send.DebugError = err.Error()
@@ -449,11 +448,10 @@ func IndexWS(access *logger, minperiod flags.Period, w http.ResponseWriter, req 
 
 		requestOrigin: req,
 
-		receive:   make(chan *received, 2),
-		pushch:    make(chan *IndexUpdate, 2),
-		full:      client.DefaultClient(minperiod),
-		minperiod: minperiod,
-		access:    access,
+		receive: make(chan *received, 2),
+		pushch:  make(chan *IndexUpdate, 2),
+		full:    client.DefaultClient(minperiod),
+		access:  access,
 	}
 	Register <- c
 	defer func() {

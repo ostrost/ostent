@@ -135,11 +135,11 @@ type clientData struct {
 type IndexData struct {
 	Generic // inline non-pointer
 
-	CPU operating.CPUInfo
-	MEM operating.MEM
+	CPU     operating.CPUInfo
+	MEM     operating.MEM
+	Links   *Links `json:",omitempty"`
+	PStable PStable
 
-	Links    *Links `json:",omitempty"`
-	PStable  PStable
 	DFbytes  operating.DFbytes  `json:",omitempty"`
 	DFinodes operating.DFinodes `json:",omitempty"`
 
@@ -151,24 +151,22 @@ type IndexData struct {
 	VagrantError    string
 	VagrantErrord   bool
 
-	DISTRIB        string
-	VERSION        string
-	PeriodDuration flags.Period // default refresh value for placeholder // TODO rename
+	DISTRIB string
+	VERSION string
+	IFTABS  client.Tabs
+	DFTABS  client.Tabs
 
 	Client clientData
-
-	IFTABS client.Tabs
-	DFTABS client.Tabs
 }
 
 type IndexUpdate struct {
 	Generic // inline non-pointer
 
-	CPU *operating.CPUInfo `json:",omitempty"`
-	MEM *operating.MEM     `json:",omitempty"`
+	CPU     *operating.CPUInfo `json:",omitempty"`
+	MEM     *operating.MEM     `json:",omitempty"`
+	Links   *Links             `json:",omitempty"`
+	PStable *PStable           `json:",omitempty"`
 
-	Links    *Links              `json:",omitempty"`
-	PStable  *PStable            `json:",omitempty"`
 	DFbytes  *operating.DFbytes  `json:",omitempty"`
 	DFinodes *operating.DFinodes `json:",omitempty"`
 
@@ -833,12 +831,10 @@ func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 	}
 
 	data := IndexData{
-		Client:  clientData{Client: cl, HideMEM: cl.HideRAM, RefreshMEM: cl.RefreshRAM},
 		Generic: updates.Generic,
 
-		CPU: *updates.CPU,
-		MEM: *updates.MEM,
-
+		CPU:     *updates.CPU,
+		MEM:     *updates.MEM,
 		Links:   updates.Links,
 		PStable: *updates.PStable,
 
@@ -847,7 +843,7 @@ func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 		DFTABS:  client.DFTABS, // "const"
 		IFTABS:  client.IFTABS, // "const"
 
-		PeriodDuration: minperiod,
+		Client: clientData{Client: cl, HideMEM: cl.HideRAM, RefreshMEM: cl.RefreshRAM},
 	}
 
 	if updates.DFbytes != nil {

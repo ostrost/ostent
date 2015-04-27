@@ -1,12 +1,12 @@
 [[/* -*- indent-tabs-mode: nil -*- */]]
 
-mixin refresh_input($placeholder, $value)
+mixin refresh_input($refresh)
   div.input-group.input-group-sm.refresh-group
     span.input-group-addon Refresh
     input.form-control.refresh-input
       [type="text"]
-      [placeholder=$placeholder]
-      [value=$value] ? json($value) != json($placeholder)
+      [placeholder=$refresh.Default]
+      [value=$refresh.Period] ? json($refresh.Period) != json($refresh.Default)
 
 mixin requirescript($main)
   script[charset="utf-8"][type="text/javascript"][src="/js/vendor/requirejs/2.1.17/require.min.js"][data-main=$main]
@@ -100,7 +100,7 @@ html
                         | Hide swap
 
                   div.form-group-padded
-                    +refresh_input(Data.PeriodDuration, Data.Client.RefreshMEM)
+                    +refresh_input(Data.Client.RefreshMEM)
 
             div.collapse#mem
               [class="in"] ? (json(Data.Client.HideMEM) == "false")
@@ -129,7 +129,7 @@ html
                         | #{Data.Client.ExpandtextIF}
 
                   div.form-group-padded
-                    +refresh_input(Data.PeriodDuration, Data.Client.RefreshIF)
+                    +refresh_input(Data.Client.RefreshIF)
 
                 ul.nav.nav-tabs
                   li.if-switch
@@ -184,7 +184,7 @@ html
                       | #{Data.Client.ExpandtextCPU}
 
                 div.form-group-padded
-                  +refresh_input(Data.PeriodDuration, Data.Client.RefreshCPU)
+                  +refresh_input(Data.Client.RefreshCPU)
 
             div.collapse#cpu
               [class="in"] ? (json(Data.Client.HideCPU) == "false")
@@ -213,7 +213,7 @@ html
                         | #{Data.Client.ExpandtextDF}
 
                   div.form-group-padded
-                    +refresh_input(Data.PeriodDuration, Data.Client.RefreshDF)
+                    +refresh_input(Data.Client.RefreshDF)
 
                 ul.nav.nav-tabs
                   li.df-switch
@@ -255,7 +255,7 @@ html
               [class="in"] ? (json(Data.Client.HideconfigPS) == "false")
               form.inline-form.border-bottom-form.text-right
                 div.form-group-padded
-                  +refresh_input(Data.PeriodDuration, Data.Client.RefreshPS)
+                  +refresh_input(Data.Client.RefreshPS)
 
                 div.form-group-padded
                   div.btn-group.btn-group-sm[data-toggle="buttons"]
@@ -288,7 +288,7 @@ html
               [class="in"] ? (json(Data.Client.HideconfigVG) == "false")
               form.inline-form.border-bottom-form.text-right
                 div.form-group-padded
-                  +refresh_input(Data.PeriodDuration, Data.Client.RefreshVG)
+                  +refresh_input(Data.Client.RefreshVG)
 
                 div.form-group-padded
                   div.btn-group.btn-group-sm[data-toggle="buttons"]

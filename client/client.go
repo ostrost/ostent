@@ -6,9 +6,18 @@ import (
 	"github.com/ostrost/ostent/flags"
 )
 
+// Refresh is a ticker with period.
 type Refresh struct {
 	flags.Period
-	tick int // .Tick() must be called once per second; .tick is 1 when the refresh expired
+	Default flags.Period // read-only and used in templates
+	tick    int          // .Tick() must be called once per second; .tick is 1 when the refresh expired
+}
+
+// NewRefreshFunc constructs Refresh-maker.
+func NewRefreshFunc(period flags.Period) func() *Refresh {
+	return func() *Refresh {
+		return &Refresh{Period: period, Default: period}
+	}
 }
 
 func (r *Refresh) Refresh(forcerefresh bool) bool {
@@ -276,19 +285,20 @@ func DefaultClient(minperiod flags.Period) Client {
 	cs.HideconfigPS = newhc()
 	cs.HideconfigVG = newhc()
 
-	cs.RefreshRAM = &Refresh{Period: minperiod}
-	cs.RefreshSWAP = &Refresh{Period: minperiod}
-	cs.RefreshIF = &Refresh{Period: minperiod}
-	cs.RefreshCPU = &Refresh{Period: minperiod}
-	cs.RefreshDF = &Refresh{Period: minperiod}
-	cs.RefreshPS = &Refresh{Period: minperiod}
-	cs.RefreshVG = &Refresh{Period: minperiod}
+	newref := NewRefreshFunc(minperiod)
+	cs.RefreshRAM = newref()
+	cs.RefreshSWAP = newref()
+	cs.RefreshIF = newref()
+	cs.RefreshCPU = newref()
+	cs.RefreshDF = newref()
+	cs.RefreshPS = newref()
+	cs.RefreshVG = newref()
 
 	// immutable refreshes:
-	cs.RefreshHN = &Refresh{Period: minperiod}
-	cs.RefreshUP = &Refresh{Period: minperiod}
-	cs.RefreshIP = &Refresh{Period: minperiod}
-	cs.RefreshLA = &Refresh{Period: minperiod}
+	cs.RefreshHN = newref()
+	cs.RefreshUP = newref()
+	cs.RefreshIP = newref()
+	cs.RefreshLA = newref()
 
 	cs.PSlimit = 8
 
@@ -326,8 +336,8 @@ func (rs *RecvClient) mergeMorePsignal(cs *Client) {
 	rs.MorePsignal = nil
 }
 
-// mergeRefreshSignal returns true when prefresh is modified.
-func (sc *SendClient) mergeRefreshSignal(above time.Duration, ppinput *string, prefresh *Refresh, sendr **Refresh, senderr **bool) bool {
+// MergeRefreshSignal returns true when prefresh is modified.
+func (sc *SendClient) MergeRefreshSignal(ppinput *string, prefresh *Refresh, sendr **Refresh, senderr **bool) bool {
 	if sc.MergeRSError != nil {
 		return false
 	}
@@ -336,7 +346,7 @@ func (sc *SendClient) mergeRefreshSignal(above time.Duration, ppinput *string, p
 	}
 	*senderr = new(bool) // false by default
 	sc.Modified = true   // senderr is non-nil, ergo sc is modified
-	pv := flags.Period{Above: &above}
+	pv := flags.Period{Above: &prefresh.Default.Duration}
 	if err := pv.Set(*ppinput); err != nil {
 		sc.MergeRSError = err
 		**senderr = true
@@ -350,19 +360,19 @@ func (sc *SendClient) mergeRefreshSignal(above time.Duration, ppinput *string, p
 }
 
 // MergeRefresh merges into cs various refresh updates. send is populated with the updates.
-func (rs *RecvClient) MergeRefresh(minrefresh time.Duration, cs *Client, send *SendClient) error {
+func (rs *RecvClient) MergeRefresh(cs *Client, send *SendClient) error {
 	rs.mergeMorePsignal(cs)
 
-	rrammod := send.mergeRefreshSignal(minrefresh, rs.RefreshSignalMEM, cs.RefreshRAM, &send.RefreshMEM, &send.RefreshErrorMEM)
+	rrammod := send.MergeRefreshSignal(rs.RefreshSignalMEM, cs.RefreshRAM, &send.RefreshMEM, &send.RefreshErrorMEM)
 	if send.MergeRSError == nil && rrammod { // RefreshRAM value change, so should RefreshSWAP
 		*cs.RefreshSWAP = *cs.RefreshRAM
 	}
 
-	send.mergeRefreshSignal(minrefresh, rs.RefreshSignalIF, cs.RefreshIF, &send.RefreshIF, &send.RefreshErrorIF)
-	send.mergeRefreshSignal(minrefresh, rs.RefreshSignalCPU, cs.RefreshCPU, &send.RefreshCPU, &send.RefreshErrorCPU)
-	send.mergeRefreshSignal(minrefresh, rs.RefreshSignalDF, cs.RefreshDF, &send.RefreshDF, &send.RefreshErrorDF)
-	send.mergeRefreshSignal(minrefresh, rs.RefreshSignalPS, cs.RefreshPS, &send.RefreshPS, &send.RefreshErrorPS)
-	send.mergeRefreshSignal(minrefresh, rs.RefreshSignalVG, cs.RefreshVG, &send.RefreshVG, &send.RefreshErrorVG)
+	send.MergeRefreshSignal(rs.RefreshSignalIF, cs.RefreshIF, &send.RefreshIF, &send.RefreshErrorIF)
+	send.MergeRefreshSignal(rs.RefreshSignalCPU, cs.RefreshCPU, &send.RefreshCPU, &send.RefreshErrorCPU)
+	send.MergeRefreshSignal(rs.RefreshSignalDF, cs.RefreshDF, &send.RefreshDF, &send.RefreshErrorDF)
+	send.MergeRefreshSignal(rs.RefreshSignalPS, cs.RefreshPS, &send.RefreshPS, &send.RefreshErrorPS)
+	send.MergeRefreshSignal(rs.RefreshSignalVG, cs.RefreshVG, &send.RefreshVG, &send.RefreshErrorVG)
 	// Refresh{HN,UP,IP,LA} are not merged
 
 	err := send.MergeRSError

@@ -35,8 +35,7 @@ func TestLinks(t *testing.T) {
 		}
 		req.ParseForm()
 		links := NewLinks()
-		unused := Number{}
-		err = DF.Decode(req.Form, "df", links, &unused, new(UintDF))
+		err = DF.Decode(req.Form, "df", links, new(Number), new(UintDF))
 		if err == nil || err.Error() != "" {
 			t.Fatalf("Error expected (%q)", err)
 		}
@@ -57,8 +56,7 @@ func CheckRedirect(t *testing.T, linker LinkerEncoder, uptr Upointer, decoder De
 		t.Fatal(err)
 	}
 	req.ParseForm()
-	unused := Number{}
-	err = decoder.Decode(req.Form, name, linker, &unused, uptr)
+	err = decoder.Decode(req.Form, name, linker, new(Number), uptr)
 	if err == nil {
 		t.Fatalf("RenamedConstError expected, got nil")
 	}
