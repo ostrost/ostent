@@ -78,7 +78,7 @@ func main() {
 	check(err)
 
 	if !jscriptMode {
-		check(writeFile(outputFile, fst))
+		check(amberp.WriteFile(outputFile, fst))
 		return
 	}
 
@@ -90,7 +90,7 @@ func main() {
 	check(err)
 	snd = regexp.MustCompile("</?script>").ReplaceAllLiteralString(snd, "")
 
-	check(writeFile(outputFile, snd))
+	check(amberp.WriteFile(outputFile, snd))
 }
 
 func KeysSorted(trees map[string]*parse.Tree) []string {
@@ -133,16 +133,7 @@ func saveDefines(outputFile, inputText string) error {
 		}
 		outputText += fmt.Sprintf("{{define \"%s\"}}%s{{end}}\n", name, t.Root)
 	}
-	return writeFile(outputFile, outputText)
-}
-
-func writeFile(optFilename, s string) error {
-	b := []byte(s)
-	if optFilename != "" {
-		return ioutil.WriteFile(optFilename, b, 0644)
-	}
-	_, err := os.Stdout.Write(b)
-	return err
+	return amberp.WriteFile(outputFile, outputText)
 }
 
 func compile(input []byte, prettyPrint, jscriptMode bool) (string, error) {

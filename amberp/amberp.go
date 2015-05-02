@@ -2,7 +2,10 @@ package amberp
 
 import (
 	"bytes"
+	"encoding/json"
 	templatehtml "html/template"
+	"io/ioutil"
+	"os"
 	"strings"
 	templatetext "text/template"
 	"text/template/parse"
@@ -108,7 +111,7 @@ func mkmap(top Dotted, jscriptMode bool, level int) interface{} {
 			h[l.Name] = mkmap(*l, jscriptMode, level+1)
 		}
 	}
-	if jscriptMode { // && level == 0 {
+	if jscriptMode && level == 0 {
 		h["CLASSNAME"] = "className"
 	}
 	return h
@@ -153,7 +156,17 @@ func DOT(dot interface{}, key string) Hash {
 	return h
 }
 
-var DotFuncs = map[string]interface{}{"dot": DOT}
+// DotFuncs features "dot" function for templates. In use in acepp and amberpp.
+var DotFuncs = templatetext.FuncMap{"dot": DOT}
+
+// AceFuncs features functions for templates. In use in acepp.
+var AceFuncs = templatehtml.FuncMap{
+	"dot": DOT,
+	"json": func(v interface{}) (string, error) {
+		j, err := json.Marshal(v)
+		return string(j), err
+	},
+}
 
 type HTMLTemplate struct{ *templatehtml.Template }
 
@@ -345,4 +358,15 @@ func getKeys(decl string, parseNode parse.Node) (keys []string) {
 		}
 	}
 	return
+}
+
+// WriteFile is ioutil.WriteFile if filename is not "",
+// otherwise it's as if filename was /dev/stdout.
+func WriteFile(filename, data string) error {
+	bytedata := []byte(data)
+	if filename != "" {
+		return ioutil.WriteFile(filename, bytedata, 0644)
+	}
+	_, err := os.Stdout.Write(bytedata)
+	return err
 }
