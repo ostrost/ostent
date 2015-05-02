@@ -85,7 +85,7 @@ func main() {
 	sndplate, err := template.New("snd").Funcs(template.FuncMap(amber.FuncMap)).Parse(fst)
 	check(err)
 
-	m := amberp.Data(sndplate.Tree, jscriptMode)
+	m := amberp.Data(&amberp.TextTemplate{Template: sndplate}, jscriptMode)
 	snd, err := amberp.StringExecute(sndplate, m)
 	check(err)
 	snd = regexp.MustCompile("</?script>").ReplaceAllLiteralString(snd, "")

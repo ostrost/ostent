@@ -2,8 +2,9 @@ package amberp
 
 import (
 	"bytes"
+	templatehtml "html/template"
 	"strings"
-	"text/template"
+	templatetext "text/template"
 	"text/template/parse"
 )
 
@@ -107,7 +108,7 @@ func mkmap(top Dotted, jscriptMode bool, level int) interface{} {
 			h[l.Name] = mkmap(*l, jscriptMode, level+1)
 		}
 	}
-	if jscriptMode && level == 0 {
+	if jscriptMode { // && level == 0 {
 		h["CLASSNAME"] = "className"
 	}
 	return h
@@ -154,8 +155,40 @@ func DOT(dot interface{}, key string) Hash {
 
 var DotFuncs = map[string]interface{}{"dot": DOT}
 
-// StringExecute does t.Execute into string returned. Does not clone.
-func StringExecute(t *template.Template, data interface{}) (string, error) {
+type HTMLTemplate struct{ *templatehtml.Template }
+
+func (ht HTMLTemplate) GetTree() *parse.Tree {
+	if ht.Template == nil {
+		return nil
+	}
+	return ht.Template.Tree
+}
+func (ht *HTMLTemplate) LookupT(n string) Templater { return &HTMLTemplate{ht.Lookup(n)} }
+
+type TextTemplate struct{ *templatetext.Template }
+
+func (tt TextTemplate) GetTree() *parse.Tree {
+	if tt.Template == nil {
+		return nil
+	}
+	return tt.Template.Tree
+}
+func (tt *TextTemplate) LookupT(n string) Templater { return &TextTemplate{tt.Lookup(n)} }
+
+type Templater interface {
+	GetTree() *parse.Tree
+	LookupT(string) Templater
+}
+
+func Tree(root Templater) *parse.Tree {
+	if root == nil {
+		return nil
+	}
+	return root.GetTree()
+}
+
+// StringExecuteHTML does t.Execute into string returned. Does not clone.
+func StringExecuteHTML(t *templatehtml.Template, data interface{}) (string, error) {
 	buf := new(bytes.Buffer)
 	if err := t.Execute(buf, data); err != nil {
 		return "", err
@@ -163,16 +196,68 @@ func StringExecute(t *template.Template, data interface{}) (string, error) {
 	return buf.String(), nil
 }
 
-func Data(TREE *parse.Tree, jscriptMode bool) interface{} {
-	if TREE == nil || TREE.Root == nil {
-		return "{}" // mkmap(tree{})
+// StringExecute does t.Execute into string returned. Does not clone.
+func StringExecute(t *templatetext.Template, data interface{}) (string, error) {
+	buf := new(bytes.Buffer)
+	if err := t.Execute(buf, data); err != nil {
+		return "", err
 	}
+	return buf.String(), nil
+}
 
+func Data(root Templater, jscriptMode bool) interface{} {
+	tree := Tree(root)
+	if tree == nil {
+		return "{}"
+	}
 	data := Dotted{}
 	vars := map[string][]string{}
+	for _, node := range tree.Root.Nodes {
+		DataNode(root, node, jscriptMode, &data, vars)
+	}
+	return mkmap(data, jscriptMode, 0)
+}
 
-	for _, node := range TREE.Root.Nodes { // here we go
+func DataNode(root Templater, node parse.Node, jscriptMode bool, data *Dotted, vars map[string][]string) {
+	if true {
 		switch node.Type() {
+		case parse.NodeWith:
+			withNode := node.(*parse.WithNode)
+			arg0 := withNode.Pipe.Cmds[0].Args[0].String()
+			var withv string
+			if len(arg0) > 0 && arg0[0] == '.' {
+				if decl := withNode.Pipe.Decl; len(decl) > 0 {
+					// just {{with $ := ...}} cases
+
+					withv = decl[0].Ident[0]
+					words := strings.Split(arg0[1:], ".")
+					vars[withv] = words
+					data.Append(words)
+				}
+			}
+			if withNode.List != nil {
+				for _, n := range withNode.List.Nodes {
+					DataNode(root, n, jscriptMode, data, vars)
+				}
+			}
+			if withNode.ElseList != nil {
+				for _, n := range withNode.ElseList.Nodes {
+					DataNode(root, n, jscriptMode, data, vars)
+				}
+			}
+			if withv != "" {
+				delete(vars, withv)
+			}
+		case parse.NodeTemplate:
+			tnode := node.(*parse.TemplateNode)
+			if lo := root.LookupT(tnode.Name); lo != nil {
+				tr := Tree(lo)
+				if tr != nil && tr.Root != nil {
+					for _, n := range tr.Root.Nodes {
+						DataNode(root, n, jscriptMode, data, vars)
+					}
+				}
+			}
 		case parse.NodeAction:
 			actionNode := node.(*parse.ActionNode)
 			decl := actionNode.Pipe.Decl
@@ -226,7 +311,13 @@ func Data(TREE *parse.Tree, jscriptMode bool) interface{} {
 
 			// fml
 			arg0 := rangeNode.Pipe.Cmds[0].Args[0].String()
-			if words, ok := vars[arg0]; ok {
+			words, ok := vars[arg0]
+			if !ok && len(arg0) > 0 && arg0[0] == '.' {
+				words = strings.Split(arg0[1:], ".")
+				data.Append(words)
+				ok = true
+			}
+			if ok {
 				if leaf := data.Find(words); leaf != nil {
 					leaf.Ranged = true
 					leaf.Keys = append(leaf.Keys, keys...)
@@ -235,7 +326,6 @@ func Data(TREE *parse.Tree, jscriptMode bool) interface{} {
 			}
 		}
 	}
-	return mkmap(data, jscriptMode, 0)
 }
 
 func getKeys(decl string, parseNode parse.Node) (keys []string) {
