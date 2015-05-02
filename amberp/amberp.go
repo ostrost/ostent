@@ -3,9 +3,11 @@ package amberp
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	templatehtml "html/template"
 	"io/ioutil"
 	"os"
+	"sort"
 	"strings"
 	templatetext "text/template"
 	"text/template/parse"
@@ -369,4 +371,47 @@ func WriteFile(filename, data string) error {
 	}
 	_, err := os.Stdout.Write(bytedata)
 	return err
+}
+
+func SaveDefines(outputFile, inputText string) error {
+	T := struct {
+		Name       string
+		LeftDelim  string
+		RightDelim string
+	}{
+		Name:       "zero",
+		LeftDelim:  "[[",
+		RightDelim: "]]",
+	}
+	// _ = template.New(T.Name).Funcs(DotFuncs).Delims(T.LeftDelim, T.RightDelim)
+	trees, err := parse.Parse(T.Name, inputText, T.LeftDelim, T.RightDelim,
+		DotFuncs, // .parseFuncs // template.FuncMap
+		DotFuncs, // builtins // template.FuncMap
+	)
+	if err != nil {
+		return err
+	}
+	var outputText string
+	for _, name := range KeysSorted(trees) {
+		t := trees[name]
+		if name == T.Name { // skip the toplevel
+			continue
+		}
+		if t == nil || t.Root == nil {
+			continue
+		}
+		outputText += fmt.Sprintf("{{define \"%s\"}}%s{{end}}\n", name, t.Root)
+	}
+	return WriteFile(outputFile, outputText)
+}
+
+func KeysSorted(trees map[string]*parse.Tree) []string {
+	keys := make([]string, len(trees))
+	i := 0
+	for k := range trees {
+		keys[i] = k
+		i++
+	}
+	sort.Strings(keys)
+	return keys
 }

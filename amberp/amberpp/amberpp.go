@@ -6,9 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"regexp"
-	"sort"
 	"text/template"
-	"text/template/parse"
 
 	"github.com/ostrost/ostent/amberp"
 	"github.com/rzab/amber"
@@ -62,7 +60,7 @@ func main() {
 	}
 
 	if definesMode {
-		check(saveDefines(outputFile, inputText))
+		check(amberp.SaveDefines(outputFile, inputText))
 		return
 	}
 
@@ -91,49 +89,6 @@ func main() {
 	snd = regexp.MustCompile("</?script>").ReplaceAllLiteralString(snd, "")
 
 	check(amberp.WriteFile(outputFile, snd))
-}
-
-func KeysSorted(trees map[string]*parse.Tree) []string {
-	keys := make([]string, len(trees))
-	i := 0
-	for k := range trees {
-		keys[i] = k
-		i++
-	}
-	sort.Strings(keys)
-	return keys
-}
-
-func saveDefines(outputFile, inputText string) error {
-	T := struct {
-		Name       string
-		LeftDelim  string
-		RightDelim string
-	}{
-		Name:       "zero",
-		LeftDelim:  "[[",
-		RightDelim: "]]",
-	}
-	// _ = template.New(T.Name).Funcs(amberp.DotFuncs).Delims(T.LeftDelim, T.RightDelim)
-	trees, err := parse.Parse(T.Name, inputText, T.LeftDelim, T.RightDelim,
-		amberp.DotFuncs, // .parseFuncs // template.FuncMap
-		amberp.DotFuncs, // builtins // template.FuncMap
-	)
-	if err != nil {
-		return err
-	}
-	var outputText string
-	for _, name := range KeysSorted(trees) {
-		t := trees[name]
-		if name == T.Name { // skip the toplevel
-			continue
-		}
-		if t == nil || t.Root == nil {
-			continue
-		}
-		outputText += fmt.Sprintf("{{define \"%s\"}}%s{{end}}\n", name, t.Root)
-	}
-	return amberp.WriteFile(outputFile, outputText)
 }
 
 func compile(input []byte, prettyPrint, jscriptMode bool) (string, error) {
