@@ -18,22 +18,20 @@ func main() {
 	var (
 		outputFile  string
 		definesFile string
-		prettyPrint bool
 		jscriptMode bool
 		definesMode bool
 	)
+	// TODO MAYBE -prettyprint with "github.com/yosssi/gohtml" formatting
 	flag.StringVar(&outputFile, "o", "", "Output file")
 	flag.StringVar(&outputFile, "output", "", "Output file")
-	flag.StringVar(&definesFile, "d", "", "Use defines file")
-	flag.StringVar(&definesFile, "defines", "", "Use defines file")
-	flag.BoolVar(&prettyPrint, "pp", false, "Pretty print output")
-	flag.BoolVar(&prettyPrint, "prettyprint", false, "Pretty print output")
+	flag.StringVar(&definesFile, "d", "", "defines.ace template")
+	flag.StringVar(&definesFile, "defines", "", "defines.ace template")
 	flag.BoolVar(&jscriptMode, "j", false, "Javascript mode")
 	flag.BoolVar(&jscriptMode, "javascript", false, "Javascript mode")
-	flag.BoolVar(&definesMode, "s", false, "Save defines mode")
-	flag.BoolVar(&definesMode, "savedefines", false, "Save defines mode")
+	flag.BoolVar(&definesMode, "s", false, "Save the defines")
+	flag.BoolVar(&definesMode, "savedefines", false, "Save the defines")
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage:\n  %s [options] [base.ace] [inner.ace]\n\nOptions:\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Usage:\n  %s [options] [filename.ace]\n\nOptions:\n", os.Args[0])
 		flag.PrintDefaults()
 		os.Exit(64)
 	}
@@ -41,9 +39,14 @@ func main() {
 
 	inputFile := flag.Arg(0)
 	if !definesMode && inputFile == "" {
-		fmt.Fprintf(os.Stderr, "No input file specified.")
-		flag.Usage()
-		os.Exit(2) // TODO 64
+		fmt.Fprintf(os.Stderr, "No template specified.\n")
+		flag.Usage() // exits 64
+		return
+	}
+	if definesMode && inputFile != "" {
+		fmt.Fprintf(os.Stderr, "Extra template specified.\n")
+		flag.Usage() // exits 64
+		return
 	}
 
 	check := func(err error) {
@@ -52,7 +55,7 @@ func main() {
 			os.Exit(1)
 		}
 	}
-	aceopt := &ace.Options{
+	aceopts := &ace.Options{
 		DelimLeft:  "{{",  // default
 		DelimRight: "}}",  // default
 		Extension:  "ace", // default
@@ -60,7 +63,7 @@ func main() {
 	}
 
 	if !jscriptMode {
-		_, index, err := LoadAce(inputFile, definesFile, aceopt)
+		_, index, err := LoadAce(inputFile, definesFile, aceopts)
 		check(err)
 		trees := amberp.Subtrees(index)
 		text := amberp.SprintfTrees(trees)
@@ -69,7 +72,7 @@ func main() {
 		return
 	}
 
-	definesbase, defines, err := LoadAce(definesFile, "", aceopt)
+	definesbase, defines, err := LoadAce(definesFile, "", aceopts)
 	check(err)
 
 	if definesMode {
@@ -77,7 +80,10 @@ func main() {
 		return
 	}
 
-	jscript, err := templatetext.New(filepath.Base(inputFile)).Funcs(templatetext.FuncMap(amberp.AceFuncs)).ParseFiles(inputFile)
+	jscript, err := templatetext.
+		New(Base(inputFile, aceopts)).
+		Funcs(templatetext.FuncMap(amberp.AceFuncs)).
+		ParseFiles(inputFile)
 	check(err)
 
 	for _, t := range defines.Templates() {
@@ -86,6 +92,7 @@ func main() {
 	}
 
 	m := amberp.Data(&amberp.TextTemplate{Template: jscript}, jscriptMode)
+	// jscriptMode is always true at this point
 
 	s, err := amberp.StringExecute(jscript, m)
 	check(err)
@@ -94,6 +101,7 @@ func main() {
 	check(amberp.WriteFile(outputFile, s))
 }
 
+// LoadAce is ace.Load without dealing with includes and setting Base'd names for the templates.
 func LoadAce(basename, innername string, opts *ace.Options) (string, *templatehtml.Template, error) {
 	base, err := ReadAce(basename, opts)
 	if err != nil {
@@ -113,6 +121,7 @@ func LoadAce(basename, innername string, opts *ace.Options) (string, *templateht
 	return basebase, template, err
 }
 
+// Base returns filepath.Base'd filename sans extension if it matches opts.Extension.
 func Base(filename string, opts *ace.Options) string {
 	if filename == "" {
 		return ""
@@ -124,6 +133,7 @@ func Base(filename string, opts *ace.Options) string {
 	return n
 }
 
+// ReadAce reads file and returns *ace.File Base-named.
 func ReadAce(filename string, opts *ace.Options) (*ace.File, error) {
 	var data []byte
 	if filename != "" {
