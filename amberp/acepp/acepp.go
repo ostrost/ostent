@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	templatehtml "html/template"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -50,25 +52,24 @@ func main() {
 			os.Exit(1)
 		}
 	}
-
-	d := definesFile
-	definesprefix := d[:len(d)-len(filepath.Ext(d))]
+	aceopt := &ace.Options{
+		DelimLeft:  "{{",  // default
+		DelimRight: "}}",  // default
+		Extension:  "ace", // default
+		FuncMap:    amberp.AceFuncs,
+	}
 
 	if !jscriptMode {
-		d := inputFile
-		inputprefix := d[:len(d)-len(filepath.Ext(d))]
-		index, err := ace.Load(inputprefix, definesprefix, &ace.Options{FuncMap: amberp.AceFuncs})
+		_, index, err := LoadAce(inputFile, definesFile, aceopt)
 		check(err)
 		trees := amberp.Subtrees(index)
-		treeprefix := filepath.Dir(definesprefix) + string(os.PathSeparator)
-		text := amberp.SprintfPrefixedTrees(treeprefix, trees)
-		text += amberp.SprintfTrees(trees)
+		text := amberp.SprintfTrees(trees)
 		text += index.Tree.Root.String()
 		check(amberp.WriteFile(outputFile, text))
 		return
 	}
 
-	defines, err := ace.Load(definesprefix, "", &ace.Options{FuncMap: amberp.AceFuncs})
+	definesbase, defines, err := LoadAce(definesFile, "", aceopt)
 	check(err)
 
 	if definesMode {
@@ -80,7 +81,7 @@ func main() {
 	check(err)
 
 	for _, t := range defines.Templates() {
-		_, err := jscript.AddParseTree(filepath.Base(definesprefix)+t.Name(), t.Tree)
+		_, err := jscript.AddParseTree(definesbase+t.Name(), t.Tree)
 		check(err)
 	}
 
@@ -91,4 +92,46 @@ func main() {
 
 	s = strings.Replace(s, "class=", "className=", -1)
 	check(amberp.WriteFile(outputFile, s))
+}
+
+func LoadAce(basename, innername string, opts *ace.Options) (string, *templatehtml.Template, error) {
+	base, err := ReadAce(basename, opts)
+	if err != nil {
+		return "", nil, err
+	}
+	inner, err := ReadAce(innername, opts)
+	if err != nil {
+		return "", nil, err
+	}
+	src := ace.NewSource(base, inner, nil)
+	res, err := ace.ParseSource(src, opts)
+	if err != nil {
+		return "", nil, err
+	}
+	basebase := Base(basename, opts)
+	template, err := ace.CompileResult(basebase, res, opts)
+	return basebase, template, err
+}
+
+func Base(filename string, opts *ace.Options) string {
+	if filename == "" {
+		return ""
+	}
+	n := filepath.Base(filename)
+	if ext := filepath.Ext(n); ext == "."+opts.Extension {
+		n = n[:len(n)-len(ext)]
+	}
+	return n
+}
+
+func ReadAce(filename string, opts *ace.Options) (*ace.File, error) {
+	var data []byte
+	if filename != "" {
+		var err error
+		data, err = ioutil.ReadFile(filename)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return ace.NewFile(Base(filename, opts), data), nil
 }

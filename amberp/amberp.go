@@ -402,14 +402,6 @@ func SprintfTrees(trees map[string]*parse.Tree) (text string) {
 	return text
 }
 
-func SprintfPrefixedTrees(prefix string, trees map[string]*parse.Tree) (text string) {
-	for _, name := range KeysSorted(trees) {
-		text += fmt.Sprintf("{{define %q}}{{template %q .}}{{end}}\n",
-			strings.TrimLeft(strings.TrimPrefix(name, prefix), ":"), name)
-	}
-	return text
-}
-
 func WriteTrees(outputfile string, trees map[string]*parse.Tree) error {
 	return WriteFile(outputfile, SprintfTrees(trees))
 }
