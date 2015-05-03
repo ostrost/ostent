@@ -17,7 +17,7 @@
     }
   });
 
-  require(['jquery', 'bootstrap', 'react', 'jscript'], function($, _, React, jscript) {
+  require(['jquery', 'bootstrap', 'react', 'jscript', 'domReady', 'headroom'], function($, _, React, jscript) {
     var neweventsource, newwebsocket, update, updates;
     updates = void 0;
     neweventsource = function(onmessage) {
@@ -548,7 +548,7 @@
         component: function(opt) {
           var el, sel;
           sel = opt.sel;
-          delete opt.$;
+          delete opt.sel;
           opt.$input_el = sel.find('.refresh-input');
           opt.$group_el = sel.find('.refresh-group');
           el = addDiv(opt.$input_el);

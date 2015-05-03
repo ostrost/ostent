@@ -10,7 +10,8 @@ require.config
     jscript:   'gen/jscript'
 
 # main require
-require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
+require ['jquery', 'bootstrap', 'react', 'jscript', 'domReady', 'headroom'], ($, _, React, jscript) ->
+  # domReady and headroom "required" for r.js only.
   updates = undefined # events source. set later
   neweventsource = (onmessage) ->
     conn = null
@@ -322,7 +323,7 @@ require ['jquery', 'bootstrap', 'react', 'jscript'], ($, _, React, jscript) ->
 
   @RefreshInputClass = React.createClass
     statics: component: (opt) ->
-      sel = opt.sel; delete opt.$
+      sel = opt.sel; delete opt.sel
       opt.$input_el = sel.find('.refresh-input')
       opt.$group_el = sel.find('.refresh-group')
       el = addDiv(opt.$input_el)
