@@ -148,22 +148,22 @@ type dotValue struct {
 
 func (dv dotValue) String() string {
 	v := dv.s
-	delete(*dv.hashp, "dot")
+	delete(*dv.hashp, "OVERRIDE")
 	return v
 }
 
-func DOT(dot interface{}, key string) Hash {
-	h := dot.(Hash)
-	h["dot"] = dotValue{s: curly(key), hashp: &h}
+func dot(v interface{}, key string) Hash {
+	h := v.(Hash)
+	h["OVERRIDE"] = dotValue{s: curly(key), hashp: &h}
 	return h
 }
 
 // DotFuncs features "dot" function for templates. In use in acepp and amberpp.
-var DotFuncs = templatetext.FuncMap{"dot": DOT}
+var DotFuncs = templatetext.FuncMap{"dot": dot}
 
 // AceFuncs features functions for templates. In use in acepp.
 var AceFuncs = templatehtml.FuncMap{
-	"dot": DOT,
+	"dot": dot,
 	"json": func(v interface{}) (string, error) {
 		j, err := json.Marshal(v)
 		return string(j), err
@@ -373,7 +373,7 @@ func WriteFile(filename, data string) error {
 	return err
 }
 
-func SaveDefines(outputFile, inputText string) error {
+func SaveDefines(outputfile, input string) error {
 	T := struct {
 		Name       string
 		LeftDelim  string
@@ -384,25 +384,45 @@ func SaveDefines(outputFile, inputText string) error {
 		RightDelim: "]]",
 	}
 	// _ = template.New(T.Name).Funcs(DotFuncs).Delims(T.LeftDelim, T.RightDelim)
-	trees, err := parse.Parse(T.Name, inputText, T.LeftDelim, T.RightDelim,
+	trees, err := parse.Parse(T.Name, input, T.LeftDelim, T.RightDelim,
 		DotFuncs, // .parseFuncs // template.FuncMap
 		DotFuncs, // builtins // template.FuncMap
 	)
 	if err != nil {
 		return err
 	}
-	var outputText string
+	delete(trees, T.Name)
+	return WriteTrees(outputfile, trees)
+}
+
+func SprintfTrees(trees map[string]*parse.Tree) (text string) {
 	for _, name := range KeysSorted(trees) {
-		t := trees[name]
-		if name == T.Name { // skip the toplevel
-			continue
-		}
-		if t == nil || t.Root == nil {
-			continue
-		}
-		outputText += fmt.Sprintf("{{define \"%s\"}}%s{{end}}\n", name, t.Root)
+		text += fmt.Sprintf("{{define \"%s\"}}%s{{end}}\n", name, trees[name].Root)
 	}
-	return WriteFile(outputFile, outputText)
+	return text
+}
+
+func SprintfPrefixedTrees(prefix string, trees map[string]*parse.Tree) (text string) {
+	for _, name := range KeysSorted(trees) {
+		text += fmt.Sprintf("{{define %q}}{{template %q .}}{{end}}\n",
+			strings.TrimLeft(strings.TrimPrefix(name, prefix), ":"), name)
+	}
+	return text
+}
+
+func WriteTrees(outputfile string, trees map[string]*parse.Tree) error {
+	return WriteFile(outputfile, SprintfTrees(trees))
+}
+
+// Subtrees returns a *parse.Tree map without tpl in it.
+func Subtrees(tpl *templatehtml.Template) map[string]*parse.Tree {
+	trees := map[string]*parse.Tree{}
+	for _, x := range tpl.Templates() {
+		if name := x.Name(); name != tpl.Name() {
+			trees[name] = x.Tree
+		}
+	}
+	return trees
 }
 
 func KeysSorted(trees map[string]*parse.Tree) []string {

@@ -52,7 +52,7 @@ func tooltipable(limit int, full string) template.HTML {
 	var html string
 	if len(full) > limit {
 		var err error
-		html, err = DefinesTemplate.LookupApply("define_tooltipable", struct {
+		html, err = DefinesTemplate.LookupApply("defines::define_tooltipable", struct {
 			Full, Short string
 		}{
 			Full:  full,
@@ -900,7 +900,8 @@ func index(production bool, template *templateutil.LazyTemplate, minperiod flags
 	}
 
 	response := template.Response(w, struct {
-		CLASSNAME  string // MUST HAVE
+		OVERRIDE   string // MUST HAVE, EMPTY
+		CLASSNAME  string // MUST HAVE, EMPTY
 		PRODUCTION bool
 		Data       IndexData
 	}{

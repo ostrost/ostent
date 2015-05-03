@@ -1,0 +1,254 @@
+= doctype html
+html
+  head
+    meta charset=utf-8
+    meta http-equiv=X-UA-Compatible content=IE=edge
+    meta name=viewport content="width=device-width, initial-scale=1"
+    title {{.Data.Hostname}} ostent
+
+    / meta itemprop=image content=/favicon.png
+    link rel=icon type=image/png href=/favicon.png
+    link rel=stylesheet type=text/css href=/css/index.css
+
+    script type=text/javascript charset=utf-8 src=/js/vendor/requirejs/2.1.17/require.min.js data-main=/js/{{if .PRODUCTION}}production/index.min.js{{else}}devel/milk/index.js{{end}}
+
+  body
+    div#client
+
+    nav.navbar.navbar-default.navbar-fixed-top role=navigation
+      div.container-fluid
+        div.navbar-header
+          div.navbar-brand
+            a#hostname href=/ data-placement=bottom data-toggle=popover data-trigger="hover focus" data-container=#distrib-popover data-content="running {{.Data.DISTRIB}}"
+              / data-placement="auto bottom" does not do the trick
+              | {{.Data.Hostname}}
+          / the span for the popover to attach to
+          span#distrib-popover
+
+        div.collapse.navbar-collapse#navbar-collapse
+          / hidden div for popover to be the content source
+          div.collapse#uptime-parent
+            | uptime&nbsp;
+            span#uptime {{.Data.Uptime}}
+
+          ul.nav.navbar-nav
+            li.navbar-text#ip {{.Data.IP}}
+            li.navbar-text#la {{.Data.LA}}
+
+          ul.nav.navbar-nav.navbar-right
+            li.navbar-text
+              ul.list-inline.navbar-nav
+                li
+                  a href=#top #top
+                li
+                  a href=#ps #ps
+                li
+                  a href=#vg #vagrant
+
+            li.active
+              a href=https://www.ostrost.com/ostent/releases/latest title="version {{.Data.VERSION}}" OSTENT
+
+      div.container-fluid
+        div.row.collapse#alert-parent
+          div.alert.alert-danger.alert-dismissable
+            button.close type=button data-dismiss=alert aria-hidden=true &times;
+            span#alert-message Alert
+
+
+    div.container-fluid.padding-topseventysh#top
+      div.row
+        div.block.col-md-2.col-md-offset-1
+          div.panel1
+            header.draggable
+              a class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigMEM)}} active{{end}}" href=#mem Memory
+
+            / a div for collapse to animate properly
+            div
+              div#memconfig class="collapse{{if eq "false" (json .Data.Client.HideconfigMEM)}} in{{end}}"
+                form.horizontal-form.border-bottom-form
+                  div.form-group-padded
+                    div.btn-group.btn-group-sm data-toggle=buttons
+                      label.btn.btn-default.hiding
+                        input type=checkbox
+                        | Hidden
+                      label class="btn btn-default{{if eq "false" (json .Data.Client.HideSWAP)}} active{{end}}" href=#hideswap
+                        input type=checkbox
+                        | Hide swap
+
+                  div.form-group-padded
+                    {{with .Data.Client.RefreshMEM}}
+                    = yield refresh
+                    {{end}}
+
+            div#mem class="collapse{{if eq "false" (json .Data.Client.HideMEM)}} in{{end}}"
+              span#mem-table
+                {{template "defines::define_memtable" .}}
+
+        div.block.col-md-3
+          div.panel1
+            header.draggable
+              a href=#if class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigIF)}} active{{end}}" {{.Data.Client.TabIF.Title}}
+
+            / a div for collapse to animate properly
+            div
+              div#ifconfig class="collapse{{if eq "false" (json .Data.Client.HideconfigIF)}} in{{end}}"
+                form.horizontal-form
+                  div.form-group-padded
+                     div.btn-group.btn-group-sm data-toggle=buttons
+                      label.btn.btn-default.hiding
+                        input type=checkbox
+                        | Hidden
+                      label href=#if class="btn btn-default{{if eq "false" (json .Data.Client.ExpandableIF)}} disabled{{end}}"
+                        input type=checkbox
+                        | {{.Data.Client.ExpandtextIF}}
+
+                  div.form-group-padded
+                    {{with .Data.Client.RefreshIF}}
+                    = yield refresh
+                    {{end}}
+
+                ul.nav.nav-tabs
+                  li.if-switch data-tabid={{.Data.IFTABS.iFPACKETS.Uint}}
+                    a href=#ifpackets Packets
+                  li.if-switch data-tabid={{.Data.IFTABS.iFERRORS.Uint}}
+                    a href=#iferrors Errors
+                  li.if-switch.active data-tabid={{.Data.IFTABS.iFBYTES.Uint}}
+                    a href=#ifbytes Bytes
+
+            / panels selected by .if-tab
+            div#ifpackets class="if-tab collapse{{if eq (json .Data.IFTABS.iFPACKETS.Uint) (json .Data.Client.TabIF.Uint)}} in{{end}}" data-title={{.Data.IFTABS.iFPACKETS.Title}} data-tabid={{.Data.IFTABS.iFPACKETS.Uint}}
+              span#ifpackets-table
+                {{template "defines::define_ifpackets_table" .}}
+
+            div#iferrors class="if-tab collapse{{if eq (json .Data.IFTABS.iFERRORS.Uint) (json .Data.Client.TabIF.Uint)}} in{{end}}" data-title={{.Data.IFTABS.iFERRORS.Title}} data-tabid={{.Data.IFTABS.iFERRORS.Uint}}
+              span#iferrors-table
+                {{template "defines::define_iferrors_table" .}}
+
+            div#ifbytes class="if-tab collapse{{if eq (json .Data.IFTABS.iFBYTES.Uint) (json .Data.Client.TabIF.Uint)}} in{{end}}" data-title={{.Data.IFTABS.iFBYTES.Title}} data-tabid={{.Data.IFTABS.iFBYTES.Uint}}
+              span#ifbytes-table
+                {{template "defines::define_ifbytes_table" .}}
+
+        div.block.col-md-2
+          div.panel1
+            header.draggable
+              a href=#cpu class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigCPU)}}active{{end}}" CPU
+
+            div#cpuconfig class="collapse{{if eq "false" (json .Data.Client.HideconfigCPU)}} in{{end}}"
+              form.horizontal-form.border-bottom-form
+                div.form-group-padded
+                  div.btn-group.btn-group-sm data-toggle=buttons
+                    label.btn.btn-default.hiding
+                      input type=checkbox
+                      | Hidden
+                    label href=#cpu class="btn btn-default{{if eq "false" (json .Data.Client.ExpandableCPU)}} disabled{{end}}"
+                      input type=checkbox
+                      | {{.Data.Client.ExpandtextCPU}}
+
+                div.form-group-padded
+                  {{with .Data.Client.RefreshCPU}}
+                  = yield refresh
+                  {{end}}
+
+            div#cpu class="collapse{{if eq "false" (json .Data.Client.HideCPU)}} in{{end}}"
+              span#cpu-table
+                {{template "defines::define_cputable" .}}
+
+        div.block.col-md-3
+          div.panel1
+            header.draggable
+              a href=#df class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigDF)}}active{{end}}" {{.Data.Client.TabDF.Title}}
+
+            / a div for collapse to animate properly
+            div
+              div#dfconfig class="collapse{{if eq "false" (json .Data.Client.HideconfigDF)}} in{{end}}"
+                form.horizontal-form
+                  div.form-group-padded
+                    div.btn-group.btn-group-sm data-toggle=buttons
+                      label.btn.btn-default.hiding
+                        input type=checkbox
+                        | Hidden
+                      label href=#df class="btn btn-default{{if eq "false" (json .Data.Client.ExpandableDF)}} disabled{{end}}"
+                        input type=checkbox
+                        | {{.Data.Client.ExpandtextDF}}
+
+                  div.form-group-padded
+                    {{with .Data.Client.RefreshDF}}
+                    = yield refresh
+                    {{end}}
+
+                ul.nav.nav-tabs
+                  li.df-switch data-tabid={{.Data.DFTABS.dFINODES.Uint}}
+                    a href=#dfinodes Inodes
+                  li.df-switch.active data-tabid={{.Data.DFTABS.dFBYTES.Uint}}
+                    a href=#dfbytes Bytes
+
+            / panels selected by .df-tab
+            div#dfinodes class="df-tab collapse{{if eq (json .Data.DFTABS.dFINODES.Uint) (json .Data.Client.TabDF.Uint)}} in{{end}}" data-title={{.Data.DFTABS.dFINODES.Title}} data-tabid={{.Data.DFTABS.dFINODES.Uint}}
+              span#dfinodes-table
+                {{template "defines::define_dfinodes_table" .}}
+
+            div#dfbytes class="df-tab collapse{{if eq (json .Data.DFTABS.dFBYTES.Uint) (json .Data.Client.TabDF.Uint)}} in{{end}}" data-title={{.Data.DFTABS.dFBYTES.Title}} data-tabid={{.Data.DFTABS.dFBYTES.Uint}}
+              span#dfbytes-table
+                {{template "defines::define_dfbytes_table" .}}
+
+    div.container-fluid
+      div.row
+        div.block.col-md-8.col-md-offset-2
+          div.panel1
+            header.NOTdraggable
+              a href=#ps class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigPS)}}active{{end}}" Processes
+
+              / div.btn-group.btn-group-xs
+              /   label.btn.btn-sm.btn-default
+              /     [class="collapse"] ifempty Data.Client.UserProcesses
+              /     | User {{.Data.Client.UserProcesses}} &times;
+
+            div#psconfig class="collapse{{if eq "false" (json .Data.Client.HideconfigPS)}} in{{end}}"
+              form.inline-form.border-bottom-form.text-right
+                div.form-group-padded
+                  {{with .Data.Client.RefreshPS}}
+                  = yield refresh
+                  {{end}}
+
+                div.form-group-padded
+                  div.btn-group.btn-group-sm data-toggle=buttons
+                    label.btn.btn-default.hiding
+                      input type=checkbox
+                      | Hidden
+                    label href=#psless class="less btn btn-default{{if eq "true" (json .Data.Client.PSnotDecreasable)}} disabled{{end}}"
+                      input type=checkbox
+                      | -
+                    label href=#psmore class="more btn btn-default{{if eq "true" (json .Data.Client.PSnotExpandable)}} disabled{{end}}"
+                      input type=checkbox
+                      | {{.Data.Client.PSplusText}}
+
+            div#ps class="collapse{{if eq "false" (json .Data.Client.HidePS)}} in{{end}}"
+              span#ps-table
+                {{template "defines::define_pstable" .}}
+
+    div.container-fluid
+      div.row
+        div.block.col-md-8.col-md-offset-2
+          div.panel1
+            header.NOTdraggable
+              a href=#vg class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigVG)}}active{{end}}" Vagrant global-status
+
+            div#vgconfig class="collapse{{if eq "false" (json .Data.Client.HideconfigVG)}} in{{end}}"
+              form.inline-form.border-bottom-form.text-right
+                div.form-group-padded
+                  {{with .Data.Client.RefreshVG}}
+                  = yield refresh
+                  {{end}}
+
+                div.form-group-padded
+                  div.btn-group.btn-group-sm data-toggle=buttons
+                    label.btn.btn-default.hiding
+                      input type=checkbox
+                      | Hidden
+
+            div#vg class="collapse{{if eq "false" (json .Data.Client.HideVG)}} in{{end}}"
+              span#vg-table
+                {{template "defines::define_vgtable" .}}
+
+    = javascript
+      var Data = {{.Data}};

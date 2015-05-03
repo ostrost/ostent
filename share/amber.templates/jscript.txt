@@ -1,0 +1,29 @@
+define(function(require) {
+	var React = require('react');
+	return {
+		mem_rows:        function(Data, $mem)  { return ({{template "defines::define_memrows"         .}}); },
+		mem_table:       function(Data, rows)  { return ({{template "defines::define_memtable"        (dot . `rows`)}}); },
+
+		ifbytes_rows:    function(Data, $if)   { return ({{template "defines::define_ifbytes_rows"    .}}); },
+		ifbytes_table:   function(Data, rows)  { return ({{template "defines::define_ifbytes_table"   (dot . `rows`)}}); },
+		iferrors_rows:   function(Data, $if)   { return ({{template "defines::define_iferrors_rows"   .}}); },
+		iferrors_table:  function(Data, rows)  { return ({{template "defines::define_iferrors_table"  (dot . `rows`)}}); },
+		ifpackets_rows:  function(Data, $if)   { return ({{template "defines::define_ifpackets_rows"  .}}); },
+		ifpackets_table: function(Data, rows)  { return ({{template "defines::define_ifpackets_table" (dot . `rows`)}}); },
+
+		cpu_rows:        function(Data, $core) { return ({{template "defines::define_cpurows"         .}}); },
+		cpu_table:       function(Data, rows)  { return ({{template "defines::define_cputable"        (dot . `rows`)}}); },
+
+		dfbytes_rows:    function(Data, $disk) { return ({{template "defines::define_dfbytes_rows"    .}}); },
+		dfbytes_table:   function(Data, rows)  { return ({{template "defines::define_dfbytes_table"   (dot . `rows`)}}); },
+		dfinodes_rows:   function(Data, $disk) { return ({{template "defines::define_dfinodes_rows"   .}}); },
+		dfinodes_table:  function(Data, rows)  { return ({{template "defines::define_dfinodes_table"  (dot . `rows`)}}); },
+
+		ps_rows:         function(Data, $proc) { return ({{template "defines::define_psrows"          .}}); },
+		ps_table:        function(Data, rows)  { return ({{template "defines::define_pstable"         (dot . `rows`)}}); },
+
+		vagrant_rows:    function(Data, $mach) { return ({{template "defines::define_vgrows"          .}}); },
+		vagrant_error:   function(Data)        { return ({{template "defines::define_vgerror"         .}}); },
+		vagrant_table:   function(Data, rows)  { return ({{template "defines::define_vgtable"         (dot . `rows`)}}); }
+	};
+});

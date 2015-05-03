@@ -170,7 +170,7 @@ func _getmem(kind string, in sigar.Swap) operating.Memory {
 	used, approxused, _ := format.HumanBandback(in.Used)
 	usepercent := format.Percent(approxused, approxtotal)
 
-	html, err := DefinesTemplate.LookupApply("define_usepercent", struct {
+	html, err := DefinesTemplate.LookupApply("defines::define_usepercent", struct {
 		Class, Value, CLASSNAME string
 	}{
 		Value: strconv.Itoa(int(usepercent)), // without "%"

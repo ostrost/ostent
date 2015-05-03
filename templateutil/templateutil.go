@@ -155,7 +155,9 @@ func (tw *TemplateWriter) Header() http.Header {
 
 // SetContentLength sets Content-Length header to .Buf length.
 func (tw *TemplateWriter) SetContentLength() {
-	tw.Header().Set("Content-Length", strconv.Itoa(tw.Buf.Len()))
+	if tw.Err == nil {
+		tw.Header().Set("Content-Length", strconv.Itoa(tw.Buf.Len()))
+	}
 }
 
 // Send writes to the .Writer what has been buffered in .Buf.

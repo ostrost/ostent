@@ -78,7 +78,7 @@ func ExecutewDottedTest(t *testing.T, tm *template.Template, expected string) {
 }
 
 func TestDot(t *testing.T) {
-	define := `[[define "define_withdot"]][[with .dot]][[.]][[else]][[end]][[end]]`
+	define := `[[define "define_withdot"]][[with .OVERRIDE]][[.]][[else]][[end]][[end]]`
 	text1 := define + `[[template "define_withdot" .]]`
 	text2 := define + `[[template "define_withdot" (dot . "rows")]]`
 	tm1, err1 := template.New("withdot1").Funcs(DotFuncs).Delims("[[", "]]").Parse(text1)
@@ -94,8 +94,8 @@ func TestDot(t *testing.T) {
 }
 
 func DotValueText(t *testing.T, in, expected string) {
-	h := DOT(Hash{}, in)
-	d, ok := h["dot"]
+	h := dot(Hash{}, in)
+	d, ok := h["OVERRIDE"]
 	if !ok {
 		t.Errorf("Getting \"dot\" from `dot' result is not okd.")
 	}
@@ -106,7 +106,7 @@ func DotValueText(t *testing.T, in, expected string) {
 	if s := dv.String(); s != expected {
 		t.Errorf("dotValue mismatch: %q (expected %q)", s, expected)
 	}
-	if v, ok := (*dv.hashp)["dot"]; ok || v != nil {
+	if v, ok := (*dv.hashp)["OVERRIDE"]; ok || v != nil {
 		t.Errorf("Getting \"dot\" from `dot' result is okd: %+v.", v)
 	}
 }
