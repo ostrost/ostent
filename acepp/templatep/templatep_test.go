@@ -1,4 +1,4 @@
-package amberp
+package templatep
 
 import (
 	"strings"

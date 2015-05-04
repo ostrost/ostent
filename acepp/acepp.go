@@ -10,7 +10,7 @@ import (
 	"strings"
 	templatetext "text/template"
 
-	"github.com/ostrost/ostent/amberp"
+	"github.com/ostrost/ostent/acepp/templatep"
 	"github.com/yosssi/ace"
 )
 
@@ -59,16 +59,16 @@ func main() {
 		DelimLeft:  "{{",  // default
 		DelimRight: "}}",  // default
 		Extension:  "ace", // default
-		FuncMap:    amberp.AceFuncs,
+		FuncMap:    templatep.AceFuncs,
 	}
 
 	if !jscriptMode {
 		_, index, err := LoadAce(inputFile, definesFile, aceopts)
 		check(err)
-		trees := amberp.Subtrees(index)
-		text := amberp.SprintfTrees(trees)
+		trees := templatep.Subtrees(index)
+		text := templatep.SprintfTrees(trees)
 		text += index.Tree.Root.String()
-		check(amberp.WriteFile(outputFile, text))
+		check(templatep.WriteFile(outputFile, text))
 		return
 	}
 
@@ -76,13 +76,13 @@ func main() {
 	check(err)
 
 	if definesMode {
-		check(amberp.WriteTrees(outputFile, amberp.Subtrees(defines)))
+		check(templatep.WriteTrees(outputFile, templatep.Subtrees(defines)))
 		return
 	}
 
 	jscript, err := templatetext.
 		New(Base(inputFile, aceopts)).
-		Funcs(templatetext.FuncMap(amberp.AceFuncs)).
+		Funcs(templatetext.FuncMap(templatep.AceFuncs)).
 		ParseFiles(inputFile)
 	check(err)
 
@@ -91,14 +91,14 @@ func main() {
 		check(err)
 	}
 
-	m := amberp.Data(&amberp.TextTemplate{Template: jscript}, jscriptMode)
+	m := templatep.Data(&templatep.TextTemplate{Template: jscript}, jscriptMode)
 	// jscriptMode is always true at this point
 
-	s, err := amberp.StringExecute(jscript, m)
+	s, err := templatep.StringExecute(jscript, m)
 	check(err)
 
 	s = strings.Replace(s, "class=", "className=", -1)
-	check(amberp.WriteFile(outputFile, s))
+	check(templatep.WriteFile(outputFile, s))
 }
 
 // LoadAce is ace.Load without dealing with includes and setting Base'd names for the templates.

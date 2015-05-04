@@ -7,7 +7,7 @@ ifeq ($(testpackage), ./...)
 singletestpackage=$(fqostent)
 endif
 
-acepp.go=amberp/acepp/acepp.go
+acepp.go=acepp/acepp.go
 
 binassets_develgo         = share/assets/bindata.devel.go
 binassets_productiongo    = share/assets/bindata.production.go
