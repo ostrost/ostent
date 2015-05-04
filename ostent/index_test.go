@@ -6,12 +6,12 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/rzab/amber"
+	"github.com/ostrost/ostent/acepp/templatep"
 )
 
-// Traverses the type, fails on any pointer field
-// Intended to reveal the pointers, they're not comparable in templates (see amber/runtime.go)
-// Ruled to use json() in the templates to compare values
+// Traverses the type, fails on any pointer field.
+// Intended to reveal the pointers, they're not comparable in templates.
+// Ruled to use json() in the templates to compare values.
 func testIndexDatatype(t *testing.T, typ reflect.Type) {
 	for i := 0; i < typ.NumField(); i++ {
 		field := typ.Field(i)
@@ -33,7 +33,7 @@ func TestIndexDatatype(t *testing.T) {
 
 func execute_template(IN string, DATA interface{}) (string, error) {
 	buf := new(bytes.Buffer)
-	if err := template.Must(template.New("tpl").Funcs(amber.FuncMap).Parse(IN)).Execute(buf, DATA); err != nil {
+	if err := template.Must(template.New("tpl").Funcs(templatep.AceFuncs).Parse(IN)).Execute(buf, DATA); err != nil {
 		return "", err
 	}
 	return buf.String(), nil

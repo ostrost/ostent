@@ -121,7 +121,7 @@ clone your fork as if it was `github.com/ostrost/ostent` package for Go:
 
 If you don't change source files, content re-generated
 should not differ from the commited. Whenever
-share/{amber.templates,style,coffee} modified,
+share/{ace.templates,style,coffee} modified,
 you have to re-make.
 
 Additional tools required for assets rebuilding:

@@ -158,10 +158,10 @@ func dot(v interface{}, key string) Hash {
 	return h
 }
 
-// DotFuncs features "dot" function for templates. In use in acepp and amberpp.
+// DotFuncs features "dot" function for templates. In use in acepp.
 var DotFuncs = templatetext.FuncMap{"dot": dot}
 
-// AceFuncs features functions for templates. In use in acepp.
+// AceFuncs features functions for templates. In use in acepp and templates.
 var AceFuncs = templatehtml.FuncMap{
 	"dot": dot,
 	"json": func(v interface{}) (string, error) {

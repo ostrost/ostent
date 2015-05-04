@@ -1,15 +1,15 @@
 package templates
 
 import (
+	"github.com/ostrost/ostent/acepp/templatep"
 	"github.com/ostrost/ostent/templateutil"
-	"github.com/rzab/amber"
 )
 
 var (
 	// IndexTemplate is a templateutil.LazyTemplate of "index.html" asset.
-	IndexTemplate = templateutil.NewLT(Asset, "index.html", amber.FuncMap)
+	IndexTemplate = templateutil.NewLT(Asset, "index.html", templatep.AceFuncs)
 	// DefinesTemplate is a templateutil.LazyTemplate of "defines.html" asset.
-	DefinesTemplate = templateutil.NewLT(Asset, "defines.html", amber.FuncMap)
+	DefinesTemplate = templateutil.NewLT(Asset, "defines.html", templatep.AceFuncs)
 )
 
 func InitTemplates(done chan<- struct{}) {

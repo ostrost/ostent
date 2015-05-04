@@ -76,12 +76,6 @@ al: $(ostent_files)
 
 $(destbin)/ostent: $(ostent_files)
 	go build -ldflags -w -a -tags production -o $@ $(fqostent)
-# $(destbin)/%: ; go build -o $@ $(fqostent)/$|
-# $(destbin)/amberpp: | amberp/amberpp
-# $(destbin)/amberpp: $(shell go list -f '\
-# {{$$dir := .Dir}}\
-# {{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}' $(fqostent)/amberp/amberpp | \
-# sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 
 share/assets/css/index.css: share/style/index.scss
 	type sass   >/dev/null || exit 0; sass $< $@
@@ -92,12 +86,12 @@ share/assets/js/devel/milk/index.js: share/coffee/index.coffee
 share/assets/js/production/index.min.js: $(shell find share/assets/js/devel/ -type f)
 	type r.js   >/dev/null || exit 0; cd share/assets/js/devel/milk && r.js -o build.js
 
-share/templates/index.html: share/amber.templates/index.ace share/amber.templates/defines.ace $(acepp.go)
-	go run $(acepp.go) -defines share/amber.templates/defines.ace -output $@ $<
-share/templates/defines.html: share/amber.templates/defines.ace $(acepp.go)
-	go run $(acepp.go) -defines share/amber.templates/defines.ace -output $@ -savedefines
-share/tmp/jscript.jsx: share/amber.templates/jscript.txt share/amber.templates/defines.ace $(acepp.go)
-	go run $(acepp.go) -defines share/amber.templates/defines.ace -output $@ -javascript $<
+share/templates/index.html: share/ace.templates/index.ace share/ace.templates/defines.ace $(acepp.go)
+	go run $(acepp.go) -defines share/ace.templates/defines.ace -output $@ $<
+share/templates/defines.html: share/ace.templates/defines.ace $(acepp.go)
+	go run $(acepp.go) -defines share/ace.templates/defines.ace -output $@ -savedefines
+share/tmp/jscript.jsx: share/ace.templates/jscript.txt share/ace.templates/defines.ace $(acepp.go)
+	go run $(acepp.go) -defines share/ace.templates/defines.ace -output $@ -javascript $<
 
 $(bintemplates_productiongo) $(bintemplates_develgo): $(shell find share/templates/ -type f \! -name \*.go)
 
