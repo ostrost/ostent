@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 	templatetext "text/template"
 
 	"github.com/ostrost/ostent/acepp/templatep"
@@ -56,10 +55,11 @@ func main() {
 		}
 	}
 	aceopts := &ace.Options{
-		DelimLeft:  "{{",  // default
-		DelimRight: "}}",  // default
-		Extension:  "ace", // default
-		FuncMap:    templatep.AceFuncs,
+		DelimLeft:          "{{",    // default
+		DelimRight:         "}}",    // default
+		Extension:          "ace",   // default
+		AttributeNameClass: "class", // default
+		FuncMap:            templatep.AceFuncs,
 	}
 
 	if !jscriptMode {
@@ -72,6 +72,7 @@ func main() {
 		return
 	}
 
+	aceopts.AttributeNameClass = "className"
 	definesbase, defines, err := LoadAce(definesFile, "", aceopts)
 	check(err)
 
@@ -97,7 +98,7 @@ func main() {
 	s, err := templatep.StringExecute(jscript, m)
 	check(err)
 
-	s = strings.Replace(s, "class=", "className=", -1)
+	// s = strings.Replace(s, "class=", "className=", -1)
 	check(templatep.WriteFile(outputFile, s))
 }
 
