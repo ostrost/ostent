@@ -113,8 +113,8 @@ clone your fork as if it was `github.com/ostrost/ostent` package for Go:
 `make` rebuilds these **commited to the repo** files:
 - `share/templates/bindata.*.go`
 - `share/assets/bindata.*.go`
-- `share/assets/js/devel/milk/*.js`
-- `share/assets/js/devel/gen/*.js`
+- `share/assets/js/src/milk/*.js`
+- `share/assets/js/src/gen/*.js`
 - `share/templates/*.html`
 - `share/assets/css/*.css`
 - `share/tmp/*.jsx`
