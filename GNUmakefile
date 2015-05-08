@@ -79,12 +79,12 @@ $(destbin)/ostent: $(ostent_files)
 
 share/assets/css/index.css: share/style/index.scss
 	type sass   >/dev/null || exit 0; sass $< $@
-share/assets/js/devel/gen/jscript.js: share/tmp/jscript.jsx
+share/assets/js/src/gen/jscript.js: share/tmp/jscript.jsx
 	type jsx    >/dev/null || exit 0; jsx <$^ >/dev/null && jsx <$^ 2>/dev/null >$@
-share/assets/js/devel/milk/index.js: share/coffee/index.coffee
+share/assets/js/src/milk/index.js: share/coffee/index.coffee
 	type coffee >/dev/null || exit 0; coffee -p $^ >/dev/null && coffee -o $(@D)/ $^
-share/assets/js/production/index.min.js: $(shell find share/assets/js/devel/ -type f)
-	type r.js   >/dev/null || exit 0; cd share/assets/js/devel/milk && r.js -o build.js
+share/assets/js/min/index.min.js: $(shell find share/assets/js/src/ -type f)
+	type r.js   >/dev/null || exit 0; cd share/assets/js/src/milk && r.js -o build.js
 
 share/templates/index.html: share/ace.templates/index.ace share/ace.templates/defines.ace $(acepp.go)
 	go run $(acepp.go) -defines share/ace.templates/defines.ace -output $@ $<
@@ -101,21 +101,21 @@ $(bintemplates_develgo):
 	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags '!production' -dev ./...
 
 $(binassets_productiongo):
-	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags production -mode 0600 -modtime 1400000000 -ignore js/devel/ ./...
+	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags production -mode 0600 -modtime 1400000000 -ignore js/src/ ./...
 $(binassets_develgo):
-	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags '!production' -dev -ignore js/production/ ./...
+	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags '!production' -dev -ignore js/min/ ./...
 
 $(binassets_productiongo): $(shell find \
                            share/assets/ -type f \! -name '*.go' \! -path \
-                          'share/assets/js/devel/*')
+                          'share/assets/js/src/*')
 $(binassets_productiongo): share/assets/css/index.css
-$(binassets_productiongo): share/assets/js/production/index.min.js
+$(binassets_productiongo): share/assets/js/min/index.min.js
 
 $(binassets_develgo): $(shell find \
                       share/assets/ -type f \! -name '*.go' \! -path \
-                     'share/assets/js/production/*')
+                     'share/assets/js/min/*')
 $(binassets_develgo): share/assets/css/index.css
-$(binassets_develgo): share/assets/js/devel/gen/jscript.js
+$(binassets_develgo): share/assets/js/src/gen/jscript.js
 
 # spare shortcuts
 bindata-production: $(binassets_productiongo) $(bintemplates_productiongo)

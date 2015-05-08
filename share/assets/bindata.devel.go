@@ -79,10 +79,10 @@ func favicon_png() (*asset, error) {
 	return a, err
 }
 
-// js_devel_gen_jscript_js reads file data from disk. It returns an error on failure.
-func js_devel_gen_jscript_js() (*asset, error) {
-	path := filepath.Join(rootDir, "js/devel/gen/jscript.js")
-	name := "js/devel/gen/jscript.js"
+// js_requirejs_2_1_17_require_min_js reads file data from disk. It returns an error on failure.
+func js_requirejs_2_1_17_require_min_js() (*asset, error) {
+	path := filepath.Join(rootDir, "js/requirejs/2.1.17/require.min.js")
+	name := "js/requirejs/2.1.17/require.min.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -97,10 +97,10 @@ func js_devel_gen_jscript_js() (*asset, error) {
 	return a, err
 }
 
-// js_devel_milk_build_js reads file data from disk. It returns an error on failure.
-func js_devel_milk_build_js() (*asset, error) {
-	path := filepath.Join(rootDir, "js/devel/milk/build.js")
-	name := "js/devel/milk/build.js"
+// js_src_gen_jscript_js reads file data from disk. It returns an error on failure.
+func js_src_gen_jscript_js() (*asset, error) {
+	path := filepath.Join(rootDir, "js/src/gen/jscript.js")
+	name := "js/src/gen/jscript.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -115,10 +115,10 @@ func js_devel_milk_build_js() (*asset, error) {
 	return a, err
 }
 
-// js_devel_milk_index_js reads file data from disk. It returns an error on failure.
-func js_devel_milk_index_js() (*asset, error) {
-	path := filepath.Join(rootDir, "js/devel/milk/index.js")
-	name := "js/devel/milk/index.js"
+// js_src_milk_build_js reads file data from disk. It returns an error on failure.
+func js_src_milk_build_js() (*asset, error) {
+	path := filepath.Join(rootDir, "js/src/milk/build.js")
+	name := "js/src/milk/build.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -133,10 +133,10 @@ func js_devel_milk_index_js() (*asset, error) {
 	return a, err
 }
 
-// js_devel_vendor_min_bootstrap_3_3_4_bootstrap_min_js reads file data from disk. It returns an error on failure.
-func js_devel_vendor_min_bootstrap_3_3_4_bootstrap_min_js() (*asset, error) {
-	path := filepath.Join(rootDir, "js/devel/vendor/min/bootstrap/3.3.4/bootstrap.min.js")
-	name := "js/devel/vendor/min/bootstrap/3.3.4/bootstrap.min.js"
+// js_src_milk_index_js reads file data from disk. It returns an error on failure.
+func js_src_milk_index_js() (*asset, error) {
+	path := filepath.Join(rootDir, "js/src/milk/index.js")
+	name := "js/src/milk/index.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -151,10 +151,10 @@ func js_devel_vendor_min_bootstrap_3_3_4_bootstrap_min_js() (*asset, error) {
 	return a, err
 }
 
-// js_devel_vendor_min_headroom_0_7_0_headroom_min_js reads file data from disk. It returns an error on failure.
-func js_devel_vendor_min_headroom_0_7_0_headroom_min_js() (*asset, error) {
-	path := filepath.Join(rootDir, "js/devel/vendor/min/headroom/0.7.0/headroom.min.js")
-	name := "js/devel/vendor/min/headroom/0.7.0/headroom.min.js"
+// js_src_vendor_bootstrap_3_3_4_bootstrap_min_js reads file data from disk. It returns an error on failure.
+func js_src_vendor_bootstrap_3_3_4_bootstrap_min_js() (*asset, error) {
+	path := filepath.Join(rootDir, "js/src/vendor/bootstrap/3.3.4/bootstrap.min.js")
+	name := "js/src/vendor/bootstrap/3.3.4/bootstrap.min.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -169,10 +169,10 @@ func js_devel_vendor_min_headroom_0_7_0_headroom_min_js() (*asset, error) {
 	return a, err
 }
 
-// js_devel_vendor_min_jquery_2_1_4_jquery_2_1_4_min_js reads file data from disk. It returns an error on failure.
-func js_devel_vendor_min_jquery_2_1_4_jquery_2_1_4_min_js() (*asset, error) {
-	path := filepath.Join(rootDir, "js/devel/vendor/min/jquery/2.1.4/jquery-2.1.4.min.js")
-	name := "js/devel/vendor/min/jquery/2.1.4/jquery-2.1.4.min.js"
+// js_src_vendor_headroom_0_7_0_headroom_min_js reads file data from disk. It returns an error on failure.
+func js_src_vendor_headroom_0_7_0_headroom_min_js() (*asset, error) {
+	path := filepath.Join(rootDir, "js/src/vendor/headroom/0.7.0/headroom.min.js")
+	name := "js/src/vendor/headroom/0.7.0/headroom.min.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -187,10 +187,10 @@ func js_devel_vendor_min_jquery_2_1_4_jquery_2_1_4_min_js() (*asset, error) {
 	return a, err
 }
 
-// js_devel_vendor_min_react_0_13_2_react_min_js reads file data from disk. It returns an error on failure.
-func js_devel_vendor_min_react_0_13_2_react_min_js() (*asset, error) {
-	path := filepath.Join(rootDir, "js/devel/vendor/min/react/0.13.2/react.min.js")
-	name := "js/devel/vendor/min/react/0.13.2/react.min.js"
+// js_src_vendor_jquery_2_1_4_jquery_2_1_4_min_js reads file data from disk. It returns an error on failure.
+func js_src_vendor_jquery_2_1_4_jquery_2_1_4_min_js() (*asset, error) {
+	path := filepath.Join(rootDir, "js/src/vendor/jquery/2.1.4/jquery-2.1.4.min.js")
+	name := "js/src/vendor/jquery/2.1.4/jquery-2.1.4.min.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -205,10 +205,10 @@ func js_devel_vendor_min_react_0_13_2_react_min_js() (*asset, error) {
 	return a, err
 }
 
-// js_devel_vendor_min_requirejs_domready_2_0_1_domready_js reads file data from disk. It returns an error on failure.
-func js_devel_vendor_min_requirejs_domready_2_0_1_domready_js() (*asset, error) {
-	path := filepath.Join(rootDir, "js/devel/vendor/min/requirejs-domReady/2.0.1/domReady.js")
-	name := "js/devel/vendor/min/requirejs-domReady/2.0.1/domReady.js"
+// js_src_vendor_react_0_13_2_react_min_js reads file data from disk. It returns an error on failure.
+func js_src_vendor_react_0_13_2_react_min_js() (*asset, error) {
+	path := filepath.Join(rootDir, "js/src/vendor/react/0.13.2/react.min.js")
+	name := "js/src/vendor/react/0.13.2/react.min.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -223,10 +223,10 @@ func js_devel_vendor_min_requirejs_domready_2_0_1_domready_js() (*asset, error) 
 	return a, err
 }
 
-// js_vendor_requirejs_2_1_17_require_min_js reads file data from disk. It returns an error on failure.
-func js_vendor_requirejs_2_1_17_require_min_js() (*asset, error) {
-	path := filepath.Join(rootDir, "js/vendor/requirejs/2.1.17/require.min.js")
-	name := "js/vendor/requirejs/2.1.17/require.min.js"
+// js_src_vendor_requirejs_domready_2_0_1_domready_js reads file data from disk. It returns an error on failure.
+func js_src_vendor_requirejs_domready_2_0_1_domready_js() (*asset, error) {
+	path := filepath.Join(rootDir, "js/src/vendor/requirejs-domready/2.0.1/domReady.js")
+	name := "js/src/vendor/requirejs-domready/2.0.1/domReady.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -314,15 +314,15 @@ var _bindata = map[string]func() (*asset, error){
 	"css/index.css": css_index_css,
 	"css/index.css.map": css_index_css_map,
 	"favicon.png": favicon_png,
-	"js/devel/gen/jscript.js": js_devel_gen_jscript_js,
-	"js/devel/milk/build.js": js_devel_milk_build_js,
-	"js/devel/milk/index.js": js_devel_milk_index_js,
-	"js/devel/vendor/min/bootstrap/3.3.4/bootstrap.min.js": js_devel_vendor_min_bootstrap_3_3_4_bootstrap_min_js,
-	"js/devel/vendor/min/headroom/0.7.0/headroom.min.js": js_devel_vendor_min_headroom_0_7_0_headroom_min_js,
-	"js/devel/vendor/min/jquery/2.1.4/jquery-2.1.4.min.js": js_devel_vendor_min_jquery_2_1_4_jquery_2_1_4_min_js,
-	"js/devel/vendor/min/react/0.13.2/react.min.js": js_devel_vendor_min_react_0_13_2_react_min_js,
-	"js/devel/vendor/min/requirejs-domReady/2.0.1/domReady.js": js_devel_vendor_min_requirejs_domready_2_0_1_domready_js,
-	"js/vendor/requirejs/2.1.17/require.min.js": js_vendor_requirejs_2_1_17_require_min_js,
+	"js/requirejs/2.1.17/require.min.js": js_requirejs_2_1_17_require_min_js,
+	"js/src/gen/jscript.js": js_src_gen_jscript_js,
+	"js/src/milk/build.js": js_src_milk_build_js,
+	"js/src/milk/index.js": js_src_milk_index_js,
+	"js/src/vendor/bootstrap/3.3.4/bootstrap.min.js": js_src_vendor_bootstrap_3_3_4_bootstrap_min_js,
+	"js/src/vendor/headroom/0.7.0/headroom.min.js": js_src_vendor_headroom_0_7_0_headroom_min_js,
+	"js/src/vendor/jquery/2.1.4/jquery-2.1.4.min.js": js_src_vendor_jquery_2_1_4_jquery_2_1_4_min_js,
+	"js/src/vendor/react/0.13.2/react.min.js": js_src_vendor_react_0_13_2_react_min_js,
+	"js/src/vendor/requirejs-domready/2.0.1/domReady.js": js_src_vendor_requirejs_domready_2_0_1_domready_js,
 	"robots.txt": robots_txt,
 }
 
@@ -375,56 +375,52 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 	"favicon.png": &_bintree_t{favicon_png, map[string]*_bintree_t{
 	}},
 	"js": &_bintree_t{nil, map[string]*_bintree_t{
-		"devel": &_bintree_t{nil, map[string]*_bintree_t{
-			"gen": &_bintree_t{nil, map[string]*_bintree_t{
-				"jscript.js": &_bintree_t{js_devel_gen_jscript_js, map[string]*_bintree_t{
-				}},
-			}},
-			"milk": &_bintree_t{nil, map[string]*_bintree_t{
-				"build.js": &_bintree_t{js_devel_milk_build_js, map[string]*_bintree_t{
-				}},
-				"index.js": &_bintree_t{js_devel_milk_index_js, map[string]*_bintree_t{
-				}},
-			}},
-			"vendor": &_bintree_t{nil, map[string]*_bintree_t{
-				"min": &_bintree_t{nil, map[string]*_bintree_t{
-					"bootstrap": &_bintree_t{nil, map[string]*_bintree_t{
-						"3.3.4": &_bintree_t{nil, map[string]*_bintree_t{
-							"bootstrap.min.js": &_bintree_t{js_devel_vendor_min_bootstrap_3_3_4_bootstrap_min_js, map[string]*_bintree_t{
-							}},
-						}},
-					}},
-					"headroom": &_bintree_t{nil, map[string]*_bintree_t{
-						"0.7.0": &_bintree_t{nil, map[string]*_bintree_t{
-							"headroom.min.js": &_bintree_t{js_devel_vendor_min_headroom_0_7_0_headroom_min_js, map[string]*_bintree_t{
-							}},
-						}},
-					}},
-					"jquery": &_bintree_t{nil, map[string]*_bintree_t{
-						"2.1.4": &_bintree_t{nil, map[string]*_bintree_t{
-							"jquery-2.1.4.min.js": &_bintree_t{js_devel_vendor_min_jquery_2_1_4_jquery_2_1_4_min_js, map[string]*_bintree_t{
-							}},
-						}},
-					}},
-					"react": &_bintree_t{nil, map[string]*_bintree_t{
-						"0.13.2": &_bintree_t{nil, map[string]*_bintree_t{
-							"react.min.js": &_bintree_t{js_devel_vendor_min_react_0_13_2_react_min_js, map[string]*_bintree_t{
-							}},
-						}},
-					}},
-					"requirejs-domReady": &_bintree_t{nil, map[string]*_bintree_t{
-						"2.0.1": &_bintree_t{nil, map[string]*_bintree_t{
-							"domReady.js": &_bintree_t{js_devel_vendor_min_requirejs_domready_2_0_1_domready_js, map[string]*_bintree_t{
-							}},
-						}},
-					}},
+		"requirejs": &_bintree_t{nil, map[string]*_bintree_t{
+			"2.1.17": &_bintree_t{nil, map[string]*_bintree_t{
+				"require.min.js": &_bintree_t{js_requirejs_2_1_17_require_min_js, map[string]*_bintree_t{
 				}},
 			}},
 		}},
-		"vendor": &_bintree_t{nil, map[string]*_bintree_t{
-			"requirejs": &_bintree_t{nil, map[string]*_bintree_t{
-				"2.1.17": &_bintree_t{nil, map[string]*_bintree_t{
-					"require.min.js": &_bintree_t{js_vendor_requirejs_2_1_17_require_min_js, map[string]*_bintree_t{
+		"src": &_bintree_t{nil, map[string]*_bintree_t{
+			"gen": &_bintree_t{nil, map[string]*_bintree_t{
+				"jscript.js": &_bintree_t{js_src_gen_jscript_js, map[string]*_bintree_t{
+				}},
+			}},
+			"milk": &_bintree_t{nil, map[string]*_bintree_t{
+				"build.js": &_bintree_t{js_src_milk_build_js, map[string]*_bintree_t{
+				}},
+				"index.js": &_bintree_t{js_src_milk_index_js, map[string]*_bintree_t{
+				}},
+			}},
+			"vendor": &_bintree_t{nil, map[string]*_bintree_t{
+				"bootstrap": &_bintree_t{nil, map[string]*_bintree_t{
+					"3.3.4": &_bintree_t{nil, map[string]*_bintree_t{
+						"bootstrap.min.js": &_bintree_t{js_src_vendor_bootstrap_3_3_4_bootstrap_min_js, map[string]*_bintree_t{
+						}},
+					}},
+				}},
+				"headroom": &_bintree_t{nil, map[string]*_bintree_t{
+					"0.7.0": &_bintree_t{nil, map[string]*_bintree_t{
+						"headroom.min.js": &_bintree_t{js_src_vendor_headroom_0_7_0_headroom_min_js, map[string]*_bintree_t{
+						}},
+					}},
+				}},
+				"jquery": &_bintree_t{nil, map[string]*_bintree_t{
+					"2.1.4": &_bintree_t{nil, map[string]*_bintree_t{
+						"jquery-2.1.4.min.js": &_bintree_t{js_src_vendor_jquery_2_1_4_jquery_2_1_4_min_js, map[string]*_bintree_t{
+						}},
+					}},
+				}},
+				"react": &_bintree_t{nil, map[string]*_bintree_t{
+					"0.13.2": &_bintree_t{nil, map[string]*_bintree_t{
+						"react.min.js": &_bintree_t{js_src_vendor_react_0_13_2_react_min_js, map[string]*_bintree_t{
+						}},
+					}},
+				}},
+				"requirejs-domready": &_bintree_t{nil, map[string]*_bintree_t{
+					"2.0.1": &_bintree_t{nil, map[string]*_bintree_t{
+						"domReady.js": &_bintree_t{js_src_vendor_requirejs_domready_2_0_1_domready_js, map[string]*_bintree_t{
+						}},
 					}},
 				}},
 			}},

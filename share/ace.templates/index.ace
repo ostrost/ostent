@@ -10,7 +10,7 @@ html
     link rel=icon type=image/png href=/favicon.png
     link rel=stylesheet type=text/css href=/css/index.css
 
-    script type=text/javascript charset=utf-8 src=/js/vendor/requirejs/2.1.17/require.min.js data-main=/js/{{if .PRODUCTION}}production/index.min.js{{else}}devel/milk/index.js{{end}}
+    script type=text/javascript charset=utf-8 src=/js/requirejs/2.1.17/require.min.js data-main=/js/{{if .PRODUCTION}}min/index.min.js{{else}}src/milk/index.js{{end}}
 
   body
     div#client

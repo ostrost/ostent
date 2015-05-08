@@ -1,12 +1,12 @@
 require.config
   shim: {bootstrap: {deps: ['jquery']}}
-  baseUrl: '/js/devel'
+  baseUrl: '/js/src'
   paths:
-    domReady:  'vendor/min/requirejs-domReady/2.0.1/domReady'
-    headroom:  'vendor/min/headroom/0.7.0/headroom.min'
-    jquery:    'vendor/min/jquery/2.1.4/jquery-2.1.4.min'
-    bootstrap: 'vendor/min/bootstrap/3.3.4/bootstrap.min'
-    react:     'vendor/min/react/0.13.2/react.min'
+    domReady:  'vendor/requirejs-domready/2.0.1/domReady'
+    headroom:  'vendor/headroom/0.7.0/headroom.min'
+    jquery:    'vendor/jquery/2.1.4/jquery-2.1.4.min'
+    bootstrap: 'vendor/bootstrap/3.3.4/bootstrap.min'
+    react:     'vendor/react/0.13.2/react.min'
     jscript:   'gen/jscript'
 
 # main require

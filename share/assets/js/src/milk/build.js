@@ -1,5 +1,5 @@
 ({
-    out: "../../production/index.min.js",
+    out: "../../min/index.min.js",
     mainConfigFile: "index.js",
     name: "milk/index",
     baseUrl: ".."
