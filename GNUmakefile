@@ -1,10 +1,12 @@
 #!/usr/bin/env make -f
 
-fqostent=github.com/ostrost/ostent
+# This repo clone location (final subdirectories) defines package name thus
+# it should be */github.com/[ostrost]/ostent to make package=github.com/[ostrost]/ostent
+package=$(shell echo $$PWD | awk -F/ '{ OFS="/"; print $$(NF-2), $$(NF-1), $$NF }')
 testpackage?=./...
 singletestpackage=$(testpackage)
 ifeq ($(testpackage), ./...)
-singletestpackage=$(fqostent)
+singletestpackage=$(package)
 endif
 
 acepp.go=acepp/acepp.go
@@ -29,17 +31,18 @@ ifneq (init, $(MAKECMDGOALS))
 # - go test fails without dependencies installed
 # - go-bindata is not installed yet
 
+cmdname=$(notdir $(PWD))
 destbin=$(shell echo $(GOPATH) | awk -F: '{ print $$1 "/bin" }')
-# destbin=$(abspath $(dir $(shell go list -f '{{.Target}}' $(fqostent))))
-ostent_files=$(shell \
-go list -tags production -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(fqostent) | xargs \
+# destbin=$(abspath $(dir $(shell go list -f '{{.Target}}' $(package))))
+packagefiles=$(shell \
+go list -tags production -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(package) | xargs \
 go list -tags production -f '{{if and (not .Standard) (not .Goroot)}}\
 {{$$dir := .Dir}}\
 {{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}\
 {{range .CgoFiles}}{{$$dir}}/{{.}}{{"\n"}}{{end}}{{end}}' | \
 sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
 
-all: $(destbin)/ostent
+all: $(destbin)/$(cmdname)
 endif
 init:
 	go get -u -v \
@@ -50,13 +53,13 @@ github.com/clipperhouse/gen \
 github.com/yosssi/ace
 # TODO rm {src,pkg/*}/github.com/clipperhouse/slice{,.a}
 	cd system/operating && gen add github.com/rzab/slice
-	git remote set-url origin https://$(fqostent) # travis & tip & https://code.google.com/p/go/issues/detail?id=8850
-	go get -v -tags production $(fqostent)
-	go list -f '{{.Target}}' $(fqostent) | $(xargs) rm # clean the library archive
-	go get -v -a $(fqostent)
-	go list -f '{{.Target}}' $(fqostent) | $(xargs) rm # clean the library archive
+	git remote set-url origin https://$(package) # travis & tip & https://code.google.com/p/go/issues/detail?id=8850
+	go get -v -tags production $(package)
+	go list -f '{{.Target}}' $(package) | $(xargs) rm # clean the library archive
+	go get -v -a $(package)
+	go list -f '{{.Target}}' $(package) | $(xargs) rm # clean the library archive
 
-%: %.sh # clear the implicit *.sh rule covering ./ostent.sh
+%: %.sh # clear the implicit *.sh rule
 # print-* rule for debugging. http://blog.jgc.org/2015/04/the-one-line-you-should-add-to-every.html :
 print-%: ; @echo $*=$($*)
 
@@ -71,11 +74,11 @@ coverhtml: covertest ; go tool  cover  -html=coverage.out
 system/operating/%_slice.go: system/operating/operating.go ; cd $(dir $@) && go generate
 client/uint%_jsonenums.go:   client/tabs.go                ; cd $(dir $@) && go generate
 
-al: $(ostent_files)
-# al: like `all' but without final go build ostent. For when rerun does the build
+al: $(packagefiles)
+# al: like `all' but without final go build $(package). For when rerun does the build
 
-$(destbin)/ostent: $(ostent_files)
-	go build -ldflags -w -a -tags production -o $@ $(fqostent)
+$(destbin)/$(cmdname): $(packagefiles)
+	go build -ldflags -w -a -tags production -o $@ $(package)
 
 share/assets/css/index.css: share/style/index.scss
 	type sass   >/dev/null || exit 0; sass $< $@
