@@ -37,9 +37,9 @@ func (s *Server) ServeExtra(listener net.Listener, extramap Muxmap) error {
 }
 
 // NewServer creates a Server.
-func NewServer(listener net.Listener, production bool) *Server {
-	access := newLogged(production, log.New(os.Stdout, "", 0))
-	recovery := recovery(production)
+func NewServer(listener net.Listener, taggedbin bool) *Server {
+	access := NewLogged(taggedbin, log.New(os.Stdout, "", 0))
+	recovery := Recovery(taggedbin)
 	chain := alice.New(
 		access.Constructor,
 		recovery.Constructor,

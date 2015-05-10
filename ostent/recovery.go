@@ -6,13 +6,13 @@ import (
 	"runtime"
 )
 
-type recovery bool // true stands for production
+type Recovery bool // true means stack inclusion in error output
 
-func (rc recovery) ConstructorFunc(hf http.HandlerFunc) http.Handler {
+func (rc Recovery) ConstructorFunc(hf http.HandlerFunc) http.Handler {
 	return rc.Constructor(http.HandlerFunc(hf))
 }
 
-func (rc recovery) Constructor(HANDLER http.Handler) http.Handler {
+func (rc Recovery) Constructor(HANDLER http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
@@ -24,7 +24,7 @@ func (rc recovery) Constructor(HANDLER http.Handler) http.Handler {
 					description = err.Error()
 				}
 				var stack string
-				if !rc { // if !production
+				if !rc {
 					sbuf := make([]byte, 4096-len(panicstatustext)-len(description))
 					size := runtime.Stack(sbuf, false)
 					stack = string(sbuf[:size])

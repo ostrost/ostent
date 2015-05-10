@@ -18,9 +18,9 @@ import (
 
 var (
 	// AssetInfoFunc is for wrapping bindata's AssetInfo func.
-	AssetInfoFunc = ProductionAssetInfoFunc
+	AssetInfoFunc = BinAssetInfoFunc
 	// AssetReadFunc is for wrapping bindata's Asset func.
-	AssetReadFunc = ProductionAssetReadFunc
+	AssetReadFunc = BinAssetReadFunc
 )
 
 func init() {
@@ -46,7 +46,7 @@ func main() {
 		go func() {
 			templates.InitTemplates(nil) // preventive
 			// sequential: Serve must wait for InitTemplates
-			Serve(listen, true, nil) // true stands for production
+			Serve(listen, true, nil) // true stands for taggedbin
 		}()
 	}
 	upgrade.FirstUpgradeStopper = webserver.GoneAgain // initial upgrade skipped after gone again
@@ -71,8 +71,8 @@ var (
 	}
 )
 
-// ProductionAssetInfoFunc wraps bindata's AssetInfo func. ModTime is always BootTime.
-func ProductionAssetInfoFunc(infofunc func(string) (os.FileInfo, error)) func(string) (ostent.TimeInfo, error) {
+// BinAssetInfoFunc wraps bindata's AssetInfo func. ModTime is always BootTime.
+func BinAssetInfoFunc(infofunc func(string) (os.FileInfo, error)) func(string) (ostent.TimeInfo, error) {
 	return func(name string) (ostent.TimeInfo, error) {
 		_, err := infofunc(name)
 		if err != nil {
@@ -82,8 +82,8 @@ func ProductionAssetInfoFunc(infofunc func(string) (os.FileInfo, error)) func(st
 	}
 }
 
-// ProductionAssetReadFunc wraps bindata's Asset func. Result is from cache or cached.
-func ProductionAssetReadFunc(readfunc func(string) ([]byte, error)) func(string) ([]byte, error) {
+// BinAssetReadFunc wraps bindata's Asset func. Result is from cache or cached.
+func BinAssetReadFunc(readfunc func(string) ([]byte, error)) func(string) ([]byte, error) {
 	return func(name string) ([]byte, error) {
 		return Read(readfunc, name)
 	}

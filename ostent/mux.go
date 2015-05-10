@@ -13,14 +13,14 @@ type ServeMux interface {
 type TrieServeMux struct {
 	*tigertonic.TrieServeMux
 	constructor func(http.Handler) http.Handler
-	Recovery    recovery
+	Recovery    Recovery
 }
 
-func NewMux(rec recovery, constructor func(http.Handler) http.Handler) *TrieServeMux {
+func NewMux(rc Recovery, constructor func(http.Handler) http.Handler) *TrieServeMux {
 	return &TrieServeMux{
 		TrieServeMux: tigertonic.NewTrieServeMux(),
 		constructor:  constructor,
-		Recovery:     rec,
+		Recovery:     rc,
 	}
 }
 

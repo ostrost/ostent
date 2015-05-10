@@ -882,13 +882,13 @@ func init() {
 // Set at init, result of system.Distrib.
 var DISTRIB string
 
-func IndexFunc(production bool, template *templateutil.LazyTemplate, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
+func IndexFunc(taggedbin bool, template *templateutil.LazyTemplate, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		index(production, template, minperiod, w, r)
+		index(taggedbin, template, minperiod, w, r)
 	}
 }
 
-func index(production bool, template *templateutil.LazyTemplate, minperiod flags.Period, w http.ResponseWriter, r *http.Request) {
+func index(taggedbin bool, template *templateutil.LazyTemplate, minperiod flags.Period, w http.ResponseWriter, r *http.Request) {
 	id, err := indexData(minperiod, r)
 	if err != nil {
 		if _, ok := err.(client.RenamedConstError); ok {
@@ -900,13 +900,13 @@ func index(production bool, template *templateutil.LazyTemplate, minperiod flags
 	}
 
 	response := template.Response(w, struct {
-		OVERRIDE   string // MUST HAVE, EMPTY
-		CLASSNAME  string // MUST HAVE, EMPTY
-		PRODUCTION bool
-		Data       IndexData
+		OVERRIDE  string // MUST HAVE, EMPTY
+		CLASSNAME string // MUST HAVE, EMPTY
+		TAGGEDbin bool
+		Data      IndexData
 	}{
-		PRODUCTION: production,
-		Data:       id,
+		TAGGEDbin: taggedbin,
+		Data:      id,
 	})
 	response.Header().Set("Content-Type", "text/html")
 	response.SetContentLength()

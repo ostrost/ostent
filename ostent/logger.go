@@ -16,16 +16,16 @@ type logged struct {
 }
 
 type logger struct {
-	production bool
-	access     *log.Logger
-	logged     logged
+	LogUniq bool
+	access  *log.Logger
+	logged  logged
 }
 
-func newLogged(production bool, access *log.Logger) *logger {
+func NewLogged(loguniq bool, access *log.Logger) *logger {
 	return &logger{
-		production: production,
-		access:     access,
-		logged:     logged{loggedmap: map[string]struct{}{}},
+		LogUniq: loguniq,
+		access:  access,
+		logged:  logged{loggedmap: map[string]struct{}{}},
 	}
 }
 
@@ -35,17 +35,17 @@ func (lg *logger) Constructor(HANDLER http.Handler) http.Handler {
 		lw := &loggedResponseWriter{ResponseWriter: w}
 		HANDLER.ServeHTTP(lw, r)
 
-		if lg.production {
-			lg.productionLog(start, *lw, r)
+		if lg.LogUniq {
+			lg.LogOnce(start, *lw, r)
 			return
 		}
-		lg.log(start, "", *lw, r)
+		lg.Log(start, "", *lw, r)
 	})
 }
 
-func (lg *logger) productionLog(start time.Time, w loggedResponseWriter, r *http.Request) {
+func (lg *logger) LogOnce(start time.Time, w loggedResponseWriter, r *http.Request) {
 	if !w.statusgood() {
-		lg.log(start, "", w, r)
+		lg.Log(start, "", w, r)
 		return
 	}
 
@@ -69,12 +69,12 @@ func (lg *logger) productionLog(start time.Time, w loggedResponseWriter, r *http
 	}
 
 	tail := fmt.Sprintf("\t;subsequent successful requests from %s will not be logged", host)
-	lg.log(start, tail, w, r)
+	lg.Log(start, tail, w, r)
 }
 
 var ZEROTIME, _ = time.Parse("15:04:05", "00:00:00")
 
-func (lg *logger) log(start time.Time, tail string, w loggedResponseWriter, r *http.Request) {
+func (lg *logger) Log(start time.Time, tail string, w loggedResponseWriter, r *http.Request) {
 	diff := time.Since(start)
 	since := ZEROTIME.Add(diff).Format("5.0000s")
 

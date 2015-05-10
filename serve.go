@@ -22,8 +22,8 @@ func init() {
 	ostent.DefinesTemplate = templates.DefinesTemplate
 }
 
-func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error {
-	server := ostent.NewServer(listener, production)
+func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error {
+	server := ostent.NewServer(listener, taggedbin)
 	access := server.Access
 	chain := server.Chain
 	mux := server.MUX
@@ -47,7 +47,7 @@ func Serve(listener net.Listener, production bool, extramap ostent.Muxmap) error
 	mux.Handle("GET", "/index.sse", recovery.
 		ConstructorFunc(ostent.IndexSSEFunc(access, PeriodFlag)))
 
-	index := chain.ThenFunc(ostent.IndexFunc(production,
+	index := chain.ThenFunc(ostent.IndexFunc(taggedbin,
 		templates.IndexTemplate, PeriodFlag))
 	mux.Handle("GET", "/", index)
 	mux.Handle("HEAD", "/", index)
