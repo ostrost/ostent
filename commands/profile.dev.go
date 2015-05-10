@@ -1,4 +1,4 @@
-// +build !production
+// +build !bin
 // http://blog.golang.org/profiling-go-programs
 
 package commands

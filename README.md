@@ -133,8 +133,8 @@ Additional tools required for assets rebuilding:
 ## The main package
 
 `github.com/ostrost/ostent` has two main.go files:
-rerun will find `main.devel.go`; the other `main.production.go`
-(used when building with `-tags production`) is the init code for
+rerun will find `main.dev.go`; the other `main.bin.go`
+(used when building with `-tags bin`) is the init code for
 the distributed binaries: also includes
 [goagain](https://github.com/rcrowley/goagain) recovering and
 self-upgrading via [go-update](https://github.com/inconshreveable/go-update).
@@ -142,7 +142,7 @@ self-upgrading via [go-update](https://github.com/inconshreveable/go-update).
 ## The assets
 
 The binaries, to be stand-alone, have the assets and templates embeded.
-Unless you specifically build with `-tags production` (e.g with make),
+Unless you specifically build with `-tags bin` (e.g with make),
 the content is not embeded for the ease of development:
 with `rerun`, asset requests are served from the actual files.
-Production-built `ostent restore-assets` can be used to copy (extract) assets on disk.
+Bin-built `ostent restore-assets` can be used to copy (extract) assets on disk.

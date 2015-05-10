@@ -1,4 +1,4 @@
-// +build !production
+// +build !bin
 
 package main
 
