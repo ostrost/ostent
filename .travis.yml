@@ -1,10 +1,12 @@
 os: [linux, osx]
+sudo: false
 env:
-  matrix:
-    - GVM_GO=go1.4.2 # release
-  # - GVM_GO=tip # pre-release
   global:
+    - UNAMESM=RC-$(uname -sm | tr ' ' .)
     - GVMINSTALLER_URL=https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer
+  matrix:
+    - GVM_GO=go1.4.2
+  # - GVM_GO=tip
 language: c
 install:
   - test x$TRAVIS_OS_NAME = xosx && export CXX=clang++ CC=clang || true # default CC=gcc for `language: c'
@@ -19,16 +21,14 @@ install:
   - make init
 script:
   - make test all # go test then the build
-
-# after_deploy: [echo done deploying]
-# before_deploy: echo deploying
 deploy:
   provider: releases
   api_key:
-    secure: EFMPpR2rZkCdlfWuz7bE4ji3/0OL+fgIq+lXJ5SWDUG7aYWVqlLpR1hYXb0yqy8YA2Rg3xvAfPY/sFZvCyUMv0Wx1ZhiVzNvAUduzYFqovvHoYS4nuv0bXWis4YBnx7zJ7uikl5aGAOB8g0L+ofsUAswlDU5M9g9stDG4upWSgw=
+    secure: >
+      EFMPpR2rZkCdlfWuz7bE4ji3/0OL+fgIq+lXJ5SWDUG7aYWVqlLpR1hYXb0yqy8YA2Rg3xvAfPY/sFZvCyUMv0Wx1ZhiVzNvAUduzYFqovvHoYS4nuv0bXWis4YBnx7zJ7uikl5aGAOB8g0L+ofsUAswlDU5M9g9stDG4upWSgw=
+  # https://github.com/travis-ci/dpl#github-releases
+  on: {tags: true}
   skip_clean: true
-  file: $HOME/gopath/bin/ostent # file to upload OR [file1, file2] list
-# file_glob: If files should be interpreted as globs (* and ** wildcards). Defaults to false.
-# release-number: Overide automatic release detection, set a release manually.
-  on: {tags: true} # repo: ostrost/ostent
-#    branch: ''
+  file:           $HOME/gopath/bin/$UNAMESM
+after_deploy:  mv $HOME/gopath/bin/$UNAMESM $HOME/gopath/bin/ostent
+before_deploy: mv $HOME/gopath/bin/ostent   $HOME/gopath/bin/$UNAMESM
