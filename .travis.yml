@@ -2,7 +2,7 @@ os: [linux, osx]
 sudo: false
 env:
   global:
-    - UNAMESM=RC-$(uname -sm | tr ' ' .)
+    - UNAMESM="RC-`uname -sm | tr ' ' .`"
     - GVMINSTALLER_URL=https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer
   matrix:
     - GVM_GO=go1.4.2
