@@ -3,7 +3,7 @@ os: [linux, osx] # ostrost/ostent flagged multi-os
 sudo: false
 env:
   global:
-    - BINDIR=~/gopath/bin
+    - BINDIR=$HOME/gopath/bin
     - UNAMESM="RC-`uname -sm | tr ' ' .`"
     - GVMINSTALLER_URL=https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer
   matrix:
