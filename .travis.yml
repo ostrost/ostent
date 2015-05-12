@@ -3,7 +3,7 @@ os: [linux, osx] # ostrost/ostent flagged multi-os
 sudo: false
 env:
   global:
-    - UNAME="RC-`uname -sm | tr ' ' .`"
+    - ARTIF="RC-`uname -sm | tr ' ' .`"
     - GVMINSTALLER_URL=https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer
   matrix:
     - GVM_GO=go1.4.2
@@ -21,10 +21,10 @@ install: |
   go version; go env
   : ::; make init
 script: make test all
-before_deploy: mv $HOME/gopath/bin/ostent $HOME/gopath/bin/$UNAME
-after_deploy:  mv $HOME/gopath/bin/$UNAME $HOME/gopath/bin/ostent
-deploy: #       # $HOME/gopath/bin/$UNAME deployed
-  file: &deployfi $HOME/gopath/bin/$UNAME
+before_deploy: mv $HOME/gopath/bin/ostent $HOME/gopath/bin/$ARTIF
+after_deploy:  mv $HOME/gopath/bin/$ARTIF $HOME/gopath/bin/ostent
+deploy: #       # $HOME/gopath/bin/$ARTIF deployed
+  file: &deployfi $HOME/gopath/bin/$ARTIF
   provider: releases
   api_key:
     secure: >
