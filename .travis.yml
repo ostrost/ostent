@@ -21,10 +21,10 @@ install: |
   go version; go env
   : ::; make init
 script: make test all
-before_deploy: mv ~/gopath/bin/ostent ~/gopath/bin/$UNAME
-after_deploy:  mv ~/gopath/bin/$UNAME ~/gopath/bin/ostent
-deploy: #       # ~/gopath/bin/$UNAME deployed
-  file: &deployfi ~/gopath/bin/$UNAME
+before_deploy: mv $HOME/gopath/bin/ostent $HOME/gopath/bin/$UNAME
+after_deploy:  mv $HOME/gopath/bin/$UNAME $HOME/gopath/bin/ostent
+deploy: #       # $HOME/gopath/bin/$UNAME deployed
+  file: &deployfi $HOME/gopath/bin/$UNAME
   provider: releases
   api_key:
     secure: >
