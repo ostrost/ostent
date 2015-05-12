@@ -21,10 +21,10 @@ install: |
   go version; go env
   : ::; make init
 script: make test all
-before_deploy: set -x; mv $HOME/gopath/bin/ostent $HOME/gopath/bin/$ARTIF
-after_deploy:  mv $HOME/gopath/bin/$ARTIF $HOME/gopath/bin/ostent
-deploy: #       # $HOME/gopath/bin/$ARTIF deployed
-  file: &deployfi $HOME/gopath/bin/$ARTIF
+before_deploy: set +e; mv $HOME/gopath/bin/ostent $HOME/gopath/bin/$ARTIF
+after_deploy:  set -e; mv $HOME/gopath/bin/$ARTIF $HOME/gopath/bin/ostent
+deploy: #               # $HOME/gopath/bin/$ARTIF deployed
+  file: &deployedfilename $HOME/gopath/bin/$ARTIF
   provider: releases
   api_key:
     secure: >
