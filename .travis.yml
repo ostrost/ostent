@@ -22,21 +22,7 @@ install: |
   go version; go env
   : ::; make init
 script: make test all
-before_deploy: |
-  set -e
-  if false; then
-    go get github.com/aktau/github-release
-    user=$(echo $TRAVIS_REPO_SLUG | cut -d/ -f1)
-    repo=$(echo $TRAVIS_REPO_SLUG | cut -d/ -f2)
-    # github-release release --pre-release --user $user --repo $repo --name "$repo 0.2.1-rc2" --tag 0.2.1-rc2
-    if test -n "$TRAVIS_TAG"; then
-      github-release release --pre-release --user $user --repo $repo --name "$repo ${TRAVIS_TAG#v}" --tag "$TRAVIS_TAG"
-    else
-      echo TRAVIS_TAG is undefined
-      exit 2
-    fi
-  fi
-  : :::::::::; mv $BINDIR/ostent   $BINDIR/$UNAMESM
+before_deploy: mv $BINDIR/ostent   $BINDIR/$UNAMESM
 after_deploy:  mv $BINDIR/$UNAMESM $BINDIR/ostent
 deploy:         # $BINDIR/$UNAMESM deployed
   file: &deplfile $BINDIR/$UNAMESM
