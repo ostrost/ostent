@@ -3,8 +3,7 @@ os: [linux, osx] # ostrost/ostent flagged multi-os
 sudo: false
 env:
   global:
-    - BINDIR=$HOME/gopath/bin
-    - UNAMESM="RC-`uname -sm | tr ' ' .`"
+    - UNAME="RC-`uname -sm | tr ' ' .`"
     - GVMINSTALLER_URL=https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer
   matrix:
     - GVM_GO=go1.4.2
@@ -18,14 +17,14 @@ install: |
   gvm install $GVM_GO --binary # || gvm install $GVM_GO
   gvm use $GVM_GO; gvm list
   cd; mkdir -p gopath/src; mv build gopath/src/github.com; cd gopath/src/github.com/$TRAVIS_REPO_SLUG
-  export GOPATH=~/gopath:$GOPATH PATH=${BINDIR:-~/gopath/bin}:$PATH
+  export GOPATH=~/gopath:$GOPATH PATH=~/gopath/bin:$PATH
   go version; go env
   : ::; make init
 script: make test all
-before_deploy: mv $BINDIR/ostent   $BINDIR/$UNAMESM
-after_deploy:  mv $BINDIR/$UNAMESM $BINDIR/ostent
-deploy:         # $BINDIR/$UNAMESM deployed
-  file: &deplfile $BINDIR/$UNAMESM
+before_deploy: mv ~/gopath/bin/ostent ~/gopath/bin/$UNAME
+after_deploy:  mv ~/gopath/bin/$UNAME ~/gopath/bin/ostent
+deploy: #       # ~/gopath/bin/$UNAME deployed
+  file: &deployfi ~/gopath/bin/$UNAME
   provider: releases
   api_key:
     secure: >
