@@ -6,7 +6,7 @@ require.config
     headroom:  'vendor/headroom/0.7.0/headroom.min'
     jquery:    'vendor/jquery/2.1.4/jquery-2.1.4.min'
     bootstrap: 'vendor/bootstrap/3.3.4/bootstrap.min'
-    react:     'vendor/react/0.13.2/react.min'
+    react:     'vendor/react/0.13.3/react.min'
     jscript:   'gen/jscript'
 
 # main require
