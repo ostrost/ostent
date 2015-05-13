@@ -64,23 +64,21 @@ html
               input.collapse-checkbox#dummymemconfigcheckbox type=checkbox aria-hidden=true hidden=
             input.collapse-checkbox type=checkbox aria-hidden=true hidden=
 
-            / a div for collapse to animate properly
-            div
-              div#memconfig class="{{if eq "true" (json .Data.Client.HideconfigMEM)}}collapse-hidden{{end}}"
-                form.horizontal-form.border-bottom-form
-                  div.form-group-padded
-                    div.btn-group.btn-group-sm data-toggle=buttons
-                      label.btn.btn-default.collapse-label for-sel=#mem
-                        input type=checkbox
-                        | Hidden
-                      label class="btn btn-default{{if ne "false" (json .Data.Client.HideSWAP)}} active{{end}}" href=#hideswap
-                        input type=checkbox
-                        | Hide swap
+            div#memconfig class="{{if eq "true" (json .Data.Client.HideconfigMEM)}}collapse-hidden{{end}}"
+              form.horizontal-form.border-bottom-form
+                div.form-group-padded
+                  div.btn-group.btn-group-sm data-toggle=buttons
+                    label.btn.btn-default.collapse-label for-sel=#mem
+                      input type=checkbox
+                      | Hidden
+                    label class="btn btn-default{{if ne "false" (json .Data.Client.HideSWAP)}} active{{end}}" href=#hideswap
+                      input type=checkbox
+                      | Hide swap
 
-                  div.form-group-padded
-                    {{with .Data.Client.RefreshMEM}}
-                    = yield refresh
-                    {{end}}
+                div.form-group-padded
+                  {{with .Data.Client.RefreshMEM}}
+                  = yield refresh
+                  {{end}}
 
             div#mem class="collapse{{if eq "false" (json .Data.Client.HideMEM)}} in{{end}}"
               span#mem-table
@@ -93,31 +91,29 @@ html
               input.collapse-checkbox#dummyifconfigcheckbox type=checkbox aria-hidden=true hidden=
             input.collapse-checkbox type=checkbox aria-hidden=true hidden=
 
-            / a div for collapse to animate properly
-            div
-              div#ifconfig class="{{if eq "true" (json .Data.Client.HideconfigIF)}}collapse-hidden{{end}}"
-                form.horizontal-form
-                  div.form-group-padded
-                     div.btn-group.btn-group-sm data-toggle=buttons
-                      label.btn.btn-default.hiding
-                        input type=checkbox
-                        | Hidden
-                      label href=#if class="btn btn-default{{if eq "false" (json .Data.Client.ExpandableIF)}} disabled{{end}}"
-                        input type=checkbox
-                        | {{.Data.Client.ExpandtextIF}}
+            div#ifconfig class="{{if eq "true" (json .Data.Client.HideconfigIF)}}collapse-hidden{{end}}"
+              form.horizontal-form
+                div.form-group-padded
+                   div.btn-group.btn-group-sm data-toggle=buttons
+                    label.btn.btn-default.hiding
+                      input type=checkbox
+                      | Hidden
+                    label href=#if class="btn btn-default{{if eq "false" (json .Data.Client.ExpandableIF)}} disabled{{end}}"
+                      input type=checkbox
+                      | {{.Data.Client.ExpandtextIF}}
 
-                  div.form-group-padded
-                    {{with .Data.Client.RefreshIF}}
-                    = yield refresh
-                    {{end}}
+                div.form-group-padded
+                  {{with .Data.Client.RefreshIF}}
+                  = yield refresh
+                  {{end}}
 
-                ul.nav.nav-tabs
-                  li.if-switch data-tabid={{.Data.IFTABS.iFPACKETS.Uint}}
-                    a href=#ifpackets Packets
-                  li.if-switch data-tabid={{.Data.IFTABS.iFERRORS.Uint}}
-                    a href=#iferrors Errors
-                  li.if-switch.active data-tabid={{.Data.IFTABS.iFBYTES.Uint}}
-                    a href=#ifbytes Bytes
+              ul.nav.nav-tabs
+                li.if-switch data-tabid={{.Data.IFTABS.iFPACKETS.Uint}}
+                  a href=#ifpackets Packets
+                li.if-switch data-tabid={{.Data.IFTABS.iFERRORS.Uint}}
+                  a href=#iferrors Errors
+                li.if-switch.active data-tabid={{.Data.IFTABS.iFBYTES.Uint}}
+                  a href=#ifbytes Bytes
 
             / panels selected by .if-tab
             div#ifpackets class="if-tab collapse{{if eq (json .Data.IFTABS.iFPACKETS.Uint) (json .Data.Client.TabIF.Uint)}} in{{end}}" data-title={{.Data.IFTABS.iFPACKETS.Title}} data-tabid={{.Data.IFTABS.iFPACKETS.Uint}}
@@ -166,29 +162,27 @@ html
               input.collapse-checkbox#dummydfconfigcheckbox type=checkbox aria-hidden=true hidden=
             input.collapse-checkbox type=checkbox aria-hidden=true hidden=
 
-            / a div for collapse to animate properly
-            div
-              div#dfconfig class="{{if eq "true" (json .Data.Client.HideconfigDF)}}collapse-hidden{{end}}"
-                form.horizontal-form
-                  div.form-group-padded
-                    div.btn-group.btn-group-sm data-toggle=buttons
-                      label.btn.btn-default.hiding
-                        input type=checkbox
-                        | Hidden
-                      label href=#df class="btn btn-default{{if eq "false" (json .Data.Client.ExpandableDF)}} disabled{{end}}"
-                        input type=checkbox
-                        | {{.Data.Client.ExpandtextDF}}
+            div#dfconfig class="{{if eq "true" (json .Data.Client.HideconfigDF)}}collapse-hidden{{end}}"
+              form.horizontal-form
+                div.form-group-padded
+                  div.btn-group.btn-group-sm data-toggle=buttons
+                    label.btn.btn-default.hiding
+                      input type=checkbox
+                      | Hidden
+                    label href=#df class="btn btn-default{{if eq "false" (json .Data.Client.ExpandableDF)}} disabled{{end}}"
+                      input type=checkbox
+                      | {{.Data.Client.ExpandtextDF}}
 
-                  div.form-group-padded
-                    {{with .Data.Client.RefreshDF}}
-                    = yield refresh
-                    {{end}}
+                div.form-group-padded
+                  {{with .Data.Client.RefreshDF}}
+                  = yield refresh
+                  {{end}}
 
-                ul.nav.nav-tabs
-                  li.df-switch data-tabid={{.Data.DFTABS.dFINODES.Uint}}
-                    a href=#dfinodes Inodes
-                  li.df-switch.active data-tabid={{.Data.DFTABS.dFBYTES.Uint}}
-                    a href=#dfbytes Bytes
+              ul.nav.nav-tabs
+                li.df-switch data-tabid={{.Data.DFTABS.dFINODES.Uint}}
+                  a href=#dfinodes Inodes
+                li.df-switch.active data-tabid={{.Data.DFTABS.dFBYTES.Uint}}
+                  a href=#dfbytes Bytes
 
             / panels selected by .df-tab
             div#dfinodes class="df-tab collapse{{if eq (json .Data.DFTABS.dFINODES.Uint) (json .Data.Client.TabDF.Uint)}} in{{end}}" data-title={{.Data.DFTABS.dFINODES.Title}} data-tabid={{.Data.DFTABS.dFINODES.Uint}}
