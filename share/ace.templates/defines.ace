@@ -4,10 +4,10 @@
 
 = content define_tooltipable
   span
-    span.tooltipable data-content=Full data-placement="auto left"
+    span.tooltipable data-placement="auto left" data-content={{.Full}}
       / data-toggle=tooltip|popover / done in js now
       | {{.Short}}
-    span.tooltipabledots.unit data-content=Full data-placement="auto left"
+    span.tooltipabledots.unit data-placement="auto left" data-content={{.Full}}
       | ...
 
 = content refresh
