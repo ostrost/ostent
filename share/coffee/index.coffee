@@ -291,14 +291,14 @@ require ['jquery', 'bootstrap', 'react', 'jscript', 'domReady', 'headroom'], ($,
       @props.$hidebutton_el.click(@clickhide)
     render: () ->
       if @state.Hide
-        @props.$collapse_el.collapse('hide')
+        @props.$collapse_el.slideUp(350)
         @props.$hidebutton_el.addClass('active')
         return null
       @props.$hidebutton_el.removeClass('active')
       curtabid = +@state.Send.Uint # MUST be an int
       nots = @props.$collapse_el.not('[data-tabid="'+ curtabid + '"]')
-      $(el).collapse('hide') for el in nots
-      $(@props.$collapse_el.not(nots)).collapse('show')
+      $(el).slideUp(350) for el in nots
+      $(@props.$collapse_el.not(nots)).slideDown(350)
       activeClass = (el) ->
         xel = $(el)
         tabid_attr = +xel.attr('data-tabid') # an int
@@ -368,25 +368,6 @@ require ['jquery', 'bootstrap', 'react', 'jscript', 'domReady', 'headroom'], ($,
     getInitialState: () -> @newstate(Data) # a global Data
     render: () -> React.DOM.span(null, @state.Text)
 
-  @AlertClass = React.createClass
-    show: () -> return @state.Error?
-    newstate: (data) ->
-      error = data.Client?.DebugError # data.Error
-      a = { # return
-        Error: error
-        ErrorText: @state?.ErrorText
-        Changed: @state? and error? and error != @state.Error
-      }
-      a.ErrorText = a.Error if a.Changed and a.Error?
-      console.log('newstate', a)
-      return a
-    getInitialState: () -> @newstate(Data) # a global Data
-    render: () ->
-      if @state.Changed
-        console.log('show', @state) # , if @show() then 'show' else 'hide')
-        @props.$collapse_el.collapse('show') if @show()
-      return React.DOM.span(null, @state.ErrorText)
-
   @setState = (obj, data) ->
     if data?
       delete data[key] for key of data when !data[key]?
@@ -446,17 +427,9 @@ require ['jquery', 'bootstrap', 'react', 'jscript', 'domReady', 'headroom'], ($,
     vgtable   = React.render(React.createElement(VGtableCLASS),   document.getElementById('vg'        +'-'+ 'table'))
     # coffeelint: enable=max_line_length
 
-    # alertComp = React.render(AlertClass({
-    #         $collapse_el: $('#alert-parent')
-    #         }), document.getElementById('alert-message'))
-
     onmessage = (event) ->
       data = JSON.parse(event.data)
       return if !data?
-
-      # alertComp.setState(alertComp.newstate(data))
-      # if alertComp.show()
-      #         return
 
       console.log('DEBUG ERROR',
         data.Client.DebugError) if data.Client?.DebugError?
@@ -539,8 +512,6 @@ require ['jquery', 'bootstrap', 'react', 'jscript', 'domReady', 'headroom'], ($,
       (new window.Headroom(document.querySelector('nav'), {
         offset: 20 # ~padding-top of a container row
       })).init()
-
-      $('.collapse').collapse({toggle: false}) # init collapsable objects
 
       $('span .tooltipable')      .popover({trigger: 'hover focus'})
       $('span .tooltipabledots')  .popover() # the clickable dots

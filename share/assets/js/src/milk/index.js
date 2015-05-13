@@ -495,7 +495,7 @@
       render: function() {
         var activeClass, curtabid, el, i, j, len, len1, nots, ref;
         if (this.state.Hide) {
-          this.props.$collapse_el.collapse('hide');
+          this.props.$collapse_el.slideUp(350);
           this.props.$hidebutton_el.addClass('active');
           return null;
         }
@@ -504,9 +504,9 @@
         nots = this.props.$collapse_el.not('[data-tabid="' + curtabid + '"]');
         for (i = 0, len = nots.length; i < len; i++) {
           el = nots[i];
-          $(el).collapse('hide');
+          $(el).slideUp(350);
         }
-        $(this.props.$collapse_el.not(nots)).collapse('show');
+        $(this.props.$collapse_el.not(nots)).slideDown(350);
         activeClass = function(el) {
           var opclass, tabid_attr, xel;
           xel = $(el);
@@ -615,37 +615,6 @@
         }
       });
     };
-    this.AlertClass = React.createClass({
-      show: function() {
-        return this.state.Error != null;
-      },
-      newstate: function(data) {
-        var a, error, ref, ref1;
-        error = (ref = data.Client) != null ? ref.DebugError : void 0;
-        a = {
-          Error: error,
-          ErrorText: (ref1 = this.state) != null ? ref1.ErrorText : void 0,
-          Changed: (this.state != null) && (error != null) && error !== this.state.Error
-        };
-        if (a.Changed && (a.Error != null)) {
-          a.ErrorText = a.Error;
-        }
-        console.log('newstate', a);
-        return a;
-      },
-      getInitialState: function() {
-        return this.newstate(Data);
-      },
-      render: function() {
-        if (this.state.Changed) {
-          console.log('show', this.state);
-          if (this.show()) {
-            this.props.$collapse_el.collapse('show');
-          }
-        }
-        return React.DOM.span(null, this.state.ErrorText);
-      }
-    });
     this.setState = function(obj, data) {
       var key;
       if (data != null) {
@@ -915,9 +884,6 @@
         (new window.Headroom(document.querySelector('nav'), {
           offset: 20
         })).init();
-        $('.collapse').collapse({
-          toggle: false
-        });
         $('span .tooltipable').popover({
           trigger: 'hover focus'
         });

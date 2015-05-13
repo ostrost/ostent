@@ -48,13 +48,6 @@ html
             li.active
               a href=https://www.ostrost.com/ostent/releases/latest title="version {{.Data.VERSION}}" OSTENT
 
-      div.container-fluid
-        div.row.collapse#alert-parent
-          div.alert.alert-danger.alert-dismissable
-            button.close type=button data-dismiss=alert aria-hidden=true &times;
-            span#alert-message Alert
-
-
     div.container-fluid.padding-topseventysh#top
       div.row
         div.block.col-md-2.col-md-offset-1
@@ -64,25 +57,27 @@ html
               input.collapse-checkbox#dummymemconfigcheckbox type=checkbox aria-hidden=true hidden=
             input.collapse-checkbox type=checkbox aria-hidden=true hidden=
 
-            div#memconfig class="{{if eq "true" (json .Data.Client.HideconfigMEM)}}collapse-hidden{{end}}"
-              form.horizontal-form.border-bottom-form
-                div.form-group-padded
-                  div.btn-group.btn-group-sm data-toggle=buttons
-                    label.btn.btn-default.collapse-label for-sel=#mem
-                      input type=checkbox
-                      | Hidden
-                    label class="btn btn-default{{if ne "false" (json .Data.Client.HideSWAP)}} active{{end}}" href=#hideswap
-                      input type=checkbox
-                      | Hide swap
+            div
+              div#memconfig class="{{if eq "true" (json .Data.Client.HideconfigMEM)}}collapse-hidden{{end}}"
+                form.horizontal-form.border-bottom-form
+                  div.form-group-padded
+                    div.btn-group.btn-group-sm data-toggle=buttons
+                      label.btn.btn-default.collapse-label for-sel=#mem
+                        input type=checkbox
+                        | Hidden
+                      label class="btn btn-default{{if ne "false" (json .Data.Client.HideSWAP)}} active{{end}}" href=#hideswap
+                        input type=checkbox
+                        | Hide swap
 
-                div.form-group-padded
-                  {{with .Data.Client.RefreshMEM}}
-                  = yield refresh
-                  {{end}}
+                  div.form-group-padded
+                    {{with .Data.Client.RefreshMEM}}
+                    = yield refresh
+                    {{end}}
 
-            div#mem class="collapse{{if eq "false" (json .Data.Client.HideMEM)}} in{{end}}"
-              span#mem-table
-                {{template "defines::define_memtable" .}}
+            div
+              div#mem class="{{if eq "true" (json .Data.Client.HideMEM)}}collapse-hidden{{end}}"
+                span#mem-table
+                  {{template "defines::define_memtable" .}}
 
         div.block.col-md-3
           div.panel1
@@ -91,114 +86,120 @@ html
               input.collapse-checkbox#dummyifconfigcheckbox type=checkbox aria-hidden=true hidden=
             input.collapse-checkbox type=checkbox aria-hidden=true hidden=
 
-            div#ifconfig class="{{if eq "true" (json .Data.Client.HideconfigIF)}}collapse-hidden{{end}}"
-              form.horizontal-form
-                div.form-group-padded
-                   div.btn-group.btn-group-sm data-toggle=buttons
-                    label.btn.btn-default.hiding
-                      input type=checkbox
-                      | Hidden
-                    label href=#if class="btn btn-default{{if eq "false" (json .Data.Client.ExpandableIF)}} disabled{{end}}"
-                      input type=checkbox
-                      | {{.Data.Client.ExpandtextIF}}
+            div
+              div#ifconfig class="{{if eq "true" (json .Data.Client.HideconfigIF)}}collapse-hidden{{end}}"
+                form.horizontal-form
+                  div.form-group-padded
+                     div.btn-group.btn-group-sm data-toggle=buttons
+                      label.btn.btn-default.hiding
+                        input type=checkbox
+                        | Hidden
+                      label href=#if class="btn btn-default{{if eq "false" (json .Data.Client.ExpandableIF)}} disabled{{end}}"
+                        input type=checkbox
+                        | {{.Data.Client.ExpandtextIF}}
 
-                div.form-group-padded
-                  {{with .Data.Client.RefreshIF}}
-                  = yield refresh
-                  {{end}}
+                  div.form-group-padded
+                    {{with .Data.Client.RefreshIF}}
+                    = yield refresh
+                    {{end}}
 
-              ul.nav.nav-tabs
-                li.if-switch data-tabid={{.Data.IFTABS.iFPACKETS.Uint}}
-                  a href=#ifpackets Packets
-                li.if-switch data-tabid={{.Data.IFTABS.iFERRORS.Uint}}
-                  a href=#iferrors Errors
-                li.if-switch.active data-tabid={{.Data.IFTABS.iFBYTES.Uint}}
-                  a href=#ifbytes Bytes
+                ul.nav.nav-tabs
+                  li.if-switch data-tabid={{.Data.IFTABS.iFPACKETS.Uint}}
+                    a href=#ifpackets Packets
+                  li.if-switch data-tabid={{.Data.IFTABS.iFERRORS.Uint}}
+                    a href=#iferrors Errors
+                  li.if-switch.active data-tabid={{.Data.IFTABS.iFBYTES.Uint}}
+                    a href=#ifbytes Bytes
 
-            / panels selected by .if-tab
-            div#ifpackets class="if-tab collapse{{if eq (json .Data.IFTABS.iFPACKETS.Uint) (json .Data.Client.TabIF.Uint)}} in{{end}}" data-title={{.Data.IFTABS.iFPACKETS.Title}} data-tabid={{.Data.IFTABS.iFPACKETS.Uint}}
-              span#ifpackets-table
-                {{template "defines::define_ifpackets_table" .}}
+            div
+              / panels selected by .if-tab
+              div#ifpackets class="if-tab{{if ne (json .Data.IFTABS.iFPACKETS.Uint) (json .Data.Client.TabIF.Uint)}} collapse-hidden{{end}}" data-title={{.Data.IFTABS.iFPACKETS.Title}} data-tabid={{.Data.IFTABS.iFPACKETS.Uint}}
+                span#ifpackets-table
+                  {{template "defines::define_ifpackets_table" .}}
 
-            div#iferrors class="if-tab collapse{{if eq (json .Data.IFTABS.iFERRORS.Uint) (json .Data.Client.TabIF.Uint)}} in{{end}}" data-title={{.Data.IFTABS.iFERRORS.Title}} data-tabid={{.Data.IFTABS.iFERRORS.Uint}}
-              span#iferrors-table
-                {{template "defines::define_iferrors_table" .}}
+              div#iferrors class="if-tab{{if ne (json .Data.IFTABS.iFERRORS.Uint) (json .Data.Client.TabIF.Uint)}} collapse-hidden{{end}}" data-title={{.Data.IFTABS.iFERRORS.Title}} data-tabid={{.Data.IFTABS.iFERRORS.Uint}}
+                span#iferrors-table
+                  {{template "defines::define_iferrors_table" .}}
 
-            div#ifbytes class="if-tab collapse{{if eq (json .Data.IFTABS.iFBYTES.Uint) (json .Data.Client.TabIF.Uint)}} in{{end}}" data-title={{.Data.IFTABS.iFBYTES.Title}} data-tabid={{.Data.IFTABS.iFBYTES.Uint}}
-              span#ifbytes-table
-                {{template "defines::define_ifbytes_table" .}}
+              div#ifbytes class="if-tab{{if ne (json .Data.IFTABS.iFBYTES.Uint) (json .Data.Client.TabIF.Uint)}} collapse-hidden{{end}}" data-title={{.Data.IFTABS.iFBYTES.Title}} data-tabid={{.Data.IFTABS.iFBYTES.Uint}}
+                span#ifbytes-table
+                  {{template "defines::define_ifbytes_table" .}}
 
         div.block.col-md-2
           div.panel1
             label.collapse-label.panel-heading.btn-block for=dummycpuconfigcheckbox for-sel=#cpuconfig
-              a href=#cpu class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigCPU)}}active{{end}}" CPU
+              a href=#cpu class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigCPU)}} active{{end}}" CPU
               input.collapse-checkbox#dummycpuconfigcheckbox type=checkbox aria-hidden=true hidden=
             input.collapse-checkbox type=checkbox aria-hidden=true hidden=
 
-            div#cpuconfig class="{{if eq "true" (json .Data.Client.HideconfigCPU)}}collapse-hidden{{end}}"
-              form.horizontal-form.border-bottom-form
-                div.form-group-padded
-                  div.btn-group.btn-group-sm data-toggle=buttons
-                    label.btn.btn-default.collapse-label for-sel=#cpu
-                      input type=checkbox
-                      | Hidden
-                    label href=#cpu class="btn btn-default{{if eq "false" (json .Data.Client.ExpandableCPU)}} disabled{{end}}"
-                      input type=checkbox
-                      | {{.Data.Client.ExpandtextCPU}}
+            div
+              div#cpuconfig class="{{if eq "true" (json .Data.Client.HideconfigCPU)}}collapse-hidden{{end}}"
+                form.horizontal-form.border-bottom-form
+                  div.form-group-padded
+                    div.btn-group.btn-group-sm data-toggle=buttons
+                      label.btn.btn-default.collapse-label for-sel=#cpu
+                        input type=checkbox
+                        | Hidden
+                      label href=#cpu class="btn btn-default{{if eq "false" (json .Data.Client.ExpandableCPU)}} disabled{{end}}"
+                        input type=checkbox
+                        | {{.Data.Client.ExpandtextCPU}}
 
-                div.form-group-padded
-                  {{with .Data.Client.RefreshCPU}}
-                  = yield refresh
-                  {{end}}
+                  div.form-group-padded
+                    {{with .Data.Client.RefreshCPU}}
+                    = yield refresh
+                    {{end}}
 
-            div#cpu class="collapse{{if eq "false" (json .Data.Client.HideCPU)}} in{{end}}"
-              span#cpu-table
-                {{template "defines::define_cputable" .}}
+            div
+              div#cpu class="{{if eq "true" (json .Data.Client.HideCPU)}}collapse-hidden{{end}}"
+                span#cpu-table
+                  {{template "defines::define_cputable" .}}
 
         div.block.col-md-3
           div.panel1
             label.collapse-label.panel-heading.btn-block for=dummydfconfigcheckbox for-sel=#dfconfig
-              a href=#df class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigDF)}}active{{end}}" {{.Data.Client.TabDF.Title}}
+              a href=#df class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigDF)}} active{{end}}" {{.Data.Client.TabDF.Title}}
               input.collapse-checkbox#dummydfconfigcheckbox type=checkbox aria-hidden=true hidden=
             input.collapse-checkbox type=checkbox aria-hidden=true hidden=
 
-            div#dfconfig class="{{if eq "true" (json .Data.Client.HideconfigDF)}}collapse-hidden{{end}}"
-              form.horizontal-form
-                div.form-group-padded
-                  div.btn-group.btn-group-sm data-toggle=buttons
-                    label.btn.btn-default.hiding
-                      input type=checkbox
-                      | Hidden
-                    label href=#df class="btn btn-default{{if eq "false" (json .Data.Client.ExpandableDF)}} disabled{{end}}"
-                      input type=checkbox
-                      | {{.Data.Client.ExpandtextDF}}
+            div
+              div#dfconfig class="{{if eq "true" (json .Data.Client.HideconfigDF)}}collapse-hidden{{end}}"
+                form.horizontal-form
+                  div.form-group-padded
+                    div.btn-group.btn-group-sm data-toggle=buttons
+                      label.btn.btn-default.hiding
+                        input type=checkbox
+                        | Hidden
+                      label href=#df class="btn btn-default{{if eq "false" (json .Data.Client.ExpandableDF)}} disabled{{end}}"
+                        input type=checkbox
+                        | {{.Data.Client.ExpandtextDF}}
 
-                div.form-group-padded
-                  {{with .Data.Client.RefreshDF}}
-                  = yield refresh
-                  {{end}}
+                  div.form-group-padded
+                    {{with .Data.Client.RefreshDF}}
+                    = yield refresh
+                    {{end}}
 
-              ul.nav.nav-tabs
-                li.df-switch data-tabid={{.Data.DFTABS.dFINODES.Uint}}
-                  a href=#dfinodes Inodes
-                li.df-switch.active data-tabid={{.Data.DFTABS.dFBYTES.Uint}}
-                  a href=#dfbytes Bytes
+                ul.nav.nav-tabs
+                  li.df-switch data-tabid={{.Data.DFTABS.dFINODES.Uint}}
+                    a href=#dfinodes Inodes
+                  li.df-switch.active data-tabid={{.Data.DFTABS.dFBYTES.Uint}}
+                    a href=#dfbytes Bytes
 
-            / panels selected by .df-tab
-            div#dfinodes class="df-tab collapse{{if eq (json .Data.DFTABS.dFINODES.Uint) (json .Data.Client.TabDF.Uint)}} in{{end}}" data-title={{.Data.DFTABS.dFINODES.Title}} data-tabid={{.Data.DFTABS.dFINODES.Uint}}
-              span#dfinodes-table
-                {{template "defines::define_dfinodes_table" .}}
+            div
+              / panels selected by .df-tab
+              div#dfinodes class="df-tab{{if ne (json .Data.DFTABS.dFINODES.Uint) (json .Data.Client.TabDF.Uint)}} collapse-hidden{{end}}" data-title={{.Data.DFTABS.dFINODES.Title}} data-tabid={{.Data.DFTABS.dFINODES.Uint}}
+                span#dfinodes-table
+                  {{template "defines::define_dfinodes_table" .}}
 
-            div#dfbytes class="df-tab collapse{{if eq (json .Data.DFTABS.dFBYTES.Uint) (json .Data.Client.TabDF.Uint)}} in{{end}}" data-title={{.Data.DFTABS.dFBYTES.Title}} data-tabid={{.Data.DFTABS.dFBYTES.Uint}}
-              span#dfbytes-table
-                {{template "defines::define_dfbytes_table" .}}
+              div#dfbytes class="df-tab{{if ne (json .Data.DFTABS.dFBYTES.Uint) (json .Data.Client.TabDF.Uint)}} collapse-hidden{{end}}" data-title={{.Data.DFTABS.dFBYTES.Title}} data-tabid={{.Data.DFTABS.dFBYTES.Uint}}
+                span#dfbytes-table
+                  {{template "defines::define_dfbytes_table" .}}
 
     div.container-fluid
       div.row
         div.block.col-md-8.col-md-offset-2
           div.panel1
             label.collapse-label.panel-heading.btn-block for=dummypsconfigcheckbox for-sel=#psconfig
-              a href=#ps class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigPS)}}active{{end}}" Processes
+              a href=#ps class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigPS)}} active{{end}}" Processes
               input.collapse-checkbox#dummypsconfigcheckbox type=checkbox aria-hidden=true hidden=
             input.collapse-checkbox type=checkbox aria-hidden=true hidden=
 
@@ -207,54 +208,58 @@ html
               /     [class="collapse"] ifempty Data.Client.UserProcesses
               /     | User {{.Data.Client.UserProcesses}} &times;
 
-            div#psconfig class="{{if eq "true" (json .Data.Client.HideconfigPS)}}collapse-hidden{{end}}"
-              form.inline-form.border-bottom-form.text-right
-                div.form-group-padded
-                  {{with .Data.Client.RefreshPS}}
-                  = yield refresh
-                  {{end}}
+            div
+              div#psconfig class="{{if eq "true" (json .Data.Client.HideconfigPS)}}collapse-hidden{{end}}"
+                form.inline-form.border-bottom-form.text-right
+                  div.form-group-padded
+                    {{with .Data.Client.RefreshPS}}
+                    = yield refresh
+                    {{end}}
 
-                div.form-group-padded
-                  div.btn-group.btn-group-sm data-toggle=buttons
-                    label.btn.btn-default.collapse-label for-sel=#ps
-                      input type=checkbox
-                      | Hidden
-                    label href=#psless class="less btn btn-default{{if eq "true" (json .Data.Client.PSnotDecreasable)}} disabled{{end}}"
-                      input type=checkbox
-                      | -
-                    label href=#psmore class="more btn btn-default{{if eq "true" (json .Data.Client.PSnotExpandable)}} disabled{{end}}"
-                      input type=checkbox
-                      | {{.Data.Client.PSplusText}}
+                  div.form-group-padded
+                    div.btn-group.btn-group-sm data-toggle=buttons
+                      label.btn.btn-default.collapse-label for-sel=#ps
+                        input type=checkbox
+                        | Hidden
+                      label href=#psless class="less btn btn-default{{if eq "true" (json .Data.Client.PSnotDecreasable)}} disabled{{end}}"
+                        input type=checkbox
+                        | -
+                      label href=#psmore class="more btn btn-default{{if eq "true" (json .Data.Client.PSnotExpandable)}} disabled{{end}}"
+                        input type=checkbox
+                        | {{.Data.Client.PSplusText}}
 
-            div#ps class="collapse{{if eq "false" (json .Data.Client.HidePS)}} in{{end}}"
-              span#ps-table
-                {{template "defines::define_pstable" .}}
+            div
+              div#ps class="{{if eq "true" (json .Data.Client.HidePS)}}collapse-hidden{{end}}"
+                span#ps-table
+                  {{template "defines::define_pstable" .}}
 
     div.container-fluid
       div.row
         div.block.col-md-8.col-md-offset-2
           div.panel1
             label.collapse-label.panel-heading.btn-block for=dummyvgconfigcheckbox for-sel=#vgconfig
-              a href=#vg class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigVG)}}active{{end}}" Vagrant global-status
+              a href=#vg class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigVG)}} active{{end}}" Vagrant global-status
               input.collapse-checkbox#dummyvgconfigcheckbox type=checkbox aria-hidden=true hidden=
             input.collapse-checkbox type=checkbox aria-hidden=true hidden=
 
-            div#vgconfig class="{{if eq "true" (json .Data.Client.HideconfigVG)}}collapse-hidden{{end}}"
-              form.inline-form.border-bottom-form.text-right
-                div.form-group-padded
-                  {{with .Data.Client.RefreshVG}}
-                  = yield refresh
-                  {{end}}
+            div
+              div#vgconfig class="{{if eq "true" (json .Data.Client.HideconfigVG)}}collapse-hidden{{end}}"
+                form.inline-form.border-bottom-form.text-right
+                  div.form-group-padded
+                    {{with .Data.Client.RefreshVG}}
+                    = yield refresh
+                    {{end}}
 
-                div.form-group-padded
-                  div.btn-group.btn-group-sm data-toggle=buttons
-                    label.btn.btn-default.collapse-label for-sel=#vg
-                      input type=checkbox
-                      | Hidden
+                  div.form-group-padded
+                    div.btn-group.btn-group-sm data-toggle=buttons
+                      label.btn.btn-default.collapse-label for-sel=#vg
+                        input type=checkbox
+                        | Hidden
 
-            div#vg class="collapse{{if eq "false" (json .Data.Client.HideVG)}} in{{end}}"
-              span#vg-table
-                {{template "defines::define_vgtable" .}}
+            div
+              div#vg class="{{if eq "true" (json .Data.Client.HideVG)}}collapse-hidden{{end}}"
+                span#vg-table
+                  {{template "defines::define_vgtable" .}}
 
     = javascript
       var Data = {{.Data}};
