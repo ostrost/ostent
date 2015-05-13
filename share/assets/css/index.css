@@ -3585,11 +3585,11 @@ fieldset[disabled] .btn-link:focus {
   line-height: 1.5;
   border-radius: 3px; }
 
-.btn-block, .btn-header-block {
+.btn-block, .panel1 label.btn-header-block a, .btn-header-block {
   display: block;
   width: 100%; }
 
-.btn-block + .btn-block, .btn-header-block + .btn-block, .btn-block + .btn-header-block, .btn-header-block + .btn-header-block {
+.btn-block + .btn-block, .panel1 label.btn-header-block a + .btn-block, .btn-header-block + .btn-block, .panel1 label.btn-header-block .btn-block + a, .panel1 label.btn-header-block a + a, .panel1 label.btn-header-block .btn-header-block + a, .btn-block + .btn-header-block, .panel1 label.btn-header-block a + .btn-header-block, .btn-header-block + .btn-header-block {
   margin-top: 5px; }
 
 input[type="submit"].btn-block, input[type="submit"].btn-header-block,
@@ -6328,7 +6328,7 @@ button.close {
 .modal-footer .btn-group .btn + .btn, .modal-footer .btn-group .btn-header + .btn, .modal-footer .btn-group .btn-header-block + .btn, .modal-footer .btn-group .btn + .btn-header, .modal-footer .btn-group .btn-header + .btn-header, .modal-footer .btn-group .btn-header-block + .btn-header, .modal-footer .btn-group .btn + .btn-header-block, .modal-footer .btn-group .btn-header + .btn-header-block, .modal-footer .btn-group .btn-header-block + .btn-header-block {
   margin-left: -1px; }
 
-.modal-footer .btn-block + .btn-block, .modal-footer .btn-header-block + .btn-block, .modal-footer .btn-block + .btn-header-block, .modal-footer .btn-header-block + .btn-header-block {
+.modal-footer .btn-block + .btn-block, .modal-footer .panel1 label.btn-header-block a + .btn-block, .panel1 label.btn-header-block .modal-footer a + .btn-block, .modal-footer .btn-header-block + .btn-block, .modal-footer .panel1 label.btn-header-block .btn-block + a, .panel1 label.btn-header-block .modal-footer .btn-block + a, .modal-footer .panel1 label.btn-header-block a + a, .panel1 label.btn-header-block .modal-footer a + a, .modal-footer .panel1 label.btn-header-block .btn-header-block + a, .panel1 label.btn-header-block .modal-footer .btn-header-block + a, .modal-footer .btn-block + .btn-header-block, .modal-footer .panel1 label.btn-header-block a + .btn-header-block, .panel1 label.btn-header-block .modal-footer a + .btn-header-block, .modal-footer .btn-header-block + .btn-header-block {
   margin-left: 0; }
 
 .modal-scrollbar-measure {
@@ -7047,6 +7047,19 @@ button.close {
   .hidden-print {
     display: none !important; } }
 /*# sourceMappingURL=bootstrap.css.map */
+.collapse-hidden {
+  display: none; }
+
+.collapse-collapse {
+  display: none; }
+
+.collapse-checkbox {
+  display: none; }
+
+.collapse-checkbox:checked ~ .collapse-collapse,
+.collapse-checkbox:checked ~ div .collapse-collapse {
+  display: block; }
+
 body {
   font-size: 12px; }
 
@@ -7071,18 +7084,22 @@ body {
 .padding-topseventysh {
   padding-top: 71px; }
 
+.panel1 label.panel-heading {
+  font-weight: normal;
+  margin-bottom: 0px;
+  padding: 0px 0px; }
 .panel1 header {
   padding: 0px 0px; }
-  .panel1 header a {
-    color: inherit;
-    background-color: inherit;
-    border-color: inherit; }
-  .panel1 header a.btn-header-block {
-    border-color: #f5f5f5; }
-  .panel1 header a.btn-header-block:hover,
-  .panel1 header a.btn-header-block:active,
-  .panel1 header a.btn-header-block.active {
-    border-color: #adadad; }
+.panel1 a {
+  color: inherit;
+  background-color: inherit;
+  border-color: inherit; }
+.panel1 a.btn-header-block {
+  border-color: #f5f5f5; }
+.panel1 a.btn-header-block:hover,
+.panel1 a.btn-header-block:active,
+.panel1 a.btn-header-block.active {
+  border-color: #adadad; }
 .panel1 form.border-bottom-form {
   border-bottom: 1px solid #ddd; }
 

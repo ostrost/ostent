@@ -207,8 +207,9 @@ require ['jquery', 'bootstrap', 'react', 'jscript', 'domReady', 'headroom'], ($,
 
   @HideClass = React.createClass
     statics: component: (opt) ->
-      el = addDiv(opt.$button_el)
-      React.render(React.createElement(HideClass, opt), el)
+      opt.$button_el=b = opt.$el
+      opt.$collapse_el = $(b.attr('for-sel'))
+      React.render(React.createElement(HideClass, opt), addDiv(opt.$button_el))
 
     reduce: (data) ->
       if data?.Client?
@@ -218,7 +219,8 @@ require ['jquery', 'bootstrap', 'react', 'jscript', 'domReady', 'headroom'], ($,
     getInitialState: () -> @reduce(Data) # a global Data
     componentDidMount: () -> @props.$button_el.click(@click)
     render: () ->
-      @props.$collapse_el.collapse(if @state.Hide then 'hide' else 'show')
+      @props.$collapse_el[if @state.Hide then 'slideUp' else 'slideDown'](350)
+    # @props.$el.find('.collapse-checkbox').get(0).checked = !@state.Hide
       buttonactive =  @state.Hide
       buttonactive = !@state.Hide if (
         @props.reverseActive? and @props.reverseActive)
@@ -392,25 +394,25 @@ require ['jquery', 'bootstrap', 'react', 'jscript', 'domReady', 'headroom'], ($,
 
   update = () ->
     # coffeelint: disable=max_line_length
-    hideconfigmem = HideClass.component({xkey: 'HideconfigMEM', $collapse_el: $('#memconfig'), $button_el: $('header a[href="#mem"]'), reverseActive: true})
-    hideconfigif  = HideClass.component({xkey: 'HideconfigIF',  $collapse_el: $('#ifconfig'),  $button_el: $('header a[href="#if"]'),  reverseActive: true})
-    hideconfigcpu = HideClass.component({xkey: 'HideconfigCPU', $collapse_el: $('#cpuconfig'), $button_el: $('header a[href="#cpu"]'), reverseActive: true})
-    hideconfigdf  = HideClass.component({xkey: 'HideconfigDF',  $collapse_el: $('#dfconfig'),  $button_el: $('header a[href="#df"]'),  reverseActive: true})
-    hideconfigps  = HideClass.component({xkey: 'HideconfigPS',  $collapse_el: $('#psconfig'),  $button_el: $('header a[href="#ps"]'),  reverseActive: true})
-    hideconfigvg  = HideClass.component({xkey: 'HideconfigVG',  $collapse_el: $('#vgconfig'),  $button_el: $('header a[href="#vg"]'),  reverseActive: true})
+    hideconfigmem = HideClass.component({xkey: 'HideconfigMEM', $el: $('[for-sel="#memconfig"]'), reverseActive: true})
+    hideconfigif  = HideClass.component({xkey: 'HideconfigIF',  $el: $('[for-sel="#ifconfig"]'),  reverseActive: true})
+    hideconfigcpu = HideClass.component({xkey: 'HideconfigCPU', $el: $('[for-sel="#cpuconfig"]'), reverseActive: true})
+    hideconfigdf  = HideClass.component({xkey: 'HideconfigDF',  $el: $('[for-sel="#dfconfig"]'),  reverseActive: true})
+    hideconfigps  = HideClass.component({xkey: 'HideconfigPS',  $el: $('[for-sel="#psconfig"]'),  reverseActive: true})
+    hideconfigvg  = HideClass.component({xkey: 'HideconfigVG',  $el: $('[for-sel="#vgconfig"]'),  reverseActive: true})
 
-    hideram = HideClass.component({xkey: 'HideRAM', $collapse_el: $('#mem'), $button_el: $('#memconfig').find('.hiding')})
-    hidecpu = HideClass.component({xkey: 'HideCPU', $collapse_el: $('#cpu'), $button_el: $('#cpuconfig').find('.hiding')})
-    hideps  = HideClass.component({xkey: 'HidePS',  $collapse_el: $('#ps'),  $button_el: $('#psconfig') .find('.hiding')})
-    hidevg  = HideClass.component({xkey: 'HideVG',  $collapse_el: $('#vg'),  $button_el: $('#vgconfig') .find('.hiding')})
+    hideram = HideClass.component({xkey: 'HideRAM', $el: $('[for-sel="#mem"]')})
+    hidecpu = HideClass.component({xkey: 'HideCPU', $el: $('[for-sel="#cpu"]')})
+    hideps  = HideClass.component({xkey: 'HidePS',  $el: $('[for-sel="#ps"]')})
+    hidevg  = HideClass.component({xkey: 'HideVG',  $el: $('[for-sel="#vg"]')})
 
     ip       = React.render(React.createElement(NewTextCLASS((data) -> data?.IP       )), $('#ip'      )   .get(0))
     hostname = React.render(React.createElement(NewTextCLASS((data) -> data?.Hostname )), $('#hostname')   .get(0))
     uptime   = React.render(React.createElement(NewTextCLASS((data) -> data?.Uptime   )), $('#uptime'  )   .get(0))
     la       = React.render(React.createElement(NewTextCLASS((data) -> data?.LA       )), $('#la'      )   .get(0))
 
-    iftitle  = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.TabIF?.Title)), $('header a[href="#if"]').get(0))
-    dftitle  = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.TabDF?.Title)), $('header a[href="#df"]').get(0))
+    iftitle  = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.TabIF?.Title)), $('a[href="#if"]').get(0))
+    dftitle  = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.TabDF?.Title)), $('a[href="#df"]').get(0))
 
     psplus   = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.PSplusText)), $('label.more[href="#psmore"]').get(0))
     psmore   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: true,  Khide: 'HidePS', Kable: 'PSnotExpandable',  $button_el: $('label.more[href="#psmore"]')})

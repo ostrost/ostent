@@ -1,5 +1,13 @@
 @import 'bootstrap-3.3.4.scss';
 
+.collapse-hidden { display: none; }
+.collapse-collapse { display: none; }
+.collapse-checkbox { display: none; }
+.collapse-checkbox:checked ~     .collapse-collapse,
+.collapse-checkbox:checked ~ div .collapse-collapse {
+  display: block;
+}
+
 body {
   font-size: 12px;
 }
@@ -29,11 +37,19 @@ body {
   @extend .panel;
   @extend .panel-default;
 
-//header.draggable { cursor: move; } // not yet
+  label.btn-header-block a {
+    @extend .btn-block;
+  }
+  label.panel-heading {
+    font-weight: normal;
+    margin-bottom: 0px;
+    padding: 0px 0px;      // for btn-header-block
+  }
   header {
     @extend .panel-heading;
     // padding-right: 5px; // for regular text
     padding: 0px 0px;      // for btn-header-block
+  }
     a {
       color:            inherit; // use the text colors
       background-color: inherit;
@@ -48,7 +64,7 @@ body {
       border-color: #adadad; // inherit;
       // .btn-default.active colors
     }
-  }
+
   form.border-bottom-form {
     border-bottom: 1px solid #ddd; // table border styling
   }
