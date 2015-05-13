@@ -23,10 +23,13 @@ func bindata_read(data []byte, name string) ([]byte, error) {
 
 	var buf bytes.Buffer
 	_, err = io.Copy(&buf, gz)
-	gz.Close()
+	clErr := gz.Close()
 
 	if err != nil {
 		return nil, fmt.Errorf("Read %q: %v", name, err)
+	}
+	if clErr != nil {
+		return nil, err
 	}
 
 	return buf.Bytes(), nil
@@ -188,8 +191,8 @@ func AssetDir(name string) ([]string, error) {
 		return nil, fmt.Errorf("Asset %s not found", name)
 	}
 	rv := make([]string, 0, len(node.Children))
-	for name := range node.Children {
-		rv = append(rv, name)
+	for childName := range node.Children {
+		rv = append(rv, childName)
 	}
 	return rv, nil
 }
