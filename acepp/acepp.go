@@ -54,13 +54,9 @@ func main() {
 			os.Exit(1)
 		}
 	}
-	aceopts := &ace.Options{
-		DelimLeft:          "{{",    // default
-		DelimRight:         "}}",    // default
-		Extension:          "ace",   // default
-		AttributeNameClass: "class", // default
-		FuncMap:            templatep.AceFuncs,
-	}
+	aceopts := ace.InitializeOptions(&ace.Options{
+		FuncMap: templatep.AceFuncs,
+	})
 
 	if !jscriptMode {
 		_, index, err := LoadAce(inputFile, definesFile, aceopts)
@@ -72,6 +68,7 @@ func main() {
 		return
 	}
 
+	aceopts.NoCloseTagNames = []string{}
 	aceopts.AttributeNameClass = "className"
 	definesbase, defines, err := LoadAce(definesFile, "", aceopts)
 	check(err)
@@ -98,7 +95,6 @@ func main() {
 	s, err := templatep.StringExecute(jscript, m)
 	check(err)
 
-	// s = strings.Replace(s, "class=", "className=", -1)
 	check(templatep.WriteFile(outputFile, s))
 }
 
