@@ -19,7 +19,7 @@
     {{$C := or .CLASSNAME "class"}}
     {{range $if := .Data.IFbytes.List}}
       | <tr{{key $C "ifbytes-rowby-name" $if.Name}}>
-      td {{template "defines::define_clip" (clip $F $C "if-bytes-name" $if.Name 12)}}
+      td {{template "defines::define_clip" (clip $F $C 12 "if-bytes-name"   $if.Name)}}
       td.text-right {{$if.DeltaIn}}
       td.text-right {{$if.DeltaOut}}
       td.text-right {{$if.In}}
@@ -34,7 +34,7 @@
     {{$C := or .CLASSNAME "class"}}
     {{range $if := .Data.IFerrors.List}}
       | <tr{{key $C "iferrors-rowby-name" $if.Name}}>
-      td {{template "defines::define_clip" (clip $F $C "if-errors-name" $if.Name 12)}}
+      td {{template "defines::define_clip" (clip $F $C 12 "if-errors-name"  $if.Name)}}
       td.text-right {{$if.DeltaIn}}
       td.text-right {{$if.DeltaOut}}
       td.text-right {{$if.In}}
@@ -49,7 +49,7 @@
     {{$C := or .CLASSNAME "class"}}
     {{range $if := .Data.IFpackets.List}}
       | <tr{{key $C "ifpackets-rowby-name" $if.Name}}>
-      td {{template "defines::define_clip" (clip $F $C "if-packets-name" $if.Name 12)}}
+      td {{template "defines::define_clip" (clip $F $C 12 "if-packets-name" $if.Name)}}
       td.text-right {{$if.DeltaIn}}
       td.text-right {{$if.DeltaOut}}
       td.text-right {{$if.In}}
@@ -120,8 +120,8 @@
     {{$C := or .CLASSNAME "class"}}
     {{range $disk := .Data.DFbytes.List}}
       | <tr{{key $C "dfbytes-rowby-dirname" $disk.DirName}}>
-      td.nowrap {{template "defines::define_clip" (clip $F $C "df-bytes-devname" $disk.DevName 12)}}
-      td.nowrap {{template "defines::define_clip" (clip $F $C "df-bytes-dirname" $disk.DirName 6)}}
+      td.nowrap {{template "defines::define_clip" (clip $F $C 12 "df-bytes-devname"  $disk.DevName)}}
+      td.nowrap {{template "defines::define_clip" (clip $F $C  6 "df-bytes-dirname"  $disk.DirName)}}
       td.text-right {{$disk.Avail}}
       td.text-right {{$disk.Used}}&nbsp;
         sup <span {{$C}}={{$disk.UsePercentClass}}>{{$disk.UsePercent}}%</span>
@@ -136,8 +136,8 @@
     {{$C := or .CLASSNAME "class"}}
     {{range $disk := .Data.DFinodes.List}}
       | <tr{{key $C "dfinodes-rowby-dirname" $disk.DirName}}>
-      td.nowrap {{template "defines::define_clip" (clip $F $C "df-inodes-devname" $disk.DevName 12)}}
-      td.nowrap {{template "defines::define_clip" (clip $F $C "df-inodes-devname" $disk.DirName 6)}}
+      td.nowrap {{template "defines::define_clip" (clip $F $C 12 "df-inodes-devname" $disk.DevName)}}
+      td.nowrap {{template "defines::define_clip" (clip $F $C  6 "df-inodes-devname" $disk.DirName)}}
       td.text-right {{$disk.Ifree}}
       td.text-right {{$disk.Iused}}&nbsp;
         sup <span {{$C}}={{$disk.IusePercentClass}}>{{$disk.IusePercent}}%</span>
@@ -234,13 +234,13 @@
       | <tr{{key $C "ps-rowby-pid" $proc.PIDstring}}>
       td.text-right  {{$proc.PID}}
       td.text-right  {{$proc.UID}}
-      td             {{template "defines::define_clip" (clip $F $C "ps-user" $proc.User 12)}}
+      td             {{template "defines::define_clip" (clip $F $C 12 "psuser-pid" $proc.PIDstring $proc.User)}}
       td.text-right  {{$proc.Priority}}
       td.text-right  {{$proc.Nice}}
       td.text-right  {{$proc.Size}}
       td.text-right  {{$proc.Resident}}
       td.text-center {{$proc.Time}}
-      td.nowrap      {{template "defines::define_clip" (clip $F $C "ps-name" $proc.Name 42)}}
+      td.nowrap      {{template "defines::define_clip" (clip $F $C 42 "psname-pid" $proc.PIDstring $proc.Name)}}
       | </tr>
     {{end}}
   {{end}}
@@ -282,11 +282,11 @@
   {{$C := or .CLASSNAME "class"}}
   {{range $mach := .Data.VagrantMachines.List}}
     | <tr{{key $C "vagrant-rowby-uuid" $mach.UUID}}>
-    td        {{template "defines::define_clip" (clip $F $C "vagrant-uuid" $mach.UUID 7)}}
+    td        {{template "defines::define_clip" (clip $F $C  7 "vagrant-uuid"     $mach.UUID)}}
     td        {{$mach.Name}}
     td        {{$mach.Provider}}
-    td        {{template "defines::define_clip" (clip $F $C "vagrant-state" $mach.State 8)}}
-    td        {{template "defines::define_clip" (clip $F $C "vagrant-filepath" $mach.Vagrantfile_path 50)}}
+    td        {{template "defines::define_clip" (clip $F $C  8 "vagrant-state"    $mach.UUID $mach.State)}}
+    td        {{template "defines::define_clip" (clip $F $C 50 "vagrant-filepath" $mach.UUID $mach.Vagrantfile_path)}}
     | </tr>
   {{end}}
 

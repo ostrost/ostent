@@ -30,7 +30,7 @@ type Clipped struct {
 	Text        string
 }
 
-func clip(HF, CN, prefix, val string, width int) Clipped {
+func clip(HF, CN string, width int, prefix, val string, rest ...string) (*Clipped, error) {
 	if HF == "" {
 		HF = "for"
 	}
@@ -42,13 +42,18 @@ func clip(HF, CN, prefix, val string, width int) Clipped {
 		key = fmt.Sprintf("%q", url.QueryEscape(prefix+"-"+val))
 		mws = fmt.Sprintf("\"max-width: %dch \"", width)
 	}
-	return Clipped{
+	if len(rest) == 1 {
+		val = rest[0]
+	} else if len(rest) > 0 {
+		return nil, fmt.Errorf("clip expects either 5 or 6 arguments")
+	}
+	return &Clipped{
 		CLASSNAME:   CN,
 		IDAttr:      templatehtml.HTMLAttr("id=" + key),
 		ForAttr:     templatehtml.HTMLAttr(HF + "=" + key),
 		MWStyleAttr: templatehtml.HTMLAttr("style=" + mws),
 		Text:        val,
-	}
+	}, nil
 }
 
 // Dotted is a tree.
