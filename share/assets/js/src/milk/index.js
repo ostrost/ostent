@@ -871,10 +871,6 @@
         if (data.Client != null) {
           console.log(JSON.stringify(data.Client), 'recvClient');
         }
-        $('span .tooltipable').popover({
-          trigger: 'hover focus'
-        });
-        $('span .tooltipabledots').popover();
       };
       updates = newwebsocket(onmessage);
     };
@@ -884,10 +880,6 @@
         (new window.Headroom(document.querySelector('nav'), {
           offset: 20
         })).init();
-        $('span .tooltipable').popover({
-          trigger: 'hover focus'
-        });
-        $('span .tooltipabledots').popover();
         $('[data-toggle="popover"]').popover();
         $('#la').popover({
           trigger: 'hover focus',
@@ -896,13 +888,6 @@
           content: function() {
             return $('#uptime-parent').html();
           }
-        });
-        $('body').on('click', function(e) {
-          $('span .tooltipabledots').each(function() {
-            if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
-              $(this).popover('hide');
-            }
-          });
         });
         if (!((function() {
           var i, len, ref, results;

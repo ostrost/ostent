@@ -7049,6 +7049,7 @@ button.close {
 /*# sourceMappingURL=bootstrap.css.map */
 label.clip {
   cursor: pointer;
+  margin-bottom: 0px;
   font-weight: normal;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -7059,7 +7060,7 @@ label.clip {
   word-wrap: break-word;
   word-break: break-all;
   white-space: normal;
-  overflow: hidden; }
+  overflow-x: visible; }
 
 .collapse-hidden {
   display: none; }
@@ -7185,9 +7186,6 @@ table thead tr .header a {
 
 .badge-danger {
   background: #d9534f; }
-
-span.tooltipabledots {
-  cursor: pointer; }
 
 .btn-header, .btn-header-block {
   font-size: 12px;

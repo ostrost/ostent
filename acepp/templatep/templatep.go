@@ -14,12 +14,12 @@ import (
 	"text/template/parse"
 )
 
-func key(CN, prefix, val string) string {
+func key(CN, prefix, val string) templatehtml.HTMLAttr {
 	var key string
 	if CN == "className" { // jscriptMode only
 		key = " key={\"" + prefix + "-\"+" + strings.TrimPrefix(val, "{")
 	}
-	return key
+	return templatehtml.HTMLAttr(key)
 }
 
 type Clipped struct {

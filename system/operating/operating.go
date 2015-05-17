@@ -70,15 +70,9 @@ type DFinodes struct {
 	List []DiskInodes
 }
 
-// InterfaceMeta type has common Interface fields.
-type InterfaceMeta struct {
-	NameKey  string
-	NameHTML template.HTML
-}
-
 // InterfaceInfo type is a struct of interface metrics.
 type InterfaceInfo struct {
-	InterfaceMeta
+	Name     string
 	In       string // with units
 	Out      string // with units
 	DeltaIn  string // with units
@@ -110,16 +104,16 @@ type ProcInfo struct {
 
 // ProcData type is a public (for index context, json marshaling) account of a process.
 type ProcData struct {
-	PID      uint
-	UID      uint
-	Priority int
-	Nice     int
-	Time     string
-	NameRaw  string
-	NameHTML template.HTML
-	UserHTML template.HTML
-	Size     string // with units
-	Resident string // with units
+	PID       uint
+	PIDstring string
+	UID       uint
+	Priority  int
+	Nice      int
+	Time      string
+	Name      string
+	User      string
+	Size      string // with units
+	Resident  string // with units
 }
 
 type RAMUpdater interface {

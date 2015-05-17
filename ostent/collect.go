@@ -13,6 +13,7 @@ import (
 	"github.com/ostrost/ostent/getifaddrs"
 	"github.com/ostrost/ostent/system"
 	"github.com/ostrost/ostent/system/operating"
+	"github.com/ostrost/ostent/templateutil"
 	sigar "github.com/rzab/gosigar"
 )
 
@@ -164,6 +165,9 @@ func (m *Machine) LA(reg Registry, wg *sync.WaitGroup) {
 	reg.UpdateLoadAverage(la)
 	wg.Done()
 }
+
+// DefinesTemplate is a lazy defines.html template.
+var DefinesTemplate *templateutil.LazyTemplate
 
 func _getmem(kind string, in sigar.Swap) operating.Memory {
 	total, approxtotal, _ := format.HumanBandback(in.Total)

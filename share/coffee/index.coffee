@@ -496,10 +496,6 @@ require ['jquery', 'bootstrap', 'react', 'jscript', 'domReady', 'headroom'], ($,
       })
 
       console.log(JSON.stringify(data.Client), 'recvClient') if data.Client?
-
-      # update the tooltips
-      $('span .tooltipable')    .popover({trigger: 'hover focus'})
-      $('span .tooltipabledots').popover() # the clickable dots
       return
 
     updates = newwebsocket(onmessage)
@@ -513,8 +509,6 @@ require ['jquery', 'bootstrap', 'react', 'jscript', 'domReady', 'headroom'], ($,
         offset: 20 # ~padding-top of a container row
       })).init()
 
-      $('span .tooltipable')      .popover({trigger: 'hover focus'})
-      $('span .tooltipabledots')  .popover() # the clickable dots
       $('[data-toggle="popover"]').popover() # should be just #hostname
       $('#la')                    .popover({
         trigger: 'hover focus',
@@ -522,16 +516,6 @@ require ['jquery', 'bootstrap', 'react', 'jscript', 'domReady', 'headroom'], ($,
         # NOT placement: 'auto right' until #la is the last element for parent
         html: true, content: () -> $('#uptime-parent').html()
       })
-
-      $('body').on('click', (e) -> # hide the popovers on click outside
-        $('span .tooltipabledots').each(() ->
-          # the 'is' for buttons that trigger popups
-          # the 'has' for icons within a button that triggers a popup
-          $(this).popover('hide') if (!$(this).is(e.target) and
-            $(this).has(e.target).length == 0 and
-            $('.popover').has(e.target).length == 0)
-          return)
-        return)
 
       # referencing upper-scope `update'
       update() unless (42 for param in location.search.substr(1).split(

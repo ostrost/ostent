@@ -4,7 +4,6 @@ package ostent
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"os/user"
@@ -22,17 +21,6 @@ import (
 	sigar "github.com/rzab/gosigar"
 )
 
-func interfaceMeta(ifdata getifaddrs.IfData) operating.InterfaceMeta {
-	return interfaceMetaFromString(ifdata.Name)
-}
-
-func interfaceMetaFromString(name string) operating.InterfaceMeta {
-	return operating.InterfaceMeta{
-		NameKey:  name,
-		NameHTML: tooltipable(12, name),
-	}
-}
-
 type diskInfo struct {
 	DevName     string
 	Total       uint64
@@ -44,27 +32,6 @@ type diskInfo struct {
 	Ifree       uint64
 	IusePercent float64
 	DirName     string
-}
-
-var DefinesTemplate *templateutil.LazyTemplate
-
-func tooltipable(limit int, full string) template.HTML {
-	var html string
-	if len(full) > limit {
-		var err error
-		html, err = DefinesTemplate.LookupApply("defines::define_tooltipable", struct {
-			Full, Short string
-		}{
-			Full:  full,
-			Short: full[:limit],
-		})
-		if err != nil {
-			html = template.HTMLEscapeString(err.Error())
-		}
-	} else {
-		html = template.HTMLEscapeString(full)
-	}
-	return template.HTML(html)
 }
 
 func diskMeta(disk operating.MetricDF) operating.DiskMeta {
@@ -110,15 +77,16 @@ func (procs MPSlice) Ordered(cl *client.Client, send *client.SendClient) []opera
 	var list []operating.ProcData
 	for _, proc := range procs {
 		list = append(list, operating.ProcData{
-			PID:      proc.PID,
-			UID:      proc.UID,
-			Priority: proc.Priority,
-			Nice:     proc.Nice,
-			Time:     format.FormatTime(proc.Time),
-			NameHTML: tooltipable(42, proc.Name),
-			UserHTML: tooltipable(12, username(uids, proc.UID)),
-			Size:     format.HumanB(proc.Size),
-			Resident: format.HumanB(proc.Resident),
+			PID:       proc.PID,
+			PIDstring: fmt.Sprintf("%d", proc.PID),
+			UID:       proc.UID,
+			Priority:  proc.Priority,
+			Nice:      proc.Nice,
+			Time:      format.FormatTime(proc.Time),
+			Name:      proc.Name,
+			User:      username(uids, proc.UID),
+			Size:      format.HumanB(proc.Size),
+			Resident:  format.HumanB(proc.Resident),
 		})
 	}
 	return list
@@ -270,11 +238,11 @@ func FormatInterface(mi operating.MetricInterface, ip InterfaceParts) operating.
 		}
 	}
 	return operating.InterfaceInfo{
-		InterfaceMeta: interfaceMetaFromString(mi.Name),
-		In:            form(uint64(in)),            // format.HumanB(uint64(in)),  // with units
-		Out:           form(uint64(out)),           // format.HumanB(uint64(out)), // with units
-		DeltaIn:       deltaForm(uint64(deltain)),  // format.Bps64(8, in, 0),     // with units
-		DeltaOut:      deltaForm(uint64(deltaout)), // format.Bps64(8, out, 0),    // with units
+		Name:     mi.Name,
+		In:       form(uint64(in)),            // format.HumanB(uint64(in)),  // with units
+		Out:      form(uint64(out)),           // format.HumanB(uint64(out)), // with units
+		DeltaIn:  deltaForm(uint64(deltain)),  // format.Bps64(8, in, 0),     // with units
+		DeltaOut: deltaForm(uint64(deltaout)), // format.Bps64(8, out, 0),    // with units
 	}
 }
 

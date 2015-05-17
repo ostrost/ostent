@@ -2,14 +2,6 @@
   {{$C := or .CLASSNAME "class"}}
   span {{$C}}={{.Class}} {{.Value}}%
 
-= content define_tooltipable
-  span
-    span.tooltipable data-placement="auto left" data-content={{.Full}}
-      / data-toggle=tooltip|popover / done in js now
-      | {{.Short}}
-    span.tooltipabledots.unit data-placement="auto left" data-content={{.Full}}
-      | ...
-
 = content define_clip
   {{$C := or .CLASSNAME "class"}}
   | <input {{.IDAttr}}  {{$C}}="collapse-checkbox" type="checkbox" aria-hidden="true" hidden></input>
@@ -23,9 +15,11 @@
 
 = content define_ifbytes_rows
   {{with .OVERRIDE}}{{.}}{{else}}
+    {{$F := or .HTMLFOR "for"}}
+    {{$C := or .CLASSNAME "class"}}
     {{range $if := .Data.IFbytes.List}}
-      | <tr key={{$if.NameKey}}>
-      td {{$if.NameHTML}}
+      | <tr{{key $C "ifbytes-rowby-name" $if.Name}}>
+      td {{template "defines::define_clip" (clip $F $C "if-bytes-name" $if.Name 12)}}
       td.text-right {{$if.DeltaIn}}
       td.text-right {{$if.DeltaOut}}
       td.text-right {{$if.In}}
@@ -36,9 +30,11 @@
 
 = content define_iferrors_rows
   {{with .OVERRIDE}}{{.}}{{else}}
+    {{$F := or .HTMLFOR "for"}}
+    {{$C := or .CLASSNAME "class"}}
     {{range $if := .Data.IFerrors.List}}
-      | <tr key={{$if.NameKey}}>
-      td {{$if.NameHTML}}
+      | <tr{{key $C "iferrors-rowby-name" $if.Name}}>
+      td {{template "defines::define_clip" (clip $F $C "if-errors-name" $if.Name 12)}}
       td.text-right {{$if.DeltaIn}}
       td.text-right {{$if.DeltaOut}}
       td.text-right {{$if.In}}
@@ -49,9 +45,11 @@
 
 = content define_ifpackets_rows
   {{with .OVERRIDE}}{{.}}{{else}}
+    {{$F := or .HTMLFOR "for"}}
+    {{$C := or .CLASSNAME "class"}}
     {{range $if := .Data.IFpackets.List}}
-      | <tr key={{$if.NameKey}}>
-      td {{$if.NameHTML}}
+      | <tr{{key $C "ifpackets-rowby-name" $if.Name}}>
+      td {{template "defines::define_clip" (clip $F $C "if-packets-name" $if.Name 12)}}
       td.text-right {{$if.DeltaIn}}
       td.text-right {{$if.DeltaOut}}
       td.text-right {{$if.In}}
@@ -177,8 +175,9 @@
 
 = content define_memrows
   {{with .OVERRIDE}}{{.}}{{else}}
+    {{$C := or .CLASSNAME "class"}}
     {{range $i, $mem := .Data.MEM.List}}
-      | <tr key={{$mem.Kind}}>
+      | <tr{{key $C "mem-rowby-kind" $mem.Kind}}>
       td {{$mem.Kind}}
       td.text-right {{$mem.Free}}
       td.text-right {{$mem.Used}}&nbsp;
@@ -203,7 +202,7 @@
   {{with .OVERRIDE}}{{.}}{{else}}
     {{$C := or .CLASSNAME "class"}}
     {{range $i, $core := .Data.CPU.List}}
-      | <tr key={{$core.N}}>
+      | <tr{{key $C "cpu-rowby-N" $core.N}}>
       td.text-right.nowrap {{$core.N}}
       / td.text-right {{$core.UserSpark}}
       td.text-right <span {{$C}}={{$core.UserClass}}>{{$core.User}}</span>
@@ -229,17 +228,19 @@
 
 = content define_psrows
   {{with .OVERRIDE}}{{.}}{{else}}
+    {{$F := or .HTMLFOR "for"}}
+    {{$C := or .CLASSNAME "class"}}
     {{range $proc := .Data.PStable.List}}
-      | <tr key={{$proc.PID}}>
+      | <tr{{key $C "ps-rowby-pid" $proc.PIDstring}}>
       td.text-right  {{$proc.PID}}
       td.text-right  {{$proc.UID}}
-      td             {{$proc.UserHTML}}
+      td             {{template "defines::define_clip" (clip $F $C "ps-user" $proc.User 12)}}
       td.text-right  {{$proc.Priority}}
       td.text-right  {{$proc.Nice}}
       td.text-right  {{$proc.Size}}
       td.text-right  {{$proc.Resident}}
       td.text-center {{$proc.Time}}
-      td.nowrap      {{$proc.NameHTML}}
+      td.nowrap      {{template "defines::define_clip" (clip $F $C "ps-name" $proc.Name 42)}}
       | </tr>
     {{end}}
   {{end}}

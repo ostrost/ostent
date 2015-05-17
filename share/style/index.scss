@@ -2,6 +2,7 @@
 
 label.clip {
   cursor: pointer;
+  margin-bottom: 0px;
   font-weight: normal;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -12,7 +13,7 @@ label.clip {
   word-wrap: break-word;
   word-break: break-all;
   white-space: normal;
-  overflow: hidden; // visible causes text to jump
+  overflow-x: visible;
 }
 
 .collapse-hidden { display: none; }
@@ -149,10 +150,6 @@ table thead tr .header a {
 .badge-info    { @extend .badge; background: #5bc0de; }
 .badge-warning { @extend .badge; background: #f0ad4e; }
 .badge-danger  { @extend .badge; background: #d9534f; }
-
-span.tooltipabledots {
-  cursor: pointer;
-}
 
 .btn-header {
   @extend .btn;
