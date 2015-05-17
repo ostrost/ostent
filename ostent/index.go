@@ -71,10 +71,8 @@ func diskMeta(disk operating.MetricDF) operating.DiskMeta {
 	devname := disk.DevName.Snapshot().Value()
 	dirname := disk.DirName.Snapshot().Value()
 	return operating.DiskMeta{
-		DiskNameHTML: tooltipable(12, devname),
-		DirNameHTML:  tooltipable(6, dirname),
-		DirNameKey:   dirname,
-		DevName:      devname,
+		DevName: devname,
+		DirName: dirname,
 	}
 }
 
@@ -902,6 +900,7 @@ func index(taggedbin bool, template *templateutil.LazyTemplate, minperiod flags.
 	response := template.Response(w, struct {
 		OVERRIDE  string // MUST HAVE, EMPTY
 		CLASSNAME string // MUST HAVE, EMPTY
+		HTMLFOR   string // MUST HAVE, EMPTY
 		TAGGEDbin bool
 		Data      IndexData
 	}{

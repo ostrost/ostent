@@ -36,10 +36,8 @@ type RAM struct {
 
 // DiskMeta type has common for DiskBytes and DiskInodes fields.
 type DiskMeta struct {
-	DiskNameHTML template.HTML
-	DirNameHTML  template.HTML
-	DirNameKey   string
-	DevName      string `json:"-"`
+	DevName string
+	DirName string
 }
 
 // DiskBytes type is a struct of disk bytes metrics.

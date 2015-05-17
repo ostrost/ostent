@@ -1,5 +1,20 @@
 @import 'bootstrap-3.3.4.scss';
 
+label.clip {
+  cursor: pointer;
+  font-weight: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.collapse-checkbox:checked + label.clip {
+  text-decoration: overline;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: normal;
+  overflow: hidden; // visible causes text to jump
+}
+
 .collapse-hidden { display: none; }
 .collapse-collapse { display: none; }
 .collapse-checkbox { display: none; }
@@ -77,6 +92,9 @@ body {
 
   .text-right sup { // or any sup?
     font-size: 100%;
+  }
+  tbody > tr > td {
+    vertical-align: top !important;
   }
 }
 .table2 {

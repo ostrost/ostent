@@ -6,12 +6,50 @@ import (
 	"fmt"
 	templatehtml "html/template"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"sort"
 	"strings"
 	templatetext "text/template"
 	"text/template/parse"
 )
+
+func key(CN, prefix, val string) string {
+	var key string
+	if CN == "className" { // jscriptMode only
+		key = " key={\"" + prefix + "-\"+" + strings.TrimPrefix(val, "{")
+	}
+	return key
+}
+
+type Clipped struct {
+	CLASSNAME   string
+	IDAttr      templatehtml.HTMLAttr
+	ForAttr     templatehtml.HTMLAttr
+	MWStyleAttr templatehtml.HTMLAttr
+	Text        string
+}
+
+func clip(HF, CN, prefix, val string, width int) Clipped {
+	if HF == "" {
+		HF = "for"
+	}
+	var key, mws string
+	if CN == "className" { // jscriptMode
+		key = "{\"" + prefix + "-\"+" + strings.TrimPrefix(val, "{")
+		mws = fmt.Sprintf("{{maxWidth: '%dch'}}", width)
+	} else { // quote everything
+		key = fmt.Sprintf("%q", url.QueryEscape(prefix+"-"+val))
+		mws = fmt.Sprintf("\"max-width: %dch \"", width)
+	}
+	return Clipped{
+		CLASSNAME:   CN,
+		IDAttr:      templatehtml.HTMLAttr("id=" + key),
+		ForAttr:     templatehtml.HTMLAttr(HF + "=" + key),
+		MWStyleAttr: templatehtml.HTMLAttr("style=" + mws),
+		Text:        val,
+	}
+}
 
 // Dotted is a tree.
 type Dotted struct {
@@ -115,6 +153,7 @@ func mkmap(top Dotted, jscriptMode bool, level int) interface{} {
 	}
 	if jscriptMode && level == 0 {
 		h["CLASSNAME"] = "className"
+		h["HTMLFOR"] = "htmlFor"
 	}
 	return h
 }
@@ -163,7 +202,9 @@ var DotFuncs = templatetext.FuncMap{"dot": dot}
 
 // AceFuncs features functions for templates. In use in acepp and templates.
 var AceFuncs = templatehtml.FuncMap{
-	"dot": dot,
+	"dot":  dot,
+	"key":  key,
+	"clip": clip,
 	"json": func(v interface{}) (string, error) {
 		j, err := json.Marshal(v)
 		return string(j), err
@@ -319,6 +360,19 @@ func DataNode(root Templater, node parse.Node, jscriptMode bool, data *Dotted, v
 					for _, z := range ifnode.(*parse.IfNode).List.Nodes {
 						if z.Type() == parse.NodeAction {
 							keys = append(keys, getKeys(decl, z)...)
+						}
+					}
+				case parse.NodeTemplate:
+					// DataNode(root, ifnode, jscriptMode, data, vars)
+					arg0 := ifnode.(*parse.TemplateNode).Pipe.Cmds[0].Args[0]
+					if arg0.Type() == parse.NodePipe {
+						cmd0 := arg0.(*parse.PipeNode).Cmds[0]
+						if cmd0.Type() == parse.NodeCommand {
+							for _, a := range cmd0.Args {
+								if s, prefix := a.String(), decl+"."; strings.HasPrefix(s, prefix) {
+									keys = append(keys, strings.TrimPrefix(s, prefix))
+								}
+							}
 						}
 					}
 				}

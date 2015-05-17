@@ -7047,6 +7047,20 @@ button.close {
   .hidden-print {
     display: none !important; } }
 /*# sourceMappingURL=bootstrap.css.map */
+label.clip {
+  cursor: pointer;
+  font-weight: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden; }
+
+.collapse-checkbox:checked + label.clip {
+  text-decoration: overline;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: normal;
+  overflow: hidden; }
+
 .collapse-hidden {
   display: none; }
 
@@ -7107,6 +7121,8 @@ body {
   margin-bottom: 0px; }
   .table2 .text-right sup, .table1 .text-right sup {
     font-size: 100%; }
+  .table2 tbody > tr > td, .table1 tbody > tr > td {
+    vertical-align: top !important; }
 
 .stripe-table > tbody > tr:nth-child(even) > td {
   background-color: #f9f9f9; }

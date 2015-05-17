@@ -10,6 +10,11 @@
     span.tooltipabledots.unit data-placement="auto left" data-content={{.Full}}
       | ...
 
+= content define_clip
+  {{$C := or .CLASSNAME "class"}}
+  | <input {{.IDAttr}}  {{$C}}="collapse-checkbox" type="checkbox" aria-hidden="true" hidden></input>
+  | <label {{.ForAttr}} {{$C}}="clip" {{.MWStyleAttr}}>{{.Text}}</label>
+
 = content refresh
   / the {{define "name"} name is defines::"refresh"
   div.input-group.input-group-sm.refresh-group
@@ -113,11 +118,12 @@
 
 = content define_dfbytes_rows
   {{with .OVERRIDE}}{{.}}{{else}}
+    {{$F := or .HTMLFOR "for"}}
     {{$C := or .CLASSNAME "class"}}
     {{range $disk := .Data.DFbytes.List}}
-      | <tr key={{$disk.DirNameKey}}>
-      td.nowrap {{$disk.DiskNameHTML}}
-      td.nowrap {{$disk.DirNameHTML}}
+      | <tr{{key $C "dfbytes-rowby-dirname" $disk.DirName}}>
+      td.nowrap {{template "defines::define_clip" (clip $F $C "df-bytes-devname" $disk.DevName 12)}}
+      td.nowrap {{template "defines::define_clip" (clip $F $C "df-bytes-dirname" $disk.DirName 6)}}
       td.text-right {{$disk.Avail}}
       td.text-right {{$disk.Used}}&nbsp;
         sup <span {{$C}}={{$disk.UsePercentClass}}>{{$disk.UsePercent}}%</span>
@@ -128,11 +134,12 @@
 
 = content define_dfinodes_rows
   {{with .OVERRIDE}}{{.}}{{else}}
+    {{$F := or .HTMLFOR "for"}}
     {{$C := or .CLASSNAME "class"}}
     {{range $disk := .Data.DFinodes.List}}
-      | <tr key={{$disk.DirNameKey}}>
-      td.nowrap {{$disk.DiskNameHTML}}
-      td.nowrap {{$disk.DirNameHTML}}
+      | <tr{{key $C "dfinodes-rowby-dirname" $disk.DirName}}>
+      td.nowrap {{template "defines::define_clip" (clip $F $C "df-inodes-devname" $disk.DevName 12)}}
+      td.nowrap {{template "defines::define_clip" (clip $F $C "df-inodes-devname" $disk.DirName 6)}}
       td.text-right {{$disk.Ifree}}
       td.text-right {{$disk.Iused}}&nbsp;
         sup <span {{$C}}={{$disk.IusePercentClass}}>{{$disk.IusePercent}}%</span>
