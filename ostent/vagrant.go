@@ -47,10 +47,6 @@ func vagrantmachines() (*VagrantMachines, error) {
 	if status.Machines != nil {
 		for uuid, machine := range *status.Machines {
 			machine.UUID = uuid
-			machine.UUIDHTML = tooltipable(7, uuid)
-			machine.VagrantfilePathHTML = tooltipable(50, machine.VagrantfilePath)
-			machine.StateHTML = tooltipable(8, machine.State)
-			// (*status.Machines)[uuid] = machine
 			machines.List = append(machines.List, machine)
 		}
 	}

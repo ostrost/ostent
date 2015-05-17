@@ -277,13 +277,15 @@
   {{end}}
 
 = content define_vgrows
+  {{$F := or .HTMLFOR "for"}}
+  {{$C := or .CLASSNAME "class"}}
   {{range $mach := .Data.VagrantMachines.List}}
-    | <tr key={{$mach.UUID}}>
-    td        {{$mach.UUIDHTML}}
+    | <tr{{key $C "vagrant-rowby-uuid" $mach.UUID}}>
+    td        {{template "defines::define_clip" (clip $F $C "vagrant-uuid" $mach.UUID 7)}}
     td        {{$mach.Name}}
     td        {{$mach.Provider}}
-    td        {{$mach.StateHTML}}
-    td.nowrap {{$mach.Vagrantfile_pathHTML}}
+    td        {{template "defines::define_clip" (clip $F $C "vagrant-state" $mach.State 8)}}
+    td        {{template "defines::define_clip" (clip $F $C "vagrant-filepath" $mach.Vagrantfile_path 50)}}
     | </tr>
   {{end}}
 
