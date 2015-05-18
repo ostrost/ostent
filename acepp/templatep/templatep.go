@@ -5,10 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	templatehtml "html/template"
-	"io/ioutil"
 	"net/url"
-	"os"
-	"sort"
 	"strings"
 	templatetext "text/template"
 	"text/template/parse"
@@ -419,70 +416,4 @@ func getKeys(decl string, parseNode parse.Node) (keys []string) {
 		}
 	}
 	return
-}
-
-// WriteFile is ioutil.WriteFile if filename is not "",
-// otherwise it's as if filename was /dev/stdout.
-func WriteFile(filename, data string) error {
-	bytedata := []byte(data)
-	if filename != "" {
-		return ioutil.WriteFile(filename, bytedata, 0644)
-	}
-	_, err := os.Stdout.Write(bytedata)
-	return err
-}
-
-func SaveDefines(outputfile, input string) error {
-	T := struct {
-		Name       string
-		LeftDelim  string
-		RightDelim string
-	}{
-		Name:       "zero",
-		LeftDelim:  "[[",
-		RightDelim: "]]",
-	}
-	// _ = template.New(T.Name).Funcs(DotFuncs).Delims(T.LeftDelim, T.RightDelim)
-	trees, err := parse.Parse(T.Name, input, T.LeftDelim, T.RightDelim,
-		DotFuncs, // .parseFuncs // template.FuncMap
-		DotFuncs, // builtins // template.FuncMap
-	)
-	if err != nil {
-		return err
-	}
-	delete(trees, T.Name)
-	return WriteTrees(outputfile, trees)
-}
-
-func SprintfTrees(trees map[string]*parse.Tree) (text string) {
-	for _, name := range KeysSorted(trees) {
-		text += fmt.Sprintf("{{define \"%s\"}}%s{{end}}\n", name, trees[name].Root)
-	}
-	return text
-}
-
-func WriteTrees(outputfile string, trees map[string]*parse.Tree) error {
-	return WriteFile(outputfile, SprintfTrees(trees))
-}
-
-// Subtrees returns a *parse.Tree map without tpl in it.
-func Subtrees(tpl *templatehtml.Template) map[string]*parse.Tree {
-	trees := map[string]*parse.Tree{}
-	for _, x := range tpl.Templates() {
-		if name := x.Name(); name != tpl.Name() {
-			trees[name] = x.Tree
-		}
-	}
-	return trees
-}
-
-func KeysSorted(trees map[string]*parse.Tree) []string {
-	keys := make([]string, len(trees))
-	i := 0
-	for k := range trees {
-		keys[i] = k
-		i++
-	}
-	sort.Strings(keys)
-	return keys
 }

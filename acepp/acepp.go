@@ -7,13 +7,17 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sort"
 	templatetext "text/template"
+	"text/template/parse"
 
 	"github.com/ostrost/ostent/acepp/templatep"
 	"github.com/yosssi/ace"
+	// "github.com/yosssi/gohtml"
 )
 
 func main() {
+	formatFunc := func(s string) string { return s } // Format // gohtml.Format
 	var (
 		outputFile  string
 		definesFile string
@@ -61,10 +65,9 @@ func main() {
 	if !jscriptMode {
 		_, index, err := LoadAce(inputFile, definesFile, aceopts)
 		check(err)
-		trees := templatep.Subtrees(index)
-		text := templatep.SprintfTrees(trees)
-		text += index.Tree.Root.String()
-		check(templatep.WriteFile(outputFile, text))
+		text := SprintfSubtrees(index, formatFunc)
+		text += formatFunc(index.Tree.Root.String())
+		check(WriteFile(outputFile, text))
 		return
 	}
 
@@ -74,7 +77,7 @@ func main() {
 	check(err)
 
 	if definesMode {
-		check(templatep.WriteTrees(outputFile, templatep.Subtrees(defines)))
+		check(WriteFile(outputFile, SprintfSubtrees(defines, formatFunc)))
 		return
 	}
 
@@ -95,7 +98,7 @@ func main() {
 	s, err := templatep.StringExecute(jscript, m)
 	check(err)
 
-	check(templatep.WriteFile(outputFile, s))
+	check(WriteFile(outputFile, s))
 }
 
 // LoadAce is ace.Load without dealing with includes and setting Base'd names for the templates.
@@ -141,4 +144,33 @@ func ReadAce(filename string, opts *ace.Options) (*ace.File, error) {
 		}
 	}
 	return ace.NewFile(Base(filename, opts), data), nil
+}
+
+func SprintfSubtrees(tpl *templatehtml.Template, formatFunc func(string) string) (text string) {
+	var names []string
+	trees := map[string]*parse.Tree{}
+	for _, x := range tpl.Templates() {
+		name := x.Name()
+		if name == tpl.Name() {
+			continue // skip the root template
+		}
+		names = append(names, name)
+		trees[name] = x.Tree
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		text += fmt.Sprintf("{{define \"%s\"}}%s{{end}}\n", name, formatFunc(trees[name].Root.String()))
+	}
+	return text
+}
+
+// WriteFile is ioutil.WriteFile if filename is not "",
+// otherwise it's as if filename was /dev/stdout.
+func WriteFile(filename, data string) error {
+	bytedata := []byte(data)
+	if filename != "" {
+		return ioutil.WriteFile(filename, bytedata, 0644)
+	}
+	_, err := os.Stdout.Write(bytedata)
+	return err
 }
