@@ -50,6 +50,7 @@ github.com/jteeuwen/go-bindata/go-bindata \
 github.com/skelterjohn/rerun \
 github.com/campoy/jsonenums \
 github.com/clipperhouse/gen \
+code.google.com/p/go.net/html \
 github.com/yosssi/ace
 # TODO rm {src,pkg/*}/github.com/clipperhouse/slice{,.a}
 	cd system/operating && gen add github.com/rzab/slice
