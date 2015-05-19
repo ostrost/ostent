@@ -1,25 +1,275 @@
-{{define "defines::define_clip"}}{{$C := or .CLASSNAME "class"}}<input {{.IDAttr}}  {{$C}}="collapse-checkbox" type="checkbox" aria-hidden="true" hidden></input><label {{.ForAttr}} {{$C}}="clip" {{.MWStyleAttr}}>{{.Text}}</label>
-
+{{/*
+*/}}{{define "defines::define_clip"}}{{$C := or .CLASSNAME "class"}}<input {{.IDAttr}}  {{$C}}="collapse-checkbox" type="checkbox" aria-hidden="true" hidden>{{if eq $C "className"}}</input>{{end}}<label {{.ForAttr}} {{$C}}="clip" {{.MWStyleAttr}}>{{.Text}}</label>
+{{end}}{{/*
+*/}}{{define "defines::define_cpurows"}}{{with .OVERRIDE}}{{.}}{{else}}{{$C := or .CLASSNAME "class"}}{{range $i, $core := .Data.CPU.List}}<tr{{key $C "cpu-rowby-N" $core.N}}>
+  <td class="text-right nowrap">{{$core.N}}</td>
+  <td class="text-right">
+    <span {{$C}}={{$core.UserClass}}>{{$core.User}}</span>
+  </td>
+  <td class="text-right">
+    <span {{$C}}={{$core.SysClass}} >{{$core.Sys}}</span>
+  </td>
+  <td class="text-right">
+    <span {{$C}}={{$core.IdleClass}}>{{$core.Idle}}</span>
+  </td>
+</tr>{{end}}{{end}}{{end}}{{/*
+*/}}{{define "defines::define_cputable"}}<table class="table1 stripe-table">
+  <thead>
+    <tr>
+      <th>
+      </th>
+      <th class="text-right nowrap">User<span class="unit">%</span>
+      </th>
+      <th class="text-right nowrap">Sys<span class="unit">%</span>
+      </th>
+      <th class="text-right nowrap">Idle<span class="unit">%</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>{{template "defines::define_cpurows" .}}</tbody>
+</table>
+{{end}}{{/*
+*/}}{{define "defines::define_dfbytes_rows"}}{{with .OVERRIDE}}{{.}}{{else}}{{$F := or .HTMLFOR "for"}}{{$C := or .CLASSNAME "class"}}{{range $disk := .Data.DFbytes.List}}<tr{{key $C "dfbytes-rowby-dirname" $disk.DirName}}>
+  <td class="nowrap">{{template "defines::define_clip" (clip $F $C 12 "df-bytes-devname" $disk.DevName)}}</td>
+  <td class="nowrap">{{template "defines::define_clip" (clip $F $C 6 "df-bytes-dirname" $disk.DirName)}}</td>
+  <td class="text-right">{{$disk.Avail}}</td>
+  <td class="text-right">{{$disk.Used}}&nbsp;<sup>
+      <span {{$C}}={{$disk.UsePercentClass}}>{{$disk.UsePercent}}%</span>
+    </sup>
+  </td>
+  <td class="text-right">{{$disk.Total}}</td>
+</tr>{{end}}{{end}}{{end}}{{/*
+*/}}{{define "defines::define_dfbytes_table"}}{{$C := or .CLASSNAME "class"}}<table class="table1 stripe-table">
+  <thead>
+    <tr>{{with $L := .Data.Links}}<th class="header">           <a href={{$L.DFFS.Href}}    {{$C}}={{$L.DFFS.Class}}   >Device<span  {{$C}}={{$L.DFFS.CaretClass}}   >
+          </span>
+        </a>
+      </th>
+      <th class="header">           <a href={{$L.DFMP.Href}}    {{$C}}={{$L.DFMP.Class}}   >Mounted<span {{$C}}={{$L.DFMP.CaretClass}}   >
+          </span>
+        </a>
+      </th>
+      <th class="header text-right">
+        <a href={{$L.DFAVAIL.Href}} {{$C}}={{$L.DFAVAIL.Class}}>Avail<span   {{$C}}={{$L.DFAVAIL.CaretClass}}>
+          </span>
+        </a>
+      </th>
+      <th class="header text-right">
+        <a href={{$L.DFUSED.Href}}  {{$C}}={{$L.DFUSED.Class}} >Used<span    {{$C}}={{$L.DFUSED.CaretClass}} >
+          </span>
+        </a>
+      </th>
+      <th class="header text-right">
+        <a href={{$L.DFTOTAL.Href}} {{$C}}={{$L.DFTOTAL.Class}}>Total<span   {{$C}}={{$L.DFTOTAL.CaretClass}}>
+          </span>
+        </a>
+      </th>{{end}}</tr>
+  </thead>
+  <tbody>{{template "defines::define_dfbytes_rows" .}}</tbody>
+</table>
+{{end}}{{/*
+*/}}{{define "defines::define_dfinodes_rows"}}{{with .OVERRIDE}}{{.}}{{else}}{{$F := or .HTMLFOR "for"}}{{$C := or .CLASSNAME "class"}}{{range $disk := .Data.DFinodes.List}}<tr{{key $C "dfinodes-rowby-dirname" $disk.DirName}}>
+  <td class="nowrap">{{template "defines::define_clip" (clip $F $C 12 "df-inodes-devname" $disk.DevName)}}</td>
+  <td class="nowrap">{{template "defines::define_clip" (clip $F $C 6 "df-inodes-devname" $disk.DirName)}}</td>
+  <td class="text-right">{{$disk.Ifree}}</td>
+  <td class="text-right">{{$disk.Iused}}&nbsp;<sup>
+      <span {{$C}}={{$disk.IusePercentClass}}>{{$disk.IusePercent}}%</span>
+    </sup>
+  </td>
+  <td class="text-right">{{$disk.Inodes}}</td>
+</tr>{{end}}{{end}}{{end}}{{/*
+*/}}{{define "defines::define_dfinodes_table"}}<table class="table1 stripe-table">
+  <thead>
+    <tr>
+      <th class="header">Device</th>
+      <th class="header">Mounted</th>
+      <th class="header text-right">Avail</th>
+      <th class="header text-right">Used</th>
+      <th class="header text-right">Total</th>
+    </tr>
+  </thead>
+  <tbody>{{template "defines::define_dfinodes_rows" .}}</tbody>
+</table>
+{{end}}{{/*
+*/}}{{define "defines::define_ifbytes_rows"}}{{with .OVERRIDE}}{{.}}{{else}}{{$F := or .HTMLFOR "for"}}{{$C := or .CLASSNAME "class"}}{{range $if := .Data.IFbytes.List}}<tr{{key $C "ifbytes-rowby-name" $if.Name}}>
+  <td>{{template "defines::define_clip" (clip $F $C 12 "if-bytes-name" $if.Name)}}</td>
+  <td class="text-right">{{$if.DeltaIn}}</td>
+  <td class="text-right">{{$if.DeltaOut}}</td>
+  <td class="text-right">{{$if.In}}</td>
+  <td class="text-right">{{$if.Out}}</td>
+</tr>{{end}}{{end}}{{end}}{{/*
+*/}}{{define "defines::define_ifbytes_table"}}<table class="table1 stripe-table">
+  <thead>
+    <tr>
+      <th>Interface</th>
+      <th class="text-right nowrap" title="BITS per second">In<span class="unit">
+          <i>b</i>ps</span>
+      </th>
+      <th class="text-right nowrap" title="BITS per second">Out<span class="unit">
+          <i>b</i>ps</span>
+      </th>
+      <th class="text-right nowrap" title="total BYTES modulo 4G">In<span class="unit">
+          <i>B</i>%4G</span>
+      </th>
+      <th class="text-right nowrap" title="total BYTES modulo 4G">Out<span class="unit">
+          <i>B</i>%4G</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>{{template "defines::define_ifbytes_rows" .}}</tbody>
+</table>
+{{end}}{{/*
+*/}}{{define "defines::define_iferrors_rows"}}{{with .OVERRIDE}}{{.}}{{else}}{{$F := or .HTMLFOR "for"}}{{$C := or .CLASSNAME "class"}}{{range $if := .Data.IFerrors.List}}<tr{{key $C "iferrors-rowby-name" $if.Name}}>
+  <td>{{template "defines::define_clip" (clip $F $C 12 "if-errors-name" $if.Name)}}</td>
+  <td class="text-right">{{$if.DeltaIn}}</td>
+  <td class="text-right">{{$if.DeltaOut}}</td>
+  <td class="text-right">{{$if.In}}</td>
+  <td class="text-right">{{$if.Out}}</td>
+</tr>{{end}}{{end}}{{end}}{{/*
+*/}}{{define "defines::define_iferrors_table"}}<table class="table1 stripe-table">
+  <thead>
+    <tr>
+      <th>Interface</th>
+      <th class="text-right nowrap" title="per second">In&nbsp;<span class="unit">ps</span>
+      </th>
+      <th class="text-right nowrap" title="per second">Out&nbsp;<span class="unit">ps</span>
+      </th>
+      <th class="text-right nowrap" title="modulo 4G">In&nbsp;<span class="unit">%4G</span>
+      </th>
+      <th class="text-right nowrap" title="modulo 4G">Out&nbsp;<span class="unit">%4G</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>{{template "defines::define_iferrors_rows" .}}</tbody>
+</table>
+{{end}}{{/*
+*/}}{{define "defines::define_ifpackets_rows"}}{{with .OVERRIDE}}{{.}}{{else}}{{$F := or .HTMLFOR "for"}}{{$C := or .CLASSNAME "class"}}{{range $if := .Data.IFpackets.List}}<tr{{key $C "ifpackets-rowby-name" $if.Name}}>
+  <td>{{template "defines::define_clip" (clip $F $C 12 "if-packets-name" $if.Name)}}</td>
+  <td class="text-right">{{$if.DeltaIn}}</td>
+  <td class="text-right">{{$if.DeltaOut}}</td>
+  <td class="text-right">{{$if.In}}</td>
+  <td class="text-right">{{$if.Out}}</td>
+</tr>{{end}}{{end}}{{end}}{{/*
+*/}}{{define "defines::define_ifpackets_table"}}<table class="table1 stripe-table">
+  <thead>
+    <tr>
+      <th>Interface</th>
+      <th class="text-right nowrap" title="per second">In&nbsp;<span class="unit">ps</span>
+      </th>
+      <th class="text-right nowrap" title="per second">Out&nbsp;<span class="unit">ps</span>
+      </th>
+      <th class="text-right nowrap" title="total modulo 4G">In&nbsp;<span class="unit">%4G</span>
+      </th>
+      <th class="text-right nowrap" title="total modulo 4G">Out&nbsp;<span class="unit">%4G</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>{{template "defines::define_ifpackets_rows" .}}</tbody>
+</table>
+{{end}}{{/*
+*/}}{{define "defines::define_memrows"}}{{with .OVERRIDE}}{{.}}{{else}}{{$C := or .CLASSNAME "class"}}{{range $i, $mem := .Data.MEM.List}}<tr{{key $C "mem-rowby-kind" $mem.Kind}}>
+  <td>{{$mem.Kind}}</td>
+  <td class="text-right">{{$mem.Free}}</td>
+  <td class="text-right">{{$mem.Used}}&nbsp;<sup>{{$mem.UsePercentHTML}}</sup>
+  </td>
+  <td class="text-right">{{$mem.Total}}</td>
+</tr>{{end}}{{end}}{{end}}{{/*
+*/}}{{define "defines::define_memtable"}}<table class="table1 stripe-table">
+  <thead>
+    <tr>
+      <th>
+      </th>
+      <th class="text-right">Free</th>
+      <th class="text-right">Used</th>
+      <th class="text-right">Total</th>
+    </tr>
+  </thead>
+  <tbody>{{template "defines::define_memrows" .}}</tbody>
+</table>
+{{end}}{{/*
+*/}}{{define "defines::define_psrows"}}{{with .OVERRIDE}}{{.}}{{else}}{{$F := or .HTMLFOR "for"}}{{$C := or .CLASSNAME "class"}}{{range $proc := .Data.PStable.List}}<tr{{key $C "ps-rowby-pid" $proc.PIDstring}}>
+  <td class="text-right"> {{$proc.PID}}</td>
+  <td class="text-right"> {{$proc.UID}}</td>
+  <td>            {{template "defines::define_clip" (clip $F $C 12 "psuser-pid" $proc.PIDstring $proc.User)}}</td>
+  <td class="text-right"> {{$proc.Priority}}</td>
+  <td class="text-right"> {{$proc.Nice}}</td>
+  <td class="text-right"> {{$proc.Size}}</td>
+  <td class="text-right"> {{$proc.Resident}}</td>
+  <td class="text-center">{{$proc.Time}}</td>
+  <td class="nowrap">     {{template "defines::define_clip" (clip $F $C 42 "psname-pid" $proc.PIDstring $proc.Name)}}</td>
+</tr>{{end}}{{end}}{{end}}{{/*
+*/}}{{define "defines::define_pstable"}}{{$C := or .CLASSNAME "class"}}<table class="table2 stripe-table">
+  <thead>
+    <tr>{{with $L := .Data.Links}}<th class="header text-right"> <a href={{$L.PSPID.Href}}  {{$C}}={{$L.PSPID.Class}} >PID<span     {{$C}}={{$L.PSPID.CaretClass}} >
+          </span>
+        </a>
+      </th>
+      <th class="header text-right"> <a href={{$L.PSUID.Href}}  {{$C}}={{$L.PSUID.Class}} >UID<span     {{$C}}={{$L.PSUID.CaretClass}} >
+          </span>
+        </a>
+      </th>
+      <th class="header">            <a href={{$L.PSUSER.Href}} {{$C}}={{$L.PSUSER.Class}}>USER<span    {{$C}}={{$L.PSUSER.CaretClass}}>
+          </span>
+        </a>
+      </th>
+      <th class="header text-right"> <a href={{$L.PSPRI.Href}}  {{$C}}={{$L.PSPRI.Class}} >PR<span      {{$C}}={{$L.PSPRI.CaretClass}} >
+          </span>
+        </a>
+      </th>
+      <th class="header text-right"> <a href={{$L.PSNICE.Href}} {{$C}}={{$L.PSNICE.Class}}>NI<span      {{$C}}={{$L.PSNICE.CaretClass}}>
+          </span>
+        </a>
+      </th>
+      <th class="header text-right"> <a href={{$L.PSVIRT.Href}} {{$C}}={{$L.PSVIRT.Class}}>VIRT<span    {{$C}}={{$L.PSVIRT.CaretClass}}>
+          </span>
+        </a>
+      </th>
+      <th class="header text-right"> <a href={{$L.PSRES.Href}}  {{$C}}={{$L.PSRES.Class}} >RES<span     {{$C}}={{$L.PSRES.CaretClass}} >
+          </span>
+        </a>
+      </th>
+      <th class="header text-center">
+        <a href={{$L.PSTIME.Href}} {{$C}}={{$L.PSTIME.Class}}>TIME<span    {{$C}}={{$L.PSTIME.CaretClass}}>
+          </span>
+        </a>
+      </th>
+      <th class="header">            <a href={{$L.PSNAME.Href}} {{$C}}={{$L.PSNAME.Class}}>COMMAND<span {{$C}}={{$L.PSNAME.CaretClass}}>
+          </span>
+        </a>
+      </th>{{end}}</tr>
+  </thead>
+  <tbody>{{template "defines::define_psrows" .}}</tbody>
+</table>
+{{end}}{{/*
+*/}}{{define "defines::define_usepercent"}}{{$C := or .CLASSNAME "class"}}<span {{$C}}="{{.Class}}">{{.Value}}%</span>
+{{end}}{{/*
+*/}}{{define "defines::define_vgerror"}}<tr key="vgerror">
+  <td colspan="5">{{.Data.VagrantError}}</td>
+</tr>
+{{end}}{{/*
+*/}}{{define "defines::define_vgrows"}}{{$F := or .HTMLFOR "for"}}{{$C := or .CLASSNAME "class"}}{{range $mach := .Data.VagrantMachines.List}}<tr{{key $C "vagrant-rowby-uuid" $mach.UUID}}>
+  <td>       {{template "defines::define_clip" (clip $F $C 7 "vagrant-uuid" $mach.UUID)}}</td>
+  <td>       {{$mach.Name}}</td>
+  <td>       {{$mach.Provider}}</td>
+  <td>       {{template "defines::define_clip" (clip $F $C 8 "vagrant-state" $mach.UUID $mach.State)}}</td>
+  <td>       {{template "defines::define_clip" (clip $F $C 50 "vagrant-filepath" $mach.UUID $mach.Vagrantfile_path)}}</td>
+</tr>{{end}}{{end}}{{/*
+*/}}{{define "defines::define_vgswitch"}}{{with .OVERRIDE}}{{.}}{{else}}{{if eq "true" (json .Data.VagrantErrord)}}{{template "defines::define_vgerror" .}}{{else}}{{template "defines::define_vgrows" .}}{{end}}{{end}}{{end}}{{/*
+*/}}{{define "defines::define_vgtable"}}<table id="vgtable" class="table1 stripe-table">
+  <thead>
+    <tr>
+      <th>id</th>
+      <th>name</th>
+      <th>provider</th>
+      <th>state</th>
+      <th>directory</th>
+    </tr>
+  </thead>
+  <tbody>{{template "defines::define_vgswitch" .}}</tbody>
+</table>
+{{end}}{{/*
+*/}}{{define "defines::refresh"}}<div class="input-group input-group-sm refresh-group">
+  <span class="input-group-addon">Refresh</span>
+  <input class="form-control refresh-input" type="text" placeholder="{{.Default}}{{if ne (json .Default) (json .Period)}}" value="{{.Period}}{{end}}">
+</div>
 {{end}}
-{{define "defines::define_cpurows"}}{{with .OVERRIDE}}{{.}}{{else}}{{$C := or .CLASSNAME "class"}}{{range $i, $core := .Data.CPU.List}}<tr{{key $C "cpu-rowby-N" $core.N}}><td class="text-right nowrap">{{$core.N}}</td><td class="text-right"><span {{$C}}={{$core.UserClass}}>{{$core.User}}</span></td><td class="text-right"><span {{$C}}={{$core.SysClass}} >{{$core.Sys}}</span></td><td class="text-right"><span {{$C}}={{$core.IdleClass}}>{{$core.Idle}}</span></td></tr>{{end}}{{end}}{{end}}
-{{define "defines::define_cputable"}}<table class="table1 stripe-table"><thead><tr><th></th><th class="text-right nowrap">User<span class="unit">%</span></th><th class="text-right nowrap">Sys<span class="unit">%</span></th><th class="text-right nowrap">Idle<span class="unit">%</span></th></tr></thead><tbody>{{template "defines::define_cpurows" .}}</tbody></table>{{end}}
-{{define "defines::define_dfbytes_rows"}}{{with .OVERRIDE}}{{.}}{{else}}{{$F := or .HTMLFOR "for"}}{{$C := or .CLASSNAME "class"}}{{range $disk := .Data.DFbytes.List}}<tr{{key $C "dfbytes-rowby-dirname" $disk.DirName}}><td class="nowrap">{{template "defines::define_clip" (clip $F $C 12 "df-bytes-devname" $disk.DevName)}}</td><td class="nowrap">{{template "defines::define_clip" (clip $F $C 6 "df-bytes-dirname" $disk.DirName)}}</td><td class="text-right">{{$disk.Avail}}</td><td class="text-right">{{$disk.Used}}&nbsp;<sup><span {{$C}}={{$disk.UsePercentClass}}>{{$disk.UsePercent}}%</span></sup></td><td class="text-right">{{$disk.Total}}</td></tr>{{end}}{{end}}{{end}}
-{{define "defines::define_dfbytes_table"}}{{$C := or .CLASSNAME "class"}}<table class="table1 stripe-table"><thead><tr>{{with $L := .Data.Links}}<th class="header">           <a href={{$L.DFFS.Href}}    {{$C}}={{$L.DFFS.Class}}   >Device<span  {{$C}}={{$L.DFFS.CaretClass}}   ></span></a></th><th class="header">           <a href={{$L.DFMP.Href}}    {{$C}}={{$L.DFMP.Class}}   >Mounted<span {{$C}}={{$L.DFMP.CaretClass}}   ></span></a></th><th class="header text-right"><a href={{$L.DFAVAIL.Href}} {{$C}}={{$L.DFAVAIL.Class}}>Avail<span   {{$C}}={{$L.DFAVAIL.CaretClass}}></span></a></th><th class="header text-right"><a href={{$L.DFUSED.Href}}  {{$C}}={{$L.DFUSED.Class}} >Used<span    {{$C}}={{$L.DFUSED.CaretClass}} ></span></a></th><th class="header text-right"><a href={{$L.DFTOTAL.Href}} {{$C}}={{$L.DFTOTAL.Class}}>Total<span   {{$C}}={{$L.DFTOTAL.CaretClass}}></span></a></th>{{end}}</tr></thead><tbody>{{template "defines::define_dfbytes_rows" .}}</tbody></table>{{end}}
-{{define "defines::define_dfinodes_rows"}}{{with .OVERRIDE}}{{.}}{{else}}{{$F := or .HTMLFOR "for"}}{{$C := or .CLASSNAME "class"}}{{range $disk := .Data.DFinodes.List}}<tr{{key $C "dfinodes-rowby-dirname" $disk.DirName}}><td class="nowrap">{{template "defines::define_clip" (clip $F $C 12 "df-inodes-devname" $disk.DevName)}}</td><td class="nowrap">{{template "defines::define_clip" (clip $F $C 6 "df-inodes-devname" $disk.DirName)}}</td><td class="text-right">{{$disk.Ifree}}</td><td class="text-right">{{$disk.Iused}}&nbsp;<sup><span {{$C}}={{$disk.IusePercentClass}}>{{$disk.IusePercent}}%</span></sup></td><td class="text-right">{{$disk.Inodes}}</td></tr>{{end}}{{end}}{{end}}
-{{define "defines::define_dfinodes_table"}}<table class="table1 stripe-table"><thead><tr><th class="header">Device</th><th class="header">Mounted</th><th class="header text-right">Avail</th><th class="header text-right">Used</th><th class="header text-right">Total</th></tr></thead><tbody>{{template "defines::define_dfinodes_rows" .}}</tbody></table>{{end}}
-{{define "defines::define_ifbytes_rows"}}{{with .OVERRIDE}}{{.}}{{else}}{{$F := or .HTMLFOR "for"}}{{$C := or .CLASSNAME "class"}}{{range $if := .Data.IFbytes.List}}<tr{{key $C "ifbytes-rowby-name" $if.Name}}><td>{{template "defines::define_clip" (clip $F $C 12 "if-bytes-name" $if.Name)}}</td><td class="text-right">{{$if.DeltaIn}}</td><td class="text-right">{{$if.DeltaOut}}</td><td class="text-right">{{$if.In}}</td><td class="text-right">{{$if.Out}}</td></tr>{{end}}{{end}}{{end}}
-{{define "defines::define_ifbytes_table"}}<table class="table1 stripe-table"><thead><tr><th>Interface</th><th class="text-right nowrap" title="BITS per second">In<span class="unit"><i>b</i>ps</span></th><th class="text-right nowrap" title="BITS per second">Out<span class="unit"><i>b</i>ps</span></th><th class="text-right nowrap" title="total BYTES modulo 4G">In<span class="unit"><i>B</i>%4G</span></th><th class="text-right nowrap" title="total BYTES modulo 4G">Out<span class="unit"><i>B</i>%4G</span></th></tr></thead><tbody>{{template "defines::define_ifbytes_rows" .}}</tbody></table>{{end}}
-{{define "defines::define_iferrors_rows"}}{{with .OVERRIDE}}{{.}}{{else}}{{$F := or .HTMLFOR "for"}}{{$C := or .CLASSNAME "class"}}{{range $if := .Data.IFerrors.List}}<tr{{key $C "iferrors-rowby-name" $if.Name}}><td>{{template "defines::define_clip" (clip $F $C 12 "if-errors-name" $if.Name)}}</td><td class="text-right">{{$if.DeltaIn}}</td><td class="text-right">{{$if.DeltaOut}}</td><td class="text-right">{{$if.In}}</td><td class="text-right">{{$if.Out}}</td></tr>{{end}}{{end}}{{end}}
-{{define "defines::define_iferrors_table"}}<table class="table1 stripe-table"><thead><tr><th>Interface</th><th class="text-right nowrap" title="per second">In&nbsp;<span class="unit">ps</span></th><th class="text-right nowrap" title="per second">Out&nbsp;<span class="unit">ps</span></th><th class="text-right nowrap" title="modulo 4G">In&nbsp;<span class="unit">%4G</span></th><th class="text-right nowrap" title="modulo 4G">Out&nbsp;<span class="unit">%4G</span></th></tr></thead><tbody>{{template "defines::define_iferrors_rows" .}}</tbody></table>{{end}}
-{{define "defines::define_ifpackets_rows"}}{{with .OVERRIDE}}{{.}}{{else}}{{$F := or .HTMLFOR "for"}}{{$C := or .CLASSNAME "class"}}{{range $if := .Data.IFpackets.List}}<tr{{key $C "ifpackets-rowby-name" $if.Name}}><td>{{template "defines::define_clip" (clip $F $C 12 "if-packets-name" $if.Name)}}</td><td class="text-right">{{$if.DeltaIn}}</td><td class="text-right">{{$if.DeltaOut}}</td><td class="text-right">{{$if.In}}</td><td class="text-right">{{$if.Out}}</td></tr>{{end}}{{end}}{{end}}
-{{define "defines::define_ifpackets_table"}}<table class="table1 stripe-table"><thead><tr><th>Interface</th><th class="text-right nowrap" title="per second">In&nbsp;<span class="unit">ps</span></th><th class="text-right nowrap" title="per second">Out&nbsp;<span class="unit">ps</span></th><th class="text-right nowrap" title="total modulo 4G">In&nbsp;<span class="unit">%4G</span></th><th class="text-right nowrap" title="total modulo 4G">Out&nbsp;<span class="unit">%4G</span></th></tr></thead><tbody>{{template "defines::define_ifpackets_rows" .}}</tbody></table>{{end}}
-{{define "defines::define_memrows"}}{{with .OVERRIDE}}{{.}}{{else}}{{$C := or .CLASSNAME "class"}}{{range $i, $mem := .Data.MEM.List}}<tr{{key $C "mem-rowby-kind" $mem.Kind}}><td>{{$mem.Kind}}</td><td class="text-right">{{$mem.Free}}</td><td class="text-right">{{$mem.Used}}&nbsp;<sup>{{$mem.UsePercentHTML}}</sup></td><td class="text-right">{{$mem.Total}}</td></tr>{{end}}{{end}}{{end}}
-{{define "defines::define_memtable"}}<table class="table1 stripe-table"><thead><tr><th></th><th class="text-right">Free</th><th class="text-right">Used</th><th class="text-right">Total</th></tr></thead><tbody>{{template "defines::define_memrows" .}}</tbody></table>{{end}}
-{{define "defines::define_psrows"}}{{with .OVERRIDE}}{{.}}{{else}}{{$F := or .HTMLFOR "for"}}{{$C := or .CLASSNAME "class"}}{{range $proc := .Data.PStable.List}}<tr{{key $C "ps-rowby-pid" $proc.PIDstring}}><td class="text-right"> {{$proc.PID}}</td><td class="text-right"> {{$proc.UID}}</td><td>            {{template "defines::define_clip" (clip $F $C 12 "psuser-pid" $proc.PIDstring $proc.User)}}</td><td class="text-right"> {{$proc.Priority}}</td><td class="text-right"> {{$proc.Nice}}</td><td class="text-right"> {{$proc.Size}}</td><td class="text-right"> {{$proc.Resident}}</td><td class="text-center">{{$proc.Time}}</td><td class="nowrap">     {{template "defines::define_clip" (clip $F $C 42 "psname-pid" $proc.PIDstring $proc.Name)}}</td></tr>{{end}}{{end}}{{end}}
-{{define "defines::define_pstable"}}{{$C := or .CLASSNAME "class"}}<table class="table2 stripe-table"><thead><tr>{{with $L := .Data.Links}}<th class="header text-right"> <a href={{$L.PSPID.Href}}  {{$C}}={{$L.PSPID.Class}} >PID<span     {{$C}}={{$L.PSPID.CaretClass}} ></span></a></th><th class="header text-right"> <a href={{$L.PSUID.Href}}  {{$C}}={{$L.PSUID.Class}} >UID<span     {{$C}}={{$L.PSUID.CaretClass}} ></span></a></th><th class="header">            <a href={{$L.PSUSER.Href}} {{$C}}={{$L.PSUSER.Class}}>USER<span    {{$C}}={{$L.PSUSER.CaretClass}}></span></a></th><th class="header text-right"> <a href={{$L.PSPRI.Href}}  {{$C}}={{$L.PSPRI.Class}} >PR<span      {{$C}}={{$L.PSPRI.CaretClass}} ></span></a></th><th class="header text-right"> <a href={{$L.PSNICE.Href}} {{$C}}={{$L.PSNICE.Class}}>NI<span      {{$C}}={{$L.PSNICE.CaretClass}}></span></a></th><th class="header text-right"> <a href={{$L.PSVIRT.Href}} {{$C}}={{$L.PSVIRT.Class}}>VIRT<span    {{$C}}={{$L.PSVIRT.CaretClass}}></span></a></th><th class="header text-right"> <a href={{$L.PSRES.Href}}  {{$C}}={{$L.PSRES.Class}} >RES<span     {{$C}}={{$L.PSRES.CaretClass}} ></span></a></th><th class="header text-center"><a href={{$L.PSTIME.Href}} {{$C}}={{$L.PSTIME.Class}}>TIME<span    {{$C}}={{$L.PSTIME.CaretClass}}></span></a></th><th class="header">            <a href={{$L.PSNAME.Href}} {{$C}}={{$L.PSNAME.Class}}>COMMAND<span {{$C}}={{$L.PSNAME.CaretClass}}></span></a></th>{{end}}</tr></thead><tbody>{{template "defines::define_psrows" .}}</tbody></table>{{end}}
-{{define "defines::define_usepercent"}}{{$C := or .CLASSNAME "class"}}<span {{$C}}="{{.Class}}">{{.Value}}%</span>{{end}}
-{{define "defines::define_vgerror"}}<tr key="vgerror"><td colspan="5">{{.Data.VagrantError}}</td></tr>{{end}}
-{{define "defines::define_vgrows"}}{{$F := or .HTMLFOR "for"}}{{$C := or .CLASSNAME "class"}}{{range $mach := .Data.VagrantMachines.List}}<tr{{key $C "vagrant-rowby-uuid" $mach.UUID}}><td>       {{template "defines::define_clip" (clip $F $C 7 "vagrant-uuid" $mach.UUID)}}</td><td>       {{$mach.Name}}</td><td>       {{$mach.Provider}}</td><td>       {{template "defines::define_clip" (clip $F $C 8 "vagrant-state" $mach.UUID $mach.State)}}</td><td>       {{template "defines::define_clip" (clip $F $C 50 "vagrant-filepath" $mach.UUID $mach.Vagrantfile_path)}}</td></tr>{{end}}{{end}}
-{{define "defines::define_vgswitch"}}{{with .OVERRIDE}}{{.}}{{else}}{{if eq "true" (json .Data.VagrantErrord)}}{{template "defines::define_vgerror" .}}{{else}}{{template "defines::define_vgrows" .}}{{end}}{{end}}{{end}}
-{{define "defines::define_vgtable"}}<table id="vgtable" class="table1 stripe-table"><thead><tr><th>id</th><th>name</th><th>provider</th><th>state</th><th>directory</th></tr></thead><tbody>{{template "defines::define_vgswitch" .}}</tbody></table>{{end}}
-{{define "defines::refresh"}}<div class="input-group input-group-sm refresh-group"><span class="input-group-addon">Refresh</span><input class="form-control refresh-input" type="text" placeholder="{{.Default}}{{if ne (json .Default) (json .Period)}}" value="{{.Period}}{{end}}"></div>{{end}}

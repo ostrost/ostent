@@ -13,8 +13,6 @@ html
     script type=text/javascript charset=utf-8 src=/js/requirejs/2.1.17/require.min.js data-main=/js/{{if .TAGGEDbin}}min/index.min.js{{else}}src/milk/index.js{{end}}
 
   body
-    div#client
-
     nav.navbar.navbar-default.navbar-fixed-top role=navigation
       div.container-fluid
         div.navbar-header

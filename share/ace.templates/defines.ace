@@ -4,7 +4,7 @@
 
 = content define_clip
   {{$C := or .CLASSNAME "class"}}
-  | <input {{.IDAttr}}  {{$C}}="collapse-checkbox" type="checkbox" aria-hidden="true" hidden></input>
+  | <input {{.IDAttr}}  {{$C}}="collapse-checkbox" type="checkbox" aria-hidden="true" hidden>{{if eq $C "className"}}</input>{{end}}
   | <label {{.ForAttr}} {{$C}}="clip" {{.MWStyleAttr}}>{{.Text}}</label>
 
 = content refresh

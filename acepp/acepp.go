@@ -8,23 +8,23 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	templatetext "text/template"
 	"text/template/parse"
 
+	"code.google.com/p/go.net/html"
 	"github.com/ostrost/ostent/acepp/templatep"
 	"github.com/yosssi/ace"
-	// "github.com/yosssi/gohtml"
 )
 
 func main() {
-	formatFunc := func(s string) string { return s } // Format // gohtml.Format
 	var (
 		outputFile  string
 		definesFile string
 		jscriptMode bool
 		definesMode bool
+		prettyprint bool
 	)
-	// TODO MAYBE -prettyprint with "github.com/yosssi/gohtml" formatting
 	flag.StringVar(&outputFile, "o", "", "Output file")
 	flag.StringVar(&outputFile, "output", "", "Output file")
 	flag.StringVar(&definesFile, "d", "", "defines.ace template")
@@ -33,6 +33,8 @@ func main() {
 	flag.BoolVar(&jscriptMode, "javascript", false, "Javascript mode")
 	flag.BoolVar(&definesMode, "s", false, "Save the defines")
 	flag.BoolVar(&definesMode, "savedefines", false, "Save the defines")
+	flag.BoolVar(&prettyprint, "pp", true, "Pretty-print the output")
+	flag.BoolVar(&prettyprint, "prettyprint", true, "Pretty-print the output")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage:\n  %s [options] [filename.ace]\n\nOptions:\n", os.Args[0])
 		flag.PrintDefaults()
@@ -65,8 +67,8 @@ func main() {
 	if !jscriptMode {
 		_, index, err := LoadAce(inputFile, definesFile, aceopts)
 		check(err)
-		text := SprintfSubtrees(index, formatFunc)
-		text += formatFunc(index.Tree.Root.String())
+		text := Format(prettyprint, index.Tree.Root.String(), aceopts.NoCloseTagNames)
+		text += FormatSubtrees(prettyprint, index, aceopts)
 		check(WriteFile(outputFile, text))
 		return
 	}
@@ -77,7 +79,7 @@ func main() {
 	check(err)
 
 	if definesMode {
-		check(WriteFile(outputFile, SprintfSubtrees(defines, formatFunc)))
+		check(WriteFile(outputFile, FormatSubtrees(prettyprint, defines, aceopts)))
 		return
 	}
 
@@ -146,7 +148,8 @@ func ReadAce(filename string, opts *ace.Options) (*ace.File, error) {
 	return ace.NewFile(Base(filename, opts), data), nil
 }
 
-func SprintfSubtrees(tpl *templatehtml.Template, formatFunc func(string) string) (text string) {
+// FormatSubtrees returns subtemplates trees forrmatted.
+func FormatSubtrees(prettyprint bool, tpl *templatehtml.Template, aceopts *ace.Options) (output string) {
 	var names []string
 	trees := map[string]*parse.Tree{}
 	for _, x := range tpl.Templates() {
@@ -159,9 +162,9 @@ func SprintfSubtrees(tpl *templatehtml.Template, formatFunc func(string) string)
 	}
 	sort.Strings(names)
 	for _, name := range names {
-		text += fmt.Sprintf("{{define \"%s\"}}%s{{end}}\n", name, formatFunc(trees[name].Root.String()))
+		output += fmt.Sprintf("{{/*\n*/}}{{define \"%s\"}}%s{{end}}", name, Format(prettyprint, trees[name].Root.String(), aceopts.NoCloseTagNames))
 	}
-	return text
+	return output
 }
 
 // WriteFile is ioutil.WriteFile if filename is not "",
@@ -173,4 +176,45 @@ func WriteFile(filename, data string) error {
 	}
 	_, err := os.Stdout.Write(bytedata)
 	return err
+}
+
+// Format pretty-formats html unless prettyprint if false.
+func Format(prettyprint bool, input string, noclose []string) (output string) {
+	if !prettyprint {
+		return input
+	}
+	isnoclose := func(s string) bool {
+		for _, x := range noclose {
+			if x == s {
+				return true
+			}
+		}
+		return false
+	}
+
+	z := html.NewTokenizer(strings.NewReader(input))
+	for level, prevtok := 0, html.TextToken; ; {
+		tok := z.Next()
+		tag, _ := z.TagName()
+		raw := string(z.Raw())
+
+		if tok == html.TextToken && strings.Trim(raw, "\n") == "" {
+			continue
+		}
+		if tok == html.EndTagToken && level > 0 {
+			level--
+		}
+		if tok != html.TextToken && prevtok != html.TextToken {
+			output += "\n" + strings.Repeat("  ", level)
+		}
+		output += raw
+
+		if tok == html.ErrorToken {
+			break
+		} else if tok == html.StartTagToken && !isnoclose(string(tag)) {
+			level++
+		}
+		prevtok = tok
+	}
+	return output
 }
