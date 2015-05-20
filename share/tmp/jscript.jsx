@@ -35,17 +35,13 @@ define(function(require) {
   <thead>
     <tr>
       <th>Interface</th>
-      <th className="text-right nowrap" title="BITS per second">In<span className="unit">
-          <i>b</i>ps</span>
+      <th className="text-right nowrap" title="BITS per second">In<span className="unit"><i>b</i>ps</span>
       </th>
-      <th className="text-right nowrap" title="BITS per second">Out<span className="unit">
-          <i>b</i>ps</span>
+      <th className="text-right nowrap" title="BITS per second">Out<span className="unit"><i>b</i>ps</span>
       </th>
-      <th className="text-right nowrap" title="total BYTES modulo 4G">In<span className="unit">
-          <i>B</i>%4G</span>
+      <th className="text-right nowrap" title="total BYTES modulo 4G">In<span className="unit"><i>B</i>%4G</span>
       </th>
-      <th className="text-right nowrap" title="total BYTES modulo 4G">Out<span className="unit">
-          <i>B</i>%4G</span>
+      <th className="text-right nowrap" title="total BYTES modulo 4G">Out<span className="unit"><i>B</i>%4G</span>
       </th>
     </tr>
   </thead>

@@ -35,17 +35,13 @@ define(function(require) {
   React.createElement("thead", null, 
     React.createElement("tr", null, 
       React.createElement("th", null, "Interface"), 
-      React.createElement("th", {className: "text-right nowrap", title: "BITS per second"}, "In", React.createElement("span", {className: "unit"}, 
-          React.createElement("i", null, "b"), "ps")
+      React.createElement("th", {className: "text-right nowrap", title: "BITS per second"}, "In", React.createElement("span", {className: "unit"}, React.createElement("i", null, "b"), "ps")
       ), 
-      React.createElement("th", {className: "text-right nowrap", title: "BITS per second"}, "Out", React.createElement("span", {className: "unit"}, 
-          React.createElement("i", null, "b"), "ps")
+      React.createElement("th", {className: "text-right nowrap", title: "BITS per second"}, "Out", React.createElement("span", {className: "unit"}, React.createElement("i", null, "b"), "ps")
       ), 
-      React.createElement("th", {className: "text-right nowrap", title: "total BYTES modulo 4G"}, "In", React.createElement("span", {className: "unit"}, 
-          React.createElement("i", null, "B"), "%4G")
+      React.createElement("th", {className: "text-right nowrap", title: "total BYTES modulo 4G"}, "In", React.createElement("span", {className: "unit"}, React.createElement("i", null, "B"), "%4G")
       ), 
-      React.createElement("th", {className: "text-right nowrap", title: "total BYTES modulo 4G"}, "Out", React.createElement("span", {className: "unit"}, 
-          React.createElement("i", null, "B"), "%4G")
+      React.createElement("th", {className: "text-right nowrap", title: "total BYTES modulo 4G"}, "Out", React.createElement("span", {className: "unit"}, React.createElement("i", null, "B"), "%4G")
       )
     )
   ), 
