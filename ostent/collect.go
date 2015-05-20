@@ -1,11 +1,9 @@
 package ostent
 
 import (
-	"html/template"
 	"os"
 	"regexp"
 	"runtime"
-	"strconv"
 	"strings"
 	"sync"
 
@@ -13,7 +11,6 @@ import (
 	"github.com/ostrost/ostent/getifaddrs"
 	"github.com/ostrost/ostent/system"
 	"github.com/ostrost/ostent/system/operating"
-	"github.com/ostrost/ostent/templateutil"
 	sigar "github.com/rzab/gosigar"
 )
 
@@ -166,30 +163,16 @@ func (m *Machine) LA(reg Registry, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-// DefinesTemplate is a lazy defines.html template.
-var DefinesTemplate *templateutil.LazyTemplate
-
 func _getmem(kind string, in sigar.Swap) operating.Memory {
 	total, approxtotal, _ := format.HumanBandback(in.Total)
 	used, approxused, _ := format.HumanBandback(in.Used)
-	usepercent := format.Percent(approxused, approxtotal)
-
-	html, err := DefinesTemplate.LookupApply("defines::define_usepercent", struct {
-		Class, Value, CLASSNAME string
-	}{
-		Value: strconv.Itoa(int(usepercent)), // without "%"
-		Class: format.LabelClassColorPercent(usepercent),
-	})
-	if err != nil {
-		html = template.HTMLEscapeString(err.Error())
-	}
 
 	return operating.Memory{
-		Kind:           kind,
-		Total:          total,
-		Used:           used,
-		Free:           format.HumanB(in.Free),
-		UsePercentHTML: template.HTML(html),
+		Kind:       kind,
+		Total:      total,
+		Used:       used,
+		Free:       format.HumanB(in.Free),
+		UsePercent: format.FormatPercent(approxused, approxtotal),
 	}
 }
 

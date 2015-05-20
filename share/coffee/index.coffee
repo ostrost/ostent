@@ -164,6 +164,14 @@ require ['jquery', 'bootstrap', 'react', 'jscript', 'domReady', 'headroom'], ($,
       return jscript.dfinodes_table(Data, (jscript.dfinodes_rows(Data, $disk
       ) for $disk in Data?.DFinodes?.List ? []))
 
+  @LabelClassColorPercent = (p) ->
+    return "label label-danger"  if p.length > 2
+    return "label label-danger"  if p.length > 1 && p[0] == '9'
+    return "label label-warning" if p.length > 1 && p[0] == '8'
+    return "label label-success" if p.length > 1 && p[0] == '1'
+    return "label label-info"    if p.length > 1
+    return "label label-success"
+
   @MEMtableCLASS = React.createClass
     getInitialState: () -> Data.MEM # a global Data
     render: () ->

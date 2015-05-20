@@ -393,12 +393,11 @@ func FormatDFbytes(md operating.MetricDF) operating.DiskBytes {
 	total, approxtotal, _ := format.HumanBandback(uint64(diskTotal))
 	used, approxused, _ := format.HumanBandback(uint64(diskUsed))
 	return operating.DiskBytes{
-		DiskMeta:        diskMeta(md),
-		Total:           total,
-		Used:            used,
-		Avail:           format.HumanB(uint64(diskAvail)),
-		UsePercent:      format.FormatPercent(approxused, approxtotal),
-		UsePercentClass: format.LabelClassColorPercent(format.Percent(approxused, approxtotal)),
+		DiskMeta:   diskMeta(md),
+		Total:      total,
+		Used:       used,
+		Avail:      format.HumanB(uint64(diskAvail)),
+		UsePercent: format.FormatPercent(approxused, approxtotal),
 	}
 }
 
@@ -429,12 +428,11 @@ func FormatDFinodes(md operating.MetricDF) operating.DiskInodes {
 	itotal, approxitotal, _ := format.HumanBandback(uint64(diskInodes))
 	iused, approxiused, _ := format.HumanBandback(uint64(diskIused))
 	return operating.DiskInodes{
-		DiskMeta:         diskMeta(md),
-		Inodes:           itotal,
-		Iused:            iused,
-		Ifree:            format.HumanB(uint64(diskIfree)),
-		IusePercent:      format.FormatPercent(approxiused, approxitotal),
-		IusePercentClass: format.LabelClassColorPercent(format.Percent(approxiused, approxitotal)),
+		DiskMeta:    diskMeta(md),
+		Inodes:      itotal,
+		Iused:       iused,
+		Ifree:       format.HumanB(uint64(diskIfree)),
+		IusePercent: format.FormatPercent(approxiused, approxitotal),
 	}
 }
 

@@ -19,7 +19,6 @@ var PeriodFlag = flags.Period{Duration: time.Second} // default
 func init() {
 	flag.Var(&PeriodFlag, "u", "Collection (update) interval")
 	flag.Var(&PeriodFlag, "update", "Collection (update) interval")
-	ostent.DefinesTemplate = templates.DefinesTemplate
 }
 
 func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error {

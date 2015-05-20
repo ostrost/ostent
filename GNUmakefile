@@ -92,8 +92,6 @@ share/assets/js/min/index.min.js: $(shell find share/assets/js/src/ -type f)
 
 share/templates/index.html: share/ace.templates/index.ace share/ace.templates/defines.ace $(acepp.go)
 	go run $(acepp.go) -defines share/ace.templates/defines.ace -output $@ $<
-share/templates/defines.html: share/ace.templates/defines.ace $(acepp.go)
-	go run $(acepp.go) -defines share/ace.templates/defines.ace -output $@ -savedefines
 share/tmp/jscript.jsx: share/ace.templates/jscript.txt share/ace.templates/defines.ace $(acepp.go)
 	go run $(acepp.go) -defines share/ace.templates/defines.ace -output $@ -javascript $<
 

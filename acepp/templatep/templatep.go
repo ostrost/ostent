@@ -11,6 +11,41 @@ import (
 	"text/template/parse"
 )
 
+func LabelClassColorPercent(p string) string {
+	if len(p) > 2 { // 100% and more
+		return "label label-danger"
+	}
+	if len(p) > 1 {
+		if p[0] == '9' {
+			return "label label-danger"
+		}
+		if p[0] == '8' {
+			return "label label-warning"
+		}
+		if p[0] == '1' {
+			return "label label-success"
+		}
+		return "label label-info"
+	}
+	return "label label-success"
+}
+
+func usepercent(CN string, val string) interface{} {
+	var ca string
+	if CN == "className" {
+		ca = " className={LabelClassColorPercent(" + strings.Trim(val, "{}") + ")}"
+	} else {
+		ca = fmt.Sprintf(" class=%q", LabelClassColorPercent(val))
+	}
+	return struct {
+		Value     string
+		ClassAttr templatehtml.HTMLAttr
+	}{
+		Value:     val,
+		ClassAttr: templatehtml.HTMLAttr(ca),
+	}
+}
+
 func key(CN, prefix, val string) templatehtml.HTMLAttr {
 	var key string
 	if CN == "className" { // jscriptMode only
@@ -204,9 +239,10 @@ var DotFuncs = templatetext.FuncMap{"dot": dot}
 
 // AceFuncs features functions for templates. In use in acepp and templates.
 var AceFuncs = templatehtml.FuncMap{
-	"dot":  dot,
-	"key":  key,
-	"clip": clip,
+	"dot":        dot,
+	"key":        key,
+	"clip":       clip,
+	"usepercent": usepercent,
 	"json": func(v interface{}) (string, error) {
 		j, err := json.Marshal(v)
 		return string(j), err

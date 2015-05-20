@@ -1,7 +1,9 @@
 define(function(require) {
 	var React = require('react');
 	return {
-		mem_rows:        function(Data, $mem)  { return (<tr key={"mem-rowby-kind-"+$mem.Kind}><td>{$mem.Kind}</td><td className="text-right">{$mem.Free}</td><td className="text-right">{$mem.Used}&nbsp;<sup><span dangerouslySetInnerHTML={{__html: $mem.UsePercentHTML}} /></sup></td><td className="text-right">{$mem.Total}</td></tr>); },
+		mem_rows:        function(Data, $mem)  { return (<tr key={"mem-rowby-kind-"+$mem.Kind}><td>{$mem.Kind}</td><td className="text-right">{$mem.Free}</td><td className="text-right">{$mem.Used}&nbsp;<sup><span  className={LabelClassColorPercent($mem.UsePercent)}>{$mem.UsePercent}%</span>
+
+</sup></td><td className="text-right">{$mem.Total}</td></tr>); },
 		mem_table:       function(Data, rows)  { return (<table className="table1 stripe-table"><thead><tr><th></th><th className="text-right">Free</th><th className="text-right">Used</th><th className="text-right">Total</th></tr></thead><tbody>{rows}</tbody></table>); },
 
 		ifbytes_rows:    function(Data, $if)   { return (<tr key={"ifbytes-rowby-name-"+$if.Name}><td><input id={"if-bytes-name-"+$if.Name}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden></input><label htmlFor={"if-bytes-name-"+$if.Name} className="clip" style={{maxWidth: '12ch'}}>{$if.Name}</label>
@@ -24,13 +26,17 @@ define(function(require) {
 
 </td><td className="nowrap"><input id={"df-bytes-dirname-"+$disk.DirName}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden></input><label htmlFor={"df-bytes-dirname-"+$disk.DirName} className="clip" style={{maxWidth: '6ch'}}>{$disk.DirName}</label>
 
-</td><td className="text-right">{$disk.Avail}</td><td className="text-right">{$disk.Used}&nbsp;<sup><span className={$disk.UsePercentClass}>{$disk.UsePercent}%</span></sup></td><td className="text-right">{$disk.Total}</td></tr>); },
+</td><td className="text-right">{$disk.Avail}</td><td className="text-right">{$disk.Used}&nbsp;<sup><span  className={LabelClassColorPercent($disk.UsePercent)}>{$disk.UsePercent}%</span>
+
+</sup></td><td className="text-right">{$disk.Total}</td></tr>); },
 		dfbytes_table:   function(Data, rows)  { return (<table className="table1 stripe-table"><thead><tr><th className="header">           <a href={Data.Links.DFFS.Href}    className={Data.Links.DFFS.Class}   >Device<span  className={Data.Links.DFFS.CaretClass}   ></span></a></th><th className="header">           <a href={Data.Links.DFMP.Href}    className={Data.Links.DFMP.Class}   >Mounted<span className={Data.Links.DFMP.CaretClass}   ></span></a></th><th className="header text-right"><a href={Data.Links.DFAVAIL.Href} className={Data.Links.DFAVAIL.Class}>Avail<span   className={Data.Links.DFAVAIL.CaretClass}></span></a></th><th className="header text-right"><a href={Data.Links.DFUSED.Href}  className={Data.Links.DFUSED.Class} >Used<span    className={Data.Links.DFUSED.CaretClass} ></span></a></th><th className="header text-right"><a href={Data.Links.DFTOTAL.Href} className={Data.Links.DFTOTAL.Class}>Total<span   className={Data.Links.DFTOTAL.CaretClass}></span></a></th></tr></thead><tbody>{rows}</tbody></table>); },
 		dfinodes_rows:   function(Data, $disk) { return (<tr key={"dfinodes-rowby-dirname-"+$disk.DirName}><td className="nowrap"><input id={"df-inodes-devname-"+$disk.DevName}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden></input><label htmlFor={"df-inodes-devname-"+$disk.DevName} className="clip" style={{maxWidth: '12ch'}}>{$disk.DevName}</label>
 
 </td><td className="nowrap"><input id={"df-inodes-devname-"+$disk.DirName}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden></input><label htmlFor={"df-inodes-devname-"+$disk.DirName} className="clip" style={{maxWidth: '6ch'}}>{$disk.DirName}</label>
 
-</td><td className="text-right">{$disk.Ifree}</td><td className="text-right">{$disk.Iused}&nbsp;<sup><span className={$disk.IusePercentClass}>{$disk.IusePercent}%</span></sup></td><td className="text-right">{$disk.Inodes}</td></tr>); },
+</td><td className="text-right">{$disk.Ifree}</td><td className="text-right">{$disk.Iused}&nbsp;<sup><span  className={LabelClassColorPercent($disk.IusePercent)}>{$disk.IusePercent}%</span>
+
+</sup></td><td className="text-right">{$disk.Inodes}</td></tr>); },
 		dfinodes_table:  function(Data, rows)  { return (<table className="table1 stripe-table"><thead><tr><th className="header">Device</th><th className="header">Mounted</th><th className="header text-right">Avail</th><th className="header text-right">Used</th><th className="header text-right">Total</th></tr></thead><tbody>{rows}</tbody></table>); },
 
 		ps_rows:         function(Data, $proc) { return (<tr key={"ps-rowby-pid-"+$proc.PIDstring}><td className="text-right"> {$proc.PID}</td><td className="text-right"> {$proc.UID}</td><td>            <input id={"psuser-pid-"+$proc.PIDstring}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden></input><label htmlFor={"psuser-pid-"+$proc.PIDstring} className="clip" style={{maxWidth: '12ch'}}>{$proc.User}</label>

@@ -251,6 +251,24 @@
         })());
       }
     });
+    this.LabelClassColorPercent = function(p) {
+      if (p.length > 2) {
+        return "label label-danger";
+      }
+      if (p.length > 1 && p[0] === '9') {
+        return "label label-danger";
+      }
+      if (p.length > 1 && p[0] === '8') {
+        return "label label-warning";
+      }
+      if (p.length > 1 && p[0] === '1') {
+        return "label label-success";
+      }
+      if (p.length > 1) {
+        return "label label-info";
+      }
+      return "label label-success";
+    };
     this.MEMtableCLASS = React.createClass({
       getInitialState: function() {
         return Data.MEM;

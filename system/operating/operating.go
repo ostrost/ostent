@@ -6,7 +6,6 @@ package operating
 import (
 	"container/ring"
 	"errors"
-	"html/template"
 	"math"
 	"sync"
 
@@ -16,11 +15,11 @@ import (
 
 // Memory type is a struct of memory metrics.
 type Memory struct {
-	Kind           string
-	Total          string
-	Used           string
-	Free           string
-	UsePercentHTML template.HTML
+	Kind       string
+	Total      string
+	Used       string
+	Free       string
+	UsePercent string
 }
 
 // MEM type has a list of Memory.
@@ -43,21 +42,19 @@ type DiskMeta struct {
 // DiskBytes type is a struct of disk bytes metrics.
 type DiskBytes struct {
 	DiskMeta
-	Total           string // with units
-	Used            string // with units
-	Avail           string // with units
-	UsePercent      string // as a string, with "%"
-	UsePercentClass string
+	Total      string // with units
+	Used       string // with units
+	Avail      string // with units
+	UsePercent string // without %
 }
 
 // DiskInodes type is a struct of disk inodes metrics.
 type DiskInodes struct {
 	DiskMeta
-	Inodes           string // with units
-	Iused            string // with units
-	Ifree            string // with units
-	IusePercent      string // as a string, with "%"
-	IusePercentClass string
+	Inodes      string // with units
+	Iused       string // with units
+	Ifree       string // with units
+	IusePercent string // without %
 }
 
 // DFbytes type has a list of DiskBytes.

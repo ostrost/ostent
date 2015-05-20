@@ -314,9 +314,7 @@ var Data = {{.Data}};
   <td class="nowrap">{{template "defines::define_clip" (clip $F $C 12 "df-bytes-devname" $disk.DevName)}}</td>
   <td class="nowrap">{{template "defines::define_clip" (clip $F $C 6 "df-bytes-dirname" $disk.DirName)}}</td>
   <td class="text-right">{{$disk.Avail}}</td>
-  <td class="text-right">{{$disk.Used}}&nbsp;<sup>
-      <span {{$C}}={{$disk.UsePercentClass}}>{{$disk.UsePercent}}%</span>
-    </sup>
+  <td class="text-right">{{$disk.Used}}&nbsp;<sup>{{template "defines::define_usepercent" (usepercent $C $disk.UsePercent)}}</sup>
   </td>
   <td class="text-right">{{$disk.Total}}</td>
 </tr>{{end}}{{end}}{{end}}{{/*
@@ -353,9 +351,7 @@ var Data = {{.Data}};
   <td class="nowrap">{{template "defines::define_clip" (clip $F $C 12 "df-inodes-devname" $disk.DevName)}}</td>
   <td class="nowrap">{{template "defines::define_clip" (clip $F $C 6 "df-inodes-devname" $disk.DirName)}}</td>
   <td class="text-right">{{$disk.Ifree}}</td>
-  <td class="text-right">{{$disk.Iused}}&nbsp;<sup>
-      <span {{$C}}={{$disk.IusePercentClass}}>{{$disk.IusePercent}}%</span>
-    </sup>
+  <td class="text-right">{{$disk.Iused}}&nbsp;<sup>{{template "defines::define_usepercent" (usepercent $C $disk.IusePercent)}}</sup>
   </td>
   <td class="text-right">{{$disk.Inodes}}</td>
 </tr>{{end}}{{end}}{{end}}{{/*
@@ -451,7 +447,7 @@ var Data = {{.Data}};
 */}}{{define "defines::define_memrows"}}{{with .OVERRIDE}}{{.}}{{else}}{{$C := or .CLASSNAME "class"}}{{range $i, $mem := .Data.MEM.List}}<tr{{key $C "mem-rowby-kind" $mem.Kind}}>
   <td>{{$mem.Kind}}</td>
   <td class="text-right">{{$mem.Free}}</td>
-  <td class="text-right">{{$mem.Used}}&nbsp;<sup>{{$mem.UsePercentHTML}}</sup>
+  <td class="text-right">{{$mem.Used}}&nbsp;<sup>{{template "defines::define_usepercent" (usepercent $C $mem.UsePercent)}}</sup>
   </td>
   <td class="text-right">{{$mem.Total}}</td>
 </tr>{{end}}{{end}}{{end}}{{/*
@@ -522,7 +518,7 @@ var Data = {{.Data}};
   <tbody>{{template "defines::define_psrows" .}}</tbody>
 </table>
 {{end}}{{/*
-*/}}{{define "defines::define_usepercent"}}{{$C := or .CLASSNAME "class"}}<span {{$C}}="{{.Class}}">{{.Value}}%</span>
+*/}}{{define "defines::define_usepercent"}}<span {{.ClassAttr}}>{{.Value}}%</span>
 {{end}}{{/*
 */}}{{define "defines::define_vgerror"}}<tr key="vgerror">
   <td colspan="5">{{.Data.VagrantError}}</td>

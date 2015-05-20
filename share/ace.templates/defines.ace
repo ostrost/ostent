@@ -1,6 +1,5 @@
 = content define_usepercent
-  {{$C := or .CLASSNAME "class"}}
-  span {{$C}}={{.Class}} {{.Value}}%
+  | <span {{.ClassAttr}}>{{.Value}}%</span>
 
 = content define_clip
   {{$C := or .CLASSNAME "class"}}
@@ -124,7 +123,7 @@
       td.nowrap {{template "defines::define_clip" (clip $F $C  6 "df-bytes-dirname"  $disk.DirName)}}
       td.text-right {{$disk.Avail}}
       td.text-right {{$disk.Used}}&nbsp;
-        sup <span {{$C}}={{$disk.UsePercentClass}}>{{$disk.UsePercent}}%</span>
+        sup {{template "defines::define_usepercent" (usepercent $C $disk.UsePercent)}}
       td.text-right {{$disk.Total}}
       | </tr>
     {{end}}
@@ -140,7 +139,7 @@
       td.nowrap {{template "defines::define_clip" (clip $F $C  6 "df-inodes-devname" $disk.DirName)}}
       td.text-right {{$disk.Ifree}}
       td.text-right {{$disk.Iused}}&nbsp;
-        sup <span {{$C}}={{$disk.IusePercentClass}}>{{$disk.IusePercent}}%</span>
+        sup {{template "defines::define_usepercent" (usepercent $C $disk.IusePercent)}}
       td.text-right {{$disk.Inodes}}
       | </tr>
     {{end}}
@@ -181,7 +180,7 @@
       td {{$mem.Kind}}
       td.text-right {{$mem.Free}}
       td.text-right {{$mem.Used}}&nbsp;
-        sup {{$mem.UsePercentHTML}}
+        sup {{template "defines::define_usepercent" (usepercent $C $mem.UsePercent)}}
       td.text-right {{$mem.Total}}
       | </tr>
     {{end}}
