@@ -90,7 +90,14 @@ func main() {
 	check(err)
 
 	for _, t := range defines.Templates() {
-		_, err := jscript.AddParseTree(definesbase+t.Name(), t.Tree)
+		name, tree := definesbase+t.Name(), t.Tree
+		if prettyprint {
+			text := Format(true, tree.Root.String(), aceopts.NoCloseTagNames)
+			y, err := templatetext.New(name).Funcs(templatetext.FuncMap(aceopts.FuncMap)).Parse(text)
+			check(err)
+			tree = y.Tree
+		}
+		_, err := jscript.AddParseTree(name, tree)
 		check(err)
 	}
 
