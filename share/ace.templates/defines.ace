@@ -64,26 +64,18 @@
         th Interface
         th.text-right.nowrap title="BITS per second" In
           span.unit
-            / empty disallows indent here
-            {{empty}}
             i b
             | ps
         th.text-right.nowrap title="BITS per second" Out
           span.unit
-            / empty disallows indent here
-            {{empty}}
             i b
             | ps
         th.text-right.nowrap title="total BYTES modulo 4G" In
           span.unit
-            / empty disallows indent here
-            {{empty}}
             i B
             | %4G
         th.text-right.nowrap title="total BYTES modulo 4G" Out
           span.unit
-            / empty disallows indent here
-            {{empty}}
             i B
             | %4G
     tbody

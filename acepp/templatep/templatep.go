@@ -243,7 +243,6 @@ var AceFuncs = templatehtml.FuncMap{
 	"key":        key,
 	"clip":       clip,
 	"usepercent": usepercent,
-	"empty":      func() string { return "" },
 	"json": func(v interface{}) (string, error) {
 		j, err := json.Marshal(v)
 		return string(j), err

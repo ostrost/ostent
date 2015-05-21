@@ -200,28 +200,28 @@ func Format(prettyprint bool, input string, noclose []string) (output string) {
 	}
 
 	z := html.NewTokenizer(strings.NewReader(input))
-	for level, prevtok := 0, html.TextToken; ; {
+	for level := 0; ; {
 		tok := z.Next()
 		tag, _ := z.TagName()
 		raw := string(z.Raw())
 
-		if tok == html.TextToken && strings.Trim(raw, "\n") == "" {
-			continue
-		}
-		if tok == html.EndTagToken && level > 0 {
+		if tok == html.StartTagToken && !isnoclose(string(tag)) {
+			level++
+		} else if tok == html.EndTagToken && level != 0 {
 			level--
 		}
-		if tok != html.TextToken && prevtok != html.TextToken {
-			output += "\n" + strings.Repeat("  ", level)
-		}
-		output += raw
 
+		if tok == html.DoctypeToken || tok == html.StartTagToken || tok == html.EndTagToken {
+			output += raw[:len(raw)-1] + "\n" + strings.Repeat("  ", level) + ">"
+		} else {
+			if tok == html.TextToken {
+				raw = strings.Trim(raw, "\n")
+			}
+			output += raw
+		}
 		if tok == html.ErrorToken {
 			break
-		} else if tok == html.StartTagToken && !isnoclose(string(tag)) {
-			level++
 		}
-		prevtok = tok
 	}
 	return output
 }
