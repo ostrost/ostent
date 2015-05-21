@@ -1,5 +1,13 @@
 @import 'bootstrap-3.3.4.scss';
 
+// regular bootstrap "a" rules. Overriding .navbar-brand style.
+a.navbar-brand:hover,
+a.navbar-brand:focus { color: #23527c !important; text-decoration: underline !important; }
+a.navbar-brand       { color: #337ab7 !important; text-decoration: none !important; }
+
+.dropdown:hover > ul.dropdown-menu { display: block; }
+.dropdown-menu > li > a.dropdown-text { cursor: default; }
+
 label.clip {
   cursor: pointer;
   margin-bottom: 0px;

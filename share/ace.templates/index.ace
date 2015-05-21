@@ -15,23 +15,29 @@ html
   body
     nav.navbar.navbar-default.navbar-fixed-top role=navigation
       div.container-fluid
-        div.navbar-header
-          div.navbar-brand
-            a#hostname href=/ data-placement=bottom data-toggle=popover data-trigger="hover focus" data-container=#distrib-popover data-content="running {{.Data.DISTRIB}}"
-              / data-placement="auto bottom" does not do the trick
-              | {{.Data.Hostname}}
-          / the span for the popover to attach to
-          span#distrib-popover
+        div.dropdown.navbar-header
+          button.navbar-toggle.collapsed type=button data-toggle=collapse data-target=#navbar-collapse
+            span.sr-only Toggle navigation
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          a.dropdown-toggle.navbar-brand id=dropdownbrand data-toggle=dropdown aria-expanded=true href=/
+            div#hostname {{.Data.Hostname}}
+          ul.dropdown-menu role=menu aria-labelledby=dropdownbrand
+            li.dropdown-header role=presentation running
+            li role=presentation
+              a.dropdown-text {{.Data.DISTRIB}}
 
         div.collapse.navbar-collapse#navbar-collapse
-          / hidden div for popover to be the content source
-          div.collapse#uptime-parent
-            | uptime&nbsp;
-            span#uptime {{.Data.Uptime}}
-
           ul.nav.navbar-nav
             li.navbar-text#ip {{.Data.IP}}
-            li.navbar-text#la {{.Data.LA}}
+            li.dropdown
+              div.navbar-text.dropdown-toggle#dropdownla data-toggle=dropdown aria-expanded=true
+                div#la {{.Data.LA}}
+              ul.dropdown-menu role=menu aria-labelledby=dropdownla
+                li.dropdown-header role=presentation uptime
+                li role=presentation
+                  a.dropdown-text#uptime {{.Data.Uptime}}
 
           ul.nav.navbar-nav.navbar-right
             li.navbar-text

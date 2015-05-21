@@ -11,13 +11,13 @@
       domReady: 'vendor/requirejs-domready/2.0.1/domReady',
       headroom: 'vendor/headroom/0.7.0/headroom.min',
       jquery: 'vendor/jquery/2.1.4/jquery-2.1.4.min',
-      bootstrap: 'vendor/bootstrap/3.3.4/bootstrap.min',
+      bscollapse: 'vendor/bootstrap/3.3.4-collapse/bootstrap.min',
       react: 'vendor/react/0.13.3/react.min',
       jscript: 'gen/jscript'
     }
   });
 
-  require(['jquery', 'bootstrap', 'react', 'jscript', 'domReady', 'headroom'], function($, _, React, jscript) {
+  require(['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], function($, React, jscript) {
     var neweventsource, newwebsocket, update, updates;
     updates = void 0;
     neweventsource = function(onmessage) {
@@ -892,21 +892,12 @@
       };
       updates = newwebsocket(onmessage);
     };
-    require(['domReady', 'jquery', 'bootstrap', 'headroom'], function(domReady, $) {
+    require(['domReady', 'jquery', 'headroom'], function(domReady, $) {
       domReady(function() {
         var param;
         (new window.Headroom(document.querySelector('nav'), {
           offset: 20
         })).init();
-        $('[data-toggle="popover"]').popover();
-        $('#la').popover({
-          trigger: 'hover focus',
-          placement: 'right',
-          html: true,
-          content: function() {
-            return $('#uptime-parent').html();
-          }
-        });
         if (!((function() {
           var i, len, ref, results;
           ref = location.search.substr(1).split('&');

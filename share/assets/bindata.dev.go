@@ -151,10 +151,10 @@ func js_src_milk_index_js() (*asset, error) {
 	return a, err
 }
 
-// js_src_vendor_bootstrap_3_3_4_bootstrap_min_js reads file data from disk. It returns an error on failure.
-func js_src_vendor_bootstrap_3_3_4_bootstrap_min_js() (*asset, error) {
-	path := filepath.Join(rootDir, "js/src/vendor/bootstrap/3.3.4/bootstrap.min.js")
-	name := "js/src/vendor/bootstrap/3.3.4/bootstrap.min.js"
+// js_src_vendor_bootstrap_3_3_4_collapse_bootstrap_min_js reads file data from disk. It returns an error on failure.
+func js_src_vendor_bootstrap_3_3_4_collapse_bootstrap_min_js() (*asset, error) {
+	path := filepath.Join(rootDir, "js/src/vendor/bootstrap/3.3.4-collapse/bootstrap.min.js")
+	name := "js/src/vendor/bootstrap/3.3.4-collapse/bootstrap.min.js"
 	bytes, err := bindata_read(path, name)
 	if err != nil {
 		return nil, err
@@ -318,7 +318,7 @@ var _bindata = map[string]func() (*asset, error){
 	"js/src/gen/jscript.js": js_src_gen_jscript_js,
 	"js/src/milk/build.js": js_src_milk_build_js,
 	"js/src/milk/index.js": js_src_milk_index_js,
-	"js/src/vendor/bootstrap/3.3.4/bootstrap.min.js": js_src_vendor_bootstrap_3_3_4_bootstrap_min_js,
+	"js/src/vendor/bootstrap/3.3.4-collapse/bootstrap.min.js": js_src_vendor_bootstrap_3_3_4_collapse_bootstrap_min_js,
 	"js/src/vendor/headroom/0.7.0/headroom.min.js": js_src_vendor_headroom_0_7_0_headroom_min_js,
 	"js/src/vendor/jquery/2.1.4/jquery-2.1.4.min.js": js_src_vendor_jquery_2_1_4_jquery_2_1_4_min_js,
 	"js/src/vendor/react/0.13.3/react.min.js": js_src_vendor_react_0_13_3_react_min_js,
@@ -394,8 +394,8 @@ var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 			}},
 			"vendor": &_bintree_t{nil, map[string]*_bintree_t{
 				"bootstrap": &_bintree_t{nil, map[string]*_bintree_t{
-					"3.3.4": &_bintree_t{nil, map[string]*_bintree_t{
-						"bootstrap.min.js": &_bintree_t{js_src_vendor_bootstrap_3_3_4_bootstrap_min_js, map[string]*_bintree_t{
+					"3.3.4-collapse": &_bintree_t{nil, map[string]*_bintree_t{
+						"bootstrap.min.js": &_bintree_t{js_src_vendor_bootstrap_3_3_4_collapse_bootstrap_min_js, map[string]*_bintree_t{
 						}},
 					}},
 				}},

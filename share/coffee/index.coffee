@@ -5,13 +5,13 @@ require.config
     domReady:  'vendor/requirejs-domready/2.0.1/domReady'
     headroom:  'vendor/headroom/0.7.0/headroom.min'
     jquery:    'vendor/jquery/2.1.4/jquery-2.1.4.min'
-    bootstrap: 'vendor/bootstrap/3.3.4/bootstrap.min'
+    bscollapse:'vendor/bootstrap/3.3.4-collapse/bootstrap.min'
     react:     'vendor/react/0.13.3/react.min'
     jscript:   'gen/jscript'
 
 # main require
-require ['jquery', 'bootstrap', 'react', 'jscript', 'domReady', 'headroom'], ($, _, React, jscript) ->
-  # domReady and headroom "required" for r.js only.
+require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($, React, jscript) ->
+  # domReady, headroom, bscollapse "required" for r.js only.
   updates = undefined # events source. set later
   neweventsource = (onmessage) ->
     conn = null
@@ -510,20 +510,12 @@ require ['jquery', 'bootstrap', 'react', 'jscript', 'domReady', 'headroom'], ($,
   # updates = neweventsource(onmessage)
     return # end of `update'
 
-  require ['domReady', 'jquery', 'bootstrap', 'headroom'], (domReady, $) ->
-    # neither bootstrap nor headroom export anything
+  require ['domReady', 'jquery', 'headroom'], (domReady, $) ->
+    # headroom does not export anything
     domReady () ->
       (new window.Headroom(document.querySelector('nav'), {
         offset: 20 # ~padding-top of a container row
       })).init()
-
-      $('[data-toggle="popover"]').popover() # should be just #hostname
-      $('#la')                    .popover({
-        trigger: 'hover focus',
-        placement: 'right',
-        # NOT placement: 'auto right' until #la is the last element for parent
-        html: true, content: () -> $('#uptime-parent').html()
-      })
 
       # referencing upper-scope `update'
       update() unless (42 for param in location.search.substr(1).split(
