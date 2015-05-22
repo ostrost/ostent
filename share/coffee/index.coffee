@@ -395,7 +395,7 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
     hideps  = HideClass.component({xkey: 'HidePS',  $el: $('[for-sel="#ps"]')})
     hidevg  = HideClass.component({xkey: 'HideVG',  $el: $('[for-sel="#vg"]')})
 
-    ip       = React.render(React.createElement(NewTextCLASS((data) -> data?.IP       )), $('#ip'      )   .get(0))
+    ip       = React.render(React.createElement(NewTextCLASS((data) -> data?.IP       )), $('#ip'      )   .get(0)) if data?.IP?
     hostname = React.render(React.createElement(NewTextCLASS((data) -> data?.Hostname )), $('#hostname')   .get(0))
     uptime   = React.render(React.createElement(NewTextCLASS((data) -> data?.Uptime   )), $('#uptime'  )   .get(0))
     la       = React.render(React.createElement(NewTextCLASS((data) -> data?.LA       )), $('#la'      )   .get(0))
@@ -464,7 +464,7 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
       setState(hideps,        hideps       .reduce(data))
       setState(hidevg,        hidevg       .reduce(data))
 
-      setState(ip,        ip      .newstate(data))
+      setState(ip,        ip      .newstate(data)) if ip?
       setState(hostname,  hostname.newstate(data))
       setState(uptime,    uptime  .newstate(data))
       setState(la,        la      .newstate(data))

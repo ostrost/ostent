@@ -692,9 +692,11 @@
         xkey: 'HideVG',
         $el: $('[for-sel="#vg"]')
       });
-      ip = React.render(React.createElement(NewTextCLASS(function(data) {
-        return data != null ? data.IP : void 0;
-      })), $('#ip').get(0));
+      if ((typeof data !== "undefined" && data !== null ? data.IP : void 0) != null) {
+        ip = React.render(React.createElement(NewTextCLASS(function(data) {
+          return data != null ? data.IP : void 0;
+        })), $('#ip').get(0));
+      }
       hostname = React.render(React.createElement(NewTextCLASS(function(data) {
         return data != null ? data.Hostname : void 0;
       })), $('#hostname').get(0));
@@ -855,7 +857,9 @@
         setState(hidecpu, hidecpu.reduce(data));
         setState(hideps, hideps.reduce(data));
         setState(hidevg, hidevg.reduce(data));
-        setState(ip, ip.newstate(data));
+        if (ip != null) {
+          setState(ip, ip.newstate(data));
+        }
         setState(hostname, hostname.newstate(data));
         setState(uptime, uptime.newstate(data));
         setState(la, la.newstate(data));
