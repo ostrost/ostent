@@ -49,8 +49,12 @@ html
                 li
                   a href=#vg #vagrant
 
-            li.active
-              a href=https://www.ostrost.com/ostent/releases/latest title="version {{.Data.VERSION}}" OSTENT
+            li.dropdown.active
+              a.dropdown-toggle#dropdownversion data-toggle=dropdown aria-expanded=true href=https://www.ostrost.com/ostent/releases/latest OSTENT
+              ul.dropdown-menu role=menu aria-labelledby=dropdownversion
+                li.dropdown-header role=presentation version
+                li role=presentation
+                  a href=https://www.ostrost.com/ostent/releases/latest {{.Data.VERSION}}
 
     div.container-fluid.padding-topseventysh#top
       div.row

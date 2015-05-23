@@ -74,9 +74,17 @@
                   ></li
                 ></ul
               ></li
-            ><li class="active"
-              ><a href="https://www.ostrost.com/ostent/releases/latest" title="version {{.Data.VERSION}}"
+            ><li class="dropdown active"
+              ><a id="dropdownversion" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true" href="https://www.ostrost.com/ostent/releases/latest"
                 >OSTENT</a
+              ><ul class="dropdown-menu" role="menu" aria-labelledby="dropdownversion"
+                ><li class="dropdown-header" role="presentation"
+                  >version</li
+                ><li role="presentation"
+                  ><a href="https://www.ostrost.com/ostent/releases/latest"
+                    >{{.Data.VERSION}}</a
+                  ></li
+                ></ul
               ></li
             ></ul
           ></div
