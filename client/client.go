@@ -3,6 +3,7 @@ package client
 import (
 	"time"
 
+	"github.com/ostrost/ostent/client/enums"
 	"github.com/ostrost/ostent/flags"
 )
 
@@ -232,7 +233,7 @@ func (c *Client) MergeTab(dst, src *Tab, send **Tab, tabs Tabs) {
 	c.Modified = true
 }
 
-func (c *Client) NewTab(tabs Tabs, u Uint) *Tab {
+func (c *Client) NewTab(tabs Tabs, u enums.Uint) *Tab {
 	n := new(Tab)
 	c.MergeTab(n, &Tab{Uint: u}, nil, tabs)
 	return n
@@ -305,8 +306,8 @@ func DefaultClient(minperiod flags.Period) Client {
 
 	cs.PSlimit = 8
 
-	cs.PSSEQ = PS.Default
-	cs.DFSEQ = DF.Default
+	cs.PSSEQ = Decodecs["ps"].Default
+	cs.DFSEQ = Decodecs["df"].Default
 
 	cs.RecalcRows()
 

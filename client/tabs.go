@@ -1,11 +1,11 @@
-//go:generate sh -c "jsonenums -type=UintDF; jsonenums -type=UintPS"
-
 // Package client is all about client state.
 package client
 
-// Tab shadows Uint and has Title string.
+import "github.com/ostrost/ostent/client/enums"
+
+// Tab shadows enums.Uint and has Title string.
 type Tab struct {
-	Uint
+	enums.Uint
 	Title string
 }
 
@@ -27,48 +27,13 @@ var IFTABS = Tabs{
 
 // Constants for DF tabs.
 const (
-	DFINODES Uint = iota
+	DFINODES enums.Uint = iota
 	DFBYTES
 )
 
 // Constants for IF tabs.
 const (
-	IFPACKETS Uint = iota
+	IFPACKETS enums.Uint = iota
 	IFERRORS
 	IFBYTES
 )
-
-// Constants for DF sorting criterion.
-const (
-	FS UintDF = iota
-	MP
-	TOTAL
-	USED
-	AVAIL
-)
-
-// Constants for PS sorting criterion.
-const (
-	PID UintPS = iota
-	PRI
-	NICE
-	VIRT
-	RES
-	TIME
-	NAME
-	UID
-	USER
-)
-
-// RenamedConstError denotes an error.
-type RenamedConstError string
-
-func (rc RenamedConstError) Error() string { return string(rc) }
-
-// Uint-derived types:
-
-// UintDF is a derived Uint for constants.
-type UintDF Uint
-
-// UintPS is a derived Uint for constants.
-type UintPS Uint

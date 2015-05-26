@@ -1,72 +1,72 @@
 package client
 
-import "net/url"
+import (
+	"encoding/json"
+	"net/http"
+	"net/url"
+	"strings"
 
-// Uint is a positive or 0 number.
-type Uint uint
+	"github.com/ostrost/ostent/client/enums"
+)
 
+// Number is an enums.Uint with sign.
 type Number struct {
-	Uint
+	enums.Uint
 	Negative bool
 }
 
-// Uinter defines required (read-only) methods
-// for all Uint-derived types interface.
-type Uinter interface {
-	Touint() Uint
-	Marshal() (string, error)
-	// MarshalJSON() ([]byte, error)
-}
-
 // Upointer defines required (incl. pointer-) methods
-// for all Uint-derived types interface.
+// for all enums.Uint-derived types interface.
 type Upointer interface {
-	Uinter
+	enums.Uinter
 	Unmarshal(string, *bool) error
 	// UnmarshalJSON([]byte) error
 }
 
-// Attr type keeps link attributes.
-type Attr struct {
-	Href, Class, CaretClass string
+// DropLink has drop{down,up} link attributes.
+type DropLink struct {
+	CLASSNAME  string // required for jsx
+	AlignClass string
+	Text       string
+	Href       string
+	Class      string
+	CaretClass string
 }
 
-// EncodeNU returns uinter applied Attr.
-func (links Links) EncodeNU(pname string, uinter Uinter) Attr {
+// EncodeUint returns enums.uinter applied DropLink. .AlignClass is not filled.
+func (p Param) EncodeUint(pname string, uinter enums.Uinter) DropLink {
 	base := url.Values{}
-	for k, v := range links.Values {
+	for k, v := range p.Query.Values {
 		base[k] = v
 	}
-	attr := Attr{Class: "state"}
-	if cur := links.SetBase(base, pname, uinter); cur != nil {
-		attr.CaretClass = "caret"
-		attr.Class += " current"
+	text, cur := p.SetBase(base, pname, uinter)
+	dl := DropLink{Text: text, Class: "state"}
+	if cur != nil {
+		dl.CaretClass = "caret"
+		dl.Class += " current"
 		if *cur {
-			attr.Class += " dropup"
+			dl.Class += " dropup"
 		}
 	}
-	attr.Href = "?" + base.Encode() // sorted by key
-	return attr
+	dl.Href = "?" + base.Encode() // sorted by key
+	return dl
 }
 
 // SetBase modifies the base.
-func (links Links) SetBase(base url.Values, pname string, uinter Uinter) *bool {
+func (p Param) SetBase(base url.Values, pname string, uinter enums.Uinter) (string, *bool) {
 	this := uinter.Touint()
-
-	// TODO Better name for Decodes/DecodedMap/Decoded
-	// because they might be not decoded, but default.
-	decoded, haveok := links.Decodes.DecodedMap[pname]
-	if !haveok {
-		// That's unexpected: SetBase (and Encode) is not supposed to be called without pname decoded prior.
-		return nil
+	_, low, err := uinter.Marshal()
+	if err != nil { // ignoring the error
+		return "", nil
 	}
 
-	ddef := decoded.Decoder.Default.Uint
-	dnum := decoded.Number
+	text := p.Decodec.Text(strings.ToUpper(low))
+	ddef := p.Decodec.Default.Uint
+	dnum := p.Decoded.Number
 
 	// Default ordering is desc (values are numeric most of the time).
 	// Alpha values ordering: asc.
-	desc := !decoded.IsAlpha(this)
+	desc := !p.Decodec.IsAlpha(this)
 	if dnum.Negative {
 		desc = !desc
 	}
@@ -76,33 +76,33 @@ func (links Links) SetBase(base url.Values, pname string, uinter Uinter) *bool {
 		*ret = !desc
 	}
 	// for default, opposite of having a parameter is it's absence.
-	if this == ddef && decoded.Specified {
+	if this == ddef && p.Decoded.Specified {
 		base.Del(pname)
-		return ret
-	}
-	low, err := uinter.Marshal()
-	if err != nil { // ignoring the error
-		return nil
+		return text, ret
 	}
 	if this == dnum.Uint && !dnum.Negative {
 		low = "-" + low
 	}
 	base.Set(pname, low)
-	return ret
+	return text, ret
 }
 
-// Links type for link making.
-type Links struct {
-	url.Values // provides Set(string, string) for Linker interface.
-	Decodes    // provides SetDecoded(string, Decoded), SetError(error) for Linker interface.
+// Query type for link making.
+type Query struct {
+	Values url.Values
+	Moved  bool
 }
 
-type Decoder struct {
-	Default Number
-	Alphas  []Uint
+type Decodec struct {
+	Default  Number
+	Alphas   []enums.Uint
+	Unew     func() (string, Upointer) `json:"-"`
+	TextFunc func(string) string       `json:"-"`
+	Texts    map[string]string         `json:"-"`
+	Pname    string
 }
 
-func (d Decoder) IsAlpha(p Uint) bool {
+func (d Decodec) IsAlpha(p enums.Uint) bool {
 	for _, u := range d.Alphas {
 		if u == p {
 			return true
@@ -111,41 +111,43 @@ func (d Decoder) IsAlpha(p Uint) bool {
 	return false
 }
 
-var PS = Decoder{
-	Default: Number{Uint: Uint(PID)},
-	Alphas:  []Uint{Uint(NAME), Uint(USER)},
+var Decodecs = map[string]Decodec{
+	"ps": {
+		Default: Number{Uint: enums.Uint(enums.PID)},
+		Alphas:  []enums.Uint{enums.Uint(enums.NAME), enums.Uint(enums.USER)},
+		// Unew:  func() (string, Upointer) { return "ps", interface{}(new(enums.UintPS)).(Upointer) },
+		Unew:     func() (string, Upointer) { return "ps", new(enums.UintPS) },
+		TextFunc: strings.ToUpper,
+		Texts:    map[string]string{"PRI": "PR", "NICE": "NI", "NAME": "COMMAND"},
+		Pname:    "ps",
+	},
+	"df": {
+		Default: Number{Uint: enums.Uint(enums.FS)},
+		Alphas:  []enums.Uint{enums.Uint(enums.FS), enums.Uint(enums.MP)},
+		// Unew:  func() (string, Upointer) { return "df", interface{}(new(enums.UintDF)).(Upointer) },
+		Unew:     func() (string, Upointer) { return "df", new(enums.UintDF) },
+		TextFunc: func(s string) string { return strings.Title(strings.ToLower(s)) },
+		Texts:    map[string]string{"FS": "Device", "MP": "Mounted"},
+		Pname:    "df",
+	},
 }
 
-var DF = Decoder{
-	Default: Number{Uint: Uint(FS)},
-	Alphas:  []Uint{Uint(FS), Uint(MP)},
-}
-
-func NewLinks() *Links {
-	return &Links{
-		Values:  make(url.Values),
-		Decodes: Decodes{DecodedMap: make(DecodedMap)},
-	}
-}
-
-type Linker interface {
-	Set(string, string)
-	SetDecoded(string, Decoded)
-	SetError(error)
-}
-
-func (d Decoder) Decode(form url.Values, pname string, linker Linker, setn *Number, uptr Upointer) error {
-	n, spec, err := d.Find(form[pname], pname, linker, uptr)
+func (p *Param) Decode(form url.Values, setn *Number) error {
+	d := p.Decodec
+	_, uptr := d.Unew()
+	n, spec, err := p.Find(form[d.Pname], uptr)
 	if err != nil {
 		return err
 	}
 	*setn = n
-	linker.SetDecoded(pname, Decoded{Number: n, Decoder: d, Specified: spec})
+	p.Decoded.Number = n
+	p.Decoded.Specified = spec
 	return nil
 }
 
-// Find side effects: ui.Unmarshal (ui.Methods[2]) and linker.Set (eg url.Values{}.Set())
-func (d Decoder) Find(values []string, pname string, linker Linker, uptr Upointer) (Number, bool, error) {
+// Find side effects: uptr.Unmarshal and p.Query.Set (eg url.Values{}.Set())
+func (p *Param) Find(values []string, uptr Upointer) (Number, bool, error) {
+	d := p.Decodec
 	if len(values) == 0 || values[0] == "" {
 		return d.Default, false, nil
 	}
@@ -156,42 +158,98 @@ func (d Decoder) Find(values []string, pname string, linker Linker, uptr Upointe
 		negate = true
 	}
 	err := uptr.Unmarshal(in, &negate) // .UnmarshalJSON([]byte(fmt.Sprintf("%q", strings.ToUpper(in))))
-	n := Number{}
 	if err != nil {
-		if rerr, ok := err.(RenamedConstError); ok {
+		if _, ok := err.(enums.RenamedConstError); ok {
 			// The case when err (of type RenamedConstError) is set
 			// AND uptr actually holds corresponding ("renamed") value.
-			if l, err := uptr.Marshal(); err == nil {
+			if _, l, err := uptr.Marshal(); err == nil {
 				if negate {
 					l = "-" + l
 				}
-				linker.Set(pname, l)
+				p.Query.Values.Set(d.Pname, l)
 			}
-			linker.SetError(rerr)
+			p.Moved = true
 		}
-		return n, true, err
+		return Number{}, true, err
 	}
-	n.Uint = uptr.Touint()
-	if negate {
-		n.Negative = true
+	n := Number{
+		Uint:     uptr.Touint(),
+		Negative: negate,
 	}
-	linker.Set(pname, values[0])
-	return n, true, err
+	p.Query.Values.Set(d.Pname, values[0])
+	return n, true, nil
 }
 
-type Decoded struct {
-	Number
-	Decoder
-	Specified bool
+// NewParams constructs new Params.
+// Global var Decodecs is ranged.
+func NewParams(req *http.Request) Params {
+	if req != nil {
+		req.ParseForm() // do ParseForm even if req.Form == nil
+		_ = req.Form    // TODO use this
+	}
+	query := &Query{Values: make(url.Values)}
+	p := make(Params)
+	for k, v := range Decodecs {
+		p[k] = &Param{
+			Decodec: v,
+			Query:   query,
+		}
+	}
+	return p
 }
 
-type DecodedMap map[string]Decoded
-type Decodes struct {
-	DecodedMap
-	RCError error
+type Param struct {
+	Decodec // Read-only, an entry from global var Decodecs.
+	Decoded struct {
+		Number
+		Specified bool
+	}
+	Query *Query // contains current url.Values
+	Moved bool
 }
 
-// SetDecoded required by Linker interface.
-func (ds *Decodes) SetDecoded(name string, d Decoded) { ds.DecodedMap[name] = d }
+// MarshalJSON goes over all defined constants
+// (by the means of p.Decodec.Unew() & .Marshal method of Uinter)
+// to returns a map of constants to DropLink.
+func (p Param) MarshalJSON() ([]byte, error) {
+	m := map[string]DropLink{}
+	name, uptr := p.Decodec.Unew()
+	uter := uptr.(enums.Uinter)
+	marshal := uptr.Marshal
+	for i := 0; i < 100; i++ {
+		nextuter, s, err := marshal()
+		if err != nil {
+			break
+		}
+		m[strings.ToUpper(s)] = p.EncodeUint(name, uter)
+		marshal = nextuter.Marshal
+		uter = nextuter
+	}
+	return json.Marshal(m)
+}
 
-func (ds *Decodes) SetError(err error) { ds.RCError = err }
+type Params map[string]*Param
+
+func (p Params) Moved() bool {
+	for _, v := range p {
+		if v.Moved {
+			return true
+		}
+	}
+	return false
+}
+
+// Encode picks first Param and uses it's .Query.Values.
+func (p Params) Encode() string {
+	for _, v := range p {
+		return v.Query.Values.Encode()
+	}
+	return ""
+}
+
+func (d Decodec) Text(in string) string {
+	if s, ok := d.Texts[in]; ok {
+		return s
+	}
+	return d.TextFunc(in)
+}

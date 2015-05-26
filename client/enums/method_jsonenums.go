@@ -1,9 +1,18 @@
-package client
+package enums
 
 import (
 	"fmt"
 	"strings"
 )
+
+// Uinter defines required (read-only) methods
+// for all Uint-derived types interface.
+type Uinter interface {
+	Touint() Uint
+	// Marshal returns next Uinter, string repr of current Uinter and an error if any
+	Marshal() (Uinter, string, error)
+	// MarshalJSON() ([]byte, error)
+}
 
 // Upointer dictated methods:
 
@@ -43,11 +52,11 @@ func (r *UintPS) Unmarshal(data string, negate *bool) error {
 
 // Uinter dictated methods:
 
-func (r UintDF) Touint() Uint             { return Uint(r) }
-func (r UintDF) Marshal() (string, error) { return MarshalStringFunc(r.MarshalJSON)() }
+func (r UintDF) Touint() Uint                     { return Uint(r) }
+func (r UintDF) Marshal() (Uinter, string, error) { return MarshalStringFunc(r+1, r.MarshalJSON)() }
 
-func (r UintPS) Touint() Uint             { return Uint(r) }
-func (r UintPS) Marshal() (string, error) { return MarshalStringFunc(r.MarshalJSON)() }
+func (r UintPS) Touint() Uint                     { return Uint(r) }
+func (r UintPS) Marshal() (Uinter, string, error) { return MarshalStringFunc(r+1, r.MarshalJSON)() }
 
 // Helpers:
 
@@ -64,19 +73,24 @@ func UnmarshalStringFunc(unmarshaler BytesUnmarshal) func(string) error {
 	}
 }
 
-func MarshalStringFunc(marshaler BytesEnmarshal) func() (string, error) {
-	return func() (string, error) {
+func MarshalStringFunc(next Uinter, marshaler BytesEnmarshal) func() (Uinter, string, error) {
+	return func() (Uinter, string, error) {
 		b, err := marshaler()
 		if err != nil {
-			return "", err
+			return next, "", err
 		}
 		if l := len(b); l > 2 && b[0] == '"' && b[l-1] == '"' {
 			b = b[1 : l-1]
 		}
 		s := strings.ToLower(string(b))
-		return s, nil
+		return next, s, nil
 	}
 }
 
 type BytesEnmarshal func() ([]byte, error)
 type BytesUnmarshal func([]byte) error
+
+// RenamedConstError denotes an error.
+type RenamedConstError string
+
+func (rc RenamedConstError) Error() string { return string(rc) }

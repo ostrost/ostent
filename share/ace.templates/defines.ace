@@ -145,18 +145,20 @@
     {{end}}
   {{end}}
 
+= content thdroplink
+  {{$C := or .CLASSNAME "class"}}
+  th {{$C}}="header {{.AlignClass}}" <a href={{.Href}} {{$C}}={{.Class}}>{{.Text}}<span {{$C}}={{.CaretClass}}></span></a>
+
 = content define_dfbytes_table
   {{$C := or .CLASSNAME "class"}}
   table.table1.stripe-table
     thead
       tr
-        {{with $L := .Data.Links}}
-          th.header            <a href={{$L.DFFS.Href}}    {{$C}}={{$L.DFFS.Class}}   >Device<span  {{$C}}={{$L.DFFS.CaretClass}}   ></span></a>
-          th.header            <a href={{$L.DFMP.Href}}    {{$C}}={{$L.DFMP.Class}}   >Mounted<span {{$C}}={{$L.DFMP.CaretClass}}   ></span></a>
-          th.header.text-right <a href={{$L.DFAVAIL.Href}} {{$C}}={{$L.DFAVAIL.Class}}>Avail<span   {{$C}}={{$L.DFAVAIL.CaretClass}}></span></a>
-          th.header.text-right <a href={{$L.DFUSED.Href}}  {{$C}}={{$L.DFUSED.Class}} >Used<span    {{$C}}={{$L.DFUSED.CaretClass}} ></span></a>
-          th.header.text-right <a href={{$L.DFTOTAL.Href}} {{$C}}={{$L.DFTOTAL.Class}}>Total<span   {{$C}}={{$L.DFTOTAL.CaretClass}}></span></a>
-        {{end}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.df "FS" ""}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.df "MP" ""}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.df "AVAIL"}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.df "USED"}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.df "TOTAL"}}
     tbody
       {{template "defines::define_dfbytes_rows" .}}
 
@@ -249,17 +251,15 @@
   table.table2.stripe-table
     thead
       tr
-        {{with $L := .Data.Links}}
-          th.header.text-right  <a href={{$L.PSPID.Href}}  {{$C}}={{$L.PSPID.Class}} >PID<span     {{$C}}={{$L.PSPID.CaretClass}} ></span></a>
-          th.header.text-right  <a href={{$L.PSUID.Href}}  {{$C}}={{$L.PSUID.Class}} >UID<span     {{$C}}={{$L.PSUID.CaretClass}} ></span></a>
-          th.header             <a href={{$L.PSUSER.Href}} {{$C}}={{$L.PSUSER.Class}}>USER<span    {{$C}}={{$L.PSUSER.CaretClass}}></span></a>
-          th.header.text-right  <a href={{$L.PSPRI.Href}}  {{$C}}={{$L.PSPRI.Class}} >PR<span      {{$C}}={{$L.PSPRI.CaretClass}} ></span></a>
-          th.header.text-right  <a href={{$L.PSNICE.Href}} {{$C}}={{$L.PSNICE.Class}}>NI<span      {{$C}}={{$L.PSNICE.CaretClass}}></span></a>
-          th.header.text-right  <a href={{$L.PSVIRT.Href}} {{$C}}={{$L.PSVIRT.Class}}>VIRT<span    {{$C}}={{$L.PSVIRT.CaretClass}}></span></a>
-          th.header.text-right  <a href={{$L.PSRES.Href}}  {{$C}}={{$L.PSRES.Class}} >RES<span     {{$C}}={{$L.PSRES.CaretClass}} ></span></a>
-          th.header.text-center <a href={{$L.PSTIME.Href}} {{$C}}={{$L.PSTIME.Class}}>TIME<span    {{$C}}={{$L.PSTIME.CaretClass}}></span></a>
-          th.header             <a href={{$L.PSNAME.Href}} {{$C}}={{$L.PSNAME.Class}}>COMMAND<span {{$C}}={{$L.PSNAME.CaretClass}}></span></a>
-        {{end}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ps "PID"}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ps "UID"}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ps "USER" ""}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ps "PRI"}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ps "NICE"}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ps "VIRT"}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ps "RES"}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ps "TIME" "center"}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ps "NAME" ""}}
     tbody
       {{template "defines::define_psrows" .}}
 

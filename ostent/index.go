@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	"github.com/ostrost/ostent/client"
+	"github.com/ostrost/ostent/client/enums"
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/getifaddrs"
@@ -123,6 +124,14 @@ type IndexData struct {
 	DFTABS  client.Tabs
 
 	Client clientData
+}
+
+type Links struct {
+	Params client.Params
+}
+
+type PStable struct {
+	List []operating.ProcData `json:",omitempty"`
 }
 
 type IndexUpdate struct {
@@ -736,13 +745,13 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 	psCopy := lastInfo.CopyPS()
 
 	if req != nil {
-		req.ParseForm() // do ParseForm even if req.Form == nil
-		iu.Links = &Links{*client.NewLinks()}
-		client.DF.Decode(req.Form, "df", iu.Links, &cl.DFSEQ, new(client.UintDF))
-		client.DF.Decode(req.Form, "ps", iu.Links, &cl.PSSEQ, new(client.UintPS))
+		iu.Links = &Links{client.NewParams(req)} // req.ParseForm()'d in NewParams()
+		iu.Links.Params["df"].Decode(req.Form, &cl.DFSEQ)
+		iu.Links.Params["ps"].Decode(req.Form, &cl.PSSEQ)
 
-		if iu.Links.Decodes.RCError != nil {
-			return iu, client.RenamedConstError("?" + iu.Links.Values.Encode())
+		// after all the Decode()s
+		if iu.Links.Params.Moved() {
+			return iu, enums.RenamedConstError("?" + iu.Links.Params.Encode())
 		}
 	}
 
@@ -855,7 +864,7 @@ func IndexFunc(taggedbin bool, template *templateutil.LazyTemplate, minperiod fl
 func index(taggedbin bool, template *templateutil.LazyTemplate, minperiod flags.Period, w http.ResponseWriter, r *http.Request) {
 	id, err := indexData(minperiod, r)
 	if err != nil {
-		if _, ok := err.(client.RenamedConstError); ok {
+		if _, ok := err.(enums.RenamedConstError); ok {
 			http.Redirect(w, r, err.Error(), http.StatusMovedPermanently)
 			return
 		}

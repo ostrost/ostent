@@ -244,37 +244,37 @@ define(function(require) {
 		dfbytes_table:   function(Data, rows)  { return (<table className="table1 stripe-table"
   ><thead
     ><tr
-      ><th className="header"
-        >           <a href={Data.Links.DFFS.Href}    className={Data.Links.DFFS.Class}   
-          >Device<span  className={Data.Links.DFFS.CaretClass}   
-            ></span
-          ></a
-        ></th
-      ><th className="header"
-        >           <a href={Data.Links.DFMP.Href}    className={Data.Links.DFMP.Class}   
-          >Mounted<span className={Data.Links.DFMP.CaretClass}   
-            ></span
-          ></a
-        ></th
-      ><th className="header text-right"
-        ><a href={Data.Links.DFAVAIL.Href} className={Data.Links.DFAVAIL.Class}
-          >Avail<span   className={Data.Links.DFAVAIL.CaretClass}
-            ></span
-          ></a
-        ></th
-      ><th className="header text-right"
-        ><a href={Data.Links.DFUSED.Href}  className={Data.Links.DFUSED.Class} 
-          >Used<span    className={Data.Links.DFUSED.CaretClass} 
-            ></span
-          ></a
-        ></th
-      ><th className="header text-right"
-        ><a href={Data.Links.DFTOTAL.Href} className={Data.Links.DFTOTAL.Class}
-          >Total<span   className={Data.Links.DFTOTAL.CaretClass}
-            ></span
-          ></a
-        ></th
-      ></tr
+      ><th className="header "
+  ><a href={Data.Links.Params.df.FS.Href} className={Data.Links.Params.df.FS.Class}
+    >{Data.Links.Params.df.FS.Text}<span className={Data.Links.Params.df.FS.CaretClass}
+      ></span
+    ></a
+  ></th
+><th className="header "
+  ><a href={Data.Links.Params.df.MP.Href} className={Data.Links.Params.df.MP.Class}
+    >{Data.Links.Params.df.MP.Text}<span className={Data.Links.Params.df.MP.CaretClass}
+      ></span
+    ></a
+  ></th
+><th className="header text-right"
+  ><a href={Data.Links.Params.df.AVAIL.Href} className={Data.Links.Params.df.AVAIL.Class}
+    >{Data.Links.Params.df.AVAIL.Text}<span className={Data.Links.Params.df.AVAIL.CaretClass}
+      ></span
+    ></a
+  ></th
+><th className="header text-right"
+  ><a href={Data.Links.Params.df.USED.Href} className={Data.Links.Params.df.USED.Class}
+    >{Data.Links.Params.df.USED.Text}<span className={Data.Links.Params.df.USED.CaretClass}
+      ></span
+    ></a
+  ></th
+><th className="header text-right"
+  ><a href={Data.Links.Params.df.TOTAL.Href} className={Data.Links.Params.df.TOTAL.Class}
+    >{Data.Links.Params.df.TOTAL.Text}<span className={Data.Links.Params.df.TOTAL.CaretClass}
+      ></span
+    ></a
+  ></th
+></tr
     ></thead
   ><tbody
     >{rows}</tbody
@@ -358,60 +358,60 @@ define(function(require) {
   ><thead
     ><tr
       ><th className="header text-right"
-        > <a href={Data.Links.PSPID.Href}  className={Data.Links.PSPID.Class} 
-          >PID<span     className={Data.Links.PSPID.CaretClass} 
-            ></span
-          ></a
-        ></th
-      ><th className="header text-right"
-        > <a href={Data.Links.PSUID.Href}  className={Data.Links.PSUID.Class} 
-          >UID<span     className={Data.Links.PSUID.CaretClass} 
-            ></span
-          ></a
-        ></th
-      ><th className="header"
-        >            <a href={Data.Links.PSUSER.Href} className={Data.Links.PSUSER.Class}
-          >USER<span    className={Data.Links.PSUSER.CaretClass}
-            ></span
-          ></a
-        ></th
-      ><th className="header text-right"
-        > <a href={Data.Links.PSPRI.Href}  className={Data.Links.PSPRI.Class} 
-          >PR<span      className={Data.Links.PSPRI.CaretClass} 
-            ></span
-          ></a
-        ></th
-      ><th className="header text-right"
-        > <a href={Data.Links.PSNICE.Href} className={Data.Links.PSNICE.Class}
-          >NI<span      className={Data.Links.PSNICE.CaretClass}
-            ></span
-          ></a
-        ></th
-      ><th className="header text-right"
-        > <a href={Data.Links.PSVIRT.Href} className={Data.Links.PSVIRT.Class}
-          >VIRT<span    className={Data.Links.PSVIRT.CaretClass}
-            ></span
-          ></a
-        ></th
-      ><th className="header text-right"
-        > <a href={Data.Links.PSRES.Href}  className={Data.Links.PSRES.Class} 
-          >RES<span     className={Data.Links.PSRES.CaretClass} 
-            ></span
-          ></a
-        ></th
-      ><th className="header text-center"
-        ><a href={Data.Links.PSTIME.Href} className={Data.Links.PSTIME.Class}
-          >TIME<span    className={Data.Links.PSTIME.CaretClass}
-            ></span
-          ></a
-        ></th
-      ><th className="header"
-        >            <a href={Data.Links.PSNAME.Href} className={Data.Links.PSNAME.Class}
-          >COMMAND<span className={Data.Links.PSNAME.CaretClass}
-            ></span
-          ></a
-        ></th
-      ></tr
+  ><a href={Data.Links.Params.ps.PID.Href} className={Data.Links.Params.ps.PID.Class}
+    >{Data.Links.Params.ps.PID.Text}<span className={Data.Links.Params.ps.PID.CaretClass}
+      ></span
+    ></a
+  ></th
+><th className="header text-right"
+  ><a href={Data.Links.Params.ps.UID.Href} className={Data.Links.Params.ps.UID.Class}
+    >{Data.Links.Params.ps.UID.Text}<span className={Data.Links.Params.ps.UID.CaretClass}
+      ></span
+    ></a
+  ></th
+><th className="header "
+  ><a href={Data.Links.Params.ps.USER.Href} className={Data.Links.Params.ps.USER.Class}
+    >{Data.Links.Params.ps.USER.Text}<span className={Data.Links.Params.ps.USER.CaretClass}
+      ></span
+    ></a
+  ></th
+><th className="header text-right"
+  ><a href={Data.Links.Params.ps.PRI.Href} className={Data.Links.Params.ps.PRI.Class}
+    >{Data.Links.Params.ps.PRI.Text}<span className={Data.Links.Params.ps.PRI.CaretClass}
+      ></span
+    ></a
+  ></th
+><th className="header text-right"
+  ><a href={Data.Links.Params.ps.NICE.Href} className={Data.Links.Params.ps.NICE.Class}
+    >{Data.Links.Params.ps.NICE.Text}<span className={Data.Links.Params.ps.NICE.CaretClass}
+      ></span
+    ></a
+  ></th
+><th className="header text-right"
+  ><a href={Data.Links.Params.ps.VIRT.Href} className={Data.Links.Params.ps.VIRT.Class}
+    >{Data.Links.Params.ps.VIRT.Text}<span className={Data.Links.Params.ps.VIRT.CaretClass}
+      ></span
+    ></a
+  ></th
+><th className="header text-right"
+  ><a href={Data.Links.Params.ps.RES.Href} className={Data.Links.Params.ps.RES.Class}
+    >{Data.Links.Params.ps.RES.Text}<span className={Data.Links.Params.ps.RES.CaretClass}
+      ></span
+    ></a
+  ></th
+><th className="header text-center"
+  ><a href={Data.Links.Params.ps.TIME.Href} className={Data.Links.Params.ps.TIME.Class}
+    >{Data.Links.Params.ps.TIME.Text}<span className={Data.Links.Params.ps.TIME.CaretClass}
+      ></span
+    ></a
+  ></th
+><th className="header "
+  ><a href={Data.Links.Params.ps.NAME.Href} className={Data.Links.Params.ps.NAME.Class}
+    >{Data.Links.Params.ps.NAME.Text}<span className={Data.Links.Params.ps.NAME.CaretClass}
+      ></span
+    ></a
+  ></th
+></tr
     ></thead
   ><tbody
     >{rows}</tbody

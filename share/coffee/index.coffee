@@ -1,5 +1,5 @@
 require.config
-  shim: {bootstrap: {deps: ['jquery']}}
+  shim: {bootstrap: {deps: ['jquery']}, bscollapse: {deps: ['jquery']}}
   baseUrl: '/js/src'
   paths:
     domReady:  'vendor/requirejs-domready/2.0.1/domReady'

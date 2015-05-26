@@ -72,8 +72,8 @@ covertest:           ; go test -coverprofile=coverage.out -covermode=count -v $(
 coverfunc: covertest ; go tool  cover  -func=coverage.out
 coverhtml: covertest ; go tool  cover  -html=coverage.out
 
-system/operating/%_slice.go: system/operating/operating.go ; cd $(dir $@) && go generate
-client/uint%_jsonenums.go:   client/tabs.go                ; cd $(dir $@) && go generate
+system/operating/%_slice.go:     system/operating/operating.go ; cd $(dir $@) && go generate
+client/enums/uint%_jsonenums.go: client/tabs.go                ; cd $(dir $@) && go generate
 
 al: $(packagefiles)
 # al: like `all' but without final go build $(package). For when rerun does the build

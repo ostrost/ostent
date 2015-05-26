@@ -4,6 +4,9 @@
     shim: {
       bootstrap: {
         deps: ['jquery']
+      },
+      bscollapse: {
+        deps: ['jquery']
       }
     },
     baseUrl: '/js/src',

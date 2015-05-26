@@ -9,7 +9,46 @@ import (
 	"strings"
 	templatetext "text/template"
 	"text/template/parse"
+
+	"github.com/ostrost/ostent/client"
 )
+
+func droplink(CN string, value interface{}, ss ...string) (interface{}, error) {
+	if value == nil {
+		return nil, fmt.Errorf("value supplied for droplink is nil")
+	}
+	var named string
+	if len(ss) > 0 {
+		named = ss[0]
+	}
+	AC := "text-right" // default
+	if len(ss) > 1 {
+		AC = ""
+		if ss[1] != "" {
+			AC = "text-" + ss[1]
+		}
+	}
+	p, ok := value.(*client.Param)
+	if !ok {
+		prefix := strings.TrimSuffix(value.(string), "}")
+		return client.DropLink{
+			CLASSNAME:  CN,
+			AlignClass: AC,
+			Text:       fmt.Sprintf("%s.%s.Text}", prefix, named),
+			Href:       fmt.Sprintf("%s.%s.Href}", prefix, named),
+			Class:      fmt.Sprintf("%s.%s.Class}", prefix, named),
+			CaretClass: fmt.Sprintf("%s.%s.CaretClass}", prefix, named),
+		}, nil
+	}
+	pname, unew := p.Decodec.Unew()
+	if err := unew.Unmarshal(named, new(bool)); err != nil {
+		return nil, err
+	}
+	l := p.EncodeUint(pname, unew)
+	l.CLASSNAME = CN
+	l.AlignClass = AC
+	return l, nil
+}
 
 func LabelClassColorPercent(p string) string {
 	if len(p) > 2 { // 100% and more
@@ -242,6 +281,7 @@ var AceFuncs = templatehtml.FuncMap{
 	"dot":        dot,
 	"key":        key,
 	"clip":       clip,
+	"droplink":   droplink,
 	"usepercent": usepercent,
 	"json": func(v interface{}) (string, error) {
 		j, err := json.Marshal(v)
@@ -344,6 +384,12 @@ func DataNode(root Templater, node parse.Node, jscriptMode bool, data *Dotted, v
 			}
 		case parse.NodeTemplate:
 			tnode := node.(*parse.TemplateNode)
+			for _, arg := range tnode.Pipe.Cmds[0].Args {
+				s := arg.String()
+				if len(s) > 0 && s[0] == '.' {
+					data.Append(strings.Split(s[1:], "."))
+				}
+			}
 			if lo := root.LookupT(tnode.Name); lo != nil {
 				tr := Tree(lo)
 				if tr != nil && tr.Root != nil {
