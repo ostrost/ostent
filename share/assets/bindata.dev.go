@@ -11,8 +11,8 @@ import (
 	"path/filepath"
 )
 
-// bindata_read reads the given file from disk. It returns an error on failure.
-func bindata_read(path, name string) ([]byte, error) {
+// bindataRead reads the given file from disk. It returns an error on failure.
+func bindataRead(path, name string) ([]byte, error) {
 	buf, err := ioutil.ReadFile(path)
 	if err != nil {
 		err = fmt.Errorf("Error reading asset %s at %s: %v", name, path, err)
@@ -25,11 +25,11 @@ type asset struct {
 	info  os.FileInfo
 }
 
-// css_index_css reads file data from disk. It returns an error on failure.
-func css_index_css() (*asset, error) {
+// cssIndexCss reads file data from disk. It returns an error on failure.
+func cssIndexCss() (*asset, error) {
 	path := filepath.Join(rootDir, "css/index.css")
 	name := "css/index.css"
-	bytes, err := bindata_read(path, name)
+	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
 	}
@@ -43,11 +43,11 @@ func css_index_css() (*asset, error) {
 	return a, err
 }
 
-// css_index_css_map reads file data from disk. It returns an error on failure.
-func css_index_css_map() (*asset, error) {
+// cssIndexCssMap reads file data from disk. It returns an error on failure.
+func cssIndexCssMap() (*asset, error) {
 	path := filepath.Join(rootDir, "css/index.css.map")
 	name := "css/index.css.map"
-	bytes, err := bindata_read(path, name)
+	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
 	}
@@ -61,11 +61,11 @@ func css_index_css_map() (*asset, error) {
 	return a, err
 }
 
-// favicon_png reads file data from disk. It returns an error on failure.
-func favicon_png() (*asset, error) {
+// faviconPng reads file data from disk. It returns an error on failure.
+func faviconPng() (*asset, error) {
 	path := filepath.Join(rootDir, "favicon.png")
 	name := "favicon.png"
-	bytes, err := bindata_read(path, name)
+	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
 	}
@@ -79,11 +79,11 @@ func favicon_png() (*asset, error) {
 	return a, err
 }
 
-// js_requirejs_2_1_17_require_min_js reads file data from disk. It returns an error on failure.
-func js_requirejs_2_1_17_require_min_js() (*asset, error) {
+// jsRequirejs2117RequireMinJs reads file data from disk. It returns an error on failure.
+func jsRequirejs2117RequireMinJs() (*asset, error) {
 	path := filepath.Join(rootDir, "js/requirejs/2.1.17/require.min.js")
 	name := "js/requirejs/2.1.17/require.min.js"
-	bytes, err := bindata_read(path, name)
+	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
 	}
@@ -97,11 +97,11 @@ func js_requirejs_2_1_17_require_min_js() (*asset, error) {
 	return a, err
 }
 
-// js_src_gen_jscript_js reads file data from disk. It returns an error on failure.
-func js_src_gen_jscript_js() (*asset, error) {
+// jsSrcGenJscriptJs reads file data from disk. It returns an error on failure.
+func jsSrcGenJscriptJs() (*asset, error) {
 	path := filepath.Join(rootDir, "js/src/gen/jscript.js")
 	name := "js/src/gen/jscript.js"
-	bytes, err := bindata_read(path, name)
+	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
 	}
@@ -115,11 +115,11 @@ func js_src_gen_jscript_js() (*asset, error) {
 	return a, err
 }
 
-// js_src_milk_build_js reads file data from disk. It returns an error on failure.
-func js_src_milk_build_js() (*asset, error) {
+// jsSrcMilkBuildJs reads file data from disk. It returns an error on failure.
+func jsSrcMilkBuildJs() (*asset, error) {
 	path := filepath.Join(rootDir, "js/src/milk/build.js")
 	name := "js/src/milk/build.js"
-	bytes, err := bindata_read(path, name)
+	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
 	}
@@ -133,11 +133,11 @@ func js_src_milk_build_js() (*asset, error) {
 	return a, err
 }
 
-// js_src_milk_index_js reads file data from disk. It returns an error on failure.
-func js_src_milk_index_js() (*asset, error) {
+// jsSrcMilkIndexJs reads file data from disk. It returns an error on failure.
+func jsSrcMilkIndexJs() (*asset, error) {
 	path := filepath.Join(rootDir, "js/src/milk/index.js")
 	name := "js/src/milk/index.js"
-	bytes, err := bindata_read(path, name)
+	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
 	}
@@ -151,11 +151,11 @@ func js_src_milk_index_js() (*asset, error) {
 	return a, err
 }
 
-// js_src_vendor_bootstrap_3_3_4_collapse_bootstrap_min_js reads file data from disk. It returns an error on failure.
-func js_src_vendor_bootstrap_3_3_4_collapse_bootstrap_min_js() (*asset, error) {
+// jsSrcVendorBootstrap334CollapseBootstrapMinJs reads file data from disk. It returns an error on failure.
+func jsSrcVendorBootstrap334CollapseBootstrapMinJs() (*asset, error) {
 	path := filepath.Join(rootDir, "js/src/vendor/bootstrap/3.3.4-collapse/bootstrap.min.js")
 	name := "js/src/vendor/bootstrap/3.3.4-collapse/bootstrap.min.js"
-	bytes, err := bindata_read(path, name)
+	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
 	}
@@ -169,11 +169,11 @@ func js_src_vendor_bootstrap_3_3_4_collapse_bootstrap_min_js() (*asset, error) {
 	return a, err
 }
 
-// js_src_vendor_headroom_0_7_0_headroom_min_js reads file data from disk. It returns an error on failure.
-func js_src_vendor_headroom_0_7_0_headroom_min_js() (*asset, error) {
+// jsSrcVendorHeadroom070HeadroomMinJs reads file data from disk. It returns an error on failure.
+func jsSrcVendorHeadroom070HeadroomMinJs() (*asset, error) {
 	path := filepath.Join(rootDir, "js/src/vendor/headroom/0.7.0/headroom.min.js")
 	name := "js/src/vendor/headroom/0.7.0/headroom.min.js"
-	bytes, err := bindata_read(path, name)
+	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
 	}
@@ -187,11 +187,11 @@ func js_src_vendor_headroom_0_7_0_headroom_min_js() (*asset, error) {
 	return a, err
 }
 
-// js_src_vendor_jquery_2_1_4_jquery_2_1_4_min_js reads file data from disk. It returns an error on failure.
-func js_src_vendor_jquery_2_1_4_jquery_2_1_4_min_js() (*asset, error) {
+// jsSrcVendorJquery214Jquery214MinJs reads file data from disk. It returns an error on failure.
+func jsSrcVendorJquery214Jquery214MinJs() (*asset, error) {
 	path := filepath.Join(rootDir, "js/src/vendor/jquery/2.1.4/jquery-2.1.4.min.js")
 	name := "js/src/vendor/jquery/2.1.4/jquery-2.1.4.min.js"
-	bytes, err := bindata_read(path, name)
+	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
 	}
@@ -205,11 +205,11 @@ func js_src_vendor_jquery_2_1_4_jquery_2_1_4_min_js() (*asset, error) {
 	return a, err
 }
 
-// js_src_vendor_react_0_13_3_react_min_js reads file data from disk. It returns an error on failure.
-func js_src_vendor_react_0_13_3_react_min_js() (*asset, error) {
+// jsSrcVendorReact0133ReactMinJs reads file data from disk. It returns an error on failure.
+func jsSrcVendorReact0133ReactMinJs() (*asset, error) {
 	path := filepath.Join(rootDir, "js/src/vendor/react/0.13.3/react.min.js")
 	name := "js/src/vendor/react/0.13.3/react.min.js"
-	bytes, err := bindata_read(path, name)
+	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
 	}
@@ -223,11 +223,11 @@ func js_src_vendor_react_0_13_3_react_min_js() (*asset, error) {
 	return a, err
 }
 
-// js_src_vendor_requirejs_domready_2_0_1_domready_js reads file data from disk. It returns an error on failure.
-func js_src_vendor_requirejs_domready_2_0_1_domready_js() (*asset, error) {
+// jsSrcVendorRequirejsDomready201DomreadyJs reads file data from disk. It returns an error on failure.
+func jsSrcVendorRequirejsDomready201DomreadyJs() (*asset, error) {
 	path := filepath.Join(rootDir, "js/src/vendor/requirejs-domready/2.0.1/domReady.js")
 	name := "js/src/vendor/requirejs-domready/2.0.1/domReady.js"
-	bytes, err := bindata_read(path, name)
+	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
 	}
@@ -241,11 +241,11 @@ func js_src_vendor_requirejs_domready_2_0_1_domready_js() (*asset, error) {
 	return a, err
 }
 
-// robots_txt reads file data from disk. It returns an error on failure.
-func robots_txt() (*asset, error) {
+// robotsTxt reads file data from disk. It returns an error on failure.
+func robotsTxt() (*asset, error) {
 	path := filepath.Join(rootDir, "robots.txt")
 	name := "robots.txt"
-	bytes, err := bindata_read(path, name)
+	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
 	}
@@ -311,19 +311,19 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"css/index.css": css_index_css,
-	"css/index.css.map": css_index_css_map,
-	"favicon.png": favicon_png,
-	"js/requirejs/2.1.17/require.min.js": js_requirejs_2_1_17_require_min_js,
-	"js/src/gen/jscript.js": js_src_gen_jscript_js,
-	"js/src/milk/build.js": js_src_milk_build_js,
-	"js/src/milk/index.js": js_src_milk_index_js,
-	"js/src/vendor/bootstrap/3.3.4-collapse/bootstrap.min.js": js_src_vendor_bootstrap_3_3_4_collapse_bootstrap_min_js,
-	"js/src/vendor/headroom/0.7.0/headroom.min.js": js_src_vendor_headroom_0_7_0_headroom_min_js,
-	"js/src/vendor/jquery/2.1.4/jquery-2.1.4.min.js": js_src_vendor_jquery_2_1_4_jquery_2_1_4_min_js,
-	"js/src/vendor/react/0.13.3/react.min.js": js_src_vendor_react_0_13_3_react_min_js,
-	"js/src/vendor/requirejs-domready/2.0.1/domReady.js": js_src_vendor_requirejs_domready_2_0_1_domready_js,
-	"robots.txt": robots_txt,
+	"css/index.css": cssIndexCss,
+	"css/index.css.map": cssIndexCssMap,
+	"favicon.png": faviconPng,
+	"js/requirejs/2.1.17/require.min.js": jsRequirejs2117RequireMinJs,
+	"js/src/gen/jscript.js": jsSrcGenJscriptJs,
+	"js/src/milk/build.js": jsSrcMilkBuildJs,
+	"js/src/milk/index.js": jsSrcMilkIndexJs,
+	"js/src/vendor/bootstrap/3.3.4-collapse/bootstrap.min.js": jsSrcVendorBootstrap334CollapseBootstrapMinJs,
+	"js/src/vendor/headroom/0.7.0/headroom.min.js": jsSrcVendorHeadroom070HeadroomMinJs,
+	"js/src/vendor/jquery/2.1.4/jquery-2.1.4.min.js": jsSrcVendorJquery214Jquery214MinJs,
+	"js/src/vendor/react/0.13.3/react.min.js": jsSrcVendorReact0133ReactMinJs,
+	"js/src/vendor/requirejs-domready/2.0.1/domReady.js": jsSrcVendorRequirejsDomready201DomreadyJs,
+	"robots.txt": robotsTxt,
 }
 
 // AssetDir returns the file names below a certain
@@ -361,76 +361,76 @@ func AssetDir(name string) ([]string, error) {
 	return rv, nil
 }
 
-type _bintree_t struct {
+type bintree struct {
 	Func func() (*asset, error)
-	Children map[string]*_bintree_t
+	Children map[string]*bintree
 }
-var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
-	"css": &_bintree_t{nil, map[string]*_bintree_t{
-		"index.css": &_bintree_t{css_index_css, map[string]*_bintree_t{
+var _bintree = &bintree{nil, map[string]*bintree{
+	"css": &bintree{nil, map[string]*bintree{
+		"index.css": &bintree{cssIndexCss, map[string]*bintree{
 		}},
-		"index.css.map": &_bintree_t{css_index_css_map, map[string]*_bintree_t{
-		}},
-	}},
-	"favicon.png": &_bintree_t{favicon_png, map[string]*_bintree_t{
-	}},
-	"js": &_bintree_t{nil, map[string]*_bintree_t{
-		"requirejs": &_bintree_t{nil, map[string]*_bintree_t{
-			"2.1.17": &_bintree_t{nil, map[string]*_bintree_t{
-				"require.min.js": &_bintree_t{js_requirejs_2_1_17_require_min_js, map[string]*_bintree_t{
-				}},
-			}},
-		}},
-		"src": &_bintree_t{nil, map[string]*_bintree_t{
-			"gen": &_bintree_t{nil, map[string]*_bintree_t{
-				"jscript.js": &_bintree_t{js_src_gen_jscript_js, map[string]*_bintree_t{
-				}},
-			}},
-			"milk": &_bintree_t{nil, map[string]*_bintree_t{
-				"build.js": &_bintree_t{js_src_milk_build_js, map[string]*_bintree_t{
-				}},
-				"index.js": &_bintree_t{js_src_milk_index_js, map[string]*_bintree_t{
-				}},
-			}},
-			"vendor": &_bintree_t{nil, map[string]*_bintree_t{
-				"bootstrap": &_bintree_t{nil, map[string]*_bintree_t{
-					"3.3.4-collapse": &_bintree_t{nil, map[string]*_bintree_t{
-						"bootstrap.min.js": &_bintree_t{js_src_vendor_bootstrap_3_3_4_collapse_bootstrap_min_js, map[string]*_bintree_t{
-						}},
-					}},
-				}},
-				"headroom": &_bintree_t{nil, map[string]*_bintree_t{
-					"0.7.0": &_bintree_t{nil, map[string]*_bintree_t{
-						"headroom.min.js": &_bintree_t{js_src_vendor_headroom_0_7_0_headroom_min_js, map[string]*_bintree_t{
-						}},
-					}},
-				}},
-				"jquery": &_bintree_t{nil, map[string]*_bintree_t{
-					"2.1.4": &_bintree_t{nil, map[string]*_bintree_t{
-						"jquery-2.1.4.min.js": &_bintree_t{js_src_vendor_jquery_2_1_4_jquery_2_1_4_min_js, map[string]*_bintree_t{
-						}},
-					}},
-				}},
-				"react": &_bintree_t{nil, map[string]*_bintree_t{
-					"0.13.3": &_bintree_t{nil, map[string]*_bintree_t{
-						"react.min.js": &_bintree_t{js_src_vendor_react_0_13_3_react_min_js, map[string]*_bintree_t{
-						}},
-					}},
-				}},
-				"requirejs-domready": &_bintree_t{nil, map[string]*_bintree_t{
-					"2.0.1": &_bintree_t{nil, map[string]*_bintree_t{
-						"domReady.js": &_bintree_t{js_src_vendor_requirejs_domready_2_0_1_domready_js, map[string]*_bintree_t{
-						}},
-					}},
-				}},
-			}},
+		"index.css.map": &bintree{cssIndexCssMap, map[string]*bintree{
 		}},
 	}},
-	"robots.txt": &_bintree_t{robots_txt, map[string]*_bintree_t{
+	"favicon.png": &bintree{faviconPng, map[string]*bintree{
+	}},
+	"js": &bintree{nil, map[string]*bintree{
+		"requirejs": &bintree{nil, map[string]*bintree{
+			"2.1.17": &bintree{nil, map[string]*bintree{
+				"require.min.js": &bintree{jsRequirejs2117RequireMinJs, map[string]*bintree{
+				}},
+			}},
+		}},
+		"src": &bintree{nil, map[string]*bintree{
+			"gen": &bintree{nil, map[string]*bintree{
+				"jscript.js": &bintree{jsSrcGenJscriptJs, map[string]*bintree{
+				}},
+			}},
+			"milk": &bintree{nil, map[string]*bintree{
+				"build.js": &bintree{jsSrcMilkBuildJs, map[string]*bintree{
+				}},
+				"index.js": &bintree{jsSrcMilkIndexJs, map[string]*bintree{
+				}},
+			}},
+			"vendor": &bintree{nil, map[string]*bintree{
+				"bootstrap": &bintree{nil, map[string]*bintree{
+					"3.3.4-collapse": &bintree{nil, map[string]*bintree{
+						"bootstrap.min.js": &bintree{jsSrcVendorBootstrap334CollapseBootstrapMinJs, map[string]*bintree{
+						}},
+					}},
+				}},
+				"headroom": &bintree{nil, map[string]*bintree{
+					"0.7.0": &bintree{nil, map[string]*bintree{
+						"headroom.min.js": &bintree{jsSrcVendorHeadroom070HeadroomMinJs, map[string]*bintree{
+						}},
+					}},
+				}},
+				"jquery": &bintree{nil, map[string]*bintree{
+					"2.1.4": &bintree{nil, map[string]*bintree{
+						"jquery-2.1.4.min.js": &bintree{jsSrcVendorJquery214Jquery214MinJs, map[string]*bintree{
+						}},
+					}},
+				}},
+				"react": &bintree{nil, map[string]*bintree{
+					"0.13.3": &bintree{nil, map[string]*bintree{
+						"react.min.js": &bintree{jsSrcVendorReact0133ReactMinJs, map[string]*bintree{
+						}},
+					}},
+				}},
+				"requirejs-domready": &bintree{nil, map[string]*bintree{
+					"2.0.1": &bintree{nil, map[string]*bintree{
+						"domReady.js": &bintree{jsSrcVendorRequirejsDomready201DomreadyJs, map[string]*bintree{
+						}},
+					}},
+				}},
+			}},
+		}},
+	}},
+	"robots.txt": &bintree{robotsTxt, map[string]*bintree{
 	}},
 }}
 
-// Restore an asset under the given directory
+// RestoreAsset restores an asset under the given directory
 func RestoreAsset(dir, name string) error {
         data, err := Asset(name)
         if err != nil {
@@ -455,17 +455,18 @@ func RestoreAsset(dir, name string) error {
         return nil
 }
 
-// Restore assets under the given directory recursively
+// RestoreAssets restores an asset under the given directory recursively
 func RestoreAssets(dir, name string) error {
         children, err := AssetDir(name)
-        if err != nil { // File
+        // File
+        if err != nil {
                 return RestoreAsset(dir, name)
-        } else { // Dir
-                for _, child := range children {
-                        err = RestoreAssets(dir, path.Join(name, child))
-                        if err != nil {
-                                return err
-                        }
+        }
+        // Dir
+        for _, child := range children {
+                err = RestoreAssets(dir, path.Join(name, child))
+                if err != nil {
+                        return err
                 }
         }
         return nil

@@ -11,8 +11,8 @@ import (
 	"path/filepath"
 )
 
-// bindata_read reads the given file from disk. It returns an error on failure.
-func bindata_read(path, name string) ([]byte, error) {
+// bindataRead reads the given file from disk. It returns an error on failure.
+func bindataRead(path, name string) ([]byte, error) {
 	buf, err := ioutil.ReadFile(path)
 	if err != nil {
 		err = fmt.Errorf("Error reading asset %s at %s: %v", name, path, err)
@@ -25,11 +25,11 @@ type asset struct {
 	info  os.FileInfo
 }
 
-// index_html reads file data from disk. It returns an error on failure.
-func index_html() (*asset, error) {
+// indexHtml reads file data from disk. It returns an error on failure.
+func indexHtml() (*asset, error) {
 	path := filepath.Join(rootDir, "index.html")
 	name := "index.html"
-	bytes, err := bindata_read(path, name)
+	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +95,7 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"index.html": index_html,
+	"index.html": indexHtml,
 }
 
 // AssetDir returns the file names below a certain
@@ -133,16 +133,16 @@ func AssetDir(name string) ([]string, error) {
 	return rv, nil
 }
 
-type _bintree_t struct {
+type bintree struct {
 	Func func() (*asset, error)
-	Children map[string]*_bintree_t
+	Children map[string]*bintree
 }
-var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
-	"index.html": &_bintree_t{index_html, map[string]*_bintree_t{
+var _bintree = &bintree{nil, map[string]*bintree{
+	"index.html": &bintree{indexHtml, map[string]*bintree{
 	}},
 }}
 
-// Restore an asset under the given directory
+// RestoreAsset restores an asset under the given directory
 func RestoreAsset(dir, name string) error {
         data, err := Asset(name)
         if err != nil {
@@ -167,17 +167,18 @@ func RestoreAsset(dir, name string) error {
         return nil
 }
 
-// Restore assets under the given directory recursively
+// RestoreAssets restores an asset under the given directory recursively
 func RestoreAssets(dir, name string) error {
         children, err := AssetDir(name)
-        if err != nil { // File
+        // File
+        if err != nil {
                 return RestoreAsset(dir, name)
-        } else { // Dir
-                for _, child := range children {
-                        err = RestoreAssets(dir, path.Join(name, child))
-                        if err != nil {
-                                return err
-                        }
+        }
+        // Dir
+        for _, child := range children {
+                err = RestoreAssets(dir, path.Join(name, child))
+                if err != nil {
+                        return err
                 }
         }
         return nil
