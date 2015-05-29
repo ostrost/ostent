@@ -7,10 +7,10 @@ import (
 )
 
 // LessDiskFunc makes a 'less' func for operating.MetricDF comparison.
-func LessDiskFunc(num client.Number) func(operating.MetricDF, operating.MetricDF) bool {
+func LessDiskFunc(param *client.EnumParam) func(operating.MetricDF, operating.MetricDF) bool {
 	return func(a, b operating.MetricDF) bool {
 		r := false
-		switch enums.UintDF(num.Uint) {
+		switch enums.UintDF(param.Decoded.Number.Uint) {
 		case enums.FS:
 			r = a.DevName.Snapshot().Value() < b.DevName.Snapshot().Value()
 		case enums.TOTAL:
@@ -22,22 +22,16 @@ func LessDiskFunc(num client.Number) func(operating.MetricDF, operating.MetricDF
 		case enums.MP:
 			r = a.DirName.Snapshot().Value() < b.DirName.Snapshot().Value()
 		}
-		// numeric values: reverse "less"
-		if !client.Decodecs["df"].IsAlpha(num.Uint) {
-			r = !r
-		}
-		if num.Negative {
-			r = !r
-		}
-		return r
+		return param.LessorMore(r)
 	}
 }
 
 // LessProcFunc makes a 'less' func for operating.MetricProc comparison.
-func LessProcFunc(uids map[uint]string, num client.Number) func(operating.MetricProc, operating.MetricProc) bool {
+func LessProcFunc(uids map[uint]string, param *client.EnumParam) func(operating.MetricProc, operating.MetricProc) bool {
 	return func(a, b operating.MetricProc) bool {
 		r := false
-		switch enums.UintPS(num.Uint) {
+		number := param.Decoded.Number
+		switch enums.UintPS(number.Uint) {
 		case enums.PID:
 			r = a.PID < b.PID
 		case enums.PRI:
@@ -57,13 +51,6 @@ func LessProcFunc(uids map[uint]string, num client.Number) func(operating.Metric
 		case enums.USER:
 			r = username(uids, a.UID) < username(uids, b.UID)
 		}
-		// numeric values: reverse "less"
-		if !client.Decodecs["ps"].IsAlpha(num.Uint) {
-			r = !r
-		}
-		if num.Negative {
-			r = !r
-		}
-		return r
+		return param.LessorMore(r)
 	}
 }

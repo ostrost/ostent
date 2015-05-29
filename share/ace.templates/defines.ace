@@ -154,11 +154,11 @@
   table.table1.stripe-table
     thead
       tr
-        {{template "defines::thdroplink" droplink $C .Data.Links.Params.df "FS" ""}}
-        {{template "defines::thdroplink" droplink $C .Data.Links.Params.df "MP" ""}}
-        {{template "defines::thdroplink" droplink $C .Data.Links.Params.df "AVAIL"}}
-        {{template "defines::thdroplink" droplink $C .Data.Links.Params.df "USED"}}
-        {{template "defines::thdroplink" droplink $C .Data.Links.Params.df "TOTAL"}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ENUM.df "FS" ""}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ENUM.df "MP" ""}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ENUM.df "AVAIL"}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ENUM.df "USED"}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ENUM.df "TOTAL"}}
     tbody
       {{template "defines::define_dfbytes_rows" .}}
 
@@ -251,15 +251,15 @@
   table.table2.stripe-table
     thead
       tr
-        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ps "PID"}}
-        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ps "UID"}}
-        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ps "USER" ""}}
-        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ps "PRI"}}
-        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ps "NICE"}}
-        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ps "VIRT"}}
-        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ps "RES"}}
-        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ps "TIME" "center"}}
-        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ps "NAME" ""}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ENUM.ps "PID"}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ENUM.ps "UID"}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ENUM.ps "USER" ""}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ENUM.ps "PRI"}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ENUM.ps "NICE"}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ENUM.ps "VIRT"}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ENUM.ps "RES"}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ENUM.ps "TIME" "center"}}
+        {{template "defines::thdroplink" droplink $C .Data.Links.Params.ENUM.ps "NAME" ""}}
     tbody
       {{template "defines::define_psrows" .}}
 

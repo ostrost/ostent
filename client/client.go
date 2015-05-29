@@ -72,8 +72,8 @@ func (c *Client) refreshes() []*Refresh {
 type internalClient struct {
 	PSlimit int
 
-	PSSEQ Number
-	DFSEQ Number
+	// PSSEQ Number
+	// DFSEQ Number
 
 	Toprows int
 
@@ -306,8 +306,8 @@ func DefaultClient(minperiod flags.Period) Client {
 
 	cs.PSlimit = 8
 
-	cs.PSSEQ = Decodecs["ps"].Default
-	cs.DFSEQ = Decodecs["df"].Default
+	// cs.PSSEQ = Decodecs["ps"].Default
+	// cs.DFSEQ = Decodecs["df"].Default
 
 	cs.RecalcRows()
 

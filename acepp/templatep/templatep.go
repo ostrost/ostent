@@ -28,7 +28,7 @@ func droplink(CN string, value interface{}, ss ...string) (interface{}, error) {
 			AC = "text-" + ss[1]
 		}
 	}
-	p, ok := value.(*client.Param)
+	ep, ok := value.(*client.EnumParam)
 	if !ok {
 		prefix := strings.TrimSuffix(value.(string), "}")
 		return client.DropLink{
@@ -40,11 +40,11 @@ func droplink(CN string, value interface{}, ss ...string) (interface{}, error) {
 			CaretClass: fmt.Sprintf("%s.%s.CaretClass}", prefix, named),
 		}, nil
 	}
-	pname, unew := p.Decodec.Unew()
+	pname, unew := ep.EnumDecodec.Unew()
 	if err := unew.Unmarshal(named, new(bool)); err != nil {
 		return nil, err
 	}
-	l := p.EncodeUint(pname, unew)
+	l := ep.EncodeUint(pname, unew)
 	l.CLASSNAME = CN
 	l.AlignClass = AC
 	return l, nil
