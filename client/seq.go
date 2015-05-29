@@ -2,7 +2,6 @@ package client
 
 import (
 	"encoding/json"
-	"net/http"
 	"net/url"
 	"strings"
 
@@ -102,8 +101,8 @@ type EnumDecodec struct {
 	Pname    string
 }
 
-func (ec EnumParam) IsAlpha(p enums.Uint) bool {
-	for _, u := range ec.EnumDecodec.Alphas {
+func (ep EnumParam) IsAlpha(p enums.Uint) bool {
+	for _, u := range ep.EnumDecodec.Alphas {
 		if u == p {
 			return true
 		}
@@ -111,20 +110,25 @@ func (ec EnumParam) IsAlpha(p enums.Uint) bool {
 	return false
 }
 
+func (ed EnumDecodec) DefaultParam() EnumParam {
+	return EnumParam{
+		EnumDecodec: ed,
+		// Query is intentionally nil
+	}
+}
+
 var EnumDecodecs = map[string]EnumDecodec{
 	"ps": {
-		Default: Number{Uint: enums.Uint(enums.PID)},
-		Alphas:  []enums.Uint{enums.Uint(enums.NAME), enums.Uint(enums.USER)},
-		// Unew:  func() (string, Upointer) { return "ps", interface{}(new(enums.UintPS)).(Upointer) },
+		Default:  Number{Uint: enums.Uint(enums.PID)},
+		Alphas:   []enums.Uint{enums.Uint(enums.NAME), enums.Uint(enums.USER)},
 		Unew:     func() (string, Upointer) { return "ps", new(enums.UintPS) },
 		TextFunc: strings.ToUpper,
 		Texts:    map[string]string{"PRI": "PR", "NICE": "NI", "NAME": "COMMAND"},
 		Pname:    "ps",
 	},
 	"df": {
-		Default: Number{Uint: enums.Uint(enums.FS)},
-		Alphas:  []enums.Uint{enums.Uint(enums.FS), enums.Uint(enums.MP)},
-		// Unew:  func() (string, Upointer) { return "df", interface{}(new(enums.UintDF)).(Upointer) },
+		Default:  Number{Uint: enums.Uint(enums.FS)},
+		Alphas:   []enums.Uint{enums.Uint(enums.FS), enums.Uint(enums.MP)},
 		Unew:     func() (string, Upointer) { return "df", new(enums.UintDF) },
 		TextFunc: func(s string) string { return strings.Title(strings.ToLower(s)) },
 		Texts:    map[string]string{"FS": "Device", "MP": "Mounted"},
@@ -132,7 +136,7 @@ var EnumDecodecs = map[string]EnumDecodec{
 	},
 }
 
-func (ep *EnumParam) Decode(form url.Values) error {
+func (ep *EnumParam) Decode(form url.Values, setep *EnumParam) error {
 	_, uptr := ep.EnumDecodec.Unew()
 	n, spec, err := ep.Find(form[ep.EnumDecodec.Pname], uptr)
 	if err != nil {
@@ -140,6 +144,10 @@ func (ep *EnumParam) Decode(form url.Values) error {
 	}
 	ep.Decoded.Number = n
 	ep.Decoded.Specified = spec
+	if setep != nil {
+		*setep = *ep
+		setep.Query = nil
+	}
 	return nil
 }
 
@@ -179,11 +187,7 @@ func (ep *EnumParam) Find(values []string, uptr Upointer) (Number, bool, error) 
 
 // NewParams constructs new Params.
 // Global var Decodecs is ranged.
-func NewParams(req *http.Request) Params {
-	if req != nil {
-		req.ParseForm() // do ParseForm even if req.Form == nil
-		_ = req.Form    // TODO use this
-	}
+func NewParams() Params {
 	q := &Query{Values: make(url.Values)}
 	enum := make(Enums)
 	for k, v := range EnumDecodecs {
@@ -208,12 +212,12 @@ type EnumParam struct {
 	Moved bool
 }
 
-func (ec EnumParam) LessorMore(r bool) bool {
+func (ep EnumParam) LessorMore(r bool) bool {
 	// numeric values: flip r
-	if !ec.IsAlpha(ec.Decoded.Number.Uint) {
+	if !ep.IsAlpha(ep.Decoded.Number.Uint) {
 		r = !r
 	}
-	if ec.Decoded.Number.Negative {
+	if ep.Decoded.Number.Negative {
 		r = !r
 	}
 	return r

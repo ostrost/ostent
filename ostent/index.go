@@ -56,9 +56,9 @@ func username(uids map[uint]string, uid uint) string {
 	return s
 }
 
-func (procs MPSlice) Ordered(param *client.EnumParam, cl *client.Client, send *client.SendClient) []operating.ProcData {
+func (procs MPSlice) Ordered(cl *client.Client, send *client.SendClient) []operating.ProcData {
 	uids := map[uint]string{}
-	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(uids, param)) // not .StableSortBy
+	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(uids, cl.PSSEQ)) // not .StableSortBy
 
 	pslen := len(procs)
 	limitPS := cl.PSlimit
@@ -364,25 +364,24 @@ func LessCPU(a, b operating.MetricCPU) bool {
 }
 
 func (ir *IndexRegistry) DF(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
-	param := iu.Links.Params.ENUM["df"]
 	switch cli.TabDF.Uint {
 	case client.DFBYTES:
-		iu.DFbytes = &operating.DFbytes{List: ir.DFbytes(param, cli, send)}
+		iu.DFbytes = &operating.DFbytes{List: ir.DFbytes(cli, send)}
 		return IndexUpdate{DFbytes: iu.DFbytes}
 	case client.DFINODES:
-		iu.DFinodes = &operating.DFinodes{List: ir.DFinodes(param, cli, send)}
+		iu.DFinodes = &operating.DFinodes{List: ir.DFinodes(cli, send)}
 		return IndexUpdate{DFinodes: iu.DFinodes}
 	}
 	return nil
 }
 
-func (ir *IndexRegistry) DFbytes(param *client.EnumParam, cli *client.Client, send *client.SendClient) []operating.DiskBytes {
+func (ir *IndexRegistry) DFbytes(cli *client.Client, send *client.SendClient) []operating.DiskBytes {
 	private := ir.ListPrivateDisk()
 
 	send.SetBool(&send.ExpandableDF, &cli.ExpandableDF, len(private) > cli.Toprows)
 	send.SetString(&send.ExpandtextDF, &cli.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(private)))
 
-	private.StableSortBy(LessDiskFunc(param))
+	private.StableSortBy(LessDiskFunc(cli.DFSEQ))
 
 	var public []operating.DiskBytes
 	for i, disk := range private {
@@ -411,13 +410,13 @@ func FormatDFbytes(md operating.MetricDF) operating.DiskBytes {
 	}
 }
 
-func (ir *IndexRegistry) DFinodes(param *client.EnumParam, cli *client.Client, send *client.SendClient) []operating.DiskInodes {
+func (ir *IndexRegistry) DFinodes(cli *client.Client, send *client.SendClient) []operating.DiskInodes {
 	private := ir.ListPrivateDisk()
 
 	send.SetBool(&send.ExpandableDF, &cli.ExpandableDF, len(private) > cli.Toprows)
 	send.SetString(&send.ExpandtextDF, &cli.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(private)))
 
-	private.StableSortBy(LessDiskFunc(param))
+	private.StableSortBy(LessDiskFunc(cli.DFSEQ))
 
 	var public []operating.DiskInodes
 	for i, disk := range private {
@@ -468,7 +467,7 @@ func (ir *IndexRegistry) VG(cli *client.Client, send *client.SendClient, iu *Ind
 type MPSlice operating.MetricProcSlice
 
 func (procs MPSlice) IU(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
-	iu.PStable = &PStable{List: procs.Ordered(iu.Links.Params.ENUM["df"], cli, send)}
+	iu.PStable = &PStable{List: procs.Ordered(cli, send)}
 	return IndexUpdate{PStable: iu.PStable}
 }
 
@@ -746,9 +745,11 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 	psCopy := lastInfo.CopyPS()
 
 	if req != nil {
-		iu.Links = &Links{client.NewParams(req)} // req.ParseForm()'d in NewParams()
-		iu.Links.Params.ENUM["df"].Decode(req.Form)
-		iu.Links.Params.ENUM["ps"].Decode(req.Form)
+		req.ParseForm() // do ParseForm even if req.Form == nil
+
+		iu.Links = &Links{client.NewParams()}
+		iu.Links.Params.ENUM["df"].Decode(req.Form, &cl.DFSEQ)
+		iu.Links.Params.ENUM["ps"].Decode(req.Form, &cl.PSSEQ)
 
 		// iu.Links.Params.BOOL["configmem"].Decode(req.Form, &cl.HideconfigMEM)
 

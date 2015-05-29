@@ -7,7 +7,7 @@ import (
 )
 
 // LessDiskFunc makes a 'less' func for operating.MetricDF comparison.
-func LessDiskFunc(param *client.EnumParam) func(operating.MetricDF, operating.MetricDF) bool {
+func LessDiskFunc(param client.EnumParam) func(operating.MetricDF, operating.MetricDF) bool {
 	return func(a, b operating.MetricDF) bool {
 		r := false
 		switch enums.UintDF(param.Decoded.Number.Uint) {
@@ -27,11 +27,10 @@ func LessDiskFunc(param *client.EnumParam) func(operating.MetricDF, operating.Me
 }
 
 // LessProcFunc makes a 'less' func for operating.MetricProc comparison.
-func LessProcFunc(uids map[uint]string, param *client.EnumParam) func(operating.MetricProc, operating.MetricProc) bool {
+func LessProcFunc(uids map[uint]string, param client.EnumParam) func(operating.MetricProc, operating.MetricProc) bool {
 	return func(a, b operating.MetricProc) bool {
 		r := false
-		number := param.Decoded.Number
-		switch enums.UintPS(number.Uint) {
+		switch enums.UintPS(param.Decoded.Number.Uint) {
 		case enums.PID:
 			r = a.PID < b.PID
 		case enums.PRI:
