@@ -257,7 +257,14 @@ type served struct {
 func (c *conn) writeJSON(data interface{}) error {
 	c.writemutex.Lock()
 	defer c.writemutex.Unlock()
-	return c.Conn.WriteJSON(data)
+	errch := make(chan error, 1)
+	go func() { errch <- c.Conn.WriteJSON(data) }()
+	select {
+	case err := <-errch:
+		return err
+	case <-time.After(5 * time.Second):
+		return fmt.Errorf("timed out (5s)")
+	}
 }
 
 func (c *conn) Reload() {
@@ -435,7 +442,9 @@ func IndexWSFunc(access *logger, minperiod flags.Period) func(http.ResponseWrite
 
 func IndexWS(access *logger, minperiod flags.Period, w http.ResponseWriter, req *http.Request) {
 	// Upgrader.Upgrade() has Origin check if .CheckOrigin is nil
-	upgrader := gorillawebsocket.Upgrader{}
+	upgrader := gorillawebsocket.Upgrader{
+		HandshakeTimeout: 5 * time.Second,
+	}
 	wsconn, err := upgrader.Upgrade(w, req, nil)
 	if err != nil { // Upgrade() does http.Error() to the client
 		return
