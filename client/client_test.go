@@ -14,19 +14,19 @@ func TestLinks(t *testing.T) {
 		t.Fatal(err)
 	}
 	params := NewParams(req)
-	err = params["df"].Decode(req.Form, new(Number))
+	err = params.ENUM["df"].Decode(req.Form)
 	if err != nil {
 		t.Fatal(err)
 	}
-	num := params["df"].Decoded.Number
+	num := params.ENUM["df"].Decoded.Number
 	if num.Negative || num.Uint != enums.Uint(enums.MP) {
 		t.Errorf("Decode failed: %+v\n", num)
 	}
 
-	if total := params["df"].EncodeUint("df", enums.TOTAL); total.Href != "?df=total" || total.Class != "state" || total.CaretClass != "" {
+	if total := params.ENUM["df"].EncodeUint("df", enums.TOTAL); total.Href != "?df=total" || total.Class != "state" || total.CaretClass != "" {
 		t.Fatalf("Encode failed: total: %+v", total)
 	}
-	if mp := params["df"].EncodeUint("df", enums.MP); mp.Href != "?df=-mp" || mp.Class != "state current dropup" || mp.CaretClass != "caret" {
+	if mp := params.ENUM["df"].EncodeUint("df", enums.MP); mp.Href != "?df=-mp" || mp.Class != "state current dropup" || mp.CaretClass != "caret" {
 		t.Fatalf("Encode failed: mp: %+v", mp)
 	}
 
@@ -36,7 +36,7 @@ func TestLinks(t *testing.T) {
 			t.Fatal(err)
 		}
 		params := NewParams(req)
-		err = params["df"].Decode(req.Form, new(Number))
+		err = params.ENUM["df"].Decode(req.Form)
 		if err == nil || err.Error() != "" {
 			t.Fatalf("Error expected (%q)", err)
 		}
@@ -45,14 +45,14 @@ func TestLinks(t *testing.T) {
 
 		}
 	}
-	CheckRedirect(t, new(Number), NewForm(t, "df=fs&ps=pid"), []string{"df"}, "df=-fs")
-	CheckRedirect(t, new(Number), NewForm(t, "df=fs&ps=pid"), []string{"df", "ps"}, "df=-fs&ps=-pid")
-	CheckRedirect(t, new(Number), NewForm(t, "df=fs&ps=pid"), []string{"ps"}, "ps=-pid")
+	CheckRedirect(t, NewForm(t, "df=fs&ps=pid"), []string{"df"}, "df=-fs")
+	CheckRedirect(t, NewForm(t, "df=fs&ps=pid"), []string{"df", "ps"}, "df=-fs&ps=-pid")
+	CheckRedirect(t, NewForm(t, "df=fs&ps=pid"), []string{"ps"}, "ps=-pid")
 }
 
-func CheckRedirect(t *testing.T, num *Number, form Form, names []string, moved string) {
+func CheckRedirect(t *testing.T, form Form, names []string, moved string) {
 	for _, name := range names {
-		err := form.Params[name].Decode(form.Values, num)
+		err := form.Params.ENUM[name].Decode(form.Values)
 		if err == nil {
 			t.Fatalf("RenamedConstError expected, got nil")
 		}
