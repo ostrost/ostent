@@ -61,7 +61,7 @@ func (ep EnumParam) SetBase(base url.Values, pname string, uinter enums.Uinter) 
 
 	text := ep.EnumDecodec.Text(strings.ToUpper(low))
 	ddef := ep.EnumDecodec.Default.Uint
-	dnum := ep.Decoded.Number
+	dnum := ep.EnumDecoded.Number
 
 	// Default ordering is desc (values are numeric most of the time).
 	// Alpha values ordering: asc.
@@ -75,7 +75,7 @@ func (ep EnumParam) SetBase(base url.Values, pname string, uinter enums.Uinter) 
 		*ret = !desc
 	}
 	// for default, opposite of having a parameter is it's absence.
-	if this == ddef && ep.Decoded.Specified {
+	if this == ddef && ep.EnumDecoded.Specified {
 		base.Del(pname)
 		return text, ret
 	}
@@ -147,8 +147,8 @@ func (ep *EnumParam) Decode(form url.Values, setep *EnumParam) error {
 	if err != nil {
 		return err
 	}
-	ep.Decoded.Number = n
-	ep.Decoded.Specified = spec
+	ep.EnumDecoded.Number = n
+	ep.EnumDecoded.Specified = spec
 	if setep != nil {
 		*setep = *ep
 	}
@@ -204,22 +204,27 @@ func NewParams() *Params {
 	return p
 }
 
+// EnumDecoded has Decode result.
+type EnumDecoded struct {
+	Number
+	Specified bool
+}
+
+// EnumParam holds everything known about enum param.
+// All fields are non-marshaled, there's .MarshalJSON method for that.
 type EnumParam struct {
-	// EnumDecodec is read-only, an entry from global var Decodecs.
-	EnumDecodec
-	Decoded struct {
-		Number
-		Specified bool
-	}
-	Params *Params `json:"-"` // non-marshaled explicitly
+	// EnumDecodec is read-only, an entry from global var EnumDecodecs.
+	EnumDecodec EnumDecodec `json:"-"` // non-marshaled explicitly
+	EnumDecoded EnumDecoded `json:"-"` // non-marshaled explicitly
+	Params      *Params     `json:"-"` // non-marshaled explicitly
 }
 
 func (ep EnumParam) LessorMore(r bool) bool {
 	// numeric values: flip r
-	if !ep.IsAlpha(ep.Decoded.Number.Uint) {
+	if !ep.IsAlpha(ep.EnumDecoded.Number.Uint) {
 		r = !r
 	}
-	if ep.Decoded.Number.Negative {
+	if ep.EnumDecoded.Number.Negative {
 		r = !r
 	}
 	return r

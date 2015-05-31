@@ -32,13 +32,13 @@ func droplink(CN string, value interface{}, ss ...string) (interface{}, error) {
 	if !ok { // ace/template-compliling stage
 		prefix := strings.TrimSuffix(value.(string), "}")
 		names := strings.Split(prefix, ".")
-		pname := names[len(names)-1]     // ace stage: ok to fail
+		pname := names[len(names)-1]     // errors are fatal here
 		enums := client.NewParams().ENUM // Params have .ENUM only yet
-		ep := enums[pname]               // undecoded, that's fine
+		ep := enums[pname]               // undecoded, only .EnumDecodec referenced
 		return client.DropLink{
 			CLASSNAME:  CN,
 			AlignClass: AC,
-			Text:       ep.Text(named), // static
+			Text:       ep.EnumDecodec.Text(named), // always static
 			Href:       fmt.Sprintf("%s.%s.Href}", prefix, named),
 			Class:      fmt.Sprintf("%s.%s.Class}", prefix, named),
 			CaretClass: fmt.Sprintf("%s.%s.CaretClass}", prefix, named),
