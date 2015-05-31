@@ -127,7 +127,7 @@ type IndexData struct {
 }
 
 type Links struct {
-	Params client.Params
+	Params *client.Params
 }
 
 type PStable struct {
@@ -739,7 +739,7 @@ type SetInterface interface {
 }
 // */
 
-func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (iu IndexUpdate, err error) {
+func getUpdates(params *client.Params, req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (iu IndexUpdate, err error) {
 	cl.RecalcRows() // before anything
 
 	psCopy := lastInfo.CopyPS()
@@ -747,15 +747,18 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 	if req != nil {
 		req.ParseForm() // do ParseForm even if req.Form == nil
 
-		iu.Links = &Links{client.NewParams()}
+		if params == nil {
+			params = client.NewParams()
+		}
+		iu.Links = &Links{params}
 		iu.Links.Params.ENUM["df"].Decode(req.Form, &cl.DFSEQ)
 		iu.Links.Params.ENUM["ps"].Decode(req.Form, &cl.PSSEQ)
 
 		// iu.Links.Params.BOOL["configmem"].Decode(req.Form, &cl.HideconfigMEM)
 
 		// after all the (enum) Decode()s
-		if iu.Links.Params.Moved() {
-			return iu, enums.RenamedConstError("?" + iu.Links.Params.Encode())
+		if iu.Links.Params.Moved {
+			return iu, enums.RenamedConstError("?" + iu.Links.Params.Values.Encode())
 		}
 	}
 
@@ -801,8 +804,9 @@ func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 		lastInfo.collect(&Machine{})
 	}
 
-	cl := client.DefaultClient(minperiod)
-	updates, err := getUpdates(req, &cl, client.SendClient{}, true)
+	params := client.NewParams()
+	cl := client.NewClient(params, minperiod)
+	updates, err := getUpdates(params, req, &cl, client.SendClient{}, true)
 	if err != nil {
 		return IndexData{}, err
 	}

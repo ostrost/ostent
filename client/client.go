@@ -263,7 +263,8 @@ func (c *Client) Merge(r RecvClient, s *SendClient) {
 	s.MergeTab(c.TabDF, r.TabDF, &s.TabDF, DFTABS)
 }
 
-func DefaultClient(minperiod flags.Period) Client {
+// NewClient construct a Client with defaults.
+func NewClient(params *Params, minperiod flags.Period) Client {
 	cs := Client{}
 
 	// new(bool) is &false
@@ -306,8 +307,11 @@ func DefaultClient(minperiod flags.Period) Client {
 
 	cs.PSlimit = 8
 
-	cs.PSSEQ = EnumDecodecs["ps"].DefaultParam()
-	cs.DFSEQ = EnumDecodecs["df"].DefaultParam()
+	if params == nil {
+		params = NewParams()
+	}
+	cs.PSSEQ = EnumDecodecs["ps"].DefaultParam(params)
+	cs.DFSEQ = EnumDecodecs["df"].DefaultParam(params)
 
 	cs.RecalcRows()
 

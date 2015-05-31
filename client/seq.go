@@ -35,7 +35,7 @@ type DropLink struct {
 // EncodeUint returns enums.uinter applied DropLink. .AlignClass is not filled.
 func (ep EnumParam) EncodeUint(pname string, uinter enums.Uinter) DropLink {
 	base := url.Values{}
-	for k, v := range ep.Query.Values {
+	for k, v := range ep.Params.Values {
 		base[k] = v
 	}
 	text, cur := ep.SetBase(base, pname, uinter)
@@ -86,12 +86,6 @@ func (ep EnumParam) SetBase(base url.Values, pname string, uinter enums.Uinter) 
 	return text, ret
 }
 
-// Query type for link making.
-type Query struct {
-	Values url.Values
-	Moved  bool
-}
-
 type EnumDecodec struct {
 	Default  Number
 	Alphas   []enums.Uint
@@ -110,10 +104,10 @@ func (ep EnumParam) IsAlpha(p enums.Uint) bool {
 	return false
 }
 
-func (ed EnumDecodec) DefaultParam() EnumParam {
+func (ed EnumDecodec) DefaultParam(params *Params) EnumParam {
 	return EnumParam{
 		EnumDecodec: ed,
-		// Query is intentionally nil
+		Params:      params,
 	}
 }
 
@@ -146,12 +140,11 @@ func (ep *EnumParam) Decode(form url.Values, setep *EnumParam) error {
 	ep.Decoded.Specified = spec
 	if setep != nil {
 		*setep = *ep
-		setep.Query = nil
 	}
 	return nil
 }
 
-// Find side effects: uptr.Unmarshal and p.Query.Set (eg url.Values{}.Set())
+// Find side effects: uptr.Unmarshal and p.Values.Set
 func (ep *EnumParam) Find(values []string, uptr Upointer) (Number, bool, error) {
 	if len(values) == 0 || values[0] == "" {
 		return ep.EnumDecodec.Default, false, nil
@@ -171,9 +164,9 @@ func (ep *EnumParam) Find(values []string, uptr Upointer) (Number, bool, error) 
 				if negate {
 					l = "-" + l
 				}
-				ep.Query.Values.Set(ep.EnumDecodec.Pname, l)
+				ep.Params.Values.Set(ep.EnumDecodec.Pname, l)
 			}
-			ep.Moved = true
+			ep.Params.Moved = true
 		}
 		return Number{}, true, err
 	}
@@ -181,24 +174,23 @@ func (ep *EnumParam) Find(values []string, uptr Upointer) (Number, bool, error) 
 		Uint:     uptr.Touint(),
 		Negative: negate,
 	}
-	ep.Query.Values.Set(ep.EnumDecodec.Pname, values[0])
+	ep.Params.Values.Set(ep.EnumDecodec.Pname, values[0])
 	return n, true, nil
 }
 
 // NewParams constructs new Params.
-// Global var Decodecs is ranged.
-func NewParams() Params {
-	q := &Query{Values: make(url.Values)}
+// Global var EnumDecodecs is ranged.
+func NewParams() *Params {
+	p := &Params{Values: make(url.Values)}
 	enum := make(Enums)
 	for k, v := range EnumDecodecs {
 		enum[k] = &EnumParam{
 			EnumDecodec: v,
-			Query:       q,
+			Params:      p,
 		}
 	}
-	return Params{
-		ENUM: enum,
-	}
+	p.ENUM = enum
+	return p
 }
 
 type EnumParam struct {
@@ -208,8 +200,7 @@ type EnumParam struct {
 		Number
 		Specified bool
 	}
-	Query *Query // contains current url.Values
-	Moved bool
+	Params *Params `json:"-"` // non-marshaled explicitly
 }
 
 func (ep EnumParam) LessorMore(r bool) bool {
@@ -229,7 +220,7 @@ func (ep EnumParam) LessorMore(r bool) bool {
 func (ep EnumParam) MarshalJSON() ([]byte, error) {
 	m := map[string]DropLink{}
 	name, uptr := ep.EnumDecodec.Unew()
-	uter := uptr.(enums.Uinter)
+	uter := uptr.(enums.Uinter) // downcast. Upointer inlines Uinter.
 	marshal := uptr.Marshal
 	for i := 0; i < 100; i++ {
 		nextuter, s, err := marshal()
@@ -246,24 +237,9 @@ func (ep EnumParam) MarshalJSON() ([]byte, error) {
 type Enums map[string]*EnumParam
 
 type Params struct {
-	ENUM Enums
-}
-
-func (ps Params) Moved() bool {
-	for _, v := range ps.ENUM {
-		if v.Moved {
-			return true
-		}
-	}
-	return false
-}
-
-// Encode picks first EnumParam and uses it's .Query.Values.
-func (ps Params) Encode() string {
-	for _, v := range ps.ENUM {
-		return v.Query.Values.Encode()
-	}
-	return ""
+	ENUM   Enums
+	Values url.Values `json:"-"`
+	Moved  bool       `json:"-"`
 }
 
 func (ed EnumDecodec) Text(in string) string {

@@ -42,7 +42,7 @@ func TestLinks(t *testing.T) {
 		if err == nil || err.Error() != "" {
 			t.Fatalf("Error expected (%q)", err)
 		}
-		if s := params.Encode(); s != "df=total" {
+		if s := params.Values.Encode(); s != "df=total" {
 			t.Fatalf("Expected Encode: %q", s)
 
 		}
@@ -56,7 +56,7 @@ func TestLinks(t *testing.T) {
 	if err := form.Params.ENUM["df"].Decode(url.Values{"df": []string{"mp"}}, nil); err != nil {
 		t.Fatalf("Decoding errd unexpectedly: %s", err)
 	}
-	if s, moved := form.Params.Encode(), "df=mp&ps=-pid"; s != moved {
+	if s, moved := form.Params.Values.Encode(), "df=mp&ps=-pid"; s != moved {
 		t.Fatalf("Redirect mismatch (%q): %q", moved, s)
 	}
 }
@@ -71,14 +71,14 @@ func CheckRedirect(t *testing.T, form Form, names []string, moved string) {
 			t.Fatalf("RenamedConstError expected, got: %s", err)
 		}
 	}
-	if s := form.Params.Encode(); s != moved {
+	if s := form.Params.Values.Encode(); s != moved {
 		t.Fatalf("Redirect mismatch (%q): %q", moved, s)
 	}
 }
 
 type Form struct {
 	url.Values
-	Params
+	*Params
 }
 
 func NewForm(t *testing.T, qs string) Form {
