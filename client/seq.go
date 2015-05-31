@@ -87,12 +87,11 @@ func (ep EnumParam) SetBase(base url.Values, pname string, uinter enums.Uinter) 
 }
 
 type EnumDecodec struct {
-	Default  Number
-	Alphas   []enums.Uint
-	Unew     func() (string, Upointer) `json:"-"`
-	TextFunc func(string) string       `json:"-"`
-	Texts    map[string]string         `json:"-"`
-	Pname    string
+	Default Number
+	Alphas  []enums.Uint
+	Unew    func() (string, Upointer) `json:"-"` // func cannot be marshaled
+	Text    func(string) string       `json:"-"` // func cannot be marshaled
+	Pname   string
 }
 
 func (ep EnumParam) IsAlpha(p enums.Uint) bool {
@@ -111,22 +110,34 @@ func (ed EnumDecodec) DefaultParam(params *Params) EnumParam {
 	}
 }
 
+// TextFunc constructs string replacement func.
+// ab defines exact mapping, miss-case: fs funcs chain-apply.
+func TextFunc(ab map[string]string, fs ...func(string) string) func(string) string {
+	return func(s string) string {
+		if n, ok := ab[s]; ok {
+			return n
+		}
+		for _, f := range fs {
+			s = f(s)
+		}
+		return s
+	}
+}
+
 var EnumDecodecs = map[string]EnumDecodec{
 	"ps": {
-		Default:  Number{Uint: enums.Uint(enums.PID)},
-		Alphas:   []enums.Uint{enums.Uint(enums.NAME), enums.Uint(enums.USER)},
-		Unew:     func() (string, Upointer) { return "ps", new(enums.UintPS) },
-		TextFunc: strings.ToUpper,
-		Texts:    map[string]string{"PRI": "PR", "NICE": "NI", "NAME": "COMMAND"},
-		Pname:    "ps",
+		Default: Number{Uint: enums.Uint(enums.PID)},
+		Alphas:  []enums.Uint{enums.Uint(enums.NAME), enums.Uint(enums.USER)},
+		Unew:    func() (string, Upointer) { return "ps", new(enums.UintPS) },
+		Text:    TextFunc(map[string]string{"PRI": "PR", "NICE": "NI", "NAME": "COMMAND"}, strings.ToUpper),
+		Pname:   "ps",
 	},
 	"df": {
-		Default:  Number{Uint: enums.Uint(enums.FS)},
-		Alphas:   []enums.Uint{enums.Uint(enums.FS), enums.Uint(enums.MP)},
-		Unew:     func() (string, Upointer) { return "df", new(enums.UintDF) },
-		TextFunc: func(s string) string { return strings.Title(strings.ToLower(s)) },
-		Texts:    map[string]string{"FS": "Device", "MP": "Mounted"},
-		Pname:    "df",
+		Default: Number{Uint: enums.Uint(enums.FS)},
+		Alphas:  []enums.Uint{enums.Uint(enums.FS), enums.Uint(enums.MP)},
+		Unew:    func() (string, Upointer) { return "df", new(enums.UintDF) },
+		Text:    TextFunc(map[string]string{"FS": "Device", "MP": "Mounted"}, strings.ToLower, strings.Title),
+		Pname:   "df",
 	},
 }
 
@@ -240,11 +251,4 @@ type Params struct {
 	ENUM   Enums
 	Values url.Values `json:"-"`
 	Moved  bool       `json:"-"`
-}
-
-func (ed EnumDecodec) Text(in string) string {
-	if s, ok := ed.Texts[in]; ok {
-		return s
-	}
-	return ed.TextFunc(in)
 }
