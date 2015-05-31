@@ -246,31 +246,31 @@ define(function(require) {
     ><tr
       ><th className="header "
   ><a href={Data.Links.Params.ENUM.df.FS.Href} className={Data.Links.Params.ENUM.df.FS.Class}
-    >{Data.Links.Params.ENUM.df.FS.Text}<span className={Data.Links.Params.ENUM.df.FS.CaretClass}
+    >Device<span className={Data.Links.Params.ENUM.df.FS.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header "
   ><a href={Data.Links.Params.ENUM.df.MP.Href} className={Data.Links.Params.ENUM.df.MP.Class}
-    >{Data.Links.Params.ENUM.df.MP.Text}<span className={Data.Links.Params.ENUM.df.MP.CaretClass}
+    >Mounted<span className={Data.Links.Params.ENUM.df.MP.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
   ><a href={Data.Links.Params.ENUM.df.AVAIL.Href} className={Data.Links.Params.ENUM.df.AVAIL.Class}
-    >{Data.Links.Params.ENUM.df.AVAIL.Text}<span className={Data.Links.Params.ENUM.df.AVAIL.CaretClass}
+    >Avail<span className={Data.Links.Params.ENUM.df.AVAIL.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
   ><a href={Data.Links.Params.ENUM.df.USED.Href} className={Data.Links.Params.ENUM.df.USED.Class}
-    >{Data.Links.Params.ENUM.df.USED.Text}<span className={Data.Links.Params.ENUM.df.USED.CaretClass}
+    >Used<span className={Data.Links.Params.ENUM.df.USED.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
   ><a href={Data.Links.Params.ENUM.df.TOTAL.Href} className={Data.Links.Params.ENUM.df.TOTAL.Class}
-    >{Data.Links.Params.ENUM.df.TOTAL.Text}<span className={Data.Links.Params.ENUM.df.TOTAL.CaretClass}
+    >Total<span className={Data.Links.Params.ENUM.df.TOTAL.CaretClass}
       ></span
     ></a
   ></th
@@ -359,55 +359,55 @@ define(function(require) {
     ><tr
       ><th className="header text-right"
   ><a href={Data.Links.Params.ENUM.ps.PID.Href} className={Data.Links.Params.ENUM.ps.PID.Class}
-    >{Data.Links.Params.ENUM.ps.PID.Text}<span className={Data.Links.Params.ENUM.ps.PID.CaretClass}
+    >PID<span className={Data.Links.Params.ENUM.ps.PID.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
   ><a href={Data.Links.Params.ENUM.ps.UID.Href} className={Data.Links.Params.ENUM.ps.UID.Class}
-    >{Data.Links.Params.ENUM.ps.UID.Text}<span className={Data.Links.Params.ENUM.ps.UID.CaretClass}
+    >UID<span className={Data.Links.Params.ENUM.ps.UID.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header "
   ><a href={Data.Links.Params.ENUM.ps.USER.Href} className={Data.Links.Params.ENUM.ps.USER.Class}
-    >{Data.Links.Params.ENUM.ps.USER.Text}<span className={Data.Links.Params.ENUM.ps.USER.CaretClass}
+    >USER<span className={Data.Links.Params.ENUM.ps.USER.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
   ><a href={Data.Links.Params.ENUM.ps.PRI.Href} className={Data.Links.Params.ENUM.ps.PRI.Class}
-    >{Data.Links.Params.ENUM.ps.PRI.Text}<span className={Data.Links.Params.ENUM.ps.PRI.CaretClass}
+    >PR<span className={Data.Links.Params.ENUM.ps.PRI.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
   ><a href={Data.Links.Params.ENUM.ps.NICE.Href} className={Data.Links.Params.ENUM.ps.NICE.Class}
-    >{Data.Links.Params.ENUM.ps.NICE.Text}<span className={Data.Links.Params.ENUM.ps.NICE.CaretClass}
+    >NI<span className={Data.Links.Params.ENUM.ps.NICE.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
   ><a href={Data.Links.Params.ENUM.ps.VIRT.Href} className={Data.Links.Params.ENUM.ps.VIRT.Class}
-    >{Data.Links.Params.ENUM.ps.VIRT.Text}<span className={Data.Links.Params.ENUM.ps.VIRT.CaretClass}
+    >VIRT<span className={Data.Links.Params.ENUM.ps.VIRT.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
   ><a href={Data.Links.Params.ENUM.ps.RES.Href} className={Data.Links.Params.ENUM.ps.RES.Class}
-    >{Data.Links.Params.ENUM.ps.RES.Text}<span className={Data.Links.Params.ENUM.ps.RES.CaretClass}
+    >RES<span className={Data.Links.Params.ENUM.ps.RES.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-center"
   ><a href={Data.Links.Params.ENUM.ps.TIME.Href} className={Data.Links.Params.ENUM.ps.TIME.Class}
-    >{Data.Links.Params.ENUM.ps.TIME.Text}<span className={Data.Links.Params.ENUM.ps.TIME.CaretClass}
+    >TIME<span className={Data.Links.Params.ENUM.ps.TIME.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header "
   ><a href={Data.Links.Params.ENUM.ps.NAME.Href} className={Data.Links.Params.ENUM.ps.NAME.Class}
-    >{Data.Links.Params.ENUM.ps.NAME.Text}<span className={Data.Links.Params.ENUM.ps.NAME.CaretClass}
+    >COMMAND<span className={Data.Links.Params.ENUM.ps.NAME.CaretClass}
       ></span
     ></a
   ></th

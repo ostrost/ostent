@@ -26,7 +26,7 @@ type Upointer interface {
 type DropLink struct {
 	CLASSNAME  string // required for jsx
 	AlignClass string
-	Text       string
+	Text       string `json:"-"` // static
 	Href       string
 	Class      string
 	CaretClass string

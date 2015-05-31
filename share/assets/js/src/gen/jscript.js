@@ -133,19 +133,19 @@ define(function(require) {
     , React.createElement("tr", null
       , React.createElement("th", {className: "header "
   }, React.createElement("a", {href: Data.Links.Params.ENUM.df.FS.Href, className: Data.Links.Params.ENUM.df.FS.Class
-    }, Data.Links.Params.ENUM.df.FS.Text, React.createElement("span", {className: Data.Links.Params.ENUM.df.FS.CaretClass
+    }, "Device", React.createElement("span", {className: Data.Links.Params.ENUM.df.FS.CaretClass
       }))), React.createElement("th", {className: "header "
   }, React.createElement("a", {href: Data.Links.Params.ENUM.df.MP.Href, className: Data.Links.Params.ENUM.df.MP.Class
-    }, Data.Links.Params.ENUM.df.MP.Text, React.createElement("span", {className: Data.Links.Params.ENUM.df.MP.CaretClass
+    }, "Mounted", React.createElement("span", {className: Data.Links.Params.ENUM.df.MP.CaretClass
       }))), React.createElement("th", {className: "header text-right"
   }, React.createElement("a", {href: Data.Links.Params.ENUM.df.AVAIL.Href, className: Data.Links.Params.ENUM.df.AVAIL.Class
-    }, Data.Links.Params.ENUM.df.AVAIL.Text, React.createElement("span", {className: Data.Links.Params.ENUM.df.AVAIL.CaretClass
+    }, "Avail", React.createElement("span", {className: Data.Links.Params.ENUM.df.AVAIL.CaretClass
       }))), React.createElement("th", {className: "header text-right"
   }, React.createElement("a", {href: Data.Links.Params.ENUM.df.USED.Href, className: Data.Links.Params.ENUM.df.USED.Class
-    }, Data.Links.Params.ENUM.df.USED.Text, React.createElement("span", {className: Data.Links.Params.ENUM.df.USED.CaretClass
+    }, "Used", React.createElement("span", {className: Data.Links.Params.ENUM.df.USED.CaretClass
       }))), React.createElement("th", {className: "header text-right"
   }, React.createElement("a", {href: Data.Links.Params.ENUM.df.TOTAL.Href, className: Data.Links.Params.ENUM.df.TOTAL.Class
-    }, Data.Links.Params.ENUM.df.TOTAL.Text, React.createElement("span", {className: Data.Links.Params.ENUM.df.TOTAL.CaretClass
+    }, "Total", React.createElement("span", {className: Data.Links.Params.ENUM.df.TOTAL.CaretClass
       }))))), React.createElement("tbody", null
     , rows))); },
 		dfinodes_rows:   function(Data, $disk) { return (React.createElement("tr", {key: "dfinodes-rowby-dirname-"+$disk.DirName
@@ -192,31 +192,31 @@ define(function(require) {
     , React.createElement("tr", null
       , React.createElement("th", {className: "header text-right"
   }, React.createElement("a", {href: Data.Links.Params.ENUM.ps.PID.Href, className: Data.Links.Params.ENUM.ps.PID.Class
-    }, Data.Links.Params.ENUM.ps.PID.Text, React.createElement("span", {className: Data.Links.Params.ENUM.ps.PID.CaretClass
+    }, "PID", React.createElement("span", {className: Data.Links.Params.ENUM.ps.PID.CaretClass
       }))), React.createElement("th", {className: "header text-right"
   }, React.createElement("a", {href: Data.Links.Params.ENUM.ps.UID.Href, className: Data.Links.Params.ENUM.ps.UID.Class
-    }, Data.Links.Params.ENUM.ps.UID.Text, React.createElement("span", {className: Data.Links.Params.ENUM.ps.UID.CaretClass
+    }, "UID", React.createElement("span", {className: Data.Links.Params.ENUM.ps.UID.CaretClass
       }))), React.createElement("th", {className: "header "
   }, React.createElement("a", {href: Data.Links.Params.ENUM.ps.USER.Href, className: Data.Links.Params.ENUM.ps.USER.Class
-    }, Data.Links.Params.ENUM.ps.USER.Text, React.createElement("span", {className: Data.Links.Params.ENUM.ps.USER.CaretClass
+    }, "USER", React.createElement("span", {className: Data.Links.Params.ENUM.ps.USER.CaretClass
       }))), React.createElement("th", {className: "header text-right"
   }, React.createElement("a", {href: Data.Links.Params.ENUM.ps.PRI.Href, className: Data.Links.Params.ENUM.ps.PRI.Class
-    }, Data.Links.Params.ENUM.ps.PRI.Text, React.createElement("span", {className: Data.Links.Params.ENUM.ps.PRI.CaretClass
+    }, "PR", React.createElement("span", {className: Data.Links.Params.ENUM.ps.PRI.CaretClass
       }))), React.createElement("th", {className: "header text-right"
   }, React.createElement("a", {href: Data.Links.Params.ENUM.ps.NICE.Href, className: Data.Links.Params.ENUM.ps.NICE.Class
-    }, Data.Links.Params.ENUM.ps.NICE.Text, React.createElement("span", {className: Data.Links.Params.ENUM.ps.NICE.CaretClass
+    }, "NI", React.createElement("span", {className: Data.Links.Params.ENUM.ps.NICE.CaretClass
       }))), React.createElement("th", {className: "header text-right"
   }, React.createElement("a", {href: Data.Links.Params.ENUM.ps.VIRT.Href, className: Data.Links.Params.ENUM.ps.VIRT.Class
-    }, Data.Links.Params.ENUM.ps.VIRT.Text, React.createElement("span", {className: Data.Links.Params.ENUM.ps.VIRT.CaretClass
+    }, "VIRT", React.createElement("span", {className: Data.Links.Params.ENUM.ps.VIRT.CaretClass
       }))), React.createElement("th", {className: "header text-right"
   }, React.createElement("a", {href: Data.Links.Params.ENUM.ps.RES.Href, className: Data.Links.Params.ENUM.ps.RES.Class
-    }, Data.Links.Params.ENUM.ps.RES.Text, React.createElement("span", {className: Data.Links.Params.ENUM.ps.RES.CaretClass
+    }, "RES", React.createElement("span", {className: Data.Links.Params.ENUM.ps.RES.CaretClass
       }))), React.createElement("th", {className: "header text-center"
   }, React.createElement("a", {href: Data.Links.Params.ENUM.ps.TIME.Href, className: Data.Links.Params.ENUM.ps.TIME.Class
-    }, Data.Links.Params.ENUM.ps.TIME.Text, React.createElement("span", {className: Data.Links.Params.ENUM.ps.TIME.CaretClass
+    }, "TIME", React.createElement("span", {className: Data.Links.Params.ENUM.ps.TIME.CaretClass
       }))), React.createElement("th", {className: "header "
   }, React.createElement("a", {href: Data.Links.Params.ENUM.ps.NAME.Href, className: Data.Links.Params.ENUM.ps.NAME.Class
-    }, Data.Links.Params.ENUM.ps.NAME.Text, React.createElement("span", {className: Data.Links.Params.ENUM.ps.NAME.CaretClass
+    }, "COMMAND", React.createElement("span", {className: Data.Links.Params.ENUM.ps.NAME.CaretClass
       }))))), React.createElement("tbody", null
     , rows))); },
 
