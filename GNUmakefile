@@ -9,12 +9,13 @@ ifeq ($(testpackage), ./...)
 singletestpackage=$(package)
 endif
 
-acepp.go=acepp/acepp.go
+acepp.go=$(shell go list -f '{{.Dir}}' github.com/ostrost/ostent)/acepp/acepp.go
 
-assets_devgo    = share/assets/bindata.dev.go
-assets_bingo    = share/assets/bindata.bin.go
-templates_devgo = share/templates/bindata.dev.go
-templates_bingo = share/templates/bindata.bin.go
+shareprefix=share
+assets_devgo    = $(shareprefix)/assets/bindata.dev.go
+assets_bingo    = $(shareprefix)/assets/bindata.bin.go
+templates_devgo = $(shareprefix)/templates/bindata.dev.go
+templates_bingo = $(shareprefix)/templates/bindata.bin.go
 
 PATH=$(shell printf %s: $$PATH; echo $$GOPATH | awk -F: 'BEGIN { OFS="/bin:"; } { print $$1,$$2,$$3,$$4,$$5,$$6,$$7,$$8,$$9 "/bin"}')
 
@@ -33,7 +34,7 @@ ifneq (init, $(MAKECMDGOALS))
 
 cmdname=$(notdir $(PWD))
 destbin=$(shell echo $(GOPATH) | awk -F: '{ print $$1 "/bin" }')
-# destbin=$(shell go list -f '{{.Target}}' $(package) | xargs dirname)
+# destbin=$(shell go list -f '{{.Target}}' $(package) | $(xargs) dirname)
 
 define golistfiles =
 {{if and (not .Standard) (not .Goroot)}}\
@@ -42,10 +43,10 @@ define golistfiles =
 {{range .CgoFiles}}{{$$dir}}/{{.}}{{"\n"}}{{end}}{{end}}
 endef
 packagefiles=$(shell \
-go list -tags   bin  -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(package) | xargs \
+go list -tags   bin  -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(package) | $(xargs) \
 go list -tags   bin  -f '$(golistfiles)' | sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort)
 devpackagefiles=$(shell \
-go list -tags '!bin' -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(package) | xargs \
+go list -tags '!bin' -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(package) | $(xargs) \
 go list -tags '!bin' -f '$(golistfiles)' | sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort)
 
 all: $(destbin)/$(cmdname)
@@ -58,13 +59,10 @@ github.com/campoy/jsonenums \
 github.com/clipperhouse/gen \
 code.google.com/p/go.net/html \
 github.com/yosssi/ace
-# TODO rm {src,pkg/*}/github.com/clipperhouse/slice{,.a}
 	cd system/operating && gen add github.com/rzab/slice
 	git remote set-url origin https://$(package) # travis & tip & https://code.google.com/p/go/issues/detail?id=8850
-	go get -v -tags bin $(package)
-	go list -f '{{.Target}}' $(package) | $(xargs) rm # clean the library archive
-	go get -v -a $(package)
-	go list -f '{{.Target}}' $(package) | $(xargs) rm # clean the library archive
+	go get -v $(package)
+	go get -v -a -tags bin $(package)
 
 %: %.sh # clear the implicit *.sh rule
 # print-* rule for debugging. http://blog.jgc.org/2015/04/the-one-line-you-should-add-to-every.html :
@@ -113,7 +111,7 @@ $(assets_bingo):
 $(assets_devgo):
 	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags '!bin' -dev -ignore js/min/ ./...
 
-$(ssets_bingo): $(shell find \
+$(assets_bingo): $(shell find \
                            share/assets/ -type f \! -name '*.go' \! -path \
                           'share/assets/js/src/*')
 $(assets_bingo): share/assets/css/index.css
