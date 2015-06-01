@@ -33,14 +33,20 @@ ifneq (init, $(MAKECMDGOALS))
 
 cmdname=$(notdir $(PWD))
 destbin=$(shell echo $(GOPATH) | awk -F: '{ print $$1 "/bin" }')
-# destbin=$(abspath $(dir $(shell go list -f '{{.Target}}' $(package))))
-packagefiles=$(shell \
-go list -tags bin -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(package) | xargs \
-go list -tags bin -f '{{if and (not .Standard) (not .Goroot)}}\
+# destbin=$(shell go list -f '{{.Target}}' $(package) | xargs dirname)
+
+define golistfiles =
+{{if and (not .Standard) (not .Goroot)}}\
 {{$$dir := .Dir}}\
 {{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}\
-{{range .CgoFiles}}{{$$dir}}/{{.}}{{"\n"}}{{end}}{{end}}' | \
-sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort) # | tee /dev/stderr
+{{range .CgoFiles}}{{$$dir}}/{{.}}{{"\n"}}{{end}}{{end}}
+endef
+packagefiles=$(shell \
+go list -tags   bin  -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(package) | xargs \
+go list -tags   bin  -f '$(golistfiles)' | sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort)
+devpackagefiles=$(shell \
+go list -tags '!bin' -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(package) | xargs \
+go list -tags '!bin' -f '$(golistfiles)' | sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort)
 
 all: $(destbin)/$(cmdname)
 endif
@@ -75,7 +81,7 @@ coverhtml: covertest ; go tool  cover  -html=coverage.out
 system/operating/%_slice.go:     system/operating/operating.go ; cd $(dir $@) && go generate
 client/enums/uint%_jsonenums.go: client/tabs.go                ; cd $(dir $@) && go generate
 
-al: $(packagefiles)
+al: $(packagefiles) $(devpackagefiles)
 # al: like `all' but without final go build $(package). For when rerun does the build
 
 $(destbin)/$(cmdname): $(packagefiles)
