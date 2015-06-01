@@ -19,7 +19,7 @@ func TestLinks(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	num := params.ENUM["df"].Decoded.Number
+	num := params.ENUM["df"].EnumDecoded.Number
 	if num.Negative || num.Uint != enums.Uint(enums.MP) {
 		t.Errorf("Decode failed: %+v\n", num)
 	}
