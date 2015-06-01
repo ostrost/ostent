@@ -13,6 +13,10 @@ import (
 	"github.com/ostrost/ostent/client"
 )
 
+func uncurl(s string) string {
+	return strings.TrimSuffix(strings.TrimPrefix(s, "{"), "}")
+}
+
 func droplink(CN string, value interface{}, ss ...string) (interface{}, error) {
 	if value == nil {
 		return nil, fmt.Errorf("value supplied for droplink is nil")
@@ -30,25 +34,25 @@ func droplink(CN string, value interface{}, ss ...string) (interface{}, error) {
 	}
 	ep, ok := value.(*client.EnumParam)
 	if !ok { // ace/template-compliling stage
-		prefix := strings.TrimSuffix(value.(string), "}")
+		prefix := uncurl(value.(string))
 		names := strings.Split(prefix, ".")
 		pname := names[len(names)-1]     // errors are fatal here
 		enums := client.NewParams().ENUM // Params have .ENUM only yet
-		ep := enums[pname]               // undecoded, only .EnumDecodec referenced
+		ed := enums[pname].EnumDecodec
 		return client.DropLink{
 			CLASSNAME:  CN,
 			AlignClass: AC,
-			Text:       ep.EnumDecodec.Text(named), // always static
-			Href:       fmt.Sprintf("%s.%s.Href}", prefix, named),
-			Class:      fmt.Sprintf("%s.%s.Class}", prefix, named),
-			CaretClass: fmt.Sprintf("%s.%s.CaretClass}", prefix, named),
+			Text:       ed.Text(named), // always static
+			Href:       fmt.Sprintf("{%s.%s.%s}", prefix, named, "Href"),
+			Class:      fmt.Sprintf("{%s.%s.%s}", prefix, named, "Class"),
+			CaretClass: fmt.Sprintf("{%s.%s.%s}", prefix, named, "CaretClass"),
 		}, nil
 	}
-	pname, unew := ep.EnumDecodec.Unew()
-	if err := unew.Unmarshal(named, new(bool)); err != nil {
+	pname, uptr := ep.EnumDecodec.Unew()
+	if err := uptr.Unmarshal(named, new(bool)); err != nil {
 		return nil, err
 	}
-	l := ep.EncodeUint(pname, unew)
+	l := ep.EncodeUint(pname, uptr)
 	l.CLASSNAME = CN
 	l.AlignClass = AC
 	return l, nil
@@ -76,7 +80,7 @@ func LabelClassColorPercent(p string) string {
 func usepercent(CN string, val string) interface{} {
 	var ca string
 	if CN == "className" {
-		ca = " className={LabelClassColorPercent(" + strings.Trim(val, "{}") + ")}"
+		ca = " className={LabelClassColorPercent(" + uncurl(val) + ")}"
 	} else {
 		ca = fmt.Sprintf(" class=%q", LabelClassColorPercent(val))
 	}
@@ -92,7 +96,7 @@ func usepercent(CN string, val string) interface{} {
 func key(CN, prefix, val string) templatehtml.HTMLAttr {
 	var key string
 	if CN == "className" { // jscriptMode only
-		key = " key={\"" + prefix + "-\"+" + strings.TrimPrefix(val, "{")
+		key = fmt.Sprintf(" key={%q+%s}", prefix+"-", uncurl(val))
 	}
 	return templatehtml.HTMLAttr(key)
 }
@@ -111,7 +115,7 @@ func clip(HF, CN string, width int, prefix, val string, rest ...string) (*Clippe
 	}
 	var key, mws string
 	if CN == "className" { // jscriptMode
-		key = "{\"" + prefix + "-\"+" + strings.TrimPrefix(val, "{")
+		key = fmt.Sprintf("{%q+%s}", prefix+"-", uncurl(val))
 		mws = fmt.Sprintf("{{maxWidth: '%dch'}}", width)
 	} else { // quote everything
 		key = fmt.Sprintf("%q", url.QueryEscape(prefix+"-"+val))
