@@ -13,6 +13,19 @@ import (
 	"github.com/ostrost/ostent/client"
 )
 
+func linkToggle(value interface{}) (interface{}, error) {
+	if value == nil {
+		return nil, fmt.Errorf("value supplied for linkToggle is nil")
+	}
+	bp, ok := value.(*client.BoolParam)
+	if !ok {
+		prefix := uncurl(value.(string))
+		return client.Href{Href: fmt.Sprintf("{%s.Href}", prefix)}, nil
+	}
+	l := bp.EncodeToggle() // type Href
+	return l, nil
+}
+
 func uncurl(s string) string {
 	return strings.TrimSuffix(strings.TrimPrefix(s, "{"), "}")
 }
@@ -290,6 +303,7 @@ var AceFuncs = templatehtml.FuncMap{
 	"key":        key,
 	"clip":       clip,
 	"droplink":   droplink,
+	"linkToggle": linkToggle,
 	"usepercent": usepercent,
 	"json": func(v interface{}) (string, error) {
 		j, err := json.Marshal(v)

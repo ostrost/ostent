@@ -2,6 +2,7 @@ package client
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/url"
 	"strings"
 
@@ -34,10 +35,7 @@ type DropLink struct {
 
 // EncodeUint returns enums.uinter applied DropLink. .AlignClass is not filled.
 func (ep EnumParam) EncodeUint(pname string, uinter enums.Uinter) DropLink {
-	base := url.Values{}
-	for k, v := range ep.Params.Values {
-		base[k] = v
-	}
+	base := ep.Params.ValuesCopy()
 	text, cur := ep.SetBase(base, pname, uinter)
 	dl := DropLink{Text: text, Class: "state"}
 	if cur != nil {
@@ -130,15 +128,38 @@ var EnumDecodecs = map[string]EnumDecodec{
 		Alphas:  []enums.Uint{enums.Uint(enums.NAME), enums.Uint(enums.USER)},
 		Unew:    func() (string, Upointer) { return "ps", new(enums.UintPS) },
 		Text:    TextFunc(map[string]string{"PRI": "PR", "NICE": "NI", "NAME": "COMMAND"}, strings.ToUpper),
-		Pname:   "ps",
 	},
 	"df": {
 		Default: Number{Uint: enums.Uint(enums.FS)},
 		Alphas:  []enums.Uint{enums.Uint(enums.FS), enums.Uint(enums.MP)},
 		Unew:    func() (string, Upointer) { return "df", new(enums.UintDF) },
 		Text:    TextFunc(map[string]string{"FS": "Device", "MP": "Mounted"}, strings.ToLower, strings.Title),
-		Pname:   "df",
 	},
+}
+
+var BoolDecodecs = map[string]BoolDecodec{
+	"showconfigmem": {Default: false},
+	"showif":        {Default: true},
+}
+
+func (bp *BoolParam) Decode(form url.Values) {
+	values, ok := form[bp.BoolDecodec.Pname]
+	if !ok {
+		bp.BoolDecoded.Value = bp.BoolDecodec.Default
+		return
+	}
+	bp.BoolDecoded.Specified = true
+	if len(values) != 0 || values[0] == "" || values[0] == "1" || values[0] == "true" || values[0] == "TRUE" {
+		bp.BoolDecoded.Value = true
+	} // else .Value stays false
+	bp.Params.Values.Set(bp.BoolDecodec.Pname, bp.StringValue(bp.BoolDecoded.Value))
+}
+
+func (bp BoolParam) StringValue(value bool) string {
+	if value == bp.BoolDecodec.Default {
+		return ""
+	}
+	return fmt.Sprintf("%t", value)
 }
 
 func (ep *EnumParam) Decode(form url.Values, setep *EnumParam) error {
@@ -190,17 +211,27 @@ func (ep *EnumParam) Find(values []string, uptr Upointer) (Number, bool, error) 
 }
 
 // NewParams constructs new Params.
-// Global var EnumDecodecs is ranged.
+// Global var EnumDecodecs, BoolDecodecs are ranged.
 func NewParams() *Params {
 	p := &Params{Values: make(url.Values)}
-	enum := make(Enums)
+	enums := make(Enums)
 	for k, v := range EnumDecodecs {
-		enum[k] = &EnumParam{
+		v.Pname = k
+		enums[k] = &EnumParam{
 			EnumDecodec: v,
 			Params:      p,
 		}
 	}
-	p.ENUM = enum
+	bools := make(Bools)
+	for k, v := range BoolDecodecs {
+		v.Pname = k
+		bools[k] = &BoolParam{
+			BoolDecodec: v,
+			Params:      p,
+		}
+	}
+	p.ENUM = enums
+	p.BOOL = bools
 	return p
 }
 
@@ -251,9 +282,53 @@ func (ep EnumParam) MarshalJSON() ([]byte, error) {
 }
 
 type Enums map[string]*EnumParam
+type Bools map[string]*BoolParam
 
 type Params struct {
 	ENUM   Enums
+	BOOL   Bools
 	Values url.Values `json:"-"`
 	Moved  bool       `json:"-"`
+}
+
+func (ps Params) ValuesCopy() url.Values {
+	copy := url.Values{}
+	for k, v := range ps.Values {
+		copy[k] = v
+	}
+	return copy
+}
+
+type BoolDecodec struct {
+	Default bool
+	Pname   string
+}
+
+type BoolDecoded struct {
+	Value     bool
+	Specified bool
+}
+
+type BoolParam struct {
+	// BoolDecoder is read-only, an entry from global var BoolDecoders.
+	BoolDecodec BoolDecodec `json:"-"` // non marshalled explicitly
+	BoolDecoded BoolDecoded `json:"-"` // non marshalled explicitly
+	Params      *Params     `json:"-"` // non marshalled explicitly
+}
+
+type Href struct {
+	Href string
+}
+
+// EncodeToggle returns Href having the bp value inverted and encoded.
+// The other values are copied from bp.Params.Values.
+func (bp BoolParam) EncodeToggle() Href {
+	base := bp.Params.ValuesCopy()
+	value := !bp.BoolDecoded.Value // here's the toggle
+	if value == bp.BoolDecodec.Default {
+		base.Del(bp.BoolDecodec.Pname)
+	} else {
+		base.Set(bp.BoolDecodec.Pname, bp.StringValue(value))
+	}
+	return Href{"?" + base.Encode()}
 }

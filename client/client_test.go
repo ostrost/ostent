@@ -8,26 +8,45 @@ import (
 	"github.com/ostrost/ostent/client/enums"
 )
 
+func TestBoolLinks(t *testing.T) {
+	req, err := http.NewRequest("GET", "http://localhost/index?showconfigmem", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	req.ParseForm()
+	params := NewParams()
+	scm := params.BOOL["showconfigmem"]
+	scm.Decode(req.Form)
+	if scm.BoolDecoded.Value != true {
+		t.Errorf("Decode failed: %t, expected %t", scm.BoolDecoded.Value, true)
+	}
+	if s := params.Values.Encode(); s != "showconfigmem=true" {
+		t.Fatalf("Unexpected Values.Encode: %q", s)
+	}
+	if h := scm.EncodeToggle(); h.Href != "?" {
+		t.Fatalf("Unexpected EncodeToggle: %q", h.Href)
+	}
+}
+
 func TestLinks(t *testing.T) {
 	req, err := http.NewRequest("GET", "http://localhost/index?df=mp", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 	req.ParseForm()
-	params := NewParams()
-	err = params.ENUM["df"].Decode(req.Form, nil)
+	df := NewParams().ENUM["df"]
+	err = df.Decode(req.Form, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	num := params.ENUM["df"].EnumDecoded.Number
-	if num.Negative || num.Uint != enums.Uint(enums.MP) {
+	if num := df.EnumDecoded.Number; num.Negative || num.Uint != enums.Uint(enums.MP) {
 		t.Errorf("Decode failed: %+v\n", num)
 	}
 
-	if total := params.ENUM["df"].EncodeUint("df", enums.TOTAL); total.Href != "?df=total" || total.Class != "state" || total.CaretClass != "" {
+	if total := df.EncodeUint("df", enums.TOTAL); total.Href != "?df=total" || total.Class != "state" || total.CaretClass != "" {
 		t.Fatalf("Encode failed: total: %+v", total)
 	}
-	if mp := params.ENUM["df"].EncodeUint("df", enums.MP); mp.Href != "?df=-mp" || mp.Class != "state current dropup" || mp.CaretClass != "caret" {
+	if mp := df.EncodeUint("df", enums.MP); mp.Href != "?df=-mp" || mp.Class != "state current dropup" || mp.CaretClass != "caret" {
 		t.Fatalf("Encode failed: mp: %+v", mp)
 	}
 
@@ -44,7 +63,6 @@ func TestLinks(t *testing.T) {
 		}
 		if s := params.Values.Encode(); s != "df=total" {
 			t.Fatalf("Expected Encode: %q", s)
-
 		}
 	}
 	CheckRedirect(t, NewForm(t, "df=fs&ps=pid"), []string{"df"}, "df=-fs")
