@@ -9,7 +9,27 @@ define(function(require) {
       , React.createElement("span", {className: LabelClassColorPercent($mem.UsePercent)
   }, $mem.UsePercent, "%"))), React.createElement("td", {className: "text-right"
     }, $mem.Total))); },
-		mem_table:       function(Data, rows)  { return (React.createElement("table", {className: "table1 stripe-table"
+		blockmem:        function(Data, rows)  { return (React.createElement("div", {className: "panel1"
+  }, React.createElement("label", {id: "for-memconfig", className: "collapse-label panel-heading btn-block", htmlFor: "dummymemconfigcheckbox"
+    }, React.createElement("a", {className: Data.Links.Params.BOOL.showconfigmem.Value ? "btn-header-block active" : "btn-header-block", href: Data.Links.Params.BOOL.showconfigmem.Href, onClick: this.handleClick
+      }, "Memory"), React.createElement("input", {id: "dummymemconfigcheckbox", className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
+      })), React.createElement("input", {className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
+    }), React.createElement("div", null
+    , React.createElement("div", {id: "memconfig", className: Data.Links.Params.BOOL.showconfigmem.Value ? "" : "collapse-hidden"
+      }, React.createElement("form", {className: "horizontal-form border-bottom-form"
+        }, React.createElement("div", {className: "form-group-padded"
+          }, React.createElement("div", {className: "btn-group btn-group-sm", "data-toggle": "buttons"
+            }, React.createElement("label", {className: "btn btn-default collapse-label", "for-sel": "#mem"
+              }, React.createElement("input", {type: "checkbox"
+                }), "Hidden"), React.createElement("label", {className: Data.Links.Params.BOOL.hideswap.Value ? "btn btn-default active" : "btn btn-default", href: "#hideswap"
+              }, React.createElement("input", {type: "checkbox"
+                }), "Hide swap"))), React.createElement("div", {className: "form-group-padded"
+          }, React.createElement("div", {className: "input-group input-group-sm refresh-group"
+  }, React.createElement("span", {className: "input-group-addon"
+    }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Client.RefreshMEM
+    })))))), React.createElement("div", null
+    , React.createElement("div", {id: "mem", className: ""
+      }, React.createElement("table", {className: "table1 stripe-table"
   }, React.createElement("thead", null
     , React.createElement("tr", null
       , React.createElement("th", null
@@ -17,7 +37,7 @@ define(function(require) {
         }, "Free"), React.createElement("th", {className: "text-right"
         }, "Used"), React.createElement("th", {className: "text-right"
         }, "Total"))), React.createElement("tbody", null
-    , rows))); },
+    , rows)))))); },
 
 		ifbytes_rows:    function(Data, $if)   { return (React.createElement("tr", {key: "ifbytes-rowby-name-"+$if.Name
   }, React.createElement("td", null

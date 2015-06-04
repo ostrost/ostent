@@ -753,6 +753,10 @@ func getUpdates(params *client.Params, req *http.Request, cl *client.Client, sen
 		iu.Links = &Links{params}
 		iu.Links.Params.ENUM["df"].Decode(req.Form, &cl.DFSEQ)
 		iu.Links.Params.ENUM["ps"].Decode(req.Form, &cl.PSSEQ)
+		iu.Links.Params.BOOL["still"].Decode(req.Form)
+		iu.Links.Params.BOOL["hideswap"].Decode(req.Form)
+		// rest of hide* to follow here
+		iu.Links.Params.BOOL["showconfigmem"].Decode(req.Form)
 
 		// iu.Links.Params.BOOL["configmem"].Decode(req.Form, &cl.HideconfigMEM)
 

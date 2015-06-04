@@ -2,7 +2,7 @@ define(function(require) {
 	var React = require('react');
 	return {
 		mem_rows:        function(Data, $mem)  { return ({{template "defines::define_memrows"         .}}); },
-		mem_table:       function(Data, rows)  { return ({{template "defines::define_memtable"        (dot . `rows`)}}); },
+		blockmem:        function(Data, rows)  { return ({{template "defines::define_blockmem"        (dot . `rows`)}}); },
 
 		ifbytes_rows:    function(Data, $if)   { return ({{template "defines::define_ifbytes_rows"    .}}); },
 		ifbytes_table:   function(Data, rows)  { return ({{template "defines::define_ifbytes_table"   (dot . `rows`)}}); },

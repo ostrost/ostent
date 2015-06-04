@@ -72,10 +72,9 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
   newwebsocket = (onmessage) ->
     conn = null
     sendSearch = (search) -> sendJSON({Search: search})
-    sendClient = (client) ->
-      console.log(JSON.stringify(client), 'sendClient')
-      return sendJSON({Client: client})
+    sendClient = (client) -> sendJSON({Client: client})
     sendJSON = (obj) ->
+      console.log(JSON.stringify(obj), 'sendJSON')
       # 0 conn.CONNECTING
       # 1 conn.OPEN
       # 2 conn.CLOSING
@@ -173,11 +172,22 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
     return "label label-success"
 
   @MEMtableCLASS = React.createClass
-    getInitialState: () -> Data.MEM # a global Data
+    getInitialState: () -> {
+      Client: Data.Client, # a global Data
+      Links:  Data.Links,  # a global Data
+      MEM:    Data.MEM,    # a global Data
+    }
     render: () ->
-      Data = {MEM: @state}
-      return jscript.mem_table(Data, (jscript.mem_rows(Data, $mem
+      Data = @state
+      return jscript.blockmem.bind(this)(Data, (jscript.mem_rows(Data, $mem
       ) for $mem in Data?.MEM?.List ? []))
+    handleClick: (e) ->
+      href = e.target.getAttribute('href')
+      history.pushState({}, '', href)
+      updates.sendSearch(href)
+      e.stopPropagation() # preserves checkbox/radio
+      e.preventDefault()  # checked/selected state
+      return undefined
 
   @CPUtableCLASS = React.createClass
     getInitialState: () -> Data.CPU # a global Data
@@ -383,7 +393,7 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
 
   update = () ->
     # coffeelint: disable=max_line_length
-    hideconfigmem = HideClass.component({xkey: 'HideconfigMEM', $el: $('[for-sel="#memconfig"]'), reverseActive: true})
+  # hideconfigmem = HideClass.component({xkey: 'HideconfigMEM', $el: $('[for-sel="#memconfig"]'), reverseActive: true})
     hideconfigif  = HideClass.component({xkey: 'HideconfigIF',  $el: $('[for-sel="#ifconfig"]'),  reverseActive: true})
     hideconfigcpu = HideClass.component({xkey: 'HideconfigCPU', $el: $('[for-sel="#cpuconfig"]'), reverseActive: true})
     hideconfigdf  = HideClass.component({xkey: 'HideconfigDF',  $el: $('[for-sel="#dfconfig"]'),  reverseActive: true})
@@ -452,7 +462,7 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
       setState(dfbytes,  {DFbytes:  data.DFbytes,  Links: data.Links})
       setState(dfinodes, {DFinodes: data.DFinodes, Links: data.Links})
 
-      setState(hideconfigmem, hideconfigmem.reduce(data))
+    # setState(hideconfigmem, hideconfigmem.reduce(data))
       setState(hideconfigif,  hideconfigif .reduce(data))
       setState(hideconfigcpu, hideconfigcpu.reduce(data))
       setState(hideconfigdf,  hideconfigdf .reduce(data))
@@ -492,7 +502,7 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
       setState(refresh_ps,  refresh_ps .reduce(data))
       setState(refresh_vg,  refresh_vg .reduce(data))
 
-      setState(memtable,  data.MEM)
+      setState(memtable,  {Client: data.Client, Links: data.Links, MEM: data.MEM})
       setState(cputable,  data.CPU)
       setState(ifbytes,   data.IFbytes)
       setState(iferrors,  data.IFerrors)

@@ -58,34 +58,8 @@ html
 
     div.container-fluid.padding-topseventysh#top
       div.row
-        div.block.col-md-2.col-md-offset-1
-          div.panel1
-            label.collapse-label.panel-heading.btn-block for=dummymemconfigcheckbox for-sel=#memconfig
-              a class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigMEM)}} active{{end}}" href=#mem Memory
-              input.collapse-checkbox#dummymemconfigcheckbox type=checkbox aria-hidden=true hidden=
-            input.collapse-checkbox type=checkbox aria-hidden=true hidden=
-
-            div
-              div#memconfig class="{{if eq "true" (json .Data.Client.HideconfigMEM)}}collapse-hidden{{end}}"
-                form.horizontal-form.border-bottom-form
-                  div.form-group-padded
-                    div.btn-group.btn-group-sm data-toggle=buttons
-                      label.btn.btn-default.collapse-label for-sel=#mem
-                        input type=checkbox
-                        | Hidden
-                      label class="btn btn-default{{if ne "false" (json .Data.Client.HideSWAP)}} active{{end}}" href=#hideswap
-                        input type=checkbox
-                        | Hide swap
-
-                  div.form-group-padded
-                    {{with .Data.Client.RefreshMEM}}
-                    = yield refresh
-                    {{end}}
-
-            div
-              div#mem class="{{if eq "true" (json .Data.Client.HideMEM)}}collapse-hidden{{end}}"
-                span#mem-table
-                  {{template "defines::define_memtable" .}}
+        div.block.col-md-2.col-md-offset-1#mem-table
+          {{template "defines::define_blockmem" .}}
 
         div.block.col-md-3
           div.panel1

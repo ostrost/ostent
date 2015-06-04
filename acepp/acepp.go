@@ -75,6 +75,9 @@ func main() {
 
 	aceopts.NoCloseTagNames = []string{}
 	aceopts.AttributeNameClass = "className"
+	aceopts.FuncMap["class"] = func() string { return "className" }
+	templatep.JS = true
+
 	definesbase, defines, err := LoadAce(definesFile, "", aceopts)
 	check(err)
 
@@ -188,6 +191,7 @@ func WriteFile(filename, data string) error {
 // Format pretty-formats html unless prettyprint if false.
 func Format(prettyprint bool, input string, noclose []string) (output string) {
 	if !prettyprint {
+		// MAYBE html.Render() here
 		return input
 	}
 	isnoclose := func(s string) bool {

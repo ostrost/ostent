@@ -13,6 +13,7 @@ import (
 	"github.com/ostrost/ostent/client"
 )
 
+// linkToggle is to be removed. stays here for better diff.
 func linkToggle(value interface{}) (interface{}, error) {
 	if value == nil {
 		return nil, fmt.Errorf("value supplied for linkToggle is nil")
@@ -24,6 +25,70 @@ func linkToggle(value interface{}) (interface{}, error) {
 	}
 	l := bp.EncodeToggle() // type Href
 	return l, nil
+}
+
+// JS is whether we're doing it for jsx.
+var JS bool
+
+// classword is class attribute name choices, picked by JS value.
+var classword = map[bool]string{
+	false: "class",     // default
+	true:  "className", // jsx case
+}
+
+func toggleHrefAttr(value interface{}) interface{} {
+	if JS {
+		return fmt.Sprintf(" href={%s.Href} onClick={this.handleClick}", uncurl(value.(string)))
+	}
+	return templatehtml.HTMLAttr(fmt.Sprintf(" href=\"%s\"",
+		value.(*client.BoolParam).EncodeToggle()))
+}
+
+func refresh(value interface{}) interface{} {
+	if !JS {
+		return value.(*client.Refresh)
+	}
+	prefix := uncurl(value.(string))
+	// struct{struct{Duration, Above}}; Default} // mimic client.Refresh
+	return struct {
+		Period  string
+		Default string
+	}{
+		Period:  fmt.Sprintf("{%s}", prefix),
+		Default: fmt.Sprintf("{%s}", prefix),
+		// TODO:
+		// Period:    fmt.Sprintf("{%s.Period}", prefix),
+		// Default:   fmt.Sprintf("{%s.Default}", prefix),
+		// etc.
+	}
+}
+
+func ifClassAttr(value interface{}, classes ...string) (templatehtml.HTMLAttr, error) {
+	s, err := ifClass(value, classes...)
+	if err != nil {
+		return templatehtml.HTMLAttr(s), err
+	}
+	if !JS {
+		s = fmt.Sprintf("%q", s)
+	}
+	return templatehtml.HTMLAttr(fmt.Sprintf(" %s=%s", classword[JS], s)), nil
+}
+
+func ifClass(value interface{}, classes ...string) (string, error) {
+	if len(classes) == 0 || len(classes) > 2 {
+		return "", fmt.Errorf("number of args for ifClass*: either 2 or 3 got %d", 1+len(classes))
+	}
+	sndclass := ""
+	if len(classes) > 1 {
+		sndclass = classes[1]
+	}
+	if JS {
+		return fmt.Sprintf("{%s.Value ? %q : %q }", uncurl(value.(string)), classes[0], sndclass), nil
+	}
+	if value.(*client.BoolParam).BoolDecoded.Value {
+		return classes[0], nil
+	}
+	return sndclass, nil
 }
 
 func uncurl(s string) string {
@@ -303,8 +368,14 @@ var AceFuncs = templatehtml.FuncMap{
 	"key":        key,
 	"clip":       clip,
 	"droplink":   droplink,
-	"linkToggle": linkToggle,
 	"usepercent": usepercent,
+
+	"refresh":        refresh,
+	"ifClass":        ifClass,
+	"ifClassAttr":    ifClassAttr,
+	"toggleHrefAttr": toggleHrefAttr,
+	"class":          func() string { return "class" },
+
 	"json": func(v interface{}) (string, error) {
 		j, err := json.Marshal(v)
 		return string(j), err
@@ -431,7 +502,20 @@ func DataNode(root Templater, node parse.Node, jscriptMode bool, data *Dotted, v
 				for _, arg := range cmd.Args {
 					var ident []string
 					switch arg.Type() {
-
+					case parse.NodeChain:
+						chain := arg.(*parse.ChainNode)
+						if chain.Node.Type() == parse.NodePipe {
+							pipe := chain.Node.(*parse.PipeNode)
+							for _, arg := range pipe.Cmds[0].Args {
+								if arg.Type() == parse.NodeField {
+									w := arg.String()
+									if len(w) > 0 && w[0] == '.' {
+										data.Append(strings.Split(w[1:], "."))
+										fmt.Printf("%s %+v\n", node, arg)
+									}
+								}
+							}
+						}
 					case parse.NodeField:
 						ident = arg.(*parse.FieldNode).Ident
 

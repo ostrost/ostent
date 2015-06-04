@@ -1,9 +1,12 @@
 package client
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/url"
+	"sort"
 	"strings"
 
 	"github.com/ostrost/ostent/client/enums"
@@ -45,7 +48,7 @@ func (ep EnumParam) EncodeUint(pname string, uinter enums.Uinter) DropLink {
 			dl.Class += " dropup"
 		}
 	}
-	dl.Href = "?" + base.Encode() // sorted by key
+	dl.Href = "?" + ValuesEncode(base)
 	return dl
 }
 
@@ -138,8 +141,17 @@ var EnumDecodecs = map[string]EnumDecodec{
 }
 
 var BoolDecodecs = map[string]BoolDecodec{
+	"still": {Default: false},
+
+	"hidecpu":  {Default: false},
+	"hidedf":   {Default: false},
+	"hideif":   {Default: false},
+	"hidemem":  {Default: false},
+	"hideps":   {Default: false},
+	"hideswap": {Default: false},
+	"hidevg":   {Default: false},
+
 	"showconfigmem": {Default: false},
-	"showif":        {Default: true},
 }
 
 func (bp *BoolParam) Decode(form url.Values) {
@@ -156,7 +168,7 @@ func (bp *BoolParam) Decode(form url.Values) {
 }
 
 func (bp BoolParam) StringValue(value bool) string {
-	if value == bp.BoolDecodec.Default {
+	if value != bp.BoolDecodec.Default {
 		return ""
 	}
 	return fmt.Sprintf("%t", value)
@@ -281,6 +293,16 @@ func (ep EnumParam) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+func (bp BoolParam) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		Href  template.HTMLAttr
+		Value bool
+	}{
+		Href:  bp.EncodeToggle(),
+		Value: bp.BoolDecoded.Value,
+	})
+}
+
 type Enums map[string]*EnumParam
 type Bools map[string]*BoolParam
 
@@ -316,13 +338,14 @@ type BoolParam struct {
 	Params      *Params     `json:"-"` // non marshalled explicitly
 }
 
+// Href is to be removed. stays here for better diff.
 type Href struct {
 	Href string
 }
 
-// EncodeToggle returns Href having the bp value inverted and encoded.
+// EncodeToggle returns template.HTMLAttr having the bp value inverted and encoded.
 // The other values are copied from bp.Params.Values.
-func (bp BoolParam) EncodeToggle() Href {
+func (bp BoolParam) EncodeToggle() template.HTMLAttr {
 	base := bp.Params.ValuesCopy()
 	value := !bp.BoolDecoded.Value // here's the toggle
 	if value == bp.BoolDecodec.Default {
@@ -330,5 +353,32 @@ func (bp BoolParam) EncodeToggle() Href {
 	} else {
 		base.Set(bp.BoolDecodec.Pname, bp.StringValue(value))
 	}
-	return Href{"?" + base.Encode()}
+	return template.HTMLAttr("?" + ValuesEncode(base))
+}
+
+func ValuesEncode(v url.Values) string {
+	if v == nil {
+		return ""
+	}
+	var buf bytes.Buffer
+	keys := make([]string, 0, len(v))
+	for k := range v {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		vs := v[k]
+		prefix := url.QueryEscape(k)
+		for _, v := range vs {
+			if buf.Len() > 0 {
+				buf.WriteByte('&')
+			}
+			buf.WriteString(prefix)
+			if v == "" {
+				continue
+			}
+			buf.WriteString("=" + url.QueryEscape(v))
+		}
+	}
+	return buf.String()
 }

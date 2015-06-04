@@ -12,6 +12,11 @@
     span.input-group-addon Refresh
     input.form-control.refresh-input type=text placeholder={{.Default}}{{if ne (json .Default) (json .Period)}} value={{.Period}}{{end}}
 
+= content define_refresh
+  div.input-group.input-group-sm.refresh-group
+    span.input-group-addon Refresh
+    | <input {{class}}="form-control refresh-input" type="text" placeholder={{.Default}}{{if ne (json .Default) (json .Period)}} value={{.Period}}{{end}}></input>
+
 = content define_ifbytes_rows
   {{with .OVERRIDE}}{{.}}{{else}}
     {{$F := or .HTMLFOR "for"}}
@@ -198,6 +203,36 @@
         th.text-right Total
     tbody
       {{template "defines::define_memrows" .}}
+
+= content define_blockmem
+  {{$F := or .HTMLFOR "for"}}
+  {{$C := or .CLASSNAME "class"}}
+  div.panel1
+    label.collapse-label.panel-heading.btn-block#for-memconfig {{$F}}="dummymemconfigcheckbox"
+      | <a {{ifClassAttr .Data.Links.Params.BOOL.showconfigmem "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigmem}}>Memory</a>
+      input.collapse-checkbox#dummymemconfigcheckbox type=checkbox aria-hidden=true hidden=
+    input.collapse-checkbox type=checkbox aria-hidden=true hidden=
+
+    div
+      | <div id="memconfig" {{ifClassAttr .Data.Links.Params.BOOL.showconfigmem "" "collapse-hidden"}}>
+      form.horizontal-form.border-bottom-form
+        div.form-group-padded
+          div.btn-group.btn-group-sm data-toggle=buttons
+            label.btn.btn-default.collapse-label for-sel=#mem
+              input type=checkbox
+              | Hidden
+            | <label {{ifClassAttr .Data.Links.Params.BOOL.hideswap "btn btn-default active" "btn btn-default"}} href="#hideswap">
+            input type=checkbox
+            | Hide swap
+            | </label>
+
+        div.form-group-padded
+          {{template "defines::define_refresh" refresh .Data.Client.RefreshMEM}}
+      | </div>
+
+    div
+      div#mem {{$C}}="{{if eq "true" (json .Data.Client.HideMEM)}}collapse-hidden{{end}}"
+        {{template "defines::define_memtable" .}}
 
 = content define_cpurows
   {{with .OVERRIDE}}{{.}}{{else}}

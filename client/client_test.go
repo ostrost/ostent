@@ -1,6 +1,7 @@
 package client
 
 import (
+	"html/template"
 	"net/http"
 	"net/url"
 	"testing"
@@ -20,11 +21,14 @@ func TestBoolLinks(t *testing.T) {
 	if scm.BoolDecoded.Value != true {
 		t.Errorf("Decode failed: %t, expected %t", scm.BoolDecoded.Value, true)
 	}
-	if s := params.Values.Encode(); s != "showconfigmem=true" {
+	if s := ValuesEncode(params.Values); s != "showconfigmem" {
 		t.Fatalf("Unexpected Values.Encode: %q", s)
 	}
-	if h := scm.EncodeToggle(); h.Href != "?" {
-		t.Fatalf("Unexpected EncodeToggle: %q", h.Href)
+	if h := scm.EncodeToggle(); h != template.HTMLAttr("?") {
+		t.Fatalf("Unexpected EncodeToggle: %q", h)
+	}
+	if s := ValuesEncode(params.Values); s != "showconfigmem" {
+		t.Fatalf("Unexpected Values.Encode (changed after EncodeToggle): %q", s)
 	}
 }
 

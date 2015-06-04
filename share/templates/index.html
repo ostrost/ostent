@@ -92,40 +92,8 @@
       ></nav
     ><div id="top" class="container-fluid padding-topseventysh"
       ><div class="row"
-        ><div class="block col-md-2 col-md-offset-1"
-          ><div class="panel1"
-            ><label class="collapse-label panel-heading btn-block" for="dummymemconfigcheckbox" for-sel="#memconfig"
-              ><a class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigMEM)}} active{{end}}" href="#mem"
-                >Memory</a
-              ><input id="dummymemconfigcheckbox" class="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-              ></label
-            ><input class="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-            ><div
-              ><div id="memconfig" class="{{if eq "true" (json .Data.Client.HideconfigMEM)}}collapse-hidden{{end}}"
-                ><form class="horizontal-form border-bottom-form"
-                  ><div class="form-group-padded"
-                    ><div class="btn-group btn-group-sm" data-toggle="buttons"
-                      ><label class="btn btn-default collapse-label" for-sel="#mem"
-                        ><input type="checkbox"
-                        >Hidden</label
-                      ><label class="btn btn-default{{if ne "false" (json .Data.Client.HideSWAP)}} active{{end}}" href="#hideswap"
-                        ><input type="checkbox"
-                        >Hide swap</label
-                      ></div
-                    ></div
-                  ><div class="form-group-padded"
-                    >{{with .Data.Client.RefreshMEM}}{{template "defines::refresh" .}}{{end}}</div
-                  ></form
-                ></div
-              ></div
-            ><div
-              ><div id="mem" class="{{if eq "true" (json .Data.Client.HideMEM)}}collapse-hidden{{end}}"
-                ><span id="mem-table"
-                  >{{template "defines::define_memtable" .}}</span
-                ></div
-              ></div
-            ></div
-          ></div
+        ><div id="mem-table" class="block col-md-2 col-md-offset-1"
+          >{{template "defines::define_blockmem" .}}</div
         ><div class="block col-md-3"
           ><div class="panel1"
             ><label class="collapse-label panel-heading btn-block" for="dummyifconfigcheckbox" for-sel="#ifconfig"
@@ -347,6 +315,37 @@
     ></body
   ></html
 >{{/*
+*/}}{{define "defines::define_blockmem"}}{{$F := or .HTMLFOR "for"}}{{$C := or .CLASSNAME "class"}}<div class="panel1"
+  ><label id="for-memconfig" class="collapse-label panel-heading btn-block" {{$F}}="dummymemconfigcheckbox"
+    ><a {{ifClassAttr .Data.Links.Params.BOOL.showconfigmem "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigmem}}
+      >Memory</a
+    ><input id="dummymemconfigcheckbox" class="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
+    ></label
+  ><input class="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
+  ><div
+    ><div id="memconfig" {{ifClassAttr .Data.Links.Params.BOOL.showconfigmem "" "collapse-hidden"}}
+      ><form class="horizontal-form border-bottom-form"
+        ><div class="form-group-padded"
+          ><div class="btn-group btn-group-sm" data-toggle="buttons"
+            ><label class="btn btn-default collapse-label" for-sel="#mem"
+              ><input type="checkbox"
+              >Hidden</label
+            ><label {{ifClassAttr .Data.Links.Params.BOOL.hideswap "btn btn-default active" "btn btn-default"}} href="#hideswap"
+              ><input type="checkbox"
+              >Hide swap</label
+            ></div
+          ></div
+        ><div class="form-group-padded"
+          >{{template "defines::define_refresh" refresh .Data.Client.RefreshMEM}}</div
+        ></form
+      ></div
+    ></div
+  ><div
+    ><div id="mem" {{$C}}="{{if eq "true" (json .Data.Client.HideMEM)}}collapse-hidden{{end}}"
+      >{{template "defines::define_memtable" .}}</div
+    ></div
+  ></div
+>{{end}}{{/*
 */}}{{define "defines::define_clip"}}{{$C := or .CLASSNAME "class"}}<input {{.IDAttr}}  {{$C}}="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
 >{{if eq $C "className"}}</input
 >{{end}}<label {{.ForAttr}} {{$C}}="clip" {{.MWStyleAttr}}
@@ -637,6 +636,13 @@
   ><tbody
     >{{template "defines::define_psrows" .}}</tbody
   ></table
+>{{end}}{{/*
+*/}}{{define "defines::define_refresh"}}<div class="input-group input-group-sm refresh-group"
+  ><span class="input-group-addon"
+    >Refresh</span
+  ><input {{class}}="form-control refresh-input" type="text" placeholder={{.Default}}{{if ne (json .Default) (json .Period)}} value={{.Period}}{{end}}
+  ></input
+></div
 >{{end}}{{/*
 */}}{{define "defines::define_usepercent"}}<span {{.ClassAttr}}
   >{{.Value}}%</span

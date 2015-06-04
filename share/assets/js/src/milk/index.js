@@ -95,12 +95,12 @@
         });
       };
       sendClient = function(client) {
-        console.log(JSON.stringify(client), 'sendClient');
         return sendJSON({
           Client: client
         });
       };
       sendJSON = function(obj) {
+        console.log(JSON.stringify(obj), 'sendJSON');
         if ((conn == null) || conn.readyState === conn.CLOSING || conn.readyState === conn.CLOSED) {
           init();
         }
@@ -274,14 +274,16 @@
     };
     this.MEMtableCLASS = React.createClass({
       getInitialState: function() {
-        return Data.MEM;
+        return {
+          Client: Data.Client,
+          Links: Data.Links,
+          MEM: Data.MEM
+        };
       },
       render: function() {
         var $mem, Data;
-        Data = {
-          MEM: this.state
-        };
-        return jscript.mem_table(Data, (function() {
+        Data = this.state;
+        return jscript.blockmem.bind(this)(Data, (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.MEM) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
@@ -291,6 +293,15 @@
           }
           return results;
         })());
+      },
+      handleClick: function(e) {
+        var href;
+        href = e.target.getAttribute('href');
+        history.pushState({}, '', href);
+        updates.sendSearch(href);
+        e.stopPropagation();
+        e.preventDefault();
+        return void 0;
       }
     });
     this.CPUtableCLASS = React.createClass({
@@ -648,12 +659,7 @@
       }
     };
     update = function() {
-      var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigmem, hideconfigps, hideconfigvg, hidecpu, hideps, hideram, hideswap, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, psless, psmore, psplus, pstable, refresh_cpu, refresh_df, refresh_if, refresh_mem, refresh_ps, refresh_vg, tabsdf, tabsif, uptime, vgtable;
-      hideconfigmem = HideClass.component({
-        xkey: 'HideconfigMEM',
-        $el: $('[for-sel="#memconfig"]'),
-        reverseActive: true
-      });
+      var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigps, hideconfigvg, hidecpu, hideps, hideram, hideswap, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, psless, psmore, psplus, pstable, refresh_cpu, refresh_df, refresh_if, refresh_mem, refresh_ps, refresh_vg, tabsdf, tabsif, uptime, vgtable;
       hideconfigif = HideClass.component({
         xkey: 'HideconfigIF',
         $el: $('[for-sel="#ifconfig"]'),
@@ -850,7 +856,6 @@
           DFinodes: data.DFinodes,
           Links: data.Links
         });
-        setState(hideconfigmem, hideconfigmem.reduce(data));
         setState(hideconfigif, hideconfigif.reduce(data));
         setState(hideconfigcpu, hideconfigcpu.reduce(data));
         setState(hideconfigdf, hideconfigdf.reduce(data));
@@ -883,7 +888,11 @@
         setState(refresh_df, refresh_df.reduce(data));
         setState(refresh_ps, refresh_ps.reduce(data));
         setState(refresh_vg, refresh_vg.reduce(data));
-        setState(memtable, data.MEM);
+        setState(memtable, {
+          Client: data.Client,
+          Links: data.Links,
+          MEM: data.MEM
+        });
         setState(cputable, data.CPU);
         setState(ifbytes, data.IFbytes);
         setState(iferrors, data.IFerrors);

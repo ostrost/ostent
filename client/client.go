@@ -99,7 +99,7 @@ type commonClient struct {
 
 	// PSusers []string `json:omitempty`
 
-	HideconfigMEM *bool `json:",omitempty"`
+	// HideconfigMEM *bool `json:",omitempty"`
 	HideconfigIF  *bool `json:",omitempty"`
 	HideconfigCPU *bool `json:",omitempty"`
 	HideconfigDF  *bool `json:",omitempty"`
@@ -252,7 +252,7 @@ func (c *Client) Merge(r RecvClient, s *SendClient) {
 	s.mergeBool(c.ExpandCPU, r.ExpandCPU, &s.ExpandCPU)
 	s.mergeBool(c.ExpandDF, r.ExpandDF, &s.ExpandDF)
 
-	s.mergeBool(c.HideconfigMEM, r.HideconfigMEM, &s.HideconfigMEM)
+	// s.mergeBool(c.HideconfigMEM, r.HideconfigMEM, &s.HideconfigMEM)
 	s.mergeBool(c.HideconfigIF, r.HideconfigIF, &s.HideconfigIF)
 	s.mergeBool(c.HideconfigCPU, r.HideconfigCPU, &s.HideconfigCPU)
 	s.mergeBool(c.HideconfigDF, r.HideconfigDF, &s.HideconfigDF)
@@ -283,7 +283,7 @@ func NewClient(params *Params, minperiod flags.Period) Client {
 	cs.TabDF = cs.NewTab(DFTABS, DFBYTES)
 
 	newhc := func() *bool { b := new(bool); *b = true; return b } // *b = false for DEVELOPMENT
-	cs.HideconfigMEM = newhc()
+	// cs.HideconfigMEM = newhc()
 	cs.HideconfigIF = newhc()
 	cs.HideconfigCPU = newhc()
 	cs.HideconfigDF = newhc()
