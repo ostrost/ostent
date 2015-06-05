@@ -28,7 +28,6 @@ type Upointer interface {
 
 // DropLink has drop{down,up} link attributes.
 type DropLink struct {
-	CLASSNAME  string // required for jsx
 	AlignClass string
 	Text       string `json:"-"` // static
 	Href       string
@@ -336,11 +335,6 @@ type BoolParam struct {
 	BoolDecodec BoolDecodec `json:"-"` // non marshalled explicitly
 	BoolDecoded BoolDecoded `json:"-"` // non marshalled explicitly
 	Params      *Params     `json:"-"` // non marshalled explicitly
-}
-
-// Href is to be removed. stays here for better diff.
-type Href struct {
-	Href string
 }
 
 // EncodeToggle returns template.HTMLAttr having the bp value inverted and encoded.

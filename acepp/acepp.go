@@ -63,6 +63,7 @@ func main() {
 	aceopts := ace.InitializeOptions(&ace.Options{
 		FuncMap: templatep.AceFuncs,
 	})
+	aceopts.FuncMap["closeTag"] = templatep.CloseTagFunc(aceopts.NoCloseTagNames)
 
 	if !jscriptMode {
 		_, index, err := LoadAce(inputFile, definesFile, aceopts)
@@ -75,7 +76,7 @@ func main() {
 
 	aceopts.NoCloseTagNames = []string{}
 	aceopts.AttributeNameClass = "className"
-	aceopts.FuncMap["class"] = func() string { return "className" }
+	aceopts.FuncMap["closeTag"] = templatep.CloseTagFunc(nil)
 	templatep.JS = true
 
 	definesbase, defines, err := LoadAce(definesFile, "", aceopts)

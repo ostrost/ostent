@@ -43,7 +43,7 @@ define(function(require) {
   }, React.createElement("td", null
     , React.createElement("input", {id: "if-bytes-name-"+$if.Name, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
   }), React.createElement("label", {htmlFor: "if-bytes-name-"+$if.Name, className: "clip", style: {maxWidth: '12ch'}
-  }, $if.Name)), React.createElement("td", {className: "text-right"
+    }, $if.Name)), React.createElement("td", {className: "text-right"
     }, $if.DeltaIn), React.createElement("td", {className: "text-right"
     }, $if.DeltaOut), React.createElement("td", {className: "text-right"
     }, $if.In), React.createElement("td", {className: "text-right"
@@ -70,7 +70,7 @@ define(function(require) {
   }, React.createElement("td", null
     , React.createElement("input", {id: "if-errors-name-"+$if.Name, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
   }), React.createElement("label", {htmlFor: "if-errors-name-"+$if.Name, className: "clip", style: {maxWidth: '12ch'}
-  }, $if.Name)), React.createElement("td", {className: "text-right"
+    }, $if.Name)), React.createElement("td", {className: "text-right"
     }, $if.DeltaIn), React.createElement("td", {className: "text-right"
     }, $if.DeltaOut), React.createElement("td", {className: "text-right"
     }, $if.In), React.createElement("td", {className: "text-right"
@@ -93,7 +93,7 @@ define(function(require) {
   }, React.createElement("td", null
     , React.createElement("input", {id: "if-packets-name-"+$if.Name, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
   }), React.createElement("label", {htmlFor: "if-packets-name-"+$if.Name, className: "clip", style: {maxWidth: '12ch'}
-  }, $if.Name)), React.createElement("td", {className: "text-right"
+    }, $if.Name)), React.createElement("td", {className: "text-right"
     }, $if.DeltaIn), React.createElement("td", {className: "text-right"
     }, $if.DeltaOut), React.createElement("td", {className: "text-right"
     }, $if.In), React.createElement("td", {className: "text-right"
@@ -139,10 +139,10 @@ define(function(require) {
   }, React.createElement("td", {className: "nowrap"
     }, React.createElement("input", {id: "df-bytes-devname-"+$disk.DevName, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
   }), React.createElement("label", {htmlFor: "df-bytes-devname-"+$disk.DevName, className: "clip", style: {maxWidth: '12ch'}
-  }, $disk.DevName)), React.createElement("td", {className: "nowrap"
+    }, $disk.DevName)), React.createElement("td", {className: "nowrap"
     }, React.createElement("input", {id: "df-bytes-dirname-"+$disk.DirName, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
   }), React.createElement("label", {htmlFor: "df-bytes-dirname-"+$disk.DirName, className: "clip", style: {maxWidth: '6ch'}
-  }, $disk.DirName)), React.createElement("td", {className: "text-right"
+    }, $disk.DirName)), React.createElement("td", {className: "text-right"
     }, $disk.Avail), React.createElement("td", {className: "text-right"
     }, $disk.Used, " ", React.createElement("sup", null
       , React.createElement("span", {className: LabelClassColorPercent($disk.UsePercent)
@@ -172,10 +172,10 @@ define(function(require) {
   }, React.createElement("td", {className: "nowrap"
     }, React.createElement("input", {id: "df-inodes-devname-"+$disk.DevName, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
   }), React.createElement("label", {htmlFor: "df-inodes-devname-"+$disk.DevName, className: "clip", style: {maxWidth: '12ch'}
-  }, $disk.DevName)), React.createElement("td", {className: "nowrap"
+    }, $disk.DevName)), React.createElement("td", {className: "nowrap"
     }, React.createElement("input", {id: "df-inodes-devname-"+$disk.DirName, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
   }), React.createElement("label", {htmlFor: "df-inodes-devname-"+$disk.DirName, className: "clip", style: {maxWidth: '6ch'}
-  }, $disk.DirName)), React.createElement("td", {className: "text-right"
+    }, $disk.DirName)), React.createElement("td", {className: "text-right"
     }, $disk.Ifree), React.createElement("td", {className: "text-right"
     }, $disk.Iused, " ", React.createElement("sup", null
       , React.createElement("span", {className: LabelClassColorPercent($disk.IusePercent)
@@ -198,7 +198,7 @@ define(function(require) {
     }, " ", $proc.UID), React.createElement("td", null
     , "            ", React.createElement("input", {id: "psuser-pid-"+$proc.PIDstring, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
   }), React.createElement("label", {htmlFor: "psuser-pid-"+$proc.PIDstring, className: "clip", style: {maxWidth: '12ch'}
-  }, $proc.User)), React.createElement("td", {className: "text-right"
+    }, $proc.User)), React.createElement("td", {className: "text-right"
     }, " ", $proc.Priority), React.createElement("td", {className: "text-right"
     }, " ", $proc.Nice), React.createElement("td", {className: "text-right"
     }, " ", $proc.Size), React.createElement("td", {className: "text-right"
@@ -206,7 +206,7 @@ define(function(require) {
     }, $proc.Time), React.createElement("td", {className: "nowrap"
     }, "     ", React.createElement("input", {id: "psname-pid-"+$proc.PIDstring, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
   }), React.createElement("label", {htmlFor: "psname-pid-"+$proc.PIDstring, className: "clip", style: {maxWidth: '42ch'}
-  }, $proc.Name)))); },
+    }, $proc.Name)))); },
 		ps_table:        function(Data, rows)  { return (React.createElement("table", {className: "table2 stripe-table"
   }, React.createElement("thead", null
     , React.createElement("tr", null
@@ -244,15 +244,15 @@ define(function(require) {
   }, React.createElement("td", null
     , "       ", React.createElement("input", {id: "vagrant-uuid-"+$mach.UUID, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
   }), React.createElement("label", {htmlFor: "vagrant-uuid-"+$mach.UUID, className: "clip", style: {maxWidth: '7ch'}
-  }, $mach.UUID)), React.createElement("td", null
+    }, $mach.UUID)), React.createElement("td", null
     , "       ", $mach.Name), React.createElement("td", null
     , "       ", $mach.Provider), React.createElement("td", null
     , "       ", React.createElement("input", {id: "vagrant-state-"+$mach.UUID, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
   }), React.createElement("label", {htmlFor: "vagrant-state-"+$mach.UUID, className: "clip", style: {maxWidth: '8ch'}
-  }, $mach.State)), React.createElement("td", null
+    }, $mach.State)), React.createElement("td", null
     , "       ", React.createElement("input", {id: "vagrant-filepath-"+$mach.UUID, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
   }), React.createElement("label", {htmlFor: "vagrant-filepath-"+$mach.UUID, className: "clip", style: {maxWidth: '50ch'}
-  }, $mach.Vagrantfile_path)))); },
+    }, $mach.Vagrantfile_path)))); },
 		vagrant_error:   function(Data)        { return (React.createElement("tr", {key: "vgerror"
   }, React.createElement("td", {colspan: "5"
     }, Data.VagrantError))); },

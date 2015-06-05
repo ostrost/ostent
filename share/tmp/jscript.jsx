@@ -45,9 +45,8 @@ define(function(require) {
   ><span className="input-group-addon"
     >Refresh</span
   ><input className="form-control refresh-input" type="text" placeholder={Data.Client.RefreshMEM}
-    ></input
+    ></input></div
   ></div
-></div
         ></form
       ></div
     ></div
@@ -77,10 +76,9 @@ define(function(require) {
 		ifbytes_rows:    function(Data, $if)   { return (<tr key={"ifbytes-rowby-name-"+$if.Name}
   ><td
     ><input id={"if-bytes-name-"+$if.Name}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-  ></input
-><label htmlFor={"if-bytes-name-"+$if.Name} className="clip" style={{maxWidth: '12ch'}}
-  >{$if.Name}</label
-></td
+  ></input><label htmlFor={"if-bytes-name-"+$if.Name} className="clip" style={{maxWidth: '12ch'}}
+    >{$if.Name}</label
+  ></td
   ><td className="text-right"
     >{$if.DeltaIn}</td
   ><td className="text-right"
@@ -129,10 +127,9 @@ define(function(require) {
 		iferrors_rows:   function(Data, $if)   { return (<tr key={"iferrors-rowby-name-"+$if.Name}
   ><td
     ><input id={"if-errors-name-"+$if.Name}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-  ></input
-><label htmlFor={"if-errors-name-"+$if.Name} className="clip" style={{maxWidth: '12ch'}}
-  >{$if.Name}</label
-></td
+  ></input><label htmlFor={"if-errors-name-"+$if.Name} className="clip" style={{maxWidth: '12ch'}}
+    >{$if.Name}</label
+  ></td
   ><td className="text-right"
     >{$if.DeltaIn}</td
   ><td className="text-right"
@@ -173,10 +170,9 @@ define(function(require) {
 		ifpackets_rows:  function(Data, $if)   { return (<tr key={"ifpackets-rowby-name-"+$if.Name}
   ><td
     ><input id={"if-packets-name-"+$if.Name}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-  ></input
-><label htmlFor={"if-packets-name-"+$if.Name} className="clip" style={{maxWidth: '12ch'}}
-  >{$if.Name}</label
-></td
+  ></input><label htmlFor={"if-packets-name-"+$if.Name} className="clip" style={{maxWidth: '12ch'}}
+    >{$if.Name}</label
+  ></td
   ><td className="text-right"
     >{$if.DeltaIn}</td
   ><td className="text-right"
@@ -259,16 +255,14 @@ define(function(require) {
 		dfbytes_rows:    function(Data, $disk) { return (<tr key={"dfbytes-rowby-dirname-"+$disk.DirName}
   ><td className="nowrap"
     ><input id={"df-bytes-devname-"+$disk.DevName}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-  ></input
-><label htmlFor={"df-bytes-devname-"+$disk.DevName} className="clip" style={{maxWidth: '12ch'}}
-  >{$disk.DevName}</label
-></td
+  ></input><label htmlFor={"df-bytes-devname-"+$disk.DevName} className="clip" style={{maxWidth: '12ch'}}
+    >{$disk.DevName}</label
+  ></td
   ><td className="nowrap"
     ><input id={"df-bytes-dirname-"+$disk.DirName}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-  ></input
-><label htmlFor={"df-bytes-dirname-"+$disk.DirName} className="clip" style={{maxWidth: '6ch'}}
-  >{$disk.DirName}</label
-></td
+  ></input><label htmlFor={"df-bytes-dirname-"+$disk.DirName} className="clip" style={{maxWidth: '6ch'}}
+    >{$disk.DirName}</label
+  ></td
   ><td className="text-right"
     >{$disk.Avail}</td
   ><td className="text-right"
@@ -323,16 +317,14 @@ define(function(require) {
 		dfinodes_rows:   function(Data, $disk) { return (<tr key={"dfinodes-rowby-dirname-"+$disk.DirName}
   ><td className="nowrap"
     ><input id={"df-inodes-devname-"+$disk.DevName}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-  ></input
-><label htmlFor={"df-inodes-devname-"+$disk.DevName} className="clip" style={{maxWidth: '12ch'}}
-  >{$disk.DevName}</label
-></td
+  ></input><label htmlFor={"df-inodes-devname-"+$disk.DevName} className="clip" style={{maxWidth: '12ch'}}
+    >{$disk.DevName}</label
+  ></td
   ><td className="nowrap"
     ><input id={"df-inodes-devname-"+$disk.DirName}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-  ></input
-><label htmlFor={"df-inodes-devname-"+$disk.DirName} className="clip" style={{maxWidth: '6ch'}}
-  >{$disk.DirName}</label
-></td
+  ></input><label htmlFor={"df-inodes-devname-"+$disk.DirName} className="clip" style={{maxWidth: '6ch'}}
+    >{$disk.DirName}</label
+  ></td
   ><td className="text-right"
     >{$disk.Ifree}</td
   ><td className="text-right"
@@ -372,10 +364,9 @@ define(function(require) {
     > {$proc.UID}</td
   ><td
     >            <input id={"psuser-pid-"+$proc.PIDstring}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-  ></input
-><label htmlFor={"psuser-pid-"+$proc.PIDstring} className="clip" style={{maxWidth: '12ch'}}
-  >{$proc.User}</label
-></td
+  ></input><label htmlFor={"psuser-pid-"+$proc.PIDstring} className="clip" style={{maxWidth: '12ch'}}
+    >{$proc.User}</label
+  ></td
   ><td className="text-right"
     > {$proc.Priority}</td
   ><td className="text-right"
@@ -388,10 +379,9 @@ define(function(require) {
     >{$proc.Time}</td
   ><td className="nowrap"
     >     <input id={"psname-pid-"+$proc.PIDstring}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-  ></input
-><label htmlFor={"psname-pid-"+$proc.PIDstring} className="clip" style={{maxWidth: '42ch'}}
-  >{$proc.Name}</label
-></td
+  ></input><label htmlFor={"psname-pid-"+$proc.PIDstring} className="clip" style={{maxWidth: '42ch'}}
+    >{$proc.Name}</label
+  ></td
   ></tr
 >); },
 		ps_table:        function(Data, rows)  { return (<table className="table2 stripe-table"
@@ -461,26 +451,23 @@ define(function(require) {
 		vagrant_rows:    function(Data, $mach) { return (<tr key={"vagrant-rowby-uuid-"+$mach.UUID}
   ><td
     >       <input id={"vagrant-uuid-"+$mach.UUID}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-  ></input
-><label htmlFor={"vagrant-uuid-"+$mach.UUID} className="clip" style={{maxWidth: '7ch'}}
-  >{$mach.UUID}</label
-></td
+  ></input><label htmlFor={"vagrant-uuid-"+$mach.UUID} className="clip" style={{maxWidth: '7ch'}}
+    >{$mach.UUID}</label
+  ></td
   ><td
     >       {$mach.Name}</td
   ><td
     >       {$mach.Provider}</td
   ><td
     >       <input id={"vagrant-state-"+$mach.UUID}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-  ></input
-><label htmlFor={"vagrant-state-"+$mach.UUID} className="clip" style={{maxWidth: '8ch'}}
-  >{$mach.State}</label
-></td
+  ></input><label htmlFor={"vagrant-state-"+$mach.UUID} className="clip" style={{maxWidth: '8ch'}}
+    >{$mach.State}</label
+  ></td
   ><td
     >       <input id={"vagrant-filepath-"+$mach.UUID}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-  ></input
-><label htmlFor={"vagrant-filepath-"+$mach.UUID} className="clip" style={{maxWidth: '50ch'}}
-  >{$mach.Vagrantfile_path}</label
-></td
+  ></input><label htmlFor={"vagrant-filepath-"+$mach.UUID} className="clip" style={{maxWidth: '50ch'}}
+    >{$mach.Vagrantfile_path}</label
+  ></td
   ></tr
 >); },
 		vagrant_error:   function(Data)        { return (<tr key="vgerror"

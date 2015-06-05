@@ -13,27 +13,34 @@ import (
 	"github.com/ostrost/ostent/client"
 )
 
-// linkToggle is to be removed. stays here for better diff.
-func linkToggle(value interface{}) (interface{}, error) {
-	if value == nil {
-		return nil, fmt.Errorf("value supplied for linkToggle is nil")
-	}
-	bp, ok := value.(*client.BoolParam)
-	if !ok {
-		prefix := uncurl(value.(string))
-		return client.Href{Href: fmt.Sprintf("{%s.Href}", prefix)}, nil
-	}
-	l := bp.EncodeToggle() // type Href
-	return l, nil
-}
-
 // JS is whether we're doing it for jsx.
 var JS bool
 
-// classword is class attribute name choices, picked by JS value.
-var classword = map[bool]string{
-	false: "class",     // default
-	true:  "className", // jsx case
+// classword returns either class or className depending on JS value.
+func classword() string {
+	return map[bool]string{
+		false: "class",     // default
+		true:  "className", // jsx case
+	}[JS]
+}
+
+// forword returns either for or htmlFor depending on JS value.
+func forword() string {
+	return map[bool]string{
+		false: "for",     // default
+		true:  "htmlFor", // jsx case
+	}[JS]
+}
+
+func CloseTagFunc(noclose []string) func(string) templatehtml.HTML {
+	return func(tn string) templatehtml.HTML {
+		for _, nc := range noclose {
+			if tn == nc {
+				return templatehtml.HTML("")
+			}
+		}
+		return templatehtml.HTML("</" + tn + ">")
+	}
 }
 
 func toggleHrefAttr(value interface{}) interface{} {
@@ -71,7 +78,7 @@ func ifClassAttr(value interface{}, classes ...string) (templatehtml.HTMLAttr, e
 	if !JS {
 		s = fmt.Sprintf("%q", s)
 	}
-	return templatehtml.HTMLAttr(fmt.Sprintf(" %s=%s", classword[JS], s)), nil
+	return templatehtml.HTMLAttr(fmt.Sprintf(" %s=%s", classword(), s)), nil
 }
 
 func ifClass(value interface{}, classes ...string) (string, error) {
@@ -95,7 +102,7 @@ func uncurl(s string) string {
 	return strings.TrimSuffix(strings.TrimPrefix(s, "{"), "}")
 }
 
-func droplink(CN string, value interface{}, ss ...string) (interface{}, error) {
+func droplink(value interface{}, ss ...string) (interface{}, error) {
 	if value == nil {
 		return nil, fmt.Errorf("value supplied for droplink is nil")
 	}
@@ -118,7 +125,6 @@ func droplink(CN string, value interface{}, ss ...string) (interface{}, error) {
 		enums := client.NewParams().ENUM // Params have .ENUM only yet
 		ed := enums[pname].EnumDecodec
 		return client.DropLink{
-			CLASSNAME:  CN,
 			AlignClass: AC,
 			Text:       ed.Text(named), // always static
 			Href:       fmt.Sprintf("{%s.%s.%s}", prefix, named, "Href"),
@@ -131,7 +137,6 @@ func droplink(CN string, value interface{}, ss ...string) (interface{}, error) {
 		return nil, err
 	}
 	l := ep.EncodeUint(pname, uptr)
-	l.CLASSNAME = CN
 	l.AlignClass = AC
 	return l, nil
 }
@@ -155,9 +160,9 @@ func LabelClassColorPercent(p string) string {
 	return "label label-success"
 }
 
-func usepercent(CN string, val string) interface{} {
+func usepercent(val string) interface{} {
 	var ca string
-	if CN == "className" {
+	if JS {
 		ca = " className={LabelClassColorPercent(" + uncurl(val) + ")}"
 	} else {
 		ca = fmt.Sprintf(" class=%q", LabelClassColorPercent(val))
@@ -171,28 +176,23 @@ func usepercent(CN string, val string) interface{} {
 	}
 }
 
-func key(CN, prefix, val string) templatehtml.HTMLAttr {
-	var key string
-	if CN == "className" { // jscriptMode only
-		key = fmt.Sprintf(" key={%q+%s}", prefix+"-", uncurl(val))
+func key(prefix, val string) templatehtml.HTMLAttr {
+	if !JS {
+		return templatehtml.HTMLAttr("")
 	}
-	return templatehtml.HTMLAttr(key)
+	return templatehtml.HTMLAttr(fmt.Sprintf(" key={%q+%s}", prefix+"-", uncurl(val)))
 }
 
 type Clipped struct {
-	CLASSNAME   string
 	IDAttr      templatehtml.HTMLAttr
 	ForAttr     templatehtml.HTMLAttr
 	MWStyleAttr templatehtml.HTMLAttr
 	Text        string
 }
 
-func clip(HF, CN string, width int, prefix, val string, rest ...string) (*Clipped, error) {
-	if HF == "" {
-		HF = "for"
-	}
+func clip(width int, prefix, val string, rest ...string) (*Clipped, error) {
 	var key, mws string
-	if CN == "className" { // jscriptMode
+	if JS {
 		key = fmt.Sprintf("{%q+%s}", prefix+"-", uncurl(val))
 		mws = fmt.Sprintf("{{maxWidth: '%dch'}}", width)
 	} else { // quote everything
@@ -205,9 +205,8 @@ func clip(HF, CN string, width int, prefix, val string, rest ...string) (*Clippe
 		return nil, fmt.Errorf("clip expects either 5 or 6 arguments")
 	}
 	return &Clipped{
-		CLASSNAME:   CN,
 		IDAttr:      templatehtml.HTMLAttr("id=" + key),
-		ForAttr:     templatehtml.HTMLAttr(HF + "=" + key),
+		ForAttr:     templatehtml.HTMLAttr(forword() + "=" + key),
 		MWStyleAttr: templatehtml.HTMLAttr("style=" + mws),
 		Text:        val,
 	}, nil
@@ -314,8 +313,8 @@ func mkmap(top Dotted, jscriptMode bool, level int) interface{} {
 		}
 	}
 	if jscriptMode && level == 0 {
-		h["CLASSNAME"] = "className"
-		h["HTMLFOR"] = "htmlFor"
+		//h["CLASSNAME"] = "className"
+		//h["HTMLFOR"] = "htmlFor"
 	}
 	return h
 }
@@ -374,7 +373,9 @@ var AceFuncs = templatehtml.FuncMap{
 	"ifClass":        ifClass,
 	"ifClassAttr":    ifClassAttr,
 	"toggleHrefAttr": toggleHrefAttr,
-	"class":          func() string { return "class" },
+	"closeTag":       CloseTagFunc(nil),
+	"class":          classword,
+	"for":            forword,
 
 	"json": func(v interface{}) (string, error) {
 		j, err := json.Marshal(v)
