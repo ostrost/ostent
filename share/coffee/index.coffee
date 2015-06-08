@@ -400,7 +400,7 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
     hideconfigps  = HideClass.component({xkey: 'HideconfigPS',  $el: $('[for-sel="#psconfig"]'),  reverseActive: true})
     hideconfigvg  = HideClass.component({xkey: 'HideconfigVG',  $el: $('[for-sel="#vgconfig"]'),  reverseActive: true})
 
-    hideram = HideClass.component({xkey: 'HideRAM', $el: $('[for-sel="#mem"]')})
+  # hideram = HideClass.component({xkey: 'HideRAM', $el: $('[for-sel="#mem"]')})
     hidecpu = HideClass.component({xkey: 'HideCPU', $el: $('[for-sel="#cpu"]')})
     hideps  = HideClass.component({xkey: 'HidePS',  $el: $('[for-sel="#ps"]')})
     hidevg  = HideClass.component({xkey: 'HideVG',  $el: $('[for-sel="#vg"]')})
@@ -417,7 +417,7 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
     psmore   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: true,  Khide: 'HidePS', Kable: 'PSnotExpandable',  $button_el: $('label.more[href="#psmore"]')})
     psless   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: false, Khide: 'HidePS', Kable: 'PSnotDecreasable', $button_el: $('label.less[href="#psless"]')})
 
-    hideswap = ButtonClass.component({Khide: 'HideRAM', Ksend: 'HideSWAP', $button_el: $('label[href="#hideswap"]')})
+  # hideswap = ButtonClass.component({Khide: 'HideRAM', Ksend: 'HideSWAP', $button_el: $('label[href="#hideswap"]')})
 
     expandif = ButtonClass.component({Khide: 'HideIF',  Ksend: 'ExpandIF',  Ktext: 'ExpandtextIF',  Kable: 'ExpandableIF',  $button_el: $('label[href="#if"]')})
     expandcpu= ButtonClass.component({Khide: 'HideCPU', Ksend: 'ExpandCPU', Ktext: 'ExpandtextCPU', Kable: 'ExpandableCPU', $button_el: $('label[href="#cpu"]')})
@@ -469,7 +469,7 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
       setState(hideconfigps,  hideconfigps .reduce(data))
       setState(hideconfigvg,  hideconfigvg .reduce(data))
 
-      setState(hideram,       hideram      .reduce(data))
+    # setState(hideram,       hideram      .reduce(data))
       setState(hidecpu,       hidecpu      .reduce(data))
       setState(hideps,        hideps       .reduce(data))
       setState(hidevg,        hidevg       .reduce(data))
@@ -486,7 +486,7 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
       setState(psmore,    psmore  .reduce(data))
       setState(psless,    psless  .reduce(data))
 
-      setState(hideswap,  hideswap.reduce(data))
+    # setState(hideswap,  hideswap.reduce(data))
 
       setState(expandif,  expandif.reduce(data))
       setState(expandcpu, expandcpu.reduce(data))

@@ -659,7 +659,7 @@
       }
     };
     update = function() {
-      var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigps, hideconfigvg, hidecpu, hideps, hideram, hideswap, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, psless, psmore, psplus, pstable, refresh_cpu, refresh_df, refresh_if, refresh_mem, refresh_ps, refresh_vg, tabsdf, tabsif, uptime, vgtable;
+      var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigps, hideconfigvg, hidecpu, hideps, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, psless, psmore, psplus, pstable, refresh_cpu, refresh_df, refresh_if, refresh_mem, refresh_ps, refresh_vg, tabsdf, tabsif, uptime, vgtable;
       hideconfigif = HideClass.component({
         xkey: 'HideconfigIF',
         $el: $('[for-sel="#ifconfig"]'),
@@ -684,10 +684,6 @@
         xkey: 'HideconfigVG',
         $el: $('[for-sel="#vgconfig"]'),
         reverseActive: true
-      });
-      hideram = HideClass.component({
-        xkey: 'HideRAM',
-        $el: $('[for-sel="#mem"]')
       });
       hidecpu = HideClass.component({
         xkey: 'HideCPU',
@@ -740,11 +736,6 @@
         Khide: 'HidePS',
         Kable: 'PSnotDecreasable',
         $button_el: $('label.less[href="#psless"]')
-      });
-      hideswap = ButtonClass.component({
-        Khide: 'HideRAM',
-        Ksend: 'HideSWAP',
-        $button_el: $('label[href="#hideswap"]')
       });
       expandif = ButtonClass.component({
         Khide: 'HideIF',
@@ -861,7 +852,6 @@
         setState(hideconfigdf, hideconfigdf.reduce(data));
         setState(hideconfigps, hideconfigps.reduce(data));
         setState(hideconfigvg, hideconfigvg.reduce(data));
-        setState(hideram, hideram.reduce(data));
         setState(hidecpu, hidecpu.reduce(data));
         setState(hideps, hideps.reduce(data));
         setState(hidevg, hidevg.reduce(data));
@@ -876,7 +866,6 @@
         setState(psplus, psplus.newstate(data));
         setState(psmore, psmore.reduce(data));
         setState(psless, psless.reduce(data));
-        setState(hideswap, hideswap.reduce(data));
         setState(expandif, expandif.reduce(data));
         setState(expandcpu, expandcpu.reduce(data));
         setState(expanddf, expanddf.reduce(data));

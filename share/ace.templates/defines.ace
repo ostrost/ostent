@@ -192,31 +192,25 @@
 
 = content define_blockmem
   div.panel1
-    label.collapse-label.panel-heading.btn-block#for-memconfig {{for}}="dummymemconfigcheckbox"
+    label.panel-heading.btn-block
       | <a {{ifClassAttr .Data.Links.Params.BOOL.showconfigmem "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigmem}}>Memory</a>
-      input.collapse-checkbox#dummymemconfigcheckbox type=checkbox aria-hidden=true hidden=
-    input.collapse-checkbox type=checkbox aria-hidden=true hidden=
 
     div
       | <div id="memconfig" {{ifClassAttr .Data.Links.Params.BOOL.showconfigmem "" "collapse-hidden"}}>
       form.horizontal-form.border-bottom-form
         div.form-group-padded
-          div.btn-group.btn-group-sm data-toggle=buttons
-            label.btn.btn-default.collapse-label for-sel=#mem
-              input type=checkbox
-              | Hidden
-            | <label {{ifClassAttr .Data.Links.Params.BOOL.hideswap "btn btn-default active" "btn btn-default"}} href="#hideswap">
-            input type=checkbox
-            | Hide swap
-            | </label>
+          div.btn-group.btn-group-sm role=group
+            | <a {{ifClassAttr .Data.Links.Params.BOOL.hidemem "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidemem}}>Hidden</a>
+            | <a {{ifClassAttr .Data.Links.Params.BOOL.hideswap "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hideswap}} {{ifDisabledAttr .Data.Links.Params.BOOL.hidemem}}>Hide swap</a>
 
         div.form-group-padded
           {{template "defines::define_refresh" refresh .Data.Client.RefreshMEM}}
       | </div>
 
     div
-      div#mem {{class}}="{{if eq "true" (json .Data.Client.HideMEM)}}collapse-hidden{{end}}"
-        {{template "defines::define_memtable" .}}
+      | <div {{ifClassAttr .Data.Links.Params.BOOL.hidemem "collapse-hidden"}}>
+      {{template "defines::define_memtable" .}}
+      | </div>
 
 = content define_cpurows
   {{with .OVERRIDE}}{{.}}{{else}}

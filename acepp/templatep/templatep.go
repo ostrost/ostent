@@ -70,10 +70,20 @@ func refresh(value interface{}) interface{} {
 	}
 }
 
+func ifDisabledAttr(value interface{}) templatehtml.HTMLAttr {
+	if JS {
+		return templatehtml.HTMLAttr(fmt.Sprintf("disabled={%s.Value ? \"disabled\" : \"\" }", uncurl(value.(string))))
+	}
+	if value.(*client.BoolParam).BoolDecoded.Value {
+		return templatehtml.HTMLAttr("disabled=\"disabled\"")
+	}
+	return templatehtml.HTMLAttr("")
+}
+
 func ifClassAttr(value interface{}, classes ...string) (templatehtml.HTMLAttr, error) {
 	s, err := ifClass(value, classes...)
 	if err != nil {
-		return templatehtml.HTMLAttr(s), err
+		return templatehtml.HTMLAttr(""), err
 	}
 	if !JS {
 		s = fmt.Sprintf("%q", s)
@@ -82,18 +92,23 @@ func ifClassAttr(value interface{}, classes ...string) (templatehtml.HTMLAttr, e
 }
 
 func ifClass(value interface{}, classes ...string) (string, error) {
-	if len(classes) == 0 || len(classes) > 2 {
-		return "", fmt.Errorf("number of args for ifClass*: either 2 or 3 got %d", 1+len(classes))
+	if len(classes) == 0 || len(classes) > 3 {
+		return "", fmt.Errorf("number of args for ifClass*: either 2 or 3 or 4 got %d", 1+len(classes))
 	}
 	sndclass := ""
 	if len(classes) > 1 {
 		sndclass = classes[1]
 	}
+	fstclass := classes[0]
+	if len(classes) > 2 {
+		fstclass = classes[2] + " " + fstclass
+		sndclass = classes[2] + " " + sndclass
+	}
 	if JS {
-		return fmt.Sprintf("{%s.Value ? %q : %q }", uncurl(value.(string)), classes[0], sndclass), nil
+		return fmt.Sprintf("{%s.Value ? %q : %q }", uncurl(value.(string)), fstclass, sndclass), nil
 	}
 	if value.(*client.BoolParam).BoolDecoded.Value {
-		return classes[0], nil
+		return fstclass, nil
 	}
 	return sndclass, nil
 }
@@ -372,6 +387,7 @@ var AceFuncs = templatehtml.FuncMap{
 	"refresh":        refresh,
 	"ifClass":        ifClass,
 	"ifClassAttr":    ifClassAttr,
+	"ifDisabledAttr": ifDisabledAttr,
 	"toggleHrefAttr": toggleHrefAttr,
 	"closeTag":       CloseTagFunc(nil),
 	"class":          classword,

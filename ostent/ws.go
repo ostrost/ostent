@@ -393,7 +393,7 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	update, err := getUpdates(nil, r, &sd.conn.full, send, sd.received != nil && sd.received.Client != nil)
+	update, err := getUpdates(r, &sd.conn.full, send, sd.received != nil && sd.received.Client != nil)
 	if err != nil || update == (IndexUpdate{}) { // nothing scheduled for the moment, no update
 		return
 	}
@@ -459,7 +459,7 @@ func IndexWS(access *logger, minperiod flags.Period, w http.ResponseWriter, req 
 
 		receive: make(chan *received, 2),
 		pushch:  make(chan *IndexUpdate, 2),
-		full:    client.NewClient(nil, minperiod),
+		full:    client.NewClient(minperiod),
 		access:  access,
 	}
 	Register <- c

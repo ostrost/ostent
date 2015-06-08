@@ -93,12 +93,6 @@ func (procs MPSlice) Ordered(cl *client.Client, send *client.SendClient) []opera
 	return list
 }
 
-type clientData struct {
-	client.Client
-	HideMEM    *bool           `json:",omitempty"` // for template only
-	RefreshMEM *client.Refresh `json:",omitempty"` // for template only
-}
-
 type IndexData struct {
 	Generic // inline non-pointer
 
@@ -123,7 +117,7 @@ type IndexData struct {
 	IFTABS  client.Tabs
 	DFTABS  client.Tabs
 
-	Client clientData
+	Client client.Client
 }
 
 type Links struct {
@@ -739,37 +733,32 @@ type SetInterface interface {
 }
 // */
 
-func getUpdates(params *client.Params, req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (iu IndexUpdate, err error) {
-	cl.RecalcRows() // before anything
-
-	psCopy := lastInfo.CopyPS()
-
+func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (iu IndexUpdate, err error) {
 	if req != nil {
 		req.ParseForm() // do ParseForm even if req.Form == nil
 
-		if params == nil {
-			params = client.NewParams()
-		}
-		iu.Links = &Links{params}
-		iu.Links.Params.ENUM["df"].Decode(req.Form, &cl.DFSEQ)
-		iu.Links.Params.ENUM["ps"].Decode(req.Form, &cl.PSSEQ)
-		iu.Links.Params.BOOL["still"].Decode(req.Form)
-		iu.Links.Params.BOOL["hideswap"].Decode(req.Form)
+		cl.Params.ENUM["df"].Decode(req.Form, &cl.DFSEQ)
+		cl.Params.ENUM["ps"].Decode(req.Form, &cl.PSSEQ)
+		cl.Params.BOOL["still"].Decode(req.Form)
+		cl.Params.BOOL["hidemem"].Decode(req.Form)
+		cl.Params.BOOL["hideswap"].Decode(req.Form)
 		// rest of hide* to follow here
-		iu.Links.Params.BOOL["showconfigmem"].Decode(req.Form)
+		cl.Params.BOOL["showconfigmem"].Decode(req.Form)
 
-		// iu.Links.Params.BOOL["configmem"].Decode(req.Form, &cl.HideconfigMEM)
+		// cl.Params.BOOL["configmem"].Decode(req.Form, &cl.HideconfigMEM)
 
 		// after all the (enum) Decode()s
-		if iu.Links.Params.Moved {
-			return iu, enums.RenamedConstError("?" + iu.Links.Params.Values.Encode())
+		if cl.Params.Moved {
+			return iu, enums.RenamedConstError("?" + cl.Params.Values.Encode())
 		}
+		iu.Links = &Links{cl.Params}
 	}
+	cl.RecalcRows() // after params decoded
+	psCopy := lastInfo.CopyPS()
 
 	set := []Set{
-		{*cl.HideRAM, cl.RefreshRAM, Reg1s.MEM},
-		// if RAM is hidden, so is SWAP:
-		{*cl.HideRAM || *cl.HideSWAP, cl.RefreshSWAP, Reg1s.SWAP},
+		{cl.Params.BOOL["hidemem"].BoolDecoded.Value, cl.RefreshMEM, Reg1s.MEM},
+		{cl.Params.BOOL["hidemem"].BoolDecoded.Value || cl.Params.BOOL["hideswap"].BoolDecoded.Value, cl.RefreshMEM, Reg1s.SWAP}, // if MEM is hidden, so is SWAP
 		{*cl.HideCPU, cl.RefreshCPU, Reg1s.CPU},
 		{*cl.HideDF, cl.RefreshDF, Reg1s.DF},
 		{*cl.HideIF, cl.RefreshIF, Reg1s.IF},
@@ -808,9 +797,8 @@ func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 		lastInfo.collect(&Machine{})
 	}
 
-	params := client.NewParams()
-	cl := client.NewClient(params, minperiod)
-	updates, err := getUpdates(params, req, &cl, client.SendClient{}, true)
+	cl := client.NewClient(minperiod)
+	updates, err := getUpdates(req, &cl, client.SendClient{}, true)
 	if err != nil {
 		return IndexData{}, err
 	}
@@ -818,17 +806,24 @@ func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 	data := IndexData{
 		Generic: updates.Generic,
 
-		CPU:     *updates.CPU,
-		MEM:     *updates.MEM,
-		Links:   updates.Links,
-		PStable: *updates.PStable,
+		Links: updates.Links,
 
 		DISTRIB: DISTRIB,       // value set in init()
 		VERSION: VERSION,       // value from server.go
 		DFTABS:  client.DFTABS, // "const"
 		IFTABS:  client.IFTABS, // "const"
 
-		Client: clientData{Client: cl, HideMEM: cl.HideRAM, RefreshMEM: cl.RefreshRAM},
+		Client: cl,
+	}
+
+	if updates.CPU != nil {
+		data.CPU = *updates.CPU
+	}
+	if updates.MEM != nil {
+		data.MEM = *updates.MEM
+	}
+	if updates.PStable != nil {
+		data.PStable = *updates.PStable
 	}
 
 	if updates.DFbytes != nil {

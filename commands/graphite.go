@@ -36,7 +36,7 @@ func graphiteCommandLine(cli *flag.FlagSet) CommandLineHandler {
 			gc := &carbond{
 				logger:     gr.logger,
 				serveraddr: gr.ServerAddr.String(),
-				Client:     client.NewClient(nil, gr.RefreshFlag),
+				Client:     client.NewClient(gr.RefreshFlag),
 			}
 			ostent.Register <- gc
 		})

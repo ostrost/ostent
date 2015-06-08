@@ -17,27 +17,19 @@ define(function(require) {
   ></tr
 >); },
 		blockmem:        function(Data, rows)  { return (<div className="panel1"
-  ><label id="for-memconfig" className="collapse-label panel-heading btn-block" htmlFor="dummymemconfigcheckbox"
+  ><label className="panel-heading btn-block"
     ><a  className={Data.Links.Params.BOOL.showconfigmem.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.showconfigmem.Href} onClick={this.handleClick}
       >Memory</a
-    ><input id="dummymemconfigcheckbox" className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-      ></input
     ></label
-  ><input className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-    ></input
   ><div
     ><div id="memconfig"  className={Data.Links.Params.BOOL.showconfigmem.Value ? "" : "collapse-hidden" }
       ><form className="horizontal-form border-bottom-form"
         ><div className="form-group-padded"
-          ><div className="btn-group btn-group-sm" data-toggle="buttons"
-            ><label className="btn btn-default collapse-label" for-sel="#mem"
-              ><input type="checkbox"
-                ></input
-              >Hidden</label
-            ><label  className={Data.Links.Params.BOOL.hideswap.Value ? "btn btn-default active" : "btn btn-default" } href="#hideswap"
-              ><input type="checkbox"
-                ></input
-              >Hide swap</label
+          ><div className="btn-group btn-group-sm" role="group"
+            ><a  className={Data.Links.Params.BOOL.hidemem.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Links.Params.BOOL.hidemem.Href} onClick={this.handleClick}
+              >Hidden</a
+            ><a  className={Data.Links.Params.BOOL.hideswap.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Links.Params.BOOL.hideswap.Href} onClick={this.handleClick} disabled={Data.Links.Params.BOOL.hidemem.Value ? "disabled" : "" }
+              >Hide swap</a
             ></div
           ></div
         ><div className="form-group-padded"
@@ -51,7 +43,7 @@ define(function(require) {
       ></div
     ></div
   ><div
-    ><div id="mem" className=""
+    ><div  className={Data.Links.Params.BOOL.hidemem.Value ? "collapse-hidden" : "" }
       ><table className="table1 stripe-table"
   ><thead
     ><tr

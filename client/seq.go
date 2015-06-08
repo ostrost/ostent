@@ -157,6 +157,7 @@ func (bp *BoolParam) Decode(form url.Values) {
 	values, ok := form[bp.BoolDecodec.Pname]
 	if !ok {
 		bp.BoolDecoded.Value = bp.BoolDecodec.Default
+		bp.Params.Values.Del(bp.BoolDecodec.Pname)
 		return
 	}
 	bp.BoolDecoded.Specified = true

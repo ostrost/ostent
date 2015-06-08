@@ -7114,24 +7114,31 @@ body {
 .padding-topseventysh {
   padding-top: 71px; }
 
-.panel1 label.panel-heading {
-  font-weight: normal;
-  margin-bottom: 0px;
-  padding: 0px 0px; }
-.panel1 header {
-  padding: 0px 0px; }
-.panel1 a {
-  color: inherit;
-  background-color: inherit;
-  border-color: inherit; }
-.panel1 a.btn-header-block {
-  border-color: #f5f5f5; }
-.panel1 a.btn-header-block:hover,
-.panel1 a.btn-header-block:active,
-.panel1 a.btn-header-block.active {
-  border-color: #adadad; }
-.panel1 form.border-bottom-form {
-  border-bottom: 1px solid #ddd; }
+.panel1 {
+  /*
+  a {
+    color:            inherit; // use the text colors
+    background-color: inherit;
+    border-color:     inherit;
+  }
+  a.btn-header-block {
+    border-color: #f5f5f5; // .btn-header background color
+  }
+  a.btn-header-block:hover,
+  a.btn-header-block:active,
+  a.btn-header-block.active {
+    border-color: #adadad; // inherit;
+    // .btn-default.active colors
+  }
+  */ }
+  .panel1 label.panel-heading {
+    font-weight: normal;
+    margin-bottom: 0px;
+    padding: 0px 0px; }
+  .panel1 header {
+    padding: 0px 0px; }
+  .panel1 form.border-bottom-form {
+    border-bottom: 1px solid #ddd; }
 
 .table2, .table1 {
   margin-bottom: 0px; }

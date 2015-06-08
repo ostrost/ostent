@@ -316,23 +316,19 @@
   ></html
 >{{/*
 */}}{{define "defines::define_blockmem"}}<div class="panel1"
-  ><label id="for-memconfig" class="collapse-label panel-heading btn-block" {{for}}="dummymemconfigcheckbox"
+  ><label class="panel-heading btn-block"
     ><a {{ifClassAttr .Data.Links.Params.BOOL.showconfigmem "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigmem}}
       >Memory</a
-    ><input id="dummymemconfigcheckbox" class="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
     ></label
-  ><input class="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
   ><div
     ><div id="memconfig" {{ifClassAttr .Data.Links.Params.BOOL.showconfigmem "" "collapse-hidden"}}
       ><form class="horizontal-form border-bottom-form"
         ><div class="form-group-padded"
-          ><div class="btn-group btn-group-sm" data-toggle="buttons"
-            ><label class="btn btn-default collapse-label" for-sel="#mem"
-              ><input type="checkbox"
-              >Hidden</label
-            ><label {{ifClassAttr .Data.Links.Params.BOOL.hideswap "btn btn-default active" "btn btn-default"}} href="#hideswap"
-              ><input type="checkbox"
-              >Hide swap</label
+          ><div class="btn-group btn-group-sm" role="group"
+            ><a {{ifClassAttr .Data.Links.Params.BOOL.hidemem "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidemem}}
+              >Hidden</a
+            ><a {{ifClassAttr .Data.Links.Params.BOOL.hideswap "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hideswap}} {{ifDisabledAttr .Data.Links.Params.BOOL.hidemem}}
+              >Hide swap</a
             ></div
           ></div
         ><div class="form-group-padded"
@@ -341,7 +337,7 @@
       ></div
     ></div
   ><div
-    ><div id="mem" {{class}}="{{if eq "true" (json .Data.Client.HideMEM)}}collapse-hidden{{end}}"
+    ><div {{ifClassAttr .Data.Links.Params.BOOL.hidemem "collapse-hidden"}}
       >{{template "defines::define_memtable" .}}</div
     ></div
   ></div
