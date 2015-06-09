@@ -38,6 +38,7 @@ func init() {
 	}
 }
 
+// MarshalJSON is generated so UintDF satisfies json.Marshaler.
 func (r UintDF) MarshalJSON() ([]byte, error) {
 	if s, ok := interface{}(r).(fmt.Stringer); ok {
 		return json.Marshal(s.String())
@@ -49,6 +50,7 @@ func (r UintDF) MarshalJSON() ([]byte, error) {
 	return json.Marshal(s)
 }
 
+// UnmarshalJSON is generated so UintDF satisfies json.Unmarshaler.
 func (r *UintDF) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
