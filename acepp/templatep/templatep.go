@@ -74,7 +74,7 @@ func ifDisabledAttr(value interface{}) templatehtml.HTMLAttr {
 	if JS {
 		return templatehtml.HTMLAttr(fmt.Sprintf("disabled={%s.Value ? \"disabled\" : \"\" }", uncurl(value.(string))))
 	}
-	if value.(*client.BoolParam).BoolDecoded.Value {
+	if value.(*client.BoolParam).Value {
 		return templatehtml.HTMLAttr("disabled=\"disabled\"")
 	}
 	return templatehtml.HTMLAttr("")
@@ -107,7 +107,7 @@ func ifClass(value interface{}, classes ...string) (string, error) {
 	if JS {
 		return fmt.Sprintf("{%s.Value ? %q : %q }", uncurl(value.(string)), fstclass, sndclass), nil
 	}
-	if value.(*client.BoolParam).BoolDecoded.Value {
+	if value.(*client.BoolParam).Value {
 		return fstclass, nil
 	}
 	return sndclass, nil

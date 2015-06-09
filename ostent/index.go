@@ -748,8 +748,8 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 		// cl.Params.BOOL["configmem"].Decode(req.Form, &cl.HideconfigMEM)
 
 		// after all the (enum) Decode()s
-		if cl.Params.Moved {
-			return iu, enums.RenamedConstError("?" + cl.Params.Values.Encode())
+		if cl.Params.Query.Moved {
+			return iu, enums.RenamedConstError("?" + client.ValuesEncode(cl.Params.Query.Values))
 		}
 		iu.Links = &Links{cl.Params}
 	}
@@ -757,8 +757,8 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 	psCopy := lastInfo.CopyPS()
 
 	set := []Set{
-		{cl.Params.BOOL["hidemem"].BoolDecoded.Value, cl.RefreshMEM, Reg1s.MEM},
-		{cl.Params.BOOL["hidemem"].BoolDecoded.Value || cl.Params.BOOL["hideswap"].BoolDecoded.Value, cl.RefreshMEM, Reg1s.SWAP}, // if MEM is hidden, so is SWAP
+		{cl.Params.BOOL["hidemem"].Value, cl.RefreshMEM, Reg1s.MEM},
+		{cl.Params.BOOL["hidemem"].Value || cl.Params.BOOL["hideswap"].Value, cl.RefreshMEM, Reg1s.SWAP}, // if MEM is hidden, so is SWAP
 		{*cl.HideCPU, cl.RefreshCPU, Reg1s.CPU},
 		{*cl.HideDF, cl.RefreshDF, Reg1s.DF},
 		{*cl.HideIF, cl.RefreshIF, Reg1s.IF},

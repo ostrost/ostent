@@ -18,16 +18,16 @@ func TestBoolLinks(t *testing.T) {
 	params := NewParams()
 	scm := params.BOOL["showconfigmem"]
 	scm.Decode(req.Form)
-	if scm.BoolDecoded.Value != true {
-		t.Errorf("Decode failed: %t, expected %t", scm.BoolDecoded.Value, true)
+	if scm.Value != true {
+		t.Errorf("Decode failed: %t, expected %t", scm.Value, true)
 	}
-	if s := ValuesEncode(params.Values); s != "showconfigmem" {
+	if s := ValuesEncode(params.Query.Values); s != "showconfigmem" {
 		t.Fatalf("Unexpected Values.Encode: %q", s)
 	}
 	if h := scm.EncodeToggle(); h != template.HTMLAttr("?") {
 		t.Fatalf("Unexpected EncodeToggle: %q", h)
 	}
-	if s := ValuesEncode(params.Values); s != "showconfigmem" {
+	if s := ValuesEncode(params.Query.Values); s != "showconfigmem" {
 		t.Fatalf("Unexpected Values.Encode (changed after EncodeToggle): %q", s)
 	}
 }
@@ -43,7 +43,7 @@ func TestLinks(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if num := df.EnumDecoded.Number; num.Negative || num.Uint != enums.Uint(enums.MP) {
+	if num := df.Number; num.Negative || num.Uint != enums.Uint(enums.MP) {
 		t.Errorf("Decode failed: %+v\n", num)
 	}
 
@@ -65,7 +65,7 @@ func TestLinks(t *testing.T) {
 		if err == nil || err.Error() != "" {
 			t.Fatalf("Error expected (%q)", err)
 		}
-		if s := params.Values.Encode(); s != "df=total" {
+		if s := params.Query.Values.Encode(); s != "df=total" {
 			t.Fatalf("Expected Encode: %q", s)
 		}
 	}
@@ -78,7 +78,7 @@ func TestLinks(t *testing.T) {
 	if err := form.Params.ENUM["df"].Decode(url.Values{"df": []string{"mp"}}, nil); err != nil {
 		t.Fatalf("Decoding errd unexpectedly: %s", err)
 	}
-	if s, moved := form.Params.Values.Encode(), "df=mp&ps=-pid"; s != moved {
+	if s, moved := form.Params.Query.Values.Encode(), "df=mp&ps=-pid"; s != moved {
 		t.Fatalf("Redirect mismatch (%q): %q", moved, s)
 	}
 }
@@ -93,7 +93,7 @@ func CheckRedirect(t *testing.T, form Form, names []string, moved string) {
 			t.Fatalf("RenamedConstError expected, got: %s", err)
 		}
 	}
-	if s := form.Params.Values.Encode(); s != moved {
+	if s := form.Params.Query.Values.Encode(); s != moved {
 		t.Fatalf("Redirect mismatch (%q): %q", moved, s)
 	}
 }

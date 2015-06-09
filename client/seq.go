@@ -37,8 +37,8 @@ type DropLink struct {
 
 // EncodeUint returns enums.uinter applied DropLink. .AlignClass is not filled.
 func (ep EnumParam) EncodeUint(pname string, uinter enums.Uinter) DropLink {
-	base := ep.Params.ValuesCopy()
-	text, cur := ep.SetBase(base, pname, uinter)
+	values := ep.Query.ValuesCopy()
+	text, cur := ep.SetValue(values, pname, uinter)
 	dl := DropLink{Text: text, Class: "state"}
 	if cur != nil {
 		dl.CaretClass = "caret"
@@ -47,12 +47,12 @@ func (ep EnumParam) EncodeUint(pname string, uinter enums.Uinter) DropLink {
 			dl.Class += " dropup"
 		}
 	}
-	dl.Href = "?" + ValuesEncode(base)
+	dl.Href = "?" + ValuesEncode(values)
 	return dl
 }
 
-// SetBase modifies the base.
-func (ep EnumParam) SetBase(base url.Values, pname string, uinter enums.Uinter) (string, *bool) {
+// SetValue modifies the values.
+func (ep EnumParam) SetValue(values url.Values, pname string, uinter enums.Uinter) (string, *bool) {
 	this := uinter.Touint()
 	_, low, err := uinter.Marshal()
 	if err != nil { // ignoring the error
@@ -61,7 +61,7 @@ func (ep EnumParam) SetBase(base url.Values, pname string, uinter enums.Uinter) 
 
 	text := ep.EnumDecodec.Text(strings.ToUpper(low))
 	ddef := ep.EnumDecodec.Default.Uint
-	dnum := ep.EnumDecoded.Number
+	dnum := ep.Number
 
 	// Default ordering is desc (values are numeric most of the time).
 	// Alpha values ordering: asc.
@@ -75,14 +75,14 @@ func (ep EnumParam) SetBase(base url.Values, pname string, uinter enums.Uinter) 
 		*ret = !desc
 	}
 	// for default, opposite of having a parameter is it's absence.
-	if this == ddef && ep.EnumDecoded.Specified {
-		base.Del(pname)
+	if this == ddef && ep.Specified {
+		values.Del(pname)
 		return text, ret
 	}
 	if this == dnum.Uint && !dnum.Negative {
 		low = "-" + low
 	}
-	base.Set(pname, low)
+	values.Set(pname, low)
 	return text, ret
 }
 
@@ -105,8 +105,8 @@ func (ep EnumParam) IsAlpha(p enums.Uint) bool {
 
 func (ed EnumDecodec) DefaultParam(params *Params) EnumParam {
 	return EnumParam{
+		Query:       &params.Query,
 		EnumDecodec: ed,
-		Params:      params,
 	}
 }
 
@@ -156,15 +156,14 @@ var BoolDecodecs = map[string]BoolDecodec{
 func (bp *BoolParam) Decode(form url.Values) {
 	values, ok := form[bp.BoolDecodec.Pname]
 	if !ok {
-		bp.BoolDecoded.Value = bp.BoolDecodec.Default
-		bp.Params.Values.Del(bp.BoolDecodec.Pname)
+		bp.Value = bp.BoolDecodec.Default
+		bp.Query.Values.Del(bp.BoolDecodec.Pname)
 		return
 	}
-	bp.BoolDecoded.Specified = true
 	if len(values) != 0 || values[0] == "" || values[0] == "1" || values[0] == "true" || values[0] == "TRUE" {
-		bp.BoolDecoded.Value = true
+		bp.Value = true
 	} // else .Value stays false
-	bp.Params.Values.Set(bp.BoolDecodec.Pname, bp.StringValue(bp.BoolDecoded.Value))
+	bp.Query.Values.Set(bp.BoolDecodec.Pname, bp.StringValue(bp.Value))
 }
 
 func (bp BoolParam) StringValue(value bool) string {
@@ -180,8 +179,8 @@ func (ep *EnumParam) Decode(form url.Values, setep *EnumParam) error {
 	if err != nil {
 		return err
 	}
-	ep.EnumDecoded.Number = n
-	ep.EnumDecoded.Specified = spec
+	ep.Number = n
+	ep.Specified = spec
 	if setep != nil {
 		*setep = *ep
 	}
@@ -208,9 +207,9 @@ func (ep *EnumParam) Find(values []string, uptr Upointer) (Number, bool, error) 
 				if negate {
 					l = "-" + l
 				}
-				ep.Params.Values.Set(ep.EnumDecodec.Pname, l)
+				ep.Query.Values.Set(ep.EnumDecodec.Pname, l)
 			}
-			ep.Params.Moved = true
+			ep.Query.Moved = true
 		}
 		return Number{}, true, err
 	}
@@ -218,28 +217,28 @@ func (ep *EnumParam) Find(values []string, uptr Upointer) (Number, bool, error) 
 		Uint:     uptr.Touint(),
 		Negative: negate,
 	}
-	ep.Params.Values.Set(ep.EnumDecodec.Pname, values[0])
+	ep.Query.Values.Set(ep.EnumDecodec.Pname, values[0])
 	return n, true, nil
 }
 
 // NewParams constructs new Params.
 // Global var EnumDecodecs, BoolDecodecs are ranged.
 func NewParams() *Params {
-	p := &Params{Values: make(url.Values)}
+	p := &Params{Query: Query{Values: make(url.Values)}}
 	enums := make(Enums)
 	for k, v := range EnumDecodecs {
 		v.Pname = k
 		enums[k] = &EnumParam{
+			Query:       &p.Query,
 			EnumDecodec: v,
-			Params:      p,
 		}
 	}
 	bools := make(Bools)
 	for k, v := range BoolDecodecs {
 		v.Pname = k
 		bools[k] = &BoolParam{
+			Query:       &p.Query,
 			BoolDecodec: v,
-			Params:      p,
 		}
 	}
 	p.ENUM = enums
@@ -247,27 +246,21 @@ func NewParams() *Params {
 	return p
 }
 
-// EnumDecoded has Decode result.
-type EnumDecoded struct {
-	Number
-	Specified bool
-}
-
-// EnumParam holds everything known about enum param.
-// All fields are non-marshaled, there's .MarshalJSON method for that.
+// EnumParam represents enum parameter. Features MarshalJSON method
+// thus all fields are explicitly marked as non-marshallable.
 type EnumParam struct {
-	// EnumDecodec is read-only, an entry from global var EnumDecodecs.
-	EnumDecodec EnumDecodec `json:"-"` // non-marshaled explicitly
-	EnumDecoded EnumDecoded `json:"-"` // non-marshaled explicitly
-	Params      *Params     `json:"-"` // non-marshaled explicitly
+	Query       *Query      `json:"-"` // url.Values here.
+	EnumDecodec EnumDecodec `json:"-"` // Read-only, an entry from global var EnumDecodecs.
+	Number      Number      `json:"-"` // Decoded Number.
+	Specified   bool        `json:"-"` // True if a valid value was specified for decoding.
 }
 
 func (ep EnumParam) LessorMore(r bool) bool {
 	// numeric values: flip r
-	if !ep.IsAlpha(ep.EnumDecoded.Number.Uint) {
+	if !ep.IsAlpha(ep.Number.Uint) {
 		r = !r
 	}
-	if ep.EnumDecoded.Number.Negative {
+	if ep.Number.Negative {
 		r = !r
 	}
 	return r
@@ -299,7 +292,7 @@ func (bp BoolParam) MarshalJSON() ([]byte, error) {
 		Value bool
 	}{
 		Href:  bp.EncodeToggle(),
-		Value: bp.BoolDecoded.Value,
+		Value: bp.Value,
 	})
 }
 
@@ -307,15 +300,19 @@ type Enums map[string]*EnumParam
 type Bools map[string]*BoolParam
 
 type Params struct {
-	ENUM   Enums
-	BOOL   Bools
-	Values url.Values `json:"-"`
-	Moved  bool       `json:"-"`
+	ENUM  Enums
+	BOOL  Bools
+	Query Query `json:"-"`
 }
 
-func (ps Params) ValuesCopy() url.Values {
+type Query struct {
+	Values url.Values
+	Moved  bool
+}
+
+func (q Query) ValuesCopy() url.Values {
 	copy := url.Values{}
-	for k, v := range ps.Values {
+	for k, v := range q.Values {
 		copy[k] = v
 	}
 	return copy
@@ -326,29 +323,25 @@ type BoolDecodec struct {
 	Pname   string
 }
 
-type BoolDecoded struct {
-	Value     bool
-	Specified bool
-}
-
+// BoolParam represents bool parameter. Features MarshalJSON method
+// thus all fields are explicitly marked as non-marshallable.
 type BoolParam struct {
-	// BoolDecoder is read-only, an entry from global var BoolDecoders.
-	BoolDecodec BoolDecodec `json:"-"` // non marshalled explicitly
-	BoolDecoded BoolDecoded `json:"-"` // non marshalled explicitly
-	Params      *Params     `json:"-"` // non marshalled explicitly
+	Query       *Query      `json:"-"` // url.Values here.
+	BoolDecodec BoolDecodec `json:"-"` // Read-only, an entry from global var BoolDecoders.
+	Value       bool        `json:"-"` // Decoded value.
 }
 
 // EncodeToggle returns template.HTMLAttr having the bp value inverted and encoded.
-// The other values are copied from bp.Params.Values.
+// The other values are copied from bp.Query.Values.
 func (bp BoolParam) EncodeToggle() template.HTMLAttr {
-	base := bp.Params.ValuesCopy()
-	value := !bp.BoolDecoded.Value // here's the toggle
+	values := bp.Query.ValuesCopy()
+	value := !bp.Value // here's the toggle
 	if value == bp.BoolDecodec.Default {
-		base.Del(bp.BoolDecodec.Pname)
+		values.Del(bp.BoolDecodec.Pname)
 	} else {
-		base.Set(bp.BoolDecodec.Pname, bp.StringValue(value))
+		values.Set(bp.BoolDecodec.Pname, bp.StringValue(value))
 	}
-	return template.HTMLAttr("?" + ValuesEncode(base))
+	return template.HTMLAttr("?" + ValuesEncode(values))
 }
 
 func ValuesEncode(v url.Values) string {

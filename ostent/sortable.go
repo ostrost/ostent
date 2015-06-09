@@ -10,7 +10,7 @@ import (
 func LessDiskFunc(param client.EnumParam) func(operating.MetricDF, operating.MetricDF) bool {
 	return func(a, b operating.MetricDF) bool {
 		r := false
-		switch enums.UintDF(param.EnumDecoded.Number.Uint) {
+		switch enums.UintDF(param.Number.Uint) {
 		case enums.FS:
 			r = a.DevName.Snapshot().Value() < b.DevName.Snapshot().Value()
 		case enums.TOTAL:
@@ -30,7 +30,7 @@ func LessDiskFunc(param client.EnumParam) func(operating.MetricDF, operating.Met
 func LessProcFunc(uids map[uint]string, param client.EnumParam) func(operating.MetricProc, operating.MetricProc) bool {
 	return func(a, b operating.MetricProc) bool {
 		r := false
-		switch enums.UintPS(param.EnumDecoded.Number.Uint) {
+		switch enums.UintPS(param.Number.Uint) {
 		case enums.PID:
 			r = a.PID < b.PID
 		case enums.PRI:

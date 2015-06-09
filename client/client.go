@@ -138,7 +138,7 @@ type Client struct {
 }
 
 func (c *Client) RecalcRows() {
-	c.Toprows = map[bool]int{true: 1, false: 2}[c.Params.BOOL["hideswap"].BoolDecoded.Value]
+	c.Toprows = map[bool]int{true: 1, false: 2}[c.Params.BOOL["hideswap"].Value]
 }
 
 func (sc *SendClient) SetBool(sendb, b **bool, v bool) {
