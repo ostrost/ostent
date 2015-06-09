@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/ostrost/ostent/client/enums"
+	"github.com/ostrost/ostent/flags"
 )
 
 // Number is an enums.Uint with sign.
@@ -87,11 +88,11 @@ func (ep EnumParam) SetValue(values url.Values, pname string, uinter enums.Uinte
 }
 
 type EnumDecodec struct {
+	Pname   string
 	Default Number
 	Alphas  []enums.Uint
 	Unew    func() (string, Upointer) `json:"-"` // func cannot be marshaled
 	Text    func(string) string       `json:"-"` // func cannot be marshaled
-	Pname   string
 }
 
 func (ep EnumParam) IsAlpha(p enums.Uint) bool {
@@ -142,15 +143,21 @@ var EnumDecodecs = map[string]EnumDecodec{
 var BoolDecodecs = map[string]BoolDecodec{
 	"still": {Default: false},
 
-	"hidecpu":  {Default: false},
-	"hidedf":   {Default: false},
-	"hideif":   {Default: false},
-	"hidemem":  {Default: false},
-	"hideps":   {Default: false},
+	// "hidecpu":  {Default: false},
+	// "hidedf":   {Default: false},
+	// "hideif":   {Default: false},
+	"hidemem": {Default: false},
+	// "hideps":   {Default: false},
 	"hideswap": {Default: false},
-	"hidevg":   {Default: false},
+	// "hidevg":   {Default: false},
+	// commented-out hide* to be un-commented
 
 	"showconfigmem": {Default: false},
+	// rest of showconfig* to follow
+}
+
+var PeriodDecodecs = map[string]PeriodDecodec{
+	"refreshmem": {},
 }
 
 func (bp *BoolParam) Decode(form url.Values) {
@@ -225,7 +232,7 @@ func (ep *EnumParam) Find(values []string, uptr Upointer) (Number, bool, error) 
 // Global var EnumDecodecs, BoolDecodecs are ranged.
 func NewParams() *Params {
 	p := &Params{Query: Query{Values: make(url.Values)}}
-	enums := make(Enums)
+	enums := make(map[string]*EnumParam)
 	for k, v := range EnumDecodecs {
 		v.Pname = k
 		enums[k] = &EnumParam{
@@ -233,7 +240,7 @@ func NewParams() *Params {
 			EnumDecodec: v,
 		}
 	}
-	bools := make(Bools)
+	bools := make(map[string]*BoolParam)
 	for k, v := range BoolDecodecs {
 		v.Pname = k
 		bools[k] = &BoolParam{
@@ -241,8 +248,17 @@ func NewParams() *Params {
 			BoolDecodec: v,
 		}
 	}
+	periods := make(map[string]*PeriodParam)
+	for k, v := range PeriodDecodecs {
+		v.Pname = k
+		periods[k] = &PeriodParam{
+			Query:         &p.Query,
+			PeriodDecodec: v,
+		}
+	}
 	p.ENUM = enums
 	p.BOOL = bools
+	p.PERIOD = periods
 	return p
 }
 
@@ -296,13 +312,21 @@ func (bp BoolParam) MarshalJSON() ([]byte, error) {
 	})
 }
 
-type Enums map[string]*EnumParam
-type Bools map[string]*BoolParam
+func (ps *Params) Decode(form url.Values) {
+	ps.Query = Query{ // reset the Query
+		Values: make(url.Values),
+	}
+	// for _, v := range ps.ENUM { v.Decode(form) }
+	for _, v := range ps.BOOL {
+		v.Decode(form)
+	}
+}
 
 type Params struct {
-	ENUM  Enums
-	BOOL  Bools
-	Query Query `json:"-"`
+	ENUM   map[string]*EnumParam
+	BOOL   map[string]*BoolParam
+	PERIOD map[string]*PeriodParam
+	Query  Query `json:"-"`
 }
 
 type Query struct {
@@ -318,9 +342,22 @@ func (q Query) ValuesCopy() url.Values {
 	return copy
 }
 
-type BoolDecodec struct {
-	Default bool
+type PeriodDecodec struct {
 	Pname   string
+	Default flags.Period
+}
+
+// PeriodParam represents period parameter. Features MarshalJSON method
+// thus all fields are explicitly marked as non-marshallable.
+type PeriodParam struct {
+	Query         *Query        `json:"-"` // url.Values here.
+	PeriodDecodec PeriodDecodec `json:"-"` // Read-only, an entry from global var BoolDecoders.
+	Period        flags.Period  `json:"-"` // Decoded Period.
+}
+
+type BoolDecodec struct {
+	Pname   string
+	Default bool
 }
 
 // BoolParam represents bool parameter. Features MarshalJSON method
