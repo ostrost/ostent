@@ -58,7 +58,7 @@ func username(uids map[uint]string, uid uint) string {
 
 func (procs MPSlice) Ordered(cl *client.Client, send *client.SendClient) []operating.ProcData {
 	uids := map[uint]string{}
-	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(uids, cl.PSSEQ)) // not .StableSortBy
+	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(uids, *cl.Params.ENUM["ps"])) // not .StableSortBy
 
 	pslen := len(procs)
 	limitPS := cl.PSlimit
@@ -375,7 +375,7 @@ func (ir *IndexRegistry) DFbytes(cli *client.Client, send *client.SendClient) []
 	send.SetBool(&send.ExpandableDF, &cli.ExpandableDF, len(private) > cli.Toprows)
 	send.SetString(&send.ExpandtextDF, &cli.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(private)))
 
-	private.StableSortBy(LessDiskFunc(cli.DFSEQ))
+	private.StableSortBy(LessDiskFunc(*cli.Params.ENUM["df"]))
 
 	var public []operating.DiskBytes
 	for i, disk := range private {
@@ -410,7 +410,7 @@ func (ir *IndexRegistry) DFinodes(cli *client.Client, send *client.SendClient) [
 	send.SetBool(&send.ExpandableDF, &cli.ExpandableDF, len(private) > cli.Toprows)
 	send.SetString(&send.ExpandtextDF, &cli.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(private)))
 
-	private.StableSortBy(LessDiskFunc(cli.DFSEQ))
+	private.StableSortBy(LessDiskFunc(*cli.Params.ENUM["df"]))
 
 	var public []operating.DiskInodes
 	for i, disk := range private {
@@ -733,16 +733,11 @@ type SetInterface interface {
 }
 // */
 
-func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (iu IndexUpdate, err error) {
+func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (IndexUpdate, error) {
+	iu := IndexUpdate{}
 	if req != nil {
-		req.ParseForm() // do ParseForm even if req.Form == nil
-		cl.Params.NewQuery()
-		cl.Params.ENUM["df"].Decode(req.Form, &cl.DFSEQ)
-		cl.Params.ENUM["ps"].Decode(req.Form, &cl.PSSEQ)
-		cl.Params.Decode(req.Form)
-
-		if cl.Params.Query.Moved {
-			return iu, enums.RenamedConstError("?" + cl.Params.Query.ValuesEncode(nil))
+		if err := DecodeParam(cl, req); err != nil {
+			return iu, err
 		}
 		iu.Links = &Links{cl.Params}
 	}
@@ -782,6 +777,17 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 		iu.Client = &send
 	}
 	return iu, nil
+}
+
+func DecodeParam(cl *client.Client, req *http.Request) error {
+	req.ParseForm() // do ParseForm even if req.Form == nil
+	cl.Params.NewQuery()
+	cl.Params.Decode(req.Form)
+
+	if cl.Params.Query.Moved {
+		return enums.RenamedConstError("?" + cl.Params.Query.ValuesEncode(nil))
+	}
+	return nil
 }
 
 func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {

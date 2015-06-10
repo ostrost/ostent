@@ -71,9 +71,6 @@ func (c *Client) refreshes() []*Refresh {
 type internalClient struct {
 	PSlimit int
 
-	PSSEQ EnumParam
-	DFSEQ EnumParam
-
 	Toprows int
 
 	MergeRSError error
@@ -297,10 +294,8 @@ func NewClient(minperiod flags.Period) Client {
 	cs.PSlimit = 8
 
 	cs.Params = NewParams(minperiod)
-	cs.PSSEQ = EnumDecodecs["ps"].DefaultParam(cs.Params)
-	cs.DFSEQ = EnumDecodecs["df"].DefaultParam(cs.Params)
+	cs.RecalcRows() // after params
 
-	cs.RecalcRows()
 	return cs
 }
 

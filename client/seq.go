@@ -103,13 +103,6 @@ func (ep EnumParam) IsAlpha(p enums.Uint) bool {
 	return false
 }
 
-func (ed EnumDecodec) DefaultParam(params *Params) EnumParam {
-	return EnumParam{
-		Query:       params.Query,
-		EnumDecodec: ed,
-	}
-}
-
 // TextFunc constructs string replacement func.
 // ab defines exact mapping, miss-case: fs funcs chain-apply.
 func TextFunc(ab map[string]string, fs ...func(string) string) func(string) string {
@@ -195,7 +188,7 @@ func (bp BoolParam) QuerySet(values url.Values, value bool) {
 	}
 }
 
-func (ep *EnumParam) Decode(form url.Values, setep *EnumParam) error {
+func (ep *EnumParam) Decode(form url.Values) error {
 	_, uptr := ep.EnumDecodec.Unew()
 	n, spec, err := ep.Find(form[ep.EnumDecodec.Pname], uptr)
 	if err != nil {
@@ -203,9 +196,6 @@ func (ep *EnumParam) Decode(form url.Values, setep *EnumParam) error {
 	}
 	ep.Number = n
 	ep.Specified = spec
-	if setep != nil {
-		*setep = *ep
-	}
 	return nil
 }
 
@@ -278,15 +268,15 @@ func NewParamsENUM(p *Params) map[string]*EnumParam {
 		p = &Params{}
 		p.NewQuery()
 	}
-	enums := make(map[string]*EnumParam)
+	enumap := make(map[string]*EnumParam)
 	for k, v := range EnumDecodecs {
 		v.Pname = k
-		enums[k] = &EnumParam{
+		enumap[k] = &EnumParam{
 			Query:       p.Query,
 			EnumDecodec: v,
 		}
 	}
-	return enums
+	return enumap
 }
 
 // EnumParam represents enum parameter. Features MarshalJSON method
@@ -355,8 +345,10 @@ func (p *Params) NewQuery() {
 }
 
 func (p *Params) Decode(form url.Values) {
-	// for _, v := range p.ENUM { v.Decode(form) }
 	for _, v := range p.BOOL {
+		v.Decode(form)
+	}
+	for _, v := range p.ENUM {
 		v.Decode(form)
 	}
 	for _, v := range p.PERIOD {
@@ -370,8 +362,8 @@ func (p *Params) Decode(form url.Values) {
 }
 
 type Params struct {
-	ENUM   map[string]*EnumParam
 	BOOL   map[string]*BoolParam
+	ENUM   map[string]*EnumParam
 	PERIOD map[string]*PeriodParam
 	Query  *Query `json:"-"`
 }

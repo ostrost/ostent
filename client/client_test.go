@@ -43,7 +43,7 @@ func TestLinks(t *testing.T) {
 	}
 	req.ParseForm()
 	df := NewParamsENUM(nil)["df"]
-	err = df.Decode(req.Form, nil)
+	err = df.Decode(req.Form)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -65,7 +65,7 @@ func TestLinks(t *testing.T) {
 		}
 		req.ParseForm()
 		params := NewParams(TestPeriodFlag)
-		err = params.ENUM["df"].Decode(req.Form, nil)
+		err = params.ENUM["df"].Decode(req.Form)
 		if err == nil || err.Error() != "" {
 			t.Fatalf("Error expected (%q)", err)
 		}
@@ -79,7 +79,7 @@ func TestLinks(t *testing.T) {
 
 	form := NewForm(t, "df=fs&ps=pid")
 	CheckRedirect(t, form, []string{"ps"}, "ps=-pid")
-	if err := form.Params.ENUM["df"].Decode(url.Values{"df": []string{"mp"}}, nil); err != nil {
+	if err := form.Params.ENUM["df"].Decode(url.Values{"df": []string{"mp"}}); err != nil {
 		t.Fatalf("Decoding errd unexpectedly: %s", err)
 	}
 	if s, moved := form.Params.Query.Encode(), "df=mp&ps=-pid"; s != moved {
@@ -89,7 +89,7 @@ func TestLinks(t *testing.T) {
 
 func CheckRedirect(t *testing.T, form Form, names []string, moved string) {
 	for _, name := range names {
-		err := form.Params.ENUM[name].Decode(form.Values, nil)
+		err := form.Params.ENUM[name].Decode(form.Values)
 		if err == nil {
 			t.Fatalf("RenamedConstError expected, got nil")
 		}
