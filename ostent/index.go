@@ -736,6 +736,7 @@ type SetInterface interface {
 func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (iu IndexUpdate, err error) {
 	if req != nil {
 		req.ParseForm() // do ParseForm even if req.Form == nil
+		cl.Params.NewQuery()
 		cl.Params.ENUM["df"].Decode(req.Form, &cl.DFSEQ)
 		cl.Params.ENUM["ps"].Decode(req.Form, &cl.PSSEQ)
 		cl.Params.Decode(req.Form)

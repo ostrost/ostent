@@ -106,7 +106,7 @@ func (ep EnumParam) IsAlpha(p enums.Uint) bool {
 
 func (ed EnumDecodec) DefaultParam(params *Params) EnumParam {
 	return EnumParam{
-		Query:       &params.Query,
+		Query:       params.Query,
 		EnumDecodec: ed,
 	}
 }
@@ -231,19 +231,19 @@ func (ep *EnumParam) Find(values []string, uptr Upointer) (Number, bool, error) 
 // NewParams constructs new Params.
 // Global var BoolDecodecs, PeriodParanames are ranged.
 func NewParams(minperiod flags.Period) *Params {
-	p := &Params{Query: Query{Values: make(url.Values)}}
+	p := &Params{Query: &Query{Values: make(url.Values)}}
 	bools := make(map[string]*BoolParam)
 	for k, v := range BoolDecodecs {
 		v.Pname = k
 		bools[k] = &BoolParam{
-			Query:       &p.Query,
+			Query:       p.Query,
 			BoolDecodec: v,
 		}
 	}
 	periods := make(map[string]*PeriodParam)
 	for _, k := range PeriodParanames {
 		periods[k] = &PeriodParam{
-			Query: &p.Query,
+			Query: p.Query,
 			PeriodDecodec: PeriodDecodec{
 				Pname:       k,
 				Placeholder: minperiod,
@@ -261,13 +261,14 @@ func NewParams(minperiod flags.Period) *Params {
 // Global var EnumDecodecs is ranged.
 func NewParamsENUM(p *Params) map[string]*EnumParam {
 	if p == nil {
-		p = &Params{Query: Query{Values: make(url.Values)}}
+		p = &Params{}
+		p.NewQuery()
 	}
 	enums := make(map[string]*EnumParam)
 	for k, v := range EnumDecodecs {
 		v.Pname = k
 		enums[k] = &EnumParam{
-			Query:       &p.Query,
+			Query:       p.Query,
 			EnumDecodec: v,
 		}
 	}
@@ -324,10 +325,13 @@ func (bp BoolParam) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func (p *Params) Decode(form url.Values) {
-	p.Query = Query{ // reset the Query
+func (p *Params) NewQuery() {
+	p.Query = &Query{ // new Query
 		Values: make(url.Values),
 	}
+}
+
+func (p *Params) Decode(form url.Values) {
 	// for _, v := range p.ENUM { v.Decode(form) }
 	for _, v := range p.BOOL {
 		v.Decode(form)
@@ -346,7 +350,7 @@ type Params struct {
 	ENUM   map[string]*EnumParam
 	BOOL   map[string]*BoolParam
 	PERIOD map[string]*PeriodParam
-	Query  Query `json:"-"`
+	Query  *Query `json:"-"`
 }
 
 type Query struct {
