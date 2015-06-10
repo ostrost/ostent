@@ -3,7 +3,6 @@ package client
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"net/url"
 	"sort"
@@ -167,17 +166,33 @@ func (bp *BoolParam) Decode(form url.Values) {
 		bp.Query.Del(bp.BoolDecodec.Pname)
 		return
 	}
-	if len(values) != 0 || values[0] == "" || values[0] == "1" || values[0] == "true" || values[0] == "TRUE" {
-		bp.Value = true
-	} // else .Value stays false
-	bp.Query.Set(bp.BoolDecodec.Pname, bp.StringValue(bp.Value))
+	var v string
+	if len(values) > 0 {
+		v = values[0]
+		if v == "1" || v == "true" || v == "True" || v == "TRUE" || v == "on" {
+			bp.QuerySet(nil, true)
+			bp.Query.Moved = true
+			return
+		}
+		if v != "" { // any value is invalid. Absence of parameter designates "false"
+			bp.Query.Del(bp.BoolDecodec.Pname)
+			return
+		}
+		bp.Value = true // v == ""
+	}
+	bp.QuerySet(nil, bp.Value)
 }
 
-func (bp BoolParam) StringValue(value bool) string {
-	if value != bp.BoolDecodec.Default {
-		return ""
+// QuerySet modifies the values.
+func (bp BoolParam) QuerySet(values url.Values, value bool) {
+	if values == nil {
+		values = bp.Query.Values
 	}
-	return fmt.Sprintf("%t", value)
+	if value == bp.BoolDecodec.Default {
+		values.Del(bp.BoolDecodec.Pname)
+	} else {
+		values.Set(bp.BoolDecodec.Pname, "")
+	}
 }
 
 func (ep *EnumParam) Decode(form url.Values, setep *EnumParam) error {
@@ -231,18 +246,20 @@ func (ep *EnumParam) Find(values []string, uptr Upointer) (Number, bool, error) 
 // NewParams constructs new Params.
 // Global var BoolDecodecs, PeriodParanames are ranged.
 func NewParams(minperiod flags.Period) *Params {
-	p := &Params{Query: &Query{Values: make(url.Values)}}
-	bools := make(map[string]*BoolParam)
+	p := &Params{}
+	p.NewQuery()
+	p.ENUM = NewParamsENUM(p)
+	p.BOOL = make(map[string]*BoolParam)
 	for k, v := range BoolDecodecs {
 		v.Pname = k
-		bools[k] = &BoolParam{
+		p.BOOL[k] = &BoolParam{
 			Query:       p.Query,
 			BoolDecodec: v,
 		}
 	}
-	periods := make(map[string]*PeriodParam)
+	p.PERIOD = make(map[string]*PeriodParam)
 	for _, k := range PeriodParanames {
-		periods[k] = &PeriodParam{
+		p.PERIOD[k] = &PeriodParam{
 			Query: p.Query,
 			PeriodDecodec: PeriodDecodec{
 				Pname:       k,
@@ -251,9 +268,6 @@ func NewParams(minperiod flags.Period) *Params {
 			Value: flags.Period{Above: &minperiod.Duration},
 		}
 	}
-	p.ENUM = NewParamsENUM(p)
-	p.BOOL = bools
-	p.PERIOD = periods
 	return p
 }
 
@@ -328,6 +342,15 @@ func (bp BoolParam) MarshalJSON() ([]byte, error) {
 func (p *Params) NewQuery() {
 	p.Query = &Query{ // new Query
 		Values: make(url.Values),
+	}
+	for _, v := range p.BOOL {
+		v.Query = p.Query
+	}
+	for _, v := range p.ENUM {
+		v.Query = p.Query
+	}
+	for _, v := range p.PERIOD {
+		v.Query = p.Query
 	}
 }
 
@@ -410,12 +433,7 @@ type BoolParam struct {
 // The other values are copied from bp.Query.Values.
 func (bp BoolParam) EncodeToggle() template.HTMLAttr {
 	values := bp.Query.ValuesCopy()
-	value := !bp.Value // here's the toggle
-	if value == bp.BoolDecodec.Default {
-		values.Del(bp.BoolDecodec.Pname)
-	} else {
-		values.Set(bp.BoolDecodec.Pname, bp.StringValue(value))
-	}
+	bp.QuerySet(values, !bp.Value)
 	return template.HTMLAttr("?" + bp.Query.ValuesEncode(values))
 }
 
