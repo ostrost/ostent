@@ -296,7 +296,7 @@ func NewClient(minperiod flags.Period) Client {
 
 	cs.PSlimit = 8
 
-	cs.Params = NewParams()
+	cs.Params = NewParams(minperiod)
 	cs.PSSEQ = EnumDecodecs["ps"].DefaultParam(cs.Params)
 	cs.DFSEQ = EnumDecodecs["df"].DefaultParam(cs.Params)
 

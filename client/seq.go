@@ -48,7 +48,7 @@ func (ep EnumParam) EncodeUint(pname string, uinter enums.Uinter) DropLink {
 			dl.Class += " dropup"
 		}
 	}
-	dl.Href = "?" + ValuesEncode(values)
+	dl.Href = "?" + ep.Query.ValuesEncode(values)
 	return dl
 }
 
@@ -156,21 +156,21 @@ var BoolDecodecs = map[string]BoolDecodec{
 	// rest of showconfig* to follow
 }
 
-var PeriodDecodecs = map[string]PeriodDecodec{
-	"refreshmem": {},
+var PeriodParanames = []string{
+	"refreshmem",
 }
 
 func (bp *BoolParam) Decode(form url.Values) {
 	values, ok := form[bp.BoolDecodec.Pname]
 	if !ok {
 		bp.Value = bp.BoolDecodec.Default
-		bp.Query.Values.Del(bp.BoolDecodec.Pname)
+		bp.Query.Del(bp.BoolDecodec.Pname)
 		return
 	}
 	if len(values) != 0 || values[0] == "" || values[0] == "1" || values[0] == "true" || values[0] == "TRUE" {
 		bp.Value = true
 	} // else .Value stays false
-	bp.Query.Values.Set(bp.BoolDecodec.Pname, bp.StringValue(bp.Value))
+	bp.Query.Set(bp.BoolDecodec.Pname, bp.StringValue(bp.Value))
 }
 
 func (bp BoolParam) StringValue(value bool) string {
@@ -214,7 +214,7 @@ func (ep *EnumParam) Find(values []string, uptr Upointer) (Number, bool, error) 
 				if negate {
 					l = "-" + l
 				}
-				ep.Query.Values.Set(ep.EnumDecodec.Pname, l)
+				ep.Query.Set(ep.EnumDecodec.Pname, l)
 			}
 			ep.Query.Moved = true
 		}
@@ -224,22 +224,14 @@ func (ep *EnumParam) Find(values []string, uptr Upointer) (Number, bool, error) 
 		Uint:     uptr.Touint(),
 		Negative: negate,
 	}
-	ep.Query.Values.Set(ep.EnumDecodec.Pname, values[0])
+	ep.Query.Set(ep.EnumDecodec.Pname, values[0])
 	return n, true, nil
 }
 
 // NewParams constructs new Params.
-// Global var EnumDecodecs, BoolDecodecs are ranged.
-func NewParams() *Params {
+// Global var BoolDecodecs, PeriodParanames are ranged.
+func NewParams(minperiod flags.Period) *Params {
 	p := &Params{Query: Query{Values: make(url.Values)}}
-	enums := make(map[string]*EnumParam)
-	for k, v := range EnumDecodecs {
-		v.Pname = k
-		enums[k] = &EnumParam{
-			Query:       &p.Query,
-			EnumDecodec: v,
-		}
-	}
 	bools := make(map[string]*BoolParam)
 	for k, v := range BoolDecodecs {
 		v.Pname = k
@@ -249,17 +241,37 @@ func NewParams() *Params {
 		}
 	}
 	periods := make(map[string]*PeriodParam)
-	for k, v := range PeriodDecodecs {
-		v.Pname = k
+	for _, k := range PeriodParanames {
 		periods[k] = &PeriodParam{
-			Query:         &p.Query,
-			PeriodDecodec: v,
+			Query: &p.Query,
+			PeriodDecodec: PeriodDecodec{
+				Pname:       k,
+				Placeholder: minperiod,
+			},
+			Value: flags.Period{Above: &minperiod.Duration},
 		}
 	}
-	p.ENUM = enums
+	p.ENUM = NewParamsENUM(p)
 	p.BOOL = bools
 	p.PERIOD = periods
 	return p
+}
+
+// NewParamsENUM returns ENUM part of Params.
+// Global var EnumDecodecs is ranged.
+func NewParamsENUM(p *Params) map[string]*EnumParam {
+	if p == nil {
+		p = &Params{Query: Query{Values: make(url.Values)}}
+	}
+	enums := make(map[string]*EnumParam)
+	for k, v := range EnumDecodecs {
+		v.Pname = k
+		enums[k] = &EnumParam{
+			Query:       &p.Query,
+			EnumDecodec: v,
+		}
+	}
+	return enums
 }
 
 // EnumParam represents enum parameter. Features MarshalJSON method
@@ -312,14 +324,22 @@ func (bp BoolParam) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func (ps *Params) Decode(form url.Values) {
-	ps.Query = Query{ // reset the Query
+func (p *Params) Decode(form url.Values) {
+	p.Query = Query{ // reset the Query
 		Values: make(url.Values),
 	}
-	// for _, v := range ps.ENUM { v.Decode(form) }
-	for _, v := range ps.BOOL {
+	// for _, v := range p.ENUM { v.Decode(form) }
+	for _, v := range p.BOOL {
 		v.Decode(form)
 	}
+	for _, v := range p.PERIOD {
+		v.Decode(form)
+	}
+	/*
+		ruri := "?" + p.Query.ValuesEncode(nil)
+		for _, v := range p.PERIOD {
+			v.FormAction = ruri
+		} // */
 }
 
 type Params struct {
@@ -330,9 +350,12 @@ type Params struct {
 }
 
 type Query struct {
-	Values url.Values
-	Moved  bool
+	url.Values
+	Moved bool
 }
+
+// func (q Query) RequestURI() string { return "?" + q.ValuesEncode(nil) }
+// func (q Query) MarshalJSON() ([]byte, error) { return json.Marshal(struct{ RequestURI string }{q.RequestURI()}) }
 
 func (q Query) ValuesCopy() url.Values {
 	copy := url.Values{}
@@ -343,16 +366,27 @@ func (q Query) ValuesCopy() url.Values {
 }
 
 type PeriodDecodec struct {
-	Pname   string
-	Default flags.Period
+	Pname       string `json:"-"`
+	Placeholder flags.Period
 }
 
-// PeriodParam represents period parameter. Features MarshalJSON method
-// thus all fields are explicitly marked as non-marshallable.
+// PeriodParam represents period parameter.
 type PeriodParam struct {
-	Query         *Query        `json:"-"` // url.Values here.
-	PeriodDecodec PeriodDecodec `json:"-"` // Read-only, an entry from global var BoolDecoders.
-	Period        flags.Period  `json:"-"` // Decoded Period.
+	Query         *Query `json:"-"` // Explicitly non-marshallable url.Values.
+	PeriodDecodec        // Read-only an entry from global var BoolDecoders.
+	Value         flags.Period
+	// FormAction string
+}
+
+func (pp *PeriodParam) Decode(form url.Values) {
+	values, ok := form[pp.PeriodDecodec.Pname]
+	if ok && len(values) > 0 {
+		if err := pp.Value.Set(values[0]); err == nil {
+			pp.Query.Set(pp.PeriodDecodec.Pname, pp.Value.String())
+			return
+		}
+	}
+	pp.Query.Del(pp.PeriodDecodec.Pname)
 }
 
 type BoolDecodec struct {
@@ -378,10 +412,13 @@ func (bp BoolParam) EncodeToggle() template.HTMLAttr {
 	} else {
 		values.Set(bp.BoolDecodec.Pname, bp.StringValue(value))
 	}
-	return template.HTMLAttr("?" + ValuesEncode(values))
+	return template.HTMLAttr("?" + bp.Query.ValuesEncode(values))
 }
 
-func ValuesEncode(v url.Values) string {
+func (q Query) ValuesEncode(v url.Values) string {
+	if v == nil {
+		v = q.Values
+	}
 	if v == nil {
 		return ""
 	}

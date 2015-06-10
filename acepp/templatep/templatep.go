@@ -136,8 +136,8 @@ func droplink(value interface{}, ss ...string) (interface{}, error) {
 	if !ok { // ace/template-compliling stage
 		prefix := uncurl(value.(string))
 		names := strings.Split(prefix, ".")
-		pname := names[len(names)-1]     // errors are fatal here
-		enums := client.NewParams().ENUM // Params have .ENUM only yet
+		pname := names[len(names)-1] // errors are fatal here
+		enums := client.NewParamsENUM(nil)
 		ed := enums[pname].EnumDecodec
 		return client.DropLink{
 			AlignClass: AC,

@@ -5,9 +5,13 @@ import (
 	"net/http"
 	"net/url"
 	"testing"
+	"time"
 
 	"github.com/ostrost/ostent/client/enums"
+	"github.com/ostrost/ostent/flags"
 )
+
+var TestPeriodFlag = flags.Period{Duration: time.Second} // default
 
 func TestBoolLinks(t *testing.T) {
 	req, err := http.NewRequest("GET", "http://localhost/index?showconfigmem", nil)
@@ -15,19 +19,19 @@ func TestBoolLinks(t *testing.T) {
 		t.Fatal(err)
 	}
 	req.ParseForm()
-	params := NewParams()
+	params := NewParams(TestPeriodFlag)
 	scm := params.BOOL["showconfigmem"]
 	scm.Decode(req.Form)
 	if scm.Value != true {
 		t.Errorf("Decode failed: %t, expected %t", scm.Value, true)
 	}
-	if s := ValuesEncode(params.Query.Values); s != "showconfigmem" {
+	if s := params.Query.ValuesEncode(nil); s != "showconfigmem" {
 		t.Fatalf("Unexpected Values.Encode: %q", s)
 	}
 	if h := scm.EncodeToggle(); h != template.HTMLAttr("?") {
 		t.Fatalf("Unexpected EncodeToggle: %q", h)
 	}
-	if s := ValuesEncode(params.Query.Values); s != "showconfigmem" {
+	if s := params.Query.ValuesEncode(nil); s != "showconfigmem" {
 		t.Fatalf("Unexpected Values.Encode (changed after EncodeToggle): %q", s)
 	}
 }
@@ -38,7 +42,7 @@ func TestLinks(t *testing.T) {
 		t.Fatal(err)
 	}
 	req.ParseForm()
-	df := NewParams().ENUM["df"]
+	df := NewParamsENUM(nil)["df"]
 	err = df.Decode(req.Form, nil)
 	if err != nil {
 		t.Fatal(err)
@@ -60,12 +64,12 @@ func TestLinks(t *testing.T) {
 			t.Fatal(err)
 		}
 		req.ParseForm()
-		params := NewParams()
+		params := NewParams(TestPeriodFlag)
 		err = params.ENUM["df"].Decode(req.Form, nil)
 		if err == nil || err.Error() != "" {
 			t.Fatalf("Error expected (%q)", err)
 		}
-		if s := params.Query.Values.Encode(); s != "df=total" {
+		if s := params.Query.Encode(); s != "df=total" {
 			t.Fatalf("Expected Encode: %q", s)
 		}
 	}
@@ -78,7 +82,7 @@ func TestLinks(t *testing.T) {
 	if err := form.Params.ENUM["df"].Decode(url.Values{"df": []string{"mp"}}, nil); err != nil {
 		t.Fatalf("Decoding errd unexpectedly: %s", err)
 	}
-	if s, moved := form.Params.Query.Values.Encode(), "df=mp&ps=-pid"; s != moved {
+	if s, moved := form.Params.Query.Encode(), "df=mp&ps=-pid"; s != moved {
 		t.Fatalf("Redirect mismatch (%q): %q", moved, s)
 	}
 }
@@ -93,7 +97,7 @@ func CheckRedirect(t *testing.T, form Form, names []string, moved string) {
 			t.Fatalf("RenamedConstError expected, got: %s", err)
 		}
 	}
-	if s := form.Params.Query.Values.Encode(); s != moved {
+	if s := form.Params.Query.Encode(); s != moved {
 		t.Fatalf("Redirect mismatch (%q): %q", moved, s)
 	}
 }
@@ -109,5 +113,5 @@ func NewForm(t *testing.T, qs string) Form {
 		t.Fatal(err)
 	}
 	req.ParseForm()
-	return Form{req.Form, NewParams()}
+	return Form{req.Form, NewParams(TestPeriodFlag)}
 }
