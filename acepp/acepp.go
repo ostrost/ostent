@@ -105,8 +105,7 @@ func main() {
 		check(err)
 	}
 
-	m := templatep.Data(&templatep.TextTemplate{Template: jscript}, jscriptMode)
-	// jscriptMode is always true at this point
+	m := templatep.Data(&templatep.TextTemplate{Template: jscript})
 
 	s, err := templatep.StringExecute(jscript, m)
 	check(err)

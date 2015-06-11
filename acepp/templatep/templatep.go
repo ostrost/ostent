@@ -307,7 +307,7 @@ func curly(s string) string {
 	return "{" + s + "}"
 }
 
-func mkmap(top Dotted, jscriptMode bool, level int) interface{} {
+func mkmap(top Dotted, level int) interface{} {
 	if len(top.Leaves) == 0 {
 		return curly(top.Notation())
 	}
@@ -324,12 +324,8 @@ func mkmap(top Dotted, jscriptMode bool, level int) interface{} {
 				h[l.Name] = []string{}
 			}
 		} else {
-			h[l.Name] = mkmap(*l, jscriptMode, level+1)
+			h[l.Name] = mkmap(*l, level+1)
 		}
-	}
-	if jscriptMode && level == 0 {
-		//h["CLASSNAME"] = "className"
-		//h["HTMLFOR"] = "htmlFor"
 	}
 	return h
 }
@@ -449,7 +445,7 @@ func StringExecute(t *templatetext.Template, data interface{}) (string, error) {
 	return buf.String(), nil
 }
 
-func Data(root Templater, jscriptMode bool) interface{} {
+func Data(root Templater) interface{} {
 	tree := Tree(root)
 	if tree == nil {
 		return "{}"
@@ -457,12 +453,12 @@ func Data(root Templater, jscriptMode bool) interface{} {
 	data := Dotted{}
 	vars := map[string][]string{}
 	for _, node := range tree.Root.Nodes {
-		DataNode(root, node, jscriptMode, &data, vars)
+		DataNode(root, node, &data, vars)
 	}
-	return mkmap(data, jscriptMode, 0)
+	return mkmap(data, 0)
 }
 
-func DataNode(root Templater, node parse.Node, jscriptMode bool, data *Dotted, vars map[string][]string) {
+func DataNode(root Templater, node parse.Node, data *Dotted, vars map[string][]string) {
 	if true {
 		switch node.Type() {
 		case parse.NodeWith:
@@ -481,12 +477,12 @@ func DataNode(root Templater, node parse.Node, jscriptMode bool, data *Dotted, v
 			}
 			if withNode.List != nil {
 				for _, n := range withNode.List.Nodes {
-					DataNode(root, n, jscriptMode, data, vars)
+					DataNode(root, n, data, vars)
 				}
 			}
 			if withNode.ElseList != nil {
 				for _, n := range withNode.ElseList.Nodes {
-					DataNode(root, n, jscriptMode, data, vars)
+					DataNode(root, n, data, vars)
 				}
 			}
 			if withv != "" {
@@ -504,7 +500,7 @@ func DataNode(root Templater, node parse.Node, jscriptMode bool, data *Dotted, v
 				tr := Tree(lo)
 				if tr != nil && tr.Root != nil {
 					for _, n := range tr.Root.Nodes {
-						DataNode(root, n, jscriptMode, data, vars)
+						DataNode(root, n, data, vars)
 					}
 				}
 			}
@@ -528,7 +524,6 @@ func DataNode(root Templater, node parse.Node, jscriptMode bool, data *Dotted, v
 									w := arg.String()
 									if len(w) > 0 && w[0] == '.' {
 										data.Append(strings.Split(w[1:], "."))
-										fmt.Printf("%s %+v\n", node, arg)
 									}
 								}
 							}
@@ -570,7 +565,7 @@ func DataNode(root Templater, node parse.Node, jscriptMode bool, data *Dotted, v
 						}
 					}
 				case parse.NodeTemplate:
-					// DataNode(root, ifnode, jscriptMode, data, vars)
+					// DataNode(root, ifnode, data, vars)
 					arg0 := ifnode.(*parse.TemplateNode).Pipe.Cmds[0].Args[0]
 					if arg0.Type() == parse.NodePipe {
 						cmd0 := arg0.(*parse.PipeNode).Cmds[0]
