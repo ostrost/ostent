@@ -10,9 +10,9 @@ func TestDotted(t *testing.T) {
 	abc := "a.b.c"
 	words := strings.Split(abc, ".")
 	d := Dotted{}
-	d.Append(words)
-	d.Append(strings.Split(abc+".1", "."))
-	d.Append(strings.Split(abc+".2", "."))
+	d.Append(words, nil)
+	d.Append(strings.Split(abc+".1", "."), nil)
+	d.Append(strings.Split(abc+".2", "."), nil)
 	if x := d.Find(append(words, "z")); x != nil {
 		t.Errorf("Find returned non-nil")
 	}
@@ -35,7 +35,7 @@ func TestDotted(t *testing.T) {
 func TestMkmap(t *testing.T) {
 	words := strings.Split("a.b.c", ".")
 	d := Dotted{}
-	d.Append(words)
+	d.Append(words, nil)
 	l1 := d.Find(words)
 	if l1 == nil {
 		t.Errorf("Dotted.Find returned nil")
@@ -45,12 +45,12 @@ func TestMkmap(t *testing.T) {
 	l1.Decl = "DECL"
 
 	w2 := strings.Split("a.b.z", ".")
-	d.Append(w2)
+	d.Append(w2, nil)
 	if l2 := d.Find(w2); l2 != nil {
 		l2.Ranged = true
 	}
 
-	v := mkmap(d, false, -1)
+	v := mkmap(d, -1)
 	c := v.(Hash)["a"].(Hash)["b"].(Hash)["c"].([]map[string]string)[0]
 	if expected := "{DECL.z}"; c["z"] != expected {
 		t.Errorf("mkmap result mismatch: %q (expected %q)", c["z"], expected)
@@ -62,8 +62,8 @@ func TestMkmap(t *testing.T) {
 
 func ExecutewDottedTest(t *testing.T, tm *template.Template, expected string) {
 	d := Dotted{}
-	d.Append([]string{"a"}) // non-string result from mkmap
-	h := mkmap(d, true, 0)
+	d.Append([]string{"a"}, nil) // non-string result from mkmap
+	h := mkmap(d, 0)
 	if _, ok := h.(string); ok {
 		t.Errorf("mkmap expected to return non-string on %+v input", d)
 	}

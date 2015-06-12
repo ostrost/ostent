@@ -43,6 +43,29 @@ func CloseTagFunc(noclose []string) func(string) templatehtml.HTML {
 	}
 }
 
+// DotSplit splits s by last ".".
+func DotSplit(s string) (string, string) {
+	if s == "" {
+		return "", ""
+	}
+	i := len(s) - 1
+	for i > 0 && s[i] != '.' {
+		i--
+	}
+	return s[:i], s[i+1:]
+}
+
+// DotSplitHash returns DotSplit of first (in no particular order) value from h.
+func DotSplitHash(h Hash) (string, string) {
+	var curled string
+	for _, v := range h {
+		curled = v.(string)
+		break
+		// First (no particular order) value is fine.
+	}
+	return DotSplit(uncurl(curled))
+}
+
 func toggleHrefAttr(value interface{}) interface{} {
 	if JS {
 		return fmt.Sprintf(" href={%s.Href} onClick={this.handleClick}", uncurl(value.(string)))
@@ -55,7 +78,7 @@ func refresh(value interface{}) interface{} {
 	if !JS {
 		return value.(*client.Refresh)
 	}
-	prefix := uncurl(value.(string))
+	prefix, _ := DotSplitHash(value.(Hash))
 	// struct{struct{Duration, Above}}; Default} // mimic client.Refresh
 	return struct {
 		Period  string
@@ -132,11 +155,9 @@ func droplink(value interface{}, ss ...string) (interface{}, error) {
 			AC = "text-" + ss[1]
 		}
 	}
-	ep, ok := value.(*client.EnumParam)
-	if !ok { // ace/template-compliling stage
-		prefix := uncurl(value.(string))
-		names := strings.Split(prefix, ".")
-		pname := names[len(names)-1] // errors are fatal here
+	if JS {
+		prefix, _ := DotSplitHash(value.(Hash))
+		_, pname := DotSplit(prefix)
 		enums := client.NewParamsENUM(nil)
 		ed := enums[pname].EnumDecodec
 		return client.DropLink{
@@ -147,6 +168,7 @@ func droplink(value interface{}, ss ...string) (interface{}, error) {
 			CaretClass: fmt.Sprintf("{%s.%s.%s}", prefix, named, "CaretClass"),
 		}, nil
 	}
+	ep := value.(*client.EnumParam)
 	pname, uptr := ep.EnumDecodec.Unew()
 	if err := uptr.Unmarshal(named, new(bool)); err != nil {
 		return nil, err
@@ -239,17 +261,20 @@ type Dotted struct {
 }
 
 // Append adds words into d.
-func (d *Dotted) Append(words []string) {
+func (d *Dotted) Append(words []string, prefix []string) {
+	if prefix != nil {
+		words = append(prefix, words...)
+	}
 	if len(words) == 0 {
 		return
 	}
 	if l := d.Leave(words[0]); l != nil {
-		l.Append(words[1:]) // recursion
+		l.Append(words[1:], nil) // recursion
 		return
 	}
 	n := &Dotted{Parent: d, Name: words[0]}
 	d.Leaves = append(d.Leaves, n)
-	n.Append(words[1:]) // recursion
+	n.Append(words[1:], nil) // recursion
 }
 
 // Find traverses d to find by words.
@@ -453,12 +478,12 @@ func Data(root Templater) interface{} {
 	data := Dotted{}
 	vars := map[string][]string{}
 	for _, node := range tree.Root.Nodes {
-		DataNode(root, node, &data, vars)
+		DataNode(root, node, &data, vars, nil)
 	}
 	return mkmap(data, 0)
 }
 
-func DataNode(root Templater, node parse.Node, data *Dotted, vars map[string][]string) {
+func DataNode(root Templater, node parse.Node, data *Dotted, vars map[string][]string, prefixwords []string) {
 	if true {
 		switch node.Type() {
 		case parse.NodeWith:
@@ -472,17 +497,17 @@ func DataNode(root Templater, node parse.Node, data *Dotted, vars map[string][]s
 					withv = decl[0].Ident[0]
 					words := strings.Split(arg0[1:], ".")
 					vars[withv] = words
-					data.Append(words)
+					data.Append(words, prefixwords)
 				}
 			}
 			if withNode.List != nil {
 				for _, n := range withNode.List.Nodes {
-					DataNode(root, n, data, vars)
+					DataNode(root, n, data, vars, prefixwords)
 				}
 			}
 			if withNode.ElseList != nil {
 				for _, n := range withNode.ElseList.Nodes {
-					DataNode(root, n, data, vars)
+					DataNode(root, n, data, vars, prefixwords)
 				}
 			}
 			if withv != "" {
@@ -490,17 +515,24 @@ func DataNode(root Templater, node parse.Node, data *Dotted, vars map[string][]s
 			}
 		case parse.NodeTemplate:
 			tnode := node.(*parse.TemplateNode)
+			var tawords []string
 			for _, arg := range tnode.Pipe.Cmds[0].Args {
 				s := arg.String()
-				if len(s) > 0 && s[0] == '.' {
-					data.Append(strings.Split(s[1:], "."))
+				if len(s) > 1 && s[0] == '.' {
+					tawords = strings.Split(s[1:], ".")
+					data.Append(tawords, prefixwords)
+					break // just one argument (pipeline) to "{{template}}" allowed anyway
 				}
 			}
 			if lo := root.LookupT(tnode.Name); lo != nil {
 				tr := Tree(lo)
 				if tr != nil && tr.Root != nil {
 					for _, n := range tr.Root.Nodes {
-						DataNode(root, n, data, vars)
+						pw := prefixwords
+						if tawords != nil {
+							pw = append(prefixwords, tawords...)
+						}
+						DataNode(root, n, data, vars, pw)
 					}
 				}
 			}
@@ -523,7 +555,7 @@ func DataNode(root Templater, node parse.Node, data *Dotted, vars map[string][]s
 								if arg.Type() == parse.NodeField {
 									w := arg.String()
 									if len(w) > 0 && w[0] == '.' {
-										data.Append(strings.Split(w[1:], "."))
+										data.Append(strings.Split(w[1:], "."), prefixwords)
 									}
 								}
 							}
@@ -534,14 +566,14 @@ func DataNode(root Templater, node parse.Node, data *Dotted, vars map[string][]s
 						if len(decl) > 0 && len(decl[0].Ident) > 0 {
 							vars[decl[0].Ident[0]] = ident
 						}
-						data.Append(ident)
+						data.Append(ident, prefixwords)
 
 					case parse.NodeVariable:
 						ident = arg.(*parse.VariableNode).Ident
 
 						if words, ok := vars[ident[0]]; ok {
 							words := append(words, ident[1:]...)
-							data.Append(words)
+							data.Append(words, prefixwords)
 							if len(decl) > 0 && len(decl[0].Ident) > 0 {
 								vars[decl[0].Ident[0]] = words
 							}
@@ -565,7 +597,7 @@ func DataNode(root Templater, node parse.Node, data *Dotted, vars map[string][]s
 						}
 					}
 				case parse.NodeTemplate:
-					// DataNode(root, ifnode, data, vars)
+					// DataNode(root, ifnode, data, vars, prefixwords)
 					arg0 := ifnode.(*parse.TemplateNode).Pipe.Cmds[0].Args[0]
 					if arg0.Type() == parse.NodePipe {
 						cmd0 := arg0.(*parse.PipeNode).Cmds[0]
@@ -585,7 +617,7 @@ func DataNode(root Templater, node parse.Node, data *Dotted, vars map[string][]s
 			words, ok := vars[arg0]
 			if !ok && len(arg0) > 0 && arg0[0] == '.' {
 				words = strings.Split(arg0[1:], ".")
-				data.Append(words)
+				data.Append(words, prefixwords)
 				ok = true
 			}
 			if ok {
