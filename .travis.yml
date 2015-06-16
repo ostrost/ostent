@@ -3,8 +3,10 @@ language: c # Go runtime is managed with gvm
 sudo: false
 env:
   global:
+    # RC- prefix til travis-dpl is unable to deploy into github PRE-release
     - ARTIF="RC-`uname -sm | tr ' ' .`"
     - GVMINSTALLER_URL=https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer
+    - DPL_GO=go1.4.2 # Deploy only when this matches GVM_GO in the matrix.
   matrix:
     - GVM_GO=go1.4.2
   # - GVM_GO=tip
@@ -43,10 +45,11 @@ deploy:
   file:
     # - $HOME/gopath/bin/$ARTIF$x32
     - $HOME/gopath/bin/$ARTIF
-  provider: releases
+  skip_clean: true
+  on:
+    tags: true
+    condition: $GVM_GO = $DPL_GO
+  provider: releases # https://github.com/travis-ci/dpl#github-releases
   api_key:
     secure: >
       EFMPpR2rZkCdlfWuz7bE4ji3/0OL+fgIq+lXJ5SWDUG7aYWVqlLpR1hYXb0yqy8YA2Rg3xvAfPY/sFZvCyUMv0Wx1ZhiVzNvAUduzYFqovvHoYS4nuv0bXWis4YBnx7zJ7uikl5aGAOB8g0L+ofsUAswlDU5M9g9stDG4upWSgw=
-  # https://github.com/travis-ci/dpl#github-releases
-  on: {tags: true}
-  skip_clean: true
