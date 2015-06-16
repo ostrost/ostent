@@ -11,36 +11,36 @@ env:
     - GVM_GO=go1.4.2
   # - GVM_GO=tip
 install: |
-  set -e # errors are fatal
-  if test x$TRAVIS_OS_NAME \!= xlinux ; then
-    # linux is ok with gcc
-    export CXX=clang++ CC=clang
-    # default CC=gcc for `language: c'
-  fi
-  if type -t gvm; then gvm get; else curl -sSL $GVMINSTALLER_URL | bash; fi
-  source ~/.gvm/scripts/gvm
-  gvm version
-  gvm install $GVM_GO --binary # || gvm install $GVM_GO
-  gvm use $GVM_GO; gvm list
-  cd; mkdir -p gopath/src; mv build gopath/src/github.com; cd gopath/src/github.com/$TRAVIS_REPO_SLUG
-  export GOPATH=~/gopath:$GOPATH PATH=~/gopath/bin:$PATH
-  go version; go env
-  : ::; make init
+  - set -e # errors are fatal
+  - if test x$TRAVIS_OS_NAME \!= xlinux ; then
+  -   # linux is ok with gcc
+  -   export CXX=clang++ CC=clang
+  -   # default CC=gcc for `language: c'
+  - fi
+  - if type -t gvm; then gvm get; else curl -sSL $GVMINSTALLER_URL | bash; fi
+  - source ~/.gvm/scripts/gvm
+  - gvm version
+  - gvm install $GVM_GO --binary # || gvm install $GVM_GO
+  - gvm use $GVM_GO; gvm list
+  - cd; mkdir -p gopath/src; mv build gopath/src/github.com; cd gopath/src/github.com/$TRAVIS_REPO_SLUG
+  - export GOPATH=~/gopath:$GOPATH PATH=~/gopath/bin:$PATH
+  - go version; go env
+  - : ; make init
 script: make test all
 before_deploy: |
-  if test x$TRAVIS_OS_NAME \!= xosx ; then # 32bit build on non-osx
-    x32=.32
-    # make all32
-    # mv $HOME/gopath/bin/ostent.32 $HOME/gopath/bin/$ARTIF.32
-  fi
-  :;mv $HOME/gopath/bin/ostent    $HOME/gopath/bin/$ARTIF
-  set +e # off fatal errors for travis-dpl
+  - if test x$TRAVIS_OS_NAME \!= xosx ; then # 32bit build on non-osx
+  -   x32=.32
+  -   # make all32
+  -   # mv $HOME/gopath/bin/ostent.32 $HOME/gopath/bin/$ARTIF.32
+  - fi
+  - :;mv $HOME/gopath/bin/ostent    $HOME/gopath/bin/$ARTIF
+  - set +e # off fatal errors for travis-dpl
 after_deploy: |
-  set -e # errors are fatal again
-  if test x$TRAVIS_OS_NAME \!= xosx ; then # 32bit build on non-osx
-    # mv $HOME/gopath/bin/$ARTIF.32 $HOME/gopath/bin/ostent.32
-  fi
-  :;mv $HOME/gopath/bin/$ARTIF    $HOME/gopath/bin/ostent
+  - set -e # errors are fatal again
+  - if test x$TRAVIS_OS_NAME \!= xosx ; then # 32bit build on non-osx
+  -   # mv $HOME/gopath/bin/$ARTIF.32 $HOME/gopath/bin/ostent.32
+  - fi
+  - :;mv $HOME/gopath/bin/$ARTIF    $HOME/gopath/bin/ostent
 deploy:
   file:
     # - $HOME/gopath/bin/$ARTIF$x32
