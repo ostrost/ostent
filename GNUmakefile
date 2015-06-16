@@ -25,10 +25,10 @@ xargs=xargs --no-run-if-empty
 endif
 go-bindata=go-bindata -ignore '.*\.go'# Go regexp syntax for -ignore
 
-.PHONY: all al init test covertest coverfunc coverhtml bindata bindata-dev bindata-bin
+.PHONY: all32 all al init test covertest coverfunc coverhtml bindata bindata-dev bindata-bin
 ifneq (init, $(MAKECMDGOALS))
 # before init:
-# - go list would fail => unknown $(destbin)
+# - go list would fail (for *packagefiles)
 # - go test fails without dependencies installed
 # - go-bindata is not installed yet
 
@@ -50,16 +50,17 @@ go list -tags '!bin' -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(package) 
 go list -tags '!bin' -f '$(golistfiles)' | sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort)
 
 all: $(destbin)/$(cmdname)
+all32: $(destbin)/$(cmdname).32
 endif
 init:
 	go get -u -v \
 github.com/jteeuwen/go-bindata/go-bindata \
 github.com/skelterjohn/rerun \
 github.com/campoy/jsonenums \
-github.com/clipperhouse/gen \
 code.google.com/p/go.net/html \
 github.com/yosssi/ace
-	cd system/operating && gen add github.com/rzab/slice
+# github.com/clipperhouse/gen
+# cd system/operating && gen add github.com/rzab/slice
 	git remote set-url origin https://$(package) # travis & tip & https://code.google.com/p/go/issues/detail?id=8850
 	go get -v $(package)
 	go get -v -a -tags bin $(package)
@@ -76,13 +77,16 @@ covertest:           ; go test -coverprofile=coverage.out -covermode=count -v $(
 coverfunc: covertest ; go tool  cover  -func=coverage.out
 coverhtml: covertest ; go tool  cover  -html=coverage.out
 
-system/operating/%_slice.go:     system/operating/operating.go ; cd $(dir $@) && go generate
+# system/operating/%_slice.go:     system/operating/operating.go ; cd $(dir $@) && go generate
 client/enums/uint%_jsonenums.go: client/tabs.go                ; cd $(dir $@) && go generate
 
 al: $(packagefiles) $(devpackagefiles)
 # al: like `all' but without final go build $(package). For when rerun does the build
 
 $(destbin)/$(cmdname): $(packagefiles)
+	go build -ldflags -w -a -tags bin -o $@ $(package)
+$(destbin)/$(cmdname).32:
+	GOARCH=386 CGO_ENABLED=1 \
 	go build -ldflags -w -a -tags bin -o $@ $(package)
 
 share/assets/css/index.css: share/style/index.scss
