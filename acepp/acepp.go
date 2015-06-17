@@ -14,6 +14,7 @@ import (
 
 	"code.google.com/p/go.net/html"
 	"github.com/ostrost/ostent/acepp/templatep"
+	"github.com/ostrost/ostent/templateutil/templatepipe"
 	"github.com/yosssi/ace"
 )
 
@@ -77,7 +78,7 @@ func main() {
 	aceopts.NoCloseTagNames = []string{}
 	aceopts.AttributeNameClass = "className"
 	aceopts.FuncMap["closeTag"] = templatep.CloseTagFunc(nil)
-	templatep.JS = true
+	templatep.JSX = true
 
 	definesbase, defines, err := LoadAce(definesFile, "", aceopts)
 	check(err)
@@ -105,8 +106,7 @@ func main() {
 		check(err)
 	}
 
-	m := templatep.Data(&templatep.TextTemplate{Template: jscript})
-
+	m := templatepipe.Data(&templatepipe.TextTemplate{Template: jscript})
 	s, err := templatep.StringExecute(jscript, m)
 	check(err)
 
