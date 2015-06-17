@@ -27,7 +27,7 @@ install:
   - export GOPATH=~/gopath:$GOPATH PATH=~/gopath/bin:$PATH
   - go version; go env
   - make init
-script: make test all
+script: make --always-make test all # like make -B
 before_deploy:
   - |
     if test x$TRAVIS_OS_NAME \!= xosx ; then # 32bit build on non-osx
