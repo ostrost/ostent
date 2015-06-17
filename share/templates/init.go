@@ -1,13 +1,13 @@
 package templates
 
 import (
-	"github.com/ostrost/ostent/acepp/templatep"
 	"github.com/ostrost/ostent/templateutil"
+	"github.com/ostrost/ostent/templateutil/templatefunc"
 )
 
 var (
 	// IndexTemplate is a templateutil.LazyTemplate of "index.html" asset.
-	IndexTemplate = templateutil.NewLT(Asset, "index.html", templatep.AceFuncs)
+	IndexTemplate = templateutil.NewLT(Asset, "index.html", templatefunc.AceFuncs)
 )
 
 // InitTemplates inits must-have templates and signals done when finished.

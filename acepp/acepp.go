@@ -13,7 +13,7 @@ import (
 	"text/template/parse"
 
 	"code.google.com/p/go.net/html"
-	"github.com/ostrost/ostent/acepp/templatep"
+	"github.com/ostrost/ostent/templateutil/templatefunc"
 	"github.com/ostrost/ostent/templateutil/templatepipe"
 	"github.com/yosssi/ace"
 )
@@ -62,9 +62,9 @@ func main() {
 		}
 	}
 	aceopts := ace.InitializeOptions(&ace.Options{
-		FuncMap: templatep.AceFuncs,
+		FuncMap: templatefunc.AceFuncs,
 	})
-	aceopts.FuncMap["closeTag"] = templatep.CloseTagFunc(aceopts.NoCloseTagNames)
+	aceopts.FuncMap["closeTag"] = templatefunc.CloseTagFunc(aceopts.NoCloseTagNames)
 
 	if !jscriptMode {
 		_, index, err := LoadAce(inputFile, definesFile, aceopts)
@@ -77,8 +77,8 @@ func main() {
 
 	aceopts.NoCloseTagNames = []string{}
 	aceopts.AttributeNameClass = "className"
-	aceopts.FuncMap["closeTag"] = templatep.CloseTagFunc(nil)
-	templatep.JSX = true
+	aceopts.FuncMap["closeTag"] = templatefunc.CloseTagFunc(nil)
+	templatefunc.JSX = true
 
 	definesbase, defines, err := LoadAce(definesFile, "", aceopts)
 	check(err)
@@ -90,7 +90,7 @@ func main() {
 
 	jscript, err := templatetext.
 		New(Base(inputFile, aceopts)).
-		Funcs(templatetext.FuncMap(templatep.AceFuncs)).
+		Funcs(templatetext.FuncMap(templatefunc.AceFuncs)).
 		ParseFiles(inputFile)
 	check(err)
 
@@ -107,7 +107,7 @@ func main() {
 	}
 
 	m := templatepipe.Data(&templatepipe.TextTemplate{Template: jscript})
-	s, err := templatep.StringExecute(jscript, m)
+	s, err := templatefunc.StringExecute(jscript, m)
 	check(err)
 
 	check(WriteFile(outputFile, s))

@@ -1,4 +1,4 @@
-package templatep
+package templatefunc
 
 import (
 	"bytes"

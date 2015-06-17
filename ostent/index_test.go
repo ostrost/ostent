@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ostrost/ostent/acepp/templatep"
+	"github.com/ostrost/ostent/templateutil/templatefunc"
 )
 
 // Traverses the type, fails on any pointer field.
@@ -33,7 +33,7 @@ func TestIndexDatatype(t *testing.T) {
 
 func execute_template(IN string, DATA interface{}) (string, error) {
 	buf := new(bytes.Buffer)
-	if err := template.Must(template.New("tpl").Funcs(templatep.AceFuncs).Parse(IN)).Execute(buf, DATA); err != nil {
+	if err := template.Must(template.New("tpl").Funcs(templatefunc.AceFuncs).Parse(IN)).Execute(buf, DATA); err != nil {
 		return "", err
 	}
 	return buf.String(), nil
