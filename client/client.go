@@ -55,7 +55,7 @@ func (c Client) Expired() bool {
 
 func (c *Client) refreshes() []*Refresh {
 	return []*Refresh{
-		c.RefreshMEM,
+		c.RefreshMME, // Used to be RefreshMEM, soon to be gone.
 		c.RefreshIF,
 		c.RefreshCPU,
 		c.RefreshDF,
@@ -116,7 +116,7 @@ type Client struct {
 	ExpandtextCPU *string `json:",omitempty"`
 	ExpandtextDF  *string `json:",omitempty"`
 
-	RefreshMEM *Refresh `json:",omitempty"`
+	RefreshMME *Refresh `json:",omitempty"` // Used to be RefreshMEM, soon to be gone.
 	RefreshIF  *Refresh `json:",omitempty"`
 	RefreshCPU *Refresh `json:",omitempty"`
 	RefreshDF  *Refresh `json:",omitempty"`
@@ -177,7 +177,7 @@ func Setstring(sends, s **string, v string) bool {
 type SendClient struct {
 	Client
 
-	RefreshErrorMEM  *bool `json:",omitempty"`
+	// RefreshErrorMEM  *bool `json:",omitempty"`
 	RefreshErrorSWAP *bool `json:",omitempty"`
 	RefreshErrorIF   *bool `json:",omitempty"`
 	RefreshErrorCPU  *bool `json:",omitempty"`
@@ -278,7 +278,7 @@ func NewClient(minperiod flags.Period) Client {
 	cs.HideconfigVG = newhc()
 
 	newref := NewRefreshFunc(minperiod)
-	cs.RefreshMEM = newref()
+	cs.RefreshMME = newref() // Used to be RefreshMEM, soon to be gone.
 	cs.RefreshIF = newref()
 	cs.RefreshCPU = newref()
 	cs.RefreshDF = newref()
@@ -302,7 +302,6 @@ func NewClient(minperiod flags.Period) Client {
 type RecvClient struct {
 	commonClient
 	MorePsignal      *bool
-	RefreshSignalMEM *string
 	RefreshSignalIF  *string
 	RefreshSignalCPU *string
 	RefreshSignalDF  *string
@@ -352,7 +351,6 @@ func (sc *SendClient) MergeRefreshSignal(ppinput *string, prefresh *Refresh, sen
 func (rs *RecvClient) MergeRefresh(cs *Client, send *SendClient) error {
 	rs.mergeMorePsignal(cs)
 
-	send.MergeRefreshSignal(rs.RefreshSignalMEM, cs.RefreshMEM, &send.RefreshMEM, &send.RefreshErrorMEM)
 	send.MergeRefreshSignal(rs.RefreshSignalIF, cs.RefreshIF, &send.RefreshIF, &send.RefreshErrorIF)
 	send.MergeRefreshSignal(rs.RefreshSignalCPU, cs.RefreshCPU, &send.RefreshCPU, &send.RefreshErrorCPU)
 	send.MergeRefreshSignal(rs.RefreshSignalDF, cs.RefreshDF, &send.RefreshDF, &send.RefreshErrorDF)

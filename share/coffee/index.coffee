@@ -1,6 +1,7 @@
 require.config
   shim: {bootstrap: {deps: ['jquery']}, bscollapse: {deps: ['jquery']}}
   baseUrl: '/js/src'
+  urlArgs: "bust=" + (new Date()).getTime()
   paths:
     domReady:  'vendor/requirejs-domready/2.0.1/domReady'
     headroom:  'vendor/headroom/0.7.0/headroom.min'
@@ -181,6 +182,12 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
       Data = @state
       return jscript.blockmem.bind(this)(Data, (jscript.mem_rows(Data, $mem
       ) for $mem in Data?.MEM?.List ? []))
+    handleChange: (e) ->
+      href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1)
+      updates.sendSearch(href)
+      e.stopPropagation() # preserves checkbox/radio
+      e.preventDefault()  # checked/selected state
+      return undefined
     handleClick: (e) ->
       href = e.target.getAttribute('href')
       history.pushState({}, '', href)
@@ -427,7 +434,7 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
     tabsif = TabsClass.component({Khide: 'HideIF', Ksend: 'TabIF', $collapse_el: $('.if-tab'), $button_el: $('.if-switch'), $hidebutton_el: $('#ifconfig').find('.hiding')})
     tabsdf = TabsClass.component({Khide: 'HideDF', Ksend: 'TabDF', $collapse_el: $('.df-tab'), $button_el: $('.df-switch'), $hidebutton_el: $('#dfconfig').find('.hiding')})
 
-    refresh_mem = RefreshInputClass.component({K: 'RefreshMEM', Kerror: 'RefreshErrorMEM', Ksig: 'RefreshSignalMEM', sel: $('#memconfig')})
+  # refresh_mem = RefreshInputClass.component({K: 'RefreshMEM', Kerror: 'RefreshErrorMEM', Ksig: 'RefreshSignalMEM', sel: $('#memconfig')})
     refresh_if  = RefreshInputClass.component({K: 'RefreshIF',  Kerror: 'RefreshErrorIF',  Ksig: 'RefreshSignalIF',  sel: $('#ifconfig')})
     refresh_cpu = RefreshInputClass.component({K: 'RefreshCPU', Kerror: 'RefreshErrorCPU', Ksig: 'RefreshSignalCPU', sel: $('#cpuconfig')})
     refresh_df  = RefreshInputClass.component({K: 'RefreshDF',  Kerror: 'RefreshErrorDF',  Ksig: 'RefreshSignalDF',  sel: $('#dfconfig')})
@@ -495,7 +502,7 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
       setState(tabsif,    tabsif.reduce(data))
       setState(tabsdf,    tabsdf.reduce(data))
 
-      setState(refresh_mem, refresh_mem.reduce(data))
+    # setState(refresh_mem, refresh_mem.reduce(data))
       setState(refresh_if,  refresh_if .reduce(data))
       setState(refresh_cpu, refresh_cpu.reduce(data))
       setState(refresh_df,  refresh_df .reduce(data))
@@ -512,6 +519,9 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
         VagrantError:    data.VagrantError,
         VagrantErrord:   data.VagrantErrord
       })
+
+      if data.Location?
+        history.pushState({}, '', data.Location)
 
       console.log(JSON.stringify(data.Client), 'recvClient') if data.Client?
       return

@@ -74,6 +74,36 @@ func toggleHrefAttr(value interface{}) interface{} {
 		value.(*client.BoolParam).EncodeToggle()))
 }
 
+func formActionAttr(query interface{}) interface{} {
+	if JS {
+		return fmt.Sprintf(" action={\"/form/\"+%s}", uncurl(query.(string)))
+	}
+	return templatehtml.HTMLAttr(fmt.Sprintf(" action=\"/form/%s\"",
+		url.QueryEscape(query.(*client.Query).ValuesEncode(nil))))
+}
+
+func periodNameAttr(pparam interface{}) interface{} {
+	if JS {
+		prefix, _ := DotSplitHash(pparam.(Hash))
+		_, pname := DotSplit(prefix)
+		return fmt.Sprintf(" name=%q", pname)
+	}
+	period := pparam.(*client.PeriodParam)
+	return templatehtml.HTMLAttr(fmt.Sprintf(" name=%q", period.Pname))
+}
+
+func periodValueAttr(pparam interface{}) interface{} {
+	if JS {
+		prefix, _ := DotSplitHash(pparam.(Hash))
+		return fmt.Sprintf(" onChange={this.handleChange} value={%s.Input}", prefix)
+	}
+	if p := pparam.(*client.PeriodParam); p.Input != "" {
+		return templatehtml.HTMLAttr(fmt.Sprintf(" value=\"%s\"", p.Input))
+	}
+	return templatehtml.HTMLAttr("")
+}
+
+/* TODO remove func refresh alltogether
 func refresh(value interface{}) interface{} {
 	if !JS {
 		return value.(*client.Refresh)
@@ -92,6 +122,7 @@ func refresh(value interface{}) interface{} {
 		// etc.
 	}
 }
+// */
 
 func ifDisabledAttr(value interface{}) templatehtml.HTMLAttr {
 	if JS {
@@ -405,14 +436,16 @@ var AceFuncs = templatehtml.FuncMap{
 	"droplink":   droplink,
 	"usepercent": usepercent,
 
-	"refresh":        refresh,
-	"ifClass":        ifClass,
-	"ifClassAttr":    ifClassAttr,
-	"ifDisabledAttr": ifDisabledAttr,
-	"toggleHrefAttr": toggleHrefAttr,
-	"closeTag":       CloseTagFunc(nil),
-	"class":          classword,
-	"for":            forword,
+	"ifClass":         ifClass,
+	"ifClassAttr":     ifClassAttr,
+	"ifDisabledAttr":  ifDisabledAttr,
+	"toggleHrefAttr":  toggleHrefAttr,
+	"formActionAttr":  formActionAttr,
+	"periodNameAttr":  periodNameAttr,
+	"periodValueAttr": periodValueAttr,
+	"closeTag":        CloseTagFunc(nil),
+	"class":           classword,
+	"for":             forword,
 
 	"json": func(v interface{}) (string, error) {
 		j, err := json.Marshal(v)

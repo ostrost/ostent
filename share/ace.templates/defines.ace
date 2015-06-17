@@ -14,7 +14,7 @@
 = content define_refresh
   div.input-group.input-group-sm.refresh-group
     span.input-group-addon Refresh
-    | <input {{class}}="form-control refresh-input" type="text" placeholder={{.Default}}{{if ne (json .Default) (json .Period)}} value={{.Period}}{{end}}>{{closeTag "input"}}
+    | <input {{class}}="form-control refresh-input" type="text" placeholder={{.Placeholder}} {{periodNameAttr .}} {{periodValueAttr .}}>{{closeTag "input"}}
 
 = content define_ifbytes_rows
   {{with .OVERRIDE}}{{.}}{{else}}
@@ -197,14 +197,17 @@
 
     div
       | <div id="memconfig" {{ifClassAttr .Data.Links.Params.BOOL.showconfigmem "" "collapse-hidden"}}>
-      form.horizontal-form.border-bottom-form
-        div.form-group-padded
-          div.btn-group.btn-group-sm role=group
-            | <a {{ifClassAttr .Data.Links.Params.BOOL.hidemem "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidemem}}>Hidden</a>
-            | <a {{ifClassAttr .Data.Links.Params.BOOL.hideswap "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hideswap}} {{ifDisabledAttr .Data.Links.Params.BOOL.hidemem}}>Hide swap</a>
+      | <form {{class}}="horizontal-form border-bottom-form" {{formActionAttr .Data.Links.Params.Query}}>
+      / TODO different semantically standalone class for submit button with display: none
+      input.collapse-hidden type=submit
+      div.form-group-padded
+        div.btn-group.btn-group-sm role=group
+          | <a {{ifClassAttr .Data.Links.Params.BOOL.hidemem "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidemem}}>Hidden</a>
+          | <a {{ifClassAttr .Data.Links.Params.BOOL.hideswap "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hideswap}} {{ifDisabledAttr .Data.Links.Params.BOOL.hidemem}}>Hide swap</a>
 
-        div.form-group-padded
-          {{template "defines::define_refresh" refresh .Data.Client.RefreshMEM}}
+      div.form-group-padded
+        {{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshmem}}
+      | </form>
       | </div>
 
     div

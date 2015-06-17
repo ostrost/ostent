@@ -148,6 +148,8 @@ type IndexUpdate struct {
 	VagrantErrord   bool
 
 	Client *client.SendClient `json:",omitempty"`
+
+	Location *string `json:",omitempty"`
 }
 
 type Generic struct {
@@ -736,17 +738,19 @@ type SetInterface interface {
 func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (IndexUpdate, error) {
 	iu := IndexUpdate{}
 	if req != nil {
-		if err := DecodeParam(cl, req); err != nil {
+		newloc, err := DecodeParam(cl, req)
+		if err != nil {
 			return iu, err
 		}
+		iu.Location = newloc // may be nil
 		iu.Links = &Links{cl.Params}
 	}
 	cl.RecalcRows() // after params decoded
 	psCopy := lastInfo.CopyPS()
 
 	set := []Set{
-		{cl.Params.BOOL["hidemem"].Value, cl.RefreshMEM, Reg1s.MEM},
-		{cl.Params.BOOL["hidemem"].Value || cl.Params.BOOL["hideswap"].Value, cl.RefreshMEM, Reg1s.SWAP}, // if MEM is hidden, so is SWAP
+		{cl.Params.BOOL["hidemem"].Value, cl.RefreshMME, Reg1s.MEM},
+		{cl.Params.BOOL["hidemem"].Value || cl.Params.BOOL["hideswap"].Value, cl.RefreshMME, Reg1s.SWAP}, // if MEM is hidden, so is SWAP
 		{*cl.HideCPU, cl.RefreshCPU, Reg1s.CPU},
 		{*cl.HideDF, cl.RefreshDF, Reg1s.DF},
 		{*cl.HideIF, cl.RefreshIF, Reg1s.IF},
@@ -779,15 +783,20 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 	return iu, nil
 }
 
-func DecodeParam(cl *client.Client, req *http.Request) error {
+func DecodeParam(cl *client.Client, req *http.Request) (*string, error) {
 	req.ParseForm() // do ParseForm even if req.Form == nil
 	cl.Params.NewQuery()
 	cl.Params.Decode(req.Form)
 
-	if cl.Params.Query.Moved {
-		return enums.RenamedConstError("?" + cl.Params.Query.ValuesEncode(nil))
+	if cl.Params.Query.Moved || cl.Params.Query.UpdateLocation {
+		loc := "?" + cl.Params.Query.ValuesEncode(nil)
+		if cl.Params.Query.Moved {
+			return nil, enums.RenamedConstError(loc)
+		}
+		// .UpdateLocation is true
+		return &loc, nil
 	}
-	return nil
+	return nil, nil
 }
 
 func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
@@ -861,6 +870,21 @@ func init() {
 // Set at init, result of system.Distrib.
 var DISTRIB string
 
+func FormRedirectFunc(minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		where := "/"
+		r.ParseForm()
+		if q, ok := r.Form["Q"]; ok && len(q) > 0 {
+			r.URL.RawQuery = r.Form.Encode() + "&" + strings.TrimPrefix(q[0], "?")
+			r.Form = nil // reset the .Form for .ParseForm() to parse new r.URL.RawQuery.
+			cl := client.NewClient(minperiod)
+			DecodeParam(&cl, r) // OR err.Error()
+			where = "/?" + cl.Params.Query.ValuesEncode(nil)
+		}
+		http.Redirect(w, r, where, http.StatusFound)
+	}
+}
+
 func IndexFunc(taggedbin bool, template *templateutil.LazyTemplate, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		index(taggedbin, template, minperiod, w, r)
@@ -871,13 +895,12 @@ func index(taggedbin bool, template *templateutil.LazyTemplate, minperiod flags.
 	id, err := indexData(minperiod, r)
 	if err != nil {
 		if _, ok := err.(enums.RenamedConstError); ok {
-			http.Redirect(w, r, err.Error(), http.StatusMovedPermanently)
+			http.Redirect(w, r, err.Error(), http.StatusFound)
 			return
 		}
 		http.Error(w, err.Error(), panicstatuscode)
 		return
 	}
-
 	response := template.Response(w, struct {
 		OVERRIDE  string // MUST HAVE, EMPTY
 		TAGGEDbin bool
@@ -904,6 +927,10 @@ func (sse *SSE) ServeHTTP(_ http.ResponseWriter, r *http.Request) {
 	w := sse.Writer
 	id, err := indexData(sse.MinPeriod, r)
 	if err != nil {
+		if _, ok := err.(enums.RenamedConstError); ok {
+			http.Redirect(w, r, err.Error(), http.StatusFound)
+			return
+		}
 		http.Error(w, err.Error(), panicstatuscode)
 	}
 	text, err := json.Marshal(id)

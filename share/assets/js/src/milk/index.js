@@ -10,6 +10,7 @@
       }
     },
     baseUrl: '/js/src',
+    urlArgs: "bust=" + (new Date()).getTime(),
     paths: {
       domReady: 'vendor/requirejs-domready/2.0.1/domReady',
       headroom: 'vendor/headroom/0.7.0/headroom.min',
@@ -293,6 +294,14 @@
           }
           return results;
         })());
+      },
+      handleChange: function(e) {
+        var href;
+        href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1);
+        updates.sendSearch(href);
+        e.stopPropagation();
+        e.preventDefault();
+        return void 0;
       },
       handleClick: function(e) {
         var href;
@@ -659,7 +668,7 @@
       }
     };
     update = function() {
-      var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigps, hideconfigvg, hidecpu, hideps, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, psless, psmore, psplus, pstable, refresh_cpu, refresh_df, refresh_if, refresh_mem, refresh_ps, refresh_vg, tabsdf, tabsif, uptime, vgtable;
+      var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigps, hideconfigvg, hidecpu, hideps, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, psless, psmore, psplus, pstable, refresh_cpu, refresh_df, refresh_if, refresh_ps, refresh_vg, tabsdf, tabsif, uptime, vgtable;
       hideconfigif = HideClass.component({
         xkey: 'HideconfigIF',
         $el: $('[for-sel="#ifconfig"]'),
@@ -772,12 +781,6 @@
         $button_el: $('.df-switch'),
         $hidebutton_el: $('#dfconfig').find('.hiding')
       });
-      refresh_mem = RefreshInputClass.component({
-        K: 'RefreshMEM',
-        Kerror: 'RefreshErrorMEM',
-        Ksig: 'RefreshSignalMEM',
-        sel: $('#memconfig')
-      });
       refresh_if = RefreshInputClass.component({
         K: 'RefreshIF',
         Kerror: 'RefreshErrorIF',
@@ -871,7 +874,6 @@
         setState(expanddf, expanddf.reduce(data));
         setState(tabsif, tabsif.reduce(data));
         setState(tabsdf, tabsdf.reduce(data));
-        setState(refresh_mem, refresh_mem.reduce(data));
         setState(refresh_if, refresh_if.reduce(data));
         setState(refresh_cpu, refresh_cpu.reduce(data));
         setState(refresh_df, refresh_df.reduce(data));
@@ -891,6 +893,9 @@
           VagrantError: data.VagrantError,
           VagrantErrord: data.VagrantErrord
         });
+        if (data.Location != null) {
+          history.pushState({}, '', data.Location);
+        }
         if (data.Client != null) {
           console.log(JSON.stringify(data.Client), 'recvClient');
         }

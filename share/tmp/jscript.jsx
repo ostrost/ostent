@@ -23,7 +23,9 @@ define(function(require) {
     ></label
   ><div
     ><div id="memconfig"  className={Data.Links.Params.BOOL.showconfigmem.Value ? "" : "collapse-hidden" }
-      ><form className="horizontal-form border-bottom-form"
+      ><form className="horizontal-form border-bottom-form"  action={"/form/"+Data.Links.Params.Query}
+        ><input className="collapse-hidden" type="submit"
+          ></input
         ><div className="form-group-padded"
           ><div className="btn-group btn-group-sm" role="group"
             ><a  className={Data.Links.Params.BOOL.hidemem.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Links.Params.BOOL.hidemem.Href} onClick={this.handleClick}
@@ -36,7 +38,7 @@ define(function(require) {
           ><div className="input-group input-group-sm refresh-group"
   ><span className="input-group-addon"
     >Refresh</span
-  ><input className="form-control refresh-input" type="text" placeholder={Data.Client.RefreshMEM}
+  ><input className="form-control refresh-input" type="text" placeholder={Data.Links.Params.PERIOD.refreshmem.Placeholder}  name="refreshmem"  onChange={this.handleChange} value={Data.Links.Params.PERIOD.refreshmem.Input}
     ></input></div
   ></div
         ></form

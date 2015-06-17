@@ -252,10 +252,10 @@ func NewParams(minperiod flags.Period) *Params {
 		p.PERIOD[k] = &PeriodParam{
 			Query: p.Query,
 			PeriodDecodec: PeriodDecodec{
-				Pname:       k,
-				Placeholder: minperiod,
+				Pname: k,
 			},
-			Value: flags.Period{Above: &minperiod.Duration},
+			Placeholder: minperiod,
+			Period:      flags.Period{Above: &minperiod.Duration},
 		}
 	}
 	return p
@@ -354,27 +354,24 @@ func (p *Params) Decode(form url.Values) {
 	for _, v := range p.PERIOD {
 		v.Decode(form)
 	}
-	/*
-		ruri := "?" + p.Query.ValuesEncode(nil)
-		for _, v := range p.PERIOD {
-			v.FormAction = ruri
-		} // */
 }
 
 type Params struct {
 	BOOL   map[string]*BoolParam
 	ENUM   map[string]*EnumParam
 	PERIOD map[string]*PeriodParam
-	Query  *Query `json:"-"`
+	Query  *Query
 }
 
 type Query struct {
 	url.Values
-	Moved bool
+	Moved          bool
+	UpdateLocation bool
 }
 
-// func (q Query) RequestURI() string { return "?" + q.ValuesEncode(nil) }
-// func (q Query) MarshalJSON() ([]byte, error) { return json.Marshal(struct{ RequestURI string }{q.RequestURI()}) }
+func (q Query) MarshalJSON() ([]byte, error) {
+	return json.Marshal(url.QueryEscape(q.ValuesEncode(nil)))
+}
 
 func (q Query) ValuesCopy() url.Values {
 	copy := url.Values{}
@@ -385,23 +382,28 @@ func (q Query) ValuesCopy() url.Values {
 }
 
 type PeriodDecodec struct {
-	Pname       string `json:"-"`
-	Placeholder flags.Period
+	Pname string `json:"-"`
 }
 
 // PeriodParam represents period parameter.
 type PeriodParam struct {
 	Query         *Query `json:"-"` // Explicitly non-marshallable url.Values.
 	PeriodDecodec        // Read-only an entry from global var BoolDecoders.
-	Value         flags.Period
-	// FormAction string
+	// PeriodDecodec is inlined for access to .Pname for templates
+	Placeholder flags.Period
+	Period      flags.Period
+	Input       string
 }
 
 func (pp *PeriodParam) Decode(form url.Values) {
 	values, ok := form[pp.PeriodDecodec.Pname]
 	if ok && len(values) > 0 {
-		if err := pp.Value.Set(values[0]); err == nil {
-			pp.Query.Set(pp.PeriodDecodec.Pname, pp.Value.String())
+		pp.Input = values[0]
+		if err := pp.Period.Set(values[0]); err == nil {
+			pp.Query.UpdateLocation = true // New location.
+			ppstring := pp.Period.String()
+			pp.Input = ppstring
+			pp.Query.Set(pp.PeriodDecodec.Pname, ppstring)
 			return
 		}
 	}

@@ -51,6 +51,10 @@ func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error 
 	mux.Handle("GET", "/", index)
 	mux.Handle("HEAD", "/", index)
 
+	formred := chain.ThenFunc(ostent.FormRedirectFunc(PeriodFlag))
+	mux.Handle("GET", "/form/{Q}", formred)
+	mux.Handle("POST", "/form/{Q}", formred)
+
 	/* panics := func(http.ResponseWriter, *http.Request) {
 		panic(fmt.Errorf("I'm panicing"))
 	}
