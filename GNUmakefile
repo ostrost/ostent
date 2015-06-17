@@ -9,7 +9,7 @@ ifeq ($(testpackage), ./...)
 singletestpackage=$(package)
 endif
 
-acepp.go=$(shell go list -f '{{.Dir}}' github.com/ostrost/ostent)/acepp/acepp.go
+acepp.go=$(shell go list -f '{{.Dir}}' github.com/ostrost/ostent)/templateutil/acepp.go
 
 shareprefix=share
 assets_devgo    = $(shareprefix)/assets/bindata.dev.go
