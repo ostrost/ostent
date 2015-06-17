@@ -13,10 +13,10 @@ env:
 install:
   - set -e # errors are fatal
   - if test x$TRAVIS_OS_NAME \!= xlinux ; then
-  -   # linux is ok with gcc
-  -   export CXX=clang++ CC=clang
-  -   # default CC=gcc for `language: c'
-  - fi
+      # linux is ok with gcc
+      export CXX=clang++ CC=clang
+      # default CC=gcc for `language: c'
+    fi
   - if type -t gvm; then gvm get; else curl -sSL $GVMINSTALLER_URL | bash; fi
   - source ~/.gvm/scripts/gvm
   - gvm version
@@ -29,17 +29,17 @@ install:
 script: make test all
 before_deploy:
   - if test x$TRAVIS_OS_NAME \!= xosx ; then # 32bit build on non-osx
-  -   x32=.32
-  -   # make all32
-  -   # mv $HOME/gopath/bin/ostent.32 $HOME/gopath/bin/$ARTIF.32
-  - fi
+      x32=.32
+      # make all32
+      # mv $HOME/gopath/bin/ostent.32 $HOME/gopath/bin/$ARTIF.32
+    fi
   - mv $HOME/gopath/bin/ostent    $HOME/gopath/bin/$ARTIF
   - set +e # off fatal errors for travis-dpl
 after_deploy:
   - set -e # errors are fatal again
   - if test x$TRAVIS_OS_NAME \!= xosx ; then # 32bit build on non-osx
-  -   # mv $HOME/gopath/bin/$ARTIF.32 $HOME/gopath/bin/ostent.32
-  - fi
+      # mv $HOME/gopath/bin/$ARTIF.32 $HOME/gopath/bin/ostent.32
+    fi
   - mv $HOME/gopath/bin/$ARTIF    $HOME/gopath/bin/ostent
 deploy:
   file:
