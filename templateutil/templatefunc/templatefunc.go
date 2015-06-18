@@ -103,6 +103,17 @@ func periodValueAttr(pparam interface{}) interface{} {
 	return templatehtml.HTMLAttr("")
 }
 
+func refreshClass(pparam interface{}, classes string) interface{} {
+	if JSX {
+		prefix, _ := DotSplitHash(pparam)
+		return fmt.Sprintf(" %s={%q + (%s.InputErrd ? \" has-warning\" : \"\")}", classword(), classes, prefix)
+	}
+	if p := pparam.(*client.PeriodParam); p.InputErrd {
+		classes += " " + "has-warning"
+	}
+	return templatehtml.HTMLAttr(fmt.Sprintf(" %s=%q", classword(), classes))
+}
+
 func ifDisabledAttr(value interface{}) templatehtml.HTMLAttr {
 	if JSX {
 		return templatehtml.HTMLAttr(fmt.Sprintf("disabled={%s.Value ? \"disabled\" : \"\" }", uncurl(value.(string))))
@@ -293,6 +304,7 @@ var AceFuncs = templatehtml.FuncMap{
 	"formActionAttr":  formActionAttr,
 	"periodNameAttr":  periodNameAttr,
 	"periodValueAttr": periodValueAttr,
+	"refreshClass":    refreshClass,
 	"closeTag":        CloseTagFunc(nil),
 	"class":           classword,
 	"for":             forword,

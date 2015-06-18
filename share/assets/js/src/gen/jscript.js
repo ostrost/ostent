@@ -21,7 +21,7 @@ define(function(require) {
             }, React.createElement("a", {className: Data.Links.Params.BOOL.hidemem.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Links.Params.BOOL.hidemem.Href, onClick: this.handleClick
               }, "Hidden"), React.createElement("a", {className: Data.Links.Params.BOOL.hideswap.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Links.Params.BOOL.hideswap.Href, onClick: this.handleClick, disabled: Data.Links.Params.BOOL.hidemem.Value ? "disabled" : ""
               }, "Hide swap"))), React.createElement("div", {className: "form-group-padded"
-          }, React.createElement("div", {className: "input-group input-group-sm refresh-group"
+          }, React.createElement("div", {className: "input-group input-group-sm refresh-group" + (Data.Links.Params.PERIOD.refreshmem.InputErrd ? " has-warning" : "")
   }, React.createElement("span", {className: "input-group-addon"
     }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Links.Params.PERIOD.refreshmem.Placeholder, name: "refreshmem", onChange: this.handleChange, value: Data.Links.Params.PERIOD.refreshmem.Input
     })))))), React.createElement("div", null

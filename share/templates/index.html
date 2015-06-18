@@ -633,7 +633,7 @@
     >{{template "defines::define_psrows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_refresh"}}<div class="input-group input-group-sm refresh-group"
+*/}}{{define "defines::define_refresh"}}<div {{refreshClass . "input-group input-group-sm refresh-group"}}
   ><span class="input-group-addon"
     >Refresh</span
   ><input {{class}}="form-control refresh-input" type="text" placeholder={{.Placeholder}} {{periodNameAttr .}} {{periodValueAttr .}}

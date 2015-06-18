@@ -12,9 +12,10 @@
     input.form-control.refresh-input type=text placeholder={{.Default}}{{if ne (json .Default) (json .Period)}} value={{.Period}}{{end}}
 
 = content define_refresh
-  div.input-group.input-group-sm.refresh-group
-    span.input-group-addon Refresh
-    | <input {{class}}="form-control refresh-input" type="text" placeholder={{.Placeholder}} {{periodNameAttr .}} {{periodValueAttr .}}>{{closeTag "input"}}
+  | <div {{refreshClass . "input-group input-group-sm refresh-group"}}>
+  span.input-group-addon Refresh
+  | <input {{class}}="form-control refresh-input" type="text" placeholder={{.Placeholder}} {{periodNameAttr .}} {{periodValueAttr .}}>{{closeTag "input"}}
+  | </div>
 
 = content define_ifbytes_rows
   {{with .OVERRIDE}}{{.}}{{else}}

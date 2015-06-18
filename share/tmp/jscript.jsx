@@ -35,7 +35,7 @@ define(function(require) {
             ></div
           ></div
         ><div className="form-group-padded"
-          ><div className="input-group input-group-sm refresh-group"
+          ><div  className={"input-group input-group-sm refresh-group" + (Data.Links.Params.PERIOD.refreshmem.InputErrd ? " has-warning" : "")}
   ><span className="input-group-addon"
     >Refresh</span
   ><input className="form-control refresh-input" type="text" placeholder={Data.Links.Params.PERIOD.refreshmem.Placeholder}  name="refreshmem"  onChange={this.handleChange} value={Data.Links.Params.PERIOD.refreshmem.Input}

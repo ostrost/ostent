@@ -393,11 +393,13 @@ type PeriodParam struct {
 	Placeholder flags.Period
 	Period      flags.Period
 	Input       string
+	InputErrd   bool
 }
 
 func (pp *PeriodParam) Decode(form url.Values) {
+	pp.InputErrd = false
 	values, ok := form[pp.PeriodDecodec.Pname]
-	if ok && len(values) > 0 {
+	if ok && len(values) > 0 && values[0] != "" {
 		pp.Input = values[0]
 		if err := pp.Period.Set(values[0]); err == nil {
 			pp.Query.UpdateLocation = true // New location.
@@ -405,6 +407,8 @@ func (pp *PeriodParam) Decode(form url.Values) {
 			pp.Input = ppstring
 			pp.Query.Set(pp.PeriodDecodec.Pname, ppstring)
 			return
+		} else {
+			pp.InputErrd = true
 		}
 	}
 	pp.Query.Del(pp.PeriodDecodec.Pname)
