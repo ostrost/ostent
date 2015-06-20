@@ -430,21 +430,22 @@ type PeriodParam struct {
 }
 
 func (pp *PeriodParam) Decode(form url.Values) {
-	pp.InputErrd = false
 	values, ok := form[pp.PeriodDecodec.Pname]
-	if ok && len(values) > 0 && values[0] != "" {
-		pp.Input = values[0]
-		if err := pp.Period.Set(values[0]); err == nil {
-			pp.Query.UpdateLocation = true // New location.
-			ppstring := pp.Period.String()
-			pp.Input = ppstring
-			pp.Query.Set(pp.PeriodDecodec.Pname, ppstring)
-			return
-		} else {
-			pp.InputErrd = true
-		}
+	if !ok || len(values) == 0 {
+		return
 	}
-	pp.Query.Del(pp.PeriodDecodec.Pname)
+	// empty values[0] is ok
+	if err := pp.Period.Set(values[0]); err != nil {
+		pp.Input, pp.InputErrd = values[0], true
+	} else {
+		pp.Input, pp.InputErrd = pp.Period.String(), false
+	}
+	if pp.Period.Duration != pp.Placeholder.Duration {
+		pp.Query.Set(pp.PeriodDecodec.Pname, pp.Input)
+	} else {
+		pp.Query.Del(pp.PeriodDecodec.Pname)
+	}
+	pp.Query.UpdateLocation = true // New location.
 }
 
 type BoolDecodec struct {
