@@ -24,16 +24,15 @@ func NewRefreshFunc(period flags.Period) func() *Refresh {
 	}
 }
 
+// TODO .Refresh method is used in ostent.Set/Refresher only. To be removed.
 func (r *Refresh) Refresh(forcerefresh bool) bool {
 	if forcerefresh {
 		return true
 	}
-	return r.expired()
+	return r.tick <= 1 // r.expired()
 }
 
-func (r Refresh) expired() bool {
-	return r.tick <= 1
-}
+// func (r Refresh) expired() bool { return r.tick <= 1 }
 
 func (c *Client) Tick() {
 	for _, r := range c.refreshes() {
@@ -46,7 +45,7 @@ func (c *Client) Tick() {
 
 func (c Client) Expired() bool {
 	for _, r := range c.refreshes() {
-		if r.expired() {
+		if r.tick <= 1 { // if r.expired()
 			return true
 		}
 	}

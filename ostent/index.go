@@ -718,8 +718,10 @@ func init() {
 
 type Set struct {
 	Hide    bool
-	Refresh *client.Refresh `json:",omitempty"`
-	Update  func(*client.Client, *client.SendClient, *IndexUpdate) interface{}
+	Refresh interface { // type Refresher interface
+		Refresh(bool) bool
+	}
+	Update func(*client.Client, *client.SendClient, *IndexUpdate) interface{}
 }
 
 func (s Set) Hidden() bool { return s.Hide }
@@ -749,8 +751,8 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 	psCopy := lastInfo.CopyPS()
 
 	set := []Set{
-		{cl.Params.BOOL["hidemem"].Value, cl.RefreshMME, Reg1s.MEM},
-		{cl.Params.BOOL["hidemem"].Value || cl.Params.BOOL["hideswap"].Value, cl.RefreshMME, Reg1s.SWAP}, // if MEM is hidden, so is SWAP
+		{cl.Params.BOOL["hidemem"].Value, cl.Params.PERIOD["refreshmem"], Reg1s.MEM},
+		{cl.Params.BOOL["hidemem"].Value || cl.Params.BOOL["hideswap"].Value, cl.Params.PERIOD["refreshmem"], Reg1s.SWAP}, // if MEM is hidden, so is SWAP
 		{*cl.HideCPU, cl.RefreshCPU, Reg1s.CPU},
 		{*cl.HideDF, cl.RefreshDF, Reg1s.DF},
 		{*cl.HideIF, cl.RefreshIF, Reg1s.IF},

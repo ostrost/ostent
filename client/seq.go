@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/ostrost/ostent/client/enums"
 	"github.com/ostrost/ostent/flags"
@@ -356,6 +357,35 @@ func (p *Params) Decode(form url.Values) {
 	}
 }
 
+func (p *Params) Refresh(force bool) bool {
+	if force {
+		return true
+	}
+	for _, v := range p.PERIOD {
+		if v.Tick <= 1 {
+			return true
+		}
+	}
+	return false
+}
+
+func (p *Params) Tick() {
+	for _, v := range p.PERIOD {
+		v.Tick++
+		if v.Tick-1 >= int(time.Duration(v.Period.Duration)/time.Second) {
+			v.Tick = 1 // expired
+		}
+	}
+}
+
+// TODO .Refresh method is used in ostent.Set/Refresher only. To be removed.
+func (p PeriodParam) Refresh(forcerefresh bool) bool {
+	if forcerefresh {
+		return true
+	}
+	return p.Tick <= 1 // p.expired()
+}
+
 type Params struct {
 	BOOL   map[string]*BoolParam
 	ENUM   map[string]*EnumParam
@@ -394,6 +424,9 @@ type PeriodParam struct {
 	Period      flags.Period
 	Input       string
 	InputErrd   bool
+
+	// Params.Tick() must be called once per second; .tick is 1 when the period expired.
+	Tick int `json:"-"` // Not to be marshaled.
 }
 
 func (pp *PeriodParam) Decode(form url.Values) {

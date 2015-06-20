@@ -113,6 +113,7 @@ func (c *conn) Tick() {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 	c.full.Tick()
+	c.full.Params.Tick()
 }
 
 func (c *conn) Tack() {
