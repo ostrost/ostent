@@ -108,7 +108,7 @@ func main() {
 		check(err)
 	}
 
-	m := templatepipe.Data(&templatepipe.TextTemplate{Template: jscript})
+	m := templatepipe.Data(jscript)
 	s, err := templatefunc.StringExecute(jscript, m)
 	check(err)
 

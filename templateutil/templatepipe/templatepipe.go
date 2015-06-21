@@ -1,58 +1,24 @@
 package templatepipe
 
 import (
-	templatehtml "html/template"
 	"strings"
-	templatetext "text/template"
+	"text/template"
 	"text/template/parse"
 )
 
-type HTMLTemplate struct{ *templatehtml.Template }
-
-func (ht HTMLTemplate) GetTree() *parse.Tree {
-	if ht.Template == nil {
-		return nil
-	}
-	return ht.Template.Tree
-}
-func (ht *HTMLTemplate) LookupT(n string) Templater { return &HTMLTemplate{ht.Lookup(n)} }
-
-type TextTemplate struct{ *templatetext.Template }
-
-func (tt TextTemplate) GetTree() *parse.Tree {
-	if tt.Template == nil {
-		return nil
-	}
-	return tt.Template.Tree
-}
-func (tt *TextTemplate) LookupT(n string) Templater { return &TextTemplate{tt.Lookup(n)} }
-
-type Templater interface {
-	GetTree() *parse.Tree
-	LookupT(string) Templater
-}
-
-func Tree(root Templater) *parse.Tree {
-	if root == nil {
-		return nil
-	}
-	return root.GetTree()
-}
-
-func Data(root Templater) interface{} {
-	tree := Tree(root)
-	if tree == nil {
+func Data(root *template.Template) interface{} {
+	if root == nil || root.Tree == nil || root.Tree.Root == nil {
 		return "{}"
 	}
 	data := Dotted{}
 	vars := map[string][]string{}
-	for _, node := range tree.Root.Nodes {
+	for _, node := range root.Tree.Root.Nodes {
 		DataNode(root, node, &data, vars, nil)
 	}
 	return Mkmap(data, 0)
 }
 
-func DataNode(root Templater, node parse.Node, data *Dotted, vars map[string][]string, prefixwords []string) {
+func DataNode(root *template.Template, node parse.Node, data *Dotted, vars map[string][]string, prefixwords []string) {
 	if true {
 		switch node.Type() {
 		case parse.NodeWith:
@@ -93,16 +59,13 @@ func DataNode(root Templater, node parse.Node, data *Dotted, vars map[string][]s
 					break // just one argument (pipeline) to "{{template}}" allowed anyway
 				}
 			}
-			if lo := root.LookupT(tnode.Name); lo != nil {
-				tr := Tree(lo)
-				if tr != nil && tr.Root != nil {
-					for _, n := range tr.Root.Nodes {
-						pw := prefixwords
-						if tawords != nil {
-							pw = append(prefixwords, tawords...)
-						}
-						DataNode(root, n, data, vars, pw)
+			if sub := root.Lookup(tnode.Name); sub != nil && sub.Tree != nil && sub.Tree.Root != nil {
+				for _, n := range sub.Tree.Root.Nodes {
+					pw := prefixwords
+					if tawords != nil {
+						pw = append(prefixwords, tawords...)
 					}
+					DataNode(root, n, data, vars, pw)
 				}
 			}
 		case parse.NodeAction:
