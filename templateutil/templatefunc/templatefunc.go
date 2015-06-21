@@ -32,14 +32,15 @@ func forword() string {
 	}[JSX]
 }
 
+// CloseTagFunc constructs a func returning close tag markup unless the tag is in noclose.
 func CloseTagFunc(noclose []string) func(string) templatehtml.HTML {
-	return func(tn string) templatehtml.HTML {
+	return func(tag string) templatehtml.HTML {
 		for _, nc := range noclose {
-			if tn == nc {
+			if tag == nc {
 				return templatehtml.HTML("")
 			}
 		}
-		return templatehtml.HTML("</" + tn + ">")
+		return templatehtml.HTML("</" + tag + ">")
 	}
 }
 
@@ -55,7 +56,8 @@ func DotSplit(s string) (string, string) {
 	return s[:i], s[i+1:]
 }
 
-// DotSplitHash returns DotSplit of first (in no particular order) value from h.
+// DotSplitHash returns DotSplit of first (in no particular order) value from i casted to templatepipe.Hash.
+// TODO move back to templatepipe, cut the traversing part (Mkmap, Data, DataNode) into separate package.
 func DotSplitHash(i interface{}) (string, string) {
 	var curled string
 	for _, v := range i.(templatepipe.Hash) {
@@ -66,62 +68,86 @@ func DotSplitHash(i interface{}) (string, string) {
 	return DotSplit(uncurl(curled))
 }
 
-func toggleHrefAttr(value interface{}) interface{} {
-	if JSX {
-		return fmt.Sprintf(" href={%s.Href} onClick={this.handleClick}", uncurl(value.(string)))
-	}
-	return templatehtml.HTMLAttr(fmt.Sprintf(" href=\"%s\"",
-		value.(*client.BoolParam).EncodeToggle()))
+func CastError(notype string) error {
+	return fmt.Errorf("Cannot convert into %s", notype)
 }
 
-func formActionAttr(query interface{}) interface{} {
+func toggleHrefAttr(value interface{}) (interface{}, error) {
 	if JSX {
-		return fmt.Sprintf(" action={\"/form/\"+%s}", uncurl(query.(string)))
+		return fmt.Sprintf(" href={%s.Href} onClick={this.handleClick}",
+			uncurl(value.(string))), nil
 	}
-	return templatehtml.HTMLAttr(fmt.Sprintf(" action=\"/form/%s\"",
-		url.QueryEscape(query.(*client.Query).ValuesEncode(nil))))
+	if bp, ok := value.(*client.BoolParam); ok {
+		return templatehtml.HTMLAttr(fmt.Sprintf(" href=\"%s\"", bp.EncodeToggle())), nil
+	}
+	return nil, CastError("*client.BoolParam")
 }
 
-func periodNameAttr(pparam interface{}) interface{} {
+func formActionAttr(value interface{}) (interface{}, error) {
 	if JSX {
-		prefix, _ := DotSplitHash(pparam)
+		return fmt.Sprintf(" action={\"/form/\"+%s}", uncurl(value.(string))), nil
+	}
+	if query, ok := value.(*client.Query); ok {
+		return templatehtml.HTMLAttr(fmt.Sprintf(" action=\"/form/%s\"",
+			url.QueryEscape(query.ValuesEncode(nil)))), nil
+	}
+	return nil, CastError("*client.Query")
+}
+
+func periodNameAttr(value interface{}) (interface{}, error) {
+	if JSX {
+		prefix, _ := DotSplitHash(value)
 		_, pname := DotSplit(prefix)
-		return fmt.Sprintf(" name=%q", pname)
+		return fmt.Sprintf(" name=%q", pname), nil
 	}
-	period := pparam.(*client.PeriodParam)
-	return templatehtml.HTMLAttr(fmt.Sprintf(" name=%q", period.Pname))
+	if period, ok := value.(*client.PeriodParam); ok {
+		return templatehtml.HTMLAttr(fmt.Sprintf(" name=%q",
+			period.Pname)), nil
+	}
+	return nil, CastError("*client.PeriodParam")
 }
 
-func periodValueAttr(pparam interface{}) interface{} {
+func periodValueAttr(value interface{}) (interface{}, error) {
 	if JSX {
-		prefix, _ := DotSplitHash(pparam)
-		return fmt.Sprintf(" onChange={this.handleChange} value={%s.Input}", prefix)
+		prefix, _ := DotSplitHash(value)
+		return fmt.Sprintf(" onChange={this.handleChange} value={%s.Input}", prefix), nil
 	}
-	if p := pparam.(*client.PeriodParam); p.Input != "" {
-		return templatehtml.HTMLAttr(fmt.Sprintf(" value=\"%s\"", p.Input))
+	if period, ok := value.(*client.PeriodParam); ok {
+		if period.Input != "" {
+			return templatehtml.HTMLAttr(fmt.Sprintf(" value=\"%s\"", period.Input)), nil
+		}
+		return templatehtml.HTMLAttr(""), nil
 	}
-	return templatehtml.HTMLAttr("")
+	return nil, CastError("*client.PeriodParam")
 }
 
-func refreshClass(pparam interface{}, classes string) interface{} {
+func refreshClass(value interface{}, classes string) (interface{}, error) {
 	if JSX {
-		prefix, _ := DotSplitHash(pparam)
-		return fmt.Sprintf(" %s={%q + (%s.InputErrd ? \" has-warning\" : \"\")}", classword(), classes, prefix)
+		prefix, _ := DotSplitHash(value)
+		return fmt.Sprintf(" %s={%q + (%s.InputErrd ? \" has-warning\" : \"\")}",
+			classword(), classes, prefix), nil
 	}
-	if p := pparam.(*client.PeriodParam); p.InputErrd {
-		classes += " " + "has-warning"
+	if period, ok := value.(*client.PeriodParam); ok {
+		if period.InputErrd {
+			classes += " " + "has-warning"
+		}
+		return templatehtml.HTMLAttr(fmt.Sprintf(" %s=%q", classword(), classes)), nil
 	}
-	return templatehtml.HTMLAttr(fmt.Sprintf(" %s=%q", classword(), classes))
+	return nil, CastError("*client.PeriodParam")
 }
 
-func ifDisabledAttr(value interface{}) templatehtml.HTMLAttr {
+func ifDisabledAttr(value interface{}) (templatehtml.HTMLAttr, error) {
 	if JSX {
-		return templatehtml.HTMLAttr(fmt.Sprintf("disabled={%s.Value ? \"disabled\" : \"\" }", uncurl(value.(string))))
+		return templatehtml.HTMLAttr(fmt.Sprintf("disabled={%s.Value ? \"disabled\" : \"\" }",
+			uncurl(value.(string)))), nil
 	}
-	if value.(*client.BoolParam).Value {
-		return templatehtml.HTMLAttr("disabled=\"disabled\"")
+	if bp, ok := value.(*client.BoolParam); ok {
+		if bp.Value {
+			return templatehtml.HTMLAttr("disabled=\"disabled\""), nil
+		}
+		return templatehtml.HTMLAttr(""), nil
 	}
-	return templatehtml.HTMLAttr("")
+	return templatehtml.HTMLAttr(""), CastError("*client.BoolParam")
 }
 
 func ifClassAttr(value interface{}, classes ...string) (templatehtml.HTMLAttr, error) {
@@ -151,10 +177,13 @@ func ifClass(value interface{}, classes ...string) (string, error) {
 	if JSX {
 		return fmt.Sprintf("{%s.Value ? %q : %q }", uncurl(value.(string)), fstclass, sndclass), nil
 	}
-	if value.(*client.BoolParam).Value {
-		return fstclass, nil
+	if bp, ok := value.(*client.BoolParam); ok {
+		if bp.Value {
+			return fstclass, nil
+		}
+		return sndclass, nil
 	}
-	return sndclass, nil
+	return "", CastError("*client.BoolParam")
 }
 
 func uncurl(s string) string {
@@ -189,7 +218,10 @@ func droplink(value interface{}, ss ...string) (interface{}, error) {
 			CaretClass: fmt.Sprintf("{%s.%s.%s}", prefix, named, "CaretClass"),
 		}, nil
 	}
-	ep := value.(*client.EnumParam)
+	ep, ok := value.(*client.EnumParam)
+	if !ok {
+		return nil, CastError("*client.EnumParam")
+	}
 	pname, uptr := ep.EnumDecodec.Unew()
 	if err := uptr.Unmarshal(named, new(bool)); err != nil {
 		return nil, err
