@@ -1,6 +1,7 @@
 package templatefunc
 
 import (
+	"bytes"
 	"testing"
 	"text/template"
 
@@ -14,11 +15,11 @@ func ExecuteWithHashTest(t *testing.T, tm *template.Template, expected string) {
 	if _, ok := h.(string); ok {
 		t.Errorf("Encurl expected to return non-string on %+v input", d)
 	}
-	s, err := StringExecute(tm, h)
-	if err != nil {
+	buf := new(bytes.Buffer)
+	if err := tm.Execute(buf, h); err != nil {
 		t.Fatal(err)
 	}
-	if s != expected {
+	if s := buf.String(); s != expected {
 		t.Errorf("Execute with Encurl: %q (expected %q)", s, expected)
 	}
 }

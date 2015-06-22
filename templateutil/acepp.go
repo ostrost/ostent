@@ -3,6 +3,7 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	templatehtml "html/template"
@@ -109,11 +110,10 @@ func main() {
 		check(err)
 	}
 
-	m := templatepipe.Data(jscript)
-	s, err := templatefunc.StringExecute(jscript, m)
-	check(err)
-
-	check(WriteFile(outputFile, s))
+	data := templatepipe.Data(jscript)
+	buf := new(bytes.Buffer)
+	check(jscript.Execute(buf, data))
+	check(WriteFile(outputFile, buf.String()))
 }
 
 // LoadAce is ace.Load without dealing with includes and setting Base'd names for the templates.

@@ -1,13 +1,11 @@
 package templatefunc
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	templatehtml "html/template"
+	"html/template"
 	"net/url"
 	"strings"
-	templatetext "text/template"
 
 	"github.com/ostrost/ostent/client"
 	"github.com/ostrost/ostent/templateutil/templatepipe"
@@ -33,14 +31,14 @@ func forword() string {
 }
 
 // CloseTagFunc constructs a func returning close tag markup unless the tag is in noclose.
-func CloseTagFunc(noclose []string) func(string) templatehtml.HTML {
-	return func(tag string) templatehtml.HTML {
+func CloseTagFunc(noclose []string) func(string) template.HTML {
+	return func(tag string) template.HTML {
 		for _, nc := range noclose {
 			if tag == nc {
-				return templatehtml.HTML("")
+				return template.HTML("")
 			}
 		}
-		return templatehtml.HTML("</" + tag + ">")
+		return template.HTML("</" + tag + ">")
 	}
 }
 
@@ -75,7 +73,7 @@ func toggleHrefAttr(value interface{}) (interface{}, error) {
 			uncurl(value.(string))), nil
 	}
 	if bp, ok := value.(*client.BoolParam); ok {
-		return templatehtml.HTMLAttr(fmt.Sprintf(" href=\"%s\"", bp.EncodeToggle())), nil
+		return template.HTMLAttr(fmt.Sprintf(" href=\"%s\"", bp.EncodeToggle())), nil
 	}
 	return nil, CastError("*client.BoolParam")
 }
@@ -85,7 +83,7 @@ func formActionAttr(value interface{}) (interface{}, error) {
 		return fmt.Sprintf(" action={\"/form/\"+%s}", uncurl(value.(string))), nil
 	}
 	if query, ok := value.(*client.Query); ok {
-		return templatehtml.HTMLAttr(fmt.Sprintf(" action=\"/form/%s\"",
+		return template.HTMLAttr(fmt.Sprintf(" action=\"/form/%s\"",
 			url.QueryEscape(query.ValuesEncode(nil)))), nil
 	}
 	return nil, CastError("*client.Query")
@@ -98,7 +96,7 @@ func periodNameAttr(value interface{}) (interface{}, error) {
 		return fmt.Sprintf(" name=%q", pname), nil
 	}
 	if period, ok := value.(*client.PeriodParam); ok {
-		return templatehtml.HTMLAttr(fmt.Sprintf(" name=%q",
+		return template.HTMLAttr(fmt.Sprintf(" name=%q",
 			period.Pname)), nil
 	}
 	return nil, CastError("*client.PeriodParam")
@@ -111,9 +109,9 @@ func periodValueAttr(value interface{}) (interface{}, error) {
 	}
 	if period, ok := value.(*client.PeriodParam); ok {
 		if period.Input != "" {
-			return templatehtml.HTMLAttr(fmt.Sprintf(" value=\"%s\"", period.Input)), nil
+			return template.HTMLAttr(fmt.Sprintf(" value=\"%s\"", period.Input)), nil
 		}
-		return templatehtml.HTMLAttr(""), nil
+		return template.HTMLAttr(""), nil
 	}
 	return nil, CastError("*client.PeriodParam")
 }
@@ -128,34 +126,34 @@ func refreshClass(value interface{}, classes string) (interface{}, error) {
 		if period.InputErrd {
 			classes += " " + "has-warning"
 		}
-		return templatehtml.HTMLAttr(fmt.Sprintf(" %s=%q", classword(), classes)), nil
+		return template.HTMLAttr(fmt.Sprintf(" %s=%q", classword(), classes)), nil
 	}
 	return nil, CastError("*client.PeriodParam")
 }
 
-func ifDisabledAttr(value interface{}) (templatehtml.HTMLAttr, error) {
+func ifDisabledAttr(value interface{}) (template.HTMLAttr, error) {
 	if JSX {
-		return templatehtml.HTMLAttr(fmt.Sprintf("disabled={%s.Value ? \"disabled\" : \"\" }",
+		return template.HTMLAttr(fmt.Sprintf("disabled={%s.Value ? \"disabled\" : \"\" }",
 			uncurl(value.(string)))), nil
 	}
 	if bp, ok := value.(*client.BoolParam); ok {
 		if bp.Value {
-			return templatehtml.HTMLAttr("disabled=\"disabled\""), nil
+			return template.HTMLAttr("disabled=\"disabled\""), nil
 		}
-		return templatehtml.HTMLAttr(""), nil
+		return template.HTMLAttr(""), nil
 	}
-	return templatehtml.HTMLAttr(""), CastError("*client.BoolParam")
+	return template.HTMLAttr(""), CastError("*client.BoolParam")
 }
 
-func ifClassAttr(value interface{}, classes ...string) (templatehtml.HTMLAttr, error) {
+func ifClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
 	s, err := ifClass(value, classes...)
 	if err != nil {
-		return templatehtml.HTMLAttr(""), err
+		return template.HTMLAttr(""), err
 	}
 	if !JSX {
 		s = fmt.Sprintf("%q", s)
 	}
-	return templatehtml.HTMLAttr(fmt.Sprintf(" %s=%s", classword(), s)), nil
+	return template.HTMLAttr(fmt.Sprintf(" %s=%s", classword(), s)), nil
 }
 
 func ifClass(value interface{}, classes ...string) (string, error) {
@@ -256,24 +254,24 @@ func usepercent(val string) interface{} {
 	}
 	return struct {
 		Value     string
-		ClassAttr templatehtml.HTMLAttr
+		ClassAttr template.HTMLAttr
 	}{
 		Value:     val,
-		ClassAttr: templatehtml.HTMLAttr(ca),
+		ClassAttr: template.HTMLAttr(ca),
 	}
 }
 
-func key(prefix, val string) templatehtml.HTMLAttr {
+func key(prefix, val string) template.HTMLAttr {
 	if !JSX {
-		return templatehtml.HTMLAttr("")
+		return template.HTMLAttr("")
 	}
-	return templatehtml.HTMLAttr(fmt.Sprintf(" key={%q+%s}", prefix+"-", uncurl(val)))
+	return template.HTMLAttr(fmt.Sprintf(" key={%q+%s}", prefix+"-", uncurl(val)))
 }
 
 type Clipped struct {
-	IDAttr      templatehtml.HTMLAttr
-	ForAttr     templatehtml.HTMLAttr
-	MWStyleAttr templatehtml.HTMLAttr
+	IDAttr      template.HTMLAttr
+	ForAttr     template.HTMLAttr
+	MWStyleAttr template.HTMLAttr
 	Text        string
 }
 
@@ -292,48 +290,22 @@ func clip(width int, prefix, val string, rest ...string) (*Clipped, error) {
 		return nil, fmt.Errorf("clip expects either 5 or 6 arguments")
 	}
 	return &Clipped{
-		IDAttr:      templatehtml.HTMLAttr("id=" + key),
-		ForAttr:     templatehtml.HTMLAttr(forword() + "=" + key),
-		MWStyleAttr: templatehtml.HTMLAttr("style=" + mws),
+		IDAttr:      template.HTMLAttr("id=" + key),
+		ForAttr:     template.HTMLAttr(forword() + "=" + key),
+		MWStyleAttr: template.HTMLAttr("style=" + mws),
 		Text:        val,
 	}, nil
 }
 
-// SetKFunc constructs a func which
-// sets k key to templatepipe.Curly(string (n))
-// in passed interface{} (v) being a templatepipe.Hash.
-func SetKFunc(k string) func(interface{}, string) interface{} {
-	return func(v interface{}, n string) interface{} {
-		v.(templatepipe.Hash)[k] = templatepipe.Curly(n)
-		return v
-	}
-}
-
-// GetKFunc constructs a func which
-// gets, deletes and returns k key
-// in passed interface{} (v) being a templatepipe.Hash.
-func GetKFunc(k string) func(interface{}) interface{} {
-	return func(v interface{}) interface{} {
-		h, ok := v.(templatepipe.Hash)
-		if !ok {
-			return "" // empty pipeline, affects dispatch
-		}
-		n := h[k]
-		delete(h, k)
-		return n // may also be empty, affects dispatch
-	}
-}
-
 // Funcs features functions for templates. In use in acepp and templates.
-var Funcs = templatehtml.FuncMap{
+var Funcs = template.FuncMap{
 	"rowsset": func(interface{}) string { return "" }, // empty pipeline
 	// acepp overrides rowsset and adds setrows
 
-	"key":        key,
-	"clip":       clip,
-	"droplink":   droplink,
-	"usepercent": usepercent,
-
+	"key":             key,
+	"clip":            clip,
+	"droplink":        droplink,
+	"usepercent":      usepercent,
 	"ifClass":         ifClass,
 	"ifClassAttr":     ifClassAttr,
 	"ifDisabledAttr":  ifDisabledAttr,
@@ -352,20 +324,29 @@ var Funcs = templatehtml.FuncMap{
 	},
 }
 
-// StringExecuteHTML does t.Execute into string returned. Does not clone.
-func StringExecuteHTML(t *templatehtml.Template, data interface{}) (string, error) {
-	buf := new(bytes.Buffer)
-	if err := t.Execute(buf, data); err != nil {
-		return "", err
+// SetKFunc constructs a func which
+// sets k key to templatepipe.Curly(string (n))
+// in passed interface{} (v) being a templatepipe.Hash.
+// SetKFunc is used by acepp only.
+func SetKFunc(k string) func(interface{}, string) interface{} {
+	return func(v interface{}, n string) interface{} {
+		v.(templatepipe.Hash)[k] = templatepipe.Curly(n)
+		return v
 	}
-	return buf.String(), nil
 }
 
-// StringExecute does t.Execute into string returned. Does not clone.
-func StringExecute(t *templatetext.Template, data interface{}) (string, error) {
-	buf := new(bytes.Buffer)
-	if err := t.Execute(buf, data); err != nil {
-		return "", err
+// GetKFunc constructs a func which
+// gets, deletes and returns k key
+// in passed interface{} (v) being a templatepipe.Hash.
+// GetKFunc is used by acepp only.
+func GetKFunc(k string) func(interface{}) interface{} {
+	return func(v interface{}) interface{} {
+		h, ok := v.(templatepipe.Hash)
+		if !ok {
+			return "" // empty pipeline, affects dispatch
+		}
+		n := h[k]
+		delete(h, k)
+		return n // may also be empty, affects dispatch
 	}
-	return buf.String(), nil
 }

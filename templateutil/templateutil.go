@@ -92,7 +92,7 @@ func (l *LazyTemplate) BufferApply(data interface{}) (*bytes.Buffer, error) {
 	return l.ApplyTemplate(nil, data)
 }
 
-// ApplyTemplate is internal. Gets a the template, clones and calls BufferExecute.
+// ApplyTemplate is internal. Gets a the template, clones and executes.
 // getter is called after l.Init so it can rely on l.Template presence.
 func (l *LazyTemplate) ApplyTemplate(getter func() (*template.Template, string), data interface{}) (*bytes.Buffer, error) {
 	var clone *template.Template
@@ -118,16 +118,9 @@ func (l *LazyTemplate) ApplyTemplate(getter func() (*template.Template, string),
 	}(); err != nil {
 		return nil, err
 	}
-	return BufferExecute(clone, data)
-}
-
-// BufferExecute does t.Execute into Buffer returned. Does not clone.
-func BufferExecute(t *template.Template, data interface{}) (*bytes.Buffer, error) {
 	buf := new(bytes.Buffer)
-	if err := t.Execute(buf, data); err != nil {
-		return nil, err
-	}
-	return buf, nil
+	err := clone.Execute(buf, data)
+	return buf, err
 }
 
 // Response is there to .Apply (implicitly) and then .Send explicitly.
