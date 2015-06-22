@@ -69,11 +69,12 @@ func main() {
 		_, index, err := LoadAce(inputFile, definesFile, aceopts)
 		check(err)
 		text := Format(prettyprint, index.Tree.Root.String(), aceopts.NoCloseTagNames)
-		text += FormatSubtrees(prettyprint, index, aceopts)
+		text += FormatSubtrees(prettyprint, index, aceopts.NoCloseTagNames)
 		check(WriteFile(outputFile, text))
 		return
 	}
 
+	noclose := aceopts.NoCloseTagNames
 	aceopts.NoCloseTagNames = []string{}
 	aceopts.AttributeNameClass = "className"
 	aceopts.FuncMap = templatefunc.JSXFuncs{}.MakeMap()
@@ -82,7 +83,7 @@ func main() {
 	check(err)
 
 	if definesMode {
-		check(WriteFile(outputFile, FormatSubtrees(prettyprint, defines, aceopts)))
+		check(WriteFile(outputFile, FormatSubtrees(prettyprint, defines, noclose)))
 		return
 	}
 
@@ -98,7 +99,7 @@ func main() {
 	for _, t := range defines.Templates() {
 		name, tree := definesbase+t.Name(), t.Tree
 		if prettyprint {
-			text := Format(true, tree.Root.String(), aceopts.NoCloseTagNames)
+			text := Format(true, tree.Root.String(), noclose)
 			y, err := templatetext.New(name).Funcs(templatetext.FuncMap(aceopts.FuncMap)).Parse(text)
 			check(err)
 			tree = y.Tree
@@ -159,7 +160,7 @@ func ReadAce(filename string, opts *ace.Options) (*ace.File, error) {
 }
 
 // FormatSubtrees returns subtemplates trees forrmatted.
-func FormatSubtrees(prettyprint bool, tpl *templatehtml.Template, aceopts *ace.Options) (output string) {
+func FormatSubtrees(prettyprint bool, tpl *templatehtml.Template, noclose []string) (output string) {
 	var names []string
 	trees := map[string]*parse.Tree{}
 	for _, x := range tpl.Templates() {
@@ -172,7 +173,7 @@ func FormatSubtrees(prettyprint bool, tpl *templatehtml.Template, aceopts *ace.O
 	}
 	sort.Strings(names)
 	for _, name := range names {
-		output += fmt.Sprintf("{{/*\n*/}}{{define \"%s\"}}%s{{end}}", name, Format(prettyprint, trees[name].Root.String(), aceopts.NoCloseTagNames))
+		output += fmt.Sprintf("{{/*\n*/}}{{define \"%s\"}}%s{{end}}", name, Format(prettyprint, trees[name].Root.String(), noclose))
 	}
 	return output
 }
