@@ -65,8 +65,6 @@ func main() {
 		}
 	}
 	aceopts := ace.InitializeOptions(&ace.Options{FuncMap: templatefunc.Funcs})
-	aceopts.FuncMap["closeTag"] = templatefunc.CloseTagFunc(aceopts.NoCloseTagNames)
-
 	if !jscriptMode {
 		_, index, err := LoadAce(inputFile, definesFile, aceopts)
 		check(err)
@@ -78,8 +76,7 @@ func main() {
 
 	aceopts.NoCloseTagNames = []string{}
 	aceopts.AttributeNameClass = "className"
-	aceopts.FuncMap["closeTag"] = templatefunc.CloseTagFunc(nil)
-	templatefunc.JSX = true
+	aceopts.FuncMap = templatefunc.JSXFuncs{}.MakeMap()
 
 	definesbase, defines, err := LoadAce(definesFile, "", aceopts)
 	check(err)
@@ -89,13 +86,13 @@ func main() {
 		return
 	}
 
-	funcs := templatetext.FuncMap(templatefunc.Funcs)
+	funcs := aceopts.FuncMap
 	// override setrows & set the rowsset
 	funcs["setrows"] = templatefunc.SetKFunc(".OverrideRows")
 	funcs["rowsset"] = templatefunc.GetKFunc(".OverrideRows")
 
 	jscript, err := templatetext.New(Base(inputFile, aceopts)).
-		Funcs(funcs).ParseFiles(inputFile)
+		Funcs(templatetext.FuncMap(funcs)).ParseFiles(inputFile)
 	check(err)
 
 	for _, t := range defines.Templates() {
