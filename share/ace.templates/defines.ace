@@ -18,7 +18,7 @@
   | </div>
 
 = content define_ifbytes_rows
-  {{with .OVERRIDE}}{{.}}{{else}}
+  {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IFbytes.List}}
       | <tr{{key "ifbytes-rowby-name" $if.Name}}>
       td {{template "defines::define_clip" (clip 12 "if-bytes-name"   $if.Name)}}
@@ -31,7 +31,7 @@
   {{end}}
 
 = content define_iferrors_rows
-  {{with .OVERRIDE}}{{.}}{{else}}
+  {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IFerrors.List}}
       | <tr{{key "iferrors-rowby-name" $if.Name}}>
       td {{template "defines::define_clip" (clip 12 "if-errors-name"  $if.Name)}}
@@ -44,7 +44,7 @@
   {{end}}
 
 = content define_ifpackets_rows
-  {{with .OVERRIDE}}{{.}}{{else}}
+  {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IFpackets.List}}
       | <tr{{key "ifpackets-rowby-name" $if.Name}}>
       td {{template "defines::define_clip" (clip 12 "if-packets-name" $if.Name)}}
@@ -113,7 +113,7 @@
       {{template "defines::define_iferrors_rows" .}}
 
 = content define_dfbytes_rows
-  {{with .OVERRIDE}}{{.}}{{else}}
+  {{with rowsset .}}{{.}}{{else}}
     {{range $disk := .Data.DFbytes.List}}
       | <tr{{key "dfbytes-rowby-dirname" $disk.DirName}}>
       td.nowrap {{template "defines::define_clip" (clip 12 "df-bytes-devname"  $disk.DevName)}}
@@ -127,7 +127,7 @@
   {{end}}
 
 = content define_dfinodes_rows
-  {{with .OVERRIDE}}{{.}}{{else}}
+  {{with rowsset .}}{{.}}{{else}}
     {{range $disk := .Data.DFinodes.List}}
       | <tr{{key "dfinodes-rowby-dirname" $disk.DirName}}>
       td.nowrap {{template "defines::define_clip" (clip 12 "df-inodes-devname" $disk.DevName)}}
@@ -168,7 +168,7 @@
       {{template "defines::define_dfinodes_rows" .}}
 
 = content define_memrows
-  {{with .OVERRIDE}}{{.}}{{else}}
+  {{with rowsset .}}{{.}}{{else}}
     {{range $i, $mem := .Data.MEM.List}}
       | <tr{{key "mem-rowby-kind" $mem.Kind}}>
       td {{$mem.Kind}}
@@ -217,7 +217,7 @@
       | </div>
 
 = content define_cpurows
-  {{with .OVERRIDE}}{{.}}{{else}}
+  {{with rowsset .}}{{.}}{{else}}
     {{range $i, $core := .Data.CPU.List}}
       | <tr{{key "cpu-rowby-N" $core.N}}>
       td.text-right.nowrap {{$core.N}}
@@ -244,7 +244,7 @@
       {{template "defines::define_cpurows" .}}
 
 = content define_psrows
-  {{with .OVERRIDE}}{{.}}{{else}}
+  {{with rowsset .}}{{.}}{{else}}
     {{range $proc := .Data.PStable.List}}
       | <tr{{key "ps-rowby-pid" $proc.PIDstring}}>
       td.text-right  {{$proc.PID}}
@@ -281,7 +281,7 @@
     td colspan=5 {{.Data.VagrantError}}
 
 = content define_vgswitch
-  {{with .OVERRIDE}}{{.}}{{else}}
+  {{with rowsset .}}{{.}}{{else}}
     {{if eq "true" (json .Data.VagrantErrord)}}
       {{template "defines::define_vgerror" .}}
     {{else}}

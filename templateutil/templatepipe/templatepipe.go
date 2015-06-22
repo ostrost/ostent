@@ -15,7 +15,7 @@ func Data(root *template.Template) interface{} {
 	for _, node := range root.Tree.Root.Nodes {
 		DataNode(root, node, &data, vars, nil)
 	}
-	return Mkmap(data, 0)
+	return Encurl(data, 0)
 }
 
 func DataNode(root *template.Template, node parse.Node, data *Dotted, vars map[string][]string, prefixwords []string) {
@@ -265,7 +265,8 @@ func Curly(s string) string {
 	return "{" + s + "}"
 }
 
-func Mkmap(top Dotted, level int) interface{} {
+// Encurl returns either a Hash or a string.
+func Encurl(top Dotted, level int) interface{} {
 	if len(top.Leaves) == 0 {
 		return Curly(top.Notation())
 	}
@@ -282,28 +283,8 @@ func Mkmap(top Dotted, level int) interface{} {
 				h[l.Name] = []string{}
 			}
 		} else {
-			h[l.Name] = Mkmap(*l, level+1)
+			h[l.Name] = Encurl(*l, level+1)
 		}
 	}
 	return h
 }
-
-/* func string_hash(h interface{}) string {
-	return hindent(h.(Hash), 0)
-}
-
-func hindent(h Hash, level int) string {
-	s := ""
-	for k, v := range h {
-		s += strings.Repeat(" ", level) + "(" + k + ")\n"
-		vv, ok := v.(Hash)
-		if ok && len(vv) > 0 {
-			level += 2
-			s += hindent(vv, level)
-			level -= 2
-		} else {
-			s += strings.Repeat(" ", level + 2) + fmt.Sprint(v) + "\n"
-		}
-	}
-	return s
-} // */

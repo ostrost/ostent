@@ -7,58 +7,59 @@ import (
 	"github.com/ostrost/ostent/templateutil/templatepipe"
 )
 
-func ExecutewDottedTest(t *testing.T, tm *template.Template, expected string) {
+func ExecuteWithHashTest(t *testing.T, tm *template.Template, expected string) {
 	d := templatepipe.Dotted{}
-	d.Append([]string{"a"}, nil) // non-string result from templatepipe.Mkmap
-	h := templatepipe.Mkmap(d, 0)
+	d.Append([]string{"a"}, nil) // non-string result from templatepipe.Encurl
+	h := templatepipe.Encurl(d, 0)
 	if _, ok := h.(string); ok {
-		t.Errorf("Mkmap expected to return non-string on %+v input", d)
+		t.Errorf("Encurl expected to return non-string on %+v input", d)
 	}
 	s, err := StringExecute(tm, h)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if s != expected {
-		t.Errorf("Execute with Mkmap: %q (expected %q)", s, expected)
+		t.Errorf("Execute with Encurl: %q (expected %q)", s, expected)
 	}
 }
 
-func TestDot(t *testing.T) {
-	define := `[[define "define_withdot"]][[with .OVERRIDE]][[.]][[else]][[end]][[end]]`
-	text1 := define + `[[template "define_withdot" .]]`
-	text2 := define + `[[template "define_withdot" (dot . "rows")]]`
-	df := template.FuncMap{"dot": dot}
-	tm1, err1 := template.New("withdot1").Funcs(df).Delims("[[", "]]").Parse(text1)
-	tm2, err2 := template.New("withdot2").Funcs(df).Delims("[[", "]]").Parse(text2)
+func TestKFuncs(t *testing.T) {
+	define := `{{define "defines::define_table"}}{{with columnsset .}}{{.}}{{else}}no columns{{end}}{{end}}`
+	text1 := define + `{{template "defines::define_table" .}}`
+	text2 := define + `{{template "defines::define_table" setcolumns . "columns"}}`
+	fs := template.FuncMap{
+		"columnsset": GetKFunc(".OverrideColumns"),
+		"setcolumns": SetKFunc(".OverrideColumns"),
+	}
+	tm1, err1 := template.New("withdot1").Funcs(fs).Parse(text1)
+	tm2, err2 := template.New("withdot2").Funcs(fs).Parse(text2)
 	if err1 != nil {
 		t.Fatal(err1)
 	}
 	if err2 != nil {
 		t.Fatal(err2)
 	}
-	ExecutewDottedTest(t, tm1, "")
-	ExecutewDottedTest(t, tm2, "{rows}")
+	ExecuteWithHashTest(t, tm1, "no columns")
+	ExecuteWithHashTest(t, tm2, "{columns}")
 }
 
-func DotValueText(t *testing.T, in, expected string) {
-	h := dot(templatepipe.Hash{}, in)
-	d, ok := h["OVERRIDE"]
+func SetKText(t *testing.T, in, expected string) {
+	override := ".Override"
+	h := SetKFunc(override)(templatepipe.Hash{}, in)
+	d, ok := h.(templatepipe.Hash)[override]
 	if !ok {
-		t.Errorf("Getting \"dot\" from `dot' result is not okd.")
+		t.Errorf("SetK[%q] is not okd.", override)
 	}
-	dv, ok := d.(dotValue)
+	dv, ok := d.(string)
 	if !ok {
-		t.Error("Cannot cast to dotValue")
+		t.Error("Cannot cast to string")
 	}
-	if s := dv.String(); s != expected {
-		t.Errorf("dotValue mismatch: %q (expected %q)", s, expected)
-	}
-	if v, ok := (*dv.hashp)["OVERRIDE"]; ok || v != nil {
-		t.Errorf("Getting \"dot\" from `dot' result is okd: %+v.", v)
+	if dv != expected {
+		t.Errorf("SetK[%q] mismatch: %q (expected %q)", override, dv, expected)
 	}
 }
 
-func TestDotValue(t *testing.T) {
-	DotValueText(t, "KEY", "{KEY}")
-	DotValueText(t, "aHTML", "<span dangerouslySetInnerHTML={{__html: aHTML}} />")
+func TestSetK(t *testing.T) {
+	SetKText(t, "KEY", "{KEY}")
+	SetKText(t, "aHTML", "<span dangerouslySetInnerHTML={{__html: aHTML}} />")
 }

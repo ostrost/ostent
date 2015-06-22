@@ -302,28 +302,36 @@ func clip(width int, prefix, val string, rest ...string) (*Clipped, error) {
 	}, nil
 }
 
-type dotValue struct {
-	s     string
-	hashp *templatepipe.Hash
+// SetKFunc constructs a func which
+// sets k key to templatepipe.Curly(string (n))
+// in passed interface{} (v) being a templatepipe.Hash.
+func SetKFunc(k string) func(interface{}, string) interface{} {
+	return func(v interface{}, n string) interface{} {
+		v.(templatepipe.Hash)[k] = templatepipe.Curly(n)
+		return v
+	}
 }
 
-// func (dv dotValue) GoString() string { return dv.GoString() } // WTF?
-
-func (dv dotValue) String() string {
-	v := dv.s
-	delete(*dv.hashp, "OVERRIDE")
-	return v
-}
-
-func dot(v interface{}, key string) templatepipe.Hash {
-	h := v.(templatepipe.Hash)
-	h["OVERRIDE"] = dotValue{s: templatepipe.Curly(key), hashp: &h}
-	return h
+// GetKFunc constructs a func which
+// gets, deletes and returns k key
+// in passed interface{} (v) being a templatepipe.Hash.
+func GetKFunc(k string) func(interface{}) interface{} {
+	return func(v interface{}) interface{} {
+		h, ok := v.(templatepipe.Hash)
+		if !ok {
+			return "" // empty pipeline, affects dispatch
+		}
+		n := h[k]
+		delete(h, k)
+		return n // may also be empty, affects dispatch
+	}
 }
 
 // AceFuncs features functions for templates. In use in acepp and templates.
 var AceFuncs = templatehtml.FuncMap{
-	"dot":        dot,
+	"rowsset": GetKFunc(".OverrideRows"),
+	"setrows": SetKFunc(".OverrideRows"),
+
 	"key":        key,
 	"clip":       clip,
 	"droplink":   droplink,

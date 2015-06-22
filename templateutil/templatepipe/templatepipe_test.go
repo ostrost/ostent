@@ -31,7 +31,7 @@ func TestDotted(t *testing.T) {
 	}
 }
 
-func TestMkmap(t *testing.T) {
+func TestEncurl(t *testing.T) {
 	words := strings.Split("a.b.c", ".")
 	d := Dotted{}
 	d.Append(words, nil)
@@ -49,10 +49,10 @@ func TestMkmap(t *testing.T) {
 		l2.Ranged = true
 	}
 
-	v := Mkmap(d, -1)
+	v := Encurl(d, -1)
 	c := v.(Hash)["a"].(Hash)["b"].(Hash)["c"].([]map[string]string)[0]
 	if expected := "{DECL.z}"; c["z"] != expected {
-		t.Errorf("Mkmap result mismatch: %q (expected %q)", c["z"], expected)
+		t.Errorf("Encurl result mismatch: %q (expected %q)", c["z"], expected)
 	}
 	if z := v.(Hash)["a"].(Hash)["b"].(Hash)["z"].([]string); len(z) != 0 {
 		t.Errorf("z is expected to be empty: %+v\n", z)
