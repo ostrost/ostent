@@ -904,7 +904,6 @@ func index(taggedbin bool, template *templateutil.LazyTemplate, minperiod flags.
 		return
 	}
 	response := template.Response(w, struct {
-		OVERRIDE  string // MUST HAVE, EMPTY
 		TAGGEDbin bool
 		Data      IndexData
 	}{
