@@ -2,7 +2,7 @@
   | <span {{.ClassAttr}}>{{.Value}}%</span>
 
 = content define_clip
-  | <input {{.IDAttr}}  {{class}}="collapse-checkbox" type="checkbox" aria-hidden="true" hidden>{{closeTag "input"}}
+  | <input {{.IDAttr}}  {{class}}="collapse-checkbox" type="checkbox" aria-hidden="true" hidden>{{jsxClose "input"}}
   | <label {{.ForAttr}} {{class}}="clip" {{.MWStyleAttr}}>{{.Text}}</label>
 
 = content refresh
@@ -14,7 +14,7 @@
 = content define_refresh
   | <div {{refreshClass . "input-group input-group-sm refresh-group"}}>
   span.input-group-addon Refresh
-  | <input {{class}}="form-control refresh-input" type="text" placeholder={{.Placeholder}} {{periodNameAttr .}} {{periodValueAttr .}}>{{closeTag "input"}}
+  | <input {{class}}="form-control refresh-input" type="text" placeholder={{.Placeholder}} {{periodNameAttr .}} {{periodValueAttr .}}>{{jsxClose "input"}}
   | </div>
 
 = content define_ifbytes_rows

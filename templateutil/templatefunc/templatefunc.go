@@ -23,36 +23,11 @@ func (f JSXFuncs) forWord() string { return "htmlFor" } // f is unused
 // forWord returns "for".
 func (f HTMLFuncs) forWord() string { return "for" } // f is unused
 
-// CloseTagFunc constructs a func returning close tag markup unless the tag is in noclose.
-func CloseTagFunc(noclose []string) func(string) template.HTML {
-	return func(tag string) template.HTML {
-		for _, nc := range noclose {
-			if tag == nc {
-				return template.HTML("")
-			}
-		}
-		return template.HTML("</" + tag + ">")
-	}
-}
+// jsxClose returns close tag markup as template.HTML.
+func (f JSXFuncs) jsxClose(tag string) template.HTML { return template.HTML("</" + tag + ">") } // f is unused
 
-// closeTagFunc constructs a func returning close tag markup.
-func (f JSXFuncs) closeTagFunc() func(string) template.HTML {
-	// f is unused
-	return CloseTagFunc(nil)
-}
-
-// closeTagFunc constructs a func returning close tag markup.
-func (f HTMLFuncs) closeTagFunc() func(string) template.HTML {
-	// f is unused
-	return CloseTagFunc([]string{ // same set as in github.com/yosssi/ace
-		"br",
-		"hr",
-		"img",
-		"input",
-		"link",
-		"meta",
-	})
-}
+// jsxClose returns empty template.HTML.
+func (f HTMLFuncs) jsxClose(string) template.HTML { return template.HTML("") } // f is unused
 
 func (f JSXFuncs) toggleHrefAttr(value interface{}) (interface{}, error) {
 	// f is unused
@@ -350,7 +325,7 @@ func MakeMap(f Functor) template.FuncMap {
 		"periodNameAttr":  f.periodNameAttr,
 		"periodValueAttr": f.periodValueAttr,
 		"refreshClass":    f.refreshClass,
-		"closeTag":        f.closeTagFunc(),
+		"jsxClose":        f.jsxClose,
 		"class":           f.classWord,
 		"for":             f.forWord,
 
@@ -378,7 +353,7 @@ type Functor interface {
 	periodNameAttr(interface{}) (interface{}, error)
 	periodValueAttr(interface{}) (interface{}, error)
 	refreshClass(interface{}, string) (interface{}, error)
-	closeTagFunc() func(string) template.HTML
+	jsxClose(string) template.HTML
 	classWord() string
 	forWord() string
 }

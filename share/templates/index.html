@@ -344,7 +344,7 @@
   ></div
 >{{end}}{{/*
 */}}{{define "defines::define_clip"}}<input {{.IDAttr}}  {{class}}="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
->{{closeTag "input"}}<label {{.ForAttr}} {{class}}="clip" {{.MWStyleAttr}}
+>{{jsxClose "input"}}<label {{.ForAttr}} {{class}}="clip" {{.MWStyleAttr}}
   >{{.Text}}</label
 >{{end}}{{/*
 */}}{{define "defines::define_cpurows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $core := .Data.CPU.List}}<tr{{key "cpu-rowby-N" $core.N}}
@@ -637,7 +637,7 @@
   ><span class="input-group-addon"
     >Refresh</span
   ><input {{class}}="form-control refresh-input" type="text" placeholder={{.Placeholder}} {{periodNameAttr .}} {{periodValueAttr .}}
-  >{{closeTag "input"}}</div
+  >{{jsxClose "input"}}</div
 >{{end}}{{/*
 */}}{{define "defines::define_usepercent"}}<span {{.ClassAttr}}
   >{{.Value}}%</span
