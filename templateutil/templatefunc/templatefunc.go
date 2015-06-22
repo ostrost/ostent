@@ -56,16 +56,13 @@ func DotSplit(s string) (string, string) {
 	return s[:i], s[i+1:]
 }
 
-// DotSplitHash returns DotSplit of first (in no particular order) value from i casted to templatepipe.Hash.
-// TODO move back to templatepipe, cut the traversing part (Mkmap, Data, DataNode) into separate package.
-func DotSplitHash(i interface{}) (string, string) {
-	var curled string
-	for _, v := range i.(templatepipe.Hash) {
-		curled = v.(string)
-		break
-		// First (no particular order) value is fine.
+// DotSplitHash returns DotSplit of first (in no particular order)
+// value from value being a templatepipe.Hash.
+func DotSplitHash(value interface{}) (string, string) {
+	for _, v := range value.(templatepipe.Hash) {
+		return DotSplit(uncurl(v.(string)))
 	}
-	return DotSplit(uncurl(curled))
+	return "", ""
 }
 
 func CastError(notype string) error {
@@ -327,10 +324,10 @@ func GetKFunc(k string) func(interface{}) interface{} {
 	}
 }
 
-// AceFuncs features functions for templates. In use in acepp and templates.
-var AceFuncs = templatehtml.FuncMap{
-	"rowsset": GetKFunc(".OverrideRows"),
-	"setrows": SetKFunc(".OverrideRows"),
+// Funcs features functions for templates. In use in acepp and templates.
+var Funcs = templatehtml.FuncMap{
+	"rowsset": func(interface{}) string { return "" }, // empty pipeline
+	// acepp overrides rowsset and adds setrows
 
 	"key":        key,
 	"clip":       clip,

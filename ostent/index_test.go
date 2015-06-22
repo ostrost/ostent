@@ -31,12 +31,11 @@ func TestIndexDatatype(t *testing.T) {
 	testIndexDatatype(t, reflect.TypeOf(IndexData{}))
 } // */
 
-func execute_template(IN string, DATA interface{}) (string, error) {
+func executeTemplate(text string, data interface{}) (string, error) {
 	buf := new(bytes.Buffer)
-	if err := template.Must(template.New("tpl").Funcs(templatefunc.AceFuncs).Parse(IN)).Execute(buf, DATA); err != nil {
-		return "", err
-	}
-	return buf.String(), nil
+	err := template.Must(template.New("tpl").Funcs(templatefunc.Funcs).Parse(text)).
+		Execute(buf, data)
+	return buf.String(), err
 }
 
 func Test_templatecomparison(t *testing.T) {
@@ -88,12 +87,12 @@ func Test_templatecomparison(t *testing.T) {
 		{`{{json .This.That}}`, struct{ This that }{that{newbool(false)}}, "false"},
 		{`{{json .This.That}}`, struct{ This that }{that{}}, "null"}, // NB
 	} {
-		cmp, err := execute_template(v.in, v.data)
+		cmp, err := executeTemplate(v.in, v.data)
 		if err != nil {
 			t.Error(err)
 		}
 		if cmp != v.cmp {
-			t.Errorf("[%d] Mismatch: execute_template(, %+v) == %v != %v\n", i, v.data, v.cmp, cmp)
+			t.Errorf("[%d] Mismatch: executeTemplate(, %+v) == %v != %v\n", i, v.data, v.cmp, cmp)
 		}
 	}
 }

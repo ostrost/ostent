@@ -7,7 +7,7 @@ import (
 
 var (
 	// IndexTemplate is a templateutil.LazyTemplate of "index.html" asset.
-	IndexTemplate = templateutil.NewLT(Asset, "index.html", templatefunc.AceFuncs)
+	IndexTemplate = templateutil.NewLT(Asset, "index.html", templatefunc.Funcs)
 )
 
 // InitTemplates inits must-have templates and signals done when finished.
