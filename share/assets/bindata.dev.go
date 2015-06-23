@@ -7,7 +7,7 @@
 // js/src/gen/jscript.js
 // js/src/milk/build.js
 // js/src/milk/index.js
-// js/src/vendor/bootstrap/3.3.4-collapse/bootstrap.min.js
+// js/src/vendor/bootstrap/3.3.5-collapse/bootstrap.min.js
 // js/src/vendor/headroom/0.7.0/headroom.min.js
 // js/src/vendor/jquery/2.1.4/jquery-2.1.4.min.js
 // js/src/vendor/react/0.13.3/react.min.js
@@ -168,10 +168,10 @@ func jsSrcMilkIndexJs() (*asset, error) {
 	return a, err
 }
 
-// jsSrcVendorBootstrap334CollapseBootstrapMinJs reads file data from disk. It returns an error on failure.
-func jsSrcVendorBootstrap334CollapseBootstrapMinJs() (*asset, error) {
-	path := filepath.Join(rootDir, "js/src/vendor/bootstrap/3.3.4-collapse/bootstrap.min.js")
-	name := "js/src/vendor/bootstrap/3.3.4-collapse/bootstrap.min.js"
+// jsSrcVendorBootstrap335CollapseBootstrapMinJs reads file data from disk. It returns an error on failure.
+func jsSrcVendorBootstrap335CollapseBootstrapMinJs() (*asset, error) {
+	path := filepath.Join(rootDir, "js/src/vendor/bootstrap/3.3.5-collapse/bootstrap.min.js")
+	name := "js/src/vendor/bootstrap/3.3.5-collapse/bootstrap.min.js"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
@@ -335,7 +335,7 @@ var _bindata = map[string]func() (*asset, error){
 	"js/src/gen/jscript.js": jsSrcGenJscriptJs,
 	"js/src/milk/build.js": jsSrcMilkBuildJs,
 	"js/src/milk/index.js": jsSrcMilkIndexJs,
-	"js/src/vendor/bootstrap/3.3.4-collapse/bootstrap.min.js": jsSrcVendorBootstrap334CollapseBootstrapMinJs,
+	"js/src/vendor/bootstrap/3.3.5-collapse/bootstrap.min.js": jsSrcVendorBootstrap335CollapseBootstrapMinJs,
 	"js/src/vendor/headroom/0.7.0/headroom.min.js": jsSrcVendorHeadroom070HeadroomMinJs,
 	"js/src/vendor/jquery/2.1.4/jquery-2.1.4.min.js": jsSrcVendorJquery214Jquery214MinJs,
 	"js/src/vendor/react/0.13.3/react.min.js": jsSrcVendorReact0133ReactMinJs,
@@ -411,8 +411,8 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			}},
 			"vendor": &bintree{nil, map[string]*bintree{
 				"bootstrap": &bintree{nil, map[string]*bintree{
-					"3.3.4-collapse": &bintree{nil, map[string]*bintree{
-						"bootstrap.min.js": &bintree{jsSrcVendorBootstrap334CollapseBootstrapMinJs, map[string]*bintree{
+					"3.3.5-collapse": &bintree{nil, map[string]*bintree{
+						"bootstrap.min.js": &bintree{jsSrcVendorBootstrap335CollapseBootstrapMinJs, map[string]*bintree{
 						}},
 					}},
 				}},
