@@ -3,7 +3,7 @@
 // css/index.css
 // css/index.css.map
 // favicon.png
-// js/requirejs/2.1.17/require.min.js
+// js/requirejs/2.1.18/require.min.js
 // js/src/gen/jscript.js
 // js/src/milk/build.js
 // js/src/milk/index.js
@@ -96,10 +96,10 @@ func faviconPng() (*asset, error) {
 	return a, err
 }
 
-// jsRequirejs2117RequireMinJs reads file data from disk. It returns an error on failure.
-func jsRequirejs2117RequireMinJs() (*asset, error) {
-	path := filepath.Join(rootDir, "js/requirejs/2.1.17/require.min.js")
-	name := "js/requirejs/2.1.17/require.min.js"
+// jsRequirejs2118RequireMinJs reads file data from disk. It returns an error on failure.
+func jsRequirejs2118RequireMinJs() (*asset, error) {
+	path := filepath.Join(rootDir, "js/requirejs/2.1.18/require.min.js")
+	name := "js/requirejs/2.1.18/require.min.js"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
@@ -331,7 +331,7 @@ var _bindata = map[string]func() (*asset, error){
 	"css/index.css": cssIndexCss,
 	"css/index.css.map": cssIndexCssMap,
 	"favicon.png": faviconPng,
-	"js/requirejs/2.1.17/require.min.js": jsRequirejs2117RequireMinJs,
+	"js/requirejs/2.1.18/require.min.js": jsRequirejs2118RequireMinJs,
 	"js/src/gen/jscript.js": jsSrcGenJscriptJs,
 	"js/src/milk/build.js": jsSrcMilkBuildJs,
 	"js/src/milk/index.js": jsSrcMilkIndexJs,
@@ -393,8 +393,8 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	}},
 	"js": &bintree{nil, map[string]*bintree{
 		"requirejs": &bintree{nil, map[string]*bintree{
-			"2.1.17": &bintree{nil, map[string]*bintree{
-				"require.min.js": &bintree{jsRequirejs2117RequireMinJs, map[string]*bintree{
+			"2.1.18": &bintree{nil, map[string]*bintree{
+				"require.min.js": &bintree{jsRequirejs2118RequireMinJs, map[string]*bintree{
 				}},
 			}},
 		}},
