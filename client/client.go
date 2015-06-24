@@ -54,7 +54,6 @@ func (c Client) Expired() bool {
 
 func (c *Client) refreshes() []*Refresh {
 	return []*Refresh{
-		c.RefreshMME, // Used to be RefreshMEM, soon to be gone.
 		c.RefreshIF,
 		c.RefreshCPU,
 		c.RefreshDF,
@@ -115,7 +114,6 @@ type Client struct {
 	ExpandtextCPU *string `json:",omitempty"`
 	ExpandtextDF  *string `json:",omitempty"`
 
-	RefreshMME *Refresh `json:",omitempty"` // Used to be RefreshMEM, soon to be gone.
 	RefreshIF  *Refresh `json:",omitempty"`
 	RefreshCPU *Refresh `json:",omitempty"`
 	RefreshDF  *Refresh `json:",omitempty"`
@@ -277,7 +275,6 @@ func NewClient(minperiod flags.Period) Client {
 	cs.HideconfigVG = newhc()
 
 	newref := NewRefreshFunc(minperiod)
-	cs.RefreshMME = newref() // Used to be RefreshMEM, soon to be gone.
 	cs.RefreshIF = newref()
 	cs.RefreshCPU = newref()
 	cs.RefreshDF = newref()
