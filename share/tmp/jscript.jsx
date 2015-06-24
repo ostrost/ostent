@@ -16,7 +16,7 @@ define(function(require) {
     >{$mem.Total}</td
   ></tr
 >); },
-		blockmem:        function(Data, rows)  { return (<div className="panel1"
+		panelmem:        function(Data, rows)  { return (<div className="panel1"
   ><label className="panel-heading btn-block"
     ><a  className={Data.Links.Params.BOOL.showconfigmem.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.showconfigmem.Href} onClick={this.handleClick}
       >Memory</a
@@ -378,7 +378,39 @@ define(function(require) {
 ></td
   ></tr
 >); },
-		ps_table:        function(Data, rows)  { return (<table className="table2 stripe-table"
+		panelps:         function(Data, rows)  { return (<div className="panel1"
+  ><label className="panel-heading btn-block"
+    ><a  className={Data.Links.Params.BOOL.showconfigps.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.showconfigps.Href} onClick={this.handleClick}
+      >Processes</a
+    ></label
+  ><div
+    ><div id="psconfig"  className={Data.Links.Params.BOOL.showconfigps.Value ? "" : "collapse-hidden" }
+      ><form className="inline-form border-bottom-form text-right"  action={"/form/"+Data.Links.Params.Query}
+        ><input className="collapse-hidden" type="submit"
+        ></input
+      ><div className="form-group-padded"
+        ><div  className={"input-group input-group-sm refresh-group" + (Data.Links.Params.PERIOD.refreshps.InputErrd ? " has-warning" : "")}
+  ><span className="input-group-addon"
+    >Refresh</span
+  ><input className="form-control refresh-input" type="text" placeholder={Data.Links.Params.PERIOD.refreshps.Placeholder}  name="refreshps"  onChange={this.handleChange} value={Data.Links.Params.PERIOD.refreshps.Input}
+  ></input></div
+></div
+      ><div className="form-group-padded"
+        ><div className="btn-group btn-group-sm" role="group"
+          ><a  className={Data.Links.Params.BOOL.hideps.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Links.Params.BOOL.hideps.Href} onClick={this.handleClick}
+            >Hidden</a
+          ><a  className={Data.PStable.PSnotDecreasable ? "btn btn-default disabled" : "btn btn-default " }  href={Data.Links.Params.COUNT.psn.LessHref} onClick={this.handleClick}
+            >-</a
+          ><a  className={Data.PStable.PSnotExpandable ? "btn btn-default disabled" : "btn btn-default " }  href={Data.Links.Params.COUNT.psn.MoreHref} onClick={this.handleClick}
+            >{Data.PStable.PSplusText}</a
+          ></div
+        ></div
+      ></form
+    ></div
+  ></div
+><div
+  ><div  className={Data.Links.Params.BOOL.hideps.Value ? "collapse-hidden" : "" }
+    ><table className="table2 stripe-table"
   ><thead
     ><tr
       ><th className="header text-right"
@@ -440,6 +472,9 @@ define(function(require) {
   ><tbody
     >{rows}</tbody
   ></table
+></div
+  ></div
+></div
 >); },
 
 		vagrant_rows:    function(Data, $mach) { return (<tr key={"vagrant-rowby-uuid-"+$mach.UUID}

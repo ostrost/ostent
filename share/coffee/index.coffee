@@ -180,7 +180,7 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
     }
     render: () ->
       Data = @state
-      return jscript.blockmem.bind(this)(Data, (jscript.mem_rows(Data, $mem
+      return jscript.panelmem.bind(this)(Data, (jscript.mem_rows(Data, $mem
       ) for $mem in Data?.MEM?.List ? []))
     handleChange: (e) ->
       href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1)
@@ -210,8 +210,21 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
     }
     render: () ->
       Data = @state
-      return jscript.ps_table(Data, (jscript.ps_rows(Data, $proc
+      return jscript.panelps.bind(this)(Data, (jscript.ps_rows(Data, $proc
       ) for $proc in Data?.PStable?.List ? []))
+    handleChange: (e) ->
+      href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1)
+      updates.sendSearch(href)
+      e.stopPropagation() # preserves checkbox/radio
+      e.preventDefault()  # checked/selected state
+      return undefined
+    handleClick: (e) ->
+      href = e.target.getAttribute('href')
+      history.pushState({}, '', href)
+      updates.sendSearch(href)
+      e.stopPropagation() # preserves checkbox/radio
+      e.preventDefault()  # checked/selected state
+      return undefined
 
   @VGtableCLASS = React.createClass
     getInitialState: () -> { # a global Data:
@@ -404,12 +417,12 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
     hideconfigif  = HideClass.component({xkey: 'HideconfigIF',  $el: $('[for-sel="#ifconfig"]'),  reverseActive: true})
     hideconfigcpu = HideClass.component({xkey: 'HideconfigCPU', $el: $('[for-sel="#cpuconfig"]'), reverseActive: true})
     hideconfigdf  = HideClass.component({xkey: 'HideconfigDF',  $el: $('[for-sel="#dfconfig"]'),  reverseActive: true})
-    hideconfigps  = HideClass.component({xkey: 'HideconfigPS',  $el: $('[for-sel="#psconfig"]'),  reverseActive: true})
+  # hideconfigps  = HideClass.component({xkey: 'HideconfigPS',  $el: $('[for-sel="#psconfig"]'),  reverseActive: true})
     hideconfigvg  = HideClass.component({xkey: 'HideconfigVG',  $el: $('[for-sel="#vgconfig"]'),  reverseActive: true})
 
   # hideram = HideClass.component({xkey: 'HideRAM', $el: $('[for-sel="#mem"]')})
     hidecpu = HideClass.component({xkey: 'HideCPU', $el: $('[for-sel="#cpu"]')})
-    hideps  = HideClass.component({xkey: 'HidePS',  $el: $('[for-sel="#ps"]')})
+  # hideps  = HideClass.component({xkey: 'HidePS',  $el: $('[for-sel="#ps"]')})
     hidevg  = HideClass.component({xkey: 'HideVG',  $el: $('[for-sel="#vg"]')})
 
     ip       = React.render(React.createElement(NewTextCLASS((data) -> data?.IP       )), $('#ip'      )   .get(0)) if data?.IP?
@@ -420,9 +433,9 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
     iftitle  = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.TabIF?.Title)), $('a[href="#if"]').get(0))
     dftitle  = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.TabDF?.Title)), $('a[href="#df"]').get(0))
 
-    psplus   = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.PSplusText)), $('label.more[href="#psmore"]').get(0))
-    psmore   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: true,  Khide: 'HidePS', Kable: 'PSnotExpandable',  $button_el: $('label.more[href="#psmore"]')})
-    psless   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: false, Khide: 'HidePS', Kable: 'PSnotDecreasable', $button_el: $('label.less[href="#psless"]')})
+  # psplus   = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.PSplusText)), $('label.more[href="#psmore"]').get(0))
+  # psmore   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: true,  Khide: 'HidePS', Kable: 'PSnotExpandable',  $button_el: $('label.more[href="#psmore"]')})
+  # psless   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: false, Khide: 'HidePS', Kable: 'PSnotDecreasable', $button_el: $('label.less[href="#psless"]')})
 
   # hideswap = ButtonClass.component({Khide: 'HideRAM', Ksend: 'HideSWAP', $button_el: $('label[href="#hideswap"]')})
 
@@ -438,7 +451,7 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
     refresh_if  = RefreshInputClass.component({K: 'RefreshIF',  Kerror: 'RefreshErrorIF',  Ksig: 'RefreshSignalIF',  sel: $('#ifconfig')})
     refresh_cpu = RefreshInputClass.component({K: 'RefreshCPU', Kerror: 'RefreshErrorCPU', Ksig: 'RefreshSignalCPU', sel: $('#cpuconfig')})
     refresh_df  = RefreshInputClass.component({K: 'RefreshDF',  Kerror: 'RefreshErrorDF',  Ksig: 'RefreshSignalDF',  sel: $('#dfconfig')})
-    refresh_ps  = RefreshInputClass.component({K: 'RefreshPS',  Kerror: 'RefreshErrorPS',  Ksig: 'RefreshSignalPS',  sel: $('#psconfig')})
+  # refresh_ps  = RefreshInputClass.component({K: 'RefreshPS',  Kerror: 'RefreshErrorPS',  Ksig: 'RefreshSignalPS',  sel: $('#psconfig')})
     refresh_vg  = RefreshInputClass.component({K: 'RefreshVG',  Kerror: 'RefreshErrorVG',  Ksig: 'RefreshSignalVG',  sel: $('#vgconfig')})
 
     memtable  = React.render(React.createElement(MEMtableCLASS),  document.getElementById('mem'       +'-'+ 'table'))
@@ -473,12 +486,12 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
       setState(hideconfigif,  hideconfigif .reduce(data))
       setState(hideconfigcpu, hideconfigcpu.reduce(data))
       setState(hideconfigdf,  hideconfigdf .reduce(data))
-      setState(hideconfigps,  hideconfigps .reduce(data))
+    # setState(hideconfigps,  hideconfigps .reduce(data))
       setState(hideconfigvg,  hideconfigvg .reduce(data))
 
     # setState(hideram,       hideram      .reduce(data))
       setState(hidecpu,       hidecpu      .reduce(data))
-      setState(hideps,        hideps       .reduce(data))
+    # setState(hideps,        hideps       .reduce(data))
       setState(hidevg,        hidevg       .reduce(data))
 
       setState(ip,        ip      .newstate(data)) if ip?
@@ -489,9 +502,9 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
       setState(iftitle,   iftitle .newstate(data))
       setState(dftitle,   dftitle .newstate(data))
 
-      setState(psplus,    psplus  .newstate(data))
-      setState(psmore,    psmore  .reduce(data))
-      setState(psless,    psless  .reduce(data))
+    # setState(psplus,    psplus  .newstate(data))
+    # setState(psmore,    psmore  .reduce(data))
+    # setState(psless,    psless  .reduce(data))
 
     # setState(hideswap,  hideswap.reduce(data))
 
@@ -506,7 +519,7 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
       setState(refresh_if,  refresh_if .reduce(data))
       setState(refresh_cpu, refresh_cpu.reduce(data))
       setState(refresh_df,  refresh_df .reduce(data))
-      setState(refresh_ps,  refresh_ps .reduce(data))
+    # setState(refresh_ps,  refresh_ps .reduce(data))
       setState(refresh_vg,  refresh_vg .reduce(data))
 
       setState(memtable,  {Client: data.Client, Links: data.Links, MEM: data.MEM})

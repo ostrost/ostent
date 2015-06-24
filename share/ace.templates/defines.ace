@@ -191,20 +191,20 @@
     tbody
       {{template "defines::define_memrows" .}}
 
-= content define_blockmem
+= content define_panelmem
   div.panel1
     label.panel-heading.btn-block
-      | <a {{ifClassAttr .Data.Links.Params.BOOL.showconfigmem "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigmem}}>Memory</a>
+      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigmem "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigmem}}>Memory</a>
 
     div
-      | <div id="memconfig" {{ifClassAttr .Data.Links.Params.BOOL.showconfigmem "" "collapse-hidden"}}>
+      | <div id="memconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigmem "" "collapse-hidden"}}>
       | <form {{class}}="horizontal-form border-bottom-form" {{formActionAttr .Data.Links.Params.Query}}>
       / TODO different semantically standalone class for submit button with display: none
       input.collapse-hidden type=submit
       div.form-group-padded
         div.btn-group.btn-group-sm role=group
-          | <a {{ifClassAttr .Data.Links.Params.BOOL.hidemem "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidemem}}>Hidden</a>
-          | <a {{ifClassAttr .Data.Links.Params.BOOL.hideswap "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hideswap}} {{ifDisabledAttr .Data.Links.Params.BOOL.hidemem}}>Hide swap</a>
+          | <a {{ifBPClassAttr .Data.Links.Params.BOOL.hidemem "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidemem}}>Hidden</a>
+          | <a {{ifBPClassAttr .Data.Links.Params.BOOL.hideswap "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hideswap}} {{ifDisabledAttr .Data.Links.Params.BOOL.hidemem}}>Hide swap</a>
 
       div.form-group-padded
         {{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshmem}}
@@ -212,7 +212,7 @@
       | </div>
 
     div
-      | <div {{ifClassAttr .Data.Links.Params.BOOL.hidemem "collapse-hidden"}}>
+      | <div {{ifBPClassAttr .Data.Links.Params.BOOL.hidemem "collapse-hidden"}}>
       {{template "defines::define_memtable" .}}
       | </div>
 
@@ -275,6 +275,34 @@
         {{template "defines::thdroplink" droplink .Data.Links.Params.ENUM.ps "NAME" ""}}
     tbody
       {{template "defines::define_psrows" .}}
+
+= content define_panelps
+  div.panel1
+    label.panel-heading.btn-block
+      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigps "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigps}}>Processes</a>
+
+    div
+      | <div id="psconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigps "" "collapse-hidden"}}>
+      | <form {{class}}="inline-form border-bottom-form text-right" {{formActionAttr .Data.Links.Params.Query}}>
+      / TODO different semantically standalone class for submit button with display: none
+      input.collapse-hidden type=submit
+
+      div.form-group-padded
+        {{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshps}}
+
+      div.form-group-padded
+        div.btn-group.btn-group-sm role=group
+          | <a {{ifBPClassAttr .Data.Links.Params.BOOL.hideps "active"  "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hideps}}>Hidden</a>
+          | <a {{ifBClassAttr .Data.PStable.PSnotDecreasable "disabled" "" "btn btn-default"}} {{lessHrefAttr .Data.Links.Params.COUNT.psn}}>-</a>
+          | <a {{ifBClassAttr .Data.PStable.PSnotExpandable  "disabled" "" "btn btn-default"}} {{moreHrefAttr .Data.Links.Params.COUNT.psn}}>
+          | {{.Data.PStable.PSplusText}}</a>
+      | </form>
+      | </div>
+
+    div
+      | <div {{ifBPClassAttr .Data.Links.Params.BOOL.hideps "collapse-hidden"}}>
+        {{template "defines::define_pstable" .}}
+      | </div>
 
 = content define_vgerror
   tr key="vgerror"

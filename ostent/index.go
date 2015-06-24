@@ -56,28 +56,36 @@ func username(uids map[uint]string, uid uint) string {
 	return s
 }
 
-func (procs MPSlice) Ordered(cl *client.Client, send *client.SendClient) []operating.ProcData {
+func (procs MPSlice) Ordered(cl *client.Client, send *client.SendClient) *PStable {
 	uids := map[uint]string{}
-	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(uids, *cl.Params.ENUM["ps"])) // not .StableSortBy
 
-	pslen := len(procs)
-	limitPS := cl.PSlimit
+	pslen := uint(len(procs))
+	limitPS := cl.Params.COUNT["psn"].Value
 	notdec := limitPS <= 1
 	notexp := limitPS >= pslen
 
 	if limitPS >= pslen { // notexp
 		limitPS = pslen // NB modified limitPS
-	} else {
-		procs = procs[:limitPS]
 	}
 
-	send.SetBool(&send.PSnotDecreasable, &cl.PSnotDecreasable, notdec)
-	send.SetBool(&send.PSnotExpandable, &cl.PSnotExpandable, notexp)
-	send.SetString(&send.PSplusText, &cl.PSplusText, fmt.Sprintf("%d+", limitPS))
+	pst := &PStable{}
+	pst.PSnotDecreasable = new(bool)
+	*pst.PSnotDecreasable = notdec
+	pst.PSnotExpandable = new(bool)
+	*pst.PSnotExpandable = notexp
+	pst.PSplusText = new(string)
+	*pst.PSplusText = fmt.Sprintf("%d+", limitPS)
 
-	var list []operating.ProcData
+	if cl.Params.BOOL["hideps"].Value {
+		return pst
+	}
+
+	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(uids, *cl.Params.ENUM["ps"])) // not .StableSortBy
+	if !notexp {
+		procs = procs[:limitPS]
+	}
 	for _, proc := range procs {
-		list = append(list, operating.ProcData{
+		pst.List = append(pst.List, operating.ProcData{
 			PID:       proc.PID,
 			PIDstring: fmt.Sprintf("%d", proc.PID),
 			UID:       proc.UID,
@@ -90,7 +98,7 @@ func (procs MPSlice) Ordered(cl *client.Client, send *client.SendClient) []opera
 			Resident:  format.HumanB(proc.Resident),
 		})
 	}
-	return list
+	return pst
 }
 
 type IndexData struct {
@@ -125,7 +133,10 @@ type Links struct {
 }
 
 type PStable struct {
-	List []operating.ProcData `json:",omitempty"`
+	List             []operating.ProcData `json:",omitempty"`
+	PSplusText       *string              `json:",omitempty"`
+	PSnotExpandable  *bool                `json:",omitempty"`
+	PSnotDecreasable *bool                `json:",omitempty"`
 }
 
 type IndexUpdate struct {
@@ -463,7 +474,7 @@ func (ir *IndexRegistry) VG(cli *client.Client, send *client.SendClient, iu *Ind
 type MPSlice operating.MetricProcSlice
 
 func (procs MPSlice) IU(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
-	iu.PStable = &PStable{List: procs.Ordered(cli, send)}
+	iu.PStable = procs.Ordered(cli, send)
 	return IndexUpdate{PStable: iu.PStable}
 }
 
@@ -756,7 +767,7 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 		{*cl.HideCPU, cl.RefreshCPU, Reg1s.CPU},
 		{*cl.HideDF, cl.RefreshDF, Reg1s.DF},
 		{*cl.HideIF, cl.RefreshIF, Reg1s.IF},
-		{*cl.HidePS, cl.RefreshPS, psCopy.IU},
+		{false, cl.Params.PERIOD["refreshmem"], psCopy.IU},
 		{*cl.HideVG, cl.RefreshVG, Reg1s.VG},
 
 		// always-shown bits:

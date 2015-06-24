@@ -284,7 +284,7 @@
       render: function() {
         var $mem, Data;
         Data = this.state;
-        return jscript.blockmem.bind(this)(Data, (function() {
+        return jscript.panelmem.bind(this)(Data, (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.MEM) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
@@ -344,7 +344,7 @@
       render: function() {
         var $proc, Data;
         Data = this.state;
-        return jscript.ps_table(Data, (function() {
+        return jscript.panelps.bind(this)(Data, (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.PStable) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
@@ -354,6 +354,23 @@
           }
           return results;
         })());
+      },
+      handleChange: function(e) {
+        var href;
+        href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1);
+        updates.sendSearch(href);
+        e.stopPropagation();
+        e.preventDefault();
+        return void 0;
+      },
+      handleClick: function(e) {
+        var href;
+        href = e.target.getAttribute('href');
+        history.pushState({}, '', href);
+        updates.sendSearch(href);
+        e.stopPropagation();
+        e.preventDefault();
+        return void 0;
       }
     });
     this.VGtableCLASS = React.createClass({
@@ -668,7 +685,7 @@
       }
     };
     update = function() {
-      var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigps, hideconfigvg, hidecpu, hideps, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, psless, psmore, psplus, pstable, refresh_cpu, refresh_df, refresh_if, refresh_ps, refresh_vg, tabsdf, tabsif, uptime, vgtable;
+      var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigvg, hidecpu, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, pstable, refresh_cpu, refresh_df, refresh_if, refresh_vg, tabsdf, tabsif, uptime, vgtable;
       hideconfigif = HideClass.component({
         xkey: 'HideconfigIF',
         $el: $('[for-sel="#ifconfig"]'),
@@ -684,11 +701,6 @@
         $el: $('[for-sel="#dfconfig"]'),
         reverseActive: true
       });
-      hideconfigps = HideClass.component({
-        xkey: 'HideconfigPS',
-        $el: $('[for-sel="#psconfig"]'),
-        reverseActive: true
-      });
       hideconfigvg = HideClass.component({
         xkey: 'HideconfigVG',
         $el: $('[for-sel="#vgconfig"]'),
@@ -697,10 +709,6 @@
       hidecpu = HideClass.component({
         xkey: 'HideCPU',
         $el: $('[for-sel="#cpu"]')
-      });
-      hideps = HideClass.component({
-        xkey: 'HidePS',
-        $el: $('[for-sel="#ps"]')
       });
       hidevg = HideClass.component({
         xkey: 'HideVG',
@@ -728,24 +736,6 @@
         var ref, ref1;
         return data != null ? (ref = data.Client) != null ? (ref1 = ref.TabDF) != null ? ref1.Title : void 0 : void 0 : void 0;
       })), $('a[href="#df"]').get(0));
-      psplus = React.render(React.createElement(NewTextCLASS(function(data) {
-        var ref;
-        return data != null ? (ref = data.Client) != null ? ref.PSplusText : void 0 : void 0;
-      })), $('label.more[href="#psmore"]').get(0));
-      psmore = ButtonClass.component({
-        Ksig: 'MorePsignal',
-        Vsig: true,
-        Khide: 'HidePS',
-        Kable: 'PSnotExpandable',
-        $button_el: $('label.more[href="#psmore"]')
-      });
-      psless = ButtonClass.component({
-        Ksig: 'MorePsignal',
-        Vsig: false,
-        Khide: 'HidePS',
-        Kable: 'PSnotDecreasable',
-        $button_el: $('label.less[href="#psless"]')
-      });
       expandif = ButtonClass.component({
         Khide: 'HideIF',
         Ksend: 'ExpandIF',
@@ -799,12 +789,6 @@
         Ksig: 'RefreshSignalDF',
         sel: $('#dfconfig')
       });
-      refresh_ps = RefreshInputClass.component({
-        K: 'RefreshPS',
-        Kerror: 'RefreshErrorPS',
-        Ksig: 'RefreshSignalPS',
-        sel: $('#psconfig')
-      });
       refresh_vg = RefreshInputClass.component({
         K: 'RefreshVG',
         Kerror: 'RefreshErrorVG',
@@ -853,10 +837,8 @@
         setState(hideconfigif, hideconfigif.reduce(data));
         setState(hideconfigcpu, hideconfigcpu.reduce(data));
         setState(hideconfigdf, hideconfigdf.reduce(data));
-        setState(hideconfigps, hideconfigps.reduce(data));
         setState(hideconfigvg, hideconfigvg.reduce(data));
         setState(hidecpu, hidecpu.reduce(data));
-        setState(hideps, hideps.reduce(data));
         setState(hidevg, hidevg.reduce(data));
         if (ip != null) {
           setState(ip, ip.newstate(data));
@@ -866,9 +848,6 @@
         setState(la, la.newstate(data));
         setState(iftitle, iftitle.newstate(data));
         setState(dftitle, dftitle.newstate(data));
-        setState(psplus, psplus.newstate(data));
-        setState(psmore, psmore.reduce(data));
-        setState(psless, psless.reduce(data));
         setState(expandif, expandif.reduce(data));
         setState(expandcpu, expandcpu.reduce(data));
         setState(expanddf, expanddf.reduce(data));
@@ -877,7 +856,6 @@
         setState(refresh_if, refresh_if.reduce(data));
         setState(refresh_cpu, refresh_cpu.reduce(data));
         setState(refresh_df, refresh_df.reduce(data));
-        setState(refresh_ps, refresh_ps.reduce(data));
         setState(refresh_vg, refresh_vg.reduce(data));
         setState(memtable, {
           Client: data.Client,

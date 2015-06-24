@@ -59,7 +59,7 @@ html
     div.container-fluid.padding-topseventysh#top
       div.row
         div.block.col-md-2.col-md-offset-1#mem-table
-          {{template "defines::define_blockmem" .}}
+          {{template "defines::define_panelmem" .}}
 
         div.block.col-md-3
           div.panel1
@@ -178,42 +178,8 @@ html
 
     div.container-fluid
       div.row
-        div.block.col-md-8.col-md-offset-2
-          div.panel1
-            label.collapse-label.panel-heading.btn-block for=dummypsconfigcheckbox for-sel=#psconfig
-              a href=#ps class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigPS)}} active{{end}}" Processes
-              input.collapse-checkbox#dummypsconfigcheckbox type=checkbox aria-hidden=true hidden=
-            input.collapse-checkbox type=checkbox aria-hidden=true hidden=
-
-              / div.btn-group.btn-group-xs
-              /   label.btn.btn-sm.btn-default
-              /     [class="collapse"] ifempty Data.Client.UserProcesses
-              /     | User {{.Data.Client.UserProcesses}} &times;
-
-            div
-              div#psconfig class="{{if eq "true" (json .Data.Client.HideconfigPS)}}collapse-hidden{{end}}"
-                form.inline-form.border-bottom-form.text-right
-                  div.form-group-padded
-                    {{with .Data.Client.RefreshPS}}
-                    = yield refresh
-                    {{end}}
-
-                  div.form-group-padded
-                    div.btn-group.btn-group-sm data-toggle=buttons
-                      label.btn.btn-default.collapse-label for-sel=#ps
-                        input type=checkbox
-                        | Hidden
-                      label href=#psless class="less btn btn-default{{if eq "true" (json .Data.Client.PSnotDecreasable)}} disabled{{end}}"
-                        input type=checkbox
-                        | -
-                      label href=#psmore class="more btn btn-default{{if eq "true" (json .Data.Client.PSnotExpandable)}} disabled{{end}}"
-                        input type=checkbox
-                        | {{.Data.Client.PSplusText}}
-
-            div
-              div#ps class="{{if eq "true" (json .Data.Client.HidePS)}}collapse-hidden{{end}}"
-                span#ps-table
-                  {{template "defines::define_pstable" .}}
+        div.block.col-md-8.col-md-offset-2#ps-table
+          {{template "defines::define_panelps" .}}
 
     div.container-fluid
       div.row

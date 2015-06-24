@@ -3,9 +3,11 @@ package client
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"net/url"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -133,24 +135,28 @@ var EnumDecodecs = map[string]EnumDecodec{
 	},
 }
 
+var CountDecodecs = map[string]CountDecodec{"psn": {Default: 8}}
+
 var BoolDecodecs = map[string]BoolDecodec{
 	"still": {Default: false},
 
 	// "hidecpu":  {Default: false},
 	// "hidedf":   {Default: false},
 	// "hideif":   {Default: false},
-	"hidemem": {Default: false},
-	// "hideps":   {Default: false},
+	"hidemem":  {Default: false},
+	"hideps":   {Default: false},
 	"hideswap": {Default: false},
 	// "hidevg":   {Default: false},
 	// commented-out hide* to be un-commented
 
 	"showconfigmem": {Default: false},
+	"showconfigps":  {Default: false},
 	// rest of showconfig* to follow
 }
 
 var PeriodParanames = []string{
 	"refreshmem",
+	"refreshps",
 }
 
 func (bp *BoolParam) Decode(form url.Values) {
@@ -248,6 +254,14 @@ func NewParams(minperiod flags.Period) *Params {
 			BoolDecodec: v,
 		}
 	}
+	p.COUNT = make(map[string]*CountParam)
+	for k, v := range CountDecodecs {
+		v.Pname = k
+		p.COUNT[k] = &CountParam{
+			Query:        p.Query,
+			CountDecodec: v,
+		}
+	}
 	p.PERIOD = make(map[string]*PeriodParam)
 	for _, k := range PeriodParanames {
 		p.PERIOD[k] = &PeriodParam{
@@ -340,6 +354,9 @@ func (p *Params) NewQuery() {
 	for _, v := range p.ENUM {
 		v.Query = p.Query
 	}
+	for _, v := range p.COUNT {
+		v.Query = p.Query
+	}
 	for _, v := range p.PERIOD {
 		v.Query = p.Query
 	}
@@ -350,6 +367,9 @@ func (p *Params) Decode(form url.Values) {
 		v.Decode(form)
 	}
 	for _, v := range p.ENUM {
+		v.Decode(form)
+	}
+	for _, v := range p.COUNT {
 		v.Decode(form)
 	}
 	for _, v := range p.PERIOD {
@@ -389,6 +409,7 @@ func (p PeriodParam) Refresh(forcerefresh bool) bool {
 type Params struct {
 	BOOL   map[string]*BoolParam
 	ENUM   map[string]*EnumParam
+	COUNT  map[string]*CountParam
 	PERIOD map[string]*PeriodParam
 	Query  *Query
 }
@@ -446,6 +467,74 @@ func (pp *PeriodParam) Decode(form url.Values) {
 		pp.Query.Del(pp.PeriodDecodec.Pname)
 	}
 	pp.Query.UpdateLocation = true // New location.
+}
+
+type CountDecodec struct {
+	Pname   string
+	Default uint
+}
+
+type CountParam struct {
+	Query        *Query       `json:"-"` // url.Values here.
+	CountDecodec CountDecodec `json:"-"` // Read-only, an entry from global var CountDecoders.
+	Value        uint         `json:"-"` // Decoded value.
+}
+
+func (cp *CountParam) Decode(form url.Values) {
+	values, ok := form[cp.CountDecodec.Pname]
+	if !ok {
+		cp.Value = cp.CountDecodec.Default
+		return
+	}
+	if len(values) == 0 {
+		cp.Query.Del(cp.CountDecodec.Pname)
+		return
+	}
+	i, err := strconv.Atoi(values[0])
+	if err != nil {
+		cp.Query.Del(cp.CountDecodec.Pname)
+	} else {
+		cp.Value = uint(i)
+		cp.Query.Set(cp.CountDecodec.Pname, fmt.Sprintf("%d", cp.Value))
+	}
+}
+
+func (cp CountParam) EncodeLess() template.HTMLAttr {
+	value := cp.Value
+	if value >= 2 {
+		value = value / 2
+	}
+	return cp.Encode(&value)
+}
+
+func (cp CountParam) EncodeMore() template.HTMLAttr {
+	value := cp.Value
+	if value < 65536 {
+		value *= 2
+	}
+	return cp.Encode(&value)
+}
+
+func (cp CountParam) Encode(this *uint) template.HTMLAttr {
+	if this == nil {
+		this = &cp.Value
+	}
+	values := cp.Query.ValuesCopy()
+	if *this != cp.CountDecodec.Default {
+		values.Set(cp.CountDecodec.Pname, fmt.Sprintf("%d", *this))
+	} else {
+		values.Del(cp.CountDecodec.Pname)
+	}
+	return template.HTMLAttr("?" + cp.Query.ValuesEncode(values))
+}
+
+func (cp CountParam) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		LessHref, MoreHref template.HTMLAttr
+	}{
+		LessHref: cp.EncodeLess(),
+		MoreHref: cp.EncodeMore(),
+	})
 }
 
 type BoolDecodec struct {

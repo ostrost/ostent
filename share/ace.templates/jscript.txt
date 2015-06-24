@@ -2,7 +2,7 @@ define(function(require) {
 	var React = require('react');
 	return {
 		mem_rows:        function(Data, $mem)  { return ({{template "defines::define_memrows"         .}}); },
-		blockmem:        function(Data, rows)  { return ({{template "defines::define_blockmem"        setrows . `rows`}}); },
+		panelmem:        function(Data, rows)  { return ({{template "defines::define_panelmem"        setrows . `rows`}}); },
 
 		ifbytes_rows:    function(Data, $if)   { return ({{template "defines::define_ifbytes_rows"    .}}); },
 		ifbytes_table:   function(Data, rows)  { return ({{template "defines::define_ifbytes_table"   setrows . `rows`}}); },
@@ -20,7 +20,7 @@ define(function(require) {
 		dfinodes_table:  function(Data, rows)  { return ({{template "defines::define_dfinodes_table"  setrows . `rows`}}); },
 
 		ps_rows:         function(Data, $proc) { return ({{template "defines::define_psrows"          .}}); },
-		ps_table:        function(Data, rows)  { return ({{template "defines::define_pstable"         setrows . `rows`}}); },
+		panelps:         function(Data, rows)  { return ({{template "defines::define_panelps"         setrows . `rows`}}); },
 
 		vagrant_rows:    function(Data, $mach) { return ({{template "defines::define_vgrows"          .}}); },
 		vagrant_error:   function(Data)        { return ({{template "defines::define_vgerror"         .}}); },

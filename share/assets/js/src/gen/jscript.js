@@ -9,7 +9,7 @@ define(function(require) {
       , React.createElement("span", {className: LabelClassColorPercent($mem.UsePercent)
   }, $mem.UsePercent, "%"))), React.createElement("td", {className: "text-right"
     }, $mem.Total))); },
-		blockmem:        function(Data, rows)  { return (React.createElement("div", {className: "panel1"
+		panelmem:        function(Data, rows)  { return (React.createElement("div", {className: "panel1"
   }, React.createElement("label", {className: "panel-heading btn-block"
     }, React.createElement("a", {className: Data.Links.Params.BOOL.showconfigmem.Value ? "btn-header-block active" : "btn-header-block", href: Data.Links.Params.BOOL.showconfigmem.Href, onClick: this.handleClick
       }, "Memory")), React.createElement("div", null
@@ -204,7 +204,25 @@ define(function(require) {
     }, "     ", React.createElement("input", {id: "psname-pid-"+$proc.PIDstring, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
 }), React.createElement("label", {htmlFor: "psname-pid-"+$proc.PIDstring, className: "clip", style: {maxWidth: '42ch'}
   }, $proc.Name)))); },
-		ps_table:        function(Data, rows)  { return (React.createElement("table", {className: "table2 stripe-table"
+		panelps:         function(Data, rows)  { return (React.createElement("div", {className: "panel1"
+  }, React.createElement("label", {className: "panel-heading btn-block"
+    }, React.createElement("a", {className: Data.Links.Params.BOOL.showconfigps.Value ? "btn-header-block active" : "btn-header-block", href: Data.Links.Params.BOOL.showconfigps.Href, onClick: this.handleClick
+      }, "Processes")), React.createElement("div", null
+    , React.createElement("div", {id: "psconfig", className: Data.Links.Params.BOOL.showconfigps.Value ? "" : "collapse-hidden"
+      }, React.createElement("form", {className: "inline-form border-bottom-form text-right", action: "/form/"+Data.Links.Params.Query
+        }, React.createElement("input", {className: "collapse-hidden", type: "submit"
+        }), React.createElement("div", {className: "form-group-padded"
+        }, React.createElement("div", {className: "input-group input-group-sm refresh-group" + (Data.Links.Params.PERIOD.refreshps.InputErrd ? " has-warning" : "")
+  }, React.createElement("span", {className: "input-group-addon"
+    }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Links.Params.PERIOD.refreshps.Placeholder, name: "refreshps", onChange: this.handleChange, value: Data.Links.Params.PERIOD.refreshps.Input
+  }))), React.createElement("div", {className: "form-group-padded"
+        }, React.createElement("div", {className: "btn-group btn-group-sm", role: "group"
+          }, React.createElement("a", {className: Data.Links.Params.BOOL.hideps.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Links.Params.BOOL.hideps.Href, onClick: this.handleClick
+            }, "Hidden"), React.createElement("a", {className: Data.PStable.PSnotDecreasable ? "btn btn-default disabled" : "btn btn-default ", href: Data.Links.Params.COUNT.psn.LessHref, onClick: this.handleClick
+            }, "-"), React.createElement("a", {className: Data.PStable.PSnotExpandable ? "btn btn-default disabled" : "btn btn-default ", href: Data.Links.Params.COUNT.psn.MoreHref, onClick: this.handleClick
+            }, Data.PStable.PSplusText)))))), React.createElement("div", null
+  , React.createElement("div", {className: Data.Links.Params.BOOL.hideps.Value ? "collapse-hidden" : ""
+    }, React.createElement("table", {className: "table2 stripe-table"
   }, React.createElement("thead", null
     , React.createElement("tr", null
       , React.createElement("th", {className: "header text-right"
@@ -235,7 +253,7 @@ define(function(require) {
   }, React.createElement("a", {href: Data.Links.Params.ENUM.ps.NAME.Href, className: Data.Links.Params.ENUM.ps.NAME.Class
     }, "COMMAND", React.createElement("span", {className: Data.Links.Params.ENUM.ps.NAME.CaretClass
       }))))), React.createElement("tbody", null
-    , rows))); },
+    , rows)))))); },
 
 		vagrant_rows:    function(Data, $mach) { return (React.createElement("tr", {key: "vagrant-rowby-uuid-"+$mach.UUID
   }, React.createElement("td", null

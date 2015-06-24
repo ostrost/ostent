@@ -57,7 +57,6 @@ func (c *Client) refreshes() []*Refresh {
 		c.RefreshIF,
 		c.RefreshCPU,
 		c.RefreshDF,
-		c.RefreshPS,
 		c.RefreshVG,
 		c.RefreshHN,
 		c.RefreshUP,
@@ -67,8 +66,6 @@ func (c *Client) refreshes() []*Refresh {
 }
 
 type internalClient struct {
-	PSlimit int
-
 	Toprows int
 
 	MergeRSError error
@@ -82,7 +79,6 @@ type commonClient struct {
 	HideIF    *bool `json:",omitempty"`
 	HideCPU   *bool `json:",omitempty"`
 	HideDF    *bool `json:",omitempty"`
-	HidePS    *bool `json:",omitempty"`
 	HideVG    *bool `json:",omitempty"`
 	ExpandIF  *bool `json:",omitempty"`
 	ExpandCPU *bool `json:",omitempty"`
@@ -91,13 +87,9 @@ type commonClient struct {
 	TabIF *Tab `json:",omitempty"`
 	TabDF *Tab `json:",omitempty"`
 
-	// PSusers []string `json:omitempty`
-
-	// HideconfigMEM *bool `json:",omitempty"`
 	HideconfigIF  *bool `json:",omitempty"`
 	HideconfigCPU *bool `json:",omitempty"`
 	HideconfigDF  *bool `json:",omitempty"`
-	HideconfigPS  *bool `json:",omitempty"`
 	HideconfigVG  *bool `json:",omitempty"`
 }
 
@@ -117,7 +109,6 @@ type Client struct {
 	RefreshIF  *Refresh `json:",omitempty"`
 	RefreshCPU *Refresh `json:",omitempty"`
 	RefreshDF  *Refresh `json:",omitempty"`
-	RefreshPS  *Refresh `json:",omitempty"`
 	RefreshVG  *Refresh `json:",omitempty"`
 
 	// un-mergable and hidden refreshes:
@@ -125,10 +116,6 @@ type Client struct {
 	RefreshUP *Refresh `json:"-"`
 	RefreshIP *Refresh `json:"-"`
 	RefreshLA *Refresh `json:"-"`
-
-	PSplusText       *string `json:",omitempty"`
-	PSnotExpandable  *bool   `json:",omitempty"`
-	PSnotDecreasable *bool   `json:",omitempty"`
 }
 
 func (c *Client) RecalcRows() {
@@ -174,13 +161,10 @@ func Setstring(sends, s **string, v string) bool {
 type SendClient struct {
 	Client
 
-	// RefreshErrorMEM  *bool `json:",omitempty"`
-	RefreshErrorSWAP *bool `json:",omitempty"`
-	RefreshErrorIF   *bool `json:",omitempty"`
-	RefreshErrorCPU  *bool `json:",omitempty"`
-	RefreshErrorDF   *bool `json:",omitempty"`
-	RefreshErrorPS   *bool `json:",omitempty"`
-	RefreshErrorVG   *bool `json:",omitempty"`
+	RefreshErrorIF  *bool `json:",omitempty"`
+	RefreshErrorCPU *bool `json:",omitempty"`
+	RefreshErrorDF  *bool `json:",omitempty"`
+	RefreshErrorVG  *bool `json:",omitempty"`
 
 	DebugError *string `json:",omitempty"`
 }
@@ -231,18 +215,15 @@ func (c *Client) Merge(r RecvClient, s *SendClient) {
 	s.mergeBool(c.HideIF, r.HideIF, &s.HideIF)
 	s.mergeBool(c.HideCPU, r.HideCPU, &s.HideCPU)
 	s.mergeBool(c.HideDF, r.HideDF, &s.HideDF)
-	s.mergeBool(c.HidePS, r.HidePS, &s.HidePS)
 	s.mergeBool(c.HideVG, r.HideVG, &s.HideVG)
 
 	s.mergeBool(c.ExpandIF, r.ExpandIF, &s.ExpandIF)
 	s.mergeBool(c.ExpandCPU, r.ExpandCPU, &s.ExpandCPU)
 	s.mergeBool(c.ExpandDF, r.ExpandDF, &s.ExpandDF)
 
-	// s.mergeBool(c.HideconfigMEM, r.HideconfigMEM, &s.HideconfigMEM)
 	s.mergeBool(c.HideconfigIF, r.HideconfigIF, &s.HideconfigIF)
 	s.mergeBool(c.HideconfigCPU, r.HideconfigCPU, &s.HideconfigCPU)
 	s.mergeBool(c.HideconfigDF, r.HideconfigDF, &s.HideconfigDF)
-	s.mergeBool(c.HideconfigPS, r.HideconfigPS, &s.HideconfigPS)
 	s.mergeBool(c.HideconfigVG, r.HideconfigVG, &s.HideconfigVG)
 
 	s.MergeTab(c.TabIF, r.TabIF, &s.TabIF, IFTABS)
@@ -257,7 +238,6 @@ func NewClient(minperiod flags.Period) Client {
 	cs.HideIF = new(bool)
 	cs.HideCPU = new(bool)
 	cs.HideDF = new(bool)
-	cs.HidePS = new(bool)
 	cs.HideVG = new(bool)
 	cs.ExpandIF = new(bool)
 	cs.ExpandCPU = new(bool)
@@ -267,18 +247,15 @@ func NewClient(minperiod flags.Period) Client {
 	cs.TabDF = cs.NewTab(DFTABS, DFBYTES)
 
 	newhc := func() *bool { b := new(bool); *b = true; return b } // *b = false for DEVELOPMENT
-	// cs.HideconfigMEM = newhc()
 	cs.HideconfigIF = newhc()
 	cs.HideconfigCPU = newhc()
 	cs.HideconfigDF = newhc()
-	cs.HideconfigPS = newhc()
 	cs.HideconfigVG = newhc()
 
 	newref := NewRefreshFunc(minperiod)
 	cs.RefreshIF = newref()
 	cs.RefreshCPU = newref()
 	cs.RefreshDF = newref()
-	cs.RefreshPS = newref()
 	cs.RefreshVG = newref()
 
 	// immutable refreshes:
@@ -286,8 +263,6 @@ func NewClient(minperiod flags.Period) Client {
 	cs.RefreshUP = newref()
 	cs.RefreshIP = newref()
 	cs.RefreshLA = newref()
-
-	cs.PSlimit = 8
 
 	cs.Params = NewParams(minperiod)
 	cs.RecalcRows() // after params
@@ -297,27 +272,10 @@ func NewClient(minperiod flags.Period) Client {
 
 type RecvClient struct {
 	commonClient
-	MorePsignal      *bool
 	RefreshSignalIF  *string
 	RefreshSignalCPU *string
 	RefreshSignalDF  *string
-	RefreshSignalPS  *string
 	RefreshSignalVG  *string
-}
-
-func (rs *RecvClient) mergeMorePsignal(cs *Client) {
-	if rs.MorePsignal == nil {
-		return
-	}
-	// cs modification of .PSlimit does not flip .Modified
-	if *rs.MorePsignal {
-		if cs.PSlimit < 65536 {
-			cs.PSlimit *= 2
-		}
-	} else if cs.PSlimit >= 2 {
-		cs.PSlimit /= 2
-	}
-	rs.MorePsignal = nil
 }
 
 // MergeRefreshSignal stores parsed ppinput into prefresh AND sendr or error in senderr.
@@ -345,12 +303,9 @@ func (sc *SendClient) MergeRefreshSignal(ppinput *string, prefresh *Refresh, sen
 
 // MergeRefresh merges into cs various refresh updates. send is populated with the updates.
 func (rs *RecvClient) MergeRefresh(cs *Client, send *SendClient) error {
-	rs.mergeMorePsignal(cs)
-
 	send.MergeRefreshSignal(rs.RefreshSignalIF, cs.RefreshIF, &send.RefreshIF, &send.RefreshErrorIF)
 	send.MergeRefreshSignal(rs.RefreshSignalCPU, cs.RefreshCPU, &send.RefreshCPU, &send.RefreshErrorCPU)
 	send.MergeRefreshSignal(rs.RefreshSignalDF, cs.RefreshDF, &send.RefreshDF, &send.RefreshErrorDF)
-	send.MergeRefreshSignal(rs.RefreshSignalPS, cs.RefreshPS, &send.RefreshPS, &send.RefreshErrorPS)
 	send.MergeRefreshSignal(rs.RefreshSignalVG, cs.RefreshVG, &send.RefreshVG, &send.RefreshErrorVG)
 	// Refresh{HN,UP,IP,LA} are not merged
 

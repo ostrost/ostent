@@ -93,7 +93,7 @@
     ><div id="top" class="container-fluid padding-topseventysh"
       ><div class="row"
         ><div id="mem-table" class="block col-md-2 col-md-offset-1"
-          >{{template "defines::define_blockmem" .}}</div
+          >{{template "defines::define_panelmem" .}}</div
         ><div class="block col-md-3"
           ><div class="panel1"
             ><label class="collapse-label panel-heading btn-block" for="dummyifconfigcheckbox" for-sel="#ifconfig"
@@ -236,43 +236,8 @@
       ></div
     ><div class="container-fluid"
       ><div class="row"
-        ><div class="block col-md-8 col-md-offset-2"
-          ><div class="panel1"
-            ><label class="collapse-label panel-heading btn-block" for="dummypsconfigcheckbox" for-sel="#psconfig"
-              ><a class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigPS)}} active{{end}}" href="#ps"
-                >Processes</a
-              ><input id="dummypsconfigcheckbox" class="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-              ></label
-            ><input class="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-            ><div
-              ><div id="psconfig" class="{{if eq "true" (json .Data.Client.HideconfigPS)}}collapse-hidden{{end}}"
-                ><form class="inline-form border-bottom-form text-right"
-                  ><div class="form-group-padded"
-                    >{{with .Data.Client.RefreshPS}}{{template "defines::refresh" .}}{{end}}</div
-                  ><div class="form-group-padded"
-                    ><div class="btn-group btn-group-sm" data-toggle="buttons"
-                      ><label class="btn btn-default collapse-label" for-sel="#ps"
-                        ><input type="checkbox"
-                        >Hidden</label
-                      ><label class="less btn btn-default{{if eq "true" (json .Data.Client.PSnotDecreasable)}} disabled{{end}}" href="#psless"
-                        ><input type="checkbox"
-                        >-</label
-                      ><label class="more btn btn-default{{if eq "true" (json .Data.Client.PSnotExpandable)}} disabled{{end}}" href="#psmore"
-                        ><input type="checkbox"
-                        >{{.Data.Client.PSplusText}}</label
-                      ></div
-                    ></div
-                  ></form
-                ></div
-              ></div
-            ><div
-              ><div id="ps" class="{{if eq "true" (json .Data.Client.HidePS)}}collapse-hidden{{end}}"
-                ><span id="ps-table"
-                  >{{template "defines::define_pstable" .}}</span
-                ></div
-              ></div
-            ></div
-          ></div
+        ><div id="ps-table" class="block col-md-8 col-md-offset-2"
+          >{{template "defines::define_panelps" .}}</div
         ></div
       ></div
     ><div class="container-fluid"
@@ -315,34 +280,6 @@
     ></body
   ></html
 >{{/*
-*/}}{{define "defines::define_blockmem"}}<div class="panel1"
-  ><label class="panel-heading btn-block"
-    ><a {{ifClassAttr .Data.Links.Params.BOOL.showconfigmem "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigmem}}
-      >Memory</a
-    ></label
-  ><div
-    ><div id="memconfig" {{ifClassAttr .Data.Links.Params.BOOL.showconfigmem "" "collapse-hidden"}}
-      ><form {{class}}="horizontal-form border-bottom-form" {{formActionAttr .Data.Links.Params.Query}}
-        ><input class="collapse-hidden" type="submit"
-        ><div class="form-group-padded"
-          ><div class="btn-group btn-group-sm" role="group"
-            ><a {{ifClassAttr .Data.Links.Params.BOOL.hidemem "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidemem}}
-              >Hidden</a
-            ><a {{ifClassAttr .Data.Links.Params.BOOL.hideswap "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hideswap}} {{ifDisabledAttr .Data.Links.Params.BOOL.hidemem}}
-              >Hide swap</a
-            ></div
-          ></div
-        ><div class="form-group-padded"
-          >{{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshmem}}</div
-        ></form
-      ></div
-    ></div
-  ><div
-    ><div {{ifClassAttr .Data.Links.Params.BOOL.hidemem "collapse-hidden"}}
-      >{{template "defines::define_memtable" .}}</div
-    ></div
-  ></div
->{{end}}{{/*
 */}}{{define "defines::define_clip"}}<input {{.IDAttr}}  {{class}}="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
 >{{jsxClose "input"}}<label {{.ForAttr}} {{class}}="clip" {{.MWStyleAttr}}
   >{{.Text}}</label
@@ -602,6 +539,64 @@
   ><tbody
     >{{template "defines::define_memrows" .}}</tbody
   ></table
+>{{end}}{{/*
+*/}}{{define "defines::define_panelmem"}}<div class="panel1"
+  ><label class="panel-heading btn-block"
+    ><a {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigmem "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigmem}}
+      >Memory</a
+    ></label
+  ><div
+    ><div id="memconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigmem "" "collapse-hidden"}}
+      ><form {{class}}="horizontal-form border-bottom-form" {{formActionAttr .Data.Links.Params.Query}}
+        ><input class="collapse-hidden" type="submit"
+        ><div class="form-group-padded"
+          ><div class="btn-group btn-group-sm" role="group"
+            ><a {{ifBPClassAttr .Data.Links.Params.BOOL.hidemem "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidemem}}
+              >Hidden</a
+            ><a {{ifBPClassAttr .Data.Links.Params.BOOL.hideswap "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hideswap}} {{ifDisabledAttr .Data.Links.Params.BOOL.hidemem}}
+              >Hide swap</a
+            ></div
+          ></div
+        ><div class="form-group-padded"
+          >{{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshmem}}</div
+        ></form
+      ></div
+    ></div
+  ><div
+    ><div {{ifBPClassAttr .Data.Links.Params.BOOL.hidemem "collapse-hidden"}}
+      >{{template "defines::define_memtable" .}}</div
+    ></div
+  ></div
+>{{end}}{{/*
+*/}}{{define "defines::define_panelps"}}<div class="panel1"
+  ><label class="panel-heading btn-block"
+    ><a {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigps "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigps}}
+      >Processes</a
+    ></label
+  ><div
+    ><div id="psconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigps "" "collapse-hidden"}}
+      ><form {{class}}="inline-form border-bottom-form text-right" {{formActionAttr .Data.Links.Params.Query}}
+        ><input class="collapse-hidden" type="submit"
+        ><div class="form-group-padded"
+          >{{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshps}}</div
+        ><div class="form-group-padded"
+          ><div class="btn-group btn-group-sm" role="group"
+            ><a {{ifBPClassAttr .Data.Links.Params.BOOL.hideps "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hideps}}
+              >Hidden</a
+            ><a {{ifBClassAttr .Data.PStable.PSnotDecreasable "disabled" "" "btn btn-default"}} {{lessHrefAttr .Data.Links.Params.COUNT.psn}}
+              >-</a
+            ><a {{ifBClassAttr .Data.PStable.PSnotExpandable "disabled" "" "btn btn-default"}} {{moreHrefAttr .Data.Links.Params.COUNT.psn}}
+              >{{.Data.PStable.PSplusText}}</a
+            ></div
+          ></div
+        ></form
+      ></div
+    ></div
+  ><div
+    ><div {{ifBPClassAttr .Data.Links.Params.BOOL.hideps "collapse-hidden"}}
+      >{{template "defines::define_pstable" .}}</div
+    ></div
+  ></div
 >{{end}}{{/*
 */}}{{define "defines::define_psrows"}}{{with rowsset .}}{{.}}{{else}}{{range $proc := .Data.PStable.List}}<tr{{key "ps-rowby-pid" $proc.PIDstring}}
   ><td class="text-right"

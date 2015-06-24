@@ -102,6 +102,28 @@ func (f HTMLFuncs) refreshClass(value interface{}, classes string) (interface{},
 	return nil, f.CastError("*client.PeriodParam")
 }
 
+func (f JSXFuncs) lessHrefAttr(value interface{}) (interface{}, error) {
+	// f is unused
+	return fmt.Sprintf(" href={%s.LessHref} onClick={this.handleClick}", uncurl(value.(string))), nil
+}
+func (f HTMLFuncs) lessHrefAttr(value interface{}) (interface{}, error) {
+	if cp, ok := value.(*client.CountParam); ok {
+		return template.HTMLAttr(fmt.Sprintf(" href=\"%s\"", cp.EncodeLess())), nil
+	}
+	return nil, f.CastError("*client.CountParam")
+}
+
+func (f JSXFuncs) moreHrefAttr(value interface{}) (interface{}, error) {
+	// f is unused
+	return fmt.Sprintf(" href={%s.MoreHref} onClick={this.handleClick}", uncurl(value.(string))), nil
+}
+func (f HTMLFuncs) moreHrefAttr(value interface{}) (interface{}, error) {
+	if cp, ok := value.(*client.CountParam); ok {
+		return template.HTMLAttr(fmt.Sprintf(" href=\"%s\"", cp.EncodeMore())), nil
+	}
+	return nil, f.CastError("*client.CountParam")
+}
+
 func (f JSXFuncs) ifDisabledAttr(value interface{}) (template.HTMLAttr, error) {
 	// f is unused
 	return template.HTMLAttr(fmt.Sprintf("disabled={%s.Value ? \"disabled\" : \"\" }",
@@ -118,33 +140,49 @@ func (f HTMLFuncs) ifDisabledAttr(value interface{}) (template.HTMLAttr, error) 
 	return template.HTMLAttr(""), f.CastError("*client.BoolParam")
 }
 
-func (f JSXFuncs) ifClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
-	s, err := f.ifClass(value, classes...)
+func (f JSXFuncs) ifBPClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
+	s, err := f.ifBPClass(value, classes...)
 	if err != nil {
 		return template.HTMLAttr(""), err
 	}
 	return template.HTMLAttr(fmt.Sprintf(" %s=%s", f.classWord(), s)), nil
 }
 
-func (f HTMLFuncs) ifClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
-	s, err := f.ifClass(value, classes...)
+func (f HTMLFuncs) ifBPClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
+	s, err := f.ifBPClass(value, classes...)
 	if err != nil {
 		return template.HTMLAttr(""), err
 	}
 	return template.HTMLAttr(fmt.Sprintf(" %s=%q", f.classWord(), s)), nil
 }
 
-func (f JSXFuncs) ifClass(value interface{}, classes ...string) (string, error) {
+func (f JSXFuncs) ifBClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
+	s, err := f.ifBClass(value, classes...)
+	if err != nil {
+		return template.HTMLAttr(""), err
+	}
+	return template.HTMLAttr(fmt.Sprintf(" %s=%s", f.classWord(), s)), nil
+}
+
+func (f HTMLFuncs) ifBClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
+	s, err := f.ifBClass(value, classes...)
+	if err != nil {
+		return template.HTMLAttr(""), err
+	}
+	return template.HTMLAttr(fmt.Sprintf(" %s=%q", f.classWord(), s)), nil
+}
+
+func (f JSXFuncs) ifBPClass(value interface{}, classes ...string) (string, error) {
 	// f is unused
-	fstclass, sndclass, err := classesChoices(classes)
+	fstclass, sndclass, err := classesChoices("ifBPClass*", classes)
 	if err != nil {
 		return "", err
 	}
 	return fmt.Sprintf("{%s.Value ? %q : %q }", uncurl(value.(string)), fstclass, sndclass), nil
 }
 
-func (f HTMLFuncs) ifClass(value interface{}, classes ...string) (string, error) {
-	fstclass, sndclass, err := classesChoices(classes)
+func (f HTMLFuncs) ifBPClass(value interface{}, classes ...string) (string, error) {
+	fstclass, sndclass, err := classesChoices("ifBPClass*", classes)
 	if err != nil {
 		return "", err
 	}
@@ -154,12 +192,35 @@ func (f HTMLFuncs) ifClass(value interface{}, classes ...string) (string, error)
 		}
 		return sndclass, nil
 	}
-	return "", f.CastError("*client.BoolParam")
+	return "", f.CastError("*bool")
 }
 
-func classesChoices(classes []string) (string, string, error) {
+func (f JSXFuncs) ifBClass(value interface{}, classes ...string) (string, error) {
+	// f is unused
+	fstclass, sndclass, err := classesChoices("ifBClass*", classes)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("{%s ? %q : %q }", uncurl(value.(string)), fstclass, sndclass), nil
+}
+
+func (f HTMLFuncs) ifBClass(value interface{}, classes ...string) (string, error) {
+	fstclass, sndclass, err := classesChoices("ifBClass*", classes)
+	if err != nil {
+		return "", err
+	}
+	if bp, ok := value.(*bool); ok {
+		if *bp {
+			return fstclass, nil
+		}
+		return sndclass, nil
+	}
+	return "", f.CastError("*bool")
+}
+
+func classesChoices(caller string, classes []string) (string, string, error) {
 	if len(classes) == 0 || len(classes) > 3 {
-		return "", "", fmt.Errorf("number of args for ifClass*: either 2 or 3 or 4 got %d", 1+len(classes))
+		return "", "", fmt.Errorf("number of args for %s: either 2 or 3 or 4 got %d", caller, 1+len(classes))
 	}
 	sndclass := ""
 	if len(classes) > 1 {
@@ -317,14 +378,18 @@ func MakeMap(f Functor) template.FuncMap {
 		"clip":            f.clip,
 		"droplink":        f.droplink,
 		"usepercent":      f.usepercent,
-		"ifClass":         f.ifClass,
-		"ifClassAttr":     f.ifClassAttr,
+		"ifBClass":        f.ifBClass,
+		"ifBClassAttr":    f.ifBClassAttr,
+		"ifBPClass":       f.ifBPClass,
+		"ifBPClassAttr":   f.ifBPClassAttr,
 		"ifDisabledAttr":  f.ifDisabledAttr,
 		"toggleHrefAttr":  f.toggleHrefAttr,
 		"formActionAttr":  f.formActionAttr,
 		"periodNameAttr":  f.periodNameAttr,
 		"periodValueAttr": f.periodValueAttr,
 		"refreshClass":    f.refreshClass,
+		"lessHrefAttr":    f.lessHrefAttr,
+		"moreHrefAttr":    f.moreHrefAttr,
 		"jsxClose":        f.jsxClose,
 		"class":           f.classWord,
 		"for":             f.forWord,
@@ -345,14 +410,18 @@ type Functor interface {
 	clip(int, string, string, ...string) (*Clipped, error)
 	droplink(interface{}, ...string) (interface{}, error)
 	usepercent(string) interface{}
-	ifClass(interface{}, ...string) (string, error)
-	ifClassAttr(interface{}, ...string) (template.HTMLAttr, error)
+	ifBClass(interface{}, ...string) (string, error)
+	ifBClassAttr(interface{}, ...string) (template.HTMLAttr, error)
+	ifBPClass(interface{}, ...string) (string, error)
+	ifBPClassAttr(interface{}, ...string) (template.HTMLAttr, error)
 	ifDisabledAttr(interface{}) (template.HTMLAttr, error)
 	toggleHrefAttr(interface{}) (interface{}, error)
 	formActionAttr(interface{}) (interface{}, error)
 	periodNameAttr(interface{}) (interface{}, error)
 	periodValueAttr(interface{}) (interface{}, error)
 	refreshClass(interface{}, string) (interface{}, error)
+	lessHrefAttr(interface{}) (interface{}, error)
+	moreHrefAttr(interface{}) (interface{}, error)
 	jsxClose(string) template.HTML
 	classWord() string
 	forWord() string
