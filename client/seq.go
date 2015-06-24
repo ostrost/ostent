@@ -136,7 +136,7 @@ var EnumDecodecs = map[string]EnumDecodec{
 	},
 }
 
-var CountDecodecs = map[string]CountDecodec{"psn": {Default: 8}}
+var LimitDecodecs = map[string]LimitDecodec{"psn": {Default: 8}}
 
 var BoolDecodecs = map[string]BoolDecodec{
 	"still": {Default: false},
@@ -255,12 +255,12 @@ func NewParams(minperiod flags.Period) *Params {
 			BoolDecodec: v,
 		}
 	}
-	p.COUNT = make(map[string]*CountParam)
-	for k, v := range CountDecodecs {
+	p.LIMIT = make(map[string]*LimitParam)
+	for k, v := range LimitDecodecs {
 		v.Pname = k
-		p.COUNT[k] = &CountParam{
+		p.LIMIT[k] = &LimitParam{
 			Query:        p.Query,
-			CountDecodec: v,
+			LimitDecodec: v,
 		}
 	}
 	p.PERIOD = make(map[string]*PeriodParam)
@@ -355,7 +355,7 @@ func (p *Params) NewQuery() {
 	for _, v := range p.ENUM {
 		v.Query = p.Query
 	}
-	for _, v := range p.COUNT {
+	for _, v := range p.LIMIT {
 		v.Query = p.Query
 	}
 	for _, v := range p.PERIOD {
@@ -370,7 +370,7 @@ func (p *Params) Decode(form url.Values) {
 	for _, v := range p.ENUM {
 		v.Decode(form)
 	}
-	for _, v := range p.COUNT {
+	for _, v := range p.LIMIT {
 		v.Decode(form)
 	}
 	for _, v := range p.PERIOD {
@@ -410,7 +410,7 @@ func (p PeriodParam) Refresh(forcerefresh bool) bool {
 type Params struct {
 	BOOL   map[string]*BoolParam
 	ENUM   map[string]*EnumParam
-	COUNT  map[string]*CountParam
+	LIMIT  map[string]*LimitParam
 	PERIOD map[string]*PeriodParam
 	Query  *Query
 }
@@ -470,37 +470,37 @@ func (pp *PeriodParam) Decode(form url.Values) {
 	pp.Query.UpdateLocation = true // New location.
 }
 
-type CountDecodec struct {
+type LimitDecodec struct {
 	Pname   string
 	Default uint
 }
 
-type CountParam struct {
+type LimitParam struct {
 	Query        *Query       `json:"-"` // url.Values here.
-	CountDecodec CountDecodec `json:"-"` // Read-only, an entry from global var CountDecoders.
+	LimitDecodec LimitDecodec `json:"-"` // Read-only, an entry from global var LimitDecoders.
 	Value        uint         `json:"-"` // Decoded value.
 }
 
-func (cp *CountParam) Decode(form url.Values) {
-	values, ok := form[cp.CountDecodec.Pname]
+func (lp *LimitParam) Decode(form url.Values) {
+	values, ok := form[lp.LimitDecodec.Pname]
 	if !ok {
-		cp.Value = cp.CountDecodec.Default
+		lp.Value = lp.LimitDecodec.Default
 		return
 	}
 	if len(values) == 0 {
-		cp.Query.Del(cp.CountDecodec.Pname)
+		lp.Query.Del(lp.LimitDecodec.Pname)
 		return
 	}
 	if i, err := strconv.Atoi(values[0]); err == nil && i > 0 && i <= 65536 {
-		cp.Value = uint(i)
-		cp.Query.Set(cp.CountDecodec.Pname, fmt.Sprintf("%d", cp.Value))
+		lp.Value = uint(i)
+		lp.Query.Set(lp.LimitDecodec.Pname, fmt.Sprintf("%d", lp.Value))
 		return
 	}
-	cp.Query.Del(cp.CountDecodec.Pname)
+	lp.Query.Del(lp.LimitDecodec.Pname)
 }
 
-func (cp CountParam) EncodeLess() template.HTMLAttr {
-	value := cp.Value
+func (lp LimitParam) EncodeLess() template.HTMLAttr {
+	value := lp.Value
 	if value >= 2 {
 		g := math.Log2(float64(value))
 		n := math.Floor(g)
@@ -509,36 +509,36 @@ func (cp CountParam) EncodeLess() template.HTMLAttr {
 		}
 		value = uint(math.Pow(2, n))
 	}
-	return cp.Encode(&value)
+	return lp.Encode(&value)
 }
 
-func (cp CountParam) EncodeMore() template.HTMLAttr {
-	value := cp.Value
+func (lp LimitParam) EncodeMore() template.HTMLAttr {
+	value := lp.Value
 	if value <= 32768 { // up to 65536
 		value = uint(math.Pow(2, 1+math.Floor(math.Log2(float64(value)))))
 	}
-	return cp.Encode(&value)
+	return lp.Encode(&value)
 }
 
-func (cp CountParam) Encode(this *uint) template.HTMLAttr {
+func (lp LimitParam) Encode(this *uint) template.HTMLAttr {
 	if this == nil {
-		this = &cp.Value
+		this = &lp.Value
 	}
-	values := cp.Query.ValuesCopy()
-	if *this != cp.CountDecodec.Default {
-		values.Set(cp.CountDecodec.Pname, fmt.Sprintf("%d", *this))
+	values := lp.Query.ValuesCopy()
+	if *this != lp.LimitDecodec.Default {
+		values.Set(lp.LimitDecodec.Pname, fmt.Sprintf("%d", *this))
 	} else {
-		values.Del(cp.CountDecodec.Pname)
+		values.Del(lp.LimitDecodec.Pname)
 	}
-	return template.HTMLAttr("?" + cp.Query.ValuesEncode(values))
+	return template.HTMLAttr("?" + lp.Query.ValuesEncode(values))
 }
 
-func (cp CountParam) MarshalJSON() ([]byte, error) {
+func (lp LimitParam) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
 		LessHref, MoreHref template.HTMLAttr
 	}{
-		LessHref: cp.EncodeLess(),
-		MoreHref: cp.EncodeMore(),
+		LessHref: lp.EncodeLess(),
+		MoreHref: lp.EncodeMore(),
 	})
 }
 

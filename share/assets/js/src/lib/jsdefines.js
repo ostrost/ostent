@@ -218,8 +218,8 @@ define(function(require) {
   }))), React.createElement("div", {className: "form-group-padded"
         }, React.createElement("div", {className: "btn-group btn-group-sm", role: "group"
           }, React.createElement("a", {className: Data.Links.Params.BOOL.hideps.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Links.Params.BOOL.hideps.Href, onClick: this.handleClick
-            }, "Hidden"), React.createElement("a", {className: Data.PStable.PSnotDecreasable ? "btn btn-default disabled" : "btn btn-default ", href: Data.Links.Params.COUNT.psn.LessHref, onClick: this.handleClick
-            }, "-"), React.createElement("a", {className: Data.PStable.PSnotExpandable ? "btn btn-default disabled" : "btn btn-default ", href: Data.Links.Params.COUNT.psn.MoreHref, onClick: this.handleClick
+            }, "Hidden"), React.createElement("a", {className: Data.PStable.PSnotDecreasable ? "btn btn-default disabled" : "btn btn-default ", href: Data.Links.Params.LIMIT.psn.LessHref, onClick: this.handleClick
+            }, "-"), React.createElement("a", {className: Data.PStable.PSnotExpandable ? "btn btn-default disabled" : "btn btn-default ", href: Data.Links.Params.LIMIT.psn.MoreHref, onClick: this.handleClick
             }, Data.PStable.PSplusText)))))), React.createElement("div", null
   , React.createElement("div", {className: Data.Links.Params.BOOL.hideps.Value ? "collapse-hidden" : ""
     }, React.createElement("table", {className: "table2 stripe-table"

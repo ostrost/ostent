@@ -107,10 +107,10 @@ func (f JSXFuncs) lessHrefAttr(value interface{}) (interface{}, error) {
 	return fmt.Sprintf(" href={%s.LessHref} onClick={this.handleClick}", uncurl(value.(string))), nil
 }
 func (f HTMLFuncs) lessHrefAttr(value interface{}) (interface{}, error) {
-	if cp, ok := value.(*client.CountParam); ok {
-		return template.HTMLAttr(fmt.Sprintf(" href=\"%s\"", cp.EncodeLess())), nil
+	if lp, ok := value.(*client.LimitParam); ok {
+		return template.HTMLAttr(fmt.Sprintf(" href=\"%s\"", lp.EncodeLess())), nil
 	}
-	return nil, f.CastError("*client.CountParam")
+	return nil, f.CastError("*client.LimitParam")
 }
 
 func (f JSXFuncs) moreHrefAttr(value interface{}) (interface{}, error) {
@@ -118,10 +118,10 @@ func (f JSXFuncs) moreHrefAttr(value interface{}) (interface{}, error) {
 	return fmt.Sprintf(" href={%s.MoreHref} onClick={this.handleClick}", uncurl(value.(string))), nil
 }
 func (f HTMLFuncs) moreHrefAttr(value interface{}) (interface{}, error) {
-	if cp, ok := value.(*client.CountParam); ok {
-		return template.HTMLAttr(fmt.Sprintf(" href=\"%s\"", cp.EncodeMore())), nil
+	if lp, ok := value.(*client.LimitParam); ok {
+		return template.HTMLAttr(fmt.Sprintf(" href=\"%s\"", lp.EncodeMore())), nil
 	}
-	return nil, f.CastError("*client.CountParam")
+	return nil, f.CastError("*client.LimitParam")
 }
 
 func (f JSXFuncs) ifDisabledAttr(value interface{}) (template.HTMLAttr, error) {

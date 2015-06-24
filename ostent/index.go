@@ -60,7 +60,7 @@ func (procs MPSlice) Ordered(cl *client.Client, send *client.SendClient) *PStabl
 	uids := map[uint]string{}
 
 	pslen := uint(len(procs))
-	limitPS := cl.Params.COUNT["psn"].Value
+	limitPS := cl.Params.LIMIT["psn"].Value
 	notdec := limitPS <= 1
 	notexp := limitPS >= pslen
 

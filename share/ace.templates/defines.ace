@@ -293,8 +293,8 @@
       div.form-group-padded
         div.btn-group.btn-group-sm role=group
           | <a {{ifBPClassAttr .Data.Links.Params.BOOL.hideps "active"  "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hideps}}>Hidden</a>
-          | <a {{ifBClassAttr .Data.PStable.PSnotDecreasable "disabled" "" "btn btn-default"}} {{lessHrefAttr .Data.Links.Params.COUNT.psn}}>-</a>
-          | <a {{ifBClassAttr .Data.PStable.PSnotExpandable  "disabled" "" "btn btn-default"}} {{moreHrefAttr .Data.Links.Params.COUNT.psn}}>
+          | <a {{ifBClassAttr .Data.PStable.PSnotDecreasable "disabled" "" "btn btn-default"}} {{lessHrefAttr .Data.Links.Params.LIMIT.psn}}>-</a>
+          | <a {{ifBClassAttr .Data.PStable.PSnotExpandable  "disabled" "" "btn btn-default"}} {{moreHrefAttr .Data.Links.Params.LIMIT.psn}}>
           | {{.Data.PStable.PSplusText}}</a>
       | </form>
       | </div>

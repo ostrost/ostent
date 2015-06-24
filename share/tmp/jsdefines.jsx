@@ -399,9 +399,9 @@ define(function(require) {
         ><div className="btn-group btn-group-sm" role="group"
           ><a  className={Data.Links.Params.BOOL.hideps.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Links.Params.BOOL.hideps.Href} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.PStable.PSnotDecreasable ? "btn btn-default disabled" : "btn btn-default " }  href={Data.Links.Params.COUNT.psn.LessHref} onClick={this.handleClick}
+          ><a  className={Data.PStable.PSnotDecreasable ? "btn btn-default disabled" : "btn btn-default " }  href={Data.Links.Params.LIMIT.psn.LessHref} onClick={this.handleClick}
             >-</a
-          ><a  className={Data.PStable.PSnotExpandable ? "btn btn-default disabled" : "btn btn-default " }  href={Data.Links.Params.COUNT.psn.MoreHref} onClick={this.handleClick}
+          ><a  className={Data.PStable.PSnotExpandable ? "btn btn-default disabled" : "btn btn-default " }  href={Data.Links.Params.LIMIT.psn.MoreHref} onClick={this.handleClick}
             >{Data.PStable.PSplusText}</a
           ></div
         ></div
