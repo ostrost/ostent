@@ -91,7 +91,7 @@ $(destbin)/$(cmdname).32:
 
 share/assets/css/index.css: share/style/index.scss
 	type sass   >/dev/null || exit 0; sass $< $@
-share/assets/js/src/gen/jscript.js: share/tmp/jscript.jsx
+share/assets/js/src/lib/jsdefines.js: share/tmp/jsdefines.jsx
 	type jsx    >/dev/null || exit 0; jsx <$^ >/dev/null && jsx <$^ 2>/dev/null >$@
 share/assets/js/src/milk/index.js: share/coffee/index.coffee
 	type coffee >/dev/null || exit 0; coffee -p $^ >/dev/null && coffee -o $(@D)/ $^
@@ -100,7 +100,7 @@ share/assets/js/min/index.min.js: $(shell find share/assets/js/src/ -type f)
 
 share/templates/index.html: share/ace.templates/index.ace share/ace.templates/defines.ace $(acepp.go)
 	go run $(acepp.go) -defines share/ace.templates/defines.ace -output $@ $<
-share/tmp/jscript.jsx: share/ace.templates/jscript.txt share/ace.templates/defines.ace $(acepp.go)
+share/tmp/jsdefines.jsx: share/ace.templates/jsdefines.js.tmpl share/ace.templates/defines.ace $(acepp.go)
 	go run $(acepp.go) -defines share/ace.templates/defines.ace -output $@ -javascript $<
 
 $(templates_bingo) $(templates_devgo): $(shell find share/templates/ -type f \! -name \*.go)
@@ -125,7 +125,7 @@ $(assets_devgo): $(shell find \
                       share/assets/ -type f \! -name '*.go' \! -path \
                      'share/assets/js/min/*')
 $(assets_devgo): share/assets/css/index.css
-$(assets_devgo): share/assets/js/src/gen/jscript.js
+$(assets_devgo): share/assets/js/src/lib/jsdefines.js
 
 # spare shortcuts
 bindata-bin: $(assets_bingo) $(templates_bingo)

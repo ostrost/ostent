@@ -17,11 +17,11 @@
       jquery: 'vendor/jquery/2.1.4/jquery-2.1.4.min',
       bscollapse: 'vendor/bootstrap/3.3.5-collapse/bootstrap.min',
       react: 'vendor/react/0.13.3/react.min',
-      jscript: 'gen/jscript'
+      jsdefines: 'lib/jsdefines'
     }
   });
 
-  require(['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], function($, React, jscript) {
+  require(['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], function($, React, jsdefines) {
     var neweventsource, newwebsocket, update, updates;
     updates = void 0;
     neweventsource = function(onmessage) {
@@ -157,13 +157,13 @@
         Data = {
           IFbytes: this.state
         };
-        return jscript.ifbytes_table(Data, (function() {
+        return jsdefines.ifbytes_table(Data, (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.IFbytes) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
           for (i = 0, len = ref2.length; i < len; i++) {
             $if = ref2[i];
-            results.push(jscript.ifbytes_rows(Data, $if));
+            results.push(jsdefines.ifbytes_rows(Data, $if));
           }
           return results;
         })());
@@ -178,13 +178,13 @@
         Data = {
           IFerrors: this.state
         };
-        return jscript.iferrors_table(Data, (function() {
+        return jsdefines.iferrors_table(Data, (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.IFerrors) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
           for (i = 0, len = ref2.length; i < len; i++) {
             $if = ref2[i];
-            results.push(jscript.iferrors_rows(Data, $if));
+            results.push(jsdefines.iferrors_rows(Data, $if));
           }
           return results;
         })());
@@ -199,13 +199,13 @@
         Data = {
           IFpackets: this.state
         };
-        return jscript.ifpackets_table(Data, (function() {
+        return jsdefines.ifpackets_table(Data, (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.IFpackets) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
           for (i = 0, len = ref2.length; i < len; i++) {
             $if = ref2[i];
-            results.push(jscript.ifpackets_rows(Data, $if));
+            results.push(jsdefines.ifpackets_rows(Data, $if));
           }
           return results;
         })());
@@ -221,13 +221,13 @@
       render: function() {
         var $disk, Data;
         Data = this.state;
-        return jscript.dfbytes_table(Data, (function() {
+        return jsdefines.dfbytes_table(Data, (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.DFbytes) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
           for (i = 0, len = ref2.length; i < len; i++) {
             $disk = ref2[i];
-            results.push(jscript.dfbytes_rows(Data, $disk));
+            results.push(jsdefines.dfbytes_rows(Data, $disk));
           }
           return results;
         })());
@@ -243,13 +243,13 @@
       render: function() {
         var $disk, Data;
         Data = this.state;
-        return jscript.dfinodes_table(Data, (function() {
+        return jsdefines.dfinodes_table(Data, (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.DFinodes) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
           for (i = 0, len = ref2.length; i < len; i++) {
             $disk = ref2[i];
-            results.push(jscript.dfinodes_rows(Data, $disk));
+            results.push(jsdefines.dfinodes_rows(Data, $disk));
           }
           return results;
         })());
@@ -284,13 +284,13 @@
       render: function() {
         var $mem, Data;
         Data = this.state;
-        return jscript.panelmem.bind(this)(Data, (function() {
+        return jsdefines.panelmem.bind(this)(Data, (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.MEM) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
           for (i = 0, len = ref2.length; i < len; i++) {
             $mem = ref2[i];
-            results.push(jscript.mem_rows(Data, $mem));
+            results.push(jsdefines.mem_rows(Data, $mem));
           }
           return results;
         })());
@@ -322,13 +322,13 @@
         Data = {
           CPU: this.state
         };
-        return jscript.cpu_table(Data, (function() {
+        return jsdefines.cpu_table(Data, (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.CPU) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
           for (i = 0, len = ref2.length; i < len; i++) {
             $core = ref2[i];
-            results.push(jscript.cpu_rows(Data, $core));
+            results.push(jsdefines.cpu_rows(Data, $core));
           }
           return results;
         })());
@@ -344,13 +344,13 @@
       render: function() {
         var $proc, Data;
         Data = this.state;
-        return jscript.panelps.bind(this)(Data, (function() {
+        return jsdefines.panelps.bind(this)(Data, (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.PStable) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
           for (i = 0, len = ref2.length; i < len; i++) {
             $proc = ref2[i];
-            results.push(jscript.ps_rows(Data, $proc));
+            results.push(jsdefines.ps_rows(Data, $proc));
           }
           return results;
         })());
@@ -385,7 +385,7 @@
         var $mach, Data, rows;
         Data = this.state;
         if (((Data != null ? Data.VagrantErrord : void 0) != null) && Data.VagrantErrord) {
-          rows = [jscript.vagrant_error(Data)];
+          rows = [jsdefines.vagrant_error(Data)];
         } else {
           rows = (function() {
             var i, len, ref, ref1, ref2, results;
@@ -393,12 +393,12 @@
             results = [];
             for (i = 0, len = ref2.length; i < len; i++) {
               $mach = ref2[i];
-              results.push(jscript.vagrant_rows(Data, $mach));
+              results.push(jsdefines.vagrant_rows(Data, $mach));
             }
             return results;
           })();
         }
-        return jscript.vagrant_table(Data, rows);
+        return jsdefines.vagrant_table(Data, rows);
       }
     });
     this.addDiv = function(sel) {

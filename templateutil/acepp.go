@@ -23,18 +23,18 @@ import (
 
 func main() {
 	var (
-		outputFile  string
-		definesFile string
-		jscriptMode bool
-		definesMode bool
-		prettyprint bool
+		outputFile    string
+		definesFile   string
+		jsdefinesMode bool
+		definesMode   bool
+		prettyprint   bool
 	)
 	flag.StringVar(&outputFile, "o", "", "Output file")
 	flag.StringVar(&outputFile, "output", "", "Output file")
 	flag.StringVar(&definesFile, "d", "", "defines.ace template")
 	flag.StringVar(&definesFile, "defines", "", "defines.ace template")
-	flag.BoolVar(&jscriptMode, "j", false, "Javascript mode")
-	flag.BoolVar(&jscriptMode, "javascript", false, "Javascript mode")
+	flag.BoolVar(&jsdefinesMode, "j", false, "Javascript defines mode")
+	flag.BoolVar(&jsdefinesMode, "javascript", false, "Javascript defines mode")
 	flag.BoolVar(&definesMode, "s", false, "Save the defines")
 	flag.BoolVar(&definesMode, "savedefines", false, "Save the defines")
 	flag.BoolVar(&prettyprint, "pp", true, "Pretty-print the output")
@@ -65,7 +65,7 @@ func main() {
 		}
 	}
 	aceopts := ace.InitializeOptions(&ace.Options{FuncMap: templatefunc.Funcs})
-	if !jscriptMode {
+	if !jsdefinesMode {
 		_, index, err := LoadAce(inputFile, definesFile, aceopts)
 		check(err)
 		text := Format(prettyprint, index.Tree.Root.String(), aceopts.NoCloseTagNames)
@@ -92,7 +92,7 @@ func main() {
 	funcs["setrows"] = templatefunc.SetKFunc(".OverrideRows")
 	funcs["rowsset"] = templatefunc.GetKFunc(".OverrideRows")
 
-	jscript, err := templatetext.New(Base(inputFile, aceopts)).
+	jsdefines, err := templatetext.New(Base(inputFile, aceopts)).
 		Funcs(templatetext.FuncMap(funcs)).ParseFiles(inputFile)
 	check(err)
 
@@ -104,13 +104,13 @@ func main() {
 			check(err)
 			tree = y.Tree
 		}
-		_, err := jscript.AddParseTree(name, tree)
+		_, err := jsdefines.AddParseTree(name, tree)
 		check(err)
 	}
 
-	data := templatepipe.Data(jscript)
+	data := templatepipe.Data(jsdefines)
 	buf := new(bytes.Buffer)
-	check(jscript.Execute(buf, data))
+	check(jsdefines.Execute(buf, data))
 	check(WriteFile(outputFile, buf.String()))
 }
 

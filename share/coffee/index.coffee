@@ -8,10 +8,10 @@ require.config
     jquery:    'vendor/jquery/2.1.4/jquery-2.1.4.min'
     bscollapse:'vendor/bootstrap/3.3.5-collapse/bootstrap.min'
     react:     'vendor/react/0.13.3/react.min'
-    jscript:   'gen/jscript'
+    jsdefines:   'lib/jsdefines'
 
 # main require
-require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($, React, jscript) ->
+require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], ($, React, jsdefines) ->
   # domReady, headroom, bscollapse "required" for r.js only.
   updates = undefined # events source. set later
   neweventsource = (onmessage) ->
@@ -127,21 +127,21 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
     getInitialState: () -> Data.IFbytes # a global Data
     render: () ->
       Data = {IFbytes: @state}
-      return jscript.ifbytes_table(Data, (jscript.ifbytes_rows(Data, $if
+      return jsdefines.ifbytes_table(Data, (jsdefines.ifbytes_rows(Data, $if
       ) for $if in Data?.IFbytes?.List ? []))
 
   @IFerrorsCLASS = React.createClass
     getInitialState: () -> Data.IFerrors # a global Data
     render: () ->
       Data = {IFerrors: @state}
-      return jscript.iferrors_table(Data, (jscript.iferrors_rows(Data, $if
+      return jsdefines.iferrors_table(Data, (jsdefines.iferrors_rows(Data, $if
       ) for $if in Data?.IFerrors?.List ? []))
 
   @IFpacketsCLASS = React.createClass
     getInitialState: () -> Data.IFpackets # a global Data
     render: () ->
       Data = {IFpackets: @state}
-      return jscript.ifpackets_table(Data, (jscript.ifpackets_rows(Data, $if
+      return jsdefines.ifpackets_table(Data, (jsdefines.ifpackets_rows(Data, $if
       ) for $if in Data?.IFpackets?.List ? []))
 
   @DFbytesCLASS = React.createClass
@@ -151,7 +151,7 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
     }
     render: () ->
       Data = @state
-      return jscript.dfbytes_table(Data, (jscript.dfbytes_rows(Data, $disk
+      return jsdefines.dfbytes_table(Data, (jsdefines.dfbytes_rows(Data, $disk
       ) for $disk in Data?.DFbytes?.List ? []))
 
   @DFinodesCLASS = React.createClass
@@ -161,7 +161,7 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
     }
     render: () ->
       Data = @state
-      return jscript.dfinodes_table(Data, (jscript.dfinodes_rows(Data, $disk
+      return jsdefines.dfinodes_table(Data, (jsdefines.dfinodes_rows(Data, $disk
       ) for $disk in Data?.DFinodes?.List ? []))
 
   @LabelClassColorPercent = (p) ->
@@ -180,7 +180,7 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
     }
     render: () ->
       Data = @state
-      return jscript.panelmem.bind(this)(Data, (jscript.mem_rows(Data, $mem
+      return jsdefines.panelmem.bind(this)(Data, (jsdefines.mem_rows(Data, $mem
       ) for $mem in Data?.MEM?.List ? []))
     handleChange: (e) ->
       href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1)
@@ -200,7 +200,7 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
     getInitialState: () -> Data.CPU # a global Data
     render: () ->
       Data = {CPU: @state}
-      return jscript.cpu_table(Data, (jscript.cpu_rows(Data, $core
+      return jsdefines.cpu_table(Data, (jsdefines.cpu_rows(Data, $core
       ) for $core in Data?.CPU?.List ? []))
 
   @PStableCLASS = React.createClass
@@ -210,7 +210,7 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
     }
     render: () ->
       Data = @state
-      return jscript.panelps.bind(this)(Data, (jscript.ps_rows(Data, $proc
+      return jsdefines.panelps.bind(this)(Data, (jsdefines.ps_rows(Data, $proc
       ) for $proc in Data?.PStable?.List ? []))
     handleChange: (e) ->
       href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1)
@@ -235,11 +235,11 @@ require ['jquery', 'react', 'jscript', 'domReady', 'headroom', 'bscollapse'], ($
     render: () ->
       Data = @state
       if Data?.VagrantErrord? and Data.VagrantErrord
-        rows = [jscript.vagrant_error(Data)]
+        rows = [jsdefines.vagrant_error(Data)]
       else
-        rows = (jscript.vagrant_rows(Data, $mach
+        rows = (jsdefines.vagrant_rows(Data, $mach
         ) for $mach in Data?.VagrantMachines?.List ? [])
-      return jscript.vagrant_table(Data, rows)
+      return jsdefines.vagrant_table(Data, rows)
 
   @addDiv = (sel) -> sel.append('<div />').find('div').get(0)
 
