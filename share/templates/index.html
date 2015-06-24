@@ -548,7 +548,7 @@
   ><div
     ><div id="memconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigmem "" "collapse-hidden"}}
       ><form {{class}}="horizontal-form border-bottom-form" {{formActionAttr .Data.Links.Params.Query}}
-        ><input class="collapse-hidden" type="submit"
+        ><input class="hidden-submit" type="submit"
         ><div class="form-group-padded"
           ><div class="btn-group btn-group-sm" role="group"
             ><a {{ifBPClassAttr .Data.Links.Params.BOOL.hidemem "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidemem}}
@@ -576,7 +576,7 @@
   ><div
     ><div id="psconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigps "" "collapse-hidden"}}
       ><form {{class}}="inline-form border-bottom-form text-right" {{formActionAttr .Data.Links.Params.Query}}
-        ><input class="collapse-hidden" type="submit"
+        ><input class="hidden-submit" type="submit"
         ><div class="form-group-padded"
           >{{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshps}}</div
         ><div class="form-group-padded"

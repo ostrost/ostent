@@ -7369,6 +7369,9 @@ body {
   .panel1 form.border-bottom-form {
     border-bottom: 1px solid #ddd; }
 
+.hidden-submit {
+  display: none; }
+
 .table2, .table1 {
   margin-bottom: 0px; }
   .table2 .text-right sup, .table1 .text-right sup {

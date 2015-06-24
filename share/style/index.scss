@@ -96,6 +96,8 @@ body {
   }
 }
 
+.hidden-submit { display: none; }
+
 .table2, .table1 {
   @extend .table;
   @extend .table-condensed;

@@ -15,7 +15,7 @@ define(function(require) {
       }, "Memory")), React.createElement("div", null
     , React.createElement("div", {id: "memconfig", className: Data.Links.Params.BOOL.showconfigmem.Value ? "" : "collapse-hidden"
       }, React.createElement("form", {className: "horizontal-form border-bottom-form", action: "/form/"+Data.Links.Params.Query
-        }, React.createElement("input", {className: "collapse-hidden", type: "submit"
+        }, React.createElement("input", {className: "hidden-submit", type: "submit"
         }), React.createElement("div", {className: "form-group-padded"
         }, React.createElement("div", {className: "btn-group btn-group-sm", role: "group"
           }, React.createElement("a", {className: Data.Links.Params.BOOL.hidemem.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Links.Params.BOOL.hidemem.Href, onClick: this.handleClick
@@ -210,7 +210,7 @@ define(function(require) {
       }, "Processes")), React.createElement("div", null
     , React.createElement("div", {id: "psconfig", className: Data.Links.Params.BOOL.showconfigps.Value ? "" : "collapse-hidden"
       }, React.createElement("form", {className: "inline-form border-bottom-form text-right", action: "/form/"+Data.Links.Params.Query
-        }, React.createElement("input", {className: "collapse-hidden", type: "submit"
+        }, React.createElement("input", {className: "hidden-submit", type: "submit"
         }), React.createElement("div", {className: "form-group-padded"
         }, React.createElement("div", {className: "input-group input-group-sm refresh-group" + (Data.Links.Params.PERIOD.refreshps.InputErrd ? " has-warning" : "")
   }, React.createElement("span", {className: "input-group-addon"

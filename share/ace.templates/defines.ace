@@ -199,8 +199,7 @@
     div
       | <div id="memconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigmem "" "collapse-hidden"}}>
       | <form {{class}}="horizontal-form border-bottom-form" {{formActionAttr .Data.Links.Params.Query}}>
-      / TODO different semantically standalone class for submit button with display: none
-      input.collapse-hidden type=submit
+      input.hidden-submit type=submit
       div.form-group-padded
         div.btn-group.btn-group-sm role=group
           | <a {{ifBPClassAttr .Data.Links.Params.BOOL.hidemem "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidemem}}>Hidden</a>
@@ -284,8 +283,7 @@
     div
       | <div id="psconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigps "" "collapse-hidden"}}>
       | <form {{class}}="inline-form border-bottom-form text-right" {{formActionAttr .Data.Links.Params.Query}}>
-      / TODO different semantically standalone class for submit button with display: none
-      input.collapse-hidden type=submit
+      input.hidden-submit type=submit
 
       div.form-group-padded
         {{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshps}}
