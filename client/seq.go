@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"math"
 	"net/url"
 	"sort"
 	"strconv"
@@ -490,27 +491,31 @@ func (cp *CountParam) Decode(form url.Values) {
 		cp.Query.Del(cp.CountDecodec.Pname)
 		return
 	}
-	i, err := strconv.Atoi(values[0])
-	if err != nil {
-		cp.Query.Del(cp.CountDecodec.Pname)
-	} else {
+	if i, err := strconv.Atoi(values[0]); err == nil && i > 0 && i <= 65536 {
 		cp.Value = uint(i)
 		cp.Query.Set(cp.CountDecodec.Pname, fmt.Sprintf("%d", cp.Value))
+		return
 	}
+	cp.Query.Del(cp.CountDecodec.Pname)
 }
 
 func (cp CountParam) EncodeLess() template.HTMLAttr {
 	value := cp.Value
 	if value >= 2 {
-		value = value / 2
+		g := math.Log2(float64(value))
+		n := math.Floor(g)
+		if n == g {
+			n--
+		}
+		value = uint(math.Pow(2, n))
 	}
 	return cp.Encode(&value)
 }
 
 func (cp CountParam) EncodeMore() template.HTMLAttr {
 	value := cp.Value
-	if value < 65536 {
-		value *= 2
+	if value <= 32768 { // up to 65536
+		value = uint(math.Pow(2, 1+math.Floor(math.Log2(float64(value)))))
 	}
 	return cp.Encode(&value)
 }
