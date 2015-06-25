@@ -276,7 +276,6 @@
     this.MEMtableCLASS = React.createClass({
       getInitialState: function() {
         return {
-          Client: Data.Client,
           Links: Data.Links,
           MEM: Data.MEM
         };
@@ -315,14 +314,15 @@
     });
     this.CPUtableCLASS = React.createClass({
       getInitialState: function() {
-        return Data.CPU;
+        return {
+          Links: Data.Links,
+          CPU: Data.CPU
+        };
       },
       render: function() {
         var $core, Data;
-        Data = {
-          CPU: this.state
-        };
-        return jsdefines.cpu_table(Data, (function() {
+        Data = this.state;
+        return jsdefines.panelcpu.bind(this)(Data, (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.CPU) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
@@ -332,6 +332,23 @@
           }
           return results;
         })());
+      },
+      handleChange: function(e) {
+        var href;
+        href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1);
+        updates.sendSearch(href);
+        e.stopPropagation();
+        e.preventDefault();
+        return void 0;
+      },
+      handleClick: function(e) {
+        var href;
+        href = e.target.getAttribute('href');
+        history.pushState({}, '', href);
+        updates.sendSearch(href);
+        e.stopPropagation();
+        e.preventDefault();
+        return void 0;
       }
     });
     this.PStableCLASS = React.createClass({
@@ -685,15 +702,10 @@
       }
     };
     update = function() {
-      var cputable, dfbytes, dfinodes, dftitle, expandcpu, expanddf, expandif, hideconfigcpu, hideconfigdf, hideconfigif, hideconfigvg, hidecpu, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, pstable, refresh_cpu, refresh_df, refresh_if, refresh_vg, tabsdf, tabsif, uptime, vgtable;
+      var cputable, dfbytes, dfinodes, dftitle, expanddf, expandif, hideconfigdf, hideconfigif, hideconfigvg, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, pstable, refresh_df, refresh_if, refresh_vg, tabsdf, tabsif, uptime, vgtable;
       hideconfigif = HideClass.component({
         xkey: 'HideconfigIF',
         $el: $('[for-sel="#ifconfig"]'),
-        reverseActive: true
-      });
-      hideconfigcpu = HideClass.component({
-        xkey: 'HideconfigCPU',
-        $el: $('[for-sel="#cpuconfig"]'),
         reverseActive: true
       });
       hideconfigdf = HideClass.component({
@@ -705,10 +717,6 @@
         xkey: 'HideconfigVG',
         $el: $('[for-sel="#vgconfig"]'),
         reverseActive: true
-      });
-      hidecpu = HideClass.component({
-        xkey: 'HideCPU',
-        $el: $('[for-sel="#cpu"]')
       });
       hidevg = HideClass.component({
         xkey: 'HideVG',
@@ -743,13 +751,6 @@
         Kable: 'ExpandableIF',
         $button_el: $('label[href="#if"]')
       });
-      expandcpu = ButtonClass.component({
-        Khide: 'HideCPU',
-        Ksend: 'ExpandCPU',
-        Ktext: 'ExpandtextCPU',
-        Kable: 'ExpandableCPU',
-        $button_el: $('label[href="#cpu"]')
-      });
       expanddf = ButtonClass.component({
         Khide: 'HideDF',
         Ksend: 'ExpandDF',
@@ -776,12 +777,6 @@
         Kerror: 'RefreshErrorIF',
         Ksig: 'RefreshSignalIF',
         sel: $('#ifconfig')
-      });
-      refresh_cpu = RefreshInputClass.component({
-        K: 'RefreshCPU',
-        Kerror: 'RefreshErrorCPU',
-        Ksig: 'RefreshSignalCPU',
-        sel: $('#cpuconfig')
       });
       refresh_df = RefreshInputClass.component({
         K: 'RefreshDF',
@@ -835,10 +830,8 @@
           Links: data.Links
         });
         setState(hideconfigif, hideconfigif.reduce(data));
-        setState(hideconfigcpu, hideconfigcpu.reduce(data));
         setState(hideconfigdf, hideconfigdf.reduce(data));
         setState(hideconfigvg, hideconfigvg.reduce(data));
-        setState(hidecpu, hidecpu.reduce(data));
         setState(hidevg, hidevg.reduce(data));
         if (ip != null) {
           setState(ip, ip.newstate(data));
@@ -849,20 +842,20 @@
         setState(iftitle, iftitle.newstate(data));
         setState(dftitle, dftitle.newstate(data));
         setState(expandif, expandif.reduce(data));
-        setState(expandcpu, expandcpu.reduce(data));
         setState(expanddf, expanddf.reduce(data));
         setState(tabsif, tabsif.reduce(data));
         setState(tabsdf, tabsdf.reduce(data));
         setState(refresh_if, refresh_if.reduce(data));
-        setState(refresh_cpu, refresh_cpu.reduce(data));
         setState(refresh_df, refresh_df.reduce(data));
         setState(refresh_vg, refresh_vg.reduce(data));
         setState(memtable, {
-          Client: data.Client,
           Links: data.Links,
           MEM: data.MEM
         });
-        setState(cputable, data.CPU);
+        setState(cputable, {
+          Links: data.Links,
+          CPU: data.CPU
+        });
         setState(ifbytes, data.IFbytes);
         setState(iferrors, data.IFerrors);
         setState(ifpackets, data.IFpackets);

@@ -12,7 +12,7 @@ define(function(require) {
 		ifpackets_table: function(Data, rows)  { return ({{template "defines::define_ifpackets_table" setrows . `rows`}}); },
 
 		cpu_rows:        function(Data, $core) { return ({{template "defines::define_cpurows"         .}}); },
-		cpu_table:       function(Data, rows)  { return ({{template "defines::define_cputable"        setrows . `rows`}}); },
+		panelcpu:        function(Data, rows)  { return ({{template "defines::define_panelcpu"        setrows . `rows`}}); },
 
 		dfbytes_rows:    function(Data, $disk) { return ({{template "defines::define_dfbytes_rows"    .}}); },
 		dfbytes_table:   function(Data, rows)  { return ({{template "defines::define_dfbytes_table"   setrows . `rows`}}); },

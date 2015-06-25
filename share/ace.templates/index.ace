@@ -107,34 +107,8 @@ html
                 span#ifbytes-table
                   {{template "defines::define_ifbytes_table" .}}
 
-        div.block.col-md-2
-          div.panel1
-            label.collapse-label.panel-heading.btn-block for=dummycpuconfigcheckbox for-sel=#cpuconfig
-              a href=#cpu class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigCPU)}} active{{end}}" CPU
-              input.collapse-checkbox#dummycpuconfigcheckbox type=checkbox aria-hidden=true hidden=
-            input.collapse-checkbox type=checkbox aria-hidden=true hidden=
-
-            div
-              div#cpuconfig class="{{if eq "true" (json .Data.Client.HideconfigCPU)}}collapse-hidden{{end}}"
-                form.horizontal-form.border-bottom-form
-                  div.form-group-padded
-                    div.btn-group.btn-group-sm data-toggle=buttons
-                      label.btn.btn-default.collapse-label for-sel=#cpu
-                        input type=checkbox
-                        | Hidden
-                      label href=#cpu class="btn btn-default{{if eq "false" (json .Data.Client.ExpandableCPU)}} disabled{{end}}"
-                        input type=checkbox
-                        | {{.Data.Client.ExpandtextCPU}}
-
-                  div.form-group-padded
-                    {{with .Data.Client.RefreshCPU}}
-                    = yield refresh
-                    {{end}}
-
-            div
-              div#cpu class="{{if eq "true" (json .Data.Client.HideCPU)}}collapse-hidden{{end}}"
-                span#cpu-table
-                  {{template "defines::define_cputable" .}}
+        div.block.col-md-2#cpu-table
+          {{template "defines::define_panelcpu" .}}
 
         div.block.col-md-3
           div.panel1

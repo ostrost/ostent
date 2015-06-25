@@ -383,7 +383,10 @@ func (gp *GaugePercent) UpdatePercent(totalDelta int64, uabsolute uint64) {
 
 // CPUInfo type has a list of CoreInfo.
 type CPUInfo struct {
-	List []CoreInfo // TODO rename to Cores
+	List          []CoreInfo
+	ExpandCPU     *bool   `json:",omitempty"`
+	ExpandableCPU *bool   `json:",omitempty"`
+	ExpandtextCPU *string `json:",omitempty"`
 }
 
 // CoreInfo type is a struct of core metrics.

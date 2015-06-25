@@ -174,7 +174,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
 
   @MEMtableCLASS = React.createClass
     getInitialState: () -> {
-      Client: Data.Client, # a global Data
+    # Client: Data.Client, # a global Data
       Links:  Data.Links,  # a global Data
       MEM:    Data.MEM,    # a global Data
     }
@@ -197,11 +197,27 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
       return undefined
 
   @CPUtableCLASS = React.createClass
-    getInitialState: () -> Data.CPU # a global Data
+    getInitialState: () -> {
+      Links: Data.Links, # a global Data
+      CPU:   Data.CPU,   # a global Data
+    }
     render: () ->
-      Data = {CPU: @state}
-      return jsdefines.cpu_table(Data, (jsdefines.cpu_rows(Data, $core
+      Data = @state
+      return jsdefines.panelcpu.bind(this)(Data, (jsdefines.cpu_rows(Data, $core
       ) for $core in Data?.CPU?.List ? []))
+    handleChange: (e) ->
+      href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1)
+      updates.sendSearch(href)
+      e.stopPropagation() # preserves checkbox/radio
+      e.preventDefault()  # checked/selected state
+      return undefined
+    handleClick: (e) ->
+      href = e.target.getAttribute('href')
+      history.pushState({}, '', href)
+      updates.sendSearch(href)
+      e.stopPropagation() # preserves checkbox/radio
+      e.preventDefault()  # checked/selected state
+      return undefined
 
   @PStableCLASS = React.createClass
     getInitialState: () -> {
@@ -415,13 +431,13 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
     # coffeelint: disable=max_line_length
   # hideconfigmem = HideClass.component({xkey: 'HideconfigMEM', $el: $('[for-sel="#memconfig"]'), reverseActive: true})
     hideconfigif  = HideClass.component({xkey: 'HideconfigIF',  $el: $('[for-sel="#ifconfig"]'),  reverseActive: true})
-    hideconfigcpu = HideClass.component({xkey: 'HideconfigCPU', $el: $('[for-sel="#cpuconfig"]'), reverseActive: true})
+  # hideconfigcpu = HideClass.component({xkey: 'HideconfigCPU', $el: $('[for-sel="#cpuconfig"]'), reverseActive: true})
     hideconfigdf  = HideClass.component({xkey: 'HideconfigDF',  $el: $('[for-sel="#dfconfig"]'),  reverseActive: true})
   # hideconfigps  = HideClass.component({xkey: 'HideconfigPS',  $el: $('[for-sel="#psconfig"]'),  reverseActive: true})
     hideconfigvg  = HideClass.component({xkey: 'HideconfigVG',  $el: $('[for-sel="#vgconfig"]'),  reverseActive: true})
 
   # hideram = HideClass.component({xkey: 'HideRAM', $el: $('[for-sel="#mem"]')})
-    hidecpu = HideClass.component({xkey: 'HideCPU', $el: $('[for-sel="#cpu"]')})
+  # hidecpu = HideClass.component({xkey: 'HideCPU', $el: $('[for-sel="#cpu"]')})
   # hideps  = HideClass.component({xkey: 'HidePS',  $el: $('[for-sel="#ps"]')})
     hidevg  = HideClass.component({xkey: 'HideVG',  $el: $('[for-sel="#vg"]')})
 
@@ -440,7 +456,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
   # hideswap = ButtonClass.component({Khide: 'HideRAM', Ksend: 'HideSWAP', $button_el: $('label[href="#hideswap"]')})
 
     expandif = ButtonClass.component({Khide: 'HideIF',  Ksend: 'ExpandIF',  Ktext: 'ExpandtextIF',  Kable: 'ExpandableIF',  $button_el: $('label[href="#if"]')})
-    expandcpu= ButtonClass.component({Khide: 'HideCPU', Ksend: 'ExpandCPU', Ktext: 'ExpandtextCPU', Kable: 'ExpandableCPU', $button_el: $('label[href="#cpu"]')})
+  # expandcpu= ButtonClass.component({Khide: 'HideCPU', Ksend: 'ExpandCPU', Ktext: 'ExpandtextCPU', Kable: 'ExpandableCPU', $button_el: $('label[href="#cpu"]')})
     expanddf = ButtonClass.component({Khide: 'HideDF',  Ksend: 'ExpandDF',  Ktext: 'ExpandtextDF',  Kalbe: 'ExpandableDF',  $button_el: $('label[href="#df"]')})
 
     # NB buttons and collapses selected by class
@@ -449,7 +465,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
 
   # refresh_mem = RefreshInputClass.component({K: 'RefreshMEM', Kerror: 'RefreshErrorMEM', Ksig: 'RefreshSignalMEM', sel: $('#memconfig')})
     refresh_if  = RefreshInputClass.component({K: 'RefreshIF',  Kerror: 'RefreshErrorIF',  Ksig: 'RefreshSignalIF',  sel: $('#ifconfig')})
-    refresh_cpu = RefreshInputClass.component({K: 'RefreshCPU', Kerror: 'RefreshErrorCPU', Ksig: 'RefreshSignalCPU', sel: $('#cpuconfig')})
+  # refresh_cpu = RefreshInputClass.component({K: 'RefreshCPU', Kerror: 'RefreshErrorCPU', Ksig: 'RefreshSignalCPU', sel: $('#cpuconfig')})
     refresh_df  = RefreshInputClass.component({K: 'RefreshDF',  Kerror: 'RefreshErrorDF',  Ksig: 'RefreshSignalDF',  sel: $('#dfconfig')})
   # refresh_ps  = RefreshInputClass.component({K: 'RefreshPS',  Kerror: 'RefreshErrorPS',  Ksig: 'RefreshSignalPS',  sel: $('#psconfig')})
     refresh_vg  = RefreshInputClass.component({K: 'RefreshVG',  Kerror: 'RefreshErrorVG',  Ksig: 'RefreshSignalVG',  sel: $('#vgconfig')})
@@ -484,13 +500,13 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
 
     # setState(hideconfigmem, hideconfigmem.reduce(data))
       setState(hideconfigif,  hideconfigif .reduce(data))
-      setState(hideconfigcpu, hideconfigcpu.reduce(data))
+    # setState(hideconfigcpu, hideconfigcpu.reduce(data))
       setState(hideconfigdf,  hideconfigdf .reduce(data))
     # setState(hideconfigps,  hideconfigps .reduce(data))
       setState(hideconfigvg,  hideconfigvg .reduce(data))
 
     # setState(hideram,       hideram      .reduce(data))
-      setState(hidecpu,       hidecpu      .reduce(data))
+    # setState(hidecpu,       hidecpu      .reduce(data))
     # setState(hideps,        hideps       .reduce(data))
       setState(hidevg,        hidevg       .reduce(data))
 
@@ -509,7 +525,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
     # setState(hideswap,  hideswap.reduce(data))
 
       setState(expandif,  expandif.reduce(data))
-      setState(expandcpu, expandcpu.reduce(data))
+    # setState(expandcpu, expandcpu.reduce(data))
       setState(expanddf,  expanddf.reduce(data))
 
       setState(tabsif,    tabsif.reduce(data))
@@ -517,13 +533,13 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
 
     # setState(refresh_mem, refresh_mem.reduce(data))
       setState(refresh_if,  refresh_if .reduce(data))
-      setState(refresh_cpu, refresh_cpu.reduce(data))
+    # setState(refresh_cpu, refresh_cpu.reduce(data))
       setState(refresh_df,  refresh_df .reduce(data))
     # setState(refresh_ps,  refresh_ps .reduce(data))
       setState(refresh_vg,  refresh_vg .reduce(data))
 
-      setState(memtable,  {Client: data.Client, Links: data.Links, MEM: data.MEM})
-      setState(cputable,  data.CPU)
+      setState(memtable,  {Links: data.Links, MEM: data.MEM}) # Client: data.Client,
+      setState(cputable,  {Links: data.Links, CPU: data.CPU})
       setState(ifbytes,   data.IFbytes)
       setState(iferrors,  data.IFerrors)
       setState(ifpackets, data.IFpackets)

@@ -141,7 +141,7 @@ var LimitDecodecs = map[string]LimitDecodec{"psn": {Default: 8}}
 var BoolDecodecs = map[string]BoolDecodec{
 	"still": {Default: false},
 
-	// "hidecpu":  {Default: false},
+	"hidecpu": {Default: false},
 	// "hidedf":   {Default: false},
 	// "hideif":   {Default: false},
 	"hidemem":  {Default: false},
@@ -150,12 +150,16 @@ var BoolDecodecs = map[string]BoolDecodec{
 	// "hidevg":   {Default: false},
 	// commented-out hide* to be un-commented
 
+	"showconfigcpu": {Default: false},
 	"showconfigmem": {Default: false},
 	"showconfigps":  {Default: false},
 	// rest of showconfig* to follow
+
+	"expandcpu": {Default: false},
 }
 
 var PeriodParanames = []string{
+	"refreshcpu",
 	"refreshmem",
 	"refreshps",
 }

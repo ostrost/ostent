@@ -156,6 +156,14 @@ func (f HTMLFuncs) ifBPClassAttr(value interface{}, classes ...string) (template
 	return template.HTMLAttr(fmt.Sprintf(" %s=%q", f.classWord(), s)), nil
 }
 
+func (f JSXFuncs) ifExpandClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
+	return "", fmt.Errorf("Not implemented yet")
+}
+func (f HTMLFuncs) ifExpandClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
+	// if ei, ok := value.(*client.ExpandInfo); ok {}
+	return "", f.CastError("*ExpandInfo")
+}
+
 func (f JSXFuncs) ifBClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
 	s, err := f.ifBClass(value, classes...)
 	if err != nil {
@@ -374,25 +382,26 @@ func MakeMap(f Functor) template.FuncMap {
 		"rowsset": func(interface{}) string { return "" }, // empty pipeline
 		// acepp overrides rowsset and adds setrows
 
-		"key":             f.key,
-		"clip":            f.clip,
-		"droplink":        f.droplink,
-		"usepercent":      f.usepercent,
-		"ifBClass":        f.ifBClass,
-		"ifBClassAttr":    f.ifBClassAttr,
-		"ifBPClass":       f.ifBPClass,
-		"ifBPClassAttr":   f.ifBPClassAttr,
-		"ifDisabledAttr":  f.ifDisabledAttr,
-		"toggleHrefAttr":  f.toggleHrefAttr,
-		"formActionAttr":  f.formActionAttr,
-		"periodNameAttr":  f.periodNameAttr,
-		"periodValueAttr": f.periodValueAttr,
-		"refreshClass":    f.refreshClass,
-		"lessHrefAttr":    f.lessHrefAttr,
-		"moreHrefAttr":    f.moreHrefAttr,
-		"jsxClose":        f.jsxClose,
-		"class":           f.classWord,
-		"for":             f.forWord,
+		"key":               f.key,
+		"clip":              f.clip,
+		"droplink":          f.droplink,
+		"usepercent":        f.usepercent,
+		"ifBClass":          f.ifBClass,
+		"ifBClassAttr":      f.ifBClassAttr,
+		"ifBPClass":         f.ifBPClass,
+		"ifBPClassAttr":     f.ifBPClassAttr,
+		"ifExpandClassAttr": f.ifExpandClassAttr,
+		"ifDisabledAttr":    f.ifDisabledAttr,
+		"toggleHrefAttr":    f.toggleHrefAttr,
+		"formActionAttr":    f.formActionAttr,
+		"periodNameAttr":    f.periodNameAttr,
+		"periodValueAttr":   f.periodValueAttr,
+		"refreshClass":      f.refreshClass,
+		"lessHrefAttr":      f.lessHrefAttr,
+		"moreHrefAttr":      f.moreHrefAttr,
+		"jsxClose":          f.jsxClose,
+		"class":             f.classWord,
+		"for":               f.forWord,
 
 		"json": func(v interface{}) (string, error) {
 			j, err := json.Marshal(v)
@@ -414,6 +423,7 @@ type Functor interface {
 	ifBClassAttr(interface{}, ...string) (template.HTMLAttr, error)
 	ifBPClass(interface{}, ...string) (string, error)
 	ifBPClassAttr(interface{}, ...string) (template.HTMLAttr, error)
+	ifExpandClassAttr(interface{}, ...string) (template.HTMLAttr, error)
 	ifDisabledAttr(interface{}) (template.HTMLAttr, error)
 	toggleHrefAttr(interface{}) (interface{}, error)
 	formActionAttr(interface{}) (interface{}, error)

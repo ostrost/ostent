@@ -494,33 +494,37 @@ func (ir *IndexRegistry) IF(cli *client.Client, send *client.SendClient, iu *Ind
 }
 
 func (ir *IndexRegistry) CPU(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
-	list := ir.CPUInternal(cli, send)
-	iu.CPU = &operating.CPUInfo{List: list}
+	iu.CPU = ir.CPUInternal(cli, send)
 	return IndexUpdate{CPU: iu.CPU}
 }
 
-func (ir *IndexRegistry) CPUInternal(cli *client.Client, send *client.SendClient) []operating.CoreInfo {
+func (ir *IndexRegistry) CPUInternal(cli *client.Client, send *client.SendClient) *operating.CPUInfo {
+	cpu := &operating.CPUInfo{}
 	private := ir.ListPrivateCPU()
 
-	send.SetBool(&send.ExpandableCPU, &cli.ExpandableCPU, len(private) > cli.Toprows) // one row reserved for "all N"
-	send.SetString(&send.ExpandtextCPU, &cli.ExpandtextCPU, fmt.Sprintf("Expanded (%d)", len(private)))
+	cpu.ExpandableCPU = new(bool)
+	*cpu.ExpandableCPU = len(private) > cli.Toprows // one row reserved for "all N"
+	cpu.ExpandtextCPU = new(string)
+	*cpu.ExpandtextCPU = fmt.Sprintf("Expanded (%d)", len(private))
 
 	if len(private) == 1 {
-		return []operating.CoreInfo{FormatCPU(private[0])}
+		cpu.List = []operating.CoreInfo{FormatCPU(private[0])}
+		return cpu
 	}
 	private.SortSortBy(LessCPU)
 	var public []operating.CoreInfo
-	if !*cli.ExpandCPU {
+	if !cli.Params.BOOL["expandcpu"].Value {
 		public = []operating.CoreInfo{FormatCPU(ir.PrivateCPUAll)}
 	}
 	for i, mc := range private {
-		if !*cli.ExpandCPU && i > cli.Toprows-2 {
+		if !cli.Params.BOOL["expandcpu"].Value && i > cli.Toprows-2 {
 			// "collapsed" view, head of the list
 			break
 		}
 		public = append(public, FormatCPU(mc))
 	}
-	return public
+	cpu.List = public
+	return cpu
 }
 
 func FormatCPU(mc operating.MetricCPU) operating.CoreInfo {
@@ -764,7 +768,7 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 	set := []Set{
 		{cl.Params.BOOL["hidemem"].Value, cl.Params.PERIOD["refreshmem"], Reg1s.MEM},
 		{cl.Params.BOOL["hidemem"].Value || cl.Params.BOOL["hideswap"].Value, cl.Params.PERIOD["refreshmem"], Reg1s.SWAP}, // if MEM is hidden, so is SWAP
-		{*cl.HideCPU, cl.RefreshCPU, Reg1s.CPU},
+		{cl.Params.BOOL["hidecpu"].Value, cl.Params.PERIOD["refreshcpu"], Reg1s.CPU},
 		{*cl.HideDF, cl.RefreshDF, Reg1s.DF},
 		{*cl.HideIF, cl.RefreshIF, Reg1s.IF},
 		{false, cl.Params.PERIOD["refreshmem"], psCopy.IU},

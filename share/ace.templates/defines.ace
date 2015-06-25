@@ -242,6 +242,31 @@
     tbody
       {{template "defines::define_cpurows" .}}
 
+= content define_panelcpu
+  div.panel1
+    label.panel-heading.btn-block
+      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigcpu "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigcpu}}>CPU</a>
+
+    div
+      | <div id="cpuconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigcpu "" "collapse-hidden"}}>
+      | <form {{class}}="horizontal-form border-bottom-form" {{formActionAttr .Data.Links.Params.Query}}>
+      input.hidden-submit type=submit
+      div.form-group-padded
+        div.btn-group.btn-group-sm role=group
+          | <a {{ifBPClassAttr .Data.Links.Params.BOOL.hidecpu "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidecpu}}>Hidden</a>
+          | <a {{ifBClassAttr .Data.CPU.ExpandableCPU "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.expandcpu}}>{{.Data.CPU.ExpandtextCPU}}</a>
+          / TODO | <a {{ifExpandClassAttr .Data.CPU "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.expandcpu}}>{{.Data.CPU.ExpandtextCPU}}</a>
+
+      div.form-group-padded
+        {{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshcpu}}
+      | </form>
+      | </div>
+
+    div
+      | <div {{ifBPClassAttr .Data.Links.Params.BOOL.hidecpu "collapse-hidden"}}>
+      {{template "defines::define_cputable" .}}
+      | </div>
+
 = content define_psrows
   {{with rowsset .}}{{.}}{{else}}
     {{range $proc := .Data.PStable.List}}

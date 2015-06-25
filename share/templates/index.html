@@ -150,40 +150,8 @@
               ></div
             ></div
           ></div
-        ><div class="block col-md-2"
-          ><div class="panel1"
-            ><label class="collapse-label panel-heading btn-block" for="dummycpuconfigcheckbox" for-sel="#cpuconfig"
-              ><a class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigCPU)}} active{{end}}" href="#cpu"
-                >CPU</a
-              ><input id="dummycpuconfigcheckbox" class="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-              ></label
-            ><input class="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-            ><div
-              ><div id="cpuconfig" class="{{if eq "true" (json .Data.Client.HideconfigCPU)}}collapse-hidden{{end}}"
-                ><form class="horizontal-form border-bottom-form"
-                  ><div class="form-group-padded"
-                    ><div class="btn-group btn-group-sm" data-toggle="buttons"
-                      ><label class="btn btn-default collapse-label" for-sel="#cpu"
-                        ><input type="checkbox"
-                        >Hidden</label
-                      ><label class="btn btn-default{{if eq "false" (json .Data.Client.ExpandableCPU)}} disabled{{end}}" href="#cpu"
-                        ><input type="checkbox"
-                        >{{.Data.Client.ExpandtextCPU}}</label
-                      ></div
-                    ></div
-                  ><div class="form-group-padded"
-                    >{{with .Data.Client.RefreshCPU}}{{template "defines::refresh" .}}{{end}}</div
-                  ></form
-                ></div
-              ></div
-            ><div
-              ><div id="cpu" class="{{if eq "true" (json .Data.Client.HideCPU)}}collapse-hidden{{end}}"
-                ><span id="cpu-table"
-                  >{{template "defines::define_cputable" .}}</span
-                ></div
-              ></div
-            ></div
-          ></div
+        ><div id="cpu-table" class="block col-md-2"
+          >{{template "defines::define_panelcpu" .}}</div
         ><div class="block col-md-3"
           ><div class="panel1"
             ><label class="collapse-label panel-heading btn-block" for="dummydfconfigcheckbox" for-sel="#dfconfig"
@@ -539,6 +507,34 @@
   ><tbody
     >{{template "defines::define_memrows" .}}</tbody
   ></table
+>{{end}}{{/*
+*/}}{{define "defines::define_panelcpu"}}<div class="panel1"
+  ><label class="panel-heading btn-block"
+    ><a {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigcpu "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigcpu}}
+      >CPU</a
+    ></label
+  ><div
+    ><div id="cpuconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigcpu "" "collapse-hidden"}}
+      ><form {{class}}="horizontal-form border-bottom-form" {{formActionAttr .Data.Links.Params.Query}}
+        ><input class="hidden-submit" type="submit"
+        ><div class="form-group-padded"
+          ><div class="btn-group btn-group-sm" role="group"
+            ><a {{ifBPClassAttr .Data.Links.Params.BOOL.hidecpu "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidecpu}}
+              >Hidden</a
+            ><a {{ifBClassAttr .Data.CPU.ExpandableCPU "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.expandcpu}}
+              >{{.Data.CPU.ExpandtextCPU}}</a
+            ></div
+          ></div
+        ><div class="form-group-padded"
+          >{{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshcpu}}</div
+        ></form
+      ></div
+    ></div
+  ><div
+    ><div {{ifBPClassAttr .Data.Links.Params.BOOL.hidecpu "collapse-hidden"}}
+      >{{template "defines::define_cputable" .}}</div
+    ></div
+  ></div
 >{{end}}{{/*
 */}}{{define "defines::define_panelmem"}}<div class="panel1"
   ><label class="panel-heading btn-block"

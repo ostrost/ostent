@@ -119,7 +119,24 @@ define(function(require) {
       }, $core.Sys)), React.createElement("td", {className: "text-right"
     }, React.createElement("span", {className: $core.IdleClass
       }, $core.Idle)))); },
-		cpu_table:       function(Data, rows)  { return (React.createElement("table", {className: "table1 stripe-table"
+		panelcpu:        function(Data, rows)  { return (React.createElement("div", {className: "panel1"
+  }, React.createElement("label", {className: "panel-heading btn-block"
+    }, React.createElement("a", {className: Data.Links.Params.BOOL.showconfigcpu.Value ? "btn-header-block active" : "btn-header-block", href: Data.Links.Params.BOOL.showconfigcpu.Href, onClick: this.handleClick
+      }, "CPU")), React.createElement("div", null
+    , React.createElement("div", {id: "cpuconfig", className: Data.Links.Params.BOOL.showconfigcpu.Value ? "" : "collapse-hidden"
+      }, React.createElement("form", {className: "horizontal-form border-bottom-form", action: "/form/"+Data.Links.Params.Query
+        }, React.createElement("input", {className: "hidden-submit", type: "submit"
+        }), React.createElement("div", {className: "form-group-padded"
+        }, React.createElement("div", {className: "btn-group btn-group-sm", role: "group"
+          }, React.createElement("a", {className: Data.Links.Params.BOOL.hidecpu.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Links.Params.BOOL.hidecpu.Href, onClick: this.handleClick
+            }, "Hidden"), React.createElement("a", {className: Data.CPU.ExpandableCPU ? "btn btn-default " : "btn btn-default disabled", href: Data.Links.Params.BOOL.expandcpu.Href, onClick: this.handleClick
+            }, Data.CPU.ExpandtextCPU))), React.createElement("div", {className: "form-group-padded"
+        }, React.createElement("div", {className: "input-group input-group-sm refresh-group" + (Data.Links.Params.PERIOD.refreshcpu.InputErrd ? " has-warning" : "")
+  }, React.createElement("span", {className: "input-group-addon"
+    }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Links.Params.PERIOD.refreshcpu.Placeholder, name: "refreshcpu", onChange: this.handleChange, value: Data.Links.Params.PERIOD.refreshcpu.Input
+  })))))), React.createElement("div", null
+  , React.createElement("div", {className: Data.Links.Params.BOOL.hidecpu.Value ? "collapse-hidden" : ""
+    }, React.createElement("table", {className: "table1 stripe-table"
   }, React.createElement("thead", null
     , React.createElement("tr", null
       , React.createElement("th", null
@@ -130,7 +147,7 @@ define(function(require) {
           }, "%")), React.createElement("th", {className: "text-right nowrap"
         }, "Idle", React.createElement("span", {className: "unit"
           }, "%")))), React.createElement("tbody", null
-    , rows))); },
+    , rows)))))); },
 
 		dfbytes_rows:    function(Data, $disk) { return (React.createElement("tr", {key: "dfbytes-rowby-dirname-"+$disk.DirName
   }, React.createElement("td", {className: "nowrap"
