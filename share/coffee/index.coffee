@@ -244,6 +244,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
 
   @VGtableCLASS = React.createClass
     getInitialState: () -> { # a global Data:
+      Links:           Data.Links
       VagrantMachines: Data.VagrantMachines
       VagrantError:    Data.VagrantError
       VagrantErrord:   Data.VagrantErrord
@@ -251,11 +252,24 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
     render: () ->
       Data = @state
       if Data?.VagrantErrord? and Data.VagrantErrord
-        rows = [jsdefines.vagrant_error(Data)]
+        rows = [jsdefines.vagrant_error.bind(this)(Data)]
       else
-        rows = (jsdefines.vagrant_rows(Data, $mach
+        rows = (jsdefines.vagrant_rows.bind(this)(Data, $mach
         ) for $mach in Data?.VagrantMachines?.List ? [])
-      return jsdefines.vagrant_table(Data, rows)
+      return jsdefines.panelvg.bind(this)(Data, rows)
+    handleChange: (e) ->
+      href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1)
+      updates.sendSearch(href)
+      e.stopPropagation() # preserves checkbox/radio
+      e.preventDefault()  # checked/selected state
+      return undefined
+    handleClick: (e) ->
+      href = e.target.getAttribute('href')
+      history.pushState({}, '', href)
+      updates.sendSearch(href)
+      e.stopPropagation() # preserves checkbox/radio
+      e.preventDefault()  # checked/selected state
+      return undefined
 
   @addDiv = (sel) -> sel.append('<div />').find('div').get(0)
 
@@ -434,12 +448,12 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
   # hideconfigcpu = HideClass.component({xkey: 'HideconfigCPU', $el: $('[for-sel="#cpuconfig"]'), reverseActive: true})
     hideconfigdf  = HideClass.component({xkey: 'HideconfigDF',  $el: $('[for-sel="#dfconfig"]'),  reverseActive: true})
   # hideconfigps  = HideClass.component({xkey: 'HideconfigPS',  $el: $('[for-sel="#psconfig"]'),  reverseActive: true})
-    hideconfigvg  = HideClass.component({xkey: 'HideconfigVG',  $el: $('[for-sel="#vgconfig"]'),  reverseActive: true})
+  # hideconfigvg  = HideClass.component({xkey: 'HideconfigVG',  $el: $('[for-sel="#vgconfig"]'),  reverseActive: true})
 
   # hideram = HideClass.component({xkey: 'HideRAM', $el: $('[for-sel="#mem"]')})
   # hidecpu = HideClass.component({xkey: 'HideCPU', $el: $('[for-sel="#cpu"]')})
   # hideps  = HideClass.component({xkey: 'HidePS',  $el: $('[for-sel="#ps"]')})
-    hidevg  = HideClass.component({xkey: 'HideVG',  $el: $('[for-sel="#vg"]')})
+  # hidevg  = HideClass.component({xkey: 'HideVG',  $el: $('[for-sel="#vg"]')})
 
     ip       = React.render(React.createElement(NewTextCLASS((data) -> data?.IP       )), $('#ip'      )   .get(0)) if data?.IP?
     hostname = React.render(React.createElement(NewTextCLASS((data) -> data?.Hostname )), $('#hostname')   .get(0))
@@ -468,7 +482,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
   # refresh_cpu = RefreshInputClass.component({K: 'RefreshCPU', Kerror: 'RefreshErrorCPU', Ksig: 'RefreshSignalCPU', sel: $('#cpuconfig')})
     refresh_df  = RefreshInputClass.component({K: 'RefreshDF',  Kerror: 'RefreshErrorDF',  Ksig: 'RefreshSignalDF',  sel: $('#dfconfig')})
   # refresh_ps  = RefreshInputClass.component({K: 'RefreshPS',  Kerror: 'RefreshErrorPS',  Ksig: 'RefreshSignalPS',  sel: $('#psconfig')})
-    refresh_vg  = RefreshInputClass.component({K: 'RefreshVG',  Kerror: 'RefreshErrorVG',  Ksig: 'RefreshSignalVG',  sel: $('#vgconfig')})
+  # refresh_vg  = RefreshInputClass.component({K: 'RefreshVG',  Kerror: 'RefreshErrorVG',  Ksig: 'RefreshSignalVG',  sel: $('#vgconfig')})
 
     memtable  = React.render(React.createElement(MEMtableCLASS),  document.getElementById('mem'       +'-'+ 'table'))
     pstable   = React.render(React.createElement(PStableCLASS),   document.getElementById('ps'        +'-'+ 'table'))
@@ -503,12 +517,12 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
     # setState(hideconfigcpu, hideconfigcpu.reduce(data))
       setState(hideconfigdf,  hideconfigdf .reduce(data))
     # setState(hideconfigps,  hideconfigps .reduce(data))
-      setState(hideconfigvg,  hideconfigvg .reduce(data))
+    # setState(hideconfigvg,  hideconfigvg .reduce(data))
 
     # setState(hideram,       hideram      .reduce(data))
     # setState(hidecpu,       hidecpu      .reduce(data))
     # setState(hideps,        hideps       .reduce(data))
-      setState(hidevg,        hidevg       .reduce(data))
+    # setState(hidevg,        hidevg       .reduce(data))
 
       setState(ip,        ip      .newstate(data)) if ip?
       setState(hostname,  hostname.newstate(data))
@@ -536,7 +550,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
     # setState(refresh_cpu, refresh_cpu.reduce(data))
       setState(refresh_df,  refresh_df .reduce(data))
     # setState(refresh_ps,  refresh_ps .reduce(data))
-      setState(refresh_vg,  refresh_vg .reduce(data))
+    # setState(refresh_vg,  refresh_vg .reduce(data))
 
       setState(memtable,  {Links: data.Links, MEM: data.MEM}) # Client: data.Client,
       setState(cputable,  {Links: data.Links, CPU: data.CPU})
@@ -544,6 +558,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
       setState(iferrors,  data.IFerrors)
       setState(ifpackets, data.IFpackets)
       setState(vgtable, {
+        Links:           data.Links,
         VagrantMachines: data.VagrantMachines,
         VagrantError:    data.VagrantError,
         VagrantErrord:   data.VagrantErrord

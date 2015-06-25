@@ -288,7 +288,23 @@ define(function(require) {
 		vagrant_error:   function(Data)        { return (React.createElement("tr", {key: "vgerror"
   }, React.createElement("td", {colspan: "5"
     }, Data.VagrantError))); },
-		vagrant_table:   function(Data, rows)  { return (React.createElement("table", {id: "vgtable", className: "table1 stripe-table"
+		panelvg:         function(Data, rows)  { return (React.createElement("div", {className: "panel1"
+  }, React.createElement("label", {className: "panel-heading btn-block"
+    }, React.createElement("a", {className: Data.Links.Params.BOOL.showconfigvg.Value ? "btn-header-block active" : "btn-header-block", href: Data.Links.Params.BOOL.showconfigvg.Href, onClick: this.handleClick
+      }, "Vagrant global-status")), React.createElement("div", null
+    , React.createElement("div", {id: "vgconfig", className: Data.Links.Params.BOOL.showconfigvg.Value ? "" : "collapse-hidden"
+      }, React.createElement("form", {className: "inline-form border-bottom-form text-right", action: "/form/"+Data.Links.Params.Query
+        }, React.createElement("input", {className: "hidden-submit", type: "submit"
+        }), React.createElement("div", {className: "form-group-padded"
+        }, React.createElement("div", {className: "input-group input-group-sm refresh-group" + (Data.Links.Params.PERIOD.refreshvg.InputErrd ? " has-warning" : "")
+  }, React.createElement("span", {className: "input-group-addon"
+    }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Links.Params.PERIOD.refreshvg.Placeholder, name: "refreshvg", onChange: this.handleChange, value: Data.Links.Params.PERIOD.refreshvg.Input
+  }))), React.createElement("div", {className: "form-group-padded"
+        }, React.createElement("div", {className: "btn-group btn-group-sm", role: "group"
+          }, React.createElement("a", {className: Data.Links.Params.BOOL.hidevg.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Links.Params.BOOL.hidevg.Href, onClick: this.handleClick
+            }, "Hidden")))))), React.createElement("div", null
+  , React.createElement("div", {className: Data.Links.Params.BOOL.hidevg.Value ? "collapse-hidden" : ""
+    }, React.createElement("table", {id: "vgtable", className: "table1 stripe-table"
   }, React.createElement("thead", null
     , React.createElement("tr", null
       , React.createElement("th", null
@@ -297,6 +313,6 @@ define(function(require) {
         , "provider"), React.createElement("th", null
         , "state"), React.createElement("th", null
         , "directory"))), React.createElement("tbody", null
-    , rows))); }
+    , rows)))))); }
 	};
 });

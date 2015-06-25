@@ -24,6 +24,6 @@ define(function(require) {
 
 		vagrant_rows:    function(Data, $mach) { return ({{template "defines::define_vgrows"          .}}); },
 		vagrant_error:   function(Data)        { return ({{template "defines::define_vgerror"         .}}); },
-		vagrant_table:   function(Data, rows)  { return ({{template "defines::define_vgtable"         setrows . `rows`}}); }
+		panelvg:         function(Data, rows)  { return ({{template "defines::define_panelvg"         setrows . `rows`}}); }
 	};
 });

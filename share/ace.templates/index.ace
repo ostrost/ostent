@@ -157,31 +157,8 @@ html
 
     div.container-fluid
       div.row
-        div.block.col-md-8.col-md-offset-2
-          div.panel1
-            label.collapse-label.panel-heading.btn-block for=dummyvgconfigcheckbox for-sel=#vgconfig
-              a href=#vg class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigVG)}} active{{end}}" Vagrant global-status
-              input.collapse-checkbox#dummyvgconfigcheckbox type=checkbox aria-hidden=true hidden=
-            input.collapse-checkbox type=checkbox aria-hidden=true hidden=
-
-            div
-              div#vgconfig class="{{if eq "true" (json .Data.Client.HideconfigVG)}}collapse-hidden{{end}}"
-                form.inline-form.border-bottom-form.text-right
-                  div.form-group-padded
-                    {{with .Data.Client.RefreshVG}}
-                    = yield refresh
-                    {{end}}
-
-                  div.form-group-padded
-                    div.btn-group.btn-group-sm data-toggle=buttons
-                      label.btn.btn-default.collapse-label for-sel=#vg
-                        input type=checkbox
-                        | Hidden
-
-            div
-              div#vg class="{{if eq "true" (json .Data.Client.HideVG)}}collapse-hidden{{end}}"
-                span#vg-table
-                  {{template "defines::define_vgtable" .}}
+        div.block.col-md-8.col-md-offset-2#vg-table
+          {{template "defines::define_panelcpu" .}}
 
     = javascript
       var Data = {{.Data}};

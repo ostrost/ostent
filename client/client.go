@@ -56,7 +56,6 @@ func (c *Client) refreshes() []*Refresh {
 	return []*Refresh{
 		c.RefreshIF,
 		c.RefreshDF,
-		c.RefreshVG,
 		c.RefreshHN,
 		c.RefreshUP,
 		c.RefreshIP,
@@ -77,7 +76,6 @@ type internalClient struct {
 type commonClient struct {
 	HideIF   *bool `json:",omitempty"`
 	HideDF   *bool `json:",omitempty"`
-	HideVG   *bool `json:",omitempty"`
 	ExpandIF *bool `json:",omitempty"`
 	ExpandDF *bool `json:",omitempty"`
 
@@ -86,7 +84,6 @@ type commonClient struct {
 
 	HideconfigIF *bool `json:",omitempty"`
 	HideconfigDF *bool `json:",omitempty"`
-	HideconfigVG *bool `json:",omitempty"`
 }
 
 // server side full client state
@@ -102,7 +99,6 @@ type Client struct {
 
 	RefreshIF *Refresh `json:",omitempty"`
 	RefreshDF *Refresh `json:",omitempty"`
-	RefreshVG *Refresh `json:",omitempty"`
 
 	// un-mergable and hidden refreshes:
 	RefreshHN *Refresh `json:"-"`
@@ -156,7 +152,6 @@ type SendClient struct {
 
 	RefreshErrorIF *bool `json:",omitempty"`
 	RefreshErrorDF *bool `json:",omitempty"`
-	RefreshErrorVG *bool `json:",omitempty"`
 
 	DebugError *string `json:",omitempty"`
 }
@@ -206,14 +201,12 @@ func (c *Client) NewTab(tabs Tabs, u enums.Uint) *Tab {
 func (c *Client) Merge(r RecvClient, s *SendClient) {
 	s.mergeBool(c.HideIF, r.HideIF, &s.HideIF)
 	s.mergeBool(c.HideDF, r.HideDF, &s.HideDF)
-	s.mergeBool(c.HideVG, r.HideVG, &s.HideVG)
 
 	s.mergeBool(c.ExpandIF, r.ExpandIF, &s.ExpandIF)
 	s.mergeBool(c.ExpandDF, r.ExpandDF, &s.ExpandDF)
 
 	s.mergeBool(c.HideconfigIF, r.HideconfigIF, &s.HideconfigIF)
 	s.mergeBool(c.HideconfigDF, r.HideconfigDF, &s.HideconfigDF)
-	s.mergeBool(c.HideconfigVG, r.HideconfigVG, &s.HideconfigVG)
 
 	s.MergeTab(c.TabIF, r.TabIF, &s.TabIF, IFTABS)
 	s.MergeTab(c.TabDF, r.TabDF, &s.TabDF, DFTABS)
@@ -226,7 +219,6 @@ func NewClient(minperiod flags.Period) Client {
 	// new(bool) is &false
 	cs.HideIF = new(bool)
 	cs.HideDF = new(bool)
-	cs.HideVG = new(bool)
 	cs.ExpandIF = new(bool)
 	cs.ExpandDF = new(bool)
 
@@ -236,12 +228,10 @@ func NewClient(minperiod flags.Period) Client {
 	newhc := func() *bool { b := new(bool); *b = true; return b } // *b = false for DEVELOPMENT
 	cs.HideconfigIF = newhc()
 	cs.HideconfigDF = newhc()
-	cs.HideconfigVG = newhc()
 
 	newref := NewRefreshFunc(minperiod)
 	cs.RefreshIF = newref()
 	cs.RefreshDF = newref()
-	cs.RefreshVG = newref()
 
 	// immutable refreshes:
 	cs.RefreshHN = newref()
@@ -259,7 +249,6 @@ type RecvClient struct {
 	commonClient
 	RefreshSignalIF *string
 	RefreshSignalDF *string
-	RefreshSignalVG *string
 }
 
 // MergeRefreshSignal stores parsed ppinput into prefresh AND sendr or error in senderr.
@@ -289,7 +278,6 @@ func (sc *SendClient) MergeRefreshSignal(ppinput *string, prefresh *Refresh, sen
 func (rs *RecvClient) MergeRefresh(cs *Client, send *SendClient) error {
 	send.MergeRefreshSignal(rs.RefreshSignalIF, cs.RefreshIF, &send.RefreshIF, &send.RefreshErrorIF)
 	send.MergeRefreshSignal(rs.RefreshSignalDF, cs.RefreshDF, &send.RefreshDF, &send.RefreshErrorDF)
-	send.MergeRefreshSignal(rs.RefreshSignalVG, cs.RefreshVG, &send.RefreshVG, &send.RefreshErrorVG)
 	// Refresh{HN,UP,IP,LA} are not merged
 
 	err := send.MergeRSError

@@ -310,7 +310,7 @@ loop:
 			if !ok {
 				return
 			}
-			if next := c.writeUpdate(*update); !next {
+			if err := c.writeJSON(update); err != nil {
 				return
 			}
 		case _ = <-stop:
@@ -404,14 +404,6 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusSwitchingProtocols) // last change to WriteHeader. 101 is 200
-}
-
-func (c *conn) writeUpdate(update IndexUpdate) bool {
-	if *c.full.HideVG {
-		// TODO other .Vagrant* fields may not be discarded
-		update.VagrantMachines = nil
-	}
-	return c.writeJSON(update) == nil
 }
 
 type dummyStatus struct { // yet another ResponseWriter

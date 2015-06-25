@@ -362,3 +362,26 @@
         th directory
     tbody
       {{template "defines::define_vgswitch" .}}
+
+= content define_panelvg
+  div.panel1
+    label.panel-heading.btn-block
+      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigvg "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigvg}}>Vagrant global-status</a>
+
+    div
+      | <div id="vgconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigvg "" "collapse-hidden"}}>
+      | <form {{class}}="inline-form border-bottom-form text-right" {{formActionAttr .Data.Links.Params.Query}}>
+      input.hidden-submit type=submit
+      div.form-group-padded
+        {{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshvg}}
+
+      div.form-group-padded
+        div.btn-group.btn-group-sm role=group
+          | <a {{ifBPClassAttr .Data.Links.Params.BOOL.hidevg "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidevg}}>Hidden</a>
+      | </form>
+      | </div>
+
+    div
+      | <div {{ifBPClassAttr .Data.Links.Params.BOOL.hidevg "collapse-hidden"}}>
+      {{template "defines::define_vgtable" .}}
+      | </div>

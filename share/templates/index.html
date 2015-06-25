@@ -210,37 +210,8 @@
       ></div
     ><div class="container-fluid"
       ><div class="row"
-        ><div class="block col-md-8 col-md-offset-2"
-          ><div class="panel1"
-            ><label class="collapse-label panel-heading btn-block" for="dummyvgconfigcheckbox" for-sel="#vgconfig"
-              ><a class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigVG)}} active{{end}}" href="#vg"
-                >Vagrant global-status</a
-              ><input id="dummyvgconfigcheckbox" class="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-              ></label
-            ><input class="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-            ><div
-              ><div id="vgconfig" class="{{if eq "true" (json .Data.Client.HideconfigVG)}}collapse-hidden{{end}}"
-                ><form class="inline-form border-bottom-form text-right"
-                  ><div class="form-group-padded"
-                    >{{with .Data.Client.RefreshVG}}{{template "defines::refresh" .}}{{end}}</div
-                  ><div class="form-group-padded"
-                    ><div class="btn-group btn-group-sm" data-toggle="buttons"
-                      ><label class="btn btn-default collapse-label" for-sel="#vg"
-                        ><input type="checkbox"
-                        >Hidden</label
-                      ></div
-                    ></div
-                  ></form
-                ></div
-              ></div
-            ><div
-              ><div id="vg" class="{{if eq "true" (json .Data.Client.HideVG)}}collapse-hidden{{end}}"
-                ><span id="vg-table"
-                  >{{template "defines::define_vgtable" .}}</span
-                ></div
-              ></div
-            ></div
-          ></div
+        ><div id="vg-table" class="block col-md-8 col-md-offset-2"
+          >{{template "defines::define_panelcpu" .}}</div
         ></div
       ></div
     ><script type="text/javascript"
@@ -591,6 +562,32 @@
   ><div
     ><div {{ifBPClassAttr .Data.Links.Params.BOOL.hideps "collapse-hidden"}}
       >{{template "defines::define_pstable" .}}</div
+    ></div
+  ></div
+>{{end}}{{/*
+*/}}{{define "defines::define_panelvg"}}<div class="panel1"
+  ><label class="panel-heading btn-block"
+    ><a {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigvg "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigvg}}
+      >Vagrant global-status</a
+    ></label
+  ><div
+    ><div id="vgconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigvg "" "collapse-hidden"}}
+      ><form {{class}}="inline-form border-bottom-form text-right" {{formActionAttr .Data.Links.Params.Query}}
+        ><input class="hidden-submit" type="submit"
+        ><div class="form-group-padded"
+          >{{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshvg}}</div
+        ><div class="form-group-padded"
+          ><div class="btn-group btn-group-sm" role="group"
+            ><a {{ifBPClassAttr .Data.Links.Params.BOOL.hidevg "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidevg}}
+              >Hidden</a
+            ></div
+          ></div
+        ></form
+      ></div
+    ></div
+  ><div
+    ><div {{ifBPClassAttr .Data.Links.Params.BOOL.hidevg "collapse-hidden"}}
+      >{{template "defines::define_vgtable" .}}</div
     ></div
   ></div
 >{{end}}{{/*

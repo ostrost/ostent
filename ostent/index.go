@@ -772,7 +772,7 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 		{*cl.HideDF, cl.RefreshDF, Reg1s.DF},
 		{*cl.HideIF, cl.RefreshIF, Reg1s.IF},
 		{false, cl.Params.PERIOD["refreshmem"], psCopy.IU},
-		{*cl.HideVG, cl.RefreshVG, Reg1s.VG},
+		{cl.Params.BOOL["hidevg"].Value, cl.Params.PERIOD["refreshvg"], Reg1s.VG},
 
 		// always-shown bits:
 		{false, cl.RefreshHN, RegMSS.HN},

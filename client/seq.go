@@ -147,12 +147,13 @@ var BoolDecodecs = map[string]BoolDecodec{
 	"hidemem":  {Default: false},
 	"hideps":   {Default: false},
 	"hideswap": {Default: false},
-	// "hidevg":   {Default: false},
+	"hidevg":   {Default: false},
 	// commented-out hide* to be un-commented
 
 	"showconfigcpu": {Default: false},
 	"showconfigmem": {Default: false},
 	"showconfigps":  {Default: false},
+	"showconfigvg":  {Default: false},
 	// rest of showconfig* to follow
 
 	"expandcpu": {Default: false},
@@ -162,6 +163,7 @@ var PeriodParanames = []string{
 	"refreshcpu",
 	"refreshmem",
 	"refreshps",
+	"refreshvg",
 }
 
 func (bp *BoolParam) Decode(form url.Values) {

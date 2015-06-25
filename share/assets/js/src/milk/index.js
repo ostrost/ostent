@@ -393,6 +393,7 @@
     this.VGtableCLASS = React.createClass({
       getInitialState: function() {
         return {
+          Links: Data.Links,
           VagrantMachines: Data.VagrantMachines,
           VagrantError: Data.VagrantError,
           VagrantErrord: Data.VagrantErrord
@@ -402,7 +403,7 @@
         var $mach, Data, rows;
         Data = this.state;
         if (((Data != null ? Data.VagrantErrord : void 0) != null) && Data.VagrantErrord) {
-          rows = [jsdefines.vagrant_error(Data)];
+          rows = [jsdefines.vagrant_error.bind(this)(Data)];
         } else {
           rows = (function() {
             var i, len, ref, ref1, ref2, results;
@@ -410,12 +411,29 @@
             results = [];
             for (i = 0, len = ref2.length; i < len; i++) {
               $mach = ref2[i];
-              results.push(jsdefines.vagrant_rows(Data, $mach));
+              results.push(jsdefines.vagrant_rows.bind(this)(Data, $mach));
             }
             return results;
-          })();
+          }).call(this);
         }
-        return jsdefines.vagrant_table(Data, rows);
+        return jsdefines.panelvg.bind(this)(Data, rows);
+      },
+      handleChange: function(e) {
+        var href;
+        href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1);
+        updates.sendSearch(href);
+        e.stopPropagation();
+        e.preventDefault();
+        return void 0;
+      },
+      handleClick: function(e) {
+        var href;
+        href = e.target.getAttribute('href');
+        history.pushState({}, '', href);
+        updates.sendSearch(href);
+        e.stopPropagation();
+        e.preventDefault();
+        return void 0;
       }
     });
     this.addDiv = function(sel) {
@@ -702,7 +720,7 @@
       }
     };
     update = function() {
-      var cputable, dfbytes, dfinodes, dftitle, expanddf, expandif, hideconfigdf, hideconfigif, hideconfigvg, hidevg, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, pstable, refresh_df, refresh_if, refresh_vg, tabsdf, tabsif, uptime, vgtable;
+      var cputable, dfbytes, dfinodes, dftitle, expanddf, expandif, hideconfigdf, hideconfigif, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, pstable, refresh_df, refresh_if, tabsdf, tabsif, uptime, vgtable;
       hideconfigif = HideClass.component({
         xkey: 'HideconfigIF',
         $el: $('[for-sel="#ifconfig"]'),
@@ -712,15 +730,6 @@
         xkey: 'HideconfigDF',
         $el: $('[for-sel="#dfconfig"]'),
         reverseActive: true
-      });
-      hideconfigvg = HideClass.component({
-        xkey: 'HideconfigVG',
-        $el: $('[for-sel="#vgconfig"]'),
-        reverseActive: true
-      });
-      hidevg = HideClass.component({
-        xkey: 'HideVG',
-        $el: $('[for-sel="#vg"]')
       });
       if ((typeof data !== "undefined" && data !== null ? data.IP : void 0) != null) {
         ip = React.render(React.createElement(NewTextCLASS(function(data) {
@@ -784,12 +793,6 @@
         Ksig: 'RefreshSignalDF',
         sel: $('#dfconfig')
       });
-      refresh_vg = RefreshInputClass.component({
-        K: 'RefreshVG',
-        Kerror: 'RefreshErrorVG',
-        Ksig: 'RefreshSignalVG',
-        sel: $('#vgconfig')
-      });
       memtable = React.render(React.createElement(MEMtableCLASS), document.getElementById('mem' + '-' + 'table'));
       pstable = React.render(React.createElement(PStableCLASS), document.getElementById('ps' + '-' + 'table'));
       dfbytes = React.render(React.createElement(DFbytesCLASS), document.getElementById('dfbytes' + '-' + 'table'));
@@ -831,8 +834,6 @@
         });
         setState(hideconfigif, hideconfigif.reduce(data));
         setState(hideconfigdf, hideconfigdf.reduce(data));
-        setState(hideconfigvg, hideconfigvg.reduce(data));
-        setState(hidevg, hidevg.reduce(data));
         if (ip != null) {
           setState(ip, ip.newstate(data));
         }
@@ -847,7 +848,6 @@
         setState(tabsdf, tabsdf.reduce(data));
         setState(refresh_if, refresh_if.reduce(data));
         setState(refresh_df, refresh_df.reduce(data));
-        setState(refresh_vg, refresh_vg.reduce(data));
         setState(memtable, {
           Links: data.Links,
           MEM: data.MEM
@@ -860,6 +860,7 @@
         setState(iferrors, data.IFerrors);
         setState(ifpackets, data.IFpackets);
         setState(vgtable, {
+          Links: data.Links,
           VagrantMachines: data.VagrantMachines,
           VagrantError: data.VagrantError,
           VagrantErrord: data.VagrantErrord

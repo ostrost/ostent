@@ -537,7 +537,35 @@ define(function(require) {
     >{Data.VagrantError}</td
   ></tr
 >); },
-		vagrant_table:   function(Data, rows)  { return (<table id="vgtable" className="table1 stripe-table"
+		panelvg:         function(Data, rows)  { return (<div className="panel1"
+  ><label className="panel-heading btn-block"
+    ><a  className={Data.Links.Params.BOOL.showconfigvg.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.showconfigvg.Href} onClick={this.handleClick}
+      >Vagrant global-status</a
+    ></label
+  ><div
+    ><div id="vgconfig"  className={Data.Links.Params.BOOL.showconfigvg.Value ? "" : "collapse-hidden" }
+      ><form className="inline-form border-bottom-form text-right"  action={"/form/"+Data.Links.Params.Query}
+        ><input className="hidden-submit" type="submit"
+        ></input
+      ><div className="form-group-padded"
+        ><div  className={"input-group input-group-sm refresh-group" + (Data.Links.Params.PERIOD.refreshvg.InputErrd ? " has-warning" : "")}
+  ><span className="input-group-addon"
+    >Refresh</span
+  ><input className="form-control refresh-input" type="text" placeholder={Data.Links.Params.PERIOD.refreshvg.Placeholder}  name="refreshvg"  onChange={this.handleChange} value={Data.Links.Params.PERIOD.refreshvg.Input}
+  ></input></div
+></div
+      ><div className="form-group-padded"
+        ><div className="btn-group btn-group-sm" role="group"
+          ><a  className={Data.Links.Params.BOOL.hidevg.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Links.Params.BOOL.hidevg.Href} onClick={this.handleClick}
+            >Hidden</a
+          ></div
+        ></div
+      ></form
+    ></div
+  ></div
+><div
+  ><div  className={Data.Links.Params.BOOL.hidevg.Value ? "collapse-hidden" : "" }
+    ><table id="vgtable" className="table1 stripe-table"
   ><thead
     ><tr
       ><th
@@ -555,6 +583,9 @@ define(function(require) {
   ><tbody
     >{rows}</tbody
   ></table
+></div
+  ></div
+></div
 >); }
 	};
 });
