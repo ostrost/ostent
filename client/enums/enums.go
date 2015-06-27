@@ -1,4 +1,4 @@
-//go:generate sh -c "jsonenums -type=UintDF; jsonenums -type=UintIFT; jsonenums -type=UintPS"
+//go:generate sh -c "jsonenums -type=UintDF; jsonenums -type=UintDFT; jsonenums -type=UintIFT; jsonenums -type=UintPS"
 package enums
 
 // Constants for DF sorting criterion.
@@ -8,6 +8,12 @@ const (
 	TOTAL
 	USED
 	AVAIL
+)
+
+// Constants for DF tabs.
+const (
+	INODES UintDFT = iota
+	DFBYTES
 )
 
 // Constants for IF tabs.
@@ -34,6 +40,9 @@ const (
 
 // UintDF is a derived Uint for constants.
 type UintDF Uint
+
+// UintDFT is a derived Uint for constants.
+type UintDFT Uint
 
 // UintIFT is a derived Uint for constants.
 type UintIFT Uint

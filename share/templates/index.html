@@ -98,54 +98,8 @@
           >{{template "defines::define_panelif" .}}</div
         ><div id="cpu-table" class="block col-md-2"
           >{{template "defines::define_panelcpu" .}}</div
-        ><div class="block col-md-3"
-          ><div class="panel1"
-            ><label class="collapse-label panel-heading btn-block" for="dummydfconfigcheckbox" for-sel="#dfconfig"
-              ><a class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigDF)}} active{{end}}" href="#df"
-                >{{.Data.Client.TabDF.Title}}</a
-              ><input id="dummydfconfigcheckbox" class="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-              ></label
-            ><input class="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-            ><div
-              ><div id="dfconfig" class="{{if eq "true" (json .Data.Client.HideconfigDF)}}collapse-hidden{{end}}"
-                ><form class="horizontal-form"
-                  ><div class="form-group-padded"
-                    ><div class="btn-group btn-group-sm" data-toggle="buttons"
-                      ><label class="btn btn-default hiding"
-                        ><input type="checkbox"
-                        >Hidden</label
-                      ><label class="btn btn-default{{if eq "false" (json .Data.Client.ExpandableDF)}} disabled{{end}}" href="#df"
-                        ><input type="checkbox"
-                        >{{.Data.Client.ExpandtextDF}}</label
-                      ></div
-                    ></div
-                  ><div class="form-group-padded"
-                    >{{with .Data.Client.RefreshDF}}{{template "defines::refresh" .}}{{end}}</div
-                  ></form
-                ><ul class="nav nav-tabs"
-                  ><li class="df-switch" data-tabid="{{.Data.DFTABS.dFINODES.Uint}}"
-                    ><a href="#dfinodes"
-                      >Inodes</a
-                    ></li
-                  ><li class="df-switch active" data-tabid="{{.Data.DFTABS.dFBYTES.Uint}}"
-                    ><a href="#dfbytes"
-                      >Bytes</a
-                    ></li
-                  ></ul
-                ></div
-              ></div
-            ><div
-              ><div id="dfinodes" class="df-tab{{if ne (json .Data.DFTABS.dFINODES.Uint) (json .Data.Client.TabDF.Uint)}} collapse-hidden{{end}}" data-title="{{.Data.DFTABS.dFINODES.Title}}" data-tabid="{{.Data.DFTABS.dFINODES.Uint}}"
-                ><span id="dfinodes-table"
-                  >{{template "defines::define_dfinodes_table" .}}</span
-                ></div
-              ><div id="dfbytes" class="df-tab{{if ne (json .Data.DFTABS.dFBYTES.Uint) (json .Data.Client.TabDF.Uint)}} collapse-hidden{{end}}" data-title="{{.Data.DFTABS.dFBYTES.Title}}" data-tabid="{{.Data.DFTABS.dFBYTES.Uint}}"
-                ><span id="dfbytes-table"
-                  >{{template "defines::define_dfbytes_table" .}}</span
-                ></div
-              ></div
-            ></div
-          ></div
+        ><div id="df-table" class="block col-md-3"
+          >{{template "defines::define_paneldf" .}}</div
         ></div
       ></div
     ><div class="container-fluid"
@@ -456,6 +410,48 @@
     ></div
   ></div
 >{{end}}{{/*
+*/}}{{define "defines::define_paneldf"}}<div class="panel1"
+  ><label class="panel-heading btn-block"
+    ><a {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigdf "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigdf}}
+      >{{.Data.Links.Params.ENUM.dft.Title}}</a
+    ></label
+  ><div
+    ><div id="dfconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigdf "" "collapse-hidden"}}
+      ><form {{class}}="horizontal-form" {{formActionAttr .Data.Links.Params.Query}}
+        ><input class="hidden-submit" type="submit"
+        ><div class="form-group-padded"
+          ><div class="btn-group btn-group-sm" role="group"
+            ><a {{ifBPClassAttr .Data.Links.Params.BOOL.hidedf "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidedf}}
+              >Hidden</a
+            ><a {{ifBClassAttr .Data.ExpandableDF "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.expanddf}}
+              >{{.Data.ExpandtextDF}}</a
+            ></div
+          ></div
+        ><div class="form-group-padded"
+          >{{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshdf}}</div
+        ></form
+      ><ul class="nav nav-tabs"
+        ><li {{iftEnumAttrs .Data.Links.Params.ENUM.dft "INODES" "active"}}
+          >{{template "defines::adroplink" droplink .Data.Links.Params.ENUM.dft "INODES"}}</li
+        ><li {{iftEnumAttrs .Data.Links.Params.ENUM.dft "DFBYTES" "active"}}
+          >{{template "defines::adroplink" droplink .Data.Links.Params.ENUM.dft "DFBYTES"}}</li
+        ></ul
+      ></div
+    ></div
+  ><div
+    ><div {{ifBPClassAttr .Data.Links.Params.BOOL.hidedf "collapse-hidden"}}
+      ><div id="dfinodes" {{ifNeClassAttr .Data.Links.Params.ENUM.dft "INODES" "collapse-hidden"}}
+        ><span id="dfinodes-table"
+          >{{template "defines::define_dfinodes_table" .}}</span
+        ></div
+      ><div id="dfbytes" {{ifNeClassAttr .Data.Links.Params.ENUM.dft "DFBYTES" "collapse-hidden"}}
+        ><span id="dfbytes-table"
+          >{{template "defines::define_dfbytes_table" .}}</span
+        ></div
+      ></div
+    ></div
+  ></div
+>{{end}}{{/*
 */}}{{define "defines::define_panelif"}}<div class="panel1"
   ><label class="panel-heading btn-block"
     ><a {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigif "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigif}}
@@ -476,28 +472,30 @@
         ><div class="form-group-padded"
           >{{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshif}}</div
         ></form
+      ><ul class="nav nav-tabs"
+        ><li {{iftEnumAttrs .Data.Links.Params.ENUM.ift "PACKETS" "active"}}
+          >{{template "defines::adroplink" droplink .Data.Links.Params.ENUM.ift "PACKETS"}}</li
+        ><li {{iftEnumAttrs .Data.Links.Params.ENUM.ift "ERRORS" "active"}}
+          >{{template "defines::adroplink" droplink .Data.Links.Params.ENUM.ift "ERRORS"}}</li
+        ><li {{iftEnumAttrs .Data.Links.Params.ENUM.ift "IFBYTES" "active"}}
+          >{{template "defines::adroplink" droplink .Data.Links.Params.ENUM.ift "IFBYTES"}}</li
+        ></ul
       ></div
-    ><ul class="nav nav-tabs"
-      ><li {{iftEnumAttrs .Data.Links.Params.ENUM.ift "PACKETS" "active"}}
-        >{{template "defines::adroplink" droplink .Data.Links.Params.ENUM.ift "PACKETS"}}</li
-      ><li {{iftEnumAttrs .Data.Links.Params.ENUM.ift "ERRORS" "active"}}
-        >{{template "defines::adroplink" droplink .Data.Links.Params.ENUM.ift "ERRORS"}}</li
-      ><li {{iftEnumAttrs .Data.Links.Params.ENUM.ift "IFBYTES" "active"}}
-        >{{template "defines::adroplink" droplink .Data.Links.Params.ENUM.ift "IFBYTES"}}</li
-      ></ul
     ></div
   ><div
-    ><div id="ifpackets" {{ifNeClassAttr .Data.Links.Params.ENUM.ift "PACKETS" "collapse-hidden"}}
-      ><span id="ifpackets-table"
-        >{{template "defines::define_ifpackets_table" .}}</span
-      ></div
-    ><div id="iferrors" {{ifNeClassAttr .Data.Links.Params.ENUM.ift "ERRORS" "collapse-hidden"}}
-      ><span id="iferrors-table"
-        >{{template "defines::define_iferrors_table" .}}</span
-      ></div
-    ><div id="ifbytes" {{ifNeClassAttr .Data.Links.Params.ENUM.ift "IFBYTES" "collapse-hidden"}}
-      ><span id="ifbytes-table"
-        >{{template "defines::define_ifbytes_table" .}}</span
+    ><div {{ifBPClassAttr .Data.Links.Params.BOOL.hideif "collapse-hidden"}}
+      ><div id="ifpackets" {{ifNeClassAttr .Data.Links.Params.ENUM.ift "PACKETS" "collapse-hidden"}}
+        ><span id="ifpackets-table"
+          >{{template "defines::define_ifpackets_table" .}}</span
+        ></div
+      ><div id="iferrors" {{ifNeClassAttr .Data.Links.Params.ENUM.ift "ERRORS" "collapse-hidden"}}
+        ><span id="iferrors-table"
+          >{{template "defines::define_iferrors_table" .}}</span
+        ></div
+      ><div id="ifbytes" {{ifNeClassAttr .Data.Links.Params.ENUM.ift "IFBYTES" "collapse-hidden"}}
+        ><span id="ifbytes-table"
+          >{{template "defines::define_ifbytes_table" .}}</span
+        ></div
       ></div
     ></div
   ></div

@@ -9,17 +9,12 @@ define(function(require) {
 		ifpackets_rows:  function(Data, $if)   { return ({{template "defines::define_ifpackets_rows"  .}}); },
 		panelif:         function(Data,r1,r2,r3){ return ({{template "defines::define_panelif"         setrows . `r1 r2 r3`}}); },
 
-{{/*ifbytes_table:   function(Data, rows)  { return ({{template "defines::define_ifbytes_table"   setrows . `rows`}}); },
-		iferrors_table:  function(Data, rows)  { return ({{template "defines::define_iferrors_table"  setrows . `rows`}}); },
-		ifpackets_table: function(Data, rows)  { return ({{template "defines::define_ifpackets_table" setrows . `rows`}}); }, */}}
-
 		cpu_rows:        function(Data, $core) { return ({{template "defines::define_cpurows"         .}}); },
 		panelcpu:        function(Data, rows)  { return ({{template "defines::define_panelcpu"        setrows . `rows`}}); },
 
 		dfbytes_rows:    function(Data, $disk) { return ({{template "defines::define_dfbytes_rows"    .}}); },
-		dfbytes_table:   function(Data, rows)  { return ({{template "defines::define_dfbytes_table"   setrows . `rows`}}); },
 		dfinodes_rows:   function(Data, $disk) { return ({{template "defines::define_dfinodes_rows"   .}}); },
-		dfinodes_table:  function(Data, rows)  { return ({{template "defines::define_dfinodes_table"  setrows . `rows`}}); },
+		paneldf:         function(Data,r1,r2)  { return ({{template "defines::define_paneldf"         setrows . `r1 r2`}}); },
 
 		ps_rows:         function(Data, $proc) { return ({{template "defines::define_psrows"          .}}); },
 		panelps:         function(Data, rows)  { return ({{template "defines::define_panelps"         setrows . `rows`}}); },

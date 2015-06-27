@@ -57,16 +57,20 @@ func (ep EnumParam) EncodeUint(pname string, uinter enums.Uinter) DropLink {
 
 func (ep EnumParam) Title() (string, error) {
 	var text string
+	var uptr *enums.Uint
 	ep.Enumerate(func(name, s string, uter enums.Uinter) bool {
-		if uter.Touint() == ep.Number.Uint {
+		if u := uter.Touint(); u == ep.Number.Uint {
 			text = ep.EncodeUint(name, uter).Text
+			uptr = &u
 			return true
 		}
 		return false
 	})
 	if text != "" {
-		text = "Interface " + strings.ToLower(text)
-		return text, nil
+		if *uptr == ep.EnumDecodec.Default.Uint {
+			return ep.EnumDecodec.TitlePrefix, nil
+		}
+		return ep.EnumDecodec.TitlePrefix + " " + strings.ToLower(text), nil
 	}
 	return "", fmt.Errorf("Cannot find text for EnumParam")
 }
@@ -113,6 +117,7 @@ type EnumDecodec struct {
 	Unew         func() (string, Upointer) `json:"-"` // func cannot be marshaled
 	Text         func(string) string       `json:"-"` // func cannot be marshaled
 	OnlyPositive bool
+	TitlePrefix  string
 }
 
 func (ep EnumParam) IsAlpha(p enums.Uint) bool {
@@ -143,23 +148,31 @@ func TextFunc(ab map[string]string, fs ...func(string) string) func(string) stri
 // - tabs don't have negatives
 
 var EnumDecodecs = map[string]EnumDecodec{
+	"df": {
+		Default: Number{Uint: enums.Uint(enums.FS)},
+		Alphas:  []enums.Uint{enums.Uint(enums.FS), enums.Uint(enums.MP)},
+		Unew:    func() (string, Upointer) { return "df", new(enums.UintDF) },
+		Text:    TextFunc(map[string]string{"FS": "Device", "MP": "Mounted"}, strings.ToLower, strings.Title),
+	},
+	"dft": {
+		Default:      Number{Uint: enums.Uint(enums.DFBYTES)},
+		Unew:         func() (string, Upointer) { return "dft", new(enums.UintDFT) },
+		Text:         TextFunc(map[string]string{"DFBYTES": "Bytes"}, strings.ToLower, strings.Title),
+		OnlyPositive: true,
+		TitlePrefix:  "Disks",
+	},
 	"ift": {
 		Default:      Number{Uint: enums.Uint(enums.IFBYTES)},
 		Unew:         func() (string, Upointer) { return "ift", new(enums.UintIFT) },
 		Text:         TextFunc(map[string]string{"IFBYTES": "Bytes"}, strings.ToLower, strings.Title),
 		OnlyPositive: true,
+		TitlePrefix:  "Interfaces",
 	},
 	"ps": {
 		Default: Number{Uint: enums.Uint(enums.PID)},
 		Alphas:  []enums.Uint{enums.Uint(enums.NAME), enums.Uint(enums.USER)},
 		Unew:    func() (string, Upointer) { return "ps", new(enums.UintPS) },
 		Text:    TextFunc(map[string]string{"PRI": "PR", "NICE": "NI", "NAME": "COMMAND"}, strings.ToUpper),
-	},
-	"df": {
-		Default: Number{Uint: enums.Uint(enums.FS)},
-		Alphas:  []enums.Uint{enums.Uint(enums.FS), enums.Uint(enums.MP)},
-		Unew:    func() (string, Upointer) { return "df", new(enums.UintDF) },
-		Text:    TextFunc(map[string]string{"FS": "Device", "MP": "Mounted"}, strings.ToLower, strings.Title),
 	},
 }
 
@@ -175,7 +188,6 @@ var BoolDecodecs = map[string]BoolDecodec{
 	"hideps":   {Default: false},
 	"hideswap": {Default: false},
 	"hidevg":   {Default: false},
-	// commented-out hide* to be un-commented
 
 	"showconfigcpu": {Default: false},
 	"showconfigdf":  {Default: false},
@@ -183,10 +195,10 @@ var BoolDecodecs = map[string]BoolDecodec{
 	"showconfigmem": {Default: false},
 	"showconfigps":  {Default: false},
 	"showconfigvg":  {Default: false},
-	// rest of showconfig* to follow
 
-	"expandcpu": {Default: false},
+	"expanddf":  {Default: false},
 	"expandif":  {Default: false},
+	"expandcpu": {Default: false},
 }
 
 var PeriodParanames = []string{

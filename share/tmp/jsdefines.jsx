@@ -141,26 +141,27 @@ define(function(require) {
   ></input></div
 ></div
       ></form
-    ></div
-  ><ul className="nav nav-tabs"
-    ><li  className={(Data.Links.Params.ENUM.ift.Uint == 0) ? "active" : ""} data-tabid="0"
-      ><a href={Data.Links.Params.ENUM.ift.PACKETS.Href} onClick={this.handleClick}
+    ><ul className="nav nav-tabs"
+      ><li  className={(Data.Links.Params.ENUM.ift.Uint == 0) ? "active" : ""} data-tabid="0"
+        ><a href={Data.Links.Params.ENUM.ift.PACKETS.Href} onClick={this.handleClick}
   >Packets</a
 ></li
-    ><li  className={(Data.Links.Params.ENUM.ift.Uint == 1) ? "active" : ""} data-tabid="1"
-      ><a href={Data.Links.Params.ENUM.ift.ERRORS.Href} onClick={this.handleClick}
+      ><li  className={(Data.Links.Params.ENUM.ift.Uint == 1) ? "active" : ""} data-tabid="1"
+        ><a href={Data.Links.Params.ENUM.ift.ERRORS.Href} onClick={this.handleClick}
   >Errors</a
 ></li
-    ><li  className={(Data.Links.Params.ENUM.ift.Uint == 2) ? "active" : ""} data-tabid="2"
-      ><a href={Data.Links.Params.ENUM.ift.IFBYTES.Href} onClick={this.handleClick}
+      ><li  className={(Data.Links.Params.ENUM.ift.Uint == 2) ? "active" : ""} data-tabid="2"
+        ><a href={Data.Links.Params.ENUM.ift.IFBYTES.Href} onClick={this.handleClick}
   >Bytes</a
 ></li
-    ></ul
+      ></ul
+    ></div
   ></div
 ><div
-  ><div id="ifpackets"  className={(Data.Links.Params.ENUM.ift.Uint != 0) ? "collapse-hidden" : ""} data-tabid="0" data-title="Packets"
-    ><span id="ifpackets-table"
-      ><table className="table1 stripe-table"
+  ><div  className={Data.Links.Params.BOOL.hideif.Value ? "collapse-hidden" : "" }
+    ><div id="ifpackets"  className={(Data.Links.Params.ENUM.ift.Uint != 0) ? "collapse-hidden" : ""} data-tabid="0" data-title="Packets"
+      ><span id="ifpackets-table"
+        ><table className="table1 stripe-table"
   ><thead
     ><tr
       ><th
@@ -187,10 +188,10 @@ define(function(require) {
     >{r1}</tbody
   ></table
 ></span
-    ></div
-  ><div id="iferrors"  className={(Data.Links.Params.ENUM.ift.Uint != 1) ? "collapse-hidden" : ""} data-tabid="1" data-title="Errors"
-    ><span id="iferrors-table"
-      ><table className="table1 stripe-table"
+      ></div
+    ><div id="iferrors"  className={(Data.Links.Params.ENUM.ift.Uint != 1) ? "collapse-hidden" : ""} data-tabid="1" data-title="Errors"
+      ><span id="iferrors-table"
+        ><table className="table1 stripe-table"
   ><thead
     ><tr
       ><th
@@ -217,10 +218,10 @@ define(function(require) {
     >{r2}</tbody
   ></table
 ></span
-    ></div
-  ><div id="ifbytes"  className={(Data.Links.Params.ENUM.ift.Uint != 2) ? "collapse-hidden" : ""} data-tabid="2" data-title="Bytes"
-    ><span id="ifbytes-table"
-      ><table className="table1 stripe-table"
+      ></div
+    ><div id="ifbytes"  className={(Data.Links.Params.ENUM.ift.Uint != 2) ? "collapse-hidden" : ""} data-tabid="2" data-title="Bytes"
+      ><span id="ifbytes-table"
+        ><table className="table1 stripe-table"
   ><thead
     ><tr
       ><th
@@ -255,12 +256,11 @@ define(function(require) {
     >{r3}</tbody
   ></table
 ></span
+      ></div
     ></div
   ></div
 ></div
 >); },
-
-
 
 		cpu_rows:        function(Data, $core) { return (<tr key={"cpu-rowby-N-"+$core.N}
   ><td className="text-right nowrap"
@@ -359,7 +359,94 @@ define(function(require) {
     >{$disk.Total}</td
   ></tr
 >); },
-		dfbytes_table:   function(Data, rows)  { return (<table className="table1 stripe-table"
+		dfinodes_rows:   function(Data, $disk) { return (<tr key={"dfinodes-rowby-dirname-"+$disk.DirName}
+  ><td className="nowrap"
+    ><input id={"df-inodes-devname-"+$disk.DevName}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
+></input><label htmlFor={"df-inodes-devname-"+$disk.DevName} className="clip" style={{maxWidth: '12ch'}}
+  >{$disk.DevName}</label
+></td
+  ><td className="nowrap"
+    ><input id={"df-inodes-devname-"+$disk.DirName}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
+></input><label htmlFor={"df-inodes-devname-"+$disk.DirName} className="clip" style={{maxWidth: '6ch'}}
+  >{$disk.DirName}</label
+></td
+  ><td className="text-right"
+    >{$disk.Ifree}</td
+  ><td className="text-right"
+    >{$disk.Iused}&nbsp;<sup
+      ><span  className={LabelClassColorPercent($disk.IusePercent)}
+  >{$disk.IusePercent}%</span
+></sup
+    ></td
+  ><td className="text-right"
+    >{$disk.Inodes}</td
+  ></tr
+>); },
+		paneldf:         function(Data,r1,r2)  { return (<div className="panel1"
+  ><label className="panel-heading btn-block"
+    ><a  className={Data.Links.Params.BOOL.showconfigdf.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.showconfigdf.Href} onClick={this.handleClick}
+      >{Data.Links.Params.ENUM.dft.Title}</a
+    ></label
+  ><div
+    ><div id="dfconfig"  className={Data.Links.Params.BOOL.showconfigdf.Value ? "" : "collapse-hidden" }
+      ><form className="horizontal-form"  action={"/form/"+Data.Links.Params.Query}
+        ><input className="hidden-submit" type="submit"
+        ></input
+      ><div className="form-group-padded"
+        ><div className="btn-group btn-group-sm" role="group"
+          ><a  className={Data.Links.Params.BOOL.hidedf.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Links.Params.BOOL.hidedf.Href} onClick={this.handleClick}
+            >Hidden</a
+          ><a  className={Data.ExpandableDF ? "btn btn-default " : "btn btn-default disabled" }  href={Data.Links.Params.BOOL.expanddf.Href} onClick={this.handleClick}
+            >{Data.ExpandtextDF}</a
+          ></div
+        ></div
+      ><div className="form-group-padded"
+        ><div  className={"input-group input-group-sm refresh-group" + (Data.Links.Params.PERIOD.refreshdf.InputErrd ? " has-warning" : "")}
+  ><span className="input-group-addon"
+    >Refresh</span
+  ><input className="form-control refresh-input" type="text" placeholder={Data.Links.Params.PERIOD.refreshdf.Placeholder}  name="refreshdf"  onChange={this.handleChange} value={Data.Links.Params.PERIOD.refreshdf.Input}
+  ></input></div
+></div
+      ></form
+    ><ul className="nav nav-tabs"
+      ><li  className={(Data.Links.Params.ENUM.dft.Uint == 0) ? "active" : ""} data-tabid="0"
+        ><a href={Data.Links.Params.ENUM.dft.INODES.Href} onClick={this.handleClick}
+  >Inodes</a
+></li
+      ><li  className={(Data.Links.Params.ENUM.dft.Uint == 1) ? "active" : ""} data-tabid="1"
+        ><a href={Data.Links.Params.ENUM.dft.DFBYTES.Href} onClick={this.handleClick}
+  >Bytes</a
+></li
+      ></ul
+    ></div
+  ></div
+><div
+  ><div  className={Data.Links.Params.BOOL.hidedf.Value ? "collapse-hidden" : "" }
+    ><div id="dfinodes"  className={(Data.Links.Params.ENUM.dft.Uint != 0) ? "collapse-hidden" : ""} data-tabid="0" data-title="Inodes"
+      ><span id="dfinodes-table"
+        ><table className="table1 stripe-table"
+  ><thead
+    ><tr
+      ><th className="header"
+        >Device</th
+      ><th className="header"
+        >Mounted</th
+      ><th className="header text-right"
+        >Avail</th
+      ><th className="header text-right"
+        >Used</th
+      ><th className="header text-right"
+        >Total</th
+      ></tr
+    ></thead
+  ><tbody
+    >{r1}</tbody
+  ></table
+></span
+      ></div
+    ><div id="dfbytes"  className={(Data.Links.Params.ENUM.dft.Uint != 1) ? "collapse-hidden" : ""} data-tabid="1" data-title="Bytes"
+      ><span id="dfbytes-table"
+        ><table className="table1 stripe-table"
   ><thead
     ><tr
       ><th className="header "
@@ -395,50 +482,13 @@ define(function(require) {
 ></tr
     ></thead
   ><tbody
-    >{rows}</tbody
+    >{r2}</tbody
   ></table
->); },
-		dfinodes_rows:   function(Data, $disk) { return (<tr key={"dfinodes-rowby-dirname-"+$disk.DirName}
-  ><td className="nowrap"
-    ><input id={"df-inodes-devname-"+$disk.DevName}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label htmlFor={"df-inodes-devname-"+$disk.DevName} className="clip" style={{maxWidth: '12ch'}}
-  >{$disk.DevName}</label
-></td
-  ><td className="nowrap"
-    ><input id={"df-inodes-devname-"+$disk.DirName}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label htmlFor={"df-inodes-devname-"+$disk.DirName} className="clip" style={{maxWidth: '6ch'}}
-  >{$disk.DirName}</label
-></td
-  ><td className="text-right"
-    >{$disk.Ifree}</td
-  ><td className="text-right"
-    >{$disk.Iused}&nbsp;<sup
-      ><span  className={LabelClassColorPercent($disk.IusePercent)}
-  >{$disk.IusePercent}%</span
-></sup
-    ></td
-  ><td className="text-right"
-    >{$disk.Inodes}</td
-  ></tr
->); },
-		dfinodes_table:  function(Data, rows)  { return (<table className="table1 stripe-table"
-  ><thead
-    ><tr
-      ><th className="header"
-        >Device</th
-      ><th className="header"
-        >Mounted</th
-      ><th className="header text-right"
-        >Avail</th
-      ><th className="header text-right"
-        >Used</th
-      ><th className="header text-right"
-        >Total</th
-      ></tr
-    ></thead
-  ><tbody
-    >{rows}</tbody
-  ></table
+></span
+      ></div
+    ></div
+  ></div
+></div
 >); },
 
 		ps_rows:         function(Data, $proc) { return (<tr key={"ps-rowby-pid-"+$proc.PIDstring}

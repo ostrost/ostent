@@ -133,7 +133,6 @@
       div.form-group-padded
         {{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshif}}
       | </form>
-      | </div>
 
       ul.nav.nav-tabs
         / {{class}}="if-switch"
@@ -144,8 +143,10 @@
         | </li><li {{iftEnumAttrs .Data.Links.Params.ENUM.ift "IFBYTES" "active"}}>
         {{template "defines::adroplink" droplink .Data.Links.Params.ENUM.ift "IFBYTES"}}
         | </li>
+      | </div>
 
     div
+      | <div {{ifBPClassAttr .Data.Links.Params.BOOL.hideif "collapse-hidden"}}>
       / panels selected by .if-tab
       / #ifpackets
       | <div id="ifpackets" {{ifNeClassAttr .Data.Links.Params.ENUM.ift "PACKETS" "collapse-hidden"}}>
@@ -163,6 +164,7 @@
       | <div id="ifbytes" {{ifNeClassAttr .Data.Links.Params.ENUM.ift "IFBYTES" "collapse-hidden"}}>
       span#ifbytes-table
         {{template "defines::define_ifbytes_table" .}}
+      | </div>
       | </div>
 
 = content define_dfbytes_rows
@@ -219,6 +221,50 @@
         th.header.text-right Total
     tbody
       {{template "defines::define_dfinodes_rows" .}}
+
+= content define_paneldf
+  div.panel1
+    label.panel-heading.btn-block
+      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigdf "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigdf}}>{{.Data.Links.Params.ENUM.dft.Title}}</a>
+
+    div
+      | <div id="dfconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigdf "" "collapse-hidden"}}>
+      | <form {{class}}="horizontal-form" {{formActionAttr .Data.Links.Params.Query}}>
+      input.hidden-submit type=submit
+
+      div.form-group-padded
+         div.btn-group.btn-group-sm role=group
+          | <a {{ifBPClassAttr .Data.Links.Params.BOOL.hidedf "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidedf}}>Hidden</a>
+          | <a {{ifBClassAttr .Data.ExpandableDF "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.expanddf}}>{{.Data.ExpandtextDF}}</a>
+
+      div.form-group-padded
+        {{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshdf}}
+      | </form>
+
+      ul.nav.nav-tabs
+        / {{class}}="df-switch"
+        | <li {{iftEnumAttrs .Data.Links.Params.ENUM.dft "INODES" "active"}}>
+        {{template "defines::adroplink" droplink .Data.Links.Params.ENUM.dft "INODES"}}
+        | </li><li {{iftEnumAttrs .Data.Links.Params.ENUM.dft "DFBYTES" "active"}}>
+        {{template "defines::adroplink" droplink .Data.Links.Params.ENUM.dft "DFBYTES"}}
+        | </li>
+      | </div>
+
+    div
+      | <div {{ifBPClassAttr .Data.Links.Params.BOOL.hidedf "collapse-hidden"}}>
+      / panels selected by .df-tab
+      / #dfinodes
+      | <div id="dfinodes" {{ifNeClassAttr .Data.Links.Params.ENUM.dft "INODES" "collapse-hidden"}}>
+      span#dfinodes-table
+        {{template "defines::define_dfinodes_table" .}}
+      | </div>
+
+      / #dfbytes
+      | <div id="dfbytes" {{ifNeClassAttr .Data.Links.Params.ENUM.dft "DFBYTES" "collapse-hidden"}}>
+      span#dfbytes-table
+        {{template "defines::define_dfbytes_table" .}}
+      | </div>
+      | </div>
 
 = content define_memrows
   {{with rowsset .}}{{.}}{{else}}

@@ -283,7 +283,7 @@ func (f HTMLFuncs) ifBClass(value interface{}, classes ...string) (string, error
 		return "", err
 	}
 	if bp, ok := value.(*bool); ok {
-		if *bp {
+		if bp != nil && *bp {
 			return fstclass, nil
 		}
 		return sndclass, nil

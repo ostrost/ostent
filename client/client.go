@@ -3,7 +3,6 @@ package client
 import (
 	"time"
 
-	"github.com/ostrost/ostent/client/enums"
 	"github.com/ostrost/ostent/flags"
 )
 
@@ -54,7 +53,6 @@ func (c Client) Expired() bool {
 
 func (c *Client) refreshes() []*Refresh {
 	return []*Refresh{
-		c.RefreshDF,
 		c.RefreshHN,
 		c.RefreshUP,
 		c.RefreshIP,
@@ -73,24 +71,12 @@ type internalClient struct {
 }
 
 type commonClient struct {
-	HideDF   *bool `json:",omitempty"`
-	ExpandDF *bool `json:",omitempty"`
-
-	TabDF *Tab `json:",omitempty"`
-
-	HideconfigDF *bool `json:",omitempty"`
 }
 
 // server side full client state
 type Client struct {
 	internalClient `json:"-"` // NB not marshalled
 	commonClient
-
-	ExpandableDF *bool `json:",omitempty"`
-
-	ExpandtextDF *string `json:",omitempty"`
-
-	RefreshDF *Refresh `json:",omitempty"`
 
 	// un-mergable and hidden refreshes:
 	RefreshHN *Refresh `json:"-"`
@@ -142,8 +128,6 @@ func Setstring(sends, s **string, v string) bool {
 type SendClient struct {
 	Client
 
-	RefreshErrorDF *bool `json:",omitempty"`
-
 	DebugError *string `json:",omitempty"`
 }
 
@@ -156,65 +140,14 @@ func (c *Client) mergeBool(dst, src *bool, send **bool) {
 	c.Modified = true
 }
 
-// MergeTab fills dst and send with src.Uint and title found from tabs.
-// src.Title is disregarded.
-func (c *Client) MergeTab(dst, src *Tab, send **Tab, tabs Tabs) {
-	if src == nil || src.Uint == dst.Uint {
-		return
-	}
-	var title string
-	for _, v := range tabs {
-		if src.Uint == v.Uint {
-			title = v.Title
-			break
-		}
-	}
-	if title == "" { // no tab with src.Uint found
-		return
-	}
-	if send == nil {
-		s := new(Tab)
-		send = &s // dummy
-	} else {
-		*send = new(Tab)
-	}
-	dst.Uint, (*send).Uint = src.Uint, src.Uint
-	dst.Title, (*send).Title = title, title
-	c.Modified = true
-}
-
-func (c *Client) NewTab(tabs Tabs, u enums.Uint) *Tab {
-	n := new(Tab)
-	c.MergeTab(n, &Tab{Uint: u}, nil, tabs)
-	return n
-}
-
 func (c *Client) Merge(r RecvClient, s *SendClient) {
-	s.mergeBool(c.HideDF, r.HideDF, &s.HideDF)
-
-	s.mergeBool(c.ExpandDF, r.ExpandDF, &s.ExpandDF)
-
-	s.mergeBool(c.HideconfigDF, r.HideconfigDF, &s.HideconfigDF)
-
-	s.MergeTab(c.TabDF, r.TabDF, &s.TabDF, DFTABS)
 }
 
 // NewClient construct a Client with defaults.
 func NewClient(minperiod flags.Period) Client {
 	cs := Client{}
 
-	// new(bool) is &false
-	cs.HideDF = new(bool)
-	cs.ExpandDF = new(bool)
-
-	cs.TabDF = cs.NewTab(DFTABS, DFBYTES)
-
-	newhc := func() *bool { b := new(bool); *b = true; return b } // *b = false for DEVELOPMENT
-	cs.HideconfigDF = newhc()
-
 	newref := NewRefreshFunc(minperiod)
-	cs.RefreshDF = newref()
-
 	// immutable refreshes:
 	cs.RefreshHN = newref()
 	cs.RefreshUP = newref()
@@ -229,7 +162,6 @@ func NewClient(minperiod flags.Period) Client {
 
 type RecvClient struct {
 	commonClient
-	RefreshSignalDF *string
 }
 
 // MergeRefreshSignal stores parsed ppinput into prefresh AND sendr or error in senderr.
@@ -257,7 +189,6 @@ func (sc *SendClient) MergeRefreshSignal(ppinput *string, prefresh *Refresh, sen
 
 // MergeRefresh merges into cs various refresh updates. send is populated with the updates.
 func (rs *RecvClient) MergeRefresh(cs *Client, send *SendClient) error {
-	send.MergeRefreshSignal(rs.RefreshSignalDF, cs.RefreshDF, &send.RefreshDF, &send.RefreshErrorDF)
 	// Refresh{HN,UP,IP,LA} are not merged
 
 	err := send.MergeRSError

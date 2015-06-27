@@ -122,10 +122,11 @@ type IndexData struct {
 
 	DISTRIB string
 	VERSION string
-	DFTABS  client.Tabs
 
 	Client client.Client
 
+	ExpandableDF *bool   `json:",omitempty"`
+	ExpandtextDF *string `json:",omitempty"`
 	ExpandableIF *bool   `json:",omitempty"`
 	ExpandtextIF *string `json:",omitempty"`
 }
@@ -164,6 +165,8 @@ type IndexUpdate struct {
 
 	Location *string `json:",omitempty"`
 
+	ExpandableDF *bool   `json:",omitempty"`
+	ExpandtextDF *string `json:",omitempty"`
 	ExpandableIF *bool   `json:",omitempty"`
 	ExpandtextIF *string `json:",omitempty"`
 }
@@ -373,33 +376,40 @@ func LessCPU(a, b operating.MetricCPU) bool {
 }
 
 func (ir *IndexRegistry) DF(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
-	switch cli.TabDF.Uint {
-	case client.DFBYTES:
-		iu.DFbytes = &operating.DFbytes{List: ir.DFbytes(cli, send)}
-		return IndexUpdate{DFbytes: iu.DFbytes}
-	case client.DFINODES:
-		iu.DFinodes = &operating.DFinodes{List: ir.DFinodes(cli, send)}
-		return IndexUpdate{DFinodes: iu.DFinodes}
+	var lenp int
+	niu := IndexUpdate{}
+	switch enums.UintDFT(cli.Params.ENUM["dft"].Number.Uint) {
+	case enums.DFBYTES:
+		list, len := ir.DFbytes(cli, send)
+		iu.DFbytes = &operating.DFbytes{List: list}
+		niu.DFbytes, lenp = iu.DFbytes, len
+	case enums.INODES:
+		list, len := ir.DFinodes(cli, send)
+		iu.DFinodes = &operating.DFinodes{List: list}
+		niu.DFinodes, lenp = iu.DFinodes, len
+	default:
+		return nil
 	}
-	return nil
+	iu.ExpandableDF = new(bool)
+	*iu.ExpandableDF = lenp > cli.Toprows
+	iu.ExpandtextDF = new(string)
+	*iu.ExpandtextDF = fmt.Sprintf("Expanded (%d)", lenp)
+	return niu
 }
 
-func (ir *IndexRegistry) DFbytes(cli *client.Client, send *client.SendClient) []operating.DiskBytes {
+func (ir *IndexRegistry) DFbytes(cli *client.Client, send *client.SendClient) ([]operating.DiskBytes, int) {
 	private := ir.ListPrivateDisk()
-
-	send.SetBool(&send.ExpandableDF, &cli.ExpandableDF, len(private) > cli.Toprows)
-	send.SetString(&send.ExpandtextDF, &cli.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(private)))
 
 	private.StableSortBy(LessDiskFunc(*cli.Params.ENUM["df"]))
 
 	var public []operating.DiskBytes
 	for i, disk := range private {
-		if !*cli.ExpandDF && i > cli.Toprows-1 {
+		if !cli.Params.BOOL["expanddf"].Value && i > cli.Toprows-1 {
 			break
 		}
 		public = append(public, FormatDFbytes(disk))
 	}
-	return public
+	return public, len(private)
 }
 
 func FormatDFbytes(md operating.MetricDF) operating.DiskBytes {
@@ -419,22 +429,19 @@ func FormatDFbytes(md operating.MetricDF) operating.DiskBytes {
 	}
 }
 
-func (ir *IndexRegistry) DFinodes(cli *client.Client, send *client.SendClient) []operating.DiskInodes {
+func (ir *IndexRegistry) DFinodes(cli *client.Client, send *client.SendClient) ([]operating.DiskInodes, int) {
 	private := ir.ListPrivateDisk()
-
-	send.SetBool(&send.ExpandableDF, &cli.ExpandableDF, len(private) > cli.Toprows)
-	send.SetString(&send.ExpandtextDF, &cli.ExpandtextDF, fmt.Sprintf("Expanded (%d)", len(private)))
 
 	private.StableSortBy(LessDiskFunc(*cli.Params.ENUM["df"]))
 
 	var public []operating.DiskInodes
 	for i, disk := range private {
-		if !*cli.ExpandDF && i > cli.Toprows-1 {
+		if !cli.Params.BOOL["expanddf"].Value && i > cli.Toprows-1 {
 			break
 		}
 		public = append(public, FormatDFinodes(disk))
 	}
-	return public
+	return public, len(private)
 }
 
 func FormatDFinodes(md operating.MetricDF) operating.DiskInodes {
@@ -506,7 +513,7 @@ func (ir *IndexRegistry) IF(cli *client.Client, send *client.SendClient, iu *Ind
 	*iu.ExpandableIF = lenp > cli.Toprows
 	iu.ExpandtextIF = new(string)
 	*iu.ExpandtextIF = fmt.Sprintf("Expanded (%d)", lenp)
-	return nil
+	return niu
 }
 
 func (ir *IndexRegistry) CPU(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
@@ -782,13 +789,13 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 	psCopy := lastInfo.CopyPS()
 
 	set := []Set{
-		{cl.Params.BOOL["hidemem"].Value, cl.Params.PERIOD["refreshmem"], Reg1s.MEM},
 		{cl.Params.BOOL["hidemem"].Value || cl.Params.BOOL["hideswap"].Value, cl.Params.PERIOD["refreshmem"], Reg1s.SWAP}, // if MEM is hidden, so is SWAP
+		{cl.Params.BOOL["hidemem"].Value, cl.Params.PERIOD["refreshmem"], Reg1s.MEM},
 		{cl.Params.BOOL["hidecpu"].Value, cl.Params.PERIOD["refreshcpu"], Reg1s.CPU},
-		{*cl.HideDF, cl.RefreshDF, Reg1s.DF},
+		{cl.Params.BOOL["hidedf"].Value, cl.Params.PERIOD["refreshdf"], Reg1s.DF},
 		{cl.Params.BOOL["hideif"].Value, cl.Params.PERIOD["refreshif"], Reg1s.IF},
-		{false, cl.Params.PERIOD["refreshmem"], psCopy.IU},
 		{cl.Params.BOOL["hidevg"].Value, cl.Params.PERIOD["refreshvg"], Reg1s.VG},
+		{false, cl.Params.PERIOD["refreshps"], psCopy.IU},
 
 		// always-shown bits:
 		{false, cl.RefreshHN, RegMSS.HN},
@@ -845,16 +852,14 @@ func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 	}
 
 	data := IndexData{
-		Generic: updates.Generic,
+		DISTRIB: DISTRIB, // value set in init()
+		VERSION: VERSION, // value from server.go
 
-		Links: updates.Links,
-
-		DISTRIB: DISTRIB,       // value set in init()
-		VERSION: VERSION,       // value from server.go
-		DFTABS:  client.DFTABS, // "const"
-
-		Client: cl,
-
+		Client:       cl,
+		Links:        updates.Links,
+		Generic:      updates.Generic,
+		ExpandableDF: updates.ExpandableDF,
+		ExpandtextDF: updates.ExpandtextDF,
 		ExpandableIF: updates.ExpandableIF,
 		ExpandtextIF: updates.ExpandtextIF,
 	}
@@ -868,13 +873,12 @@ func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 	if updates.PStable != nil {
 		data.PStable = *updates.PStable
 	}
-
 	if updates.DFbytes != nil {
 		data.DFbytes = *updates.DFbytes
-	} else if updates.DFinodes != nil {
+	}
+	if updates.DFinodes != nil {
 		data.DFinodes = *updates.DFinodes
 	}
-
 	if updates.IFbytes != nil {
 		data.IFbytes = *updates.IFbytes
 	}

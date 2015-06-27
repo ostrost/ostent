@@ -78,17 +78,18 @@ define(function(require) {
         }, React.createElement("div", {className: "input-group input-group-sm refresh-group" + (Data.Links.Params.PERIOD.refreshif.InputErrd ? " has-warning" : "")
   }, React.createElement("span", {className: "input-group-addon"
     }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Links.Params.PERIOD.refreshif.Placeholder, name: "refreshif", onChange: this.handleChange, value: Data.Links.Params.PERIOD.refreshif.Input
-  }))))), React.createElement("ul", {className: "nav nav-tabs"
-    }, React.createElement("li", {className: (Data.Links.Params.ENUM.ift.Uint == 0) ? "active" : "", "data-tabid": "0"
-      }, React.createElement("a", {href: Data.Links.Params.ENUM.ift.PACKETS.Href, onClick: this.handleClick
+  })))), React.createElement("ul", {className: "nav nav-tabs"
+      }, React.createElement("li", {className: (Data.Links.Params.ENUM.ift.Uint == 0) ? "active" : "", "data-tabid": "0"
+        }, React.createElement("a", {href: Data.Links.Params.ENUM.ift.PACKETS.Href, onClick: this.handleClick
   }, "Packets")), React.createElement("li", {className: (Data.Links.Params.ENUM.ift.Uint == 1) ? "active" : "", "data-tabid": "1"
-      }, React.createElement("a", {href: Data.Links.Params.ENUM.ift.ERRORS.Href, onClick: this.handleClick
+        }, React.createElement("a", {href: Data.Links.Params.ENUM.ift.ERRORS.Href, onClick: this.handleClick
   }, "Errors")), React.createElement("li", {className: (Data.Links.Params.ENUM.ift.Uint == 2) ? "active" : "", "data-tabid": "2"
-      }, React.createElement("a", {href: Data.Links.Params.ENUM.ift.IFBYTES.Href, onClick: this.handleClick
-  }, "Bytes")))), React.createElement("div", null
-  , React.createElement("div", {id: "ifpackets", className: (Data.Links.Params.ENUM.ift.Uint != 0) ? "collapse-hidden" : "", "data-tabid": "0", "data-title": "Packets"
-    }, React.createElement("span", {id: "ifpackets-table"
-      }, React.createElement("table", {className: "table1 stripe-table"
+        }, React.createElement("a", {href: Data.Links.Params.ENUM.ift.IFBYTES.Href, onClick: this.handleClick
+  }, "Bytes"))))), React.createElement("div", null
+  , React.createElement("div", {className: Data.Links.Params.BOOL.hideif.Value ? "collapse-hidden" : ""
+    }, React.createElement("div", {id: "ifpackets", className: (Data.Links.Params.ENUM.ift.Uint != 0) ? "collapse-hidden" : "", "data-tabid": "0", "data-title": "Packets"
+      }, React.createElement("span", {id: "ifpackets-table"
+        }, React.createElement("table", {className: "table1 stripe-table"
   }, React.createElement("thead", null
     , React.createElement("tr", null
       , React.createElement("th", null
@@ -102,8 +103,8 @@ define(function(require) {
         }, "Out ", React.createElement("span", {className: "unit"
           }, "%4G")))), React.createElement("tbody", null
     , r1)))), React.createElement("div", {id: "iferrors", className: (Data.Links.Params.ENUM.ift.Uint != 1) ? "collapse-hidden" : "", "data-tabid": "1", "data-title": "Errors"
-    }, React.createElement("span", {id: "iferrors-table"
-      }, React.createElement("table", {className: "table1 stripe-table"
+      }, React.createElement("span", {id: "iferrors-table"
+        }, React.createElement("table", {className: "table1 stripe-table"
   }, React.createElement("thead", null
     , React.createElement("tr", null
       , React.createElement("th", null
@@ -117,8 +118,8 @@ define(function(require) {
         }, "Out ", React.createElement("span", {className: "unit"
           }, "%4G")))), React.createElement("tbody", null
     , r2)))), React.createElement("div", {id: "ifbytes", className: (Data.Links.Params.ENUM.ift.Uint != 2) ? "collapse-hidden" : "", "data-tabid": "2", "data-title": "Bytes"
-    }, React.createElement("span", {id: "ifbytes-table"
-      }, React.createElement("table", {className: "table1 stripe-table"
+      }, React.createElement("span", {id: "ifbytes-table"
+        }, React.createElement("table", {className: "table1 stripe-table"
   }, React.createElement("thead", null
     , React.createElement("tr", null
       , React.createElement("th", null
@@ -135,9 +136,7 @@ define(function(require) {
         }, "Out", React.createElement("span", {className: "unit"
           }, React.createElement("i", null
             , "B"), "%4G")))), React.createElement("tbody", null
-    , r3))))))); },
-
-
+    , r3)))))))); },
 
 		cpu_rows:        function(Data, $core) { return (React.createElement("tr", {key: "cpu-rowby-N-"+$core.N
   }, React.createElement("td", {className: "text-right nowrap"
@@ -191,7 +190,55 @@ define(function(require) {
       , React.createElement("span", {className: LabelClassColorPercent($disk.UsePercent)
   }, $disk.UsePercent, "%"))), React.createElement("td", {className: "text-right"
     }, $disk.Total))); },
-		dfbytes_table:   function(Data, rows)  { return (React.createElement("table", {className: "table1 stripe-table"
+		dfinodes_rows:   function(Data, $disk) { return (React.createElement("tr", {key: "dfinodes-rowby-dirname-"+$disk.DirName
+  }, React.createElement("td", {className: "nowrap"
+    }, React.createElement("input", {id: "df-inodes-devname-"+$disk.DevName, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
+}), React.createElement("label", {htmlFor: "df-inodes-devname-"+$disk.DevName, className: "clip", style: {maxWidth: '12ch'}
+  }, $disk.DevName)), React.createElement("td", {className: "nowrap"
+    }, React.createElement("input", {id: "df-inodes-devname-"+$disk.DirName, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
+}), React.createElement("label", {htmlFor: "df-inodes-devname-"+$disk.DirName, className: "clip", style: {maxWidth: '6ch'}
+  }, $disk.DirName)), React.createElement("td", {className: "text-right"
+    }, $disk.Ifree), React.createElement("td", {className: "text-right"
+    }, $disk.Iused, " ", React.createElement("sup", null
+      , React.createElement("span", {className: LabelClassColorPercent($disk.IusePercent)
+  }, $disk.IusePercent, "%"))), React.createElement("td", {className: "text-right"
+    }, $disk.Inodes))); },
+		paneldf:         function(Data,r1,r2)  { return (React.createElement("div", {className: "panel1"
+  }, React.createElement("label", {className: "panel-heading btn-block"
+    }, React.createElement("a", {className: Data.Links.Params.BOOL.showconfigdf.Value ? "btn-header-block active" : "btn-header-block", href: Data.Links.Params.BOOL.showconfigdf.Href, onClick: this.handleClick
+      }, Data.Links.Params.ENUM.dft.Title)), React.createElement("div", null
+    , React.createElement("div", {id: "dfconfig", className: Data.Links.Params.BOOL.showconfigdf.Value ? "" : "collapse-hidden"
+      }, React.createElement("form", {className: "horizontal-form", action: "/form/"+Data.Links.Params.Query
+        }, React.createElement("input", {className: "hidden-submit", type: "submit"
+        }), React.createElement("div", {className: "form-group-padded"
+        }, React.createElement("div", {className: "btn-group btn-group-sm", role: "group"
+          }, React.createElement("a", {className: Data.Links.Params.BOOL.hidedf.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Links.Params.BOOL.hidedf.Href, onClick: this.handleClick
+            }, "Hidden"), React.createElement("a", {className: Data.ExpandableDF ? "btn btn-default " : "btn btn-default disabled", href: Data.Links.Params.BOOL.expanddf.Href, onClick: this.handleClick
+            }, Data.ExpandtextDF))), React.createElement("div", {className: "form-group-padded"
+        }, React.createElement("div", {className: "input-group input-group-sm refresh-group" + (Data.Links.Params.PERIOD.refreshdf.InputErrd ? " has-warning" : "")
+  }, React.createElement("span", {className: "input-group-addon"
+    }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Links.Params.PERIOD.refreshdf.Placeholder, name: "refreshdf", onChange: this.handleChange, value: Data.Links.Params.PERIOD.refreshdf.Input
+  })))), React.createElement("ul", {className: "nav nav-tabs"
+      }, React.createElement("li", {className: (Data.Links.Params.ENUM.dft.Uint == 0) ? "active" : "", "data-tabid": "0"
+        }, React.createElement("a", {href: Data.Links.Params.ENUM.dft.INODES.Href, onClick: this.handleClick
+  }, "Inodes")), React.createElement("li", {className: (Data.Links.Params.ENUM.dft.Uint == 1) ? "active" : "", "data-tabid": "1"
+        }, React.createElement("a", {href: Data.Links.Params.ENUM.dft.DFBYTES.Href, onClick: this.handleClick
+  }, "Bytes"))))), React.createElement("div", null
+  , React.createElement("div", {className: Data.Links.Params.BOOL.hidedf.Value ? "collapse-hidden" : ""
+    }, React.createElement("div", {id: "dfinodes", className: (Data.Links.Params.ENUM.dft.Uint != 0) ? "collapse-hidden" : "", "data-tabid": "0", "data-title": "Inodes"
+      }, React.createElement("span", {id: "dfinodes-table"
+        }, React.createElement("table", {className: "table1 stripe-table"
+  }, React.createElement("thead", null
+    , React.createElement("tr", null
+      , React.createElement("th", {className: "header"
+        }, "Device"), React.createElement("th", {className: "header"
+        }, "Mounted"), React.createElement("th", {className: "header text-right"
+        }, "Avail"), React.createElement("th", {className: "header text-right"
+        }, "Used"), React.createElement("th", {className: "header text-right"
+        }, "Total"))), React.createElement("tbody", null
+    , r1)))), React.createElement("div", {id: "dfbytes", className: (Data.Links.Params.ENUM.dft.Uint != 1) ? "collapse-hidden" : "", "data-tabid": "1", "data-title": "Bytes"
+      }, React.createElement("span", {id: "dfbytes-table"
+        }, React.createElement("table", {className: "table1 stripe-table"
   }, React.createElement("thead", null
     , React.createElement("tr", null
       , React.createElement("th", {className: "header "
@@ -210,30 +257,7 @@ define(function(require) {
   }, React.createElement("a", {href: Data.Links.Params.ENUM.df.TOTAL.Href, className: Data.Links.Params.ENUM.df.TOTAL.Class
     }, "Total", React.createElement("span", {className: Data.Links.Params.ENUM.df.TOTAL.CaretClass
       }))))), React.createElement("tbody", null
-    , rows))); },
-		dfinodes_rows:   function(Data, $disk) { return (React.createElement("tr", {key: "dfinodes-rowby-dirname-"+$disk.DirName
-  }, React.createElement("td", {className: "nowrap"
-    }, React.createElement("input", {id: "df-inodes-devname-"+$disk.DevName, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
-}), React.createElement("label", {htmlFor: "df-inodes-devname-"+$disk.DevName, className: "clip", style: {maxWidth: '12ch'}
-  }, $disk.DevName)), React.createElement("td", {className: "nowrap"
-    }, React.createElement("input", {id: "df-inodes-devname-"+$disk.DirName, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
-}), React.createElement("label", {htmlFor: "df-inodes-devname-"+$disk.DirName, className: "clip", style: {maxWidth: '6ch'}
-  }, $disk.DirName)), React.createElement("td", {className: "text-right"
-    }, $disk.Ifree), React.createElement("td", {className: "text-right"
-    }, $disk.Iused, " ", React.createElement("sup", null
-      , React.createElement("span", {className: LabelClassColorPercent($disk.IusePercent)
-  }, $disk.IusePercent, "%"))), React.createElement("td", {className: "text-right"
-    }, $disk.Inodes))); },
-		dfinodes_table:  function(Data, rows)  { return (React.createElement("table", {className: "table1 stripe-table"
-  }, React.createElement("thead", null
-    , React.createElement("tr", null
-      , React.createElement("th", {className: "header"
-        }, "Device"), React.createElement("th", {className: "header"
-        }, "Mounted"), React.createElement("th", {className: "header text-right"
-        }, "Avail"), React.createElement("th", {className: "header text-right"
-        }, "Used"), React.createElement("th", {className: "header text-right"
-        }, "Total"))), React.createElement("tbody", null
-    , rows))); },
+    , r2)))))))); },
 
 		ps_rows:         function(Data, $proc) { return (React.createElement("tr", {key: "ps-rowby-pid-"+$proc.PIDstring
   }, React.createElement("td", {className: "text-right"
