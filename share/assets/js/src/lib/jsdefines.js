@@ -45,7 +45,80 @@ define(function(require) {
     }, $if.DeltaOut), React.createElement("td", {className: "text-right"
     }, $if.In), React.createElement("td", {className: "text-right"
     }, $if.Out))); },
-		ifbytes_table:   function(Data, rows)  { return (React.createElement("table", {className: "table1 stripe-table"
+		iferrors_rows:   function(Data, $if)   { return (React.createElement("tr", {key: "iferrors-rowby-name-"+$if.Name
+  }, React.createElement("td", null
+    , React.createElement("input", {id: "if-errors-name-"+$if.Name, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
+}), React.createElement("label", {htmlFor: "if-errors-name-"+$if.Name, className: "clip", style: {maxWidth: '12ch'}
+  }, $if.Name)), React.createElement("td", {className: "text-right"
+    }, $if.DeltaIn), React.createElement("td", {className: "text-right"
+    }, $if.DeltaOut), React.createElement("td", {className: "text-right"
+    }, $if.In), React.createElement("td", {className: "text-right"
+    }, $if.Out))); },
+		ifpackets_rows:  function(Data, $if)   { return (React.createElement("tr", {key: "ifpackets-rowby-name-"+$if.Name
+  }, React.createElement("td", null
+    , React.createElement("input", {id: "if-packets-name-"+$if.Name, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
+}), React.createElement("label", {htmlFor: "if-packets-name-"+$if.Name, className: "clip", style: {maxWidth: '12ch'}
+  }, $if.Name)), React.createElement("td", {className: "text-right"
+    }, $if.DeltaIn), React.createElement("td", {className: "text-right"
+    }, $if.DeltaOut), React.createElement("td", {className: "text-right"
+    }, $if.In), React.createElement("td", {className: "text-right"
+    }, $if.Out))); },
+		panelif:         function(Data,r1,r2,r3){ return (React.createElement("div", {className: "panel1"
+  }, React.createElement("label", {className: "panel-heading btn-block"
+    }, React.createElement("a", {className: Data.Links.Params.BOOL.showconfigif.Value ? "btn-header-block active" : "btn-header-block", href: Data.Links.Params.BOOL.showconfigif.Href, onClick: this.handleClick
+      }, Data.Links.Params.ENUM.ift.Title)), React.createElement("div", null
+    , React.createElement("div", {id: "ifconfig", className: Data.Links.Params.BOOL.showconfigif.Value ? "" : "collapse-hidden"
+      }, React.createElement("form", {className: "horizontal-form", action: "/form/"+Data.Links.Params.Query
+        }, React.createElement("input", {className: "hidden-submit", type: "submit"
+        }), React.createElement("div", {className: "form-group-padded"
+        }, React.createElement("div", {className: "btn-group btn-group-sm", role: "group"
+          }, React.createElement("a", {className: Data.Links.Params.BOOL.hideif.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Links.Params.BOOL.hideif.Href, onClick: this.handleClick
+            }, "Hidden"), React.createElement("a", {className: Data.ExpandableIF ? "btn btn-default " : "btn btn-default disabled", href: Data.Links.Params.BOOL.expandif.Href, onClick: this.handleClick
+            }, Data.ExpandtextIF))), React.createElement("div", {className: "form-group-padded"
+        }, React.createElement("div", {className: "input-group input-group-sm refresh-group" + (Data.Links.Params.PERIOD.refreshif.InputErrd ? " has-warning" : "")
+  }, React.createElement("span", {className: "input-group-addon"
+    }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Links.Params.PERIOD.refreshif.Placeholder, name: "refreshif", onChange: this.handleChange, value: Data.Links.Params.PERIOD.refreshif.Input
+  }))))), React.createElement("ul", {className: "nav nav-tabs"
+    }, React.createElement("li", {className: (Data.Links.Params.ENUM.ift.Uint == 0) ? "active" : "", "data-tabid": "0"
+      }, React.createElement("a", {href: Data.Links.Params.ENUM.ift.PACKETS.Href, onClick: this.handleClick
+  }, "Packets")), React.createElement("li", {className: (Data.Links.Params.ENUM.ift.Uint == 1) ? "active" : "", "data-tabid": "1"
+      }, React.createElement("a", {href: Data.Links.Params.ENUM.ift.ERRORS.Href, onClick: this.handleClick
+  }, "Errors")), React.createElement("li", {className: (Data.Links.Params.ENUM.ift.Uint == 2) ? "active" : "", "data-tabid": "2"
+      }, React.createElement("a", {href: Data.Links.Params.ENUM.ift.IFBYTES.Href, onClick: this.handleClick
+  }, "Bytes")))), React.createElement("div", null
+  , React.createElement("div", {id: "ifpackets", className: (Data.Links.Params.ENUM.ift.Uint != 0) ? "collapse-hidden" : "", "data-tabid": "0", "data-title": "Packets"
+    }, React.createElement("span", {id: "ifpackets-table"
+      }, React.createElement("table", {className: "table1 stripe-table"
+  }, React.createElement("thead", null
+    , React.createElement("tr", null
+      , React.createElement("th", null
+        , "Interface"), React.createElement("th", {className: "text-right nowrap", title: "per second"
+        }, "In ", React.createElement("span", {className: "unit"
+          }, "ps")), React.createElement("th", {className: "text-right nowrap", title: "per second"
+        }, "Out ", React.createElement("span", {className: "unit"
+          }, "ps")), React.createElement("th", {className: "text-right nowrap", title: "total modulo 4G"
+        }, "In ", React.createElement("span", {className: "unit"
+          }, "%4G")), React.createElement("th", {className: "text-right nowrap", title: "total modulo 4G"
+        }, "Out ", React.createElement("span", {className: "unit"
+          }, "%4G")))), React.createElement("tbody", null
+    , r1)))), React.createElement("div", {id: "iferrors", className: (Data.Links.Params.ENUM.ift.Uint != 1) ? "collapse-hidden" : "", "data-tabid": "1", "data-title": "Errors"
+    }, React.createElement("span", {id: "iferrors-table"
+      }, React.createElement("table", {className: "table1 stripe-table"
+  }, React.createElement("thead", null
+    , React.createElement("tr", null
+      , React.createElement("th", null
+        , "Interface"), React.createElement("th", {className: "text-right nowrap", title: "per second"
+        }, "In ", React.createElement("span", {className: "unit"
+          }, "ps")), React.createElement("th", {className: "text-right nowrap", title: "per second"
+        }, "Out ", React.createElement("span", {className: "unit"
+          }, "ps")), React.createElement("th", {className: "text-right nowrap", title: "modulo 4G"
+        }, "In ", React.createElement("span", {className: "unit"
+          }, "%4G")), React.createElement("th", {className: "text-right nowrap", title: "modulo 4G"
+        }, "Out ", React.createElement("span", {className: "unit"
+          }, "%4G")))), React.createElement("tbody", null
+    , r2)))), React.createElement("div", {id: "ifbytes", className: (Data.Links.Params.ENUM.ift.Uint != 2) ? "collapse-hidden" : "", "data-tabid": "2", "data-title": "Bytes"
+    }, React.createElement("span", {id: "ifbytes-table"
+      }, React.createElement("table", {className: "table1 stripe-table"
   }, React.createElement("thead", null
     , React.createElement("tr", null
       , React.createElement("th", null
@@ -62,53 +135,9 @@ define(function(require) {
         }, "Out", React.createElement("span", {className: "unit"
           }, React.createElement("i", null
             , "B"), "%4G")))), React.createElement("tbody", null
-    , rows))); },
-		iferrors_rows:   function(Data, $if)   { return (React.createElement("tr", {key: "iferrors-rowby-name-"+$if.Name
-  }, React.createElement("td", null
-    , React.createElement("input", {id: "if-errors-name-"+$if.Name, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
-}), React.createElement("label", {htmlFor: "if-errors-name-"+$if.Name, className: "clip", style: {maxWidth: '12ch'}
-  }, $if.Name)), React.createElement("td", {className: "text-right"
-    }, $if.DeltaIn), React.createElement("td", {className: "text-right"
-    }, $if.DeltaOut), React.createElement("td", {className: "text-right"
-    }, $if.In), React.createElement("td", {className: "text-right"
-    }, $if.Out))); },
-		iferrors_table:  function(Data, rows)  { return (React.createElement("table", {className: "table1 stripe-table"
-  }, React.createElement("thead", null
-    , React.createElement("tr", null
-      , React.createElement("th", null
-        , "Interface"), React.createElement("th", {className: "text-right nowrap", title: "per second"
-        }, "In ", React.createElement("span", {className: "unit"
-          }, "ps")), React.createElement("th", {className: "text-right nowrap", title: "per second"
-        }, "Out ", React.createElement("span", {className: "unit"
-          }, "ps")), React.createElement("th", {className: "text-right nowrap", title: "modulo 4G"
-        }, "In ", React.createElement("span", {className: "unit"
-          }, "%4G")), React.createElement("th", {className: "text-right nowrap", title: "modulo 4G"
-        }, "Out ", React.createElement("span", {className: "unit"
-          }, "%4G")))), React.createElement("tbody", null
-    , rows))); },
-		ifpackets_rows:  function(Data, $if)   { return (React.createElement("tr", {key: "ifpackets-rowby-name-"+$if.Name
-  }, React.createElement("td", null
-    , React.createElement("input", {id: "if-packets-name-"+$if.Name, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
-}), React.createElement("label", {htmlFor: "if-packets-name-"+$if.Name, className: "clip", style: {maxWidth: '12ch'}
-  }, $if.Name)), React.createElement("td", {className: "text-right"
-    }, $if.DeltaIn), React.createElement("td", {className: "text-right"
-    }, $if.DeltaOut), React.createElement("td", {className: "text-right"
-    }, $if.In), React.createElement("td", {className: "text-right"
-    }, $if.Out))); },
-		ifpackets_table: function(Data, rows)  { return (React.createElement("table", {className: "table1 stripe-table"
-  }, React.createElement("thead", null
-    , React.createElement("tr", null
-      , React.createElement("th", null
-        , "Interface"), React.createElement("th", {className: "text-right nowrap", title: "per second"
-        }, "In ", React.createElement("span", {className: "unit"
-          }, "ps")), React.createElement("th", {className: "text-right nowrap", title: "per second"
-        }, "Out ", React.createElement("span", {className: "unit"
-          }, "ps")), React.createElement("th", {className: "text-right nowrap", title: "total modulo 4G"
-        }, "In ", React.createElement("span", {className: "unit"
-          }, "%4G")), React.createElement("th", {className: "text-right nowrap", title: "total modulo 4G"
-        }, "Out ", React.createElement("span", {className: "unit"
-          }, "%4G")))), React.createElement("tbody", null
-    , rows))); },
+    , r3))))))); },
+
+
 
 		cpu_rows:        function(Data, $core) { return (React.createElement("tr", {key: "cpu-rowby-N-"+$core.N
   }, React.createElement("td", {className: "text-right nowrap"

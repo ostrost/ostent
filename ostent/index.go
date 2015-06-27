@@ -122,10 +122,12 @@ type IndexData struct {
 
 	DISTRIB string
 	VERSION string
-	IFTABS  client.Tabs
 	DFTABS  client.Tabs
 
 	Client client.Client
+
+	ExpandableIF *bool   `json:",omitempty"`
+	ExpandtextIF *string `json:",omitempty"`
 }
 
 type Links struct {
@@ -161,6 +163,9 @@ type IndexUpdate struct {
 	Client *client.SendClient `json:",omitempty"`
 
 	Location *string `json:",omitempty"`
+
+	ExpandableIF *bool   `json:",omitempty"`
+	ExpandtextIF *string `json:",omitempty"`
 }
 
 type Generic struct {
@@ -274,21 +279,18 @@ func (_ *IndexRegistry) InterfacePackets(mi operating.MetricInterface) (*operati
 	return mi.PacketsIn, mi.PacketsOut, false
 }
 
-func (ir *IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient, ip InterfaceParts) []operating.InterfaceInfo {
+func (ir *IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient, ip InterfaceParts) ([]operating.InterfaceInfo, int) {
 	private := ir.ListPrivateInterface()
-
-	send.SetBool(&send.ExpandableIF, &cli.ExpandableIF, len(private) > cli.Toprows)
-	send.SetString(&send.ExpandtextIF, &cli.ExpandtextIF, fmt.Sprintf("Expanded (%d)", len(private)))
 
 	private.SortSortBy(LessInterface)
 	var public []operating.InterfaceInfo
 	for i, mi := range private {
-		if !*cli.ExpandIF && i >= cli.Toprows {
+		if !cli.Params.BOOL["expandif"].Value && i >= cli.Toprows {
 			break
 		}
 		public = append(public, FormatInterface(mi, ip))
 	}
-	return public
+	return public, len(private)
 }
 
 // ListPrivateInterface returns list of MetricInterface's by traversing the PrivateInterfaceRegistry.
@@ -479,17 +481,31 @@ func (procs MPSlice) IU(cli *client.Client, send *client.SendClient, iu *IndexUp
 }
 
 func (ir *IndexRegistry) IF(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
-	switch cli.TabIF.Uint {
-	case client.IFBYTES:
-		iu.IFbytes = &operating.Interfaces{List: ir.Interfaces(cli, send, ir.InterfaceBytes)}
-		return IndexUpdate{IFbytes: iu.IFbytes}
-	case client.IFERRORS:
-		iu.IFerrors = &operating.Interfaces{List: Reg1s.Interfaces(cli, send, ir.InterfaceErrors)}
-		return IndexUpdate{IFerrors: iu.IFerrors}
-	case client.IFPACKETS:
-		iu.IFpackets = &operating.Interfaces{List: Reg1s.Interfaces(cli, send, ir.InterfacePackets)}
-		return IndexUpdate{IFpackets: iu.IFpackets}
+	var lenp int
+	niu := IndexUpdate{}
+	switch enums.UintIFT(cli.Params.ENUM["ift"].Number.Uint) {
+	case enums.IFBYTES:
+		list, len := ir.Interfaces(cli, send, ir.InterfaceBytes)
+		iu.IFbytes = &operating.Interfaces{List: list}
+		niu.IFbytes = iu.IFbytes
+		lenp = len
+	case enums.ERRORS:
+		list, len := Reg1s.Interfaces(cli, send, ir.InterfaceErrors)
+		iu.IFerrors = &operating.Interfaces{List: list}
+		niu.IFerrors = iu.IFerrors
+		lenp = len
+	case enums.PACKETS:
+		list, len := Reg1s.Interfaces(cli, send, ir.InterfacePackets)
+		iu.IFpackets = &operating.Interfaces{List: list}
+		niu.IFpackets = iu.IFpackets
+		lenp = len
+	default:
+		return nil
 	}
+	iu.ExpandableIF = new(bool)
+	*iu.ExpandableIF = lenp > cli.Toprows
+	iu.ExpandtextIF = new(string)
+	*iu.ExpandtextIF = fmt.Sprintf("Expanded (%d)", lenp)
 	return nil
 }
 
@@ -770,7 +786,7 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 		{cl.Params.BOOL["hidemem"].Value || cl.Params.BOOL["hideswap"].Value, cl.Params.PERIOD["refreshmem"], Reg1s.SWAP}, // if MEM is hidden, so is SWAP
 		{cl.Params.BOOL["hidecpu"].Value, cl.Params.PERIOD["refreshcpu"], Reg1s.CPU},
 		{*cl.HideDF, cl.RefreshDF, Reg1s.DF},
-		{*cl.HideIF, cl.RefreshIF, Reg1s.IF},
+		{cl.Params.BOOL["hideif"].Value, cl.Params.PERIOD["refreshif"], Reg1s.IF},
 		{false, cl.Params.PERIOD["refreshmem"], psCopy.IU},
 		{cl.Params.BOOL["hidevg"].Value, cl.Params.PERIOD["refreshvg"], Reg1s.VG},
 
@@ -836,9 +852,11 @@ func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 		DISTRIB: DISTRIB,       // value set in init()
 		VERSION: VERSION,       // value from server.go
 		DFTABS:  client.DFTABS, // "const"
-		IFTABS:  client.IFTABS, // "const"
 
 		Client: cl,
+
+		ExpandableIF: updates.ExpandableIF,
+		ExpandtextIF: updates.ExpandtextIF,
 	}
 
 	if updates.CPU != nil {
@@ -859,9 +877,11 @@ func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 
 	if updates.IFbytes != nil {
 		data.IFbytes = *updates.IFbytes
-	} else if updates.IFerrors != nil {
+	}
+	if updates.IFerrors != nil {
 		data.IFerrors = *updates.IFerrors
-	} else if updates.IFpackets != nil {
+	}
+	if updates.IFpackets != nil {
 		data.IFpackets = *updates.IFpackets
 	}
 	data.VagrantMachines = updates.VagrantMachines

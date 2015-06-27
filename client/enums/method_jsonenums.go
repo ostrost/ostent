@@ -55,6 +55,12 @@ func (r *UintPS) Unmarshal(data string, negate *bool) error {
 func (r UintDF) Touint() Uint                     { return Uint(r) }
 func (r UintDF) Marshal() (Uinter, string, error) { return MarshalStringFunc(r+1, r.MarshalJSON)() }
 
+func (r UintIFT) Touint() Uint                     { return Uint(r) }
+func (r UintIFT) Marshal() (Uinter, string, error) { return MarshalStringFunc(r+1, r.MarshalJSON)() }
+func (r *UintIFT) Unmarshal(data string, _ *bool) error {
+	return UnmarshalMaybe(false, r.UnmarshalJSON, data)
+}
+
 func (r UintPS) Touint() Uint                     { return Uint(r) }
 func (r UintPS) Marshal() (Uinter, string, error) { return MarshalStringFunc(r+1, r.MarshalJSON)() }
 

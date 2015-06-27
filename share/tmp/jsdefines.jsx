@@ -83,41 +83,6 @@ define(function(require) {
     >{$if.Out}</td
   ></tr
 >); },
-		ifbytes_table:   function(Data, rows)  { return (<table className="table1 stripe-table"
-  ><thead
-    ><tr
-      ><th
-        >Interface</th
-      ><th className="text-right nowrap" title="BITS per second"
-        >In<span className="unit"
-          ><i
-            >b</i
-          >ps</span
-        ></th
-      ><th className="text-right nowrap" title="BITS per second"
-        >Out<span className="unit"
-          ><i
-            >b</i
-          >ps</span
-        ></th
-      ><th className="text-right nowrap" title="total BYTES modulo 4G"
-        >In<span className="unit"
-          ><i
-            >B</i
-          >%4G</span
-        ></th
-      ><th className="text-right nowrap" title="total BYTES modulo 4G"
-        >Out<span className="unit"
-          ><i
-            >B</i
-          >%4G</span
-        ></th
-      ></tr
-    ></thead
-  ><tbody
-    >{rows}</tbody
-  ></table
->); },
 		iferrors_rows:   function(Data, $if)   { return (<tr key={"iferrors-rowby-name-"+$if.Name}
   ><td
     ><input id={"if-errors-name-"+$if.Name}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
@@ -133,33 +98,6 @@ define(function(require) {
   ><td className="text-right"
     >{$if.Out}</td
   ></tr
->); },
-		iferrors_table:  function(Data, rows)  { return (<table className="table1 stripe-table"
-  ><thead
-    ><tr
-      ><th
-        >Interface</th
-      ><th className="text-right nowrap" title="per second"
-        >In&nbsp;<span className="unit"
-          >ps</span
-        ></th
-      ><th className="text-right nowrap" title="per second"
-        >Out&nbsp;<span className="unit"
-          >ps</span
-        ></th
-      ><th className="text-right nowrap" title="modulo 4G"
-        >In&nbsp;<span className="unit"
-          >%4G</span
-        ></th
-      ><th className="text-right nowrap" title="modulo 4G"
-        >Out&nbsp;<span className="unit"
-          >%4G</span
-        ></th
-      ></tr
-    ></thead
-  ><tbody
-    >{rows}</tbody
-  ></table
 >); },
 		ifpackets_rows:  function(Data, $if)   { return (<tr key={"ifpackets-rowby-name-"+$if.Name}
   ><td
@@ -177,7 +115,52 @@ define(function(require) {
     >{$if.Out}</td
   ></tr
 >); },
-		ifpackets_table: function(Data, rows)  { return (<table className="table1 stripe-table"
+		panelif:         function(Data,r1,r2,r3){ return (<div className="panel1"
+  ><label className="panel-heading btn-block"
+    ><a  className={Data.Links.Params.BOOL.showconfigif.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.showconfigif.Href} onClick={this.handleClick}
+      >{Data.Links.Params.ENUM.ift.Title}</a
+    ></label
+  ><div
+    ><div id="ifconfig"  className={Data.Links.Params.BOOL.showconfigif.Value ? "" : "collapse-hidden" }
+      ><form className="horizontal-form"  action={"/form/"+Data.Links.Params.Query}
+        ><input className="hidden-submit" type="submit"
+        ></input
+      ><div className="form-group-padded"
+        ><div className="btn-group btn-group-sm" role="group"
+          ><a  className={Data.Links.Params.BOOL.hideif.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Links.Params.BOOL.hideif.Href} onClick={this.handleClick}
+            >Hidden</a
+          ><a  className={Data.ExpandableIF ? "btn btn-default " : "btn btn-default disabled" }  href={Data.Links.Params.BOOL.expandif.Href} onClick={this.handleClick}
+            >{Data.ExpandtextIF}</a
+          ></div
+        ></div
+      ><div className="form-group-padded"
+        ><div  className={"input-group input-group-sm refresh-group" + (Data.Links.Params.PERIOD.refreshif.InputErrd ? " has-warning" : "")}
+  ><span className="input-group-addon"
+    >Refresh</span
+  ><input className="form-control refresh-input" type="text" placeholder={Data.Links.Params.PERIOD.refreshif.Placeholder}  name="refreshif"  onChange={this.handleChange} value={Data.Links.Params.PERIOD.refreshif.Input}
+  ></input></div
+></div
+      ></form
+    ></div
+  ><ul className="nav nav-tabs"
+    ><li  className={(Data.Links.Params.ENUM.ift.Uint == 0) ? "active" : ""} data-tabid="0"
+      ><a href={Data.Links.Params.ENUM.ift.PACKETS.Href} onClick={this.handleClick}
+  >Packets</a
+></li
+    ><li  className={(Data.Links.Params.ENUM.ift.Uint == 1) ? "active" : ""} data-tabid="1"
+      ><a href={Data.Links.Params.ENUM.ift.ERRORS.Href} onClick={this.handleClick}
+  >Errors</a
+></li
+    ><li  className={(Data.Links.Params.ENUM.ift.Uint == 2) ? "active" : ""} data-tabid="2"
+      ><a href={Data.Links.Params.ENUM.ift.IFBYTES.Href} onClick={this.handleClick}
+  >Bytes</a
+></li
+    ></ul
+  ></div
+><div
+  ><div id="ifpackets"  className={(Data.Links.Params.ENUM.ift.Uint != 0) ? "collapse-hidden" : ""} data-tabid="0" data-title="Packets"
+    ><span id="ifpackets-table"
+      ><table className="table1 stripe-table"
   ><thead
     ><tr
       ><th
@@ -201,9 +184,83 @@ define(function(require) {
       ></tr
     ></thead
   ><tbody
-    >{rows}</tbody
+    >{r1}</tbody
   ></table
+></span
+    ></div
+  ><div id="iferrors"  className={(Data.Links.Params.ENUM.ift.Uint != 1) ? "collapse-hidden" : ""} data-tabid="1" data-title="Errors"
+    ><span id="iferrors-table"
+      ><table className="table1 stripe-table"
+  ><thead
+    ><tr
+      ><th
+        >Interface</th
+      ><th className="text-right nowrap" title="per second"
+        >In&nbsp;<span className="unit"
+          >ps</span
+        ></th
+      ><th className="text-right nowrap" title="per second"
+        >Out&nbsp;<span className="unit"
+          >ps</span
+        ></th
+      ><th className="text-right nowrap" title="modulo 4G"
+        >In&nbsp;<span className="unit"
+          >%4G</span
+        ></th
+      ><th className="text-right nowrap" title="modulo 4G"
+        >Out&nbsp;<span className="unit"
+          >%4G</span
+        ></th
+      ></tr
+    ></thead
+  ><tbody
+    >{r2}</tbody
+  ></table
+></span
+    ></div
+  ><div id="ifbytes"  className={(Data.Links.Params.ENUM.ift.Uint != 2) ? "collapse-hidden" : ""} data-tabid="2" data-title="Bytes"
+    ><span id="ifbytes-table"
+      ><table className="table1 stripe-table"
+  ><thead
+    ><tr
+      ><th
+        >Interface</th
+      ><th className="text-right nowrap" title="BITS per second"
+        >In<span className="unit"
+          ><i
+            >b</i
+          >ps</span
+        ></th
+      ><th className="text-right nowrap" title="BITS per second"
+        >Out<span className="unit"
+          ><i
+            >b</i
+          >ps</span
+        ></th
+      ><th className="text-right nowrap" title="total BYTES modulo 4G"
+        >In<span className="unit"
+          ><i
+            >B</i
+          >%4G</span
+        ></th
+      ><th className="text-right nowrap" title="total BYTES modulo 4G"
+        >Out<span className="unit"
+          ><i
+            >B</i
+          >%4G</span
+        ></th
+      ></tr
+    ></thead
+  ><tbody
+    >{r3}</tbody
+  ></table
+></span
+    ></div
+  ></div
+></div
 >); },
+
+
 
 		cpu_rows:        function(Data, $core) { return (<tr key={"cpu-rowby-N-"+$core.N}
   ><td className="text-right nowrap"

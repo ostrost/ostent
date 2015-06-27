@@ -61,51 +61,8 @@ html
         div.block.col-md-2.col-md-offset-1#mem-table
           {{template "defines::define_panelmem" .}}
 
-        div.block.col-md-3
-          div.panel1
-            label.collapse-label.panel-heading.btn-block for=dummyifconfigcheckbox for-sel=#ifconfig
-              a href=#if class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigIF)}} active{{end}}" {{.Data.Client.TabIF.Title}}
-              input.collapse-checkbox#dummyifconfigcheckbox type=checkbox aria-hidden=true hidden=
-            input.collapse-checkbox type=checkbox aria-hidden=true hidden=
-
-            div
-              div#ifconfig class="{{if eq "true" (json .Data.Client.HideconfigIF)}}collapse-hidden{{end}}"
-                form.horizontal-form
-                  div.form-group-padded
-                     div.btn-group.btn-group-sm data-toggle=buttons
-                      label.btn.btn-default.hiding
-                        input type=checkbox
-                        | Hidden
-                      label href=#if class="btn btn-default{{if eq "false" (json .Data.Client.ExpandableIF)}} disabled{{end}}"
-                        input type=checkbox
-                        | {{.Data.Client.ExpandtextIF}}
-
-                  div.form-group-padded
-                    {{with .Data.Client.RefreshIF}}
-                    = yield refresh
-                    {{end}}
-
-                ul.nav.nav-tabs
-                  li.if-switch data-tabid={{.Data.IFTABS.iFPACKETS.Uint}}
-                    a href=#ifpackets Packets
-                  li.if-switch data-tabid={{.Data.IFTABS.iFERRORS.Uint}}
-                    a href=#iferrors Errors
-                  li.if-switch.active data-tabid={{.Data.IFTABS.iFBYTES.Uint}}
-                    a href=#ifbytes Bytes
-
-            div
-              / panels selected by .if-tab
-              div#ifpackets class="if-tab{{if ne (json .Data.IFTABS.iFPACKETS.Uint) (json .Data.Client.TabIF.Uint)}} collapse-hidden{{end}}" data-title={{.Data.IFTABS.iFPACKETS.Title}} data-tabid={{.Data.IFTABS.iFPACKETS.Uint}}
-                span#ifpackets-table
-                  {{template "defines::define_ifpackets_table" .}}
-
-              div#iferrors class="if-tab{{if ne (json .Data.IFTABS.iFERRORS.Uint) (json .Data.Client.TabIF.Uint)}} collapse-hidden{{end}}" data-title={{.Data.IFTABS.iFERRORS.Title}} data-tabid={{.Data.IFTABS.iFERRORS.Uint}}
-                span#iferrors-table
-                  {{template "defines::define_iferrors_table" .}}
-
-              div#ifbytes class="if-tab{{if ne (json .Data.IFTABS.iFBYTES.Uint) (json .Data.Client.TabIF.Uint)}} collapse-hidden{{end}}" data-title={{.Data.IFTABS.iFBYTES.Title}} data-tabid={{.Data.IFTABS.iFBYTES.Uint}}
-                span#ifbytes-table
-                  {{template "defines::define_ifbytes_table" .}}
+        div.block.col-md-3#if-table
+          {{template "defines::define_panelif" .}}
 
         div.block.col-md-2#cpu-table
           {{template "defines::define_panelcpu" .}}

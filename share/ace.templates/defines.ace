@@ -112,6 +112,59 @@
     tbody
       {{template "defines::define_iferrors_rows" .}}
 
+= content adroplink
+  | <a href={{.Href}} onClick={this.handleClick}>{{.Text}}</a>
+
+= content define_panelif
+  div.panel1
+    label.panel-heading.btn-block
+      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigif "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigif}}>{{.Data.Links.Params.ENUM.ift.Title}}</a>
+
+    div
+      | <div id="ifconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigif "" "collapse-hidden"}}>
+      | <form {{class}}="horizontal-form" {{formActionAttr .Data.Links.Params.Query}}>
+      input.hidden-submit type=submit
+
+      div.form-group-padded
+         div.btn-group.btn-group-sm role=group
+          | <a {{ifBPClassAttr .Data.Links.Params.BOOL.hideif "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hideif}}>Hidden</a>
+          | <a {{ifBClassAttr .Data.ExpandableIF "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.expandif}}>{{.Data.ExpandtextIF}}</a>
+
+      div.form-group-padded
+        {{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshif}}
+      | </form>
+      | </div>
+
+      ul.nav.nav-tabs
+        / {{class}}="if-switch"
+        | <li {{iftEnumAttrs .Data.Links.Params.ENUM.ift "PACKETS" "active"}}>
+        {{template "defines::adroplink" droplink .Data.Links.Params.ENUM.ift "PACKETS"}}
+        | </li><li {{iftEnumAttrs .Data.Links.Params.ENUM.ift "ERRORS" "active"}}>
+        {{template "defines::adroplink" droplink .Data.Links.Params.ENUM.ift "ERRORS"}}
+        | </li><li {{iftEnumAttrs .Data.Links.Params.ENUM.ift "IFBYTES" "active"}}>
+        {{template "defines::adroplink" droplink .Data.Links.Params.ENUM.ift "IFBYTES"}}
+        | </li>
+
+    div
+      / panels selected by .if-tab
+      / #ifpackets
+      | <div id="ifpackets" {{ifNeClassAttr .Data.Links.Params.ENUM.ift "PACKETS" "collapse-hidden"}}>
+      span#ifpackets-table
+        {{template "defines::define_ifpackets_table" .}}
+      | </div>
+
+      / #iferrors
+      | <div id="iferrors" {{ifNeClassAttr .Data.Links.Params.ENUM.ift "ERRORS" "collapse-hidden"}}>
+      span#iferrors-table
+        {{template "defines::define_iferrors_table" .}}
+      | </div>
+
+      / #ifbytes
+      | <div id="ifbytes" {{ifNeClassAttr .Data.Links.Params.ENUM.ift "IFBYTES" "collapse-hidden"}}>
+      span#ifbytes-table
+        {{template "defines::define_ifbytes_table" .}}
+      | </div>
+
 = content define_dfbytes_rows
   {{with rowsset .}}{{.}}{{else}}
     {{range $disk := .Data.DFbytes.List}}
@@ -255,7 +308,6 @@
         div.btn-group.btn-group-sm role=group
           | <a {{ifBPClassAttr .Data.Links.Params.BOOL.hidecpu "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidecpu}}>Hidden</a>
           | <a {{ifBClassAttr .Data.CPU.ExpandableCPU "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.expandcpu}}>{{.Data.CPU.ExpandtextCPU}}</a>
-          / TODO | <a {{ifExpandClassAttr .Data.CPU "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.expandcpu}}>{{.Data.CPU.ExpandtextCPU}}</a>
 
       div.form-group-padded
         {{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshcpu}}

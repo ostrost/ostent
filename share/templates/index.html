@@ -94,62 +94,8 @@
       ><div class="row"
         ><div id="mem-table" class="block col-md-2 col-md-offset-1"
           >{{template "defines::define_panelmem" .}}</div
-        ><div class="block col-md-3"
-          ><div class="panel1"
-            ><label class="collapse-label panel-heading btn-block" for="dummyifconfigcheckbox" for-sel="#ifconfig"
-              ><a class="btn-header-block{{if eq "false" (json .Data.Client.HideconfigIF)}} active{{end}}" href="#if"
-                >{{.Data.Client.TabIF.Title}}</a
-              ><input id="dummyifconfigcheckbox" class="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-              ></label
-            ><input class="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-            ><div
-              ><div id="ifconfig" class="{{if eq "true" (json .Data.Client.HideconfigIF)}}collapse-hidden{{end}}"
-                ><form class="horizontal-form"
-                  ><div class="form-group-padded"
-                    ><div class="btn-group btn-group-sm" data-toggle="buttons"
-                      ><label class="btn btn-default hiding"
-                        ><input type="checkbox"
-                        >Hidden</label
-                      ><label class="btn btn-default{{if eq "false" (json .Data.Client.ExpandableIF)}} disabled{{end}}" href="#if"
-                        ><input type="checkbox"
-                        >{{.Data.Client.ExpandtextIF}}</label
-                      ></div
-                    ></div
-                  ><div class="form-group-padded"
-                    >{{with .Data.Client.RefreshIF}}{{template "defines::refresh" .}}{{end}}</div
-                  ></form
-                ><ul class="nav nav-tabs"
-                  ><li class="if-switch" data-tabid="{{.Data.IFTABS.iFPACKETS.Uint}}"
-                    ><a href="#ifpackets"
-                      >Packets</a
-                    ></li
-                  ><li class="if-switch" data-tabid="{{.Data.IFTABS.iFERRORS.Uint}}"
-                    ><a href="#iferrors"
-                      >Errors</a
-                    ></li
-                  ><li class="if-switch active" data-tabid="{{.Data.IFTABS.iFBYTES.Uint}}"
-                    ><a href="#ifbytes"
-                      >Bytes</a
-                    ></li
-                  ></ul
-                ></div
-              ></div
-            ><div
-              ><div id="ifpackets" class="if-tab{{if ne (json .Data.IFTABS.iFPACKETS.Uint) (json .Data.Client.TabIF.Uint)}} collapse-hidden{{end}}" data-title="{{.Data.IFTABS.iFPACKETS.Title}}" data-tabid="{{.Data.IFTABS.iFPACKETS.Uint}}"
-                ><span id="ifpackets-table"
-                  >{{template "defines::define_ifpackets_table" .}}</span
-                ></div
-              ><div id="iferrors" class="if-tab{{if ne (json .Data.IFTABS.iFERRORS.Uint) (json .Data.Client.TabIF.Uint)}} collapse-hidden{{end}}" data-title="{{.Data.IFTABS.iFERRORS.Title}}" data-tabid="{{.Data.IFTABS.iFERRORS.Uint}}"
-                ><span id="iferrors-table"
-                  >{{template "defines::define_iferrors_table" .}}</span
-                ></div
-              ><div id="ifbytes" class="if-tab{{if ne (json .Data.IFTABS.iFBYTES.Uint) (json .Data.Client.TabIF.Uint)}} collapse-hidden{{end}}" data-title="{{.Data.IFTABS.iFBYTES.Title}}" data-tabid="{{.Data.IFTABS.iFBYTES.Uint}}"
-                ><span id="ifbytes-table"
-                  >{{template "defines::define_ifbytes_table" .}}</span
-                ></div
-              ></div
-            ></div
-          ></div
+        ><div id="if-table" class="block col-md-3"
+          >{{template "defines::define_panelif" .}}</div
         ><div id="cpu-table" class="block col-md-2"
           >{{template "defines::define_panelcpu" .}}</div
         ><div class="block col-md-3"
@@ -219,6 +165,9 @@
     ></body
   ></html
 >{{/*
+*/}}{{define "defines::adroplink"}}<a href={{.Href}} onClick={this.handleClick}
+  >{{.Text}}</a
+>{{end}}{{/*
 */}}{{define "defines::define_clip"}}<input {{.IDAttr}}  {{class}}="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
 >{{jsxClose "input"}}<label {{.ForAttr}} {{class}}="clip" {{.MWStyleAttr}}
   >{{.Text}}</label
@@ -504,6 +453,52 @@
   ><div
     ><div {{ifBPClassAttr .Data.Links.Params.BOOL.hidecpu "collapse-hidden"}}
       >{{template "defines::define_cputable" .}}</div
+    ></div
+  ></div
+>{{end}}{{/*
+*/}}{{define "defines::define_panelif"}}<div class="panel1"
+  ><label class="panel-heading btn-block"
+    ><a {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigif "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigif}}
+      >{{.Data.Links.Params.ENUM.ift.Title}}</a
+    ></label
+  ><div
+    ><div id="ifconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigif "" "collapse-hidden"}}
+      ><form {{class}}="horizontal-form" {{formActionAttr .Data.Links.Params.Query}}
+        ><input class="hidden-submit" type="submit"
+        ><div class="form-group-padded"
+          ><div class="btn-group btn-group-sm" role="group"
+            ><a {{ifBPClassAttr .Data.Links.Params.BOOL.hideif "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hideif}}
+              >Hidden</a
+            ><a {{ifBClassAttr .Data.ExpandableIF "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.expandif}}
+              >{{.Data.ExpandtextIF}}</a
+            ></div
+          ></div
+        ><div class="form-group-padded"
+          >{{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshif}}</div
+        ></form
+      ></div
+    ><ul class="nav nav-tabs"
+      ><li {{iftEnumAttrs .Data.Links.Params.ENUM.ift "PACKETS" "active"}}
+        >{{template "defines::adroplink" droplink .Data.Links.Params.ENUM.ift "PACKETS"}}</li
+      ><li {{iftEnumAttrs .Data.Links.Params.ENUM.ift "ERRORS" "active"}}
+        >{{template "defines::adroplink" droplink .Data.Links.Params.ENUM.ift "ERRORS"}}</li
+      ><li {{iftEnumAttrs .Data.Links.Params.ENUM.ift "IFBYTES" "active"}}
+        >{{template "defines::adroplink" droplink .Data.Links.Params.ENUM.ift "IFBYTES"}}</li
+      ></ul
+    ></div
+  ><div
+    ><div id="ifpackets" {{ifNeClassAttr .Data.Links.Params.ENUM.ift "PACKETS" "collapse-hidden"}}
+      ><span id="ifpackets-table"
+        >{{template "defines::define_ifpackets_table" .}}</span
+      ></div
+    ><div id="iferrors" {{ifNeClassAttr .Data.Links.Params.ENUM.ift "ERRORS" "collapse-hidden"}}
+      ><span id="iferrors-table"
+        >{{template "defines::define_iferrors_table" .}}</span
+      ></div
+    ><div id="ifbytes" {{ifNeClassAttr .Data.Links.Params.ENUM.ift "IFBYTES" "collapse-hidden"}}
+      ><span id="ifbytes-table"
+        >{{template "defines::define_ifbytes_table" .}}</span
+      ></div
     ></div
   ></div
 >{{end}}{{/*

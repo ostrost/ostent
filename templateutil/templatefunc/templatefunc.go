@@ -156,6 +156,71 @@ func (f HTMLFuncs) ifBPClassAttr(value interface{}, classes ...string) (template
 	return template.HTMLAttr(fmt.Sprintf(" %s=%q", f.classWord(), s)), nil
 }
 
+/*
+func (_ HashValue) ClassAttrUnless(dot interface{}, cmp uint, class string) (template.HTMLAttr, error) {}
+func (_ Uint) ClassAttrUnless(dot interface{}, cmp uint, class string) (template.HTMLAttr, error) {
+	if z, ok := dot.(HashValue); ok { return z.ClassAttrUnless(dot, cmp, class) }
+} // */
+
+func (f JSXFuncs) ifNeClassAttr(value interface{}, named string, class string) (template.HTMLAttr, error) {
+	prefix, _ := DotSplitHash(value) // "Data.Links.Params.ENUM.ift" ?
+	_, pname := DotSplit(prefix)
+	enums := client.NewParamsENUM(nil)
+	ed := enums[pname].EnumDecodec
+	_, uptr := ed.Unew()
+	if err := uptr.Unmarshal(named, new(bool)); err != nil {
+		return template.HTMLAttr(""), err
+	}
+	return template.HTMLAttr(fmt.Sprintf(" %s={(%s.Uint != %d) ? %q : \"\"} data-tabid=\"%d\" data-title=%q",
+		f.classWord(), prefix, uptr.Touint(), class, uptr.Touint(), ed.Text(named))), nil
+}
+
+func (f HTMLFuncs) ifNeClassAttr(value interface{}, named string, class string) (template.HTMLAttr, error) {
+	ep, ok := value.(*client.EnumParam)
+	if !ok {
+		return template.HTMLAttr(""), f.CastError("*client.EnumParams")
+	}
+	_, uptr := ep.EnumDecodec.Unew()
+	if err := uptr.Unmarshal(named, new(bool)); err != nil {
+		return template.HTMLAttr(""), err
+	}
+	ucmp := uptr.Touint()
+	if ep.Number.Uint == ucmp {
+		class = ""
+	}
+	return template.HTMLAttr(fmt.Sprintf(" %s=%q data-tabid=\"%d\" data-title=%q",
+		f.classWord(), class, ucmp, ep.EnumDecodec.Text(named))), nil
+}
+
+func (f JSXFuncs) iftEnumAttrs(value interface{}, named string, class string) (template.HTMLAttr, error) {
+	prefix, _ := DotSplitHash(value) // "Data.Links.Params.ENUM.ift" ?
+	_, pname := DotSplit(prefix)
+	enums := client.NewParamsENUM(nil)
+	ed := enums[pname].EnumDecodec
+	_, uptr := ed.Unew()
+	if err := uptr.Unmarshal(named, new(bool)); err != nil {
+		return template.HTMLAttr(""), err
+	}
+	return template.HTMLAttr(fmt.Sprintf(" %s={(%s.Uint == %d) ? %q : \"\"} data-tabid=\"%d\"",
+		f.classWord(), prefix, uptr.Touint(), class, uptr.Touint())), nil
+}
+
+func (f HTMLFuncs) iftEnumAttrs(value interface{}, named string, class string) (template.HTMLAttr, error) {
+	ep, ok := value.(*client.EnumParam)
+	if !ok {
+		return template.HTMLAttr(""), f.CastError("*client.EnumParams")
+	}
+	_, uptr := ep.EnumDecodec.Unew()
+	if err := uptr.Unmarshal(named, new(bool)); err != nil {
+		return template.HTMLAttr(""), err
+	}
+	ucmp := uptr.Touint()
+	if ep.Number.Uint != ucmp {
+		class = ""
+	}
+	return template.HTMLAttr(fmt.Sprintf(" %s=%q data-tabid=\"%d\"", f.classWord(), class, ucmp)), nil
+}
+
 func (f JSXFuncs) ifExpandClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
 	return "", fmt.Errorf("Not implemented yet")
 }
@@ -390,6 +455,8 @@ func MakeMap(f Functor) template.FuncMap {
 		"ifBClassAttr":      f.ifBClassAttr,
 		"ifBPClass":         f.ifBPClass,
 		"ifBPClassAttr":     f.ifBPClassAttr,
+		"ifNeClassAttr":     f.ifNeClassAttr,
+		"iftEnumAttrs":      f.iftEnumAttrs,
 		"ifExpandClassAttr": f.ifExpandClassAttr,
 		"ifDisabledAttr":    f.ifDisabledAttr,
 		"toggleHrefAttr":    f.toggleHrefAttr,
@@ -423,6 +490,8 @@ type Functor interface {
 	ifBClassAttr(interface{}, ...string) (template.HTMLAttr, error)
 	ifBPClass(interface{}, ...string) (string, error)
 	ifBPClassAttr(interface{}, ...string) (template.HTMLAttr, error)
+	ifNeClassAttr(interface{}, string, string) (template.HTMLAttr, error)
+	iftEnumAttrs(interface{}, string, string) (template.HTMLAttr, error)
 	ifExpandClassAttr(interface{}, ...string) (template.HTMLAttr, error)
 	ifDisabledAttr(interface{}) (template.HTMLAttr, error)
 	toggleHrefAttr(interface{}) (interface{}, error)
@@ -492,6 +561,14 @@ func LabelClassColorPercent(p string) string {
 // SetKFunc is used by acepp only.
 func SetKFunc(k string) func(interface{}, string) interface{} {
 	return func(v interface{}, n string) interface{} {
+		if args := strings.Split(n, " "); len(args) > 1 {
+			var list []string
+			for _, arg := range args {
+				list = append(list, templatepipe.Curly(arg))
+			}
+			v.(templatepipe.Hash)[k] = list
+			return v
+		}
 		v.(templatepipe.Hash)[k] = templatepipe.Curly(n)
 		return v
 	}
@@ -508,6 +585,14 @@ func GetKFunc(k string) func(interface{}) interface{} {
 			return "" // empty pipeline, affects dispatch
 		}
 		n := h[k]
+		if args, ok := n.([]string); ok {
+			if len(args) > 1 {
+				h[k] = args[1:]
+			} else {
+				delete(h, k)
+			}
+			return args[0]
+		}
 		delete(h, k)
 		return n // may also be empty, affects dispatch
 	}

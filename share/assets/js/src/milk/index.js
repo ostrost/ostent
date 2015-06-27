@@ -148,6 +148,68 @@
         }
       };
     };
+    this.IFCLASS = React.createClass({
+      getInitialState: function() {
+        return {
+          Client: Data.Client,
+          Links: Data.Links,
+          IFbytes: Data.IFbytes,
+          IFerrors: Data.IFerrors,
+          IFpackets: Data.IFpackets,
+          ExpandableIF: Data.ExpandableIF,
+          ExpandtextIF: Data.ExpandtextIF
+        };
+      },
+      render: function() {
+        var $if, Data;
+        Data = this.state;
+        return jsdefines.panelif.bind(this)(Data, (function() {
+          var i, len, ref, ref1, ref2, results;
+          ref2 = (ref = Data != null ? (ref1 = Data.IFpackets) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
+          results = [];
+          for (i = 0, len = ref2.length; i < len; i++) {
+            $if = ref2[i];
+            results.push(jsdefines.ifpackets_rows(Data, $if));
+          }
+          return results;
+        })(), (function() {
+          var i, len, ref, ref1, ref2, results;
+          ref2 = (ref = Data != null ? (ref1 = Data.IFerrors) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
+          results = [];
+          for (i = 0, len = ref2.length; i < len; i++) {
+            $if = ref2[i];
+            results.push(jsdefines.iferrors_rows(Data, $if));
+          }
+          return results;
+        })(), (function() {
+          var i, len, ref, ref1, ref2, results;
+          ref2 = (ref = Data != null ? (ref1 = Data.IFbytes) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
+          results = [];
+          for (i = 0, len = ref2.length; i < len; i++) {
+            $if = ref2[i];
+            results.push(jsdefines.ifbytes_rows(Data, $if));
+          }
+          return results;
+        })());
+      },
+      handleChange: function(e) {
+        var href;
+        href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1);
+        updates.sendSearch(href);
+        e.stopPropagation();
+        e.preventDefault();
+        return void 0;
+      },
+      handleClick: function(e) {
+        var href;
+        href = e.target.getAttribute('href');
+        history.pushState({}, '', href);
+        updates.sendSearch(href);
+        e.stopPropagation();
+        e.preventDefault();
+        return void 0;
+      }
+    });
     this.IFbytesCLASS = React.createClass({
       getInitialState: function() {
         return Data.IFbytes;
@@ -720,12 +782,7 @@
       }
     };
     update = function() {
-      var cputable, dfbytes, dfinodes, dftitle, expanddf, expandif, hideconfigdf, hideconfigif, hostname, ifbytes, iferrors, ifpackets, iftitle, ip, la, memtable, onmessage, pstable, refresh_df, refresh_if, tabsdf, tabsif, uptime, vgtable;
-      hideconfigif = HideClass.component({
-        xkey: 'HideconfigIF',
-        $el: $('[for-sel="#ifconfig"]'),
-        reverseActive: true
-      });
+      var cputable, dfbytes, dfinodes, dftitle, expanddf, hideconfigdf, hostname, iftable, ip, la, memtable, onmessage, pstable, refresh_df, tabsdf, uptime, vgtable;
       hideconfigdf = HideClass.component({
         xkey: 'HideconfigDF',
         $el: $('[for-sel="#dfconfig"]'),
@@ -745,21 +802,10 @@
       la = React.render(React.createElement(NewTextCLASS(function(data) {
         return data != null ? data.LA : void 0;
       })), $('#la').get(0));
-      iftitle = React.render(React.createElement(NewTextCLASS(function(data) {
-        var ref, ref1;
-        return data != null ? (ref = data.Client) != null ? (ref1 = ref.TabIF) != null ? ref1.Title : void 0 : void 0 : void 0;
-      })), $('a[href="#if"]').get(0));
       dftitle = React.render(React.createElement(NewTextCLASS(function(data) {
         var ref, ref1;
         return data != null ? (ref = data.Client) != null ? (ref1 = ref.TabDF) != null ? ref1.Title : void 0 : void 0 : void 0;
       })), $('a[href="#df"]').get(0));
-      expandif = ButtonClass.component({
-        Khide: 'HideIF',
-        Ksend: 'ExpandIF',
-        Ktext: 'ExpandtextIF',
-        Kable: 'ExpandableIF',
-        $button_el: $('label[href="#if"]')
-      });
       expanddf = ButtonClass.component({
         Khide: 'HideDF',
         Ksend: 'ExpandDF',
@@ -767,25 +813,12 @@
         Kalbe: 'ExpandableDF',
         $button_el: $('label[href="#df"]')
       });
-      tabsif = TabsClass.component({
-        Khide: 'HideIF',
-        Ksend: 'TabIF',
-        $collapse_el: $('.if-tab'),
-        $button_el: $('.if-switch'),
-        $hidebutton_el: $('#ifconfig').find('.hiding')
-      });
       tabsdf = TabsClass.component({
         Khide: 'HideDF',
         Ksend: 'TabDF',
         $collapse_el: $('.df-tab'),
         $button_el: $('.df-switch'),
         $hidebutton_el: $('#dfconfig').find('.hiding')
-      });
-      refresh_if = RefreshInputClass.component({
-        K: 'RefreshIF',
-        Kerror: 'RefreshErrorIF',
-        Ksig: 'RefreshSignalIF',
-        sel: $('#ifconfig')
       });
       refresh_df = RefreshInputClass.component({
         K: 'RefreshDF',
@@ -798,9 +831,7 @@
       dfbytes = React.render(React.createElement(DFbytesCLASS), document.getElementById('dfbytes' + '-' + 'table'));
       dfinodes = React.render(React.createElement(DFinodesCLASS), document.getElementById('dfinodes' + '-' + 'table'));
       cputable = React.render(React.createElement(CPUtableCLASS), document.getElementById('cpu' + '-' + 'table'));
-      ifbytes = React.render(React.createElement(IFbytesCLASS), document.getElementById('ifbytes' + '-' + 'table'));
-      iferrors = React.render(React.createElement(IFerrorsCLASS), document.getElementById('iferrors' + '-' + 'table'));
-      ifpackets = React.render(React.createElement(IFpacketsCLASS), document.getElementById('ifpackets' + '-' + 'table'));
+      iftable = React.render(React.createElement(IFCLASS), document.getElementById('if' + '-' + 'table'));
       vgtable = React.render(React.createElement(VGtableCLASS), document.getElementById('vg' + '-' + 'table'));
       onmessage = function(event) {
         var data, ref;
@@ -832,7 +863,6 @@
           DFinodes: data.DFinodes,
           Links: data.Links
         });
-        setState(hideconfigif, hideconfigif.reduce(data));
         setState(hideconfigdf, hideconfigdf.reduce(data));
         if (ip != null) {
           setState(ip, ip.newstate(data));
@@ -840,13 +870,9 @@
         setState(hostname, hostname.newstate(data));
         setState(uptime, uptime.newstate(data));
         setState(la, la.newstate(data));
-        setState(iftitle, iftitle.newstate(data));
         setState(dftitle, dftitle.newstate(data));
-        setState(expandif, expandif.reduce(data));
         setState(expanddf, expanddf.reduce(data));
-        setState(tabsif, tabsif.reduce(data));
         setState(tabsdf, tabsdf.reduce(data));
-        setState(refresh_if, refresh_if.reduce(data));
         setState(refresh_df, refresh_df.reduce(data));
         setState(memtable, {
           Links: data.Links,
@@ -856,9 +882,15 @@
           Links: data.Links,
           CPU: data.CPU
         });
-        setState(ifbytes, data.IFbytes);
-        setState(iferrors, data.IFerrors);
-        setState(ifpackets, data.IFpackets);
+        setState(iftable, {
+          Client: data.Client,
+          Links: data.Links,
+          IFbytes: data.IFbytes,
+          IFerrors: data.IFerrors,
+          IFpackets: data.IFpackets,
+          ExpandableIF: data.ExpandableIF,
+          ExpandtextIF: data.ExpandtextIF
+        });
         setState(vgtable, {
           Links: data.Links,
           VagrantMachines: data.VagrantMachines,

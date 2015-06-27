@@ -18,22 +18,8 @@ var DFTABS = Tabs{
 	"dFBYTES":  {DFBYTES, "Disks"},
 }
 
-// IFTABS is a map containing defined IF Tab's.
-var IFTABS = Tabs{
-	"iFPACKETS": {IFPACKETS, "Interfaces packets"},
-	"iFERRORS":  {IFERRORS, "Interfaces errors"},
-	"iFBYTES":   {IFBYTES, "Interfaces"},
-}
-
 // Constants for DF tabs.
 const (
 	DFINODES enums.Uint = iota
 	DFBYTES
-)
-
-// Constants for IF tabs.
-const (
-	IFPACKETS enums.Uint = iota
-	IFERRORS
-	IFBYTES
 )

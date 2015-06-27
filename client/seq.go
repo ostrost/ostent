@@ -55,6 +55,22 @@ func (ep EnumParam) EncodeUint(pname string, uinter enums.Uinter) DropLink {
 	return dl
 }
 
+func (ep EnumParam) Title() (string, error) {
+	var text string
+	ep.Enumerate(func(name, s string, uter enums.Uinter) bool {
+		if uter.Touint() == ep.Number.Uint {
+			text = ep.EncodeUint(name, uter).Text
+			return true
+		}
+		return false
+	})
+	if text != "" {
+		text = "Interface " + strings.ToLower(text)
+		return text, nil
+	}
+	return "", fmt.Errorf("Cannot find text for EnumParam")
+}
+
 // SetValue modifies the values.
 func (ep EnumParam) SetValue(values url.Values, pname string, uinter enums.Uinter) (string, *bool) {
 	this := uinter.Touint()
@@ -83,7 +99,7 @@ func (ep EnumParam) SetValue(values url.Values, pname string, uinter enums.Uinte
 		values.Del(pname)
 		return text, ret
 	}
-	if this == dnum.Uint && !dnum.Negative {
+	if this == dnum.Uint && !dnum.Negative && !ep.EnumDecodec.OnlyPositive {
 		low = "-" + low
 	}
 	values.Set(pname, low)
@@ -91,11 +107,12 @@ func (ep EnumParam) SetValue(values url.Values, pname string, uinter enums.Uinte
 }
 
 type EnumDecodec struct {
-	Pname   string
-	Default Number
-	Alphas  []enums.Uint
-	Unew    func() (string, Upointer) `json:"-"` // func cannot be marshaled
-	Text    func(string) string       `json:"-"` // func cannot be marshaled
+	Pname        string
+	Default      Number
+	Alphas       []enums.Uint
+	Unew         func() (string, Upointer) `json:"-"` // func cannot be marshaled
+	Text         func(string) string       `json:"-"` // func cannot be marshaled
+	OnlyPositive bool
 }
 
 func (ep EnumParam) IsAlpha(p enums.Uint) bool {
@@ -121,7 +138,17 @@ func TextFunc(ab map[string]string, fs ...func(string) string) func(string) stri
 	}
 }
 
+// TODO Enum* now handle sorting AND tabs:
+// - tabs don't need .Alphas
+// - tabs don't have negatives
+
 var EnumDecodecs = map[string]EnumDecodec{
+	"ift": {
+		Default:      Number{Uint: enums.Uint(enums.IFBYTES)},
+		Unew:         func() (string, Upointer) { return "ift", new(enums.UintIFT) },
+		Text:         TextFunc(map[string]string{"IFBYTES": "Bytes"}, strings.ToLower, strings.Title),
+		OnlyPositive: true,
+	},
 	"ps": {
 		Default: Number{Uint: enums.Uint(enums.PID)},
 		Alphas:  []enums.Uint{enums.Uint(enums.NAME), enums.Uint(enums.USER)},
@@ -141,9 +168,9 @@ var LimitDecodecs = map[string]LimitDecodec{"psn": {Default: 8}}
 var BoolDecodecs = map[string]BoolDecodec{
 	"still": {Default: false},
 
-	"hidecpu": {Default: false},
-	// "hidedf":   {Default: false},
-	// "hideif":   {Default: false},
+	"hidecpu":  {Default: false},
+	"hidedf":   {Default: false},
+	"hideif":   {Default: false},
 	"hidemem":  {Default: false},
 	"hideps":   {Default: false},
 	"hideswap": {Default: false},
@@ -151,16 +178,21 @@ var BoolDecodecs = map[string]BoolDecodec{
 	// commented-out hide* to be un-commented
 
 	"showconfigcpu": {Default: false},
+	"showconfigdf":  {Default: false},
+	"showconfigif":  {Default: false},
 	"showconfigmem": {Default: false},
 	"showconfigps":  {Default: false},
 	"showconfigvg":  {Default: false},
 	// rest of showconfig* to follow
 
 	"expandcpu": {Default: false},
+	"expandif":  {Default: false},
 }
 
 var PeriodParanames = []string{
 	"refreshcpu",
+	"refreshdf",
+	"refreshif",
 	"refreshmem",
 	"refreshps",
 	"refreshvg",
@@ -325,7 +357,19 @@ func (ep EnumParam) LessorMore(r bool) bool {
 // (by the means of p.EnumDecodec.Unew() & .Marshal method of Uinter)
 // to returns a map of constants to DropLink.
 func (ep EnumParam) MarshalJSON() ([]byte, error) {
-	m := map[string]DropLink{}
+	m := map[string]interface{}{} // DropLink{}
+	ep.Enumerate(func(name, s string, uter enums.Uinter) bool {
+		m[strings.ToUpper(s)] = ep.EncodeUint(name, uter)
+		return false
+	})
+	if title, err := ep.Title(); err == nil {
+		m["Title"] = title
+	}
+	m["Uint"] = fmt.Sprintf("%d", ep.Number.Uint)
+	return json.Marshal(m)
+}
+
+func (ep EnumParam) Enumerate(callback func(string, string, enums.Uinter) bool) {
 	name, uptr := ep.EnumDecodec.Unew()
 	uter := uptr.(enums.Uinter) // downcast. Upointer inlines Uinter.
 	marshal := uptr.Marshal
@@ -334,11 +378,12 @@ func (ep EnumParam) MarshalJSON() ([]byte, error) {
 		if err != nil {
 			break
 		}
-		m[strings.ToUpper(s)] = ep.EncodeUint(name, uter)
+		if stop := callback(name, s, uter); stop {
+			break
+		}
 		marshal = nextuter.Marshal
 		uter = nextuter
 	}
-	return json.Marshal(m)
 }
 
 func (bp BoolParam) MarshalJSON() ([]byte, error) {
