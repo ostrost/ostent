@@ -118,50 +118,50 @@
 = content define_panelif
   div.panel1
     label.panel-heading.btn-block
-      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.configif "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.configif}}>{{.Data.Links.Params.ENUM.ift.Title}}</a>
+      | <a {{ifBPClassAttr .Data.Params.BOOL.configif "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Params.BOOL.configif}}>{{.Data.Params.ENUM.ift.Title}}</a>
 
     div
-      | <div id="ifconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.configif "" "collapse-hidden"}}>
-      | <form {{class}}="horizontal-form" {{formActionAttr .Data.Links.Params.Query}}>
+      | <div id="ifconfig" {{ifBPClassAttr .Data.Params.BOOL.configif "" "collapse-hidden"}}>
+      | <form {{class}}="horizontal-form" {{formActionAttr .Data.Params.Query}}>
       input.hidden-submit type=submit
 
       div.form-group-padded
          div.btn-group.btn-group-sm role=group
-          | <a {{ifBPClassAttr .Data.Links.Params.BOOL.hideif "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hideif}}>Hidden</a>
-          | <a {{ifBClassAttr .Data.ExpandableIF "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.expandif}}>{{.Data.ExpandtextIF}}</a>
+          | <a {{ifBPClassAttr .Data.Params.BOOL.hideif "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hideif}}>Hidden</a>
+          | <a {{ifBClassAttr .Data.ExpandableIF "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.expandif}}>{{.Data.ExpandtextIF}}</a>
 
       div.form-group-padded
-        {{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshif}}
+        {{template "defines::define_refresh" .Data.Params.PERIOD.refreshif}}
       | </form>
 
       ul.nav.nav-tabs
         / {{class}}="if-switch"
-        | <li {{iftEnumAttrs .Data.Links.Params.ENUM.ift "PACKETS" "active"}}>
-        {{template "defines::adroplink" droplink .Data.Links.Params.ENUM.ift "PACKETS"}}
-        | </li><li {{iftEnumAttrs .Data.Links.Params.ENUM.ift "ERRORS" "active"}}>
-        {{template "defines::adroplink" droplink .Data.Links.Params.ENUM.ift "ERRORS"}}
-        | </li><li {{iftEnumAttrs .Data.Links.Params.ENUM.ift "IFBYTES" "active"}}>
-        {{template "defines::adroplink" droplink .Data.Links.Params.ENUM.ift "IFBYTES"}}
+        | <li {{iftEnumAttrs .Data.Params.ENUM.ift "PACKETS" "active"}}>
+        {{template "defines::adroplink" droplink .Data.Params.ENUM.ift "PACKETS"}}
+        | </li><li {{iftEnumAttrs .Data.Params.ENUM.ift "ERRORS" "active"}}>
+        {{template "defines::adroplink" droplink .Data.Params.ENUM.ift "ERRORS"}}
+        | </li><li {{iftEnumAttrs .Data.Params.ENUM.ift "IFBYTES" "active"}}>
+        {{template "defines::adroplink" droplink .Data.Params.ENUM.ift "IFBYTES"}}
         | </li>
       | </div>
 
     div
-      | <div {{ifBPClassAttr .Data.Links.Params.BOOL.hideif "collapse-hidden"}}>
+      | <div {{ifBPClassAttr .Data.Params.BOOL.hideif "collapse-hidden"}}>
       / panels selected by .if-tab
       / #ifpackets
-      | <div id="ifpackets" {{ifNeClassAttr .Data.Links.Params.ENUM.ift "PACKETS" "collapse-hidden"}}>
+      | <div id="ifpackets" {{ifNeClassAttr .Data.Params.ENUM.ift "PACKETS" "collapse-hidden"}}>
       span#ifpackets-table
         {{template "defines::define_ifpackets_table" .}}
       | </div>
 
       / #iferrors
-      | <div id="iferrors" {{ifNeClassAttr .Data.Links.Params.ENUM.ift "ERRORS" "collapse-hidden"}}>
+      | <div id="iferrors" {{ifNeClassAttr .Data.Params.ENUM.ift "ERRORS" "collapse-hidden"}}>
       span#iferrors-table
         {{template "defines::define_iferrors_table" .}}
       | </div>
 
       / #ifbytes
-      | <div id="ifbytes" {{ifNeClassAttr .Data.Links.Params.ENUM.ift "IFBYTES" "collapse-hidden"}}>
+      | <div id="ifbytes" {{ifNeClassAttr .Data.Params.ENUM.ift "IFBYTES" "collapse-hidden"}}>
       span#ifbytes-table
         {{template "defines::define_ifbytes_table" .}}
       | </div>
@@ -202,11 +202,11 @@
   table.table1.stripe-table
     thead
       tr
-        {{template "defines::thdroplink" droplink .Data.Links.Params.ENUM.df "FS" ""}}
-        {{template "defines::thdroplink" droplink .Data.Links.Params.ENUM.df "MP" ""}}
-        {{template "defines::thdroplink" droplink .Data.Links.Params.ENUM.df "AVAIL"}}
-        {{template "defines::thdroplink" droplink .Data.Links.Params.ENUM.df "USED"}}
-        {{template "defines::thdroplink" droplink .Data.Links.Params.ENUM.df "TOTAL"}}
+        {{template "defines::thdroplink" droplink .Data.Params.ENUM.df "FS" ""}}
+        {{template "defines::thdroplink" droplink .Data.Params.ENUM.df "MP" ""}}
+        {{template "defines::thdroplink" droplink .Data.Params.ENUM.df "AVAIL"}}
+        {{template "defines::thdroplink" droplink .Data.Params.ENUM.df "USED"}}
+        {{template "defines::thdroplink" droplink .Data.Params.ENUM.df "TOTAL"}}
     tbody
       {{template "defines::define_dfbytes_rows" .}}
 
@@ -225,42 +225,42 @@
 = content define_paneldf
   div.panel1
     label.panel-heading.btn-block
-      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.configdf "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.configdf}}>{{.Data.Links.Params.ENUM.dft.Title}}</a>
+      | <a {{ifBPClassAttr .Data.Params.BOOL.configdf "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Params.BOOL.configdf}}>{{.Data.Params.ENUM.dft.Title}}</a>
 
     div
-      | <div id="dfconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.configdf "" "collapse-hidden"}}>
-      | <form {{class}}="horizontal-form" {{formActionAttr .Data.Links.Params.Query}}>
+      | <div id="dfconfig" {{ifBPClassAttr .Data.Params.BOOL.configdf "" "collapse-hidden"}}>
+      | <form {{class}}="horizontal-form" {{formActionAttr .Data.Params.Query}}>
       input.hidden-submit type=submit
 
       div.form-group-padded
          div.btn-group.btn-group-sm role=group
-          | <a {{ifBPClassAttr .Data.Links.Params.BOOL.hidedf "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidedf}}>Hidden</a>
-          | <a {{ifBClassAttr .Data.ExpandableDF "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.expanddf}}>{{.Data.ExpandtextDF}}</a>
+          | <a {{ifBPClassAttr .Data.Params.BOOL.hidedf "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hidedf}}>Hidden</a>
+          | <a {{ifBClassAttr .Data.ExpandableDF "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.expanddf}}>{{.Data.ExpandtextDF}}</a>
 
       div.form-group-padded
-        {{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshdf}}
+        {{template "defines::define_refresh" .Data.Params.PERIOD.refreshdf}}
       | </form>
 
       ul.nav.nav-tabs
         / {{class}}="df-switch"
-        | <li {{iftEnumAttrs .Data.Links.Params.ENUM.dft "INODES" "active"}}>
-        {{template "defines::adroplink" droplink .Data.Links.Params.ENUM.dft "INODES"}}
-        | </li><li {{iftEnumAttrs .Data.Links.Params.ENUM.dft "DFBYTES" "active"}}>
-        {{template "defines::adroplink" droplink .Data.Links.Params.ENUM.dft "DFBYTES"}}
+        | <li {{iftEnumAttrs .Data.Params.ENUM.dft "INODES" "active"}}>
+        {{template "defines::adroplink" droplink .Data.Params.ENUM.dft "INODES"}}
+        | </li><li {{iftEnumAttrs .Data.Params.ENUM.dft "DFBYTES" "active"}}>
+        {{template "defines::adroplink" droplink .Data.Params.ENUM.dft "DFBYTES"}}
         | </li>
       | </div>
 
     div
-      | <div {{ifBPClassAttr .Data.Links.Params.BOOL.hidedf "collapse-hidden"}}>
+      | <div {{ifBPClassAttr .Data.Params.BOOL.hidedf "collapse-hidden"}}>
       / panels selected by .df-tab
       / #dfinodes
-      | <div id="dfinodes" {{ifNeClassAttr .Data.Links.Params.ENUM.dft "INODES" "collapse-hidden"}}>
+      | <div id="dfinodes" {{ifNeClassAttr .Data.Params.ENUM.dft "INODES" "collapse-hidden"}}>
       span#dfinodes-table
         {{template "defines::define_dfinodes_table" .}}
       | </div>
 
       / #dfbytes
-      | <div id="dfbytes" {{ifNeClassAttr .Data.Links.Params.ENUM.dft "DFBYTES" "collapse-hidden"}}>
+      | <div id="dfbytes" {{ifNeClassAttr .Data.Params.ENUM.dft "DFBYTES" "collapse-hidden"}}>
       span#dfbytes-table
         {{template "defines::define_dfbytes_table" .}}
       | </div>
@@ -293,24 +293,24 @@
 = content define_panelmem
   div.panel1
     label.panel-heading.btn-block
-      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.configmem "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.configmem}}>Memory</a>
+      | <a {{ifBPClassAttr .Data.Params.BOOL.configmem "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Params.BOOL.configmem}}>Memory</a>
 
     div
-      | <div id="memconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.configmem "" "collapse-hidden"}}>
-      | <form {{class}}="horizontal-form border-bottom-form" {{formActionAttr .Data.Links.Params.Query}}>
+      | <div id="memconfig" {{ifBPClassAttr .Data.Params.BOOL.configmem "" "collapse-hidden"}}>
+      | <form {{class}}="horizontal-form border-bottom-form" {{formActionAttr .Data.Params.Query}}>
       input.hidden-submit type=submit
       div.form-group-padded
         div.btn-group.btn-group-sm role=group
-          | <a {{ifBPClassAttr .Data.Links.Params.BOOL.hidemem "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidemem}}>Hidden</a>
-          | <a {{ifBPClassAttr .Data.Links.Params.BOOL.hideswap "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hideswap}} {{ifDisabledAttr .Data.Links.Params.BOOL.hidemem}}>Hide swap</a>
+          | <a {{ifBPClassAttr .Data.Params.BOOL.hidemem "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hidemem}}>Hidden</a>
+          | <a {{ifBPClassAttr .Data.Params.BOOL.hideswap "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hideswap}} {{ifDisabledAttr .Data.Params.BOOL.hidemem}}>Hide swap</a>
 
       div.form-group-padded
-        {{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshmem}}
+        {{template "defines::define_refresh" .Data.Params.PERIOD.refreshmem}}
       | </form>
       | </div>
 
     div
-      | <div {{ifBPClassAttr .Data.Links.Params.BOOL.hidemem "collapse-hidden"}}>
+      | <div {{ifBPClassAttr .Data.Params.BOOL.hidemem "collapse-hidden"}}>
       {{template "defines::define_memtable" .}}
       | </div>
 
@@ -344,24 +344,24 @@
 = content define_panelcpu
   div.panel1
     label.panel-heading.btn-block
-      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.configcpu "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.configcpu}}>CPU</a>
+      | <a {{ifBPClassAttr .Data.Params.BOOL.configcpu "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Params.BOOL.configcpu}}>CPU</a>
 
     div
-      | <div id="cpuconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.configcpu "" "collapse-hidden"}}>
-      | <form {{class}}="horizontal-form border-bottom-form" {{formActionAttr .Data.Links.Params.Query}}>
+      | <div id="cpuconfig" {{ifBPClassAttr .Data.Params.BOOL.configcpu "" "collapse-hidden"}}>
+      | <form {{class}}="horizontal-form border-bottom-form" {{formActionAttr .Data.Params.Query}}>
       input.hidden-submit type=submit
       div.form-group-padded
         div.btn-group.btn-group-sm role=group
-          | <a {{ifBPClassAttr .Data.Links.Params.BOOL.hidecpu "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidecpu}}>Hidden</a>
-          | <a {{ifBClassAttr .Data.CPU.ExpandableCPU "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.expandcpu}}>{{.Data.CPU.ExpandtextCPU}}</a>
+          | <a {{ifBPClassAttr .Data.Params.BOOL.hidecpu "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hidecpu}}>Hidden</a>
+          | <a {{ifBClassAttr .Data.CPU.ExpandableCPU "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.expandcpu}}>{{.Data.CPU.ExpandtextCPU}}</a>
 
       div.form-group-padded
-        {{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshcpu}}
+        {{template "defines::define_refresh" .Data.Params.PERIOD.refreshcpu}}
       | </form>
       | </div>
 
     div
-      | <div {{ifBPClassAttr .Data.Links.Params.BOOL.hidecpu "collapse-hidden"}}>
+      | <div {{ifBPClassAttr .Data.Params.BOOL.hidecpu "collapse-hidden"}}>
       {{template "defines::define_cputable" .}}
       | </div>
 
@@ -386,42 +386,42 @@
   table.table2.stripe-table
     thead
       tr
-        {{template "defines::thdroplink" droplink .Data.Links.Params.ENUM.ps "PID"}}
-        {{template "defines::thdroplink" droplink .Data.Links.Params.ENUM.ps "UID"}}
-        {{template "defines::thdroplink" droplink .Data.Links.Params.ENUM.ps "USER" ""}}
-        {{template "defines::thdroplink" droplink .Data.Links.Params.ENUM.ps "PRI"}}
-        {{template "defines::thdroplink" droplink .Data.Links.Params.ENUM.ps "NICE"}}
-        {{template "defines::thdroplink" droplink .Data.Links.Params.ENUM.ps "VIRT"}}
-        {{template "defines::thdroplink" droplink .Data.Links.Params.ENUM.ps "RES"}}
-        {{template "defines::thdroplink" droplink .Data.Links.Params.ENUM.ps "TIME" "center"}}
-        {{template "defines::thdroplink" droplink .Data.Links.Params.ENUM.ps "NAME" ""}}
+        {{template "defines::thdroplink" droplink .Data.Params.ENUM.ps "PID"}}
+        {{template "defines::thdroplink" droplink .Data.Params.ENUM.ps "UID"}}
+        {{template "defines::thdroplink" droplink .Data.Params.ENUM.ps "USER" ""}}
+        {{template "defines::thdroplink" droplink .Data.Params.ENUM.ps "PRI"}}
+        {{template "defines::thdroplink" droplink .Data.Params.ENUM.ps "NICE"}}
+        {{template "defines::thdroplink" droplink .Data.Params.ENUM.ps "VIRT"}}
+        {{template "defines::thdroplink" droplink .Data.Params.ENUM.ps "RES"}}
+        {{template "defines::thdroplink" droplink .Data.Params.ENUM.ps "TIME" "center"}}
+        {{template "defines::thdroplink" droplink .Data.Params.ENUM.ps "NAME" ""}}
     tbody
       {{template "defines::define_psrows" .}}
 
 = content define_panelps
   div.panel1
     label.panel-heading.btn-block
-      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.configps "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.configps}}>Processes</a>
+      | <a {{ifBPClassAttr .Data.Params.BOOL.configps "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Params.BOOL.configps}}>Processes</a>
 
     div
-      | <div id="psconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.configps "" "collapse-hidden"}}>
-      | <form {{class}}="inline-form border-bottom-form text-right" {{formActionAttr .Data.Links.Params.Query}}>
+      | <div id="psconfig" {{ifBPClassAttr .Data.Params.BOOL.configps "" "collapse-hidden"}}>
+      | <form {{class}}="inline-form border-bottom-form text-right" {{formActionAttr .Data.Params.Query}}>
       input.hidden-submit type=submit
 
       div.form-group-padded
-        {{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshps}}
+        {{template "defines::define_refresh" .Data.Params.PERIOD.refreshps}}
 
       div.form-group-padded
         div.btn-group.btn-group-sm role=group
-          | <a {{ifBPClassAttr .Data.Links.Params.BOOL.hideps "active"  "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hideps}}>Hidden</a>
-          | <a {{ifBClassAttr .Data.PStable.PSnotDecreasable "disabled" "" "btn btn-default"}} {{lessHrefAttr .Data.Links.Params.LIMIT.psn}}>-</a>
-          | <a {{ifBClassAttr .Data.PStable.PSnotExpandable  "disabled" "" "btn btn-default"}} {{moreHrefAttr .Data.Links.Params.LIMIT.psn}}>
+          | <a {{ifBPClassAttr .Data.Params.BOOL.hideps "active"  "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hideps}}>Hidden</a>
+          | <a {{ifBClassAttr .Data.PStable.PSnotDecreasable "disabled" "" "btn btn-default"}} {{lessHrefAttr .Data.Params.LIMIT.psn}}>-</a>
+          | <a {{ifBClassAttr .Data.PStable.PSnotExpandable  "disabled" "" "btn btn-default"}} {{moreHrefAttr .Data.Params.LIMIT.psn}}>
           | {{.Data.PStable.PSplusText}}</a>
       | </form>
       | </div>
 
     div
-      | <div {{ifBPClassAttr .Data.Links.Params.BOOL.hideps "collapse-hidden"}}>
+      | <div {{ifBPClassAttr .Data.Params.BOOL.hideps "collapse-hidden"}}>
         {{template "defines::define_pstable" .}}
       | </div>
 
@@ -464,22 +464,22 @@
 = content define_panelvg
   div.panel1
     label.panel-heading.btn-block
-      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.configvg "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.configvg}}>Vagrant global-status</a>
+      | <a {{ifBPClassAttr .Data.Params.BOOL.configvg "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Params.BOOL.configvg}}>Vagrant global-status</a>
 
     div
-      | <div id="vgconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.configvg "" "collapse-hidden"}}>
-      | <form {{class}}="inline-form border-bottom-form text-right" {{formActionAttr .Data.Links.Params.Query}}>
+      | <div id="vgconfig" {{ifBPClassAttr .Data.Params.BOOL.configvg "" "collapse-hidden"}}>
+      | <form {{class}}="inline-form border-bottom-form text-right" {{formActionAttr .Data.Params.Query}}>
       input.hidden-submit type=submit
       div.form-group-padded
-        {{template "defines::define_refresh" .Data.Links.Params.PERIOD.refreshvg}}
+        {{template "defines::define_refresh" .Data.Params.PERIOD.refreshvg}}
 
       div.form-group-padded
         div.btn-group.btn-group-sm role=group
-          | <a {{ifBPClassAttr .Data.Links.Params.BOOL.hidevg "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Links.Params.BOOL.hidevg}}>Hidden</a>
+          | <a {{ifBPClassAttr .Data.Params.BOOL.hidevg "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hidevg}}>Hidden</a>
       | </form>
       | </div>
 
     div
-      | <div {{ifBPClassAttr .Data.Links.Params.BOOL.hidevg "collapse-hidden"}}>
+      | <div {{ifBPClassAttr .Data.Params.BOOL.hidevg "collapse-hidden"}}>
       {{template "defines::define_vgtable" .}}
       | </div>

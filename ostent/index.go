@@ -106,7 +106,7 @@ type IndexData struct {
 
 	CPU     operating.CPUInfo
 	MEM     operating.MEM
-	Links   *Links `json:",omitempty"`
+	Params  *client.Params `json:",omitempty"`
 	PStable PStable
 
 	DFbytes  operating.DFbytes  `json:",omitempty"`
@@ -129,10 +129,6 @@ type IndexData struct {
 	ExpandtextIF *string `json:",omitempty"`
 }
 
-type Links struct {
-	Params *client.Params
-}
-
 type PStable struct {
 	List             []operating.ProcData `json:",omitempty"`
 	PSplusText       *string              `json:",omitempty"`
@@ -145,7 +141,7 @@ type IndexUpdate struct {
 
 	CPU     *operating.CPUInfo `json:",omitempty"`
 	MEM     *operating.MEM     `json:",omitempty"`
-	Links   *Links             `json:",omitempty"`
+	Params  *client.Params     `json:",omitempty"`
 	PStable *PStable           `json:",omitempty"`
 
 	DFbytes  *operating.DFbytes  `json:",omitempty"`
@@ -783,7 +779,7 @@ func getUpdates(req *http.Request, para *client.Params, forcerefresh bool) (Inde
 			return iu, err
 		}
 		iu.Location = newloc // may be nil
-		iu.Links = &Links{para}
+		iu.Params = para
 	}
 	psCopy := lastInfo.CopyPS()
 
@@ -850,7 +846,7 @@ func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 		DISTRIB: DISTRIB, // value set in init()
 		VERSION: VERSION, // value from server.go
 
-		Links:        updates.Links,
+		Params:       updates.Params,
 		Generic:      updates.Generic,
 		ExpandableDF: updates.ExpandableDF,
 		ExpandtextDF: updates.ExpandtextDF,

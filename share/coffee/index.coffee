@@ -53,9 +53,8 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
     }
   newwebsocket = (onmessage) ->
     conn = null
-    sendSearch = (search) -> sendJSON({Search: search})
-    sendJSON = (obj) ->
-      console.log(JSON.stringify(obj), 'sendJSON')
+    sendSearch = (search) ->
+      console.log 'Search', search
       # 0 conn.CONNECTING
       # 1 conn.OPEN
       # 2 conn.CLOSING
@@ -66,9 +65,9 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
         init()
       if !conn? ||
          conn.readyState != conn.OPEN
-        console.log('Not connected, cannot send', obj)
+        console.log('Not connected, cannot send search', search)
         return
-      return conn.send(JSON.stringify(obj))
+      return conn.send(JSON.stringify({Search: search}))
     init = () ->
       hostport = window.location.hostname +
         (if location.port then ':' + location.port else '')
@@ -104,7 +103,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
 
   @IFCLASS = React.createClass
     getInitialState: () -> { # a global Data
-      Links:        Data.Links
+      Params:       Data.Params
       IFbytes:      Data.IFbytes
       IFerrors:     Data.IFerrors
       IFpackets:    Data.IFpackets
@@ -133,7 +132,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
 
   @DFCLASS = React.createClass
     getInitialState: () -> { # a global Data
-      Links:        Data.Links
+      Params:       Data.Params
       DFbytes:      Data.DFbytes
       DFinodes:     Data.DFinodes
       ExpandableDF: Data.ExpandableDF
@@ -168,7 +167,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
 
   @MEMtableCLASS = React.createClass
     getInitialState: () -> {
-      Links:  Data.Links,  # a global Data
+      Params: Data.Params,  # a global Data
       MEM:    Data.MEM,    # a global Data
     }
     render: () ->
@@ -191,8 +190,8 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
 
   @CPUtableCLASS = React.createClass
     getInitialState: () -> {
-      Links: Data.Links, # a global Data
-      CPU:   Data.CPU,   # a global Data
+      Params: Data.Params, # a global Data
+      CPU:    Data.CPU,    # a global Data
     }
     render: () ->
       Data = @state
@@ -214,7 +213,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
 
   @PStableCLASS = React.createClass
     getInitialState: () -> {
-      Links:   Data.Links,  # a global Data
+      Params:  Data.Params, # a global Data
       PStable: Data.PStable # a global Data
     }
     render: () ->
@@ -237,7 +236,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
 
   @VGtableCLASS = React.createClass
     getInitialState: () -> { # a global Data:
-      Links:           Data.Links
+      Params:          Data.Params
       VagrantMachines: Data.VagrantMachines
       VagrantError:    Data.VagrantError
       VagrantErrord:   Data.VagrantErrord
@@ -307,11 +306,11 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
       setState(uptime,    uptime  .newstate(data))
       setState(la,        la      .newstate(data))
 
-      setState(pstable,  {Links: data.Links, PStable:  data.PStable})
-      setState(memtable, {Links: data.Links, MEM: data.MEM})
-      setState(cputable, {Links: data.Links, CPU: data.CPU})
+      setState(pstable,  {Params: data.Params, PStable:  data.PStable})
+      setState(memtable, {Params: data.Params, MEM: data.MEM})
+      setState(cputable, {Params: data.Params, CPU: data.CPU})
       setState(iftable, {
-        Links:        data.Links
+        Params:       data.Params
         IFbytes:      data.IFbytes
         IFerrors:     data.IFerrors
         IFpackets:    data.IFpackets
@@ -319,14 +318,14 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
         ExpandtextIF: data.ExpandtextIF
       })
       setState(dftable, {
-        Links:        data.Links
+        Params:       data.Params
         DFbytes:      data.DFbytes
         DFinodes:     data.DFinodes
         ExpandableDF: data.ExpandableDF
         ExpandtextDF: data.ExpandtextDF
       })
       setState(vgtable, {
-        Links:           data.Links,
+        Params:          data.Params,
         VagrantMachines: data.VagrantMachines,
         VagrantError:    data.VagrantError,
         VagrantErrord:   data.VagrantErrord

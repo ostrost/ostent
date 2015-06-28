@@ -18,34 +18,34 @@ define(function(require) {
 >); },
 		panelmem:        function(Data, rows)  { return (<div className="panel1"
   ><label className="panel-heading btn-block"
-    ><a  className={Data.Links.Params.BOOL.configmem.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.configmem.Href} onClick={this.handleClick}
+    ><a  className={Data.Params.BOOL.configmem.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Params.BOOL.configmem.Href} onClick={this.handleClick}
       >Memory</a
     ></label
   ><div
-    ><div id="memconfig"  className={Data.Links.Params.BOOL.configmem.Value ? "" : "collapse-hidden" }
-      ><form className="horizontal-form border-bottom-form"  action={"/form/"+Data.Links.Params.Query}
+    ><div id="memconfig"  className={Data.Params.BOOL.configmem.Value ? "" : "collapse-hidden" }
+      ><form className="horizontal-form border-bottom-form"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="form-group-padded"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Links.Params.BOOL.hidemem.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Links.Params.BOOL.hidemem.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.BOOL.hidemem.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hidemem.Href} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.Links.Params.BOOL.hideswap.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Links.Params.BOOL.hideswap.Href} onClick={this.handleClick} disabled={Data.Links.Params.BOOL.hidemem.Value ? "disabled" : "" }
+          ><a  className={Data.Params.BOOL.hideswap.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hideswap.Href} onClick={this.handleClick} disabled={Data.Params.BOOL.hidemem.Value ? "disabled" : "" }
             >Hide swap</a
           ></div
         ></div
       ><div className="form-group-padded"
-        ><div  className={"input-group input-group-sm refresh-group" + (Data.Links.Params.PERIOD.refreshmem.InputErrd ? " has-warning" : "")}
+        ><div  className={"input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshmem.InputErrd ? " has-warning" : "")}
   ><span className="input-group-addon"
     >Refresh</span
-  ><input className="form-control refresh-input" type="text" placeholder={Data.Links.Params.PERIOD.refreshmem.Placeholder}  name="refreshmem"  onChange={this.handleChange} value={Data.Links.Params.PERIOD.refreshmem.Input}
+  ><input className="form-control refresh-input" type="text" placeholder={Data.Params.PERIOD.refreshmem.Placeholder}  name="refreshmem"  onChange={this.handleChange} value={Data.Params.PERIOD.refreshmem.Input}
   ></input></div
 ></div
       ></form
     ></div
   ></div
 ><div
-  ><div  className={Data.Links.Params.BOOL.hidemem.Value ? "collapse-hidden" : "" }
+  ><div  className={Data.Params.BOOL.hidemem.Value ? "collapse-hidden" : "" }
     ><table className="table1 stripe-table"
   ><thead
     ><tr
@@ -117,49 +117,49 @@ define(function(require) {
 >); },
 		panelif:         function(Data,r1,r2,r3){ return (<div className="panel1"
   ><label className="panel-heading btn-block"
-    ><a  className={Data.Links.Params.BOOL.configif.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.configif.Href} onClick={this.handleClick}
-      >{Data.Links.Params.ENUM.ift.Title}</a
+    ><a  className={Data.Params.BOOL.configif.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Params.BOOL.configif.Href} onClick={this.handleClick}
+      >{Data.Params.ENUM.ift.Title}</a
     ></label
   ><div
-    ><div id="ifconfig"  className={Data.Links.Params.BOOL.configif.Value ? "" : "collapse-hidden" }
-      ><form className="horizontal-form"  action={"/form/"+Data.Links.Params.Query}
+    ><div id="ifconfig"  className={Data.Params.BOOL.configif.Value ? "" : "collapse-hidden" }
+      ><form className="horizontal-form"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="form-group-padded"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Links.Params.BOOL.hideif.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Links.Params.BOOL.hideif.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.BOOL.hideif.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hideif.Href} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.ExpandableIF ? "btn btn-default " : "btn btn-default disabled" }  href={Data.Links.Params.BOOL.expandif.Href} onClick={this.handleClick}
+          ><a  className={Data.ExpandableIF ? "btn btn-default " : "btn btn-default disabled" }  href={Data.Params.BOOL.expandif.Href} onClick={this.handleClick}
             >{Data.ExpandtextIF}</a
           ></div
         ></div
       ><div className="form-group-padded"
-        ><div  className={"input-group input-group-sm refresh-group" + (Data.Links.Params.PERIOD.refreshif.InputErrd ? " has-warning" : "")}
+        ><div  className={"input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshif.InputErrd ? " has-warning" : "")}
   ><span className="input-group-addon"
     >Refresh</span
-  ><input className="form-control refresh-input" type="text" placeholder={Data.Links.Params.PERIOD.refreshif.Placeholder}  name="refreshif"  onChange={this.handleChange} value={Data.Links.Params.PERIOD.refreshif.Input}
+  ><input className="form-control refresh-input" type="text" placeholder={Data.Params.PERIOD.refreshif.Placeholder}  name="refreshif"  onChange={this.handleChange} value={Data.Params.PERIOD.refreshif.Input}
   ></input></div
 ></div
       ></form
     ><ul className="nav nav-tabs"
-      ><li  className={(Data.Links.Params.ENUM.ift.Uint == 0) ? "active" : ""} data-tabid="0"
-        ><a href={Data.Links.Params.ENUM.ift.PACKETS.Href} onClick={this.handleClick}
+      ><li  className={(Data.Params.ENUM.ift.Uint == 0) ? "active" : ""} data-tabid="0"
+        ><a href={Data.Params.ENUM.ift.PACKETS.Href} onClick={this.handleClick}
   >Packets</a
 ></li
-      ><li  className={(Data.Links.Params.ENUM.ift.Uint == 1) ? "active" : ""} data-tabid="1"
-        ><a href={Data.Links.Params.ENUM.ift.ERRORS.Href} onClick={this.handleClick}
+      ><li  className={(Data.Params.ENUM.ift.Uint == 1) ? "active" : ""} data-tabid="1"
+        ><a href={Data.Params.ENUM.ift.ERRORS.Href} onClick={this.handleClick}
   >Errors</a
 ></li
-      ><li  className={(Data.Links.Params.ENUM.ift.Uint == 2) ? "active" : ""} data-tabid="2"
-        ><a href={Data.Links.Params.ENUM.ift.IFBYTES.Href} onClick={this.handleClick}
+      ><li  className={(Data.Params.ENUM.ift.Uint == 2) ? "active" : ""} data-tabid="2"
+        ><a href={Data.Params.ENUM.ift.IFBYTES.Href} onClick={this.handleClick}
   >Bytes</a
 ></li
       ></ul
     ></div
   ></div
 ><div
-  ><div  className={Data.Links.Params.BOOL.hideif.Value ? "collapse-hidden" : "" }
-    ><div id="ifpackets"  className={(Data.Links.Params.ENUM.ift.Uint != 0) ? "collapse-hidden" : ""} data-tabid="0" data-title="Packets"
+  ><div  className={Data.Params.BOOL.hideif.Value ? "collapse-hidden" : "" }
+    ><div id="ifpackets"  className={(Data.Params.ENUM.ift.Uint != 0) ? "collapse-hidden" : ""} data-tabid="0" data-title="Packets"
       ><span id="ifpackets-table"
         ><table className="table1 stripe-table"
   ><thead
@@ -189,7 +189,7 @@ define(function(require) {
   ></table
 ></span
       ></div
-    ><div id="iferrors"  className={(Data.Links.Params.ENUM.ift.Uint != 1) ? "collapse-hidden" : ""} data-tabid="1" data-title="Errors"
+    ><div id="iferrors"  className={(Data.Params.ENUM.ift.Uint != 1) ? "collapse-hidden" : ""} data-tabid="1" data-title="Errors"
       ><span id="iferrors-table"
         ><table className="table1 stripe-table"
   ><thead
@@ -219,7 +219,7 @@ define(function(require) {
   ></table
 ></span
       ></div
-    ><div id="ifbytes"  className={(Data.Links.Params.ENUM.ift.Uint != 2) ? "collapse-hidden" : ""} data-tabid="2" data-title="Bytes"
+    ><div id="ifbytes"  className={(Data.Params.ENUM.ift.Uint != 2) ? "collapse-hidden" : ""} data-tabid="2" data-title="Bytes"
       ><span id="ifbytes-table"
         ><table className="table1 stripe-table"
   ><thead
@@ -281,34 +281,34 @@ define(function(require) {
 >); },
 		panelcpu:        function(Data, rows)  { return (<div className="panel1"
   ><label className="panel-heading btn-block"
-    ><a  className={Data.Links.Params.BOOL.configcpu.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.configcpu.Href} onClick={this.handleClick}
+    ><a  className={Data.Params.BOOL.configcpu.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Params.BOOL.configcpu.Href} onClick={this.handleClick}
       >CPU</a
     ></label
   ><div
-    ><div id="cpuconfig"  className={Data.Links.Params.BOOL.configcpu.Value ? "" : "collapse-hidden" }
-      ><form className="horizontal-form border-bottom-form"  action={"/form/"+Data.Links.Params.Query}
+    ><div id="cpuconfig"  className={Data.Params.BOOL.configcpu.Value ? "" : "collapse-hidden" }
+      ><form className="horizontal-form border-bottom-form"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="form-group-padded"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Links.Params.BOOL.hidecpu.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Links.Params.BOOL.hidecpu.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.BOOL.hidecpu.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hidecpu.Href} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.CPU.ExpandableCPU ? "btn btn-default " : "btn btn-default disabled" }  href={Data.Links.Params.BOOL.expandcpu.Href} onClick={this.handleClick}
+          ><a  className={Data.CPU.ExpandableCPU ? "btn btn-default " : "btn btn-default disabled" }  href={Data.Params.BOOL.expandcpu.Href} onClick={this.handleClick}
             >{Data.CPU.ExpandtextCPU}</a
           ></div
         ></div
       ><div className="form-group-padded"
-        ><div  className={"input-group input-group-sm refresh-group" + (Data.Links.Params.PERIOD.refreshcpu.InputErrd ? " has-warning" : "")}
+        ><div  className={"input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshcpu.InputErrd ? " has-warning" : "")}
   ><span className="input-group-addon"
     >Refresh</span
-  ><input className="form-control refresh-input" type="text" placeholder={Data.Links.Params.PERIOD.refreshcpu.Placeholder}  name="refreshcpu"  onChange={this.handleChange} value={Data.Links.Params.PERIOD.refreshcpu.Input}
+  ><input className="form-control refresh-input" type="text" placeholder={Data.Params.PERIOD.refreshcpu.Placeholder}  name="refreshcpu"  onChange={this.handleChange} value={Data.Params.PERIOD.refreshcpu.Input}
   ></input></div
 ></div
       ></form
     ></div
   ></div
 ><div
-  ><div  className={Data.Links.Params.BOOL.hidecpu.Value ? "collapse-hidden" : "" }
+  ><div  className={Data.Params.BOOL.hidecpu.Value ? "collapse-hidden" : "" }
     ><table className="table1 stripe-table"
   ><thead
     ><tr
@@ -384,45 +384,45 @@ define(function(require) {
 >); },
 		paneldf:         function(Data,r1,r2)  { return (<div className="panel1"
   ><label className="panel-heading btn-block"
-    ><a  className={Data.Links.Params.BOOL.configdf.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.configdf.Href} onClick={this.handleClick}
-      >{Data.Links.Params.ENUM.dft.Title}</a
+    ><a  className={Data.Params.BOOL.configdf.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Params.BOOL.configdf.Href} onClick={this.handleClick}
+      >{Data.Params.ENUM.dft.Title}</a
     ></label
   ><div
-    ><div id="dfconfig"  className={Data.Links.Params.BOOL.configdf.Value ? "" : "collapse-hidden" }
-      ><form className="horizontal-form"  action={"/form/"+Data.Links.Params.Query}
+    ><div id="dfconfig"  className={Data.Params.BOOL.configdf.Value ? "" : "collapse-hidden" }
+      ><form className="horizontal-form"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="form-group-padded"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Links.Params.BOOL.hidedf.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Links.Params.BOOL.hidedf.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.BOOL.hidedf.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hidedf.Href} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.ExpandableDF ? "btn btn-default " : "btn btn-default disabled" }  href={Data.Links.Params.BOOL.expanddf.Href} onClick={this.handleClick}
+          ><a  className={Data.ExpandableDF ? "btn btn-default " : "btn btn-default disabled" }  href={Data.Params.BOOL.expanddf.Href} onClick={this.handleClick}
             >{Data.ExpandtextDF}</a
           ></div
         ></div
       ><div className="form-group-padded"
-        ><div  className={"input-group input-group-sm refresh-group" + (Data.Links.Params.PERIOD.refreshdf.InputErrd ? " has-warning" : "")}
+        ><div  className={"input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshdf.InputErrd ? " has-warning" : "")}
   ><span className="input-group-addon"
     >Refresh</span
-  ><input className="form-control refresh-input" type="text" placeholder={Data.Links.Params.PERIOD.refreshdf.Placeholder}  name="refreshdf"  onChange={this.handleChange} value={Data.Links.Params.PERIOD.refreshdf.Input}
+  ><input className="form-control refresh-input" type="text" placeholder={Data.Params.PERIOD.refreshdf.Placeholder}  name="refreshdf"  onChange={this.handleChange} value={Data.Params.PERIOD.refreshdf.Input}
   ></input></div
 ></div
       ></form
     ><ul className="nav nav-tabs"
-      ><li  className={(Data.Links.Params.ENUM.dft.Uint == 0) ? "active" : ""} data-tabid="0"
-        ><a href={Data.Links.Params.ENUM.dft.INODES.Href} onClick={this.handleClick}
+      ><li  className={(Data.Params.ENUM.dft.Uint == 0) ? "active" : ""} data-tabid="0"
+        ><a href={Data.Params.ENUM.dft.INODES.Href} onClick={this.handleClick}
   >Inodes</a
 ></li
-      ><li  className={(Data.Links.Params.ENUM.dft.Uint == 1) ? "active" : ""} data-tabid="1"
-        ><a href={Data.Links.Params.ENUM.dft.DFBYTES.Href} onClick={this.handleClick}
+      ><li  className={(Data.Params.ENUM.dft.Uint == 1) ? "active" : ""} data-tabid="1"
+        ><a href={Data.Params.ENUM.dft.DFBYTES.Href} onClick={this.handleClick}
   >Bytes</a
 ></li
       ></ul
     ></div
   ></div
 ><div
-  ><div  className={Data.Links.Params.BOOL.hidedf.Value ? "collapse-hidden" : "" }
-    ><div id="dfinodes"  className={(Data.Links.Params.ENUM.dft.Uint != 0) ? "collapse-hidden" : ""} data-tabid="0" data-title="Inodes"
+  ><div  className={Data.Params.BOOL.hidedf.Value ? "collapse-hidden" : "" }
+    ><div id="dfinodes"  className={(Data.Params.ENUM.dft.Uint != 0) ? "collapse-hidden" : ""} data-tabid="0" data-title="Inodes"
       ><span id="dfinodes-table"
         ><table className="table1 stripe-table"
   ><thead
@@ -444,38 +444,38 @@ define(function(require) {
   ></table
 ></span
       ></div
-    ><div id="dfbytes"  className={(Data.Links.Params.ENUM.dft.Uint != 1) ? "collapse-hidden" : ""} data-tabid="1" data-title="Bytes"
+    ><div id="dfbytes"  className={(Data.Params.ENUM.dft.Uint != 1) ? "collapse-hidden" : ""} data-tabid="1" data-title="Bytes"
       ><span id="dfbytes-table"
         ><table className="table1 stripe-table"
   ><thead
     ><tr
       ><th className="header "
-  ><a href={Data.Links.Params.ENUM.df.FS.Href} className={Data.Links.Params.ENUM.df.FS.Class}
-    >Device<span className={Data.Links.Params.ENUM.df.FS.CaretClass}
+  ><a href={Data.Params.ENUM.df.FS.Href} className={Data.Params.ENUM.df.FS.Class}
+    >Device<span className={Data.Params.ENUM.df.FS.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header "
-  ><a href={Data.Links.Params.ENUM.df.MP.Href} className={Data.Links.Params.ENUM.df.MP.Class}
-    >Mounted<span className={Data.Links.Params.ENUM.df.MP.CaretClass}
+  ><a href={Data.Params.ENUM.df.MP.Href} className={Data.Params.ENUM.df.MP.Class}
+    >Mounted<span className={Data.Params.ENUM.df.MP.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Links.Params.ENUM.df.AVAIL.Href} className={Data.Links.Params.ENUM.df.AVAIL.Class}
-    >Avail<span className={Data.Links.Params.ENUM.df.AVAIL.CaretClass}
+  ><a href={Data.Params.ENUM.df.AVAIL.Href} className={Data.Params.ENUM.df.AVAIL.Class}
+    >Avail<span className={Data.Params.ENUM.df.AVAIL.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Links.Params.ENUM.df.USED.Href} className={Data.Links.Params.ENUM.df.USED.Class}
-    >Used<span className={Data.Links.Params.ENUM.df.USED.CaretClass}
+  ><a href={Data.Params.ENUM.df.USED.Href} className={Data.Params.ENUM.df.USED.Class}
+    >Used<span className={Data.Params.ENUM.df.USED.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Links.Params.ENUM.df.TOTAL.Href} className={Data.Links.Params.ENUM.df.TOTAL.Class}
-    >Total<span className={Data.Links.Params.ENUM.df.TOTAL.CaretClass}
+  ><a href={Data.Params.ENUM.df.TOTAL.Href} className={Data.Params.ENUM.df.TOTAL.Class}
+    >Total<span className={Data.Params.ENUM.df.TOTAL.CaretClass}
       ></span
     ></a
   ></th
@@ -520,28 +520,28 @@ define(function(require) {
 >); },
 		panelps:         function(Data, rows)  { return (<div className="panel1"
   ><label className="panel-heading btn-block"
-    ><a  className={Data.Links.Params.BOOL.configps.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.configps.Href} onClick={this.handleClick}
+    ><a  className={Data.Params.BOOL.configps.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Params.BOOL.configps.Href} onClick={this.handleClick}
       >Processes</a
     ></label
   ><div
-    ><div id="psconfig"  className={Data.Links.Params.BOOL.configps.Value ? "" : "collapse-hidden" }
-      ><form className="inline-form border-bottom-form text-right"  action={"/form/"+Data.Links.Params.Query}
+    ><div id="psconfig"  className={Data.Params.BOOL.configps.Value ? "" : "collapse-hidden" }
+      ><form className="inline-form border-bottom-form text-right"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="form-group-padded"
-        ><div  className={"input-group input-group-sm refresh-group" + (Data.Links.Params.PERIOD.refreshps.InputErrd ? " has-warning" : "")}
+        ><div  className={"input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshps.InputErrd ? " has-warning" : "")}
   ><span className="input-group-addon"
     >Refresh</span
-  ><input className="form-control refresh-input" type="text" placeholder={Data.Links.Params.PERIOD.refreshps.Placeholder}  name="refreshps"  onChange={this.handleChange} value={Data.Links.Params.PERIOD.refreshps.Input}
+  ><input className="form-control refresh-input" type="text" placeholder={Data.Params.PERIOD.refreshps.Placeholder}  name="refreshps"  onChange={this.handleChange} value={Data.Params.PERIOD.refreshps.Input}
   ></input></div
 ></div
       ><div className="form-group-padded"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Links.Params.BOOL.hideps.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Links.Params.BOOL.hideps.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.BOOL.hideps.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hideps.Href} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.PStable.PSnotDecreasable ? "btn btn-default disabled" : "btn btn-default " }  href={Data.Links.Params.LIMIT.psn.LessHref} onClick={this.handleClick}
+          ><a  className={Data.PStable.PSnotDecreasable ? "btn btn-default disabled" : "btn btn-default " }  href={Data.Params.LIMIT.psn.LessHref} onClick={this.handleClick}
             >-</a
-          ><a  className={Data.PStable.PSnotExpandable ? "btn btn-default disabled" : "btn btn-default " }  href={Data.Links.Params.LIMIT.psn.MoreHref} onClick={this.handleClick}
+          ><a  className={Data.PStable.PSnotExpandable ? "btn btn-default disabled" : "btn btn-default " }  href={Data.Params.LIMIT.psn.MoreHref} onClick={this.handleClick}
             >{Data.PStable.PSplusText}</a
           ></div
         ></div
@@ -549,61 +549,61 @@ define(function(require) {
     ></div
   ></div
 ><div
-  ><div  className={Data.Links.Params.BOOL.hideps.Value ? "collapse-hidden" : "" }
+  ><div  className={Data.Params.BOOL.hideps.Value ? "collapse-hidden" : "" }
     ><table className="table2 stripe-table"
   ><thead
     ><tr
       ><th className="header text-right"
-  ><a href={Data.Links.Params.ENUM.ps.PID.Href} className={Data.Links.Params.ENUM.ps.PID.Class}
-    >PID<span className={Data.Links.Params.ENUM.ps.PID.CaretClass}
+  ><a href={Data.Params.ENUM.ps.PID.Href} className={Data.Params.ENUM.ps.PID.Class}
+    >PID<span className={Data.Params.ENUM.ps.PID.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Links.Params.ENUM.ps.UID.Href} className={Data.Links.Params.ENUM.ps.UID.Class}
-    >UID<span className={Data.Links.Params.ENUM.ps.UID.CaretClass}
+  ><a href={Data.Params.ENUM.ps.UID.Href} className={Data.Params.ENUM.ps.UID.Class}
+    >UID<span className={Data.Params.ENUM.ps.UID.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header "
-  ><a href={Data.Links.Params.ENUM.ps.USER.Href} className={Data.Links.Params.ENUM.ps.USER.Class}
-    >USER<span className={Data.Links.Params.ENUM.ps.USER.CaretClass}
+  ><a href={Data.Params.ENUM.ps.USER.Href} className={Data.Params.ENUM.ps.USER.Class}
+    >USER<span className={Data.Params.ENUM.ps.USER.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Links.Params.ENUM.ps.PRI.Href} className={Data.Links.Params.ENUM.ps.PRI.Class}
-    >PR<span className={Data.Links.Params.ENUM.ps.PRI.CaretClass}
+  ><a href={Data.Params.ENUM.ps.PRI.Href} className={Data.Params.ENUM.ps.PRI.Class}
+    >PR<span className={Data.Params.ENUM.ps.PRI.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Links.Params.ENUM.ps.NICE.Href} className={Data.Links.Params.ENUM.ps.NICE.Class}
-    >NI<span className={Data.Links.Params.ENUM.ps.NICE.CaretClass}
+  ><a href={Data.Params.ENUM.ps.NICE.Href} className={Data.Params.ENUM.ps.NICE.Class}
+    >NI<span className={Data.Params.ENUM.ps.NICE.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Links.Params.ENUM.ps.VIRT.Href} className={Data.Links.Params.ENUM.ps.VIRT.Class}
-    >VIRT<span className={Data.Links.Params.ENUM.ps.VIRT.CaretClass}
+  ><a href={Data.Params.ENUM.ps.VIRT.Href} className={Data.Params.ENUM.ps.VIRT.Class}
+    >VIRT<span className={Data.Params.ENUM.ps.VIRT.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Links.Params.ENUM.ps.RES.Href} className={Data.Links.Params.ENUM.ps.RES.Class}
-    >RES<span className={Data.Links.Params.ENUM.ps.RES.CaretClass}
+  ><a href={Data.Params.ENUM.ps.RES.Href} className={Data.Params.ENUM.ps.RES.Class}
+    >RES<span className={Data.Params.ENUM.ps.RES.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-center"
-  ><a href={Data.Links.Params.ENUM.ps.TIME.Href} className={Data.Links.Params.ENUM.ps.TIME.Class}
-    >TIME<span className={Data.Links.Params.ENUM.ps.TIME.CaretClass}
+  ><a href={Data.Params.ENUM.ps.TIME.Href} className={Data.Params.ENUM.ps.TIME.Class}
+    >TIME<span className={Data.Params.ENUM.ps.TIME.CaretClass}
       ></span
     ></a
   ></th
 ><th className="header "
-  ><a href={Data.Links.Params.ENUM.ps.NAME.Href} className={Data.Links.Params.ENUM.ps.NAME.Class}
-    >COMMAND<span className={Data.Links.Params.ENUM.ps.NAME.CaretClass}
+  ><a href={Data.Params.ENUM.ps.NAME.Href} className={Data.Params.ENUM.ps.NAME.Class}
+    >COMMAND<span className={Data.Params.ENUM.ps.NAME.CaretClass}
       ></span
     ></a
   ></th
@@ -646,24 +646,24 @@ define(function(require) {
 >); },
 		panelvg:         function(Data, rows)  { return (<div className="panel1"
   ><label className="panel-heading btn-block"
-    ><a  className={Data.Links.Params.BOOL.configvg.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.configvg.Href} onClick={this.handleClick}
+    ><a  className={Data.Params.BOOL.configvg.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Params.BOOL.configvg.Href} onClick={this.handleClick}
       >Vagrant global-status</a
     ></label
   ><div
-    ><div id="vgconfig"  className={Data.Links.Params.BOOL.configvg.Value ? "" : "collapse-hidden" }
-      ><form className="inline-form border-bottom-form text-right"  action={"/form/"+Data.Links.Params.Query}
+    ><div id="vgconfig"  className={Data.Params.BOOL.configvg.Value ? "" : "collapse-hidden" }
+      ><form className="inline-form border-bottom-form text-right"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="form-group-padded"
-        ><div  className={"input-group input-group-sm refresh-group" + (Data.Links.Params.PERIOD.refreshvg.InputErrd ? " has-warning" : "")}
+        ><div  className={"input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshvg.InputErrd ? " has-warning" : "")}
   ><span className="input-group-addon"
     >Refresh</span
-  ><input className="form-control refresh-input" type="text" placeholder={Data.Links.Params.PERIOD.refreshvg.Placeholder}  name="refreshvg"  onChange={this.handleChange} value={Data.Links.Params.PERIOD.refreshvg.Input}
+  ><input className="form-control refresh-input" type="text" placeholder={Data.Params.PERIOD.refreshvg.Placeholder}  name="refreshvg"  onChange={this.handleChange} value={Data.Params.PERIOD.refreshvg.Input}
   ></input></div
 ></div
       ><div className="form-group-padded"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Links.Params.BOOL.hidevg.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Links.Params.BOOL.hidevg.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.BOOL.hidevg.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hidevg.Href} onClick={this.handleClick}
             >Hidden</a
           ></div
         ></div
@@ -671,7 +671,7 @@ define(function(require) {
     ></div
   ></div
 ><div
-  ><div  className={Data.Links.Params.BOOL.hidevg.Value ? "collapse-hidden" : "" }
+  ><div  className={Data.Params.BOOL.hidevg.Value ? "collapse-hidden" : "" }
     ><table id="vgtable" className="table1 stripe-table"
   ><thead
     ><tr

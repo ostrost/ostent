@@ -68,23 +68,20 @@
       };
     };
     newwebsocket = function(onmessage) {
-      var conn, init, sendJSON, sendSearch;
+      var conn, init, sendSearch;
       conn = null;
       sendSearch = function(search) {
-        return sendJSON({
-          Search: search
-        });
-      };
-      sendJSON = function(obj) {
-        console.log(JSON.stringify(obj), 'sendJSON');
+        console.log('Search', search);
         if ((conn == null) || conn.readyState === conn.CLOSING || conn.readyState === conn.CLOSED) {
           init();
         }
         if ((conn == null) || conn.readyState !== conn.OPEN) {
-          console.log('Not connected, cannot send', obj);
+          console.log('Not connected, cannot send search', search);
           return;
         }
-        return conn.send(JSON.stringify(obj));
+        return conn.send(JSON.stringify({
+          Search: search
+        }));
       };
       init = function() {
         var again, hostport, statesel;
@@ -125,7 +122,7 @@
     this.IFCLASS = React.createClass({
       getInitialState: function() {
         return {
-          Links: Data.Links,
+          Params: Data.Params,
           IFbytes: Data.IFbytes,
           IFerrors: Data.IFerrors,
           IFpackets: Data.IFpackets,
@@ -186,7 +183,7 @@
     this.DFCLASS = React.createClass({
       getInitialState: function() {
         return {
-          Links: Data.Links,
+          Params: Data.Params,
           DFbytes: Data.DFbytes,
           DFinodes: Data.DFinodes,
           ExpandableDF: Data.ExpandableDF,
@@ -255,7 +252,7 @@
     this.MEMtableCLASS = React.createClass({
       getInitialState: function() {
         return {
-          Links: Data.Links,
+          Params: Data.Params,
           MEM: Data.MEM
         };
       },
@@ -294,7 +291,7 @@
     this.CPUtableCLASS = React.createClass({
       getInitialState: function() {
         return {
-          Links: Data.Links,
+          Params: Data.Params,
           CPU: Data.CPU
         };
       },
@@ -333,7 +330,7 @@
     this.PStableCLASS = React.createClass({
       getInitialState: function() {
         return {
-          Links: Data.Links,
+          Params: Data.Params,
           PStable: Data.PStable
         };
       },
@@ -372,7 +369,7 @@
     this.VGtableCLASS = React.createClass({
       getInitialState: function() {
         return {
-          Links: Data.Links,
+          Params: Data.Params,
           VagrantMachines: Data.VagrantMachines,
           VagrantError: Data.VagrantError,
           VagrantErrord: Data.VagrantErrord
@@ -489,19 +486,19 @@
         setState(uptime, uptime.newstate(data));
         setState(la, la.newstate(data));
         setState(pstable, {
-          Links: data.Links,
+          Params: data.Params,
           PStable: data.PStable
         });
         setState(memtable, {
-          Links: data.Links,
+          Params: data.Params,
           MEM: data.MEM
         });
         setState(cputable, {
-          Links: data.Links,
+          Params: data.Params,
           CPU: data.CPU
         });
         setState(iftable, {
-          Links: data.Links,
+          Params: data.Params,
           IFbytes: data.IFbytes,
           IFerrors: data.IFerrors,
           IFpackets: data.IFpackets,
@@ -509,14 +506,14 @@
           ExpandtextIF: data.ExpandtextIF
         });
         setState(dftable, {
-          Links: data.Links,
+          Params: data.Params,
           DFbytes: data.DFbytes,
           DFinodes: data.DFinodes,
           ExpandableDF: data.ExpandableDF,
           ExpandtextDF: data.ExpandtextDF
         });
         setState(vgtable, {
-          Links: data.Links,
+          Params: data.Params,
           VagrantMachines: data.VagrantMachines,
           VagrantError: data.VagrantError,
           VagrantErrord: data.VagrantErrord
