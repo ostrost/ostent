@@ -288,7 +288,7 @@ func (ir *IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient,
 	private.SortSortBy(LessInterface)
 	var public []operating.InterfaceInfo
 	for i, mi := range private {
-		if !cli.Params.BOOL["expandif"].Value && i >= cli.Toprows {
+		if !cli.Params.BOOL["expandif"].Value && i >= cli.Params.Toprows {
 			break
 		}
 		public = append(public, FormatInterface(mi, ip))
@@ -391,7 +391,7 @@ func (ir *IndexRegistry) DF(cli *client.Client, send *client.SendClient, iu *Ind
 		return nil
 	}
 	iu.ExpandableDF = new(bool)
-	*iu.ExpandableDF = lenp > cli.Toprows
+	*iu.ExpandableDF = lenp > cli.Params.Toprows
 	iu.ExpandtextDF = new(string)
 	*iu.ExpandtextDF = fmt.Sprintf("Expanded (%d)", lenp)
 	return niu
@@ -404,7 +404,7 @@ func (ir *IndexRegistry) DFbytes(cli *client.Client, send *client.SendClient) ([
 
 	var public []operating.DiskBytes
 	for i, disk := range private {
-		if !cli.Params.BOOL["expanddf"].Value && i > cli.Toprows-1 {
+		if !cli.Params.BOOL["expanddf"].Value && i > cli.Params.Toprows-1 {
 			break
 		}
 		public = append(public, FormatDFbytes(disk))
@@ -436,7 +436,7 @@ func (ir *IndexRegistry) DFinodes(cli *client.Client, send *client.SendClient) (
 
 	var public []operating.DiskInodes
 	for i, disk := range private {
-		if !cli.Params.BOOL["expanddf"].Value && i > cli.Toprows-1 {
+		if !cli.Params.BOOL["expanddf"].Value && i > cli.Params.Toprows-1 {
 			break
 		}
 		public = append(public, FormatDFinodes(disk))
@@ -510,7 +510,7 @@ func (ir *IndexRegistry) IF(cli *client.Client, send *client.SendClient, iu *Ind
 		return nil
 	}
 	iu.ExpandableIF = new(bool)
-	*iu.ExpandableIF = lenp > cli.Toprows
+	*iu.ExpandableIF = lenp > cli.Params.Toprows
 	iu.ExpandtextIF = new(string)
 	*iu.ExpandtextIF = fmt.Sprintf("Expanded (%d)", lenp)
 	return niu
@@ -526,7 +526,7 @@ func (ir *IndexRegistry) CPUInternal(cli *client.Client, send *client.SendClient
 	private := ir.ListPrivateCPU()
 
 	cpu.ExpandableCPU = new(bool)
-	*cpu.ExpandableCPU = len(private) > cli.Toprows // one row reserved for "all N"
+	*cpu.ExpandableCPU = len(private) > cli.Params.Toprows // one row reserved for "all N"
 	cpu.ExpandtextCPU = new(string)
 	*cpu.ExpandtextCPU = fmt.Sprintf("Expanded (%d)", len(private))
 
@@ -540,7 +540,7 @@ func (ir *IndexRegistry) CPUInternal(cli *client.Client, send *client.SendClient
 		public = []operating.CoreInfo{FormatCPU(ir.PrivateCPUAll)}
 	}
 	for i, mc := range private {
-		if !cli.Params.BOOL["expandcpu"].Value && i > cli.Toprows-2 {
+		if !cli.Params.BOOL["expandcpu"].Value && i > cli.Params.Toprows-2 {
 			// "collapsed" view, head of the list
 			break
 		}
@@ -768,6 +768,9 @@ type Set struct {
 
 func (s Set) Hidden() bool { return s.Hide }
 func (s *Set) Expired(forcerefresh bool) bool {
+	if s.Refresh == nil {
+		return true
+	}
 	return s.Refresh.Refresh(forcerefresh)
 }
 
@@ -789,12 +792,11 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 		iu.Location = newloc // may be nil
 		iu.Links = &Links{cl.Params}
 	}
-	cl.RecalcRows() // after params decoded
 	psCopy := lastInfo.CopyPS()
 
 	set := []Set{
-		{cl.Params.BOOL["hidemem"].Value || cl.Params.BOOL["hideswap"].Value, cl.Params.PERIOD["refreshmem"], Reg1s.SWAP}, // if MEM is hidden, so is SWAP
 		{cl.Params.BOOL["hidemem"].Value, cl.Params.PERIOD["refreshmem"], Reg1s.MEM},
+		{cl.Params.BOOL["hidemem"].Value || cl.Params.BOOL["hideswap"].Value, cl.Params.PERIOD["refreshmem"], Reg1s.SWAP}, // if MEM is hidden, so is SWAP
 		{cl.Params.BOOL["hidecpu"].Value, cl.Params.PERIOD["refreshcpu"], Reg1s.CPU},
 		{cl.Params.BOOL["hidedf"].Value, cl.Params.PERIOD["refreshdf"], Reg1s.DF},
 		{cl.Params.BOOL["hideif"].Value, cl.Params.PERIOD["refreshif"], Reg1s.IF},
@@ -802,10 +804,10 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 		{false, cl.Params.PERIOD["refreshps"], psCopy.IU},
 
 		// always-shown bits:
-		{false, cl.RefreshHN, RegMSS.HN},
-		{false, cl.RefreshHN, RegMSS.UP},
-		{false, cl.RefreshHN, RegMSS.IP},
-		{false, cl.RefreshHN, Reg1s.LA},
+		{false, nil, RegMSS.HN},
+		{false, nil, RegMSS.UP},
+		{false, nil, RegMSS.IP},
+		{false, nil, Reg1s.LA},
 	}
 
 	// var additions []interface{}

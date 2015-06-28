@@ -34,9 +34,9 @@ func graphiteCommandLine(cli *flag.FlagSet) CommandLineHandler {
 				gr.RefreshFlag = defaultPeriod
 			} */
 			gc := &carbond{
-				logger:     gr.logger,
-				serveraddr: gr.ServerAddr.String(),
-				Client:     client.NewClient(gr.RefreshFlag),
+				logger:      gr.logger,
+				serveraddr:  gr.ServerAddr.String(),
+				PeriodParam: client.NewPeriodParam(gr.RefreshFlag, "refreshgraphite", nil),
 			}
 			ostent.Register <- gc
 		})
@@ -45,11 +45,11 @@ func graphiteCommandLine(cli *flag.FlagSet) CommandLineHandler {
 }
 
 type carbond struct {
-	logger        *Logger
-	serveraddr    string
-	conn          net.Conn
-	client.Client // expires() bool method
-	failing       bool
+	logger     *Logger
+	serveraddr string
+	conn       net.Conn
+	*client.PeriodParam
+	failing bool
 }
 
 func (_ *carbond) CloseChans() {} // intentionally empty

@@ -315,16 +315,20 @@ func NewParams(minperiod flags.Period) *Params {
 	}
 	p.PERIOD = make(map[string]*PeriodParam)
 	for _, k := range PeriodParanames {
-		p.PERIOD[k] = &PeriodParam{
-			Query: p.Query,
-			PeriodDecodec: PeriodDecodec{
-				Pname: k,
-			},
-			Placeholder: minperiod,
-			Period:      flags.Period{Above: &minperiod.Duration},
-		}
+		p.PERIOD[k] = NewPeriodParam(minperiod, k, p.Query)
 	}
 	return p
+}
+
+func NewPeriodParam(minperiod flags.Period, k string, q *Query) *PeriodParam {
+	return &PeriodParam{
+		Query: q,
+		PeriodDecodec: PeriodDecodec{
+			Pname: k,
+		},
+		Placeholder: minperiod,
+		Period:      flags.Period{Above: &minperiod.Duration},
+	}
 }
 
 // NewParamsENUM returns ENUM part of Params.
@@ -439,43 +443,53 @@ func (p *Params) Decode(form url.Values) {
 	for _, v := range p.PERIOD {
 		v.Decode(form)
 	}
+	p.Toprows = map[bool]int{true: 1, false: 2}[p.BOOL["hideswap"].Value]
 }
 
 func (p *Params) Refresh(force bool) bool {
-	if force {
-		return true
-	}
 	for _, v := range p.PERIOD {
-		if v.Tick <= 1 {
+		if v.Refresh(force) {
 			return true
 		}
 	}
 	return false
 }
 
+func (p Params) Expired() bool {
+	return p.Refresh(false)
+}
+
 func (p *Params) Tick() {
 	for _, v := range p.PERIOD {
-		v.Tick++
-		if v.Tick-1 >= int(time.Duration(v.Period.Duration)/time.Second) {
-			v.Tick = 1 // expired
-		}
+		v.Tick()
 	}
 }
 
-// TODO .Refresh method is used in ostent.Set/Refresher only. To be removed.
+func (p *PeriodParam) Tick() {
+	p.Ticks++
+	if p.Ticks-1 >= int(time.Duration(p.Period.Duration)/time.Second) {
+		p.Ticks = 1 // expired
+	}
+}
+
 func (p PeriodParam) Refresh(forcerefresh bool) bool {
 	if forcerefresh {
 		return true
 	}
-	return p.Tick <= 1 // p.expired()
+	return p.Expired()
+}
+
+func (p PeriodParam) Expired() bool {
+	return p.Ticks <= 1
 }
 
 type Params struct {
-	BOOL   map[string]*BoolParam
-	ENUM   map[string]*EnumParam
-	LIMIT  map[string]*LimitParam
-	PERIOD map[string]*PeriodParam
-	Query  *Query
+	BOOL    map[string]*BoolParam
+	ENUM    map[string]*EnumParam
+	LIMIT   map[string]*LimitParam
+	PERIOD  map[string]*PeriodParam
+	Toprows int `json:"-"`
+	Query   *Query
 }
 
 type Query struct {
@@ -510,8 +524,8 @@ type PeriodParam struct {
 	Input       string
 	InputErrd   bool
 
-	// Params.Tick() must be called once per second; .tick is 1 when the period expired.
-	Tick int `json:"-"` // Not to be marshaled.
+	// Params.Tick() must be called once per second; .Ticks is 1 when the period expired.
+	Ticks int `json:"-"` // Not to be marshaled.
 }
 
 func (pp *PeriodParam) Decode(form url.Values) {

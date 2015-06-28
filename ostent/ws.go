@@ -106,13 +106,12 @@ type conn struct {
 func (c *conn) Expired() bool {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
-	return c.full.Expired()
+	return c.full.Params.Expired()
 }
 
 func (c *conn) Tick() {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
-	c.full.Tick()
 	c.full.Params.Tick()
 }
 
