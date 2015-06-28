@@ -189,12 +189,12 @@ var BoolDecodecs = map[string]BoolDecodec{
 	"hideswap": {Default: false},
 	"hidevg":   {Default: false},
 
-	"showconfigcpu": {Default: false},
-	"showconfigdf":  {Default: false},
-	"showconfigif":  {Default: false},
-	"showconfigmem": {Default: false},
-	"showconfigps":  {Default: false},
-	"showconfigvg":  {Default: false},
+	"configcpu": {Default: false},
+	"configdf":  {Default: false},
+	"configif":  {Default: false},
+	"configmem": {Default: false},
+	"configps":  {Default: false},
+	"configvg":  {Default: false},
 
 	"expanddf":  {Default: false},
 	"expandif":  {Default: false},

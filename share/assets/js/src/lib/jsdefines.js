@@ -11,9 +11,9 @@ define(function(require) {
     }, $mem.Total))); },
 		panelmem:        function(Data, rows)  { return (React.createElement("div", {className: "panel1"
   }, React.createElement("label", {className: "panel-heading btn-block"
-    }, React.createElement("a", {className: Data.Links.Params.BOOL.showconfigmem.Value ? "btn-header-block active" : "btn-header-block", href: Data.Links.Params.BOOL.showconfigmem.Href, onClick: this.handleClick
+    }, React.createElement("a", {className: Data.Links.Params.BOOL.configmem.Value ? "btn-header-block active" : "btn-header-block", href: Data.Links.Params.BOOL.configmem.Href, onClick: this.handleClick
       }, "Memory")), React.createElement("div", null
-    , React.createElement("div", {id: "memconfig", className: Data.Links.Params.BOOL.showconfigmem.Value ? "" : "collapse-hidden"
+    , React.createElement("div", {id: "memconfig", className: Data.Links.Params.BOOL.configmem.Value ? "" : "collapse-hidden"
       }, React.createElement("form", {className: "horizontal-form border-bottom-form", action: "/form/"+Data.Links.Params.Query
         }, React.createElement("input", {className: "hidden-submit", type: "submit"
         }), React.createElement("div", {className: "form-group-padded"
@@ -65,9 +65,9 @@ define(function(require) {
     }, $if.Out))); },
 		panelif:         function(Data,r1,r2,r3){ return (React.createElement("div", {className: "panel1"
   }, React.createElement("label", {className: "panel-heading btn-block"
-    }, React.createElement("a", {className: Data.Links.Params.BOOL.showconfigif.Value ? "btn-header-block active" : "btn-header-block", href: Data.Links.Params.BOOL.showconfigif.Href, onClick: this.handleClick
+    }, React.createElement("a", {className: Data.Links.Params.BOOL.configif.Value ? "btn-header-block active" : "btn-header-block", href: Data.Links.Params.BOOL.configif.Href, onClick: this.handleClick
       }, Data.Links.Params.ENUM.ift.Title)), React.createElement("div", null
-    , React.createElement("div", {id: "ifconfig", className: Data.Links.Params.BOOL.showconfigif.Value ? "" : "collapse-hidden"
+    , React.createElement("div", {id: "ifconfig", className: Data.Links.Params.BOOL.configif.Value ? "" : "collapse-hidden"
       }, React.createElement("form", {className: "horizontal-form", action: "/form/"+Data.Links.Params.Query
         }, React.createElement("input", {className: "hidden-submit", type: "submit"
         }), React.createElement("div", {className: "form-group-padded"
@@ -149,9 +149,9 @@ define(function(require) {
       }, $core.Idle)))); },
 		panelcpu:        function(Data, rows)  { return (React.createElement("div", {className: "panel1"
   }, React.createElement("label", {className: "panel-heading btn-block"
-    }, React.createElement("a", {className: Data.Links.Params.BOOL.showconfigcpu.Value ? "btn-header-block active" : "btn-header-block", href: Data.Links.Params.BOOL.showconfigcpu.Href, onClick: this.handleClick
+    }, React.createElement("a", {className: Data.Links.Params.BOOL.configcpu.Value ? "btn-header-block active" : "btn-header-block", href: Data.Links.Params.BOOL.configcpu.Href, onClick: this.handleClick
       }, "CPU")), React.createElement("div", null
-    , React.createElement("div", {id: "cpuconfig", className: Data.Links.Params.BOOL.showconfigcpu.Value ? "" : "collapse-hidden"
+    , React.createElement("div", {id: "cpuconfig", className: Data.Links.Params.BOOL.configcpu.Value ? "" : "collapse-hidden"
       }, React.createElement("form", {className: "horizontal-form border-bottom-form", action: "/form/"+Data.Links.Params.Query
         }, React.createElement("input", {className: "hidden-submit", type: "submit"
         }), React.createElement("div", {className: "form-group-padded"
@@ -205,9 +205,9 @@ define(function(require) {
     }, $disk.Inodes))); },
 		paneldf:         function(Data,r1,r2)  { return (React.createElement("div", {className: "panel1"
   }, React.createElement("label", {className: "panel-heading btn-block"
-    }, React.createElement("a", {className: Data.Links.Params.BOOL.showconfigdf.Value ? "btn-header-block active" : "btn-header-block", href: Data.Links.Params.BOOL.showconfigdf.Href, onClick: this.handleClick
+    }, React.createElement("a", {className: Data.Links.Params.BOOL.configdf.Value ? "btn-header-block active" : "btn-header-block", href: Data.Links.Params.BOOL.configdf.Href, onClick: this.handleClick
       }, Data.Links.Params.ENUM.dft.Title)), React.createElement("div", null
-    , React.createElement("div", {id: "dfconfig", className: Data.Links.Params.BOOL.showconfigdf.Value ? "" : "collapse-hidden"
+    , React.createElement("div", {id: "dfconfig", className: Data.Links.Params.BOOL.configdf.Value ? "" : "collapse-hidden"
       }, React.createElement("form", {className: "horizontal-form", action: "/form/"+Data.Links.Params.Query
         }, React.createElement("input", {className: "hidden-submit", type: "submit"
         }), React.createElement("div", {className: "form-group-padded"
@@ -276,9 +276,9 @@ define(function(require) {
   }, $proc.Name)))); },
 		panelps:         function(Data, rows)  { return (React.createElement("div", {className: "panel1"
   }, React.createElement("label", {className: "panel-heading btn-block"
-    }, React.createElement("a", {className: Data.Links.Params.BOOL.showconfigps.Value ? "btn-header-block active" : "btn-header-block", href: Data.Links.Params.BOOL.showconfigps.Href, onClick: this.handleClick
+    }, React.createElement("a", {className: Data.Links.Params.BOOL.configps.Value ? "btn-header-block active" : "btn-header-block", href: Data.Links.Params.BOOL.configps.Href, onClick: this.handleClick
       }, "Processes")), React.createElement("div", null
-    , React.createElement("div", {id: "psconfig", className: Data.Links.Params.BOOL.showconfigps.Value ? "" : "collapse-hidden"
+    , React.createElement("div", {id: "psconfig", className: Data.Links.Params.BOOL.configps.Value ? "" : "collapse-hidden"
       }, React.createElement("form", {className: "inline-form border-bottom-form text-right", action: "/form/"+Data.Links.Params.Query
         }, React.createElement("input", {className: "hidden-submit", type: "submit"
         }), React.createElement("div", {className: "form-group-padded"
@@ -343,9 +343,9 @@ define(function(require) {
     }, Data.VagrantError))); },
 		panelvg:         function(Data, rows)  { return (React.createElement("div", {className: "panel1"
   }, React.createElement("label", {className: "panel-heading btn-block"
-    }, React.createElement("a", {className: Data.Links.Params.BOOL.showconfigvg.Value ? "btn-header-block active" : "btn-header-block", href: Data.Links.Params.BOOL.showconfigvg.Href, onClick: this.handleClick
+    }, React.createElement("a", {className: Data.Links.Params.BOOL.configvg.Value ? "btn-header-block active" : "btn-header-block", href: Data.Links.Params.BOOL.configvg.Href, onClick: this.handleClick
       }, "Vagrant global-status")), React.createElement("div", null
-    , React.createElement("div", {id: "vgconfig", className: Data.Links.Params.BOOL.showconfigvg.Value ? "" : "collapse-hidden"
+    , React.createElement("div", {id: "vgconfig", className: Data.Links.Params.BOOL.configvg.Value ? "" : "collapse-hidden"
       }, React.createElement("form", {className: "inline-form border-bottom-form text-right", action: "/form/"+Data.Links.Params.Query
         }, React.createElement("input", {className: "hidden-submit", type: "submit"
         }), React.createElement("div", {className: "form-group-padded"

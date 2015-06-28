@@ -118,10 +118,10 @@
 = content define_panelif
   div.panel1
     label.panel-heading.btn-block
-      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigif "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigif}}>{{.Data.Links.Params.ENUM.ift.Title}}</a>
+      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.configif "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.configif}}>{{.Data.Links.Params.ENUM.ift.Title}}</a>
 
     div
-      | <div id="ifconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigif "" "collapse-hidden"}}>
+      | <div id="ifconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.configif "" "collapse-hidden"}}>
       | <form {{class}}="horizontal-form" {{formActionAttr .Data.Links.Params.Query}}>
       input.hidden-submit type=submit
 
@@ -225,10 +225,10 @@
 = content define_paneldf
   div.panel1
     label.panel-heading.btn-block
-      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigdf "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigdf}}>{{.Data.Links.Params.ENUM.dft.Title}}</a>
+      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.configdf "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.configdf}}>{{.Data.Links.Params.ENUM.dft.Title}}</a>
 
     div
-      | <div id="dfconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigdf "" "collapse-hidden"}}>
+      | <div id="dfconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.configdf "" "collapse-hidden"}}>
       | <form {{class}}="horizontal-form" {{formActionAttr .Data.Links.Params.Query}}>
       input.hidden-submit type=submit
 
@@ -293,10 +293,10 @@
 = content define_panelmem
   div.panel1
     label.panel-heading.btn-block
-      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigmem "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigmem}}>Memory</a>
+      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.configmem "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.configmem}}>Memory</a>
 
     div
-      | <div id="memconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigmem "" "collapse-hidden"}}>
+      | <div id="memconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.configmem "" "collapse-hidden"}}>
       | <form {{class}}="horizontal-form border-bottom-form" {{formActionAttr .Data.Links.Params.Query}}>
       input.hidden-submit type=submit
       div.form-group-padded
@@ -344,10 +344,10 @@
 = content define_panelcpu
   div.panel1
     label.panel-heading.btn-block
-      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigcpu "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigcpu}}>CPU</a>
+      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.configcpu "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.configcpu}}>CPU</a>
 
     div
-      | <div id="cpuconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigcpu "" "collapse-hidden"}}>
+      | <div id="cpuconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.configcpu "" "collapse-hidden"}}>
       | <form {{class}}="horizontal-form border-bottom-form" {{formActionAttr .Data.Links.Params.Query}}>
       input.hidden-submit type=submit
       div.form-group-padded
@@ -401,10 +401,10 @@
 = content define_panelps
   div.panel1
     label.panel-heading.btn-block
-      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigps "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigps}}>Processes</a>
+      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.configps "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.configps}}>Processes</a>
 
     div
-      | <div id="psconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigps "" "collapse-hidden"}}>
+      | <div id="psconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.configps "" "collapse-hidden"}}>
       | <form {{class}}="inline-form border-bottom-form text-right" {{formActionAttr .Data.Links.Params.Query}}>
       input.hidden-submit type=submit
 
@@ -464,10 +464,10 @@
 = content define_panelvg
   div.panel1
     label.panel-heading.btn-block
-      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigvg "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.showconfigvg}}>Vagrant global-status</a>
+      | <a {{ifBPClassAttr .Data.Links.Params.BOOL.configvg "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Links.Params.BOOL.configvg}}>Vagrant global-status</a>
 
     div
-      | <div id="vgconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.showconfigvg "" "collapse-hidden"}}>
+      | <div id="vgconfig" {{ifBPClassAttr .Data.Links.Params.BOOL.configvg "" "collapse-hidden"}}>
       | <form {{class}}="inline-form border-bottom-form text-right" {{formActionAttr .Data.Links.Params.Query}}>
       input.hidden-submit type=submit
       div.form-group-padded

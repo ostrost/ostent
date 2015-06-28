@@ -18,11 +18,11 @@ define(function(require) {
 >); },
 		panelmem:        function(Data, rows)  { return (<div className="panel1"
   ><label className="panel-heading btn-block"
-    ><a  className={Data.Links.Params.BOOL.showconfigmem.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.showconfigmem.Href} onClick={this.handleClick}
+    ><a  className={Data.Links.Params.BOOL.configmem.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.configmem.Href} onClick={this.handleClick}
       >Memory</a
     ></label
   ><div
-    ><div id="memconfig"  className={Data.Links.Params.BOOL.showconfigmem.Value ? "" : "collapse-hidden" }
+    ><div id="memconfig"  className={Data.Links.Params.BOOL.configmem.Value ? "" : "collapse-hidden" }
       ><form className="horizontal-form border-bottom-form"  action={"/form/"+Data.Links.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
@@ -117,11 +117,11 @@ define(function(require) {
 >); },
 		panelif:         function(Data,r1,r2,r3){ return (<div className="panel1"
   ><label className="panel-heading btn-block"
-    ><a  className={Data.Links.Params.BOOL.showconfigif.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.showconfigif.Href} onClick={this.handleClick}
+    ><a  className={Data.Links.Params.BOOL.configif.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.configif.Href} onClick={this.handleClick}
       >{Data.Links.Params.ENUM.ift.Title}</a
     ></label
   ><div
-    ><div id="ifconfig"  className={Data.Links.Params.BOOL.showconfigif.Value ? "" : "collapse-hidden" }
+    ><div id="ifconfig"  className={Data.Links.Params.BOOL.configif.Value ? "" : "collapse-hidden" }
       ><form className="horizontal-form"  action={"/form/"+Data.Links.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
@@ -281,11 +281,11 @@ define(function(require) {
 >); },
 		panelcpu:        function(Data, rows)  { return (<div className="panel1"
   ><label className="panel-heading btn-block"
-    ><a  className={Data.Links.Params.BOOL.showconfigcpu.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.showconfigcpu.Href} onClick={this.handleClick}
+    ><a  className={Data.Links.Params.BOOL.configcpu.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.configcpu.Href} onClick={this.handleClick}
       >CPU</a
     ></label
   ><div
-    ><div id="cpuconfig"  className={Data.Links.Params.BOOL.showconfigcpu.Value ? "" : "collapse-hidden" }
+    ><div id="cpuconfig"  className={Data.Links.Params.BOOL.configcpu.Value ? "" : "collapse-hidden" }
       ><form className="horizontal-form border-bottom-form"  action={"/form/"+Data.Links.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
@@ -384,11 +384,11 @@ define(function(require) {
 >); },
 		paneldf:         function(Data,r1,r2)  { return (<div className="panel1"
   ><label className="panel-heading btn-block"
-    ><a  className={Data.Links.Params.BOOL.showconfigdf.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.showconfigdf.Href} onClick={this.handleClick}
+    ><a  className={Data.Links.Params.BOOL.configdf.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.configdf.Href} onClick={this.handleClick}
       >{Data.Links.Params.ENUM.dft.Title}</a
     ></label
   ><div
-    ><div id="dfconfig"  className={Data.Links.Params.BOOL.showconfigdf.Value ? "" : "collapse-hidden" }
+    ><div id="dfconfig"  className={Data.Links.Params.BOOL.configdf.Value ? "" : "collapse-hidden" }
       ><form className="horizontal-form"  action={"/form/"+Data.Links.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
@@ -520,11 +520,11 @@ define(function(require) {
 >); },
 		panelps:         function(Data, rows)  { return (<div className="panel1"
   ><label className="panel-heading btn-block"
-    ><a  className={Data.Links.Params.BOOL.showconfigps.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.showconfigps.Href} onClick={this.handleClick}
+    ><a  className={Data.Links.Params.BOOL.configps.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.configps.Href} onClick={this.handleClick}
       >Processes</a
     ></label
   ><div
-    ><div id="psconfig"  className={Data.Links.Params.BOOL.showconfigps.Value ? "" : "collapse-hidden" }
+    ><div id="psconfig"  className={Data.Links.Params.BOOL.configps.Value ? "" : "collapse-hidden" }
       ><form className="inline-form border-bottom-form text-right"  action={"/form/"+Data.Links.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
@@ -646,11 +646,11 @@ define(function(require) {
 >); },
 		panelvg:         function(Data, rows)  { return (<div className="panel1"
   ><label className="panel-heading btn-block"
-    ><a  className={Data.Links.Params.BOOL.showconfigvg.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.showconfigvg.Href} onClick={this.handleClick}
+    ><a  className={Data.Links.Params.BOOL.configvg.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Links.Params.BOOL.configvg.Href} onClick={this.handleClick}
       >Vagrant global-status</a
     ></label
   ><div
-    ><div id="vgconfig"  className={Data.Links.Params.BOOL.showconfigvg.Value ? "" : "collapse-hidden" }
+    ><div id="vgconfig"  className={Data.Links.Params.BOOL.configvg.Value ? "" : "collapse-hidden" }
       ><form className="inline-form border-bottom-form text-right"  action={"/form/"+Data.Links.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input

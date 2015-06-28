@@ -14,24 +14,24 @@ import (
 var TestPeriodFlag = flags.Period{Duration: time.Second} // default
 
 func TestBoolLinks(t *testing.T) {
-	req, err := http.NewRequest("GET", "http://localhost/index?showconfigmem", nil)
+	req, err := http.NewRequest("GET", "http://localhost/index?configmem", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 	req.ParseForm()
 	params := NewParams(TestPeriodFlag)
-	scm := params.BOOL["showconfigmem"]
+	scm := params.BOOL["configmem"]
 	scm.Decode(req.Form)
 	if scm.Value != true {
 		t.Errorf("Decode failed: %t, expected %t", scm.Value, true)
 	}
-	if s := params.Query.ValuesEncode(nil); s != "showconfigmem" {
+	if s := params.Query.ValuesEncode(nil); s != "configmem" {
 		t.Fatalf("Unexpected Values.Encode: %q", s)
 	}
 	if h := scm.EncodeToggle(); h != template.HTMLAttr("?") {
 		t.Fatalf("Unexpected EncodeToggle: %q", h)
 	}
-	if s := params.Query.ValuesEncode(nil); s != "showconfigmem" {
+	if s := params.Query.ValuesEncode(nil); s != "configmem" {
 		t.Fatalf("Unexpected Values.Encode (changed after EncodeToggle): %q", s)
 	}
 }
