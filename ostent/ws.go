@@ -10,8 +10,8 @@ import (
 
 	gorillawebsocket "github.com/gorilla/websocket"
 
-	"github.com/ostrost/ostent/client"
 	"github.com/ostrost/ostent/flags"
+	"github.com/ostrost/ostent/params"
 )
 
 type backgroundHandler func(flags.Period)
@@ -96,7 +96,7 @@ type conn struct {
 
 	receive chan *received
 	pushch  chan *IndexUpdate
-	para    *client.Params
+	para    *params.Params
 	access  *logger
 
 	mutex      sync.Mutex
@@ -438,7 +438,7 @@ func IndexWS(access *logger, minperiod flags.Period, w http.ResponseWriter, req 
 
 		receive: make(chan *received, 2),
 		pushch:  make(chan *IndexUpdate, 2),
-		para:    client.NewParams(minperiod),
+		para:    params.NewParams(minperiod),
 		access:  access,
 	}
 	Register <- c

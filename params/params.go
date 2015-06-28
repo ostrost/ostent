@@ -1,4 +1,4 @@
-package client
+package params
 
 import (
 	"bytes"
@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ostrost/ostent/client/enums"
 	"github.com/ostrost/ostent/flags"
+	"github.com/ostrost/ostent/params/enums"
 )
 
 // Number is an enums.Uint with sign.

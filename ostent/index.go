@@ -10,11 +10,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ostrost/ostent/client"
-	"github.com/ostrost/ostent/client/enums"
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/getifaddrs"
+	"github.com/ostrost/ostent/params"
+	"github.com/ostrost/ostent/params/enums"
 	"github.com/ostrost/ostent/system"
 	"github.com/ostrost/ostent/system/operating"
 	"github.com/ostrost/ostent/templateutil"
@@ -56,7 +56,7 @@ func username(uids map[uint]string, uid uint) string {
 	return s
 }
 
-func (procs MPSlice) Ordered(para *client.Params) *PStable {
+func (procs MPSlice) Ordered(para *params.Params) *PStable {
 	uids := map[uint]string{}
 
 	pslen := uint(len(procs))
@@ -106,7 +106,7 @@ type IndexData struct {
 
 	CPU     operating.CPUInfo
 	MEM     operating.MEM
-	Params  *client.Params `json:",omitempty"`
+	Params  *params.Params `json:",omitempty"`
 	PStable PStable
 
 	DFbytes  operating.DFbytes  `json:",omitempty"`
@@ -141,7 +141,7 @@ type IndexUpdate struct {
 
 	CPU     *operating.CPUInfo `json:",omitempty"`
 	MEM     *operating.MEM     `json:",omitempty"`
-	Params  *client.Params     `json:",omitempty"`
+	Params  *params.Params     `json:",omitempty"`
 	PStable *PStable           `json:",omitempty"`
 
 	DFbytes  *operating.DFbytes  `json:",omitempty"`
@@ -206,21 +206,21 @@ func (la *last) CopyPS() MPSlice {
 	return psCopy
 }
 
-func (mss *MSS) HN(para *client.Params, iu *IndexUpdate) interface{} {
+func (mss *MSS) HN(para *params.Params, iu *IndexUpdate) interface{} {
 	iu.Hostname = mss.GetString("hostname")
 	generic := iu.Generic
 	generic.Hostname = iu.Hostname
 	return IndexUpdate{Generic: generic}
 }
 
-func (mss *MSS) UP(para *client.Params, iu *IndexUpdate) interface{} {
+func (mss *MSS) UP(para *params.Params, iu *IndexUpdate) interface{} {
 	iu.Uptime = mss.GetString("uptime")
 	generic := iu.Generic
 	generic.Uptime = iu.Uptime
 	return IndexUpdate{Generic: generic}
 }
 
-func (mss *MSS) IP(para *client.Params, iu *IndexUpdate) interface{} {
+func (mss *MSS) IP(para *params.Params, iu *IndexUpdate) interface{} {
 	iu.IP = mss.GetString("ip")
 	generic := iu.Generic
 	generic.IP = iu.IP
@@ -274,7 +274,7 @@ func (_ *IndexRegistry) InterfacePackets(mi operating.MetricInterface) (*operati
 	return mi.PacketsIn, mi.PacketsOut, false
 }
 
-func (ir *IndexRegistry) Interfaces(para *client.Params, ip InterfaceParts) ([]operating.InterfaceInfo, int) {
+func (ir *IndexRegistry) Interfaces(para *params.Params, ip InterfaceParts) ([]operating.InterfaceInfo, int) {
 	private := ir.ListPrivateInterface()
 
 	private.SortSortBy(LessInterface)
@@ -367,7 +367,7 @@ func LessCPU(a, b operating.MetricCPU) bool {
 	return (auser + anice + asys) > (buser + bnice + bsys)
 }
 
-func (ir *IndexRegistry) DF(para *client.Params, iu *IndexUpdate) interface{} {
+func (ir *IndexRegistry) DF(para *params.Params, iu *IndexUpdate) interface{} {
 	var lenp int
 	niu := IndexUpdate{}
 	switch enums.UintDFT(para.ENUM["dft"].Number.Uint) {
@@ -389,7 +389,7 @@ func (ir *IndexRegistry) DF(para *client.Params, iu *IndexUpdate) interface{} {
 	return niu
 }
 
-func (ir *IndexRegistry) DFbytes(para *client.Params) ([]operating.DiskBytes, int) {
+func (ir *IndexRegistry) DFbytes(para *params.Params) ([]operating.DiskBytes, int) {
 	private := ir.ListPrivateDisk()
 
 	private.StableSortBy(LessDiskFunc(*para.ENUM["df"]))
@@ -421,7 +421,7 @@ func FormatDFbytes(md operating.MetricDF) operating.DiskBytes {
 	}
 }
 
-func (ir *IndexRegistry) DFinodes(para *client.Params) ([]operating.DiskInodes, int) {
+func (ir *IndexRegistry) DFinodes(para *params.Params) ([]operating.DiskInodes, int) {
 	private := ir.ListPrivateDisk()
 
 	private.StableSortBy(LessDiskFunc(*para.ENUM["df"]))
@@ -453,7 +453,7 @@ func FormatDFinodes(md operating.MetricDF) operating.DiskInodes {
 	}
 }
 
-func (ir *IndexRegistry) VG(para *client.Params, iu *IndexUpdate) interface{} {
+func (ir *IndexRegistry) VG(para *params.Params, iu *IndexUpdate) interface{} {
 	machines, err := vagrantmachines()
 	if err != nil {
 		iu.VagrantErrord = true
@@ -474,12 +474,12 @@ func (ir *IndexRegistry) VG(para *client.Params, iu *IndexUpdate) interface{} {
 // MPSlice is a operating.MetricProcSlice with some methods.
 type MPSlice operating.MetricProcSlice
 
-func (procs MPSlice) IU(para *client.Params, iu *IndexUpdate) interface{} {
+func (procs MPSlice) IU(para *params.Params, iu *IndexUpdate) interface{} {
 	iu.PStable = procs.Ordered(para)
 	return IndexUpdate{PStable: iu.PStable}
 }
 
-func (ir *IndexRegistry) IF(para *client.Params, iu *IndexUpdate) interface{} {
+func (ir *IndexRegistry) IF(para *params.Params, iu *IndexUpdate) interface{} {
 	var lenp int
 	niu := IndexUpdate{}
 	switch enums.UintIFT(para.ENUM["ift"].Number.Uint) {
@@ -508,12 +508,12 @@ func (ir *IndexRegistry) IF(para *client.Params, iu *IndexUpdate) interface{} {
 	return niu
 }
 
-func (ir *IndexRegistry) CPU(para *client.Params, iu *IndexUpdate) interface{} {
+func (ir *IndexRegistry) CPU(para *params.Params, iu *IndexUpdate) interface{} {
 	iu.CPU = ir.CPUInternal(para)
 	return IndexUpdate{CPU: iu.CPU}
 }
 
-func (ir *IndexRegistry) CPUInternal(para *client.Params) *operating.CPUInfo {
+func (ir *IndexRegistry) CPUInternal(para *params.Params) *operating.CPUInfo {
 	cpu := &operating.CPUInfo{}
 	private := ir.ListPrivateCPU()
 
@@ -592,7 +592,7 @@ func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) operating.MetricCPU
 	return i
 }
 
-func (ir *IndexRegistry) SWAP(para *client.Params, iu *IndexUpdate) interface{} {
+func (ir *IndexRegistry) SWAP(para *params.Params, iu *IndexUpdate) interface{} {
 	// params is unused
 	if iu.MEM == nil {
 		iu.MEM = new(operating.MEM)
@@ -610,7 +610,7 @@ func (ir *IndexRegistry) SWAP(para *client.Params, iu *IndexUpdate) interface{} 
 	return IndexUpdate{MEM: iu.MEM}
 }
 
-func (ir *IndexRegistry) MEM(para *client.Params, iu *IndexUpdate) interface{} {
+func (ir *IndexRegistry) MEM(para *params.Params, iu *IndexUpdate) interface{} {
 	// params is unused
 	if iu.MEM == nil {
 		iu.MEM = new(operating.MEM)
@@ -629,7 +629,7 @@ func (ir *IndexRegistry) MEM(para *client.Params, iu *IndexUpdate) interface{} {
 	return IndexUpdate{MEM: iu.MEM}
 }
 
-func (ir *IndexRegistry) LA(para *client.Params, iu *IndexUpdate) interface{} {
+func (ir *IndexRegistry) LA(para *params.Params, iu *IndexUpdate) interface{} {
 	gl := ir.Load
 	iu.LA = gl.Short.Sparkline() + " " + fmt.Sprintf("%.2f %.2f %.2f",
 		gl.Short.Snapshot().Value(),
@@ -752,7 +752,7 @@ type Set struct {
 	Refresh interface { // type Refresher interface
 		Refresh(bool) bool
 	}
-	Update func(*client.Params, *IndexUpdate) interface{}
+	Update func(*params.Params, *IndexUpdate) interface{}
 }
 
 func (s Set) Hidden() bool { return s.Hide }
@@ -767,11 +767,11 @@ func (s *Set) Expired(forcerefresh bool) bool {
 type SetInterface interface {
 	Hidden() bool
 	Expired(bool) bool
-	Update(*client.Params, *IndexUpdate) interface{}
+	Update(*params.Params, *IndexUpdate) interface{}
 }
 // */
 
-func getUpdates(req *http.Request, para *client.Params, forcerefresh bool) (IndexUpdate, error) {
+func getUpdates(req *http.Request, para *params.Params, forcerefresh bool) (IndexUpdate, error) {
 	iu := IndexUpdate{}
 	if req != nil {
 		newloc, err := DecodeParam(para, req)
@@ -814,7 +814,7 @@ func getUpdates(req *http.Request, para *client.Params, forcerefresh bool) (Inde
 	return iu, nil
 }
 
-func DecodeParam(para *client.Params, req *http.Request) (*string, error) {
+func DecodeParam(para *params.Params, req *http.Request) (*string, error) {
 	req.ParseForm() // do ParseForm even if req.Form == nil
 	para.NewQuery()
 	para.Decode(req.Form)
@@ -836,7 +836,7 @@ func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 		lastInfo.collect(&Machine{})
 	}
 
-	para := client.NewParams(minperiod)
+	para := params.NewParams(minperiod)
 	updates, err := getUpdates(req, para, true)
 	if err != nil {
 		return IndexData{}, err
@@ -908,7 +908,7 @@ func FormRedirectFunc(minperiod flags.Period) func(http.ResponseWriter, *http.Re
 		if q, ok := r.Form["Q"]; ok && len(q) > 0 {
 			r.URL.RawQuery = r.Form.Encode() + "&" + strings.TrimPrefix(q[0], "?")
 			r.Form = nil // reset the .Form for .ParseForm() to parse new r.URL.RawQuery.
-			para := client.NewParams(minperiod)
+			para := params.NewParams(minperiod)
 			DecodeParam(para, r) // OR err.Error()
 			where = "/?" + para.Query.ValuesEncode(nil)
 		}

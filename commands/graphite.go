@@ -5,9 +5,9 @@ import (
 	"net"
 	"time"
 
-	"github.com/ostrost/ostent/client"
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
+	"github.com/ostrost/ostent/params"
 	metrics "github.com/rcrowley/go-metrics"
 )
 
@@ -36,7 +36,7 @@ func graphiteCommandLine(cli *flag.FlagSet) CommandLineHandler {
 			gc := &carbond{
 				logger:      gr.logger,
 				serveraddr:  gr.ServerAddr.String(),
-				PeriodParam: client.NewPeriodParam(gr.RefreshFlag, "refreshgraphite", nil),
+				PeriodParam: params.NewPeriodParam(gr.RefreshFlag, "refreshgraphite", nil),
 			}
 			ostent.Register <- gc
 		})
@@ -48,7 +48,7 @@ type carbond struct {
 	logger     *Logger
 	serveraddr string
 	conn       net.Conn
-	*client.PeriodParam
+	*params.PeriodParam
 	failing bool
 }
 

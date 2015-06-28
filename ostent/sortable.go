@@ -1,13 +1,13 @@
 package ostent
 
 import (
-	"github.com/ostrost/ostent/client"
-	"github.com/ostrost/ostent/client/enums"
+	"github.com/ostrost/ostent/params"
+	"github.com/ostrost/ostent/params/enums"
 	"github.com/ostrost/ostent/system/operating"
 )
 
 // LessDiskFunc makes a 'less' func for operating.MetricDF comparison.
-func LessDiskFunc(param client.EnumParam) func(operating.MetricDF, operating.MetricDF) bool {
+func LessDiskFunc(param params.EnumParam) func(operating.MetricDF, operating.MetricDF) bool {
 	return func(a, b operating.MetricDF) bool {
 		r := false
 		switch enums.UintDF(param.Number.Uint) {
@@ -27,7 +27,7 @@ func LessDiskFunc(param client.EnumParam) func(operating.MetricDF, operating.Met
 }
 
 // LessProcFunc makes a 'less' func for operating.MetricProc comparison.
-func LessProcFunc(uids map[uint]string, param client.EnumParam) func(operating.MetricProc, operating.MetricProc) bool {
+func LessProcFunc(uids map[uint]string, param params.EnumParam) func(operating.MetricProc, operating.MetricProc) bool {
 	return func(a, b operating.MetricProc) bool {
 		r := false
 		switch enums.UintPS(param.Number.Uint) {

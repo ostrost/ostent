@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/ostrost/ostent/client"
+	"github.com/ostrost/ostent/params"
 	"github.com/ostrost/ostent/templateutil/templatepipe"
 )
 
@@ -36,10 +36,10 @@ func (f JSXFuncs) toggleHrefAttr(value interface{}) (interface{}, error) {
 }
 
 func (f HTMLFuncs) toggleHrefAttr(value interface{}) (interface{}, error) {
-	if bp, ok := value.(*client.BoolParam); ok {
+	if bp, ok := value.(*params.BoolParam); ok {
 		return template.HTMLAttr(fmt.Sprintf(" href=\"%s\"", bp.EncodeToggle())), nil
 	}
-	return nil, f.CastError("*client.BoolParam")
+	return nil, f.CastError("*params.BoolParam")
 }
 
 func (f JSXFuncs) formActionAttr(value interface{}) (interface{}, error) {
@@ -48,11 +48,11 @@ func (f JSXFuncs) formActionAttr(value interface{}) (interface{}, error) {
 }
 
 func (f HTMLFuncs) formActionAttr(value interface{}) (interface{}, error) {
-	if query, ok := value.(*client.Query); ok {
+	if query, ok := value.(*params.Query); ok {
 		return template.HTMLAttr(fmt.Sprintf(" action=\"/form/%s\"",
 			url.QueryEscape(query.ValuesEncode(nil)))), nil
 	}
-	return nil, f.CastError("*client.Query")
+	return nil, f.CastError("*params.Query")
 }
 
 func (f JSXFuncs) periodNameAttr(value interface{}) (interface{}, error) {
@@ -63,11 +63,11 @@ func (f JSXFuncs) periodNameAttr(value interface{}) (interface{}, error) {
 }
 
 func (f HTMLFuncs) periodNameAttr(value interface{}) (interface{}, error) {
-	if period, ok := value.(*client.PeriodParam); ok {
+	if period, ok := value.(*params.PeriodParam); ok {
 		return template.HTMLAttr(fmt.Sprintf(" name=%q",
 			period.Pname)), nil
 	}
-	return nil, f.CastError("*client.PeriodParam")
+	return nil, f.CastError("*params.PeriodParam")
 }
 
 func (f JSXFuncs) periodValueAttr(value interface{}) (interface{}, error) {
@@ -77,13 +77,13 @@ func (f JSXFuncs) periodValueAttr(value interface{}) (interface{}, error) {
 }
 
 func (f HTMLFuncs) periodValueAttr(value interface{}) (interface{}, error) {
-	if period, ok := value.(*client.PeriodParam); ok {
+	if period, ok := value.(*params.PeriodParam); ok {
 		if period.Input != "" {
 			return template.HTMLAttr(fmt.Sprintf(" value=\"%s\"", period.Input)), nil
 		}
 		return template.HTMLAttr(""), nil
 	}
-	return nil, f.CastError("*client.PeriodParam")
+	return nil, f.CastError("*params.PeriodParam")
 }
 
 func (f JSXFuncs) refreshClass(value interface{}, classes string) (interface{}, error) {
@@ -93,13 +93,13 @@ func (f JSXFuncs) refreshClass(value interface{}, classes string) (interface{}, 
 }
 
 func (f HTMLFuncs) refreshClass(value interface{}, classes string) (interface{}, error) {
-	if period, ok := value.(*client.PeriodParam); ok {
+	if period, ok := value.(*params.PeriodParam); ok {
 		if period.InputErrd {
 			classes += " " + "has-warning"
 		}
 		return template.HTMLAttr(fmt.Sprintf(" %s=%q", f.classWord(), classes)), nil
 	}
-	return nil, f.CastError("*client.PeriodParam")
+	return nil, f.CastError("*params.PeriodParam")
 }
 
 func (f JSXFuncs) lessHrefAttr(value interface{}) (interface{}, error) {
@@ -107,10 +107,10 @@ func (f JSXFuncs) lessHrefAttr(value interface{}) (interface{}, error) {
 	return fmt.Sprintf(" href={%s.LessHref} onClick={this.handleClick}", uncurl(value.(string))), nil
 }
 func (f HTMLFuncs) lessHrefAttr(value interface{}) (interface{}, error) {
-	if lp, ok := value.(*client.LimitParam); ok {
+	if lp, ok := value.(*params.LimitParam); ok {
 		return template.HTMLAttr(fmt.Sprintf(" href=\"%s\"", lp.EncodeLess())), nil
 	}
-	return nil, f.CastError("*client.LimitParam")
+	return nil, f.CastError("*params.LimitParam")
 }
 
 func (f JSXFuncs) moreHrefAttr(value interface{}) (interface{}, error) {
@@ -118,10 +118,10 @@ func (f JSXFuncs) moreHrefAttr(value interface{}) (interface{}, error) {
 	return fmt.Sprintf(" href={%s.MoreHref} onClick={this.handleClick}", uncurl(value.(string))), nil
 }
 func (f HTMLFuncs) moreHrefAttr(value interface{}) (interface{}, error) {
-	if lp, ok := value.(*client.LimitParam); ok {
+	if lp, ok := value.(*params.LimitParam); ok {
 		return template.HTMLAttr(fmt.Sprintf(" href=\"%s\"", lp.EncodeMore())), nil
 	}
-	return nil, f.CastError("*client.LimitParam")
+	return nil, f.CastError("*params.LimitParam")
 }
 
 func (f JSXFuncs) ifDisabledAttr(value interface{}) (template.HTMLAttr, error) {
@@ -131,13 +131,13 @@ func (f JSXFuncs) ifDisabledAttr(value interface{}) (template.HTMLAttr, error) {
 }
 
 func (f HTMLFuncs) ifDisabledAttr(value interface{}) (template.HTMLAttr, error) {
-	if bp, ok := value.(*client.BoolParam); ok {
+	if bp, ok := value.(*params.BoolParam); ok {
 		if bp.Value {
 			return template.HTMLAttr("disabled=\"disabled\""), nil
 		}
 		return template.HTMLAttr(""), nil
 	}
-	return template.HTMLAttr(""), f.CastError("*client.BoolParam")
+	return template.HTMLAttr(""), f.CastError("*params.BoolParam")
 }
 
 func (f JSXFuncs) ifBPClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
@@ -165,7 +165,7 @@ func (_ Uint) ClassAttrUnless(dot interface{}, cmp uint, class string) (template
 func (f JSXFuncs) ifNeClassAttr(value interface{}, named string, class string) (template.HTMLAttr, error) {
 	prefix, _ := DotSplitHash(value) // "Data.Links.Params.ENUM.ift" ?
 	_, pname := DotSplit(prefix)
-	enums := client.NewParamsENUM(nil)
+	enums := params.NewParamsENUM(nil)
 	ed := enums[pname].EnumDecodec
 	_, uptr := ed.Unew()
 	if err := uptr.Unmarshal(named, new(bool)); err != nil {
@@ -176,9 +176,9 @@ func (f JSXFuncs) ifNeClassAttr(value interface{}, named string, class string) (
 }
 
 func (f HTMLFuncs) ifNeClassAttr(value interface{}, named string, class string) (template.HTMLAttr, error) {
-	ep, ok := value.(*client.EnumParam)
+	ep, ok := value.(*params.EnumParam)
 	if !ok {
-		return template.HTMLAttr(""), f.CastError("*client.EnumParams")
+		return template.HTMLAttr(""), f.CastError("*params.EnumParams")
 	}
 	_, uptr := ep.EnumDecodec.Unew()
 	if err := uptr.Unmarshal(named, new(bool)); err != nil {
@@ -195,7 +195,7 @@ func (f HTMLFuncs) ifNeClassAttr(value interface{}, named string, class string) 
 func (f JSXFuncs) iftEnumAttrs(value interface{}, named string, class string) (template.HTMLAttr, error) {
 	prefix, _ := DotSplitHash(value) // "Data.Links.Params.ENUM.ift" ?
 	_, pname := DotSplit(prefix)
-	enums := client.NewParamsENUM(nil)
+	enums := params.NewParamsENUM(nil)
 	ed := enums[pname].EnumDecodec
 	_, uptr := ed.Unew()
 	if err := uptr.Unmarshal(named, new(bool)); err != nil {
@@ -206,9 +206,9 @@ func (f JSXFuncs) iftEnumAttrs(value interface{}, named string, class string) (t
 }
 
 func (f HTMLFuncs) iftEnumAttrs(value interface{}, named string, class string) (template.HTMLAttr, error) {
-	ep, ok := value.(*client.EnumParam)
+	ep, ok := value.(*params.EnumParam)
 	if !ok {
-		return template.HTMLAttr(""), f.CastError("*client.EnumParams")
+		return template.HTMLAttr(""), f.CastError("*params.EnumParams")
 	}
 	_, uptr := ep.EnumDecodec.Unew()
 	if err := uptr.Unmarshal(named, new(bool)); err != nil {
@@ -225,7 +225,7 @@ func (f JSXFuncs) ifExpandClassAttr(value interface{}, classes ...string) (templ
 	return "", fmt.Errorf("Not implemented yet")
 }
 func (f HTMLFuncs) ifExpandClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
-	// if ei, ok := value.(*client.ExpandInfo); ok {}
+	// if ei, ok := value.(*params.ExpandInfo); ok {}
 	return "", f.CastError("*ExpandInfo")
 }
 
@@ -259,7 +259,7 @@ func (f HTMLFuncs) ifBPClass(value interface{}, classes ...string) (string, erro
 	if err != nil {
 		return "", err
 	}
-	if bp, ok := value.(*client.BoolParam); ok {
+	if bp, ok := value.(*params.BoolParam); ok {
 		if bp.Value {
 			return fstclass, nil
 		}
@@ -312,9 +312,9 @@ func (f JSXFuncs) droplink(value interface{}, args ...string) (interface{}, erro
 	named, aclass := DropLinkArgs(args)
 	prefix, _ := DotSplitHash(value)
 	_, pname := DotSplit(prefix)
-	enums := client.NewParamsENUM(nil)
+	enums := params.NewParamsENUM(nil)
 	ed := enums[pname].EnumDecodec
-	return client.DropLink{
+	return params.DropLink{
 		AlignClass: aclass,
 		Text:       ed.Text(named), // always static
 		Href:       fmt.Sprintf("{%s.%s.%s}", prefix, named, "Href"),
@@ -325,9 +325,9 @@ func (f JSXFuncs) droplink(value interface{}, args ...string) (interface{}, erro
 
 func (f HTMLFuncs) droplink(value interface{}, args ...string) (interface{}, error) {
 	named, aclass := DropLinkArgs(args)
-	ep, ok := value.(*client.EnumParam)
+	ep, ok := value.(*params.EnumParam)
 	if !ok {
-		return nil, f.CastError("*client.EnumParam")
+		return nil, f.CastError("*params.EnumParam")
 	}
 	pname, uptr := ep.EnumDecodec.Unew()
 	if err := uptr.Unmarshal(named, new(bool)); err != nil {

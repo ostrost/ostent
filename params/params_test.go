@@ -1,4 +1,4 @@
-package client
+package params
 
 import (
 	"html/template"
@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ostrost/ostent/client/enums"
 	"github.com/ostrost/ostent/flags"
+	"github.com/ostrost/ostent/params/enums"
 )
 
 var TestPeriodFlag = flags.Period{Duration: time.Second} // default
