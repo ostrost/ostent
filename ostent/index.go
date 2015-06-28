@@ -56,11 +56,11 @@ func username(uids map[uint]string, uid uint) string {
 	return s
 }
 
-func (procs MPSlice) Ordered(cl *client.Client, send *client.SendClient) *PStable {
+func (procs MPSlice) Ordered(para *client.Params) *PStable {
 	uids := map[uint]string{}
 
 	pslen := uint(len(procs))
-	limitPS := cl.Params.LIMIT["psn"].Value
+	limitPS := para.LIMIT["psn"].Value
 	notdec := limitPS <= 1
 	notexp := limitPS >= pslen
 
@@ -76,11 +76,11 @@ func (procs MPSlice) Ordered(cl *client.Client, send *client.SendClient) *PStabl
 	pst.PSplusText = new(string)
 	*pst.PSplusText = fmt.Sprintf("%d+", limitPS)
 
-	if cl.Params.BOOL["hideps"].Value {
+	if para.BOOL["hideps"].Value {
 		return pst
 	}
 
-	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(uids, *cl.Params.ENUM["ps"])) // not .StableSortBy
+	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(uids, *para.ENUM["ps"])) // not .StableSortBy
 	if !notexp {
 		procs = procs[:limitPS]
 	}
@@ -123,8 +123,6 @@ type IndexData struct {
 	DISTRIB string
 	VERSION string
 
-	Client client.Client
-
 	ExpandableDF *bool   `json:",omitempty"`
 	ExpandtextDF *string `json:",omitempty"`
 	ExpandableIF *bool   `json:",omitempty"`
@@ -160,8 +158,6 @@ type IndexUpdate struct {
 	VagrantMachines *VagrantMachines `json:",omitempty"`
 	VagrantError    string
 	VagrantErrord   bool
-
-	Client *client.SendClient `json:",omitempty"`
 
 	Location *string `json:",omitempty"`
 
@@ -214,21 +210,21 @@ func (la *last) CopyPS() MPSlice {
 	return psCopy
 }
 
-func (mss *MSS) HN(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
+func (mss *MSS) HN(para *client.Params, iu *IndexUpdate) interface{} {
 	iu.Hostname = mss.GetString("hostname")
 	generic := iu.Generic
 	generic.Hostname = iu.Hostname
 	return IndexUpdate{Generic: generic}
 }
 
-func (mss *MSS) UP(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
+func (mss *MSS) UP(para *client.Params, iu *IndexUpdate) interface{} {
 	iu.Uptime = mss.GetString("uptime")
 	generic := iu.Generic
 	generic.Uptime = iu.Uptime
 	return IndexUpdate{Generic: generic}
 }
 
-func (mss *MSS) IP(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
+func (mss *MSS) IP(para *client.Params, iu *IndexUpdate) interface{} {
 	iu.IP = mss.GetString("ip")
 	generic := iu.Generic
 	generic.IP = iu.IP
@@ -282,13 +278,13 @@ func (_ *IndexRegistry) InterfacePackets(mi operating.MetricInterface) (*operati
 	return mi.PacketsIn, mi.PacketsOut, false
 }
 
-func (ir *IndexRegistry) Interfaces(cli *client.Client, send *client.SendClient, ip InterfaceParts) ([]operating.InterfaceInfo, int) {
+func (ir *IndexRegistry) Interfaces(para *client.Params, ip InterfaceParts) ([]operating.InterfaceInfo, int) {
 	private := ir.ListPrivateInterface()
 
 	private.SortSortBy(LessInterface)
 	var public []operating.InterfaceInfo
 	for i, mi := range private {
-		if !cli.Params.BOOL["expandif"].Value && i >= cli.Params.Toprows {
+		if !para.BOOL["expandif"].Value && i >= para.Toprows {
 			break
 		}
 		public = append(public, FormatInterface(mi, ip))
@@ -375,36 +371,36 @@ func LessCPU(a, b operating.MetricCPU) bool {
 	return (auser + anice + asys) > (buser + bnice + bsys)
 }
 
-func (ir *IndexRegistry) DF(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
+func (ir *IndexRegistry) DF(para *client.Params, iu *IndexUpdate) interface{} {
 	var lenp int
 	niu := IndexUpdate{}
-	switch enums.UintDFT(cli.Params.ENUM["dft"].Number.Uint) {
+	switch enums.UintDFT(para.ENUM["dft"].Number.Uint) {
 	case enums.DFBYTES:
-		list, len := ir.DFbytes(cli, send)
+		list, len := ir.DFbytes(para)
 		iu.DFbytes = &operating.DFbytes{List: list}
 		niu.DFbytes, lenp = iu.DFbytes, len
 	case enums.INODES:
-		list, len := ir.DFinodes(cli, send)
+		list, len := ir.DFinodes(para)
 		iu.DFinodes = &operating.DFinodes{List: list}
 		niu.DFinodes, lenp = iu.DFinodes, len
 	default:
 		return nil
 	}
 	iu.ExpandableDF = new(bool)
-	*iu.ExpandableDF = lenp > cli.Params.Toprows
+	*iu.ExpandableDF = lenp > para.Toprows
 	iu.ExpandtextDF = new(string)
 	*iu.ExpandtextDF = fmt.Sprintf("Expanded (%d)", lenp)
 	return niu
 }
 
-func (ir *IndexRegistry) DFbytes(cli *client.Client, send *client.SendClient) ([]operating.DiskBytes, int) {
+func (ir *IndexRegistry) DFbytes(para *client.Params) ([]operating.DiskBytes, int) {
 	private := ir.ListPrivateDisk()
 
-	private.StableSortBy(LessDiskFunc(*cli.Params.ENUM["df"]))
+	private.StableSortBy(LessDiskFunc(*para.ENUM["df"]))
 
 	var public []operating.DiskBytes
 	for i, disk := range private {
-		if !cli.Params.BOOL["expanddf"].Value && i > cli.Params.Toprows-1 {
+		if !para.BOOL["expanddf"].Value && i > para.Toprows-1 {
 			break
 		}
 		public = append(public, FormatDFbytes(disk))
@@ -429,14 +425,14 @@ func FormatDFbytes(md operating.MetricDF) operating.DiskBytes {
 	}
 }
 
-func (ir *IndexRegistry) DFinodes(cli *client.Client, send *client.SendClient) ([]operating.DiskInodes, int) {
+func (ir *IndexRegistry) DFinodes(para *client.Params) ([]operating.DiskInodes, int) {
 	private := ir.ListPrivateDisk()
 
-	private.StableSortBy(LessDiskFunc(*cli.Params.ENUM["df"]))
+	private.StableSortBy(LessDiskFunc(*para.ENUM["df"]))
 
 	var public []operating.DiskInodes
 	for i, disk := range private {
-		if !cli.Params.BOOL["expanddf"].Value && i > cli.Params.Toprows-1 {
+		if !para.BOOL["expanddf"].Value && i > para.Toprows-1 {
 			break
 		}
 		public = append(public, FormatDFinodes(disk))
@@ -461,7 +457,7 @@ func FormatDFinodes(md operating.MetricDF) operating.DiskInodes {
 	}
 }
 
-func (ir *IndexRegistry) VG(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
+func (ir *IndexRegistry) VG(para *client.Params, iu *IndexUpdate) interface{} {
 	machines, err := vagrantmachines()
 	if err != nil {
 		iu.VagrantErrord = true
@@ -482,27 +478,27 @@ func (ir *IndexRegistry) VG(cli *client.Client, send *client.SendClient, iu *Ind
 // MPSlice is a operating.MetricProcSlice with some methods.
 type MPSlice operating.MetricProcSlice
 
-func (procs MPSlice) IU(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
-	iu.PStable = procs.Ordered(cli, send)
+func (procs MPSlice) IU(para *client.Params, iu *IndexUpdate) interface{} {
+	iu.PStable = procs.Ordered(para)
 	return IndexUpdate{PStable: iu.PStable}
 }
 
-func (ir *IndexRegistry) IF(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
+func (ir *IndexRegistry) IF(para *client.Params, iu *IndexUpdate) interface{} {
 	var lenp int
 	niu := IndexUpdate{}
-	switch enums.UintIFT(cli.Params.ENUM["ift"].Number.Uint) {
+	switch enums.UintIFT(para.ENUM["ift"].Number.Uint) {
 	case enums.IFBYTES:
-		list, len := ir.Interfaces(cli, send, ir.InterfaceBytes)
+		list, len := ir.Interfaces(para, ir.InterfaceBytes)
 		iu.IFbytes = &operating.Interfaces{List: list}
 		niu.IFbytes = iu.IFbytes
 		lenp = len
 	case enums.ERRORS:
-		list, len := Reg1s.Interfaces(cli, send, ir.InterfaceErrors)
+		list, len := Reg1s.Interfaces(para, ir.InterfaceErrors)
 		iu.IFerrors = &operating.Interfaces{List: list}
 		niu.IFerrors = iu.IFerrors
 		lenp = len
 	case enums.PACKETS:
-		list, len := Reg1s.Interfaces(cli, send, ir.InterfacePackets)
+		list, len := Reg1s.Interfaces(para, ir.InterfacePackets)
 		iu.IFpackets = &operating.Interfaces{List: list}
 		niu.IFpackets = iu.IFpackets
 		lenp = len
@@ -510,23 +506,23 @@ func (ir *IndexRegistry) IF(cli *client.Client, send *client.SendClient, iu *Ind
 		return nil
 	}
 	iu.ExpandableIF = new(bool)
-	*iu.ExpandableIF = lenp > cli.Params.Toprows
+	*iu.ExpandableIF = lenp > para.Toprows
 	iu.ExpandtextIF = new(string)
 	*iu.ExpandtextIF = fmt.Sprintf("Expanded (%d)", lenp)
 	return niu
 }
 
-func (ir *IndexRegistry) CPU(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
-	iu.CPU = ir.CPUInternal(cli, send)
+func (ir *IndexRegistry) CPU(para *client.Params, iu *IndexUpdate) interface{} {
+	iu.CPU = ir.CPUInternal(para)
 	return IndexUpdate{CPU: iu.CPU}
 }
 
-func (ir *IndexRegistry) CPUInternal(cli *client.Client, send *client.SendClient) *operating.CPUInfo {
+func (ir *IndexRegistry) CPUInternal(para *client.Params) *operating.CPUInfo {
 	cpu := &operating.CPUInfo{}
 	private := ir.ListPrivateCPU()
 
 	cpu.ExpandableCPU = new(bool)
-	*cpu.ExpandableCPU = len(private) > cli.Params.Toprows // one row reserved for "all N"
+	*cpu.ExpandableCPU = len(private) > para.Toprows // one row reserved for "all N"
 	cpu.ExpandtextCPU = new(string)
 	*cpu.ExpandtextCPU = fmt.Sprintf("Expanded (%d)", len(private))
 
@@ -536,11 +532,11 @@ func (ir *IndexRegistry) CPUInternal(cli *client.Client, send *client.SendClient
 	}
 	private.SortSortBy(LessCPU)
 	var public []operating.CoreInfo
-	if !cli.Params.BOOL["expandcpu"].Value {
+	if !para.BOOL["expandcpu"].Value {
 		public = []operating.CoreInfo{FormatCPU(ir.PrivateCPUAll)}
 	}
 	for i, mc := range private {
-		if !cli.Params.BOOL["expandcpu"].Value && i > cli.Params.Toprows-2 {
+		if !para.BOOL["expandcpu"].Value && i > para.Toprows-2 {
 			// "collapsed" view, head of the list
 			break
 		}
@@ -600,9 +596,8 @@ func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) operating.MetricCPU
 	return i
 }
 
-func (ir *IndexRegistry) SWAP(client *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
-	// client is unused
-	// send is unused
+func (ir *IndexRegistry) SWAP(para *client.Params, iu *IndexUpdate) interface{} {
+	// params is unused
 	if iu.MEM == nil {
 		iu.MEM = new(operating.MEM)
 	}
@@ -616,13 +611,11 @@ func (ir *IndexRegistry) SWAP(client *client.Client, send *client.SendClient, iu
 			Free:  uint64(gs.Free.Snapshot().Value()),
 			Used:  uint64(gs.Used.Snapshot().Value()),
 		}))
-	// did modify iu.MEM
 	return IndexUpdate{MEM: iu.MEM}
 }
 
-func (ir *IndexRegistry) MEM(client *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
-	// client is unused
-	// send is unused
+func (ir *IndexRegistry) MEM(para *client.Params, iu *IndexUpdate) interface{} {
+	// params is unused
 	if iu.MEM == nil {
 		iu.MEM = new(operating.MEM)
 	}
@@ -640,7 +633,7 @@ func (ir *IndexRegistry) MEM(client *client.Client, send *client.SendClient, iu 
 	return IndexUpdate{MEM: iu.MEM}
 }
 
-func (ir *IndexRegistry) LA(cli *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
+func (ir *IndexRegistry) LA(para *client.Params, iu *IndexUpdate) interface{} {
 	gl := ir.Load
 	iu.LA = gl.Short.Sparkline() + " " + fmt.Sprintf("%.2f %.2f %.2f",
 		gl.Short.Snapshot().Value(),
@@ -763,7 +756,7 @@ type Set struct {
 	Refresh interface { // type Refresher interface
 		Refresh(bool) bool
 	}
-	Update func(*client.Client, *client.SendClient, *IndexUpdate) interface{}
+	Update func(*client.Params, *IndexUpdate) interface{}
 }
 
 func (s Set) Hidden() bool { return s.Hide }
@@ -778,30 +771,30 @@ func (s *Set) Expired(forcerefresh bool) bool {
 type SetInterface interface {
 	Hidden() bool
 	Expired(bool) bool
-	Update(*client.Client, *client.SendClient, *IndexUpdate) interface{}
+	Update(*client.Params, *IndexUpdate) interface{}
 }
 // */
 
-func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, forcerefresh bool) (IndexUpdate, error) {
+func getUpdates(req *http.Request, para *client.Params, forcerefresh bool) (IndexUpdate, error) {
 	iu := IndexUpdate{}
 	if req != nil {
-		newloc, err := DecodeParam(cl, req)
+		newloc, err := DecodeParam(para, req)
 		if err != nil {
 			return iu, err
 		}
 		iu.Location = newloc // may be nil
-		iu.Links = &Links{cl.Params}
+		iu.Links = &Links{para}
 	}
 	psCopy := lastInfo.CopyPS()
 
 	set := []Set{
-		{cl.Params.BOOL["hidemem"].Value, cl.Params.PERIOD["refreshmem"], Reg1s.MEM},
-		{cl.Params.BOOL["hidemem"].Value || cl.Params.BOOL["hideswap"].Value, cl.Params.PERIOD["refreshmem"], Reg1s.SWAP}, // if MEM is hidden, so is SWAP
-		{cl.Params.BOOL["hidecpu"].Value, cl.Params.PERIOD["refreshcpu"], Reg1s.CPU},
-		{cl.Params.BOOL["hidedf"].Value, cl.Params.PERIOD["refreshdf"], Reg1s.DF},
-		{cl.Params.BOOL["hideif"].Value, cl.Params.PERIOD["refreshif"], Reg1s.IF},
-		{cl.Params.BOOL["hidevg"].Value, cl.Params.PERIOD["refreshvg"], Reg1s.VG},
-		{false, cl.Params.PERIOD["refreshps"], psCopy.IU},
+		{para.BOOL["hidemem"].Value, para.PERIOD["refreshmem"], Reg1s.MEM},
+		{para.BOOL["hidemem"].Value || para.BOOL["hideswap"].Value, para.PERIOD["refreshmem"], Reg1s.SWAP}, // if MEM is hidden, so is SWAP
+		{para.BOOL["hidecpu"].Value, para.PERIOD["refreshcpu"], Reg1s.CPU},
+		{para.BOOL["hidedf"].Value, para.PERIOD["refreshdf"], Reg1s.DF},
+		{para.BOOL["hideif"].Value, para.PERIOD["refreshif"], Reg1s.IF},
+		{para.BOOL["hidevg"].Value, para.PERIOD["refreshvg"], Reg1s.VG},
+		{false, para.PERIOD["refreshps"], psCopy.IU},
 
 		// always-shown bits:
 		{false, nil, RegMSS.HN},
@@ -818,25 +811,21 @@ func getUpdates(req *http.Request, cl *client.Client, send client.SendClient, fo
 		if x.Hidden() {
 			continue
 		}
-		if add := x.Update(cl, &send, &iu); add != nil {
+		if add := x.Update(para, &iu); add != nil {
 			// additions = append(additions, add)
 		}
-	}
-
-	if send.Modified {
-		iu.Client = &send
 	}
 	return iu, nil
 }
 
-func DecodeParam(cl *client.Client, req *http.Request) (*string, error) {
+func DecodeParam(para *client.Params, req *http.Request) (*string, error) {
 	req.ParseForm() // do ParseForm even if req.Form == nil
-	cl.Params.NewQuery()
-	cl.Params.Decode(req.Form)
+	para.NewQuery()
+	para.Decode(req.Form)
 
-	if cl.Params.Query.Moved || cl.Params.Query.UpdateLocation {
-		loc := "?" + cl.Params.Query.ValuesEncode(nil)
-		if cl.Params.Query.Moved {
+	if para.Query.Moved || para.Query.UpdateLocation {
+		loc := "?" + para.Query.ValuesEncode(nil)
+		if para.Query.Moved {
 			return nil, enums.RenamedConstError(loc)
 		}
 		// .UpdateLocation is true
@@ -851,8 +840,8 @@ func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 		lastInfo.collect(&Machine{})
 	}
 
-	cl := client.NewClient(minperiod)
-	updates, err := getUpdates(req, &cl, client.SendClient{}, true)
+	para := client.NewParams(minperiod)
+	updates, err := getUpdates(req, para, true)
 	if err != nil {
 		return IndexData{}, err
 	}
@@ -861,7 +850,6 @@ func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 		DISTRIB: DISTRIB, // value set in init()
 		VERSION: VERSION, // value from server.go
 
-		Client:       cl,
 		Links:        updates.Links,
 		Generic:      updates.Generic,
 		ExpandableDF: updates.ExpandableDF,
@@ -924,9 +912,9 @@ func FormRedirectFunc(minperiod flags.Period) func(http.ResponseWriter, *http.Re
 		if q, ok := r.Form["Q"]; ok && len(q) > 0 {
 			r.URL.RawQuery = r.Form.Encode() + "&" + strings.TrimPrefix(q[0], "?")
 			r.Form = nil // reset the .Form for .ParseForm() to parse new r.URL.RawQuery.
-			cl := client.NewClient(minperiod)
-			DecodeParam(&cl, r) // OR err.Error()
-			where = "/?" + cl.Params.Query.ValuesEncode(nil)
+			para := client.NewParams(minperiod)
+			DecodeParam(para, r) // OR err.Error()
+			where = "/?" + para.Query.ValuesEncode(nil)
 		}
 		http.Redirect(w, r, where, http.StatusFound)
 	}

@@ -96,7 +96,7 @@ type conn struct {
 
 	receive chan *received
 	pushch  chan *IndexUpdate
-	full    client.Client
+	para    *client.Params
 	access  *logger
 
 	mutex      sync.Mutex
@@ -106,13 +106,13 @@ type conn struct {
 func (c *conn) Expired() bool {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
-	return c.full.Params.Expired()
+	return c.para.Expired()
 }
 
 func (c *conn) Tick() {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
-	c.full.Params.Tick()
+	c.para.Tick()
 }
 
 func (c *conn) Tack() {
@@ -246,7 +246,6 @@ var (
 
 type received struct {
 	Search *string
-	Client *client.RecvClient
 }
 
 type served struct {
@@ -381,8 +380,7 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	stop := func() {
 		w.WriteHeader(http.StatusBadRequest) // well, not a bad request but a write failure
 	}
-	send := client.SendClient{}
-	update, err := getUpdates(r, &sd.conn.full, send, sd.received != nil && sd.received.Client != nil)
+	update, err := getUpdates(r, sd.conn.para, sd.received != nil)
 	if err != nil || update == (IndexUpdate{}) { // nothing scheduled for the moment, no update
 		return
 	}
@@ -440,7 +438,7 @@ func IndexWS(access *logger, minperiod flags.Period, w http.ResponseWriter, req 
 
 		receive: make(chan *received, 2),
 		pushch:  make(chan *IndexUpdate, 2),
-		full:    client.NewClient(minperiod),
+		para:    client.NewParams(minperiod),
 		access:  access,
 	}
 	Register <- c

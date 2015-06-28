@@ -22,28 +22,12 @@
     var neweventsource, newwebsocket, update, updates;
     updates = void 0;
     neweventsource = function(onmessage) {
-      var conn, init, sendClient, sendSearch;
+      var conn, init, sendSearch;
       conn = null;
       sendSearch = function(search) {
         console.log('SEARCH', search);
         conn.close();
         return window.setTimeout(init, 1000);
-      };
-      sendClient = function(client) {
-        var obj;
-        return;
-        console.log(JSON.stringify(client), 'sendClient');
-        obj = {
-          Client: client
-        };
-        if ((conn == null) || conn.readyState === conn.CLOSING || conn.readyState === conn.CLOSED) {
-          init();
-        }
-        if ((conn == null) || conn.readyState !== conn.OPEN) {
-          console.log('Not connected, cannot send', obj);
-          return;
-        }
-        return conn.send(JSON.stringify(obj));
       };
       init = function() {
         var again, statesel;
@@ -77,7 +61,6 @@
       };
       init();
       return {
-        sendClient: sendClient,
         sendSearch: sendSearch,
         close: function() {
           return conn.close();
@@ -85,16 +68,11 @@
       };
     };
     newwebsocket = function(onmessage) {
-      var conn, init, sendClient, sendJSON, sendSearch;
+      var conn, init, sendJSON, sendSearch;
       conn = null;
       sendSearch = function(search) {
         return sendJSON({
           Search: search
-        });
-      };
-      sendClient = function(client) {
-        return sendJSON({
-          Client: client
         });
       };
       sendJSON = function(obj) {
@@ -138,7 +116,6 @@
       };
       init();
       return {
-        sendClient: sendClient,
         sendSearch: sendSearch,
         close: function() {
           return conn.close();
@@ -491,13 +468,10 @@
       iftable = React.render(React.createElement(IFCLASS), document.getElementById('if' + '-' + 'table'));
       vgtable = React.render(React.createElement(VGtableCLASS), document.getElementById('vg' + '-' + 'table'));
       onmessage = function(event) {
-        var data, ref;
+        var data;
         data = JSON.parse(event.data);
         if (data == null) {
           return;
-        }
-        if (((ref = data.Client) != null ? ref.DebugError : void 0) != null) {
-          console.log('DEBUG ERROR', data.Client.DebugError);
         }
         if ((data.Reload != null) && data.Reload) {
           window.setTimeout((function() {
@@ -549,9 +523,6 @@
         });
         if (data.Location != null) {
           history.pushState({}, '', data.Location);
-        }
-        if (data.Client != null) {
-          console.log(JSON.stringify(data.Client), 'recvClient');
         }
       };
       updates = newwebsocket(onmessage);

@@ -22,24 +22,6 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
       console.log('SEARCH', search)
       conn.close() # if conn?
       window.setTimeout(init, 1000)
-    sendClient = (client) ->
-      # TODO
-      return
-      console.log(JSON.stringify(client), 'sendClient')
-      obj = {Client: client}
-      # 0 conn.CONNECTING
-      # 1 conn.OPEN
-      # 2 conn.CLOSING
-      # 3 conn.CLOSED
-      if !conn? ||
-         conn.readyState == conn.CLOSING ||
-         conn.readyState == conn.CLOSED
-        init()
-      if !conn? ||
-         conn.readyState != conn.OPEN
-        console.log('Not connected, cannot send', obj)
-        return
-      return conn.send(JSON.stringify(obj))
     init = () ->
       conn = new EventSource('/index.sse' + location.search)
       conn.onopen = () ->
@@ -66,14 +48,12 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
 
     init()
     return {
-      sendClient: sendClient
       sendSearch: sendSearch
       close: () -> conn.close()
     }
   newwebsocket = (onmessage) ->
     conn = null
     sendSearch = (search) -> sendJSON({Search: search})
-    sendClient = (client) -> sendJSON({Client: client})
     sendJSON = (obj) ->
       console.log(JSON.stringify(obj), 'sendJSON')
       # 0 conn.CONNECTING
@@ -118,7 +98,6 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
 
     init()
     return {
-      sendClient: sendClient
       sendSearch: sendSearch
       close: () -> conn.close()
     }
@@ -189,7 +168,6 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
 
   @MEMtableCLASS = React.createClass
     getInitialState: () -> {
-    # Client: Data.Client, # a global Data
       Links:  Data.Links,  # a global Data
       MEM:    Data.MEM,    # a global Data
     }
@@ -317,8 +295,6 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
       data = JSON.parse(event.data)
       return if !data?
 
-      console.log('DEBUG ERROR',
-        data.Client.DebugError) if data.Client?.DebugError?
       if data.Reload? and data.Reload
         window.setTimeout((() -> location.reload(true)), 5000)
         window.setTimeout(updates.close, 2000)
@@ -359,7 +335,6 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
       if data.Location?
         history.pushState({}, '', data.Location)
 
-      console.log(JSON.stringify(data.Client), 'recvClient') if data.Client?
       return
 
     updates = newwebsocket(onmessage)
