@@ -383,17 +383,6 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest) // well, not a bad request but a write failure
 	}
 	send := client.SendClient{}
-	if sd.received != nil {
-		if sd.received.Client != nil {
-			if err := sd.received.Client.MergeRefresh(&sd.conn.full, &send); err != nil {
-				// if !sd.conn.Conn.writeError(err) { stop(); return }
-				send.DebugError = new(string)
-				*send.DebugError = err.Error()
-			}
-			sd.conn.full.Merge(*sd.received.Client, &send)
-		}
-	}
-
 	update, err := getUpdates(r, &sd.conn.full, send, sd.received != nil && sd.received.Client != nil)
 	if err != nil || update == (IndexUpdate{}) { // nothing scheduled for the moment, no update
 		return

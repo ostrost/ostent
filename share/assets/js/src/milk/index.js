@@ -2,9 +2,6 @@
 (function() {
   require.config({
     shim: {
-      bootstrap: {
-        deps: ['jquery']
-      },
       bscollapse: {
         deps: ['jquery']
       }
@@ -441,259 +438,6 @@
         return void 0;
       }
     });
-    this.addDiv = function(sel) {
-      return sel.append('<div />').find('div').get(0);
-    };
-    this.HideClass = React.createClass({
-      statics: {
-        component: function(opt) {
-          var b;
-          opt.$button_el = b = opt.$el;
-          opt.$collapse_el = $(b.attr('for-sel'));
-          return React.render(React.createElement(HideClass, opt), addDiv(opt.$button_el));
-        }
-      },
-      reduce: function(data) {
-        var value;
-        if ((data != null ? data.Client : void 0) != null) {
-          value = data.Client[this.props.xkey];
-          if (value !== void 0) {
-            return {
-              Hide: value
-            };
-          }
-        }
-        return null;
-      },
-      getInitialState: function() {
-        return this.reduce(Data);
-      },
-      componentDidMount: function() {
-        return this.props.$button_el.click(this.click);
-      },
-      render: function() {
-        var buttonactive, opclass;
-        this.props.$collapse_el[this.state.Hide ? 'slideUp' : 'slideDown'](350);
-        buttonactive = this.state.Hide;
-        if ((this.props.reverseActive != null) && this.props.reverseActive) {
-          buttonactive = !this.state.Hide;
-        }
-        opclass = buttonactive ? 'addClass' : 'removeClass';
-        this.props.$button_el[opclass]('active');
-        return null;
-      },
-      click: function(e) {
-        var S;
-        (S = {})[this.props.xkey] = !this.state.Hide;
-        updates.sendClient(S);
-        e.stopPropagation();
-        e.preventDefault();
-        return void 0;
-      }
-    });
-    this.ButtonClass = React.createClass({
-      statics: {
-        component: function(opt) {
-          var el;
-          el = addDiv(opt.$button_el);
-          return React.render(React.createElement(ButtonClass, opt), el);
-        }
-      },
-      reduce: function(data) {
-        var S;
-        if ((data != null ? data.Client : void 0) != null) {
-          S = {};
-          if (data.Client[this.props.Khide] !== void 0) {
-            S.Hide = data.Client[this.props.Khide];
-          }
-          if ((this.props.Kable != null) && data.Client[this.props.Kable] !== void 0) {
-            S.Able = data.Client[this.props.Kable];
-          }
-          if ((this.props.Ksend != null) && data.Client[this.props.Ksend] !== void 0) {
-            S.Send = data.Client[this.props.Ksend];
-          }
-          if ((this.props.Ktext != null) && data.Client[this.props.Ktext] !== void 0) {
-            S.Text = data.Client[this.props.Ktext];
-          }
-          return S;
-        }
-      },
-      getInitialState: function() {
-        return this.reduce(Data);
-      },
-      componentDidMount: function() {
-        return this.props.$button_el.click(this.click);
-      },
-      render: function() {
-        var able, opclass;
-        if (this.props.Kable) {
-          able = this.state.Able;
-          if (!(this.props.Kable.indexOf('not') > -1)) {
-            able = !able;
-          }
-          opclass = able ? 'addClass' : 'removeClass';
-          this.props.$button_el.prop('disabled', able);
-          this.props.$button_el[opclass]('disabled');
-        }
-        opclass = this.state.Send ? 'addClass' : 'removeClass';
-        if (this.props.Ksend != null) {
-          this.props.$button_el[opclass]('active');
-        }
-        if (this.props.Ktext != null) {
-          this.props.$button_el.text(this.state.Text);
-        }
-        return null;
-      },
-      click: function(e) {
-        var S;
-        S = {};
-        if ((this.state.Hide != null) && this.state.Hide) {
-          S[this.props.Khide] = !this.state.Hide;
-        }
-        if ((this.props.Ksend != null) && (this.state.Send != null)) {
-          S[this.props.Ksend] = !this.state.Send;
-        }
-        if (this.props.Ksig != null) {
-          S[this.props.Ksig] = this.props.Vsig;
-        }
-        updates.sendClient(S);
-        e.stopPropagation();
-        e.preventDefault();
-        return void 0;
-      }
-    });
-    this.TabsClass = React.createClass({
-      statics: {
-        component: function(opt) {
-          var el;
-          el = addDiv(opt.$button_el);
-          return React.render(React.createElement(TabsClass, opt), el);
-        }
-      },
-      reduce: function(data) {
-        var S;
-        if ((data != null ? data.Client : void 0) != null) {
-          S = {};
-          if (data.Client[this.props.Khide] !== void 0) {
-            S.Hide = data.Client[this.props.Khide];
-          }
-          if ((this.props.Ksend != null) && data.Client[this.props.Ksend] !== void 0) {
-            S.Send = data.Client[this.props.Ksend];
-          }
-          return S;
-        }
-      },
-      getInitialState: function() {
-        return this.reduce(Data);
-      },
-      componentDidMount: function() {
-        this.props.$button_el.click(this.clicktab);
-        return this.props.$hidebutton_el.click(this.clickhide);
-      },
-      render: function() {
-        var activeClass, curtabid, el, i, j, len, len1, nots, ref;
-        if (this.state.Hide) {
-          this.props.$collapse_el.slideUp(350);
-          this.props.$hidebutton_el.addClass('active');
-          return null;
-        }
-        this.props.$hidebutton_el.removeClass('active');
-        curtabid = +this.state.Send.Uint;
-        nots = this.props.$collapse_el.not('[data-tabid="' + curtabid + '"]');
-        for (i = 0, len = nots.length; i < len; i++) {
-          el = nots[i];
-          $(el).slideUp(350);
-        }
-        $(this.props.$collapse_el.not(nots)).slideDown(350);
-        activeClass = function(el) {
-          var opclass, tabid_attr, xel;
-          xel = $(el);
-          tabid_attr = +xel.attr('data-tabid');
-          opclass = tabid_attr === curtabid ? 'addClass' : 'removeClass';
-          xel[opclass]('active');
-        };
-        ref = this.props.$button_el;
-        for (j = 0, len1 = ref.length; j < len1; j++) {
-          el = ref[j];
-          activeClass(el);
-        }
-        return null;
-      },
-      clicktab: function(e) {
-        var S;
-        S = {};
-        S[this.props.Ksend] = {
-          Uint: +$($(e.target).attr('href')).attr('data-tabid')
-        };
-        if ((this.state.Hide != null) && this.state.Hide) {
-          S[this.props.Khide] = false;
-        }
-        updates.sendClient(S);
-        e.preventDefault();
-        e.stopPropagation();
-        return void 0;
-      },
-      clickhide: function(e) {
-        var S;
-        (S = {})[this.props.Khide] = !this.state.Hide;
-        updates.sendClient(S);
-        e.stopPropagation();
-        e.preventDefault();
-        return void 0;
-      }
-    });
-    this.RefreshInputClass = React.createClass({
-      statics: {
-        component: function(opt) {
-          var el, sel;
-          sel = opt.sel;
-          delete opt.sel;
-          opt.$input_el = sel.find('.refresh-input');
-          opt.$group_el = sel.find('.refresh-group');
-          el = addDiv(opt.$input_el);
-          return React.render(React.createElement(RefreshInputClass, opt), el);
-        }
-      },
-      reduce: function(data) {
-        var S;
-        if (((data != null ? data.Client : void 0) != null) && ((data.Client[this.props.K] != null) || (data.Client[this.props.Kerror] != null))) {
-          S = {};
-          if (data.Client[this.props.K] != null) {
-            S.Value = data.Client[this.props.K];
-          }
-          if (data.Client[this.props.Kerror] != null) {
-            S.Error = data.Client[this.props.Kerror];
-          }
-          return S;
-        }
-      },
-      getInitialState: function() {
-        var S;
-        S = this.reduce(Data);
-        delete S.Value;
-        return S;
-      },
-      componentDidMount: function() {
-        return this.props.$input_el.on('input', this.submit);
-      },
-      render: function() {
-        var opclass;
-        if ((this.state.Value != null) && !this.state.Error) {
-          this.props.$input_el.prop('value', this.state.Value);
-        }
-        opclass = this.state.Error ? 'addClass' : 'removeClass';
-        this.props.$group_el[opclass]('has-warning');
-        return null;
-      },
-      submit: function(e) {
-        var S;
-        (S = {})[this.props.Ksig] = $(e.target).val();
-        updates.sendClient(S);
-        e.preventDefault();
-        e.stopPropagation();
-        return void 0;
-      }
-    });
     this.NewTextCLASS = function(reduce) {
       return React.createClass({
         newstate: function(data) {
@@ -764,23 +508,16 @@
           console.log('in 2s: updates.close()');
           return;
         }
-        setState(pstable, {
-          Links: data.Links,
-          PStable: data.PStable
-        });
-        setState(dftable, {
-          Links: data.Links,
-          DFbytes: data.DFbytes,
-          DFinodes: data.DFinodes,
-          ExpandableDF: data.ExpandableDF,
-          ExpandtextDF: data.ExpandtextDF
-        });
         if (ip != null) {
           setState(ip, ip.newstate(data));
         }
         setState(hostname, hostname.newstate(data));
         setState(uptime, uptime.newstate(data));
         setState(la, la.newstate(data));
+        setState(pstable, {
+          Links: data.Links,
+          PStable: data.PStable
+        });
         setState(memtable, {
           Links: data.Links,
           MEM: data.MEM
@@ -796,6 +533,13 @@
           IFpackets: data.IFpackets,
           ExpandableIF: data.ExpandableIF,
           ExpandtextIF: data.ExpandtextIF
+        });
+        setState(dftable, {
+          Links: data.Links,
+          DFbytes: data.DFbytes,
+          DFinodes: data.DFinodes,
+          ExpandableDF: data.ExpandableDF,
+          ExpandtextDF: data.ExpandtextDF
         });
         setState(vgtable, {
           Links: data.Links,

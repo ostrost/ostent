@@ -1,5 +1,5 @@
 require.config
-  shim: {bootstrap: {deps: ['jquery']}, bscollapse: {deps: ['jquery']}}
+  shim: {bscollapse: {deps: ['jquery']}} #, bootstrap: {deps: ['jquery']}
   baseUrl: '/js/src'
   urlArgs: "bust=" + (new Date()).getTime()
   paths:
@@ -286,164 +286,6 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
       e.preventDefault()  # checked/selected state
       return undefined
 
-  @addDiv = (sel) -> sel.append('<div />').find('div').get(0)
-
-  @HideClass = React.createClass
-    statics: component: (opt) ->
-      opt.$button_el=b = opt.$el
-      opt.$collapse_el = $(b.attr('for-sel'))
-      React.render(React.createElement(HideClass, opt), addDiv(opt.$button_el))
-
-    reduce: (data) ->
-      if data?.Client?
-        value = data.Client[@props.xkey]
-        return {Hide: value} if value isnt undefined
-      return null
-    getInitialState: () -> @reduce(Data) # a global Data
-    componentDidMount: () -> @props.$button_el.click(@click)
-    render: () ->
-      @props.$collapse_el[if @state.Hide then 'slideUp' else 'slideDown'](350)
-    # @props.$el.find('.collapse-checkbox').get(0).checked = !@state.Hide
-      buttonactive =  @state.Hide
-      buttonactive = !@state.Hide if (
-        @props.reverseActive? and @props.reverseActive)
-      opclass = if buttonactive then 'addClass' else 'removeClass'
-      @props.$button_el[opclass]('active')
-      return null
-    click: (e) ->
-      (S = {})[@props.xkey] = !@state.Hide
-      updates.sendClient(S)
-      e.stopPropagation() # preserves checkbox/radio
-      e.preventDefault()  # checked/selected state
-      return undefined
-
-  @ButtonClass = React.createClass
-    statics: component: (opt) ->
-      el = addDiv(opt.$button_el)
-      React.render(React.createElement(ButtonClass, opt), el)
-
-    reduce: (data) ->
-      if data?.Client?
-        S = {}
-        # coffeelint: disable=max_line_length
-        S.Hide = data.Client[@props.Khide] if                   data.Client[@props.Khide] isnt undefined # Khide is a required prop
-        S.Able = data.Client[@props.Kable] if @props.Kable? and data.Client[@props.Kable] isnt undefined
-        S.Send = data.Client[@props.Ksend] if @props.Ksend? and data.Client[@props.Ksend] isnt undefined
-        S.Text = data.Client[@props.Ktext] if @props.Ktext? and data.Client[@props.Ktext] isnt undefined
-        # coffeelint: enable=max_line_length
-        return S
-    getInitialState: () -> @reduce(Data) # a global Data
-    componentDidMount: () -> @props.$button_el.click(@click)
-    render: () ->
-      if @props.Kable
-        able = @state.Able
-        able = !able if not (@props.Kable.indexOf('not') > -1) # That's a hack
-        opclass = if able then 'addClass' else 'removeClass'
-        @props.$button_el.prop('disabled', able)
-        @props.$button_el[opclass]('disabled')
-      opclass = if @state.Send then 'addClass' else 'removeClass'
-      @props.$button_el[opclass]('active') if @props.Ksend?
-      @props.$button_el.text(@state.Text) if @props.Ktext?
-      return null
-    click: (e) ->
-      S = {}
-      S[@props.Khide] = !@state.Hide if @state.Hide?  and @state.Hide
-      S[@props.Ksend] = !@state.Send if @props.Ksend? and @state.Send?
-      S[@props.Ksig]  =  @props.Vsig if @props.Ksig?
-      updates.sendClient(S)
-      e.stopPropagation() # preserves checkbox/radio
-      e.preventDefault()  # checked/selected state
-      return undefined
-
-  @TabsClass = React.createClass
-    statics: component: (opt) ->
-      el = addDiv(opt.$button_el)
-      React.render(React.createElement(TabsClass, opt), el)
-
-    reduce: (data) ->
-      if data?.Client?
-        S = {}
-        # coffeelint: disable=max_line_length
-        S.Hide = data.Client[@props.Khide] if                   data.Client[@props.Khide] isnt undefined # Khide is a required prop
-        S.Send = data.Client[@props.Ksend] if @props.Ksend? and data.Client[@props.Ksend] isnt undefined
-        # coffeelint: enable=max_line_length
-        return S
-    getInitialState: () -> @reduce(Data) # a global Data
-    componentDidMount: () ->
-      @props.$button_el.click(@clicktab)
-      @props.$hidebutton_el.click(@clickhide)
-    render: () ->
-      if @state.Hide
-        @props.$collapse_el.slideUp(350)
-        @props.$hidebutton_el.addClass('active')
-        return null
-      @props.$hidebutton_el.removeClass('active')
-      curtabid = +@state.Send.Uint # MUST be an int
-      nots = @props.$collapse_el.not('[data-tabid="'+ curtabid + '"]')
-      $(el).slideUp(350) for el in nots
-      $(@props.$collapse_el.not(nots)).slideDown(350)
-      activeClass = (el) ->
-        xel = $(el)
-        tabid_attr = +xel.attr('data-tabid') # an int
-        opclass = if tabid_attr == curtabid then 'addClass' else 'removeClass'
-        xel[opclass]('active')
-        return
-      activeClass(el) for el in @props.$button_el
-      return null
-    clicktab: (e) ->
-      S = {}
-      # +"STRING" to make it an int
-      S[@props.Ksend] = {Uint: +$($(e.target).attr('href')).attr('data-tabid')}
-      S[@props.Khide] = false if @state.Hide? and @state.Hide
-      updates.sendClient(S)
-      e.preventDefault()
-      e.stopPropagation() # don't change checkbox/radio state
-      return undefined
-    clickhide: (e) ->
-      (S = {})[@props.Khide] = !@state.Hide
-      updates.sendClient(S)
-      e.stopPropagation() # preserves checkbox/radio
-      e.preventDefault()  # checked/selected state
-      return undefined
-
-  @RefreshInputClass = React.createClass
-    statics: component: (opt) ->
-      sel = opt.sel; delete opt.sel
-      opt.$input_el = sel.find('.refresh-input')
-      opt.$group_el = sel.find('.refresh-group')
-      el = addDiv(opt.$input_el)
-      React.render(React.createElement(RefreshInputClass, opt), el)
-
-    reduce: (data) ->
-      if data?.Client? and (
-        data.Client[@props.K]? or
-        data.Client[@props.Kerror]?)
-        S = {}
-        S.Value = data.Client[@props.K]      if data.Client[@props.K]?
-        S.Error = data.Client[@props.Kerror] if data.Client[@props.Kerror]?
-        return S
-    getInitialState: () ->
-      S = @reduce(Data) # a global Data
-      delete S.Value # to make input empty initially
-      return S
-
-    componentDidMount: () -> @props.$input_el.on('input', @submit)
-    render: () ->
-      # The initial render should not place a value.
-      # The check relied on @isMounted() until it was deprecated.
-      # getInitialState now deletes .Value.
-      @props.$input_el.prop('value', @state.Value) if (
-        @state.Value? and !@state.Error)
-      opclass = if @state.Error then 'addClass' else 'removeClass'
-      @props.$group_el[opclass]('has-warning')
-      return null
-    submit: (e) ->
-      (S = {})[@props.Ksig] = $(e.target).val()
-      updates.sendClient(S)
-      e.preventDefault()
-      e.stopPropagation() # don't change checkbox/radio state
-      return undefined
-
   @NewTextCLASS = (reduce) -> React.createClass
     newstate: (data) ->
       v = reduce(data)
@@ -458,46 +300,10 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
 
   update = () ->
     # coffeelint: disable=max_line_length
-  # hideconfigmem = HideClass.component({xkey: 'HideconfigMEM', $el: $('[for-sel="#memconfig"]'), reverseActive: true})
-  # hideconfigif  = HideClass.component({xkey: 'HideconfigIF',  $el: $('[for-sel="#ifconfig"]'),  reverseActive: true})
-  # hideconfigcpu = HideClass.component({xkey: 'HideconfigCPU', $el: $('[for-sel="#cpuconfig"]'), reverseActive: true})
-  # hideconfigdf  = HideClass.component({xkey: 'HideconfigDF',  $el: $('[for-sel="#dfconfig"]'),  reverseActive: true})
-  # hideconfigps  = HideClass.component({xkey: 'HideconfigPS',  $el: $('[for-sel="#psconfig"]'),  reverseActive: true})
-  # hideconfigvg  = HideClass.component({xkey: 'HideconfigVG',  $el: $('[for-sel="#vgconfig"]'),  reverseActive: true})
-
-  # hideram = HideClass.component({xkey: 'HideRAM', $el: $('[for-sel="#mem"]')})
-  # hidecpu = HideClass.component({xkey: 'HideCPU', $el: $('[for-sel="#cpu"]')})
-  # hideps  = HideClass.component({xkey: 'HidePS',  $el: $('[for-sel="#ps"]')})
-  # hidevg  = HideClass.component({xkey: 'HideVG',  $el: $('[for-sel="#vg"]')})
-
     ip       = React.render(React.createElement(NewTextCLASS((data) -> data?.IP       )), $('#ip'      )   .get(0)) if data?.IP?
     hostname = React.render(React.createElement(NewTextCLASS((data) -> data?.Hostname )), $('#hostname')   .get(0))
     uptime   = React.render(React.createElement(NewTextCLASS((data) -> data?.Uptime   )), $('#uptime'  )   .get(0))
     la       = React.render(React.createElement(NewTextCLASS((data) -> data?.LA       )), $('#la'      )   .get(0))
-
-  # iftitle  = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.TabIF?.Title)), $('a[href="#if"]').get(0))
-  # dftitle  = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.TabDF?.Title)), $('a[href="#df"]').get(0))
-
-  # psplus   = React.render(React.createElement(NewTextCLASS((data) -> data?.Client?.PSplusText)), $('label.more[href="#psmore"]').get(0))
-  # psmore   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: true,  Khide: 'HidePS', Kable: 'PSnotExpandable',  $button_el: $('label.more[href="#psmore"]')})
-  # psless   = ButtonClass.component({Ksig: 'MorePsignal', Vsig: false, Khide: 'HidePS', Kable: 'PSnotDecreasable', $button_el: $('label.less[href="#psless"]')})
-
-  # hideswap = ButtonClass.component({Khide: 'HideRAM', Ksend: 'HideSWAP', $button_el: $('label[href="#hideswap"]')})
-
-  # expandif = ButtonClass.component({Khide: 'HideIF',  Ksend: 'ExpandIF',  Ktext: 'ExpandtextIF',  Kable: 'ExpandableIF',  $button_el: $('label[href="#if"]')})
-  # expandcpu= ButtonClass.component({Khide: 'HideCPU', Ksend: 'ExpandCPU', Ktext: 'ExpandtextCPU', Kable: 'ExpandableCPU', $button_el: $('label[href="#cpu"]')})
-  # expanddf = ButtonClass.component({Khide: 'HideDF',  Ksend: 'ExpandDF',  Ktext: 'ExpandtextDF',  Kalbe: 'ExpandableDF',  $button_el: $('label[href="#df"]')})
-
-    # NB buttons and collapses selected by class
-  # tabsif = TabsClass.component({Khide: 'HideIF', Ksend: 'TabIF', $collapse_el: $('.if-tab'), $button_el: $('.if-switch'), $hidebutton_el: $('#ifconfig').find('.hiding')})
-  # tabsdf = TabsClass.component({Khide: 'HideDF', Ksend: 'TabDF', $collapse_el: $('.df-tab'), $button_el: $('.df-switch'), $hidebutton_el: $('#dfconfig').find('.hiding')})
-
-  # refresh_mem = RefreshInputClass.component({K: 'RefreshMEM', Kerror: 'RefreshErrorMEM', Ksig: 'RefreshSignalMEM', sel: $('#memconfig')})
-  # refresh_if  = RefreshInputClass.component({K: 'RefreshIF',  Kerror: 'RefreshErrorIF',  Ksig: 'RefreshSignalIF',  sel: $('#ifconfig')})
-  # refresh_cpu = RefreshInputClass.component({K: 'RefreshCPU', Kerror: 'RefreshErrorCPU', Ksig: 'RefreshSignalCPU', sel: $('#cpuconfig')})
-  # refresh_df  = RefreshInputClass.component({K: 'RefreshDF',  Kerror: 'RefreshErrorDF',  Ksig: 'RefreshSignalDF',  sel: $('#dfconfig')})
-  # refresh_ps  = RefreshInputClass.component({K: 'RefreshPS',  Kerror: 'RefreshErrorPS',  Ksig: 'RefreshSignalPS',  sel: $('#psconfig')})
-  # refresh_vg  = RefreshInputClass.component({K: 'RefreshVG',  Kerror: 'RefreshErrorVG',  Ksig: 'RefreshSignalVG',  sel: $('#vgconfig')})
 
     memtable  = React.render(React.createElement(MEMtableCLASS), document.getElementById('mem' +'-'+ 'table'))
     pstable   = React.render(React.createElement(PStableCLASS),  document.getElementById('ps'  +'-'+ 'table'))
@@ -520,58 +326,15 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
         console.log('in 2s: updates.close()')
         return
 
-      setState(pstable,  {Links: data.Links, PStable:  data.PStable})
-      setState(dftable,  {
-        Links:        data.Links
-        DFbytes:      data.DFbytes
-        DFinodes:     data.DFinodes
-        ExpandableDF: data.ExpandableDF
-        ExpandtextDF: data.ExpandtextDF
-      })
-
-    # setState(hideconfigmem, hideconfigmem.reduce(data))
-    # setState(hideconfigif,  hideconfigif .reduce(data))
-    # setState(hideconfigcpu, hideconfigcpu.reduce(data))
-    # setState(hideconfigdf,  hideconfigdf .reduce(data))
-    # setState(hideconfigps,  hideconfigps .reduce(data))
-    # setState(hideconfigvg,  hideconfigvg .reduce(data))
-
-    # setState(hideram,       hideram      .reduce(data))
-    # setState(hidecpu,       hidecpu      .reduce(data))
-    # setState(hideps,        hideps       .reduce(data))
-    # setState(hidevg,        hidevg       .reduce(data))
-
       setState(ip,        ip      .newstate(data)) if ip?
       setState(hostname,  hostname.newstate(data))
       setState(uptime,    uptime  .newstate(data))
       setState(la,        la      .newstate(data))
 
-    # setState(iftitle,   iftitle .newstate(data))
-    # setState(dftitle,   dftitle .newstate(data))
-
-    # setState(psplus,    psplus  .newstate(data))
-    # setState(psmore,    psmore  .reduce(data))
-    # setState(psless,    psless  .reduce(data))
-
-    # setState(hideswap,  hideswap.reduce(data))
-
-    # setState(expandif,  expandif.reduce(data))
-    # setState(expandcpu, expandcpu.reduce(data))
-    # setState(expanddf,  expanddf.reduce(data))
-
-    # setState(tabsif,    tabsif.reduce(data))
-    # setState(tabsdf,    tabsdf.reduce(data))
-
-    # setState(refresh_mem, refresh_mem.reduce(data))
-    # setState(refresh_if,  refresh_if .reduce(data))
-    # setState(refresh_cpu, refresh_cpu.reduce(data))
-    # setState(refresh_df,  refresh_df .reduce(data))
-    # setState(refresh_ps,  refresh_ps .reduce(data))
-    # setState(refresh_vg,  refresh_vg .reduce(data))
-
-      setState(memtable,  {Links: data.Links, MEM: data.MEM}) # Client: data.Client,
-      setState(cputable,  {Links: data.Links, CPU: data.CPU})
-      setState(iftable,   {
+      setState(pstable,  {Links: data.Links, PStable:  data.PStable})
+      setState(memtable, {Links: data.Links, MEM: data.MEM})
+      setState(cputable, {Links: data.Links, CPU: data.CPU})
+      setState(iftable, {
         Links:        data.Links
         IFbytes:      data.IFbytes
         IFerrors:     data.IFerrors
@@ -579,9 +342,13 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
         ExpandableIF: data.ExpandableIF
         ExpandtextIF: data.ExpandtextIF
       })
-    # setState(ifbytes,   data.IFbytes)
-    # setState(iferrors,  data.IFerrors)
-    # setState(ifpackets, data.IFpackets)
+      setState(dftable, {
+        Links:        data.Links
+        DFbytes:      data.DFbytes
+        DFinodes:     data.DFinodes
+        ExpandableDF: data.ExpandableDF
+        ExpandtextDF: data.ExpandtextDF
+      })
       setState(vgtable, {
         Links:           data.Links,
         VagrantMachines: data.VagrantMachines,

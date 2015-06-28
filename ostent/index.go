@@ -623,16 +623,20 @@ func (ir *IndexRegistry) SWAP(client *client.Client, send *client.SendClient, iu
 func (ir *IndexRegistry) MEM(client *client.Client, send *client.SendClient, iu *IndexUpdate) interface{} {
 	// client is unused
 	// send is unused
+	if iu.MEM == nil {
+		iu.MEM = new(operating.MEM)
+	}
+	if iu.MEM.List == nil {
+		iu.MEM.List = []operating.Memory{}
+	}
 	gr := ir.RAM
-	mem := new(operating.MEM)
-	mem.List = []operating.Memory{
+	iu.MEM.List = append(iu.MEM.List,
 		_getmem("RAM", sigar.Swap{
 			Total: uint64(gr.Total.Snapshot().Value()),
 			Free:  uint64(gr.Free.Snapshot().Value()),
 			Used:  gr.UsedValue(), // == .Total - .Free
 		}),
-	}
-	iu.MEM = mem
+	)
 	return IndexUpdate{MEM: iu.MEM}
 }
 
