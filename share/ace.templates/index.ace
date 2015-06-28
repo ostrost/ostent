@@ -78,7 +78,7 @@ html
     div.container-fluid
       div.row
         div.block.col-md-8.col-md-offset-2#vg-table
-          {{template "defines::define_panelcpu" .}}
+          {{template "defines::define_panelvg" .}}
 
     = javascript
       var Data = {{.Data}};
