@@ -17,17 +17,8 @@ func TestDotted(t *testing.T) {
 	}
 	if x := d.Find(words); x == nil {
 		t.Errorf("Find returned nil")
-	} else if s := x.Notation(); s != abc {
+	} else if _, _, s := x.Notation(); s != abc {
 		t.Errorf("Notation: %q (expected %q)", s, abc)
-	}
-	if expected, s := `[]
-  [a]
-    [b]
-      [c]
-        [1]
-        [2]
-`, d.GoString(); s != expected {
-		t.Errorf("GoString: %s (expected %s)", s, expected)
 	}
 }
 
@@ -49,9 +40,9 @@ func TestEncurl(t *testing.T) {
 		l2.Ranged = true
 	}
 
-	v := Encurl(d, -1)
-	c := v.(Hash)["a"].(Hash)["b"].(Hash)["c"].([]map[string]Value)[0]
-	if expected := "{DECL.z}"; string(c["z"]) != expected {
+	v := Encurl(Curly, d, -1)
+	c := v.(Hash)["a"].(Hash)["b"].(Hash)["c"].([]map[string]interface{})[0]
+	if expected := "{DECL.z}"; string(c["z"].(Value)) != expected {
 		t.Errorf("Encurl result mismatch: %q (expected %q)", c["z"], expected)
 	}
 	if z := v.(Hash)["a"].(Hash)["b"].(Hash)["z"].([]string); len(z) != 0 {

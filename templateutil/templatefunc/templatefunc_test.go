@@ -11,7 +11,7 @@ import (
 func ExecuteWithHashTest(t *testing.T, tm *template.Template, expected string) {
 	d := templatepipe.Dotted{}
 	d.Append([]string{"a"}, nil) // non-string result from templatepipe.Encurl
-	h := templatepipe.Encurl(d, 0)
+	h := templatepipe.Encurl(templatepipe.Curly, d, 0)
 	if _, ok := h.(string); ok {
 		t.Errorf("Encurl expected to return non-string on %+v input", d)
 	}
