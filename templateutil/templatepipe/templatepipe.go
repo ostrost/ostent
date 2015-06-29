@@ -6,7 +6,9 @@ import (
 	"text/template/parse"
 )
 
-func Data(root *template.Template) interface{} {
+type CurlyFunc func(string, string, string) interface{}
+
+func Data(cf CurlyFunc, root *template.Template) interface{} {
 	if root == nil || root.Tree == nil || root.Tree.Root == nil {
 		return "{}"
 	}
@@ -15,7 +17,10 @@ func Data(root *template.Template) interface{} {
 	for _, node := range root.Tree.Root.Nodes {
 		DataNode(root, node, &data, vars, nil)
 	}
-	return Encurl(data, 0)
+	if cf == nil {
+		cf = Curly
+	}
+	return Encurl(cf, data, 0)
 }
 
 func DataNode(root *template.Template, node parse.Node, data *Dotted, vars map[string][]string, prefixwords []string) {
@@ -232,35 +237,21 @@ func (d Dotted) Leave(name string) *Dotted {
 	return nil
 }
 
-func (d *Dotted) Notation() string {
-	if d == nil || d.Name == "" {
-		return ""
-	}
-	if s := d.Parent.Notation(); s != "" {
-		return s + "." + d.Name
-	}
-	return d.Name
-}
-
-func (d Dotted) DebugString(level int) string {
-	s := strings.Repeat(" ", level) + "[" + d.Name + "]\n"
-	level += 2
-	for _, l := range d.Leaves {
-		s += l.DebugString(level)
-	}
-	level -= 2
-	return s
-}
-
-func (d Dotted) GoString() string {
-	return d.DebugString(0)
-}
-
 type Value string
 type Hash map[string]interface{}
 
-func Curly(s string) Value {
-	return Value(Curl(s))
+func (d *Dotted) Notation() (string, string, string) {
+	if d == nil || d.Name == "" {
+		return "", "", ""
+	}
+	if _, _, s := d.Parent.Notation(); s != "" {
+		return s, d.Name, s + "." + d.Name
+	}
+	return "", d.Name, d.Name
+}
+
+func Curly(parent, key, full string) interface{} {
+	return Value(Curl(full))
 }
 
 func Curl(s string) string {
@@ -271,24 +262,24 @@ func Curl(s string) string {
 }
 
 // Encurl returns either a Hash or a string.
-func Encurl(top Dotted, level int) interface{} {
-	if len(top.Leaves) == 0 {
-		return Curly(top.Notation())
+func Encurl(cf CurlyFunc, parent Dotted, level int) interface{} {
+	if len(parent.Leaves) == 0 {
+		return cf(parent.Notation())
 	}
 	h := make(Hash)
-	for _, l := range top.Leaves {
+	for _, l := range parent.Leaves {
 		if l.Ranged {
 			if len(l.Keys) != 0 {
-				kv := make(map[string]Value)
+				kv := make(map[string]interface{})
 				for _, k := range l.Keys {
-					kv[k] = Curly(l.Decl + "." + k)
+					kv[k] = cf(l.Decl, k, l.Decl+"."+k)
 				}
-				h[l.Name] = []map[string]Value{kv}
+				h[l.Name] = []map[string]interface{}{kv}
 			} else {
 				h[l.Name] = []string{}
 			}
 		} else {
-			h[l.Name] = Encurl(*l, level+1)
+			h[l.Name] = Encurl(cf, *l, level+1)
 		}
 	}
 	return h

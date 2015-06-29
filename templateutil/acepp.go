@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"reflect"
 	"sort"
 	"strings"
 	templatetext "text/template"
@@ -108,10 +109,21 @@ func main() {
 		check(err)
 	}
 
-	data := templatepipe.Data(jsdefines)
+	data := templatepipe.Data(Curly, jsdefines)
 	buf := new(bytes.Buffer)
 	check(jsdefines.Execute(buf, data))
 	check(WriteFile(outputFile, buf.String()))
+}
+
+var vtype = reflect.TypeOf(templatepipe.Value(""))
+
+func Curly(parent, key, full string) interface{} {
+	if m, ok := vtype.MethodByName(key); ok {
+		return m.Func.Call([]reflect.Value{
+			reflect.ValueOf(templatepipe.Value(templatepipe.Curl(parent))),
+		})[0].Interface()
+	}
+	return templatepipe.Curly(parent, key, full)
 }
 
 // LoadAce is ace.Load without dealing with includes and setting Base'd names for the templates.

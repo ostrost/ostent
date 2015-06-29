@@ -41,19 +41,6 @@ func (f HTMLFuncs) toggleHrefAttr(value interface{}) (interface{}, error) {
 	return nil, f.CastError("*params.BoolParam")
 }
 
-func (f JSXFuncs) formActionAttr(value interface{}) (interface{}, error) {
-	// f is unused
-	return fmt.Sprintf(" action={\"/form/\"+%s}", uncurlv(value)), nil
-}
-
-func (f HTMLFuncs) formActionAttr(value interface{}) (interface{}, error) {
-	if query, ok := value.(*params.Query); ok {
-		return template.HTMLAttr(fmt.Sprintf(" action=\"/form/%s\"",
-			url.QueryEscape(query.ValuesEncode(nil)))), nil
-	}
-	return nil, f.CastError("*params.Query")
-}
-
 func (f JSXFuncs) periodNameAttr(value interface{}) (interface{}, error) {
 	// f is unused
 	prefix, _ := DotSplitHash(value)
@@ -459,7 +446,6 @@ func MakeMap(f Functor) template.FuncMap {
 		"ifExpandClassAttr": f.ifExpandClassAttr,
 		"ifDisabledAttr":    f.ifDisabledAttr,
 		"toggleHrefAttr":    f.toggleHrefAttr,
-		"formActionAttr":    f.formActionAttr,
 		"periodNameAttr":    f.periodNameAttr,
 		"periodValueAttr":   f.periodValueAttr,
 		"refreshClass":      f.refreshClass,
@@ -494,7 +480,6 @@ type Functor interface {
 	ifExpandClassAttr(interface{}, ...string) (template.HTMLAttr, error)
 	ifDisabledAttr(interface{}) (template.HTMLAttr, error)
 	toggleHrefAttr(interface{}) (interface{}, error)
-	formActionAttr(interface{}) (interface{}, error)
 	periodNameAttr(interface{}) (interface{}, error)
 	periodValueAttr(interface{}) (interface{}, error)
 	refreshClass(interface{}, string) (interface{}, error)
@@ -503,6 +488,16 @@ type Functor interface {
 	jsxClose(string) template.HTML
 	classWord() string
 	forWord() string
+}
+
+type FormActioner interface {
+	FormActionAttr() (interface{}, error)
+}
+
+func init() {
+	v := templatepipe.Value("")
+	// check for Value's interfaces compliance
+	_ = FormActioner(v)
 }
 
 // DotSplit splits s by last ".".

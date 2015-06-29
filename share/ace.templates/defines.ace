@@ -122,7 +122,7 @@
 
     div
       | <div id="ifconfig" {{ifBPClassAttr .Data.Params.BOOL.configif "" "collapse-hidden"}}>
-      | <form {{class}}="horizontal-form" {{formActionAttr .Data.Params.Query}}>
+      | <form {{class}}="horizontal-form" {{.Data.Params.Query.FormActionAttr}}>
       input.hidden-submit type=submit
 
       div.form-group-padded
@@ -229,7 +229,7 @@
 
     div
       | <div id="dfconfig" {{ifBPClassAttr .Data.Params.BOOL.configdf "" "collapse-hidden"}}>
-      | <form {{class}}="horizontal-form" {{formActionAttr .Data.Params.Query}}>
+      | <form {{class}}="horizontal-form" {{.Data.Params.Query.FormActionAttr}}>
       input.hidden-submit type=submit
 
       div.form-group-padded
@@ -297,7 +297,7 @@
 
     div
       | <div id="memconfig" {{ifBPClassAttr .Data.Params.BOOL.configmem "" "collapse-hidden"}}>
-      | <form {{class}}="horizontal-form border-bottom-form" {{formActionAttr .Data.Params.Query}}>
+      | <form {{class}}="horizontal-form border-bottom-form" {{.Data.Params.Query.FormActionAttr}}>
       input.hidden-submit type=submit
       div.form-group-padded
         div.btn-group.btn-group-sm role=group
@@ -348,7 +348,7 @@
 
     div
       | <div id="cpuconfig" {{ifBPClassAttr .Data.Params.BOOL.configcpu "" "collapse-hidden"}}>
-      | <form {{class}}="horizontal-form border-bottom-form" {{formActionAttr .Data.Params.Query}}>
+      | <form {{class}}="horizontal-form border-bottom-form" {{.Data.Params.Query.FormActionAttr}}>
       input.hidden-submit type=submit
       div.form-group-padded
         div.btn-group.btn-group-sm role=group
@@ -405,7 +405,7 @@
 
     div
       | <div id="psconfig" {{ifBPClassAttr .Data.Params.BOOL.configps "" "collapse-hidden"}}>
-      | <form {{class}}="inline-form border-bottom-form text-right" {{formActionAttr .Data.Params.Query}}>
+      | <form {{class}}="inline-form border-bottom-form text-right" {{.Data.Params.Query.FormActionAttr}}>
       input.hidden-submit type=submit
 
       div.form-group-padded
@@ -468,7 +468,7 @@
 
     div
       | <div id="vgconfig" {{ifBPClassAttr .Data.Params.BOOL.configvg "" "collapse-hidden"}}>
-      | <form {{class}}="inline-form border-bottom-form text-right" {{formActionAttr .Data.Params.Query}}>
+      | <form {{class}}="inline-form border-bottom-form text-right" {{.Data.Params.Query.FormActionAttr}}>
       input.hidden-submit type=submit
       div.form-group-padded
         {{template "defines::define_refresh" .Data.Params.PERIOD.refreshvg}}
