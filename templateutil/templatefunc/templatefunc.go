@@ -364,12 +364,12 @@ func (f JSXFuncs) usepercent(val interface{}) interface{} {
 }
 
 func (f HTMLFuncs) usepercent(val interface{}) interface{} {
-	ca := fmt.Sprintf(" %s=%q", f.classWord(), LabelClassColorPercent(stringv(val)))
+	ca := fmt.Sprintf(" %s=%q", f.classWord(), LabelClassColorPercent(stringi(val)))
 	return struct {
 		Value     string
 		ClassAttr template.HTMLAttr
 	}{
-		Value:     stringv(val),
+		Value:     stringi(val),
 		ClassAttr: template.HTMLAttr(ca),
 	}
 }
@@ -402,7 +402,7 @@ func (f JSXFuncs) clip(width int, prefix string, val interface{}, rest ...interf
 		IDAttr:      SprintfAttr("id=%s", key),
 		ForAttr:     SprintfAttr("%s=%s", f.forWord(), key),
 		MWStyleAttr: SprintfAttr("style={{maxWidth: '%dch'}}", width),
-		Text:        text,
+		Text:        stringv(text),
 	}, nil
 }
 func (f HTMLFuncs) clip(width int, prefix string, val interface{}, rest ...interface{}) (*Clipped, error) {
@@ -410,22 +410,22 @@ func (f HTMLFuncs) clip(width int, prefix string, val interface{}, rest ...inter
 	if err != nil {
 		return nil, err
 	}
-	key := fmt.Sprintf("%q", url.QueryEscape(prefix+"-"+stringv(val)))
+	key := fmt.Sprintf("%q", url.QueryEscape(prefix+"-"+stringi(val)))
 	return &Clipped{
 		IDAttr:      SprintfAttr("id=%s", key),
 		ForAttr:     SprintfAttr("%s=%s", f.forWord(), key),
 		MWStyleAttr: SprintfAttr("style=\"max-width: %dch \"", width),
-		Text:        text,
+		Text:        stringi(text),
 	}, nil
 }
 
-func ClipArgs(fst interface{}, rest []interface{}) (string, error) {
+func ClipArgs(fst interface{}, rest []interface{}) (interface{}, error) {
 	if len(rest) == 1 {
-		return stringv(rest[0]), nil
+		return rest[0], nil
 	} else if len(rest) > 0 {
-		return "", fmt.Errorf("clip expects either 5 or 6 arguments")
+		return nil, fmt.Errorf("clip expects either 5 or 6 arguments")
 	}
-	return stringv(fst), nil
+	return fst, nil
 }
 
 // JSXFuncs has methods implementing Functor.
@@ -541,6 +541,10 @@ func uncurlv(v interface{}) string {
 
 func stringv(v interface{}) string {
 	return string(v.(templatepipe.Value))
+}
+
+func stringi(v interface{}) string {
+	return v.(string)
 }
 
 func LabelClassColorPercent(p string) string {
