@@ -256,9 +256,14 @@ func (d Dotted) GoString() string {
 	return d.DebugString(0)
 }
 
+type Value string
 type Hash map[string]interface{}
 
-func Curly(s string) string {
+func Curly(s string) Value {
+	return Value(Curl(s))
+}
+
+func Curl(s string) string {
 	if strings.HasSuffix(s, "HTML") {
 		return /* "{" + */ "<span dangerouslySetInnerHTML={{__html: " + s + "}} />" // + ".props.children}"
 	}
@@ -274,11 +279,11 @@ func Encurl(top Dotted, level int) interface{} {
 	for _, l := range top.Leaves {
 		if l.Ranged {
 			if len(l.Keys) != 0 {
-				kv := make(map[string]string)
+				kv := make(map[string]Value)
 				for _, k := range l.Keys {
 					kv[k] = Curly(l.Decl + "." + k)
 				}
-				h[l.Name] = []map[string]string{kv}
+				h[l.Name] = []map[string]Value{kv}
 			} else {
 				h[l.Name] = []string{}
 			}

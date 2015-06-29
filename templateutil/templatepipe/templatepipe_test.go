@@ -50,8 +50,8 @@ func TestEncurl(t *testing.T) {
 	}
 
 	v := Encurl(d, -1)
-	c := v.(Hash)["a"].(Hash)["b"].(Hash)["c"].([]map[string]string)[0]
-	if expected := "{DECL.z}"; c["z"] != expected {
+	c := v.(Hash)["a"].(Hash)["b"].(Hash)["c"].([]map[string]Value)[0]
+	if expected := "{DECL.z}"; string(c["z"]) != expected {
 		t.Errorf("Encurl result mismatch: %q (expected %q)", c["z"], expected)
 	}
 	if z := v.(Hash)["a"].(Hash)["b"].(Hash)["z"].([]string); len(z) != 0 {

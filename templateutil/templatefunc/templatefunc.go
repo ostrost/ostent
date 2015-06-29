@@ -27,12 +27,11 @@ func (f HTMLFuncs) forWord() string { return "for" } // f is unused
 func (f JSXFuncs) jsxClose(tag string) template.HTML { return template.HTML("</" + tag + ">") } // f is unused
 
 // jsxClose returns empty template.HTML.
-func (f HTMLFuncs) jsxClose(string) template.HTML { return template.HTML("") } // f is unused
+func (f HTMLFuncs) jsxClose(string) (empty template.HTML) { return } // f is unused
 
 func (f JSXFuncs) toggleHrefAttr(value interface{}) (interface{}, error) {
 	// f is unused
-	return fmt.Sprintf(" href={%s.Href} onClick={this.handleClick}",
-		uncurl(value.(string))), nil
+	return fmt.Sprintf(" href={%s.Href} onClick={this.handleClick}", uncurlv(value)), nil
 }
 
 func (f HTMLFuncs) toggleHrefAttr(value interface{}) (interface{}, error) {
@@ -44,7 +43,7 @@ func (f HTMLFuncs) toggleHrefAttr(value interface{}) (interface{}, error) {
 
 func (f JSXFuncs) formActionAttr(value interface{}) (interface{}, error) {
 	// f is unused
-	return fmt.Sprintf(" action={\"/form/\"+%s}", uncurl(value.(string))), nil
+	return fmt.Sprintf(" action={\"/form/\"+%s}", uncurlv(value)), nil
 }
 
 func (f HTMLFuncs) formActionAttr(value interface{}) (interface{}, error) {
@@ -104,7 +103,7 @@ func (f HTMLFuncs) refreshClass(value interface{}, classes string) (interface{},
 
 func (f JSXFuncs) lessHrefAttr(value interface{}) (interface{}, error) {
 	// f is unused
-	return fmt.Sprintf(" href={%s.LessHref} onClick={this.handleClick}", uncurl(value.(string))), nil
+	return fmt.Sprintf(" href={%s.LessHref} onClick={this.handleClick}", uncurlv(value)), nil
 }
 func (f HTMLFuncs) lessHrefAttr(value interface{}) (interface{}, error) {
 	if lp, ok := value.(*params.LimitParam); ok {
@@ -115,7 +114,7 @@ func (f HTMLFuncs) lessHrefAttr(value interface{}) (interface{}, error) {
 
 func (f JSXFuncs) moreHrefAttr(value interface{}) (interface{}, error) {
 	// f is unused
-	return fmt.Sprintf(" href={%s.MoreHref} onClick={this.handleClick}", uncurl(value.(string))), nil
+	return fmt.Sprintf(" href={%s.MoreHref} onClick={this.handleClick}", uncurlv(value)), nil
 }
 func (f HTMLFuncs) moreHrefAttr(value interface{}) (interface{}, error) {
 	if lp, ok := value.(*params.LimitParam); ok {
@@ -127,7 +126,7 @@ func (f HTMLFuncs) moreHrefAttr(value interface{}) (interface{}, error) {
 func (f JSXFuncs) ifDisabledAttr(value interface{}) (template.HTMLAttr, error) {
 	// f is unused
 	return template.HTMLAttr(fmt.Sprintf("disabled={%s.Value ? \"disabled\" : \"\" }",
-		uncurl(value.(string)))), nil
+		uncurlv(value))), nil
 }
 
 func (f HTMLFuncs) ifDisabledAttr(value interface{}) (template.HTMLAttr, error) {
@@ -251,7 +250,7 @@ func (f JSXFuncs) ifBPClass(value interface{}, classes ...string) (string, error
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("{%s.Value ? %q : %q }", uncurl(value.(string)), fstclass, sndclass), nil
+	return fmt.Sprintf("{%s.Value ? %q : %q }", uncurlv(value), fstclass, sndclass), nil
 }
 
 func (f HTMLFuncs) ifBPClass(value interface{}, classes ...string) (string, error) {
@@ -274,7 +273,7 @@ func (f JSXFuncs) ifBClass(value interface{}, classes ...string) (string, error)
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("{%s ? %q : %q }", uncurl(value.(string)), fstclass, sndclass), nil
+	return fmt.Sprintf("{%s ? %q : %q }", uncurlv(value), fstclass, sndclass), nil
 }
 
 func (f HTMLFuncs) ifBClass(value interface{}, classes ...string) (string, error) {
@@ -353,34 +352,34 @@ func DropLinkArgs(args []string) (string, string) {
 	return named, aclass
 }
 
-func (f JSXFuncs) usepercent(val string) interface{} {
-	ca := fmt.Sprintf(" %s={LabelClassColorPercent(%s)}", f.classWord(), uncurl(val))
+func (f JSXFuncs) usepercent(val interface{}) interface{} {
+	ca := fmt.Sprintf(" %s={LabelClassColorPercent(%s)}", f.classWord(), uncurlv(val))
 	return struct {
 		Value     string
 		ClassAttr template.HTMLAttr
 	}{
-		Value:     val,
+		Value:     stringv(val),
 		ClassAttr: template.HTMLAttr(ca),
 	}
 }
 
-func (f HTMLFuncs) usepercent(val string) interface{} {
-	ca := fmt.Sprintf(" %s=%q", f.classWord(), LabelClassColorPercent(val))
+func (f HTMLFuncs) usepercent(val interface{}) interface{} {
+	ca := fmt.Sprintf(" %s=%q", f.classWord(), LabelClassColorPercent(stringv(val)))
 	return struct {
 		Value     string
 		ClassAttr template.HTMLAttr
 	}{
-		Value:     val,
+		Value:     stringv(val),
 		ClassAttr: template.HTMLAttr(ca),
 	}
 }
 
-func (f JSXFuncs) key(prefix, val string) template.HTMLAttr {
+func (f JSXFuncs) key(prefix string, val interface{}) template.HTMLAttr {
 	// f is unused
-	return template.HTMLAttr(fmt.Sprintf(" key={%q+%s}", prefix+"-", uncurl(val)))
+	return template.HTMLAttr(fmt.Sprintf(" key={%q+%s}", prefix+"-", uncurlv(val)))
 }
 
-func (f HTMLFuncs) key(string, string) template.HTMLAttr { return template.HTMLAttr("") } // f is unused
+func (f HTMLFuncs) key(string, interface{}) template.HTMLAttr { return template.HTMLAttr("") } // f is unused
 
 func SprintfAttr(format string, args ...interface{}) template.HTMLAttr {
 	return template.HTMLAttr(fmt.Sprintf(format, args...))
@@ -393,12 +392,12 @@ type Clipped struct {
 	Text        string
 }
 
-func (f JSXFuncs) clip(width int, prefix, val string, rest ...string) (*Clipped, error) {
+func (f JSXFuncs) clip(width int, prefix string, val interface{}, rest ...interface{}) (*Clipped, error) {
 	text, err := ClipArgs(val, rest)
 	if err != nil {
 		return nil, err
 	}
-	key := fmt.Sprintf("{%q+%s}", prefix+"-", uncurl(val))
+	key := fmt.Sprintf("{%q+%s}", prefix+"-", uncurlv(val))
 	return &Clipped{
 		IDAttr:      SprintfAttr("id=%s", key),
 		ForAttr:     SprintfAttr("%s=%s", f.forWord(), key),
@@ -406,12 +405,12 @@ func (f JSXFuncs) clip(width int, prefix, val string, rest ...string) (*Clipped,
 		Text:        text,
 	}, nil
 }
-func (f HTMLFuncs) clip(width int, prefix, val string, rest ...string) (*Clipped, error) {
+func (f HTMLFuncs) clip(width int, prefix string, val interface{}, rest ...interface{}) (*Clipped, error) {
 	text, err := ClipArgs(val, rest)
 	if err != nil {
 		return nil, err
 	}
-	key := fmt.Sprintf("%q", url.QueryEscape(prefix+"-"+val))
+	key := fmt.Sprintf("%q", url.QueryEscape(prefix+"-"+stringv(val)))
 	return &Clipped{
 		IDAttr:      SprintfAttr("id=%s", key),
 		ForAttr:     SprintfAttr("%s=%s", f.forWord(), key),
@@ -420,13 +419,13 @@ func (f HTMLFuncs) clip(width int, prefix, val string, rest ...string) (*Clipped
 	}, nil
 }
 
-func ClipArgs(fst string, rest []string) (string, error) {
+func ClipArgs(fst interface{}, rest []interface{}) (string, error) {
 	if len(rest) == 1 {
-		return rest[0], nil
+		return stringv(rest[0]), nil
 	} else if len(rest) > 0 {
 		return "", fmt.Errorf("clip expects either 5 or 6 arguments")
 	}
-	return fst, nil
+	return stringv(fst), nil
 }
 
 // JSXFuncs has methods implementing Functor.
@@ -482,10 +481,10 @@ var Funcs = HTMLFuncs{}.MakeMap()
 
 type Functor interface {
 	MakeMap() template.FuncMap
-	key(string, string) template.HTMLAttr
-	clip(int, string, string, ...string) (*Clipped, error)
+	key(string, interface{}) template.HTMLAttr
+	clip(int, string, interface{}, ...interface{}) (*Clipped, error)
 	droplink(interface{}, ...string) (interface{}, error)
-	usepercent(string) interface{}
+	usepercent(interface{}) interface{}
 	ifBClass(interface{}, ...string) (string, error)
 	ifBClassAttr(interface{}, ...string) (template.HTMLAttr, error)
 	ifBPClass(interface{}, ...string) (string, error)
@@ -522,7 +521,7 @@ func DotSplit(s string) (string, string) {
 // value from value being a templatepipe.Hash.
 func DotSplitHash(value interface{}) (string, string) {
 	for _, v := range value.(templatepipe.Hash) {
-		return DotSplit(uncurl(v.(string)))
+		return DotSplit(uncurlv(v))
 	}
 	return "", ""
 }
@@ -534,6 +533,14 @@ func (f HTMLFuncs) CastError(notype string) error {
 
 func uncurl(s string) string {
 	return strings.TrimSuffix(strings.TrimPrefix(s, "{"), "}")
+}
+
+func uncurlv(v interface{}) string {
+	return uncurl(stringv(v))
+}
+
+func stringv(v interface{}) string {
+	return string(v.(templatepipe.Value))
 }
 
 func LabelClassColorPercent(p string) string {
@@ -564,12 +571,12 @@ func SetKFunc(k string) func(interface{}, string) interface{} {
 		if args := strings.Split(n, " "); len(args) > 1 {
 			var list []string
 			for _, arg := range args {
-				list = append(list, templatepipe.Curly(arg))
+				list = append(list, templatepipe.Curl(arg))
 			}
 			v.(templatepipe.Hash)[k] = list
 			return v
 		}
-		v.(templatepipe.Hash)[k] = templatepipe.Curly(n)
+		v.(templatepipe.Hash)[k] = templatepipe.Curl(n)
 		return v
 	}
 }
