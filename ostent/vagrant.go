@@ -46,7 +46,7 @@ func vagrantmachines() (*VagrantMachines, error) {
 	machines := new(VagrantMachines)
 	if status.Machines != nil {
 		for uuid, machine := range *status.Machines {
-			machine.UUID = uuid
+			machine.UUID = operating.Field(uuid)
 			machines.List = append(machines.List, machine)
 		}
 	}

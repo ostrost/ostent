@@ -18,7 +18,7 @@ func Data(cf CurlyFunc, root *template.Template) interface{} {
 		DataNode(root, node, &data, vars, nil)
 	}
 	if cf == nil {
-		cf = Curly
+		cf = CurlyX
 	}
 	return Encurl(cf, data, 0)
 }
@@ -141,7 +141,7 @@ func DataNode(root *template.Template, node parse.Node, data *Dotted, vars map[s
 						if cmd0.Type() == parse.NodeCommand {
 							for _, a := range cmd0.Args {
 								if s, prefix := a.String(), decl+"."; strings.HasPrefix(s, prefix) {
-									keys = append(keys, strings.TrimPrefix(s, prefix))
+									keys = append(keys, strings.Split(strings.TrimPrefix(s, prefix), ".")...)
 								}
 							}
 						}
@@ -250,7 +250,11 @@ func (d *Dotted) Notation() (string, string, string) {
 	return "", d.Name, d.Name
 }
 
-func Curly(parent, key, full string) interface{} {
+func CurlyX(parent, key, full string) interface{} {
+	return Curly(parent, key, full)
+}
+
+func Curly(parent, key, full string) Value {
 	return Value(Curl(full))
 }
 
@@ -270,17 +274,22 @@ func Encurl(cf CurlyFunc, parent Dotted, level int) interface{} {
 	for _, l := range parent.Leaves {
 		if l.Ranged {
 			if len(l.Keys) != 0 {
-				kv := make(map[string]interface{})
+				kv := make(map[string]Value)
 				for _, k := range l.Keys {
-					kv[k] = cf(l.Decl, k, l.Decl+"."+k)
+					kv[k] = Curly(l.Decl, k, l.Decl+"."+k)
 				}
-				h[l.Name] = []map[string]interface{}{kv}
+				h[l.Name] = []map[string]Value{kv}
 			} else {
 				h[l.Name] = []string{}
 			}
 		} else {
-			h[l.Name] = Encurl(cf, *l, level+1)
+			if m := Encurl(cf, *l, level+1); m != nil {
+				h[l.Name] = m
+			}
 		}
+	}
+	if len(h) == 0 {
+		return cf(parent.Notation())
 	}
 	return h
 }

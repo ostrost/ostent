@@ -118,12 +118,14 @@ func main() {
 var vtype = reflect.TypeOf(templatepipe.Value(""))
 
 func Curly(parent, key, full string) interface{} {
-	if m, ok := vtype.MethodByName(key); ok {
-		return m.Func.Call([]reflect.Value{
+	if _, ok := vtype.MethodByName(key); ok {
+		return nil // m.Func
+		/* return m.Func.Call([]reflect.Value{
 			reflect.ValueOf(templatepipe.Value(templatepipe.Curl(parent))),
-		})[0].Interface()
+			// reflect.ValueOf(""),
+		})[0].Interface() // */
 	}
-	return templatepipe.Curly(parent, key, full)
+	return templatepipe.CurlyX(parent, key, full)
 }
 
 // LoadAce is ace.Load without dealing with includes and setting Base'd names for the templates.

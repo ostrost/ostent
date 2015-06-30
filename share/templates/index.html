@@ -126,7 +126,7 @@
 >{{jsxClose "input"}}<label {{.ForAttr}} {{class}}="clip" {{.MWStyleAttr}}
   >{{.Text}}</label
 >{{end}}{{/*
-*/}}{{define "defines::define_cpurows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $core := .Data.CPU.List}}<tr{{key "cpu-rowby-N" $core.N}}
+*/}}{{define "defines::define_cpurows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $core := .Data.CPU.List}}<tr {{$core.N.KeyAttr "cpu-rowby-N"}}
   ><td class="text-right nowrap"
     >{{$core.N}}</td
   ><td class="text-right"
@@ -166,11 +166,11 @@
     >{{template "defines::define_cpurows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_dfbytes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $disk := .Data.DFbytes.List}}<tr{{key "dfbytes-rowby-dirname" $disk.DirName}}
+*/}}{{define "defines::define_dfbytes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $disk := .Data.DFbytes.List}}<tr {{$disk.DirName.KeyAttr "dfbytes-rowby-dirname"}}
   ><td class="nowrap"
-    >{{template "defines::define_clip" (clip 12 "df-bytes-devname" $disk.DevName)}}</td
+    >{{template "defines::define_clip" ($disk.DevName.Clip 12 "df-bytes-devname")}}</td
   ><td class="nowrap"
-    >{{template "defines::define_clip" (clip 6 "df-bytes-dirname" $disk.DirName)}}</td
+    >{{template "defines::define_clip" ($disk.DirName.Clip 6 "df-bytes-dirname")}}</td
   ><td class="text-right"
     >{{$disk.Avail}}</td
   ><td class="text-right"
@@ -190,11 +190,11 @@
     >{{template "defines::define_dfbytes_rows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_dfinodes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $disk := .Data.DFinodes.List}}<tr{{key "dfinodes-rowby-dirname" $disk.DirName}}
+*/}}{{define "defines::define_dfinodes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $disk := .Data.DFinodes.List}}<tr {{$disk.DirName.KeyAttr "dfinodes-rowby-dirname"}}
   ><td class="nowrap"
-    >{{template "defines::define_clip" (clip 12 "df-inodes-devname" $disk.DevName)}}</td
+    >{{template "defines::define_clip" ($disk.DevName.Clip 12 "df-inodes-devname")}}</td
   ><td class="nowrap"
-    >{{template "defines::define_clip" (clip 6 "df-inodes-devname" $disk.DirName)}}</td
+    >{{template "defines::define_clip" ($disk.DirName.Clip 6 "df-inodes-devname")}}</td
   ><td class="text-right"
     >{{$disk.Ifree}}</td
   ><td class="text-right"
@@ -224,9 +224,9 @@
     >{{template "defines::define_dfinodes_rows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_ifbytes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFbytes.List}}<tr{{key "ifbytes-rowby-name" $if.Name}}
+*/}}{{define "defines::define_ifbytes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFbytes.List}}<tr {{$if.Name.KeyAttr "ifbytes-rowby-name"}}
   ><td
-    >{{template "defines::define_clip" (clip 12 "if-bytes-name" $if.Name)}}</td
+    >{{template "defines::define_clip" ($if.Name.Clip 12 "if-bytes-name")}}</td
   ><td class="text-right"
     >{{$if.DeltaIn}}</td
   ><td class="text-right"
@@ -272,9 +272,9 @@
     >{{template "defines::define_ifbytes_rows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_iferrors_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFerrors.List}}<tr{{key "iferrors-rowby-name" $if.Name}}
+*/}}{{define "defines::define_iferrors_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFerrors.List}}<tr {{$if.Name.KeyAttr "iferrors-rowby-name"}}
   ><td
-    >{{template "defines::define_clip" (clip 12 "if-errors-name" $if.Name)}}</td
+    >{{template "defines::define_clip" ($if.Name.Clip 12 "if-errors-name")}}</td
   ><td class="text-right"
     >{{$if.DeltaIn}}</td
   ><td class="text-right"
@@ -312,9 +312,9 @@
     >{{template "defines::define_iferrors_rows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_ifpackets_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFpackets.List}}<tr{{key "ifpackets-rowby-name" $if.Name}}
+*/}}{{define "defines::define_ifpackets_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFpackets.List}}<tr {{$if.Name.KeyAttr "ifpackets-rowby-name"}}
   ><td
-    >{{template "defines::define_clip" (clip 12 "if-packets-name" $if.Name)}}</td
+    >{{template "defines::define_clip" ($if.Name.Clip 12 "if-packets-name")}}</td
   ><td class="text-right"
     >{{$if.DeltaIn}}</td
   ><td class="text-right"
@@ -352,7 +352,7 @@
     >{{template "defines::define_ifpackets_rows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_memrows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $mem := .Data.MEM.List}}<tr{{key "mem-rowby-kind" $mem.Kind}}
+*/}}{{define "defines::define_memrows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $mem := .Data.MEM.List}}<tr {{$mem.Kind.KeyAttr "mem-rowby-kind"}}
   ><td
     >{{$mem.Kind}}</td
   ><td class="text-right"
@@ -584,13 +584,13 @@
     ></div
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_psrows"}}{{with rowsset .}}{{.}}{{else}}{{range $proc := .Data.PStable.List}}<tr{{key "ps-rowby-pid" $proc.PIDstring}}
+*/}}{{define "defines::define_psrows"}}{{with rowsset .}}{{.}}{{else}}{{range $proc := .Data.PStable.List}}<tr {{$proc.PIDstring.KeyAttr "ps-rowby-pid"}}
   ><td class="text-right"
     > {{$proc.PID}}</td
   ><td class="text-right"
     > {{$proc.UID}}</td
   ><td
-    >            {{template "defines::define_clip" (clip 12 "psuser-pid" $proc.PIDstring $proc.User)}}</td
+    >            {{template "defines::define_clip" ($proc.User.Clip 12 "psuser-pid" $proc.PIDstring)}}</td
   ><td class="text-right"
     > {{$proc.Priority}}</td
   ><td class="text-right"
@@ -602,7 +602,7 @@
   ><td class="text-center"
     >{{$proc.Time}}</td
   ><td class="nowrap"
-    >     {{template "defines::define_clip" (clip 42 "psname-pid" $proc.PIDstring $proc.Name)}}</td
+    >     {{template "defines::define_clip" ($proc.Name.Clip 42 "psname-pid" $proc.PIDstring)}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
 */}}{{define "defines::define_pstable"}}<table class="table2 stripe-table"
@@ -628,17 +628,17 @@
     >{{.Data.VagrantError}}</td
   ></tr
 >{{end}}{{/*
-*/}}{{define "defines::define_vgrows"}}{{range $mach := .Data.VagrantMachines.List}}<tr{{key "vagrant-rowby-uuid" $mach.UUID}}
+*/}}{{define "defines::define_vgrows"}}{{range $mach := .Data.VagrantMachines.List}}<tr {{$mach.UUID.KeyAttr "vagrant-rowby-uuid"}}
   ><td
-    >       {{template "defines::define_clip" (clip 7 "vagrant-uuid" $mach.UUID)}}</td
+    >       {{template "defines::define_clip" ($mach.UUID.Clip 7 "vagrant-uuid")}}</td
   ><td
     >       {{$mach.Name}}</td
   ><td
     >       {{$mach.Provider}}</td
   ><td
-    >       {{template "defines::define_clip" (clip 8 "vagrant-state" $mach.UUID $mach.State)}}</td
+    >       {{template "defines::define_clip" ($mach.State.Clip 8 "vagrant-state" $mach.UUID)}}</td
   ><td
-    >       {{template "defines::define_clip" (clip 50 "vagrant-filepath" $mach.UUID $mach.Vagrantfile_path)}}</td
+    >       {{template "defines::define_clip" ($mach.Vagrantfile_path.Clip 50 "vagrant-filepath" $mach.UUID)}}</td
   ></tr
 >{{end}}{{end}}{{/*
 */}}{{define "defines::define_vgswitch"}}{{with rowsset .}}{{.}}{{else}}{{if eq "true" (json .Data.VagrantErrord)}}{{template "defines::define_vgerror" .}}{{else}}{{template "defines::define_vgrows" .}}{{end}}{{end}}{{end}}{{/*

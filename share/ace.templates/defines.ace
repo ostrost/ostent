@@ -20,8 +20,8 @@
 = content define_ifbytes_rows
   {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IFbytes.List}}
-      | <tr{{key "ifbytes-rowby-name" $if.Name}}>
-      td {{template "defines::define_clip" (clip 12 "if-bytes-name"   $if.Name)}}
+      | <tr {{$if.Name.KeyAttr "ifbytes-rowby-name"}}>
+      td {{template "defines::define_clip" ($if.Name.Clip 12 "if-bytes-name")}}
       td.text-right {{$if.DeltaIn}}
       td.text-right {{$if.DeltaOut}}
       td.text-right {{$if.In}}
@@ -33,8 +33,8 @@
 = content define_iferrors_rows
   {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IFerrors.List}}
-      | <tr{{key "iferrors-rowby-name" $if.Name}}>
-      td {{template "defines::define_clip" (clip 12 "if-errors-name"  $if.Name)}}
+      | <tr {{$if.Name.KeyAttr "iferrors-rowby-name"}}>
+      td {{template "defines::define_clip" ($if.Name.Clip 12 "if-errors-name")}}
       td.text-right {{$if.DeltaIn}}
       td.text-right {{$if.DeltaOut}}
       td.text-right {{$if.In}}
@@ -46,8 +46,8 @@
 = content define_ifpackets_rows
   {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IFpackets.List}}
-      | <tr{{key "ifpackets-rowby-name" $if.Name}}>
-      td {{template "defines::define_clip" (clip 12 "if-packets-name" $if.Name)}}
+      | <tr {{$if.Name.KeyAttr "ifpackets-rowby-name"}}>
+      td {{template "defines::define_clip" ($if.Name.Clip 12 "if-packets-name")}}
       td.text-right {{$if.DeltaIn}}
       td.text-right {{$if.DeltaOut}}
       td.text-right {{$if.In}}
@@ -170,9 +170,9 @@
 = content define_dfbytes_rows
   {{with rowsset .}}{{.}}{{else}}
     {{range $disk := .Data.DFbytes.List}}
-      | <tr{{key "dfbytes-rowby-dirname" $disk.DirName}}>
-      td.nowrap {{template "defines::define_clip" (clip 12 "df-bytes-devname"  $disk.DevName)}}
-      td.nowrap {{template "defines::define_clip" (clip  6 "df-bytes-dirname"  $disk.DirName)}}
+      | <tr {{$disk.DirName.KeyAttr "dfbytes-rowby-dirname"}}>
+      td.nowrap {{template "defines::define_clip" ($disk.DevName.Clip 12 "df-bytes-devname")}}
+      td.nowrap {{template "defines::define_clip" ($disk.DirName.Clip  6 "df-bytes-dirname")}}
       td.text-right {{$disk.Avail}}
       td.text-right {{$disk.Used}}&nbsp;
         sup {{template "defines::define_usepercent" (usepercent $disk.UsePercent)}}
@@ -184,9 +184,9 @@
 = content define_dfinodes_rows
   {{with rowsset .}}{{.}}{{else}}
     {{range $disk := .Data.DFinodes.List}}
-      | <tr{{key "dfinodes-rowby-dirname" $disk.DirName}}>
-      td.nowrap {{template "defines::define_clip" (clip 12 "df-inodes-devname" $disk.DevName)}}
-      td.nowrap {{template "defines::define_clip" (clip  6 "df-inodes-devname" $disk.DirName)}}
+      | <tr {{$disk.DirName.KeyAttr "dfinodes-rowby-dirname"}}>
+      td.nowrap {{template "defines::define_clip" ($disk.DevName.Clip 12 "df-inodes-devname")}}
+      td.nowrap {{template "defines::define_clip" ($disk.DirName.Clip  6 "df-inodes-devname")}}
       td.text-right {{$disk.Ifree}}
       td.text-right {{$disk.Iused}}&nbsp;
         sup {{template "defines::define_usepercent" (usepercent $disk.IusePercent)}}
@@ -269,7 +269,7 @@
 = content define_memrows
   {{with rowsset .}}{{.}}{{else}}
     {{range $i, $mem := .Data.MEM.List}}
-      | <tr{{key "mem-rowby-kind" $mem.Kind}}>
+      | <tr {{$mem.Kind.KeyAttr "mem-rowby-kind"}}>
       td {{$mem.Kind}}
       td.text-right {{$mem.Free}}
       td.text-right {{$mem.Used}}&nbsp;
@@ -317,7 +317,7 @@
 = content define_cpurows
   {{with rowsset .}}{{.}}{{else}}
     {{range $i, $core := .Data.CPU.List}}
-      | <tr{{key "cpu-rowby-N" $core.N}}>
+      | <tr {{$core.N.KeyAttr "cpu-rowby-N"}}>
       td.text-right.nowrap {{$core.N}}
       / td.text-right {{$core.UserSpark}}
       td.text-right <span {{class}}={{$core.UserClass}}>{{$core.User}}</span>
@@ -368,16 +368,16 @@
 = content define_psrows
   {{with rowsset .}}{{.}}{{else}}
     {{range $proc := .Data.PStable.List}}
-      | <tr{{key "ps-rowby-pid" $proc.PIDstring}}>
+      | <tr {{$proc.PIDstring.KeyAttr "ps-rowby-pid"}}>
       td.text-right  {{$proc.PID}}
       td.text-right  {{$proc.UID}}
-      td             {{template "defines::define_clip" (clip 12 "psuser-pid" $proc.PIDstring $proc.User)}}
+      td             {{template "defines::define_clip" ($proc.User.Clip 12 "psuser-pid" $proc.PIDstring)}}
       td.text-right  {{$proc.Priority}}
       td.text-right  {{$proc.Nice}}
       td.text-right  {{$proc.Size}}
       td.text-right  {{$proc.Resident}}
       td.text-center {{$proc.Time}}
-      td.nowrap      {{template "defines::define_clip" (clip 42 "psname-pid" $proc.PIDstring $proc.Name)}}
+      td.nowrap      {{template "defines::define_clip" ($proc.Name.Clip 42 "psname-pid" $proc.PIDstring)}}
       | </tr>
     {{end}}
   {{end}}
@@ -440,12 +440,12 @@
 
 = content define_vgrows
   {{range $mach := .Data.VagrantMachines.List}}
-    | <tr{{key "vagrant-rowby-uuid" $mach.UUID}}>
-    td        {{template "defines::define_clip" (clip  7 "vagrant-uuid"     $mach.UUID)}}
+    | <tr {{$mach.UUID.KeyAttr "vagrant-rowby-uuid"}}>
+    td        {{template "defines::define_clip" ($mach.UUID.Clip   7 "vagrant-uuid")}}
     td        {{$mach.Name}}
     td        {{$mach.Provider}}
-    td        {{template "defines::define_clip" (clip  8 "vagrant-state"    $mach.UUID $mach.State)}}
-    td        {{template "defines::define_clip" (clip 50 "vagrant-filepath" $mach.UUID $mach.Vagrantfile_path)}}
+    td        {{template "defines::define_clip" ($mach.State.Clip  8 "vagrant-state" $mach.UUID)}}
+    td        {{template "defines::define_clip" ($mach.Vagrantfile_path.Clip 50 "vagrant-filepath" $mach.UUID)}}
     | </tr>
   {{end}}
 

@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"net/url"
 	"strings"
 
 	"github.com/ostrost/ostent/params"
+	"github.com/ostrost/ostent/system/operating"
 	"github.com/ostrost/ostent/templateutil/templatepipe"
 )
 
@@ -361,60 +361,6 @@ func (f HTMLFuncs) usepercent(val interface{}) interface{} {
 	}
 }
 
-func (f JSXFuncs) key(prefix string, val interface{}) template.HTMLAttr {
-	// f is unused
-	return template.HTMLAttr(fmt.Sprintf(" key={%q+%s}", prefix+"-", uncurlv(val)))
-}
-
-func (f HTMLFuncs) key(string, interface{}) template.HTMLAttr { return template.HTMLAttr("") } // f is unused
-
-func SprintfAttr(format string, args ...interface{}) template.HTMLAttr {
-	return template.HTMLAttr(fmt.Sprintf(format, args...))
-}
-
-type Clipped struct {
-	IDAttr      template.HTMLAttr
-	ForAttr     template.HTMLAttr
-	MWStyleAttr template.HTMLAttr
-	Text        string
-}
-
-func (f JSXFuncs) clip(width int, prefix string, val interface{}, rest ...interface{}) (*Clipped, error) {
-	text, err := ClipArgs(val, rest)
-	if err != nil {
-		return nil, err
-	}
-	key := fmt.Sprintf("{%q+%s}", prefix+"-", uncurlv(val))
-	return &Clipped{
-		IDAttr:      SprintfAttr("id=%s", key),
-		ForAttr:     SprintfAttr("%s=%s", f.forWord(), key),
-		MWStyleAttr: SprintfAttr("style={{maxWidth: '%dch'}}", width),
-		Text:        stringv(text),
-	}, nil
-}
-func (f HTMLFuncs) clip(width int, prefix string, val interface{}, rest ...interface{}) (*Clipped, error) {
-	text, err := ClipArgs(val, rest)
-	if err != nil {
-		return nil, err
-	}
-	key := fmt.Sprintf("%q", url.QueryEscape(prefix+"-"+stringi(val)))
-	return &Clipped{
-		IDAttr:      SprintfAttr("id=%s", key),
-		ForAttr:     SprintfAttr("%s=%s", f.forWord(), key),
-		MWStyleAttr: SprintfAttr("style=\"max-width: %dch \"", width),
-		Text:        stringi(text),
-	}, nil
-}
-
-func ClipArgs(fst interface{}, rest []interface{}) (interface{}, error) {
-	if len(rest) == 1 {
-		return rest[0], nil
-	} else if len(rest) > 0 {
-		return nil, fmt.Errorf("clip expects either 5 or 6 arguments")
-	}
-	return fst, nil
-}
-
 // JSXFuncs has methods implementing Functor.
 type JSXFuncs struct{}
 
@@ -433,8 +379,6 @@ func MakeMap(f Functor) template.FuncMap {
 		"rowsset": func(interface{}) string { return "" }, // empty pipeline
 		// acepp overrides rowsset and adds setrows
 
-		"key":               f.key,
-		"clip":              f.clip,
 		"droplink":          f.droplink,
 		"usepercent":        f.usepercent,
 		"ifBClass":          f.ifBClass,
@@ -467,8 +411,6 @@ var Funcs = HTMLFuncs{}.MakeMap()
 
 type Functor interface {
 	MakeMap() template.FuncMap
-	key(string, interface{}) template.HTMLAttr
-	clip(int, string, interface{}, ...interface{}) (*Clipped, error)
 	droplink(interface{}, ...string) (interface{}, error)
 	usepercent(interface{}) interface{}
 	ifBClass(interface{}, ...string) (string, error)
@@ -493,11 +435,19 @@ type Functor interface {
 type FormActioner interface {
 	FormActionAttr() (interface{}, error)
 }
+type Keyer interface {
+	KeyAttr(string) template.HTMLAttr
+}
+type Clipper interface {
+	Clip(int, string, ...operating.ToStringer) (*operating.Clipped, error)
+}
 
 func init() {
 	v := templatepipe.Value("")
 	// check for Value's interfaces compliance
 	_ = FormActioner(v)
+	_ = Keyer(v)
+	_ = Clipper(v)
 }
 
 // DotSplit splits s by last ".".

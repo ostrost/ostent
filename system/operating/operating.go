@@ -6,6 +6,7 @@ package operating
 import (
 	"container/ring"
 	"errors"
+	"html/template"
 	"math"
 	"sync"
 
@@ -15,7 +16,7 @@ import (
 
 // Memory type is a struct of memory metrics.
 type Memory struct {
-	Kind       string
+	Kind       Field
 	Total      string
 	Used       string
 	Free       string
@@ -35,8 +36,8 @@ type RAM struct {
 
 // DiskMeta type has common for DiskBytes and DiskInodes fields.
 type DiskMeta struct {
-	DevName string
-	DirName string
+	DevName Field
+	DirName Field
 }
 
 // DiskBytes type is a struct of disk bytes metrics.
@@ -69,7 +70,7 @@ type DFinodes struct {
 
 // InterfaceInfo type is a struct of interface metrics.
 type InterfaceInfo struct {
-	Name     string
+	Name     Field
 	In       string // with units
 	Out      string // with units
 	DeltaIn  string // with units
@@ -102,13 +103,13 @@ type ProcInfo struct {
 // ProcData type is a public (for index context, json marshaling) account of a process.
 type ProcData struct {
 	PID       uint
-	PIDstring string
+	PIDstring Field
 	UID       uint
 	Priority  int
 	Nice      int
 	Time      string
-	Name      string
-	User      string
+	Name      Field
+	User      Field
 	Size      string // with units
 	Resident  string // with units
 }
@@ -391,7 +392,7 @@ type CPUInfo struct {
 
 // CoreInfo type is a struct of core metrics.
 type CoreInfo struct {
-	N         string
+	N         Field
 	User      uint // percent without "%"
 	Sys       uint // percent without "%"
 	Idle      uint // percent without "%"
@@ -413,8 +414,8 @@ type MetricCPU struct {
 }
 
 type CPU struct {
-	metrics.Healthcheck        // derive from one of (go-)metric types, otherwise it won't be registered
-	N                   string // The "cpu-N"
+	metrics.Healthcheck       // derive from one of (go-)metric types, otherwise it won't be registered
+	N                   Field // The "cpu-N"
 	User                *GaugePercent
 	Nice                *GaugePercent
 	Sys                 *GaugePercent
@@ -437,7 +438,7 @@ func (mc MetricCPU) Update(scpu sigar.Cpu) {
 func ExtraNewMetricCPU(r metrics.Registry, name string, extra CPUUpdater) *MetricCPU {
 	return &MetricCPU{
 		CPU: &CPU{
-			N:     name,
+			N:     Field(name),
 			User:  NewGaugePercent(name+".user", r),
 			Nice:  NewGaugePercent(name+".nice", r),
 			Sys:   NewGaugePercent(name+".system", r),
@@ -544,7 +545,7 @@ type MetricInterface struct {
 // Interface is a set of interface metrics.
 type Interface struct {
 	metrics.Healthcheck // derive from one of (go-)metric types, otherwise it won't be registered
-	Name                string
+	Name                Field
 	BytesIn             *GaugeDiff
 	BytesOut            *GaugeDiff
 	ErrorsIn            *GaugeDiff
@@ -574,9 +575,23 @@ type Getifdata interface {
 
 // +gen slice:"PkgSortBy"
 type Vgmachine struct {
-	UUID             string
+	UUID             Field
 	Name             string
 	Provider         string
-	State            string
-	Vagrantfile_path string // Directory
+	State            Field
+	Vagrantfile_path Field // Directory
+}
+
+type Field string
+
+func (f Field) ToString() string { return string(f) }
+
+// KeyAttr intended for UUID field.
+func (f Field) KeyAttr(string) (empty template.HTMLAttr) { return }
+func (f Field) Clip(width int, prefix string, id ...ToStringer) (*Clipped, error) {
+	return Clip(width, prefix, id, f.ToString())
+}
+
+type ToStringer interface {
+	ToString() string
 }

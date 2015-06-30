@@ -39,8 +39,8 @@ func diskMeta(disk operating.MetricDF) operating.DiskMeta {
 	devname := disk.DevName.Snapshot().Value()
 	dirname := disk.DirName.Snapshot().Value()
 	return operating.DiskMeta{
-		DevName: devname,
-		DirName: dirname,
+		DevName: operating.Field(devname),
+		DirName: operating.Field(dirname),
 	}
 }
 
@@ -87,13 +87,13 @@ func (procs MPSlice) Ordered(para *params.Params) *PStable {
 	for _, proc := range procs {
 		pst.List = append(pst.List, operating.ProcData{
 			PID:       proc.PID,
-			PIDstring: fmt.Sprintf("%d", proc.PID),
+			PIDstring: operating.Field(fmt.Sprintf("%d", proc.PID)),
 			UID:       proc.UID,
 			Priority:  proc.Priority,
 			Nice:      proc.Nice,
 			Time:      format.FormatTime(proc.Time),
-			Name:      proc.Name,
-			User:      username(uids, proc.UID),
+			Name:      operating.Field(proc.Name),
+			User:      operating.Field(username(uids, proc.UID)),
 			Size:      format.HumanB(proc.Size),
 			Resident:  format.HumanB(proc.Resident),
 		})
@@ -305,7 +305,7 @@ func (ir *IndexRegistry) GetOrRegisterPrivateInterface(name string) operating.Me
 	}
 	i := operating.MetricInterface{
 		Interface: &operating.Interface{
-			Name:       name,
+			Name:       operating.Field(name),
 			BytesIn:    operating.NewGaugeDiff("interface-"+name+".if_octets.rx", ir.Registry),
 			BytesOut:   operating.NewGaugeDiff("interface-"+name+".if_octets.tx", ir.Registry),
 			ErrorsIn:   operating.NewGaugeDiff("interface-"+name+".if_errors.rx", ir.Registry),
@@ -547,12 +547,12 @@ func FormatCPU(mc operating.MetricCPU) operating.CoreInfo {
 	// .Nice is unused
 	sys := uint(mc.Sys.Percent.Snapshot().Value())   // rounding
 	idle := uint(mc.Idle.Percent.Snapshot().Value()) // rounding
-	N := mc.N
+	N := string(mc.N)
 	if prefix := "cpu-"; strings.HasPrefix(N, prefix) { // true for all but "all"
 		N = "#" + N[len(prefix):] // fmt.Sprintf("#%d", n)
 	}
 	return operating.CoreInfo{
-		N:         N,
+		N:         operating.Field(N),
 		User:      user,
 		Sys:       sys,
 		Idle:      idle,
@@ -676,7 +676,7 @@ func (ir *IndexRegistry) UpdateCPU(cpus []sigar.Cpu) {
 		operating.AddSCPU(&all, core)
 	}
 	if ir.PrivateCPUAll.N == "all" {
-		ir.PrivateCPUAll.N = fmt.Sprintf("all %d", len(cpus))
+		ir.PrivateCPUAll.N = operating.Field(fmt.Sprintf("all %d", len(cpus)))
 	}
 	ir.PrivateCPUAll.Update(all)
 }
