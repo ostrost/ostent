@@ -1,7 +1,6 @@
 package templatefunc
 
 import (
-	"encoding/json"
 	"fmt"
 	"html/template"
 	"strings"
@@ -10,6 +9,12 @@ import (
 	"github.com/ostrost/ostent/system/operating"
 	"github.com/ostrost/ostent/templateutil/templatepipe"
 )
+
+// colspanWord returns "colSpan".
+func (f JSXFuncs) colspanWord() string { return "colSpan" } // f is unused
+
+// colspanWord returns "colspan".
+func (f HTMLFuncs) colspanWord() string { return "colspan" } // f is unused
 
 // classWord returns "className".
 func (f JSXFuncs) classWord() string { return "className" } // f is unused
@@ -396,13 +401,9 @@ func MakeMap(f Functor) template.FuncMap {
 		"lessHrefAttr":      f.lessHrefAttr,
 		"moreHrefAttr":      f.moreHrefAttr,
 		"jsxClose":          f.jsxClose,
+		"colspan":           f.colspanWord,
 		"class":             f.classWord,
 		"for":               f.forWord,
-
-		"json": func(v interface{}) (string, error) {
-			j, err := json.Marshal(v)
-			return string(j), err
-		},
 	}
 }
 
@@ -428,6 +429,7 @@ type Functor interface {
 	lessHrefAttr(interface{}) (interface{}, error)
 	moreHrefAttr(interface{}) (interface{}, error)
 	jsxClose(string) template.HTML
+	colspanWord() string
 	classWord() string
 	forWord() string
 }

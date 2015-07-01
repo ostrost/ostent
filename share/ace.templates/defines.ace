@@ -5,12 +5,6 @@
   | <input {{.IDAttr}}  {{class}}="collapse-checkbox" type="checkbox" aria-hidden="true" hidden>{{jsxClose "input"}}
   | <label {{.ForAttr}} {{class}}="clip" {{.MWStyleAttr}}>{{.Text}}</label>
 
-= content refresh
-  / the {{define "name"} name is defines::"refresh"
-  div.input-group.input-group-sm.refresh-group
-    span.input-group-addon Refresh
-    input.form-control.refresh-input type=text placeholder={{.Default}}{{if ne (json .Default) (json .Period)}} value={{.Period}}{{end}}
-
 = content define_refresh
   | <div {{refreshClass . "input-group input-group-sm refresh-group"}}>
   span.input-group-addon Refresh
@@ -427,11 +421,11 @@
 
 = content define_vgerror
   tr key="vgerror"
-    td colspan=5 {{.Data.VagrantError}}
+    td {{colspan}}=5 {{.Data.VagrantError}}
 
 = content define_vgswitch
   {{with rowsset .}}{{.}}{{else}}
-    {{if eq "true" (json .Data.VagrantErrord)}}
+    {{if eq .Data.VagrantErrord true}}
       {{template "defines::define_vgerror" .}}
     {{else}}
       {{template "defines::define_vgrows" .}}

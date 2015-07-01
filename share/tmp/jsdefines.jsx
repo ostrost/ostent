@@ -640,7 +640,7 @@ define(function(require) {
   ></tr
 >); },
 		vagrant_error:   function(Data)        { return (<tr key="vgerror"
-  ><td colspan="5"
+  ><td colSpan="5"
     >{Data.VagrantError}</td
   ></tr
 >); },

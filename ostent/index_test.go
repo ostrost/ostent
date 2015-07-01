@@ -79,13 +79,6 @@ func Test_templatecomparison(t *testing.T) {
 			This *bool
 			That *bool
 		}{newbool(false), newbool(false)}, "false"},
-
-		{`{{json .This}}`, struct{ This bool }{true}, "true"},
-		{`{{json .This}}`, struct{ This bool }{false}, "false"},
-		{`{{json .This}}`, struct{ This bool }{}, "false"},
-		{`{{json .This.That}}`, struct{ This that }{that{newbool(true)}}, "true"},
-		{`{{json .This.That}}`, struct{ This that }{that{newbool(false)}}, "false"},
-		{`{{json .This.That}}`, struct{ This that }{that{}}, "null"}, // NB
 	} {
 		cmp, err := executeTemplate(v.in, v.data)
 		if err != nil {

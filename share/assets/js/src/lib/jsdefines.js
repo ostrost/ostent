@@ -339,7 +339,7 @@ define(function(require) {
 }), React.createElement("label", {htmlFor: "vagrant-filepath-"+$mach.UUID, className: "clip", style: {maxWidth: '50ch'}
   }, $mach.Vagrantfile_path)))); },
 		vagrant_error:   function(Data)        { return (React.createElement("tr", {key: "vgerror"
-  }, React.createElement("td", {colspan: "5"
+  }, React.createElement("td", {colSpan: "5"
     }, Data.VagrantError))); },
 		panelvg:         function(Data, rows)  { return (React.createElement("div", {className: "panel1"
   }, React.createElement("label", {className: "panel-heading btn-block"
