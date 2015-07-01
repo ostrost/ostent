@@ -38,6 +38,9 @@ func (value Value) Clip(width int, prefix string, id ...operating.ToStringer) (*
 	}, nil
 }
 
-func (value Value) ToString() string { return string(value) }
+func (value Value) ToggleHrefAttr() interface{} {
+	return fmt.Sprintf(" href={%s.Href} onClick={this.handleClick}", value.Uncurl())
+}
 
-func (value Value) forWord() string { return "htmlFor" }
+func (value Value) ToString() string { return string(value) }
+func (value Value) forWord() string  { return "htmlFor" }

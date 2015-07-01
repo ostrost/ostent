@@ -112,7 +112,7 @@
 = content define_panelif
   div.panel1
     label.panel-heading.btn-block
-      | <a {{ifBPClassAttr .Data.Params.BOOL.configif "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Params.BOOL.configif}}>{{.Data.Params.ENUM.ift.Title}}</a>
+      | <a {{ifBPClassAttr .Data.Params.BOOL.configif "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configif.ToggleHrefAttr}}>{{.Data.Params.ENUM.ift.Title}}</a>
 
     div
       | <div id="ifconfig" {{ifBPClassAttr .Data.Params.BOOL.configif "" "collapse-hidden"}}>
@@ -121,8 +121,8 @@
 
       div.form-group-padded
          div.btn-group.btn-group-sm role=group
-          | <a {{ifBPClassAttr .Data.Params.BOOL.hideif "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hideif}}>Hidden</a>
-          | <a {{ifBClassAttr .Data.ExpandableIF "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.expandif}}>{{.Data.ExpandtextIF}}</a>
+          | <a {{ifBPClassAttr .Data.Params.BOOL.hideif "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideif.ToggleHrefAttr}}>Hidden</a>
+          | <a {{ifBClassAttr .Data.ExpandableIF "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expandif.ToggleHrefAttr}}>{{.Data.ExpandtextIF}}</a>
 
       div.form-group-padded
         {{template "defines::define_refresh" .Data.Params.PERIOD.refreshif}}
@@ -219,7 +219,7 @@
 = content define_paneldf
   div.panel1
     label.panel-heading.btn-block
-      | <a {{ifBPClassAttr .Data.Params.BOOL.configdf "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Params.BOOL.configdf}}>{{.Data.Params.ENUM.dft.Title}}</a>
+      | <a {{ifBPClassAttr .Data.Params.BOOL.configdf "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configdf.ToggleHrefAttr}}>{{.Data.Params.ENUM.dft.Title}}</a>
 
     div
       | <div id="dfconfig" {{ifBPClassAttr .Data.Params.BOOL.configdf "" "collapse-hidden"}}>
@@ -228,8 +228,8 @@
 
       div.form-group-padded
          div.btn-group.btn-group-sm role=group
-          | <a {{ifBPClassAttr .Data.Params.BOOL.hidedf "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hidedf}}>Hidden</a>
-          | <a {{ifBClassAttr .Data.ExpandableDF "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.expanddf}}>{{.Data.ExpandtextDF}}</a>
+          | <a {{ifBPClassAttr .Data.Params.BOOL.hidedf "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidedf.ToggleHrefAttr}}>Hidden</a>
+          | <a {{ifBClassAttr .Data.ExpandableDF "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expanddf.ToggleHrefAttr}}>{{.Data.ExpandtextDF}}</a>
 
       div.form-group-padded
         {{template "defines::define_refresh" .Data.Params.PERIOD.refreshdf}}
@@ -287,7 +287,7 @@
 = content define_panelmem
   div.panel1
     label.panel-heading.btn-block
-      | <a {{ifBPClassAttr .Data.Params.BOOL.configmem "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Params.BOOL.configmem}}>Memory</a>
+      | <a {{ifBPClassAttr .Data.Params.BOOL.configmem "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configmem.ToggleHrefAttr}}>Memory</a>
 
     div
       | <div id="memconfig" {{ifBPClassAttr .Data.Params.BOOL.configmem "" "collapse-hidden"}}>
@@ -295,8 +295,8 @@
       input.hidden-submit type=submit
       div.form-group-padded
         div.btn-group.btn-group-sm role=group
-          | <a {{ifBPClassAttr .Data.Params.BOOL.hidemem "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hidemem}}>Hidden</a>
-          | <a {{ifBPClassAttr .Data.Params.BOOL.hideswap "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hideswap}} {{ifDisabledAttr .Data.Params.BOOL.hidemem}}>Hide swap</a>
+          | <a {{ifBPClassAttr .Data.Params.BOOL.hidemem "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidemem.ToggleHrefAttr}}>Hidden</a>
+          | <a {{ifBPClassAttr .Data.Params.BOOL.hideswap "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideswap.ToggleHrefAttr}} {{ifDisabledAttr .Data.Params.BOOL.hidemem}}>Hide swap</a>
 
       div.form-group-padded
         {{template "defines::define_refresh" .Data.Params.PERIOD.refreshmem}}
@@ -338,7 +338,7 @@
 = content define_panelcpu
   div.panel1
     label.panel-heading.btn-block
-      | <a {{ifBPClassAttr .Data.Params.BOOL.configcpu "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Params.BOOL.configcpu}}>CPU</a>
+      | <a {{ifBPClassAttr .Data.Params.BOOL.configcpu "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configcpu.ToggleHrefAttr}}>CPU</a>
 
     div
       | <div id="cpuconfig" {{ifBPClassAttr .Data.Params.BOOL.configcpu "" "collapse-hidden"}}>
@@ -346,8 +346,8 @@
       input.hidden-submit type=submit
       div.form-group-padded
         div.btn-group.btn-group-sm role=group
-          | <a {{ifBPClassAttr .Data.Params.BOOL.hidecpu "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hidecpu}}>Hidden</a>
-          | <a {{ifBClassAttr .Data.CPU.ExpandableCPU "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.expandcpu}}>{{.Data.CPU.ExpandtextCPU}}</a>
+          | <a {{ifBPClassAttr .Data.Params.BOOL.hidecpu "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidecpu.ToggleHrefAttr}}>Hidden</a>
+          | <a {{ifBClassAttr .Data.CPU.ExpandableCPU "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expandcpu.ToggleHrefAttr}}>{{.Data.CPU.ExpandtextCPU}}</a>
 
       div.form-group-padded
         {{template "defines::define_refresh" .Data.Params.PERIOD.refreshcpu}}
@@ -395,7 +395,7 @@
 = content define_panelps
   div.panel1
     label.panel-heading.btn-block
-      | <a {{ifBPClassAttr .Data.Params.BOOL.configps "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Params.BOOL.configps}}>Processes</a>
+      | <a {{ifBPClassAttr .Data.Params.BOOL.configps "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configps.ToggleHrefAttr}}>Processes</a>
 
     div
       | <div id="psconfig" {{ifBPClassAttr .Data.Params.BOOL.configps "" "collapse-hidden"}}>
@@ -407,7 +407,7 @@
 
       div.form-group-padded
         div.btn-group.btn-group-sm role=group
-          | <a {{ifBPClassAttr .Data.Params.BOOL.hideps "active"  "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hideps}}>Hidden</a>
+          | <a {{ifBPClassAttr .Data.Params.BOOL.hideps "active"  "" "btn btn-default"}} {{.Data.Params.BOOL.hideps.ToggleHrefAttr}}>Hidden</a>
           | <a {{ifBClassAttr .Data.PStable.PSnotDecreasable "disabled" "" "btn btn-default"}} {{lessHrefAttr .Data.Params.LIMIT.psn}}>-</a>
           | <a {{ifBClassAttr .Data.PStable.PSnotExpandable  "disabled" "" "btn btn-default"}} {{moreHrefAttr .Data.Params.LIMIT.psn}}>
           | {{.Data.PStable.PSplusText}}</a>
@@ -458,7 +458,7 @@
 = content define_panelvg
   div.panel1
     label.panel-heading.btn-block
-      | <a {{ifBPClassAttr .Data.Params.BOOL.configvg "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Params.BOOL.configvg}}>Vagrant global-status</a>
+      | <a {{ifBPClassAttr .Data.Params.BOOL.configvg "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configvg.ToggleHrefAttr}}>Vagrant global-status</a>
 
     div
       | <div id="vgconfig" {{ifBPClassAttr .Data.Params.BOOL.configvg "" "collapse-hidden"}}>
@@ -469,7 +469,7 @@
 
       div.form-group-padded
         div.btn-group.btn-group-sm role=group
-          | <a {{ifBPClassAttr .Data.Params.BOOL.hidevg "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hidevg}}>Hidden</a>
+          | <a {{ifBPClassAttr .Data.Params.BOOL.hidevg "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidevg.ToggleHrefAttr}}>Hidden</a>
       | </form>
       | </div>
 

@@ -384,7 +384,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_panelcpu"}}<div class="panel1"
   ><label class="panel-heading btn-block"
-    ><a {{ifBPClassAttr .Data.Params.BOOL.configcpu "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Params.BOOL.configcpu}}
+    ><a {{ifBPClassAttr .Data.Params.BOOL.configcpu "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configcpu.ToggleHrefAttr}}
       >CPU</a
     ></label
   ><div
@@ -393,9 +393,9 @@
         ><input class="hidden-submit" type="submit"
         ><div class="form-group-padded"
           ><div class="btn-group btn-group-sm" role="group"
-            ><a {{ifBPClassAttr .Data.Params.BOOL.hidecpu "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hidecpu}}
+            ><a {{ifBPClassAttr .Data.Params.BOOL.hidecpu "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidecpu.ToggleHrefAttr}}
               >Hidden</a
-            ><a {{ifBClassAttr .Data.CPU.ExpandableCPU "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.expandcpu}}
+            ><a {{ifBClassAttr .Data.CPU.ExpandableCPU "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expandcpu.ToggleHrefAttr}}
               >{{.Data.CPU.ExpandtextCPU}}</a
             ></div
           ></div
@@ -412,7 +412,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_paneldf"}}<div class="panel1"
   ><label class="panel-heading btn-block"
-    ><a {{ifBPClassAttr .Data.Params.BOOL.configdf "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Params.BOOL.configdf}}
+    ><a {{ifBPClassAttr .Data.Params.BOOL.configdf "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configdf.ToggleHrefAttr}}
       >{{.Data.Params.ENUM.dft.Title}}</a
     ></label
   ><div
@@ -421,9 +421,9 @@
         ><input class="hidden-submit" type="submit"
         ><div class="form-group-padded"
           ><div class="btn-group btn-group-sm" role="group"
-            ><a {{ifBPClassAttr .Data.Params.BOOL.hidedf "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hidedf}}
+            ><a {{ifBPClassAttr .Data.Params.BOOL.hidedf "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidedf.ToggleHrefAttr}}
               >Hidden</a
-            ><a {{ifBClassAttr .Data.ExpandableDF "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.expanddf}}
+            ><a {{ifBClassAttr .Data.ExpandableDF "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expanddf.ToggleHrefAttr}}
               >{{.Data.ExpandtextDF}}</a
             ></div
           ></div
@@ -454,7 +454,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_panelif"}}<div class="panel1"
   ><label class="panel-heading btn-block"
-    ><a {{ifBPClassAttr .Data.Params.BOOL.configif "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Params.BOOL.configif}}
+    ><a {{ifBPClassAttr .Data.Params.BOOL.configif "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configif.ToggleHrefAttr}}
       >{{.Data.Params.ENUM.ift.Title}}</a
     ></label
   ><div
@@ -463,9 +463,9 @@
         ><input class="hidden-submit" type="submit"
         ><div class="form-group-padded"
           ><div class="btn-group btn-group-sm" role="group"
-            ><a {{ifBPClassAttr .Data.Params.BOOL.hideif "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hideif}}
+            ><a {{ifBPClassAttr .Data.Params.BOOL.hideif "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideif.ToggleHrefAttr}}
               >Hidden</a
-            ><a {{ifBClassAttr .Data.ExpandableIF "" "disabled" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.expandif}}
+            ><a {{ifBClassAttr .Data.ExpandableIF "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expandif.ToggleHrefAttr}}
               >{{.Data.ExpandtextIF}}</a
             ></div
           ></div
@@ -502,7 +502,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_panelmem"}}<div class="panel1"
   ><label class="panel-heading btn-block"
-    ><a {{ifBPClassAttr .Data.Params.BOOL.configmem "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Params.BOOL.configmem}}
+    ><a {{ifBPClassAttr .Data.Params.BOOL.configmem "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configmem.ToggleHrefAttr}}
       >Memory</a
     ></label
   ><div
@@ -511,9 +511,9 @@
         ><input class="hidden-submit" type="submit"
         ><div class="form-group-padded"
           ><div class="btn-group btn-group-sm" role="group"
-            ><a {{ifBPClassAttr .Data.Params.BOOL.hidemem "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hidemem}}
+            ><a {{ifBPClassAttr .Data.Params.BOOL.hidemem "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidemem.ToggleHrefAttr}}
               >Hidden</a
-            ><a {{ifBPClassAttr .Data.Params.BOOL.hideswap "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hideswap}} {{ifDisabledAttr .Data.Params.BOOL.hidemem}}
+            ><a {{ifBPClassAttr .Data.Params.BOOL.hideswap "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideswap.ToggleHrefAttr}} {{ifDisabledAttr .Data.Params.BOOL.hidemem}}
               >Hide swap</a
             ></div
           ></div
@@ -530,7 +530,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_panelps"}}<div class="panel1"
   ><label class="panel-heading btn-block"
-    ><a {{ifBPClassAttr .Data.Params.BOOL.configps "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Params.BOOL.configps}}
+    ><a {{ifBPClassAttr .Data.Params.BOOL.configps "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configps.ToggleHrefAttr}}
       >Processes</a
     ></label
   ><div
@@ -541,7 +541,7 @@
           >{{template "defines::define_refresh" .Data.Params.PERIOD.refreshps}}</div
         ><div class="form-group-padded"
           ><div class="btn-group btn-group-sm" role="group"
-            ><a {{ifBPClassAttr .Data.Params.BOOL.hideps "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hideps}}
+            ><a {{ifBPClassAttr .Data.Params.BOOL.hideps "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideps.ToggleHrefAttr}}
               >Hidden</a
             ><a {{ifBClassAttr .Data.PStable.PSnotDecreasable "disabled" "" "btn btn-default"}} {{lessHrefAttr .Data.Params.LIMIT.psn}}
               >-</a
@@ -560,7 +560,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_panelvg"}}<div class="panel1"
   ><label class="panel-heading btn-block"
-    ><a {{ifBPClassAttr .Data.Params.BOOL.configvg "btn-header-block active" "btn-header-block"}} {{toggleHrefAttr .Data.Params.BOOL.configvg}}
+    ><a {{ifBPClassAttr .Data.Params.BOOL.configvg "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configvg.ToggleHrefAttr}}
       >Vagrant global-status</a
     ></label
   ><div
@@ -571,7 +571,7 @@
           >{{template "defines::define_refresh" .Data.Params.PERIOD.refreshvg}}</div
         ><div class="form-group-padded"
           ><div class="btn-group btn-group-sm" role="group"
-            ><a {{ifBPClassAttr .Data.Params.BOOL.hidevg "active" "" "btn btn-default"}} {{toggleHrefAttr .Data.Params.BOOL.hidevg}}
+            ><a {{ifBPClassAttr .Data.Params.BOOL.hidevg "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidevg.ToggleHrefAttr}}
               >Hidden</a
             ></div
           ></div

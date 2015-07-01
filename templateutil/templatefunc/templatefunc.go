@@ -10,41 +10,19 @@ import (
 	"github.com/ostrost/ostent/templateutil/templatepipe"
 )
 
-// colspanWord returns "colSpan".
-func (f JSXFuncs) colspanWord() string { return "colSpan" } // f is unused
+func (f JSXFuncs) classWord() string   { return "className" }
+func (f JSXFuncs) colspanWord() string { return "colSpan" }
+func (f JSXFuncs) forWord() string     { return "htmlFor" }
 
-// colspanWord returns "colspan".
-func (f HTMLFuncs) colspanWord() string { return "colspan" } // f is unused
-
-// classWord returns "className".
-func (f JSXFuncs) classWord() string { return "className" } // f is unused
-
-// classWord returns "class".
-func (f HTMLFuncs) classWord() string { return "class" } // f is unused
-
-// forWord returns "htmlFor".
-func (f JSXFuncs) forWord() string { return "htmlFor" } // f is unused
-
-// forWord returns "for".
-func (f HTMLFuncs) forWord() string { return "for" } // f is unused
+func (f HTMLFuncs) classWord() string   { return "class" }
+func (f HTMLFuncs) colspanWord() string { return "colspan" }
+func (f HTMLFuncs) forWord() string     { return "for" }
 
 // jsxClose returns close tag markup as template.HTML.
 func (f JSXFuncs) jsxClose(tag string) template.HTML { return template.HTML("</" + tag + ">") } // f is unused
 
 // jsxClose returns empty template.HTML.
 func (f HTMLFuncs) jsxClose(string) (empty template.HTML) { return } // f is unused
-
-func (f JSXFuncs) toggleHrefAttr(value interface{}) (interface{}, error) {
-	// f is unused
-	return fmt.Sprintf(" href={%s.Href} onClick={this.handleClick}", uncurlv(value)), nil
-}
-
-func (f HTMLFuncs) toggleHrefAttr(value interface{}) (interface{}, error) {
-	if bp, ok := value.(*params.BoolParam); ok {
-		return template.HTMLAttr(fmt.Sprintf(" href=\"%s\"", bp.EncodeToggle())), nil
-	}
-	return nil, f.CastError("*params.BoolParam")
-}
 
 func (f JSXFuncs) periodNameAttr(value interface{}) (interface{}, error) {
 	// f is unused
@@ -394,15 +372,14 @@ func MakeMap(f Functor) template.FuncMap {
 		"iftEnumAttrs":      f.iftEnumAttrs,
 		"ifExpandClassAttr": f.ifExpandClassAttr,
 		"ifDisabledAttr":    f.ifDisabledAttr,
-		"toggleHrefAttr":    f.toggleHrefAttr,
 		"periodNameAttr":    f.periodNameAttr,
 		"periodValueAttr":   f.periodValueAttr,
 		"refreshClass":      f.refreshClass,
 		"lessHrefAttr":      f.lessHrefAttr,
 		"moreHrefAttr":      f.moreHrefAttr,
 		"jsxClose":          f.jsxClose,
-		"colspan":           f.colspanWord,
 		"class":             f.classWord,
+		"colspan":           f.colspanWord,
 		"for":               f.forWord,
 	}
 }
@@ -422,15 +399,14 @@ type Functor interface {
 	iftEnumAttrs(interface{}, string, string) (template.HTMLAttr, error)
 	ifExpandClassAttr(interface{}, ...string) (template.HTMLAttr, error)
 	ifDisabledAttr(interface{}) (template.HTMLAttr, error)
-	toggleHrefAttr(interface{}) (interface{}, error)
 	periodNameAttr(interface{}) (interface{}, error)
 	periodValueAttr(interface{}) (interface{}, error)
 	refreshClass(interface{}, string) (interface{}, error)
 	lessHrefAttr(interface{}) (interface{}, error)
 	moreHrefAttr(interface{}) (interface{}, error)
 	jsxClose(string) template.HTML
-	colspanWord() string
 	classWord() string
+	colspanWord() string
 	forWord() string
 }
 
@@ -443,6 +419,9 @@ type Keyer interface {
 type Clipper interface {
 	Clip(int, string, ...operating.ToStringer) (*operating.Clipped, error)
 }
+type ToggleHrefer interface {
+	ToggleHrefAttr() interface{}
+}
 
 func init() {
 	v := templatepipe.Value("")
@@ -450,6 +429,7 @@ func init() {
 	_ = FormActioner(v)
 	_ = Keyer(v)
 	_ = Clipper(v)
+	_ = ToggleHrefer(v)
 }
 
 // DotSplit splits s by last ".".
