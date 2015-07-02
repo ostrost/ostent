@@ -36,3 +36,11 @@ func (pp PeriodParam) RefreshClassAttr(classes string) interface{} {
 	}
 	return SprintfAttr(" class=%q", classes)
 }
+
+func (lp LimitParam) LessHrefAttr() interface{} {
+	return SprintfAttr(" href=%q", lp.EncodeLess())
+}
+
+func (lp LimitParam) MoreHrefAttr() interface{} {
+	return SprintfAttr(" href=%q", lp.EncodeMore())
+}

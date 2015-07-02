@@ -24,26 +24,6 @@ func (f JSXFuncs) jsxClose(tag string) template.HTML { return template.HTML("</"
 // jsxClose returns empty template.HTML.
 func (f HTMLFuncs) jsxClose(string) (empty template.HTML) { return } // f is unused
 
-func (f JSXFuncs) lessHrefAttr(value interface{}) (interface{}, error) {
-	return fmt.Sprintf(" href={%s.LessHref} onClick={this.handleClick}", f.uncurlv(value)), nil
-}
-func (f HTMLFuncs) lessHrefAttr(value interface{}) (interface{}, error) {
-	if lp, ok := value.(*params.LimitParam); ok {
-		return template.HTMLAttr(fmt.Sprintf(" href=\"%s\"", lp.EncodeLess())), nil
-	}
-	return nil, f.CastError("*params.LimitParam")
-}
-
-func (f JSXFuncs) moreHrefAttr(value interface{}) (interface{}, error) {
-	return fmt.Sprintf(" href={%s.MoreHref} onClick={this.handleClick}", f.uncurlv(value)), nil
-}
-func (f HTMLFuncs) moreHrefAttr(value interface{}) (interface{}, error) {
-	if lp, ok := value.(*params.LimitParam); ok {
-		return template.HTMLAttr(fmt.Sprintf(" href=\"%s\"", lp.EncodeMore())), nil
-	}
-	return nil, f.CastError("*params.LimitParam")
-}
-
 func (f JSXFuncs) ifDisabledAttr(value interface{}) (template.HTMLAttr, error) {
 	return template.HTMLAttr(fmt.Sprintf("disabled={%s.Value ? \"disabled\" : \"\" }",
 		f.uncurlv(value))), nil
@@ -315,8 +295,6 @@ func MakeMap(f Functor) template.FuncMap {
 		"iftEnumAttrs":      f.iftEnumAttrs,
 		"ifExpandClassAttr": f.ifExpandClassAttr,
 		"ifDisabledAttr":    f.ifDisabledAttr,
-		"lessHrefAttr":      f.lessHrefAttr,
-		"moreHrefAttr":      f.moreHrefAttr,
 		"jsxClose":          f.jsxClose,
 		"class":             f.classWord,
 		"colspan":           f.colspanWord,
@@ -339,8 +317,6 @@ type Functor interface {
 	iftEnumAttrs(interface{}, string, string) (template.HTMLAttr, error)
 	ifExpandClassAttr(interface{}, ...string) (template.HTMLAttr, error)
 	ifDisabledAttr(interface{}) (template.HTMLAttr, error)
-	lessHrefAttr(interface{}) (interface{}, error)
-	moreHrefAttr(interface{}) (interface{}, error)
 	jsxClose(string) template.HTML
 	classWord() string
 	colspanWord() string
@@ -359,6 +335,8 @@ func init() {
 		PeriodNameAttr() interface{}         // PeriodParam
 		PeriodValueAttr() interface{}        // PeriodParam
 		RefreshClassAttr(string) interface{} // PeriodParam
+		LessHrefAttr() interface{}           // LimitParam
+		MoreHrefAttr() interface{}           // LimitParam
 	}(templatepipe.Nota(nil))
 }
 

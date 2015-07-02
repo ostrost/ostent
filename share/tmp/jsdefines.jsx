@@ -38,7 +38,7 @@ define(function(require) {
         ><div  className={"input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshmem.InputErrd ? " has-warning" : "")}
   ><span className="input-group-addon"
     >Refresh</span
-  ><input className="form-control refresh-input" type="text" placeholder={Data.Params.PERIOD.refreshmem.Placeholder}  name="refreshmem"  onChange={this.handleChange} value={Data.Params.PERIOD.refreshmem.Input}
+  ><input className="form-control refresh-input" type="text" placeholder={Data.Params.PERIOD.refreshmem.Placeholder}  name="refreshmem"  value={Data.Params.PERIOD.refreshmem.Input} onChange={this.handleChange}
   ></input></div
 ></div
       ></form
@@ -137,7 +137,7 @@ define(function(require) {
         ><div  className={"input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshif.InputErrd ? " has-warning" : "")}
   ><span className="input-group-addon"
     >Refresh</span
-  ><input className="form-control refresh-input" type="text" placeholder={Data.Params.PERIOD.refreshif.Placeholder}  name="refreshif"  onChange={this.handleChange} value={Data.Params.PERIOD.refreshif.Input}
+  ><input className="form-control refresh-input" type="text" placeholder={Data.Params.PERIOD.refreshif.Placeholder}  name="refreshif"  value={Data.Params.PERIOD.refreshif.Input} onChange={this.handleChange}
   ></input></div
 ></div
       ></form
@@ -301,7 +301,7 @@ define(function(require) {
         ><div  className={"input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshcpu.InputErrd ? " has-warning" : "")}
   ><span className="input-group-addon"
     >Refresh</span
-  ><input className="form-control refresh-input" type="text" placeholder={Data.Params.PERIOD.refreshcpu.Placeholder}  name="refreshcpu"  onChange={this.handleChange} value={Data.Params.PERIOD.refreshcpu.Input}
+  ><input className="form-control refresh-input" type="text" placeholder={Data.Params.PERIOD.refreshcpu.Placeholder}  name="refreshcpu"  value={Data.Params.PERIOD.refreshcpu.Input} onChange={this.handleChange}
   ></input></div
 ></div
       ></form
@@ -404,7 +404,7 @@ define(function(require) {
         ><div  className={"input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshdf.InputErrd ? " has-warning" : "")}
   ><span className="input-group-addon"
     >Refresh</span
-  ><input className="form-control refresh-input" type="text" placeholder={Data.Params.PERIOD.refreshdf.Placeholder}  name="refreshdf"  onChange={this.handleChange} value={Data.Params.PERIOD.refreshdf.Input}
+  ><input className="form-control refresh-input" type="text" placeholder={Data.Params.PERIOD.refreshdf.Placeholder}  name="refreshdf"  value={Data.Params.PERIOD.refreshdf.Input} onChange={this.handleChange}
   ></input></div
 ></div
       ></form
@@ -532,7 +532,7 @@ define(function(require) {
         ><div  className={"input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshps.InputErrd ? " has-warning" : "")}
   ><span className="input-group-addon"
     >Refresh</span
-  ><input className="form-control refresh-input" type="text" placeholder={Data.Params.PERIOD.refreshps.Placeholder}  name="refreshps"  onChange={this.handleChange} value={Data.Params.PERIOD.refreshps.Input}
+  ><input className="form-control refresh-input" type="text" placeholder={Data.Params.PERIOD.refreshps.Placeholder}  name="refreshps"  value={Data.Params.PERIOD.refreshps.Input} onChange={this.handleChange}
   ></input></div
 ></div
       ><div className="form-group-padded"
@@ -658,7 +658,7 @@ define(function(require) {
         ><div  className={"input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshvg.InputErrd ? " has-warning" : "")}
   ><span className="input-group-addon"
     >Refresh</span
-  ><input className="form-control refresh-input" type="text" placeholder={Data.Params.PERIOD.refreshvg.Placeholder}  name="refreshvg"  onChange={this.handleChange} value={Data.Params.PERIOD.refreshvg.Input}
+  ><input className="form-control refresh-input" type="text" placeholder={Data.Params.PERIOD.refreshvg.Placeholder}  name="refreshvg"  value={Data.Params.PERIOD.refreshvg.Input} onChange={this.handleChange}
   ></input></div
 ></div
       ><div className="form-group-padded"

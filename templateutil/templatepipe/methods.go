@@ -48,12 +48,20 @@ func (n Nota) PeriodNameAttr() interface{} {
 }
 
 func (n Nota) PeriodValueAttr() interface{} {
-	return fmt.Sprintf(" onChange={this.handleChange} value={%s.Input}", n.ToString())
+	return fmt.Sprintf(" value={%s.Input} onChange={this.handleChange}", n.ToString())
 }
 
 func (n Nota) RefreshClassAttr(classes string) interface{} {
 	return fmt.Sprintf(" className={%q + (%s.InputErrd ? %q : \"\")}",
 		classes, n.ToString(), " has-warning")
+}
+
+func (n Nota) LessHrefAttr() interface{} {
+	return fmt.Sprintf(" href={%s.LessHref} onClick={this.handleClick}", n.Uncurl())
+}
+
+func (n Nota) MoreHrefAttr() interface{} {
+	return fmt.Sprintf(" href={%s.MoreHref} onClick={this.handleClick}", n.Uncurl())
 }
 
 // DotSplit splits s by last ".".

@@ -23,7 +23,7 @@ define(function(require) {
             }, "Hide swap"))), React.createElement("div", {className: "form-group-padded"
         }, React.createElement("div", {className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshmem.InputErrd ? " has-warning" : "")
   }, React.createElement("span", {className: "input-group-addon"
-    }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Params.PERIOD.refreshmem.Placeholder, name: "refreshmem", onChange: this.handleChange, value: Data.Params.PERIOD.refreshmem.Input
+    }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Params.PERIOD.refreshmem.Placeholder, name: "refreshmem", value: Data.Params.PERIOD.refreshmem.Input, onChange: this.handleChange
   })))))), React.createElement("div", null
   , React.createElement("div", {className: Data.Params.BOOL.hidemem.Value ? "collapse-hidden" : ""
     }, React.createElement("table", {className: "table1 stripe-table"
@@ -77,7 +77,7 @@ define(function(require) {
             }, Data.ExpandtextIF))), React.createElement("div", {className: "form-group-padded"
         }, React.createElement("div", {className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshif.InputErrd ? " has-warning" : "")
   }, React.createElement("span", {className: "input-group-addon"
-    }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Params.PERIOD.refreshif.Placeholder, name: "refreshif", onChange: this.handleChange, value: Data.Params.PERIOD.refreshif.Input
+    }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Params.PERIOD.refreshif.Placeholder, name: "refreshif", value: Data.Params.PERIOD.refreshif.Input, onChange: this.handleChange
   })))), React.createElement("ul", {className: "nav nav-tabs"
       }, React.createElement("li", {className: (Data.Params.ENUM.ift.Uint == 0) ? "active" : "", "data-tabid": "0"
         }, React.createElement("a", {href: Data.Params.ENUM.ift.PACKETS.Href, onClick: this.handleClick
@@ -161,7 +161,7 @@ define(function(require) {
             }, Data.CPU.ExpandtextCPU))), React.createElement("div", {className: "form-group-padded"
         }, React.createElement("div", {className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshcpu.InputErrd ? " has-warning" : "")
   }, React.createElement("span", {className: "input-group-addon"
-    }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Params.PERIOD.refreshcpu.Placeholder, name: "refreshcpu", onChange: this.handleChange, value: Data.Params.PERIOD.refreshcpu.Input
+    }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Params.PERIOD.refreshcpu.Placeholder, name: "refreshcpu", value: Data.Params.PERIOD.refreshcpu.Input, onChange: this.handleChange
   })))))), React.createElement("div", null
   , React.createElement("div", {className: Data.Params.BOOL.hidecpu.Value ? "collapse-hidden" : ""
     }, React.createElement("table", {className: "table1 stripe-table"
@@ -217,7 +217,7 @@ define(function(require) {
             }, Data.ExpandtextDF))), React.createElement("div", {className: "form-group-padded"
         }, React.createElement("div", {className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshdf.InputErrd ? " has-warning" : "")
   }, React.createElement("span", {className: "input-group-addon"
-    }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Params.PERIOD.refreshdf.Placeholder, name: "refreshdf", onChange: this.handleChange, value: Data.Params.PERIOD.refreshdf.Input
+    }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Params.PERIOD.refreshdf.Placeholder, name: "refreshdf", value: Data.Params.PERIOD.refreshdf.Input, onChange: this.handleChange
   })))), React.createElement("ul", {className: "nav nav-tabs"
       }, React.createElement("li", {className: (Data.Params.ENUM.dft.Uint == 0) ? "active" : "", "data-tabid": "0"
         }, React.createElement("a", {href: Data.Params.ENUM.dft.INODES.Href, onClick: this.handleClick
@@ -284,7 +284,7 @@ define(function(require) {
         }), React.createElement("div", {className: "form-group-padded"
         }, React.createElement("div", {className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshps.InputErrd ? " has-warning" : "")
   }, React.createElement("span", {className: "input-group-addon"
-    }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Params.PERIOD.refreshps.Placeholder, name: "refreshps", onChange: this.handleChange, value: Data.Params.PERIOD.refreshps.Input
+    }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Params.PERIOD.refreshps.Placeholder, name: "refreshps", value: Data.Params.PERIOD.refreshps.Input, onChange: this.handleChange
   }))), React.createElement("div", {className: "form-group-padded"
         }, React.createElement("div", {className: "btn-group btn-group-sm", role: "group"
           }, React.createElement("a", {className: Data.Params.BOOL.hideps.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Params.BOOL.hideps.Href, onClick: this.handleClick
@@ -351,7 +351,7 @@ define(function(require) {
         }), React.createElement("div", {className: "form-group-padded"
         }, React.createElement("div", {className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshvg.InputErrd ? " has-warning" : "")
   }, React.createElement("span", {className: "input-group-addon"
-    }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Params.PERIOD.refreshvg.Placeholder, name: "refreshvg", onChange: this.handleChange, value: Data.Params.PERIOD.refreshvg.Input
+    }, "Refresh"), React.createElement("input", {className: "form-control refresh-input", type: "text", placeholder: Data.Params.PERIOD.refreshvg.Placeholder, name: "refreshvg", value: Data.Params.PERIOD.refreshvg.Input, onChange: this.handleChange
   }))), React.createElement("div", {className: "form-group-padded"
         }, React.createElement("div", {className: "btn-group btn-group-sm", role: "group"
           }, React.createElement("a", {className: Data.Params.BOOL.hidevg.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Params.BOOL.hidevg.Href, onClick: this.handleClick

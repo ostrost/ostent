@@ -543,9 +543,9 @@
           ><div class="btn-group btn-group-sm" role="group"
             ><a {{ifBPClassAttr .Data.Params.BOOL.hideps "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideps.ToggleHrefAttr}}
               >Hidden</a
-            ><a {{ifBClassAttr .Data.PStable.PSnotDecreasable "disabled" "" "btn btn-default"}} {{lessHrefAttr .Data.Params.LIMIT.psn}}
+            ><a {{ifBClassAttr .Data.PStable.PSnotDecreasable "disabled" "" "btn btn-default"}} {{.Data.Params.LIMIT.psn.LessHrefAttr}}
               >-</a
-            ><a {{ifBClassAttr .Data.PStable.PSnotExpandable "disabled" "" "btn btn-default"}} {{moreHrefAttr .Data.Params.LIMIT.psn}}
+            ><a {{ifBClassAttr .Data.PStable.PSnotExpandable "disabled" "" "btn btn-default"}} {{.Data.Params.LIMIT.psn.MoreHrefAttr}}
               >{{.Data.PStable.PSplusText}}</a
             ></div
           ></div
