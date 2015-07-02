@@ -47,6 +47,10 @@ func (n Nota) PeriodNameAttr() interface{} {
 	return fmt.Sprintf(" name=%q", pname)
 }
 
+func (n Nota) PeriodValueAttr() interface{} {
+	return fmt.Sprintf(" onChange={this.handleChange} value={%s.Input}", n.ToString())
+}
+
 // DotSplit splits s by last ".".
 func DotSplit(s string) (string, string) {
 	if s == "" {

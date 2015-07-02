@@ -24,22 +24,6 @@ func (f JSXFuncs) jsxClose(tag string) template.HTML { return template.HTML("</"
 // jsxClose returns empty template.HTML.
 func (f HTMLFuncs) jsxClose(string) (empty template.HTML) { return } // f is unused
 
-func (f JSXFuncs) periodValueAttr(value interface{}) (interface{}, error) {
-	// f is unused
-	vstring := ToString(value)
-	return fmt.Sprintf(" onChange={this.handleChange} value={%s.Input}", vstring), nil
-}
-
-func (f HTMLFuncs) periodValueAttr(value interface{}) (interface{}, error) {
-	if period, ok := value.(*params.PeriodParam); ok {
-		if period.Input != "" {
-			return template.HTMLAttr(fmt.Sprintf(" value=\"%s\"", period.Input)), nil
-		}
-		return template.HTMLAttr(""), nil
-	}
-	return nil, f.CastError("*params.PeriodParam")
-}
-
 func (f JSXFuncs) refreshClass(value interface{}, classes string) (interface{}, error) {
 	vstring := ToString(value)
 	return fmt.Sprintf(" %s={%q + (%s.InputErrd ? \" has-warning\" : \"\")}",
@@ -347,7 +331,6 @@ func MakeMap(f Functor) template.FuncMap {
 		"iftEnumAttrs":      f.iftEnumAttrs,
 		"ifExpandClassAttr": f.ifExpandClassAttr,
 		"ifDisabledAttr":    f.ifDisabledAttr,
-		"periodValueAttr":   f.periodValueAttr,
 		"refreshClass":      f.refreshClass,
 		"lessHrefAttr":      f.lessHrefAttr,
 		"moreHrefAttr":      f.moreHrefAttr,
@@ -373,7 +356,6 @@ type Functor interface {
 	iftEnumAttrs(interface{}, string, string) (template.HTMLAttr, error)
 	ifExpandClassAttr(interface{}, ...string) (template.HTMLAttr, error)
 	ifDisabledAttr(interface{}) (template.HTMLAttr, error)
-	periodValueAttr(interface{}) (interface{}, error)
 	refreshClass(interface{}, string) (interface{}, error)
 	lessHrefAttr(interface{}) (interface{}, error)
 	moreHrefAttr(interface{}) (interface{}, error)
@@ -386,11 +368,14 @@ type Functor interface {
 func init() {
 	// check for Nota's interfaces compliance
 	_ = interface {
-		Clip(int, string, ...operating.ToStringer) (*operating.Clipped, error) // operating.*
-		KeyAttr(string) template.HTMLAttr                                      // operating.*
-		FormActionAttr() interface{}                                           // Query
-		ToggleHrefAttr() interface{}                                           // BoolParam
-		PeriodNameAttr() interface{}                                           // PeriodParam
+		// operating (multiple types):
+		Clip(int, string, ...operating.ToStringer) (*operating.Clipped, error)
+		KeyAttr(string) template.HTMLAttr
+
+		FormActionAttr() interface{}  // Query
+		ToggleHrefAttr() interface{}  // BoolParam
+		PeriodNameAttr() interface{}  // PeriodParam
+		PeriodValueAttr() interface{} // PeriodParam
 	}(templatepipe.Nota(nil))
 }
 
