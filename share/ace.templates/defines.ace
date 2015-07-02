@@ -129,35 +129,27 @@
       | </form>
 
       ul.nav.nav-tabs
-        / {{class}}="if-switch"
-        | <li {{iftEnumAttrs .Data.Params.ENUM.ift "PACKETS" "active"}}>
+        | <li {{.Data.Params.ENUM.ift.EnumClassAttr "PACKETS" "active"}}>
         {{template "defines::adroplink" droplink .Data.Params.ENUM.ift "PACKETS"}}
-        | </li><li {{iftEnumAttrs .Data.Params.ENUM.ift "ERRORS" "active"}}>
+        | </li><li {{.Data.Params.ENUM.ift.EnumClassAttr "ERRORS" "active"}}>
         {{template "defines::adroplink" droplink .Data.Params.ENUM.ift "ERRORS"}}
-        | </li><li {{iftEnumAttrs .Data.Params.ENUM.ift "IFBYTES" "active"}}>
+        | </li><li {{.Data.Params.ENUM.ift.EnumClassAttr "IFBYTES" "active"}}>
         {{template "defines::adroplink" droplink .Data.Params.ENUM.ift "IFBYTES"}}
         | </li>
       | </div>
 
     div
       | <div {{.Data.Params.BOOL.hideif.BoolParamClassAttr "collapse-hidden"}}>
-      / panels selected by .if-tab
-      / #ifpackets
-      | <div id="ifpackets" {{ifNeClassAttr .Data.Params.ENUM.ift "PACKETS" "collapse-hidden"}}>
-      span#ifpackets-table
-        {{template "defines::define_ifpackets_table" .}}
+      | <div {{.Data.Params.ENUM.ift.EnumClassAttr "PACKETS" "" "collapse-hidden"}}>
+      {{template "defines::define_ifpackets_table" .}}
       | </div>
 
-      / #iferrors
-      | <div id="iferrors" {{ifNeClassAttr .Data.Params.ENUM.ift "ERRORS" "collapse-hidden"}}>
-      span#iferrors-table
-        {{template "defines::define_iferrors_table" .}}
+      | <div {{.Data.Params.ENUM.ift.EnumClassAttr "ERRORS" "" "collapse-hidden"}}>
+      {{template "defines::define_iferrors_table" .}}
       | </div>
 
-      / #ifbytes
-      | <div id="ifbytes" {{ifNeClassAttr .Data.Params.ENUM.ift "IFBYTES" "collapse-hidden"}}>
-      span#ifbytes-table
-        {{template "defines::define_ifbytes_table" .}}
+      | <div {{.Data.Params.ENUM.ift.EnumClassAttr "IFBYTES" "" "collapse-hidden"}}>
+      {{template "defines::define_ifbytes_table" .}}
       | </div>
       | </div>
 
@@ -236,27 +228,21 @@
       | </form>
 
       ul.nav.nav-tabs
-        / {{class}}="df-switch"
-        | <li {{iftEnumAttrs .Data.Params.ENUM.dft "INODES" "active"}}>
+        | <li {{.Data.Params.ENUM.dft.EnumClassAttr "INODES" "active"}}>
         {{template "defines::adroplink" droplink .Data.Params.ENUM.dft "INODES"}}
-        | </li><li {{iftEnumAttrs .Data.Params.ENUM.dft "DFBYTES" "active"}}>
+        | </li><li {{.Data.Params.ENUM.dft.EnumClassAttr "DFBYTES" "active"}}>
         {{template "defines::adroplink" droplink .Data.Params.ENUM.dft "DFBYTES"}}
         | </li>
       | </div>
 
     div
       | <div {{.Data.Params.BOOL.hidedf.BoolParamClassAttr "collapse-hidden"}}>
-      / panels selected by .df-tab
-      / #dfinodes
-      | <div id="dfinodes" {{ifNeClassAttr .Data.Params.ENUM.dft "INODES" "collapse-hidden"}}>
-      span#dfinodes-table
-        {{template "defines::define_dfinodes_table" .}}
+      | <div {{.Data.Params.ENUM.dft.EnumClassAttr "INODES" "" "collapse-hidden"}}>
+      {{template "defines::define_dfinodes_table" .}}
       | </div>
 
-      / #dfbytes
-      | <div id="dfbytes" {{ifNeClassAttr .Data.Params.ENUM.dft "DFBYTES" "collapse-hidden"}}>
-      span#dfbytes-table
-        {{template "defines::define_dfbytes_table" .}}
+      | <div {{.Data.Params.ENUM.dft.EnumClassAttr "DFBYTES" "" "collapse-hidden"}}>
+      {{template "defines::define_dfbytes_table" .}}
       | </div>
       | </div>
 

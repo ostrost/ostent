@@ -24,65 +24,6 @@ func (f JSXFuncs) jsxClose(tag string) template.HTML { return template.HTML("</"
 // jsxClose returns empty template.HTML.
 func (f HTMLFuncs) jsxClose(string) (empty template.HTML) { return } // f is unused
 
-func (f JSXFuncs) ifNeClassAttr(value interface{}, named string, class string) (template.HTMLAttr, error) {
-	vstring := ToString(value)
-	_, pname := DotSplit(vstring)
-	enums := params.NewParamsENUM(nil)
-	ed := enums[pname].EnumDecodec
-	_, uptr := ed.Unew()
-	if err := uptr.Unmarshal(named, new(bool)); err != nil {
-		return template.HTMLAttr(""), err
-	}
-	return template.HTMLAttr(fmt.Sprintf(" %s={(%s.Uint != %d) ? %q : \"\"} data-tabid=\"%d\" data-title=%q",
-		f.classWord(), vstring, uptr.Touint(), class, uptr.Touint(), ed.Text(named))), nil
-}
-
-func (f HTMLFuncs) ifNeClassAttr(value interface{}, named string, class string) (template.HTMLAttr, error) {
-	ep, ok := value.(*params.EnumParam)
-	if !ok {
-		return template.HTMLAttr(""), f.CastError("*params.EnumParams")
-	}
-	_, uptr := ep.EnumDecodec.Unew()
-	if err := uptr.Unmarshal(named, new(bool)); err != nil {
-		return template.HTMLAttr(""), err
-	}
-	ucmp := uptr.Touint()
-	if ep.Number.Uint == ucmp {
-		class = ""
-	}
-	return template.HTMLAttr(fmt.Sprintf(" %s=%q data-tabid=\"%d\" data-title=%q",
-		f.classWord(), class, ucmp, ep.EnumDecodec.Text(named))), nil
-}
-
-func (f JSXFuncs) iftEnumAttrs(value interface{}, named string, class string) (template.HTMLAttr, error) {
-	vstring := ToString(value)
-	_, pname := DotSplit(vstring)
-	enums := params.NewParamsENUM(nil)
-	ed := enums[pname].EnumDecodec
-	_, uptr := ed.Unew()
-	if err := uptr.Unmarshal(named, new(bool)); err != nil {
-		return template.HTMLAttr(""), err
-	}
-	return template.HTMLAttr(fmt.Sprintf(" %s={(%s.Uint == %d) ? %q : \"\"} data-tabid=\"%d\"",
-		f.classWord(), vstring, uptr.Touint(), class, uptr.Touint())), nil
-}
-
-func (f HTMLFuncs) iftEnumAttrs(value interface{}, named string, class string) (template.HTMLAttr, error) {
-	ep, ok := value.(*params.EnumParam)
-	if !ok {
-		return template.HTMLAttr(""), f.CastError("*params.EnumParams")
-	}
-	_, uptr := ep.EnumDecodec.Unew()
-	if err := uptr.Unmarshal(named, new(bool)); err != nil {
-		return template.HTMLAttr(""), err
-	}
-	ucmp := uptr.Touint()
-	if ep.Number.Uint != ucmp {
-		class = ""
-	}
-	return template.HTMLAttr(fmt.Sprintf(" %s=%q data-tabid=\"%d\"", f.classWord(), class, ucmp)), nil
-}
-
 func (f JSXFuncs) droplink(value interface{}, args ...string) (interface{}, error) {
 	// f is unused
 	named, aclass := DropLinkArgs(args)
@@ -170,14 +111,12 @@ func MakeMap(f Functor) template.FuncMap {
 		"rowsset": func(interface{}) string { return "" }, // empty pipeline
 		// acepp overrides rowsset and adds setrows
 
-		"droplink":      f.droplink,
-		"usepercent":    f.usepercent,
-		"ifNeClassAttr": f.ifNeClassAttr,
-		"iftEnumAttrs":  f.iftEnumAttrs,
-		"jsxClose":      f.jsxClose,
-		"class":         f.classWord,
-		"colspan":       f.colspanWord,
-		"for":           f.forWord,
+		"droplink":   f.droplink,
+		"usepercent": f.usepercent,
+		"jsxClose":   f.jsxClose,
+		"class":      f.classWord,
+		"colspan":    f.colspanWord,
+		"for":        f.forWord,
 	}
 }
 
@@ -188,8 +127,6 @@ type Functor interface {
 	MakeMap() template.FuncMap
 	droplink(interface{}, ...string) (interface{}, error)
 	usepercent(interface{}) interface{}
-	ifNeClassAttr(interface{}, string, string) (template.HTMLAttr, error)
-	iftEnumAttrs(interface{}, string, string) (template.HTMLAttr, error)
 	jsxClose(string) template.HTML
 	classWord() string
 	colspanWord() string
@@ -201,18 +138,19 @@ func init() {
 	_ = interface {
 		// operating (multiple types):
 		BoolClassAttr(...string) (template.HTMLAttr, error)
-		BoolParamClassAttr(...string) (template.HTMLAttr, error)
 		Clip(int, string, ...operating.ToStringer) (*operating.Clipped, error)
 		KeyAttr(string) template.HTMLAttr
 
-		FormActionAttr() interface{}         // Query
-		DisabledAttr() interface{}           // BoolParam
-		ToggleHrefAttr() interface{}         // BoolParam
-		PeriodNameAttr() interface{}         // PeriodParam
-		PeriodValueAttr() interface{}        // PeriodParam
-		RefreshClassAttr(string) interface{} // PeriodParam
-		LessHrefAttr() interface{}           // LimitParam
-		MoreHrefAttr() interface{}           // LimitParam
+		FormActionAttr() interface{}                                        // Query
+		BoolParamClassAttr(...string) (template.HTMLAttr, error)            // BoolParam
+		DisabledAttr() interface{}                                          // BoolParam
+		ToggleHrefAttr() interface{}                                        // BoolParam
+		EnumClassAttr(string, string, ...string) (template.HTMLAttr, error) // EnumParam
+		PeriodNameAttr() interface{}                                        // PeriodParam
+		PeriodValueAttr() interface{}                                       // PeriodParam
+		RefreshClassAttr(string) interface{}                                // PeriodParam
+		LessHrefAttr() interface{}                                          // LimitParam
+		MoreHrefAttr() interface{}                                          // LimitParam
 	}(templatepipe.Nota(nil))
 }
 

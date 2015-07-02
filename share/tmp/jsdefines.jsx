@@ -142,15 +142,15 @@ define(function(require) {
 ></div
       ></form
     ><ul className="nav nav-tabs"
-      ><li  className={(Data.Params.ENUM.ift.Uint == 0) ? "active" : ""} data-tabid="0"
+      ><li  className={(Data.Params.ENUM.ift.Uint == 0) ? "active" : ""}
         ><a href={Data.Params.ENUM.ift.PACKETS.Href} onClick={this.handleClick}
   >Packets</a
 ></li
-      ><li  className={(Data.Params.ENUM.ift.Uint == 1) ? "active" : ""} data-tabid="1"
+      ><li  className={(Data.Params.ENUM.ift.Uint == 1) ? "active" : ""}
         ><a href={Data.Params.ENUM.ift.ERRORS.Href} onClick={this.handleClick}
   >Errors</a
 ></li
-      ><li  className={(Data.Params.ENUM.ift.Uint == 2) ? "active" : ""} data-tabid="2"
+      ><li  className={(Data.Params.ENUM.ift.Uint == 2) ? "active" : ""}
         ><a href={Data.Params.ENUM.ift.IFBYTES.Href} onClick={this.handleClick}
   >Bytes</a
 ></li
@@ -159,9 +159,8 @@ define(function(require) {
   ></div
 ><div
   ><div  className={Data.Params.BOOL.hideif.Value ? "collapse-hidden" : ""}
-    ><div id="ifpackets"  className={(Data.Params.ENUM.ift.Uint != 0) ? "collapse-hidden" : ""} data-tabid="0" data-title="Packets"
-      ><span id="ifpackets-table"
-        ><table className="table1 stripe-table"
+    ><div  className={(Data.Params.ENUM.ift.Uint == 0) ? "" : "collapse-hidden"}
+      ><table className="table1 stripe-table"
   ><thead
     ><tr
       ><th
@@ -187,11 +186,9 @@ define(function(require) {
   ><tbody
     >{r1}</tbody
   ></table
-></span
-      ></div
-    ><div id="iferrors"  className={(Data.Params.ENUM.ift.Uint != 1) ? "collapse-hidden" : ""} data-tabid="1" data-title="Errors"
-      ><span id="iferrors-table"
-        ><table className="table1 stripe-table"
+></div
+    ><div  className={(Data.Params.ENUM.ift.Uint == 1) ? "" : "collapse-hidden"}
+      ><table className="table1 stripe-table"
   ><thead
     ><tr
       ><th
@@ -217,11 +214,9 @@ define(function(require) {
   ><tbody
     >{r2}</tbody
   ></table
-></span
-      ></div
-    ><div id="ifbytes"  className={(Data.Params.ENUM.ift.Uint != 2) ? "collapse-hidden" : ""} data-tabid="2" data-title="Bytes"
-      ><span id="ifbytes-table"
-        ><table className="table1 stripe-table"
+></div
+    ><div  className={(Data.Params.ENUM.ift.Uint == 2) ? "" : "collapse-hidden"}
+      ><table className="table1 stripe-table"
   ><thead
     ><tr
       ><th
@@ -255,8 +250,7 @@ define(function(require) {
   ><tbody
     >{r3}</tbody
   ></table
-></span
-      ></div
+></div
     ></div
   ></div
 ></div
@@ -409,11 +403,11 @@ define(function(require) {
 ></div
       ></form
     ><ul className="nav nav-tabs"
-      ><li  className={(Data.Params.ENUM.dft.Uint == 0) ? "active" : ""} data-tabid="0"
+      ><li  className={(Data.Params.ENUM.dft.Uint == 0) ? "active" : ""}
         ><a href={Data.Params.ENUM.dft.INODES.Href} onClick={this.handleClick}
   >Inodes</a
 ></li
-      ><li  className={(Data.Params.ENUM.dft.Uint == 1) ? "active" : ""} data-tabid="1"
+      ><li  className={(Data.Params.ENUM.dft.Uint == 1) ? "active" : ""}
         ><a href={Data.Params.ENUM.dft.DFBYTES.Href} onClick={this.handleClick}
   >Bytes</a
 ></li
@@ -422,9 +416,8 @@ define(function(require) {
   ></div
 ><div
   ><div  className={Data.Params.BOOL.hidedf.Value ? "collapse-hidden" : ""}
-    ><div id="dfinodes"  className={(Data.Params.ENUM.dft.Uint != 0) ? "collapse-hidden" : ""} data-tabid="0" data-title="Inodes"
-      ><span id="dfinodes-table"
-        ><table className="table1 stripe-table"
+    ><div  className={(Data.Params.ENUM.dft.Uint == 0) ? "" : "collapse-hidden"}
+      ><table className="table1 stripe-table"
   ><thead
     ><tr
       ><th className="header"
@@ -442,11 +435,9 @@ define(function(require) {
   ><tbody
     >{r1}</tbody
   ></table
-></span
-      ></div
-    ><div id="dfbytes"  className={(Data.Params.ENUM.dft.Uint != 1) ? "collapse-hidden" : ""} data-tabid="1" data-title="Bytes"
-      ><span id="dfbytes-table"
-        ><table className="table1 stripe-table"
+></div
+    ><div  className={(Data.Params.ENUM.dft.Uint == 1) ? "" : "collapse-hidden"}
+      ><table className="table1 stripe-table"
   ><thead
     ><tr
       ><th className="header "
@@ -484,8 +475,7 @@ define(function(require) {
   ><tbody
     >{r2}</tbody
   ></table
-></span
-      ></div
+></div
     ></div
   ></div
 ></div

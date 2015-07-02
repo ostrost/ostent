@@ -55,6 +55,23 @@ func (bp BoolParam) ToggleHrefAttr() interface{} {
 	return SprintfAttr(" href=\"%s\"", bp.EncodeToggle())
 }
 
+func (ep EnumParam) EnumClassAttr(named, classif string, optelse ...string) (template.HTMLAttr, error) {
+	var classelse string
+	if len(optelse) == 1 {
+		classelse = optelse[0]
+	} else if len(optelse) > 1 {
+		return template.HTMLAttr(""), fmt.Errorf("number of args for EnumClassAttr: either 2 or 3 got %d", 2+len(optelse))
+	}
+	_, uptr := ep.EnumDecodec.Unew()
+	if err := uptr.Unmarshal(named, new(bool)); err != nil {
+		return template.HTMLAttr(""), err
+	}
+	if ep.Number.Uint != uptr.Touint() {
+		classif = classelse
+	}
+	return SprintfAttr(" class=%q", classif), nil
+}
+
 func (pp PeriodParam) PeriodNameAttr() interface{} {
 	return SprintfAttr(" name=%q", pp.Pname)
 }

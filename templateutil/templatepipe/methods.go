@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"strings"
 
+	"github.com/ostrost/ostent/params"
 	"github.com/ostrost/ostent/system/operating"
 )
 
@@ -58,6 +59,25 @@ func (n Nota) Clip(width int, prefix string, id ...operating.ToStringer) (*opera
 
 func (n Nota) DisabledAttr() interface{} {
 	return fmt.Sprintf(" disabled={%s.Value ? %q : \"\" }", n.Uncurl(), "disabled")
+}
+
+func (n Nota) EnumClassAttr(named, classif string, optelse ...string) (template.HTMLAttr, error) {
+	var classelse string
+	if len(optelse) == 1 {
+		classelse = optelse[0]
+	} else if len(optelse) > 1 {
+		return template.HTMLAttr(""), fmt.Errorf("number of args for EnumClassAttr: either 2 or 3 got %d", 2+len(optelse))
+	}
+	vstring := n.ToString()
+	_, pname := DotSplit(vstring)
+	eparams := params.NewParamsENUM(nil)
+	ed := eparams[pname].EnumDecodec
+	_, uptr := ed.Unew()
+	if err := uptr.Unmarshal(named, new(bool)); err != nil {
+		return template.HTMLAttr(""), err
+	}
+	return operating.SprintfAttr(" className={(%s.Uint == %d) ? %q : %q}",
+		n.ToString(), uptr.Touint(), classif, classelse), nil
 }
 
 func (n Nota) ToggleHrefAttr() interface{} {
