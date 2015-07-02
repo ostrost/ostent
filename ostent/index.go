@@ -69,10 +69,10 @@ func (procs MPSlice) Ordered(para *params.Params) *PStable {
 	}
 
 	pst := &PStable{}
-	pst.PSnotDecreasable = new(bool)
-	*pst.PSnotDecreasable = notdec
-	pst.PSnotExpandable = new(bool)
-	*pst.PSnotExpandable = notexp
+	pst.PSnotDecreasable = new(operating.Bool)
+	*pst.PSnotDecreasable = operating.Bool(notdec)
+	pst.PSnotExpandable = new(operating.Bool)
+	*pst.PSnotExpandable = operating.Bool(notexp)
 	pst.PSplusText = new(string)
 	*pst.PSplusText = fmt.Sprintf("%d+", limitPS)
 
@@ -123,17 +123,17 @@ type IndexData struct {
 	DISTRIB string
 	VERSION string
 
-	ExpandableDF *bool   `json:",omitempty"`
-	ExpandtextDF *string `json:",omitempty"`
-	ExpandableIF *bool   `json:",omitempty"`
-	ExpandtextIF *string `json:",omitempty"`
+	ExpandableDF *operating.Bool `json:",omitempty"`
+	ExpandtextDF *string         `json:",omitempty"`
+	ExpandableIF *operating.Bool `json:",omitempty"`
+	ExpandtextIF *string         `json:",omitempty"`
 }
 
 type PStable struct {
 	List             []operating.ProcData `json:",omitempty"`
 	PSplusText       *string              `json:",omitempty"`
-	PSnotExpandable  *bool                `json:",omitempty"`
-	PSnotDecreasable *bool                `json:",omitempty"`
+	PSnotExpandable  *operating.Bool      `json:",omitempty"`
+	PSnotDecreasable *operating.Bool      `json:",omitempty"`
 }
 
 type IndexUpdate struct {
@@ -157,10 +157,10 @@ type IndexUpdate struct {
 
 	Location *string `json:",omitempty"`
 
-	ExpandableDF *bool   `json:",omitempty"`
-	ExpandtextDF *string `json:",omitempty"`
-	ExpandableIF *bool   `json:",omitempty"`
-	ExpandtextIF *string `json:",omitempty"`
+	ExpandableDF *operating.Bool `json:",omitempty"`
+	ExpandtextDF *string         `json:",omitempty"`
+	ExpandableIF *operating.Bool `json:",omitempty"`
+	ExpandtextIF *string         `json:",omitempty"`
 }
 
 type Generic struct {
@@ -382,7 +382,7 @@ func (ir *IndexRegistry) DF(para *params.Params, iu *IndexUpdate) interface{} {
 	default:
 		return nil
 	}
-	iu.ExpandableDF = new(bool)
+	iu.ExpandableDF = new(operating.Bool)
 	*iu.ExpandableDF = lenp > para.Toprows
 	iu.ExpandtextDF = new(string)
 	*iu.ExpandtextDF = fmt.Sprintf("Expanded (%d)", lenp)
@@ -501,7 +501,7 @@ func (ir *IndexRegistry) IF(para *params.Params, iu *IndexUpdate) interface{} {
 	default:
 		return nil
 	}
-	iu.ExpandableIF = new(bool)
+	iu.ExpandableIF = new(operating.Bool)
 	*iu.ExpandableIF = lenp > para.Toprows
 	iu.ExpandtextIF = new(string)
 	*iu.ExpandtextIF = fmt.Sprintf("Expanded (%d)", lenp)
@@ -517,7 +517,7 @@ func (ir *IndexRegistry) CPUInternal(para *params.Params) *operating.CPUInfo {
 	cpu := &operating.CPUInfo{}
 	private := ir.ListPrivateCPU()
 
-	cpu.ExpandableCPU = new(bool)
+	cpu.ExpandableCPU = new(operating.Bool)
 	*cpu.ExpandableCPU = len(private) > para.Toprows // one row reserved for "all N"
 	cpu.ExpandtextCPU = new(string)
 	*cpu.ExpandtextCPU = fmt.Sprintf("Expanded (%d)", len(private))

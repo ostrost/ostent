@@ -395,7 +395,7 @@
           ><div class="btn-group btn-group-sm" role="group"
             ><a {{ifBPClassAttr .Data.Params.BOOL.hidecpu "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidecpu.ToggleHrefAttr}}
               >Hidden</a
-            ><a {{ifBClassAttr .Data.CPU.ExpandableCPU "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expandcpu.ToggleHrefAttr}}
+            ><a {{.Data.CPU.ExpandableCPU.BoolClassAttr "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expandcpu.ToggleHrefAttr}}
               >{{.Data.CPU.ExpandtextCPU}}</a
             ></div
           ></div
@@ -423,7 +423,7 @@
           ><div class="btn-group btn-group-sm" role="group"
             ><a {{ifBPClassAttr .Data.Params.BOOL.hidedf "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidedf.ToggleHrefAttr}}
               >Hidden</a
-            ><a {{ifBClassAttr .Data.ExpandableDF "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expanddf.ToggleHrefAttr}}
+            ><a {{.Data.ExpandableDF.BoolClassAttr "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expanddf.ToggleHrefAttr}}
               >{{.Data.ExpandtextDF}}</a
             ></div
           ></div
@@ -465,7 +465,7 @@
           ><div class="btn-group btn-group-sm" role="group"
             ><a {{ifBPClassAttr .Data.Params.BOOL.hideif "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideif.ToggleHrefAttr}}
               >Hidden</a
-            ><a {{ifBClassAttr .Data.ExpandableIF "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expandif.ToggleHrefAttr}}
+            ><a {{.Data.ExpandableIF.BoolClassAttr "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expandif.ToggleHrefAttr}}
               >{{.Data.ExpandtextIF}}</a
             ></div
           ></div
@@ -543,9 +543,9 @@
           ><div class="btn-group btn-group-sm" role="group"
             ><a {{ifBPClassAttr .Data.Params.BOOL.hideps "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideps.ToggleHrefAttr}}
               >Hidden</a
-            ><a {{ifBClassAttr .Data.PStable.PSnotDecreasable "disabled" "" "btn btn-default"}} {{.Data.Params.LIMIT.psn.LessHrefAttr}}
+            ><a {{.Data.PStable.PSnotDecreasable.BoolClassAttr "disabled" "" "btn btn-default"}} {{.Data.Params.LIMIT.psn.LessHrefAttr}}
               >-</a
-            ><a {{ifBClassAttr .Data.PStable.PSnotExpandable "disabled" "" "btn btn-default"}} {{.Data.Params.LIMIT.psn.MoreHrefAttr}}
+            ><a {{.Data.PStable.PSnotExpandable.BoolClassAttr "disabled" "" "btn btn-default"}} {{.Data.Params.LIMIT.psn.MoreHrefAttr}}
               >{{.Data.PStable.PSplusText}}</a
             ></div
           ></div

@@ -129,7 +129,7 @@ define(function(require) {
         ><div className="btn-group btn-group-sm" role="group"
           ><a  className={Data.Params.BOOL.hideif.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hideif.Href} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.ExpandableIF ? "btn btn-default " : "btn btn-default disabled" }  href={Data.Params.BOOL.expandif.Href} onClick={this.handleClick}
+          ><a  className={Data.ExpandableIF ? "btn btn-default " : "btn btn-default disabled"}  href={Data.Params.BOOL.expandif.Href} onClick={this.handleClick}
             >{Data.ExpandtextIF}</a
           ></div
         ></div
@@ -293,7 +293,7 @@ define(function(require) {
         ><div className="btn-group btn-group-sm" role="group"
           ><a  className={Data.Params.BOOL.hidecpu.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hidecpu.Href} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.CPU.ExpandableCPU ? "btn btn-default " : "btn btn-default disabled" }  href={Data.Params.BOOL.expandcpu.Href} onClick={this.handleClick}
+          ><a  className={Data.CPU.ExpandableCPU ? "btn btn-default " : "btn btn-default disabled"}  href={Data.Params.BOOL.expandcpu.Href} onClick={this.handleClick}
             >{Data.CPU.ExpandtextCPU}</a
           ></div
         ></div
@@ -396,7 +396,7 @@ define(function(require) {
         ><div className="btn-group btn-group-sm" role="group"
           ><a  className={Data.Params.BOOL.hidedf.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hidedf.Href} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.ExpandableDF ? "btn btn-default " : "btn btn-default disabled" }  href={Data.Params.BOOL.expanddf.Href} onClick={this.handleClick}
+          ><a  className={Data.ExpandableDF ? "btn btn-default " : "btn btn-default disabled"}  href={Data.Params.BOOL.expanddf.Href} onClick={this.handleClick}
             >{Data.ExpandtextDF}</a
           ></div
         ></div
@@ -539,9 +539,9 @@ define(function(require) {
         ><div className="btn-group btn-group-sm" role="group"
           ><a  className={Data.Params.BOOL.hideps.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hideps.Href} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.PStable.PSnotDecreasable ? "btn btn-default disabled" : "btn btn-default " }  href={Data.Params.LIMIT.psn.LessHref} onClick={this.handleClick}
+          ><a  className={Data.PStable.PSnotDecreasable ? "btn btn-default disabled" : "btn btn-default "}  href={Data.Params.LIMIT.psn.LessHref} onClick={this.handleClick}
             >-</a
-          ><a  className={Data.PStable.PSnotExpandable ? "btn btn-default disabled" : "btn btn-default " }  href={Data.Params.LIMIT.psn.MoreHref} onClick={this.handleClick}
+          ><a  className={Data.PStable.PSnotExpandable ? "btn btn-default disabled" : "btn btn-default "}  href={Data.Params.LIMIT.psn.MoreHref} onClick={this.handleClick}
             >{Data.PStable.PSplusText}</a
           ></div
         ></div

@@ -99,30 +99,6 @@ func (f HTMLFuncs) iftEnumAttrs(value interface{}, named string, class string) (
 	return template.HTMLAttr(fmt.Sprintf(" %s=%q data-tabid=\"%d\"", f.classWord(), class, ucmp)), nil
 }
 
-func (f JSXFuncs) ifExpandClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
-	return "", fmt.Errorf("Not implemented yet")
-}
-func (f HTMLFuncs) ifExpandClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
-	// if ei, ok := value.(*params.ExpandInfo); ok {}
-	return "", f.CastError("*ExpandInfo")
-}
-
-func (f JSXFuncs) ifBClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
-	s, err := f.ifBClass(value, classes...)
-	if err != nil {
-		return template.HTMLAttr(""), err
-	}
-	return template.HTMLAttr(fmt.Sprintf(" %s=%s", f.classWord(), s)), nil
-}
-
-func (f HTMLFuncs) ifBClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
-	s, err := f.ifBClass(value, classes...)
-	if err != nil {
-		return template.HTMLAttr(""), err
-	}
-	return template.HTMLAttr(fmt.Sprintf(" %s=%q", f.classWord(), s)), nil
-}
-
 func (f JSXFuncs) ifBPClass(value interface{}, classes ...string) (string, error) {
 	fstclass, sndclass, err := classesChoices("ifBPClass*", classes)
 	if err != nil {
@@ -138,28 +114,6 @@ func (f HTMLFuncs) ifBPClass(value interface{}, classes ...string) (string, erro
 	}
 	if bp, ok := value.(*params.BoolParam); ok {
 		if bp.Value {
-			return fstclass, nil
-		}
-		return sndclass, nil
-	}
-	return "", f.CastError("*bool")
-}
-
-func (f JSXFuncs) ifBClass(value interface{}, classes ...string) (string, error) {
-	fstclass, sndclass, err := classesChoices("ifBClass*", classes)
-	if err != nil {
-		return "", err
-	}
-	return fmt.Sprintf("{%s ? %q : %q }", f.uncurlv(value), fstclass, sndclass), nil
-}
-
-func (f HTMLFuncs) ifBClass(value interface{}, classes ...string) (string, error) {
-	fstclass, sndclass, err := classesChoices("ifBClass*", classes)
-	if err != nil {
-		return "", err
-	}
-	if bp, ok := value.(*bool); ok {
-		if bp != nil && *bp {
 			return fstclass, nil
 		}
 		return sndclass, nil
@@ -270,19 +224,16 @@ func MakeMap(f Functor) template.FuncMap {
 		"rowsset": func(interface{}) string { return "" }, // empty pipeline
 		// acepp overrides rowsset and adds setrows
 
-		"droplink":          f.droplink,
-		"usepercent":        f.usepercent,
-		"ifBClass":          f.ifBClass,
-		"ifBClassAttr":      f.ifBClassAttr,
-		"ifBPClass":         f.ifBPClass,
-		"ifBPClassAttr":     f.ifBPClassAttr,
-		"ifNeClassAttr":     f.ifNeClassAttr,
-		"iftEnumAttrs":      f.iftEnumAttrs,
-		"ifExpandClassAttr": f.ifExpandClassAttr,
-		"jsxClose":          f.jsxClose,
-		"class":             f.classWord,
-		"colspan":           f.colspanWord,
-		"for":               f.forWord,
+		"droplink":      f.droplink,
+		"usepercent":    f.usepercent,
+		"ifBPClass":     f.ifBPClass,
+		"ifBPClassAttr": f.ifBPClassAttr,
+		"ifNeClassAttr": f.ifNeClassAttr,
+		"iftEnumAttrs":  f.iftEnumAttrs,
+		"jsxClose":      f.jsxClose,
+		"class":         f.classWord,
+		"colspan":       f.colspanWord,
+		"for":           f.forWord,
 	}
 }
 
@@ -293,13 +244,10 @@ type Functor interface {
 	MakeMap() template.FuncMap
 	droplink(interface{}, ...string) (interface{}, error)
 	usepercent(interface{}) interface{}
-	ifBClass(interface{}, ...string) (string, error)
-	ifBClassAttr(interface{}, ...string) (template.HTMLAttr, error)
 	ifBPClass(interface{}, ...string) (string, error)
 	ifBPClassAttr(interface{}, ...string) (template.HTMLAttr, error)
 	ifNeClassAttr(interface{}, string, string) (template.HTMLAttr, error)
 	iftEnumAttrs(interface{}, string, string) (template.HTMLAttr, error)
-	ifExpandClassAttr(interface{}, ...string) (template.HTMLAttr, error)
 	jsxClose(string) template.HTML
 	classWord() string
 	colspanWord() string
@@ -310,6 +258,7 @@ func init() {
 	// check for Nota's interfaces compliance
 	_ = interface {
 		// operating (multiple types):
+		BoolClassAttr(...string) (template.HTMLAttr, error)
 		Clip(int, string, ...operating.ToStringer) (*operating.Clipped, error)
 		KeyAttr(string) template.HTMLAttr
 

@@ -6,6 +6,7 @@ package operating
 import (
 	"container/ring"
 	"errors"
+	"fmt"
 	"html/template"
 	"math"
 	"sync"
@@ -386,8 +387,38 @@ func (gp *GaugePercent) UpdatePercent(totalDelta int64, uabsolute uint64) {
 type CPUInfo struct {
 	List          []CoreInfo
 	ExpandCPU     *bool   `json:",omitempty"`
-	ExpandableCPU *bool   `json:",omitempty"`
+	ExpandableCPU *Bool   `json:",omitempty"`
 	ExpandtextCPU *string `json:",omitempty"`
+}
+
+type Bool bool
+
+func (b Bool) BoolClassAttr(classes ...string) (template.HTMLAttr, error) {
+	fstclass, sndclass, err := ClassesChoices("BoolClassAttr", classes)
+	if err != nil {
+		return template.HTMLAttr(""), err
+	}
+	s := fstclass
+	if !b {
+		s = sndclass
+	}
+	return template.HTMLAttr(fmt.Sprintf(" class=%q", s)), nil
+}
+
+func ClassesChoices(caller string, classes []string) (string, string, error) {
+	if len(classes) == 0 || len(classes) > 3 {
+		return "", "", fmt.Errorf("number of args for %s: either 2 or 3 or 4 got %d", caller, 1+len(classes))
+	}
+	sndclass := ""
+	if len(classes) > 1 {
+		sndclass = classes[1]
+	}
+	fstclass := classes[0]
+	if len(classes) > 2 {
+		fstclass = classes[2] + " " + fstclass
+		sndclass = classes[2] + " " + sndclass
+	}
+	return fstclass, sndclass, nil
 }
 
 // CoreInfo type is a struct of core metrics.
