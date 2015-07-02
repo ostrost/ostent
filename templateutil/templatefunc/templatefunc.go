@@ -24,22 +24,6 @@ func (f JSXFuncs) jsxClose(tag string) template.HTML { return template.HTML("</"
 // jsxClose returns empty template.HTML.
 func (f HTMLFuncs) jsxClose(string) (empty template.HTML) { return } // f is unused
 
-func (f JSXFuncs) refreshClass(value interface{}, classes string) (interface{}, error) {
-	vstring := ToString(value)
-	return fmt.Sprintf(" %s={%q + (%s.InputErrd ? \" has-warning\" : \"\")}",
-		f.classWord(), classes, vstring), nil
-}
-
-func (f HTMLFuncs) refreshClass(value interface{}, classes string) (interface{}, error) {
-	if period, ok := value.(*params.PeriodParam); ok {
-		if period.InputErrd {
-			classes += " " + "has-warning"
-		}
-		return template.HTMLAttr(fmt.Sprintf(" %s=%q", f.classWord(), classes)), nil
-	}
-	return nil, f.CastError("*params.PeriodParam")
-}
-
 func (f JSXFuncs) lessHrefAttr(value interface{}) (interface{}, error) {
 	return fmt.Sprintf(" href={%s.LessHref} onClick={this.handleClick}", f.uncurlv(value)), nil
 }
@@ -331,7 +315,6 @@ func MakeMap(f Functor) template.FuncMap {
 		"iftEnumAttrs":      f.iftEnumAttrs,
 		"ifExpandClassAttr": f.ifExpandClassAttr,
 		"ifDisabledAttr":    f.ifDisabledAttr,
-		"refreshClass":      f.refreshClass,
 		"lessHrefAttr":      f.lessHrefAttr,
 		"moreHrefAttr":      f.moreHrefAttr,
 		"jsxClose":          f.jsxClose,
@@ -356,7 +339,6 @@ type Functor interface {
 	iftEnumAttrs(interface{}, string, string) (template.HTMLAttr, error)
 	ifExpandClassAttr(interface{}, ...string) (template.HTMLAttr, error)
 	ifDisabledAttr(interface{}) (template.HTMLAttr, error)
-	refreshClass(interface{}, string) (interface{}, error)
 	lessHrefAttr(interface{}) (interface{}, error)
 	moreHrefAttr(interface{}) (interface{}, error)
 	jsxClose(string) template.HTML
@@ -372,10 +354,11 @@ func init() {
 		Clip(int, string, ...operating.ToStringer) (*operating.Clipped, error)
 		KeyAttr(string) template.HTMLAttr
 
-		FormActionAttr() interface{}  // Query
-		ToggleHrefAttr() interface{}  // BoolParam
-		PeriodNameAttr() interface{}  // PeriodParam
-		PeriodValueAttr() interface{} // PeriodParam
+		FormActionAttr() interface{}         // Query
+		ToggleHrefAttr() interface{}         // BoolParam
+		PeriodNameAttr() interface{}         // PeriodParam
+		PeriodValueAttr() interface{}        // PeriodParam
+		RefreshClassAttr(string) interface{} // PeriodParam
 	}(templatepipe.Nota(nil))
 }
 

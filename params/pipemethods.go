@@ -29,3 +29,10 @@ func (pp PeriodParam) PeriodValueAttr() interface{} {
 	}
 	return SprintfAttr(" value=\"%s\"", pp.Input)
 }
+
+func (pp PeriodParam) RefreshClassAttr(classes string) interface{} {
+	if pp.InputErrd {
+		classes += " has-warning"
+	}
+	return SprintfAttr(" class=%q", classes)
+}

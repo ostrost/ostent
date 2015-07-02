@@ -6,7 +6,7 @@
   | <label {{.ForAttr}} {{class}}="clip" {{.MWStyleAttr}}>{{.Text}}</label>
 
 = content define_refresh
-  | <div {{refreshClass . "input-group input-group-sm refresh-group"}}>
+  | <div {{.RefreshClassAttr "input-group input-group-sm refresh-group"}}>
   span.input-group-addon Refresh
   | <input {{class}}="form-control refresh-input" type="text" placeholder={{.Placeholder}} {{.PeriodNameAttr}} {{.PeriodValueAttr}}>{{jsxClose "input"}}
   | </div>
