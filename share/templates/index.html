@@ -384,16 +384,16 @@
 >{{end}}{{/*
 */}}{{define "defines::define_panelcpu"}}<div class="panel1"
   ><label class="panel-heading btn-block"
-    ><a {{ifBPClassAttr .Data.Params.BOOL.configcpu "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configcpu.ToggleHrefAttr}}
+    ><a {{.Data.Params.BOOL.configcpu.BoolParamClassAttr "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configcpu.ToggleHrefAttr}}
       >CPU</a
     ></label
   ><div
-    ><div id="cpuconfig" {{ifBPClassAttr .Data.Params.BOOL.configcpu "" "collapse-hidden"}}
+    ><div id="cpuconfig" {{.Data.Params.BOOL.configcpu.BoolParamClassAttr "" "collapse-hidden"}}
       ><form {{class}}="horizontal-form border-bottom-form" {{.Data.Params.Query.FormActionAttr}}
         ><input class="hidden-submit" type="submit"
         ><div class="form-group-padded"
           ><div class="btn-group btn-group-sm" role="group"
-            ><a {{ifBPClassAttr .Data.Params.BOOL.hidecpu "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidecpu.ToggleHrefAttr}}
+            ><a {{.Data.Params.BOOL.hidecpu.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidecpu.ToggleHrefAttr}}
               >Hidden</a
             ><a {{.Data.CPU.ExpandableCPU.BoolClassAttr "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expandcpu.ToggleHrefAttr}}
               >{{.Data.CPU.ExpandtextCPU}}</a
@@ -405,23 +405,23 @@
       ></div
     ></div
   ><div
-    ><div {{ifBPClassAttr .Data.Params.BOOL.hidecpu "collapse-hidden"}}
+    ><div {{.Data.Params.BOOL.hidecpu.BoolParamClassAttr "collapse-hidden"}}
       >{{template "defines::define_cputable" .}}</div
     ></div
   ></div
 >{{end}}{{/*
 */}}{{define "defines::define_paneldf"}}<div class="panel1"
   ><label class="panel-heading btn-block"
-    ><a {{ifBPClassAttr .Data.Params.BOOL.configdf "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configdf.ToggleHrefAttr}}
+    ><a {{.Data.Params.BOOL.configdf.BoolParamClassAttr "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configdf.ToggleHrefAttr}}
       >{{.Data.Params.ENUM.dft.Title}}</a
     ></label
   ><div
-    ><div id="dfconfig" {{ifBPClassAttr .Data.Params.BOOL.configdf "" "collapse-hidden"}}
+    ><div id="dfconfig" {{.Data.Params.BOOL.configdf.BoolParamClassAttr "" "collapse-hidden"}}
       ><form {{class}}="horizontal-form" {{.Data.Params.Query.FormActionAttr}}
         ><input class="hidden-submit" type="submit"
         ><div class="form-group-padded"
           ><div class="btn-group btn-group-sm" role="group"
-            ><a {{ifBPClassAttr .Data.Params.BOOL.hidedf "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidedf.ToggleHrefAttr}}
+            ><a {{.Data.Params.BOOL.hidedf.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidedf.ToggleHrefAttr}}
               >Hidden</a
             ><a {{.Data.ExpandableDF.BoolClassAttr "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expanddf.ToggleHrefAttr}}
               >{{.Data.ExpandtextDF}}</a
@@ -439,7 +439,7 @@
       ></div
     ></div
   ><div
-    ><div {{ifBPClassAttr .Data.Params.BOOL.hidedf "collapse-hidden"}}
+    ><div {{.Data.Params.BOOL.hidedf.BoolParamClassAttr "collapse-hidden"}}
       ><div id="dfinodes" {{ifNeClassAttr .Data.Params.ENUM.dft "INODES" "collapse-hidden"}}
         ><span id="dfinodes-table"
           >{{template "defines::define_dfinodes_table" .}}</span
@@ -454,16 +454,16 @@
 >{{end}}{{/*
 */}}{{define "defines::define_panelif"}}<div class="panel1"
   ><label class="panel-heading btn-block"
-    ><a {{ifBPClassAttr .Data.Params.BOOL.configif "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configif.ToggleHrefAttr}}
+    ><a {{.Data.Params.BOOL.configif.BoolParamClassAttr "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configif.ToggleHrefAttr}}
       >{{.Data.Params.ENUM.ift.Title}}</a
     ></label
   ><div
-    ><div id="ifconfig" {{ifBPClassAttr .Data.Params.BOOL.configif "" "collapse-hidden"}}
+    ><div id="ifconfig" {{.Data.Params.BOOL.configif.BoolParamClassAttr "" "collapse-hidden"}}
       ><form {{class}}="horizontal-form" {{.Data.Params.Query.FormActionAttr}}
         ><input class="hidden-submit" type="submit"
         ><div class="form-group-padded"
           ><div class="btn-group btn-group-sm" role="group"
-            ><a {{ifBPClassAttr .Data.Params.BOOL.hideif "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideif.ToggleHrefAttr}}
+            ><a {{.Data.Params.BOOL.hideif.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideif.ToggleHrefAttr}}
               >Hidden</a
             ><a {{.Data.ExpandableIF.BoolClassAttr "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expandif.ToggleHrefAttr}}
               >{{.Data.ExpandtextIF}}</a
@@ -483,7 +483,7 @@
       ></div
     ></div
   ><div
-    ><div {{ifBPClassAttr .Data.Params.BOOL.hideif "collapse-hidden"}}
+    ><div {{.Data.Params.BOOL.hideif.BoolParamClassAttr "collapse-hidden"}}
       ><div id="ifpackets" {{ifNeClassAttr .Data.Params.ENUM.ift "PACKETS" "collapse-hidden"}}
         ><span id="ifpackets-table"
           >{{template "defines::define_ifpackets_table" .}}</span
@@ -502,18 +502,18 @@
 >{{end}}{{/*
 */}}{{define "defines::define_panelmem"}}<div class="panel1"
   ><label class="panel-heading btn-block"
-    ><a {{ifBPClassAttr .Data.Params.BOOL.configmem "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configmem.ToggleHrefAttr}}
+    ><a {{.Data.Params.BOOL.configmem.BoolParamClassAttr "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configmem.ToggleHrefAttr}}
       >Memory</a
     ></label
   ><div
-    ><div id="memconfig" {{ifBPClassAttr .Data.Params.BOOL.configmem "" "collapse-hidden"}}
+    ><div id="memconfig" {{.Data.Params.BOOL.configmem.BoolParamClassAttr "" "collapse-hidden"}}
       ><form {{class}}="horizontal-form border-bottom-form" {{.Data.Params.Query.FormActionAttr}}
         ><input class="hidden-submit" type="submit"
         ><div class="form-group-padded"
           ><div class="btn-group btn-group-sm" role="group"
-            ><a {{ifBPClassAttr .Data.Params.BOOL.hidemem "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidemem.ToggleHrefAttr}}
+            ><a {{.Data.Params.BOOL.hidemem.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidemem.ToggleHrefAttr}}
               >Hidden</a
-            ><a {{ifBPClassAttr .Data.Params.BOOL.hideswap "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideswap.ToggleHrefAttr}} {{.Data.Params.BOOL.hidemem.DisabledAttr}}
+            ><a {{.Data.Params.BOOL.hideswap.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideswap.ToggleHrefAttr}} {{.Data.Params.BOOL.hidemem.DisabledAttr}}
               >Hide swap</a
             ></div
           ></div
@@ -523,25 +523,25 @@
       ></div
     ></div
   ><div
-    ><div {{ifBPClassAttr .Data.Params.BOOL.hidemem "collapse-hidden"}}
+    ><div {{.Data.Params.BOOL.hidemem.BoolParamClassAttr "collapse-hidden"}}
       >{{template "defines::define_memtable" .}}</div
     ></div
   ></div
 >{{end}}{{/*
 */}}{{define "defines::define_panelps"}}<div class="panel1"
   ><label class="panel-heading btn-block"
-    ><a {{ifBPClassAttr .Data.Params.BOOL.configps "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configps.ToggleHrefAttr}}
+    ><a {{.Data.Params.BOOL.configps.BoolParamClassAttr "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configps.ToggleHrefAttr}}
       >Processes</a
     ></label
   ><div
-    ><div id="psconfig" {{ifBPClassAttr .Data.Params.BOOL.configps "" "collapse-hidden"}}
+    ><div id="psconfig" {{.Data.Params.BOOL.configps.BoolParamClassAttr "" "collapse-hidden"}}
       ><form {{class}}="inline-form border-bottom-form text-right" {{.Data.Params.Query.FormActionAttr}}
         ><input class="hidden-submit" type="submit"
         ><div class="form-group-padded"
           >{{template "defines::define_refresh" .Data.Params.PERIOD.refreshps}}</div
         ><div class="form-group-padded"
           ><div class="btn-group btn-group-sm" role="group"
-            ><a {{ifBPClassAttr .Data.Params.BOOL.hideps "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideps.ToggleHrefAttr}}
+            ><a {{.Data.Params.BOOL.hideps.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideps.ToggleHrefAttr}}
               >Hidden</a
             ><a {{.Data.PStable.PSnotDecreasable.BoolClassAttr "disabled" "" "btn btn-default"}} {{.Data.Params.LIMIT.psn.LessHrefAttr}}
               >-</a
@@ -553,25 +553,25 @@
       ></div
     ></div
   ><div
-    ><div {{ifBPClassAttr .Data.Params.BOOL.hideps "collapse-hidden"}}
+    ><div {{.Data.Params.BOOL.hideps.BoolParamClassAttr "collapse-hidden"}}
       >{{template "defines::define_pstable" .}}</div
     ></div
   ></div
 >{{end}}{{/*
 */}}{{define "defines::define_panelvg"}}<div class="panel1"
   ><label class="panel-heading btn-block"
-    ><a {{ifBPClassAttr .Data.Params.BOOL.configvg "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configvg.ToggleHrefAttr}}
+    ><a {{.Data.Params.BOOL.configvg.BoolParamClassAttr "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configvg.ToggleHrefAttr}}
       >Vagrant global-status</a
     ></label
   ><div
-    ><div id="vgconfig" {{ifBPClassAttr .Data.Params.BOOL.configvg "" "collapse-hidden"}}
+    ><div id="vgconfig" {{.Data.Params.BOOL.configvg.BoolParamClassAttr "" "collapse-hidden"}}
       ><form {{class}}="inline-form border-bottom-form text-right" {{.Data.Params.Query.FormActionAttr}}
         ><input class="hidden-submit" type="submit"
         ><div class="form-group-padded"
           >{{template "defines::define_refresh" .Data.Params.PERIOD.refreshvg}}</div
         ><div class="form-group-padded"
           ><div class="btn-group btn-group-sm" role="group"
-            ><a {{ifBPClassAttr .Data.Params.BOOL.hidevg "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidevg.ToggleHrefAttr}}
+            ><a {{.Data.Params.BOOL.hidevg.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidevg.ToggleHrefAttr}}
               >Hidden</a
             ></div
           ></div
@@ -579,7 +579,7 @@
       ></div
     ></div
   ><div
-    ><div {{ifBPClassAttr .Data.Params.BOOL.hidevg "collapse-hidden"}}
+    ><div {{.Data.Params.BOOL.hidevg.BoolParamClassAttr "collapse-hidden"}}
       >{{template "defines::define_vgtable" .}}</div
     ></div
   ></div

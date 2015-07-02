@@ -33,6 +33,15 @@ func (n Nota) BoolClassAttr(classes ...string) (template.HTMLAttr, error) {
 		n.Uncurl(), fstclass, sndclass)), nil
 }
 
+func (n Nota) BoolParamClassAttr(classes ...string) (template.HTMLAttr, error) {
+	fstclass, sndclass, err := operating.ClassesChoices("BoolParamClassAttr", classes)
+	if err != nil {
+		return template.HTMLAttr(""), err
+	}
+	return template.HTMLAttr(fmt.Sprintf(" className={%s.Value ? %q : %q}",
+		n.Uncurl(), fstclass, sndclass)), nil
+}
+
 func (n Nota) Clip(width int, prefix string, id ...operating.ToStringer) (*operating.Clipped, error) {
 	k, err := operating.ClipArgs(id, n.Uncurl())
 	if err != nil {

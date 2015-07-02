@@ -24,22 +24,6 @@ func (f JSXFuncs) jsxClose(tag string) template.HTML { return template.HTML("</"
 // jsxClose returns empty template.HTML.
 func (f HTMLFuncs) jsxClose(string) (empty template.HTML) { return } // f is unused
 
-func (f JSXFuncs) ifBPClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
-	s, err := f.ifBPClass(value, classes...)
-	if err != nil {
-		return template.HTMLAttr(""), err
-	}
-	return template.HTMLAttr(fmt.Sprintf(" %s=%s", f.classWord(), s)), nil
-}
-
-func (f HTMLFuncs) ifBPClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
-	s, err := f.ifBPClass(value, classes...)
-	if err != nil {
-		return template.HTMLAttr(""), err
-	}
-	return template.HTMLAttr(fmt.Sprintf(" %s=%q", f.classWord(), s)), nil
-}
-
 func (f JSXFuncs) ifNeClassAttr(value interface{}, named string, class string) (template.HTMLAttr, error) {
 	vstring := ToString(value)
 	_, pname := DotSplit(vstring)
@@ -97,44 +81,6 @@ func (f HTMLFuncs) iftEnumAttrs(value interface{}, named string, class string) (
 		class = ""
 	}
 	return template.HTMLAttr(fmt.Sprintf(" %s=%q data-tabid=\"%d\"", f.classWord(), class, ucmp)), nil
-}
-
-func (f JSXFuncs) ifBPClass(value interface{}, classes ...string) (string, error) {
-	fstclass, sndclass, err := classesChoices("ifBPClass*", classes)
-	if err != nil {
-		return "", err
-	}
-	return fmt.Sprintf("{%s.Value ? %q : %q }", f.uncurlv(value), fstclass, sndclass), nil
-}
-
-func (f HTMLFuncs) ifBPClass(value interface{}, classes ...string) (string, error) {
-	fstclass, sndclass, err := classesChoices("ifBPClass*", classes)
-	if err != nil {
-		return "", err
-	}
-	if bp, ok := value.(*params.BoolParam); ok {
-		if bp.Value {
-			return fstclass, nil
-		}
-		return sndclass, nil
-	}
-	return "", f.CastError("*bool")
-}
-
-func classesChoices(caller string, classes []string) (string, string, error) {
-	if len(classes) == 0 || len(classes) > 3 {
-		return "", "", fmt.Errorf("number of args for %s: either 2 or 3 or 4 got %d", caller, 1+len(classes))
-	}
-	sndclass := ""
-	if len(classes) > 1 {
-		sndclass = classes[1]
-	}
-	fstclass := classes[0]
-	if len(classes) > 2 {
-		fstclass = classes[2] + " " + fstclass
-		sndclass = classes[2] + " " + sndclass
-	}
-	return fstclass, sndclass, nil
 }
 
 func (f JSXFuncs) droplink(value interface{}, args ...string) (interface{}, error) {
@@ -226,8 +172,6 @@ func MakeMap(f Functor) template.FuncMap {
 
 		"droplink":      f.droplink,
 		"usepercent":    f.usepercent,
-		"ifBPClass":     f.ifBPClass,
-		"ifBPClassAttr": f.ifBPClassAttr,
 		"ifNeClassAttr": f.ifNeClassAttr,
 		"iftEnumAttrs":  f.iftEnumAttrs,
 		"jsxClose":      f.jsxClose,
@@ -244,8 +188,6 @@ type Functor interface {
 	MakeMap() template.FuncMap
 	droplink(interface{}, ...string) (interface{}, error)
 	usepercent(interface{}) interface{}
-	ifBPClass(interface{}, ...string) (string, error)
-	ifBPClassAttr(interface{}, ...string) (template.HTMLAttr, error)
 	ifNeClassAttr(interface{}, string, string) (template.HTMLAttr, error)
 	iftEnumAttrs(interface{}, string, string) (template.HTMLAttr, error)
 	jsxClose(string) template.HTML
@@ -259,6 +201,7 @@ func init() {
 	_ = interface {
 		// operating (multiple types):
 		BoolClassAttr(...string) (template.HTMLAttr, error)
+		BoolParamClassAttr(...string) (template.HTMLAttr, error)
 		Clip(int, string, ...operating.ToStringer) (*operating.Clipped, error)
 		KeyAttr(string) template.HTMLAttr
 

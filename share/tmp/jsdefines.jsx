@@ -18,19 +18,19 @@ define(function(require) {
 >); },
 		panelmem:        function(Data, rows)  { return (<div className="panel1"
   ><label className="panel-heading btn-block"
-    ><a  className={Data.Params.BOOL.configmem.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Params.BOOL.configmem.Href} onClick={this.handleClick}
+    ><a  className={Data.Params.BOOL.configmem.Value ? "btn-header-block active" : "btn-header-block"}  href={Data.Params.BOOL.configmem.Href} onClick={this.handleClick}
       >Memory</a
     ></label
   ><div
-    ><div id="memconfig"  className={Data.Params.BOOL.configmem.Value ? "" : "collapse-hidden" }
+    ><div id="memconfig"  className={Data.Params.BOOL.configmem.Value ? "" : "collapse-hidden"}
       ><form className="horizontal-form border-bottom-form"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="form-group-padded"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.BOOL.hidemem.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hidemem.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.BOOL.hidemem.Value ? "btn btn-default active" : "btn btn-default "}  href={Data.Params.BOOL.hidemem.Href} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.Params.BOOL.hideswap.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hideswap.Href} onClick={this.handleClick}  disabled={Data.Params.BOOL.hidemem.Value ? "disabled" : "" }
+          ><a  className={Data.Params.BOOL.hideswap.Value ? "btn btn-default active" : "btn btn-default "}  href={Data.Params.BOOL.hideswap.Href} onClick={this.handleClick}  disabled={Data.Params.BOOL.hidemem.Value ? "disabled" : "" }
             >Hide swap</a
           ></div
         ></div
@@ -45,7 +45,7 @@ define(function(require) {
     ></div
   ></div
 ><div
-  ><div  className={Data.Params.BOOL.hidemem.Value ? "collapse-hidden" : "" }
+  ><div  className={Data.Params.BOOL.hidemem.Value ? "collapse-hidden" : ""}
     ><table className="table1 stripe-table"
   ><thead
     ><tr
@@ -117,17 +117,17 @@ define(function(require) {
 >); },
 		panelif:         function(Data,r1,r2,r3){ return (<div className="panel1"
   ><label className="panel-heading btn-block"
-    ><a  className={Data.Params.BOOL.configif.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Params.BOOL.configif.Href} onClick={this.handleClick}
+    ><a  className={Data.Params.BOOL.configif.Value ? "btn-header-block active" : "btn-header-block"}  href={Data.Params.BOOL.configif.Href} onClick={this.handleClick}
       >{Data.Params.ENUM.ift.Title}</a
     ></label
   ><div
-    ><div id="ifconfig"  className={Data.Params.BOOL.configif.Value ? "" : "collapse-hidden" }
+    ><div id="ifconfig"  className={Data.Params.BOOL.configif.Value ? "" : "collapse-hidden"}
       ><form className="horizontal-form"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="form-group-padded"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.BOOL.hideif.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hideif.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.BOOL.hideif.Value ? "btn btn-default active" : "btn btn-default "}  href={Data.Params.BOOL.hideif.Href} onClick={this.handleClick}
             >Hidden</a
           ><a  className={Data.ExpandableIF ? "btn btn-default " : "btn btn-default disabled"}  href={Data.Params.BOOL.expandif.Href} onClick={this.handleClick}
             >{Data.ExpandtextIF}</a
@@ -158,7 +158,7 @@ define(function(require) {
     ></div
   ></div
 ><div
-  ><div  className={Data.Params.BOOL.hideif.Value ? "collapse-hidden" : "" }
+  ><div  className={Data.Params.BOOL.hideif.Value ? "collapse-hidden" : ""}
     ><div id="ifpackets"  className={(Data.Params.ENUM.ift.Uint != 0) ? "collapse-hidden" : ""} data-tabid="0" data-title="Packets"
       ><span id="ifpackets-table"
         ><table className="table1 stripe-table"
@@ -281,17 +281,17 @@ define(function(require) {
 >); },
 		panelcpu:        function(Data, rows)  { return (<div className="panel1"
   ><label className="panel-heading btn-block"
-    ><a  className={Data.Params.BOOL.configcpu.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Params.BOOL.configcpu.Href} onClick={this.handleClick}
+    ><a  className={Data.Params.BOOL.configcpu.Value ? "btn-header-block active" : "btn-header-block"}  href={Data.Params.BOOL.configcpu.Href} onClick={this.handleClick}
       >CPU</a
     ></label
   ><div
-    ><div id="cpuconfig"  className={Data.Params.BOOL.configcpu.Value ? "" : "collapse-hidden" }
+    ><div id="cpuconfig"  className={Data.Params.BOOL.configcpu.Value ? "" : "collapse-hidden"}
       ><form className="horizontal-form border-bottom-form"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="form-group-padded"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.BOOL.hidecpu.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hidecpu.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.BOOL.hidecpu.Value ? "btn btn-default active" : "btn btn-default "}  href={Data.Params.BOOL.hidecpu.Href} onClick={this.handleClick}
             >Hidden</a
           ><a  className={Data.CPU.ExpandableCPU ? "btn btn-default " : "btn btn-default disabled"}  href={Data.Params.BOOL.expandcpu.Href} onClick={this.handleClick}
             >{Data.CPU.ExpandtextCPU}</a
@@ -308,7 +308,7 @@ define(function(require) {
     ></div
   ></div
 ><div
-  ><div  className={Data.Params.BOOL.hidecpu.Value ? "collapse-hidden" : "" }
+  ><div  className={Data.Params.BOOL.hidecpu.Value ? "collapse-hidden" : ""}
     ><table className="table1 stripe-table"
   ><thead
     ><tr
@@ -384,17 +384,17 @@ define(function(require) {
 >); },
 		paneldf:         function(Data,r1,r2)  { return (<div className="panel1"
   ><label className="panel-heading btn-block"
-    ><a  className={Data.Params.BOOL.configdf.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Params.BOOL.configdf.Href} onClick={this.handleClick}
+    ><a  className={Data.Params.BOOL.configdf.Value ? "btn-header-block active" : "btn-header-block"}  href={Data.Params.BOOL.configdf.Href} onClick={this.handleClick}
       >{Data.Params.ENUM.dft.Title}</a
     ></label
   ><div
-    ><div id="dfconfig"  className={Data.Params.BOOL.configdf.Value ? "" : "collapse-hidden" }
+    ><div id="dfconfig"  className={Data.Params.BOOL.configdf.Value ? "" : "collapse-hidden"}
       ><form className="horizontal-form"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="form-group-padded"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.BOOL.hidedf.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hidedf.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.BOOL.hidedf.Value ? "btn btn-default active" : "btn btn-default "}  href={Data.Params.BOOL.hidedf.Href} onClick={this.handleClick}
             >Hidden</a
           ><a  className={Data.ExpandableDF ? "btn btn-default " : "btn btn-default disabled"}  href={Data.Params.BOOL.expanddf.Href} onClick={this.handleClick}
             >{Data.ExpandtextDF}</a
@@ -421,7 +421,7 @@ define(function(require) {
     ></div
   ></div
 ><div
-  ><div  className={Data.Params.BOOL.hidedf.Value ? "collapse-hidden" : "" }
+  ><div  className={Data.Params.BOOL.hidedf.Value ? "collapse-hidden" : ""}
     ><div id="dfinodes"  className={(Data.Params.ENUM.dft.Uint != 0) ? "collapse-hidden" : ""} data-tabid="0" data-title="Inodes"
       ><span id="dfinodes-table"
         ><table className="table1 stripe-table"
@@ -520,11 +520,11 @@ define(function(require) {
 >); },
 		panelps:         function(Data, rows)  { return (<div className="panel1"
   ><label className="panel-heading btn-block"
-    ><a  className={Data.Params.BOOL.configps.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Params.BOOL.configps.Href} onClick={this.handleClick}
+    ><a  className={Data.Params.BOOL.configps.Value ? "btn-header-block active" : "btn-header-block"}  href={Data.Params.BOOL.configps.Href} onClick={this.handleClick}
       >Processes</a
     ></label
   ><div
-    ><div id="psconfig"  className={Data.Params.BOOL.configps.Value ? "" : "collapse-hidden" }
+    ><div id="psconfig"  className={Data.Params.BOOL.configps.Value ? "" : "collapse-hidden"}
       ><form className="inline-form border-bottom-form text-right"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
@@ -537,7 +537,7 @@ define(function(require) {
 ></div
       ><div className="form-group-padded"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.BOOL.hideps.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hideps.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.BOOL.hideps.Value ? "btn btn-default active" : "btn btn-default "}  href={Data.Params.BOOL.hideps.Href} onClick={this.handleClick}
             >Hidden</a
           ><a  className={Data.PStable.PSnotDecreasable ? "btn btn-default disabled" : "btn btn-default "}  href={Data.Params.LIMIT.psn.LessHref} onClick={this.handleClick}
             >-</a
@@ -549,7 +549,7 @@ define(function(require) {
     ></div
   ></div
 ><div
-  ><div  className={Data.Params.BOOL.hideps.Value ? "collapse-hidden" : "" }
+  ><div  className={Data.Params.BOOL.hideps.Value ? "collapse-hidden" : ""}
     ><table className="table2 stripe-table"
   ><thead
     ><tr
@@ -646,11 +646,11 @@ define(function(require) {
 >); },
 		panelvg:         function(Data, rows)  { return (<div className="panel1"
   ><label className="panel-heading btn-block"
-    ><a  className={Data.Params.BOOL.configvg.Value ? "btn-header-block active" : "btn-header-block" }  href={Data.Params.BOOL.configvg.Href} onClick={this.handleClick}
+    ><a  className={Data.Params.BOOL.configvg.Value ? "btn-header-block active" : "btn-header-block"}  href={Data.Params.BOOL.configvg.Href} onClick={this.handleClick}
       >Vagrant global-status</a
     ></label
   ><div
-    ><div id="vgconfig"  className={Data.Params.BOOL.configvg.Value ? "" : "collapse-hidden" }
+    ><div id="vgconfig"  className={Data.Params.BOOL.configvg.Value ? "" : "collapse-hidden"}
       ><form className="inline-form border-bottom-form text-right"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
@@ -663,7 +663,7 @@ define(function(require) {
 ></div
       ><div className="form-group-padded"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.BOOL.hidevg.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hidevg.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.BOOL.hidevg.Value ? "btn btn-default active" : "btn btn-default "}  href={Data.Params.BOOL.hidevg.Href} onClick={this.handleClick}
             >Hidden</a
           ></div
         ></div
@@ -671,7 +671,7 @@ define(function(require) {
     ></div
   ></div
 ><div
-  ><div  className={Data.Params.BOOL.hidevg.Value ? "collapse-hidden" : "" }
+  ><div  className={Data.Params.BOOL.hidevg.Value ? "collapse-hidden" : ""}
     ><table id="vgtable" className="table1 stripe-table"
   ><thead
     ><tr
