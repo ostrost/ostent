@@ -38,6 +38,10 @@ func (n Nota) Clip(width int, prefix string, id ...operating.ToStringer) (*opera
 	}, nil
 }
 
+func (n Nota) DisabledAttr() interface{} {
+	return fmt.Sprintf(" disabled={%s.Value ? %q : \"\" }", n.Uncurl(), "disabled")
+}
+
 func (n Nota) ToggleHrefAttr() interface{} {
 	return fmt.Sprintf(" href={%s.Href} onClick={this.handleClick}", n.Uncurl())
 }

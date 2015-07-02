@@ -24,21 +24,6 @@ func (f JSXFuncs) jsxClose(tag string) template.HTML { return template.HTML("</"
 // jsxClose returns empty template.HTML.
 func (f HTMLFuncs) jsxClose(string) (empty template.HTML) { return } // f is unused
 
-func (f JSXFuncs) ifDisabledAttr(value interface{}) (template.HTMLAttr, error) {
-	return template.HTMLAttr(fmt.Sprintf("disabled={%s.Value ? \"disabled\" : \"\" }",
-		f.uncurlv(value))), nil
-}
-
-func (f HTMLFuncs) ifDisabledAttr(value interface{}) (template.HTMLAttr, error) {
-	if bp, ok := value.(*params.BoolParam); ok {
-		if bp.Value {
-			return template.HTMLAttr("disabled=\"disabled\""), nil
-		}
-		return template.HTMLAttr(""), nil
-	}
-	return template.HTMLAttr(""), f.CastError("*params.BoolParam")
-}
-
 func (f JSXFuncs) ifBPClassAttr(value interface{}, classes ...string) (template.HTMLAttr, error) {
 	s, err := f.ifBPClass(value, classes...)
 	if err != nil {
@@ -294,7 +279,6 @@ func MakeMap(f Functor) template.FuncMap {
 		"ifNeClassAttr":     f.ifNeClassAttr,
 		"iftEnumAttrs":      f.iftEnumAttrs,
 		"ifExpandClassAttr": f.ifExpandClassAttr,
-		"ifDisabledAttr":    f.ifDisabledAttr,
 		"jsxClose":          f.jsxClose,
 		"class":             f.classWord,
 		"colspan":           f.colspanWord,
@@ -316,7 +300,6 @@ type Functor interface {
 	ifNeClassAttr(interface{}, string, string) (template.HTMLAttr, error)
 	iftEnumAttrs(interface{}, string, string) (template.HTMLAttr, error)
 	ifExpandClassAttr(interface{}, ...string) (template.HTMLAttr, error)
-	ifDisabledAttr(interface{}) (template.HTMLAttr, error)
 	jsxClose(string) template.HTML
 	classWord() string
 	colspanWord() string
@@ -331,6 +314,7 @@ func init() {
 		KeyAttr(string) template.HTMLAttr
 
 		FormActionAttr() interface{}         // Query
+		DisabledAttr() interface{}           // BoolParam
 		ToggleHrefAttr() interface{}         // BoolParam
 		PeriodNameAttr() interface{}         // PeriodParam
 		PeriodValueAttr() interface{}        // PeriodParam

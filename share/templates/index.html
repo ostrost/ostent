@@ -513,7 +513,7 @@
           ><div class="btn-group btn-group-sm" role="group"
             ><a {{ifBPClassAttr .Data.Params.BOOL.hidemem "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidemem.ToggleHrefAttr}}
               >Hidden</a
-            ><a {{ifBPClassAttr .Data.Params.BOOL.hideswap "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideswap.ToggleHrefAttr}} {{ifDisabledAttr .Data.Params.BOOL.hidemem}}
+            ><a {{ifBPClassAttr .Data.Params.BOOL.hideswap "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideswap.ToggleHrefAttr}} {{.Data.Params.BOOL.hidemem.DisabledAttr}}
               >Hide swap</a
             ></div
           ></div

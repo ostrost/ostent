@@ -30,7 +30,7 @@ define(function(require) {
         ><div className="btn-group btn-group-sm" role="group"
           ><a  className={Data.Params.BOOL.hidemem.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hidemem.Href} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.Params.BOOL.hideswap.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hideswap.Href} onClick={this.handleClick} disabled={Data.Params.BOOL.hidemem.Value ? "disabled" : "" }
+          ><a  className={Data.Params.BOOL.hideswap.Value ? "btn btn-default active" : "btn btn-default " }  href={Data.Params.BOOL.hideswap.Href} onClick={this.handleClick}  disabled={Data.Params.BOOL.hidemem.Value ? "disabled" : "" }
             >Hide swap</a
           ></div
         ></div

@@ -15,6 +15,13 @@ func (q Query) FormActionAttr() interface{} {
 	return SprintfAttr(" action=\"/form/%s\"", url.QueryEscape(q.ValuesEncode(nil)))
 }
 
+func (bp BoolParam) DisabledAttr() interface{} {
+	if !bp.Value {
+		return template.HTMLAttr("")
+	}
+	return SprintfAttr(" disabled=%q", "disabled")
+}
+
 func (bp BoolParam) ToggleHrefAttr() interface{} {
 	return SprintfAttr(" href=\"%s\"", bp.EncodeToggle())
 }
