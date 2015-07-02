@@ -15,3 +15,7 @@ func (q Query) FormActionAttr() (interface{}, error) {
 func (bp BoolParam) ToggleHrefAttr() interface{} {
 	return template.HTMLAttr(fmt.Sprintf(" href=\"%s\"", bp.EncodeToggle()))
 }
+
+func (pp PeriodParam) PeriodNameAttr() interface{} {
+	return template.HTMLAttr(fmt.Sprintf(" name=%q", pp.Pname))
+}

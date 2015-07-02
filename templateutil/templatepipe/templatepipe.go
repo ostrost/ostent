@@ -237,8 +237,10 @@ func (d Dotted) Leave(name string) *Dotted {
 	return nil
 }
 
-type Value string
-type Hash map[string]interface{}
+// Nota is a type of encoded jsx notations for template transplitting.
+type Nota map[string]interface{}
+
+func (n Nota) String() string { return n.ToString() }
 
 func (d *Dotted) Notation() (string, string, string) {
 	if d == nil || d.Name == "" {
@@ -254,8 +256,8 @@ func CurlyX(parent, key, full string) interface{} {
 	return Curly(parent, key, full)
 }
 
-func Curly(parent, key, full string) Value {
-	return Value(Curl(full))
+func Curly(parent, key, full string) string {
+	return Curl(full)
 }
 
 func Curl(s string) string {
@@ -265,31 +267,32 @@ func Curl(s string) string {
 	return "{" + s + "}"
 }
 
-// Encurl returns either a Hash or a string.
+// Encurl returns constructed Nota.
 func Encurl(cf CurlyFunc, parent Dotted, level int) interface{} {
 	if len(parent.Leaves) == 0 {
-		return cf(parent.Notation())
+		return cf(parent.Notation()) // may be nil
 	}
-	h := make(Hash)
+	n := make(Nota)
 	for _, l := range parent.Leaves {
 		if l.Ranged {
 			if len(l.Keys) != 0 {
-				kv := make(map[string]Value)
+				kv := make(map[string]Nota)
 				for _, k := range l.Keys {
-					kv[k] = Curly(l.Decl, k, l.Decl+"."+k)
+					if v := cf(l.Decl, k, l.Decl+"."+k); v != nil {
+						kv[k] = make(Nota)
+						kv[k]["."] = v
+					}
 				}
-				h[l.Name] = []map[string]Value{kv}
+				if len(kv) != 0 {
+					n[l.Name] = []map[string]Nota{kv}
+				}
 			} else {
-				h[l.Name] = []string{}
+				n[l.Name] = []string{}
 			}
-		} else {
-			if m := Encurl(cf, *l, level+1); m != nil {
-				h[l.Name] = m
-			}
+		} else if m := Encurl(cf, *l, level+1); m != nil {
+			n[l.Name] = m
 		}
 	}
-	if len(h) == 0 {
-		return cf(parent.Notation())
-	}
-	return h
+	_, _, n["."] = parent.Notation()
+	return n
 }

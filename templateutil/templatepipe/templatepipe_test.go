@@ -41,11 +41,11 @@ func TestEncurl(t *testing.T) {
 	}
 
 	v := Encurl(CurlyX, d, -1)
-	c := v.(Hash)["a"].(Hash)["b"].(Hash)["c"].([]map[string]Value)[0]
+	c := v.(Nota)["a"].(Nota)["b"].(Nota)["c"].([]map[string]Nota)[0]
 	if expected := "{DECL.z}"; c["z"].ToString() != expected {
 		t.Errorf("Encurl result mismatch: %q (expected %q)", c["z"], expected)
 	}
-	if z := v.(Hash)["a"].(Hash)["b"].(Hash)["z"].([]string); len(z) != 0 {
+	if z := v.(Nota)["a"].(Nota)["b"].(Nota)["z"].([]string); len(z) != 0 {
 		t.Errorf("z is expected to be empty: %+v\n", z)
 	}
 }

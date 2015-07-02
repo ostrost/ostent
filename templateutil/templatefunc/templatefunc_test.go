@@ -46,8 +46,8 @@ func TestKFuncs(t *testing.T) {
 
 func SetKText(t *testing.T, in, expected string) {
 	override := ".Override"
-	h := SetKFunc(override)(templatepipe.Hash{}, in)
-	d, ok := h.(templatepipe.Hash)[override]
+	h := SetKFunc(override)(templatepipe.Nota{}, in)
+	d, ok := h.(templatepipe.Nota)[override]
 	if !ok {
 		t.Errorf("SetK[%q] is not okd.", override)
 	}

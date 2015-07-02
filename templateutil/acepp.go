@@ -115,15 +115,11 @@ func main() {
 	check(WriteFile(outputFile, buf.String()))
 }
 
-var vtype = reflect.TypeOf(templatepipe.Value(""))
+var vtype = reflect.TypeOf(templatepipe.Nota(nil))
 
 func Curly(parent, key, full string) interface{} {
 	if _, ok := vtype.MethodByName(key); ok {
-		return nil // m.Func
-		/* return m.Func.Call([]reflect.Value{
-			reflect.ValueOf(templatepipe.Value(templatepipe.Curl(parent))),
-			// reflect.ValueOf(""),
-		})[0].Interface() // */
+		return nil
 	}
 	return templatepipe.CurlyX(parent, key, full)
 }

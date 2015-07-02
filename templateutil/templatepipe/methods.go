@@ -12,20 +12,20 @@ func Uncurl(s string) string {
 	return strings.TrimSuffix(strings.TrimPrefix(s, "{"), "}")
 }
 
-func (value Value) Uncurl() string {
-	return Uncurl(value.ToString())
+func (n Nota) Uncurl() string {
+	return Uncurl(n.ToString())
 }
 
-func (value Value) FormActionAttr() (interface{}, error) {
-	return fmt.Sprintf(" action={\"/form/\"+%s}", value.Uncurl()), nil
+func (n Nota) FormActionAttr() interface{} {
+	return fmt.Sprintf(" action={\"/form/\"+%s}", n.Uncurl())
 }
 
-func (value Value) KeyAttr(prefix string) template.HTMLAttr {
-	return template.HTMLAttr(fmt.Sprintf(" key={%q+%s}", prefix+"-", value.Uncurl()))
+func (n Nota) KeyAttr(prefix string) template.HTMLAttr {
+	return template.HTMLAttr(fmt.Sprintf(" key={%q+%s}", prefix+"-", n.Uncurl()))
 }
 
-func (value Value) Clip(width int, prefix string, id ...operating.ToStringer) (*operating.Clipped, error) {
-	k, err := operating.ClipArgs(id, value.Uncurl())
+func (n Nota) Clip(width int, prefix string, id ...operating.ToStringer) (*operating.Clipped, error) {
+	k, err := operating.ClipArgs(id, n.Uncurl())
 	if err != nil {
 		return nil, err
 	}
@@ -34,13 +34,36 @@ func (value Value) Clip(width int, prefix string, id ...operating.ToStringer) (*
 		IDAttr:      operating.SprintfAttr(" id=%s", key),
 		ForAttr:     operating.SprintfAttr(" htmlFor=%s", key),
 		MWStyleAttr: operating.SprintfAttr(" style={{maxWidth: '%dch'}}", width),
-		Text:        value.ToString(),
+		Text:        n.ToString(),
 	}, nil
 }
 
-func (value Value) ToggleHrefAttr() interface{} {
-	return fmt.Sprintf(" href={%s.Href} onClick={this.handleClick}", value.Uncurl())
+func (n Nota) ToggleHrefAttr() interface{} {
+	return fmt.Sprintf(" href={%s.Href} onClick={this.handleClick}", n.Uncurl())
 }
 
-func (value Value) ToString() string { return string(value) }
-func (value Value) forWord() string  { return "htmlFor" }
+func (n Nota) PeriodNameAttr() interface{} {
+	_, pname := n.DotSplit()
+	return fmt.Sprintf(" name=%q", pname)
+}
+
+// DotSplit splits s by last ".".
+func DotSplit(s string) (string, string) {
+	if s == "" {
+		return "", ""
+	}
+	i := len(s) - 1
+	for i > 0 && s[i] != '.' {
+		i--
+	}
+	return s[:i], s[i+1:]
+}
+
+// Split calls DotSplit with n's string.
+func (n Nota) DotSplit() (string, string) {
+	return DotSplit(n.ToString())
+}
+
+func (n Nota) ToString() string {
+	return n["."].(string)
+}

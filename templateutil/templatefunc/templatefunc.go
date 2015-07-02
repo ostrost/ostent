@@ -24,25 +24,10 @@ func (f JSXFuncs) jsxClose(tag string) template.HTML { return template.HTML("</"
 // jsxClose returns empty template.HTML.
 func (f HTMLFuncs) jsxClose(string) (empty template.HTML) { return } // f is unused
 
-func (f JSXFuncs) periodNameAttr(value interface{}) (interface{}, error) {
-	// f is unused
-	prefix, _ := DotSplitHash(value)
-	_, pname := DotSplit(prefix)
-	return fmt.Sprintf(" name=%q", pname), nil
-}
-
-func (f HTMLFuncs) periodNameAttr(value interface{}) (interface{}, error) {
-	if period, ok := value.(*params.PeriodParam); ok {
-		return template.HTMLAttr(fmt.Sprintf(" name=%q",
-			period.Pname)), nil
-	}
-	return nil, f.CastError("*params.PeriodParam")
-}
-
 func (f JSXFuncs) periodValueAttr(value interface{}) (interface{}, error) {
 	// f is unused
-	prefix, _ := DotSplitHash(value)
-	return fmt.Sprintf(" onChange={this.handleChange} value={%s.Input}", prefix), nil
+	vstring := ToString(value)
+	return fmt.Sprintf(" onChange={this.handleChange} value={%s.Input}", vstring), nil
 }
 
 func (f HTMLFuncs) periodValueAttr(value interface{}) (interface{}, error) {
@@ -56,9 +41,9 @@ func (f HTMLFuncs) periodValueAttr(value interface{}) (interface{}, error) {
 }
 
 func (f JSXFuncs) refreshClass(value interface{}, classes string) (interface{}, error) {
-	prefix, _ := DotSplitHash(value)
+	vstring := ToString(value)
 	return fmt.Sprintf(" %s={%q + (%s.InputErrd ? \" has-warning\" : \"\")}",
-		f.classWord(), classes, prefix), nil
+		f.classWord(), classes, vstring), nil
 }
 
 func (f HTMLFuncs) refreshClass(value interface{}, classes string) (interface{}, error) {
@@ -72,8 +57,7 @@ func (f HTMLFuncs) refreshClass(value interface{}, classes string) (interface{},
 }
 
 func (f JSXFuncs) lessHrefAttr(value interface{}) (interface{}, error) {
-	// f is unused
-	return fmt.Sprintf(" href={%s.LessHref} onClick={this.handleClick}", uncurlv(value)), nil
+	return fmt.Sprintf(" href={%s.LessHref} onClick={this.handleClick}", f.uncurlv(value)), nil
 }
 func (f HTMLFuncs) lessHrefAttr(value interface{}) (interface{}, error) {
 	if lp, ok := value.(*params.LimitParam); ok {
@@ -83,8 +67,7 @@ func (f HTMLFuncs) lessHrefAttr(value interface{}) (interface{}, error) {
 }
 
 func (f JSXFuncs) moreHrefAttr(value interface{}) (interface{}, error) {
-	// f is unused
-	return fmt.Sprintf(" href={%s.MoreHref} onClick={this.handleClick}", uncurlv(value)), nil
+	return fmt.Sprintf(" href={%s.MoreHref} onClick={this.handleClick}", f.uncurlv(value)), nil
 }
 func (f HTMLFuncs) moreHrefAttr(value interface{}) (interface{}, error) {
 	if lp, ok := value.(*params.LimitParam); ok {
@@ -94,9 +77,8 @@ func (f HTMLFuncs) moreHrefAttr(value interface{}) (interface{}, error) {
 }
 
 func (f JSXFuncs) ifDisabledAttr(value interface{}) (template.HTMLAttr, error) {
-	// f is unused
 	return template.HTMLAttr(fmt.Sprintf("disabled={%s.Value ? \"disabled\" : \"\" }",
-		uncurlv(value))), nil
+		f.uncurlv(value))), nil
 }
 
 func (f HTMLFuncs) ifDisabledAttr(value interface{}) (template.HTMLAttr, error) {
@@ -125,15 +107,9 @@ func (f HTMLFuncs) ifBPClassAttr(value interface{}, classes ...string) (template
 	return template.HTMLAttr(fmt.Sprintf(" %s=%q", f.classWord(), s)), nil
 }
 
-/*
-func (_ HashValue) ClassAttrUnless(dot interface{}, cmp uint, class string) (template.HTMLAttr, error) {}
-func (_ Uint) ClassAttrUnless(dot interface{}, cmp uint, class string) (template.HTMLAttr, error) {
-	if z, ok := dot.(HashValue); ok { return z.ClassAttrUnless(dot, cmp, class) }
-} // */
-
 func (f JSXFuncs) ifNeClassAttr(value interface{}, named string, class string) (template.HTMLAttr, error) {
-	prefix, _ := DotSplitHash(value) // "Data.Links.Params.ENUM.ift" ?
-	_, pname := DotSplit(prefix)
+	vstring := ToString(value)
+	_, pname := DotSplit(vstring)
 	enums := params.NewParamsENUM(nil)
 	ed := enums[pname].EnumDecodec
 	_, uptr := ed.Unew()
@@ -141,7 +117,7 @@ func (f JSXFuncs) ifNeClassAttr(value interface{}, named string, class string) (
 		return template.HTMLAttr(""), err
 	}
 	return template.HTMLAttr(fmt.Sprintf(" %s={(%s.Uint != %d) ? %q : \"\"} data-tabid=\"%d\" data-title=%q",
-		f.classWord(), prefix, uptr.Touint(), class, uptr.Touint(), ed.Text(named))), nil
+		f.classWord(), vstring, uptr.Touint(), class, uptr.Touint(), ed.Text(named))), nil
 }
 
 func (f HTMLFuncs) ifNeClassAttr(value interface{}, named string, class string) (template.HTMLAttr, error) {
@@ -162,8 +138,8 @@ func (f HTMLFuncs) ifNeClassAttr(value interface{}, named string, class string) 
 }
 
 func (f JSXFuncs) iftEnumAttrs(value interface{}, named string, class string) (template.HTMLAttr, error) {
-	prefix, _ := DotSplitHash(value) // "Data.Links.Params.ENUM.ift" ?
-	_, pname := DotSplit(prefix)
+	vstring := ToString(value)
+	_, pname := DotSplit(vstring)
 	enums := params.NewParamsENUM(nil)
 	ed := enums[pname].EnumDecodec
 	_, uptr := ed.Unew()
@@ -171,7 +147,7 @@ func (f JSXFuncs) iftEnumAttrs(value interface{}, named string, class string) (t
 		return template.HTMLAttr(""), err
 	}
 	return template.HTMLAttr(fmt.Sprintf(" %s={(%s.Uint == %d) ? %q : \"\"} data-tabid=\"%d\"",
-		f.classWord(), prefix, uptr.Touint(), class, uptr.Touint())), nil
+		f.classWord(), vstring, uptr.Touint(), class, uptr.Touint())), nil
 }
 
 func (f HTMLFuncs) iftEnumAttrs(value interface{}, named string, class string) (template.HTMLAttr, error) {
@@ -215,12 +191,11 @@ func (f HTMLFuncs) ifBClassAttr(value interface{}, classes ...string) (template.
 }
 
 func (f JSXFuncs) ifBPClass(value interface{}, classes ...string) (string, error) {
-	// f is unused
 	fstclass, sndclass, err := classesChoices("ifBPClass*", classes)
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("{%s.Value ? %q : %q }", uncurlv(value), fstclass, sndclass), nil
+	return fmt.Sprintf("{%s.Value ? %q : %q }", f.uncurlv(value), fstclass, sndclass), nil
 }
 
 func (f HTMLFuncs) ifBPClass(value interface{}, classes ...string) (string, error) {
@@ -238,12 +213,11 @@ func (f HTMLFuncs) ifBPClass(value interface{}, classes ...string) (string, erro
 }
 
 func (f JSXFuncs) ifBClass(value interface{}, classes ...string) (string, error) {
-	// f is unused
 	fstclass, sndclass, err := classesChoices("ifBClass*", classes)
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("{%s ? %q : %q }", uncurlv(value), fstclass, sndclass), nil
+	return fmt.Sprintf("{%s ? %q : %q }", f.uncurlv(value), fstclass, sndclass), nil
 }
 
 func (f HTMLFuncs) ifBClass(value interface{}, classes ...string) (string, error) {
@@ -279,16 +253,16 @@ func classesChoices(caller string, classes []string) (string, string, error) {
 func (f JSXFuncs) droplink(value interface{}, args ...string) (interface{}, error) {
 	// f is unused
 	named, aclass := DropLinkArgs(args)
-	prefix, _ := DotSplitHash(value)
-	_, pname := DotSplit(prefix)
+	vstring := ToString(value)
+	_, pname := DotSplit(vstring)
 	enums := params.NewParamsENUM(nil)
 	ed := enums[pname].EnumDecodec
 	return params.DropLink{
 		AlignClass: aclass,
 		Text:       ed.Text(named), // always static
-		Href:       fmt.Sprintf("{%s.%s.%s}", prefix, named, "Href"),
-		Class:      fmt.Sprintf("{%s.%s.%s}", prefix, named, "Class"),
-		CaretClass: fmt.Sprintf("{%s.%s.%s}", prefix, named, "CaretClass"),
+		Href:       fmt.Sprintf("{%s.%s.%s}", vstring, named, "Href"),
+		Class:      fmt.Sprintf("{%s.%s.%s}", vstring, named, "Class"),
+		CaretClass: fmt.Sprintf("{%s.%s.%s}", vstring, named, "CaretClass"),
 	}, nil
 }
 
@@ -322,24 +296,25 @@ func DropLinkArgs(args []string) (string, string) {
 	return named, aclass
 }
 
-func (f JSXFuncs) usepercent(val interface{}) interface{} {
-	ca := fmt.Sprintf(" %s={LabelClassColorPercent(%s)}", f.classWord(), uncurlv(val))
+func (f JSXFuncs) usepercent(value interface{}) interface{} {
+	ca := fmt.Sprintf(" %s={LabelClassColorPercent(%s)}", f.classWord(), f.uncurlv(value))
 	return struct {
 		Value     string
 		ClassAttr template.HTMLAttr
 	}{
-		Value:     stringv(val),
+		Value:     ToString(value),
 		ClassAttr: template.HTMLAttr(ca),
 	}
 }
 
-func (f HTMLFuncs) usepercent(val interface{}) interface{} {
-	ca := fmt.Sprintf(" %s=%q", f.classWord(), LabelClassColorPercent(stringi(val)))
+func (f HTMLFuncs) usepercent(value interface{}) interface{} {
+	vstring := ToString(value)
+	ca := fmt.Sprintf(" %s=%q", f.classWord(), LabelClassColorPercent(vstring))
 	return struct {
 		Value     string
 		ClassAttr template.HTMLAttr
 	}{
-		Value:     stringi(val),
+		Value:     vstring,
 		ClassAttr: template.HTMLAttr(ca),
 	}
 }
@@ -372,7 +347,6 @@ func MakeMap(f Functor) template.FuncMap {
 		"iftEnumAttrs":      f.iftEnumAttrs,
 		"ifExpandClassAttr": f.ifExpandClassAttr,
 		"ifDisabledAttr":    f.ifDisabledAttr,
-		"periodNameAttr":    f.periodNameAttr,
 		"periodValueAttr":   f.periodValueAttr,
 		"refreshClass":      f.refreshClass,
 		"lessHrefAttr":      f.lessHrefAttr,
@@ -399,7 +373,6 @@ type Functor interface {
 	iftEnumAttrs(interface{}, string, string) (template.HTMLAttr, error)
 	ifExpandClassAttr(interface{}, ...string) (template.HTMLAttr, error)
 	ifDisabledAttr(interface{}) (template.HTMLAttr, error)
-	periodNameAttr(interface{}) (interface{}, error)
 	periodValueAttr(interface{}) (interface{}, error)
 	refreshClass(interface{}, string) (interface{}, error)
 	lessHrefAttr(interface{}) (interface{}, error)
@@ -410,26 +383,15 @@ type Functor interface {
 	forWord() string
 }
 
-type FormActioner interface {
-	FormActionAttr() (interface{}, error)
-}
-type Keyer interface {
-	KeyAttr(string) template.HTMLAttr
-}
-type Clipper interface {
-	Clip(int, string, ...operating.ToStringer) (*operating.Clipped, error)
-}
-type ToggleHrefer interface {
-	ToggleHrefAttr() interface{}
-}
-
 func init() {
-	v := templatepipe.Value("")
-	// check for Value's interfaces compliance
-	_ = FormActioner(v)
-	_ = Keyer(v)
-	_ = Clipper(v)
-	_ = ToggleHrefer(v)
+	// check for Nota's interfaces compliance
+	_ = interface {
+		Clip(int, string, ...operating.ToStringer) (*operating.Clipped, error) // operating.*
+		KeyAttr(string) template.HTMLAttr                                      // operating.*
+		FormActionAttr() interface{}                                           // Query
+		ToggleHrefAttr() interface{}                                           // BoolParam
+		PeriodNameAttr() interface{}                                           // PeriodParam
+	}(templatepipe.Nota(nil))
 }
 
 // DotSplit splits s by last ".".
@@ -444,13 +406,16 @@ func DotSplit(s string) (string, string) {
 	return s[:i], s[i+1:]
 }
 
-// DotSplitHash returns DotSplit of first (in no particular order)
-// value from value being a templatepipe.Hash.
-func DotSplitHash(value interface{}) (string, string) {
-	for _, v := range value.(templatepipe.Hash) {
-		return DotSplit(uncurlv(v))
+// DotSplitV calls DotSplit with value's string.
+func DotSplitV(value interface{}) (string, string) {
+	return DotSplit(ToString(value))
+}
+
+func ToString(value interface{}) string {
+	if s, ok := value.(string); ok {
+		return s
 	}
-	return "", ""
+	return value.(templatepipe.Nota).ToString()
 }
 
 func (f HTMLFuncs) CastError(notype string) error {
@@ -458,20 +423,13 @@ func (f HTMLFuncs) CastError(notype string) error {
 	return fmt.Errorf("Cannot convert into %s", notype)
 }
 
-func uncurl(s string) string {
+func (f JSXFuncs) uncurl(s string) string {
+	// f is unused
 	return strings.TrimSuffix(strings.TrimPrefix(s, "{"), "}")
 }
 
-func uncurlv(v interface{}) string {
-	return uncurl(stringv(v))
-}
-
-func stringv(v interface{}) string {
-	return string(v.(templatepipe.Value))
-}
-
-func stringi(v interface{}) string {
-	return v.(string)
+func (f JSXFuncs) uncurlv(v interface{}) string {
+	return f.uncurl(ToString(v))
 }
 
 func LabelClassColorPercent(p string) string {
@@ -495,7 +453,7 @@ func LabelClassColorPercent(p string) string {
 
 // SetKFunc constructs a func which
 // sets k key to templatepipe.Curly(string (n))
-// in passed interface{} (v) being a templatepipe.Hash.
+// in passed interface{} (v) being a templatepipe.Nota.
 // SetKFunc is used by acepp only.
 func SetKFunc(k string) func(interface{}, string) interface{} {
 	return func(v interface{}, n string) interface{} {
@@ -504,21 +462,21 @@ func SetKFunc(k string) func(interface{}, string) interface{} {
 			for _, arg := range args {
 				list = append(list, templatepipe.Curl(arg))
 			}
-			v.(templatepipe.Hash)[k] = list
+			v.(templatepipe.Nota)[k] = list
 			return v
 		}
-		v.(templatepipe.Hash)[k] = templatepipe.Curl(n)
+		v.(templatepipe.Nota)[k] = templatepipe.Curl(n)
 		return v
 	}
 }
 
 // GetKFunc constructs a func which
 // gets, deletes and returns k key
-// in passed interface{} (v) being a templatepipe.Hash.
+// in passed interface{} (v) being a templatepipe.Nota.
 // GetKFunc is used by acepp only.
 func GetKFunc(k string) func(interface{}) interface{} {
 	return func(v interface{}) interface{} {
-		h, ok := v.(templatepipe.Hash)
+		h, ok := v.(templatepipe.Nota)
 		if !ok {
 			return "" // empty pipeline, affects dispatch
 		}
