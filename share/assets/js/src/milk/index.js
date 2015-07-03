@@ -19,7 +19,7 @@
   });
 
   require(['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], function($, React, jsdefines) {
-    var neweventsource, newwebsocket, update, updates;
+    var HandlerMixin, neweventsource, newwebsocket, update, updates;
     updates = void 0;
     neweventsource = function(onmessage) {
       var conn, init, sendSearch;
@@ -119,7 +119,25 @@
         }
       };
     };
+    HandlerMixin = {
+      handleChange: function(e) {
+        return this.handle(e, false, '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1));
+      },
+      handleClick: function(e) {
+        return this.handle(e, true, e.target.getAttribute('href'));
+      },
+      handle: function(e, ps, href) {
+        if (ps) {
+          history.pushState({}, '', href);
+        }
+        updates.sendSearch(href);
+        e.stopPropagation();
+        e.preventDefault();
+        return void 0;
+      }
+    };
     this.IFCLASS = React.createClass({
+      mixins: [HandlerMixin],
       getInitialState: function() {
         return {
           Params: Data.Params,
@@ -161,26 +179,10 @@
           }
           return results;
         })());
-      },
-      handleChange: function(e) {
-        var href;
-        href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1);
-        updates.sendSearch(href);
-        e.stopPropagation();
-        e.preventDefault();
-        return void 0;
-      },
-      handleClick: function(e) {
-        var href;
-        href = e.target.getAttribute('href');
-        history.pushState({}, '', href);
-        updates.sendSearch(href);
-        e.stopPropagation();
-        e.preventDefault();
-        return void 0;
       }
     });
     this.DFCLASS = React.createClass({
+      mixins: [HandlerMixin],
       getInitialState: function() {
         return {
           Params: Data.Params,
@@ -212,26 +214,10 @@
           }
           return results;
         })());
-      },
-      handleChange: function(e) {
-        var href;
-        href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1);
-        updates.sendSearch(href);
-        e.stopPropagation();
-        e.preventDefault();
-        return void 0;
-      },
-      handleClick: function(e) {
-        var href;
-        href = e.target.getAttribute('href');
-        history.pushState({}, '', href);
-        updates.sendSearch(href);
-        e.stopPropagation();
-        e.preventDefault();
-        return void 0;
       }
     });
     this.MEMtableCLASS = React.createClass({
+      mixins: [HandlerMixin],
       getInitialState: function() {
         return {
           Params: Data.Params,
@@ -251,26 +237,10 @@
           }
           return results;
         })());
-      },
-      handleChange: function(e) {
-        var href;
-        href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1);
-        updates.sendSearch(href);
-        e.stopPropagation();
-        e.preventDefault();
-        return void 0;
-      },
-      handleClick: function(e) {
-        var href;
-        href = e.target.getAttribute('href');
-        history.pushState({}, '', href);
-        updates.sendSearch(href);
-        e.stopPropagation();
-        e.preventDefault();
-        return void 0;
       }
     });
     this.CPUtableCLASS = React.createClass({
+      mixins: [HandlerMixin],
       getInitialState: function() {
         return {
           Params: Data.Params,
@@ -290,26 +260,10 @@
           }
           return results;
         })());
-      },
-      handleChange: function(e) {
-        var href;
-        href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1);
-        updates.sendSearch(href);
-        e.stopPropagation();
-        e.preventDefault();
-        return void 0;
-      },
-      handleClick: function(e) {
-        var href;
-        href = e.target.getAttribute('href');
-        history.pushState({}, '', href);
-        updates.sendSearch(href);
-        e.stopPropagation();
-        e.preventDefault();
-        return void 0;
       }
     });
     this.PStableCLASS = React.createClass({
+      mixins: [HandlerMixin],
       getInitialState: function() {
         return {
           Params: Data.Params,
@@ -329,26 +283,10 @@
           }
           return results;
         })());
-      },
-      handleChange: function(e) {
-        var href;
-        href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1);
-        updates.sendSearch(href);
-        e.stopPropagation();
-        e.preventDefault();
-        return void 0;
-      },
-      handleClick: function(e) {
-        var href;
-        href = e.target.getAttribute('href');
-        history.pushState({}, '', href);
-        updates.sendSearch(href);
-        e.stopPropagation();
-        e.preventDefault();
-        return void 0;
       }
     });
     this.VGtableCLASS = React.createClass({
+      mixins: [HandlerMixin],
       getInitialState: function() {
         return {
           Params: Data.Params,
@@ -375,23 +313,6 @@
           }).call(this);
         }
         return jsdefines.panelvg.bind(this)(Data, rows);
-      },
-      handleChange: function(e) {
-        var href;
-        href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1);
-        updates.sendSearch(href);
-        e.stopPropagation();
-        e.preventDefault();
-        return void 0;
-      },
-      handleClick: function(e) {
-        var href;
-        href = e.target.getAttribute('href');
-        history.pushState({}, '', href);
-        updates.sendSearch(href);
-        e.stopPropagation();
-        e.preventDefault();
-        return void 0;
       }
     });
     this.NewTextCLASS = function(reduce) {

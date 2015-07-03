@@ -101,7 +101,18 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
       close: () -> conn.close()
     }
 
+  HandlerMixin =
+    handleChange: (e) -> @handle(e, false, '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1))
+    handleClick: (e) -> @handle(e, true, e.target.getAttribute('href'))
+    handle: (e, ps, href) ->
+      history.pushState({}, '', href) if ps
+      updates.sendSearch(href)
+      e.stopPropagation() # preserves checkbox/radio
+      e.preventDefault()  # checked/selected state
+      return undefined
+
   @IFCLASS = React.createClass
+    mixins: [HandlerMixin]
     getInitialState: () -> { # a global Data
       Params:       Data.Params
       IFbytes:      Data.IFbytes
@@ -116,21 +127,9 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
             (jsdefines.ifpackets_rows(Data, $if) for $if in Data?.IFpackets?.List ? []),
             (jsdefines.iferrors_rows(Data, $if) for $if in Data?.IFerrors?.List ? []),
             (jsdefines.ifbytes_rows(Data, $if) for $if in Data?.IFbytes?.List ? []))
-    handleChange: (e) ->
-      href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1)
-      updates.sendSearch(href)
-      e.stopPropagation() # preserves checkbox/radio
-      e.preventDefault()  # checked/selected state
-      return undefined
-    handleClick: (e) ->
-      href = e.target.getAttribute('href')
-      history.pushState({}, '', href)
-      updates.sendSearch(href)
-      e.stopPropagation() # preserves checkbox/radio
-      e.preventDefault()  # checked/selected state
-      return undefined
 
   @DFCLASS = React.createClass
+    mixins: [HandlerMixin]
     getInitialState: () -> { # a global Data
       Params:       Data.Params
       DFbytes:      Data.DFbytes
@@ -143,21 +142,9 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
       return jsdefines.paneldf.bind(this)(Data,
              (jsdefines.dfinodes_rows(Data, $disk) for $disk in Data?.DFinodes?.List ? []),
              (jsdefines.dfbytes_rows(Data, $disk) for $disk in Data?.DFbytes?.List ? []))
-    handleChange: (e) ->
-      href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1)
-      updates.sendSearch(href)
-      e.stopPropagation() # preserves checkbox/radio
-      e.preventDefault()  # checked/selected state
-      return undefined
-    handleClick: (e) ->
-      href = e.target.getAttribute('href')
-      history.pushState({}, '', href)
-      updates.sendSearch(href)
-      e.stopPropagation() # preserves checkbox/radio
-      e.preventDefault()  # checked/selected state
-      return undefined
 
   @MEMtableCLASS = React.createClass
+    mixins: [HandlerMixin]
     getInitialState: () -> {
       Params: Data.Params,  # a global Data
       MEM:    Data.MEM,    # a global Data
@@ -166,21 +153,9 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
       Data = @state
       return jsdefines.panelmem.bind(this)(Data, (jsdefines.mem_rows(Data, $mem
       ) for $mem in Data?.MEM?.List ? []))
-    handleChange: (e) ->
-      href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1)
-      updates.sendSearch(href)
-      e.stopPropagation() # preserves checkbox/radio
-      e.preventDefault()  # checked/selected state
-      return undefined
-    handleClick: (e) ->
-      href = e.target.getAttribute('href')
-      history.pushState({}, '', href)
-      updates.sendSearch(href)
-      e.stopPropagation() # preserves checkbox/radio
-      e.preventDefault()  # checked/selected state
-      return undefined
 
   @CPUtableCLASS = React.createClass
+    mixins: [HandlerMixin]
     getInitialState: () -> {
       Params: Data.Params, # a global Data
       CPU:    Data.CPU,    # a global Data
@@ -189,21 +164,9 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
       Data = @state
       return jsdefines.panelcpu.bind(this)(Data, (jsdefines.cpu_rows(Data, $core
       ) for $core in Data?.CPU?.List ? []))
-    handleChange: (e) ->
-      href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1)
-      updates.sendSearch(href)
-      e.stopPropagation() # preserves checkbox/radio
-      e.preventDefault()  # checked/selected state
-      return undefined
-    handleClick: (e) ->
-      href = e.target.getAttribute('href')
-      history.pushState({}, '', href)
-      updates.sendSearch(href)
-      e.stopPropagation() # preserves checkbox/radio
-      e.preventDefault()  # checked/selected state
-      return undefined
 
   @PStableCLASS = React.createClass
+    mixins: [HandlerMixin]
     getInitialState: () -> {
       Params:  Data.Params, # a global Data
       PStable: Data.PStable # a global Data
@@ -212,21 +175,9 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
       Data = @state
       return jsdefines.panelps.bind(this)(Data, (jsdefines.ps_rows(Data, $proc
       ) for $proc in Data?.PStable?.List ? []))
-    handleChange: (e) ->
-      href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1)
-      updates.sendSearch(href)
-      e.stopPropagation() # preserves checkbox/radio
-      e.preventDefault()  # checked/selected state
-      return undefined
-    handleClick: (e) ->
-      href = e.target.getAttribute('href')
-      history.pushState({}, '', href)
-      updates.sendSearch(href)
-      e.stopPropagation() # preserves checkbox/radio
-      e.preventDefault()  # checked/selected state
-      return undefined
 
   @VGtableCLASS = React.createClass
+    mixins: [HandlerMixin]
     getInitialState: () -> { # a global Data:
       Params:          Data.Params
       VagrantMachines: Data.VagrantMachines
@@ -241,19 +192,6 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
         rows = (jsdefines.vagrant_rows.bind(this)(Data, $mach
         ) for $mach in Data?.VagrantMachines?.List ? [])
       return jsdefines.panelvg.bind(this)(Data, rows)
-    handleChange: (e) ->
-      href = '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1)
-      updates.sendSearch(href)
-      e.stopPropagation() # preserves checkbox/radio
-      e.preventDefault()  # checked/selected state
-      return undefined
-    handleClick: (e) ->
-      href = e.target.getAttribute('href')
-      history.pushState({}, '', href)
-      updates.sendSearch(href)
-      e.stopPropagation() # preserves checkbox/radio
-      e.preventDefault()  # checked/selected state
-      return undefined
 
   @NewTextCLASS = (reduce) -> React.createClass
     newstate: (data) ->
