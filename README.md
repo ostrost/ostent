@@ -126,7 +126,7 @@ you have to re-make.
 
 Additional tools required for assets rebuilding:
 - [Sass](http://sass-lang.com/install)
-- [react-tools](https://www.npmjs.org/package/react-tools)
+- [babel](https://www.npmjs.com/package/babel)
 - [coffee-script](https://www.npmjs.com/package/coffee-script)
 - [requirejs](https://www.npmjs.org/package/requirejs)
 

@@ -92,7 +92,7 @@ $(destbin)/$(cmdname).32:
 share/assets/css/index.css: share/style/index.scss
 	type sass   >/dev/null || exit 0; sass $< $@
 share/assets/js/src/lib/jsdefines.js: share/tmp/jsdefines.jsx
-	type jsx    >/dev/null || exit 0; jsx <$^ >/dev/null && jsx <$^ 2>/dev/null >$@
+	type babel  >/dev/null || exit 0; babel $^ -o $@
 share/assets/js/src/milk/index.js: share/coffee/index.coffee
 	type coffee >/dev/null || exit 0; coffee -p $^ >/dev/null && coffee -o $(@D)/ $^
 share/assets/js/min/index.min.js: $(shell find share/assets/js/src/ -type f)
