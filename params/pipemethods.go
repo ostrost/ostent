@@ -56,11 +56,9 @@ func (bp BoolParam) ToggleHrefAttr() interface{} {
 }
 
 func (ep EnumParam) EnumClassAttr(named, classif string, optelse ...string) (template.HTMLAttr, error) {
-	var classelse string
-	if len(optelse) == 1 {
-		classelse = optelse[0]
-	} else if len(optelse) > 1 {
-		return template.HTMLAttr(""), fmt.Errorf("number of args for EnumClassAttr: either 2 or 3 got %d", 2+len(optelse))
+	classelse, err := EnumClassAttrArgs(optelse)
+	if err != nil {
+		return template.HTMLAttr(""), err
 	}
 	_, uptr := ep.EnumDecodec.Unew()
 	if err := uptr.Unmarshal(named, new(bool)); err != nil {
@@ -70,6 +68,42 @@ func (ep EnumParam) EnumClassAttr(named, classif string, optelse ...string) (tem
 		classif = classelse
 	}
 	return SprintfAttr(" class=%q", classif), nil
+}
+
+func EnumClassAttrArgs(opt []string) (string, error) {
+	if len(opt) == 1 {
+		return opt[0], nil
+	} else if len(opt) > 1 {
+		return "", fmt.Errorf("number of args for EnumClassAttr: either 2 or 3 got %d",
+			2+len(opt))
+	}
+	return "", nil
+}
+
+func (ep EnumParam) EnumLink(args ...string) (EnumLink, error) {
+	named, aclass := EnumLinkArgs(args)
+	pname, uptr := ep.EnumDecodec.Unew()
+	if err := uptr.Unmarshal(named, new(bool)); err != nil {
+		return EnumLink{}, err
+	}
+	l := ep.EncodeUint(pname, uptr)
+	l.AlignClass = aclass
+	return l, nil
+}
+
+func EnumLinkArgs(args []string) (string, string) {
+	var named string
+	if len(args) > 0 {
+		named = args[0]
+	}
+	aclass := "text-right" // default
+	if len(args) > 1 {
+		aclass = ""
+		if args[1] != "" {
+			aclass = "text-" + args[1]
+		}
+	}
+	return named, aclass
 }
 
 func (pp PeriodParam) PeriodNameAttr() interface{} {

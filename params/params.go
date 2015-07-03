@@ -30,8 +30,8 @@ type Upointer interface {
 	// UnmarshalJSON([]byte) error
 }
 
-// DropLink has drop{down,up} link attributes.
-type DropLink struct {
+// EnumLink has drop{down,up} link attributes.
+type EnumLink struct {
 	AlignClass string
 	Text       string `json:"-"` // static
 	Href       string
@@ -40,10 +40,10 @@ type DropLink struct {
 }
 
 // EncodeUint returns enums.uinter applied DropLink. .AlignClass is not filled.
-func (ep EnumParam) EncodeUint(pname string, uinter enums.Uinter) DropLink {
+func (ep EnumParam) EncodeUint(pname string, uinter enums.Uinter) EnumLink {
 	values := ep.Query.ValuesCopy()
 	text, cur := ep.SetValue(values, pname, uinter)
-	dl := DropLink{Text: text, Class: "state"}
+	dl := EnumLink{Text: text, Class: "state"}
 	if cur != nil {
 		dl.CaretClass = "caret"
 		dl.Class += " current"

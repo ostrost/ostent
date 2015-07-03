@@ -13,7 +13,7 @@ type Clipped struct {
 	Text        string
 }
 
-func Clip(width int, prefix string, id []ToStringer, value string) (*Clipped, error) {
+func Clip(width int, prefix string, id []fmt.Stringer, value string) (*Clipped, error) {
 	key, err := ClipArgs(id, value)
 	if err != nil {
 		return nil, err
@@ -27,9 +27,9 @@ func Clip(width int, prefix string, id []ToStringer, value string) (*Clipped, er
 	}, nil
 }
 
-func ClipArgs(id []ToStringer, value string) (string, error) {
+func ClipArgs(id []fmt.Stringer, value string) (string, error) {
 	if len(id) == 1 {
-		return id[0].ToString(), nil
+		return id[0].String(), nil
 	} else if len(id) > 0 {
 		return "", fmt.Errorf("Clip expects either 5 or 6 arguments")
 	}

@@ -242,7 +242,7 @@ func (d Dotted) Leave(name string) *Dotted {
 // Nota is a type of encoded jsx notations for template transplitting.
 type Nota map[string]interface{}
 
-func (n Nota) String() string { return n.ToString() }
+func (n Nota) String() string { return n["."].(string) }
 
 func (d *Dotted) Notation() (string, string, string) {
 	if d == nil || d.Name == "" {

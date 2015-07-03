@@ -5,69 +5,21 @@ import (
 	"html/template"
 	"strings"
 
-	"github.com/ostrost/ostent/params"
 	"github.com/ostrost/ostent/system/operating"
 	"github.com/ostrost/ostent/templateutil/templatepipe"
 )
 
-func (f JSXFuncs) classWord() string   { return "className" }
-func (f JSXFuncs) colspanWord() string { return "colSpan" }
-func (f JSXFuncs) forWord() string     { return "htmlFor" }
+func (f JSXFuncs) Class() string    { return "className" }
+func (f HTMLFuncs) Class() string   { return "class" }
+func (f JSXFuncs) Colspan() string  { return "colSpan" }
+func (f HTMLFuncs) Colspan() string { return "colspan" }
 
-func (f HTMLFuncs) classWord() string   { return "class" }
-func (f HTMLFuncs) colspanWord() string { return "colspan" }
-func (f HTMLFuncs) forWord() string     { return "for" }
+// JSXClose returns empty template.HTML.
+func (f HTMLFuncs) JSXClose(string) (empty template.HTML) { return }
 
-// jsxClose returns close tag markup as template.HTML.
-func (f JSXFuncs) jsxClose(tag string) template.HTML { return template.HTML("</" + tag + ">") } // f is unused
-
-// jsxClose returns empty template.HTML.
-func (f HTMLFuncs) jsxClose(string) (empty template.HTML) { return } // f is unused
-
-func (f JSXFuncs) droplink(value interface{}, args ...string) (interface{}, error) {
-	// f is unused
-	named, aclass := DropLinkArgs(args)
-	vstring := ToString(value)
-	_, pname := DotSplit(vstring)
-	enums := params.NewParamsENUM(nil)
-	ed := enums[pname].EnumDecodec
-	return params.DropLink{
-		AlignClass: aclass,
-		Text:       ed.Text(named), // always static
-		Href:       fmt.Sprintf("{%s.%s.%s}", vstring, named, "Href"),
-		Class:      fmt.Sprintf("{%s.%s.%s}", vstring, named, "Class"),
-		CaretClass: fmt.Sprintf("{%s.%s.%s}", vstring, named, "CaretClass"),
-	}, nil
-}
-
-func (f HTMLFuncs) droplink(value interface{}, args ...string) (interface{}, error) {
-	named, aclass := DropLinkArgs(args)
-	ep, ok := value.(*params.EnumParam)
-	if !ok {
-		return nil, f.CastError("*params.EnumParam")
-	}
-	pname, uptr := ep.EnumDecodec.Unew()
-	if err := uptr.Unmarshal(named, new(bool)); err != nil {
-		return nil, err
-	}
-	l := ep.EncodeUint(pname, uptr)
-	l.AlignClass = aclass
-	return l, nil
-}
-
-func DropLinkArgs(args []string) (string, string) {
-	var named string
-	if len(args) > 0 {
-		named = args[0]
-	}
-	aclass := "text-right" // default
-	if len(args) > 1 {
-		aclass = ""
-		if args[1] != "" {
-			aclass = "text-" + args[1]
-		}
-	}
-	return named, aclass
+// JSXClose returns close tag markup as template.HTML.
+func (f JSXFuncs) JSXClose(tag string) template.HTML {
+	return template.HTML("</" + tag + ">")
 }
 
 // JSXFuncs has methods implementing Functor.
@@ -88,11 +40,9 @@ func MakeMap(f Functor) template.FuncMap {
 		"rowsset": func(interface{}) string { return "" }, // empty pipeline
 		// acepp overrides rowsset and adds setrows
 
-		"droplink": f.droplink,
-		"jsxClose": f.jsxClose,
-		"class":    f.classWord,
-		"colspan":  f.colspanWord,
-		"for":      f.forWord,
+		"class":    f.Class,
+		"colspan":  f.Colspan,
+		"jsxClose": f.JSXClose,
 	}
 }
 
@@ -101,11 +51,9 @@ var Funcs = HTMLFuncs{}.MakeMap()
 
 type Functor interface {
 	MakeMap() template.FuncMap
-	droplink(interface{}, ...string) (interface{}, error)
-	jsxClose(string) template.HTML
-	classWord() string
-	colspanWord() string
-	forWord() string
+	Class() string
+	Colspan() string
+	JSXClose(string) template.HTML
 }
 
 func init() {
@@ -113,7 +61,7 @@ func init() {
 	_ = interface {
 		// operating (multiple types):
 		BoolClassAttr(...string) (template.HTMLAttr, error)
-		Clip(int, string, ...operating.ToStringer) (*operating.Clipped, error)
+		Clip(int, string, ...fmt.Stringer) (*operating.Clipped, error)
 		KeyAttr(string) template.HTMLAttr
 
 		FormActionAttr() interface{}                                        // Query
@@ -121,50 +69,13 @@ func init() {
 		DisabledAttr() interface{}                                          // BoolParam
 		ToggleHrefAttr() interface{}                                        // BoolParam
 		EnumClassAttr(string, string, ...string) (template.HTMLAttr, error) // EnumParam
+		EnumLink(...string) (interface{}, error)                            // EnumParam
 		PeriodNameAttr() interface{}                                        // PeriodParam
 		PeriodValueAttr() interface{}                                       // PeriodParam
 		RefreshClassAttr(string) interface{}                                // PeriodParam
 		LessHrefAttr() interface{}                                          // LimitParam
 		MoreHrefAttr() interface{}                                          // LimitParam
 	}(templatepipe.Nota(nil))
-}
-
-// DotSplit splits s by last ".".
-func DotSplit(s string) (string, string) {
-	if s == "" {
-		return "", ""
-	}
-	i := len(s) - 1
-	for i > 0 && s[i] != '.' {
-		i--
-	}
-	return s[:i], s[i+1:]
-}
-
-// DotSplitV calls DotSplit with value's string.
-func DotSplitV(value interface{}) (string, string) {
-	return DotSplit(ToString(value))
-}
-
-func ToString(value interface{}) string {
-	if s, ok := value.(string); ok {
-		return s
-	}
-	return value.(templatepipe.Nota).ToString()
-}
-
-func (f HTMLFuncs) CastError(notype string) error {
-	// f is unused
-	return fmt.Errorf("Cannot convert into %s", notype)
-}
-
-func (f JSXFuncs) uncurl(s string) string {
-	// f is unused
-	return strings.TrimSuffix(strings.TrimPrefix(s, "{"), "}")
-}
-
-func (f JSXFuncs) uncurlv(v interface{}) string {
-	return f.uncurl(ToString(v))
 }
 
 // SetKFunc constructs a func which

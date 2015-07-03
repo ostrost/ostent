@@ -107,9 +107,6 @@
     tbody
       {{template "defines::define_iferrors_rows" .}}
 
-= content adroplink
-  | <a href={{.Href}} onClick={this.handleClick}>{{.Text}}</a>
-
 = content define_panelif
   div.panel1
     label.panel-heading.btn-block
@@ -131,11 +128,11 @@
 
       ul.nav.nav-tabs
         | <li {{.Data.Params.ENUM.ift.EnumClassAttr "PACKETS" "active"}}>
-        {{template "defines::adroplink" droplink .Data.Params.ENUM.ift "PACKETS"}}
+        {{template "defines::enumlink" .Data.Params.ENUM.ift.EnumLink "PACKETS"}}
         | </li><li {{.Data.Params.ENUM.ift.EnumClassAttr "ERRORS" "active"}}>
-        {{template "defines::adroplink" droplink .Data.Params.ENUM.ift "ERRORS"}}
+        {{template "defines::enumlink" .Data.Params.ENUM.ift.EnumLink "ERRORS"}}
         | </li><li {{.Data.Params.ENUM.ift.EnumClassAttr "IFBYTES" "active"}}>
-        {{template "defines::adroplink" droplink .Data.Params.ENUM.ift "IFBYTES"}}
+        {{template "defines::enumlink" .Data.Params.ENUM.ift.EnumLink "IFBYTES"}}
         | </li>
       | </div>
 
@@ -182,18 +179,21 @@
     {{end}}
   {{end}}
 
-= content thdroplink
+= content enumlink
+  | <a href={{.Href}} onClick={this.handleClick}>{{.Text}}</a>
+
+= content headerenumlink
   th {{class}}="header {{.AlignClass}}" <a href={{.Href}} {{class}}={{.Class}}>{{.Text}}<span {{class}}={{.CaretClass}}></span></a>
 
 = content define_dfbytes_table
   table.table1.stripe-table
     thead
       tr
-        {{template "defines::thdroplink" droplink .Data.Params.ENUM.df "FS" ""}}
-        {{template "defines::thdroplink" droplink .Data.Params.ENUM.df "MP" ""}}
-        {{template "defines::thdroplink" droplink .Data.Params.ENUM.df "AVAIL"}}
-        {{template "defines::thdroplink" droplink .Data.Params.ENUM.df "USED"}}
-        {{template "defines::thdroplink" droplink .Data.Params.ENUM.df "TOTAL"}}
+        {{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "FS" ""}}
+        {{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "MP" ""}}
+        {{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "AVAIL"}}
+        {{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "USED"}}
+        {{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "TOTAL"}}
     tbody
       {{template "defines::define_dfbytes_rows" .}}
 
@@ -230,9 +230,9 @@
 
       ul.nav.nav-tabs
         | <li {{.Data.Params.ENUM.dft.EnumClassAttr "INODES" "active"}}>
-        {{template "defines::adroplink" droplink .Data.Params.ENUM.dft "INODES"}}
+        {{template "defines::enumlink" .Data.Params.ENUM.dft.EnumLink "INODES"}}
         | </li><li {{.Data.Params.ENUM.dft.EnumClassAttr "DFBYTES" "active"}}>
-        {{template "defines::adroplink" droplink .Data.Params.ENUM.dft "DFBYTES"}}
+        {{template "defines::enumlink" .Data.Params.ENUM.dft.EnumLink "DFBYTES"}}
         | </li>
       | </div>
 
@@ -366,15 +366,15 @@
   table.table2.stripe-table
     thead
       tr
-        {{template "defines::thdroplink" droplink .Data.Params.ENUM.ps "PID"}}
-        {{template "defines::thdroplink" droplink .Data.Params.ENUM.ps "UID"}}
-        {{template "defines::thdroplink" droplink .Data.Params.ENUM.ps "USER" ""}}
-        {{template "defines::thdroplink" droplink .Data.Params.ENUM.ps "PRI"}}
-        {{template "defines::thdroplink" droplink .Data.Params.ENUM.ps "NICE"}}
-        {{template "defines::thdroplink" droplink .Data.Params.ENUM.ps "VIRT"}}
-        {{template "defines::thdroplink" droplink .Data.Params.ENUM.ps "RES"}}
-        {{template "defines::thdroplink" droplink .Data.Params.ENUM.ps "TIME" "center"}}
-        {{template "defines::thdroplink" droplink .Data.Params.ENUM.ps "NAME" ""}}
+        {{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "PID"}}
+        {{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "UID"}}
+        {{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "USER" ""}}
+        {{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "PRI"}}
+        {{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "NICE"}}
+        {{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "VIRT"}}
+        {{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "RES"}}
+        {{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "TIME" "center"}}
+        {{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "NAME" ""}}
     tbody
       {{template "defines::define_psrows" .}}
 

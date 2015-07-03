@@ -609,14 +609,10 @@ type Vgmachine struct {
 
 type Field string
 
-func (f Field) ToString() string { return string(f) }
+func (f Field) String() string { return string(f) }
 
 // KeyAttr intended for UUID field.
 func (f Field) KeyAttr(string) (empty template.HTMLAttr) { return }
-func (f Field) Clip(width int, prefix string, id ...ToStringer) (*Clipped, error) {
-	return Clip(width, prefix, id, f.ToString())
-}
-
-type ToStringer interface {
-	ToString() string
+func (f Field) Clip(width int, prefix string, id ...fmt.Stringer) (*Clipped, error) {
+	return Clip(width, prefix, id, f.String())
 }

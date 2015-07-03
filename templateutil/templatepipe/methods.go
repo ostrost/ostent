@@ -14,7 +14,7 @@ func Uncurl(s string) string {
 }
 
 func (n Nota) Uncurl() string {
-	return Uncurl(n.ToString())
+	return Uncurl(n.String())
 }
 
 func (n Nota) FormActionAttr() interface{} {
@@ -43,7 +43,7 @@ func (n Nota) BoolParamClassAttr(classes ...string) (template.HTMLAttr, error) {
 		n.Uncurl(), fstclass, sndclass)), nil
 }
 
-func (n Nota) Clip(width int, prefix string, id ...operating.ToStringer) (*operating.Clipped, error) {
+func (n Nota) Clip(width int, prefix string, id ...fmt.Stringer) (*operating.Clipped, error) {
 	k, err := operating.ClipArgs(id, n.Uncurl())
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func (n Nota) Clip(width int, prefix string, id ...operating.ToStringer) (*opera
 		IDAttr:      operating.SprintfAttr(" id=%s", key),
 		ForAttr:     operating.SprintfAttr(" htmlFor=%s", key),
 		MWStyleAttr: operating.SprintfAttr(" style={{maxWidth: '%dch'}}", width),
-		Text:        n.ToString(),
+		Text:        n.String(),
 	}, nil
 }
 
@@ -62,22 +62,31 @@ func (n Nota) DisabledAttr() interface{} {
 }
 
 func (n Nota) EnumClassAttr(named, classif string, optelse ...string) (template.HTMLAttr, error) {
-	var classelse string
-	if len(optelse) == 1 {
-		classelse = optelse[0]
-	} else if len(optelse) > 1 {
-		return template.HTMLAttr(""), fmt.Errorf("number of args for EnumClassAttr: either 2 or 3 got %d", 2+len(optelse))
+	classelse, err := params.EnumClassAttrArgs(optelse)
+	if err != nil {
+		return template.HTMLAttr(""), err
 	}
-	vstring := n.ToString()
-	_, pname := DotSplit(vstring)
 	eparams := params.NewParamsENUM(nil)
-	ed := eparams[pname].EnumDecodec
+	ed := eparams[n.Base()].EnumDecodec
 	_, uptr := ed.Unew()
 	if err := uptr.Unmarshal(named, new(bool)); err != nil {
 		return template.HTMLAttr(""), err
 	}
 	return operating.SprintfAttr(" className={(%s.Uint == %d) ? %q : %q}",
-		n.ToString(), uptr.Touint(), classif, classelse), nil
+		n, uptr.Touint(), classif, classelse), nil
+}
+
+func (n Nota) EnumLink(args ...string) (interface{}, error) {
+	named, aclass := params.EnumLinkArgs(args)
+	eparams := params.NewParamsENUM(nil)
+	ed := eparams[n.Base()].EnumDecodec
+	return params.EnumLink{
+		AlignClass: aclass,
+		Text:       ed.Text(named), // always static
+		Href:       fmt.Sprintf("{%s.%s.%s}", n, named, "Href"),
+		Class:      fmt.Sprintf("{%s.%s.%s}", n, named, "Class"),
+		CaretClass: fmt.Sprintf("{%s.%s.%s}", n, named, "CaretClass"),
+	}, nil
 }
 
 func (n Nota) ToggleHrefAttr() interface{} {
@@ -85,17 +94,16 @@ func (n Nota) ToggleHrefAttr() interface{} {
 }
 
 func (n Nota) PeriodNameAttr() interface{} {
-	_, pname := n.DotSplit()
-	return fmt.Sprintf(" name=%q", pname)
+	return fmt.Sprintf(" name=%q", n.Base())
 }
 
 func (n Nota) PeriodValueAttr() interface{} {
-	return fmt.Sprintf(" value={%s.Input} onChange={this.handleChange}", n.ToString())
+	return fmt.Sprintf(" value={%s.Input} onChange={this.handleChange}", n)
 }
 
 func (n Nota) RefreshClassAttr(classes string) interface{} {
 	return fmt.Sprintf(" className={%q + (%s.InputErrd ? %q : \"\")}",
-		classes, n.ToString(), " has-warning")
+		classes, n, " has-warning")
 }
 
 func (n Nota) LessHrefAttr() interface{} {
@@ -106,23 +114,8 @@ func (n Nota) MoreHrefAttr() interface{} {
 	return fmt.Sprintf(" href={%s.MoreHref} onClick={this.handleClick}", n.Uncurl())
 }
 
-// DotSplit splits s by last ".".
-func DotSplit(s string) (string, string) {
-	if s == "" {
-		return "", ""
-	}
-	i := len(s) - 1
-	for i > 0 && s[i] != '.' {
-		i--
-	}
-	return s[:i], s[i+1:]
-}
-
-// Split calls DotSplit with n's string.
-func (n Nota) DotSplit() (string, string) {
-	return DotSplit(n.ToString())
-}
-
-func (n Nota) ToString() string {
-	return n["."].(string)
+// Base is like filepath.Base on n with "." separator.
+func (n Nota) Base() string {
+	split := strings.Split(n.String(), ".")
+	return split[len(split)-1]
 }
