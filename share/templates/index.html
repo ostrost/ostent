@@ -130,15 +130,15 @@
   ><td class="text-right nowrap"
     >{{$core.N}}</td
   ><td class="text-right"
-    ><span {{class}}={{$core.UserClass}}
+    ><span {{class}}="usepercent-text" data-usepercent={{$core.User}}
       >{{$core.User}}</span
     ></td
   ><td class="text-right"
-    ><span {{class}}={{$core.SysClass}} 
+    ><span {{class}}="usepercent-text" data-usepercent={{$core.Sys}}
       >{{$core.Sys}}</span
     ></td
   ><td class="text-right"
-    ><span {{class}}={{$core.IdleClass}}
+    ><span {{class}}="usepercent-text-inverse" data-usepercent={{$core.Idle}}
       >{{$core.Idle}}</span
     ></td
   ></tr
@@ -174,9 +174,7 @@
   ><td class="text-right"
     >{{$disk.Avail}}</td
   ><td class="text-right"
-    >{{$disk.Used}}&nbsp;<sup
-      >{{template "defines::define_usepercent" (usepercent $disk.UsePercent)}}</sup
-    ></td
+    >{{$disk.Used}}&nbsp;{{template "defines::define_usepercent" $disk.UsePercent}}</td
   ><td class="text-right"
     >{{$disk.Total}}</td
   ></tr
@@ -198,9 +196,7 @@
   ><td class="text-right"
     >{{$disk.Ifree}}</td
   ><td class="text-right"
-    >{{$disk.Iused}}&nbsp;<sup
-      >{{template "defines::define_usepercent" (usepercent $disk.IusePercent)}}</sup
-    ></td
+    >{{$disk.Iused}}&nbsp;{{template "defines::define_usepercent" $disk.IusePercent}}</td
   ><td class="text-right"
     >{{$disk.Inodes}}</td
   ></tr
@@ -358,9 +354,7 @@
   ><td class="text-right"
     >{{$mem.Free}}</td
   ><td class="text-right"
-    >{{$mem.Used}}&nbsp;<sup
-      >{{template "defines::define_usepercent" (usepercent $mem.UsePercent)}}</sup
-    ></td
+    >{{$mem.Used}}&nbsp;{{template "defines::define_usepercent" $mem.UsePercent}}</td
   ><td class="text-right"
     >{{$mem.Total}}</td
   ></tr
@@ -610,8 +604,10 @@
   ><input {{class}}="form-control refresh-input" type="text" placeholder={{.Placeholder}} {{.PeriodNameAttr}} {{.PeriodValueAttr}}
   >{{jsxClose "input"}}</div
 >{{end}}{{/*
-*/}}{{define "defines::define_usepercent"}}<span {{.ClassAttr}}
-  >{{.Value}}%</span
+*/}}{{define "defines::define_usepercent"}}<sup
+  ><span {{class}}="label" data-usepercent={{.}}
+    >{{.}}%</span
+  ></sup
 >{{end}}{{/*
 */}}{{define "defines::define_vgerror"}}<tr key="vgerror"
   ><td {{colspan}}="5"

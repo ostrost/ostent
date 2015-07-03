@@ -423,16 +423,10 @@ func ClassesChoices(caller string, classes []string) (string, string, error) {
 
 // CoreInfo type is a struct of core metrics.
 type CoreInfo struct {
-	N         Field
-	User      uint // percent without "%"
-	Sys       uint // percent without "%"
-	Idle      uint // percent without "%"
-	UserClass string
-	SysClass  string
-	IdleClass string
-	// UserSpark string
-	// SysSpark  string
-	// IdleSpark string
+	N    Field
+	User uint // percent without "%"
+	Sys  uint // percent without "%"
+	Idle uint // percent without "%"
 }
 
 type CPUUpdater interface {

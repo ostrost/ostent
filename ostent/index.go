@@ -552,13 +552,10 @@ func FormatCPU(mc operating.MetricCPU) operating.CoreInfo {
 		N = "#" + N[len(prefix):] // fmt.Sprintf("#%d", n)
 	}
 	return operating.CoreInfo{
-		N:         operating.Field(N),
-		User:      user,
-		Sys:       sys,
-		Idle:      idle,
-		UserClass: format.TextClassColorPercent(user),
-		SysClass:  format.TextClassColorPercent(sys),
-		IdleClass: format.TextClassColorPercent(100 - idle),
+		N:    operating.Field(N),
+		User: user,
+		Sys:  sys,
+		Idle: idle,
 	}
 }
 

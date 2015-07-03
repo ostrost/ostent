@@ -1,5 +1,6 @@
 = content define_usepercent
-  | <span {{.ClassAttr}}>{{.Value}}%</span>
+  sup
+    | <span {{class}}="label" data-usepercent={{.}}>{{.}}%</span>
 
 = content define_clip
   | <input {{.IDAttr}}  {{class}}="collapse-checkbox" type="checkbox" aria-hidden="true" hidden>{{jsxClose "input"}}
@@ -161,7 +162,7 @@
       td.nowrap {{template "defines::define_clip" ($disk.DirName.Clip  6 "df-bytes-dirname")}}
       td.text-right {{$disk.Avail}}
       td.text-right {{$disk.Used}}&nbsp;
-        sup {{template "defines::define_usepercent" (usepercent $disk.UsePercent)}}
+        {{template "defines::define_usepercent" $disk.UsePercent}}
       td.text-right {{$disk.Total}}
       | </tr>
     {{end}}
@@ -175,7 +176,7 @@
       td.nowrap {{template "defines::define_clip" ($disk.DirName.Clip  6 "df-inodes-devname")}}
       td.text-right {{$disk.Ifree}}
       td.text-right {{$disk.Iused}}&nbsp;
-        sup {{template "defines::define_usepercent" (usepercent $disk.IusePercent)}}
+        {{template "defines::define_usepercent" $disk.IusePercent}}
       td.text-right {{$disk.Inodes}}
       | </tr>
     {{end}}
@@ -253,7 +254,7 @@
       td {{$mem.Kind}}
       td.text-right {{$mem.Free}}
       td.text-right {{$mem.Used}}&nbsp;
-        sup {{template "defines::define_usepercent" (usepercent $mem.UsePercent)}}
+        {{template "defines::define_usepercent" $mem.UsePercent}}
       td.text-right {{$mem.Total}}
       | </tr>
     {{end}}
@@ -299,10 +300,9 @@
     {{range $i, $core := .Data.CPU.List}}
       | <tr {{$core.N.KeyAttr "cpu-rowby-N"}}>
       td.text-right.nowrap {{$core.N}}
-      / td.text-right {{$core.UserSpark}}
-      td.text-right <span {{class}}={{$core.UserClass}}>{{$core.User}}</span>
-      td.text-right <span {{class}}={{$core.SysClass}} >{{$core.Sys}}</span>
-      td.text-right <span {{class}}={{$core.IdleClass}}>{{$core.Idle}}</span>
+      td.text-right <span {{class}}="usepercent-text" data-usepercent={{$core.User}}>{{$core.User}}</span>
+      td.text-right <span {{class}}="usepercent-text" data-usepercent={{$core.Sys}}>{{$core.Sys}}</span>
+      td.text-right <span {{class}}="usepercent-text-inverse" data-usepercent={{$core.Idle}}>{{$core.Idle}}</span>
       | </tr>
     {{end}}
   {{end}}

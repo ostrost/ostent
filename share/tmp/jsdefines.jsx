@@ -8,10 +8,10 @@ define(function(require) {
     >{$mem.Free}</td
   ><td className="text-right"
     >{$mem.Used}&nbsp;<sup
-      ><span  className={LabelClassColorPercent($mem.UsePercent)}
-  >{$mem.UsePercent}%</span
-></sup
-    ></td
+  ><span className="label" data-usepercent={$mem.UsePercent}
+    >{$mem.UsePercent}%</span
+  ></sup
+></td
   ><td className="text-right"
     >{$mem.Total}</td
   ></tr
@@ -260,15 +260,15 @@ define(function(require) {
   ><td className="text-right nowrap"
     >{$core.N}</td
   ><td className="text-right"
-    ><span className={$core.UserClass}
+    ><span className="usepercent-text" data-usepercent={$core.User}
       >{$core.User}</span
     ></td
   ><td className="text-right"
-    ><span className={$core.SysClass} 
+    ><span className="usepercent-text" data-usepercent={$core.Sys}
       >{$core.Sys}</span
     ></td
   ><td className="text-right"
-    ><span className={$core.IdleClass}
+    ><span className="usepercent-text-inverse" data-usepercent={$core.Idle}
       >{$core.Idle}</span
     ></td
   ></tr
@@ -345,10 +345,10 @@ define(function(require) {
     >{$disk.Avail}</td
   ><td className="text-right"
     >{$disk.Used}&nbsp;<sup
-      ><span  className={LabelClassColorPercent($disk.UsePercent)}
-  >{$disk.UsePercent}%</span
-></sup
-    ></td
+  ><span className="label" data-usepercent={$disk.UsePercent}
+    >{$disk.UsePercent}%</span
+  ></sup
+></td
   ><td className="text-right"
     >{$disk.Total}</td
   ></tr
@@ -368,10 +368,10 @@ define(function(require) {
     >{$disk.Ifree}</td
   ><td className="text-right"
     >{$disk.Iused}&nbsp;<sup
-      ><span  className={LabelClassColorPercent($disk.IusePercent)}
-  >{$disk.IusePercent}%</span
-></sup
-    ></td
+  ><span className="label" data-usepercent={$disk.IusePercent}
+    >{$disk.IusePercent}%</span
+  ></sup
+></td
   ><td className="text-right"
     >{$disk.Inodes}</td
   ></tr

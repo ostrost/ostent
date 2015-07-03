@@ -1339,32 +1339,136 @@ a.text-primary:hover,
 a.text-primary:focus {
   color: #286090; }
 
-.text-success {
+.text-success, .usepercent-text[data-usepercent="0"],
+.usepercent-text[data-usepercent="1"],
+.usepercent-text[data-usepercent="2"],
+.usepercent-text[data-usepercent="3"],
+.usepercent-text[data-usepercent="4"],
+.usepercent-text[data-usepercent="5"],
+.usepercent-text[data-usepercent="6"],
+.usepercent-text[data-usepercent="7"],
+.usepercent-text[data-usepercent="8"],
+.usepercent-text[data-usepercent="9"],
+.usepercent-text[data-usepercent^="1"]:not([data-usepercent="100"]), .usepercent-text-inverse[data-usepercent^="9"]:not([data-usepercent="9"]),
+.usepercent-text-inverse[data-usepercent="100"] {
   color: #3c763d; }
 
-a.text-success:hover,
-a.text-success:focus {
+a.text-success:hover, a.usepercent-text[data-usepercent="0"]:hover,
+a.usepercent-text[data-usepercent="1"]:hover,
+a.usepercent-text[data-usepercent="2"]:hover,
+a.usepercent-text[data-usepercent="3"]:hover,
+a.usepercent-text[data-usepercent="4"]:hover,
+a.usepercent-text[data-usepercent="5"]:hover,
+a.usepercent-text[data-usepercent="6"]:hover,
+a.usepercent-text[data-usepercent="7"]:hover,
+a.usepercent-text[data-usepercent="8"]:hover,
+a.usepercent-text[data-usepercent="9"]:hover,
+a.usepercent-text[data-usepercent^="1"]:hover:not([data-usepercent="100"]), a.usepercent-text-inverse[data-usepercent^="9"]:hover:not([data-usepercent="9"]),
+a.usepercent-text-inverse[data-usepercent="100"]:hover,
+a.text-success:focus,
+a.usepercent-text[data-usepercent="0"]:focus,
+a.usepercent-text[data-usepercent="1"]:focus,
+a.usepercent-text[data-usepercent="2"]:focus,
+a.usepercent-text[data-usepercent="3"]:focus,
+a.usepercent-text[data-usepercent="4"]:focus,
+a.usepercent-text[data-usepercent="5"]:focus,
+a.usepercent-text[data-usepercent="6"]:focus,
+a.usepercent-text[data-usepercent="7"]:focus,
+a.usepercent-text[data-usepercent="8"]:focus,
+a.usepercent-text[data-usepercent="9"]:focus,
+a.usepercent-text[data-usepercent^="1"]:focus:not([data-usepercent="100"]),
+a.usepercent-text-inverse[data-usepercent^="9"]:focus:not([data-usepercent="9"]),
+a.usepercent-text-inverse[data-usepercent="100"]:focus {
   color: #2b542c; }
 
-.text-info {
+.text-info, .usepercent-text[data-usepercent^="2"]:not([data-usepercent="2"]),
+.usepercent-text[data-usepercent^="3"]:not([data-usepercent="3"]),
+.usepercent-text[data-usepercent^="4"]:not([data-usepercent="4"]),
+.usepercent-text[data-usepercent^="5"]:not([data-usepercent="5"]),
+.usepercent-text[data-usepercent^="6"]:not([data-usepercent="6"]),
+.usepercent-text[data-usepercent^="7"]:not([data-usepercent="7"]), .usepercent-text-inverse[data-usepercent^="2"]:not([data-usepercent="2"]),
+.usepercent-text-inverse[data-usepercent^="3"]:not([data-usepercent="3"]),
+.usepercent-text-inverse[data-usepercent^="4"]:not([data-usepercent="4"]),
+.usepercent-text-inverse[data-usepercent^="5"]:not([data-usepercent="5"]),
+.usepercent-text-inverse[data-usepercent^="6"]:not([data-usepercent="6"]),
+.usepercent-text-inverse[data-usepercent^="7"]:not([data-usepercent="7"]),
+.usepercent-text-inverse[data-usepercent^="8"]:not([data-usepercent="8"]) {
   color: #31708f; }
 
-a.text-info:hover,
-a.text-info:focus {
+a.text-info:hover, a.usepercent-text[data-usepercent^="2"]:hover:not([data-usepercent="2"]),
+a.usepercent-text[data-usepercent^="3"]:hover:not([data-usepercent="3"]),
+a.usepercent-text[data-usepercent^="4"]:hover:not([data-usepercent="4"]),
+a.usepercent-text[data-usepercent^="5"]:hover:not([data-usepercent="5"]),
+a.usepercent-text[data-usepercent^="6"]:hover:not([data-usepercent="6"]),
+a.usepercent-text[data-usepercent^="7"]:hover:not([data-usepercent="7"]), a.usepercent-text-inverse[data-usepercent^="2"]:hover:not([data-usepercent="2"]),
+a.usepercent-text-inverse[data-usepercent^="3"]:hover:not([data-usepercent="3"]),
+a.usepercent-text-inverse[data-usepercent^="4"]:hover:not([data-usepercent="4"]),
+a.usepercent-text-inverse[data-usepercent^="5"]:hover:not([data-usepercent="5"]),
+a.usepercent-text-inverse[data-usepercent^="6"]:hover:not([data-usepercent="6"]),
+a.usepercent-text-inverse[data-usepercent^="7"]:hover:not([data-usepercent="7"]),
+a.usepercent-text-inverse[data-usepercent^="8"]:hover:not([data-usepercent="8"]),
+a.text-info:focus,
+a.usepercent-text[data-usepercent^="2"]:focus:not([data-usepercent="2"]),
+a.usepercent-text[data-usepercent^="3"]:focus:not([data-usepercent="3"]),
+a.usepercent-text[data-usepercent^="4"]:focus:not([data-usepercent="4"]),
+a.usepercent-text[data-usepercent^="5"]:focus:not([data-usepercent="5"]),
+a.usepercent-text[data-usepercent^="6"]:focus:not([data-usepercent="6"]),
+a.usepercent-text[data-usepercent^="7"]:focus:not([data-usepercent="7"]),
+a.usepercent-text-inverse[data-usepercent^="2"]:focus:not([data-usepercent="2"]),
+a.usepercent-text-inverse[data-usepercent^="3"]:focus:not([data-usepercent="3"]),
+a.usepercent-text-inverse[data-usepercent^="4"]:focus:not([data-usepercent="4"]),
+a.usepercent-text-inverse[data-usepercent^="5"]:focus:not([data-usepercent="5"]),
+a.usepercent-text-inverse[data-usepercent^="6"]:focus:not([data-usepercent="6"]),
+a.usepercent-text-inverse[data-usepercent^="7"]:focus:not([data-usepercent="7"]),
+a.usepercent-text-inverse[data-usepercent^="8"]:focus:not([data-usepercent="8"]) {
   color: #245269; }
 
-.text-warning {
+.text-warning, .usepercent-text[data-usepercent^="8"]:not([data-usepercent="8"]), .usepercent-text-inverse[data-usepercent^="1"]:not([data-usepercent="1"]):not([data-usepercent="100"]) {
   color: #8a6d3b; }
 
-a.text-warning:hover,
-a.text-warning:focus {
+a.text-warning:hover, a.usepercent-text[data-usepercent^="8"]:hover:not([data-usepercent="8"]), a.usepercent-text-inverse[data-usepercent^="1"]:hover:not([data-usepercent="1"]):not([data-usepercent="100"]),
+a.text-warning:focus,
+a.usepercent-text[data-usepercent^="8"]:focus:not([data-usepercent="8"]),
+a.usepercent-text-inverse[data-usepercent^="1"]:focus:not([data-usepercent="1"]):not([data-usepercent="100"]) {
   color: #66512c; }
 
-.text-danger {
+.text-danger, .usepercent-text[data-usepercent^="9"]:not([data-usepercent="9"]),
+.usepercent-text[data-usepercent="100"], .usepercent-text-inverse[data-usepercent="0"],
+.usepercent-text-inverse[data-usepercent="1"],
+.usepercent-text-inverse[data-usepercent="2"],
+.usepercent-text-inverse[data-usepercent="3"],
+.usepercent-text-inverse[data-usepercent="4"],
+.usepercent-text-inverse[data-usepercent="5"],
+.usepercent-text-inverse[data-usepercent="6"],
+.usepercent-text-inverse[data-usepercent="7"],
+.usepercent-text-inverse[data-usepercent="8"],
+.usepercent-text-inverse[data-usepercent="9"] {
   color: #a94442; }
 
-a.text-danger:hover,
-a.text-danger:focus {
+a.text-danger:hover, a.usepercent-text[data-usepercent^="9"]:hover:not([data-usepercent="9"]),
+a.usepercent-text[data-usepercent="100"]:hover, a.usepercent-text-inverse[data-usepercent="0"]:hover,
+a.usepercent-text-inverse[data-usepercent="1"]:hover,
+a.usepercent-text-inverse[data-usepercent="2"]:hover,
+a.usepercent-text-inverse[data-usepercent="3"]:hover,
+a.usepercent-text-inverse[data-usepercent="4"]:hover,
+a.usepercent-text-inverse[data-usepercent="5"]:hover,
+a.usepercent-text-inverse[data-usepercent="6"]:hover,
+a.usepercent-text-inverse[data-usepercent="7"]:hover,
+a.usepercent-text-inverse[data-usepercent="8"]:hover,
+a.usepercent-text-inverse[data-usepercent="9"]:hover,
+a.text-danger:focus,
+a.usepercent-text[data-usepercent^="9"]:focus:not([data-usepercent="9"]),
+a.usepercent-text[data-usepercent="100"]:focus,
+a.usepercent-text-inverse[data-usepercent="0"]:focus,
+a.usepercent-text-inverse[data-usepercent="1"]:focus,
+a.usepercent-text-inverse[data-usepercent="2"]:focus,
+a.usepercent-text-inverse[data-usepercent="3"]:focus,
+a.usepercent-text-inverse[data-usepercent="4"]:focus,
+a.usepercent-text-inverse[data-usepercent="5"]:focus,
+a.usepercent-text-inverse[data-usepercent="6"]:focus,
+a.usepercent-text-inverse[data-usepercent="7"]:focus,
+a.usepercent-text-inverse[data-usepercent="8"]:focus,
+a.usepercent-text-inverse[data-usepercent="9"]:focus {
   color: #843534; }
 
 .bg-primary {
@@ -5189,32 +5293,84 @@ a.label:focus {
 .label-primary[href]:focus {
   background-color: #286090; }
 
-.label-success {
+.label-success, .label[data-usepercent="0"],
+.label[data-usepercent="1"],
+.label[data-usepercent="2"],
+.label[data-usepercent="3"],
+.label[data-usepercent="4"],
+.label[data-usepercent="5"],
+.label[data-usepercent="6"],
+.label[data-usepercent="7"],
+.label[data-usepercent="8"],
+.label[data-usepercent="9"],
+.label[data-usepercent^="1"]:not([data-usepercent="100"]) {
   background-color: #5cb85c; }
 
-.label-success[href]:hover,
-.label-success[href]:focus {
+.label-success[href]:hover, [href].label[data-usepercent="0"]:hover,
+[href].label[data-usepercent="1"]:hover,
+[href].label[data-usepercent="2"]:hover,
+[href].label[data-usepercent="3"]:hover,
+[href].label[data-usepercent="4"]:hover,
+[href].label[data-usepercent="5"]:hover,
+[href].label[data-usepercent="6"]:hover,
+[href].label[data-usepercent="7"]:hover,
+[href].label[data-usepercent="8"]:hover,
+[href].label[data-usepercent="9"]:hover,
+[href].label[data-usepercent^="1"]:hover:not([data-usepercent="100"]),
+.label-success[href]:focus,
+[href].label[data-usepercent="0"]:focus,
+[href].label[data-usepercent="1"]:focus,
+[href].label[data-usepercent="2"]:focus,
+[href].label[data-usepercent="3"]:focus,
+[href].label[data-usepercent="4"]:focus,
+[href].label[data-usepercent="5"]:focus,
+[href].label[data-usepercent="6"]:focus,
+[href].label[data-usepercent="7"]:focus,
+[href].label[data-usepercent="8"]:focus,
+[href].label[data-usepercent="9"]:focus,
+[href].label[data-usepercent^="1"]:focus:not([data-usepercent="100"]) {
   background-color: #449d44; }
 
-.label-info {
+.label-info, .label[data-usepercent^="2"]:not([data-usepercent="2"]),
+.label[data-usepercent^="3"]:not([data-usepercent="3"]),
+.label[data-usepercent^="4"]:not([data-usepercent="4"]),
+.label[data-usepercent^="5"]:not([data-usepercent="5"]),
+.label[data-usepercent^="6"]:not([data-usepercent="6"]),
+.label[data-usepercent^="7"]:not([data-usepercent="7"]) {
   background-color: #5bc0de; }
 
-.label-info[href]:hover,
-.label-info[href]:focus {
+.label-info[href]:hover, [href].label[data-usepercent^="2"]:hover:not([data-usepercent="2"]),
+[href].label[data-usepercent^="3"]:hover:not([data-usepercent="3"]),
+[href].label[data-usepercent^="4"]:hover:not([data-usepercent="4"]),
+[href].label[data-usepercent^="5"]:hover:not([data-usepercent="5"]),
+[href].label[data-usepercent^="6"]:hover:not([data-usepercent="6"]),
+[href].label[data-usepercent^="7"]:hover:not([data-usepercent="7"]),
+.label-info[href]:focus,
+[href].label[data-usepercent^="2"]:focus:not([data-usepercent="2"]),
+[href].label[data-usepercent^="3"]:focus:not([data-usepercent="3"]),
+[href].label[data-usepercent^="4"]:focus:not([data-usepercent="4"]),
+[href].label[data-usepercent^="5"]:focus:not([data-usepercent="5"]),
+[href].label[data-usepercent^="6"]:focus:not([data-usepercent="6"]),
+[href].label[data-usepercent^="7"]:focus:not([data-usepercent="7"]) {
   background-color: #31b0d5; }
 
-.label-warning {
+.label-warning, .label[data-usepercent^="8"]:not([data-usepercent="8"]) {
   background-color: #f0ad4e; }
 
-.label-warning[href]:hover,
-.label-warning[href]:focus {
+.label-warning[href]:hover, [href].label[data-usepercent^="8"]:hover:not([data-usepercent="8"]),
+.label-warning[href]:focus,
+[href].label[data-usepercent^="8"]:focus:not([data-usepercent="8"]) {
   background-color: #ec971f; }
 
-.label-danger {
+.label-danger, .label[data-usepercent^="9"]:not([data-usepercent="9"]),
+.label[data-usepercent="100"] {
   background-color: #d9534f; }
 
-.label-danger[href]:hover,
-.label-danger[href]:focus {
+.label-danger[href]:hover, [href].label[data-usepercent^="9"]:hover:not([data-usepercent="9"]),
+[href].label[data-usepercent="100"]:hover,
+.label-danger[href]:focus,
+[href].label[data-usepercent^="9"]:focus:not([data-usepercent="9"]),
+[href].label[data-usepercent="100"]:focus {
   background-color: #c9302c; }
 
 .badge, .badge-primary, .badge-success, .badge-info, .badge-warning, .badge-danger {

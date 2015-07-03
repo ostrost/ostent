@@ -145,6 +145,8 @@ func DataNode(root *template.Template, node parse.Node, data *Dotted, vars map[s
 								}
 							}
 						}
+					} else if arg0.Type() == parse.NodeVariable {
+						keys = append(keys, arg0.(*parse.VariableNode).Ident[1:]...)
 					}
 				}
 			}

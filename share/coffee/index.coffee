@@ -157,14 +157,6 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
       e.preventDefault()  # checked/selected state
       return undefined
 
-  @LabelClassColorPercent = (p) ->
-    return "label label-danger"  if p.length > 2
-    return "label label-danger"  if p.length > 1 && p[0] == '9'
-    return "label label-warning" if p.length > 1 && p[0] == '8'
-    return "label label-success" if p.length > 1 && p[0] == '1'
-    return "label label-info"    if p.length > 1
-    return "label label-success"
-
   @MEMtableCLASS = React.createClass
     getInitialState: () -> {
       Params: Data.Params,  # a global Data

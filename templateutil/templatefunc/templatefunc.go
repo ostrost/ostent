@@ -70,29 +70,6 @@ func DropLinkArgs(args []string) (string, string) {
 	return named, aclass
 }
 
-func (f JSXFuncs) usepercent(value interface{}) interface{} {
-	ca := fmt.Sprintf(" %s={LabelClassColorPercent(%s)}", f.classWord(), f.uncurlv(value))
-	return struct {
-		Value     string
-		ClassAttr template.HTMLAttr
-	}{
-		Value:     ToString(value),
-		ClassAttr: template.HTMLAttr(ca),
-	}
-}
-
-func (f HTMLFuncs) usepercent(value interface{}) interface{} {
-	vstring := ToString(value)
-	ca := fmt.Sprintf(" %s=%q", f.classWord(), LabelClassColorPercent(vstring))
-	return struct {
-		Value     string
-		ClassAttr template.HTMLAttr
-	}{
-		Value:     vstring,
-		ClassAttr: template.HTMLAttr(ca),
-	}
-}
-
 // JSXFuncs has methods implementing Functor.
 type JSXFuncs struct{}
 
@@ -111,12 +88,11 @@ func MakeMap(f Functor) template.FuncMap {
 		"rowsset": func(interface{}) string { return "" }, // empty pipeline
 		// acepp overrides rowsset and adds setrows
 
-		"droplink":   f.droplink,
-		"usepercent": f.usepercent,
-		"jsxClose":   f.jsxClose,
-		"class":      f.classWord,
-		"colspan":    f.colspanWord,
-		"for":        f.forWord,
+		"droplink": f.droplink,
+		"jsxClose": f.jsxClose,
+		"class":    f.classWord,
+		"colspan":  f.colspanWord,
+		"for":      f.forWord,
 	}
 }
 
@@ -126,7 +102,6 @@ var Funcs = HTMLFuncs{}.MakeMap()
 type Functor interface {
 	MakeMap() template.FuncMap
 	droplink(interface{}, ...string) (interface{}, error)
-	usepercent(interface{}) interface{}
 	jsxClose(string) template.HTML
 	classWord() string
 	colspanWord() string
@@ -190,25 +165,6 @@ func (f JSXFuncs) uncurl(s string) string {
 
 func (f JSXFuncs) uncurlv(v interface{}) string {
 	return f.uncurl(ToString(v))
-}
-
-func LabelClassColorPercent(p string) string {
-	if len(p) > 2 { // 100% and more
-		return "label label-danger"
-	}
-	if len(p) > 1 {
-		if p[0] == '9' {
-			return "label label-danger"
-		}
-		if p[0] == '8' {
-			return "label label-warning"
-		}
-		if p[0] == '1' {
-			return "label label-success"
-		}
-		return "label label-info"
-	}
-	return "label label-success"
 }
 
 // SetKFunc constructs a func which

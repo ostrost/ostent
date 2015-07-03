@@ -1,5 +1,73 @@
 @import 'bootstrap-3.3.5.scss';
 
+.label[data-usepercent="0"],
+.label[data-usepercent="1"],
+.label[data-usepercent="2"],
+.label[data-usepercent="3"],
+.label[data-usepercent="4"],
+.label[data-usepercent="5"],
+.label[data-usepercent="6"],
+.label[data-usepercent="7"],
+.label[data-usepercent="8"],
+.label[data-usepercent="9"],
+.label[data-usepercent^="1"]:not([data-usepercent="100"]) { @extend .label-success; }
+
+.label[data-usepercent^="2"]:not([data-usepercent="2"]),
+.label[data-usepercent^="3"]:not([data-usepercent="3"]),
+.label[data-usepercent^="4"]:not([data-usepercent="4"]),
+.label[data-usepercent^="5"]:not([data-usepercent="5"]),
+.label[data-usepercent^="6"]:not([data-usepercent="6"]),
+.label[data-usepercent^="7"]:not([data-usepercent="7"]) { @extend .label-info; }
+
+.label[data-usepercent^="8"]:not([data-usepercent="8"]) { @extend .label-warning; }
+.label[data-usepercent^="9"]:not([data-usepercent="9"]),
+.label[data-usepercent="100"] { @extend .label-danger; }
+
+.usepercent-text[data-usepercent="0"],
+.usepercent-text[data-usepercent="1"],
+.usepercent-text[data-usepercent="2"],
+.usepercent-text[data-usepercent="3"],
+.usepercent-text[data-usepercent="4"],
+.usepercent-text[data-usepercent="5"],
+.usepercent-text[data-usepercent="6"],
+.usepercent-text[data-usepercent="7"],
+.usepercent-text[data-usepercent="8"],
+.usepercent-text[data-usepercent="9"],
+.usepercent-text[data-usepercent^="1"]:not([data-usepercent="100"]) { @extend .text-success; }
+
+.usepercent-text[data-usepercent^="2"]:not([data-usepercent="2"]),
+.usepercent-text[data-usepercent^="3"]:not([data-usepercent="3"]),
+.usepercent-text[data-usepercent^="4"]:not([data-usepercent="4"]),
+.usepercent-text[data-usepercent^="5"]:not([data-usepercent="5"]),
+.usepercent-text[data-usepercent^="6"]:not([data-usepercent="6"]),
+.usepercent-text[data-usepercent^="7"]:not([data-usepercent="7"]) { @extend .text-info; }
+
+.usepercent-text[data-usepercent^="8"]:not([data-usepercent="8"]) { @extend .text-warning; }
+.usepercent-text[data-usepercent^="9"]:not([data-usepercent="9"]),
+.usepercent-text[data-usepercent="100"] { @extend .text-danger; }
+
+.usepercent-text-inverse[data-usepercent="0"],
+.usepercent-text-inverse[data-usepercent="1"],
+.usepercent-text-inverse[data-usepercent="2"],
+.usepercent-text-inverse[data-usepercent="3"],
+.usepercent-text-inverse[data-usepercent="4"],
+.usepercent-text-inverse[data-usepercent="5"],
+.usepercent-text-inverse[data-usepercent="6"],
+.usepercent-text-inverse[data-usepercent="7"],
+.usepercent-text-inverse[data-usepercent="8"],
+.usepercent-text-inverse[data-usepercent="9"] { @extend .text-danger; }
+.usepercent-text-inverse[data-usepercent^="1"]:not([data-usepercent="1"]):not([data-usepercent="100"]) { @extend .text-warning; }
+
+.usepercent-text-inverse[data-usepercent^="2"]:not([data-usepercent="2"]),
+.usepercent-text-inverse[data-usepercent^="3"]:not([data-usepercent="3"]),
+.usepercent-text-inverse[data-usepercent^="4"]:not([data-usepercent="4"]),
+.usepercent-text-inverse[data-usepercent^="5"]:not([data-usepercent="5"]),
+.usepercent-text-inverse[data-usepercent^="6"]:not([data-usepercent="6"]),
+.usepercent-text-inverse[data-usepercent^="7"]:not([data-usepercent="7"]),
+.usepercent-text-inverse[data-usepercent^="8"]:not([data-usepercent="8"]) { @extend .text-info; }
+.usepercent-text-inverse[data-usepercent^="9"]:not([data-usepercent="9"]),
+.usepercent-text-inverse[data-usepercent="100"] { @extend .text-success; }
+
 // regular bootstrap "a" rules. Overriding .navbar-brand style.
 a.navbar-brand:hover,
 a.navbar-brand:focus { color: #23527c !important; text-decoration: underline !important; }

@@ -6,8 +6,8 @@ define(function(require) {
     , $mem.Kind), React.createElement("td", {className: "text-right"
     }, $mem.Free), React.createElement("td", {className: "text-right"
     }, $mem.Used, " ", React.createElement("sup", null
-      , React.createElement("span", {className: LabelClassColorPercent($mem.UsePercent)
-  }, $mem.UsePercent, "%"))), React.createElement("td", {className: "text-right"
+  , React.createElement("span", {className: "label", "data-usepercent": $mem.UsePercent
+    }, $mem.UsePercent, "%"))), React.createElement("td", {className: "text-right"
     }, $mem.Total))); },
 		panelmem:        function(Data, rows)  { return (React.createElement("div", {className: "panel1"
   }, React.createElement("label", {className: "panel-heading btn-block"
@@ -138,11 +138,11 @@ define(function(require) {
 		cpu_rows:        function(Data, $core) { return (React.createElement("tr", {key: "cpu-rowby-N-"+$core.N
   }, React.createElement("td", {className: "text-right nowrap"
     }, $core.N), React.createElement("td", {className: "text-right"
-    }, React.createElement("span", {className: $core.UserClass
+    }, React.createElement("span", {className: "usepercent-text", "data-usepercent": $core.User
       }, $core.User)), React.createElement("td", {className: "text-right"
-    }, React.createElement("span", {className: $core.SysClass
+    }, React.createElement("span", {className: "usepercent-text", "data-usepercent": $core.Sys
       }, $core.Sys)), React.createElement("td", {className: "text-right"
-    }, React.createElement("span", {className: $core.IdleClass
+    }, React.createElement("span", {className: "usepercent-text-inverse", "data-usepercent": $core.Idle
       }, $core.Idle)))); },
 		panelcpu:        function(Data, rows)  { return (React.createElement("div", {className: "panel1"
   }, React.createElement("label", {className: "panel-heading btn-block"
@@ -184,8 +184,8 @@ define(function(require) {
   }, $disk.DirName)), React.createElement("td", {className: "text-right"
     }, $disk.Avail), React.createElement("td", {className: "text-right"
     }, $disk.Used, " ", React.createElement("sup", null
-      , React.createElement("span", {className: LabelClassColorPercent($disk.UsePercent)
-  }, $disk.UsePercent, "%"))), React.createElement("td", {className: "text-right"
+  , React.createElement("span", {className: "label", "data-usepercent": $disk.UsePercent
+    }, $disk.UsePercent, "%"))), React.createElement("td", {className: "text-right"
     }, $disk.Total))); },
 		dfinodes_rows:   function(Data, $disk) { return (React.createElement("tr", {key: "dfinodes-rowby-dirname-"+$disk.DirName
   }, React.createElement("td", {className: "nowrap"
@@ -197,8 +197,8 @@ define(function(require) {
   }, $disk.DirName)), React.createElement("td", {className: "text-right"
     }, $disk.Ifree), React.createElement("td", {className: "text-right"
     }, $disk.Iused, " ", React.createElement("sup", null
-      , React.createElement("span", {className: LabelClassColorPercent($disk.IusePercent)
-  }, $disk.IusePercent, "%"))), React.createElement("td", {className: "text-right"
+  , React.createElement("span", {className: "label", "data-usepercent": $disk.IusePercent
+    }, $disk.IusePercent, "%"))), React.createElement("td", {className: "text-right"
     }, $disk.Inodes))); },
 		paneldf:         function(Data,r1,r2)  { return (React.createElement("div", {className: "panel1"
   }, React.createElement("label", {className: "panel-heading btn-block"

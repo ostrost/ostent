@@ -125,24 +125,3 @@ func Ps(current, previous uint64) string {
 	return HumanUnitless(current - previous)
 }
 // */
-
-func TextClassColorPercent(p uint) string {
-	return "text-" + colorPercent(p)
-}
-
-func LabelClassColorPercent(p uint) string {
-	return "label label-" + colorPercent(p)
-}
-
-func colorPercent(p uint) string {
-	if p > 90 {
-		return "danger"
-	}
-	if p > 80 {
-		return "warning"
-	}
-	if p > 20 {
-		return "info"
-	}
-	return "success"
-}
