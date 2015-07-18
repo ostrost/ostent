@@ -16,28 +16,20 @@ import (
 // Muxmap is a type of a map of pattern to HandlerFunc.
 type Muxmap map[string]http.HandlerFunc
 
-// Server is a http.Server with auxiliaries
-type Server struct {
-	http.Server
-	Access *logger       // the access_log
-	MUX    *TrieServeMux // the mux
-	Chain  alice.Chain   // the chain
-}
-
 // ServeExtra .Serve's with the extramap in the mux.
-func (s *Server) ServeExtra(listener net.Listener, extramap Muxmap) error {
+func ServeExtra(server http.Server, mux *TrieServeMux, chain alice.Chain, listener net.Listener, extramap Muxmap) error {
 	if extramap != nil {
 		for path, handler := range extramap {
 			for _, METH := range []string{"HEAD", "GET", "POST"} {
-				s.MUX.Handle(METH, path, s.Chain.Then(handler))
+				mux.Handle(METH, path, chain.Then(handler))
 			}
 		}
 	}
-	return s.Serve(listener)
+	return server.Serve(listener)
 }
 
-// NewServer creates a Server.
-func NewServer(listener net.Listener, taggedbin bool) *Server {
+// NewServer sets up server, mux, chain and access logger.
+func NewServer(listener net.Listener, taggedbin bool) (http.Server, *TrieServeMux, alice.Chain, *logger) {
 	access := NewLogged(taggedbin, log.New(os.Stdout, "", 0))
 	recovery := Recovery(taggedbin)
 	chain := alice.New(
@@ -45,12 +37,7 @@ func NewServer(listener net.Listener, taggedbin bool) *Server {
 		recovery.Constructor,
 	)
 	mux := NewMux(recovery, chain.Then)
-	return &Server{
-		Server: http.Server{Addr: listener.Addr().String(), Handler: mux},
-		Access: access,
-		Chain:  chain,
-		MUX:    mux,
-	}
+	return http.Server{Addr: listener.Addr().String(), Handler: mux}, mux, chain, access
 }
 
 // TimeInfo is for AssetInfoFunc: a reduced os.FileInfo.

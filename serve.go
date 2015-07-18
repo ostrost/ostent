@@ -22,11 +22,7 @@ func init() {
 }
 
 func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error {
-	server := ostent.NewServer(listener, taggedbin)
-	access := server.Access
-	chain := server.Chain
-	mux := server.MUX
-	recovery := mux.Recovery
+	server, mux, chain, access := ostent.NewServer(listener, taggedbin)
 
 	logger := log.New(os.Stderr, "[ostent] ", 0)
 	assetnames := assets.AssetNames()
@@ -40,10 +36,10 @@ func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error 
 	}
 
 	// access is passed to Index*Func for them to log with.
-	// recovery.ConstructorFunc used to bypass the chain so no double log.
-	mux.Handle("GET", "/index.ws", recovery.
+	// mux.Recovery.ConstructorFunc used to bypass the chain so no double log.
+	mux.Handle("GET", "/index.ws", mux.Recovery.
 		ConstructorFunc(ostent.IndexWSFunc(access, PeriodFlag)))
-	mux.Handle("GET", "/index.sse", recovery.
+	mux.Handle("GET", "/index.sse", mux.Recovery.
 		ConstructorFunc(ostent.IndexSSEFunc(access, PeriodFlag)))
 
 	index := chain.ThenFunc(ostent.IndexFunc(taggedbin,
@@ -61,5 +57,5 @@ func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error 
 	mux.Handle("GET", "/panic", chain.ThenFunc(panics)) // */
 
 	ostent.Banner(listener.Addr().String(), "ostent", logger)
-	return server.ServeExtra(listener, extramap)
+	return ostent.ServeExtra(server, mux, chain, listener, extramap)
 }

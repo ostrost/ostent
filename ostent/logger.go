@@ -29,6 +29,10 @@ func NewLogged(loguniq bool, access *log.Logger) *logger {
 	}
 }
 
+func (lg *logger) Recover(w http.ResponseWriter, r *http.Request, recd interface{}) {
+	lg.Constructor(Recovery(lg.LogUniq).PanicHandle(recd)).ServeHTTP(w, r)
+}
+
 func (lg *logger) Constructor(HANDLER http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()

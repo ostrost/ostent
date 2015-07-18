@@ -12,32 +12,39 @@ func (rc Recovery) ConstructorFunc(hf http.HandlerFunc) http.Handler {
 	return rc.Constructor(http.HandlerFunc(hf))
 }
 
+func (rc Recovery) PanicHandle(recd interface{}) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(panicstatuscode) // NB
+
+		var description string
+		if err, ok := recd.(error); ok {
+			description = err.Error()
+		} else if s, ok := recd.(string); ok {
+			description = s
+		}
+		var stack string
+		if !rc {
+			sbuf := make([]byte, 4096-len(panicstatustext)-len(description))
+			size := runtime.Stack(sbuf, false)
+			stack = string(sbuf[:size])
+		}
+		if tpl, err := rctemplate.Clone(); err == nil { // otherwise bail out
+			tpl.Execute(w, struct {
+				Title, Description, Stack string
+			}{
+				Title:       panicstatustext,
+				Description: description,
+				Stack:       stack,
+			})
+		}
+	}
+}
+
 func (rc Recovery) Constructor(HANDLER http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
-			if err := recover(); err != nil {
-				// TODO panic(err); return for hijacked connection
-				w.WriteHeader(panicstatuscode) // NB
-
-				var description string
-				if err, ok := err.(error); ok {
-					description = err.Error()
-				}
-				var stack string
-				if !rc {
-					sbuf := make([]byte, 4096-len(panicstatustext)-len(description))
-					size := runtime.Stack(sbuf, false)
-					stack = string(sbuf[:size])
-				}
-				if tpl, err := rctemplate.Clone(); err == nil { // otherwise bail out
-					tpl.Execute(w, struct {
-						Title, Description, Stack string
-					}{
-						Title:       panicstatustext,
-						Description: description,
-						Stack:       stack,
-					})
-				}
+			if recd := recover(); recd != nil {
+				rc.PanicHandle(recd)(w, r)
 			}
 		}()
 		HANDLER.ServeHTTP(w, r)
