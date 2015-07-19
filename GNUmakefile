@@ -54,14 +54,14 @@ all32: $(destbin)/$(cmdname).32
 endif
 init:
 	go get -u -v \
-github.com/jteeuwen/go-bindata/go-bindata \
-github.com/skelterjohn/rerun \
 github.com/campoy/jsonenums \
 github.com/clipperhouse/gen \
-code.google.com/p/go.net/html \
-github.com/yosssi/ace
+github.com/jteeuwen/go-bindata/go-bindata \
+github.com/skelterjohn/rerun \
+github.com/yosssi/ace \
+golang.org/x/net/html
 	cd system/operating && gen add github.com/rzab/slice
-	git remote set-url origin https://$(package) # travis & tip & https://code.google.com/p/go/issues/detail?id=8850
+# git remote set-url origin https://$(package) # travis & tip & https://github.com/golang/go/issues/8850
 	go get -v $(package)
 	go get -v -a -tags bin $(package)
 
