@@ -6,15 +6,9 @@ import (
 	"runtime"
 )
 
-type Recovery bool // true means stack inclusion in error output
-
-func (rc Recovery) ConstructorFunc(hf http.HandlerFunc) http.Handler {
-	return rc.Constructor(http.HandlerFunc(hf))
-}
-
-func (rc Recovery) PanicHandle(recd interface{}) http.HandlerFunc {
+func PanicHandlerFunc(taggedbin bool, recd interface{}) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(panicstatuscode) // NB
+		w.WriteHeader(PanicStatusCode)
 
 		var description string
 		if err, ok := recd.(error); ok {
@@ -23,16 +17,16 @@ func (rc Recovery) PanicHandle(recd interface{}) http.HandlerFunc {
 			description = s
 		}
 		var stack string
-		if !rc {
-			sbuf := make([]byte, 4096-len(panicstatustext)-len(description))
+		if !taggedbin {
+			sbuf := make([]byte, 4096-len(PanicStatusText)-len(description))
 			size := runtime.Stack(sbuf, false)
 			stack = string(sbuf[:size])
 		}
-		if tpl, err := rctemplate.Clone(); err == nil { // otherwise bail out
+		if tpl, err := PanicTemplate.Clone(); err == nil { // otherwise bail out
 			tpl.Execute(w, struct {
 				Title, Description, Stack string
 			}{
-				Title:       panicstatustext,
+				Title:       PanicStatusText,
 				Description: description,
 				Stack:       stack,
 			})
@@ -40,22 +34,11 @@ func (rc Recovery) PanicHandle(recd interface{}) http.HandlerFunc {
 	}
 }
 
-func (rc Recovery) Constructor(HANDLER http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		defer func() {
-			if recd := recover(); recd != nil {
-				rc.PanicHandle(recd)(w, r)
-			}
-		}()
-		HANDLER.ServeHTTP(w, r)
-	})
-}
+const PanicStatusCode = http.StatusInternalServerError
 
-const panicstatuscode = http.StatusInternalServerError
-
-var panicstatustext = statusLine(panicstatuscode)
-
-var rctemplate = template.Must(template.New("recovery.html").Parse(`
+var (
+	PanicStatusText = statusLine(PanicStatusCode)
+	PanicTemplate   = template.Must(template.New("recovery.html").Parse(`
 <html>
 <head><title>{{.Title}}</title></head>
 <body bgcolor="white">
@@ -64,3 +47,4 @@ var rctemplate = template.Must(template.New("recovery.html").Parse(`
 </body>
 </html>
 `))
+)

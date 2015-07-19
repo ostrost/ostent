@@ -10,6 +10,10 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/julienschmidt/httprouter"
+	metrics "github.com/rcrowley/go-metrics"
+	sigar "github.com/rzab/gosigar"
+
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/getifaddrs"
@@ -18,8 +22,6 @@ import (
 	"github.com/ostrost/ostent/system"
 	"github.com/ostrost/ostent/system/operating"
 	"github.com/ostrost/ostent/templateutil"
-	metrics "github.com/rcrowley/go-metrics"
-	sigar "github.com/rzab/gosigar"
 )
 
 type diskInfo struct {
@@ -898,18 +900,19 @@ func init() {
 // Set at init, result of system.Distrib.
 var DISTRIB string
 
-func FormRedirectFunc(minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		where := "/"
-		r.ParseForm()
-		if q, ok := r.Form["Q"]; ok && len(q) > 0 {
-			r.URL.RawQuery = r.Form.Encode() + "&" + strings.TrimPrefix(q[0], "?")
-			r.Form = nil // reset the .Form for .ParseForm() to parse new r.URL.RawQuery.
-			para := params.NewParams(minperiod)
-			DecodeParam(para, r) // OR err.Error()
-			where = "/?" + para.Query.ValuesEncode(nil)
-		}
-		http.Redirect(w, r, where, http.StatusFound)
+func FormRedirectFunc(minperiod flags.Period, wrap func(http.HandlerFunc) http.Handler) func(http.ResponseWriter, *http.Request, httprouter.Params) {
+	return func(w http.ResponseWriter, r *http.Request, muxpara httprouter.Params) {
+		wrap(func(w http.ResponseWriter, r *http.Request) {
+			where := "/"
+			if q := muxpara.ByName("Q"); q != "" {
+				r.URL.RawQuery = r.Form.Encode() + "&" + strings.TrimPrefix(q, "?")
+				r.Form = nil // reset the .Form for .ParseForm() to parse new r.URL.RawQuery.
+				para := params.NewParams(minperiod)
+				DecodeParam(para, r) // OR err.Error()
+				where = "/?" + para.Query.ValuesEncode(nil)
+			}
+			http.Redirect(w, r, where, http.StatusFound)
+		}).ServeHTTP(w, r)
 	}
 }
 
@@ -926,7 +929,7 @@ func index(taggedbin bool, template *templateutil.LazyTemplate, minperiod flags.
 			http.Redirect(w, r, err.Error(), http.StatusFound)
 			return
 		}
-		http.Error(w, err.Error(), panicstatuscode)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	response := template.Response(w, struct {
@@ -958,7 +961,7 @@ func (sse *SSE) ServeHTTP(_ http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, err.Error(), http.StatusFound)
 			return
 		}
-		http.Error(w, err.Error(), panicstatuscode)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 	text, err := json.Marshal(id)
 	if err != nil {

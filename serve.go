@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"net"
+	"net/http"
 	"os"
 	"time"
 
@@ -22,40 +23,41 @@ func init() {
 }
 
 func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error {
-	server, mux, chain, access := ostent.NewServer(listener, taggedbin)
+	mux, access, accesslog := ostent.NewServer(taggedbin, extramap)
+
+	if index := access.ThenFunc(ostent.IndexFunc(taggedbin, templates.IndexTemplate,
+		PeriodFlag)); true {
+		mux.Handler("GET", "/", index)
+		mux.Handler("HEAD", "/", index)
+	}
+
+	if formred := ostent.FormRedirectFunc(PeriodFlag, access.ThenFunc); true {
+		mux.GET("/form/*Q", formred)
+		mux.POST("/form/*Q", formred)
+	}
+
+	// access chain is not used.
+	// accesslog is passed to log with.
+	mux.HandlerFunc("GET", "/index.ws", ostent.IndexWSFunc(accesslog, PeriodFlag))
+	mux.HandlerFunc("GET", "/index.sse", ostent.IndexSSEFunc(accesslog, PeriodFlag))
+
+	if !taggedbin { // dev-only
+		mux.Handler("GET", "/panic", access.ThenFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				panic("/panic")
+			}))
+	}
 
 	logger := log.New(os.Stderr, "[ostent] ", 0)
-	assetnames := assets.AssetNames()
-	for _, path := range assetnames {
-		hf := chain.Then(ostent.ServeContentFunc(
+	for _, path := range assets.AssetNames() {
+		hf := access.Then(ostent.ServeContentFunc(
 			AssetReadFunc(assets.Asset),
 			AssetInfoFunc(assets.AssetInfo),
 			path, logger))
-		mux.Handle("GET", "/"+path, hf)
-		mux.Handle("HEAD", "/"+path, hf)
+		mux.Handler("GET", "/"+path, hf)
+		mux.Handler("HEAD", "/"+path, hf)
 	}
-
-	// access is passed to Index*Func for them to log with.
-	// mux.Recovery.ConstructorFunc used to bypass the chain so no double log.
-	mux.Handle("GET", "/index.ws", mux.Recovery.
-		ConstructorFunc(ostent.IndexWSFunc(access, PeriodFlag)))
-	mux.Handle("GET", "/index.sse", mux.Recovery.
-		ConstructorFunc(ostent.IndexSSEFunc(access, PeriodFlag)))
-
-	index := chain.ThenFunc(ostent.IndexFunc(taggedbin,
-		templates.IndexTemplate, PeriodFlag))
-	mux.Handle("GET", "/", index)
-	mux.Handle("HEAD", "/", index)
-
-	formred := chain.ThenFunc(ostent.FormRedirectFunc(PeriodFlag))
-	mux.Handle("GET", "/form/{Q}", formred)
-	mux.Handle("POST", "/form/{Q}", formred)
-
-	/* panics := func(http.ResponseWriter, *http.Request) {
-		panic(fmt.Errorf("I'm panicing"))
-	}
-	mux.Handle("GET", "/panic", chain.ThenFunc(panics)) // */
 
 	ostent.Banner(listener.Addr().String(), "ostent", logger)
-	return ostent.ServeExtra(server, mux, chain, listener, extramap)
+	return http.Serve(listener, mux)
 }

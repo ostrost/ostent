@@ -17,20 +17,20 @@ type logged struct {
 
 type logger struct {
 	LogUniq bool
-	access  *log.Logger
+	logger  *log.Logger
 	logged  logged
 }
 
-func NewLogged(loguniq bool, access *log.Logger) *logger {
+func NewLogged(loguniq bool, l *log.Logger) *logger {
 	return &logger{
 		LogUniq: loguniq,
-		access:  access,
+		logger:  l,
 		logged:  logged{loggedmap: map[string]struct{}{}},
 	}
 }
 
-func (lg *logger) Recover(w http.ResponseWriter, r *http.Request, recd interface{}) {
-	lg.Constructor(Recovery(lg.LogUniq).PanicHandle(recd)).ServeHTTP(w, r)
+func (lg *logger) PanicHandler(w http.ResponseWriter, r *http.Request, recd interface{}) {
+	lg.Constructor(PanicHandlerFunc(lg.LogUniq, recd)).ServeHTTP(w, r)
 }
 
 func (lg *logger) Constructor(HANDLER http.Handler) http.Handler {
@@ -97,7 +97,7 @@ func (lg *logger) Log(start time.Time, tail string, w loggedResponseWriter, r *h
 		}
 		return s
 	}
-	lg.access.Printf("%s - - [%s] %#v %d %d %#v %#v\t;%s%s\n",
+	lg.logger.Printf("%s - - [%s] %#v %d %d %#v %#v\t;%s%s\n",
 		host,
 		start.Format("02/Jan/2006:15:04:05 -0700"),
 		fmt.Sprintf("%s %s %s", r.Method, uri, r.Proto),
