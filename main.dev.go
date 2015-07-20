@@ -13,7 +13,6 @@ import (
 
 	"github.com/ostrost/ostent/commands"
 	_ "github.com/ostrost/ostent/commands/ostent"
-	_ "github.com/ostrost/ostent/init-stdlogfilter"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/share/assets"
 	"github.com/ostrost/ostent/share/templates"
