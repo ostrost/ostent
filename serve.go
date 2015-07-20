@@ -23,26 +23,25 @@ func init() {
 }
 
 func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error {
-	mux, access, accesslog := ostent.NewServer(taggedbin, extramap)
+	mux, chain, access := ostent.NewServery(taggedbin, extramap)
 
-	if index := access.ThenFunc(ostent.IndexFunc(taggedbin, templates.IndexTemplate,
+	if index := chain.ThenFunc(ostent.IndexFunc(taggedbin, templates.IndexTemplate,
 		PeriodFlag)); true {
 		mux.Handler("GET", "/", index)
 		mux.Handler("HEAD", "/", index)
 	}
 
-	if formred := ostent.FormRedirectFunc(PeriodFlag, access.ThenFunc); true {
+	if formred := ostent.FormRedirectFunc(PeriodFlag, chain.ThenFunc); true {
 		mux.GET("/form/*Q", formred)
 		mux.POST("/form/*Q", formred)
 	}
 
-	// access chain is not used.
-	// accesslog is passed to log with.
-	mux.HandlerFunc("GET", "/index.ws", ostent.IndexWSFunc(accesslog, PeriodFlag))
-	mux.HandlerFunc("GET", "/index.sse", ostent.IndexSSEFunc(accesslog, PeriodFlag))
+	// chain is not used -- access is passed to log with.
+	mux.HandlerFunc("GET", "/index.ws", ostent.IndexWSFunc(access, PeriodFlag))
+	mux.HandlerFunc("GET", "/index.sse", ostent.IndexSSEFunc(access, PeriodFlag))
 
 	if !taggedbin { // dev-only
-		mux.Handler("GET", "/panic", access.ThenFunc(
+		mux.Handler("GET", "/panic", chain.ThenFunc(
 			func(w http.ResponseWriter, r *http.Request) {
 				panic("/panic")
 			}))
@@ -50,7 +49,7 @@ func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error 
 
 	logger := log.New(os.Stderr, "[ostent] ", 0)
 	for _, path := range assets.AssetNames() {
-		hf := access.Then(ostent.ServeContentFunc(
+		hf := chain.Then(ostent.ServeContentFunc(
 			AssetReadFunc(assets.Asset),
 			AssetInfoFunc(assets.AssetInfo),
 			path, logger))
@@ -59,5 +58,11 @@ func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error 
 	}
 
 	ostent.Banner(listener.Addr().String(), "ostent", logger)
-	return http.Serve(listener, mux)
+	errlog, errclose := ostent.NewErrorLog()
+	defer errclose()
+	s := &http.Server{
+		ErrorLog: errlog,
+		Handler:  mux,
+	}
+	return s.Serve(listener)
 }

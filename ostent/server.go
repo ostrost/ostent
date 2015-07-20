@@ -17,18 +17,18 @@ import (
 // Muxmap is a type of a map of pattern to HandlerFunc.
 type Muxmap map[string]http.HandlerFunc
 
-func NewServer(taggedbin bool, extramap Muxmap) (*httprouter.Router, alice.Chain, *logger) {
-	accesslog := NewLogged(taggedbin, log.New(os.Stdout, "", 0))
-	access := alice.New(accesslog.Constructor)
+func NewServery(taggedbin bool, extramap Muxmap) (*httprouter.Router, alice.Chain, *Access) {
+	access := NewAccess(taggedbin)
+	chain := alice.New(access.Constructor)
 	mux := httprouter.New()
-	mux.PanicHandler = accesslog.PanicHandler
+	mux.PanicHandler = access.PanicHandler
 	for path, handler := range extramap {
-		h := access.Then(handler)
+		h := chain.Then(handler)
 		mux.Handler("GET", path, h)
 		mux.Handler("HEAD", path, h)
 		mux.Handler("POST", path, h)
 	}
-	return mux, access, accesslog
+	return mux, chain, access
 }
 
 // TimeInfo is for AssetInfoFunc: a reduced os.FileInfo.

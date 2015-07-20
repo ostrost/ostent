@@ -988,20 +988,18 @@ func (sse *SSE) SetHeader(name, value string) bool {
 	return true
 }
 
-func IndexSSEFunc(access *logger, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
+func IndexSSEFunc(access *Access, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		IndexSSE(access, minperiod, w, r)
 	}
 }
 
-func IndexSSE(access *logger, minperiod flags.Period, w http.ResponseWriter, r *http.Request) {
+func IndexSSE(access *Access, minperiod flags.Period, w http.ResponseWriter, r *http.Request) {
 	sse := &SSE{Writer: w, MinPeriod: minperiod}
-	// The request is logged just once.
-	if access.Constructor(sse).ServeHTTP(nil, r); sse.Errord {
+	if access.Constructor(sse).ServeHTTP(nil, r); sse.Errord { // the request logging
 		return
 	}
-	// Loop is access-log-free.
-	for {
+	for { // loop is access-log-free
 		SleepTilNextSecond() // TODO is it second?
 		if sse.ServeHTTP(nil, r); sse.Errord {
 			break

@@ -97,7 +97,7 @@ type conn struct {
 	receive chan *received
 	pushch  chan *IndexUpdate
 	para    *params.Params
-	access  *logger
+	access  *Access
 
 	mutex      sync.Mutex
 	writemutex sync.Mutex
@@ -413,13 +413,13 @@ func (w dummyStatus) Write(b []byte) (int, error) {
 	// return len(b), nil
 }
 
-func IndexWSFunc(access *logger, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
+func IndexWSFunc(access *Access, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
 		IndexWS(access, minperiod, w, req)
 	}
 }
 
-func IndexWS(access *logger, minperiod flags.Period, w http.ResponseWriter, req *http.Request) {
+func IndexWS(access *Access, minperiod flags.Period, w http.ResponseWriter, req *http.Request) {
 	// Upgrader.Upgrade() has Origin check if .CheckOrigin is nil
 	upgrader := gorillawebsocket.Upgrader{
 		HandshakeTimeout: 5 * time.Second,
