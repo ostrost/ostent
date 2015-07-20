@@ -16,10 +16,11 @@ import (
 	templatetext "text/template"
 	"text/template/parse"
 
-	"code.google.com/p/go.net/html"
+	"github.com/yosssi/ace"
+	"golang.org/x/net/html"
+
 	"github.com/ostrost/ostent/templateutil/templatefunc"
 	"github.com/ostrost/ostent/templateutil/templatepipe"
-	"github.com/yosssi/ace"
 )
 
 func main() {
