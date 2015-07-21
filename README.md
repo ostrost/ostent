@@ -125,10 +125,10 @@ share/{ace.templates,style,coffee} modified,
 you have to re-make.
 
 Additional tools required for assets rebuilding:
-- [Sass](http://sass-lang.com/install)
-- [babel](https://www.npmjs.com/package/babel)
-- [coffee-script](https://www.npmjs.com/package/coffee-script)
-- [requirejs](https://www.npmjs.org/package/requirejs)
+- [Babel](https://www.npmjs.com/package/babel)
+- [CoffeeScript](https://www.npmjs.com/package/coffee-script)
+- [Less](https://www.npmjs.com/package/less)
+- [RequireJS](https://www.npmjs.org/package/requirejs)
 
 ## The main package
 

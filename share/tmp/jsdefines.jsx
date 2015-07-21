@@ -16,14 +16,14 @@ define(function(require) {
     >{$mem.Total}</td
   ></tr
 >); },
-		panelmem:        function(Data, rows)  { return (<div className="panel1"
+		panelmem:        function(Data, rows)  { return (<div className="panel panel-default panel1"
   ><label className="panel-heading btn-block"
     ><a  className={Data.Params.BOOL.configmem.Value ? "btn-header-block active" : "btn-header-block"}  href={Data.Params.BOOL.configmem.Href} onClick={this.handleClick}
       >Memory</a
     ></label
   ><div
     ><div id="memconfig"  className={Data.Params.BOOL.configmem.Value ? "" : "collapse-hidden"}
-      ><form className="horizontal-form border-bottom-form"  action={"/form/"+Data.Params.Query}
+      ><form className="form-horizontal horizontal-form border-bottom-form"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="form-group-padded"
@@ -46,7 +46,7 @@ define(function(require) {
   ></div
 ><div
   ><div  className={Data.Params.BOOL.hidemem.Value ? "collapse-hidden" : ""}
-    ><table className="table1 stripe-table"
+    ><table className="table stripe-table table-condensed panel-table"
   ><thead
     ><tr
       ><th
@@ -70,7 +70,7 @@ define(function(require) {
 		ifbytes_rows:    function(Data, $if)   { return (<tr  key={"ifbytes-rowby-name-"+$if.Name}
   ><td
     ><input  id={"if-bytes-name-"+$if.Name}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label  htmlFor={"if-bytes-name-"+$if.Name} className="clip"  style={{maxWidth: '12ch'}}
+></input><label  htmlFor={"if-bytes-name-"+$if.Name} className="clip"  style={{maxWidth: '11ch'}}
   >{$if.Name}</label
 ></td
   ><td className="text-right"
@@ -86,7 +86,7 @@ define(function(require) {
 		iferrors_rows:   function(Data, $if)   { return (<tr  key={"iferrors-rowby-name-"+$if.Name}
   ><td
     ><input  id={"if-errors-name-"+$if.Name}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label  htmlFor={"if-errors-name-"+$if.Name} className="clip"  style={{maxWidth: '12ch'}}
+></input><label  htmlFor={"if-errors-name-"+$if.Name} className="clip"  style={{maxWidth: '11ch'}}
   >{$if.Name}</label
 ></td
   ><td className="text-right"
@@ -102,7 +102,7 @@ define(function(require) {
 		ifpackets_rows:  function(Data, $if)   { return (<tr  key={"ifpackets-rowby-name-"+$if.Name}
   ><td
     ><input  id={"if-packets-name-"+$if.Name}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label  htmlFor={"if-packets-name-"+$if.Name} className="clip"  style={{maxWidth: '12ch'}}
+></input><label  htmlFor={"if-packets-name-"+$if.Name} className="clip"  style={{maxWidth: '11ch'}}
   >{$if.Name}</label
 ></td
   ><td className="text-right"
@@ -115,14 +115,14 @@ define(function(require) {
     >{$if.Out}</td
   ></tr
 >); },
-		panelif:         function(Data,r1,r2,r3){ return (<div className="panel1"
+		panelif:         function(Data,r1,r2,r3){ return (<div className="panel panel-default panel1"
   ><label className="panel-heading btn-block"
     ><a  className={Data.Params.BOOL.configif.Value ? "btn-header-block active" : "btn-header-block"}  href={Data.Params.BOOL.configif.Href} onClick={this.handleClick}
       >{Data.Params.ENUM.ift.Title}</a
     ></label
   ><div
     ><div id="ifconfig"  className={Data.Params.BOOL.configif.Value ? "" : "collapse-hidden"}
-      ><form className="horizontal-form"  action={"/form/"+Data.Params.Query}
+      ><form className="form-horizontal horizontal-form"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="form-group-padded"
@@ -160,7 +160,7 @@ define(function(require) {
 ><div
   ><div  className={Data.Params.BOOL.hideif.Value ? "collapse-hidden" : ""}
     ><div  className={(Data.Params.ENUM.ift.Uint == 0) ? "" : "collapse-hidden"}
-      ><table className="table1 stripe-table"
+      ><table className="table stripe-table table-condensed panel-table"
   ><thead
     ><tr
       ><th
@@ -188,7 +188,7 @@ define(function(require) {
   ></table
 ></div
     ><div  className={(Data.Params.ENUM.ift.Uint == 1) ? "" : "collapse-hidden"}
-      ><table className="table1 stripe-table"
+      ><table className="table stripe-table table-condensed panel-table"
   ><thead
     ><tr
       ><th
@@ -216,7 +216,7 @@ define(function(require) {
   ></table
 ></div
     ><div  className={(Data.Params.ENUM.ift.Uint == 2) ? "" : "collapse-hidden"}
-      ><table className="table1 stripe-table"
+      ><table className="table stripe-table table-condensed panel-table"
   ><thead
     ><tr
       ><th
@@ -273,14 +273,14 @@ define(function(require) {
     ></td
   ></tr
 >); },
-		panelcpu:        function(Data, rows)  { return (<div className="panel1"
+		panelcpu:        function(Data, rows)  { return (<div className="panel panel-default panel1"
   ><label className="panel-heading btn-block"
     ><a  className={Data.Params.BOOL.configcpu.Value ? "btn-header-block active" : "btn-header-block"}  href={Data.Params.BOOL.configcpu.Href} onClick={this.handleClick}
       >CPU</a
     ></label
   ><div
     ><div id="cpuconfig"  className={Data.Params.BOOL.configcpu.Value ? "" : "collapse-hidden"}
-      ><form className="horizontal-form border-bottom-form"  action={"/form/"+Data.Params.Query}
+      ><form className="form-horizontal horizontal-form border-bottom-form"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="form-group-padded"
@@ -303,7 +303,7 @@ define(function(require) {
   ></div
 ><div
   ><div  className={Data.Params.BOOL.hidecpu.Value ? "collapse-hidden" : ""}
-    ><table className="table1 stripe-table"
+    ><table className="table stripe-table table-condensed panel-table"
   ><thead
     ><tr
       ><th
@@ -333,7 +333,7 @@ define(function(require) {
 		dfbytes_rows:    function(Data, $disk) { return (<tr  key={"dfbytes-rowby-dirname-"+$disk.DirName}
   ><td className="nowrap"
     ><input  id={"df-bytes-devname-"+$disk.DevName}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label  htmlFor={"df-bytes-devname-"+$disk.DevName} className="clip"  style={{maxWidth: '12ch'}}
+></input><label  htmlFor={"df-bytes-devname-"+$disk.DevName} className="clip"  style={{maxWidth: '11ch'}}
   >{$disk.DevName}</label
 ></td
   ><td className="nowrap"
@@ -356,7 +356,7 @@ define(function(require) {
 		dfinodes_rows:   function(Data, $disk) { return (<tr  key={"dfinodes-rowby-dirname-"+$disk.DirName}
   ><td className="nowrap"
     ><input  id={"df-inodes-devname-"+$disk.DevName}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label  htmlFor={"df-inodes-devname-"+$disk.DevName} className="clip"  style={{maxWidth: '12ch'}}
+></input><label  htmlFor={"df-inodes-devname-"+$disk.DevName} className="clip"  style={{maxWidth: '11ch'}}
   >{$disk.DevName}</label
 ></td
   ><td className="nowrap"
@@ -376,14 +376,14 @@ define(function(require) {
     >{$disk.Inodes}</td
   ></tr
 >); },
-		paneldf:         function(Data,r1,r2)  { return (<div className="panel1"
+		paneldf:         function(Data,r1,r2)  { return (<div className="panel panel-default panel1"
   ><label className="panel-heading btn-block"
     ><a  className={Data.Params.BOOL.configdf.Value ? "btn-header-block active" : "btn-header-block"}  href={Data.Params.BOOL.configdf.Href} onClick={this.handleClick}
       >{Data.Params.ENUM.dft.Title}</a
     ></label
   ><div
     ><div id="dfconfig"  className={Data.Params.BOOL.configdf.Value ? "" : "collapse-hidden"}
-      ><form className="horizontal-form"  action={"/form/"+Data.Params.Query}
+      ><form className="form-horizontal horizontal-form"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="form-group-padded"
@@ -417,7 +417,7 @@ define(function(require) {
 ><div
   ><div  className={Data.Params.BOOL.hidedf.Value ? "collapse-hidden" : ""}
     ><div  className={(Data.Params.ENUM.dft.Uint == 0) ? "" : "collapse-hidden"}
-      ><table className="table1 stripe-table"
+      ><table className="table stripe-table table-condensed panel-table"
   ><thead
     ><tr
       ><th className="header"
@@ -437,7 +437,7 @@ define(function(require) {
   ></table
 ></div
     ><div  className={(Data.Params.ENUM.dft.Uint == 1) ? "" : "collapse-hidden"}
-      ><table className="table1 stripe-table"
+      ><table className="table stripe-table table-condensed panel-table"
   ><thead
     ><tr
       ><th className="header "
@@ -488,7 +488,7 @@ define(function(require) {
     > {$proc.UID}</td
   ><td
     >            <input  id={"psuser-pid-"+$proc.PIDstring}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label  htmlFor={"psuser-pid-"+$proc.PIDstring} className="clip"  style={{maxWidth: '12ch'}}
+></input><label  htmlFor={"psuser-pid-"+$proc.PIDstring} className="clip"  style={{maxWidth: '11ch'}}
   >{$proc.User}</label
 ></td
   ><td className="text-right"
@@ -508,14 +508,14 @@ define(function(require) {
 ></td
   ></tr
 >); },
-		panelps:         function(Data, rows)  { return (<div className="panel1"
+		panelps:         function(Data, rows)  { return (<div className="panel panel-default panel1"
   ><label className="panel-heading btn-block"
     ><a  className={Data.Params.BOOL.configps.Value ? "btn-header-block active" : "btn-header-block"}  href={Data.Params.BOOL.configps.Href} onClick={this.handleClick}
       >Processes</a
     ></label
   ><div
     ><div id="psconfig"  className={Data.Params.BOOL.configps.Value ? "" : "collapse-hidden"}
-      ><form className="inline-form border-bottom-form text-right"  action={"/form/"+Data.Params.Query}
+      ><form className="form-inline inline-form border-bottom-form text-right"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="form-group-padded"
@@ -540,7 +540,7 @@ define(function(require) {
   ></div
 ><div
   ><div  className={Data.Params.BOOL.hideps.Value ? "collapse-hidden" : ""}
-    ><table className="table2 stripe-table"
+    ><table className="table stripe-table table-condensed panel-table table-hover"
   ><thead
     ><tr
       ><th className="header text-right"
@@ -634,14 +634,14 @@ define(function(require) {
     >{Data.VagrantError}</td
   ></tr
 >); },
-		panelvg:         function(Data, rows)  { return (<div className="panel1"
+		panelvg:         function(Data, rows)  { return (<div className="panel panel-default panel1"
   ><label className="panel-heading btn-block"
     ><a  className={Data.Params.BOOL.configvg.Value ? "btn-header-block active" : "btn-header-block"}  href={Data.Params.BOOL.configvg.Href} onClick={this.handleClick}
       >Vagrant global-status</a
     ></label
   ><div
     ><div id="vgconfig"  className={Data.Params.BOOL.configvg.Value ? "" : "collapse-hidden"}
-      ><form className="inline-form border-bottom-form text-right"  action={"/form/"+Data.Params.Query}
+      ><form className="form-inline inline-form border-bottom-form text-right"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="form-group-padded"
@@ -662,7 +662,7 @@ define(function(require) {
   ></div
 ><div
   ><div  className={Data.Params.BOOL.hidevg.Value ? "collapse-hidden" : ""}
-    ><table id="vgtable" className="table1 stripe-table"
+    ><table id="vgtable" className="table stripe-table table-condensed panel-table"
   ><thead
     ><tr
       ><th

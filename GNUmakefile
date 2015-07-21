@@ -61,7 +61,6 @@ github.com/skelterjohn/rerun \
 github.com/yosssi/ace \
 golang.org/x/net/html
 	cd system/operating && gen add github.com/rzab/slice
-# git remote set-url origin https://$(package) # travis & tip & https://github.com/golang/go/issues/8850
 	go get -v $(package)
 	go get -v -a -tags bin $(package)
 
@@ -89,8 +88,8 @@ $(destbin)/$(cmdname).32:
 	GOARCH=386 CGO_ENABLED=1 \
 	go build -ldflags -w -a -tags bin -o $@ $(package)
 
-share/assets/css/index.css: share/style/index.scss
-	type sass   >/dev/null || exit 0; sass $< $@
+share/assets/css/index.css: share/style/index.less
+	type lessc  >/dev/null || exit 0; lessc --source-map $< $@
 share/assets/js/src/lib/jsdefines.js: share/tmp/jsdefines.jsx
 	type babel  >/dev/null || exit 0; babel $^ -o $@
 share/assets/js/src/milk/index.js: share/coffee/index.coffee

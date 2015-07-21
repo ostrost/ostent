@@ -1,3 +1,5 @@
+// -*- eval: (rainbow-mode) -*-
+
 @import 'bootstrap-3.3.5.scss';
 
 .label[data-usepercent="0"],
@@ -10,18 +12,18 @@
 .label[data-usepercent="7"],
 .label[data-usepercent="8"],
 .label[data-usepercent="9"],
-.label[data-usepercent^="1"]:not([data-usepercent="100"]) { @extend .label-success; }
+.label[data-usepercent^="1"]:not([data-usepercent="100"]) { &:extend(.label-success); }
 
 .label[data-usepercent^="2"]:not([data-usepercent="2"]),
 .label[data-usepercent^="3"]:not([data-usepercent="3"]),
 .label[data-usepercent^="4"]:not([data-usepercent="4"]),
 .label[data-usepercent^="5"]:not([data-usepercent="5"]),
 .label[data-usepercent^="6"]:not([data-usepercent="6"]),
-.label[data-usepercent^="7"]:not([data-usepercent="7"]) { @extend .label-info; }
+.label[data-usepercent^="7"]:not([data-usepercent="7"]) { &:extend(.label-info); }
 
-.label[data-usepercent^="8"]:not([data-usepercent="8"]) { @extend .label-warning; }
+.label[data-usepercent^="8"]:not([data-usepercent="8"]) { &:extend(.label-warning); }
 .label[data-usepercent^="9"]:not([data-usepercent="9"]),
-.label[data-usepercent="100"] { @extend .label-danger; }
+.label[data-usepercent="100"] { &:extend(.label-danger); }
 
 .usepercent-text[data-usepercent="0"],
 .usepercent-text[data-usepercent="1"],
@@ -33,18 +35,18 @@
 .usepercent-text[data-usepercent="7"],
 .usepercent-text[data-usepercent="8"],
 .usepercent-text[data-usepercent="9"],
-.usepercent-text[data-usepercent^="1"]:not([data-usepercent="100"]) { @extend .text-success; }
+.usepercent-text[data-usepercent^="1"]:not([data-usepercent="100"]) { &:extend(.text-success); }
 
 .usepercent-text[data-usepercent^="2"]:not([data-usepercent="2"]),
 .usepercent-text[data-usepercent^="3"]:not([data-usepercent="3"]),
 .usepercent-text[data-usepercent^="4"]:not([data-usepercent="4"]),
 .usepercent-text[data-usepercent^="5"]:not([data-usepercent="5"]),
 .usepercent-text[data-usepercent^="6"]:not([data-usepercent="6"]),
-.usepercent-text[data-usepercent^="7"]:not([data-usepercent="7"]) { @extend .text-info; }
+.usepercent-text[data-usepercent^="7"]:not([data-usepercent="7"]) { &:extend(.text-info); }
 
-.usepercent-text[data-usepercent^="8"]:not([data-usepercent="8"]) { @extend .text-warning; }
+.usepercent-text[data-usepercent^="8"]:not([data-usepercent="8"]) { &:extend(.text-warning); }
 .usepercent-text[data-usepercent^="9"]:not([data-usepercent="9"]),
-.usepercent-text[data-usepercent="100"] { @extend .text-danger; }
+.usepercent-text[data-usepercent="100"] { &:extend(.text-danger); }
 
 .usepercent-text-inverse[data-usepercent="0"],
 .usepercent-text-inverse[data-usepercent="1"],
@@ -55,8 +57,8 @@
 .usepercent-text-inverse[data-usepercent="6"],
 .usepercent-text-inverse[data-usepercent="7"],
 .usepercent-text-inverse[data-usepercent="8"],
-.usepercent-text-inverse[data-usepercent="9"] { @extend .text-danger; }
-.usepercent-text-inverse[data-usepercent^="1"]:not([data-usepercent="1"]):not([data-usepercent="100"]) { @extend .text-warning; }
+.usepercent-text-inverse[data-usepercent="9"] { &:extend(.text-danger); }
+.usepercent-text-inverse[data-usepercent^="1"]:not([data-usepercent="1"]):not([data-usepercent="100"]) { &:extend(.text-warning); }
 
 .usepercent-text-inverse[data-usepercent^="2"]:not([data-usepercent="2"]),
 .usepercent-text-inverse[data-usepercent^="3"]:not([data-usepercent="3"]),
@@ -64,9 +66,9 @@
 .usepercent-text-inverse[data-usepercent^="5"]:not([data-usepercent="5"]),
 .usepercent-text-inverse[data-usepercent^="6"]:not([data-usepercent="6"]),
 .usepercent-text-inverse[data-usepercent^="7"]:not([data-usepercent="7"]),
-.usepercent-text-inverse[data-usepercent^="8"]:not([data-usepercent="8"]) { @extend .text-info; }
+.usepercent-text-inverse[data-usepercent^="8"]:not([data-usepercent="8"]) { &:extend(.text-info); }
 .usepercent-text-inverse[data-usepercent^="9"]:not([data-usepercent="9"]),
-.usepercent-text-inverse[data-usepercent="100"] { @extend .text-success; }
+.usepercent-text-inverse[data-usepercent="100"] { &:extend(.text-success); }
 
 // regular bootstrap "a" rules. Overriding .navbar-brand style.
 a.navbar-brand:hover,
@@ -100,9 +102,7 @@ label.clip {
   display: block;
 }
 
-body {
-  font-size: 12px;
-}
+body { font-size: 12px; }
 
 // https://stackoverflow.com/q/9742166
 * {
@@ -126,11 +126,8 @@ body {
 }
 
 .panel1 {
-  @extend .panel;
-  @extend .panel-default;
-
-  label.btn-header-block a {
-    @extend .btn-block;
+  label a.btn-header-block {
+    &:extend(.btn-block);
   }
   label.panel-heading {
     font-weight: normal;
@@ -138,7 +135,7 @@ body {
     padding: 0px 0px;      // for btn-header-block
   }
   header {
-    @extend .panel-heading;
+    &:extend(.panel-heading);
     // padding-right: 5px; // for regular text
     padding: 0px 0px;      // for btn-header-block
   }
@@ -166,20 +163,12 @@ body {
 
 .hidden-submit { display: none; }
 
-.table2, .table1 {
-  @extend .table;
-  @extend .table-condensed;
+.panel-table {
   margin-bottom: 0px;
 
   .text-right sup { // or any sup?
     font-size: 100%;
   }
-  tbody > tr > td {
-    vertical-align: top !important;
-  }
-}
-.table2 {
-  @extend .table-hover;
 }
 
 // .stripe-table > tbody > tr:nth-child(odd)  > th,
@@ -202,7 +191,7 @@ table .bold    { font-weight: bold;   }
 table thead tr .header a {
   color: black;
   &:hover {
-    // @extend a; @extend a:hover;
+    // &:extend(a); &:extend(a:hover);
     color: #428bca;
     text-decoration: none;
   }
@@ -214,26 +203,16 @@ table thead tr .header a {
   }
 }
 
-.table > thead > tr > th,
-.table > tbody > tr > th,
-.table > tfoot > tr > th,
-.table > thead > tr > td,
-.table > tbody > tr > td,
-.table > tfoot > tr > td {
-    // same as the table theader tr .header a.state.current
-    vertical-align: middle;
-}
-
-// .badge-default { @extend .badge; background:
-.badge-primary { @extend .badge; background: #428bca; }
-.badge-success { @extend .badge; background: #5cb85c; }
-.badge-info    { @extend .badge; background: #5bc0de; }
-.badge-warning { @extend .badge; background: #f0ad4e; }
-.badge-danger  { @extend .badge; background: #d9534f; }
+// .badge-default { &:extend(.badge); background:
+.badge-primary { &:extend(.badge); background: #428bca; }
+.badge-success { &:extend(.badge); background: #5cb85c; }
+.badge-info    { &:extend(.badge); background: #5bc0de; }
+.badge-warning { &:extend(.badge); background: #f0ad4e; }
+.badge-danger  { &:extend(.badge); background: #d9534f; }
 
 .btn-header {
-  @extend .btn;
-  @extend .btn-default;
+  &:extend(.btn);
+  &:extend(.btn-default);
   font-size: 12px; // body font-size
 
   // panel-heading colors
@@ -243,19 +222,17 @@ table thead tr .header a {
 }
 
 .btn-header-block {
-  @extend .btn-header;
-  @extend .btn-block;
+  &:extend(.btn-header);
+  &:extend(.btn-block);
   text-align: left;
   padding: 10px 15px; // panel heading padding
 }
 
 .horizontal-form {
-  @extend .form-horizontal;
   padding: 10px 15px;
 }
 
 .inline-form     {
-  @extend .form-inline;
   padding: 10px 15px;
 
   .form-group {
@@ -269,7 +246,7 @@ table thead tr .header a {
 }
 
 .form-group-padded {
-  @extend .form-group;
+  &:extend(.form-group);
   padding-right: 15px;
   padding-left:  15px;
 }

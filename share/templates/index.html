@@ -140,7 +140,7 @@
     ></td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_cputable"}}<table class="table1 stripe-table"
+*/}}{{define "defines::define_cputable"}}<table class="table stripe-table table-condensed panel-table"
   ><thead
     ><tr
       ><th
@@ -165,7 +165,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_dfbytes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $disk := .Data.DFbytes.List}}<tr {{$disk.DirName.KeyAttr "dfbytes-rowby-dirname"}}
   ><td class="nowrap"
-    >{{template "defines::define_clip" ($disk.DevName.Clip 12 "df-bytes-devname")}}</td
+    >{{template "defines::define_clip" ($disk.DevName.Clip 11 "df-bytes-devname")}}</td
   ><td class="nowrap"
     >{{template "defines::define_clip" ($disk.DirName.Clip 6 "df-bytes-dirname")}}</td
   ><td class="text-right"
@@ -176,7 +176,7 @@
     >{{$disk.Total}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_dfbytes_table"}}<table class="table1 stripe-table"
+*/}}{{define "defines::define_dfbytes_table"}}<table class="table stripe-table table-condensed panel-table"
   ><thead
     ><tr
       >{{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "FS" ""}}{{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "MP" ""}}{{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "AVAIL"}}{{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "USED"}}{{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "TOTAL"}}</tr
@@ -187,7 +187,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_dfinodes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $disk := .Data.DFinodes.List}}<tr {{$disk.DirName.KeyAttr "dfinodes-rowby-dirname"}}
   ><td class="nowrap"
-    >{{template "defines::define_clip" ($disk.DevName.Clip 12 "df-inodes-devname")}}</td
+    >{{template "defines::define_clip" ($disk.DevName.Clip 11 "df-inodes-devname")}}</td
   ><td class="nowrap"
     >{{template "defines::define_clip" ($disk.DirName.Clip 6 "df-inodes-devname")}}</td
   ><td class="text-right"
@@ -198,7 +198,7 @@
     >{{$disk.Inodes}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_dfinodes_table"}}<table class="table1 stripe-table"
+*/}}{{define "defines::define_dfinodes_table"}}<table class="table stripe-table table-condensed panel-table"
   ><thead
     ><tr
       ><th class="header"
@@ -219,7 +219,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_ifbytes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFbytes.List}}<tr {{$if.Name.KeyAttr "ifbytes-rowby-name"}}
   ><td
-    >{{template "defines::define_clip" ($if.Name.Clip 12 "if-bytes-name")}}</td
+    >{{template "defines::define_clip" ($if.Name.Clip 11 "if-bytes-name")}}</td
   ><td class="text-right"
     >{{$if.DeltaIn}}</td
   ><td class="text-right"
@@ -230,7 +230,7 @@
     >{{$if.Out}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_ifbytes_table"}}<table class="table1 stripe-table"
+*/}}{{define "defines::define_ifbytes_table"}}<table class="table stripe-table table-condensed panel-table"
   ><thead
     ><tr
       ><th
@@ -267,7 +267,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_iferrors_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFerrors.List}}<tr {{$if.Name.KeyAttr "iferrors-rowby-name"}}
   ><td
-    >{{template "defines::define_clip" ($if.Name.Clip 12 "if-errors-name")}}</td
+    >{{template "defines::define_clip" ($if.Name.Clip 11 "if-errors-name")}}</td
   ><td class="text-right"
     >{{$if.DeltaIn}}</td
   ><td class="text-right"
@@ -278,7 +278,7 @@
     >{{$if.Out}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_iferrors_table"}}<table class="table1 stripe-table"
+*/}}{{define "defines::define_iferrors_table"}}<table class="table stripe-table table-condensed panel-table"
   ><thead
     ><tr
       ><th
@@ -307,7 +307,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_ifpackets_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFpackets.List}}<tr {{$if.Name.KeyAttr "ifpackets-rowby-name"}}
   ><td
-    >{{template "defines::define_clip" ($if.Name.Clip 12 "if-packets-name")}}</td
+    >{{template "defines::define_clip" ($if.Name.Clip 11 "if-packets-name")}}</td
   ><td class="text-right"
     >{{$if.DeltaIn}}</td
   ><td class="text-right"
@@ -318,7 +318,7 @@
     >{{$if.Out}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_ifpackets_table"}}<table class="table1 stripe-table"
+*/}}{{define "defines::define_ifpackets_table"}}<table class="table stripe-table table-condensed panel-table"
   ><thead
     ><tr
       ><th
@@ -356,7 +356,7 @@
     >{{$mem.Total}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_memtable"}}<table class="table1 stripe-table"
+*/}}{{define "defines::define_memtable"}}<table class="table stripe-table table-condensed panel-table"
   ><thead
     ><tr
       ><th
@@ -373,14 +373,14 @@
     >{{template "defines::define_memrows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_panelcpu"}}<div class="panel1"
+*/}}{{define "defines::define_panelcpu"}}<div class="panel panel-default panel1"
   ><label class="panel-heading btn-block"
     ><a {{.Data.Params.BOOL.configcpu.BoolParamClassAttr "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configcpu.ToggleHrefAttr}}
       >CPU</a
     ></label
   ><div
     ><div id="cpuconfig" {{.Data.Params.BOOL.configcpu.BoolParamClassAttr "" "collapse-hidden"}}
-      ><form {{class}}="horizontal-form border-bottom-form" {{.Data.Params.Query.FormActionAttr}}
+      ><form {{class}}="form-horizontal horizontal-form border-bottom-form" {{.Data.Params.Query.FormActionAttr}}
         ><input class="hidden-submit" type="submit"
         ><div class="form-group-padded"
           ><div class="btn-group btn-group-sm" role="group"
@@ -401,14 +401,14 @@
     ></div
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_paneldf"}}<div class="panel1"
+*/}}{{define "defines::define_paneldf"}}<div class="panel panel-default panel1"
   ><label class="panel-heading btn-block"
     ><a {{.Data.Params.BOOL.configdf.BoolParamClassAttr "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configdf.ToggleHrefAttr}}
       >{{.Data.Params.ENUM.dft.Title}}</a
     ></label
   ><div
     ><div id="dfconfig" {{.Data.Params.BOOL.configdf.BoolParamClassAttr "" "collapse-hidden"}}
-      ><form {{class}}="horizontal-form" {{.Data.Params.Query.FormActionAttr}}
+      ><form {{class}}="form-horizontal horizontal-form" {{.Data.Params.Query.FormActionAttr}}
         ><input class="hidden-submit" type="submit"
         ><div class="form-group-padded"
           ><div class="btn-group btn-group-sm" role="group"
@@ -439,14 +439,14 @@
     ></div
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelif"}}<div class="panel1"
+*/}}{{define "defines::define_panelif"}}<div class="panel panel-default panel1"
   ><label class="panel-heading btn-block"
     ><a {{.Data.Params.BOOL.configif.BoolParamClassAttr "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configif.ToggleHrefAttr}}
       >{{.Data.Params.ENUM.ift.Title}}</a
     ></label
   ><div
     ><div id="ifconfig" {{.Data.Params.BOOL.configif.BoolParamClassAttr "" "collapse-hidden"}}
-      ><form {{class}}="horizontal-form" {{.Data.Params.Query.FormActionAttr}}
+      ><form {{class}}="form-horizontal horizontal-form" {{.Data.Params.Query.FormActionAttr}}
         ><input class="hidden-submit" type="submit"
         ><div class="form-group-padded"
           ><div class="btn-group btn-group-sm" role="group"
@@ -481,14 +481,14 @@
     ></div
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelmem"}}<div class="panel1"
+*/}}{{define "defines::define_panelmem"}}<div class="panel panel-default panel1"
   ><label class="panel-heading btn-block"
     ><a {{.Data.Params.BOOL.configmem.BoolParamClassAttr "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configmem.ToggleHrefAttr}}
       >Memory</a
     ></label
   ><div
     ><div id="memconfig" {{.Data.Params.BOOL.configmem.BoolParamClassAttr "" "collapse-hidden"}}
-      ><form {{class}}="horizontal-form border-bottom-form" {{.Data.Params.Query.FormActionAttr}}
+      ><form {{class}}="form-horizontal horizontal-form border-bottom-form" {{.Data.Params.Query.FormActionAttr}}
         ><input class="hidden-submit" type="submit"
         ><div class="form-group-padded"
           ><div class="btn-group btn-group-sm" role="group"
@@ -509,14 +509,14 @@
     ></div
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelps"}}<div class="panel1"
+*/}}{{define "defines::define_panelps"}}<div class="panel panel-default panel1"
   ><label class="panel-heading btn-block"
     ><a {{.Data.Params.BOOL.configps.BoolParamClassAttr "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configps.ToggleHrefAttr}}
       >Processes</a
     ></label
   ><div
     ><div id="psconfig" {{.Data.Params.BOOL.configps.BoolParamClassAttr "" "collapse-hidden"}}
-      ><form {{class}}="inline-form border-bottom-form text-right" {{.Data.Params.Query.FormActionAttr}}
+      ><form {{class}}="form-inline inline-form border-bottom-form text-right" {{.Data.Params.Query.FormActionAttr}}
         ><input class="hidden-submit" type="submit"
         ><div class="form-group-padded"
           >{{template "defines::define_refresh" .Data.Params.PERIOD.refreshps}}</div
@@ -539,14 +539,14 @@
     ></div
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelvg"}}<div class="panel1"
+*/}}{{define "defines::define_panelvg"}}<div class="panel panel-default panel1"
   ><label class="panel-heading btn-block"
     ><a {{.Data.Params.BOOL.configvg.BoolParamClassAttr "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configvg.ToggleHrefAttr}}
       >Vagrant global-status</a
     ></label
   ><div
     ><div id="vgconfig" {{.Data.Params.BOOL.configvg.BoolParamClassAttr "" "collapse-hidden"}}
-      ><form {{class}}="inline-form border-bottom-form text-right" {{.Data.Params.Query.FormActionAttr}}
+      ><form {{class}}="form-inline inline-form border-bottom-form text-right" {{.Data.Params.Query.FormActionAttr}}
         ><input class="hidden-submit" type="submit"
         ><div class="form-group-padded"
           >{{template "defines::define_refresh" .Data.Params.PERIOD.refreshvg}}</div
@@ -571,7 +571,7 @@
   ><td class="text-right"
     > {{$proc.UID}}</td
   ><td
-    >            {{template "defines::define_clip" ($proc.User.Clip 12 "psuser-pid" $proc.PIDstring)}}</td
+    >            {{template "defines::define_clip" ($proc.User.Clip 11 "psuser-pid" $proc.PIDstring)}}</td
   ><td class="text-right"
     > {{$proc.Priority}}</td
   ><td class="text-right"
@@ -586,7 +586,7 @@
     >     {{template "defines::define_clip" ($proc.Name.Clip 42 "psname-pid" $proc.PIDstring)}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_pstable"}}<table class="table2 stripe-table"
+*/}}{{define "defines::define_pstable"}}<table class="table stripe-table table-condensed panel-table table-hover"
   ><thead
     ><tr
       >{{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "PID"}}{{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "UID"}}{{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "USER" ""}}{{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "PRI"}}{{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "NICE"}}{{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "VIRT"}}{{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "RES"}}{{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "TIME" "center"}}{{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "NAME" ""}}</tr
@@ -625,7 +625,7 @@
   ></tr
 >{{end}}{{end}}{{/*
 */}}{{define "defines::define_vgswitch"}}{{with rowsset .}}{{.}}{{else}}{{if eq .Data.VagrantErrord true}}{{template "defines::define_vgerror" .}}{{else}}{{template "defines::define_vgrows" .}}{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_vgtable"}}<table id="vgtable" class="table1 stripe-table"
+*/}}{{define "defines::define_vgtable"}}<table id="vgtable" class="table stripe-table table-condensed panel-table"
   ><thead
     ><tr
       ><th

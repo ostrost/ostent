@@ -48,7 +48,7 @@ define(function (require) {
     panelmem: function panelmem(Data, rows) {
       return React.createElement(
         "div",
-        { className: "panel1"
+        { className: "panel panel-default panel1"
         },
         React.createElement(
           "label",
@@ -70,7 +70,7 @@ define(function (require) {
             },
             React.createElement(
               "form",
-              { className: "horizontal-form border-bottom-form", action: "/form/" + Data.Params.Query
+              { className: "form-horizontal horizontal-form border-bottom-form", action: "/form/" + Data.Params.Query
               },
               React.createElement("input", { className: "hidden-submit", type: "submit"
               }),
@@ -126,7 +126,7 @@ define(function (require) {
             },
             React.createElement(
               "table",
-              { className: "table1 stripe-table"
+              { className: "table stripe-table table-condensed panel-table"
               },
               React.createElement(
                 "thead",
@@ -178,7 +178,7 @@ define(function (require) {
           }),
           React.createElement(
             "label",
-            { htmlFor: "if-bytes-name-" + $if.Name, className: "clip", style: { maxWidth: "12ch" }
+            { htmlFor: "if-bytes-name-" + $if.Name, className: "clip", style: { maxWidth: "11ch" }
             },
             $if.Name
           )
@@ -221,7 +221,7 @@ define(function (require) {
           }),
           React.createElement(
             "label",
-            { htmlFor: "if-errors-name-" + $if.Name, className: "clip", style: { maxWidth: "12ch" }
+            { htmlFor: "if-errors-name-" + $if.Name, className: "clip", style: { maxWidth: "11ch" }
             },
             $if.Name
           )
@@ -264,7 +264,7 @@ define(function (require) {
           }),
           React.createElement(
             "label",
-            { htmlFor: "if-packets-name-" + $if.Name, className: "clip", style: { maxWidth: "12ch" }
+            { htmlFor: "if-packets-name-" + $if.Name, className: "clip", style: { maxWidth: "11ch" }
             },
             $if.Name
           )
@@ -298,7 +298,7 @@ define(function (require) {
     panelif: function panelif(Data, r1, r2, r3) {
       return React.createElement(
         "div",
-        { className: "panel1"
+        { className: "panel panel-default panel1"
         },
         React.createElement(
           "label",
@@ -320,7 +320,7 @@ define(function (require) {
             },
             React.createElement(
               "form",
-              { className: "horizontal-form", action: "/form/" + Data.Params.Query
+              { className: "form-horizontal horizontal-form", action: "/form/" + Data.Params.Query
               },
               React.createElement("input", { className: "hidden-submit", type: "submit"
               }),
@@ -418,7 +418,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table1 stripe-table"
+                { className: "table stripe-table table-condensed panel-table"
                 },
                 React.createElement(
                   "thead",
@@ -494,7 +494,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table1 stripe-table"
+                { className: "table stripe-table table-condensed panel-table"
                 },
                 React.createElement(
                   "thead",
@@ -570,7 +570,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table1 stripe-table"
+                { className: "table stripe-table table-condensed panel-table"
                 },
                 React.createElement(
                   "thead",
@@ -714,7 +714,7 @@ define(function (require) {
     panelcpu: function panelcpu(Data, rows) {
       return React.createElement(
         "div",
-        { className: "panel1"
+        { className: "panel panel-default panel1"
         },
         React.createElement(
           "label",
@@ -736,7 +736,7 @@ define(function (require) {
             },
             React.createElement(
               "form",
-              { className: "horizontal-form border-bottom-form", action: "/form/" + Data.Params.Query
+              { className: "form-horizontal horizontal-form border-bottom-form", action: "/form/" + Data.Params.Query
               },
               React.createElement("input", { className: "hidden-submit", type: "submit"
               }),
@@ -792,7 +792,7 @@ define(function (require) {
             },
             React.createElement(
               "table",
-              { className: "table1 stripe-table"
+              { className: "table stripe-table table-condensed panel-table"
               },
               React.createElement(
                 "thead",
@@ -863,7 +863,7 @@ define(function (require) {
           }),
           React.createElement(
             "label",
-            { htmlFor: "df-bytes-devname-" + $disk.DevName, className: "clip", style: { maxWidth: "12ch" }
+            { htmlFor: "df-bytes-devname-" + $disk.DevName, className: "clip", style: { maxWidth: "11ch" }
             },
             $disk.DevName
           )
@@ -926,7 +926,7 @@ define(function (require) {
           }),
           React.createElement(
             "label",
-            { htmlFor: "df-inodes-devname-" + $disk.DevName, className: "clip", style: { maxWidth: "12ch" }
+            { htmlFor: "df-inodes-devname-" + $disk.DevName, className: "clip", style: { maxWidth: "11ch" }
             },
             $disk.DevName
           )
@@ -979,7 +979,7 @@ define(function (require) {
     paneldf: function paneldf(Data, r1, r2) {
       return React.createElement(
         "div",
-        { className: "panel1"
+        { className: "panel panel-default panel1"
         },
         React.createElement(
           "label",
@@ -1001,7 +1001,7 @@ define(function (require) {
             },
             React.createElement(
               "form",
-              { className: "horizontal-form", action: "/form/" + Data.Params.Query
+              { className: "form-horizontal horizontal-form", action: "/form/" + Data.Params.Query
               },
               React.createElement("input", { className: "hidden-submit", type: "submit"
               }),
@@ -1088,7 +1088,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table1 stripe-table"
+                { className: "table stripe-table table-condensed panel-table"
                 },
                 React.createElement(
                   "thead",
@@ -1141,7 +1141,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table1 stripe-table"
+                { className: "table stripe-table table-condensed panel-table"
                 },
                 React.createElement(
                   "thead",
@@ -1255,7 +1255,7 @@ define(function (require) {
           }),
           React.createElement(
             "label",
-            { htmlFor: "psuser-pid-" + $proc.PIDstring, className: "clip", style: { maxWidth: "12ch" }
+            { htmlFor: "psuser-pid-" + $proc.PIDstring, className: "clip", style: { maxWidth: "11ch" }
             },
             $proc.User
           )
@@ -1313,7 +1313,7 @@ define(function (require) {
     panelps: function panelps(Data, rows) {
       return React.createElement(
         "div",
-        { className: "panel1"
+        { className: "panel panel-default panel1"
         },
         React.createElement(
           "label",
@@ -1335,7 +1335,7 @@ define(function (require) {
             },
             React.createElement(
               "form",
-              { className: "inline-form border-bottom-form text-right", action: "/form/" + Data.Params.Query
+              { className: "form-inline inline-form border-bottom-form text-right", action: "/form/" + Data.Params.Query
               },
               React.createElement("input", { className: "hidden-submit", type: "submit"
               }),
@@ -1397,7 +1397,7 @@ define(function (require) {
             },
             React.createElement(
               "table",
-              { className: "table2 stripe-table"
+              { className: "table stripe-table table-condensed panel-table table-hover"
               },
               React.createElement(
                 "thead",
@@ -1609,7 +1609,7 @@ define(function (require) {
     panelvg: function panelvg(Data, rows) {
       return React.createElement(
         "div",
-        { className: "panel1"
+        { className: "panel panel-default panel1"
         },
         React.createElement(
           "label",
@@ -1631,7 +1631,7 @@ define(function (require) {
             },
             React.createElement(
               "form",
-              { className: "inline-form border-bottom-form text-right", action: "/form/" + Data.Params.Query
+              { className: "form-inline inline-form border-bottom-form text-right", action: "/form/" + Data.Params.Query
               },
               React.createElement("input", { className: "hidden-submit", type: "submit"
               }),
@@ -1681,7 +1681,7 @@ define(function (require) {
             },
             React.createElement(
               "table",
-              { id: "vgtable", className: "table1 stripe-table"
+              { id: "vgtable", className: "table stripe-table table-condensed panel-table"
               },
               React.createElement(
                 "thead",
