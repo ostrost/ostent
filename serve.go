@@ -24,6 +24,8 @@ func init() {
 
 func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error {
 	mux, chain, access := ostent.NewServery(taggedbin, extramap)
+	errlog, errclose := ostent.NewErrorLog()
+	defer errclose()
 
 	if index := chain.ThenFunc(ostent.IndexFunc(taggedbin, templates.IndexTemplate,
 		PeriodFlag)); true {
@@ -37,7 +39,7 @@ func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error 
 	}
 
 	// chain is not used -- access is passed to log with.
-	mux.HandlerFunc("GET", "/index.ws", ostent.IndexWSFunc(access, PeriodFlag))
+	mux.HandlerFunc("GET", "/index.ws", ostent.IndexWSFunc(access, errlog, PeriodFlag))
 	mux.HandlerFunc("GET", "/index.sse", ostent.IndexSSEFunc(access, PeriodFlag))
 
 	if !taggedbin { // dev-only
@@ -58,8 +60,6 @@ func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error 
 	}
 
 	ostent.Banner(listener.Addr().String(), "ostent", logger)
-	errlog, errclose := ostent.NewErrorLog()
-	defer errclose()
 	s := &http.Server{
 		ErrorLog: errlog,
 		Handler:  mux,

@@ -14,7 +14,11 @@ import (
 
 // NewErrorLog creates a logger and returns a func to defer.
 func NewErrorLog() (*log.Logger, func() error) {
-	errlog := logrus.New().Writer()
+	logger := logrus.New()
+	logger.Formatter = &logrus.TextFormatter{
+		FullTimestamp: true,
+	}
+	errlog := logger.Writer()
 	return log.New(errlog, "", 0), errlog.Close
 }
 

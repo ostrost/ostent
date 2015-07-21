@@ -382,6 +382,10 @@
           console.log('in 2s: updates.close()');
           return;
         }
+        if (data.Error != null) {
+          console.log('Error', data.Error);
+          return;
+        }
         if (ip != null) {
           setState(ip, ip.newstate(data));
         }

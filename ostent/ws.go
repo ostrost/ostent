@@ -2,6 +2,7 @@ package ostent
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -185,12 +186,8 @@ func (c *conn) CloseChans() {
 	defer func() {
 		defer c.mutex.Unlock()
 		if e := recover(); e != nil {
-			if err, ok := e.(error); ok {
-				fmt.Printf("CLOSE? PANIC %s\n", err.Error())
-			} else {
-				fmt.Printf("CLOSE? PANIC (UNDESCRIPT) %+v\n", e)
-			}
-			panic(e)
+			// TODO should be errlog.Printf
+			fmt.Printf("close panic (recovered) %+v\n", e)
 		}
 	}()
 	close(c.receive)
@@ -289,7 +286,7 @@ func (c *conn) receiveLoop(stop chan<- struct{}) { // read from the conn
 	}
 }
 
-func (c *conn) updateLoop(stop <-chan struct{}) { // write to the conn
+func (c *conn) updateLoop(errlog *log.Logger, stop <-chan struct{}) { // write to the conn
 loop:
 	for {
 		select {
@@ -297,7 +294,7 @@ loop:
 			if !ok {
 				return
 			}
-			if next := c.process(rd); next != nil {
+			if next := c.process(errlog, rd); next != nil {
 				if *next {
 					continue loop
 				} else {
@@ -317,26 +314,13 @@ loop:
 	}
 }
 
-func (c *conn) process(rd *received) *bool {
+func (c *conn) process(errlog *log.Logger, rd *received) *bool {
 	c.mutex.Lock()
 	defer func() {
 		c.mutex.Unlock()
 		if e := recover(); e != nil {
-			stack := ""
-			/* The stack to be fmt.Printf-d. Not sure if I should
-			sbuf := make([]byte, 4096)
-			size := runtime.Stack(sbuf, false)
-			stack = string(sbuf[:size])
-			*/
-
-			if err, ok := e.(error); ok {
-				c.writeError(err) // an alert for the client
-
-				fmt.Printf("PANIC %s\n%s\n", err.Error(), stack)
-			} else {
-				fmt.Printf("PANIC (UNDESCRIPT) %+v\n%s\n", e, stack)
-			}
-			panic(e)
+			errlog.Printf("close panic (recovered) %+v\n", e)
+			c.writeError(fmt.Errorf("%s", fmt.Sprintf("%+v", e))) // an alert for the client
 		}
 	}()
 
@@ -413,13 +397,13 @@ func (w dummyStatus) Write(b []byte) (int, error) {
 	// return len(b), nil
 }
 
-func IndexWSFunc(access *Access, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
+func IndexWSFunc(access *Access, errlog *log.Logger, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
-		IndexWS(access, minperiod, w, req)
+		IndexWS(access, errlog, minperiod, w, req)
 	}
 }
 
-func IndexWS(access *Access, minperiod flags.Period, w http.ResponseWriter, req *http.Request) {
+func IndexWS(access *Access, errlog *log.Logger, minperiod flags.Period, w http.ResponseWriter, req *http.Request) {
 	// Upgrader.Upgrade() has Origin check if .CheckOrigin is nil
 	upgrader := gorillawebsocket.Upgrader{
 		HandshakeTimeout: 5 * time.Second,
@@ -447,8 +431,8 @@ func IndexWS(access *Access, minperiod flags.Period, w http.ResponseWriter, req 
 		c.Conn.Close()
 	}()
 	stop := make(chan struct{}, 1)
-	go c.receiveLoop(stop) // read from the client
-	c.updateLoop(stop)     // write to the client
+	go c.receiveLoop(stop)     // read from the client
+	c.updateLoop(errlog, stop) // write to the client
 }
 
 func newfalse() *bool      { return new(bool) }

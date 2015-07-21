@@ -231,6 +231,10 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
         console.log('in 2s: updates.close()')
         return
 
+      if data.Error?
+        console.log 'Error', data.Error
+        return
+
       setState(ip,        ip      .newstate(data)) if ip?
       setState(hostname,  hostname.newstate(data))
       setState(uptime,    uptime  .newstate(data))
