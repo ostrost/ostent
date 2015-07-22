@@ -40,15 +40,6 @@ html
                   a.dropdown-text#uptime {{.Data.Uptime}}
 
           ul.nav.navbar-nav.navbar-right
-            li.navbar-text
-              ul.list-inline.navbar-nav
-                li
-                  a href=#top #top
-                li
-                  a href=#ps #ps
-                li
-                  a href=#vg #vagrant
-
             li.dropdown.active
               a.dropdown-toggle#dropdownversion data-toggle=dropdown aria-expanded=true href=https://www.ostrost.com/ostent/releases/latest OSTENT
               ul.dropdown-menu role=menu aria-labelledby=dropdownversion
@@ -56,28 +47,25 @@ html
                 li role=presentation
                   a href=https://www.ostrost.com/ostent/releases/latest {{.Data.VERSION}}
 
-    div.container-fluid.padding-topseventysh#top
+    div.container-fluid.padding-topseventysh
       div.row
-        div.block.col-md-2.col-md-offset-1#mem-table
+        div.col-md-3#mem-table
           {{template "defines::define_panelmem" .}}
-
-        div.block.col-md-3#if-table
+        div.col-md-3#if-table
           {{template "defines::define_panelif" .}}
-
-        div.block.col-md-2#cpu-table
+        div.col-md-3#cpu-table
           {{template "defines::define_panelcpu" .}}
-
-        div.block.col-md-3#df-table
+        div.col-md-3#df-table
           {{template "defines::define_paneldf" .}}
 
     div.container-fluid
       div.row
-        div.block.col-md-8.col-md-offset-2#ps-table
+        div.col-md-8.col-md-offset-2#ps-table
           {{template "defines::define_panelps" .}}
 
     div.container-fluid
       div.row
-        div.block.col-md-8.col-md-offset-2#vg-table
+        div.col-md-8.col-md-offset-2#vg-table
           {{template "defines::define_panelvg" .}}
 
     = javascript

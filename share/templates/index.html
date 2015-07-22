@@ -58,22 +58,6 @@
               ></li
             ></ul
           ><ul class="nav navbar-nav navbar-right"
-            ><li class="navbar-text"
-              ><ul class="list-inline navbar-nav"
-                ><li
-                  ><a href="#top"
-                    >#top</a
-                  ></li
-                ><li
-                  ><a href="#ps"
-                    >#ps</a
-                  ></li
-                ><li
-                  ><a href="#vg"
-                    >#vagrant</a
-                  ></li
-                ></ul
-              ></li
             ><li class="dropdown active"
               ><a id="dropdownversion" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true" href="https://www.ostrost.com/ostent/releases/latest"
                 >OSTENT</a
@@ -90,27 +74,27 @@
           ></div
         ></div
       ></nav
-    ><div id="top" class="container-fluid padding-topseventysh"
+    ><div class="container-fluid padding-topseventysh"
       ><div class="row"
-        ><div id="mem-table" class="block col-md-2 col-md-offset-1"
+        ><div id="mem-table" class="col-md-3"
           >{{template "defines::define_panelmem" .}}</div
-        ><div id="if-table" class="block col-md-3"
+        ><div id="if-table" class="col-md-3"
           >{{template "defines::define_panelif" .}}</div
-        ><div id="cpu-table" class="block col-md-2"
+        ><div id="cpu-table" class="col-md-3"
           >{{template "defines::define_panelcpu" .}}</div
-        ><div id="df-table" class="block col-md-3"
+        ><div id="df-table" class="col-md-3"
           >{{template "defines::define_paneldf" .}}</div
         ></div
       ></div
     ><div class="container-fluid"
       ><div class="row"
-        ><div id="ps-table" class="block col-md-8 col-md-offset-2"
+        ><div id="ps-table" class="col-md-8 col-md-offset-2"
           >{{template "defines::define_panelps" .}}</div
         ></div
       ></div
     ><div class="container-fluid"
       ><div class="row"
-        ><div id="vg-table" class="block col-md-8 col-md-offset-2"
+        ><div id="vg-table" class="col-md-8 col-md-offset-2"
           >{{template "defines::define_panelvg" .}}</div
         ></div
       ></div
@@ -140,7 +124,7 @@
     ></td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_cputable"}}<table class="table stripe-table table-condensed panel-table"
+*/}}{{define "defines::define_cputable"}}<table class="table table-striped table-condensed"
   ><thead
     ><tr
       ><th
@@ -171,12 +155,12 @@
   ><td class="text-right"
     >{{$disk.Avail}}</td
   ><td class="text-right"
-    >{{$disk.Used}}&nbsp;{{template "defines::define_usepercent" $disk.UsePercent}}</td
+    >{{template "defines::define_usepercent" $disk.UsePercent}}&nbsp;{{$disk.Used}}</td
   ><td class="text-right"
     >{{$disk.Total}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_dfbytes_table"}}<table class="table stripe-table table-condensed panel-table"
+*/}}{{define "defines::define_dfbytes_table"}}<table class="table table-striped table-condensed"
   ><thead
     ><tr
       >{{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "FS" ""}}{{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "MP" ""}}{{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "AVAIL"}}{{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "USED"}}{{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "TOTAL"}}</tr
@@ -193,12 +177,12 @@
   ><td class="text-right"
     >{{$disk.Ifree}}</td
   ><td class="text-right"
-    >{{$disk.Iused}}&nbsp;{{template "defines::define_usepercent" $disk.IusePercent}}</td
+    >{{template "defines::define_usepercent" $disk.IusePercent}}&nbsp;{{$disk.Iused}}</td
   ><td class="text-right"
     >{{$disk.Inodes}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_dfinodes_table"}}<table class="table stripe-table table-condensed panel-table"
+*/}}{{define "defines::define_dfinodes_table"}}<table class="table table-striped table-condensed"
   ><thead
     ><tr
       ><th class="header"
@@ -230,7 +214,7 @@
     >{{$if.Out}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_ifbytes_table"}}<table class="table stripe-table table-condensed panel-table"
+*/}}{{define "defines::define_ifbytes_table"}}<table class="table table-striped table-condensed"
   ><thead
     ><tr
       ><th
@@ -278,7 +262,7 @@
     >{{$if.Out}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_iferrors_table"}}<table class="table stripe-table table-condensed panel-table"
+*/}}{{define "defines::define_iferrors_table"}}<table class="table table-striped table-condensed"
   ><thead
     ><tr
       ><th
@@ -318,7 +302,7 @@
     >{{$if.Out}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_ifpackets_table"}}<table class="table stripe-table table-condensed panel-table"
+*/}}{{define "defines::define_ifpackets_table"}}<table class="table table-striped table-condensed"
   ><thead
     ><tr
       ><th
@@ -351,12 +335,12 @@
   ><td class="text-right"
     >{{$mem.Free}}</td
   ><td class="text-right"
-    >{{$mem.Used}}&nbsp;{{template "defines::define_usepercent" $mem.UsePercent}}</td
+    >{{template "defines::define_usepercent" $mem.UsePercent}}&nbsp;{{$mem.Used}}</td
   ><td class="text-right"
     >{{$mem.Total}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_memtable"}}<table class="table stripe-table table-condensed panel-table"
+*/}}{{define "defines::define_memtable"}}<table class="table table-striped table-condensed"
   ><thead
     ><tr
       ><th
@@ -373,25 +357,27 @@
     >{{template "defines::define_memrows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_panelcpu"}}<div class="panel panel-default panel1"
-  ><label class="panel-heading btn-block"
-    ><a {{.Data.Params.BOOL.configcpu.BoolParamClassAttr "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configcpu.ToggleHrefAttr}}
-      >CPU</a
-    ></label
+*/}}{{define "defines::define_panelcpu"}}<div
+  ><div
+    ><a    {{.Data.Params.BOOL.configcpu.ToggleHrefAttr}} {{class}}="btn btn-block btn-link btn-left"
+      ><span {{.Data.Params.BOOL.configcpu.BoolParamClassAttr "h4 bg-info" "h4"}}
+        >CPU</span
+      ></a
+    ></div
   ><div
     ><div id="cpuconfig" {{.Data.Params.BOOL.configcpu.BoolParamClassAttr "" "collapse-hidden"}}
-      ><form {{class}}="form-horizontal horizontal-form border-bottom-form" {{.Data.Params.Query.FormActionAttr}}
+      ><form {{class}}="form-inline" {{.Data.Params.Query.FormActionAttr}}
         ><input class="hidden-submit" type="submit"
-        ><div class="form-group-padded"
+        ><div class="btn-toolbar"
           ><div class="btn-group btn-group-sm" role="group"
             ><a {{.Data.Params.BOOL.hidecpu.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidecpu.ToggleHrefAttr}}
               >Hidden</a
             ><a {{.Data.CPU.ExpandableCPU.BoolClassAttr "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expandcpu.ToggleHrefAttr}}
               >{{.Data.CPU.ExpandtextCPU}}</a
             ></div
+          ><div class="btn-group btn-group-sm" role="group"
+            >{{template "defines::define_refresh" .Data.Params.PERIOD.refreshcpu}}</div
           ></div
-        ><div class="form-group-padded"
-          >{{template "defines::define_refresh" .Data.Params.PERIOD.refreshcpu}}</div
         ></form
       ></div
     ></div
@@ -401,32 +387,36 @@
     ></div
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_paneldf"}}<div class="panel panel-default panel1"
-  ><label class="panel-heading btn-block"
-    ><a {{.Data.Params.BOOL.configdf.BoolParamClassAttr "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configdf.ToggleHrefAttr}}
-      >{{.Data.Params.ENUM.dft.Title}}</a
-    ></label
+*/}}{{define "defines::define_paneldf"}}<div
+  ><div
+    ><a    {{.Data.Params.BOOL.configdf.ToggleHrefAttr}} {{class}}="btn btn-block btn-link btn-left"
+      ><span {{.Data.Params.BOOL.configdf.BoolParamClassAttr "h4 bg-info" "h4"}}
+        >{{.Data.Params.ENUM.dft.Title}}</span
+      ></a
+    ></div
   ><div
     ><div id="dfconfig" {{.Data.Params.BOOL.configdf.BoolParamClassAttr "" "collapse-hidden"}}
-      ><form {{class}}="form-horizontal horizontal-form" {{.Data.Params.Query.FormActionAttr}}
+      ><form {{class}}="form-inline" {{.Data.Params.Query.FormActionAttr}}
         ><input class="hidden-submit" type="submit"
-        ><div class="form-group-padded"
+        ><div class="btn-toolbar"
           ><div class="btn-group btn-group-sm" role="group"
             ><a {{.Data.Params.BOOL.hidedf.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidedf.ToggleHrefAttr}}
               >Hidden</a
             ><a {{.Data.ExpandableDF.BoolClassAttr "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expanddf.ToggleHrefAttr}}
               >{{.Data.ExpandtextDF}}</a
             ></div
+          ><div class="btn-group btn-group-sm" role="group"
+            >{{template "defines::define_refresh" .Data.Params.PERIOD.refreshdf}}</div
           ></div
-        ><div class="form-group-padded"
-          >{{template "defines::define_refresh" .Data.Params.PERIOD.refreshdf}}</div
         ></form
-      ><ul class="nav nav-tabs"
-        ><li {{.Data.Params.ENUM.dft.EnumClassAttr "INODES" "active"}}
-          >{{template "defines::enumlink" .Data.Params.ENUM.dft.EnumLink "INODES"}}</li
-        ><li {{.Data.Params.ENUM.dft.EnumClassAttr "DFBYTES" "active"}}
-          >{{template "defines::enumlink" .Data.Params.ENUM.dft.EnumLink "DFBYTES"}}</li
-        ></ul
+      ><p
+        ><ul class="nav nav-tabs"
+          ><li {{.Data.Params.ENUM.dft.EnumClassAttr "INODES" "active"}}
+            >{{template "defines::enumlink" .Data.Params.ENUM.dft.EnumLink "INODES"}}</li
+          ><li {{.Data.Params.ENUM.dft.EnumClassAttr "DFBYTES" "active"}}
+            >{{template "defines::enumlink" .Data.Params.ENUM.dft.EnumLink "DFBYTES"}}</li
+          ></ul
+        ></p
       ></div
     ></div
   ><div
@@ -439,34 +429,38 @@
     ></div
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelif"}}<div class="panel panel-default panel1"
-  ><label class="panel-heading btn-block"
-    ><a {{.Data.Params.BOOL.configif.BoolParamClassAttr "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configif.ToggleHrefAttr}}
-      >{{.Data.Params.ENUM.ift.Title}}</a
-    ></label
+*/}}{{define "defines::define_panelif"}}<div
+  ><div
+    ><a    {{.Data.Params.BOOL.configif.ToggleHrefAttr}} {{class}}="btn btn-block btn-link btn-left"
+      ><span {{.Data.Params.BOOL.configif.BoolParamClassAttr "h4 bg-info" "h4"}}
+        >{{.Data.Params.ENUM.ift.Title}}</span
+      ></a
+    ></div
   ><div
     ><div id="ifconfig" {{.Data.Params.BOOL.configif.BoolParamClassAttr "" "collapse-hidden"}}
-      ><form {{class}}="form-horizontal horizontal-form" {{.Data.Params.Query.FormActionAttr}}
+      ><form {{class}}="form-inline" {{.Data.Params.Query.FormActionAttr}}
         ><input class="hidden-submit" type="submit"
-        ><div class="form-group-padded"
+        ><div class="btn-toolbar"
           ><div class="btn-group btn-group-sm" role="group"
             ><a {{.Data.Params.BOOL.hideif.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideif.ToggleHrefAttr}}
               >Hidden</a
             ><a {{.Data.ExpandableIF.BoolClassAttr "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expandif.ToggleHrefAttr}}
               >{{.Data.ExpandtextIF}}</a
             ></div
+          ><div class="btn-group btn-group-sm" role="group"
+            >{{template "defines::define_refresh" .Data.Params.PERIOD.refreshif}}</div
           ></div
-        ><div class="form-group-padded"
-          >{{template "defines::define_refresh" .Data.Params.PERIOD.refreshif}}</div
         ></form
-      ><ul class="nav nav-tabs"
-        ><li {{.Data.Params.ENUM.ift.EnumClassAttr "PACKETS" "active"}}
-          >{{template "defines::enumlink" .Data.Params.ENUM.ift.EnumLink "PACKETS"}}</li
-        ><li {{.Data.Params.ENUM.ift.EnumClassAttr "ERRORS" "active"}}
-          >{{template "defines::enumlink" .Data.Params.ENUM.ift.EnumLink "ERRORS"}}</li
-        ><li {{.Data.Params.ENUM.ift.EnumClassAttr "IFBYTES" "active"}}
-          >{{template "defines::enumlink" .Data.Params.ENUM.ift.EnumLink "IFBYTES"}}</li
-        ></ul
+      ><p
+        ><ul class="nav nav-tabs"
+          ><li {{.Data.Params.ENUM.ift.EnumClassAttr "PACKETS" "active"}}
+            >{{template "defines::enumlink" .Data.Params.ENUM.ift.EnumLink "PACKETS"}}</li
+          ><li {{.Data.Params.ENUM.ift.EnumClassAttr "ERRORS" "active"}}
+            >{{template "defines::enumlink" .Data.Params.ENUM.ift.EnumLink "ERRORS"}}</li
+          ><li {{.Data.Params.ENUM.ift.EnumClassAttr "IFBYTES" "active"}}
+            >{{template "defines::enumlink" .Data.Params.ENUM.ift.EnumLink "IFBYTES"}}</li
+          ></ul
+        ></p
       ></div
     ></div
   ><div
@@ -481,25 +475,27 @@
     ></div
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelmem"}}<div class="panel panel-default panel1"
-  ><label class="panel-heading btn-block"
-    ><a {{.Data.Params.BOOL.configmem.BoolParamClassAttr "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configmem.ToggleHrefAttr}}
-      >Memory</a
-    ></label
+*/}}{{define "defines::define_panelmem"}}<div
+  ><div
+    ><a    {{.Data.Params.BOOL.configmem.ToggleHrefAttr}} {{class}}="btn btn-block btn-link btn-left"
+      ><span {{.Data.Params.BOOL.configmem.BoolParamClassAttr "h4 bg-info" "h4"}}
+        >Memory</span
+      ></a
+    ></div
   ><div
     ><div id="memconfig" {{.Data.Params.BOOL.configmem.BoolParamClassAttr "" "collapse-hidden"}}
-      ><form {{class}}="form-horizontal horizontal-form border-bottom-form" {{.Data.Params.Query.FormActionAttr}}
+      ><form {{class}}="form-inline" {{.Data.Params.Query.FormActionAttr}}
         ><input class="hidden-submit" type="submit"
-        ><div class="form-group-padded"
+        ><div class="btn-toolbar"
           ><div class="btn-group btn-group-sm" role="group"
             ><a {{.Data.Params.BOOL.hidemem.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidemem.ToggleHrefAttr}}
               >Hidden</a
             ><a {{.Data.Params.BOOL.hideswap.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideswap.ToggleHrefAttr}} {{.Data.Params.BOOL.hidemem.DisabledAttr}}
               >Hide swap</a
             ></div
+          ><div class="btn-group btn-group-sm" role="group"
+            >{{template "defines::define_refresh" .Data.Params.PERIOD.refreshmem}}</div
           ></div
-        ><div class="form-group-padded"
-          >{{template "defines::define_refresh" .Data.Params.PERIOD.refreshmem}}</div
         ></form
       ></div
     ></div
@@ -509,21 +505,25 @@
     ></div
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelps"}}<div class="panel panel-default panel1"
-  ><label class="panel-heading btn-block"
-    ><a {{.Data.Params.BOOL.configps.BoolParamClassAttr "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configps.ToggleHrefAttr}}
-      >Processes</a
-    ></label
+*/}}{{define "defines::define_panelps"}}<div
+  ><div
+    ><a    {{.Data.Params.BOOL.configps.ToggleHrefAttr}} {{class}}="btn btn-block btn-link btn-left"
+      ><span {{.Data.Params.BOOL.configps.BoolParamClassAttr "h4 bg-info" "h4"}}
+        >Processes</span
+      ></a
+    ></div
   ><div
     ><div id="psconfig" {{.Data.Params.BOOL.configps.BoolParamClassAttr "" "collapse-hidden"}}
-      ><form {{class}}="form-inline inline-form border-bottom-form text-right" {{.Data.Params.Query.FormActionAttr}}
+      ><form {{class}}="form-inline text-right" {{.Data.Params.Query.FormActionAttr}}
         ><input class="hidden-submit" type="submit"
-        ><div class="form-group-padded"
-          >{{template "defines::define_refresh" .Data.Params.PERIOD.refreshps}}</div
-        ><div class="form-group-padded"
+        ><div class="btn-toolbar"
           ><div class="btn-group btn-group-sm" role="group"
             ><a {{.Data.Params.BOOL.hideps.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideps.ToggleHrefAttr}}
               >Hidden</a
+            ></div
+          ><div class="btn-group btn-group-sm" role="group"
+            >{{template "defines::define_refresh" .Data.Params.PERIOD.refreshps}}</div
+          ><div class="btn-group btn-group-sm" role="group"
             ><a {{.Data.PStable.PSnotDecreasable.BoolClassAttr "disabled" "" "btn btn-default"}} {{.Data.Params.LIMIT.psn.LessHrefAttr}}
               >-</a
             ><a {{.Data.PStable.PSnotExpandable.BoolClassAttr "disabled" "" "btn btn-default"}} {{.Data.Params.LIMIT.psn.MoreHrefAttr}}
@@ -539,22 +539,24 @@
     ></div
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelvg"}}<div class="panel panel-default panel1"
-  ><label class="panel-heading btn-block"
-    ><a {{.Data.Params.BOOL.configvg.BoolParamClassAttr "btn-header-block active" "btn-header-block"}} {{.Data.Params.BOOL.configvg.ToggleHrefAttr}}
-      >Vagrant global-status</a
-    ></label
+*/}}{{define "defines::define_panelvg"}}<div
+  ><div
+    ><a    {{.Data.Params.BOOL.configvg.ToggleHrefAttr}} {{class}}="btn btn-block btn-link btn-left"
+      ><span {{.Data.Params.BOOL.configvg.BoolParamClassAttr "h4 bg-info" "h4"}}
+        >Vagrant global-status</span
+      ></a
+    ></div
   ><div
     ><div id="vgconfig" {{.Data.Params.BOOL.configvg.BoolParamClassAttr "" "collapse-hidden"}}
-      ><form {{class}}="form-inline inline-form border-bottom-form text-right" {{.Data.Params.Query.FormActionAttr}}
+      ><form {{class}}="form-inline" {{.Data.Params.Query.FormActionAttr}}
         ><input class="hidden-submit" type="submit"
-        ><div class="form-group-padded"
-          >{{template "defines::define_refresh" .Data.Params.PERIOD.refreshvg}}</div
-        ><div class="form-group-padded"
+        ><div class="btn-toolbar"
           ><div class="btn-group btn-group-sm" role="group"
             ><a {{.Data.Params.BOOL.hidevg.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidevg.ToggleHrefAttr}}
               >Hidden</a
             ></div
+          ><div class="btn-group btn-group-sm" role="group"
+            >{{template "defines::define_refresh" .Data.Params.PERIOD.refreshvg}}</div
           ></div
         ></form
       ></div
@@ -586,7 +588,7 @@
     >     {{template "defines::define_clip" ($proc.Name.Clip 42 "psname-pid" $proc.PIDstring)}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_pstable"}}<table class="table stripe-table table-condensed panel-table table-hover"
+*/}}{{define "defines::define_pstable"}}<table class="table table-striped table-condensed table-hover"
   ><thead
     ><tr
       >{{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "PID"}}{{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "UID"}}{{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "USER" ""}}{{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "PRI"}}{{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "NICE"}}{{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "VIRT"}}{{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "RES"}}{{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "TIME" "center"}}{{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "NAME" ""}}</tr
@@ -598,13 +600,11 @@
 */}}{{define "defines::define_refresh"}}<div {{.RefreshClassAttr "input-group input-group-sm refresh-group"}}
   ><span class="input-group-addon"
     >Refresh</span
-  ><input {{class}}="form-control refresh-input" type="text" placeholder={{.Placeholder}} {{.PeriodNameAttr}} {{.PeriodValueAttr}}
+  ><input {{class}}="form-control refresh-input width-fourem" type="text" placeholder={{.Placeholder}} {{.PeriodNameAttr}} {{.PeriodValueAttr}}
   >{{jsxClose "input"}}</div
 >{{end}}{{/*
-*/}}{{define "defines::define_usepercent"}}<sup
-  ><span {{class}}="label" data-usepercent={{.}}
-    >{{.}}%</span
-  ></sup
+*/}}{{define "defines::define_usepercent"}}<span {{class}}="label" data-usepercent={{.}}
+  >{{.}}%</span
 >{{end}}{{/*
 */}}{{define "defines::define_vgerror"}}<tr key="vgerror"
   ><td {{colspan}}="5"
@@ -625,7 +625,7 @@
   ></tr
 >{{end}}{{end}}{{/*
 */}}{{define "defines::define_vgswitch"}}{{with rowsset .}}{{.}}{{else}}{{if eq .Data.VagrantErrord true}}{{template "defines::define_vgerror" .}}{{else}}{{template "defines::define_vgrows" .}}{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_vgtable"}}<table id="vgtable" class="table stripe-table table-condensed panel-table"
+*/}}{{define "defines::define_vgtable"}}<table id="vgtable" class="table table-striped table-condensed"
   ><thead
     ><tr
       ><th

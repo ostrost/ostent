@@ -2753,8 +2753,7 @@ input[type="search"] {
     line-height: 46px;
   }
 }
-.form-group,
-.form-group-padded {
+.form-group {
   margin-bottom: 15px;
 }
 .radio,
@@ -3126,9 +3125,7 @@ select[multiple].input-lg {
     font-size: 12px;
   }
 }
-.btn,
-.btn-header,
-.btn-header-block {
+.btn {
   display: inline-block;
   padding: 6px 12px;
   margin-bottom: 0;
@@ -3185,9 +3182,7 @@ a.btn.disabled,
 fieldset[disabled] a.btn {
   pointer-events: none;
 }
-.btn-default,
-.btn-header,
-.btn-header-block {
+.btn-default {
   color: #333;
   background-color: #fff;
   border-color: #ccc;
@@ -3637,9 +3632,7 @@ fieldset[disabled] .btn-link:focus {
   line-height: 1.5;
   border-radius: 3px;
 }
-.btn-block,
-.panel1 label a.btn-header-block,
-.btn-header-block {
+.btn-block {
   display: block;
   width: 100%;
 }
@@ -5663,8 +5656,7 @@ button.list-group-item-danger.active:focus {
 .panel-body {
   padding: 15px;
 }
-.panel-heading,
-.panel1 header {
+.panel-heading {
   padding: 10px 15px;
   border-bottom: 1px solid transparent;
   border-top-left-radius: 3px;
@@ -6955,14 +6947,24 @@ button.close {
   }
 }
 /*# sourceMappingURL=bootstrap.css.map */
-a.navbar-brand:hover,
-a.navbar-brand:focus {
-  color: #23527c !important;
-  text-decoration: underline !important;
+body {
+  font-size: 12px;
 }
-a.navbar-brand {
-  color: #337ab7 !important;
-  text-decoration: none !important;
+.headroom {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  transition: all 0.2s ease-in-out;
+}
+.headroom--pinned {
+  top: 0;
+}
+.headroom--unpinned {
+  top: -100px;
+}
+.padding-topseventysh {
+  padding-top: 71px;
 }
 .dropdown:hover > ul.dropdown-menu {
   display: block;
@@ -6985,6 +6987,9 @@ label.clip {
   white-space: normal;
   overflow-x: visible;
 }
+.hidden-submit {
+  display: none;
+}
 .collapse-hidden {
   display: none;
 }
@@ -6997,71 +7002,6 @@ label.clip {
 .collapse-checkbox:checked ~ .collapse-collapse,
 .collapse-checkbox:checked ~ div .collapse-collapse {
   display: block;
-}
-body {
-  font-size: 12px;
-}
-* {
-  -webkit-border-radius: 0 !important;
-  -moz-border-radius: 0 !important;
-  border-radius: 0 !important;
-}
-.headroom {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  transition: all 0.2s ease-in-out;
-}
-.headroom--pinned {
-  top: 0;
-}
-.headroom--unpinned {
-  top: -100px;
-}
-.padding-topseventysh {
-  padding-top: 71px;
-}
-.panel1 {
-  /*
-    a {
-      color:            inherit; // use the text colors
-      background-color: inherit;
-      border-color:     inherit;
-    }
-    a.btn-header-block {
-      border-color: #f5f5f5; // .btn-header background color
-    }
-    a.btn-header-block:hover,
-    a.btn-header-block:active,
-    a.btn-header-block.active {
-      border-color: #adadad; // inherit;
-      // .btn-default.active colors
-    }
-    */
-}
-.panel1 label.panel-heading {
-  font-weight: normal;
-  margin-bottom: 0px;
-  padding: 0px 0px;
-}
-.panel1 header {
-  padding: 0px 0px;
-}
-.panel1 form.border-bottom-form {
-  border-bottom: 1px solid #ddd;
-}
-.hidden-submit {
-  display: none;
-}
-.panel-table {
-  margin-bottom: 0px;
-}
-.panel-table .text-right sup {
-  font-size: 100%;
-}
-.stripe-table > tbody > tr:nth-child(even) > td {
-  background-color: #f9f9f9;
 }
 .nowrap {
   white-space: nowrap;
@@ -7106,42 +7046,10 @@ table thead tr .header a.state.current {
 .badge-danger {
   background: #d9534f;
 }
-.btn-header,
-.btn-header-block {
-  font-size: 12px;
-  color: #333;
-  background-color: #f5f5f5;
-  border-color: #f5f5f5;
-}
-.btn-header-block {
+.btn-left {
   text-align: left;
-  padding: 10px 15px;
 }
-.horizontal-form {
-  padding: 10px 15px;
-}
-.inline-form {
-  padding: 10px 15px;
-}
-.inline-form .form-group {
-  margin-bottom: 15px;
-}
-.inline-form .input-group > .input-group-addon {
-  width: auto;
-}
-.form-group-padded {
-  padding-right: 15px;
-  padding-left: 15px;
-}
-.form-group-padded:last-child {
-  padding-right: 0px;
-}
-.refresh-input,
-.input-group > .form-control.refresh-input {
+.form-inline .input-group > .form-control.width-fourem {
   width: 4em;
-}
-nav .alert,
-.navbar .alert {
-  margin-bottom: 0px;
 }
 /*# sourceMappingURL=index.css.map */

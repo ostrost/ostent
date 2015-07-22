@@ -2,6 +2,88 @@
 
 @import 'bootstrap-3.3.5.scss';
 
+body { font-size: 12px; }
+
+// https://stackoverflow.com/q/20648451
+.headroom {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  transition: all .2s ease-in-out;
+}
+.headroom--pinned   { top: 0; }
+.headroom--unpinned { top: -100px; }
+
+.padding-topseventysh {
+  // 51 for navbar(50+1(border)) (depends on theme) + regular 20 padding-top
+  padding-top: 71px;
+}
+
+.dropdown:hover > ul.dropdown-menu { display: block; }
+.dropdown-menu > li > a.dropdown-text { cursor: default; }
+
+label.clip {
+  cursor: pointer;
+  margin-bottom: 0px;
+  font-weight: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.collapse-checkbox:checked + label.clip {
+  text-decoration: overline;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: normal;
+  overflow-x: visible;
+}
+
+.hidden-submit     { display: none; }
+.collapse-hidden   { display: none; }
+.collapse-collapse { display: none; }
+.collapse-checkbox { display: none; }
+.collapse-checkbox:checked ~     .collapse-collapse,
+.collapse-checkbox:checked ~ div .collapse-collapse {
+  display: block;
+}
+
+.nowrap { white-space: nowrap; }
+
+#generic-uptime { white-space: pre; }
+
+.unit { // "code" colors
+  color:            #333;
+  background-color: #f4f4f4;
+}
+
+table thead th { font-weight: normal; }
+table .bold    { font-weight: bold;   }
+
+table thead tr .header a {
+  color: black;
+  &:hover {
+    // &:extend(a); &:extend(a:hover);
+    color: #428bca;
+    text-decoration: none;
+  }
+  &.state.current {
+    white-space: nowrap;
+    font-weight: bold;
+    // https://stackoverflow.com/q/8376795
+    vertical-align: middle; // this DOES NOT make the line 1px higher
+  }
+}
+
+// .badge-default { &:extend(.badge); background:
+.badge-primary { &:extend(.badge); background: #428bca; }
+.badge-success { &:extend(.badge); background: #5cb85c; }
+.badge-info    { &:extend(.badge); background: #5bc0de; }
+.badge-warning { &:extend(.badge); background: #f0ad4e; }
+.badge-danger  { &:extend(.badge); background: #d9534f; }
+
+.btn-left { text-align: left; }
+
+.form-inline .input-group > .form-control.width-fourem { width: 4em; } // refresh input
+
 .label[data-usepercent="0"],
 .label[data-usepercent="1"],
 .label[data-usepercent="2"],
@@ -69,197 +151,3 @@
 .usepercent-text-inverse[data-usepercent^="8"]:not([data-usepercent="8"]) { &:extend(.text-info); }
 .usepercent-text-inverse[data-usepercent^="9"]:not([data-usepercent="9"]),
 .usepercent-text-inverse[data-usepercent="100"] { &:extend(.text-success); }
-
-// regular bootstrap "a" rules. Overriding .navbar-brand style.
-a.navbar-brand:hover,
-a.navbar-brand:focus { color: #23527c !important; text-decoration: underline !important; }
-a.navbar-brand       { color: #337ab7 !important; text-decoration: none !important; }
-
-.dropdown:hover > ul.dropdown-menu { display: block; }
-.dropdown-menu > li > a.dropdown-text { cursor: default; }
-
-label.clip {
-  cursor: pointer;
-  margin-bottom: 0px;
-  font-weight: normal;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
-.collapse-checkbox:checked + label.clip {
-  text-decoration: overline;
-  word-wrap: break-word;
-  word-break: break-all;
-  white-space: normal;
-  overflow-x: visible;
-}
-
-.collapse-hidden { display: none; }
-.collapse-collapse { display: none; }
-.collapse-checkbox { display: none; }
-.collapse-checkbox:checked ~     .collapse-collapse,
-.collapse-checkbox:checked ~ div .collapse-collapse {
-  display: block;
-}
-
-body { font-size: 12px; }
-
-// https://stackoverflow.com/q/9742166
-* {
-  -webkit-border-radius: 0 !important;
-     -moz-border-radius: 0 !important;
-          border-radius: 0 !important;
-}
-
-// https://stackoverflow.com/q/20648451
-.headroom {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  transition: all .2s ease-in-out;
-}
-.headroom--pinned   { top: 0; }
-.headroom--unpinned { top: -100px; }
-
-.padding-topseventysh {
-  // 51 for navbar(50+1(border)) (depends on theme) + regular 20 padding-top
-  padding-top: 71px;
-}
-
-.panel1 {
-  label a.btn-header-block {
-    &:extend(.btn-block);
-  }
-  label.panel-heading {
-    font-weight: normal;
-    margin-bottom: 0px;
-    padding: 0px 0px;      // for btn-header-block
-  }
-  header {
-    &:extend(.panel-heading);
-    // padding-right: 5px; // for regular text
-    padding: 0px 0px;      // for btn-header-block
-  }
-    /*
-    a {
-      color:            inherit; // use the text colors
-      background-color: inherit;
-      border-color:     inherit;
-    }
-    a.btn-header-block {
-      border-color: #f5f5f5; // .btn-header background color
-    }
-    a.btn-header-block:hover,
-    a.btn-header-block:active,
-    a.btn-header-block.active {
-      border-color: #adadad; // inherit;
-      // .btn-default.active colors
-    }
-    */
-
-  form.border-bottom-form {
-    border-bottom: 1px solid #ddd; // table border styling
-  }
-}
-
-.hidden-submit { display: none; }
-
-.panel-table {
-  margin-bottom: 0px;
-
-  .text-right sup { // or any sup?
-    font-size: 100%;
-  }
-}
-
-// .stripe-table > tbody > tr:nth-child(odd)  > th,
-   .stripe-table > tbody > tr:nth-child(even) > td {
-  background-color: #f9f9f9;
-}
-
-.nowrap { white-space: nowrap; }
-
-#generic-uptime { white-space: pre; }
-
-.unit { // "code" colors
-  color:            #333;
-  background-color: #f4f4f4;
-}
-
-table thead th { font-weight: normal; }
-table .bold    { font-weight: bold;   }
-
-table thead tr .header a {
-  color: black;
-  &:hover {
-    // &:extend(a); &:extend(a:hover);
-    color: #428bca;
-    text-decoration: none;
-  }
-  &.state.current {
-    white-space: nowrap;
-    font-weight: bold;
-    // https://stackoverflow.com/q/8376795
-    vertical-align: middle; // this DOES NOT make the line 1px higher
-  }
-}
-
-// .badge-default { &:extend(.badge); background:
-.badge-primary { &:extend(.badge); background: #428bca; }
-.badge-success { &:extend(.badge); background: #5cb85c; }
-.badge-info    { &:extend(.badge); background: #5bc0de; }
-.badge-warning { &:extend(.badge); background: #f0ad4e; }
-.badge-danger  { &:extend(.badge); background: #d9534f; }
-
-.btn-header {
-  &:extend(.btn);
-  &:extend(.btn-default);
-  font-size: 12px; // body font-size
-
-  // panel-heading colors
-  color:            #333;
-  background-color: #f5f5f5;
-  border-color:     #f5f5f5; // #ddd;
-}
-
-.btn-header-block {
-  &:extend(.btn-header);
-  &:extend(.btn-block);
-  text-align: left;
-  padding: 10px 15px; // panel heading padding
-}
-
-.horizontal-form {
-  padding: 10px 15px;
-}
-
-.inline-form     {
-  padding: 10px 15px;
-
-  .form-group {
-    margin-bottom: 15px;
-  }
-
-//.input-group > .input-group-btn,
-  .input-group > .input-group-addon {
-    width: auto;
-  }
-}
-
-.form-group-padded {
-  &:extend(.form-group);
-  padding-right: 15px;
-  padding-left:  15px;
-}
-.form-group-padded:last-child {
-  padding-right: 0px;
-}
-
-.refresh-input,
-.input-group > .form-control.refresh-input {
-  width: 4em;
-}
-
-nav .alert,
-.navbar .alert {
-  margin-bottom: 0px;
-}

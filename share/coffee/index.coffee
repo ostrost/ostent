@@ -103,7 +103,10 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
 
   HandlerMixin =
     handleChange: (e) -> @handle(e, false, '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1))
-    handleClick: (e) -> @handle(e, true, e.target.getAttribute('href'))
+    handleClick: (e) ->
+      href = e.target.getAttribute('href')
+      href = $(e.target).parent().get(0).getAttribute('href') if !href?
+      @handle(e, true, href)
     handle: (e, ps, href) ->
       history.pushState({}, '', href) if ps
       updates.sendSearch(href)

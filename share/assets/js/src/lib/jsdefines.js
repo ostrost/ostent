@@ -23,19 +23,15 @@ define(function (require) {
           "td",
           { className: "text-right"
           },
-          $mem.Used,
-          " ",
           React.createElement(
-            "sup",
-            null,
-            React.createElement(
-              "span",
-              { className: "label", "data-usepercent": $mem.UsePercent
-              },
-              $mem.UsePercent,
-              "%"
-            )
-          )
+            "span",
+            { className: "label", "data-usepercent": $mem.UsePercent
+            },
+            $mem.UsePercent,
+            "%"
+          ),
+          " ",
+          $mem.Used
         ),
         React.createElement(
           "td",
@@ -48,17 +44,20 @@ define(function (require) {
     panelmem: function panelmem(Data, rows) {
       return React.createElement(
         "div",
-        { className: "panel panel-default panel1"
-        },
+        null,
         React.createElement(
-          "label",
-          { className: "panel-heading btn-block"
-          },
+          "div",
+          null,
           React.createElement(
             "a",
-            { className: Data.Params.BOOL.configmem.Value ? "btn-header-block active" : "btn-header-block", href: Data.Params.BOOL.configmem.Href, onClick: this.handleClick
+            { href: Data.Params.BOOL.configmem.Href, onClick: this.handleClick, className: "btn btn-block btn-link btn-left"
             },
-            "Memory"
+            React.createElement(
+              "span",
+              { className: Data.Params.BOOL.configmem.Value ? "h4 bg-info" : "h4"
+              },
+              "Memory"
+            )
           )
         ),
         React.createElement(
@@ -70,13 +69,13 @@ define(function (require) {
             },
             React.createElement(
               "form",
-              { className: "form-horizontal horizontal-form border-bottom-form", action: "/form/" + Data.Params.Query
+              { className: "form-inline", action: "/form/" + Data.Params.Query
               },
               React.createElement("input", { className: "hidden-submit", type: "submit"
               }),
               React.createElement(
                 "div",
-                { className: "form-group-padded"
+                { className: "btn-toolbar"
                 },
                 React.createElement(
                   "div",
@@ -94,24 +93,24 @@ define(function (require) {
                     },
                     "Hide swap"
                   )
-                )
-              ),
-              React.createElement(
-                "div",
-                { className: "form-group-padded"
-                },
+                ),
                 React.createElement(
                   "div",
-                  { className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshmem.InputErrd ? " has-warning" : "")
+                  { className: "btn-group btn-group-sm", role: "group"
                   },
                   React.createElement(
-                    "span",
-                    { className: "input-group-addon"
+                    "div",
+                    { className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshmem.InputErrd ? " has-warning" : "")
                     },
-                    "Refresh"
-                  ),
-                  React.createElement("input", { className: "form-control refresh-input", type: "text", placeholder: Data.Params.PERIOD.refreshmem.Placeholder, name: "refreshmem", value: Data.Params.PERIOD.refreshmem.Input, onChange: this.handleChange
-                  })
+                    React.createElement(
+                      "span",
+                      { className: "input-group-addon"
+                      },
+                      "Refresh"
+                    ),
+                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.Params.PERIOD.refreshmem.Placeholder, name: "refreshmem", value: Data.Params.PERIOD.refreshmem.Input, onChange: this.handleChange
+                    })
+                  )
                 )
               )
             )
@@ -126,7 +125,7 @@ define(function (require) {
             },
             React.createElement(
               "table",
-              { className: "table stripe-table table-condensed panel-table"
+              { className: "table table-striped table-condensed"
               },
               React.createElement(
                 "thead",
@@ -298,17 +297,20 @@ define(function (require) {
     panelif: function panelif(Data, r1, r2, r3) {
       return React.createElement(
         "div",
-        { className: "panel panel-default panel1"
-        },
+        null,
         React.createElement(
-          "label",
-          { className: "panel-heading btn-block"
-          },
+          "div",
+          null,
           React.createElement(
             "a",
-            { className: Data.Params.BOOL.configif.Value ? "btn-header-block active" : "btn-header-block", href: Data.Params.BOOL.configif.Href, onClick: this.handleClick
+            { href: Data.Params.BOOL.configif.Href, onClick: this.handleClick, className: "btn btn-block btn-link btn-left"
             },
-            Data.Params.ENUM.ift.Title
+            React.createElement(
+              "span",
+              { className: Data.Params.BOOL.configif.Value ? "h4 bg-info" : "h4"
+              },
+              Data.Params.ENUM.ift.Title
+            )
           )
         ),
         React.createElement(
@@ -320,13 +322,13 @@ define(function (require) {
             },
             React.createElement(
               "form",
-              { className: "form-horizontal horizontal-form", action: "/form/" + Data.Params.Query
+              { className: "form-inline", action: "/form/" + Data.Params.Query
               },
               React.createElement("input", { className: "hidden-submit", type: "submit"
               }),
               React.createElement(
                 "div",
-                { className: "form-group-padded"
+                { className: "btn-toolbar"
                 },
                 React.createElement(
                   "div",
@@ -344,62 +346,66 @@ define(function (require) {
                     },
                     Data.ExpandtextIF
                   )
-                )
-              ),
-              React.createElement(
-                "div",
-                { className: "form-group-padded"
-                },
+                ),
                 React.createElement(
                   "div",
-                  { className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshif.InputErrd ? " has-warning" : "")
+                  { className: "btn-group btn-group-sm", role: "group"
                   },
                   React.createElement(
-                    "span",
-                    { className: "input-group-addon"
+                    "div",
+                    { className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshif.InputErrd ? " has-warning" : "")
                     },
-                    "Refresh"
-                  ),
-                  React.createElement("input", { className: "form-control refresh-input", type: "text", placeholder: Data.Params.PERIOD.refreshif.Placeholder, name: "refreshif", value: Data.Params.PERIOD.refreshif.Input, onChange: this.handleChange
-                  })
+                    React.createElement(
+                      "span",
+                      { className: "input-group-addon"
+                      },
+                      "Refresh"
+                    ),
+                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.Params.PERIOD.refreshif.Placeholder, name: "refreshif", value: Data.Params.PERIOD.refreshif.Input, onChange: this.handleChange
+                    })
+                  )
                 )
               )
             ),
             React.createElement(
-              "ul",
-              { className: "nav nav-tabs"
-              },
+              "p",
+              null,
               React.createElement(
-                "li",
-                { className: Data.Params.ENUM.ift.Uint == 0 ? "active" : ""
+                "ul",
+                { className: "nav nav-tabs"
                 },
                 React.createElement(
-                  "a",
-                  { href: Data.Params.ENUM.ift.PACKETS.Href, onClick: this.handleClick
+                  "li",
+                  { className: Data.Params.ENUM.ift.Uint == 0 ? "active" : ""
                   },
-                  "Packets"
-                )
-              ),
-              React.createElement(
-                "li",
-                { className: Data.Params.ENUM.ift.Uint == 1 ? "active" : ""
-                },
+                  React.createElement(
+                    "a",
+                    { href: Data.Params.ENUM.ift.PACKETS.Href, onClick: this.handleClick
+                    },
+                    "Packets"
+                  )
+                ),
                 React.createElement(
-                  "a",
-                  { href: Data.Params.ENUM.ift.ERRORS.Href, onClick: this.handleClick
+                  "li",
+                  { className: Data.Params.ENUM.ift.Uint == 1 ? "active" : ""
                   },
-                  "Errors"
-                )
-              ),
-              React.createElement(
-                "li",
-                { className: Data.Params.ENUM.ift.Uint == 2 ? "active" : ""
-                },
+                  React.createElement(
+                    "a",
+                    { href: Data.Params.ENUM.ift.ERRORS.Href, onClick: this.handleClick
+                    },
+                    "Errors"
+                  )
+                ),
                 React.createElement(
-                  "a",
-                  { href: Data.Params.ENUM.ift.IFBYTES.Href, onClick: this.handleClick
+                  "li",
+                  { className: Data.Params.ENUM.ift.Uint == 2 ? "active" : ""
                   },
-                  "Bytes"
+                  React.createElement(
+                    "a",
+                    { href: Data.Params.ENUM.ift.IFBYTES.Href, onClick: this.handleClick
+                    },
+                    "Bytes"
+                  )
                 )
               )
             )
@@ -418,7 +424,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table stripe-table table-condensed panel-table"
+                { className: "table table-striped table-condensed"
                 },
                 React.createElement(
                   "thead",
@@ -494,7 +500,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table stripe-table table-condensed panel-table"
+                { className: "table table-striped table-condensed"
                 },
                 React.createElement(
                   "thead",
@@ -570,7 +576,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table stripe-table table-condensed panel-table"
+                { className: "table table-striped table-condensed"
                 },
                 React.createElement(
                   "thead",
@@ -714,17 +720,20 @@ define(function (require) {
     panelcpu: function panelcpu(Data, rows) {
       return React.createElement(
         "div",
-        { className: "panel panel-default panel1"
-        },
+        null,
         React.createElement(
-          "label",
-          { className: "panel-heading btn-block"
-          },
+          "div",
+          null,
           React.createElement(
             "a",
-            { className: Data.Params.BOOL.configcpu.Value ? "btn-header-block active" : "btn-header-block", href: Data.Params.BOOL.configcpu.Href, onClick: this.handleClick
+            { href: Data.Params.BOOL.configcpu.Href, onClick: this.handleClick, className: "btn btn-block btn-link btn-left"
             },
-            "CPU"
+            React.createElement(
+              "span",
+              { className: Data.Params.BOOL.configcpu.Value ? "h4 bg-info" : "h4"
+              },
+              "CPU"
+            )
           )
         ),
         React.createElement(
@@ -736,13 +745,13 @@ define(function (require) {
             },
             React.createElement(
               "form",
-              { className: "form-horizontal horizontal-form border-bottom-form", action: "/form/" + Data.Params.Query
+              { className: "form-inline", action: "/form/" + Data.Params.Query
               },
               React.createElement("input", { className: "hidden-submit", type: "submit"
               }),
               React.createElement(
                 "div",
-                { className: "form-group-padded"
+                { className: "btn-toolbar"
                 },
                 React.createElement(
                   "div",
@@ -760,24 +769,24 @@ define(function (require) {
                     },
                     Data.CPU.ExpandtextCPU
                   )
-                )
-              ),
-              React.createElement(
-                "div",
-                { className: "form-group-padded"
-                },
+                ),
                 React.createElement(
                   "div",
-                  { className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshcpu.InputErrd ? " has-warning" : "")
+                  { className: "btn-group btn-group-sm", role: "group"
                   },
                   React.createElement(
-                    "span",
-                    { className: "input-group-addon"
+                    "div",
+                    { className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshcpu.InputErrd ? " has-warning" : "")
                     },
-                    "Refresh"
-                  ),
-                  React.createElement("input", { className: "form-control refresh-input", type: "text", placeholder: Data.Params.PERIOD.refreshcpu.Placeholder, name: "refreshcpu", value: Data.Params.PERIOD.refreshcpu.Input, onChange: this.handleChange
-                  })
+                    React.createElement(
+                      "span",
+                      { className: "input-group-addon"
+                      },
+                      "Refresh"
+                    ),
+                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.Params.PERIOD.refreshcpu.Placeholder, name: "refreshcpu", value: Data.Params.PERIOD.refreshcpu.Input, onChange: this.handleChange
+                    })
+                  )
                 )
               )
             )
@@ -792,7 +801,7 @@ define(function (require) {
             },
             React.createElement(
               "table",
-              { className: "table stripe-table table-condensed panel-table"
+              { className: "table table-striped table-condensed"
               },
               React.createElement(
                 "thead",
@@ -891,19 +900,15 @@ define(function (require) {
           "td",
           { className: "text-right"
           },
-          $disk.Used,
-          " ",
           React.createElement(
-            "sup",
-            null,
-            React.createElement(
-              "span",
-              { className: "label", "data-usepercent": $disk.UsePercent
-              },
-              $disk.UsePercent,
-              "%"
-            )
-          )
+            "span",
+            { className: "label", "data-usepercent": $disk.UsePercent
+            },
+            $disk.UsePercent,
+            "%"
+          ),
+          " ",
+          $disk.Used
         ),
         React.createElement(
           "td",
@@ -954,19 +959,15 @@ define(function (require) {
           "td",
           { className: "text-right"
           },
-          $disk.Iused,
-          " ",
           React.createElement(
-            "sup",
-            null,
-            React.createElement(
-              "span",
-              { className: "label", "data-usepercent": $disk.IusePercent
-              },
-              $disk.IusePercent,
-              "%"
-            )
-          )
+            "span",
+            { className: "label", "data-usepercent": $disk.IusePercent
+            },
+            $disk.IusePercent,
+            "%"
+          ),
+          " ",
+          $disk.Iused
         ),
         React.createElement(
           "td",
@@ -979,17 +980,20 @@ define(function (require) {
     paneldf: function paneldf(Data, r1, r2) {
       return React.createElement(
         "div",
-        { className: "panel panel-default panel1"
-        },
+        null,
         React.createElement(
-          "label",
-          { className: "panel-heading btn-block"
-          },
+          "div",
+          null,
           React.createElement(
             "a",
-            { className: Data.Params.BOOL.configdf.Value ? "btn-header-block active" : "btn-header-block", href: Data.Params.BOOL.configdf.Href, onClick: this.handleClick
+            { href: Data.Params.BOOL.configdf.Href, onClick: this.handleClick, className: "btn btn-block btn-link btn-left"
             },
-            Data.Params.ENUM.dft.Title
+            React.createElement(
+              "span",
+              { className: Data.Params.BOOL.configdf.Value ? "h4 bg-info" : "h4"
+              },
+              Data.Params.ENUM.dft.Title
+            )
           )
         ),
         React.createElement(
@@ -1001,13 +1005,13 @@ define(function (require) {
             },
             React.createElement(
               "form",
-              { className: "form-horizontal horizontal-form", action: "/form/" + Data.Params.Query
+              { className: "form-inline", action: "/form/" + Data.Params.Query
               },
               React.createElement("input", { className: "hidden-submit", type: "submit"
               }),
               React.createElement(
                 "div",
-                { className: "form-group-padded"
+                { className: "btn-toolbar"
                 },
                 React.createElement(
                   "div",
@@ -1025,51 +1029,55 @@ define(function (require) {
                     },
                     Data.ExpandtextDF
                   )
-                )
-              ),
-              React.createElement(
-                "div",
-                { className: "form-group-padded"
-                },
+                ),
                 React.createElement(
                   "div",
-                  { className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshdf.InputErrd ? " has-warning" : "")
+                  { className: "btn-group btn-group-sm", role: "group"
                   },
                   React.createElement(
-                    "span",
-                    { className: "input-group-addon"
+                    "div",
+                    { className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshdf.InputErrd ? " has-warning" : "")
                     },
-                    "Refresh"
-                  ),
-                  React.createElement("input", { className: "form-control refresh-input", type: "text", placeholder: Data.Params.PERIOD.refreshdf.Placeholder, name: "refreshdf", value: Data.Params.PERIOD.refreshdf.Input, onChange: this.handleChange
-                  })
+                    React.createElement(
+                      "span",
+                      { className: "input-group-addon"
+                      },
+                      "Refresh"
+                    ),
+                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.Params.PERIOD.refreshdf.Placeholder, name: "refreshdf", value: Data.Params.PERIOD.refreshdf.Input, onChange: this.handleChange
+                    })
+                  )
                 )
               )
             ),
             React.createElement(
-              "ul",
-              { className: "nav nav-tabs"
-              },
+              "p",
+              null,
               React.createElement(
-                "li",
-                { className: Data.Params.ENUM.dft.Uint == 0 ? "active" : ""
+                "ul",
+                { className: "nav nav-tabs"
                 },
                 React.createElement(
-                  "a",
-                  { href: Data.Params.ENUM.dft.INODES.Href, onClick: this.handleClick
+                  "li",
+                  { className: Data.Params.ENUM.dft.Uint == 0 ? "active" : ""
                   },
-                  "Inodes"
-                )
-              ),
-              React.createElement(
-                "li",
-                { className: Data.Params.ENUM.dft.Uint == 1 ? "active" : ""
-                },
+                  React.createElement(
+                    "a",
+                    { href: Data.Params.ENUM.dft.INODES.Href, onClick: this.handleClick
+                    },
+                    "Inodes"
+                  )
+                ),
                 React.createElement(
-                  "a",
-                  { href: Data.Params.ENUM.dft.DFBYTES.Href, onClick: this.handleClick
+                  "li",
+                  { className: Data.Params.ENUM.dft.Uint == 1 ? "active" : ""
                   },
-                  "Bytes"
+                  React.createElement(
+                    "a",
+                    { href: Data.Params.ENUM.dft.DFBYTES.Href, onClick: this.handleClick
+                    },
+                    "Bytes"
+                  )
                 )
               )
             )
@@ -1088,7 +1096,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table stripe-table table-condensed panel-table"
+                { className: "table table-striped table-condensed"
                 },
                 React.createElement(
                   "thead",
@@ -1141,7 +1149,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table stripe-table table-condensed panel-table"
+                { className: "table table-striped table-condensed"
                 },
                 React.createElement(
                   "thead",
@@ -1313,17 +1321,20 @@ define(function (require) {
     panelps: function panelps(Data, rows) {
       return React.createElement(
         "div",
-        { className: "panel panel-default panel1"
-        },
+        null,
         React.createElement(
-          "label",
-          { className: "panel-heading btn-block"
-          },
+          "div",
+          null,
           React.createElement(
             "a",
-            { className: Data.Params.BOOL.configps.Value ? "btn-header-block active" : "btn-header-block", href: Data.Params.BOOL.configps.Href, onClick: this.handleClick
+            { href: Data.Params.BOOL.configps.Href, onClick: this.handleClick, className: "btn btn-block btn-link btn-left"
             },
-            "Processes"
+            React.createElement(
+              "span",
+              { className: Data.Params.BOOL.configps.Value ? "h4 bg-info" : "h4"
+              },
+              "Processes"
+            )
           )
         ),
         React.createElement(
@@ -1335,31 +1346,13 @@ define(function (require) {
             },
             React.createElement(
               "form",
-              { className: "form-inline inline-form border-bottom-form text-right", action: "/form/" + Data.Params.Query
+              { className: "form-inline text-right", action: "/form/" + Data.Params.Query
               },
               React.createElement("input", { className: "hidden-submit", type: "submit"
               }),
               React.createElement(
                 "div",
-                { className: "form-group-padded"
-                },
-                React.createElement(
-                  "div",
-                  { className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshps.InputErrd ? " has-warning" : "")
-                  },
-                  React.createElement(
-                    "span",
-                    { className: "input-group-addon"
-                    },
-                    "Refresh"
-                  ),
-                  React.createElement("input", { className: "form-control refresh-input", type: "text", placeholder: Data.Params.PERIOD.refreshps.Placeholder, name: "refreshps", value: Data.Params.PERIOD.refreshps.Input, onChange: this.handleChange
-                  })
-                )
-              ),
-              React.createElement(
-                "div",
-                { className: "form-group-padded"
+                { className: "btn-toolbar"
                 },
                 React.createElement(
                   "div",
@@ -1370,7 +1363,30 @@ define(function (require) {
                     { className: Data.Params.BOOL.hideps.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Params.BOOL.hideps.Href, onClick: this.handleClick
                     },
                     "Hidden"
-                  ),
+                  )
+                ),
+                React.createElement(
+                  "div",
+                  { className: "btn-group btn-group-sm", role: "group"
+                  },
+                  React.createElement(
+                    "div",
+                    { className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshps.InputErrd ? " has-warning" : "")
+                    },
+                    React.createElement(
+                      "span",
+                      { className: "input-group-addon"
+                      },
+                      "Refresh"
+                    ),
+                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.Params.PERIOD.refreshps.Placeholder, name: "refreshps", value: Data.Params.PERIOD.refreshps.Input, onChange: this.handleChange
+                    })
+                  )
+                ),
+                React.createElement(
+                  "div",
+                  { className: "btn-group btn-group-sm", role: "group"
+                  },
                   React.createElement(
                     "a",
                     { className: Data.PStable.PSnotDecreasable ? "btn btn-default disabled" : "btn btn-default ", href: Data.Params.LIMIT.psn.LessHref, onClick: this.handleClick
@@ -1397,7 +1413,7 @@ define(function (require) {
             },
             React.createElement(
               "table",
-              { className: "table stripe-table table-condensed panel-table table-hover"
+              { className: "table table-striped table-condensed table-hover"
               },
               React.createElement(
                 "thead",
@@ -1609,17 +1625,20 @@ define(function (require) {
     panelvg: function panelvg(Data, rows) {
       return React.createElement(
         "div",
-        { className: "panel panel-default panel1"
-        },
+        null,
         React.createElement(
-          "label",
-          { className: "panel-heading btn-block"
-          },
+          "div",
+          null,
           React.createElement(
             "a",
-            { className: Data.Params.BOOL.configvg.Value ? "btn-header-block active" : "btn-header-block", href: Data.Params.BOOL.configvg.Href, onClick: this.handleClick
+            { href: Data.Params.BOOL.configvg.Href, onClick: this.handleClick, className: "btn btn-block btn-link btn-left"
             },
-            "Vagrant global-status"
+            React.createElement(
+              "span",
+              { className: Data.Params.BOOL.configvg.Value ? "h4 bg-info" : "h4"
+              },
+              "Vagrant global-status"
+            )
           )
         ),
         React.createElement(
@@ -1631,31 +1650,13 @@ define(function (require) {
             },
             React.createElement(
               "form",
-              { className: "form-inline inline-form border-bottom-form text-right", action: "/form/" + Data.Params.Query
+              { className: "form-inline", action: "/form/" + Data.Params.Query
               },
               React.createElement("input", { className: "hidden-submit", type: "submit"
               }),
               React.createElement(
                 "div",
-                { className: "form-group-padded"
-                },
-                React.createElement(
-                  "div",
-                  { className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshvg.InputErrd ? " has-warning" : "")
-                  },
-                  React.createElement(
-                    "span",
-                    { className: "input-group-addon"
-                    },
-                    "Refresh"
-                  ),
-                  React.createElement("input", { className: "form-control refresh-input", type: "text", placeholder: Data.Params.PERIOD.refreshvg.Placeholder, name: "refreshvg", value: Data.Params.PERIOD.refreshvg.Input, onChange: this.handleChange
-                  })
-                )
-              ),
-              React.createElement(
-                "div",
-                { className: "form-group-padded"
+                { className: "btn-toolbar"
                 },
                 React.createElement(
                   "div",
@@ -1666,6 +1667,24 @@ define(function (require) {
                     { className: Data.Params.BOOL.hidevg.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Params.BOOL.hidevg.Href, onClick: this.handleClick
                     },
                     "Hidden"
+                  )
+                ),
+                React.createElement(
+                  "div",
+                  { className: "btn-group btn-group-sm", role: "group"
+                  },
+                  React.createElement(
+                    "div",
+                    { className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshvg.InputErrd ? " has-warning" : "")
+                    },
+                    React.createElement(
+                      "span",
+                      { className: "input-group-addon"
+                      },
+                      "Refresh"
+                    ),
+                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.Params.PERIOD.refreshvg.Placeholder, name: "refreshvg", value: Data.Params.PERIOD.refreshvg.Input, onChange: this.handleChange
+                    })
                   )
                 )
               )
@@ -1681,7 +1700,7 @@ define(function (require) {
             },
             React.createElement(
               "table",
-              { id: "vgtable", className: "table stripe-table table-condensed panel-table"
+              { id: "vgtable", className: "table table-striped table-condensed"
               },
               React.createElement(
                 "thead",

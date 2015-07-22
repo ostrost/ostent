@@ -124,7 +124,12 @@
         return this.handle(e, false, '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1));
       },
       handleClick: function(e) {
-        return this.handle(e, true, e.target.getAttribute('href'));
+        var href;
+        href = e.target.getAttribute('href');
+        if (href == null) {
+          href = $(e.target).parent().get(0).getAttribute('href');
+        }
+        return this.handle(e, true, href);
       },
       handle: function(e, ps, href) {
         if (ps) {
