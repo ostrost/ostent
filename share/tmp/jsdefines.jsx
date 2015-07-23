@@ -16,13 +16,13 @@ define(function(require) {
 >); },
 		panelmem:        function(Data, rows)  { return (<div
   ><div
-    ><a     href={Data.Params.BOOL.configmem.Href} onClick={this.handleClick} className="btn btn-block btn-link btn-left"
+    ><a     href={Data.Params.BOOL.configmem.Href} onClick={this.handleClick} className="btn-block"
       ><span  className={Data.Params.BOOL.configmem.Value ? "h4 bg-info" : "h4"}
         >Memory</span
       ></a
     ></div
   ><div
-    ><div id="memconfig"  className={Data.Params.BOOL.configmem.Value ? "" : "collapse-hidden"}
+    ><div id="memconfig"  className={Data.Params.BOOL.configmem.Value ? "config-margintop" : "config-margintop collapse-hidden"}
       ><form className="form-inline"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
@@ -46,7 +46,7 @@ define(function(require) {
   ></div
 ><div
   ><div  className={Data.Params.BOOL.hidemem.Value ? "collapse-hidden" : ""}
-    ><table className="table table-striped table-condensed"
+    ><table className="table table-striped"
   ><thead
     ><tr
       ><th
@@ -117,13 +117,13 @@ define(function(require) {
 >); },
 		panelif:         function(Data,r1,r2,r3){ return (<div
   ><div
-    ><a     href={Data.Params.BOOL.configif.Href} onClick={this.handleClick} className="btn btn-block btn-link btn-left"
+    ><a     href={Data.Params.BOOL.configif.Href} onClick={this.handleClick} className="btn-block"
       ><span  className={Data.Params.BOOL.configif.Value ? "h4 bg-info" : "h4"}
         >{Data.Params.ENUM.ift.Title}</span
       ></a
     ></div
   ><div
-    ><div id="ifconfig"  className={Data.Params.BOOL.configif.Value ? "" : "collapse-hidden"}
+    ><div id="ifconfig"  className={Data.Params.BOOL.configif.Value ? "config-margintop" : "config-margintop collapse-hidden"}
       ><form className="form-inline"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
@@ -143,28 +143,26 @@ define(function(require) {
 ></div
         ></div
       ></form
-    ><p
-      ><ul className="nav nav-tabs"
-        ><li  className={(Data.Params.ENUM.ift.Uint == 0) ? "active" : ""}
-          ><a href={Data.Params.ENUM.ift.PACKETS.Href} onClick={this.handleClick}
+    ><ul className="nav nav-tabs config-margintop"
+      ><li  className={(Data.Params.ENUM.ift.Uint == 0) ? "active" : ""}
+        ><a href={Data.Params.ENUM.ift.PACKETS.Href} onClick={this.handleClick}
   >Packets</a
 ></li
-        ><li  className={(Data.Params.ENUM.ift.Uint == 1) ? "active" : ""}
-          ><a href={Data.Params.ENUM.ift.ERRORS.Href} onClick={this.handleClick}
+      ><li  className={(Data.Params.ENUM.ift.Uint == 1) ? "active" : ""}
+        ><a href={Data.Params.ENUM.ift.ERRORS.Href} onClick={this.handleClick}
   >Errors</a
 ></li
-        ><li  className={(Data.Params.ENUM.ift.Uint == 2) ? "active" : ""}
-          ><a href={Data.Params.ENUM.ift.IFBYTES.Href} onClick={this.handleClick}
+      ><li  className={(Data.Params.ENUM.ift.Uint == 2) ? "active" : ""}
+        ><a href={Data.Params.ENUM.ift.IFBYTES.Href} onClick={this.handleClick}
   >Bytes</a
 ></li
-        ></ul
-      ></p
+      ></ul
     ></div
   ></div
 ><div
   ><div  className={Data.Params.BOOL.hideif.Value ? "collapse-hidden" : ""}
     ><div  className={(Data.Params.ENUM.ift.Uint == 0) ? "" : "collapse-hidden"}
-      ><table className="table table-striped table-condensed"
+      ><table className="table table-striped"
   ><thead
     ><tr
       ><th
@@ -192,7 +190,7 @@ define(function(require) {
   ></table
 ></div
     ><div  className={(Data.Params.ENUM.ift.Uint == 1) ? "" : "collapse-hidden"}
-      ><table className="table table-striped table-condensed"
+      ><table className="table table-striped"
   ><thead
     ><tr
       ><th
@@ -220,7 +218,7 @@ define(function(require) {
   ></table
 ></div
     ><div  className={(Data.Params.ENUM.ift.Uint == 2) ? "" : "collapse-hidden"}
-      ><table className="table table-striped table-condensed"
+      ><table className="table table-striped"
   ><thead
     ><tr
       ><th
@@ -279,13 +277,13 @@ define(function(require) {
 >); },
 		panelcpu:        function(Data, rows)  { return (<div
   ><div
-    ><a     href={Data.Params.BOOL.configcpu.Href} onClick={this.handleClick} className="btn btn-block btn-link btn-left"
+    ><a     href={Data.Params.BOOL.configcpu.Href} onClick={this.handleClick} className="btn-block"
       ><span  className={Data.Params.BOOL.configcpu.Value ? "h4 bg-info" : "h4"}
         >CPU</span
       ></a
     ></div
   ><div
-    ><div id="cpuconfig"  className={Data.Params.BOOL.configcpu.Value ? "" : "collapse-hidden"}
+    ><div id="cpuconfig"  className={Data.Params.BOOL.configcpu.Value ? "config-margintop" : "config-margintop collapse-hidden"}
       ><form className="form-inline"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
@@ -309,7 +307,7 @@ define(function(require) {
   ></div
 ><div
   ><div  className={Data.Params.BOOL.hidecpu.Value ? "collapse-hidden" : ""}
-    ><table className="table table-striped table-condensed"
+    ><table className="table table-striped"
   ><thead
     ><tr
       ><th
@@ -380,13 +378,13 @@ define(function(require) {
 >); },
 		paneldf:         function(Data,r1,r2)  { return (<div
   ><div
-    ><a     href={Data.Params.BOOL.configdf.Href} onClick={this.handleClick} className="btn btn-block btn-link btn-left"
+    ><a     href={Data.Params.BOOL.configdf.Href} onClick={this.handleClick} className="btn-block"
       ><span  className={Data.Params.BOOL.configdf.Value ? "h4 bg-info" : "h4"}
         >{Data.Params.ENUM.dft.Title}</span
       ></a
     ></div
   ><div
-    ><div id="dfconfig"  className={Data.Params.BOOL.configdf.Value ? "" : "collapse-hidden"}
+    ><div id="dfconfig"  className={Data.Params.BOOL.configdf.Value ? "config-margintop" : "config-margintop collapse-hidden"}
       ><form className="form-inline"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
@@ -406,24 +404,22 @@ define(function(require) {
 ></div
         ></div
       ></form
-    ><p
-      ><ul className="nav nav-tabs"
-        ><li  className={(Data.Params.ENUM.dft.Uint == 0) ? "active" : ""}
-          ><a href={Data.Params.ENUM.dft.INODES.Href} onClick={this.handleClick}
+    ><ul className="nav nav-tabs config-margintop"
+      ><li  className={(Data.Params.ENUM.dft.Uint == 0) ? "active" : ""}
+        ><a href={Data.Params.ENUM.dft.INODES.Href} onClick={this.handleClick}
   >Inodes</a
 ></li
-        ><li  className={(Data.Params.ENUM.dft.Uint == 1) ? "active" : ""}
-          ><a href={Data.Params.ENUM.dft.DFBYTES.Href} onClick={this.handleClick}
+      ><li  className={(Data.Params.ENUM.dft.Uint == 1) ? "active" : ""}
+        ><a href={Data.Params.ENUM.dft.DFBYTES.Href} onClick={this.handleClick}
   >Bytes</a
 ></li
-        ></ul
-      ></p
+      ></ul
     ></div
   ></div
 ><div
   ><div  className={Data.Params.BOOL.hidedf.Value ? "collapse-hidden" : ""}
     ><div  className={(Data.Params.ENUM.dft.Uint == 0) ? "" : "collapse-hidden"}
-      ><table className="table table-striped table-condensed"
+      ><table className="table table-striped"
   ><thead
     ><tr
       ><th className="header"
@@ -443,7 +439,7 @@ define(function(require) {
   ></table
 ></div
     ><div  className={(Data.Params.ENUM.dft.Uint == 1) ? "" : "collapse-hidden"}
-      ><table className="table table-striped table-condensed"
+      ><table className="table table-striped"
   ><thead
     ><tr
       ><th className="header "
@@ -516,13 +512,13 @@ define(function(require) {
 >); },
 		panelps:         function(Data, rows)  { return (<div
   ><div
-    ><a     href={Data.Params.BOOL.configps.Href} onClick={this.handleClick} className="btn btn-block btn-link btn-left"
+    ><a     href={Data.Params.BOOL.configps.Href} onClick={this.handleClick} className="btn-block"
       ><span  className={Data.Params.BOOL.configps.Value ? "h4 bg-info" : "h4"}
         >Processes</span
       ></a
     ></div
   ><div
-    ><div id="psconfig"  className={Data.Params.BOOL.configps.Value ? "" : "collapse-hidden"}
+    ><div id="psconfig"  className={Data.Params.BOOL.configps.Value ? "config-margintop" : "config-margintop collapse-hidden"}
       ><form className="form-inline text-right"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
@@ -530,6 +526,10 @@ define(function(require) {
         ><div className="btn-group btn-group-sm" role="group"
           ><a  className={Data.Params.BOOL.hideps.Value ? "btn btn-default active" : "btn btn-default "}  href={Data.Params.BOOL.hideps.Href} onClick={this.handleClick}
             >Hidden</a
+          ><a  className={Data.PStable.PSnotDecreasable ? "btn btn-default disabled" : "btn btn-default "}  href={Data.Params.LIMIT.psn.LessHref} onClick={this.handleClick}
+            >-</a
+          ><a  className={Data.PStable.PSnotExpandable ? "btn btn-default disabled" : "btn btn-default "}  href={Data.Params.LIMIT.psn.MoreHref} onClick={this.handleClick}
+            >{Data.PStable.PSplusText}</a
           ></div
         ><div className="btn-group btn-group-sm" role="group"
           ><div  className={"input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshps.InputErrd ? " has-warning" : "")}
@@ -538,19 +538,13 @@ define(function(require) {
   ><input className="form-control refresh-input width-fourem" type="text" placeholder={Data.Params.PERIOD.refreshps.Placeholder}  name="refreshps"  value={Data.Params.PERIOD.refreshps.Input} onChange={this.handleChange}
   ></input></div
 ></div
-        ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.PStable.PSnotDecreasable ? "btn btn-default disabled" : "btn btn-default "}  href={Data.Params.LIMIT.psn.LessHref} onClick={this.handleClick}
-            >-</a
-          ><a  className={Data.PStable.PSnotExpandable ? "btn btn-default disabled" : "btn btn-default "}  href={Data.Params.LIMIT.psn.MoreHref} onClick={this.handleClick}
-            >{Data.PStable.PSplusText}</a
-          ></div
         ></div
       ></form
     ></div
   ></div
 ><div
   ><div  className={Data.Params.BOOL.hideps.Value ? "collapse-hidden" : ""}
-    ><table className="table table-striped table-condensed table-hover"
+    ><table className="table table-striped table-hover"
   ><thead
     ><tr
       ><th className="header text-right"
@@ -646,13 +640,13 @@ define(function(require) {
 >); },
 		panelvg:         function(Data, rows)  { return (<div
   ><div
-    ><a     href={Data.Params.BOOL.configvg.Href} onClick={this.handleClick} className="btn btn-block btn-link btn-left"
+    ><a     href={Data.Params.BOOL.configvg.Href} onClick={this.handleClick} className="btn-block"
       ><span  className={Data.Params.BOOL.configvg.Value ? "h4 bg-info" : "h4"}
         >Vagrant global-status</span
       ></a
     ></div
   ><div
-    ><div id="vgconfig"  className={Data.Params.BOOL.configvg.Value ? "" : "collapse-hidden"}
+    ><div id="vgconfig"  className={Data.Params.BOOL.configvg.Value ? "config-margintop" : "config-margintop collapse-hidden"}
       ><form className="form-inline"  action={"/form/"+Data.Params.Query}
         ><input className="hidden-submit" type="submit"
         ></input
@@ -674,7 +668,7 @@ define(function(require) {
   ></div
 ><div
   ><div  className={Data.Params.BOOL.hidevg.Value ? "collapse-hidden" : ""}
-    ><table id="vgtable" className="table table-striped table-condensed"
+    ><table id="vgtable" className="table table-striped"
   ><thead
     ><tr
       ><th

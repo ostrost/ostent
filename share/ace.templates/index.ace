@@ -13,59 +13,55 @@ html
     script type=text/javascript charset=utf-8 src=/js/requirejs/2.1.18/require.min.js data-main=/js/{{if .TAGGEDbin}}min/index.min.js{{else}}src/milk/index.js{{end}}
 
   body
-    nav.navbar.navbar-default.navbar-fixed-top role=navigation
+    nav.navbar.navbar-default.navbar-static-top role=navigation
       div.container-fluid
-        div.dropdown.navbar-header
+        div.navbar-header.col-md-1.padding-leftless
           button.navbar-toggle.collapsed type=button data-toggle=collapse data-target=#navbar-collapse
             span.sr-only Toggle navigation
             span.icon-bar
             span.icon-bar
             span.icon-bar
-          a.dropdown-toggle.navbar-brand id=dropdownbrand data-toggle=dropdown aria-expanded=true href=/
-            div#hostname {{.Data.Hostname}}
-          ul.dropdown-menu role=menu aria-labelledby=dropdownbrand
-            li.dropdown-header role=presentation running
-            li role=presentation
-              a.dropdown-text {{.Data.DISTRIB}}
+          a.navbar-brand.clip#hn style="max-width: 12ch" href=/ {{.Data.Hostname}}
 
         div.collapse.navbar-collapse#navbar-collapse
           ul.nav.navbar-nav
-            li.navbar-text#ip {{.Data.IP}}
-            li.dropdown
-              div.navbar-text.dropdown-toggle#dropdownla data-toggle=dropdown aria-expanded=true
-                div#la {{.Data.LA}}
-              ul.dropdown-menu role=menu aria-labelledby=dropdownla
-                li.dropdown-header role=presentation uptime
-                li role=presentation
-                  a.dropdown-text#uptime {{.Data.Uptime}}
+            li.active
+              a href=https://www.ostrost.com/ostent/releases/latest title="Running version {{.Data.VERSION}}"
+                | ostent
+                / | &nbsp;
+                / span.badge {{.Data.VERSION}}
+            li.navbar-text.navbar-text-marginless.first-text
+              code.navbar-codeline
+                | os {{.Data.DISTRIB}}
+            li.navbar-text.navbar-text-marginless
+              code.navbar-codeline
+                | ip&nbsp;
+                span#ip {{.Data.IP}}
+            li.navbar-text.navbar-text-marginless
+              code.navbar-codeline
+                | up&nbsp;
+                span#up {{.Data.Uptime}}
+            li.navbar-text.navbar-text-marginless
+              code.navbar-codeline
+                | la&nbsp;
+                span#la {{.Data.LA}}
 
-          ul.nav.navbar-nav.navbar-right
-            li.dropdown.active
-              a.dropdown-toggle#dropdownversion data-toggle=dropdown aria-expanded=true href=https://www.ostrost.com/ostent/releases/latest OSTENT
-              ul.dropdown-menu role=menu aria-labelledby=dropdownversion
-                li.dropdown-header role=presentation version
-                li role=presentation
-                  a href=https://www.ostrost.com/ostent/releases/latest {{.Data.VERSION}}
-
-    div.container-fluid.padding-topseventysh
+    div.container-fluid
       div.row
-        div.col-md-3#mem-table
+        div.col-md-4.col-md-offset-1#mem-table
           {{template "defines::define_panelmem" .}}
-        div.col-md-3#if-table
-          {{template "defines::define_panelif" .}}
-        div.col-md-3#cpu-table
-          {{template "defines::define_panelcpu" .}}
-        div.col-md-3#df-table
+        div.col-md-4.col-md-offset-1#df-table
           {{template "defines::define_paneldf" .}}
-
-    div.container-fluid
       div.row
-        div.col-md-8.col-md-offset-2#ps-table
+        div.col-md-4.col-md-offset-1#cpu-table
+          {{template "defines::define_panelcpu" .}}
+        div.col-md-4.col-md-offset-1#if-table
+          {{template "defines::define_panelif" .}}
+      div.row
+        div.col-md-9.col-md-offset-1#ps-table
           {{template "defines::define_panelps" .}}
-
-    div.container-fluid
       div.row
-        div.col-md-8.col-md-offset-2#vg-table
+        div.col-md-9.col-md-offset-1#vg-table
           {{template "defines::define_panelvg" .}}
 
     = javascript

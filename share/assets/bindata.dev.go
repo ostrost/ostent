@@ -8,8 +8,7 @@
 // js/src/milk/build.js
 // js/src/milk/index.js
 // js/src/vendor/bootstrap/3.3.5-collapse/bootstrap.min.js
-// js/src/vendor/headroom/0.7.0/headroom.min.js
-// js/src/vendor/jquery/2.1.4/jquery-2.1.4.min.js
+// js/src/vendor/jquery/2.1.4/jquery.min.js
 // js/src/vendor/react/0.13.3/react.min.js
 // js/src/vendor/requirejs-domready/2.0.1/domReady.js
 // robots.txt
@@ -185,28 +184,10 @@ func jsSrcVendorBootstrap335CollapseBootstrapMinJs() (*asset, error) {
 	return a, err
 }
 
-// jsSrcVendorHeadroom070HeadroomMinJs reads file data from disk. It returns an error on failure.
-func jsSrcVendorHeadroom070HeadroomMinJs() (*asset, error) {
-	path := filepath.Join(rootDir, "js/src/vendor/headroom/0.7.0/headroom.min.js")
-	name := "js/src/vendor/headroom/0.7.0/headroom.min.js"
-	bytes, err := bindataRead(path, name)
-	if err != nil {
-		return nil, err
-	}
-
-	fi, err := os.Stat(path)
-	if err != nil {
-		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
-	}
-
-	a := &asset{bytes: bytes, info: fi}
-	return a, err
-}
-
-// jsSrcVendorJquery214Jquery214MinJs reads file data from disk. It returns an error on failure.
-func jsSrcVendorJquery214Jquery214MinJs() (*asset, error) {
-	path := filepath.Join(rootDir, "js/src/vendor/jquery/2.1.4/jquery-2.1.4.min.js")
-	name := "js/src/vendor/jquery/2.1.4/jquery-2.1.4.min.js"
+// jsSrcVendorJquery214JqueryMinJs reads file data from disk. It returns an error on failure.
+func jsSrcVendorJquery214JqueryMinJs() (*asset, error) {
+	path := filepath.Join(rootDir, "js/src/vendor/jquery/2.1.4/jquery.min.js")
+	name := "js/src/vendor/jquery/2.1.4/jquery.min.js"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
@@ -335,8 +316,7 @@ var _bindata = map[string]func() (*asset, error){
 	"js/src/milk/build.js": jsSrcMilkBuildJs,
 	"js/src/milk/index.js": jsSrcMilkIndexJs,
 	"js/src/vendor/bootstrap/3.3.5-collapse/bootstrap.min.js": jsSrcVendorBootstrap335CollapseBootstrapMinJs,
-	"js/src/vendor/headroom/0.7.0/headroom.min.js": jsSrcVendorHeadroom070HeadroomMinJs,
-	"js/src/vendor/jquery/2.1.4/jquery-2.1.4.min.js": jsSrcVendorJquery214Jquery214MinJs,
+	"js/src/vendor/jquery/2.1.4/jquery.min.js": jsSrcVendorJquery214JqueryMinJs,
 	"js/src/vendor/react/0.13.3/react.min.js": jsSrcVendorReact0133ReactMinJs,
 	"js/src/vendor/requirejs-domready/2.0.1/domReady.js": jsSrcVendorRequirejsDomready201DomreadyJs,
 	"robots.txt": robotsTxt,
@@ -415,15 +395,9 @@ var _bintree = &bintree{nil, map[string]*bintree{
 						}},
 					}},
 				}},
-				"headroom": &bintree{nil, map[string]*bintree{
-					"0.7.0": &bintree{nil, map[string]*bintree{
-						"headroom.min.js": &bintree{jsSrcVendorHeadroom070HeadroomMinJs, map[string]*bintree{
-						}},
-					}},
-				}},
 				"jquery": &bintree{nil, map[string]*bintree{
 					"2.1.4": &bintree{nil, map[string]*bintree{
-						"jquery-2.1.4.min.js": &bintree{jsSrcVendorJquery214Jquery214MinJs, map[string]*bintree{
+						"jquery.min.js": &bintree{jsSrcVendorJquery214JqueryMinJs, map[string]*bintree{
 						}},
 					}},
 				}},

@@ -50,7 +50,7 @@ define(function (require) {
           null,
           React.createElement(
             "a",
-            { href: Data.Params.BOOL.configmem.Href, onClick: this.handleClick, className: "btn btn-block btn-link btn-left"
+            { href: Data.Params.BOOL.configmem.Href, onClick: this.handleClick, className: "btn-block"
             },
             React.createElement(
               "span",
@@ -65,7 +65,7 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { id: "memconfig", className: Data.Params.BOOL.configmem.Value ? "" : "collapse-hidden"
+            { id: "memconfig", className: Data.Params.BOOL.configmem.Value ? "config-margintop" : "config-margintop collapse-hidden"
             },
             React.createElement(
               "form",
@@ -125,7 +125,7 @@ define(function (require) {
             },
             React.createElement(
               "table",
-              { className: "table table-striped table-condensed"
+              { className: "table table-striped"
               },
               React.createElement(
                 "thead",
@@ -303,7 +303,7 @@ define(function (require) {
           null,
           React.createElement(
             "a",
-            { href: Data.Params.BOOL.configif.Href, onClick: this.handleClick, className: "btn btn-block btn-link btn-left"
+            { href: Data.Params.BOOL.configif.Href, onClick: this.handleClick, className: "btn-block"
             },
             React.createElement(
               "span",
@@ -318,7 +318,7 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { id: "ifconfig", className: Data.Params.BOOL.configif.Value ? "" : "collapse-hidden"
+            { id: "ifconfig", className: Data.Params.BOOL.configif.Value ? "config-margintop" : "config-margintop collapse-hidden"
             },
             React.createElement(
               "form",
@@ -368,44 +368,40 @@ define(function (require) {
               )
             ),
             React.createElement(
-              "p",
-              null,
+              "ul",
+              { className: "nav nav-tabs config-margintop"
+              },
               React.createElement(
-                "ul",
-                { className: "nav nav-tabs"
+                "li",
+                { className: Data.Params.ENUM.ift.Uint == 0 ? "active" : ""
                 },
                 React.createElement(
-                  "li",
-                  { className: Data.Params.ENUM.ift.Uint == 0 ? "active" : ""
+                  "a",
+                  { href: Data.Params.ENUM.ift.PACKETS.Href, onClick: this.handleClick
                   },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.ENUM.ift.PACKETS.Href, onClick: this.handleClick
-                    },
-                    "Packets"
-                  )
-                ),
+                  "Packets"
+                )
+              ),
+              React.createElement(
+                "li",
+                { className: Data.Params.ENUM.ift.Uint == 1 ? "active" : ""
+                },
                 React.createElement(
-                  "li",
-                  { className: Data.Params.ENUM.ift.Uint == 1 ? "active" : ""
+                  "a",
+                  { href: Data.Params.ENUM.ift.ERRORS.Href, onClick: this.handleClick
                   },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.ENUM.ift.ERRORS.Href, onClick: this.handleClick
-                    },
-                    "Errors"
-                  )
-                ),
+                  "Errors"
+                )
+              ),
+              React.createElement(
+                "li",
+                { className: Data.Params.ENUM.ift.Uint == 2 ? "active" : ""
+                },
                 React.createElement(
-                  "li",
-                  { className: Data.Params.ENUM.ift.Uint == 2 ? "active" : ""
+                  "a",
+                  { href: Data.Params.ENUM.ift.IFBYTES.Href, onClick: this.handleClick
                   },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.ENUM.ift.IFBYTES.Href, onClick: this.handleClick
-                    },
-                    "Bytes"
-                  )
+                  "Bytes"
                 )
               )
             )
@@ -424,7 +420,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table table-striped table-condensed"
+                { className: "table table-striped"
                 },
                 React.createElement(
                   "thead",
@@ -500,7 +496,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table table-striped table-condensed"
+                { className: "table table-striped"
                 },
                 React.createElement(
                   "thead",
@@ -576,7 +572,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table table-striped table-condensed"
+                { className: "table table-striped"
                 },
                 React.createElement(
                   "thead",
@@ -726,7 +722,7 @@ define(function (require) {
           null,
           React.createElement(
             "a",
-            { href: Data.Params.BOOL.configcpu.Href, onClick: this.handleClick, className: "btn btn-block btn-link btn-left"
+            { href: Data.Params.BOOL.configcpu.Href, onClick: this.handleClick, className: "btn-block"
             },
             React.createElement(
               "span",
@@ -741,7 +737,7 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { id: "cpuconfig", className: Data.Params.BOOL.configcpu.Value ? "" : "collapse-hidden"
+            { id: "cpuconfig", className: Data.Params.BOOL.configcpu.Value ? "config-margintop" : "config-margintop collapse-hidden"
             },
             React.createElement(
               "form",
@@ -801,7 +797,7 @@ define(function (require) {
             },
             React.createElement(
               "table",
-              { className: "table table-striped table-condensed"
+              { className: "table table-striped"
               },
               React.createElement(
                 "thead",
@@ -986,7 +982,7 @@ define(function (require) {
           null,
           React.createElement(
             "a",
-            { href: Data.Params.BOOL.configdf.Href, onClick: this.handleClick, className: "btn btn-block btn-link btn-left"
+            { href: Data.Params.BOOL.configdf.Href, onClick: this.handleClick, className: "btn-block"
             },
             React.createElement(
               "span",
@@ -1001,7 +997,7 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { id: "dfconfig", className: Data.Params.BOOL.configdf.Value ? "" : "collapse-hidden"
+            { id: "dfconfig", className: Data.Params.BOOL.configdf.Value ? "config-margintop" : "config-margintop collapse-hidden"
             },
             React.createElement(
               "form",
@@ -1051,33 +1047,29 @@ define(function (require) {
               )
             ),
             React.createElement(
-              "p",
-              null,
+              "ul",
+              { className: "nav nav-tabs config-margintop"
+              },
               React.createElement(
-                "ul",
-                { className: "nav nav-tabs"
+                "li",
+                { className: Data.Params.ENUM.dft.Uint == 0 ? "active" : ""
                 },
                 React.createElement(
-                  "li",
-                  { className: Data.Params.ENUM.dft.Uint == 0 ? "active" : ""
+                  "a",
+                  { href: Data.Params.ENUM.dft.INODES.Href, onClick: this.handleClick
                   },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.ENUM.dft.INODES.Href, onClick: this.handleClick
-                    },
-                    "Inodes"
-                  )
-                ),
+                  "Inodes"
+                )
+              ),
+              React.createElement(
+                "li",
+                { className: Data.Params.ENUM.dft.Uint == 1 ? "active" : ""
+                },
                 React.createElement(
-                  "li",
-                  { className: Data.Params.ENUM.dft.Uint == 1 ? "active" : ""
+                  "a",
+                  { href: Data.Params.ENUM.dft.DFBYTES.Href, onClick: this.handleClick
                   },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.ENUM.dft.DFBYTES.Href, onClick: this.handleClick
-                    },
-                    "Bytes"
-                  )
+                  "Bytes"
                 )
               )
             )
@@ -1096,7 +1088,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table table-striped table-condensed"
+                { className: "table table-striped"
                 },
                 React.createElement(
                   "thead",
@@ -1149,7 +1141,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table table-striped table-condensed"
+                { className: "table table-striped"
                 },
                 React.createElement(
                   "thead",
@@ -1327,7 +1319,7 @@ define(function (require) {
           null,
           React.createElement(
             "a",
-            { href: Data.Params.BOOL.configps.Href, onClick: this.handleClick, className: "btn btn-block btn-link btn-left"
+            { href: Data.Params.BOOL.configps.Href, onClick: this.handleClick, className: "btn-block"
             },
             React.createElement(
               "span",
@@ -1342,7 +1334,7 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { id: "psconfig", className: Data.Params.BOOL.configps.Value ? "" : "collapse-hidden"
+            { id: "psconfig", className: Data.Params.BOOL.configps.Value ? "config-margintop" : "config-margintop collapse-hidden"
             },
             React.createElement(
               "form",
@@ -1363,6 +1355,18 @@ define(function (require) {
                     { className: Data.Params.BOOL.hideps.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Params.BOOL.hideps.Href, onClick: this.handleClick
                     },
                     "Hidden"
+                  ),
+                  React.createElement(
+                    "a",
+                    { className: Data.PStable.PSnotDecreasable ? "btn btn-default disabled" : "btn btn-default ", href: Data.Params.LIMIT.psn.LessHref, onClick: this.handleClick
+                    },
+                    "-"
+                  ),
+                  React.createElement(
+                    "a",
+                    { className: Data.PStable.PSnotExpandable ? "btn btn-default disabled" : "btn btn-default ", href: Data.Params.LIMIT.psn.MoreHref, onClick: this.handleClick
+                    },
+                    Data.PStable.PSplusText
                   )
                 ),
                 React.createElement(
@@ -1382,23 +1386,6 @@ define(function (require) {
                     React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.Params.PERIOD.refreshps.Placeholder, name: "refreshps", value: Data.Params.PERIOD.refreshps.Input, onChange: this.handleChange
                     })
                   )
-                ),
-                React.createElement(
-                  "div",
-                  { className: "btn-group btn-group-sm", role: "group"
-                  },
-                  React.createElement(
-                    "a",
-                    { className: Data.PStable.PSnotDecreasable ? "btn btn-default disabled" : "btn btn-default ", href: Data.Params.LIMIT.psn.LessHref, onClick: this.handleClick
-                    },
-                    "-"
-                  ),
-                  React.createElement(
-                    "a",
-                    { className: Data.PStable.PSnotExpandable ? "btn btn-default disabled" : "btn btn-default ", href: Data.Params.LIMIT.psn.MoreHref, onClick: this.handleClick
-                    },
-                    Data.PStable.PSplusText
-                  )
                 )
               )
             )
@@ -1413,7 +1400,7 @@ define(function (require) {
             },
             React.createElement(
               "table",
-              { className: "table table-striped table-condensed table-hover"
+              { className: "table table-striped table-hover"
               },
               React.createElement(
                 "thead",
@@ -1631,7 +1618,7 @@ define(function (require) {
           null,
           React.createElement(
             "a",
-            { href: Data.Params.BOOL.configvg.Href, onClick: this.handleClick, className: "btn btn-block btn-link btn-left"
+            { href: Data.Params.BOOL.configvg.Href, onClick: this.handleClick, className: "btn-block"
             },
             React.createElement(
               "span",
@@ -1646,7 +1633,7 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { id: "vgconfig", className: Data.Params.BOOL.configvg.Value ? "" : "collapse-hidden"
+            { id: "vgconfig", className: Data.Params.BOOL.configvg.Value ? "config-margintop" : "config-margintop collapse-hidden"
             },
             React.createElement(
               "form",
@@ -1700,7 +1687,7 @@ define(function (require) {
             },
             React.createElement(
               "table",
-              { id: "vgtable", className: "table table-striped table-condensed"
+              { id: "vgtable", className: "table table-striped"
               },
               React.createElement(
                 "thead",

@@ -1,27 +1,30 @@
 // -*- eval: (rainbow-mode) -*-
 
-@import 'bootstrap-3.3.5.scss';
+@import 'vendor/bootstrap-3.3.5/less/bootstrap.less';
+@import 'vendor/bootstrap-3.3.5/less/theme.less';
 
-body { font-size: 12px; }
+@navbar-height: 34px;
 
-// https://stackoverflow.com/q/20648451
-.headroom {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  transition: all .2s ease-in-out;
+.config-margintop { margin-top: (@line-height-computed / 2); }
+
+.padding-leftless { padding-left: 0; }
+
+.navbar-text-marginless:not(:last-child) { margin-right: 0; }
+.navbar-text-marginless:not(.first-text) { margin-left:  0; }
+
+.navbar-codeline { // pre/code mix & line-height not to heighten the navbar
+  line-height: 1;
+  white-space: pre;
+  color: @pre-color;
+  background-color: @pre-bg;
 }
-.headroom--pinned   { top: 0; }
-.headroom--unpinned { top: -100px; }
 
-.padding-topseventysh {
-  // 51 for navbar(50+1(border)) (depends on theme) + regular 20 padding-top
-  padding-top: 71px;
+.unit { // pre colors
+  color: @pre-color;
+  background-color: @pre-bg;
 }
 
-.dropdown:hover > ul.dropdown-menu { display: block; }
-.dropdown-menu > li > a.dropdown-text { cursor: default; }
-
-label.clip {
+.clip {
   cursor: pointer;
   margin-bottom: 0px;
   font-weight: normal;
@@ -29,7 +32,7 @@ label.clip {
   white-space: nowrap;
   overflow: hidden;
 }
-.collapse-checkbox:checked + label.clip {
+.collapse-checkbox:checked + .clip {
   text-decoration: overline;
   word-wrap: break-word;
   word-break: break-all;
@@ -48,13 +51,6 @@ label.clip {
 
 .nowrap { white-space: nowrap; }
 
-#generic-uptime { white-space: pre; }
-
-.unit { // "code" colors
-  color:            #333;
-  background-color: #f4f4f4;
-}
-
 table thead th { font-weight: normal; }
 table .bold    { font-weight: bold;   }
 
@@ -62,7 +58,7 @@ table thead tr .header a {
   color: black;
   &:hover {
     // &:extend(a); &:extend(a:hover);
-    color: #428bca;
+    color: @link-color;
     text-decoration: none;
   }
   &.state.current {
@@ -72,15 +68,6 @@ table thead tr .header a {
     vertical-align: middle; // this DOES NOT make the line 1px higher
   }
 }
-
-// .badge-default { &:extend(.badge); background:
-.badge-primary { &:extend(.badge); background: #428bca; }
-.badge-success { &:extend(.badge); background: #5cb85c; }
-.badge-info    { &:extend(.badge); background: #5bc0de; }
-.badge-warning { &:extend(.badge); background: #f0ad4e; }
-.badge-danger  { &:extend(.badge); background: #d9534f; }
-
-.btn-left { text-align: left; }
 
 .form-inline .input-group > .form-control.width-fourem { width: 4em; } // refresh input
 

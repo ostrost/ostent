@@ -51,7 +51,7 @@
   {{end}}
 
 = content define_ifbytes_table
-  table.table.table-striped.table-condensed
+  table.table.table-striped
     thead
       tr
         th Interface
@@ -75,7 +75,7 @@
       {{template "defines::define_ifbytes_rows" .}}
 
 = content define_ifpackets_table
-  table.table.table-striped.table-condensed
+  table.table.table-striped
     thead
       tr
         th Interface
@@ -91,7 +91,7 @@
       {{template "defines::define_ifpackets_rows" .}}
 
 = content define_iferrors_table
-  table.table.table-striped.table-condensed
+  table.table.table-striped
     thead
       tr
         th Interface
@@ -109,11 +109,11 @@
 = content define_panelif
   div
     div
-      | <a    {{.Data.Params.BOOL.configif.ToggleHrefAttr}} {{class}}="btn btn-block btn-link btn-left">
+      | <a    {{.Data.Params.BOOL.configif.ToggleHrefAttr}} {{class}}="btn-block">
       | <span {{.Data.Params.BOOL.configif.BoolParamClassAttr "h4 bg-info" "h4"}}>{{.Data.Params.ENUM.ift.Title}}</span></a>
 
     div
-      | <div id="ifconfig" {{.Data.Params.BOOL.configif.BoolParamClassAttr "" "collapse-hidden"}}>
+      | <div id="ifconfig" {{.Data.Params.BOOL.configif.BoolParamClassAttr "config-margintop" "config-margintop collapse-hidden"}}>
       | <form {{class}}="form-inline" {{.Data.Params.Query.FormActionAttr}}>
       input.hidden-submit type=submit
 
@@ -125,15 +125,14 @@
           {{template "defines::define_refresh" .Data.Params.PERIOD.refreshif}}
       | </form>
 
-      p
-        ul.nav.nav-tabs
-          | <li {{.Data.Params.ENUM.ift.EnumClassAttr "PACKETS" "active"}}>
-          {{template "defines::enumlink" .Data.Params.ENUM.ift.EnumLink "PACKETS"}}
-          | </li><li {{.Data.Params.ENUM.ift.EnumClassAttr "ERRORS" "active"}}>
-          {{template "defines::enumlink" .Data.Params.ENUM.ift.EnumLink "ERRORS"}}
-          | </li><li {{.Data.Params.ENUM.ift.EnumClassAttr "IFBYTES" "active"}}>
-          {{template "defines::enumlink" .Data.Params.ENUM.ift.EnumLink "IFBYTES"}}
-          | </li>
+      ul.nav.nav-tabs.config-margintop
+        | <li {{.Data.Params.ENUM.ift.EnumClassAttr "PACKETS" "active"}}>
+        {{template "defines::enumlink" .Data.Params.ENUM.ift.EnumLink "PACKETS"}}
+        | </li><li {{.Data.Params.ENUM.ift.EnumClassAttr "ERRORS" "active"}}>
+        {{template "defines::enumlink" .Data.Params.ENUM.ift.EnumLink "ERRORS"}}
+        | </li><li {{.Data.Params.ENUM.ift.EnumClassAttr "IFBYTES" "active"}}>
+        {{template "defines::enumlink" .Data.Params.ENUM.ift.EnumLink "IFBYTES"}}
+        | </li>
       | </div>
 
     div
@@ -184,7 +183,7 @@
   th {{class}}="header {{.AlignClass}}" <a href={{.Href}} {{class}}={{.Class}}>{{.Text}}<span {{class}}={{.CaretClass}}></span></a>
 
 = content define_dfbytes_table
-  table.table.table-striped.table-condensed
+  table.table.table-striped
     thead
       tr
         {{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "FS" ""}}
@@ -196,7 +195,7 @@
       {{template "defines::define_dfbytes_rows" .}}
 
 = content define_dfinodes_table
-  table.table.table-striped.table-condensed
+  table.table.table-striped
     thead
       tr
         th.header Device
@@ -210,11 +209,11 @@
 = content define_paneldf
   div
     div
-      | <a    {{.Data.Params.BOOL.configdf.ToggleHrefAttr}} {{class}}="btn btn-block btn-link btn-left">
+      | <a    {{.Data.Params.BOOL.configdf.ToggleHrefAttr}} {{class}}="btn-block">
       | <span {{.Data.Params.BOOL.configdf.BoolParamClassAttr "h4 bg-info" "h4"}}>{{.Data.Params.ENUM.dft.Title}}</span></a>
 
     div
-      | <div id="dfconfig" {{.Data.Params.BOOL.configdf.BoolParamClassAttr "" "collapse-hidden"}}>
+      | <div id="dfconfig" {{.Data.Params.BOOL.configdf.BoolParamClassAttr "config-margintop" "config-margintop collapse-hidden"}}>
       | <form {{class}}="form-inline" {{.Data.Params.Query.FormActionAttr}}>
       input.hidden-submit type=submit
 
@@ -226,13 +225,12 @@
           {{template "defines::define_refresh" .Data.Params.PERIOD.refreshdf}}
       | </form>
 
-      p
-        ul.nav.nav-tabs
-          | <li {{.Data.Params.ENUM.dft.EnumClassAttr "INODES" "active"}}>
-          {{template "defines::enumlink" .Data.Params.ENUM.dft.EnumLink "INODES"}}
-          | </li><li {{.Data.Params.ENUM.dft.EnumClassAttr "DFBYTES" "active"}}>
-          {{template "defines::enumlink" .Data.Params.ENUM.dft.EnumLink "DFBYTES"}}
-          | </li>
+      ul.nav.nav-tabs.config-margintop
+        | <li {{.Data.Params.ENUM.dft.EnumClassAttr "INODES" "active"}}>
+        {{template "defines::enumlink" .Data.Params.ENUM.dft.EnumLink "INODES"}}
+        | </li><li {{.Data.Params.ENUM.dft.EnumClassAttr "DFBYTES" "active"}}>
+        {{template "defines::enumlink" .Data.Params.ENUM.dft.EnumLink "DFBYTES"}}
+        | </li>
       | </div>
 
     div
@@ -259,7 +257,7 @@
   {{end}}
 
 = content define_memtable
-  table.table.table-striped.table-condensed
+  table.table.table-striped
     thead
       tr
         th
@@ -272,13 +270,14 @@
 = content define_panelmem
   div
     div
-      | <a    {{.Data.Params.BOOL.configmem.ToggleHrefAttr}} {{class}}="btn btn-block btn-link btn-left">
+      | <a    {{.Data.Params.BOOL.configmem.ToggleHrefAttr}} {{class}}="btn-block">
       | <span {{.Data.Params.BOOL.configmem.BoolParamClassAttr "h4 bg-info" "h4"}}>Memory</span></a>
 
     div
-      | <div id="memconfig" {{.Data.Params.BOOL.configmem.BoolParamClassAttr "" "collapse-hidden"}}>
+      | <div id="memconfig" {{.Data.Params.BOOL.configmem.BoolParamClassAttr "config-margintop" "config-margintop collapse-hidden"}}>
       | <form {{class}}="form-inline" {{.Data.Params.Query.FormActionAttr}}>
       input.hidden-submit type=submit
+
       div.btn-toolbar
         div.btn-group.btn-group-sm role=group
           | <a {{.Data.Params.BOOL.hidemem.BoolParamClassAttr  "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidemem.ToggleHrefAttr}}>Hidden</a>
@@ -306,7 +305,7 @@
   {{end}}
 
 = content define_cputable
-  table.table.table-striped.table-condensed
+  table.table.table-striped
     thead
       tr
         th
@@ -322,11 +321,11 @@
 = content define_panelcpu
   div
     div
-      | <a    {{.Data.Params.BOOL.configcpu.ToggleHrefAttr}} {{class}}="btn btn-block btn-link btn-left">
+      | <a    {{.Data.Params.BOOL.configcpu.ToggleHrefAttr}} {{class}}="btn-block">
       | <span {{.Data.Params.BOOL.configcpu.BoolParamClassAttr "h4 bg-info" "h4"}}>CPU</span></a>
 
     div
-      | <div id="cpuconfig" {{.Data.Params.BOOL.configcpu.BoolParamClassAttr "" "collapse-hidden"}}>
+      | <div id="cpuconfig" {{.Data.Params.BOOL.configcpu.BoolParamClassAttr "config-margintop" "config-margintop collapse-hidden"}}>
       | <form {{class}}="form-inline" {{.Data.Params.Query.FormActionAttr}}>
       input.hidden-submit type=submit
 
@@ -362,7 +361,7 @@
   {{end}}
 
 = content define_pstable
-  table.table.table-striped.table-condensed.table-hover
+  table.table.table-striped.table-hover
     thead
       tr
         {{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "PID"}}
@@ -380,23 +379,21 @@
 = content define_panelps
   div
     div
-      | <a    {{.Data.Params.BOOL.configps.ToggleHrefAttr}} {{class}}="btn btn-block btn-link btn-left">
+      | <a    {{.Data.Params.BOOL.configps.ToggleHrefAttr}} {{class}}="btn-block">
       | <span {{.Data.Params.BOOL.configps.BoolParamClassAttr "h4 bg-info" "h4"}}>Processes</span></a>
 
     div
-      | <div id="psconfig" {{.Data.Params.BOOL.configps.BoolParamClassAttr "" "collapse-hidden"}}>
+      | <div id="psconfig" {{.Data.Params.BOOL.configps.BoolParamClassAttr "config-margintop" "config-margintop collapse-hidden"}}>
       | <form {{class}}="form-inline text-right" {{.Data.Params.Query.FormActionAttr}}>
       input.hidden-submit type=submit
 
       div.btn-toolbar
         div.btn-group.btn-group-sm role=group
           | <a {{.Data.Params.BOOL.hideps.BoolParamClassAttr "active"  "" "btn btn-default"}} {{.Data.Params.BOOL.hideps.ToggleHrefAttr}}>Hidden</a>
+          | <a {{.Data.PStable.PSnotDecreasable.BoolClassAttr "disabled" "" "btn btn-default"}} {{.Data.Params.LIMIT.psn.LessHrefAttr}}>-</a>
+          | <a {{.Data.PStable.PSnotExpandable.BoolClassAttr  "disabled" "" "btn btn-default"}} {{.Data.Params.LIMIT.psn.MoreHrefAttr}}>{{.Data.PStable.PSplusText}}</a>
         div.btn-group.btn-group-sm role=group
           {{template "defines::define_refresh" .Data.Params.PERIOD.refreshps}}
-        div.btn-group.btn-group-sm role=group
-          | <a {{.Data.PStable.PSnotDecreasable.BoolClassAttr "disabled" "" "btn btn-default"}} {{.Data.Params.LIMIT.psn.LessHrefAttr}}>-</a>
-          | <a {{.Data.PStable.PSnotExpandable.BoolClassAttr  "disabled" "" "btn btn-default"}} {{.Data.Params.LIMIT.psn.MoreHrefAttr}}>
-          | {{.Data.PStable.PSplusText}}</a>
       | </form>
       | </div>
 
@@ -430,7 +427,7 @@
   {{end}}
 
 = content define_vgtable
-  table.table.table-striped.table-condensed#vgtable
+  table.table.table-striped#vgtable
     thead
       tr
         th id
@@ -444,11 +441,11 @@
 = content define_panelvg
   div
     div
-      | <a    {{.Data.Params.BOOL.configvg.ToggleHrefAttr}} {{class}}="btn btn-block btn-link btn-left">
+      | <a    {{.Data.Params.BOOL.configvg.ToggleHrefAttr}} {{class}}="btn-block">
       | <span {{.Data.Params.BOOL.configvg.BoolParamClassAttr "h4 bg-info" "h4"}}>Vagrant global-status</span></a>
 
     div
-      | <div id="vgconfig" {{.Data.Params.BOOL.configvg.BoolParamClassAttr "" "collapse-hidden"}}>
+      | <div id="vgconfig" {{.Data.Params.BOOL.configvg.BoolParamClassAttr "config-margintop" "config-margintop collapse-hidden"}}>
       | <form {{class}}="form-inline" {{.Data.Params.Query.FormActionAttr}}>
       input.hidden-submit type=submit
 

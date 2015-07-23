@@ -10,15 +10,14 @@
     urlArgs: "bust=" + (new Date()).getTime(),
     paths: {
       domReady: 'vendor/requirejs-domready/2.0.1/domReady',
-      headroom: 'vendor/headroom/0.7.0/headroom.min',
-      jquery: 'vendor/jquery/2.1.4/jquery-2.1.4.min',
+      jquery: 'vendor/jquery/2.1.4/jquery.min',
       bscollapse: 'vendor/bootstrap/3.3.5-collapse/bootstrap.min',
       react: 'vendor/react/0.13.3/react.min',
       jsdefines: 'lib/jsdefines'
     }
   });
 
-  require(['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], function($, React, jsdefines) {
+  require(['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'], function($, React, jsdefines) {
     var HandlerMixin, neweventsource, newwebsocket, update, updates;
     updates = void 0;
     neweventsource = function(onmessage) {
@@ -351,18 +350,18 @@
       }
     };
     update = function() {
-      var cputable, dftable, hostname, iftable, ip, la, memtable, onmessage, pstable, uptime, vgtable;
+      var cputable, dftable, hn, iftable, ip, la, memtable, onmessage, pstable, up, vgtable;
       if ((typeof data !== "undefined" && data !== null ? data.IP : void 0) != null) {
         ip = React.render(React.createElement(NewTextCLASS(function(data) {
           return data != null ? data.IP : void 0;
         })), $('#ip').get(0));
       }
-      hostname = React.render(React.createElement(NewTextCLASS(function(data) {
+      hn = React.render(React.createElement(NewTextCLASS(function(data) {
         return data != null ? data.Hostname : void 0;
-      })), $('#hostname').get(0));
-      uptime = React.render(React.createElement(NewTextCLASS(function(data) {
+      })), $('#hn').get(0));
+      up = React.render(React.createElement(NewTextCLASS(function(data) {
         return data != null ? data.Uptime : void 0;
-      })), $('#uptime').get(0));
+      })), $('#up').get(0));
       la = React.render(React.createElement(NewTextCLASS(function(data) {
         return data != null ? data.LA : void 0;
       })), $('#la').get(0));
@@ -394,8 +393,8 @@
         if (ip != null) {
           setState(ip, ip.newstate(data));
         }
-        setState(hostname, hostname.newstate(data));
-        setState(uptime, uptime.newstate(data));
+        setState(hn, hn.newstate(data));
+        setState(up, up.newstate(data));
         setState(la, la.newstate(data));
         setState(pstable, {
           Params: data.Params,
@@ -436,12 +435,9 @@
       };
       updates = newwebsocket(onmessage);
     };
-    require(['domReady', 'jquery', 'headroom'], function(domReady, $) {
-      domReady(function() {
+    return require(['domReady', 'jquery'], function(domReady, $) {
+      return domReady(function() {
         var param;
-        (new window.Headroom(document.querySelector('nav'), {
-          offset: 20
-        })).init();
         if (!((function() {
           var i, len, ref, results;
           ref = location.search.substr(1).split('&');
@@ -454,7 +450,7 @@
           }
           return results;
         })()).length) {
-          update();
+          return update();
         }
       });
     });

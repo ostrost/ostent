@@ -4,15 +4,14 @@ require.config
   urlArgs: "bust=" + (new Date()).getTime()
   paths:
     domReady:  'vendor/requirejs-domready/2.0.1/domReady'
-    headroom:  'vendor/headroom/0.7.0/headroom.min'
-    jquery:    'vendor/jquery/2.1.4/jquery-2.1.4.min'
+    jquery:    'vendor/jquery/2.1.4/jquery.min'
     bscollapse:'vendor/bootstrap/3.3.5-collapse/bootstrap.min'
     react:     'vendor/react/0.13.3/react.min'
-    jsdefines:   'lib/jsdefines'
+    jsdefines: 'lib/jsdefines'
 
 # main require
-require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], ($, React, jsdefines) ->
-  # domReady, headroom, bscollapse "required" for r.js only.
+require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'], ($, React, jsdefines) ->
+  # domReady, bscollapse "required" for r.js only.
   updates = undefined # events source. set later
   neweventsource = (onmessage) ->
     conn = null
@@ -210,10 +209,10 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
 
   update = () ->
     # coffeelint: disable=max_line_length
-    ip       = React.render(React.createElement(NewTextCLASS((data) -> data?.IP       )), $('#ip'      )   .get(0)) if data?.IP?
-    hostname = React.render(React.createElement(NewTextCLASS((data) -> data?.Hostname )), $('#hostname')   .get(0))
-    uptime   = React.render(React.createElement(NewTextCLASS((data) -> data?.Uptime   )), $('#uptime'  )   .get(0))
-    la       = React.render(React.createElement(NewTextCLASS((data) -> data?.LA       )), $('#la'      )   .get(0))
+    ip = React.render(React.createElement(NewTextCLASS((data) -> data?.IP       )), $('#ip').get(0)) if data?.IP?
+    hn = React.render(React.createElement(NewTextCLASS((data) -> data?.Hostname )), $('#hn').get(0))
+    up = React.render(React.createElement(NewTextCLASS((data) -> data?.Uptime   )), $('#up').get(0))
+    la = React.render(React.createElement(NewTextCLASS((data) -> data?.LA       )), $('#la').get(0))
 
     memtable  = React.render(React.createElement(MEMtableCLASS), document.getElementById('mem' +'-'+ 'table'))
     pstable   = React.render(React.createElement(PStableCLASS),  document.getElementById('ps'  +'-'+ 'table'))
@@ -238,10 +237,10 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
         console.log 'Error', data.Error
         return
 
-      setState(ip,        ip      .newstate(data)) if ip?
-      setState(hostname,  hostname.newstate(data))
-      setState(uptime,    uptime  .newstate(data))
-      setState(la,        la      .newstate(data))
+      setState(ip, ip.newstate(data)) if ip?
+      setState(hn, hn.newstate(data))
+      setState(up, up.newstate(data))
+      setState(la, la.newstate(data))
 
       setState(pstable,  {Params: data.Params, PStable:  data.PStable})
       setState(memtable, {Params: data.Params, MEM: data.MEM})
@@ -277,20 +276,10 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'headroom', 'bscollapse'], 
   # updates = neweventsource(onmessage)
     return # end of `update'
 
-  require ['domReady', 'jquery', 'headroom'], (domReady, $) ->
-    # headroom does not export anything
+  require ['domReady', 'jquery'], (domReady, $) ->
     domReady () ->
-      (new window.Headroom(document.querySelector('nav'), {
-        offset: 20 # ~padding-top of a container row
-      })).init()
-
-      # referencing upper-scope `update'
       update() unless (42 for param in location.search.substr(1).split(
         '&') when (param.split('=')[0] == 'still')).length
-
-      return # return from domReady
-    return # end of sub`require'
-  return # end of main `require'
 
 # Local variables:
 # coffee-tab-width: 2
