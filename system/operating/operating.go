@@ -4,11 +4,8 @@
 package operating
 
 import (
-	"container/ring"
-	"errors"
 	"fmt"
 	"html/template"
-	"math"
 	"sync"
 
 	metrics "github.com/rcrowley/go-metrics"
@@ -145,148 +142,15 @@ func (mr *MetricRAM) UsedValue() uint64 { // Total - Free
 	return uint64(mr.Total.Snapshot().Value() - mr.Free.Snapshot().Value())
 }
 
-type GaugeShortLoad struct {
-	metrics.GaugeFloat64
-	Ring  *ring.Ring
-	Min   int
-	Max   int
-	Mutex sync.Mutex
-}
-
-func (gsl *GaugeShortLoad) Update(floatValue float64) {
-	gsl.Mutex.Lock()
-	defer gsl.Mutex.Unlock()
-	gsl.GaugeFloat64.Update(floatValue)
-	value := int(float64(100) * floatValue)
-	// func push(ff **five, v int)
-	setmin := gsl.Min == -1.0 || value < gsl.Min
-	setmax := gsl.Max == -1.0 || value > gsl.Max
-	if setmin {
-		gsl.Min = value
-	}
-	if setmax {
-		gsl.Max = value
-	}
-
-	if gsl.Ring.Len() != 0 {
-		if prev := gsl.Ring.Prev().Value; prev != nil {
-			// Don't push if the bars for the current and previous are equal
-			i, _, e1 := gsl.Bar(prev.(int))
-			j, _, e2 := gsl.Bar(value)
-			if e1 == nil && e2 == nil && i == j {
-				return
-			}
-		}
-	}
-
-	ring := gsl.Ring.Move(1)
-	ring.Move(4).Value = value
-	gsl.Ring = ring // gc please
-
-	// recalc min, max of the remained values
-
-	if !setmin {
-		if gsl.Ring != nil && gsl.Ring.Value != nil {
-			gsl.Min = gsl.Ring.Value.(int)
-		}
-		gsl.Ring.Do(func(o interface{}) {
-			if o == nil {
-				return
-			}
-			if v := o.(int); gsl.Min > v {
-				gsl.Min = v
-			}
-		})
-	}
-	if !setmax {
-		if gsl.Ring != nil && gsl.Ring.Value != nil {
-			gsl.Max = gsl.Ring.Value.(int)
-		}
-		gsl.Ring.Do(func(o interface{}) {
-			if o == nil {
-				return
-			}
-			if v := o.(int); gsl.Max < v {
-				gsl.Max = v
-			}
-		})
-	}
-}
-
-var bARS = []string{
-	"▁",
-	"▂",
-	"▃",
-	// "▄", // looks bad in browsers
-	"▅",
-	"▆",
-	"▇",
-	// "█", // looks bad in browsers
-}
-
-func (gsl *GaugeShortLoad) Bar(v int) (int, string, error) {
-	if gsl.Max == -1 || gsl.Min == -1 { // || f.max == f.min {
-		return -1, "", errors.New("Unknown min or max")
-	}
-	spread := gsl.Max - gsl.Min
-
-	fi := 0.0
-	if spread != 0 {
-		// fi = float64(v-f.min) / float64(spread)
-		fi = float64(gsl.round(v)-float64(gsl.Min)) / float64(spread)
-		if fi > 1.0 {
-			// panic("impossible") // ??
-			fi = 1.0
-		}
-	}
-	i := int(round(fi * float64(len(bARS)-1)))
-	return i, bARS[i], nil
-}
-
-func (gsl *GaugeShortLoad) round(v int) float64 {
-	unit := float64(gsl.Max-gsl.Min) /* spread */ / float64(len(bARS)-1)
-	times := round((float64(v) - float64(gsl.Min)) / unit)
-	return float64(gsl.Min) + unit*times
-}
-
-func round(val float64) float64 {
-	_, d := math.Modf(val)
-	return map[bool]func(float64) float64{true: math.Ceil, false: math.Floor}[d >= 0.5](val)
-}
-
-func (gsl *GaugeShortLoad) Sparkline() string {
-	if gsl.Max == -1 || gsl.Min == -1 { // || gsl.Max == gsl.Min {
-		return ""
-	}
-	s := ""
-	gsl.Ring.Do(func(o interface{}) {
-		if o == nil {
-			return
-		}
-		if _, c, err := gsl.Bar(o.(int)); err == nil {
-			s += c
-		}
-	})
-	return s
-}
-
 type MetricLoad struct {
-	Short GaugeShortLoad
+	Short metrics.GaugeFloat64
 	Mid   metrics.GaugeFloat64
 	Long  metrics.GaugeFloat64
 }
 
 func NewMetricLoad(r metrics.Registry) *MetricLoad {
-	short := GaugeShortLoad{
-		GaugeFloat64: metrics.NewGaugeFloat64(),
-		Ring:         ring.New(5), // 5 values
-		Min:          -1.0,
-		Max:          -1.0,
-	}
-	// short := metrics.NewRegisteredGaugeFloat64("load.shortterm", r)
-	r.Register("load.shortterm", short.GaugeFloat64)
 	return &MetricLoad{
-		Short: short,
+		Short: metrics.NewRegisteredGaugeFloat64("load.shortterm", r),
 		Mid:   metrics.NewRegisteredGaugeFloat64("load.midterm", r),
 		Long:  metrics.NewRegisteredGaugeFloat64("load.longterm", r),
 	}

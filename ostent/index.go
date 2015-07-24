@@ -644,7 +644,7 @@ func (ir *IndexRegistry) MEM(para *params.Params, iu *IndexUpdate) interface{} {
 
 func (ir *IndexRegistry) LA(para *params.Params, iu *IndexUpdate) interface{} {
 	gl := ir.Load
-	iu.LA = gl.Short.Sparkline() + " " + fmt.Sprintf("%.2f %.2f %.2f",
+	iu.LA = fmt.Sprintf("%.2f %.2f %.2f",
 		gl.Short.Snapshot().Value(),
 		gl.Mid.Snapshot().Value(),
 		gl.Long.Snapshot().Value())
