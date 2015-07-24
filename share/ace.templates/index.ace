@@ -21,15 +21,12 @@ html
             span.icon-bar
             span.icon-bar
             span.icon-bar
-          a.navbar-brand.clip#hn style="max-width: 12ch" href=/ {{.Data.Hostname}}
+          a.navbar-brand.clip#hn style="max-width: 12ch" href=/ title="hostname {{.Data.Hostname}}"
 
         div.collapse.navbar-collapse#navbar-collapse
           ul.nav.navbar-nav
             li.active
-              a href=https://www.ostrost.com/ostent/releases/latest title="Running version {{.Data.VERSION}}"
-                | ostent
-                / | &nbsp;
-                / span.badge {{.Data.VERSION}}
+              a href=https://www.ostrost.com/ostent/releases/latest?cmp={{.Data.VERSION}} ostent
             li.navbar-text.navbar-text-marginless.first-text
               code.navbar-codeline
                 | os {{.Data.DISTRIB}}

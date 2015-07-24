@@ -25,13 +25,13 @@
             ><span class="icon-bar"
               ></span
             ></button
-          ><a id="hn" class="navbar-brand clip" style="max-width: 12ch" href="/"
-            >{{.Data.Hostname}}</a
+          ><a id="hn" class="navbar-brand clip" style="max-width: 12ch" href="/" title="hostname {{.Data.Hostname}}"
+            ></a
           ></div
         ><div id="navbar-collapse" class="collapse navbar-collapse"
           ><ul class="nav navbar-nav"
             ><li class="active"
-              ><a href="https://www.ostrost.com/ostent/releases/latest" title="Running version {{.Data.VERSION}}"
+              ><a href="https://www.ostrost.com/ostent/releases/latest?cmp={{.Data.VERSION}}"
                 >ostent</a
               ></li
             ><li class="navbar-text navbar-text-marginless first-text"
