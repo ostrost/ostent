@@ -370,6 +370,13 @@ func LessCPU(a, b operating.MetricCPU) bool {
 }
 
 func (ir *IndexRegistry) DF(para *params.Params, iu *IndexUpdate) interface{} {
+	if para.BOOL["hidedf"].Value {
+		iu.ExpandableDF = new(operating.Bool)
+		*iu.ExpandableDF = true
+		iu.ExpandtextDF = new(string)
+		*iu.ExpandtextDF = "Expanded"
+		return IndexUpdate{}
+	}
 	var lenp int
 	niu := IndexUpdate{}
 	switch enums.UintDFT(para.ENUM["dft"].Number.Uint) {
@@ -482,6 +489,13 @@ func (procs MPSlice) IU(para *params.Params, iu *IndexUpdate) interface{} {
 }
 
 func (ir *IndexRegistry) IF(para *params.Params, iu *IndexUpdate) interface{} {
+	if para.BOOL["hideif"].Value {
+		iu.ExpandableIF = new(operating.Bool)
+		*iu.ExpandableIF = true
+		iu.ExpandtextIF = new(string)
+		*iu.ExpandtextIF = "Expanded"
+		return IndexUpdate{}
+	}
 	var lenp int
 	niu := IndexUpdate{}
 	switch enums.UintIFT(para.ENUM["ift"].Number.Uint) {
@@ -786,9 +800,9 @@ func getUpdates(req *http.Request, para *params.Params, forcerefresh bool) (Inde
 		{para.BOOL["hidemem"].Value, para.PERIOD["refreshmem"], Reg1s.MEM},
 		{para.BOOL["hidemem"].Value || para.BOOL["hideswap"].Value, para.PERIOD["refreshmem"], Reg1s.SWAP}, // if MEM is hidden, so is SWAP
 		{para.BOOL["hidecpu"].Value, para.PERIOD["refreshcpu"], Reg1s.CPU},
-		{para.BOOL["hidedf"].Value, para.PERIOD["refreshdf"], Reg1s.DF},
-		{para.BOOL["hideif"].Value, para.PERIOD["refreshif"], Reg1s.IF},
 		{para.BOOL["hidevg"].Value, para.PERIOD["refreshvg"], Reg1s.VG},
+		{false, para.PERIOD["refreshdf"], Reg1s.DF},
+		{false, para.PERIOD["refreshif"], Reg1s.IF},
 		{false, para.PERIOD["refreshps"], psCopy.IU},
 
 		// always-shown bits:
