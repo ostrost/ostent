@@ -15,33 +15,12 @@ func (q Query) FormActionAttr() interface{} {
 	return SprintfAttr(" action=\"/form/%s\"", url.QueryEscape(q.ValuesEncode(nil)))
 }
 
-func (bp BoolParam) BoolParamClassAttr(classes ...string) (template.HTMLAttr, error) {
-	fstclass, sndclass, err := ClassesChoices("BoolParamClassAttr", classes)
-	if err != nil {
-		return template.HTMLAttr(""), err
-	}
+func (bp BoolParam) BoolParamClassAttr(fstclass, sndclass string) template.HTMLAttr {
 	s := fstclass
 	if !bp.Value {
 		s = sndclass
 	}
-	return SprintfAttr(" class=%q", s), nil
-}
-
-// TODO dup from operating
-func ClassesChoices(caller string, classes []string) (string, string, error) {
-	if len(classes) == 0 || len(classes) > 3 {
-		return "", "", fmt.Errorf("number of args for %s: either 2 or 3 or 4 got %d", caller, 1+len(classes))
-	}
-	sndclass := ""
-	if len(classes) > 1 {
-		sndclass = classes[1]
-	}
-	fstclass := classes[0]
-	if len(classes) > 2 {
-		fstclass = classes[2] + " " + fstclass
-		sndclass = classes[2] + " " + sndclass
-	}
-	return fstclass, sndclass, nil
+	return SprintfAttr(" class=%q", s)
 }
 
 func (bp BoolParam) DisabledAttr() interface{} {

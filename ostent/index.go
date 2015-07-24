@@ -41,7 +41,7 @@ func diskMeta(disk operating.MetricDF) operating.DiskMeta {
 	devname := disk.DevName.Snapshot().Value()
 	dirname := disk.DirName.Snapshot().Value()
 	return operating.DiskMeta{
-		DevName: operating.Field(devname),
+		DevName: devname,
 		DirName: operating.Field(dirname),
 	}
 }
@@ -88,16 +88,15 @@ func (procs MPSlice) Ordered(para *params.Params) *PStable {
 	}
 	for _, proc := range procs {
 		pst.List = append(pst.List, operating.ProcData{
-			PID:       proc.PID,
-			PIDstring: operating.Field(fmt.Sprintf("%d", proc.PID)),
-			UID:       proc.UID,
-			Priority:  proc.Priority,
-			Nice:      proc.Nice,
-			Time:      format.FormatTime(proc.Time),
-			Name:      operating.Field(proc.Name),
-			User:      operating.Field(username(uids, proc.UID)),
-			Size:      format.HumanB(proc.Size),
-			Resident:  format.HumanB(proc.Resident),
+			PID:      operating.Field(fmt.Sprintf("%d", proc.PID)),
+			UID:      proc.UID,
+			Priority: proc.Priority,
+			Nice:     proc.Nice,
+			Time:     format.FormatTime(proc.Time),
+			Name:     proc.Name,
+			User:     username(uids, proc.UID),
+			Size:     format.HumanB(proc.Size),
+			Resident: format.HumanB(proc.Resident),
 		})
 	}
 	return pst

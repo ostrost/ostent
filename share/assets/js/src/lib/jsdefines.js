@@ -83,13 +83,13 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { className: Data.Params.BOOL.hidemem.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Params.BOOL.hidemem.Href, onClick: this.handleClick
+                    { className: Data.Params.BOOL.hidemem.Value ? "btn btn-default active" : "btn btn-default", href: Data.Params.BOOL.hidemem.Href, onClick: this.handleClick
                     },
                     "Hidden"
                   ),
                   React.createElement(
                     "a",
-                    { className: Data.Params.BOOL.hideswap.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Params.BOOL.hideswap.Href, onClick: this.handleClick, disabled: Data.Params.BOOL.hidemem.Value ? "disabled" : ""
+                    { className: Data.Params.BOOL.hideswap.Value ? "btn btn-default active" : "btn btn-default", href: Data.Params.BOOL.hideswap.Href, onClick: this.handleClick, disabled: Data.Params.BOOL.hidemem.Value ? "disabled" : ""
                     },
                     "Hide swap"
                   )
@@ -173,14 +173,7 @@ define(function (require) {
         React.createElement(
           "td",
           null,
-          React.createElement("input", { id: "if-bytes-name-" + $if.Name, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
-          }),
-          React.createElement(
-            "label",
-            { htmlFor: "if-bytes-name-" + $if.Name, className: "clip", style: { maxWidth: "11ch" }
-            },
-            $if.Name
-          )
+          $if.Name
         ),
         React.createElement(
           "td",
@@ -216,14 +209,7 @@ define(function (require) {
         React.createElement(
           "td",
           null,
-          React.createElement("input", { id: "if-errors-name-" + $if.Name, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
-          }),
-          React.createElement(
-            "label",
-            { htmlFor: "if-errors-name-" + $if.Name, className: "clip", style: { maxWidth: "11ch" }
-            },
-            $if.Name
-          )
+          $if.Name
         ),
         React.createElement(
           "td",
@@ -259,14 +245,7 @@ define(function (require) {
         React.createElement(
           "td",
           null,
-          React.createElement("input", { id: "if-packets-name-" + $if.Name, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
-          }),
-          React.createElement(
-            "label",
-            { htmlFor: "if-packets-name-" + $if.Name, className: "clip", style: { maxWidth: "11ch" }
-            },
-            $if.Name
-          )
+          $if.Name
         ),
         React.createElement(
           "td",
@@ -336,13 +315,13 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { className: Data.Params.BOOL.hideif.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Params.BOOL.hideif.Href, onClick: this.handleClick
+                    { className: Data.Params.BOOL.hideif.Value ? "btn btn-default active" : "btn btn-default", href: Data.Params.BOOL.hideif.Href, onClick: this.handleClick
                     },
                     "Hidden"
                   ),
                   React.createElement(
                     "a",
-                    { className: Data.ExpandableIF ? "btn btn-default " : "btn btn-default disabled", href: Data.Params.BOOL.expandif.Href, onClick: this.handleClick
+                    { className: Data.ExpandableIF ? "btn btn-default" : "btn btn-default disabled", href: Data.Params.BOOL.expandif.Href, onClick: this.handleClick
                     },
                     Data.ExpandtextIF
                   )
@@ -755,13 +734,13 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { className: Data.Params.BOOL.hidecpu.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Params.BOOL.hidecpu.Href, onClick: this.handleClick
+                    { className: Data.Params.BOOL.hidecpu.Value ? "btn btn-default active" : "btn btn-default", href: Data.Params.BOOL.hidecpu.Href, onClick: this.handleClick
                     },
                     "Hidden"
                   ),
                   React.createElement(
                     "a",
-                    { className: Data.CPU.ExpandableCPU ? "btn btn-default " : "btn btn-default disabled", href: Data.Params.BOOL.expandcpu.Href, onClick: this.handleClick
+                    { className: Data.CPU.ExpandableCPU ? "btn btn-default" : "btn btn-default disabled", href: Data.Params.BOOL.expandcpu.Href, onClick: this.handleClick
                     },
                     Data.CPU.ExpandtextCPU
                   )
@@ -862,29 +841,13 @@ define(function (require) {
         },
         React.createElement(
           "td",
-          { className: "nowrap"
-          },
-          React.createElement("input", { id: "df-bytes-devname-" + $disk.DevName, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
-          }),
-          React.createElement(
-            "label",
-            { htmlFor: "df-bytes-devname-" + $disk.DevName, className: "clip", style: { maxWidth: "11ch" }
-            },
-            $disk.DevName
-          )
+          null,
+          $disk.DevName
         ),
         React.createElement(
           "td",
-          { className: "nowrap"
-          },
-          React.createElement("input", { id: "df-bytes-dirname-" + $disk.DirName, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
-          }),
-          React.createElement(
-            "label",
-            { htmlFor: "df-bytes-dirname-" + $disk.DirName, className: "clip", style: { maxWidth: "6ch" }
-            },
-            $disk.DirName
-          )
+          null,
+          $disk.DirName
         ),
         React.createElement(
           "td",
@@ -921,29 +884,13 @@ define(function (require) {
         },
         React.createElement(
           "td",
-          { className: "nowrap"
-          },
-          React.createElement("input", { id: "df-inodes-devname-" + $disk.DevName, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
-          }),
-          React.createElement(
-            "label",
-            { htmlFor: "df-inodes-devname-" + $disk.DevName, className: "clip", style: { maxWidth: "11ch" }
-            },
-            $disk.DevName
-          )
+          null,
+          $disk.DevName
         ),
         React.createElement(
           "td",
-          { className: "nowrap"
-          },
-          React.createElement("input", { id: "df-inodes-devname-" + $disk.DirName, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
-          }),
-          React.createElement(
-            "label",
-            { htmlFor: "df-inodes-devname-" + $disk.DirName, className: "clip", style: { maxWidth: "6ch" }
-            },
-            $disk.DirName
-          )
+          null,
+          $disk.DirName
         ),
         React.createElement(
           "td",
@@ -1015,13 +962,13 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { className: Data.Params.BOOL.hidedf.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Params.BOOL.hidedf.Href, onClick: this.handleClick
+                    { className: Data.Params.BOOL.hidedf.Value ? "btn btn-default active" : "btn btn-default", href: Data.Params.BOOL.hidedf.Href, onClick: this.handleClick
                     },
                     "Hidden"
                   ),
                   React.createElement(
                     "a",
-                    { className: Data.ExpandableDF ? "btn btn-default " : "btn btn-default disabled", href: Data.Params.BOOL.expanddf.Href, onClick: this.handleClick
+                    { className: Data.ExpandableDF ? "btn btn-default" : "btn btn-default disabled", href: Data.Params.BOOL.expanddf.Href, onClick: this.handleClick
                     },
                     Data.ExpandtextDF
                   )
@@ -1231,7 +1178,7 @@ define(function (require) {
     ps_rows: function ps_rows(Data, $proc) {
       return React.createElement(
         "tr",
-        { key: "ps-rowby-pid-" + $proc.PIDstring
+        { key: "ps-rowby-pid-" + $proc.PID
         },
         React.createElement(
           "td",
@@ -1250,15 +1197,7 @@ define(function (require) {
         React.createElement(
           "td",
           null,
-          "            ",
-          React.createElement("input", { id: "psuser-pid-" + $proc.PIDstring, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
-          }),
-          React.createElement(
-            "label",
-            { htmlFor: "psuser-pid-" + $proc.PIDstring, className: "clip", style: { maxWidth: "11ch" }
-            },
-            $proc.User
-          )
+          $proc.User
         ),
         React.createElement(
           "td",
@@ -1296,17 +1235,8 @@ define(function (require) {
         ),
         React.createElement(
           "td",
-          { className: "nowrap"
-          },
-          "     ",
-          React.createElement("input", { id: "psname-pid-" + $proc.PIDstring, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
-          }),
-          React.createElement(
-            "label",
-            { htmlFor: "psname-pid-" + $proc.PIDstring, className: "clip", style: { maxWidth: "42ch" }
-            },
-            $proc.Name
-          )
+          null,
+          $proc.Name
         )
       );
     },
@@ -1352,19 +1282,19 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { className: Data.Params.BOOL.hideps.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Params.BOOL.hideps.Href, onClick: this.handleClick
+                    { className: Data.Params.BOOL.hideps.Value ? "btn btn-default active" : "btn btn-default", href: Data.Params.BOOL.hideps.Href, onClick: this.handleClick
                     },
                     "Hidden"
                   ),
                   React.createElement(
                     "a",
-                    { className: Data.PStable.PSnotDecreasable ? "btn btn-default disabled" : "btn btn-default ", href: Data.Params.LIMIT.psn.LessHref, onClick: this.handleClick
+                    { className: Data.PStable.PSnotDecreasable ? "btn btn-default" : "btn btn-default disabled", href: Data.Params.LIMIT.psn.LessHref, onClick: this.handleClick
                     },
                     "-"
                   ),
                   React.createElement(
                     "a",
-                    { className: Data.PStable.PSnotExpandable ? "btn btn-default disabled" : "btn btn-default ", href: Data.Params.LIMIT.psn.MoreHref, onClick: this.handleClick
+                    { className: Data.PStable.PSnotExpandable ? "btn btn-default" : "btn btn-default disabled", href: Data.Params.LIMIT.psn.MoreHref, onClick: this.handleClick
                     },
                     Data.PStable.PSplusText
                   )
@@ -1546,53 +1476,27 @@ define(function (require) {
         React.createElement(
           "td",
           null,
-          "       ",
-          React.createElement("input", { id: "vagrant-uuid-" + $mach.UUID, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
-          }),
-          React.createElement(
-            "label",
-            { htmlFor: "vagrant-uuid-" + $mach.UUID, className: "clip", style: { maxWidth: "7ch" }
-            },
-            $mach.UUID
-          )
+          $mach.UUID
         ),
         React.createElement(
           "td",
           null,
-          "       ",
           $mach.Name
         ),
         React.createElement(
           "td",
           null,
-          "       ",
           $mach.Provider
         ),
         React.createElement(
           "td",
           null,
-          "       ",
-          React.createElement("input", { id: "vagrant-state-" + $mach.UUID, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
-          }),
-          React.createElement(
-            "label",
-            { htmlFor: "vagrant-state-" + $mach.UUID, className: "clip", style: { maxWidth: "8ch" }
-            },
-            $mach.State
-          )
+          $mach.State
         ),
         React.createElement(
           "td",
           null,
-          "       ",
-          React.createElement("input", { id: "vagrant-filepath-" + $mach.UUID, className: "collapse-checkbox", type: "checkbox", "aria-hidden": "true", hidden: true
-          }),
-          React.createElement(
-            "label",
-            { htmlFor: "vagrant-filepath-" + $mach.UUID, className: "clip", style: { maxWidth: "50ch" }
-            },
-            $mach.Vagrantfile_path
-          )
+          $mach.Vagrantfile_path
         )
       );
     },
@@ -1651,7 +1555,7 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { className: Data.Params.BOOL.hidevg.Value ? "btn btn-default active" : "btn btn-default ", href: Data.Params.BOOL.hidevg.Href, onClick: this.handleClick
+                    { className: Data.Params.BOOL.hidevg.Value ? "btn btn-default active" : "btn btn-default", href: Data.Params.BOOL.hidevg.Href, onClick: this.handleClick
                     },
                     "Hidden"
                   )

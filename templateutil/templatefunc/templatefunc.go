@@ -1,11 +1,9 @@
 package templatefunc
 
 import (
-	"fmt"
 	"html/template"
 	"strings"
 
-	"github.com/ostrost/ostent/system/operating"
 	"github.com/ostrost/ostent/templateutil/templatepipe"
 )
 
@@ -60,12 +58,11 @@ func init() {
 	// check for Nota's interfaces compliance
 	_ = interface {
 		// operating (multiple types):
-		BoolClassAttr(...string) (template.HTMLAttr, error)
-		Clip(int, string, ...fmt.Stringer) (*operating.Clipped, error)
+		BoolClassAttr(string, string) template.HTMLAttr
 		KeyAttr(string) template.HTMLAttr
 
 		FormActionAttr() interface{}                                        // Query
-		BoolParamClassAttr(...string) (template.HTMLAttr, error)            // BoolParam
+		BoolParamClassAttr(string, string) template.HTMLAttr                // BoolParam
 		DisabledAttr() interface{}                                          // BoolParam
 		ToggleHrefAttr() interface{}                                        // BoolParam
 		EnumClassAttr(string, string, ...string) (template.HTMLAttr, error) // EnumParam

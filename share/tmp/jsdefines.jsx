@@ -28,9 +28,9 @@ define(function(require) {
         ></input
       ><div className="btn-toolbar"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.BOOL.hidemem.Value ? "btn btn-default active" : "btn btn-default "}  href={Data.Params.BOOL.hidemem.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.BOOL.hidemem.Value ? "btn btn-default active" : "btn btn-default"}  href={Data.Params.BOOL.hidemem.Href} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.Params.BOOL.hideswap.Value ? "btn btn-default active" : "btn btn-default "}  href={Data.Params.BOOL.hideswap.Href} onClick={this.handleClick}  disabled={Data.Params.BOOL.hidemem.Value ? "disabled" : "" }
+          ><a  className={Data.Params.BOOL.hideswap.Value ? "btn btn-default active" : "btn btn-default"}  href={Data.Params.BOOL.hideswap.Href} onClick={this.handleClick}  disabled={Data.Params.BOOL.hidemem.Value ? "disabled" : "" }
             >Hide swap</a
           ></div
         ><div className="btn-group btn-group-sm" role="group"
@@ -69,10 +69,7 @@ define(function(require) {
 
 		ifbytes_rows:    function(Data, $if)   { return (<tr  key={"ifbytes-rowby-name-"+$if.Name}
   ><td
-    ><input  id={"if-bytes-name-"+$if.Name}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label  htmlFor={"if-bytes-name-"+$if.Name} className="clip"  style={{maxWidth: '11ch'}}
-  >{$if.Name}</label
-></td
+    >{$if.Name}</td
   ><td className="text-right"
     >{$if.DeltaIn}</td
   ><td className="text-right"
@@ -85,10 +82,7 @@ define(function(require) {
 >); },
 		iferrors_rows:   function(Data, $if)   { return (<tr  key={"iferrors-rowby-name-"+$if.Name}
   ><td
-    ><input  id={"if-errors-name-"+$if.Name}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label  htmlFor={"if-errors-name-"+$if.Name} className="clip"  style={{maxWidth: '11ch'}}
-  >{$if.Name}</label
-></td
+    >{$if.Name}</td
   ><td className="text-right"
     >{$if.DeltaIn}</td
   ><td className="text-right"
@@ -101,10 +95,7 @@ define(function(require) {
 >); },
 		ifpackets_rows:  function(Data, $if)   { return (<tr  key={"ifpackets-rowby-name-"+$if.Name}
   ><td
-    ><input  id={"if-packets-name-"+$if.Name}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label  htmlFor={"if-packets-name-"+$if.Name} className="clip"  style={{maxWidth: '11ch'}}
-  >{$if.Name}</label
-></td
+    >{$if.Name}</td
   ><td className="text-right"
     >{$if.DeltaIn}</td
   ><td className="text-right"
@@ -129,9 +120,9 @@ define(function(require) {
         ></input
       ><div className="btn-toolbar"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.BOOL.hideif.Value ? "btn btn-default active" : "btn btn-default "}  href={Data.Params.BOOL.hideif.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.BOOL.hideif.Value ? "btn btn-default active" : "btn btn-default"}  href={Data.Params.BOOL.hideif.Href} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.ExpandableIF ? "btn btn-default " : "btn btn-default disabled"}  href={Data.Params.BOOL.expandif.Href} onClick={this.handleClick}
+          ><a  className={Data.ExpandableIF ? "btn btn-default" : "btn btn-default disabled"}  href={Data.Params.BOOL.expandif.Href} onClick={this.handleClick}
             >{Data.ExpandtextIF}</a
           ></div
         ><div className="btn-group btn-group-sm" role="group"
@@ -289,9 +280,9 @@ define(function(require) {
         ></input
       ><div className="btn-toolbar"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.BOOL.hidecpu.Value ? "btn btn-default active" : "btn btn-default "}  href={Data.Params.BOOL.hidecpu.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.BOOL.hidecpu.Value ? "btn btn-default active" : "btn btn-default"}  href={Data.Params.BOOL.hidecpu.Href} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.CPU.ExpandableCPU ? "btn btn-default " : "btn btn-default disabled"}  href={Data.Params.BOOL.expandcpu.Href} onClick={this.handleClick}
+          ><a  className={Data.CPU.ExpandableCPU ? "btn btn-default" : "btn btn-default disabled"}  href={Data.Params.BOOL.expandcpu.Href} onClick={this.handleClick}
             >{Data.CPU.ExpandtextCPU}</a
           ></div
         ><div className="btn-group btn-group-sm" role="group"
@@ -335,16 +326,10 @@ define(function(require) {
 >); },
 
 		dfbytes_rows:    function(Data, $disk) { return (<tr  key={"dfbytes-rowby-dirname-"+$disk.DirName}
-  ><td className="nowrap"
-    ><input  id={"df-bytes-devname-"+$disk.DevName}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label  htmlFor={"df-bytes-devname-"+$disk.DevName} className="clip"  style={{maxWidth: '11ch'}}
-  >{$disk.DevName}</label
-></td
-  ><td className="nowrap"
-    ><input  id={"df-bytes-dirname-"+$disk.DirName}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label  htmlFor={"df-bytes-dirname-"+$disk.DirName} className="clip"  style={{maxWidth: '6ch'}}
-  >{$disk.DirName}</label
-></td
+  ><td
+    >{$disk.DevName}</td
+  ><td
+    >{$disk.DirName}</td
   ><td className="text-right"
     >{$disk.Avail}</td
   ><td className="text-right"
@@ -356,16 +341,10 @@ define(function(require) {
   ></tr
 >); },
 		dfinodes_rows:   function(Data, $disk) { return (<tr  key={"dfinodes-rowby-dirname-"+$disk.DirName}
-  ><td className="nowrap"
-    ><input  id={"df-inodes-devname-"+$disk.DevName}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label  htmlFor={"df-inodes-devname-"+$disk.DevName} className="clip"  style={{maxWidth: '11ch'}}
-  >{$disk.DevName}</label
-></td
-  ><td className="nowrap"
-    ><input  id={"df-inodes-devname-"+$disk.DirName}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label  htmlFor={"df-inodes-devname-"+$disk.DirName} className="clip"  style={{maxWidth: '6ch'}}
-  >{$disk.DirName}</label
-></td
+  ><td
+    >{$disk.DevName}</td
+  ><td
+    >{$disk.DirName}</td
   ><td className="text-right"
     >{$disk.Ifree}</td
   ><td className="text-right"
@@ -390,9 +369,9 @@ define(function(require) {
         ></input
       ><div className="btn-toolbar"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.BOOL.hidedf.Value ? "btn btn-default active" : "btn btn-default "}  href={Data.Params.BOOL.hidedf.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.BOOL.hidedf.Value ? "btn btn-default active" : "btn btn-default"}  href={Data.Params.BOOL.hidedf.Href} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.ExpandableDF ? "btn btn-default " : "btn btn-default disabled"}  href={Data.Params.BOOL.expanddf.Href} onClick={this.handleClick}
+          ><a  className={Data.ExpandableDF ? "btn btn-default" : "btn btn-default disabled"}  href={Data.Params.BOOL.expanddf.Href} onClick={this.handleClick}
             >{Data.ExpandtextDF}</a
           ></div
         ><div className="btn-group btn-group-sm" role="group"
@@ -483,16 +462,13 @@ define(function(require) {
 ></div
 >); },
 
-		ps_rows:         function(Data, $proc) { return (<tr  key={"ps-rowby-pid-"+$proc.PIDstring}
+		ps_rows:         function(Data, $proc) { return (<tr  key={"ps-rowby-pid-"+$proc.PID}
   ><td className="text-right"
     > {$proc.PID}</td
   ><td className="text-right"
     > {$proc.UID}</td
   ><td
-    >            <input  id={"psuser-pid-"+$proc.PIDstring}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label  htmlFor={"psuser-pid-"+$proc.PIDstring} className="clip"  style={{maxWidth: '11ch'}}
-  >{$proc.User}</label
-></td
+    >{$proc.User}</td
   ><td className="text-right"
     > {$proc.Priority}</td
   ><td className="text-right"
@@ -503,11 +479,8 @@ define(function(require) {
     > {$proc.Resident}</td
   ><td className="text-center"
     >{$proc.Time}</td
-  ><td className="nowrap"
-    >     <input  id={"psname-pid-"+$proc.PIDstring}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label  htmlFor={"psname-pid-"+$proc.PIDstring} className="clip"  style={{maxWidth: '42ch'}}
-  >{$proc.Name}</label
-></td
+  ><td
+    >{$proc.Name}</td
   ></tr
 >); },
 		panelps:         function(Data, rows)  { return (<div
@@ -524,11 +497,11 @@ define(function(require) {
         ></input
       ><div className="btn-toolbar"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.BOOL.hideps.Value ? "btn btn-default active" : "btn btn-default "}  href={Data.Params.BOOL.hideps.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.BOOL.hideps.Value ? "btn btn-default active" : "btn btn-default"}  href={Data.Params.BOOL.hideps.Href} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.PStable.PSnotDecreasable ? "btn btn-default disabled" : "btn btn-default "}  href={Data.Params.LIMIT.psn.LessHref} onClick={this.handleClick}
+          ><a  className={Data.PStable.PSnotDecreasable ? "btn btn-default" : "btn btn-default disabled"}  href={Data.Params.LIMIT.psn.LessHref} onClick={this.handleClick}
             >-</a
-          ><a  className={Data.PStable.PSnotExpandable ? "btn btn-default disabled" : "btn btn-default "}  href={Data.Params.LIMIT.psn.MoreHref} onClick={this.handleClick}
+          ><a  className={Data.PStable.PSnotExpandable ? "btn btn-default" : "btn btn-default disabled"}  href={Data.Params.LIMIT.psn.MoreHref} onClick={this.handleClick}
             >{Data.PStable.PSplusText}</a
           ></div
         ><div className="btn-group btn-group-sm" role="group"
@@ -613,24 +586,15 @@ define(function(require) {
 
 		vagrant_rows:    function(Data, $mach) { return (<tr  key={"vagrant-rowby-uuid-"+$mach.UUID}
   ><td
-    >       <input  id={"vagrant-uuid-"+$mach.UUID}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label  htmlFor={"vagrant-uuid-"+$mach.UUID} className="clip"  style={{maxWidth: '7ch'}}
-  >{$mach.UUID}</label
-></td
+    >{$mach.UUID}</td
   ><td
-    >       {$mach.Name}</td
+    >{$mach.Name}</td
   ><td
-    >       {$mach.Provider}</td
+    >{$mach.Provider}</td
   ><td
-    >       <input  id={"vagrant-state-"+$mach.UUID}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label  htmlFor={"vagrant-state-"+$mach.UUID} className="clip"  style={{maxWidth: '8ch'}}
-  >{$mach.State}</label
-></td
+    >{$mach.State}</td
   ><td
-    >       <input  id={"vagrant-filepath-"+$mach.UUID}  className="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
-></input><label  htmlFor={"vagrant-filepath-"+$mach.UUID} className="clip"  style={{maxWidth: '50ch'}}
-  >{$mach.Vagrantfile_path}</label
-></td
+    >{$mach.Vagrantfile_path}</td
   ></tr
 >); },
 		vagrant_error:   function(Data)        { return (<tr key="vgerror"
@@ -652,7 +616,7 @@ define(function(require) {
         ></input
       ><div className="btn-toolbar"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.BOOL.hidevg.Value ? "btn btn-default active" : "btn btn-default "}  href={Data.Params.BOOL.hidevg.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.BOOL.hidevg.Value ? "btn btn-default active" : "btn btn-default"}  href={Data.Params.BOOL.hidevg.Href} onClick={this.handleClick}
             >Hidden</a
           ></div
         ><div className="btn-group btn-group-sm" role="group"

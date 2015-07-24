@@ -26,7 +26,7 @@
               ></span
             ></button
           ><a id="hn" class="navbar-brand clip" style="max-width: 12ch" href="/" title="hostname {{.Data.Hostname}}"
-            ></a
+            >{{.Data.Hostname}}</a
           ></div
         ><div id="navbar-collapse" class="collapse navbar-collapse"
           ><ul class="nav navbar-nav"
@@ -64,21 +64,21 @@
       ><div class="row"
         ><div id="mem-table" class="col-md-4 col-md-offset-1"
           >{{template "defines::define_panelmem" .}}</div
-        ><div id="df-table" class="col-md-4 col-md-offset-1"
+        ><div id="df-table" class="col-md-5 col-md-offset-1"
           >{{template "defines::define_paneldf" .}}</div
         ></div
       ><div class="row"
         ><div id="cpu-table" class="col-md-4 col-md-offset-1"
           >{{template "defines::define_panelcpu" .}}</div
-        ><div id="if-table" class="col-md-4 col-md-offset-1"
+        ><div id="if-table" class="col-md-5 col-md-offset-1"
           >{{template "defines::define_panelif" .}}</div
         ></div
       ><div class="row"
-        ><div id="ps-table" class="col-md-9 col-md-offset-1"
+        ><div id="ps-table" class="col-md-10 col-md-offset-1"
           >{{template "defines::define_panelps" .}}</div
         ></div
       ><div class="row"
-        ><div id="vg-table" class="col-md-9 col-md-offset-1"
+        ><div id="vg-table" class="col-md-10 col-md-offset-1"
           >{{template "defines::define_panelvg" .}}</div
         ></div
       ></div
@@ -87,10 +87,6 @@
     ></body
   ></html
 >{{/*
-*/}}{{define "defines::define_clip"}}<input {{.IDAttr}}  {{class}}="collapse-checkbox" type="checkbox" aria-hidden="true" hidden
->{{jsxClose "input"}}<label {{.ForAttr}} {{class}}="clip" {{.MWStyleAttr}}
-  >{{.Text}}</label
->{{end}}{{/*
 */}}{{define "defines::define_cpurows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $core := .Data.CPU.List}}<tr {{$core.N.KeyAttr "cpu-rowby-N"}}
   ><td class="text-right nowrap"
     >{{$core.N}}</td
@@ -132,10 +128,10 @@
   ></table
 >{{end}}{{/*
 */}}{{define "defines::define_dfbytes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $disk := .Data.DFbytes.List}}<tr {{$disk.DirName.KeyAttr "dfbytes-rowby-dirname"}}
-  ><td class="nowrap"
-    >{{template "defines::define_clip" ($disk.DevName.Clip 11 "df-bytes-devname")}}</td
-  ><td class="nowrap"
-    >{{template "defines::define_clip" ($disk.DirName.Clip 6 "df-bytes-dirname")}}</td
+  ><td
+    >{{$disk.DevName}}</td
+  ><td
+    >{{$disk.DirName}}</td
   ><td class="text-right"
     >{{$disk.Avail}}</td
   ><td class="text-right"
@@ -154,10 +150,10 @@
   ></table
 >{{end}}{{/*
 */}}{{define "defines::define_dfinodes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $disk := .Data.DFinodes.List}}<tr {{$disk.DirName.KeyAttr "dfinodes-rowby-dirname"}}
-  ><td class="nowrap"
-    >{{template "defines::define_clip" ($disk.DevName.Clip 11 "df-inodes-devname")}}</td
-  ><td class="nowrap"
-    >{{template "defines::define_clip" ($disk.DirName.Clip 6 "df-inodes-devname")}}</td
+  ><td
+    >{{$disk.DevName}}</td
+  ><td
+    >{{$disk.DirName}}</td
   ><td class="text-right"
     >{{$disk.Ifree}}</td
   ><td class="text-right"
@@ -187,7 +183,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_ifbytes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFbytes.List}}<tr {{$if.Name.KeyAttr "ifbytes-rowby-name"}}
   ><td
-    >{{template "defines::define_clip" ($if.Name.Clip 11 "if-bytes-name")}}</td
+    >{{$if.Name}}</td
   ><td class="text-right"
     >{{$if.DeltaIn}}</td
   ><td class="text-right"
@@ -235,7 +231,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_iferrors_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFerrors.List}}<tr {{$if.Name.KeyAttr "iferrors-rowby-name"}}
   ><td
-    >{{template "defines::define_clip" ($if.Name.Clip 11 "if-errors-name")}}</td
+    >{{$if.Name}}</td
   ><td class="text-right"
     >{{$if.DeltaIn}}</td
   ><td class="text-right"
@@ -275,7 +271,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_ifpackets_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFpackets.List}}<tr {{$if.Name.KeyAttr "ifpackets-rowby-name"}}
   ><td
-    >{{template "defines::define_clip" ($if.Name.Clip 11 "if-packets-name")}}</td
+    >{{$if.Name}}</td
   ><td class="text-right"
     >{{$if.DeltaIn}}</td
   ><td class="text-right"
@@ -354,9 +350,9 @@
         ><input class="hidden-submit" type="submit"
         ><div class="btn-toolbar"
           ><div class="btn-group btn-group-sm" role="group"
-            ><a {{.Data.Params.BOOL.hidecpu.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidecpu.ToggleHrefAttr}}
+            ><a {{.Data.Params.BOOL.hidecpu.BoolParamClassAttr "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hidecpu.ToggleHrefAttr}}
               >Hidden</a
-            ><a {{.Data.CPU.ExpandableCPU.BoolClassAttr "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expandcpu.ToggleHrefAttr}}
+            ><a {{.Data.CPU.ExpandableCPU.BoolClassAttr "btn btn-default" "btn btn-default disabled"}} {{.Data.Params.BOOL.expandcpu.ToggleHrefAttr}}
               >{{.Data.CPU.ExpandtextCPU}}</a
             ></div
           ><div class="btn-group btn-group-sm" role="group"
@@ -366,7 +362,7 @@
       ></div
     ></div
   ><div
-    ><div {{.Data.Params.BOOL.hidecpu.BoolParamClassAttr "collapse-hidden"}}
+    ><div {{.Data.Params.BOOL.hidecpu.BoolParamClassAttr "collapse-hidden" ""}}
       >{{template "defines::define_cputable" .}}</div
     ></div
   ></div
@@ -384,9 +380,9 @@
         ><input class="hidden-submit" type="submit"
         ><div class="btn-toolbar"
           ><div class="btn-group btn-group-sm" role="group"
-            ><a {{.Data.Params.BOOL.hidedf.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidedf.ToggleHrefAttr}}
+            ><a {{.Data.Params.BOOL.hidedf.BoolParamClassAttr "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hidedf.ToggleHrefAttr}}
               >Hidden</a
-            ><a {{.Data.ExpandableDF.BoolClassAttr "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expanddf.ToggleHrefAttr}}
+            ><a {{.Data.ExpandableDF.BoolClassAttr "btn btn-default" "btn btn-default disabled"}} {{.Data.Params.BOOL.expanddf.ToggleHrefAttr}}
               >{{.Data.ExpandtextDF}}</a
             ></div
           ><div class="btn-group btn-group-sm" role="group"
@@ -402,7 +398,7 @@
       ></div
     ></div
   ><div
-    ><div {{.Data.Params.BOOL.hidedf.BoolParamClassAttr "collapse-hidden"}}
+    ><div {{.Data.Params.BOOL.hidedf.BoolParamClassAttr "collapse-hidden" ""}}
       ><div {{.Data.Params.ENUM.dft.EnumClassAttr "INODES" "" "collapse-hidden"}}
         >{{template "defines::define_dfinodes_table" .}}</div
       ><div {{.Data.Params.ENUM.dft.EnumClassAttr "DFBYTES" "" "collapse-hidden"}}
@@ -424,9 +420,9 @@
         ><input class="hidden-submit" type="submit"
         ><div class="btn-toolbar"
           ><div class="btn-group btn-group-sm" role="group"
-            ><a {{.Data.Params.BOOL.hideif.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideif.ToggleHrefAttr}}
+            ><a {{.Data.Params.BOOL.hideif.BoolParamClassAttr "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hideif.ToggleHrefAttr}}
               >Hidden</a
-            ><a {{.Data.ExpandableIF.BoolClassAttr "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expandif.ToggleHrefAttr}}
+            ><a {{.Data.ExpandableIF.BoolClassAttr "btn btn-default" "btn btn-default disabled"}} {{.Data.Params.BOOL.expandif.ToggleHrefAttr}}
               >{{.Data.ExpandtextIF}}</a
             ></div
           ><div class="btn-group btn-group-sm" role="group"
@@ -444,7 +440,7 @@
       ></div
     ></div
   ><div
-    ><div {{.Data.Params.BOOL.hideif.BoolParamClassAttr "collapse-hidden"}}
+    ><div {{.Data.Params.BOOL.hideif.BoolParamClassAttr "collapse-hidden" ""}}
       ><div {{.Data.Params.ENUM.ift.EnumClassAttr "PACKETS" "" "collapse-hidden"}}
         >{{template "defines::define_ifpackets_table" .}}</div
       ><div {{.Data.Params.ENUM.ift.EnumClassAttr "ERRORS" "" "collapse-hidden"}}
@@ -468,9 +464,9 @@
         ><input class="hidden-submit" type="submit"
         ><div class="btn-toolbar"
           ><div class="btn-group btn-group-sm" role="group"
-            ><a {{.Data.Params.BOOL.hidemem.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidemem.ToggleHrefAttr}}
+            ><a {{.Data.Params.BOOL.hidemem.BoolParamClassAttr "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hidemem.ToggleHrefAttr}}
               >Hidden</a
-            ><a {{.Data.Params.BOOL.hideswap.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideswap.ToggleHrefAttr}} {{.Data.Params.BOOL.hidemem.DisabledAttr}}
+            ><a {{.Data.Params.BOOL.hideswap.BoolParamClassAttr "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hideswap.ToggleHrefAttr}} {{.Data.Params.BOOL.hidemem.DisabledAttr}}
               >Hide swap</a
             ></div
           ><div class="btn-group btn-group-sm" role="group"
@@ -480,7 +476,7 @@
       ></div
     ></div
   ><div
-    ><div {{.Data.Params.BOOL.hidemem.BoolParamClassAttr "collapse-hidden"}}
+    ><div {{.Data.Params.BOOL.hidemem.BoolParamClassAttr "collapse-hidden" ""}}
       >{{template "defines::define_memtable" .}}</div
     ></div
   ></div
@@ -498,11 +494,11 @@
         ><input class="hidden-submit" type="submit"
         ><div class="btn-toolbar"
           ><div class="btn-group btn-group-sm" role="group"
-            ><a {{.Data.Params.BOOL.hideps.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideps.ToggleHrefAttr}}
+            ><a {{.Data.Params.BOOL.hideps.BoolParamClassAttr "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hideps.ToggleHrefAttr}}
               >Hidden</a
-            ><a {{.Data.PStable.PSnotDecreasable.BoolClassAttr "disabled" "" "btn btn-default"}} {{.Data.Params.LIMIT.psn.LessHrefAttr}}
+            ><a {{.Data.PStable.PSnotDecreasable.BoolClassAttr "btn btn-default" "btn btn-default disabled"}} {{.Data.Params.LIMIT.psn.LessHrefAttr}}
               >-</a
-            ><a {{.Data.PStable.PSnotExpandable.BoolClassAttr "disabled" "" "btn btn-default"}} {{.Data.Params.LIMIT.psn.MoreHrefAttr}}
+            ><a {{.Data.PStable.PSnotExpandable.BoolClassAttr "btn btn-default" "btn btn-default disabled"}} {{.Data.Params.LIMIT.psn.MoreHrefAttr}}
               >{{.Data.PStable.PSplusText}}</a
             ></div
           ><div class="btn-group btn-group-sm" role="group"
@@ -512,7 +508,7 @@
       ></div
     ></div
   ><div
-    ><div {{.Data.Params.BOOL.hideps.BoolParamClassAttr "collapse-hidden"}}
+    ><div {{.Data.Params.BOOL.hideps.BoolParamClassAttr "collapse-hidden" ""}}
       >{{template "defines::define_pstable" .}}</div
     ></div
   ></div
@@ -530,7 +526,7 @@
         ><input class="hidden-submit" type="submit"
         ><div class="btn-toolbar"
           ><div class="btn-group btn-group-sm" role="group"
-            ><a {{.Data.Params.BOOL.hidevg.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidevg.ToggleHrefAttr}}
+            ><a {{.Data.Params.BOOL.hidevg.BoolParamClassAttr "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hidevg.ToggleHrefAttr}}
               >Hidden</a
             ></div
           ><div class="btn-group btn-group-sm" role="group"
@@ -540,18 +536,18 @@
       ></div
     ></div
   ><div
-    ><div {{.Data.Params.BOOL.hidevg.BoolParamClassAttr "collapse-hidden"}}
+    ><div {{.Data.Params.BOOL.hidevg.BoolParamClassAttr "collapse-hidden" ""}}
       >{{template "defines::define_vgtable" .}}</div
     ></div
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_psrows"}}{{with rowsset .}}{{.}}{{else}}{{range $proc := .Data.PStable.List}}<tr {{$proc.PIDstring.KeyAttr "ps-rowby-pid"}}
+*/}}{{define "defines::define_psrows"}}{{with rowsset .}}{{.}}{{else}}{{range $proc := .Data.PStable.List}}<tr {{$proc.PID.KeyAttr "ps-rowby-pid"}}
   ><td class="text-right"
     > {{$proc.PID}}</td
   ><td class="text-right"
     > {{$proc.UID}}</td
   ><td
-    >            {{template "defines::define_clip" ($proc.User.Clip 11 "psuser-pid" $proc.PIDstring)}}</td
+    >{{$proc.User}}</td
   ><td class="text-right"
     > {{$proc.Priority}}</td
   ><td class="text-right"
@@ -562,8 +558,8 @@
     > {{$proc.Resident}}</td
   ><td class="text-center"
     >{{$proc.Time}}</td
-  ><td class="nowrap"
-    >     {{template "defines::define_clip" ($proc.Name.Clip 42 "psname-pid" $proc.PIDstring)}}</td
+  ><td
+    >{{$proc.Name}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
 */}}{{define "defines::define_pstable"}}<table class="table table-striped table-hover"
@@ -591,15 +587,15 @@
 >{{end}}{{/*
 */}}{{define "defines::define_vgrows"}}{{range $mach := .Data.VagrantMachines.List}}<tr {{$mach.UUID.KeyAttr "vagrant-rowby-uuid"}}
   ><td
-    >       {{template "defines::define_clip" ($mach.UUID.Clip 7 "vagrant-uuid")}}</td
+    >{{$mach.UUID}}</td
   ><td
-    >       {{$mach.Name}}</td
+    >{{$mach.Name}}</td
   ><td
-    >       {{$mach.Provider}}</td
+    >{{$mach.Provider}}</td
   ><td
-    >       {{template "defines::define_clip" ($mach.State.Clip 8 "vagrant-state" $mach.UUID)}}</td
+    >{{$mach.State}}</td
   ><td
-    >       {{template "defines::define_clip" ($mach.Vagrantfile_path.Clip 50 "vagrant-filepath" $mach.UUID)}}</td
+    >{{$mach.Vagrantfile_path}}</td
   ></tr
 >{{end}}{{end}}{{/*
 */}}{{define "defines::define_vgswitch"}}{{with rowsset .}}{{.}}{{else}}{{if eq .Data.VagrantErrord true}}{{template "defines::define_vgerror" .}}{{else}}{{template "defines::define_vgrows" .}}{{end}}{{end}}{{end}}{{/*

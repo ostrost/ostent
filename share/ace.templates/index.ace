@@ -21,7 +21,7 @@ html
             span.icon-bar
             span.icon-bar
             span.icon-bar
-          a.navbar-brand.clip#hn style="max-width: 12ch" href=/ title="hostname {{.Data.Hostname}}"
+          a.navbar-brand.clip#hn style="max-width: 12ch" href=/ title="hostname {{.Data.Hostname}}" {{.Data.Hostname}}
 
         div.collapse.navbar-collapse#navbar-collapse
           ul.nav.navbar-nav
@@ -47,18 +47,18 @@ html
       div.row
         div.col-md-4.col-md-offset-1#mem-table
           {{template "defines::define_panelmem" .}}
-        div.col-md-4.col-md-offset-1#df-table
+        div.col-md-5.col-md-offset-1#df-table
           {{template "defines::define_paneldf" .}}
       div.row
         div.col-md-4.col-md-offset-1#cpu-table
           {{template "defines::define_panelcpu" .}}
-        div.col-md-4.col-md-offset-1#if-table
+        div.col-md-5.col-md-offset-1#if-table
           {{template "defines::define_panelif" .}}
       div.row
-        div.col-md-9.col-md-offset-1#ps-table
+        div.col-md-10.col-md-offset-1#ps-table
           {{template "defines::define_panelps" .}}
       div.row
-        div.col-md-9.col-md-offset-1#vg-table
+        div.col-md-10.col-md-offset-1#vg-table
           {{template "defines::define_panelvg" .}}
 
     = javascript

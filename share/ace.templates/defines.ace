@@ -1,10 +1,6 @@
 = content define_usepercent
   | <span {{class}}="label" data-usepercent={{.}}>{{.}}%</span>
 
-= content define_clip
-  | <input {{.IDAttr}}  {{class}}="collapse-checkbox" type="checkbox" aria-hidden="true" hidden>{{jsxClose "input"}}
-  | <label {{.ForAttr}} {{class}}="clip" {{.MWStyleAttr}}>{{.Text}}</label>
-
 = content define_refresh
   | <div {{.RefreshClassAttr "input-group input-group-sm refresh-group"}}>
   span.input-group-addon Refresh
@@ -15,7 +11,7 @@
   {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IFbytes.List}}
       | <tr {{$if.Name.KeyAttr "ifbytes-rowby-name"}}>
-      td {{template "defines::define_clip" ($if.Name.Clip 11 "if-bytes-name")}}
+      td {{$if.Name}}
       td.text-right {{$if.DeltaIn}}
       td.text-right {{$if.DeltaOut}}
       td.text-right {{$if.In}}
@@ -28,7 +24,7 @@
   {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IFerrors.List}}
       | <tr {{$if.Name.KeyAttr "iferrors-rowby-name"}}>
-      td {{template "defines::define_clip" ($if.Name.Clip 11 "if-errors-name")}}
+      td {{$if.Name}}
       td.text-right {{$if.DeltaIn}}
       td.text-right {{$if.DeltaOut}}
       td.text-right {{$if.In}}
@@ -41,7 +37,7 @@
   {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IFpackets.List}}
       | <tr {{$if.Name.KeyAttr "ifpackets-rowby-name"}}>
-      td {{template "defines::define_clip" ($if.Name.Clip 11 "if-packets-name")}}
+      td {{$if.Name}}
       td.text-right {{$if.DeltaIn}}
       td.text-right {{$if.DeltaOut}}
       td.text-right {{$if.In}}
@@ -119,8 +115,8 @@
 
       div.btn-toolbar
         div.btn-group.btn-group-sm role=group
-          | <a {{.Data.Params.BOOL.hideif.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideif.ToggleHrefAttr}}>Hidden</a>
-          | <a {{.Data.ExpandableIF.BoolClassAttr "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expandif.ToggleHrefAttr}}>{{.Data.ExpandtextIF}}</a>
+          | <a {{.Data.Params.BOOL.hideif.BoolParamClassAttr "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hideif.ToggleHrefAttr}}>Hidden</a>
+          | <a {{.Data.ExpandableIF.BoolClassAttr "btn btn-default" "btn btn-default disabled"}} {{.Data.Params.BOOL.expandif.ToggleHrefAttr}}>{{.Data.ExpandtextIF}}</a>
         div.btn-group.btn-group-sm role=group
           {{template "defines::define_refresh" .Data.Params.PERIOD.refreshif}}
       | </form>
@@ -136,7 +132,7 @@
       | </div>
 
     div
-      | <div {{.Data.Params.BOOL.hideif.BoolParamClassAttr "collapse-hidden"}}>
+      | <div {{.Data.Params.BOOL.hideif.BoolParamClassAttr "collapse-hidden" ""}}>
       | <div {{.Data.Params.ENUM.ift.EnumClassAttr "PACKETS" "" "collapse-hidden"}}>
       {{template "defines::define_ifpackets_table" .}}
       | </div>
@@ -154,8 +150,8 @@
   {{with rowsset .}}{{.}}{{else}}
     {{range $disk := .Data.DFbytes.List}}
       | <tr {{$disk.DirName.KeyAttr "dfbytes-rowby-dirname"}}>
-      td.nowrap {{template "defines::define_clip" ($disk.DevName.Clip 11 "df-bytes-devname")}}
-      td.nowrap {{template "defines::define_clip" ($disk.DirName.Clip  6 "df-bytes-dirname")}}
+      td {{$disk.DevName}}
+      td {{$disk.DirName}}
       td.text-right {{$disk.Avail}}
       td.text-right {{template "defines::define_usepercent" $disk.UsePercent}}&nbsp;{{$disk.Used}}
       td.text-right {{$disk.Total}}
@@ -167,8 +163,8 @@
   {{with rowsset .}}{{.}}{{else}}
     {{range $disk := .Data.DFinodes.List}}
       | <tr {{$disk.DirName.KeyAttr "dfinodes-rowby-dirname"}}>
-      td.nowrap {{template "defines::define_clip" ($disk.DevName.Clip 11 "df-inodes-devname")}}
-      td.nowrap {{template "defines::define_clip" ($disk.DirName.Clip  6 "df-inodes-devname")}}
+      td {{$disk.DevName}}
+      td {{$disk.DirName}}
       td.text-right {{$disk.Ifree}}
       td.text-right {{template "defines::define_usepercent" $disk.IusePercent}}&nbsp;{{$disk.Iused}}
       td.text-right {{$disk.Inodes}}
@@ -219,8 +215,8 @@
 
       div.btn-toolbar
         div.btn-group.btn-group-sm role=group
-          | <a {{.Data.Params.BOOL.hidedf.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidedf.ToggleHrefAttr}}>Hidden</a>
-          | <a {{.Data.ExpandableDF.BoolClassAttr "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expanddf.ToggleHrefAttr}}>{{.Data.ExpandtextDF}}</a>
+          | <a {{.Data.Params.BOOL.hidedf.BoolParamClassAttr "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hidedf.ToggleHrefAttr}}>Hidden</a>
+          | <a {{.Data.ExpandableDF.BoolClassAttr "btn btn-default" "btn btn-default disabled"}} {{.Data.Params.BOOL.expanddf.ToggleHrefAttr}}>{{.Data.ExpandtextDF}}</a>
         div.btn-group.btn-group-sm role=group
           {{template "defines::define_refresh" .Data.Params.PERIOD.refreshdf}}
       | </form>
@@ -234,7 +230,7 @@
       | </div>
 
     div
-      | <div {{.Data.Params.BOOL.hidedf.BoolParamClassAttr "collapse-hidden"}}>
+      | <div {{.Data.Params.BOOL.hidedf.BoolParamClassAttr "collapse-hidden" ""}}>
       | <div {{.Data.Params.ENUM.dft.EnumClassAttr "INODES" "" "collapse-hidden"}}>
       {{template "defines::define_dfinodes_table" .}}
       | </div>
@@ -280,15 +276,15 @@
 
       div.btn-toolbar
         div.btn-group.btn-group-sm role=group
-          | <a {{.Data.Params.BOOL.hidemem.BoolParamClassAttr  "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidemem.ToggleHrefAttr}}>Hidden</a>
-          | <a {{.Data.Params.BOOL.hideswap.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hideswap.ToggleHrefAttr}} {{.Data.Params.BOOL.hidemem.DisabledAttr}}>Hide swap</a>
+          | <a {{.Data.Params.BOOL.hidemem.BoolParamClassAttr  "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hidemem.ToggleHrefAttr}}>Hidden</a>
+          | <a {{.Data.Params.BOOL.hideswap.BoolParamClassAttr "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hideswap.ToggleHrefAttr}} {{.Data.Params.BOOL.hidemem.DisabledAttr}}>Hide swap</a>
         div.btn-group.btn-group-sm role=group
           {{template "defines::define_refresh" .Data.Params.PERIOD.refreshmem}}
       | </form>
       | </div>
 
     div
-      | <div {{.Data.Params.BOOL.hidemem.BoolParamClassAttr "collapse-hidden"}}>
+      | <div {{.Data.Params.BOOL.hidemem.BoolParamClassAttr "collapse-hidden" ""}}>
       {{template "defines::define_memtable" .}}
       | </div>
 
@@ -331,31 +327,31 @@
 
       div.btn-toolbar
         div.btn-group.btn-group-sm role=group
-          | <a {{.Data.Params.BOOL.hidecpu.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidecpu.ToggleHrefAttr}}>Hidden</a>
-          | <a {{.Data.CPU.ExpandableCPU.BoolClassAttr "" "disabled" "btn btn-default"}} {{.Data.Params.BOOL.expandcpu.ToggleHrefAttr}}>{{.Data.CPU.ExpandtextCPU}}</a>
+          | <a {{.Data.Params.BOOL.hidecpu.BoolParamClassAttr "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hidecpu.ToggleHrefAttr}}>Hidden</a>
+          | <a {{.Data.CPU.ExpandableCPU.BoolClassAttr "btn btn-default" "btn btn-default disabled"}} {{.Data.Params.BOOL.expandcpu.ToggleHrefAttr}}>{{.Data.CPU.ExpandtextCPU}}</a>
         div.btn-group.btn-group-sm role=group
           {{template "defines::define_refresh" .Data.Params.PERIOD.refreshcpu}}
       | </form>
       | </div>
 
     div
-      | <div {{.Data.Params.BOOL.hidecpu.BoolParamClassAttr "collapse-hidden"}}>
+      | <div {{.Data.Params.BOOL.hidecpu.BoolParamClassAttr "collapse-hidden" ""}}>
       {{template "defines::define_cputable" .}}
       | </div>
 
 = content define_psrows
   {{with rowsset .}}{{.}}{{else}}
     {{range $proc := .Data.PStable.List}}
-      | <tr {{$proc.PIDstring.KeyAttr "ps-rowby-pid"}}>
+      | <tr {{$proc.PID.KeyAttr "ps-rowby-pid"}}>
       td.text-right  {{$proc.PID}}
       td.text-right  {{$proc.UID}}
-      td             {{template "defines::define_clip" ($proc.User.Clip 11 "psuser-pid" $proc.PIDstring)}}
+      td {{$proc.User}}
       td.text-right  {{$proc.Priority}}
       td.text-right  {{$proc.Nice}}
       td.text-right  {{$proc.Size}}
       td.text-right  {{$proc.Resident}}
       td.text-center {{$proc.Time}}
-      td.nowrap      {{template "defines::define_clip" ($proc.Name.Clip 42 "psname-pid" $proc.PIDstring)}}
+      td {{$proc.Name}}
       | </tr>
     {{end}}
   {{end}}
@@ -389,16 +385,16 @@
 
       div.btn-toolbar
         div.btn-group.btn-group-sm role=group
-          | <a {{.Data.Params.BOOL.hideps.BoolParamClassAttr "active"  "" "btn btn-default"}} {{.Data.Params.BOOL.hideps.ToggleHrefAttr}}>Hidden</a>
-          | <a {{.Data.PStable.PSnotDecreasable.BoolClassAttr "disabled" "" "btn btn-default"}} {{.Data.Params.LIMIT.psn.LessHrefAttr}}>-</a>
-          | <a {{.Data.PStable.PSnotExpandable.BoolClassAttr  "disabled" "" "btn btn-default"}} {{.Data.Params.LIMIT.psn.MoreHrefAttr}}>{{.Data.PStable.PSplusText}}</a>
+          | <a {{.Data.Params.BOOL.hideps.BoolParamClassAttr "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hideps.ToggleHrefAttr}}>Hidden</a>
+          | <a {{.Data.PStable.PSnotDecreasable.BoolClassAttr "btn btn-default" "btn btn-default disabled"}} {{.Data.Params.LIMIT.psn.LessHrefAttr}}>-</a>
+          | <a {{.Data.PStable.PSnotExpandable.BoolClassAttr  "btn btn-default" "btn btn-default disabled"}} {{.Data.Params.LIMIT.psn.MoreHrefAttr}}>{{.Data.PStable.PSplusText}}</a>
         div.btn-group.btn-group-sm role=group
           {{template "defines::define_refresh" .Data.Params.PERIOD.refreshps}}
       | </form>
       | </div>
 
     div
-      | <div {{.Data.Params.BOOL.hideps.BoolParamClassAttr "collapse-hidden"}}>
+      | <div {{.Data.Params.BOOL.hideps.BoolParamClassAttr "collapse-hidden" ""}}>
         {{template "defines::define_pstable" .}}
       | </div>
 
@@ -418,11 +414,11 @@
 = content define_vgrows
   {{range $mach := .Data.VagrantMachines.List}}
     | <tr {{$mach.UUID.KeyAttr "vagrant-rowby-uuid"}}>
-    td        {{template "defines::define_clip" ($mach.UUID.Clip   7 "vagrant-uuid")}}
-    td        {{$mach.Name}}
-    td        {{$mach.Provider}}
-    td        {{template "defines::define_clip" ($mach.State.Clip  8 "vagrant-state" $mach.UUID)}}
-    td        {{template "defines::define_clip" ($mach.Vagrantfile_path.Clip 50 "vagrant-filepath" $mach.UUID)}}
+    td {{$mach.UUID}}
+    td {{$mach.Name}}
+    td {{$mach.Provider}}
+    td {{$mach.State}}
+    td {{$mach.Vagrantfile_path}}
     | </tr>
   {{end}}
 
@@ -451,13 +447,13 @@
 
       div.btn-toolbar
         div.btn-group.btn-group-sm role=group
-          | <a {{.Data.Params.BOOL.hidevg.BoolParamClassAttr "active" "" "btn btn-default"}} {{.Data.Params.BOOL.hidevg.ToggleHrefAttr}}>Hidden</a>
+          | <a {{.Data.Params.BOOL.hidevg.BoolParamClassAttr "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hidevg.ToggleHrefAttr}}>Hidden</a>
         div.btn-group.btn-group-sm role=group
           {{template "defines::define_refresh" .Data.Params.PERIOD.refreshvg}}
       | </form>
       | </div>
 
     div
-      | <div {{.Data.Params.BOOL.hidevg.BoolParamClassAttr "collapse-hidden"}}>
+      | <div {{.Data.Params.BOOL.hidevg.BoolParamClassAttr "collapse-hidden" ""}}>
       {{template "defines::define_vgtable" .}}
       | </div>

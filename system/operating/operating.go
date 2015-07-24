@@ -34,7 +34,7 @@ type RAM struct {
 
 // DiskMeta type has common for DiskBytes and DiskInodes fields.
 type DiskMeta struct {
-	DevName Field
+	DevName string
 	DirName Field
 }
 
@@ -100,16 +100,15 @@ type ProcInfo struct {
 
 // ProcData type is a public (for index context, json marshaling) account of a process.
 type ProcData struct {
-	PID       uint
-	PIDstring Field
-	UID       uint
-	Priority  int
-	Nice      int
-	Time      string
-	Name      Field
-	User      Field
-	Size      string // with units
-	Resident  string // with units
+	PID      Field
+	UID      uint
+	Priority int
+	Nice     int
+	Time     string
+	Name     string
+	User     string
+	Size     string // with units
+	Resident string // with units
 }
 
 type RAMUpdater interface {
@@ -257,32 +256,12 @@ type CPUInfo struct {
 
 type Bool bool
 
-func (b Bool) BoolClassAttr(classes ...string) (template.HTMLAttr, error) {
-	fstclass, sndclass, err := ClassesChoices("BoolClassAttr", classes)
-	if err != nil {
-		return template.HTMLAttr(""), err
-	}
+func (b Bool) BoolClassAttr(fstclass, sndclass string) template.HTMLAttr {
 	s := fstclass
 	if !b {
 		s = sndclass
 	}
-	return template.HTMLAttr(fmt.Sprintf(" class=%q", s)), nil
-}
-
-func ClassesChoices(caller string, classes []string) (string, string, error) {
-	if len(classes) == 0 || len(classes) > 3 {
-		return "", "", fmt.Errorf("number of args for %s: either 2 or 3 or 4 got %d", caller, 1+len(classes))
-	}
-	sndclass := ""
-	if len(classes) > 1 {
-		sndclass = classes[1]
-	}
-	fstclass := classes[0]
-	if len(classes) > 2 {
-		fstclass = classes[2] + " " + fstclass
-		sndclass = classes[2] + " " + sndclass
-	}
-	return fstclass, sndclass, nil
+	return template.HTMLAttr(fmt.Sprintf(" class=%q", s))
 }
 
 // CoreInfo type is a struct of core metrics.
@@ -467,16 +446,14 @@ type Vgmachine struct {
 	UUID             Field
 	Name             string
 	Provider         string
-	State            Field
-	Vagrantfile_path Field // Directory
+	State            string
+	Vagrantfile_path string // Directory
 }
 
+// Field is a string type with KeyAttr method.
 type Field string
 
 func (f Field) String() string { return string(f) }
 
-// KeyAttr intended for UUID field.
+// KeyAttr returns empty attribute. In jsx that would be "key=%s".
 func (f Field) KeyAttr(string) (empty template.HTMLAttr) { return }
-func (f Field) Clip(width int, prefix string, id ...fmt.Stringer) (*Clipped, error) {
-	return Clip(width, prefix, id, f.String())
-}

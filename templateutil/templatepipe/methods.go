@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/ostrost/ostent/params"
-	"github.com/ostrost/ostent/system/operating"
 )
 
 func Uncurl(s string) string {
@@ -22,39 +21,15 @@ func (n Nota) FormActionAttr() interface{} {
 }
 
 func (n Nota) KeyAttr(prefix string) template.HTMLAttr {
-	return template.HTMLAttr(fmt.Sprintf(" key={%q+%s}", prefix+"-", n.Uncurl()))
+	return SprintfAttr(" key={%q+%s}", prefix+"-", n.Uncurl())
 }
 
-func (n Nota) BoolClassAttr(classes ...string) (template.HTMLAttr, error) {
-	fstclass, sndclass, err := operating.ClassesChoices("BoolClassAttr", classes)
-	if err != nil {
-		return template.HTMLAttr(""), err
-	}
-	return template.HTMLAttr(fmt.Sprintf(" className={%s ? %q : %q}",
-		n.Uncurl(), fstclass, sndclass)), nil
+func (n Nota) BoolClassAttr(fstclass, sndclass string) template.HTMLAttr {
+	return SprintfAttr(" className={%s ? %q : %q}", n.Uncurl(), fstclass, sndclass)
 }
 
-func (n Nota) BoolParamClassAttr(classes ...string) (template.HTMLAttr, error) {
-	fstclass, sndclass, err := operating.ClassesChoices("BoolParamClassAttr", classes)
-	if err != nil {
-		return template.HTMLAttr(""), err
-	}
-	return template.HTMLAttr(fmt.Sprintf(" className={%s.Value ? %q : %q}",
-		n.Uncurl(), fstclass, sndclass)), nil
-}
-
-func (n Nota) Clip(width int, prefix string, id ...fmt.Stringer) (*operating.Clipped, error) {
-	k, err := operating.ClipArgs(id, n.Uncurl())
-	if err != nil {
-		return nil, err
-	}
-	key := fmt.Sprintf("{%q+%s}", prefix+"-", Uncurl(k))
-	return &operating.Clipped{
-		IDAttr:      operating.SprintfAttr(" id=%s", key),
-		ForAttr:     operating.SprintfAttr(" htmlFor=%s", key),
-		MWStyleAttr: operating.SprintfAttr(" style={{maxWidth: '%dch'}}", width),
-		Text:        n.String(),
-	}, nil
+func (n Nota) BoolParamClassAttr(fstclass, sndclass string) template.HTMLAttr {
+	return SprintfAttr(" className={%s.Value ? %q : %q}", n.Uncurl(), fstclass, sndclass)
 }
 
 func (n Nota) DisabledAttr() interface{} {
@@ -72,7 +47,7 @@ func (n Nota) EnumClassAttr(named, classif string, optelse ...string) (template.
 	if err := uptr.Unmarshal(named, new(bool)); err != nil {
 		return template.HTMLAttr(""), err
 	}
-	return operating.SprintfAttr(" className={(%s.Uint == %d) ? %q : %q}",
+	return SprintfAttr(" className={(%s.Uint == %d) ? %q : %q}",
 		n, uptr.Touint(), classif, classelse), nil
 }
 
@@ -118,4 +93,8 @@ func (n Nota) MoreHrefAttr() interface{} {
 func (n Nota) Base() string {
 	split := strings.Split(n.String(), ".")
 	return split[len(split)-1]
+}
+
+func SprintfAttr(format string, args ...interface{}) template.HTMLAttr {
+	return template.HTMLAttr(fmt.Sprintf(format, args...))
 }
