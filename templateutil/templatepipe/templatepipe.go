@@ -56,6 +56,20 @@ func DataNode(root *template.Template, node parse.Node, data *Dotted, vars map[s
 		case parse.NodeTemplate:
 			tnode := node.(*parse.TemplateNode)
 			var tawords []string
+			for _, cmd := range tnode.Pipe.Cmds {
+				for _, arg := range cmd.Args {
+					s := arg.String()
+					if len(s) == 1 || s[0] != '$' {
+						continue
+					}
+					x := strings.Split(s, ".")
+					if words, ok := vars[x[0]]; ok {
+						words := append(words, x[1:]...)
+						data.Append(words, prefixwords)
+					}
+				}
+				break
+			}
 			for _, arg := range tnode.Pipe.Cmds[0].Args {
 				s := arg.String()
 				if len(s) > 1 && s[0] == '.' {
@@ -114,6 +128,9 @@ func DataNode(root *template.Template, node parse.Node, data *Dotted, vars map[s
 							if len(decl) > 0 && len(decl[0].Ident) > 0 {
 								vars[decl[0].Ident[0]] = words
 							}
+						} else if ident[0] == "$data" {
+							words := append([]string{"Data"}, ident[1:]...)
+							data.Append(words, prefixwords)
 						}
 					}
 				}

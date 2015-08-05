@@ -1,16 +1,21 @@
 = content define_usepercent
   | <span {{class}}="label" data-usepercent={{.}}>{{.}}%</span>
 
+/ usage: {{template "defines::define_refresh" (Chain .Data "Refreshsmth")}}
 = content define_refresh
-  | <div {{.RefreshClassAttr "input-group input-group-sm refresh-group"}}>
+  {{$data := (index . 0)}}{{/*   .Data         */}}
+  {{$n    := (index . 1)}}{{/*   "Refreshsmth" */}}
+  {{$p    := $data.Params}}
+  | <div {{$p.AttrClassParamsError $data.Params.Errors $n "input-group input-group-sm refresh-group has-warning" "input-group input-group-sm refresh-group"}}>
   span.input-group-addon Refresh
-  | <input {{class}}="form-control refresh-input width-fourem" type="text" placeholder={{.Placeholder}} {{.PeriodNameAttr}} {{.PeriodValueAttr}}>{{jsxClose "input"}}
-  | </div>
+  |
+      <input {{class}}="form-control refresh-input width-fourem" type="text" placeholder={{$data.MinRefresh}} {{$p.AttrNameRefresh $n}} {{$p.AttrValueRefresh $n}}>{{jsxClose "input"}}
+    </div>
 
 = content define_ifbytes_rows
   {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IFbytes.List}}
-      | <tr {{$if.Name.KeyAttr "ifbytes-rowby-name"}}>
+      | <tr {{$if.Name.AttrKey "ifbytes-rowby-name"}}>
       td {{$if.Name}}
       td.text-right {{$if.DeltaIn}}
       td.text-right {{$if.DeltaOut}}
@@ -23,7 +28,7 @@
 = content define_iferrors_rows
   {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IFerrors.List}}
-      | <tr {{$if.Name.KeyAttr "iferrors-rowby-name"}}>
+      | <tr {{$if.Name.AttrKey "iferrors-rowby-name"}}>
       td {{$if.Name}}
       td.text-right {{$if.DeltaIn}}
       td.text-right {{$if.DeltaOut}}
@@ -36,7 +41,7 @@
 = content define_ifpackets_rows
   {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IFpackets.List}}
-      | <tr {{$if.Name.KeyAttr "ifpackets-rowby-name"}}>
+      | <tr {{$if.Name.AttrKey "ifpackets-rowby-name"}}>
       td {{$if.Name}}
       td.text-right {{$if.DeltaIn}}
       td.text-right {{$if.DeltaOut}}
@@ -103,53 +108,60 @@
       {{template "defines::define_iferrors_rows" .}}
 
 = content define_panelif
+  {{$p := .Data.Params}}
   div
     div
-      | <a    {{.Data.Params.BOOL.configif.ToggleHrefAttr}} {{class}}="btn-block">
-      | <span {{.Data.Params.BOOL.configif.BoolParamClassAttr "h4 bg-info" "h4"}}>{{.Data.Params.ENUM.ift.Title}}</span></a>
+      |
+        <a      {{$p.AttrHrefToggle $p.Configif}} {{class}}="btn-block">
+          <span {{$p.AttrClassN $p.Configif "h4 bg-info" "h4"}}>Interfaces</span>
+        </a>
 
     div
-      | <div id="ifconfig" {{.Data.Params.BOOL.configif.BoolParamClassAttr "config-margintop" "config-margintop collapse-hidden"}}>
-      | <form {{class}}="form-inline" {{.Data.Params.Query.FormActionAttr}}>
+      | <div {{$p.AttrClassN $p.Configif "config-margintop" "config-margintop collapse-hidden"}} id="ifconfig">
+      | <form {{$p.AttrActionForm}} {{class}}="form-inline">
       input.hidden-submit type=submit
 
       div.btn-toolbar
         div.btn-group.btn-group-sm role=group
-          | <a {{.Data.Params.BOOL.hideif.BoolParamClassAttr "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hideif.ToggleHrefAttr}}>Hidden</a>
-          | <a {{.Data.ExpandableIF.BoolClassAttr "btn btn-default" "btn btn-default disabled"}} {{.Data.Params.BOOL.expandif.ToggleHrefAttr}}>{{.Data.ExpandtextIF}}</a>
+          |
+            <a {{$p.AttrClassN $p.Hideif "btn btn-default active" "btn btn-default"}}
+               {{$p.AttrHrefToggle $p.Hideif}}>Hidden</a>
+            <a {{$p.AttrClassN .Data.ExpandableIF "btn btn-default" "btn btn-default disabled"}}
+               {{$p.AttrHrefToggle $p.Expandif}}>{{.Data.ExpandtextIF}}</a>
         div.btn-group.btn-group-sm role=group
-          {{template "defines::define_refresh" .Data.Params.PERIOD.refreshif}}
+          {{template "defines::define_refresh" (Chain .Data "Refreshif")}}
       | </form>
 
       ul.nav.nav-tabs.config-margintop
-        | <li {{.Data.Params.ENUM.ift.EnumClassAttr "PACKETS" "active"}}>
-        {{template "defines::enumlink" .Data.Params.ENUM.ift.EnumLink "PACKETS"}}
-        | </li><li {{.Data.Params.ENUM.ift.EnumClassAttr "ERRORS" "active"}}>
-        {{template "defines::enumlink" .Data.Params.ENUM.ift.EnumLink "ERRORS"}}
-        | </li><li {{.Data.Params.ENUM.ift.EnumClassAttr "IFBYTES" "active"}}>
-        {{template "defines::enumlink" .Data.Params.ENUM.ift.EnumLink "IFBYTES"}}
+        / PACKETS
+        | <li {{$p.AttrClassT $p.Defaults $p.Ift 1 "active" ""}}>
+        {{template "defines::enumlink" $p.Variate $p.Ift 1 "Packets" ""}}
+        / ERRORS
+        | </li><li {{$p.AttrClassT $p.Defaults $p.Ift 2 "active" ""}}>
+        {{template "defines::enumlink" $p.Variate $p.Ift 2 "Errors" ""}}
+        / IFBYTES
+        | </li><li {{$p.AttrClassT $p.Defaults $p.Ift 3 "active" ""}}>
+        {{template "defines::enumlink" $p.Variate $p.Ift 3 "Bytes" ""}}
         | </li>
       | </div>
 
     div
-      | <div {{.Data.Params.BOOL.hideif.BoolParamClassAttr "collapse-hidden" ""}}>
-      | <div {{.Data.Params.ENUM.ift.EnumClassAttr "PACKETS" "" "collapse-hidden"}}>
+      | <div {{$p.AttrClassN $p.Hideif "collapse-hidden" ""}}>
+      / PACKETS
+      | <div {{$p.AttrClassT $p.Defaults $p.Ift 1 "" "collapse-hidden"}}>
       {{template "defines::define_ifpackets_table" .}}
-      | </div>
-
-      | <div {{.Data.Params.ENUM.ift.EnumClassAttr "ERRORS" "" "collapse-hidden"}}>
+      / ERRORS
+      | </div><div {{$p.AttrClassT $p.Defaults $p.Ift 2 "" "collapse-hidden"}}>
       {{template "defines::define_iferrors_table" .}}
-      | </div>
-
-      | <div {{.Data.Params.ENUM.ift.EnumClassAttr "IFBYTES" "" "collapse-hidden"}}>
+      / IFBYTES
+      | </div><div {{$p.AttrClassT $p.Defaults $p.Ift 3 "" "collapse-hidden"}}>
       {{template "defines::define_ifbytes_table" .}}
-      | </div>
-      | </div>
+      | </div></div>
 
 = content define_dfbytes_rows
   {{with rowsset .}}{{.}}{{else}}
     {{range $disk := .Data.DFbytes.List}}
-      | <tr {{$disk.DirName.KeyAttr "dfbytes-rowby-dirname"}}>
+      | <tr {{$disk.DirName.AttrKey "dfbytes-rowby-dirname"}}>
       td {{$disk.DevName}}
       td {{$disk.DirName}}
       td.text-right {{$disk.Avail}}
@@ -162,7 +174,7 @@
 = content define_dfinodes_rows
   {{with rowsset .}}{{.}}{{else}}
     {{range $disk := .Data.DFinodes.List}}
-      | <tr {{$disk.DirName.KeyAttr "dfinodes-rowby-dirname"}}>
+      | <tr {{$disk.DirName.AttrKey "dfinodes-rowby-dirname"}}>
       td {{$disk.DevName}}
       td {{$disk.DirName}}
       td.text-right {{$disk.Ifree}}
@@ -173,20 +185,25 @@
   {{end}}
 
 = content enumlink
-  | <a href={{.Href}} onClick={this.handleClick}>{{.Text}}</a>
+  | <a href={{.LinkHref}} onClick={this.handleClick}>{{.LinkText}}</a>
 
 = content headerenumlink
-  th {{class}}="header {{.AlignClass}}" <a href={{.Href}} {{class}}={{.Class}}>{{.Text}}<span {{class}}={{.CaretClass}}></span></a>
+  th {{class}}="header {{.AlignClass}}"
+    |
+      <a href={{.LinkHref}} {{class}}={{.LinkClass}}>{{.LinkText}}
+        <span {{class}}={{.CaretClass}}></span>
+      </a>
 
 = content define_dfbytes_table
+  {{$p := .Data.Params}}
   table.table.table-striped
     thead
       tr
-        {{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "FS" ""}}
-        {{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "MP" ""}}
-        {{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "AVAIL"}}
-        {{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "USED"}}
-        {{template "defines::headerenumlink" .Data.Params.ENUM.df.EnumLink "TOTAL"}}
+        {{template "defines::headerenumlink" $p.Variate $p.Dfk 1 "Device"  ""          }}{{/* FS    */}}
+        {{template "defines::headerenumlink" $p.Variate $p.Dfk 2 "Mounted" ""          }}{{/* MP    */}}
+        {{template "defines::headerenumlink" $p.Variate $p.Dfk 3 "Avail"   "text-right"}}{{/* AVAIL */}}
+        {{template "defines::headerenumlink" $p.Variate $p.Dfk 4 "Used"    "text-right"}}{{/* USED  */}}
+        {{template "defines::headerenumlink" $p.Variate $p.Dfk 5 "Total"   "text-right"}}{{/* TOTAL */}}
     tbody
       {{template "defines::define_dfbytes_rows" .}}
 
@@ -203,47 +220,52 @@
       {{template "defines::define_dfinodes_rows" .}}
 
 = content define_paneldf
+  {{$p := .Data.Params}}
   div
     div
-      | <a    {{.Data.Params.BOOL.configdf.ToggleHrefAttr}} {{class}}="btn-block">
-      | <span {{.Data.Params.BOOL.configdf.BoolParamClassAttr "h4 bg-info" "h4"}}>{{.Data.Params.ENUM.dft.Title}}</span></a>
+      | <a    {{$p.AttrHrefToggle $p.Configdf}} {{class}}="btn-block">
+      | <span {{$p.AttrClassN $p.Configdf "h4 bg-info" "h4"}}>Disk usage</span></a>
 
     div
-      | <div id="dfconfig" {{.Data.Params.BOOL.configdf.BoolParamClassAttr "config-margintop" "config-margintop collapse-hidden"}}>
-      | <form {{class}}="form-inline" {{.Data.Params.Query.FormActionAttr}}>
+      | <div {{$p.AttrClassN $p.Configdf "config-margintop" "config-margintop collapse-hidden"}} id="dfconfig">
+      | <form {{$p.AttrActionForm}} {{class}}="form-inline">
       input.hidden-submit type=submit
 
       div.btn-toolbar
         div.btn-group.btn-group-sm role=group
-          | <a {{.Data.Params.BOOL.hidedf.BoolParamClassAttr "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hidedf.ToggleHrefAttr}}>Hidden</a>
-          | <a {{.Data.ExpandableDF.BoolClassAttr "btn btn-default" "btn btn-default disabled"}} {{.Data.Params.BOOL.expanddf.ToggleHrefAttr}}>{{.Data.ExpandtextDF}}</a>
+          |
+            <a {{$p.AttrClassN $p.Hidedf "btn btn-default active" "btn btn-default"}}
+               {{$p.AttrHrefToggle $p.Hidedf}}>Hidden</a>
+            <a {{$p.AttrClassN .Data.ExpandableDF "btn btn-default" "btn btn-default disabled"}}
+               {{$p.AttrHrefToggle $p.Expanddf}}>{{.Data.ExpandtextDF}}</a>
         div.btn-group.btn-group-sm role=group
-          {{template "defines::define_refresh" .Data.Params.PERIOD.refreshdf}}
+          {{template "defines::define_refresh" (Chain .Data "Refreshdf")}}
       | </form>
 
       ul.nav.nav-tabs.config-margintop
-        | <li {{.Data.Params.ENUM.dft.EnumClassAttr "INODES" "active"}}>
-        {{template "defines::enumlink" .Data.Params.ENUM.dft.EnumLink "INODES"}}
-        | </li><li {{.Data.Params.ENUM.dft.EnumClassAttr "DFBYTES" "active"}}>
-        {{template "defines::enumlink" .Data.Params.ENUM.dft.EnumLink "DFBYTES"}}
+        / INODES
+        | <li {{$p.AttrClassT $p.Defaults $p.Dft 1 "active" ""}}>
+        {{template "defines::enumlink" $p.Variate $p.Dft 1 "Inodes" ""}}
+        / DFBYTES
+        | </li><li {{$p.AttrClassT $p.Defaults $p.Dft 2 "active" ""}}>
+        {{template "defines::enumlink" $p.Variate $p.Dft 2 "Bytes" ""}}
         | </li>
       | </div>
 
     div
-      | <div {{.Data.Params.BOOL.hidedf.BoolParamClassAttr "collapse-hidden" ""}}>
-      | <div {{.Data.Params.ENUM.dft.EnumClassAttr "INODES" "" "collapse-hidden"}}>
+      | <div {{$p.AttrClassN $p.Hidedf "collapse-hidden" ""}}>
+      / INODES
+      | <div {{$p.AttrClassT $p.Defaults $p.Dft 1 "" "collapse-hidden"}}>
       {{template "defines::define_dfinodes_table" .}}
-      | </div>
-
-      | <div {{.Data.Params.ENUM.dft.EnumClassAttr "DFBYTES" "" "collapse-hidden"}}>
+      / DFBYTES
+      | </div><div {{$p.AttrClassT $p.Defaults $p.Dft 2 "" "collapse-hidden"}}>
       {{template "defines::define_dfbytes_table" .}}
-      | </div>
-      | </div>
+      | </div></div>
 
 = content define_memrows
   {{with rowsset .}}{{.}}{{else}}
     {{range $i, $mem := .Data.MEM.List}}
-      | <tr {{$mem.Kind.KeyAttr "mem-rowby-kind"}}>
+      | <tr {{$mem.Kind.AttrKey "mem-rowby-kind"}}>
       td {{$mem.Kind}}
       td.text-right {{$mem.Free}}
       td.text-right {{template "defines::define_usepercent" $mem.UsePercent}}&nbsp;{{$mem.Used}}
@@ -264,34 +286,40 @@
       {{template "defines::define_memrows" .}}
 
 = content define_panelmem
+  {{$p := .Data.Params}}
   div
     div
-      | <a    {{.Data.Params.BOOL.configmem.ToggleHrefAttr}} {{class}}="btn-block">
-      | <span {{.Data.Params.BOOL.configmem.BoolParamClassAttr "h4 bg-info" "h4"}}>Memory</span></a>
+      |
+        <a      {{$p.AttrHrefToggle $p.Configmem}} {{class}}="btn-block">
+          <span {{$p.AttrClassN $p.Configmem "h4 bg-info" "h4"}}>Memory</span>
+        </a>
 
     div
-      | <div id="memconfig" {{.Data.Params.BOOL.configmem.BoolParamClassAttr "config-margintop" "config-margintop collapse-hidden"}}>
-      | <form {{class}}="form-inline" {{.Data.Params.Query.FormActionAttr}}>
+      | <div {{$p.AttrClassN $p.Configmem "config-margintop" "config-margintop collapse-hidden"}} id="memconfig">
+      | <form {{$p.AttrActionForm}} {{class}}="form-inline">
       input.hidden-submit type=submit
 
       div.btn-toolbar
         div.btn-group.btn-group-sm role=group
-          | <a {{.Data.Params.BOOL.hidemem.BoolParamClassAttr  "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hidemem.ToggleHrefAttr}}>Hidden</a>
-          | <a {{.Data.Params.BOOL.hideswap.BoolParamClassAttr "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hideswap.ToggleHrefAttr}} {{.Data.Params.BOOL.hidemem.DisabledAttr}}>Hide swap</a>
+          |
+            <a {{$p.AttrClassN $p.Hidemem  "btn btn-default active" "btn btn-default"}}
+               {{$p.AttrHrefToggle $p.Hidemem}} >Hidden</a>
+            <a {{$p.AttrClassN $p.Hideswap "btn btn-default active" "btn btn-default"}}
+               {{$p.AttrHrefToggle $p.Hideswap}}>Hide swap</a>
         div.btn-group.btn-group-sm role=group
-          {{template "defines::define_refresh" .Data.Params.PERIOD.refreshmem}}
+          {{template "defines::define_refresh" (Chain .Data "Refreshmem")}}
       | </form>
       | </div>
 
     div
-      | <div {{.Data.Params.BOOL.hidemem.BoolParamClassAttr "collapse-hidden" ""}}>
+      | <div {{$p.AttrClassN $p.Hidemem "collapse-hidden" ""}}>
       {{template "defines::define_memtable" .}}
       | </div>
 
 = content define_cpurows
   {{with rowsset .}}{{.}}{{else}}
     {{range $i, $core := .Data.CPU.List}}
-      | <tr {{$core.N.KeyAttr "cpu-rowby-N"}}>
+      | <tr {{$core.N.AttrKey "cpu-rowby-N"}}>
       td.text-right.nowrap {{$core.N}}
       td.text-right <span {{class}}="usepercent-text" data-usepercent={{$core.User}}>{{$core.User}}</span>
       td.text-right <span {{class}}="usepercent-text" data-usepercent={{$core.Sys}}>{{$core.Sys}}</span>
@@ -315,34 +343,40 @@
       {{template "defines::define_cpurows" .}}
 
 = content define_panelcpu
+  {{$p := .Data.Params}}
   div
     div
-      | <a    {{.Data.Params.BOOL.configcpu.ToggleHrefAttr}} {{class}}="btn-block">
-      | <span {{.Data.Params.BOOL.configcpu.BoolParamClassAttr "h4 bg-info" "h4"}}>CPU</span></a>
+      |
+        <a      {{$p.AttrHrefToggle $p.Configcpu}} {{class}}="btn-block">
+          <span {{$p.AttrClassN $p.Configcpu "h4 bg-info" "h4"}}>CPU</span>
+        </a>
 
     div
-      | <div id="cpuconfig" {{.Data.Params.BOOL.configcpu.BoolParamClassAttr "config-margintop" "config-margintop collapse-hidden"}}>
-      | <form {{class}}="form-inline" {{.Data.Params.Query.FormActionAttr}}>
+      | <div {{$p.AttrClassN $p.Configcpu "config-margintop" "config-margintop collapse-hidden"}} id="cpuconfig">
+      | <form {{$p.AttrActionForm}} {{class}}="form-inline">
       input.hidden-submit type=submit
 
       div.btn-toolbar
         div.btn-group.btn-group-sm role=group
-          | <a {{.Data.Params.BOOL.hidecpu.BoolParamClassAttr "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hidecpu.ToggleHrefAttr}}>Hidden</a>
-          | <a {{.Data.CPU.ExpandableCPU.BoolClassAttr "btn btn-default" "btn btn-default disabled"}} {{.Data.Params.BOOL.expandcpu.ToggleHrefAttr}}>{{.Data.CPU.ExpandtextCPU}}</a>
+          |
+            <a {{$p.AttrClassN $p.Hidecpu "btn btn-default active" "btn btn-default"}}
+               {{$p.AttrHrefToggle $p.Hidecpu}}>Hidden</a>
+            <a {{$p.AttrClassN .Data.CPU.ExpandableCPU "btn btn-default" "btn btn-default disabled"}}
+               {{$p.AttrHrefToggle $p.Expandcpu}}>{{.Data.CPU.ExpandtextCPU}}</a>
         div.btn-group.btn-group-sm role=group
-          {{template "defines::define_refresh" .Data.Params.PERIOD.refreshcpu}}
+          {{template "defines::define_refresh" (Chain .Data "Refreshcpu")}}
       | </form>
       | </div>
 
     div
-      | <div {{.Data.Params.BOOL.hidecpu.BoolParamClassAttr "collapse-hidden" ""}}>
+      | <div {{$p.AttrClassN $p.Hidecpu "collapse-hidden" ""}}>
       {{template "defines::define_cputable" .}}
       | </div>
 
 = content define_psrows
   {{with rowsset .}}{{.}}{{else}}
     {{range $proc := .Data.PStable.List}}
-      | <tr {{$proc.PID.KeyAttr "ps-rowby-pid"}}>
+      | <tr {{$proc.PID.AttrKey "ps-rowby-pid"}}>
       td.text-right  {{$proc.PID}}
       td.text-right  {{$proc.UID}}
       td {{$proc.User}}
@@ -357,44 +391,50 @@
   {{end}}
 
 = content define_pstable
+  {{$p := .Data.Params}}
   table.table.table-striped.table-hover
     thead
       tr
-        {{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "PID"}}
-        {{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "UID"}}
-        {{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "USER" ""}}
-        {{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "PRI"}}
-        {{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "NICE"}}
-        {{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "VIRT"}}
-        {{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "RES"}}
-        {{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "TIME" "center"}}
-        {{template "defines::headerenumlink" .Data.Params.ENUM.ps.EnumLink "NAME" ""}}
+        {{template "defines::headerenumlink" $p.Variate $p.Psk 1 "PID"     "text-right" }}{{/* PID  */}}
+        {{template "defines::headerenumlink" $p.Variate $p.Psk 8 "UID"     "text-right" }}{{/* UID  */}}
+        {{template "defines::headerenumlink" $p.Variate $p.Psk 9 "USER"    ""           }}{{/* USER */}}
+        {{template "defines::headerenumlink" $p.Variate $p.Psk 2 "PR"      "text-right" }}{{/* PRI  */}}
+        {{template "defines::headerenumlink" $p.Variate $p.Psk 3 "NI"      "text-right" }}{{/* NICE */}}
+        {{template "defines::headerenumlink" $p.Variate $p.Psk 4 "VIRT"    "text-right" }}{{/* VIRT */}}
+        {{template "defines::headerenumlink" $p.Variate $p.Psk 5 "RES"     "text-right" }}{{/* RES  */}}
+        {{template "defines::headerenumlink" $p.Variate $p.Psk 6 "TIME"    "text-center"}}{{/* TIME */}}
+        {{template "defines::headerenumlink" $p.Variate $p.Psk 7 "COMMAND" ""           }}{{/* NAME */}}
     tbody
       {{template "defines::define_psrows" .}}
 
 = content define_panelps
+  {{$p := .Data.Params}}
   div
     div
-      | <a    {{.Data.Params.BOOL.configps.ToggleHrefAttr}} {{class}}="btn-block">
-      | <span {{.Data.Params.BOOL.configps.BoolParamClassAttr "h4 bg-info" "h4"}}>Processes</span></a>
+      | <a    {{$p.AttrHrefToggle $p.Configps}} {{class}}="btn-block">
+      | <span {{$p.AttrClassN $p.Configps "h4 bg-info" "h4"}}>Processes</span></a>
 
     div
-      | <div id="psconfig" {{.Data.Params.BOOL.configps.BoolParamClassAttr "config-margintop" "config-margintop collapse-hidden"}}>
-      | <form {{class}}="form-inline text-right" {{.Data.Params.Query.FormActionAttr}}>
+      | <div {{$p.AttrClassN $p.Configps "config-margintop" "config-margintop collapse-hidden"}} id="psconfig">
+      | <form {{$p.AttrActionForm}} {{class}}="form-inline">
       input.hidden-submit type=submit
 
       div.btn-toolbar
         div.btn-group.btn-group-sm role=group
-          | <a {{.Data.Params.BOOL.hideps.BoolParamClassAttr "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hideps.ToggleHrefAttr}}>Hidden</a>
-          | <a {{.Data.PStable.PSnotDecreasable.BoolClassAttr "btn btn-default" "btn btn-default disabled"}} {{.Data.Params.LIMIT.psn.LessHrefAttr}}>-</a>
-          | <a {{.Data.PStable.PSnotExpandable.BoolClassAttr  "btn btn-default" "btn btn-default disabled"}} {{.Data.Params.LIMIT.psn.MoreHrefAttr}}>{{.Data.PStable.PSplusText}}</a>
+          |
+            <a {{$p.AttrClassN $p.Hideps "btn btn-default active" "btn btn-default"}}
+               {{$p.AttrHrefToggle $p.Hideps}}>Hidden</a>
+            <a {{$p.AttrClassN .Data.PStable.PSnotDecreasable "btn btn-default" "btn btn-default disabled"}}
+               {{$p.AttrHrefLess $p.Psn}}>-</a>
+            <a {{$p.AttrClassN .Data.PStable.PSnotExpandable "btn btn-default" "btn btn-default disabled"}}
+                {{$p.AttrHrefMore $p.Psn}}>{{.Data.PStable.PSplusText}}</a>
         div.btn-group.btn-group-sm role=group
-          {{template "defines::define_refresh" .Data.Params.PERIOD.refreshps}}
+          {{template "defines::define_refresh" (Chain .Data "Refreshps")}}
       | </form>
       | </div>
 
     div
-      | <div {{.Data.Params.BOOL.hideps.BoolParamClassAttr "collapse-hidden" ""}}>
+      | <div {{$p.AttrClassN $p.Hideps "collapse-hidden" ""}}>
         {{template "defines::define_pstable" .}}
       | </div>
 
@@ -413,7 +453,7 @@
 
 = content define_vgrows
   {{range $mach := .Data.VagrantMachines.List}}
-    | <tr {{$mach.UUID.KeyAttr "vagrant-rowby-uuid"}}>
+    | <tr {{$mach.UUID.AttrKey "vagrant-rowby-uuid"}}>
     td {{$mach.UUID}}
     td {{$mach.Name}}
     td {{$mach.Provider}}
@@ -435,25 +475,30 @@
       {{template "defines::define_vgswitch" .}}
 
 = content define_panelvg
+  {{$p := .Data.Params}}
   div
     div
-      | <a    {{.Data.Params.BOOL.configvg.ToggleHrefAttr}} {{class}}="btn-block">
-      | <span {{.Data.Params.BOOL.configvg.BoolParamClassAttr "h4 bg-info" "h4"}}>Vagrant global-status</span></a>
+      |
+        <a      {{$p.AttrHrefToggle $p.Configvg}} {{class}}="btn-block">
+          <span {{$p.AttrClassN $p.Configvg "h4 bg-info" "h4"}}>Vagrant global-status</span>
+        </a>
 
     div
-      | <div id="vgconfig" {{.Data.Params.BOOL.configvg.BoolParamClassAttr "config-margintop" "config-margintop collapse-hidden"}}>
-      | <form {{class}}="form-inline" {{.Data.Params.Query.FormActionAttr}}>
+      | <div {{$p.AttrClassN $p.Configvg "config-margintop" "config-margintop collapse-hidden"}} id="vgconfig">
+      | <form {{$p.AttrActionForm}} {{class}}="form-inline">
       input.hidden-submit type=submit
 
       div.btn-toolbar
         div.btn-group.btn-group-sm role=group
-          | <a {{.Data.Params.BOOL.hidevg.BoolParamClassAttr "btn btn-default active" "btn btn-default"}} {{.Data.Params.BOOL.hidevg.ToggleHrefAttr}}>Hidden</a>
+          |
+            <a {{$p.AttrClassN $p.Hidevg "btn btn-default active" "btn btn-default"}}
+               {{$p.AttrHrefToggle $p.Hidevg}}>Hidden</a>
         div.btn-group.btn-group-sm role=group
-          {{template "defines::define_refresh" .Data.Params.PERIOD.refreshvg}}
+          {{template "defines::define_refresh" (Chain .Data "Refreshvg")}}
       | </form>
       | </div>
 
     div
-      | <div {{.Data.Params.BOOL.hidevg.BoolParamClassAttr "collapse-hidden" ""}}>
+      | <div {{$p.AttrClassN $p.Hidevg "collapse-hidden" ""}}>
       {{template "defines::define_vgtable" .}}
       | </div>

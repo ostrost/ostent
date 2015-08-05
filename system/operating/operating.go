@@ -4,7 +4,6 @@
 package operating
 
 import (
-	"fmt"
 	"html/template"
 	"sync"
 
@@ -250,18 +249,8 @@ func (gp *GaugePercent) UpdatePercent(totalDelta int64, uabsolute uint64) {
 type CPUInfo struct {
 	List          []CoreInfo
 	ExpandCPU     *bool   `json:",omitempty"`
-	ExpandableCPU *Bool   `json:",omitempty"`
+	ExpandableCPU *bool   `json:",omitempty"`
 	ExpandtextCPU *string `json:",omitempty"`
-}
-
-type Bool bool
-
-func (b Bool) BoolClassAttr(fstclass, sndclass string) template.HTMLAttr {
-	s := fstclass
-	if !b {
-		s = sndclass
-	}
-	return template.HTMLAttr(fmt.Sprintf(" class=%q", s))
 }
 
 // CoreInfo type is a struct of core metrics.
@@ -450,10 +439,10 @@ type Vgmachine struct {
 	Vagrantfile_path string // Directory
 }
 
-// Field is a string type with KeyAttr method.
+// Field is a string type with AttrKey method.
 type Field string
 
 func (f Field) String() string { return string(f) }
 
-// KeyAttr returns empty attribute. In jsx that would be "key=%s".
-func (f Field) KeyAttr(string) (empty template.HTMLAttr) { return }
+// AttrKey returns empty attribute. In jsx that would be "key=%s".
+func (f Field) AttrKey(string) (empty template.HTMLAttr) { return }

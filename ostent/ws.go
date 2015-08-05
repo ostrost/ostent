@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	gorillawebsocket "github.com/gorilla/websocket"
+	"github.com/gorilla/websocket"
 
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/params"
@@ -91,7 +91,7 @@ func Loop(flags.Period) {
 }
 
 type conn struct {
-	Conn *gorillawebsocket.Conn
+	Conn *websocket.Conn
 
 	requestOrigin *http.Request
 
@@ -364,8 +364,8 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	stop := func() {
 		w.WriteHeader(http.StatusBadRequest) // well, not a bad request but a write failure
 	}
-	update, err := getUpdates(r, sd.conn.para, sd.received != nil)
-	if err != nil || update == (IndexUpdate{}) { // nothing scheduled for the moment, no update
+	update, updated, err := getUpdates(r, sd.conn.para, sd.received != nil)
+	if err != nil || !updated { // nothing scheduled for the moment, no update
 		return
 	}
 
@@ -405,7 +405,7 @@ func IndexWSFunc(access *Access, errlog *log.Logger, minperiod flags.Period) fun
 
 func IndexWS(access *Access, errlog *log.Logger, minperiod flags.Period, w http.ResponseWriter, req *http.Request) {
 	// Upgrader.Upgrade() has Origin check if .CheckOrigin is nil
-	upgrader := gorillawebsocket.Upgrader{
+	upgrader := websocket.Upgrader{
 		HandshakeTimeout: 5 * time.Second,
 	}
 	wsconn, err := upgrader.Upgrade(w, req, nil)

@@ -16,26 +16,33 @@ func (n Nota) Uncurl() string {
 	return Uncurl(n.String())
 }
 
-func (n Nota) FormActionAttr() interface{} {
-	return fmt.Sprintf(" action={\"/form/\"+%s}", n.Uncurl())
+func (n Nota) AttrActionForm() template.HTMLAttr {
+	return SprintfAttr(" action={\"/form/\"+%s}", n.Uncurl())
 }
 
-func (n Nota) KeyAttr(prefix string) template.HTMLAttr {
+func (n Nota) AttrKey(prefix string) template.HTMLAttr {
 	return SprintfAttr(" key={%q+%s}", prefix+"-", n.Uncurl())
 }
 
-func (n Nota) BoolClassAttr(fstclass, sndclass string) template.HTMLAttr {
-	return SprintfAttr(" className={%s ? %q : %q}", n.Uncurl(), fstclass, sndclass)
+func (_ Nota) AttrClassN(v, fstclass, sndclass string) template.HTMLAttr {
+	return SprintfAttr(" className={%s ? %q : %q}", Uncurl(v), fstclass, sndclass)
 }
 
-func (n Nota) BoolParamClassAttr(fstclass, sndclass string) template.HTMLAttr {
-	return SprintfAttr(" className={%s.Value ? %q : %q}", n.Uncurl(), fstclass, sndclass)
+func (_ Nota) AttrClassT(defaults, v string, cmp int, fstclass, sndclass string) template.HTMLAttr {
+	defaults, v = Uncurl(defaults), Uncurl(v)
+	split := strings.Split(v, ".")
+	last := split[len(split)-1]
+	return SprintfAttr(" className={%d == %s || (%s == 0 && %d == %s.%s) ? %q : %q}",
+		cmp, v, v, cmp, defaults, last, fstclass, sndclass)
 }
 
-func (n Nota) DisabledAttr() interface{} {
-	return fmt.Sprintf(" disabled={%s.Value ? %q : \"\" }", n.Uncurl(), "disabled")
+func (_ Nota) AttrClassParamsError(errs interface{}, name, fstclass, sndclass string) template.HTMLAttr {
+	serrs := Uncurl(errs.(string))
+	return SprintfAttr(" className={%s && %s.%s ? %q : %q}",
+		serrs, serrs, name, fstclass, sndclass)
 }
 
+/*
 func (n Nota) EnumClassAttr(named, classif string, optelse ...string) (template.HTMLAttr, error) {
 	classelse, err := params.EnumClassAttrArgs(optelse)
 	if err != nil {
@@ -49,8 +56,23 @@ func (n Nota) EnumClassAttr(named, classif string, optelse ...string) (template.
 	}
 	return SprintfAttr(" className={(%s.Uint == %d) ? %q : %q}",
 		n, uptr.Touint(), classif, classelse), nil
+} // */
+
+func (n Nota) Variate(this string, cmp int, text, alignClass string) interface{} {
+	split := strings.Split(Uncurl(this), ".")
+	base := strings.Join(split[:len(split)-1], ".")
+	last := split[len(split)-1]
+	// param = Uncurl(param)
+	return params.Varlink{
+		AlignClass: alignClass,
+		CaretClass: fmt.Sprintf("{%s.Variations.%s[%d-1].%s}", base, last, cmp, "CaretClass"),
+		LinkClass:  fmt.Sprintf("{%s.Variations.%s[%d-1].%s}", base, last, cmp, "LinkClass"),
+		LinkHref:   fmt.Sprintf("{%s.Variations.%s[%d-1].%s}", base, last, cmp, "LinkHref"),
+		LinkText:   text, // always static
+	}
 }
 
+/*
 func (n Nota) EnumLink(args ...string) (interface{}, error) {
 	named, aclass := params.EnumLinkArgs(args)
 	eparams := params.NewParamsENUM(nil)
@@ -63,29 +85,39 @@ func (n Nota) EnumLink(args ...string) (interface{}, error) {
 		CaretClass: fmt.Sprintf("{%s.%s.%s}", n, named, "CaretClass"),
 	}, nil
 }
+// */
 
-func (n Nota) ToggleHrefAttr() interface{} {
-	return fmt.Sprintf(" href={%s.Href} onClick={this.handleClick}", n.Uncurl())
+func (_ Nota) AttrHrefToggle(s string) interface{} {
+	split := strings.Split(Uncurl(s), ".")
+	base := strings.Join(split[:len(split)-1], ".")
+	last := split[len(split)-1]
+	return fmt.Sprintf(" href={%s.Toggle.%s} onClick={this.handleClick}", base, last)
 }
 
-func (n Nota) PeriodNameAttr() interface{} {
-	return fmt.Sprintf(" name=%q", n.Base())
+// Data.Params.RefreshXX RefreshXX
+func (n Nota) AttrNameRefresh(fieldName string) interface{} {
+	// TODO fieldName is "Refreshsmth", ought to have a map to actual parameter
+	// lowercase fieldName suffices for now
+	return fmt.Sprintf(" name=%q", strings.ToLower(fieldName))
 }
 
-func (n Nota) PeriodValueAttr() interface{} {
-	return fmt.Sprintf(" value={%s.Input} onChange={this.handleChange}", n)
+func (n Nota) AttrValueRefresh(fieldName string) interface{} {
+	return fmt.Sprintf(" value={%s.%s} onChange={this.handleChange}",
+		n, fieldName)
 }
 
+/*
 func (n Nota) RefreshClassAttr(classes string) interface{} {
-	return fmt.Sprintf(" className={%q + (%s.InputErrd ? %q : \"\")}",
-		classes, n, " has-warning")
+ 	return fmt.Sprintf(" className={%q + (%s.InputErrd ? %q : \"\")}",
+ 		classes, n, " has-warning")
 }
+*/
 
-func (n Nota) LessHrefAttr() interface{} {
+func (n Nota) AttrHrefLess(s string) interface{} {
 	return fmt.Sprintf(" href={%s.LessHref} onClick={this.handleClick}", n.Uncurl())
 }
 
-func (n Nota) MoreHrefAttr() interface{} {
+func (n Nota) AttrHrefMore(s string) interface{} {
 	return fmt.Sprintf(" href={%s.MoreHref} onClick={this.handleClick}", n.Uncurl())
 }
 

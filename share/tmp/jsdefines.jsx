@@ -16,28 +16,30 @@ define(function(require) {
 >); },
 		panelmem:        function(Data, rows)  { return (<div
   ><div
-    ><a     href={Data.Params.BOOL.configmem.Href} onClick={this.handleClick} className="btn-block"
-      ><span  className={Data.Params.BOOL.configmem.Value ? "h4 bg-info" : "h4"}
+    ><a       href={Data.Params.Toggle.Configmem} onClick={this.handleClick} className="btn-block"
+      >  <span  className={Data.Params.Configmem ? "h4 bg-info" : "h4"}
         >Memory</span
       ></a
     ></div
   ><div
-    ><div id="memconfig"  className={Data.Params.BOOL.configmem.Value ? "config-margintop" : "config-margintop collapse-hidden"}
-      ><form className="form-inline"  action={"/form/"+Data.Params.Query}
+    ><div  className={Data.Params.Configmem ? "config-margintop" : "config-margintop collapse-hidden"} id="memconfig"
+      ><form  action={"/form/"+Data.Params} className="form-inline"
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="btn-toolbar"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.BOOL.hidemem.Value ? "btn btn-default active" : "btn btn-default"}  href={Data.Params.BOOL.hidemem.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.Hidemem ? "btn btn-default active" : "btn btn-default"}
+    href={Data.Params.Toggle.Hidemem} onClick={this.handleClick} 
             >Hidden</a
-          ><a  className={Data.Params.BOOL.hideswap.Value ? "btn btn-default active" : "btn btn-default"}  href={Data.Params.BOOL.hideswap.Href} onClick={this.handleClick}  disabled={Data.Params.BOOL.hidemem.Value ? "disabled" : "" }
+          ><a  className={Data.Params.Hideswap ? "btn btn-default active" : "btn btn-default"}
+    href={Data.Params.Toggle.Hideswap} onClick={this.handleClick}
             >Hide swap</a
           ></div
         ><div className="btn-group btn-group-sm" role="group"
-          ><div  className={"input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshmem.InputErrd ? " has-warning" : "")}
+          ><div  className={Data.Params.Errors && Data.Params.Errors.Refreshmem ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"}
   ><span className="input-group-addon"
     >Refresh</span
-  ><input className="form-control refresh-input width-fourem" type="text" placeholder={Data.Params.PERIOD.refreshmem.Placeholder}  name="refreshmem"  value={Data.Params.PERIOD.refreshmem.Input} onChange={this.handleChange}
+  >  <input className="form-control refresh-input width-fourem" type="text" placeholder={Data.MinRefresh}  name="refreshmem"  value={Data.Params.Refreshmem} onChange={this.handleChange}
   ></input></div
 ></div
         ></div
@@ -45,7 +47,7 @@ define(function(require) {
     ></div
   ></div
 ><div
-  ><div  className={Data.Params.BOOL.hidemem.Value ? "collapse-hidden" : ""}
+  ><div  className={Data.Params.Hidemem ? "collapse-hidden" : ""}
     ><table className="table table-striped"
   ><thead
     ><tr
@@ -108,51 +110,53 @@ define(function(require) {
 >); },
 		panelif:         function(Data,r1,r2,r3){ return (<div
   ><div
-    ><a     href={Data.Params.BOOL.configif.Href} onClick={this.handleClick} className="btn-block"
-      ><span  className={Data.Params.BOOL.configif.Value ? "h4 bg-info" : "h4"}
-        >{Data.Params.ENUM.ift.Title}</span
+    ><a       href={Data.Params.Toggle.Configif} onClick={this.handleClick} className="btn-block"
+      >  <span  className={Data.Params.Configif ? "h4 bg-info" : "h4"}
+        >Interfaces</span
       ></a
     ></div
   ><div
-    ><div id="ifconfig"  className={Data.Params.BOOL.configif.Value ? "config-margintop" : "config-margintop collapse-hidden"}
-      ><form className="form-inline"  action={"/form/"+Data.Params.Query}
+    ><div  className={Data.Params.Configif ? "config-margintop" : "config-margintop collapse-hidden"} id="ifconfig"
+      ><form  action={"/form/"+Data.Params} className="form-inline"
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="btn-toolbar"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.BOOL.hideif.Value ? "btn btn-default active" : "btn btn-default"}  href={Data.Params.BOOL.hideif.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.Hideif ? "btn btn-default active" : "btn btn-default"}
+    href={Data.Params.Toggle.Hideif} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.ExpandableIF ? "btn btn-default" : "btn btn-default disabled"}  href={Data.Params.BOOL.expandif.Href} onClick={this.handleClick}
+          ><a  className={Data.ExpandableIF ? "btn btn-default" : "btn btn-default disabled"}
+    href={Data.Params.Toggle.Expandif} onClick={this.handleClick}
             >{Data.ExpandtextIF}</a
           ></div
         ><div className="btn-group btn-group-sm" role="group"
-          ><div  className={"input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshif.InputErrd ? " has-warning" : "")}
+          ><div  className={Data.Params.Errors && Data.Params.Errors.Refreshif ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"}
   ><span className="input-group-addon"
     >Refresh</span
-  ><input className="form-control refresh-input width-fourem" type="text" placeholder={Data.Params.PERIOD.refreshif.Placeholder}  name="refreshif"  value={Data.Params.PERIOD.refreshif.Input} onChange={this.handleChange}
+  >  <input className="form-control refresh-input width-fourem" type="text" placeholder={Data.MinRefresh}  name="refreshif"  value={Data.Params.Refreshif} onChange={this.handleChange}
   ></input></div
 ></div
         ></div
       ></form
     ><ul className="nav nav-tabs config-margintop"
-      ><li  className={(Data.Params.ENUM.ift.Uint == 0) ? "active" : ""}
-        ><a href={Data.Params.ENUM.ift.PACKETS.Href} onClick={this.handleClick}
+      ><li  className={1 == Data.Params.Ift || (Data.Params.Ift == 0 && 1 == Data.Params.Defaults.Ift) ? "active" : ""}
+        ><a href={Data.Params.Variations.Ift[1-1].LinkHref} onClick={this.handleClick}
   >Packets</a
 ></li
-      ><li  className={(Data.Params.ENUM.ift.Uint == 1) ? "active" : ""}
-        ><a href={Data.Params.ENUM.ift.ERRORS.Href} onClick={this.handleClick}
+      ><li  className={2 == Data.Params.Ift || (Data.Params.Ift == 0 && 2 == Data.Params.Defaults.Ift) ? "active" : ""}
+        ><a href={Data.Params.Variations.Ift[2-1].LinkHref} onClick={this.handleClick}
   >Errors</a
 ></li
-      ><li  className={(Data.Params.ENUM.ift.Uint == 2) ? "active" : ""}
-        ><a href={Data.Params.ENUM.ift.IFBYTES.Href} onClick={this.handleClick}
+      ><li  className={3 == Data.Params.Ift || (Data.Params.Ift == 0 && 3 == Data.Params.Defaults.Ift) ? "active" : ""}
+        ><a href={Data.Params.Variations.Ift[3-1].LinkHref} onClick={this.handleClick}
   >Bytes</a
 ></li
       ></ul
     ></div
   ></div
 ><div
-  ><div  className={Data.Params.BOOL.hideif.Value ? "collapse-hidden" : ""}
-    ><div  className={(Data.Params.ENUM.ift.Uint == 0) ? "" : "collapse-hidden"}
+  ><div  className={Data.Params.Hideif ? "collapse-hidden" : ""}
+    ><div  className={1 == Data.Params.Ift || (Data.Params.Ift == 0 && 1 == Data.Params.Defaults.Ift) ? "" : "collapse-hidden"}
       ><table className="table table-striped"
   ><thead
     ><tr
@@ -180,7 +184,7 @@ define(function(require) {
     >{r1}</tbody
   ></table
 ></div
-    ><div  className={(Data.Params.ENUM.ift.Uint == 1) ? "" : "collapse-hidden"}
+    ><div  className={2 == Data.Params.Ift || (Data.Params.Ift == 0 && 2 == Data.Params.Defaults.Ift) ? "" : "collapse-hidden"}
       ><table className="table table-striped"
   ><thead
     ><tr
@@ -208,7 +212,7 @@ define(function(require) {
     >{r2}</tbody
   ></table
 ></div
-    ><div  className={(Data.Params.ENUM.ift.Uint == 2) ? "" : "collapse-hidden"}
+    ><div  className={3 == Data.Params.Ift || (Data.Params.Ift == 0 && 3 == Data.Params.Defaults.Ift) ? "" : "collapse-hidden"}
       ><table className="table table-striped"
   ><thead
     ><tr
@@ -268,28 +272,30 @@ define(function(require) {
 >); },
 		panelcpu:        function(Data, rows)  { return (<div
   ><div
-    ><a     href={Data.Params.BOOL.configcpu.Href} onClick={this.handleClick} className="btn-block"
-      ><span  className={Data.Params.BOOL.configcpu.Value ? "h4 bg-info" : "h4"}
+    ><a       href={Data.Params.Toggle.Configcpu} onClick={this.handleClick} className="btn-block"
+      >  <span  className={Data.Params.Configcpu ? "h4 bg-info" : "h4"}
         >CPU</span
       ></a
     ></div
   ><div
-    ><div id="cpuconfig"  className={Data.Params.BOOL.configcpu.Value ? "config-margintop" : "config-margintop collapse-hidden"}
-      ><form className="form-inline"  action={"/form/"+Data.Params.Query}
+    ><div  className={Data.Params.Configcpu ? "config-margintop" : "config-margintop collapse-hidden"} id="cpuconfig"
+      ><form  action={"/form/"+Data.Params} className="form-inline"
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="btn-toolbar"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.BOOL.hidecpu.Value ? "btn btn-default active" : "btn btn-default"}  href={Data.Params.BOOL.hidecpu.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.Hidecpu ? "btn btn-default active" : "btn btn-default"}
+    href={Data.Params.Toggle.Hidecpu} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.CPU.ExpandableCPU ? "btn btn-default" : "btn btn-default disabled"}  href={Data.Params.BOOL.expandcpu.Href} onClick={this.handleClick}
+          ><a  className={Data.CPU.ExpandableCPU ? "btn btn-default" : "btn btn-default disabled"}
+    href={Data.Params.Toggle.Expandcpu} onClick={this.handleClick}
             >{Data.CPU.ExpandtextCPU}</a
           ></div
         ><div className="btn-group btn-group-sm" role="group"
-          ><div  className={"input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshcpu.InputErrd ? " has-warning" : "")}
+          ><div  className={Data.Params.Errors && Data.Params.Errors.Refreshcpu ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"}
   ><span className="input-group-addon"
     >Refresh</span
-  ><input className="form-control refresh-input width-fourem" type="text" placeholder={Data.Params.PERIOD.refreshcpu.Placeholder}  name="refreshcpu"  value={Data.Params.PERIOD.refreshcpu.Input} onChange={this.handleChange}
+  >  <input className="form-control refresh-input width-fourem" type="text" placeholder={Data.MinRefresh}  name="refreshcpu"  value={Data.Params.Refreshcpu} onChange={this.handleChange}
   ></input></div
 ></div
         ></div
@@ -297,7 +303,7 @@ define(function(require) {
     ></div
   ></div
 ><div
-  ><div  className={Data.Params.BOOL.hidecpu.Value ? "collapse-hidden" : ""}
+  ><div  className={Data.Params.Hidecpu ? "collapse-hidden" : ""}
     ><table className="table table-striped"
   ><thead
     ><tr
@@ -357,47 +363,49 @@ define(function(require) {
 >); },
 		paneldf:         function(Data,r1,r2)  { return (<div
   ><div
-    ><a     href={Data.Params.BOOL.configdf.Href} onClick={this.handleClick} className="btn-block"
-      ><span  className={Data.Params.BOOL.configdf.Value ? "h4 bg-info" : "h4"}
-        >{Data.Params.ENUM.dft.Title}</span
+    ><a     href={Data.Params.Toggle.Configdf} onClick={this.handleClick} className="btn-block"
+      ><span  className={Data.Params.Configdf ? "h4 bg-info" : "h4"}
+        >Disk usage</span
       ></a
     ></div
   ><div
-    ><div id="dfconfig"  className={Data.Params.BOOL.configdf.Value ? "config-margintop" : "config-margintop collapse-hidden"}
-      ><form className="form-inline"  action={"/form/"+Data.Params.Query}
+    ><div  className={Data.Params.Configdf ? "config-margintop" : "config-margintop collapse-hidden"} id="dfconfig"
+      ><form  action={"/form/"+Data.Params} className="form-inline"
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="btn-toolbar"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.BOOL.hidedf.Value ? "btn btn-default active" : "btn btn-default"}  href={Data.Params.BOOL.hidedf.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.Hidedf ? "btn btn-default active" : "btn btn-default"}
+    href={Data.Params.Toggle.Hidedf} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.ExpandableDF ? "btn btn-default" : "btn btn-default disabled"}  href={Data.Params.BOOL.expanddf.Href} onClick={this.handleClick}
+          ><a  className={Data.ExpandableDF ? "btn btn-default" : "btn btn-default disabled"}
+    href={Data.Params.Toggle.Expanddf} onClick={this.handleClick}
             >{Data.ExpandtextDF}</a
           ></div
         ><div className="btn-group btn-group-sm" role="group"
-          ><div  className={"input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshdf.InputErrd ? " has-warning" : "")}
+          ><div  className={Data.Params.Errors && Data.Params.Errors.Refreshdf ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"}
   ><span className="input-group-addon"
     >Refresh</span
-  ><input className="form-control refresh-input width-fourem" type="text" placeholder={Data.Params.PERIOD.refreshdf.Placeholder}  name="refreshdf"  value={Data.Params.PERIOD.refreshdf.Input} onChange={this.handleChange}
+  >  <input className="form-control refresh-input width-fourem" type="text" placeholder={Data.MinRefresh}  name="refreshdf"  value={Data.Params.Refreshdf} onChange={this.handleChange}
   ></input></div
 ></div
         ></div
       ></form
     ><ul className="nav nav-tabs config-margintop"
-      ><li  className={(Data.Params.ENUM.dft.Uint == 0) ? "active" : ""}
-        ><a href={Data.Params.ENUM.dft.INODES.Href} onClick={this.handleClick}
+      ><li  className={1 == Data.Params.Dft || (Data.Params.Dft == 0 && 1 == Data.Params.Defaults.Dft) ? "active" : ""}
+        ><a href={Data.Params.Variations.Dft[1-1].LinkHref} onClick={this.handleClick}
   >Inodes</a
 ></li
-      ><li  className={(Data.Params.ENUM.dft.Uint == 1) ? "active" : ""}
-        ><a href={Data.Params.ENUM.dft.DFBYTES.Href} onClick={this.handleClick}
+      ><li  className={2 == Data.Params.Dft || (Data.Params.Dft == 0 && 2 == Data.Params.Defaults.Dft) ? "active" : ""}
+        ><a href={Data.Params.Variations.Dft[2-1].LinkHref} onClick={this.handleClick}
   >Bytes</a
 ></li
       ></ul
     ></div
   ></div
 ><div
-  ><div  className={Data.Params.BOOL.hidedf.Value ? "collapse-hidden" : ""}
-    ><div  className={(Data.Params.ENUM.dft.Uint == 0) ? "" : "collapse-hidden"}
+  ><div  className={Data.Params.Hidedf ? "collapse-hidden" : ""}
+    ><div  className={1 == Data.Params.Dft || (Data.Params.Dft == 0 && 1 == Data.Params.Defaults.Dft) ? "" : "collapse-hidden"}
       ><table className="table table-striped"
   ><thead
     ><tr
@@ -417,37 +425,42 @@ define(function(require) {
     >{r1}</tbody
   ></table
 ></div
-    ><div  className={(Data.Params.ENUM.dft.Uint == 1) ? "" : "collapse-hidden"}
+    ><div  className={2 == Data.Params.Dft || (Data.Params.Dft == 0 && 2 == Data.Params.Defaults.Dft) ? "" : "collapse-hidden"}
       ><table className="table table-striped"
   ><thead
     ><tr
       ><th className="header "
-  ><a href={Data.Params.ENUM.df.FS.Href} className={Data.Params.ENUM.df.FS.Class}
-    >Device<span className={Data.Params.ENUM.df.FS.CaretClass}
+  ><a href={Data.Params.Variations.Dfk[1-1].LinkHref} className={Data.Params.Variations.Dfk[1-1].LinkClass}
+    >Device
+  <span className={Data.Params.Variations.Dfk[1-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header "
-  ><a href={Data.Params.ENUM.df.MP.Href} className={Data.Params.ENUM.df.MP.Class}
-    >Mounted<span className={Data.Params.ENUM.df.MP.CaretClass}
+  ><a href={Data.Params.Variations.Dfk[2-1].LinkHref} className={Data.Params.Variations.Dfk[2-1].LinkClass}
+    >Mounted
+  <span className={Data.Params.Variations.Dfk[2-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Params.ENUM.df.AVAIL.Href} className={Data.Params.ENUM.df.AVAIL.Class}
-    >Avail<span className={Data.Params.ENUM.df.AVAIL.CaretClass}
+  ><a href={Data.Params.Variations.Dfk[3-1].LinkHref} className={Data.Params.Variations.Dfk[3-1].LinkClass}
+    >Avail
+  <span className={Data.Params.Variations.Dfk[3-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Params.ENUM.df.USED.Href} className={Data.Params.ENUM.df.USED.Class}
-    >Used<span className={Data.Params.ENUM.df.USED.CaretClass}
+  ><a href={Data.Params.Variations.Dfk[4-1].LinkHref} className={Data.Params.Variations.Dfk[4-1].LinkClass}
+    >Used
+  <span className={Data.Params.Variations.Dfk[4-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Params.ENUM.df.TOTAL.Href} className={Data.Params.ENUM.df.TOTAL.Class}
-    >Total<span className={Data.Params.ENUM.df.TOTAL.CaretClass}
+  ><a href={Data.Params.Variations.Dfk[5-1].LinkHref} className={Data.Params.Variations.Dfk[5-1].LinkClass}
+    >Total
+  <span className={Data.Params.Variations.Dfk[5-1].CaretClass}
       ></span
     ></a
   ></th
@@ -485,30 +498,33 @@ define(function(require) {
 >); },
 		panelps:         function(Data, rows)  { return (<div
   ><div
-    ><a     href={Data.Params.BOOL.configps.Href} onClick={this.handleClick} className="btn-block"
-      ><span  className={Data.Params.BOOL.configps.Value ? "h4 bg-info" : "h4"}
+    ><a     href={Data.Params.Toggle.Configps} onClick={this.handleClick} className="btn-block"
+      ><span  className={Data.Params.Configps ? "h4 bg-info" : "h4"}
         >Processes</span
       ></a
     ></div
   ><div
-    ><div id="psconfig"  className={Data.Params.BOOL.configps.Value ? "config-margintop" : "config-margintop collapse-hidden"}
-      ><form className="form-inline text-right"  action={"/form/"+Data.Params.Query}
+    ><div  className={Data.Params.Configps ? "config-margintop" : "config-margintop collapse-hidden"} id="psconfig"
+      ><form  action={"/form/"+Data.Params} className="form-inline"
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="btn-toolbar"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.BOOL.hideps.Value ? "btn btn-default active" : "btn btn-default"}  href={Data.Params.BOOL.hideps.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.Hideps ? "btn btn-default active" : "btn btn-default"}
+    href={Data.Params.Toggle.Hideps} onClick={this.handleClick}
             >Hidden</a
-          ><a  className={Data.PStable.PSnotDecreasable ? "btn btn-default" : "btn btn-default disabled"}  href={Data.Params.LIMIT.psn.LessHref} onClick={this.handleClick}
+          ><a  className={Data.PStable.PSnotDecreasable ? "btn btn-default" : "btn btn-default disabled"}
+    href={Data.Params.LessHref} onClick={this.handleClick}
             >-</a
-          ><a  className={Data.PStable.PSnotExpandable ? "btn btn-default" : "btn btn-default disabled"}  href={Data.Params.LIMIT.psn.MoreHref} onClick={this.handleClick}
+          ><a  className={Data.PStable.PSnotExpandable ? "btn btn-default" : "btn btn-default disabled"}
+     href={Data.Params.MoreHref} onClick={this.handleClick}
             >{Data.PStable.PSplusText}</a
           ></div
         ><div className="btn-group btn-group-sm" role="group"
-          ><div  className={"input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshps.InputErrd ? " has-warning" : "")}
+          ><div  className={Data.Params.Errors && Data.Params.Errors.Refreshps ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"}
   ><span className="input-group-addon"
     >Refresh</span
-  ><input className="form-control refresh-input width-fourem" type="text" placeholder={Data.Params.PERIOD.refreshps.Placeholder}  name="refreshps"  value={Data.Params.PERIOD.refreshps.Input} onChange={this.handleChange}
+  >  <input className="form-control refresh-input width-fourem" type="text" placeholder={Data.MinRefresh}  name="refreshps"  value={Data.Params.Refreshps} onChange={this.handleChange}
   ></input></div
 ></div
         ></div
@@ -516,61 +532,70 @@ define(function(require) {
     ></div
   ></div
 ><div
-  ><div  className={Data.Params.BOOL.hideps.Value ? "collapse-hidden" : ""}
+  ><div  className={Data.Params.Hideps ? "collapse-hidden" : ""}
     ><table className="table table-striped table-hover"
   ><thead
     ><tr
       ><th className="header text-right"
-  ><a href={Data.Params.ENUM.ps.PID.Href} className={Data.Params.ENUM.ps.PID.Class}
-    >PID<span className={Data.Params.ENUM.ps.PID.CaretClass}
+  ><a href={Data.Params.Variations.Psk[1-1].LinkHref} className={Data.Params.Variations.Psk[1-1].LinkClass}
+    >PID
+  <span className={Data.Params.Variations.Psk[1-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Params.ENUM.ps.UID.Href} className={Data.Params.ENUM.ps.UID.Class}
-    >UID<span className={Data.Params.ENUM.ps.UID.CaretClass}
+  ><a href={Data.Params.Variations.Psk[8-1].LinkHref} className={Data.Params.Variations.Psk[8-1].LinkClass}
+    >UID
+  <span className={Data.Params.Variations.Psk[8-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header "
-  ><a href={Data.Params.ENUM.ps.USER.Href} className={Data.Params.ENUM.ps.USER.Class}
-    >USER<span className={Data.Params.ENUM.ps.USER.CaretClass}
+  ><a href={Data.Params.Variations.Psk[9-1].LinkHref} className={Data.Params.Variations.Psk[9-1].LinkClass}
+    >USER
+  <span className={Data.Params.Variations.Psk[9-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Params.ENUM.ps.PRI.Href} className={Data.Params.ENUM.ps.PRI.Class}
-    >PR<span className={Data.Params.ENUM.ps.PRI.CaretClass}
+  ><a href={Data.Params.Variations.Psk[2-1].LinkHref} className={Data.Params.Variations.Psk[2-1].LinkClass}
+    >PR
+  <span className={Data.Params.Variations.Psk[2-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Params.ENUM.ps.NICE.Href} className={Data.Params.ENUM.ps.NICE.Class}
-    >NI<span className={Data.Params.ENUM.ps.NICE.CaretClass}
+  ><a href={Data.Params.Variations.Psk[3-1].LinkHref} className={Data.Params.Variations.Psk[3-1].LinkClass}
+    >NI
+  <span className={Data.Params.Variations.Psk[3-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Params.ENUM.ps.VIRT.Href} className={Data.Params.ENUM.ps.VIRT.Class}
-    >VIRT<span className={Data.Params.ENUM.ps.VIRT.CaretClass}
+  ><a href={Data.Params.Variations.Psk[4-1].LinkHref} className={Data.Params.Variations.Psk[4-1].LinkClass}
+    >VIRT
+  <span className={Data.Params.Variations.Psk[4-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Params.ENUM.ps.RES.Href} className={Data.Params.ENUM.ps.RES.Class}
-    >RES<span className={Data.Params.ENUM.ps.RES.CaretClass}
+  ><a href={Data.Params.Variations.Psk[5-1].LinkHref} className={Data.Params.Variations.Psk[5-1].LinkClass}
+    >RES
+  <span className={Data.Params.Variations.Psk[5-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-center"
-  ><a href={Data.Params.ENUM.ps.TIME.Href} className={Data.Params.ENUM.ps.TIME.Class}
-    >TIME<span className={Data.Params.ENUM.ps.TIME.CaretClass}
+  ><a href={Data.Params.Variations.Psk[6-1].LinkHref} className={Data.Params.Variations.Psk[6-1].LinkClass}
+    >TIME
+  <span className={Data.Params.Variations.Psk[6-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header "
-  ><a href={Data.Params.ENUM.ps.NAME.Href} className={Data.Params.ENUM.ps.NAME.Class}
-    >COMMAND<span className={Data.Params.ENUM.ps.NAME.CaretClass}
+  ><a href={Data.Params.Variations.Psk[7-1].LinkHref} className={Data.Params.Variations.Psk[7-1].LinkClass}
+    >COMMAND
+  <span className={Data.Params.Variations.Psk[7-1].CaretClass}
       ></span
     ></a
   ></th
@@ -604,26 +629,27 @@ define(function(require) {
 >); },
 		panelvg:         function(Data, rows)  { return (<div
   ><div
-    ><a     href={Data.Params.BOOL.configvg.Href} onClick={this.handleClick} className="btn-block"
-      ><span  className={Data.Params.BOOL.configvg.Value ? "h4 bg-info" : "h4"}
+    ><a       href={Data.Params.Toggle.Configvg} onClick={this.handleClick} className="btn-block"
+      >  <span  className={Data.Params.Configvg ? "h4 bg-info" : "h4"}
         >Vagrant global-status</span
       ></a
     ></div
   ><div
-    ><div id="vgconfig"  className={Data.Params.BOOL.configvg.Value ? "config-margintop" : "config-margintop collapse-hidden"}
-      ><form className="form-inline"  action={"/form/"+Data.Params.Query}
+    ><div  className={Data.Params.Configvg ? "config-margintop" : "config-margintop collapse-hidden"} id="vgconfig"
+      ><form  action={"/form/"+Data.Params} className="form-inline"
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="btn-toolbar"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.BOOL.hidevg.Value ? "btn btn-default active" : "btn btn-default"}  href={Data.Params.BOOL.hidevg.Href} onClick={this.handleClick}
+          ><a  className={Data.Params.Hidevg ? "btn btn-default active" : "btn btn-default"}
+    href={Data.Params.Toggle.Hidevg} onClick={this.handleClick}
             >Hidden</a
           ></div
         ><div className="btn-group btn-group-sm" role="group"
-          ><div  className={"input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshvg.InputErrd ? " has-warning" : "")}
+          ><div  className={Data.Params.Errors && Data.Params.Errors.Refreshvg ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"}
   ><span className="input-group-addon"
     >Refresh</span
-  ><input className="form-control refresh-input width-fourem" type="text" placeholder={Data.Params.PERIOD.refreshvg.Placeholder}  name="refreshvg"  value={Data.Params.PERIOD.refreshvg.Input} onChange={this.handleChange}
+  >  <input className="form-control refresh-input width-fourem" type="text" placeholder={Data.MinRefresh}  name="refreshvg"  value={Data.Params.Refreshvg} onChange={this.handleChange}
   ></input></div
 ></div
         ></div
@@ -631,7 +657,7 @@ define(function(require) {
     ></div
   ></div
 ><div
-  ><div  className={Data.Params.BOOL.hidevg.Value ? "collapse-hidden" : ""}
+  ><div  className={Data.Params.Hidevg ? "collapse-hidden" : ""}
     ><table id="vgtable" className="table table-striped"
   ><thead
     ><tr

@@ -54,7 +54,6 @@ all32: $(destbin)/$(cmdname).32
 endif
 init:
 	go get -u -v \
-github.com/campoy/jsonenums \
 github.com/clipperhouse/gen \
 github.com/jteeuwen/go-bindata/go-bindata \
 github.com/skelterjohn/rerun \
@@ -77,7 +76,6 @@ coverfunc: covertest ; go tool  cover  -func=coverage.out
 coverhtml: covertest ; go tool  cover  -html=coverage.out
 
 system/operating/%_slice.go:     system/operating/operating.go ; cd $(dir $@) && go generate
-client/enums/uint%_jsonenums.go: client/tabs.go                ; cd $(dir $@) && go generate
 
 al: $(packagefiles) $(devpackagefiles)
 # al: like `all' but without final go build $(package). For when rerun does the build

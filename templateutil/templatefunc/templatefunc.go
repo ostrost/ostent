@@ -12,6 +12,9 @@ func (f HTMLFuncs) Class() string   { return "class" }
 func (f JSXFuncs) Colspan() string  { return "colSpan" }
 func (f HTMLFuncs) Colspan() string { return "colspan" }
 
+func (f JSXFuncs) Chain(args ...interface{}) []interface{}  { return args }
+func (f HTMLFuncs) Chain(args ...interface{}) []interface{} { return args }
+
 // JSXClose returns empty template.HTML.
 func (f HTMLFuncs) JSXClose(string) (empty template.HTML) { return }
 
@@ -41,6 +44,9 @@ func MakeMap(f Functor) template.FuncMap {
 		"class":    f.Class,
 		"colspan":  f.Colspan,
 		"jsxClose": f.JSXClose,
+		"Chain":    f.Chain,
+		// "attrKey":        f.AttrKey,
+		// "attrActionForm": f.AttrActionForm,
 	}
 }
 
@@ -52,26 +58,29 @@ type Functor interface {
 	Class() string
 	Colspan() string
 	JSXClose(string) template.HTML
+	Chain(...interface{}) []interface{}
+	// AttrKey(string) template.HTMLAttr
+	// AttrActionForm() template.HTMLAttr
 }
 
 func init() {
 	// check for Nota's interfaces compliance
 	_ = interface {
 		// operating (multiple types):
-		BoolClassAttr(string, string) template.HTMLAttr
-		KeyAttr(string) template.HTMLAttr
+		// TODO BoolClassAttr(string, string) template.HTMLAttr
+		AttrKey(string) template.HTMLAttr
 
-		FormActionAttr() interface{}                                        // Query
-		BoolParamClassAttr(string, string) template.HTMLAttr                // BoolParam
-		DisabledAttr() interface{}                                          // BoolParam
-		ToggleHrefAttr() interface{}                                        // BoolParam
-		EnumClassAttr(string, string, ...string) (template.HTMLAttr, error) // EnumParam
-		EnumLink(...string) (interface{}, error)                            // EnumParam
-		PeriodNameAttr() interface{}                                        // PeriodParam
-		PeriodValueAttr() interface{}                                       // PeriodParam
-		RefreshClassAttr(string) interface{}                                // PeriodParam
-		LessHrefAttr() interface{}                                          // LimitParam
-		MoreHrefAttr() interface{}                                          // LimitParam
+		AttrActionForm() template.HTMLAttr // Query
+		// TODO BoolParamClassAttr(string, string) template.HTMLAttr // BoolParam
+		// TODO DisabledAttr() interface{}                                          // BoolParam
+		// TODO ToggleHrefAttr() interface{}                                        // BoolParam
+		// TODO EnumClassAttr(string, string, ...string) (template.HTMLAttr, error) // EnumParam
+		// TODO EnumLink(...string) (interface{}, error) // EnumParam
+		AttrNameRefresh(string) interface{}  // PeriodParam
+		AttrValueRefresh(string) interface{} // PeriodParam
+		// TODO RefreshClassAttr(string) interface{} // PeriodParam
+		AttrHrefLess(string) interface{} // LimitParam
+		AttrHrefMore(string) interface{} // LimitParam
 	}(templatepipe.Nota(nil))
 }
 

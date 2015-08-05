@@ -50,11 +50,12 @@ define(function (require) {
           null,
           React.createElement(
             "a",
-            { href: Data.Params.BOOL.configmem.Href, onClick: this.handleClick, className: "btn-block"
+            { href: Data.Params.Toggle.Configmem, onClick: this.handleClick, className: "btn-block"
             },
+            "  ",
             React.createElement(
               "span",
-              { className: Data.Params.BOOL.configmem.Value ? "h4 bg-info" : "h4"
+              { className: Data.Params.Configmem ? "h4 bg-info" : "h4"
               },
               "Memory"
             )
@@ -65,11 +66,11 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { id: "memconfig", className: Data.Params.BOOL.configmem.Value ? "config-margintop" : "config-margintop collapse-hidden"
+            { className: Data.Params.Configmem ? "config-margintop" : "config-margintop collapse-hidden", id: "memconfig"
             },
             React.createElement(
               "form",
-              { className: "form-inline", action: "/form/" + Data.Params.Query
+              { action: "/form/" + Data.Params, className: "form-inline"
               },
               React.createElement("input", { className: "hidden-submit", type: "submit"
               }),
@@ -83,13 +84,15 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { className: Data.Params.BOOL.hidemem.Value ? "btn btn-default active" : "btn btn-default", href: Data.Params.BOOL.hidemem.Href, onClick: this.handleClick
+                    { className: Data.Params.Hidemem ? "btn btn-default active" : "btn btn-default",
+                      href: Data.Params.Toggle.Hidemem, onClick: this.handleClick
                     },
                     "Hidden"
                   ),
                   React.createElement(
                     "a",
-                    { className: Data.Params.BOOL.hideswap.Value ? "btn btn-default active" : "btn btn-default", href: Data.Params.BOOL.hideswap.Href, onClick: this.handleClick, disabled: Data.Params.BOOL.hidemem.Value ? "disabled" : ""
+                    { className: Data.Params.Hideswap ? "btn btn-default active" : "btn btn-default",
+                      href: Data.Params.Toggle.Hideswap, onClick: this.handleClick
                     },
                     "Hide swap"
                   )
@@ -100,7 +103,7 @@ define(function (require) {
                   },
                   React.createElement(
                     "div",
-                    { className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshmem.InputErrd ? " has-warning" : "")
+                    { className: Data.Params.Errors && Data.Params.Errors.Refreshmem ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"
                     },
                     React.createElement(
                       "span",
@@ -108,7 +111,8 @@ define(function (require) {
                       },
                       "Refresh"
                     ),
-                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.Params.PERIOD.refreshmem.Placeholder, name: "refreshmem", value: Data.Params.PERIOD.refreshmem.Input, onChange: this.handleChange
+                    "  ",
+                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.MinRefresh, name: "refreshmem", value: Data.Params.Refreshmem, onChange: this.handleChange
                     })
                   )
                 )
@@ -121,7 +125,7 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { className: Data.Params.BOOL.hidemem.Value ? "collapse-hidden" : ""
+            { className: Data.Params.Hidemem ? "collapse-hidden" : ""
             },
             React.createElement(
               "table",
@@ -282,13 +286,14 @@ define(function (require) {
           null,
           React.createElement(
             "a",
-            { href: Data.Params.BOOL.configif.Href, onClick: this.handleClick, className: "btn-block"
+            { href: Data.Params.Toggle.Configif, onClick: this.handleClick, className: "btn-block"
             },
+            "  ",
             React.createElement(
               "span",
-              { className: Data.Params.BOOL.configif.Value ? "h4 bg-info" : "h4"
+              { className: Data.Params.Configif ? "h4 bg-info" : "h4"
               },
-              Data.Params.ENUM.ift.Title
+              "Interfaces"
             )
           )
         ),
@@ -297,11 +302,11 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { id: "ifconfig", className: Data.Params.BOOL.configif.Value ? "config-margintop" : "config-margintop collapse-hidden"
+            { className: Data.Params.Configif ? "config-margintop" : "config-margintop collapse-hidden", id: "ifconfig"
             },
             React.createElement(
               "form",
-              { className: "form-inline", action: "/form/" + Data.Params.Query
+              { action: "/form/" + Data.Params, className: "form-inline"
               },
               React.createElement("input", { className: "hidden-submit", type: "submit"
               }),
@@ -315,13 +320,15 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { className: Data.Params.BOOL.hideif.Value ? "btn btn-default active" : "btn btn-default", href: Data.Params.BOOL.hideif.Href, onClick: this.handleClick
+                    { className: Data.Params.Hideif ? "btn btn-default active" : "btn btn-default",
+                      href: Data.Params.Toggle.Hideif, onClick: this.handleClick
                     },
                     "Hidden"
                   ),
                   React.createElement(
                     "a",
-                    { className: Data.ExpandableIF ? "btn btn-default" : "btn btn-default disabled", href: Data.Params.BOOL.expandif.Href, onClick: this.handleClick
+                    { className: Data.ExpandableIF ? "btn btn-default" : "btn btn-default disabled",
+                      href: Data.Params.Toggle.Expandif, onClick: this.handleClick
                     },
                     Data.ExpandtextIF
                   )
@@ -332,7 +339,7 @@ define(function (require) {
                   },
                   React.createElement(
                     "div",
-                    { className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshif.InputErrd ? " has-warning" : "")
+                    { className: Data.Params.Errors && Data.Params.Errors.Refreshif ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"
                     },
                     React.createElement(
                       "span",
@@ -340,7 +347,8 @@ define(function (require) {
                       },
                       "Refresh"
                     ),
-                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.Params.PERIOD.refreshif.Placeholder, name: "refreshif", value: Data.Params.PERIOD.refreshif.Input, onChange: this.handleChange
+                    "  ",
+                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.MinRefresh, name: "refreshif", value: Data.Params.Refreshif, onChange: this.handleChange
                     })
                   )
                 )
@@ -352,33 +360,33 @@ define(function (require) {
               },
               React.createElement(
                 "li",
-                { className: Data.Params.ENUM.ift.Uint == 0 ? "active" : ""
+                { className: 1 == Data.Params.Ift || Data.Params.Ift == 0 && 1 == Data.Params.Defaults.Ift ? "active" : ""
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.ENUM.ift.PACKETS.Href, onClick: this.handleClick
+                  { href: Data.Params.Variations.Ift[1 - 1].LinkHref, onClick: this.handleClick
                   },
                   "Packets"
                 )
               ),
               React.createElement(
                 "li",
-                { className: Data.Params.ENUM.ift.Uint == 1 ? "active" : ""
+                { className: 2 == Data.Params.Ift || Data.Params.Ift == 0 && 2 == Data.Params.Defaults.Ift ? "active" : ""
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.ENUM.ift.ERRORS.Href, onClick: this.handleClick
+                  { href: Data.Params.Variations.Ift[2 - 1].LinkHref, onClick: this.handleClick
                   },
                   "Errors"
                 )
               ),
               React.createElement(
                 "li",
-                { className: Data.Params.ENUM.ift.Uint == 2 ? "active" : ""
+                { className: 3 == Data.Params.Ift || Data.Params.Ift == 0 && 3 == Data.Params.Defaults.Ift ? "active" : ""
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.ENUM.ift.IFBYTES.Href, onClick: this.handleClick
+                  { href: Data.Params.Variations.Ift[3 - 1].LinkHref, onClick: this.handleClick
                   },
                   "Bytes"
                 )
@@ -391,11 +399,11 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { className: Data.Params.BOOL.hideif.Value ? "collapse-hidden" : ""
+            { className: Data.Params.Hideif ? "collapse-hidden" : ""
             },
             React.createElement(
               "div",
-              { className: Data.Params.ENUM.ift.Uint == 0 ? "" : "collapse-hidden"
+              { className: 1 == Data.Params.Ift || Data.Params.Ift == 0 && 1 == Data.Params.Defaults.Ift ? "" : "collapse-hidden"
               },
               React.createElement(
                 "table",
@@ -471,7 +479,7 @@ define(function (require) {
             ),
             React.createElement(
               "div",
-              { className: Data.Params.ENUM.ift.Uint == 1 ? "" : "collapse-hidden"
+              { className: 2 == Data.Params.Ift || Data.Params.Ift == 0 && 2 == Data.Params.Defaults.Ift ? "" : "collapse-hidden"
               },
               React.createElement(
                 "table",
@@ -547,7 +555,7 @@ define(function (require) {
             ),
             React.createElement(
               "div",
-              { className: Data.Params.ENUM.ift.Uint == 2 ? "" : "collapse-hidden"
+              { className: 3 == Data.Params.Ift || Data.Params.Ift == 0 && 3 == Data.Params.Defaults.Ift ? "" : "collapse-hidden"
               },
               React.createElement(
                 "table",
@@ -701,11 +709,12 @@ define(function (require) {
           null,
           React.createElement(
             "a",
-            { href: Data.Params.BOOL.configcpu.Href, onClick: this.handleClick, className: "btn-block"
+            { href: Data.Params.Toggle.Configcpu, onClick: this.handleClick, className: "btn-block"
             },
+            "  ",
             React.createElement(
               "span",
-              { className: Data.Params.BOOL.configcpu.Value ? "h4 bg-info" : "h4"
+              { className: Data.Params.Configcpu ? "h4 bg-info" : "h4"
               },
               "CPU"
             )
@@ -716,11 +725,11 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { id: "cpuconfig", className: Data.Params.BOOL.configcpu.Value ? "config-margintop" : "config-margintop collapse-hidden"
+            { className: Data.Params.Configcpu ? "config-margintop" : "config-margintop collapse-hidden", id: "cpuconfig"
             },
             React.createElement(
               "form",
-              { className: "form-inline", action: "/form/" + Data.Params.Query
+              { action: "/form/" + Data.Params, className: "form-inline"
               },
               React.createElement("input", { className: "hidden-submit", type: "submit"
               }),
@@ -734,13 +743,15 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { className: Data.Params.BOOL.hidecpu.Value ? "btn btn-default active" : "btn btn-default", href: Data.Params.BOOL.hidecpu.Href, onClick: this.handleClick
+                    { className: Data.Params.Hidecpu ? "btn btn-default active" : "btn btn-default",
+                      href: Data.Params.Toggle.Hidecpu, onClick: this.handleClick
                     },
                     "Hidden"
                   ),
                   React.createElement(
                     "a",
-                    { className: Data.CPU.ExpandableCPU ? "btn btn-default" : "btn btn-default disabled", href: Data.Params.BOOL.expandcpu.Href, onClick: this.handleClick
+                    { className: Data.CPU.ExpandableCPU ? "btn btn-default" : "btn btn-default disabled",
+                      href: Data.Params.Toggle.Expandcpu, onClick: this.handleClick
                     },
                     Data.CPU.ExpandtextCPU
                   )
@@ -751,7 +762,7 @@ define(function (require) {
                   },
                   React.createElement(
                     "div",
-                    { className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshcpu.InputErrd ? " has-warning" : "")
+                    { className: Data.Params.Errors && Data.Params.Errors.Refreshcpu ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"
                     },
                     React.createElement(
                       "span",
@@ -759,7 +770,8 @@ define(function (require) {
                       },
                       "Refresh"
                     ),
-                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.Params.PERIOD.refreshcpu.Placeholder, name: "refreshcpu", value: Data.Params.PERIOD.refreshcpu.Input, onChange: this.handleChange
+                    "  ",
+                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.MinRefresh, name: "refreshcpu", value: Data.Params.Refreshcpu, onChange: this.handleChange
                     })
                   )
                 )
@@ -772,7 +784,7 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { className: Data.Params.BOOL.hidecpu.Value ? "collapse-hidden" : ""
+            { className: Data.Params.Hidecpu ? "collapse-hidden" : ""
             },
             React.createElement(
               "table",
@@ -929,13 +941,13 @@ define(function (require) {
           null,
           React.createElement(
             "a",
-            { href: Data.Params.BOOL.configdf.Href, onClick: this.handleClick, className: "btn-block"
+            { href: Data.Params.Toggle.Configdf, onClick: this.handleClick, className: "btn-block"
             },
             React.createElement(
               "span",
-              { className: Data.Params.BOOL.configdf.Value ? "h4 bg-info" : "h4"
+              { className: Data.Params.Configdf ? "h4 bg-info" : "h4"
               },
-              Data.Params.ENUM.dft.Title
+              "Disk usage"
             )
           )
         ),
@@ -944,11 +956,11 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { id: "dfconfig", className: Data.Params.BOOL.configdf.Value ? "config-margintop" : "config-margintop collapse-hidden"
+            { className: Data.Params.Configdf ? "config-margintop" : "config-margintop collapse-hidden", id: "dfconfig"
             },
             React.createElement(
               "form",
-              { className: "form-inline", action: "/form/" + Data.Params.Query
+              { action: "/form/" + Data.Params, className: "form-inline"
               },
               React.createElement("input", { className: "hidden-submit", type: "submit"
               }),
@@ -962,13 +974,15 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { className: Data.Params.BOOL.hidedf.Value ? "btn btn-default active" : "btn btn-default", href: Data.Params.BOOL.hidedf.Href, onClick: this.handleClick
+                    { className: Data.Params.Hidedf ? "btn btn-default active" : "btn btn-default",
+                      href: Data.Params.Toggle.Hidedf, onClick: this.handleClick
                     },
                     "Hidden"
                   ),
                   React.createElement(
                     "a",
-                    { className: Data.ExpandableDF ? "btn btn-default" : "btn btn-default disabled", href: Data.Params.BOOL.expanddf.Href, onClick: this.handleClick
+                    { className: Data.ExpandableDF ? "btn btn-default" : "btn btn-default disabled",
+                      href: Data.Params.Toggle.Expanddf, onClick: this.handleClick
                     },
                     Data.ExpandtextDF
                   )
@@ -979,7 +993,7 @@ define(function (require) {
                   },
                   React.createElement(
                     "div",
-                    { className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshdf.InputErrd ? " has-warning" : "")
+                    { className: Data.Params.Errors && Data.Params.Errors.Refreshdf ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"
                     },
                     React.createElement(
                       "span",
@@ -987,7 +1001,8 @@ define(function (require) {
                       },
                       "Refresh"
                     ),
-                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.Params.PERIOD.refreshdf.Placeholder, name: "refreshdf", value: Data.Params.PERIOD.refreshdf.Input, onChange: this.handleChange
+                    "  ",
+                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.MinRefresh, name: "refreshdf", value: Data.Params.Refreshdf, onChange: this.handleChange
                     })
                   )
                 )
@@ -999,22 +1014,22 @@ define(function (require) {
               },
               React.createElement(
                 "li",
-                { className: Data.Params.ENUM.dft.Uint == 0 ? "active" : ""
+                { className: 1 == Data.Params.Dft || Data.Params.Dft == 0 && 1 == Data.Params.Defaults.Dft ? "active" : ""
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.ENUM.dft.INODES.Href, onClick: this.handleClick
+                  { href: Data.Params.Variations.Dft[1 - 1].LinkHref, onClick: this.handleClick
                   },
                   "Inodes"
                 )
               ),
               React.createElement(
                 "li",
-                { className: Data.Params.ENUM.dft.Uint == 1 ? "active" : ""
+                { className: 2 == Data.Params.Dft || Data.Params.Dft == 0 && 2 == Data.Params.Defaults.Dft ? "active" : ""
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.ENUM.dft.DFBYTES.Href, onClick: this.handleClick
+                  { href: Data.Params.Variations.Dft[2 - 1].LinkHref, onClick: this.handleClick
                   },
                   "Bytes"
                 )
@@ -1027,11 +1042,11 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { className: Data.Params.BOOL.hidedf.Value ? "collapse-hidden" : ""
+            { className: Data.Params.Hidedf ? "collapse-hidden" : ""
             },
             React.createElement(
               "div",
-              { className: Data.Params.ENUM.dft.Uint == 0 ? "" : "collapse-hidden"
+              { className: 1 == Data.Params.Dft || Data.Params.Dft == 0 && 1 == Data.Params.Defaults.Dft ? "" : "collapse-hidden"
               },
               React.createElement(
                 "table",
@@ -1084,7 +1099,7 @@ define(function (require) {
             ),
             React.createElement(
               "div",
-              { className: Data.Params.ENUM.dft.Uint == 1 ? "" : "collapse-hidden"
+              { className: 2 == Data.Params.Dft || Data.Params.Dft == 0 && 2 == Data.Params.Defaults.Dft ? "" : "collapse-hidden"
               },
               React.createElement(
                 "table",
@@ -1102,10 +1117,10 @@ define(function (require) {
                       },
                       React.createElement(
                         "a",
-                        { href: Data.Params.ENUM.df.FS.Href, className: Data.Params.ENUM.df.FS.Class
+                        { href: Data.Params.Variations.Dfk[1 - 1].LinkHref, className: Data.Params.Variations.Dfk[1 - 1].LinkClass
                         },
                         "Device",
-                        React.createElement("span", { className: Data.Params.ENUM.df.FS.CaretClass
+                        React.createElement("span", { className: Data.Params.Variations.Dfk[1 - 1].CaretClass
                         })
                       )
                     ),
@@ -1115,10 +1130,10 @@ define(function (require) {
                       },
                       React.createElement(
                         "a",
-                        { href: Data.Params.ENUM.df.MP.Href, className: Data.Params.ENUM.df.MP.Class
+                        { href: Data.Params.Variations.Dfk[2 - 1].LinkHref, className: Data.Params.Variations.Dfk[2 - 1].LinkClass
                         },
                         "Mounted",
-                        React.createElement("span", { className: Data.Params.ENUM.df.MP.CaretClass
+                        React.createElement("span", { className: Data.Params.Variations.Dfk[2 - 1].CaretClass
                         })
                       )
                     ),
@@ -1128,10 +1143,10 @@ define(function (require) {
                       },
                       React.createElement(
                         "a",
-                        { href: Data.Params.ENUM.df.AVAIL.Href, className: Data.Params.ENUM.df.AVAIL.Class
+                        { href: Data.Params.Variations.Dfk[3 - 1].LinkHref, className: Data.Params.Variations.Dfk[3 - 1].LinkClass
                         },
                         "Avail",
-                        React.createElement("span", { className: Data.Params.ENUM.df.AVAIL.CaretClass
+                        React.createElement("span", { className: Data.Params.Variations.Dfk[3 - 1].CaretClass
                         })
                       )
                     ),
@@ -1141,10 +1156,10 @@ define(function (require) {
                       },
                       React.createElement(
                         "a",
-                        { href: Data.Params.ENUM.df.USED.Href, className: Data.Params.ENUM.df.USED.Class
+                        { href: Data.Params.Variations.Dfk[4 - 1].LinkHref, className: Data.Params.Variations.Dfk[4 - 1].LinkClass
                         },
                         "Used",
-                        React.createElement("span", { className: Data.Params.ENUM.df.USED.CaretClass
+                        React.createElement("span", { className: Data.Params.Variations.Dfk[4 - 1].CaretClass
                         })
                       )
                     ),
@@ -1154,10 +1169,10 @@ define(function (require) {
                       },
                       React.createElement(
                         "a",
-                        { href: Data.Params.ENUM.df.TOTAL.Href, className: Data.Params.ENUM.df.TOTAL.Class
+                        { href: Data.Params.Variations.Dfk[5 - 1].LinkHref, className: Data.Params.Variations.Dfk[5 - 1].LinkClass
                         },
                         "Total",
-                        React.createElement("span", { className: Data.Params.ENUM.df.TOTAL.CaretClass
+                        React.createElement("span", { className: Data.Params.Variations.Dfk[5 - 1].CaretClass
                         })
                       )
                     )
@@ -1249,11 +1264,11 @@ define(function (require) {
           null,
           React.createElement(
             "a",
-            { href: Data.Params.BOOL.configps.Href, onClick: this.handleClick, className: "btn-block"
+            { href: Data.Params.Toggle.Configps, onClick: this.handleClick, className: "btn-block"
             },
             React.createElement(
               "span",
-              { className: Data.Params.BOOL.configps.Value ? "h4 bg-info" : "h4"
+              { className: Data.Params.Configps ? "h4 bg-info" : "h4"
               },
               "Processes"
             )
@@ -1264,11 +1279,11 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { id: "psconfig", className: Data.Params.BOOL.configps.Value ? "config-margintop" : "config-margintop collapse-hidden"
+            { className: Data.Params.Configps ? "config-margintop" : "config-margintop collapse-hidden", id: "psconfig"
             },
             React.createElement(
               "form",
-              { className: "form-inline text-right", action: "/form/" + Data.Params.Query
+              { action: "/form/" + Data.Params, className: "form-inline"
               },
               React.createElement("input", { className: "hidden-submit", type: "submit"
               }),
@@ -1282,19 +1297,22 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { className: Data.Params.BOOL.hideps.Value ? "btn btn-default active" : "btn btn-default", href: Data.Params.BOOL.hideps.Href, onClick: this.handleClick
+                    { className: Data.Params.Hideps ? "btn btn-default active" : "btn btn-default",
+                      href: Data.Params.Toggle.Hideps, onClick: this.handleClick
                     },
                     "Hidden"
                   ),
                   React.createElement(
                     "a",
-                    { className: Data.PStable.PSnotDecreasable ? "btn btn-default" : "btn btn-default disabled", href: Data.Params.LIMIT.psn.LessHref, onClick: this.handleClick
+                    { className: Data.PStable.PSnotDecreasable ? "btn btn-default" : "btn btn-default disabled",
+                      href: Data.Params.LessHref, onClick: this.handleClick
                     },
                     "-"
                   ),
                   React.createElement(
                     "a",
-                    { className: Data.PStable.PSnotExpandable ? "btn btn-default" : "btn btn-default disabled", href: Data.Params.LIMIT.psn.MoreHref, onClick: this.handleClick
+                    { className: Data.PStable.PSnotExpandable ? "btn btn-default" : "btn btn-default disabled",
+                      href: Data.Params.MoreHref, onClick: this.handleClick
                     },
                     Data.PStable.PSplusText
                   )
@@ -1305,7 +1323,7 @@ define(function (require) {
                   },
                   React.createElement(
                     "div",
-                    { className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshps.InputErrd ? " has-warning" : "")
+                    { className: Data.Params.Errors && Data.Params.Errors.Refreshps ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"
                     },
                     React.createElement(
                       "span",
@@ -1313,7 +1331,8 @@ define(function (require) {
                       },
                       "Refresh"
                     ),
-                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.Params.PERIOD.refreshps.Placeholder, name: "refreshps", value: Data.Params.PERIOD.refreshps.Input, onChange: this.handleChange
+                    "  ",
+                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.MinRefresh, name: "refreshps", value: Data.Params.Refreshps, onChange: this.handleChange
                     })
                   )
                 )
@@ -1326,7 +1345,7 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { className: Data.Params.BOOL.hideps.Value ? "collapse-hidden" : ""
+            { className: Data.Params.Hideps ? "collapse-hidden" : ""
             },
             React.createElement(
               "table",
@@ -1344,10 +1363,10 @@ define(function (require) {
                     },
                     React.createElement(
                       "a",
-                      { href: Data.Params.ENUM.ps.PID.Href, className: Data.Params.ENUM.ps.PID.Class
+                      { href: Data.Params.Variations.Psk[1 - 1].LinkHref, className: Data.Params.Variations.Psk[1 - 1].LinkClass
                       },
                       "PID",
-                      React.createElement("span", { className: Data.Params.ENUM.ps.PID.CaretClass
+                      React.createElement("span", { className: Data.Params.Variations.Psk[1 - 1].CaretClass
                       })
                     )
                   ),
@@ -1357,10 +1376,10 @@ define(function (require) {
                     },
                     React.createElement(
                       "a",
-                      { href: Data.Params.ENUM.ps.UID.Href, className: Data.Params.ENUM.ps.UID.Class
+                      { href: Data.Params.Variations.Psk[8 - 1].LinkHref, className: Data.Params.Variations.Psk[8 - 1].LinkClass
                       },
                       "UID",
-                      React.createElement("span", { className: Data.Params.ENUM.ps.UID.CaretClass
+                      React.createElement("span", { className: Data.Params.Variations.Psk[8 - 1].CaretClass
                       })
                     )
                   ),
@@ -1370,10 +1389,10 @@ define(function (require) {
                     },
                     React.createElement(
                       "a",
-                      { href: Data.Params.ENUM.ps.USER.Href, className: Data.Params.ENUM.ps.USER.Class
+                      { href: Data.Params.Variations.Psk[9 - 1].LinkHref, className: Data.Params.Variations.Psk[9 - 1].LinkClass
                       },
                       "USER",
-                      React.createElement("span", { className: Data.Params.ENUM.ps.USER.CaretClass
+                      React.createElement("span", { className: Data.Params.Variations.Psk[9 - 1].CaretClass
                       })
                     )
                   ),
@@ -1383,10 +1402,10 @@ define(function (require) {
                     },
                     React.createElement(
                       "a",
-                      { href: Data.Params.ENUM.ps.PRI.Href, className: Data.Params.ENUM.ps.PRI.Class
+                      { href: Data.Params.Variations.Psk[2 - 1].LinkHref, className: Data.Params.Variations.Psk[2 - 1].LinkClass
                       },
                       "PR",
-                      React.createElement("span", { className: Data.Params.ENUM.ps.PRI.CaretClass
+                      React.createElement("span", { className: Data.Params.Variations.Psk[2 - 1].CaretClass
                       })
                     )
                   ),
@@ -1396,10 +1415,10 @@ define(function (require) {
                     },
                     React.createElement(
                       "a",
-                      { href: Data.Params.ENUM.ps.NICE.Href, className: Data.Params.ENUM.ps.NICE.Class
+                      { href: Data.Params.Variations.Psk[3 - 1].LinkHref, className: Data.Params.Variations.Psk[3 - 1].LinkClass
                       },
                       "NI",
-                      React.createElement("span", { className: Data.Params.ENUM.ps.NICE.CaretClass
+                      React.createElement("span", { className: Data.Params.Variations.Psk[3 - 1].CaretClass
                       })
                     )
                   ),
@@ -1409,10 +1428,10 @@ define(function (require) {
                     },
                     React.createElement(
                       "a",
-                      { href: Data.Params.ENUM.ps.VIRT.Href, className: Data.Params.ENUM.ps.VIRT.Class
+                      { href: Data.Params.Variations.Psk[4 - 1].LinkHref, className: Data.Params.Variations.Psk[4 - 1].LinkClass
                       },
                       "VIRT",
-                      React.createElement("span", { className: Data.Params.ENUM.ps.VIRT.CaretClass
+                      React.createElement("span", { className: Data.Params.Variations.Psk[4 - 1].CaretClass
                       })
                     )
                   ),
@@ -1422,10 +1441,10 @@ define(function (require) {
                     },
                     React.createElement(
                       "a",
-                      { href: Data.Params.ENUM.ps.RES.Href, className: Data.Params.ENUM.ps.RES.Class
+                      { href: Data.Params.Variations.Psk[5 - 1].LinkHref, className: Data.Params.Variations.Psk[5 - 1].LinkClass
                       },
                       "RES",
-                      React.createElement("span", { className: Data.Params.ENUM.ps.RES.CaretClass
+                      React.createElement("span", { className: Data.Params.Variations.Psk[5 - 1].CaretClass
                       })
                     )
                   ),
@@ -1435,10 +1454,10 @@ define(function (require) {
                     },
                     React.createElement(
                       "a",
-                      { href: Data.Params.ENUM.ps.TIME.Href, className: Data.Params.ENUM.ps.TIME.Class
+                      { href: Data.Params.Variations.Psk[6 - 1].LinkHref, className: Data.Params.Variations.Psk[6 - 1].LinkClass
                       },
                       "TIME",
-                      React.createElement("span", { className: Data.Params.ENUM.ps.TIME.CaretClass
+                      React.createElement("span", { className: Data.Params.Variations.Psk[6 - 1].CaretClass
                       })
                     )
                   ),
@@ -1448,10 +1467,10 @@ define(function (require) {
                     },
                     React.createElement(
                       "a",
-                      { href: Data.Params.ENUM.ps.NAME.Href, className: Data.Params.ENUM.ps.NAME.Class
+                      { href: Data.Params.Variations.Psk[7 - 1].LinkHref, className: Data.Params.Variations.Psk[7 - 1].LinkClass
                       },
                       "COMMAND",
-                      React.createElement("span", { className: Data.Params.ENUM.ps.NAME.CaretClass
+                      React.createElement("span", { className: Data.Params.Variations.Psk[7 - 1].CaretClass
                       })
                     )
                   )
@@ -1522,11 +1541,12 @@ define(function (require) {
           null,
           React.createElement(
             "a",
-            { href: Data.Params.BOOL.configvg.Href, onClick: this.handleClick, className: "btn-block"
+            { href: Data.Params.Toggle.Configvg, onClick: this.handleClick, className: "btn-block"
             },
+            "  ",
             React.createElement(
               "span",
-              { className: Data.Params.BOOL.configvg.Value ? "h4 bg-info" : "h4"
+              { className: Data.Params.Configvg ? "h4 bg-info" : "h4"
               },
               "Vagrant global-status"
             )
@@ -1537,11 +1557,11 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { id: "vgconfig", className: Data.Params.BOOL.configvg.Value ? "config-margintop" : "config-margintop collapse-hidden"
+            { className: Data.Params.Configvg ? "config-margintop" : "config-margintop collapse-hidden", id: "vgconfig"
             },
             React.createElement(
               "form",
-              { className: "form-inline", action: "/form/" + Data.Params.Query
+              { action: "/form/" + Data.Params, className: "form-inline"
               },
               React.createElement("input", { className: "hidden-submit", type: "submit"
               }),
@@ -1555,7 +1575,8 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { className: Data.Params.BOOL.hidevg.Value ? "btn btn-default active" : "btn btn-default", href: Data.Params.BOOL.hidevg.Href, onClick: this.handleClick
+                    { className: Data.Params.Hidevg ? "btn btn-default active" : "btn btn-default",
+                      href: Data.Params.Toggle.Hidevg, onClick: this.handleClick
                     },
                     "Hidden"
                   )
@@ -1566,7 +1587,7 @@ define(function (require) {
                   },
                   React.createElement(
                     "div",
-                    { className: "input-group input-group-sm refresh-group" + (Data.Params.PERIOD.refreshvg.InputErrd ? " has-warning" : "")
+                    { className: Data.Params.Errors && Data.Params.Errors.Refreshvg ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"
                     },
                     React.createElement(
                       "span",
@@ -1574,7 +1595,8 @@ define(function (require) {
                       },
                       "Refresh"
                     ),
-                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.Params.PERIOD.refreshvg.Placeholder, name: "refreshvg", value: Data.Params.PERIOD.refreshvg.Input, onChange: this.handleChange
+                    "  ",
+                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.MinRefresh, name: "refreshvg", value: Data.Params.Refreshvg, onChange: this.handleChange
                     })
                   )
                 )
@@ -1587,7 +1609,7 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { className: Data.Params.BOOL.hidevg.Value ? "collapse-hidden" : ""
+            { className: Data.Params.Hidevg ? "collapse-hidden" : ""
             },
             React.createElement(
               "table",

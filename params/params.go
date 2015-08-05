@@ -1,21 +1,6 @@
 package params
 
-import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"html/template"
-	"math"
-	"net/url"
-	"sort"
-	"strconv"
-	"strings"
-	"time"
-
-	"github.com/ostrost/ostent/flags"
-	"github.com/ostrost/ostent/params/enums"
-)
-
+/*
 // Number is an enums.Uint with sign.
 type Number struct {
 	enums.Uint
@@ -669,3 +654,4 @@ func (q Query) ValuesEncode(v url.Values) string {
 	}
 	return buf.String()
 }
+// */
