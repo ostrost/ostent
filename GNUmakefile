@@ -81,10 +81,10 @@ al: $(packagefiles) $(devpackagefiles)
 # al: like `all' but without final go build $(package). For when rerun does the build
 
 $(destbin)/$(cmdname): $(packagefiles)
-	go build -ldflags -w -a -tags bin -o $@ $(package)
+	go build -ldflags '-s -w' -a -tags bin -o $@ $(package)
 $(destbin)/$(cmdname).32:
 	GOARCH=386 CGO_ENABLED=1 \
-	go build -ldflags -w -a -tags bin -o $@ $(package)
+	go build -ldflags '-s -w' -a -tags bin -o $@ $(package)
 
 share/assets/css/index.css: share/style/index.less
 	type lessc  >/dev/null || exit 0; lessc --source-map $< $@
