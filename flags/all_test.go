@@ -2,7 +2,6 @@ package flags
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"testing"
 	"time"
@@ -42,11 +41,11 @@ func TestPeriodSet(t *testing.T) {
 		str   string
 		err   error
 	}{
-		{"abc", "", "", errors.New("time: invalid duration abc")},
-		{"0.5s", "", "", errors.New("Less than a second: 500ms")},
-		{"1.5s", "", "", errors.New("Not a multiple of a second: 1.5s")},
+		{"abc", "", "", fmt.Errorf("time: invalid duration abc")},
+		{"0.5s", "", "", fmt.Errorf("Less than a second: 500ms")},
+		{"1.5s", "", "", fmt.Errorf("Not a multiple of a second: 1.5s")},
 		{"1s1s", "", "2s", nil},
-		{"3s", "4s", "", errors.New("Should be above 4s: 3s")},
+		{"3s", "4s", "", fmt.Errorf("Should be above 4s: 3s")},
 	} {
 		td, err := time.ParseDuration(v.dstr)
 		if err != nil && err.Error() != v.err.Error() {
@@ -81,10 +80,11 @@ func TestBindSet(t *testing.T) {
 		cmp  string
 		errs []error
 	}{
-		{"a:b:", "", []error{errors.New("too many colons in address a:b:")}},
+		{"a:b:", "", []error{fmt.Errorf("too many colons in address a:b:")}},
 		{"localhost:nonexistent", "", []error{
-			errors.New("lookup tcp/nonexistent: Servname not supported for ai_socktype"),
-			errors.New("unknown port tcp/nonexistent"),
+			fmt.Errorf("lookup tcp/nonexistent: Servname not supported for ai_socktype"),
+			fmt.Errorf("lookup tcp/nonexistent: nodename nor servname provided, or not known"),
+			fmt.Errorf("unknown port tcp/nonexistent"),
 		}},
 		{"localhost", "localhost:9050", nil},
 		{"", ":9050", nil},
