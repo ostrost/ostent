@@ -22,8 +22,8 @@ install:
       if test x$TRAVIS_OS_NAME == xosx -a x$GVM_GO == xgo1.5beta3 ; then
         go_binary_basename=$GVM_GO.darwin-amd64.tar.gz
         GO_BINARY_PATH=~/.gvm/archive/$go_binary_basename
-        GO_BINARY_URL=https://storage.googleapis.com/golang/$go_binary_basename
-        test -f $GO_BINARY_FILE ||
+        GO_BINARY_URL=https://golang.org/dl/$go_binary_basename # https://storage.googleapis.com/golang/
+        test -f $GO_BINARY_PATH ||
         curl -s -f -L $GO_BINARY_URL >$GO_BINARY_PATH
       fi
       set +x
