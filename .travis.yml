@@ -18,7 +18,7 @@ install:
       # linux is ok with gcc
       export CXX=clang++ CC=clang
       # default CC=gcc for `language: c'
-      if test x$TRAVIS_OS_NAME == xdarwin -a x$GVM_GO == xgo1.5beta3 ; then
+      if test x$TRAVIS_OS_NAME == xosx -a x$GVM_GO == xgo1.5beta3 ; then
         go_binary_basename=$GVM_GO.darwin-amd64.tar.gz
         GO_BINARY_PATH=~/.gvm/archive/$go_binary_basename
         GO_BINARY_URL=https://golang.org/dl/$go_binary_basename # https://storage.googleapis.com/golang/
