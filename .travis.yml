@@ -21,18 +21,12 @@ install:
     fi
   - if type -t gvm; then gvm get; else curl -sSL $GVMINSTALLER_URL | bash; fi
   - |
-    set -x
-    if test x$TRAVIS_OS_NAME == xosx -a x$GVM_GO == xgo1.5beta3 ; then
-      go_binary_basename=$GVM_GO.darwin-amd64.tar.gz
-      gvm_archive=~/.gvm/archive
-      GO_BINARY_PATH=$gvm_archive/$go_binary_basename
-      GO_BINARY_URL=http://golang.org/dl/$go_binary_basename # https://storage.googleapis.com/golang/
-      test -e $gvm_archive ||
-      mkdir -p $gvm_archive
+    if test x$TRAVIS_OS_NAME == xosx -a xx$GVM_GO == xxgo1.5beta3 ; then
+      GO_BINARY_PATH=~/.gvm/archive///////$GVM_GO.darwin-amd64-osx10.8.tar.gz
+      GO_BINARY_URL=https://golang.org/dl/$GVM_GO.darwin-amd64.tar.gz
       test -f $GO_BINARY_PATH ||
       curl --silent --show-error --fail --location --output $GO_BINARY_PATH $GO_BINARY_URL
     fi
-    set +x
   - source ~/.gvm/scripts/gvm
   - gvm version
   - gvm install $GVM_GO --binary # || gvm install $GVM_GO
