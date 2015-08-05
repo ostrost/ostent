@@ -77,12 +77,15 @@ func TestBindSet(t *testing.T) {
 	const defportint = 9050
 	defport := fmt.Sprintf("%d", defportint)
 	for _, v := range []struct {
-		a   string
-		cmp string
-		err error
+		a    string
+		cmp  string
+		errs []error
 	}{
-		{"a:b:", "", errors.New("too many colons in address a:b:")},
-		{"localhost:nonexistent", "", errors.New("unknown port tcp/nonexistent")},
+		{"a:b:", "", []error{errors.New("too many colons in address a:b:")}},
+		{"localhost:nonexistent", "", []error{
+			errors.New("lookup tcp/nonexistent: Servname not supported for ai_socktype"),
+			errors.New("unknown port tcp/nonexistent"),
+		}},
 		{"localhost", "localhost:9050", nil},
 		{"", ":9050", nil},
 		{"8001", ":8001", nil},
@@ -97,8 +100,15 @@ func TestBindSet(t *testing.T) {
 	} {
 		b := NewBind(defportint)
 		if err := b.Set(v.a); err != nil {
-			if err.Error() != v.err.Error() {
-				t.Errorf("Error: %s\nMismatch: %s\n", err, v.err)
+			unknownerr := true
+			for _, x := range v.errs {
+				if err.Error() == x.Error() {
+					unknownerr = false
+					break
+				}
+			}
+			if unknownerr {
+				t.Errorf("Error: %q\nExpected errors: %+v\n", err, v.errs)
 			}
 			continue
 		}
