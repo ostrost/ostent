@@ -104,7 +104,7 @@
     ></td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_cputable"}}<table class="table table-striped"
+*/}}{{define "defines::define_cputable"}}<table class="table table-hover"
   ><thead
     ><tr
       ><th
@@ -140,7 +140,7 @@
     >{{$disk.Total}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_dfbytes_table"}}{{$p := .Data.Params}}<table class="table table-striped"
+*/}}{{define "defines::define_dfbytes_table"}}{{$p := .Data.Params}}<table class="table table-hover"
   ><thead
     ><tr
       >{{template "defines::headerenumlink" $p.Variate $p.Dfk 1 "Device" ""}}{{template "defines::headerenumlink" $p.Variate $p.Dfk 2 "Mounted" ""}}{{template "defines::headerenumlink" $p.Variate $p.Dfk 3 "Avail" "text-right"}}{{template "defines::headerenumlink" $p.Variate $p.Dfk 4 "Used" "text-right"}}{{template "defines::headerenumlink" $p.Variate $p.Dfk 5 "Total" "text-right"}}</tr
@@ -162,7 +162,7 @@
     >{{$disk.Inodes}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_dfinodes_table"}}<table class="table table-striped"
+*/}}{{define "defines::define_dfinodes_table"}}<table class="table table-hover"
   ><thead
     ><tr
       ><th class="header"
@@ -194,7 +194,7 @@
     >{{$if.Out}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_ifbytes_table"}}<table class="table table-striped"
+*/}}{{define "defines::define_ifbytes_table"}}<table class="table table-hover"
   ><thead
     ><tr
       ><th
@@ -242,7 +242,7 @@
     >{{$if.Out}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_iferrors_table"}}<table class="table table-striped"
+*/}}{{define "defines::define_iferrors_table"}}<table class="table table-hover"
   ><thead
     ><tr
       ><th
@@ -282,7 +282,7 @@
     >{{$if.Out}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_ifpackets_table"}}<table class="table table-striped"
+*/}}{{define "defines::define_ifpackets_table"}}<table class="table table-hover"
   ><thead
     ><tr
       ><th
@@ -320,7 +320,7 @@
     >{{$mem.Total}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_memtable"}}<table class="table table-striped"
+*/}}{{define "defines::define_memtable"}}<table class="table table-hover"
   ><thead
     ><tr
       ><th
@@ -528,7 +528,7 @@
   ><div
     ><a      {{$p.AttrHrefToggle $p.Configvg}} {{class}}="btn-block"
       >  <span {{$p.AttrClassN $p.Configvg "h4 bg-info" "h4"}}
-        >Vagrant global-status</span
+        >Vagrant</span
       ></a
     ></div
   ><div
@@ -574,7 +574,7 @@
     >{{$proc.Name}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_pstable"}}{{$p := .Data.Params}}<table class="table table-striped table-hover"
+*/}}{{define "defines::define_pstable"}}{{$p := .Data.Params}}<table class="table table-hover"
   ><thead
     ><tr
       >{{template "defines::headerenumlink" $p.Variate $p.Psk 1 "PID" "text-right"}}{{template "defines::headerenumlink" $p.Variate $p.Psk 8 "UID" "text-right"}}{{template "defines::headerenumlink" $p.Variate $p.Psk 9 "USER" ""}}{{template "defines::headerenumlink" $p.Variate $p.Psk 2 "PR" "text-right"}}{{template "defines::headerenumlink" $p.Variate $p.Psk 3 "NI" "text-right"}}{{template "defines::headerenumlink" $p.Variate $p.Psk 4 "VIRT" "text-right"}}{{template "defines::headerenumlink" $p.Variate $p.Psk 5 "RES" "text-right"}}{{template "defines::headerenumlink" $p.Variate $p.Psk 6 "TIME" "text-center"}}{{template "defines::headerenumlink" $p.Variate $p.Psk 7 "COMMAND" ""}}</tr
@@ -611,19 +611,19 @@
   ></tr
 >{{end}}{{end}}{{/*
 */}}{{define "defines::define_vgswitch"}}{{with rowsset .}}{{.}}{{else}}{{if eq .Data.VagrantErrord true}}{{template "defines::define_vgerror" .}}{{else}}{{template "defines::define_vgrows" .}}{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_vgtable"}}<table id="vgtable" class="table table-striped"
+*/}}{{define "defines::define_vgtable"}}<table class="table table-hover"
   ><thead
     ><tr
       ><th
-        >id</th
+        >ID</th
       ><th
-        >name</th
+        >Name</th
       ><th
-        >provider</th
+        >Provider</th
       ><th
-        >state</th
+        >State</th
       ><th
-        >directory</th
+        >Directory</th
       ></tr
     ></thead
   ><tbody

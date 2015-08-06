@@ -3,7 +3,7 @@
 @import 'vendor/bootstrap-3.3.5/less/bootstrap.less';
 @import 'vendor/bootstrap-3.3.5/less/theme.less';
 
-@navbar-height: 34px;
+@navbar-height: 40px;
 
 .config-margintop { margin-top: (@line-height-computed / 2); }
 
@@ -27,7 +27,7 @@
 .clip {
   cursor: pointer;
   margin-bottom: 0px;
-  font-weight: normal;
+  // font-weight: normal;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
@@ -51,8 +51,12 @@
 
 .nowrap { white-space: nowrap; }
 
-table thead th { font-weight: normal; }
-table .bold    { font-weight: bold;   }
+table th { // :not(.empty)
+    background-color: @panel-default-heading-bg;
+}
+
+// table thead th { font-weight: normal; }
+// table .bold    { font-weight: bold;   }
 
 table thead tr .header a {
   color: black;
@@ -63,7 +67,7 @@ table thead tr .header a {
   }
   &.state.current {
     white-space: nowrap;
-    font-weight: bold;
+    // font-weight: bold;
     // https://stackoverflow.com/q/8376795
     vertical-align: middle; // this DOES NOT make the line 1px higher
   }

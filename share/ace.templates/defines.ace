@@ -52,7 +52,7 @@
   {{end}}
 
 = content define_ifbytes_table
-  table.table.table-striped
+  table.table.table-hover
     thead
       tr
         th Interface
@@ -76,7 +76,7 @@
       {{template "defines::define_ifbytes_rows" .}}
 
 = content define_ifpackets_table
-  table.table.table-striped
+  table.table.table-hover
     thead
       tr
         th Interface
@@ -92,7 +92,7 @@
       {{template "defines::define_ifpackets_rows" .}}
 
 = content define_iferrors_table
-  table.table.table-striped
+  table.table.table-hover
     thead
       tr
         th Interface
@@ -196,7 +196,7 @@
 
 = content define_dfbytes_table
   {{$p := .Data.Params}}
-  table.table.table-striped
+  table.table.table-hover
     thead
       tr
         {{template "defines::headerenumlink" $p.Variate $p.Dfk 1 "Device"  ""          }}{{/* FS    */}}
@@ -208,7 +208,7 @@
       {{template "defines::define_dfbytes_rows" .}}
 
 = content define_dfinodes_table
-  table.table.table-striped
+  table.table.table-hover
     thead
       tr
         th.header Device
@@ -275,7 +275,7 @@
   {{end}}
 
 = content define_memtable
-  table.table.table-striped
+  table.table.table-hover
     thead
       tr
         th
@@ -329,7 +329,7 @@
   {{end}}
 
 = content define_cputable
-  table.table.table-striped
+  table.table.table-hover
     thead
       tr
         th
@@ -392,7 +392,7 @@
 
 = content define_pstable
   {{$p := .Data.Params}}
-  table.table.table-striped.table-hover
+  table.table.table-hover
     thead
       tr
         {{template "defines::headerenumlink" $p.Variate $p.Psk 1 "PID"     "text-right" }}{{/* PID  */}}
@@ -463,14 +463,14 @@
   {{end}}
 
 = content define_vgtable
-  table.table.table-striped#vgtable
+  table.table.table-hover
     thead
       tr
-        th id
-        th name
-        th provider
-        th state
-        th directory
+        th ID
+        th Name
+        th Provider
+        th State
+        th Directory
     tbody
       {{template "defines::define_vgswitch" .}}
 
@@ -480,7 +480,7 @@
     div
       |
         <a      {{$p.AttrHrefToggle $p.Configvg}} {{class}}="btn-block">
-          <span {{$p.AttrClassN $p.Configvg "h4 bg-info" "h4"}}>Vagrant global-status</span>
+          <span {{$p.AttrClassN $p.Configvg "h4 bg-info" "h4"}}>Vagrant</span>
         </a>
 
     div

@@ -129,7 +129,7 @@ define(function (require) {
             },
             React.createElement(
               "table",
-              { className: "table table-striped"
+              { className: "table table-hover"
               },
               React.createElement(
                 "thead",
@@ -407,7 +407,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table table-striped"
+                { className: "table table-hover"
                 },
                 React.createElement(
                   "thead",
@@ -483,7 +483,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table table-striped"
+                { className: "table table-hover"
                 },
                 React.createElement(
                   "thead",
@@ -559,7 +559,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table table-striped"
+                { className: "table table-hover"
                 },
                 React.createElement(
                   "thead",
@@ -788,7 +788,7 @@ define(function (require) {
             },
             React.createElement(
               "table",
-              { className: "table table-striped"
+              { className: "table table-hover"
               },
               React.createElement(
                 "thead",
@@ -1050,7 +1050,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table table-striped"
+                { className: "table table-hover"
                 },
                 React.createElement(
                   "thead",
@@ -1103,7 +1103,7 @@ define(function (require) {
               },
               React.createElement(
                 "table",
-                { className: "table table-striped"
+                { className: "table table-hover"
                 },
                 React.createElement(
                   "thead",
@@ -1349,7 +1349,7 @@ define(function (require) {
             },
             React.createElement(
               "table",
-              { className: "table table-striped table-hover"
+              { className: "table table-hover"
               },
               React.createElement(
                 "thead",
@@ -1548,7 +1548,7 @@ define(function (require) {
               "span",
               { className: Data.Params.Configvg ? "h4 bg-info" : "h4"
               },
-              "Vagrant global-status"
+              "Vagrant"
             )
           )
         ),
@@ -1613,7 +1613,7 @@ define(function (require) {
             },
             React.createElement(
               "table",
-              { id: "vgtable", className: "table table-striped"
+              { className: "table table-hover"
               },
               React.createElement(
                 "thead",
@@ -1624,27 +1624,27 @@ define(function (require) {
                   React.createElement(
                     "th",
                     null,
-                    "id"
+                    "ID"
                   ),
                   React.createElement(
                     "th",
                     null,
-                    "name"
+                    "Name"
                   ),
                   React.createElement(
                     "th",
                     null,
-                    "provider"
+                    "Provider"
                   ),
                   React.createElement(
                     "th",
                     null,
-                    "state"
+                    "State"
                   ),
                   React.createElement(
                     "th",
                     null,
-                    "directory"
+                    "Directory"
                   )
                 )
               ),

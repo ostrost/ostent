@@ -48,7 +48,7 @@ define(function(require) {
   ></div
 ><div
   ><div  className={Data.Params.Hidemem ? "collapse-hidden" : ""}
-    ><table className="table table-striped"
+    ><table className="table table-hover"
   ><thead
     ><tr
       ><th
@@ -157,7 +157,7 @@ define(function(require) {
 ><div
   ><div  className={Data.Params.Hideif ? "collapse-hidden" : ""}
     ><div  className={1 == Data.Params.Ift || (Data.Params.Ift == 0 && 1 == Data.Params.Defaults.Ift) ? "" : "collapse-hidden"}
-      ><table className="table table-striped"
+      ><table className="table table-hover"
   ><thead
     ><tr
       ><th
@@ -185,7 +185,7 @@ define(function(require) {
   ></table
 ></div
     ><div  className={2 == Data.Params.Ift || (Data.Params.Ift == 0 && 2 == Data.Params.Defaults.Ift) ? "" : "collapse-hidden"}
-      ><table className="table table-striped"
+      ><table className="table table-hover"
   ><thead
     ><tr
       ><th
@@ -213,7 +213,7 @@ define(function(require) {
   ></table
 ></div
     ><div  className={3 == Data.Params.Ift || (Data.Params.Ift == 0 && 3 == Data.Params.Defaults.Ift) ? "" : "collapse-hidden"}
-      ><table className="table table-striped"
+      ><table className="table table-hover"
   ><thead
     ><tr
       ><th
@@ -304,7 +304,7 @@ define(function(require) {
   ></div
 ><div
   ><div  className={Data.Params.Hidecpu ? "collapse-hidden" : ""}
-    ><table className="table table-striped"
+    ><table className="table table-hover"
   ><thead
     ><tr
       ><th
@@ -406,7 +406,7 @@ define(function(require) {
 ><div
   ><div  className={Data.Params.Hidedf ? "collapse-hidden" : ""}
     ><div  className={1 == Data.Params.Dft || (Data.Params.Dft == 0 && 1 == Data.Params.Defaults.Dft) ? "" : "collapse-hidden"}
-      ><table className="table table-striped"
+      ><table className="table table-hover"
   ><thead
     ><tr
       ><th className="header"
@@ -426,7 +426,7 @@ define(function(require) {
   ></table
 ></div
     ><div  className={2 == Data.Params.Dft || (Data.Params.Dft == 0 && 2 == Data.Params.Defaults.Dft) ? "" : "collapse-hidden"}
-      ><table className="table table-striped"
+      ><table className="table table-hover"
   ><thead
     ><tr
       ><th className="header "
@@ -533,7 +533,7 @@ define(function(require) {
   ></div
 ><div
   ><div  className={Data.Params.Hideps ? "collapse-hidden" : ""}
-    ><table className="table table-striped table-hover"
+    ><table className="table table-hover"
   ><thead
     ><tr
       ><th className="header text-right"
@@ -631,7 +631,7 @@ define(function(require) {
   ><div
     ><a       href={Data.Params.Toggle.Configvg} onClick={this.handleClick} className="btn-block"
       >  <span  className={Data.Params.Configvg ? "h4 bg-info" : "h4"}
-        >Vagrant global-status</span
+        >Vagrant</span
       ></a
     ></div
   ><div
@@ -658,19 +658,19 @@ define(function(require) {
   ></div
 ><div
   ><div  className={Data.Params.Hidevg ? "collapse-hidden" : ""}
-    ><table id="vgtable" className="table table-striped"
+    ><table className="table table-hover"
   ><thead
     ><tr
       ><th
-        >id</th
+        >ID</th
       ><th
-        >name</th
+        >Name</th
       ><th
-        >provider</th
+        >Provider</th
       ><th
-        >state</th
+        >State</th
       ><th
-        >directory</th
+        >Directory</th
       ></tr
     ></thead
   ><tbody
