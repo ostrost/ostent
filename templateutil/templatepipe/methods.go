@@ -24,6 +24,14 @@ func (n Nota) AttrKey(prefix string) template.HTMLAttr {
 	return SprintfAttr(" key={%q+%s}", prefix+"-", n.Uncurl())
 }
 
+func (_ Nota) AttrClassP(defaults, v, fstclass, sndclass string) (template.HTMLAttr, error) {
+	defaults, v = Uncurl(defaults), Uncurl(v)
+	split := strings.Split(v, ".")
+	last := split[len(split)-1]
+	nz := fmt.Sprintf("(%s != 0 ? %s : %s.%s)", v, v, defaults, last)
+	return SprintfAttr(" className={%s > 0 ? %q : %q}", nz, fstclass, sndclass), nil
+}
+
 func (_ Nota) AttrClassN(v, fstclass, sndclass string) template.HTMLAttr {
 	return SprintfAttr(" className={%s ? %q : %q}", Uncurl(v), fstclass, sndclass)
 }
@@ -92,6 +100,10 @@ func (_ Nota) AttrHrefToggle(s string) interface{} {
 	base := strings.Join(split[:len(split)-1], ".")
 	last := split[len(split)-1]
 	return fmt.Sprintf(" href={%s.Toggle.%s} onClick={this.handleClick}", base, last)
+}
+
+func (n Nota) AttrHrefToggleN(s string) interface{} {
+	return n.AttrHrefToggle(s)
 }
 
 // Data.Params.RefreshXX RefreshXX

@@ -112,51 +112,56 @@ func NewTicks(dp *Duration) Ticks {
 	return Ticks{Duration: dp}
 }
 
+type Defaults map[interface{}]int
+
 type Params struct {
 	Schema
-	Errors    MultiError          `schema:"-" url:"-" json:",omitempty"`
-	Ticks     map[string]Ticks    `schema:"-" url:"-" json:"-"`
-	Toprows   int                 `schema:"-" url:"-" json:"-"`
-	MinPeriod flags.Period        `schema:"-" url:"-" json:"-"`
-	Defaults  map[interface{}]int `schema:"-" url:"-" json:"-"` // encoded in MarshalJSON
+	Defaults  `json:"-"`       // encoded in MarshalJSON
+	Errors    MultiError       `json:",omitempty"`
+	Ticks     map[string]Ticks `json:"-"`
+	Toprows   int              `json:"-"`
+	MinPeriod flags.Period     `json:"-"`
 }
 
 type Schema struct {
-	Still     bool `schema:"still"     url:"still,omitempty"`
-	Hidecpu   bool `schema:"hidecpu"   url:"hidecpu,omitempty"`
-	Hidedf    bool `schema:"hidedf"    url:"hidedf,omitempty"`
-	Hideif    bool `schema:"hideif"    url:"hideif,omitempty"`
-	Hidemem   bool `schema:"hidemem"   url:"hidemem,omitempty"`
-	Hideps    bool `schema:"hideps"    url:"hideps,omitempty"`
-	Hideswap  bool `schema:"hideswap"  url:"hideswap,omitempty"`
-	Hidevg    bool `schema:"hidevg"    url:"hidevg,omitempty"`
-	Configcpu bool `schema:"configcpu" url:"configcpu,omitempty"`
-	Configdf  bool `schema:"configdf"  url:"configdf,omitempty"`
-	Configif  bool `schema:"configif"  url:"configif,omitempty"`
-	Configmem bool `schema:"configmem" url:"configmem,omitempty"`
-	Configps  bool `schema:"configps"  url:"configps,omitempty"`
-	Configvg  bool `schema:"configvg"  url:"configvg,omitempty"`
-	Expanddf  bool `schema:"expanddf"  url:"expanddf,omitempty"`
-	Expandif  bool `schema:"expandif"  url:"expandif,omitempty"`
-	Expandcpu bool `schema:"expandcpu" url:"expandcpu,omitempty"`
+	Still     bool `url:"still,omitempty"`
+	Hidecpu   bool `url:"hidecpu,omitempty"`
+	Hidedf    bool `url:"hidedf,omitempty"`
+	Hideif    bool `url:"hideif,omitempty"`
+	Hidemem   bool `url:"hidemem,omitempty"`
+	Hideps    bool `url:"hideps,omitempty"`
+	Hideswap  bool `url:"hideswap,omitempty"`
+	Hidevg    bool `url:"hidevg,omitempty"`
+	Configcpu bool `url:"configcpu,omitempty"`
+	Configdf  bool `url:"configdf,omitempty"`
+	Configif  bool `url:"configif,omitempty"`
+	Configmem bool `url:"configmem,omitempty"`
+	Configvg  bool `url:"configvg,omitempty"`
+	Expanddf  bool `url:"expanddf,omitempty"`
+	Expandif  bool `url:"expandif,omitempty"`
+	Expandcpu bool `url:"expandcpu,omitempty"`
 
 	// Memn int
 	// Cpun int
 	// Dfn int
 	// Ifn int
-	Psn int `schema:"psn" url:"psn,omitempty,default8"`            // limit
-	Psk int `schema:"psk" url:"psk,omitempty,default1,enumerate9"` // sort, default PID
-	Dfk int `schema:"dfk" url:"dfk,omitempty,default1,enumerate5"` // sort, default FS
-	Dft int `schema:"dft" url:"dft,omitempty,default2,enumerate2"` // tab, default DFBYTES
-	Ift int `schema:"ift" url:"ift,omitempty,default3,enumerate3"` // tab, default IFBYTES
+
+	// Psn encodes number of proccesses and ps config toggle.
+	// Negative value states config displaying and
+	// the absolute value still encodes the ps number.
+	Psn int `url:"psn,omitempty,default8"`            // limit
+	Psk int `url:"psk,omitempty,default1,enumerate9"` // sort, default PID
+	Dfk int `url:"dfk,omitempty,default1,enumerate5"` // sort, default FS
+	Dft int `url:"dft,omitempty,default2,enumerate2"` // tab, default DFBYTES
+	Ift int `url:"ift,omitempty,default3,enumerate3"` // tab, default IFBYTES
 
 	// The NewParams must populate .Ticks with EACH Refresh*
-	Refreshcpu Duration `schema:"refreshcpu" url:"refreshcpu,omitempty"`
-	Refreshdf  Duration `schema:"refreshdf"  url:"refreshdf,omitempty"`
-	Refreshif  Duration `schema:"refreshif"  url:"refreshif,omitempty"`
-	Refreshmem Duration `schema:"refreshmem" url:"refreshmem,omitempty"`
-	Refreshps  Duration `schema:"refreshps"  url:"refreshps,omitempty"`
-	Refreshvg  Duration `schema:"refreshvg"  url:"refreshvg,omitempty"`
+	Refreshcpu Duration `url:"refreshcpu,omitempty"`
+	Refreshdf  Duration `url:"refreshdf,omitempty"`
+	Refreshif  Duration `url:"refreshif,omitempty"`
+	Refreshmem Duration `url:"refreshmem,omitempty"`
+	Refreshps  Duration `url:"refreshps,omitempty"`
+	Refreshvg  Duration `url:"refreshvg,omitempty"`
 }
 
 func (p *Params) MarshalJSON() ([]byte, error) {
@@ -169,14 +174,14 @@ func (p *Params) MarshalJSON() ([]byte, error) {
 		Schema:     p.Schema,
 		Toggle:     p.Toggles(),
 		Variations: p.Variations(),
-		Defaults:   p.StringDefaults(),
+		Defaults:   p.Defaults.StringKeysOnly(),
 	}
 	return json.Marshal(d)
 }
 
-func (p Params) StringDefaults() map[string]int {
+func (def Defaults) StringKeysOnly() map[string]int {
 	m := make(map[string]int)
-	for k, v := range p.Defaults {
+	for k, v := range def {
 		if s, ok := k.(string); ok {
 			m[s] = v
 		}
@@ -184,15 +189,21 @@ func (p Params) StringDefaults() map[string]int {
 	return m
 }
 
-func (p Params) Nonzero(v *int) int {
-	if v != nil && *v != 0 {
-		return *v
+func (def Defaults) Nonzero(i *int) (int, error) {
+	if i != nil && *i != 0 {
+		return *i, nil
 	}
-	if d, ok := p.Defaults[v]; ok {
-		return d
+	if v, ok := def[i]; ok {
+		return v, nil
 	}
-	fmt.Printf("Cannot find default for %+v\n", v)
-	return 0
+	return 0, fmt.Errorf("Cannot find default for %+v\n", i)
+}
+
+func (def Defaults) ZeroForDefault(i *int) int {
+	if v, ok := def[i]; ok && *i == v {
+		return 0
+	}
+	return *i
 }
 
 func (p *Params) Variations() map[string][]Varlink {
@@ -238,15 +249,20 @@ func (p *Params) Toggles() map[string]string {
 	val := reflect.ValueOf(&p.Schema).Elem()
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
 		sf := typ.Field(i)
-		if sf.Type.Kind() != reflect.Bool {
-			continue
-		}
 		if tags, ok := TagsOk(sf); !ok || tags[0] == "" {
 			continue
 		}
-		b := val.Field(i).Addr().Interface().(*bool)
-		if s, err := p.HrefToggle(b); err == nil {
-			m[sf.Name] = s
+		if sf.Type.Kind() == reflect.Bool {
+			v := val.Field(i).Addr().Interface().(*bool)
+			if s, err := p.HrefToggle(v); err == nil {
+				m[sf.Name] = s
+			}
+		}
+		if sf.Type.Kind() == reflect.Int {
+			v := val.Field(i).Addr().Interface().(*int)
+			if s, err := p.HrefToggleN(v); err == nil {
+				m[sf.Name] = s
+			}
 		}
 	}
 	return m
@@ -328,6 +344,7 @@ func (p *Params) DecodeDecode(req *http.Request) error {
 	}
 
 	dec := schema.NewDecoder()
+	dec.SetAliasTag("url")
 	dec.IgnoreUnknownKeys(true)
 	dec.ZeroEmpty(true)
 	dec.RegisterConverter(Duration(time.Second), ConvertDurationFunc(p.MinPeriod))
@@ -345,7 +362,7 @@ func (p *Params) DecodeDecode(req *http.Request) error {
 }
 
 func (p Params) Encode() (string, error) {
-	values, err := query.Values(p)
+	values, err := query.Values(p.Schema)
 	if err != nil {
 		return "", err
 	}

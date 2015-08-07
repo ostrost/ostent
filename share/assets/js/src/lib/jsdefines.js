@@ -1264,11 +1264,11 @@ define(function (require) {
           null,
           React.createElement(
             "a",
-            { href: Data.Params.Toggle.Configps, onClick: this.handleClick, className: "btn-block"
+            { href: Data.Params.Toggle.Psn, onClick: this.handleClick, className: "btn-block"
             },
             React.createElement(
               "span",
-              { className: Data.Params.Configps ? "h4 bg-info" : "h4"
+              { className: (Data.Params.Psn != 0 ? Data.Params.Psn : Data.Params.Defaults.Psn) > 0 ? "h4" : "h4 bg-info"
               },
               "Processes"
             )
@@ -1279,7 +1279,7 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { className: Data.Params.Configps ? "config-margintop" : "config-margintop collapse-hidden", id: "psconfig"
+            { className: (Data.Params.Psn != 0 ? Data.Params.Psn : Data.Params.Defaults.Psn) > 0 ? "config-margintop collapse-hidden" : "config-margintop", id: "psconfig"
             },
             React.createElement(
               "form",

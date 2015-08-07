@@ -491,13 +491,13 @@
 >{{end}}{{/*
 */}}{{define "defines::define_panelps"}}{{$p := .Data.Params}}<div
   ><div
-    ><a    {{$p.AttrHrefToggle $p.Configps}} {{class}}="btn-block"
-      ><span {{$p.AttrClassN $p.Configps "h4 bg-info" "h4"}}
+    ><a    {{$p.AttrHrefToggleN $p.Psn}} {{class}}="btn-block"
+      ><span {{$p.AttrClassP $p.Defaults $p.Psn "h4" "h4 bg-info"}}
         >Processes</span
       ></a
     ></div
   ><div
-    ><div {{$p.AttrClassN $p.Configps "config-margintop" "config-margintop collapse-hidden"}} id="psconfig"
+    ><div {{$p.AttrClassP $p.Defaults $p.Psn "config-margintop collapse-hidden" "config-margintop"}} id="psconfig"
       ><form {{$p.AttrActionForm}} {{class}}="form-inline"
         ><input class="hidden-submit" type="submit"
         ><div class="btn-toolbar"

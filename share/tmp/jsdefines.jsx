@@ -498,13 +498,13 @@ define(function(require) {
 >); },
 		panelps:         function(Data, rows)  { return (<div
   ><div
-    ><a     href={Data.Params.Toggle.Configps} onClick={this.handleClick} className="btn-block"
-      ><span  className={Data.Params.Configps ? "h4 bg-info" : "h4"}
+    ><a     href={Data.Params.Toggle.Psn} onClick={this.handleClick} className="btn-block"
+      ><span  className={(Data.Params.Psn != 0 ? Data.Params.Psn : Data.Params.Defaults.Psn) > 0 ? "h4" : "h4 bg-info"}
         >Processes</span
       ></a
     ></div
   ><div
-    ><div  className={Data.Params.Configps ? "config-margintop" : "config-margintop collapse-hidden"} id="psconfig"
+    ><div  className={(Data.Params.Psn != 0 ? Data.Params.Psn : Data.Params.Defaults.Psn) > 0 ? "config-margintop collapse-hidden" : "config-margintop"} id="psconfig"
       ><form  action={"/form/"+Data.Params} className="form-inline"
         ><input className="hidden-submit" type="submit"
         ></input

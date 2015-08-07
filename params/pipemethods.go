@@ -24,6 +24,14 @@ func (p Params) AttrActionForm() (interface{}, error) {
 	return SprintfAttr(" action=\"/form/%s\"", url.QueryEscape(s)), nil
 }
 
+func (p Params) AttrClassP(def Defaults, i *int, fstclass, sndclass string) (template.HTMLAttr, error) {
+	v, err := def.Nonzero(i)
+	if err != nil {
+		return template.HTMLAttr(""), err
+	}
+	return p.AttrClassN(v > 0, fstclass, sndclass), nil
+}
+
 func (p Params) AttrClassN(b bool, fstclass, sndclass string) template.HTMLAttr {
 	// p is unused
 	s := fstclass
@@ -69,9 +77,28 @@ func (p *Params) HrefToggle(b *bool) (string, error) {
 	return "?" + s, err
 }
 
+func (p *Params) HrefToggleN(i *int) (string, error) {
+	o := *i
+	v, err := p.Nonzero(i)
+	if err != nil {
+		return "", err
+	}
+	*i = -v
+	*i = p.ZeroForDefault(i)
+	s, err := p.Encode()
+	*i = o
+	return "?" + s, err
+}
+
 // p is a pointer to flip (twice) the b.
 func (p *Params) AttrHrefToggle(b *bool) (interface{}, error) {
 	s, err := p.HrefToggle(b)
+	return SprintfAttr(" href=%q", s), err
+}
+
+// p is a pointer to negate (twice) the i.
+func (p *Params) AttrHrefToggleN(i *int) (interface{}, error) {
+	s, err := p.HrefToggleN(i)
 	return SprintfAttr(" href=%q", s), err
 }
 
@@ -138,7 +165,10 @@ type Varlink struct {
 }
 
 func (p *Params) Variate(this *int, cmp int, text, alignClass string) (Varlink, error) {
-	i := p.Nonzero(this)
+	i, err := p.Nonzero(this)
+	if err != nil {
+		return Varlink{}, err
+	}
 	vl := Varlink{LinkText: text, LinkClass: "state"}
 	if i == cmp || i == -cmp {
 		vl.CaretClass = "caret"
