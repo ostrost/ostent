@@ -63,10 +63,7 @@ func (procs MPSlice) Ordered(para *params.Params) *PStable {
 	uids := map[uint]string{}
 
 	pslen := len(procs)
-	limitPS, _ := para.Nonzero(&para.Psn)
-	if limitPS < 0 {
-		limitPS = -limitPS
-	}
+	limitPS := para.Psn.Absolute()
 	notdec := limitPS <= 1
 	notexp := limitPS >= pslen
 
@@ -86,8 +83,7 @@ func (procs MPSlice) Ordered(para *params.Params) *PStable {
 		return pst
 	}
 
-	psk, _ := para.Nonzero(&para.Psk)
-	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(psk, uids)) // not .StableSortBy
+	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(para.Psk.X, uids)) // not .StableSortBy
 	if !notexp {
 		procs = procs[:limitPS]
 	}
@@ -378,8 +374,7 @@ func (ir *IndexRegistry) DF(para *params.Params, iu *IndexUpdate) bool {
 		return true
 	}
 	var lenp int
-	dft, _ := para.Nonzero(&para.Dft)
-	switch dft {
+	switch para.Dft.Absolute() {
 	case enums.DFBYTES:
 		list, len := ir.DFbytes(para)
 		lenp, iu.DFbytes = len, &operating.DFbytes{List: list}
@@ -399,8 +394,7 @@ func (ir *IndexRegistry) DF(para *params.Params, iu *IndexUpdate) bool {
 func (ir *IndexRegistry) DFbytes(para *params.Params) ([]operating.DiskBytes, int) {
 	private := ir.ListPrivateDisk()
 
-	dfk, _ := para.Nonzero(&para.Dfk)
-	private.StableSortBy(LessDiskFunc(dfk))
+	private.StableSortBy(LessDiskFunc(para.Dfk.X))
 
 	var public []operating.DiskBytes
 	for i, disk := range private {
@@ -432,8 +426,7 @@ func FormatDFbytes(md operating.MetricDF) operating.DiskBytes {
 func (ir *IndexRegistry) DFinodes(para *params.Params) ([]operating.DiskInodes, int) {
 	private := ir.ListPrivateDisk()
 
-	dfk, _ := para.Nonzero(&para.Dfk)
-	private.StableSortBy(LessDiskFunc(dfk))
+	private.StableSortBy(LessDiskFunc(para.Dfk.X))
 
 	var public []operating.DiskInodes
 	for i, disk := range private {
@@ -494,8 +487,7 @@ func (ir *IndexRegistry) IF(para *params.Params, iu *IndexUpdate) bool {
 		return true
 	}
 	var lenp int
-	ift, _ := para.Nonzero(&para.Ift)
-	switch ift {
+	switch para.Ift.Absolute() {
 	case enums.IFBYTES:
 		list, len := ir.Interfaces(para, ir.InterfaceBytes)
 		lenp, iu.IFbytes = len, &operating.Interfaces{List: list}

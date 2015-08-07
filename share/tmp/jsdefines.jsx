@@ -139,15 +139,15 @@ define(function(require) {
         ></div
       ></form
     ><ul className="nav nav-tabs config-margintop"
-      ><li  className={1 == Data.Params.Ift || (Data.Params.Ift == 0 && 1 == Data.Params.Defaults.Ift) ? "active" : ""}
+      ><li  className={Data.Params.Ift == 1 ? "active" : ""}
         ><a href={Data.Params.Variations.Ift[1-1].LinkHref} onClick={this.handleClick}
   >Packets</a
 ></li
-      ><li  className={2 == Data.Params.Ift || (Data.Params.Ift == 0 && 2 == Data.Params.Defaults.Ift) ? "active" : ""}
+      ><li  className={Data.Params.Ift == 2 ? "active" : ""}
         ><a href={Data.Params.Variations.Ift[2-1].LinkHref} onClick={this.handleClick}
   >Errors</a
 ></li
-      ><li  className={3 == Data.Params.Ift || (Data.Params.Ift == 0 && 3 == Data.Params.Defaults.Ift) ? "active" : ""}
+      ><li  className={Data.Params.Ift == 3 ? "active" : ""}
         ><a href={Data.Params.Variations.Ift[3-1].LinkHref} onClick={this.handleClick}
   >Bytes</a
 ></li
@@ -156,7 +156,7 @@ define(function(require) {
   ></div
 ><div
   ><div  className={Data.Params.Hideif ? "collapse-hidden" : ""}
-    ><div  className={1 == Data.Params.Ift || (Data.Params.Ift == 0 && 1 == Data.Params.Defaults.Ift) ? "" : "collapse-hidden"}
+    ><div  className={Data.Params.Ift == 1 ? "" : "collapse-hidden"}
       ><table className="table table-hover"
   ><thead
     ><tr
@@ -184,7 +184,7 @@ define(function(require) {
     >{r1}</tbody
   ></table
 ></div
-    ><div  className={2 == Data.Params.Ift || (Data.Params.Ift == 0 && 2 == Data.Params.Defaults.Ift) ? "" : "collapse-hidden"}
+    ><div  className={Data.Params.Ift == 2 ? "" : "collapse-hidden"}
       ><table className="table table-hover"
   ><thead
     ><tr
@@ -212,7 +212,7 @@ define(function(require) {
     >{r2}</tbody
   ></table
 ></div
-    ><div  className={3 == Data.Params.Ift || (Data.Params.Ift == 0 && 3 == Data.Params.Defaults.Ift) ? "" : "collapse-hidden"}
+    ><div  className={Data.Params.Ift == 3 ? "" : "collapse-hidden"}
       ><table className="table table-hover"
   ><thead
     ><tr
@@ -392,11 +392,11 @@ define(function(require) {
         ></div
       ></form
     ><ul className="nav nav-tabs config-margintop"
-      ><li  className={1 == Data.Params.Dft || (Data.Params.Dft == 0 && 1 == Data.Params.Defaults.Dft) ? "active" : ""}
+      ><li  className={Data.Params.Dft == 1 ? "active" : ""}
         ><a href={Data.Params.Variations.Dft[1-1].LinkHref} onClick={this.handleClick}
   >Inodes</a
 ></li
-      ><li  className={2 == Data.Params.Dft || (Data.Params.Dft == 0 && 2 == Data.Params.Defaults.Dft) ? "active" : ""}
+      ><li  className={Data.Params.Dft == 2 ? "active" : ""}
         ><a href={Data.Params.Variations.Dft[2-1].LinkHref} onClick={this.handleClick}
   >Bytes</a
 ></li
@@ -405,7 +405,7 @@ define(function(require) {
   ></div
 ><div
   ><div  className={Data.Params.Hidedf ? "collapse-hidden" : ""}
-    ><div  className={1 == Data.Params.Dft || (Data.Params.Dft == 0 && 1 == Data.Params.Defaults.Dft) ? "" : "collapse-hidden"}
+    ><div  className={Data.Params.Dft == 1 ? "" : "collapse-hidden"}
       ><table className="table table-hover"
   ><thead
     ><tr
@@ -425,7 +425,7 @@ define(function(require) {
     >{r1}</tbody
   ></table
 ></div
-    ><div  className={2 == Data.Params.Dft || (Data.Params.Dft == 0 && 2 == Data.Params.Defaults.Dft) ? "" : "collapse-hidden"}
+    ><div  className={Data.Params.Dft == 2 ? "" : "collapse-hidden"}
       ><table className="table table-hover"
   ><thead
     ><tr
@@ -499,19 +499,19 @@ define(function(require) {
 		panelps:         function(Data, rows)  { return (<div
   ><div
     ><a     href={Data.Params.Toggle.Psn} onClick={this.handleClick} className="btn-block"
-      ><span  className={(Data.Params.Psn != 0 ? Data.Params.Psn : Data.Params.Defaults.Psn) > 0 ? "h4" : "h4 bg-info"}
+      ><span  className={Data.Params.Psn >= 0 ? "h4" : "h4 bg-info"}
         >Processes</span
       ></a
     ></div
   ><div
-    ><div  className={(Data.Params.Psn != 0 ? Data.Params.Psn : Data.Params.Defaults.Psn) > 0 ? "config-margintop collapse-hidden" : "config-margintop"} id="psconfig"
+    ><div  className={Data.Params.Psn >= 0 ? "config-margintop collapse-hidden" : "config-margintop"} id="psconfig"
       ><form  action={"/form/"+Data.Params} className="form-inline"
         ><input className="hidden-submit" type="submit"
         ></input
       ><div className="btn-toolbar"
         ><div className="btn-group btn-group-sm" role="group"
           ><a  className={Data.Params.Hideps ? "btn btn-default active" : "btn btn-default"}
-    href={Data.Params.Toggle.Hideps} onClick={this.handleClick}
+    href={Data.Params.Numbered.Psn.Zero} onClick={this.handleClick}
             >Hidden</a
           ><a  className={Data.PStable.PSnotDecreasable ? "btn btn-default" : "btn btn-default disabled"}
     href={Data.Params.LessHref} onClick={this.handleClick}

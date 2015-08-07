@@ -16,7 +16,10 @@ import (
 	"github.com/ostrost/ostent/flags"
 )
 
-var DurationKind = reflect.TypeOf(Duration(0)).Kind()
+var (
+	IntKind      = reflect.TypeOf(Int{}).Kind()
+	DurationKind = reflect.TypeOf(Duration(0)).Kind()
+)
 
 // NewParams constructs new Params.
 func NewParams(minperiod flags.Period) *Params {
@@ -34,14 +37,13 @@ func NewParams(minperiod flags.Period) *Params {
 			continue
 		}
 		fv := val.Field(i)
-		if k := sf.Type.Kind(); k == reflect.Int {
-			if d := TagPrefixedInt(tags[1:], "default"); d != 0 {
+		if k := sf.Type.Kind(); k == IntKind {
+			if d, err := IntPrefix(tags[1:], "default"); err == nil { // otherwise err is ignored
 				v := fv.Addr().Interface()
 				p.Defaults[sf.Name] = d // ?
 				p.Defaults[v] = d
 			}
-		}
-		if sf.Type.Kind() == DurationKind {
+		} else if k == DurationKind {
 			fv.Set(reflect.ValueOf(Duration(0)))
 			p.Ticks[tags[0]] = NewTicks(fv.Addr().Interface().(*Duration))
 		}
@@ -112,15 +114,13 @@ func NewTicks(dp *Duration) Ticks {
 	return Ticks{Duration: dp}
 }
 
-type Defaults map[interface{}]int
-
 type Params struct {
 	Schema
-	Defaults  `json:"-"`       // encoded in MarshalJSON
-	Errors    MultiError       `json:",omitempty"`
-	Ticks     map[string]Ticks `json:"-"`
-	Toprows   int              `json:"-"`
-	MinPeriod flags.Period     `json:"-"`
+	Defaults  map[interface{}]int `json:"-"`
+	Errors    MultiError          `json:",omitempty"`
+	Ticks     map[string]Ticks    `json:"-"`
+	Toprows   int                 `json:"-"`
+	MinPeriod flags.Period        `json:"-"`
 }
 
 type Schema struct {
@@ -141,19 +141,19 @@ type Schema struct {
 	Expandif  bool `url:"expandif,omitempty"`
 	Expandcpu bool `url:"expandcpu,omitempty"`
 
-	// Memn int
-	// Cpun int
-	// Dfn int
-	// Ifn int
+	// Memn Int
+	// Cpun Int
+	// Dfn Int
+	// Ifn Int
 
 	// Psn encodes number of proccesses and ps config toggle.
 	// Negative value states config displaying and
 	// the absolute value still encodes the ps number.
-	Psn int `url:"psn,omitempty,default8"`            // limit
-	Psk int `url:"psk,omitempty,default1,enumerate9"` // sort, default PID
-	Dfk int `url:"dfk,omitempty,default1,enumerate5"` // sort, default FS
-	Dft int `url:"dft,omitempty,default2,enumerate2"` // tab, default DFBYTES
-	Ift int `url:"ift,omitempty,default3,enumerate3"` // tab, default IFBYTES
+	Psn Int `url:"psn,default8"`            // limit
+	Psk Int `url:"psk,default1,enumerate9"` // sort, default PID
+	Dfk Int `url:"dfk,default1,enumerate5"` // sort, default FS
+	Dft Int `url:"dft,default2,enumerate2"` // tab, default DFBYTES
+	Ift Int `url:"ift,default3,enumerate3"` // tab, default IFBYTES
 
 	// The NewParams must populate .Ticks with EACH Refresh*
 	Refreshcpu Duration `url:"refreshcpu,omitempty"`
@@ -164,46 +164,70 @@ type Schema struct {
 	Refreshvg  Duration `url:"refreshvg,omitempty"`
 }
 
+type Numbered struct {
+	Zero string
+	// More, Less string
+}
+
 func (p *Params) MarshalJSON() ([]byte, error) {
 	d := struct {
 		Schema
 		Toggle     map[string]string
+		Numbered   map[string]Numbered
 		Variations map[string][]Varlink
-		Defaults   map[string]int
+		// Defaults   map[string]int
 	}{
 		Schema:     p.Schema,
 		Toggle:     p.Toggles(),
+		Numbered:   p.Numbered(),
 		Variations: p.Variations(),
-		Defaults:   p.Defaults.StringKeysOnly(),
+		// Defaults:   p.Defaults.StringKeysOnly(),
 	}
 	return json.Marshal(d)
 }
 
-func (def Defaults) StringKeysOnly() map[string]int {
+/*
+func (p Params) StringKeysOnly() map[string]int {
 	m := make(map[string]int)
-	for k, v := range def {
+	for k, v := range p.Defaults {
 		if s, ok := k.(string); ok {
 			m[s] = v
 		}
 	}
 	return m
 }
+*/
 
-func (def Defaults) Nonzero(i *int) (int, error) {
-	if i != nil && *i != 0 {
-		return *i, nil
+func (p Params) Numbered() map[string]Numbered {
+	m := make(map[string]Numbered)
+	val := reflect.ValueOf(&p.Schema).Elem()
+	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
+		sf := typ.Field(i)
+		if sf.Type.Kind() != IntKind {
+			continue
+		}
+		tags, ok := TagsOk(sf)
+		if !ok || tags[0] == "" {
+			continue
+		}
+		v := val.Field(i).Addr().Interface().(*Int)
+		zero, err := p.HrefZero(v)
+		if err != nil {
+			// err is ignored
+			continue
+		}
+		m[sf.Name] = Numbered{
+			Zero: zero,
+		}
 	}
-	if v, ok := def[i]; ok {
-		return v, nil
-	}
-	return 0, fmt.Errorf("Cannot find default for %+v\n", i)
+	return m
 }
 
-func (def Defaults) ZeroForDefault(i *int) int {
-	if v, ok := def[i]; ok && *i == v {
-		return 0
+func (v Int) Absolute() int {
+	if v.X < 0 {
+		return -v.X
 	}
-	return *i
+	return v.X
 }
 
 func (p *Params) Variations() map[string][]Varlink {
@@ -211,37 +235,38 @@ func (p *Params) Variations() map[string][]Varlink {
 	val := reflect.ValueOf(&p.Schema).Elem()
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
 		sf := typ.Field(i)
-		if kind := sf.Type.Kind(); kind != reflect.Int {
+		if sf.Type.Kind() != IntKind {
 			continue
 		}
 		tags, ok := TagsOk(sf)
 		if !ok || tags[0] == "" {
 			continue
 		}
-		v := val.Field(i).Addr().Interface()
+		v := val.Field(i).Addr().Interface().(*Int)
 		var links []Varlink
-		if vv, ok := v.(*int); ok { // better be
-			max := TagPrefixedInt(tags[1:], "enumerate")
-			for j := 1; j < max+1; j++ { // indexed from 1
-				if vl, err := p.Variate(vv, j, "", ""); err == nil {
-					links = append(links, vl)
-				} // err ignored
-			}
+		max, _ := IntPrefix(tags[1:], "enumerate")
+		// max is 0 in case of err
+		for j := 1; j < max+1; j++ { // indexed from 1
+			if vl, err := p.Variate(v, j, "", ""); err == nil {
+				links = append(links, vl)
+			} // err ignored
 		}
 		m[sf.Name] = links
 	}
 	return m
 }
 
-func TagPrefixedInt(words []string, prefix string) int {
+func IntPrefix(words []string, prefix string) (int, error) {
 	for _, w := range words {
 		if strings.HasPrefix(w, prefix) {
-			if i64, err := strconv.ParseInt(w[len(prefix):], 10, 0); err == nil {
-				return int(i64)
+			i64, err := strconv.ParseInt(w[len(prefix):], 10, 0)
+			if err != nil {
+				return 0, err
 			}
+			return int(i64), nil
 		}
 	}
-	return 0
+	return 0, fmt.Errorf("%q not prefixing in %+v", prefix, words)
 }
 
 func (p *Params) Toggles() map[string]string {
@@ -258,8 +283,8 @@ func (p *Params) Toggles() map[string]string {
 				m[sf.Name] = s
 			}
 		}
-		if sf.Type.Kind() == reflect.Int {
-			v := val.Field(i).Addr().Interface().(*int)
+		if sf.Type.Kind() == IntKind {
+			v := val.Field(i).Addr().Interface().(*Int)
 			if s, err := p.HrefToggleN(v); err == nil {
 				m[sf.Name] = s
 			}
@@ -280,11 +305,34 @@ func TagsOk(sf reflect.StructField) ([]string, bool) {
 	return strings.Split(tag, ","), true
 }
 
+type Int struct {
+	X       int
+	Default int
+}
+
+func (v Int) EncodeValues(key string, values *url.Values) error {
+	if v.X != v.Default {
+		(*values)[key] = []string{v.String()}
+	}
+	return nil
+}
+
+func (v Int) MarshalJSON() ([]byte, error) { return json.Marshal(v.X) }
+func (v Int) String() string               { return fmt.Sprintf("%d", v.X) }
+
+// ConvertInt is a schema decoder's converter into Int.
+func ConvertInt(value string) reflect.Value {
+	if x, err := strconv.Atoi(value); err == nil {
+		return reflect.ValueOf(Int{X: x})
+	}
+	return reflect.Value{}
+}
+
 type Duration time.Duration
 
-func (d Duration) EncodeValues(key string, v *url.Values) error {
+func (d Duration) EncodeValues(key string, values *url.Values) error {
 	if d != 0 {
-		(*v)[key] = []string{time.Duration(d).String()}
+		(*values)[key] = []string{time.Duration(d).String()}
 	}
 	return nil
 }
@@ -324,8 +372,32 @@ func (p *Params) ResetSchema() {
 			fv.SetBool(false)
 		case reflect.Int:
 			fv.SetInt(0)
+		case IntKind:
+			fv.Set(reflect.ValueOf(Int{}))
 		case DurationKind:
 			fv.Set(reflect.ValueOf(Duration(0)))
+		}
+	}
+}
+
+func (p *Params) SetDefaults(form url.Values) {
+	val := reflect.ValueOf(&p.Schema).Elem()
+	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
+		sf := typ.Field(i)
+		fv := val.Field(i)
+		switch sf.Type.Kind() {
+		case IntKind:
+			v := fv.Addr().Interface().(*Int)
+			if d, ok := p.Defaults[v]; ok {
+				v.Default = d
+				if v.X == 0 { // not allow 0 init values
+					if tags, ok := TagsOk(sf); ok {
+						if _, ok := form[tags[0]]; !ok {
+							v.X = d
+						}
+					}
+				}
+			}
 		}
 	}
 }
@@ -347,12 +419,17 @@ func (p *Params) DecodeDecode(req *http.Request) error {
 	dec.SetAliasTag("url")
 	dec.IgnoreUnknownKeys(true)
 	dec.ZeroEmpty(true)
-	dec.RegisterConverter(Duration(time.Second), ConvertDurationFunc(p.MinPeriod))
+	dec.RegisterConverter(Int{}, ConvertInt)
+	dec.RegisterConverter(Duration(0), ConvertDurationFunc(p.MinPeriod))
 
 	p.ResetSchema()
-	derr := dec.Decode(&p.Schema, req.Form)
-	if !moved || derr != nil {
-		return derr
+	err := dec.Decode(&p.Schema, req.Form)
+	if err != nil {
+		return err
+	}
+	p.SetDefaults(req.Form)
+	if !moved {
+		return nil
 	}
 	s, err := p.Encode()
 	if err != nil {

@@ -360,7 +360,7 @@ define(function (require) {
               },
               React.createElement(
                 "li",
-                { className: 1 == Data.Params.Ift || Data.Params.Ift == 0 && 1 == Data.Params.Defaults.Ift ? "active" : ""
+                { className: Data.Params.Ift == 1 ? "active" : ""
                 },
                 React.createElement(
                   "a",
@@ -371,7 +371,7 @@ define(function (require) {
               ),
               React.createElement(
                 "li",
-                { className: 2 == Data.Params.Ift || Data.Params.Ift == 0 && 2 == Data.Params.Defaults.Ift ? "active" : ""
+                { className: Data.Params.Ift == 2 ? "active" : ""
                 },
                 React.createElement(
                   "a",
@@ -382,7 +382,7 @@ define(function (require) {
               ),
               React.createElement(
                 "li",
-                { className: 3 == Data.Params.Ift || Data.Params.Ift == 0 && 3 == Data.Params.Defaults.Ift ? "active" : ""
+                { className: Data.Params.Ift == 3 ? "active" : ""
                 },
                 React.createElement(
                   "a",
@@ -403,7 +403,7 @@ define(function (require) {
             },
             React.createElement(
               "div",
-              { className: 1 == Data.Params.Ift || Data.Params.Ift == 0 && 1 == Data.Params.Defaults.Ift ? "" : "collapse-hidden"
+              { className: Data.Params.Ift == 1 ? "" : "collapse-hidden"
               },
               React.createElement(
                 "table",
@@ -479,7 +479,7 @@ define(function (require) {
             ),
             React.createElement(
               "div",
-              { className: 2 == Data.Params.Ift || Data.Params.Ift == 0 && 2 == Data.Params.Defaults.Ift ? "" : "collapse-hidden"
+              { className: Data.Params.Ift == 2 ? "" : "collapse-hidden"
               },
               React.createElement(
                 "table",
@@ -555,7 +555,7 @@ define(function (require) {
             ),
             React.createElement(
               "div",
-              { className: 3 == Data.Params.Ift || Data.Params.Ift == 0 && 3 == Data.Params.Defaults.Ift ? "" : "collapse-hidden"
+              { className: Data.Params.Ift == 3 ? "" : "collapse-hidden"
               },
               React.createElement(
                 "table",
@@ -1014,7 +1014,7 @@ define(function (require) {
               },
               React.createElement(
                 "li",
-                { className: 1 == Data.Params.Dft || Data.Params.Dft == 0 && 1 == Data.Params.Defaults.Dft ? "active" : ""
+                { className: Data.Params.Dft == 1 ? "active" : ""
                 },
                 React.createElement(
                   "a",
@@ -1025,7 +1025,7 @@ define(function (require) {
               ),
               React.createElement(
                 "li",
-                { className: 2 == Data.Params.Dft || Data.Params.Dft == 0 && 2 == Data.Params.Defaults.Dft ? "active" : ""
+                { className: Data.Params.Dft == 2 ? "active" : ""
                 },
                 React.createElement(
                   "a",
@@ -1046,7 +1046,7 @@ define(function (require) {
             },
             React.createElement(
               "div",
-              { className: 1 == Data.Params.Dft || Data.Params.Dft == 0 && 1 == Data.Params.Defaults.Dft ? "" : "collapse-hidden"
+              { className: Data.Params.Dft == 1 ? "" : "collapse-hidden"
               },
               React.createElement(
                 "table",
@@ -1099,7 +1099,7 @@ define(function (require) {
             ),
             React.createElement(
               "div",
-              { className: 2 == Data.Params.Dft || Data.Params.Dft == 0 && 2 == Data.Params.Defaults.Dft ? "" : "collapse-hidden"
+              { className: Data.Params.Dft == 2 ? "" : "collapse-hidden"
               },
               React.createElement(
                 "table",
@@ -1268,7 +1268,7 @@ define(function (require) {
             },
             React.createElement(
               "span",
-              { className: (Data.Params.Psn != 0 ? Data.Params.Psn : Data.Params.Defaults.Psn) > 0 ? "h4" : "h4 bg-info"
+              { className: Data.Params.Psn >= 0 ? "h4" : "h4 bg-info"
               },
               "Processes"
             )
@@ -1279,7 +1279,7 @@ define(function (require) {
           null,
           React.createElement(
             "div",
-            { className: (Data.Params.Psn != 0 ? Data.Params.Psn : Data.Params.Defaults.Psn) > 0 ? "config-margintop collapse-hidden" : "config-margintop", id: "psconfig"
+            { className: Data.Params.Psn >= 0 ? "config-margintop collapse-hidden" : "config-margintop", id: "psconfig"
             },
             React.createElement(
               "form",
@@ -1298,7 +1298,7 @@ define(function (require) {
                   React.createElement(
                     "a",
                     { className: Data.Params.Hideps ? "btn btn-default active" : "btn btn-default",
-                      href: Data.Params.Toggle.Hideps, onClick: this.handleClick
+                      href: Data.Params.Numbered.Psn.Zero, onClick: this.handleClick
                     },
                     "Hidden"
                   ),

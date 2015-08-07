@@ -394,18 +394,18 @@
           ></div
         ></form
       ><ul class="nav nav-tabs config-margintop"
-        ><li {{$p.AttrClassT $p.Defaults $p.Dft 1 "active" ""}}
+        ><li {{$p.AttrClassT $p.Dft 1 "active" ""}}
           >{{template "defines::enumlink" $p.Variate $p.Dft 1 "Inodes" ""}}</li
-        ><li {{$p.AttrClassT $p.Defaults $p.Dft 2 "active" ""}}
+        ><li {{$p.AttrClassT $p.Dft 2 "active" ""}}
           >{{template "defines::enumlink" $p.Variate $p.Dft 2 "Bytes" ""}}</li
         ></ul
       ></div
     ></div
   ><div
     ><div {{$p.AttrClassN $p.Hidedf "collapse-hidden" ""}}
-      ><div {{$p.AttrClassT $p.Defaults $p.Dft 1 "" "collapse-hidden"}}
+      ><div {{$p.AttrClassT $p.Dft 1 "" "collapse-hidden"}}
         >{{template "defines::define_dfinodes_table" .}}</div
-      ><div {{$p.AttrClassT $p.Defaults $p.Dft 2 "" "collapse-hidden"}}
+      ><div {{$p.AttrClassT $p.Dft 2 "" "collapse-hidden"}}
         >{{template "defines::define_dfbytes_table" .}}</div
       ></div
     ></div
@@ -436,22 +436,22 @@
           ></div
         ></form
       ><ul class="nav nav-tabs config-margintop"
-        ><li {{$p.AttrClassT $p.Defaults $p.Ift 1 "active" ""}}
+        ><li {{$p.AttrClassT $p.Ift 1 "active" ""}}
           >{{template "defines::enumlink" $p.Variate $p.Ift 1 "Packets" ""}}</li
-        ><li {{$p.AttrClassT $p.Defaults $p.Ift 2 "active" ""}}
+        ><li {{$p.AttrClassT $p.Ift 2 "active" ""}}
           >{{template "defines::enumlink" $p.Variate $p.Ift 2 "Errors" ""}}</li
-        ><li {{$p.AttrClassT $p.Defaults $p.Ift 3 "active" ""}}
+        ><li {{$p.AttrClassT $p.Ift 3 "active" ""}}
           >{{template "defines::enumlink" $p.Variate $p.Ift 3 "Bytes" ""}}</li
         ></ul
       ></div
     ></div
   ><div
     ><div {{$p.AttrClassN $p.Hideif "collapse-hidden" ""}}
-      ><div {{$p.AttrClassT $p.Defaults $p.Ift 1 "" "collapse-hidden"}}
+      ><div {{$p.AttrClassT $p.Ift 1 "" "collapse-hidden"}}
         >{{template "defines::define_ifpackets_table" .}}</div
-      ><div {{$p.AttrClassT $p.Defaults $p.Ift 2 "" "collapse-hidden"}}
+      ><div {{$p.AttrClassT $p.Ift 2 "" "collapse-hidden"}}
         >{{template "defines::define_iferrors_table" .}}</div
-      ><div {{$p.AttrClassT $p.Defaults $p.Ift 3 "" "collapse-hidden"}}
+      ><div {{$p.AttrClassT $p.Ift 3 "" "collapse-hidden"}}
         >{{template "defines::define_ifbytes_table" .}}</div
       ></div
     ></div
@@ -492,18 +492,18 @@
 */}}{{define "defines::define_panelps"}}{{$p := .Data.Params}}<div
   ><div
     ><a    {{$p.AttrHrefToggleN $p.Psn}} {{class}}="btn-block"
-      ><span {{$p.AttrClassP $p.Defaults $p.Psn "h4" "h4 bg-info"}}
+      ><span {{$p.AttrClassP $p.Psn "h4" "h4 bg-info"}}
         >Processes</span
       ></a
     ></div
   ><div
-    ><div {{$p.AttrClassP $p.Defaults $p.Psn "config-margintop collapse-hidden" "config-margintop"}} id="psconfig"
+    ><div {{$p.AttrClassP $p.Psn "config-margintop collapse-hidden" "config-margintop"}} id="psconfig"
       ><form {{$p.AttrActionForm}} {{class}}="form-inline"
         ><input class="hidden-submit" type="submit"
         ><div class="btn-toolbar"
           ><div class="btn-group btn-group-sm" role="group"
             ><a {{$p.AttrClassN $p.Hideps "btn btn-default active" "btn btn-default"}}
-   {{$p.AttrHrefToggle $p.Hideps}}
+   {{$p.AttrHrefZero $p.Psn}}
               >Hidden</a
             ><a {{$p.AttrClassN .Data.PStable.PSnotDecreasable "btn btn-default" "btn btn-default disabled"}}
    {{$p.AttrHrefLess $p.Psn}}

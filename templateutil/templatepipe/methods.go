@@ -24,24 +24,17 @@ func (n Nota) AttrKey(prefix string) template.HTMLAttr {
 	return SprintfAttr(" key={%q+%s}", prefix+"-", n.Uncurl())
 }
 
-func (_ Nota) AttrClassP(defaults, v, fstclass, sndclass string) (template.HTMLAttr, error) {
-	defaults, v = Uncurl(defaults), Uncurl(v)
-	split := strings.Split(v, ".")
-	last := split[len(split)-1]
-	nz := fmt.Sprintf("(%s != 0 ? %s : %s.%s)", v, v, defaults, last)
-	return SprintfAttr(" className={%s > 0 ? %q : %q}", nz, fstclass, sndclass), nil
+func (_ Nota) AttrClassP(v, fstclass, sndclass string) template.HTMLAttr {
+	return SprintfAttr(" className={%s >= 0 ? %q : %q}", Uncurl(v), fstclass, sndclass)
 }
 
 func (_ Nota) AttrClassN(v, fstclass, sndclass string) template.HTMLAttr {
 	return SprintfAttr(" className={%s ? %q : %q}", Uncurl(v), fstclass, sndclass)
 }
 
-func (_ Nota) AttrClassT(defaults, v string, cmp int, fstclass, sndclass string) template.HTMLAttr {
-	defaults, v = Uncurl(defaults), Uncurl(v)
-	split := strings.Split(v, ".")
-	last := split[len(split)-1]
-	return SprintfAttr(" className={%d == %s || (%s == 0 && %d == %s.%s) ? %q : %q}",
-		cmp, v, v, cmp, defaults, last, fstclass, sndclass)
+func (_ Nota) AttrClassT(v string, cmp int, fstclass, sndclass string) template.HTMLAttr {
+	return SprintfAttr(" className={%s == %d ? %q : %q}",
+		Uncurl(v), cmp, fstclass, sndclass)
 }
 
 func (_ Nota) AttrClassParamsError(errs interface{}, name, fstclass, sndclass string) template.HTMLAttr {
@@ -104,6 +97,13 @@ func (_ Nota) AttrHrefToggle(s string) interface{} {
 
 func (n Nota) AttrHrefToggleN(s string) interface{} {
 	return n.AttrHrefToggle(s)
+}
+
+func (n Nota) AttrHrefZero(s string) interface{} {
+	split := strings.Split(Uncurl(s), ".")
+	base := strings.Join(split[:len(split)-1], ".")
+	last := split[len(split)-1]
+	return fmt.Sprintf(" href={%s.Numbered.%s.Zero} onClick={this.handleClick}", base, last)
 }
 
 // Data.Params.RefreshXX RefreshXX

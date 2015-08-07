@@ -24,12 +24,8 @@ func (p Params) AttrActionForm() (interface{}, error) {
 	return SprintfAttr(" action=\"/form/%s\"", url.QueryEscape(s)), nil
 }
 
-func (p Params) AttrClassP(def Defaults, i *int, fstclass, sndclass string) (template.HTMLAttr, error) {
-	v, err := def.Nonzero(i)
-	if err != nil {
-		return template.HTMLAttr(""), err
-	}
-	return p.AttrClassN(v > 0, fstclass, sndclass), nil
+func (p Params) AttrClassP(v *Int, fstclass, sndclass string) template.HTMLAttr {
+	return p.AttrClassN(v.X >= 0, fstclass, sndclass)
 }
 
 func (p Params) AttrClassN(b bool, fstclass, sndclass string) template.HTMLAttr {
@@ -59,14 +55,8 @@ func (p *Params) AttrClassParamsError(m MultiError, name, fstclass, sndclass str
 	return p.AttrClassN(ok, fstclass, sndclass)
 }
 
-func (p *Params) AttrClassT(defaults map[interface{}]int, vp *int, cmp int, fstclass, sndclass string) template.HTMLAttr {
-	v := *vp
-	if v == 0 {
-		if d, ok := defaults[vp]; ok {
-			v = d
-		}
-	}
-	return p.AttrClassN(v == cmp, fstclass, sndclass)
+func (p *Params) AttrClassT(v *Int, cmp int, fstclass, sndclass string) template.HTMLAttr {
+	return p.AttrClassN(v.X == cmp, fstclass, sndclass)
 }
 
 // p is a pointer to flip (twice) the b.
@@ -77,28 +67,41 @@ func (p *Params) HrefToggle(b *bool) (string, error) {
 	return "?" + s, err
 }
 
-func (p *Params) HrefToggleN(i *int) (string, error) {
-	o := *i
-	v, err := p.Nonzero(i)
-	if err != nil {
-		return "", err
+func (p *Params) HrefToggleN(v *Int) (string, error) {
+	copy := v.X
+	if v.X != 0 {
+		v.X = -v.X
+	} else {
+		v.X = -1
 	}
-	*i = -v
-	*i = p.ZeroForDefault(i)
 	s, err := p.Encode()
-	*i = o
+	v.X = copy
 	return "?" + s, err
 }
 
-// p is a pointer to flip (twice) the b.
-func (p *Params) AttrHrefToggle(b *bool) (interface{}, error) {
-	s, err := p.HrefToggle(b)
+func (p *Params) HrefZero(v *Int) (string, error) {
+	copy := v.X
+	v.X = 0
+	s, err := p.Encode()
+	v.X = copy
+	return "?" + s, err
+}
+
+// p is a pointer to alter (and revert) v being part of p.
+func (p *Params) AttrHrefToggle(v *bool) (interface{}, error) {
+	s, err := p.HrefToggle(v)
 	return SprintfAttr(" href=%q", s), err
 }
 
-// p is a pointer to negate (twice) the i.
-func (p *Params) AttrHrefToggleN(i *int) (interface{}, error) {
-	s, err := p.HrefToggleN(i)
+// p is a pointer to alter (and revert) v being part of p.
+func (p *Params) AttrHrefToggleN(v *Int) (interface{}, error) {
+	s, err := p.HrefToggleN(v)
+	return SprintfAttr(" href=%q", s), err
+}
+
+// p is a pointer to alter (and revert) v being part of p.
+func (p *Params) AttrHrefZero(v *Int) (interface{}, error) {
+	s, err := p.HrefZero(v)
 	return SprintfAttr(" href=%q", s), err
 }
 
@@ -164,24 +167,20 @@ type Varlink struct {
 	LinkText   string `json:"-"` // static
 }
 
-func (p *Params) Variate(this *int, cmp int, text, alignClass string) (Varlink, error) {
-	i, err := p.Nonzero(this)
-	if err != nil {
-		return Varlink{}, err
-	}
+func (p *Params) Variate(v *Int, cmp int, text, alignClass string) (Varlink, error) {
 	vl := Varlink{LinkText: text, LinkClass: "state"}
-	if i == cmp || i == -cmp {
+	if v.X == cmp || v.X == -cmp {
 		vl.CaretClass = "caret"
 		vl.LinkClass += " current"
-		if i == cmp {
+		if v.X == cmp {
 			cmp = -cmp
 			vl.LinkClass += " dropup"
 		}
 	}
-	copy := *this
-	*this = cmp // set
+	copy := v.X
+	v.X = cmp // set
 	s, err := p.Encode()
-	*this = copy // revert
+	v.X = copy // revert
 	if err != nil {
 		return Varlink{}, err
 	}
@@ -243,33 +242,29 @@ func (lp LimitParam) MoreHrefAttr() interface{} {
 }
 */
 
-func (p *Params) AttrHrefLess(value *int) (template.HTMLAttr, error) {
-	old := *value
-	if *value < 0 {
-		*value = -*value
-	}
-	if *value >= 2 {
-		g := math.Log2(float64(*value))
+func (p *Params) AttrHrefLess(v *Int) (template.HTMLAttr, error) {
+	copy := v.X
+	v.X = v.Absolute()
+	if v.X >= 2 {
+		g := math.Log2(float64(v.X))
 		n := math.Floor(g)
 		if n == g {
 			n--
 		}
-		*value = int(math.Pow(2, n))
+		v.X = int(math.Pow(2, n))
 	}
 	s, err := p.Encode()
-	*value = old
-	return SprintfAttr(" href=%q", s), err
+	v.X = copy
+	return SprintfAttr(" href=%q", "?"+s), err
 }
 
-func (p *Params) AttrHrefMore(value *int) (template.HTMLAttr, error) {
-	old := *value
-	if *value < 0 {
-		*value = -*value
-	}
-	if *value <= 32768 { // up to 65536
-		*value = int(math.Pow(2, 1+math.Floor(math.Log2(float64(*value)))))
+func (p *Params) AttrHrefMore(v *Int) (template.HTMLAttr, error) {
+	copy := v.X
+	v.X = v.Absolute()
+	if v.X <= 32768 { // up to 65536
+		v.X = int(math.Pow(2, 1+math.Floor(math.Log2(float64(v.X)))))
 	}
 	s, err := p.Encode()
-	*value = old
-	return SprintfAttr(" href=%q", s), err
+	v.X = copy
+	return SprintfAttr(" href=%q", "?"+s), err
 }
