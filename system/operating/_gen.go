@@ -1,5 +1,5 @@
 package main
 
 import (
-	_ "github.com/rzab/slice"
+	_ "github.com/ostrost/slice"
 )

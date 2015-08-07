@@ -59,7 +59,7 @@ github.com/jteeuwen/go-bindata/go-bindata \
 github.com/skelterjohn/rerun \
 github.com/yosssi/ace \
 golang.org/x/net/html
-	cd system/operating && gen add github.com/rzab/slice
+	cd system/operating && gen add github.com/ostrost/slice
 	go get -v $(package)
 	go get -v -a -tags bin $(package)
 
