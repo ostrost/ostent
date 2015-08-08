@@ -12,7 +12,7 @@ import (
 type Influx struct {
 	// Logger      *Logger
 	RefreshFlag flags.Period
-	ServerAddr  string // flags.Bind
+	URL         string
 	Database    string
 	Username    string
 	Password    string
@@ -21,16 +21,15 @@ type Influx struct {
 func influxdbCommandLine(cli *flag.FlagSet) CommandLineHandler {
 	ix := &Influx{
 		// Logger:      NewLogger("[ostent sendto-influxdb] "),
-		RefreshFlag: flags.Period{Duration: 1 * time.Second}, // 10s default
-		// ServerAddr: flags.NewBind(8086),
+		RefreshFlag: flags.Period{Duration: 10 * time.Second}, // 10s default
 	}
-	cli.Var(&ix.RefreshFlag, "influxdb-refresh", "InfluxDB refresh interval")
-	cli.StringVar(&ix.ServerAddr, "sendto-influxdb", "", "InfluxDB server address")
-	cli.StringVar(&ix.Database, "influxdb-database", "ostent", "InfluxDB database")
-	cli.StringVar(&ix.Username, "influxdb-username", "", "InfluxDB username")
-	cli.StringVar(&ix.Password, "influxdb-password", "", "InfluxDB password")
+	cli.Var(&ix.RefreshFlag, "influxdb-delay", "InfluxDB `delay`")
+	cli.StringVar(&ix.URL, "influxdb-url", "", "InfluxDB server `URL`")
+	cli.StringVar(&ix.Database, "influxdb-database", "ostent", "InfluxDB `database`")
+	cli.StringVar(&ix.Username, "influxdb-username", "", "InfluxDB `username`")
+	cli.StringVar(&ix.Password, "influxdb-password", "", "InfluxDB `password`")
 	return func() (AtexitHandler, bool, error) {
-		if ix.ServerAddr == "" {
+		if ix.URL == "" {
 			return nil, false, nil
 		}
 		ostent.AddBackground(func(defaultPeriod flags.Period) {
@@ -38,7 +37,7 @@ func influxdbCommandLine(cli *flag.FlagSet) CommandLineHandler {
 				ix.RefreshFlag = defaultPeriod
 			} */
 			go influxdb.Influxdb(ostent.Reg1s.Registry, ix.RefreshFlag.Duration, &influxdb.Config{
-				Host:     ix.ServerAddr, //.String(),
+				URL:      ix.URL,
 				Database: ix.Database,
 				Username: ix.Username,
 				Password: ix.Password,

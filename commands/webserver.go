@@ -45,7 +45,7 @@ func NewWebserver(defport int) *webserver {
 func (ws *webserver) AddCommandLine() *webserver {
 	AddCommandLine(func(cli *flag.FlagSet) CommandLineHandler {
 		cli.Var(&ws.Bind, "b", "short for bind")
-		cli.Var(&ws.Bind, "bind", "Bind address")
+		cli.Var(&ws.Bind, "bind", "Bind `address`")
 		return nil
 	})
 	return ws

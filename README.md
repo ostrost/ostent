@@ -51,23 +51,23 @@ The master code is runnable already.
 ```
 Usage of ostent:
   -bind=:8050: Bind address
-  -update=1s: Collection interval
+  -delay=1s: Collection delay
 
-  -sendto-graphite=: Graphite server address
-  -graphite-refresh=10s: Graphite refresh interval
+  -graphite-host=: Graphite host
+  -graphite-delay=10s: Graphite delay
 
-  -sendto-influxdb=: InfluxDB server URL
-  -influxdb-database="ostent": InfluxDB database
-  -influxdb-password="": InfluxDB password
-  -influxdb-refresh=10s: InfluxDB refresh interval
+  -influxdb-url="": InfluxDB server URL
   -influxdb-username="": InfluxDB username
+  -influxdb-password="": InfluxDB password
+  -influxdb-database="ostent": InfluxDB database
+  -influxdb-delay=10s: InfluxDB delay
 ```
 
 Unless `-bind` (`-b` for short) is set, ostent binds to `*:8050`.
 The bind and Graphite addresses are specified like `IP[:port]`
 (default ports being 8050 and 2003 respectively).
 InfluxDB server must be specified as an URL `http://ADDRESS`.
-An interval is a number and a unit: `s` for seconds, `m` for minutes etc.
+A delay is a number and a unit: `s` for seconds, `m` for minutes etc.
 
 Here's how it goes:
 

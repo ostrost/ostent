@@ -11,10 +11,10 @@ import (
 )
 
 type Config struct {
-	Host     string
-	Database string
+	URL      string
 	Username string
 	Password string
+	Database string
 }
 
 func Influxdb(r metrics.Registry, d time.Duration, config *Config) {
@@ -32,12 +32,12 @@ func Influxdb(r metrics.Registry, d time.Duration, config *Config) {
 }
 
 func NewClient(config *Config) (*client.Client, error) {
-	URL, err := url.Parse(config.Host)
+	u, err := url.Parse(config.URL)
 	if err != nil {
 		return nil, err
 	}
 	return client.NewClient(client.Config{
-		URL:      *URL,
+		URL:      *u,
 		Username: config.Username,
 		Password: config.Password,
 	})

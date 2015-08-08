@@ -9,84 +9,84 @@ import (
 	"runtime/pprof"
 )
 
-type memprofile struct {
-	logger *Logger
-	output string
-	_f     *os.File
+type ProfileHeap struct {
+	Log    *Logger
+	Output string
+	File   *os.File
 }
 
-func memProfileCommandLine(cli *flag.FlagSet) CommandLineHandler {
-	mp := &memprofile{
-		logger: NewLogger("[ostent memprofile] "),
+func ProfileHeapCLI(cli *flag.FlagSet) CommandLineHandler {
+	ph := &ProfileHeap{
+		Log: NewLogger("[ostent profile-heap] "),
 	}
-	cli.StringVar(&mp.output, "memprofile", "", "MEM profile output file")
+	cli.StringVar(&ph.Output, "profile-heap", "", "Profiling heap output `filename`")
 	return func() (AtexitHandler, bool, error) {
-		if mp.output == "" {
+		if ph.Output == "" {
 			return nil, false, nil
 		}
-		return mp.atexit, false, mp.run()
+		return ph.Atexit, false, ph.Run()
 	}
 }
 
-func (mp *memprofile) atexit() {
-	mp.logger.Print("Writing MEM profile")
-	if err := pprof.Lookup("heap").WriteTo(mp._f, 1); err != nil {
-		mp.logger.Print(err) // just print
+func (ph *ProfileHeap) Atexit() {
+	ph.Log.Print("Writing heap profile")
+	if err := pprof.Lookup("heap").WriteTo(ph.File, 1); err != nil {
+		ph.Log.Print(err) // just print
 	}
-	if err := mp._f.Close(); err != nil {
-		mp.logger.Print(err) // just print
+	if err := ph.File.Close(); err != nil {
+		ph.Log.Print(err) // just print
 	}
 }
 
-func (mp *memprofile) run() (err error) {
-	mp._f, err = os.Create(mp.output)
+func (ph *ProfileHeap) Run() (err error) {
+	ph.File, err = os.Create(ph.Output)
 	if err != nil {
-		mp.logger.Fatal(err) // log with the mp logger
+		ph.Log.Fatal(err)
 	}
 	return err
 }
 
 /* ******************************************************************************** */
 
-type cpuprofile struct {
-	logger *Logger
-	output string
-	_f     *os.File
+type ProfileCPU struct {
+	Log    *Logger
+	Output string
+	File   *os.File
 }
 
-func cpuProfileCommandLine(cli *flag.FlagSet) CommandLineHandler {
-	cp := &cpuprofile{
-		logger: NewLogger("[ostent cpuprofile] "),
+func ProfileCPUCLI(cli *flag.FlagSet) CommandLineHandler {
+	pc := &ProfileCPU{
+		Log: NewLogger("[ostent profile-cpu] "),
 	}
-	cli.StringVar(&cp.output, "cpuprofile", "", "CPU profile output file")
+	cli.StringVar(&pc.Output, "profile-cpu", "", "Profiling CPU output `filename`")
 	return func() (AtexitHandler, bool, error) {
-		if cp.output == "" {
+		if pc.Output == "" {
 			return nil, false, nil
 		}
-		return cp.atexit, false, cp.run()
+		return pc.Atexit, false, pc.Run()
 	}
 }
 
-func (cp *cpuprofile) atexit() {
-	cp.logger.Print("Writing CPU profile")
+func (pc *ProfileCPU) Atexit() {
+	pc.Log.Print("Writing CPU profile")
 	pprof.StopCPUProfile()
-	if err := cp._f.Close(); err != nil {
-		cp.logger.Print(err) // just print
+	if err := pc.File.Close(); err != nil {
+		pc.Log.Print(err) // just print
 	}
 }
 
-func (cp *cpuprofile) run() (err error) {
-	cp._f, err = os.Create(cp.output)
+func (pc *ProfileCPU) Run() (err error) {
+	pc.File, err = os.Create(pc.Output)
 	if err == nil {
-		err = pprof.StartCPUProfile(cp._f)
+		err = pprof.StartCPUProfile(pc.File)
 	}
 	if err != nil {
-		cp.logger.Fatal(err) // log with the cp logger
+		pc.Log.Fatal(err)
 	}
 	return err
 }
 
 func init() {
-	AddCommandLine(cpuProfileCommandLine)
-	AddCommandLine(memProfileCommandLine)
+	AddCommandLine(ProfileCPUCLI)
+	AddCommandLine(ProfileHeapCLI)
 }

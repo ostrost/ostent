@@ -9,36 +9,37 @@ import (
 	"github.com/ostrost/ostent/ostent"
 )
 
-type version struct {
-	logger *commands.Logger
+type Version struct {
+	Log *commands.Logger
 }
 
-func (v version) run() {
-	v.logger.Println(ostent.VERSION)
+func (v Version) Run() {
+	v.Log.Println(ostent.VERSION)
 }
 
-func newVersion(loggerOptions ...commands.SetupLogger) *version {
-	return &version{
-		logger: commands.NewLogger("", append([]commands.SetupLogger{
+func NewVersion(logOptions ...commands.SetupLogger) *Version {
+	return &Version{
+		Log: commands.NewLogger("", append([]commands.SetupLogger{
 			func(l *commands.Logger) {
 				l.Out = os.Stdout
 				l.Flag = 0
 			},
-		}, loggerOptions...)...),
+		}, logOptions...)...),
 	}
 }
 
-func versionCommand(_ *flag.FlagSet, loggerOptions ...commands.SetupLogger) (commands.CommandHandler, io.Writer) {
-	v := newVersion(loggerOptions...)
-	return v.run, v.logger
+func VersionCommand(_ *flag.FlagSet, logOptions ...commands.SetupLogger) (commands.CommandHandler, io.Writer) {
+	v := NewVersion(logOptions...)
+	return v.Run, v.Log
 }
 
-func versionCommandLine(cli *flag.FlagSet) commands.CommandLineHandler {
+func VersionCLI(cli *flag.FlagSet) commands.CommandLineHandler {
 	var fv bool
-	cli.BoolVar(&fv, "v", false, "version")
+	cli.BoolVar(&fv, "v", false, "Short for version")
+	cli.BoolVar(&fv, "version", false, "Print version and exit")
 	return func() (commands.AtexitHandler, bool, error) {
 		if fv {
-			newVersion().run()
+			NewVersion().Run()
 			return nil, true, nil
 		}
 		return nil, false, nil
@@ -46,6 +47,6 @@ func versionCommandLine(cli *flag.FlagSet) commands.CommandLineHandler {
 }
 
 func init() {
-	commands.AddCommand("version", versionCommand)
-	commands.AddCommandLine(versionCommandLine)
+	commands.AddCommand("version", VersionCommand)
+	commands.AddCommandLine(VersionCLI)
 }

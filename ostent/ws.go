@@ -54,11 +54,10 @@ func Loop(flags.Period) {
 	go func() {
 		for {
 			SleepTilNextSecond()
+			lastInfo.collect(&Machine{})
 
 			Connections.tick()
-
 			if exes := Connections.expired(); len(exes) != 0 {
-				lastInfo.collect(&Machine{})
 				for _, c := range exes {
 					c.Tack()
 				}

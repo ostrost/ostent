@@ -23,8 +23,8 @@ func graphiteCommandLine(cli *flag.FlagSet) CommandLineHandler {
 		RefreshFlag: flags.Period{Duration: 10 * time.Second}, // 10s default
 		ServerAddr:  flags.NewBind(2003),
 	}
-	cli.Var(&gr.RefreshFlag, "graphite-refresh", "Graphite refresh interval")
-	cli.Var(&gr.ServerAddr, "sendto-graphite", "Graphite server address")
+	cli.Var(&gr.RefreshFlag, "graphite-delay", "Graphite `delay`")
+	cli.Var(&gr.ServerAddr, "graphite-host", "Graphite `host`")
 	return func() (AtexitHandler, bool, error) {
 		if gr.ServerAddr.Host == "" {
 			return nil, false, nil

@@ -18,8 +18,8 @@ import (
 var PeriodFlag = flags.Period{Duration: time.Second} // default
 
 func init() {
-	flag.Var(&PeriodFlag, "u", "Collection (update) interval")
-	flag.Var(&PeriodFlag, "update", "Collection (update) interval")
+	flag.Var(&PeriodFlag, "d", "Short for delay")
+	flag.Var(&PeriodFlag, "delay", "Collection `delay`")
 }
 
 func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error {
