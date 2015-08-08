@@ -4,13 +4,13 @@ import (
 	"flag"
 	"time"
 
+	influxdb "github.com/ostrost/ostent/commands/go-metrics-influxdb"
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
-	"github.com/rzab/go-metrics/influxdb"
 )
 
-type influx struct {
-	logger      *Logger
+type Influx struct {
+	// Logger      *Logger
 	RefreshFlag flags.Period
 	ServerAddr  string // flags.Bind
 	Database    string
@@ -19,9 +19,9 @@ type influx struct {
 }
 
 func influxdbCommandLine(cli *flag.FlagSet) CommandLineHandler {
-	ix := &influx{
-		logger:      NewLogger("[ostent sendto-influxdb] "),
-		RefreshFlag: flags.Period{Duration: 10 * time.Second}, // 10s default
+	ix := &Influx{
+		// Logger:      NewLogger("[ostent sendto-influxdb] "),
+		RefreshFlag: flags.Period{Duration: 1 * time.Second}, // 10s default
 		// ServerAddr: flags.NewBind(8086),
 	}
 	cli.Var(&ix.RefreshFlag, "influxdb-refresh", "InfluxDB refresh interval")
