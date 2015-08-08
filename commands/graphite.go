@@ -5,21 +5,21 @@ import (
 	"net"
 	"time"
 
+	graphite "github.com/cyberdelia/go-metrics-graphite"
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/params"
-	metrics "github.com/rcrowley/go-metrics"
 )
 
-type graphite struct {
-	logger      *Logger
+type Graphite struct {
+	Logger      *Logger
 	RefreshFlag flags.Period
 	ServerAddr  flags.Bind
 }
 
 func graphiteCommandLine(cli *flag.FlagSet) CommandLineHandler {
-	gr := &graphite{
-		logger:      NewLogger("[ostent sendto-graphite] "),
+	gr := &Graphite{
+		Logger:      NewLogger("[ostent sendto-graphite] "),
 		RefreshFlag: flags.Period{Duration: 10 * time.Second}, // 10s default
 		ServerAddr:  flags.NewBind(2003),
 	}
@@ -34,9 +34,9 @@ func graphiteCommandLine(cli *flag.FlagSet) CommandLineHandler {
 				gr.RefreshFlag = defaultPeriod
 			} */
 			d := params.Duration(gr.RefreshFlag.Duration)
-			gc := &carbond{
-				logger:     gr.logger,
-				serveraddr: gr.ServerAddr.String(),
+			gc := &Carbond{
+				Logger:     gr.Logger,
+				ServerAddr: gr.ServerAddr.String(),
 				Ticks:      params.NewTicks(&d),
 			}
 			ostent.Register <- gc
@@ -45,40 +45,39 @@ func graphiteCommandLine(cli *flag.FlagSet) CommandLineHandler {
 	}
 }
 
-type carbond struct {
-	logger       *Logger
-	serveraddr   string
-	conn         net.Conn
+type Carbond struct {
+	Logger       *Logger
+	ServerAddr   string
+	Conn         net.Conn
 	params.Ticks // Expired, Tick methods
-	failing      bool
+	Failing      bool
 }
 
-func (_ *carbond) CloseChans() {} // intentionally empty
-func (_ *carbond) Reload()     {} // intentionally empty
+func (cd *Carbond) CloseChans()              {} // intentionally empty
+func (cd *Carbond) Reload()                  {} // intentionally empty
+func (cd *Carbond) Push(*ostent.IndexUpdate) {} // TODO?
 
-func (_ *carbond) Push(*ostent.IndexUpdate) {} // TODO?
-
-func (cd *carbond) Tack() {
-	addr, err := net.ResolveTCPAddr("tcp", cd.serveraddr)
+func (cd *Carbond) Tack() {
+	addr, err := net.ResolveTCPAddr("tcp", cd.ServerAddr)
 	if err != nil {
-		cd.logger.Printf("Resolve Addr %s: %s\n", cd.serveraddr, err)
+		cd.Logger.Printf("Resolve Addr %s: %s\n", cd.ServerAddr, err)
 		return
 	}
-	// go metrics.Graphite(ostent.Reg1s.Registry, 1*time.Second, "ostent", addr)
-	err = metrics.GraphiteOnce(metrics.GraphiteConfig{
+	// go graphite.Graphite(ostent.Reg1s.Registry, 1*time.Second, "ostent", addr)
+	err = graphite.GraphiteOnce(graphite.GraphiteConfig{
 		DurationUnit: time.Nanosecond, // default, used(divided by thus must not be 0) with Timer metrics
 		Addr:         addr,
 		Registry:     ostent.Reg1s.Registry,
 		Prefix:       "ostent",
 	})
 	if err != nil {
-		if !cd.failing {
-			cd.failing = true
-			cd.logger.Printf("Sending: %s\n", err)
+		if !cd.Failing {
+			cd.Failing = true
+			cd.Logger.Printf("Sending: %s\n", err)
 		}
-	} else if cd.failing {
-		cd.failing = false
-		cd.logger.Printf("Recovered\n")
+	} else if cd.Failing {
+		cd.Failing = false
+		cd.Logger.Printf("Recovered\n")
 	}
 }
 
