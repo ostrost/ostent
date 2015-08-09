@@ -491,7 +491,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_panelps"}}{{$p := .Data.Params}}<div
   ><div
-    ><a    {{$p.AttrHrefToggleN $p.Psn}} {{class}}="btn-block"
+    ><a    {{$p.AttrHrefToggleHead $p.Psn}} {{class}}="btn-block"
       ><span {{$p.AttrClassP $p.Psn "h4" "h4 bg-info"}}
         >Processes</span
       ></a
@@ -502,16 +502,7 @@
         ><input class="hidden-submit" type="submit"
         ><div class="btn-toolbar"
           ><div class="btn-group btn-group-sm" role="group"
-            ><a {{$p.AttrClassN $p.Hideps "btn btn-default active" "btn btn-default"}}
-   {{$p.AttrHrefZero $p.Psn}}
-              >Hidden</a
-            ><a {{$p.AttrClassN .Data.PStable.PSnotDecreasable "btn btn-default" "btn btn-default disabled"}}
-   {{$p.AttrHrefLess $p.Psn}}
-              >-</a
-            ><a {{$p.AttrClassN .Data.PStable.PSnotExpandable "btn btn-default" "btn btn-default disabled"}}
-    {{$p.AttrHrefMore $p.Psn}}
-              >{{.Data.PStable.PSplusText}}</a
-            ></div
+            >{{template "defines::numlink" $p.Zero $p.Psn}}{{template "defines::numlink" $p.Less $p.Psn}}{{template "defines::numlink" $p.More $p.Psn}}</div
           ><div class="btn-group btn-group-sm" role="group"
             >{{template "defines::define_refresh" (Chain .Data "Refreshps")}}</div
           ></div
@@ -640,4 +631,7 @@
       ></span
     ></a
   ></th
+>{{end}}{{/*
+*/}}{{define "defines::numlink"}}<a href={{.Href}} onClick={this.handleClick} {{class}}={{.Class "btn btn-default"}}
+  >{{.Text}}</a
 >{{end}}

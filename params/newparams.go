@@ -17,14 +17,14 @@ import (
 )
 
 var (
-	IntKind      = reflect.TypeOf(Int{}).Kind()
+	NumKind      = reflect.TypeOf(Num{}).Kind()
 	DurationKind = reflect.TypeOf(Duration(0)).Kind()
 )
 
 // NewParams constructs new Params.
 func NewParams(minperiod flags.Period) *Params {
 	p := &Params{
-		Defaults:  make(map[interface{}]int),
+		Defaults:  make(map[interface{}]Num),
 		Ticks:     make(map[string]Ticks),
 		MinPeriod: minperiod,
 	}
@@ -37,8 +37,8 @@ func NewParams(minperiod flags.Period) *Params {
 			continue
 		}
 		fv := val.Field(i)
-		if k := sf.Type.Kind(); k == IntKind {
-			if d, err := IntPrefix(tags[1:], "default"); err == nil { // otherwise err is ignored
+		if k := sf.Type.Kind(); k == NumKind {
+			if d, err := NumPrefix(tags[1:], "default"); err == nil { // otherwise err is ignored
 				v := fv.Addr().Interface()
 				p.Defaults[sf.Name] = d // ?
 				p.Defaults[v] = d
@@ -116,7 +116,7 @@ func NewTicks(dp *Duration) Ticks {
 
 type Params struct {
 	Schema
-	Defaults  map[interface{}]int `json:"-"`
+	Defaults  map[interface{}]Num `json:"-"`
 	Errors    MultiError          `json:",omitempty"`
 	Ticks     map[string]Ticks    `json:"-"`
 	Toprows   int                 `json:"-"`
@@ -141,19 +141,19 @@ type Schema struct {
 	Expandif  bool `url:"expandif,omitempty"`
 	Expandcpu bool `url:"expandcpu,omitempty"`
 
-	// Memn Int
-	// Cpun Int
-	// Dfn Int
-	// Ifn Int
+	// Memn Num
+	// Cpun Num
+	// Dfn Num
+	// Ifn Num
 
 	// Psn encodes number of proccesses and ps config toggle.
 	// Negative value states config displaying and
 	// the absolute value still encodes the ps number.
-	Psn Int `url:"psn,default8"`            // limit
-	Psk Int `url:"psk,default1,enumerate9"` // sort, default PID
-	Dfk Int `url:"dfk,default1,enumerate5"` // sort, default FS
-	Dft Int `url:"dft,default2,enumerate2"` // tab, default DFBYTES
-	Ift Int `url:"ift,default3,enumerate3"` // tab, default IFBYTES
+	Psn Num `url:"psn,default8"`            // limit
+	Psk Num `url:"psk,default1,enumerate9"` // sort, default PID
+	Dfk Num `url:"dfk,default1,enumerate5"` // sort, default FS
+	Dft Num `url:"dft,default2,enumerate2"` // tab, default DFBYTES
+	Ift Num `url:"ift,default3,enumerate3"` // tab, default IFBYTES
 
 	// The NewParams must populate .Ticks with EACH Refresh*
 	Refreshcpu Duration `url:"refreshcpu,omitempty"`
@@ -165,8 +165,7 @@ type Schema struct {
 }
 
 type Numbered struct {
-	Zero string
-	// More, Less string
+	Zero, More, Less NumLink
 }
 
 func (p *Params) MarshalJSON() ([]byte, error) {
@@ -175,7 +174,7 @@ func (p *Params) MarshalJSON() ([]byte, error) {
 		Toggle     map[string]string
 		Numbered   map[string]Numbered
 		Variations map[string][]Varlink
-		// Defaults   map[string]int
+		// Defaults   map[string]Num
 	}{
 		Schema:     p.Schema,
 		Toggle:     p.Toggles(),
@@ -187,8 +186,8 @@ func (p *Params) MarshalJSON() ([]byte, error) {
 }
 
 /*
-func (p Params) StringKeysOnly() map[string]int {
-	m := make(map[string]int)
+func (p Params) StringKeysOnly() map[string]Num {
+	m := make(map[string]Num)
 	for k, v := range p.Defaults {
 		if s, ok := k.(string); ok {
 			m[s] = v
@@ -203,31 +202,22 @@ func (p Params) Numbered() map[string]Numbered {
 	val := reflect.ValueOf(&p.Schema).Elem()
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
 		sf := typ.Field(i)
-		if sf.Type.Kind() != IntKind {
+		if sf.Type.Kind() != NumKind {
 			continue
 		}
 		tags, ok := TagsOk(sf)
 		if !ok || tags[0] == "" {
 			continue
 		}
-		v := val.Field(i).Addr().Interface().(*Int)
-		zero, err := p.HrefZero(v)
-		if err != nil {
-			// err is ignored
-			continue
-		}
-		m[sf.Name] = Numbered{
-			Zero: zero,
-		}
+		num := val.Field(i).Addr().Interface().(*Num)
+		red := Numbered{}
+		// errors are ignored
+		red.Zero, _ = p.Zero(num)
+		red.More, _ = p.More(num)
+		red.Less, _ = p.Less(num)
+		m[sf.Name] = red
 	}
 	return m
-}
-
-func (v Int) Absolute() int {
-	if v.X < 0 {
-		return -v.X
-	}
-	return v.X
 }
 
 func (p *Params) Variations() map[string][]Varlink {
@@ -235,38 +225,36 @@ func (p *Params) Variations() map[string][]Varlink {
 	val := reflect.ValueOf(&p.Schema).Elem()
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
 		sf := typ.Field(i)
-		if sf.Type.Kind() != IntKind {
+		if sf.Type.Kind() != NumKind {
 			continue
 		}
 		tags, ok := TagsOk(sf)
 		if !ok || tags[0] == "" {
 			continue
 		}
-		v := val.Field(i).Addr().Interface().(*Int)
+		v := val.Field(i).Addr().Interface().(*Num)
 		var links []Varlink
-		max, _ := IntPrefix(tags[1:], "enumerate")
-		// max is 0 in case of err
-		for j := 1; j < max+1; j++ { // indexed from 1
-			if vl, err := p.Variate(v, j, "", ""); err == nil {
+		maxn, err := NumPrefix(tags[1:], "enumerate")
+		if err != nil { // err is gone
+			continue
+		}
+		for j := 1; j < maxn.Body+1; j++ { // indexed from 1
+			if vl, err := p.Variate(v, j, "", ""); err == nil { // err is gone
 				links = append(links, vl)
-			} // err ignored
+			}
 		}
 		m[sf.Name] = links
 	}
 	return m
 }
 
-func IntPrefix(words []string, prefix string) (int, error) {
+func NumPrefix(words []string, prefix string) (Num, error) {
 	for _, w := range words {
 		if strings.HasPrefix(w, prefix) {
-			i64, err := strconv.ParseInt(w[len(prefix):], 10, 0)
-			if err != nil {
-				return 0, err
-			}
-			return int(i64), nil
+			return DecodeNum(w[len(prefix):])
 		}
 	}
-	return 0, fmt.Errorf("%q not prefixing in %+v", prefix, words)
+	return Num{}, fmt.Errorf("%q not prefixing in %+v", prefix, words)
 }
 
 func (p *Params) Toggles() map[string]string {
@@ -283,10 +271,10 @@ func (p *Params) Toggles() map[string]string {
 				m[sf.Name] = s
 			}
 		}
-		if sf.Type.Kind() == IntKind {
-			v := val.Field(i).Addr().Interface().(*Int)
-			if s, err := p.HrefToggleN(v); err == nil {
-				m[sf.Name] = s
+		if sf.Type.Kind() == NumKind {
+			num := val.Field(i).Addr().Interface().(*Num)
+			if href, err := p.HrefToggleHead(num); err == nil {
+				m[sf.Name] = href
 			}
 		}
 	}
@@ -305,27 +293,63 @@ func TagsOk(sf reflect.StructField) ([]string, bool) {
 	return strings.Split(tag, ","), true
 }
 
-type Int struct {
-	X       int
-	Default int
+type Num struct {
+	Head        bool
+	Body        int
+	DefaultHead bool
+	DefaultBody int
+	Limit       int
 }
 
-func (v Int) EncodeValues(key string, values *url.Values) error {
-	if v.X != v.Default {
-		(*values)[key] = []string{v.String()}
+func (num Num) EncodeValues(key string, values *url.Values) error {
+	if num.Head != num.DefaultHead || num.Body != num.DefaultBody {
+		(*values)[key] = []string{num.String()}
 	}
 	return nil
 }
 
-func (v Int) MarshalJSON() ([]byte, error) { return json.Marshal(v.X) }
-func (v Int) String() string               { return fmt.Sprintf("%d", v.X) }
-
-// ConvertInt is a schema decoder's converter into Int.
-func ConvertInt(value string) reflect.Value {
-	if x, err := strconv.Atoi(value); err == nil {
-		return reflect.ValueOf(Int{X: x})
+func (num Num) MarshalJSON() ([]byte, error) { return json.Marshal(num.String()) }
+func (num Num) String() string {
+	var sym string
+	if num.Head {
+		sym = "-"
+		if num.Body == 0 {
+			sym = "!"
+		}
 	}
-	return reflect.Value{}
+	return fmt.Sprintf("%s%d", sym, num.Body)
+}
+
+func DecodePositive(value string) (int, error) {
+	i, err := strconv.Atoi(value)
+	if err != nil {
+		return 0, err
+	}
+	if i < 0 {
+		return 0, fmt.Errorf("Integer decoded may not be negative")
+	}
+	return i, nil
+}
+
+func DecodeNum(value string) (Num, error) {
+	var head bool
+	if len(value) >= 1 && (value[0] == '-' || value[0] == '!') {
+		head, value = true, value[1:]
+	}
+	body, err := DecodePositive(value)
+	if err != nil {
+		return Num{}, err
+	}
+	return Num{Head: head, Body: body}, nil
+}
+
+// ConvertNum is a schema decoder's converter into Num.
+func ConvertNum(value string) reflect.Value {
+	num, err := DecodeNum(value)
+	if err != nil { // err is lost
+		return reflect.Value{}
+	}
+	return reflect.ValueOf(num)
 }
 
 type Duration time.Duration
@@ -372,8 +396,8 @@ func (p *Params) ResetSchema() {
 			fv.SetBool(false)
 		case reflect.Int:
 			fv.SetInt(0)
-		case IntKind:
-			fv.Set(reflect.ValueOf(Int{}))
+		case NumKind:
+			fv.Set(reflect.ValueOf(Num{}))
 		case DurationKind:
 			fv.Set(reflect.ValueOf(Duration(0)))
 		}
@@ -386,17 +410,29 @@ func (p *Params) SetDefaults(form url.Values) {
 		sf := typ.Field(i)
 		fv := val.Field(i)
 		switch sf.Type.Kind() {
-		case IntKind:
-			v := fv.Addr().Interface().(*Int)
-			if d, ok := p.Defaults[v]; ok {
-				v.Default = d
-				if v.X == 0 { // not allow 0 init values
-					if tags, ok := TagsOk(sf); ok {
-						if _, ok := form[tags[0]]; !ok {
-							v.X = d
-						}
-					}
-				}
+		case NumKind:
+			num := fv.Addr().Interface().(*Num)
+			d, ok := p.Defaults[num]
+			if !ok {
+				continue
+			}
+			num.DefaultHead = d.Head
+			num.DefaultBody = d.Body
+			if num.Head && num.Body != 0 { // all values specified, no need for defaults
+				continue
+			}
+			tags, ok := TagsOk(sf)
+			if !ok {
+				continue
+			}
+			if _, ok := form[tags[0]]; ok { // have parameter
+				continue
+			}
+			if !num.Head { // not allow false init value
+				num.Head = d.Head
+			}
+			if num.Body == 0 { // not allow 0 init value
+				num.Body = d.Body
 			}
 		}
 	}
@@ -419,7 +455,7 @@ func (p *Params) DecodeDecode(req *http.Request) error {
 	dec.SetAliasTag("url")
 	dec.IgnoreUnknownKeys(true)
 	dec.ZeroEmpty(true)
-	dec.RegisterConverter(Int{}, ConvertInt)
+	dec.RegisterConverter(Num{}, ConvertNum)
 	dec.RegisterConverter(Duration(0), ConvertDurationFunc(p.MinPeriod))
 
 	p.ResetSchema()

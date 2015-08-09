@@ -88,6 +88,35 @@ func (n Nota) EnumLink(args ...string) (interface{}, error) {
 }
 // */
 
+type NumLink params.NumLink
+
+func (n NumLink) Class(base string) string {
+	add := Uncurl(n.ExtraClass)
+	return fmt.Sprintf("{%q + \" \" + (%s != null ? %s : \"\")}", base, add, add)
+}
+
+func (n Nota) Zero(num string) (NumLink, error) { return n.Numbered(num, "Zero") }
+func (n Nota) Less(num string) (NumLink, error) { return n.Numbered(num, "Less") }
+func (n Nota) More(num string) (NumLink, error) { return n.Numbered(num, "More") }
+
+func (n Nota) Numbered(s, which string) (NumLink, error) {
+	split := strings.Split(Uncurl(s), ".")
+	base := strings.Join(split[:len(split)-1], ".")
+	last := split[len(split)-1]
+	var (
+		href  = fmt.Sprintf("{%s.Numbered.%s.%s.Href}", base, last, which)
+		text  = fmt.Sprintf("{%s.Numbered.%s.%s.Text}", base, last, which)
+		class = fmt.Sprintf("{%s.Numbered.%s.%s.Class}", base, last, which)
+	)
+	return NumLink{
+		NumPlain: params.NumPlain{
+			Href: href,
+			Text: text,
+		},
+		ExtraClass: class,
+	}, nil
+}
+
 func (_ Nota) AttrHrefToggle(s string) interface{} {
 	split := strings.Split(Uncurl(s), ".")
 	base := strings.Join(split[:len(split)-1], ".")
@@ -95,15 +124,8 @@ func (_ Nota) AttrHrefToggle(s string) interface{} {
 	return fmt.Sprintf(" href={%s.Toggle.%s} onClick={this.handleClick}", base, last)
 }
 
-func (n Nota) AttrHrefToggleN(s string) interface{} {
+func (n Nota) AttrHrefToggleHead(s string) interface{} {
 	return n.AttrHrefToggle(s)
-}
-
-func (n Nota) AttrHrefZero(s string) interface{} {
-	split := strings.Split(Uncurl(s), ".")
-	base := strings.Join(split[:len(split)-1], ".")
-	last := split[len(split)-1]
-	return fmt.Sprintf(" href={%s.Numbered.%s.Zero} onClick={this.handleClick}", base, last)
 }
 
 // Data.Params.RefreshXX RefreshXX

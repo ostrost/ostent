@@ -1297,24 +1297,21 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { className: Data.Params.Hideps ? "btn btn-default active" : "btn btn-default",
-                      href: Data.Params.Numbered.Psn.Zero, onClick: this.handleClick
+                    { href: Data.Params.Numbered.Psn.Zero.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Numbered.Psn.Zero.Class != null ? Data.Params.Numbered.Psn.Zero.Class : "")
                     },
-                    "Hidden"
+                    Data.Params.Numbered.Psn.Zero.Text
                   ),
                   React.createElement(
                     "a",
-                    { className: Data.PStable.PSnotDecreasable ? "btn btn-default" : "btn btn-default disabled",
-                      href: Data.Params.LessHref, onClick: this.handleClick
+                    { href: Data.Params.Numbered.Psn.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Numbered.Psn.Less.Class != null ? Data.Params.Numbered.Psn.Less.Class : "")
                     },
-                    "-"
+                    Data.Params.Numbered.Psn.Less.Text
                   ),
                   React.createElement(
                     "a",
-                    { className: Data.PStable.PSnotExpandable ? "btn btn-default" : "btn btn-default disabled",
-                      href: Data.Params.MoreHref, onClick: this.handleClick
+                    { href: Data.Params.Numbered.Psn.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Numbered.Psn.More.Class != null ? Data.Params.Numbered.Psn.More.Class : "")
                     },
-                    Data.PStable.PSplusText
+                    Data.Params.Numbered.Psn.More.Text
                   )
                 ),
                 React.createElement(

@@ -62,32 +62,22 @@ func username(uids map[uint]string, uid uint) string {
 func (procs MPSlice) Ordered(para *params.Params) *PStable {
 	uids := map[uint]string{}
 
-	pslen := len(procs)
-	limitPS := para.Psn.Absolute()
-	notdec := limitPS <= 1
-	notexp := limitPS >= pslen
-
-	if limitPS >= pslen { // notexp
-		limitPS = pslen // NB modified limitPS
+	para.Psn.Limit = len(procs)
+	limitPS := para.Psn.Body
+	if limitPS > para.Psn.Limit {
+		limitPS = para.Psn.Limit
 	}
 
 	pst := &PStable{}
-	pst.PSnotDecreasable = new(bool)
-	*pst.PSnotDecreasable = notdec
-	pst.PSnotExpandable = new(bool)
-	*pst.PSnotExpandable = notexp
-	pst.PSplusText = new(string)
-	*pst.PSplusText = fmt.Sprintf("%d+", limitPS)
+	pst.N = new(int)
+	*pst.N = para.Psn.Limit
 
 	if para.Hideps {
 		return pst
 	}
 
-	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(para.Psk.X, uids)) // not .StableSortBy
-	if !notexp {
-		procs = procs[:limitPS]
-	}
-	for _, proc := range procs {
+	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(para.Psk.Body, uids)) // not .StableSortBy
+	for _, proc := range procs[:limitPS] {
 		pst.List = append(pst.List, operating.ProcData{
 			PID:      operating.Field(fmt.Sprintf("%d", proc.PID)),
 			UID:      proc.UID,
@@ -134,10 +124,8 @@ type IndexData struct {
 }
 
 type PStable struct {
-	List             []operating.ProcData `json:",omitempty"`
-	PSplusText       *string              `json:",omitempty"`
-	PSnotExpandable  *bool                `json:",omitempty"`
-	PSnotDecreasable *bool                `json:",omitempty"`
+	List []operating.ProcData `json:",omitempty"`
+	N    *int                 `json:",omitempty"`
 }
 
 type IndexUpdate struct {
@@ -374,7 +362,7 @@ func (ir *IndexRegistry) DF(para *params.Params, iu *IndexUpdate) bool {
 		return true
 	}
 	var lenp int
-	switch para.Dft.Absolute() {
+	switch para.Dft.Body {
 	case enums.DFBYTES:
 		list, len := ir.DFbytes(para)
 		lenp, iu.DFbytes = len, &operating.DFbytes{List: list}
@@ -394,7 +382,7 @@ func (ir *IndexRegistry) DF(para *params.Params, iu *IndexUpdate) bool {
 func (ir *IndexRegistry) DFbytes(para *params.Params) ([]operating.DiskBytes, int) {
 	private := ir.ListPrivateDisk()
 
-	private.StableSortBy(LessDiskFunc(para.Dfk.X))
+	private.StableSortBy(LessDiskFunc(para.Dfk.Body))
 
 	var public []operating.DiskBytes
 	for i, disk := range private {
@@ -426,7 +414,7 @@ func FormatDFbytes(md operating.MetricDF) operating.DiskBytes {
 func (ir *IndexRegistry) DFinodes(para *params.Params) ([]operating.DiskInodes, int) {
 	private := ir.ListPrivateDisk()
 
-	private.StableSortBy(LessDiskFunc(para.Dfk.X))
+	private.StableSortBy(LessDiskFunc(para.Dfk.Body))
 
 	var public []operating.DiskInodes
 	for i, disk := range private {
@@ -487,7 +475,7 @@ func (ir *IndexRegistry) IF(para *params.Params, iu *IndexUpdate) bool {
 		return true
 	}
 	var lenp int
-	switch para.Ift.Absolute() {
+	switch para.Ift.Body {
 	case enums.IFBYTES:
 		list, len := ir.Interfaces(para, ir.InterfaceBytes)
 		lenp, iu.IFbytes = len, &operating.Interfaces{List: list}

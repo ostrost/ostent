@@ -1,6 +1,7 @@
 package params
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"math"
@@ -24,8 +25,8 @@ func (p Params) AttrActionForm() (interface{}, error) {
 	return SprintfAttr(" action=\"/form/%s\"", url.QueryEscape(s)), nil
 }
 
-func (p Params) AttrClassP(v *Int, fstclass, sndclass string) template.HTMLAttr {
-	return p.AttrClassN(v.X >= 0, fstclass, sndclass)
+func (p Params) AttrClassP(num *Num, fstclass, sndclass string) template.HTMLAttr {
+	return p.AttrClassN(!num.Head, fstclass, sndclass)
 }
 
 func (p Params) AttrClassN(b bool, fstclass, sndclass string) template.HTMLAttr {
@@ -55,8 +56,8 @@ func (p *Params) AttrClassParamsError(m MultiError, name, fstclass, sndclass str
 	return p.AttrClassN(ok, fstclass, sndclass)
 }
 
-func (p *Params) AttrClassT(v *Int, cmp int, fstclass, sndclass string) template.HTMLAttr {
-	return p.AttrClassN(v.X == cmp, fstclass, sndclass)
+func (p Params) AttrClassT(num Num, cmp int, fstclass, sndclass string) template.HTMLAttr {
+	return p.AttrClassN(num.Body == cmp, fstclass, sndclass)
 }
 
 // p is a pointer to flip (twice) the b.
@@ -67,42 +68,50 @@ func (p *Params) HrefToggle(b *bool) (string, error) {
 	return "?" + s, err
 }
 
-func (p *Params) HrefToggleN(v *Int) (string, error) {
-	copy := v.X
-	if v.X != 0 {
-		v.X = -v.X
-	} else {
-		v.X = -1
-	}
-	s, err := p.Encode()
-	v.X = copy
-	return "?" + s, err
+func (p *Params) HrefToggleHead(num *Num) (string, error) {
+	num.Head = !num.Head
+	qs, err := p.Encode()
+	num.Head = !num.Head
+	return "?" + qs, err
 }
 
-func (p *Params) HrefZero(v *Int) (string, error) {
-	copy := v.X
-	v.X = 0
-	s, err := p.Encode()
-	v.X = copy
-	return "?" + s, err
+type NumPlain struct {
+	Href string
+	Text string
+}
+
+type NumLink struct {
+	NumPlain
+	ExtraClass string `json:"-"`
+}
+
+func (n NumLink) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		NumPlain
+		Class string `json:",omitempty"`
+	}{
+		NumPlain: n.NumPlain,
+		Class:    n.Class(""),
+	})
+}
+
+func (n NumLink) Class(base string) string {
+	if base == "" {
+		return n.ExtraClass
+	}
+	return base + " " + n.ExtraClass
 }
 
 // p is a pointer to alter (and revert) v being part of p.
 func (p *Params) AttrHrefToggle(v *bool) (interface{}, error) {
-	s, err := p.HrefToggle(v)
-	return SprintfAttr(" href=%q", s), err
+	href, err := p.HrefToggle(v)
+	return SprintfAttr(" href=%q", href), err
 }
 
-// p is a pointer to alter (and revert) v being part of p.
-func (p *Params) AttrHrefToggleN(v *Int) (interface{}, error) {
-	s, err := p.HrefToggleN(v)
-	return SprintfAttr(" href=%q", s), err
-}
-
-// p is a pointer to alter (and revert) v being part of p.
-func (p *Params) AttrHrefZero(v *Int) (interface{}, error) {
-	s, err := p.HrefZero(v)
-	return SprintfAttr(" href=%q", s), err
+// p is a pointer to alter (and revert) num being part of p.
+func (p *Params) AttrHrefToggleHead(num *Num) (interface{}, error) {
+	href, err := p.HrefToggleHead(num)
+	return SprintfAttr(" href=%q", href), err
 }
 
 // TODO In Decoder, have a cache of type=>fieldName=>tag(got,splitted)
@@ -167,24 +176,21 @@ type Varlink struct {
 	LinkText   string `json:"-"` // static
 }
 
-func (p *Params) Variate(v *Int, cmp int, text, alignClass string) (Varlink, error) {
+func (p *Params) Variate(num *Num, cmp int, text, alignClass string) (Varlink, error) {
 	vl := Varlink{LinkText: text, LinkClass: "state"}
-	if v.X == cmp || v.X == -cmp {
+	if num.Body == cmp || num.Body == -cmp {
 		vl.CaretClass = "caret"
 		vl.LinkClass += " current"
-		if v.X == cmp {
+		if num.Body == cmp {
 			cmp = -cmp
 			vl.LinkClass += " dropup"
 		}
 	}
-	copy := v.X
-	v.X = cmp // set
-	s, err := p.Encode()
-	v.X = copy // revert
+	qs, err := p.EncodeNum(num, cmp)
 	if err != nil {
 		return Varlink{}, err
 	}
-	vl.LinkHref = "?" + s
+	vl.LinkHref = "?" + qs
 	return vl, nil
 }
 
@@ -232,39 +238,78 @@ func (pp PeriodParam) RefreshClassAttr(classes string) interface{} {
 	}
 	return SprintfAttr(" class=%q", classes)
 }
-
-func (lp LimitParam) LessHrefAttr() interface{} {
-	return SprintfAttr(" href=%q", lp.EncodeLess())
-}
-
-func (lp LimitParam) MoreHrefAttr() interface{} {
-	return SprintfAttr(" href=%q", lp.EncodeMore())
-}
 */
 
-func (p *Params) AttrHrefLess(v *Int) (template.HTMLAttr, error) {
-	copy := v.X
-	v.X = v.Absolute()
-	if v.X >= 2 {
-		g := math.Log2(float64(v.X))
-		n := math.Floor(g)
-		if n == g {
-			n--
-		}
-		v.X = int(math.Pow(2, n))
-	}
-	s, err := p.Encode()
-	v.X = copy
-	return SprintfAttr(" href=%q", "?"+s), err
+func (p *Params) EncodeNum(num *Num, body int) (string, error) {
+	copy := num.Body
+	num.Body = body
+	qs, err := p.Encode()
+	num.Body = copy
+	return "?" + qs, err
 }
 
-func (p *Params) AttrHrefMore(v *Int) (template.HTMLAttr, error) {
-	copy := v.X
-	v.X = v.Absolute()
-	if v.X <= 32768 { // up to 65536
-		v.X = int(math.Pow(2, 1+math.Floor(math.Log2(float64(v.X)))))
+func Pow2Less(v int) int {
+	switch v {
+	case 0:
+		return 0
+	case 1:
+		return 0
+	case 2:
+		return 1
 	}
-	s, err := p.Encode()
-	v.X = copy
-	return SprintfAttr(" href=%q", "?"+s), err
+	g := math.Log2(float64(v))
+	n := math.Floor(g)
+	if n == g {
+		n--
+	}
+	return int(math.Pow(2, n))
+}
+
+func Pow2More(v int) int {
+	switch v {
+	case 0:
+		return 1
+	case 1:
+		return 2
+	case 2:
+		return 4
+	}
+	if v <= 32768 { // up to 65536
+		v = int(math.Pow(2, 1+math.Floor(math.Log2(float64(v)))))
+	}
+	return v
+}
+
+func (p *Params) Zero(num *Num) (NumLink, error) {
+	return p.LinkNum(0, num, 0)
+}
+func (p *Params) More(num *Num) (NumLink, error) {
+	return p.LinkNum(1, num, Pow2More(num.Body))
+}
+func (p *Params) Less(num *Num) (NumLink, error) {
+	return p.LinkNum(-1, num, Pow2Less(num.Body))
+}
+
+func (p *Params) LinkNum(opid int, num *Num, body int) (NumLink, error) {
+	href, err := p.EncodeNum(num, body)
+	if err != nil {
+		return NumLink{}, err
+	}
+	var class string
+	if opid == 0 && num.Body == 0 {
+		class = " disabled active"
+	}
+	if opid == 1 && body >= num.Limit {
+		class = " disabled"
+	}
+	if opid == -1 && body == 0 {
+		class = " disabled"
+	}
+	return NumLink{
+		NumPlain: NumPlain{
+			Href: href,
+			Text: fmt.Sprintf("%d", body),
+		},
+		ExtraClass: class,
+	}, nil
 }

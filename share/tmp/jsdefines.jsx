@@ -510,16 +510,13 @@ define(function(require) {
         ></input
       ><div className="btn-toolbar"
         ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.Hideps ? "btn btn-default active" : "btn btn-default"}
-    href={Data.Params.Numbered.Psn.Zero} onClick={this.handleClick}
-            >Hidden</a
-          ><a  className={Data.PStable.PSnotDecreasable ? "btn btn-default" : "btn btn-default disabled"}
-    href={Data.Params.LessHref} onClick={this.handleClick}
-            >-</a
-          ><a  className={Data.PStable.PSnotExpandable ? "btn btn-default" : "btn btn-default disabled"}
-     href={Data.Params.MoreHref} onClick={this.handleClick}
-            >{Data.PStable.PSplusText}</a
-          ></div
+          ><a href={Data.Params.Numbered.Psn.Zero.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Numbered.Psn.Zero.Class != null ? Data.Params.Numbered.Psn.Zero.Class : "")}
+  >{Data.Params.Numbered.Psn.Zero.Text}</a
+><a href={Data.Params.Numbered.Psn.Less.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Numbered.Psn.Less.Class != null ? Data.Params.Numbered.Psn.Less.Class : "")}
+  >{Data.Params.Numbered.Psn.Less.Text}</a
+><a href={Data.Params.Numbered.Psn.More.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Numbered.Psn.More.Class != null ? Data.Params.Numbered.Psn.More.Class : "")}
+  >{Data.Params.Numbered.Psn.More.Text}</a
+></div
         ><div className="btn-group btn-group-sm" role="group"
           ><div  className={Data.Params.Errors && Data.Params.Errors.Refreshps ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"}
   ><span className="input-group-addon"
