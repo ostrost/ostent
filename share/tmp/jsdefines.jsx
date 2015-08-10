@@ -518,11 +518,10 @@ define(function(require) {
   >{Data.Params.Numbered.Psn.More.Text}</a
 ></div
         ><div className="btn-group btn-group-sm" role="group"
-          ><div  className={Data.Params.Errors && Data.Params.Errors.Refreshps ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"}
-  ><span className="input-group-addon"
-    >Refresh</span
-  >  <input className="form-control refresh-input width-fourem" type="text" placeholder={Data.MinRefresh}  name="refreshps"  value={Data.Params.Refreshps} onChange={this.handleChange}
-  ></input></div
+          ><a href={Data.Params.Delayed.Psd.Less.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Delayed.Psd.Less.Class != null ? Data.Params.Delayed.Psd.Less.Class : "")}
+  >{Data.Params.Delayed.Psd.Less.Text}</a
+><a href={Data.Params.Delayed.Psd.More.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Delayed.Psd.More.Class != null ? Data.Params.Delayed.Psd.More.Class : "")}
+  >{Data.Params.Delayed.Psd.More.Text}</a
 ></div
         ></div
       ></form

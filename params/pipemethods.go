@@ -8,8 +8,11 @@ import (
 	"net/url"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/google/go-querystring/query"
+
+	"github.com/ostrost/ostent/flags"
 )
 
 func SprintfAttr(format string, args ...interface{}) template.HTMLAttr {
@@ -75,31 +78,31 @@ func (p *Params) HrefToggleHead(num *Num) (string, error) {
 	return "?" + qs, err
 }
 
-type NumPlain struct {
+type APlain struct {
 	Href string
 	Text string
 }
 
-type NumLink struct {
-	NumPlain
+type ALink struct {
+	APlain
 	ExtraClass string `json:"-"`
 }
 
-func (n NumLink) MarshalJSON() ([]byte, error) {
+func (al ALink) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
-		NumPlain
+		APlain
 		Class string `json:",omitempty"`
 	}{
-		NumPlain: n.NumPlain,
-		Class:    n.Class(""),
+		APlain: al.APlain,
+		Class:  al.Class(""),
 	})
 }
 
-func (n NumLink) Class(base string) string {
+func (al ALink) Class(base string) string {
 	if base == "" {
-		return n.ExtraClass
+		return al.ExtraClass
 	}
-	return base + " " + n.ExtraClass
+	return base + " " + al.ExtraClass
 }
 
 // p is a pointer to alter (and revert) v being part of p.
@@ -178,19 +181,20 @@ type Varlink struct {
 
 func (p *Params) Variate(num *Num, cmp int, text, alignClass string) (Varlink, error) {
 	vl := Varlink{LinkText: text, LinkClass: "state"}
-	if num.Body == cmp || num.Body == -cmp {
+	var toggleh bool
+	if num.Body == cmp {
 		vl.CaretClass = "caret"
 		vl.LinkClass += " current"
 		if num.Body == cmp {
-			cmp = -cmp
 			vl.LinkClass += " dropup"
+			toggleh = true
 		}
 	}
-	qs, err := p.EncodeNum(num, cmp)
+	qs, err := p.EncodeN(num, cmp, &toggleh)
 	if err != nil {
 		return Varlink{}, err
 	}
-	vl.LinkHref = "?" + qs
+	vl.LinkHref = qs
 	return vl, nil
 }
 
@@ -240,11 +244,17 @@ func (pp PeriodParam) RefreshClassAttr(classes string) interface{} {
 }
 */
 
-func (p *Params) EncodeNum(num *Num, body int) (string, error) {
+func (p *Params) EncodeN(num *Num, body int, thead *bool) (string, error) {
 	copy := num.Body
 	num.Body = body
+	if thead != nil && *thead {
+		num.Head = !num.Head
+	}
 	qs, err := p.Encode()
 	num.Body = copy
+	if thead != nil && *thead {
+		num.Head = !num.Head
+	}
 	return "?" + qs, err
 }
 
@@ -280,20 +290,14 @@ func Pow2More(v int) int {
 	return v
 }
 
-func (p *Params) Zero(num *Num) (NumLink, error) {
-	return p.LinkNum(0, num, 0)
-}
-func (p *Params) More(num *Num) (NumLink, error) {
-	return p.LinkNum(1, num, Pow2More(num.Body))
-}
-func (p *Params) Less(num *Num) (NumLink, error) {
-	return p.LinkNum(-1, num, Pow2Less(num.Body))
-}
+func (p *Params) ZeroN(num *Num) (ALink, error) { return p.LinkN(0, num, 0) }
+func (p *Params) MoreN(num *Num) (ALink, error) { return p.LinkN(1, num, Pow2More(num.Body)) }
+func (p *Params) LessN(num *Num) (ALink, error) { return p.LinkN(-1, num, Pow2Less(num.Body)) }
 
-func (p *Params) LinkNum(opid int, num *Num, body int) (NumLink, error) {
-	href, err := p.EncodeNum(num, body)
+func (p *Params) LinkN(opid int, num *Num, body int) (ALink, error) {
+	href, err := p.EncodeN(num, body, nil)
 	if err != nil {
-		return NumLink{}, err
+		return ALink{}, err
 	}
 	var class string
 	if opid == 0 && num.Body == 0 {
@@ -305,10 +309,85 @@ func (p *Params) LinkNum(opid int, num *Num, body int) (NumLink, error) {
 	if opid == -1 && body == 0 {
 		class = " disabled"
 	}
-	return NumLink{
-		NumPlain: NumPlain{
+	return ALink{
+		APlain: APlain{
 			Href: href,
 			Text: fmt.Sprintf("%d", body),
+		},
+		ExtraClass: class,
+	}, nil
+}
+
+func (p *Params) EncodeD(dur *Duration, set time.Duration) (string, error) {
+	copy := dur.D
+	dur.D = set
+	qs, err := p.Encode()
+	dur.D = copy
+	return "?" + qs, err
+}
+
+func DurationMore(dur Duration, step time.Duration) time.Duration {
+	const s = time.Second
+	const m = time.Second * 60
+	var table = map[time.Duration]time.Duration{
+		s:      2 * s,
+		2 * s:  5 * s,
+		5 * s:  10 * s,
+		10 * s: 30 * s,
+		30 * s: m,
+		m:      2 * m,
+		2 * m:  5 * m,
+		5 * m:  10 * m,
+		10 * m: 30 * m,
+		30 * m: 60 * m,
+	}
+	if d, ok := table[dur.D]; ok {
+		return d
+	}
+	return dur.D + step
+}
+func DurationLess(dur Duration, step time.Duration) time.Duration {
+	const s = time.Second
+	const m = time.Second * 60
+	var table = map[time.Duration]time.Duration{
+		s:      s,
+		2 * s:  s,
+		5 * s:  2 * s,
+		10 * s: 5 * s,
+		30 * s: 10 * s,
+		m:      30 * s,
+		2 * m:  m,
+		5 * m:  2 * m,
+		10 * m: 5 * m,
+		30 * m: 10 * m,
+		60 * m: 30 * m,
+	}
+	if d, ok := table[dur.D]; ok {
+		return d
+	}
+	return dur.D - step
+}
+
+func (p *Params) MoreD(dur *Duration) (ALink, error) {
+	return p.LinkD(1, dur, DurationMore(*dur, p.MinPeriod.Duration))
+}
+func (p *Params) LessD(dur *Duration) (ALink, error) {
+	return p.LinkD(-1, dur, DurationLess(*dur, p.MinPeriod.Duration))
+}
+
+func (p *Params) LinkD(opid int, dur *Duration, set time.Duration) (ALink, error) {
+	href, err := p.EncodeD(dur, set)
+	if err != nil {
+		return ALink{}, err
+	}
+	var class string
+	if opid == -1 && dur.D == p.MinPeriod.Duration {
+		class = " disabled"
+	}
+	return ALink{
+		APlain: APlain{
+			Href: href,
+			Text: flags.DurationString(set),
 		},
 		ExtraClass: class,
 	}, nil

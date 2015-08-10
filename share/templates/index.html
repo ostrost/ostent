@@ -502,9 +502,9 @@
         ><input class="hidden-submit" type="submit"
         ><div class="btn-toolbar"
           ><div class="btn-group btn-group-sm" role="group"
-            >{{template "defines::numlink" $p.Zero $p.Psn}}{{template "defines::numlink" $p.Less $p.Psn}}{{template "defines::numlink" $p.More $p.Psn}}</div
+            >{{template "defines::numlink" $p.ZeroN $p.Psn}}{{template "defines::numlink" $p.LessN $p.Psn}}{{template "defines::numlink" $p.MoreN $p.Psn}}</div
           ><div class="btn-group btn-group-sm" role="group"
-            >{{template "defines::define_refresh" (Chain .Data "Refreshps")}}</div
+            >{{template "defines::numlink" $p.LessD $p.Psd}}{{template "defines::numlink" $p.MoreD $p.Psd}}</div
           ></div
         ></form
       ></div

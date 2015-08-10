@@ -33,11 +33,10 @@ func graphiteCommandLine(cli *flag.FlagSet) CommandLineHandler {
 			/* if gr.RefreshFlag.Duration == 0 { // if .RefreshFlag had no default
 				gr.RefreshFlag = defaultPeriod
 			} */
-			d := params.Duration(gr.RefreshFlag.Duration)
 			gc := &Carbond{
 				Logger:     gr.Logger,
 				ServerAddr: gr.ServerAddr.String(),
-				Ticks:      params.NewTicks(&d),
+				Ticks:      params.NewTicks(&params.Duration{D: gr.RefreshFlag.Duration}),
 			}
 			ostent.Register <- gc
 		})

@@ -76,7 +76,7 @@ func (procs MPSlice) Ordered(para *params.Params) *PStable {
 		return pst
 	}
 
-	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(para.Psk.Body, uids)) // not .StableSortBy
+	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(para.Psk, uids)) // not .StableSortBy
 	for _, proc := range procs[:limitPS] {
 		pst.List = append(pst.List, operating.ProcData{
 			PID:      operating.Field(fmt.Sprintf("%d", proc.PID)),
@@ -382,7 +382,7 @@ func (ir *IndexRegistry) DF(para *params.Params, iu *IndexUpdate) bool {
 func (ir *IndexRegistry) DFbytes(para *params.Params) ([]operating.DiskBytes, int) {
 	private := ir.ListPrivateDisk()
 
-	private.StableSortBy(LessDiskFunc(para.Dfk.Body))
+	private.StableSortBy(LessDiskFunc(para.Dfk))
 
 	var public []operating.DiskBytes
 	for i, disk := range private {
@@ -414,7 +414,7 @@ func FormatDFbytes(md operating.MetricDF) operating.DiskBytes {
 func (ir *IndexRegistry) DFinodes(para *params.Params) ([]operating.DiskInodes, int) {
 	private := ir.ListPrivateDisk()
 
-	private.StableSortBy(LessDiskFunc(para.Dfk.Body))
+	private.StableSortBy(LessDiskFunc(para.Dfk))
 
 	var public []operating.DiskInodes
 	for i, disk := range private {
@@ -766,7 +766,7 @@ func getUpdates(req *http.Request, para *params.Params, forcerefresh bool) (Inde
 		{para.RefreshFunc(&para.Refreshvg), Reg1s.VG},
 		{para.RefreshFunc(&para.Refreshdf), Reg1s.DF},
 		{para.RefreshFunc(&para.Refreshif), Reg1s.IF},
-		{para.RefreshFunc(&para.Refreshps), psCopy.IU},
+		{para.RefreshFunc(&para.Psd), psCopy.IU},
 
 		// always-shown bits:
 		{nil, RegMSS.HN},

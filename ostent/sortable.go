@@ -1,19 +1,16 @@
 package ostent
 
 import (
+	"github.com/ostrost/ostent/params"
 	"github.com/ostrost/ostent/params/enums"
 	"github.com/ostrost/ostent/system/operating"
 )
 
 // LessDiskFunc makes a 'less' func for operating.MetricDF comparison.
-func LessDiskFunc(by int) func(operating.MetricDF, operating.MetricDF) bool {
-	posby := by
-	if posby < 0 {
-		posby = -posby
-	}
+func LessDiskFunc(by params.Num) func(operating.MetricDF, operating.MetricDF) bool {
 	return func(a, b operating.MetricDF) bool {
 		r := false
-		switch posby {
+		switch by.Body {
 		case enums.FS: // alpha
 			r = a.DevName.Snapshot().Value() < b.DevName.Snapshot().Value()
 		case enums.TOTAL:
@@ -25,7 +22,7 @@ func LessDiskFunc(by int) func(operating.MetricDF, operating.MetricDF) bool {
 		case enums.MP: // alpha
 			r = a.DirName.Snapshot().Value() < b.DirName.Snapshot().Value()
 		}
-		if by < 0 {
+		if by.Head {
 			return !r
 		}
 		return r
@@ -33,14 +30,10 @@ func LessDiskFunc(by int) func(operating.MetricDF, operating.MetricDF) bool {
 }
 
 // LessProcFunc makes a 'less' func for operating.MetricProc comparison.
-func LessProcFunc(by int, uids map[uint]string) func(operating.MetricProc, operating.MetricProc) bool {
-	posby := by
-	if posby < 0 {
-		posby = -posby
-	}
+func LessProcFunc(by params.Num, uids map[uint]string) func(operating.MetricProc, operating.MetricProc) bool {
 	return func(a, b operating.MetricProc) bool {
 		r := false
-		switch posby {
+		switch by.Body {
 		case enums.PID:
 			r = a.PID > b.PID
 		case enums.PRI:
@@ -60,7 +53,7 @@ func LessProcFunc(by int, uids map[uint]string) func(operating.MetricProc, opera
 		case enums.USER: // alpha
 			r = username(uids, a.UID) > username(uids, b.UID)
 		}
-		if by < 0 {
+		if by.Head {
 			return !r
 		}
 		return r

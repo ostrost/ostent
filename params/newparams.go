@@ -17,8 +17,8 @@ import (
 )
 
 var (
-	NumKind      = reflect.TypeOf(Num{}).Kind()
-	DurationKind = reflect.TypeOf(Duration(0)).Kind()
+	NumType      = reflect.TypeOf(Num{})
+	DurationType = reflect.TypeOf(Duration{})
 )
 
 // NewParams constructs new Params.
@@ -37,15 +37,16 @@ func NewParams(minperiod flags.Period) *Params {
 			continue
 		}
 		fv := val.Field(i)
-		if k := sf.Type.Kind(); k == NumKind {
-			if d, err := NumPrefix(tags[1:], "default"); err == nil { // otherwise err is ignored
-				v := fv.Addr().Interface()
-				p.Defaults[sf.Name] = d // ?
-				p.Defaults[v] = d
+		if sft := sf.Type; sft == NumType {
+			if def, err := NumPrefix(tags[1:], "default"); err == nil { // otherwise err is ignored
+				num := fv.Addr().Interface()
+				p.Defaults[sf.Name] = def // ?
+				p.Defaults[num] = def
 			}
-		} else if k == DurationKind {
-			fv.Set(reflect.ValueOf(Duration(0)))
-			p.Ticks[tags[0]] = NewTicks(fv.Addr().Interface().(*Duration))
+		} else if sft == DurationType {
+			dur := fv.Addr().Interface().(*Duration)
+			p.Ticks[tags[0]] = NewTicks(dur)
+			// p.Defaults[dur] = def
 		}
 	}
 	return p
@@ -100,7 +101,7 @@ func (ti Ticks) Expired() bool { return ti.Ticks <= 1 }
 
 func (ti *Ticks) Tick() {
 	ti.Ticks++
-	if ti.Ticks-1 >= int(time.Duration(*ti.Duration)/time.Second) {
+	if ti.Ticks-1 >= int(ti.Duration.D/time.Second) {
 		ti.Ticks = 1 // expired
 	}
 }
@@ -155,29 +156,35 @@ type Schema struct {
 	Dft Num `url:"dft,default2,enumerate2"` // tab, default DFBYTES
 	Ift Num `url:"ift,default3,enumerate3"` // tab, default IFBYTES
 
-	// The NewParams must populate .Ticks with EACH Refresh*
+	// The NewParams must populate .Ticks with EACH *d
+	Psd Duration `url:"psd,omitempty"`
+
 	Refreshcpu Duration `url:"refreshcpu,omitempty"`
 	Refreshdf  Duration `url:"refreshdf,omitempty"`
 	Refreshif  Duration `url:"refreshif,omitempty"`
 	Refreshmem Duration `url:"refreshmem,omitempty"`
-	Refreshps  Duration `url:"refreshps,omitempty"`
 	Refreshvg  Duration `url:"refreshvg,omitempty"`
 }
 
 type Numbered struct {
-	Zero, More, Less NumLink
+	Zero, More, Less ALink
+}
+type Delayed struct {
+	More, Less ALink
 }
 
 func (p *Params) MarshalJSON() ([]byte, error) {
 	d := struct {
 		Schema
 		Toggle     map[string]string
+		Delayed    map[string]Delayed
 		Numbered   map[string]Numbered
 		Variations map[string][]Varlink
 		// Defaults   map[string]Num
 	}{
 		Schema:     p.Schema,
 		Toggle:     p.Toggles(),
+		Delayed:    p.Delayed(),
 		Numbered:   p.Numbered(),
 		Variations: p.Variations(),
 		// Defaults:   p.Defaults.StringKeysOnly(),
@@ -202,7 +209,7 @@ func (p Params) Numbered() map[string]Numbered {
 	val := reflect.ValueOf(&p.Schema).Elem()
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
 		sf := typ.Field(i)
-		if sf.Type.Kind() != NumKind {
+		if sf.Type != NumType {
 			continue
 		}
 		tags, ok := TagsOk(sf)
@@ -212,10 +219,32 @@ func (p Params) Numbered() map[string]Numbered {
 		num := val.Field(i).Addr().Interface().(*Num)
 		red := Numbered{}
 		// errors are ignored
-		red.Zero, _ = p.Zero(num)
-		red.More, _ = p.More(num)
-		red.Less, _ = p.Less(num)
+		red.Zero, _ = p.ZeroN(num)
+		red.More, _ = p.MoreN(num)
+		red.Less, _ = p.LessN(num)
 		m[sf.Name] = red
+	}
+	return m
+}
+
+func (p Params) Delayed() map[string]Delayed {
+	m := make(map[string]Delayed)
+	val := reflect.ValueOf(&p.Schema).Elem()
+	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
+		sf := typ.Field(i)
+		if sf.Type != DurationType {
+			continue
+		}
+		tags, ok := TagsOk(sf)
+		if !ok || tags[0] == "" {
+			continue
+		}
+		dur := val.Field(i).Addr().Interface().(*Duration)
+		dly := Delayed{}
+		// errors are ignored
+		dly.More, _ = p.MoreD(dur)
+		dly.Less, _ = p.LessD(dur)
+		m[sf.Name] = dly
 	}
 	return m
 }
@@ -225,7 +254,7 @@ func (p *Params) Variations() map[string][]Varlink {
 	val := reflect.ValueOf(&p.Schema).Elem()
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
 		sf := typ.Field(i)
-		if sf.Type.Kind() != NumKind {
+		if sf.Type != NumType {
 			continue
 		}
 		tags, ok := TagsOk(sf)
@@ -271,7 +300,7 @@ func (p *Params) Toggles() map[string]string {
 				m[sf.Name] = s
 			}
 		}
-		if sf.Type.Kind() == NumKind {
+		if sf.Type == NumType {
 			num := val.Field(i).Addr().Interface().(*Num)
 			if href, err := p.HrefToggleHead(num); err == nil {
 				m[sf.Name] = href
@@ -309,6 +338,7 @@ func (num Num) EncodeValues(key string, values *url.Values) error {
 }
 
 func (num Num) MarshalJSON() ([]byte, error) { return json.Marshal(num.String()) }
+
 func (num Num) String() string {
 	var sym string
 	if num.Head {
@@ -333,7 +363,7 @@ func DecodePositive(value string) (int, error) {
 
 func DecodeNum(value string) (Num, error) {
 	var head bool
-	if len(value) >= 1 && (value[0] == '-' || value[0] == '!') {
+	if len(value) > 0 && (value[0] == '-' || value[0] == '!') {
 		head, value = true, value[1:]
 	}
 	body, err := DecodePositive(value)
@@ -352,25 +382,23 @@ func ConvertNum(value string) reflect.Value {
 	return reflect.ValueOf(num)
 }
 
-type Duration time.Duration
+type Duration struct {
+	D       time.Duration
+	Default time.Duration
+}
 
-func (d Duration) EncodeValues(key string, values *url.Values) error {
-	if d != 0 {
-		(*values)[key] = []string{time.Duration(d).String()}
+func (dur Duration) EncodeValues(key string, values *url.Values) error {
+	if s := dur.String(); s != "" {
+		(*values)[key] = []string{s}
 	}
 	return nil
 }
 
-func (d Duration) MarshalJSON() ([]byte, error) {
-	if d != 0 {
-		return json.Marshal(d)
-	}
-	return json.Marshal(nil)
-}
+func (dur Duration) MarshalJSON() ([]byte, error) { return json.Marshal(dur.String()) }
 
-func (d Duration) String() string {
-	if d != 0 {
-		return time.Duration(d).String()
+func (dur Duration) String() string {
+	if dur.D != dur.Default {
+		return flags.DurationString(dur.D)
 	}
 	return ""
 }
@@ -382,7 +410,7 @@ func ConvertDurationFunc(minperiod flags.Period) func(string) reflect.Value {
 		if err := p.Set(value); err != nil {
 			return reflect.Value{}
 		}
-		return reflect.ValueOf(Duration(p.Duration))
+		return reflect.ValueOf(Duration{D: p.Duration})
 	}
 }
 
@@ -396,28 +424,30 @@ func (p *Params) ResetSchema() {
 			fv.SetBool(false)
 		case reflect.Int:
 			fv.SetInt(0)
-		case NumKind:
+		}
+		switch sf.Type {
+		case NumType:
 			fv.Set(reflect.ValueOf(Num{}))
-		case DurationKind:
-			fv.Set(reflect.ValueOf(Duration(0)))
+		case DurationType:
+			fv.Set(reflect.ValueOf(Duration{}))
 		}
 	}
 }
 
-func (p *Params) SetDefaults(form url.Values) {
+func (p *Params) SetDefaults(form url.Values, minperiod flags.Period) {
 	val := reflect.ValueOf(&p.Schema).Elem()
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
 		sf := typ.Field(i)
 		fv := val.Field(i)
-		switch sf.Type.Kind() {
-		case NumKind:
+		switch sf.Type {
+		case NumType:
 			num := fv.Addr().Interface().(*Num)
-			d, ok := p.Defaults[num]
+			def, ok := p.Defaults[num]
 			if !ok {
 				continue
 			}
-			num.DefaultHead = d.Head
-			num.DefaultBody = d.Body
+			num.DefaultHead = def.Head
+			num.DefaultBody = def.Body
 			if num.Head && num.Body != 0 { // all values specified, no need for defaults
 				continue
 			}
@@ -429,11 +459,25 @@ func (p *Params) SetDefaults(form url.Values) {
 				continue
 			}
 			if !num.Head { // not allow false init value
-				num.Head = d.Head
+				num.Head = def.Head
 			}
 			if num.Body == 0 { // not allow 0 init value
-				num.Body = d.Body
+				num.Body = def.Body
 			}
+		case DurationType:
+			dur := fv.Addr().Interface().(*Duration)
+			dur.Default = minperiod.Duration
+			if dur.D != time.Duration(0) { // value specified, no need for defaults
+				continue
+			}
+			tags, ok := TagsOk(sf)
+			if !ok {
+				continue
+			}
+			if _, ok := form[tags[0]]; ok { // have parameter
+				continue
+			}
+			dur.D = minperiod.Duration
 		}
 	}
 }
@@ -456,14 +500,14 @@ func (p *Params) DecodeDecode(req *http.Request) error {
 	dec.IgnoreUnknownKeys(true)
 	dec.ZeroEmpty(true)
 	dec.RegisterConverter(Num{}, ConvertNum)
-	dec.RegisterConverter(Duration(0), ConvertDurationFunc(p.MinPeriod))
+	dec.RegisterConverter(Duration{}, ConvertDurationFunc(p.MinPeriod))
 
 	p.ResetSchema()
 	err := dec.Decode(&p.Schema, req.Form)
 	if err != nil {
 		return err
 	}
-	p.SetDefaults(req.Form)
+	p.SetDefaults(req.Form, p.MinPeriod)
 	if !moved {
 		return nil
 	}

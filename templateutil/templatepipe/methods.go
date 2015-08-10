@@ -88,18 +88,18 @@ func (n Nota) EnumLink(args ...string) (interface{}, error) {
 }
 // */
 
-type NumLink params.NumLink
+type ALink params.ALink
 
-func (n NumLink) Class(base string) string {
-	add := Uncurl(n.ExtraClass)
+func (al ALink) Class(base string) string {
+	add := Uncurl(al.ExtraClass)
 	return fmt.Sprintf("{%q + \" \" + (%s != null ? %s : \"\")}", base, add, add)
 }
 
-func (n Nota) Zero(num string) (NumLink, error) { return n.Numbered(num, "Zero") }
-func (n Nota) Less(num string) (NumLink, error) { return n.Numbered(num, "Less") }
-func (n Nota) More(num string) (NumLink, error) { return n.Numbered(num, "More") }
+func (n Nota) ZeroN(num string) (ALink, error) { return n.Numbered(num, "Zero") }
+func (n Nota) LessN(num string) (ALink, error) { return n.Numbered(num, "Less") }
+func (n Nota) MoreN(num string) (ALink, error) { return n.Numbered(num, "More") }
 
-func (n Nota) Numbered(s, which string) (NumLink, error) {
+func (n Nota) Numbered(s, which string) (ALink, error) {
 	split := strings.Split(Uncurl(s), ".")
 	base := strings.Join(split[:len(split)-1], ".")
 	last := split[len(split)-1]
@@ -108,13 +108,22 @@ func (n Nota) Numbered(s, which string) (NumLink, error) {
 		text  = fmt.Sprintf("{%s.Numbered.%s.%s.Text}", base, last, which)
 		class = fmt.Sprintf("{%s.Numbered.%s.%s.Class}", base, last, which)
 	)
-	return NumLink{
-		NumPlain: params.NumPlain{
-			Href: href,
-			Text: text,
-		},
-		ExtraClass: class,
-	}, nil
+	return ALink{APlain: params.APlain{Href: href, Text: text}, ExtraClass: class}, nil
+}
+
+func (n Nota) LessD(dur string) (ALink, error) { return n.Delayed(dur, "Less") }
+func (n Nota) MoreD(dur string) (ALink, error) { return n.Delayed(dur, "More") }
+
+func (n Nota) Delayed(s, which string) (ALink, error) {
+	split := strings.Split(Uncurl(s), ".")
+	base := strings.Join(split[:len(split)-1], ".")
+	last := split[len(split)-1]
+	var (
+		href  = fmt.Sprintf("{%s.Delayed.%s.%s.Href}", base, last, which)
+		text  = fmt.Sprintf("{%s.Delayed.%s.%s.Text}", base, last, which)
+		class = fmt.Sprintf("{%s.Delayed.%s.%s.Class}", base, last, which)
+	)
+	return ALink{APlain: params.APlain{Href: href, Text: text}, ExtraClass: class}, nil
 }
 
 func (_ Nota) AttrHrefToggle(s string) interface{} {

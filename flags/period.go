@@ -12,9 +12,9 @@ type Period struct {
 	Above *time.Duration // optional
 }
 
-// String returns Period string representation
-func (p Period) String() string {
-	s := p.Duration.String()
+// DurationString returns string representation of dur.
+func DurationString(dur time.Duration) string {
+	s := dur.String()
 	if strings.HasSuffix(s, "m0s") {
 		s = strings.TrimSuffix(s, "0s")
 	}
@@ -22,6 +22,11 @@ func (p Period) String() string {
 		s = strings.TrimSuffix(s, "0m")
 	}
 	return s
+}
+
+// String returns Period string representation
+func (p Period) String() string {
+	return DurationString(p.Duration)
 }
 
 // MarshalJSON is for encoding/json marshaling into Period string representation

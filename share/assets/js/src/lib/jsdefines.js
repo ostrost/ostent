@@ -1319,18 +1319,16 @@ define(function (require) {
                   { className: "btn-group btn-group-sm", role: "group"
                   },
                   React.createElement(
-                    "div",
-                    { className: Data.Params.Errors && Data.Params.Errors.Refreshps ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"
+                    "a",
+                    { href: Data.Params.Delayed.Psd.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Delayed.Psd.Less.Class != null ? Data.Params.Delayed.Psd.Less.Class : "")
                     },
-                    React.createElement(
-                      "span",
-                      { className: "input-group-addon"
-                      },
-                      "Refresh"
-                    ),
-                    "  ",
-                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.MinRefresh, name: "refreshps", value: Data.Params.Refreshps, onChange: this.handleChange
-                    })
+                    Data.Params.Delayed.Psd.Less.Text
+                  ),
+                  React.createElement(
+                    "a",
+                    { href: Data.Params.Delayed.Psd.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Delayed.Psd.More.Class != null ? Data.Params.Delayed.Psd.More.Class : "")
+                    },
+                    Data.Params.Delayed.Psd.More.Text
                   )
                 )
               )
