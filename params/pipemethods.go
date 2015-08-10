@@ -32,6 +32,10 @@ func (p Params) AttrClassP(num *Num, fstclass, sndclass string) template.HTMLAtt
 	return p.AttrClassN(!num.Head, fstclass, sndclass)
 }
 
+func (p Params) AttrClassZero(num *Num, fstclass, sndclass string) template.HTMLAttr {
+	return p.AttrClassN(num.Body == 0, fstclass, sndclass)
+}
+
 func (p Params) AttrClassN(b bool, fstclass, sndclass string) template.HTMLAttr {
 	// p is unused
 	s := fstclass
@@ -79,8 +83,9 @@ func (p *Params) HrefToggleHead(num *Num) (string, error) {
 }
 
 type APlain struct {
-	Href string
-	Text string
+	Href  string
+	Text  string
+	Badge string `json:",omitempty"`
 }
 
 type ALink struct {
@@ -290,29 +295,30 @@ func Pow2More(v int) int {
 	return v
 }
 
-func (p *Params) ZeroN(num *Num) (ALink, error) { return p.LinkN(0, num, 0) }
-func (p *Params) MoreN(num *Num) (ALink, error) { return p.LinkN(1, num, Pow2More(num.Body)) }
-func (p *Params) LessN(num *Num) (ALink, error) { return p.LinkN(-1, num, Pow2Less(num.Body)) }
+func (p *Params) ZeroN(num *Num) (ALink, error) { return p.LinkN(num, 0, "") }
+func (p *Params) MoreN(num *Num) (ALink, error) { return p.LinkN(num, Pow2More(num.Body), "+") }
+func (p *Params) LessN(num *Num) (ALink, error) { return p.LinkN(num, Pow2Less(num.Body), "-") }
 
-func (p *Params) LinkN(opid int, num *Num, body int) (ALink, error) {
+func (p *Params) LinkN(num *Num, body int, badge string) (ALink, error) {
 	href, err := p.EncodeN(num, body, nil)
 	if err != nil {
 		return ALink{}, err
 	}
 	var class string
-	if opid == 0 && num.Body == 0 {
+	if badge == "" && num.Body == 0 { // "0" case && param is 0
 		class = " disabled active"
 	}
-	if opid == 1 && body >= num.Limit {
+	if badge == "+" && body >= num.Limit {
 		class = " disabled"
 	}
-	if opid == -1 && body == 0 {
+	if badge == "-" && body == 0 {
 		class = " disabled"
 	}
 	return ALink{
 		APlain: APlain{
-			Href: href,
-			Text: fmt.Sprintf("%d", body),
+			Href:  href,
+			Text:  fmt.Sprintf("%d", body),
+			Badge: badge,
 		},
 		ExtraClass: class,
 	}, nil
@@ -369,25 +375,26 @@ func DurationLess(dur Duration, step time.Duration) time.Duration {
 }
 
 func (p *Params) MoreD(dur *Duration) (ALink, error) {
-	return p.LinkD(1, dur, DurationMore(*dur, p.MinPeriod.Duration))
+	return p.LinkD(dur, DurationMore(*dur, p.MinPeriod.Duration), "+")
 }
 func (p *Params) LessD(dur *Duration) (ALink, error) {
-	return p.LinkD(-1, dur, DurationLess(*dur, p.MinPeriod.Duration))
+	return p.LinkD(dur, DurationLess(*dur, p.MinPeriod.Duration), "-")
 }
 
-func (p *Params) LinkD(opid int, dur *Duration, set time.Duration) (ALink, error) {
+func (p *Params) LinkD(dur *Duration, set time.Duration, badge string) (ALink, error) {
 	href, err := p.EncodeD(dur, set)
 	if err != nil {
 		return ALink{}, err
 	}
 	var class string
-	if opid == -1 && dur.D == p.MinPeriod.Duration {
+	if badge == "-" && dur.D == p.MinPeriod.Duration {
 		class = " disabled"
 	}
 	return ALink{
 		APlain: APlain{
-			Href: href,
-			Text: flags.DurationString(set),
+			Href:  href,
+			Text:  flags.DurationString(set),
+			Badge: badge,
 		},
 		ExtraClass: class,
 	}, nil

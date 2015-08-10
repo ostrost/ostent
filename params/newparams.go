@@ -130,7 +130,6 @@ type Schema struct {
 	Hidedf    bool `url:"hidedf,omitempty"`
 	Hideif    bool `url:"hideif,omitempty"`
 	Hidemem   bool `url:"hidemem,omitempty"`
-	Hideps    bool `url:"hideps,omitempty"`
 	Hideswap  bool `url:"hideswap,omitempty"`
 	Hidevg    bool `url:"hidevg,omitempty"`
 	Configcpu bool `url:"configcpu,omitempty"`
@@ -388,20 +387,15 @@ type Duration struct {
 }
 
 func (dur Duration) EncodeValues(key string, values *url.Values) error {
-	if s := dur.String(); s != "" {
-		(*values)[key] = []string{s}
+	if dur.D != dur.Default {
+		(*values)[key] = []string{dur.String()}
 	}
 	return nil
 }
 
 func (dur Duration) MarshalJSON() ([]byte, error) { return json.Marshal(dur.String()) }
 
-func (dur Duration) String() string {
-	if dur.D != dur.Default {
-		return flags.DurationString(dur.D)
-	}
-	return ""
-}
+func (dur Duration) String() string { return flags.DurationString(dur.D) }
 
 // ConvertDurationFunc creates a schema decoder's converter into Duration.
 func ConvertDurationFunc(minperiod flags.Period) func(string) reflect.Value {

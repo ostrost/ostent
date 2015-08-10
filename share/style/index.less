@@ -5,6 +5,9 @@
 
 @navbar-height: 40px;
 
+.panel-default > .panel-heading a { &:extend(a); }
+a.panel-title { &:extend(a); } // .panel-title has color: inherit
+
 .config-margintop { margin-top: (@line-height-computed / 2); }
 
 .padding-leftless { padding-left: 0; }
@@ -50,13 +53,19 @@
 }
 
 .nowrap { white-space: nowrap; }
-
-table th { // :not(.empty)
-    background-color: @panel-default-heading-bg;
+.nowrap-group {
+  white-space: nowrap;
+  .btn {
+    float: none;
+    display: inline-block;
+  }
 }
 
-// table thead th { font-weight: normal; }
-// table .bold    { font-weight: bold;   }
+table tr.panel-config, table th {
+    background-color: @panel-default-heading-bg;
+    font-weight: bold; // this is for .panel-config, th is bold anyway
+    td { vertical-align: middle; }
+}
 
 table thead tr .header a {
   color: black;

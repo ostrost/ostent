@@ -496,40 +496,73 @@ define(function(require) {
     >{$proc.Name}</td
   ></tr
 >); },
-		panelps:         function(Data, rows)  { return (<div
-  ><div
-    ><a     href={Data.Params.Toggle.Psn} onClick={this.handleClick} className="btn-block"
-      ><span  className={Data.Params.Psn >= 0 ? "h4" : "h4 bg-info"}
-        >Processes</span
-      ></a
-    ></div
-  ><div
-    ><div  className={Data.Params.Psn >= 0 ? "config-margintop collapse-hidden" : "config-margintop"} id="psconfig"
-      ><form  action={"/form/"+Data.Params} className="form-inline"
-        ><input className="hidden-submit" type="submit"
-        ></input
-      ><div className="btn-toolbar"
-        ><div className="btn-group btn-group-sm" role="group"
-          ><a href={Data.Params.Numbered.Psn.Zero.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Numbered.Psn.Zero.Class != null ? Data.Params.Numbered.Psn.Zero.Class : "")}
-  >{Data.Params.Numbered.Psn.Zero.Text}</a
-><a href={Data.Params.Numbered.Psn.Less.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Numbered.Psn.Less.Class != null ? Data.Params.Numbered.Psn.Less.Class : "")}
-  >{Data.Params.Numbered.Psn.Less.Text}</a
-><a href={Data.Params.Numbered.Psn.More.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Numbered.Psn.More.Class != null ? Data.Params.Numbered.Psn.More.Class : "")}
-  >{Data.Params.Numbered.Psn.More.Text}</a
-></div
-        ><div className="btn-group btn-group-sm" role="group"
+		panelps:         function(Data, rows)  { return (<div      className={(Data.Params.Psn != "!0" && Data.Params.Psn >= 0) ? "" : "panel panel-default"}
+  >  <div    className={(Data.Params.Psn != "!0" && Data.Params.Psn >= 0) ? "" : "panel-heading"}
+    >    <a    href={Data.Params.Toggle.Psn} onClick={this.handleClick} className="panel-title btn-block"
+      >      <b  className={(Data.Params.Psn != "!0" && Data.Params.Psn >= 0) ? "h4" : "h4 bg-info"}
+        >Processes</b
+      >    </a
+    >  </div
+  >  <table  className={(Data.Params.Psn != "!0" && Data.Params.Psn >= 0) ? "table collapse-hidden" : "table"} id="psconfig"
+    ><tr className="panel-config"
+      ><td className="col-md-2"
+        ><div className="nowrap text-right"
+          >Delay&nbsp;<span className="badge"
+            >{Data.Params.Psd}</span
+          ></div
+        ></td
+      ><td
+        ><div className="btn-group nowrap-group" role="group"
           ><a href={Data.Params.Delayed.Psd.Less.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Delayed.Psd.Less.Class != null ? Data.Params.Delayed.Psd.Less.Class : "")}
-  >{Data.Params.Delayed.Psd.Less.Text}</a
+  
+  ><span className="xlabel xlabel-default"
+    >-</span
+  > {Data.Params.Delayed.Psd.Less.Text}</a
 ><a href={Data.Params.Delayed.Psd.More.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Delayed.Psd.More.Class != null ? Data.Params.Delayed.Psd.More.Class : "")}
-  >{Data.Params.Delayed.Psd.More.Text}</a
+  
+  >{Data.Params.Delayed.Psd.More.Text} <span className="xlabel xlabel-default"
+    >+</span
+  ></a
 ></div
-        ></div
-      ></form
-    ></div
-  ></div
-><div
-  ><div  className={Data.Params.Hideps ? "collapse-hidden" : ""}
-    ><table className="table table-hover"
+        ></td
+      ><td className="col-md-10" colSpan="2"
+        ></td
+      ></tr
+    ><tr className="panel-config"
+      ><td className="col-md-2"
+        ><div className="nowrap text-right"
+          >Rows&nbsp;<span className="badge"
+            >{Data.Params.Psn == "!0" ? 0 : (Data.Params.Psn < 0 ? -Data.Params.Psn : Data.Params.Psn)}</span
+          ></div
+        ></td
+      ><td
+        ><div className="btn-group nowrap-group" role="group"
+          ><a href={Data.Params.Numbered.Psn.Less.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Numbered.Psn.Less.Class != null ? Data.Params.Numbered.Psn.Less.Class : "")}
+  
+  ><span className="xlabel xlabel-default"
+    >-</span
+  > {Data.Params.Numbered.Psn.Less.Text}</a
+><a href={Data.Params.Numbered.Psn.More.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Numbered.Psn.More.Class != null ? Data.Params.Numbered.Psn.More.Class : "")}
+  
+  >{Data.Params.Numbered.Psn.More.Text} <span className="xlabel xlabel-default"
+    >+</span
+  ></a
+></div
+        ></td
+      ><td
+        ><div className="btn-group nowrap-group" role="group"
+          ><a href={Data.Params.Numbered.Psn.Zero.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Numbered.Psn.Zero.Class != null ? Data.Params.Numbered.Psn.Zero.Class : "")}
+  
+  >{Data.Params.Numbered.Psn.Zero.Text} <span className="xlabel xlabel-default"
+    ></span
+  ></a
+></div
+        ></td
+      ><td className="col-md-10"
+        ></td
+      ></tr
+    >  </table
+  >  <table  className={(Data.Params.Psn == "!0" || Data.Params.Psn == 0) ? "collapse-hidden" : "table table-hover"}
   ><thead
     ><tr
       ><th className="header text-right"
@@ -600,8 +633,6 @@ define(function(require) {
   ><tbody
     >{rows}</tbody
   ></table
-></div
-  ></div
 ></div
 >); },
 

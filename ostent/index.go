@@ -72,7 +72,7 @@ func (procs MPSlice) Ordered(para *params.Params) *PStable {
 	pst.N = new(int)
 	*pst.N = para.Psn.Limit
 
-	if para.Hideps {
+	if para.Psn.Body == 0 {
 		return pst
 	}
 

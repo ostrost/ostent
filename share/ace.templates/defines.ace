@@ -392,51 +392,69 @@
 
 = content define_pstable
   {{$p := .Data.Params}}
-  table.table.table-hover
-    thead
-      tr
-        {{template "defines::headerenumlink" $p.Variate $p.Psk 1 "PID"     "text-right" }}{{/* PID  */}}
-        {{template "defines::headerenumlink" $p.Variate $p.Psk 8 "UID"     "text-right" }}{{/* UID  */}}
-        {{template "defines::headerenumlink" $p.Variate $p.Psk 9 "USER"    ""           }}{{/* USER */}}
-        {{template "defines::headerenumlink" $p.Variate $p.Psk 2 "PR"      "text-right" }}{{/* PRI  */}}
-        {{template "defines::headerenumlink" $p.Variate $p.Psk 3 "NI"      "text-right" }}{{/* NICE */}}
-        {{template "defines::headerenumlink" $p.Variate $p.Psk 4 "VIRT"    "text-right" }}{{/* VIRT */}}
-        {{template "defines::headerenumlink" $p.Variate $p.Psk 5 "RES"     "text-right" }}{{/* RES  */}}
-        {{template "defines::headerenumlink" $p.Variate $p.Psk 6 "TIME"    "text-center"}}{{/* TIME */}}
-        {{template "defines::headerenumlink" $p.Variate $p.Psk 7 "COMMAND" ""           }}{{/* NAME */}}
-    tbody
-      {{template "defines::define_psrows" .}}
+  | <table {{$p.AttrClassZero $p.Psn "collapse-hidden" "table table-hover"}}>
+  thead
+    tr
+      {{template "defines::headerenumlink" $p.Variate $p.Psk 1 "PID"     "text-right" }}
+      {{template "defines::headerenumlink" $p.Variate $p.Psk 8 "UID"     "text-right" }}
+      {{template "defines::headerenumlink" $p.Variate $p.Psk 9 "USER"    ""           }}
+      {{template "defines::headerenumlink" $p.Variate $p.Psk 2 "PR"      "text-right" }}{{/* PRI  */}}
+      {{template "defines::headerenumlink" $p.Variate $p.Psk 3 "NI"      "text-right" }}{{/* NICE */}}
+      {{template "defines::headerenumlink" $p.Variate $p.Psk 4 "VIRT"    "text-right" }}
+      {{template "defines::headerenumlink" $p.Variate $p.Psk 5 "RES"     "text-right" }}
+      {{template "defines::headerenumlink" $p.Variate $p.Psk 6 "TIME"    "text-center"}}
+      {{template "defines::headerenumlink" $p.Variate $p.Psk 7 "COMMAND" ""           }}{{/* NAME */}}
+  tbody
+    {{template "defines::define_psrows" .}}
+  | </table>
 
 = content define_panelps
   {{$p := .Data.Params}}
-  div
-    div
-      | <a    {{$p.AttrHrefToggleHead $p.Psn}} {{class}}="btn-block">
-      | <span {{$p.AttrClassP $p.Psn "h4" "h4 bg-info"}}>Processes</span></a>
+  |
+    <div     {{$p.AttrClassP $p.Psn "" "panel panel-default"}}>
+      <div   {{$p.AttrClassP $p.Psn "" "panel-heading"}}>
+        <a   {{$p.AttrHrefToggleHead $p.Psn}} {{class}}="panel-title btn-block">
+          <b {{$p.AttrClassP $p.Psn "h4" "h4 bg-info"}}>Processes</b>
+        </a>
+      </div>
+      <table {{$p.AttrClassP $p.Psn "table collapse-hidden" "table"}} id="psconfig">
+  tr.panel-config
+    td.col-md-2
+      div.nowrap.text-right
+        | Delay&nbsp;
+        span.badge {{$p.Psd}}
+    td
+      div.btn-group.nowrap-group role=group
+        {{template "defines::badgedlinkleft"  $p.LessD $p.Psd}}
+        {{template "defines::badgedlinkright" $p.MoreD $p.Psd}}
+    td.col-md-10 {{colspan}}=2
+  tr.panel-config
+    td.col-md-2
+      div.nowrap.text-right
+        | Rows&nbsp;
+        span.badge {{$p.Psn.Body}}
+    td
+      div.btn-group.nowrap-group role=group
+        {{template "defines::badgedlinkleft"  $p.LessN $p.Psn}}
+        {{template "defines::badgedlinkright" $p.MoreN $p.Psn}}
+    td
+      div.btn-group.nowrap-group role=group
+        / a.btn.btn-default 8 (default)
+        {{template "defines::badgedlinkright" $p.ZeroN $p.Psn}}
+    td.col-md-10
+  |
+      </table>
+      {{template "defines::define_pstable" .}}
+    </div>
 
-    div
-      | <div {{$p.AttrClassP $p.Psn "config-margintop collapse-hidden" "config-margintop"}} id="psconfig">
-      | <form {{$p.AttrActionForm}} {{class}}="form-inline">
-      input.hidden-submit type=submit
-
-      div.btn-toolbar
-        div.btn-group.btn-group-sm role=group
-          {{template "defines::numlink" $p.ZeroN $p.Psn}}
-          {{template "defines::numlink" $p.LessN $p.Psn}}
-          {{template "defines::numlink" $p.MoreN $p.Psn}}
-        div.btn-group.btn-group-sm role=group
-          {{template "defines::numlink" $p.LessD $p.Psd}}
-          {{template "defines::numlink" $p.MoreD $p.Psd}}
-      | </form>
-      | </div>
-
-    div
-      | <div {{$p.AttrClassN $p.Hideps "collapse-hidden" ""}}>
-        {{template "defines::define_pstable" .}}
-      | </div>
-
-= content numlink
-  | <a href={{.Href}} onClick={this.handleClick} {{class}}={{.Class "btn btn-default"}}>{{.Text}}</a>
+= content badgedlinkleft
+  |
+    <a href={{.Href}} onClick={this.handleClick} {{class}}={{.Class "btn btn-default"}}
+      ><span {{class}}="xlabel xlabel-default">{{.Badge}}</span> {{.Text}}</a>
+= content badgedlinkright
+  |
+    <a href={{.Href}} onClick={this.handleClick} {{class}}={{.Class "btn btn-default"}}
+      >{{.Text}} <span {{class}}="xlabel xlabel-default">{{.Badge}}</span></a>
 
 = content define_vgerror
   tr key="vgerror"

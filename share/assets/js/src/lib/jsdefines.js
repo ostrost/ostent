@@ -1258,225 +1258,311 @@ define(function (require) {
     panelps: function panelps(Data, rows) {
       return React.createElement(
         "div",
-        null,
+        { className: Data.Params.Psn != "!0" && Data.Params.Psn >= 0 ? "" : "panel panel-default"
+        },
+        "  ",
         React.createElement(
           "div",
-          null,
+          { className: Data.Params.Psn != "!0" && Data.Params.Psn >= 0 ? "" : "panel-heading"
+          },
+          "    ",
           React.createElement(
             "a",
-            { href: Data.Params.Toggle.Psn, onClick: this.handleClick, className: "btn-block"
+            { href: Data.Params.Toggle.Psn, onClick: this.handleClick, className: "panel-title btn-block"
             },
+            "      ",
             React.createElement(
-              "span",
-              { className: Data.Params.Psn >= 0 ? "h4" : "h4 bg-info"
+              "b",
+              { className: Data.Params.Psn != "!0" && Data.Params.Psn >= 0 ? "h4" : "h4 bg-info"
               },
               "Processes"
-            )
-          )
+            ),
+            "    "
+          ),
+          "  "
         ),
+        "  ",
         React.createElement(
-          "div",
-          null,
+          "table",
+          { className: Data.Params.Psn != "!0" && Data.Params.Psn >= 0 ? "table collapse-hidden" : "table", id: "psconfig"
+          },
           React.createElement(
-            "div",
-            { className: Data.Params.Psn >= 0 ? "config-margintop collapse-hidden" : "config-margintop", id: "psconfig"
+            "tr",
+            { className: "panel-config"
             },
             React.createElement(
-              "form",
-              { action: "/form/" + Data.Params, className: "form-inline"
+              "td",
+              { className: "col-md-2"
               },
-              React.createElement("input", { className: "hidden-submit", type: "submit"
-              }),
               React.createElement(
                 "div",
-                { className: "btn-toolbar"
+                { className: "nowrap text-right"
+                },
+                "Delay ",
+                React.createElement(
+                  "span",
+                  { className: "badge"
+                  },
+                  Data.Params.Psd
+                )
+              )
+            ),
+            React.createElement(
+              "td",
+              null,
+              React.createElement(
+                "div",
+                { className: "btn-group nowrap-group", role: "group"
                 },
                 React.createElement(
-                  "div",
-                  { className: "btn-group btn-group-sm", role: "group"
+                  "a",
+                  { href: Data.Params.Delayed.Psd.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Delayed.Psd.Less.Class != null ? Data.Params.Delayed.Psd.Less.Class : "")
+
                   },
                   React.createElement(
-                    "a",
-                    { href: Data.Params.Numbered.Psn.Zero.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Numbered.Psn.Zero.Class != null ? Data.Params.Numbered.Psn.Zero.Class : "")
+                    "span",
+                    { className: "xlabel xlabel-default"
                     },
-                    Data.Params.Numbered.Psn.Zero.Text
+                    "-"
                   ),
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Numbered.Psn.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Numbered.Psn.Less.Class != null ? Data.Params.Numbered.Psn.Less.Class : "")
-                    },
-                    Data.Params.Numbered.Psn.Less.Text
-                  ),
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Numbered.Psn.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Numbered.Psn.More.Class != null ? Data.Params.Numbered.Psn.More.Class : "")
-                    },
-                    Data.Params.Numbered.Psn.More.Text
-                  )
+                  " ",
+                  Data.Params.Delayed.Psd.Less.Text
                 ),
                 React.createElement(
-                  "div",
-                  { className: "btn-group btn-group-sm", role: "group"
+                  "a",
+                  { href: Data.Params.Delayed.Psd.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Delayed.Psd.More.Class != null ? Data.Params.Delayed.Psd.More.Class : "")
+
                   },
+                  Data.Params.Delayed.Psd.More.Text,
+                  " ",
                   React.createElement(
-                    "a",
-                    { href: Data.Params.Delayed.Psd.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Delayed.Psd.Less.Class != null ? Data.Params.Delayed.Psd.Less.Class : "")
+                    "span",
+                    { className: "xlabel xlabel-default"
                     },
-                    Data.Params.Delayed.Psd.Less.Text
-                  ),
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Delayed.Psd.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Delayed.Psd.More.Class != null ? Data.Params.Delayed.Psd.More.Class : "")
-                    },
-                    Data.Params.Delayed.Psd.More.Text
+                    "+"
                   )
                 )
               )
-            )
-          )
-        ),
-        React.createElement(
-          "div",
-          null,
+            ),
+            React.createElement("td", { className: "col-md-10", colSpan: "2"
+            })
+          ),
           React.createElement(
-            "div",
-            { className: Data.Params.Hideps ? "collapse-hidden" : ""
+            "tr",
+            { className: "panel-config"
             },
             React.createElement(
-              "table",
-              { className: "table table-hover"
+              "td",
+              { className: "col-md-2"
               },
               React.createElement(
-                "thead",
-                null,
+                "div",
+                { className: "nowrap text-right"
+                },
+                "Rows ",
                 React.createElement(
-                  "tr",
-                  null,
+                  "span",
+                  { className: "badge"
+                  },
+                  Data.Params.Psn == "!0" ? 0 : Data.Params.Psn < 0 ? -Data.Params.Psn : Data.Params.Psn
+                )
+              )
+            ),
+            React.createElement(
+              "td",
+              null,
+              React.createElement(
+                "div",
+                { className: "btn-group nowrap-group", role: "group"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Numbered.Psn.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Numbered.Psn.Less.Class != null ? Data.Params.Numbered.Psn.Less.Class : "")
+
+                  },
                   React.createElement(
-                    "th",
-                    { className: "header text-right"
+                    "span",
+                    { className: "xlabel xlabel-default"
                     },
-                    React.createElement(
-                      "a",
-                      { href: Data.Params.Variations.Psk[1 - 1].LinkHref, className: Data.Params.Variations.Psk[1 - 1].LinkClass
-                      },
-                      "PID",
-                      React.createElement("span", { className: Data.Params.Variations.Psk[1 - 1].CaretClass
-                      })
-                    )
+                    "-"
                   ),
+                  " ",
+                  Data.Params.Numbered.Psn.Less.Text
+                ),
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Numbered.Psn.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Numbered.Psn.More.Class != null ? Data.Params.Numbered.Psn.More.Class : "")
+
+                  },
+                  Data.Params.Numbered.Psn.More.Text,
+                  " ",
                   React.createElement(
-                    "th",
-                    { className: "header text-right"
+                    "span",
+                    { className: "xlabel xlabel-default"
                     },
-                    React.createElement(
-                      "a",
-                      { href: Data.Params.Variations.Psk[8 - 1].LinkHref, className: Data.Params.Variations.Psk[8 - 1].LinkClass
-                      },
-                      "UID",
-                      React.createElement("span", { className: Data.Params.Variations.Psk[8 - 1].CaretClass
-                      })
-                    )
-                  ),
-                  React.createElement(
-                    "th",
-                    { className: "header "
-                    },
-                    React.createElement(
-                      "a",
-                      { href: Data.Params.Variations.Psk[9 - 1].LinkHref, className: Data.Params.Variations.Psk[9 - 1].LinkClass
-                      },
-                      "USER",
-                      React.createElement("span", { className: Data.Params.Variations.Psk[9 - 1].CaretClass
-                      })
-                    )
-                  ),
-                  React.createElement(
-                    "th",
-                    { className: "header text-right"
-                    },
-                    React.createElement(
-                      "a",
-                      { href: Data.Params.Variations.Psk[2 - 1].LinkHref, className: Data.Params.Variations.Psk[2 - 1].LinkClass
-                      },
-                      "PR",
-                      React.createElement("span", { className: Data.Params.Variations.Psk[2 - 1].CaretClass
-                      })
-                    )
-                  ),
-                  React.createElement(
-                    "th",
-                    { className: "header text-right"
-                    },
-                    React.createElement(
-                      "a",
-                      { href: Data.Params.Variations.Psk[3 - 1].LinkHref, className: Data.Params.Variations.Psk[3 - 1].LinkClass
-                      },
-                      "NI",
-                      React.createElement("span", { className: Data.Params.Variations.Psk[3 - 1].CaretClass
-                      })
-                    )
-                  ),
-                  React.createElement(
-                    "th",
-                    { className: "header text-right"
-                    },
-                    React.createElement(
-                      "a",
-                      { href: Data.Params.Variations.Psk[4 - 1].LinkHref, className: Data.Params.Variations.Psk[4 - 1].LinkClass
-                      },
-                      "VIRT",
-                      React.createElement("span", { className: Data.Params.Variations.Psk[4 - 1].CaretClass
-                      })
-                    )
-                  ),
-                  React.createElement(
-                    "th",
-                    { className: "header text-right"
-                    },
-                    React.createElement(
-                      "a",
-                      { href: Data.Params.Variations.Psk[5 - 1].LinkHref, className: Data.Params.Variations.Psk[5 - 1].LinkClass
-                      },
-                      "RES",
-                      React.createElement("span", { className: Data.Params.Variations.Psk[5 - 1].CaretClass
-                      })
-                    )
-                  ),
-                  React.createElement(
-                    "th",
-                    { className: "header text-center"
-                    },
-                    React.createElement(
-                      "a",
-                      { href: Data.Params.Variations.Psk[6 - 1].LinkHref, className: Data.Params.Variations.Psk[6 - 1].LinkClass
-                      },
-                      "TIME",
-                      React.createElement("span", { className: Data.Params.Variations.Psk[6 - 1].CaretClass
-                      })
-                    )
-                  ),
-                  React.createElement(
-                    "th",
-                    { className: "header "
-                    },
-                    React.createElement(
-                      "a",
-                      { href: Data.Params.Variations.Psk[7 - 1].LinkHref, className: Data.Params.Variations.Psk[7 - 1].LinkClass
-                      },
-                      "COMMAND",
-                      React.createElement("span", { className: Data.Params.Variations.Psk[7 - 1].CaretClass
-                      })
-                    )
+                    "+"
                   )
+                )
+              )
+            ),
+            React.createElement(
+              "td",
+              null,
+              React.createElement(
+                "div",
+                { className: "btn-group nowrap-group", role: "group"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Numbered.Psn.Zero.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Numbered.Psn.Zero.Class != null ? Data.Params.Numbered.Psn.Zero.Class : "")
+
+                  },
+                  Data.Params.Numbered.Psn.Zero.Text,
+                  " ",
+                  React.createElement("span", { className: "xlabel xlabel-default"
+                  })
+                )
+              )
+            ),
+            React.createElement("td", { className: "col-md-10"
+            })
+          ),
+          "  "
+        ),
+        "  ",
+        React.createElement(
+          "table",
+          { className: Data.Params.Psn == "!0" || Data.Params.Psn == 0 ? "collapse-hidden" : "table table-hover"
+          },
+          React.createElement(
+            "thead",
+            null,
+            React.createElement(
+              "tr",
+              null,
+              React.createElement(
+                "th",
+                { className: "header text-right"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Variations.Psk[1 - 1].LinkHref, className: Data.Params.Variations.Psk[1 - 1].LinkClass
+                  },
+                  "PID",
+                  React.createElement("span", { className: Data.Params.Variations.Psk[1 - 1].CaretClass
+                  })
                 )
               ),
               React.createElement(
-                "tbody",
-                null,
-                rows
+                "th",
+                { className: "header text-right"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Variations.Psk[8 - 1].LinkHref, className: Data.Params.Variations.Psk[8 - 1].LinkClass
+                  },
+                  "UID",
+                  React.createElement("span", { className: Data.Params.Variations.Psk[8 - 1].CaretClass
+                  })
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "header "
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Variations.Psk[9 - 1].LinkHref, className: Data.Params.Variations.Psk[9 - 1].LinkClass
+                  },
+                  "USER",
+                  React.createElement("span", { className: Data.Params.Variations.Psk[9 - 1].CaretClass
+                  })
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "header text-right"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Variations.Psk[2 - 1].LinkHref, className: Data.Params.Variations.Psk[2 - 1].LinkClass
+                  },
+                  "PR",
+                  React.createElement("span", { className: Data.Params.Variations.Psk[2 - 1].CaretClass
+                  })
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "header text-right"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Variations.Psk[3 - 1].LinkHref, className: Data.Params.Variations.Psk[3 - 1].LinkClass
+                  },
+                  "NI",
+                  React.createElement("span", { className: Data.Params.Variations.Psk[3 - 1].CaretClass
+                  })
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "header text-right"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Variations.Psk[4 - 1].LinkHref, className: Data.Params.Variations.Psk[4 - 1].LinkClass
+                  },
+                  "VIRT",
+                  React.createElement("span", { className: Data.Params.Variations.Psk[4 - 1].CaretClass
+                  })
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "header text-right"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Variations.Psk[5 - 1].LinkHref, className: Data.Params.Variations.Psk[5 - 1].LinkClass
+                  },
+                  "RES",
+                  React.createElement("span", { className: Data.Params.Variations.Psk[5 - 1].CaretClass
+                  })
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "header text-center"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Variations.Psk[6 - 1].LinkHref, className: Data.Params.Variations.Psk[6 - 1].LinkClass
+                  },
+                  "TIME",
+                  React.createElement("span", { className: Data.Params.Variations.Psk[6 - 1].CaretClass
+                  })
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "header "
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Variations.Psk[7 - 1].LinkHref, className: Data.Params.Variations.Psk[7 - 1].LinkClass
+                  },
+                  "COMMAND",
+                  React.createElement("span", { className: Data.Params.Variations.Psk[7 - 1].CaretClass
+                  })
+                )
               )
             )
+          ),
+          React.createElement(
+            "tbody",
+            null,
+            rows
           )
         )
       );

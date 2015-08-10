@@ -259,7 +259,13 @@ func (d Dotted) Leave(name string) *Dotted {
 // Nota is a type of encoded jsx notations for template transplitting.
 type Nota map[string]interface{}
 
-func (n Nota) String() string { return n["."].(string) }
+func (n Nota) String() string {
+	v := n["."]
+	if s, ok := v.(string); ok {
+		return s
+	}
+	return string(v.(Curled))
+}
 
 func (d *Dotted) Notation() (string, string, string) {
 	if d == nil || d.Name == "" {
@@ -275,8 +281,14 @@ func CurlyX(parent, key, full string) interface{} {
 	return Curly(parent, key, full)
 }
 
-func Curly(parent, key, full string) string {
-	return Curl(full)
+type Curled string
+
+func (c Curled) Uncurl() string {
+	return strings.TrimSuffix(strings.TrimPrefix(string(c), "{"), "}")
+}
+
+func Curly(parent, key, full string) Curled {
+	return Curled(Curl(full))
 }
 
 func Curl(s string) string {

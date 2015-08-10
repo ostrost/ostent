@@ -42,7 +42,9 @@ audio:not([controls]) {
 template {
   display: none;
 }
-a {
+a,
+.panel-default > .panel-heading a,
+a.panel-title {
   background-color: transparent;
 }
 a:active,
@@ -192,7 +194,9 @@ th {
     text-shadow: none !important;
   }
   a,
-  a:visited {
+  a:visited,
+  .panel-default > .panel-heading a,
+  a.panel-title {
     text-decoration: underline;
   }
   a[href]:after {
@@ -1085,7 +1089,9 @@ textarea {
   font-size: inherit;
   line-height: inherit;
 }
-a {
+a,
+.panel-default > .panel-heading a,
+a.panel-title {
   color: #337ab7;
   text-decoration: none;
 }
@@ -7434,8 +7440,21 @@ fieldset[disabled] .btn-danger.active {
 .nowrap {
   white-space: nowrap;
 }
+.nowrap-group {
+  white-space: nowrap;
+}
+.nowrap-group .btn {
+  float: none;
+  display: inline-block;
+}
+table tr.panel-config,
 table th {
   background-color: #f5f5f5;
+  font-weight: bold;
+}
+table tr.panel-config td,
+table th td {
+  vertical-align: middle;
 }
 table thead tr .header a {
   color: black;
