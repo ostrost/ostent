@@ -503,7 +503,7 @@ define(function(require) {
         >Processes</b
       >    </a
     >  </div
-  >  <table  className={(Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-") ? "table collapse-hidden" : "table"} id="psconfig"
+  >  <table  className={(Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-") ? "table collapse-hidden" : "table"}
     ><tr className="panel-config"
       ><td className="col-md-2"
         ><div className="nowrap text-right"

@@ -408,40 +408,56 @@
     {{template "defines::define_psrows" .}}
   | </table>
 
-= content define_panelps
-  {{$p := .Data.Params}}
+[[define "startpanel"]]
+[[$N     := (index . 0)]]
+[[$title := (index . 1)]]
   |
-    <div     {{$p.AttrClassP $p.Psn "" "panel panel-default"}}>
-      <div   {{$p.AttrClassP $p.Psn "" "panel-heading"}}>
-        <a   {{$p.AttrHrefToggleHead $p.Psn}} {{class}}="panel-title btn-block">
-          <b {{$p.AttrClassP $p.Psn "h4" "h4 bg-info"}}>Processes</b>
+    <div     {{$p.AttrClassP [[$N]] "" "panel panel-default"}}>
+      <div   {{$p.AttrClassP [[$N]] "" "panel-heading"}}>
+        <a   {{$p.AttrHrefToggleHead [[$N]]}} {{class}}="panel-title btn-block">
+          <b {{$p.AttrClassP [[$N]] "h4" "h4 bg-info"}}>[[$title]]</b>
         </a>
       </div>
-      <table {{$p.AttrClassP $p.Psn "table collapse-hidden" "table"}} id="psconfig">
+      <table {{$p.AttrClassP [[$N]] "table collapse-hidden" "table"}}>
+[[end]]
+
+[[define "configrow_delay"]]
+[[$D := .]]
   tr.panel-config
     td.col-md-2
       div.nowrap.text-right
         | Delay&nbsp;
-        span.badge {{$p.Psd}}
+        span.badge {{[[$D]]}}
     td
       div.btn-group.nowrap-group role=group
-        {{template "defines::badgedlinkleft"  $p.LessD $p.Psd}}
-        {{template "defines::badgedlinkright" $p.MoreD $p.Psd}}
+        {{template "defines::badgedlinkleft"  $p.LessD [[$D]]}}
+        {{template "defines::badgedlinkright" $p.MoreD [[$D]]}}
     td.col-md-10 {{colspan}}=2
+[[end]]
+
+[[define "configrow_rows"]]
+[[$N := .]]
   tr.panel-config
     td.col-md-2
       div.nowrap.text-right
         | Rows&nbsp;
-        span.badge {{$p.Psn.Body}}
+        span.badge {{[[$N]].Body}}
     td
       div.btn-group.nowrap-group role=group
-        {{template "defines::badgedlinkleft"  $p.LessN $p.Psn}}
-        {{template "defines::badgedlinkright" $p.MoreN $p.Psn}}
+        {{template "defines::badgedlinkleft"  $p.LessN [[$N]]}}
+        {{template "defines::badgedlinkright" $p.MoreN [[$N]]}}
     td
       div.btn-group.nowrap-group role=group
         / a.btn.btn-default 8 (default)
-        {{template "defines::badgedlinkright" $p.ZeroN $p.Psn}}
+        {{template "defines::badgedlinkright" $p.ZeroN [[$N]]}}
     td.col-md-10
+[[end]]
+
+= content define_panelps
+  {{$p := .Data.Params}}
+  [[template "startpanel" Chain `$p.Psn` "Processes"]]
+  [[template "configrow_delay"  `$p.Psd`]]
+  [[template "configrow_rows"   `$p.Psn`]]
   |
       </table>
       {{template "defines::define_pstable" .}}

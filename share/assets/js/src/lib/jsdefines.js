@@ -1284,7 +1284,7 @@ define(function (require) {
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-" ? "table collapse-hidden" : "table", id: "psconfig"
+          { className: Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-" ? "table collapse-hidden" : "table"
           },
           React.createElement(
             "tr",

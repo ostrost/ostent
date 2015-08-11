@@ -66,9 +66,23 @@ func main() {
 			os.Exit(1)
 		}
 	}
+	dtmpl, err := templatetext.New(filepath.Base(definesFile)).Delims("[[", "]]").
+		Funcs(templatetext.FuncMap{
+		"Chain": func(args ...interface{}) []interface{} { return args },
+	}).
+		ParseFiles(definesFile)
+	check(err)
+	dbuf := new(bytes.Buffer)
+	check(dtmpl.Execute(dbuf, nil))
+
 	aceopts := ace.InitializeOptions(&ace.Options{FuncMap: templatefunc.Funcs})
+	definesAce, err := NewAceFile(definesFile, dbuf.Bytes(), aceopts)
+	check(err)
+
 	if !jsdefinesMode {
-		_, index, err := LoadAce(inputFile, definesFile, aceopts)
+		indexAce, err := NewAceFile(inputFile, nil, aceopts)
+		check(err)
+		index, err := LoadAce(indexAce, &definesAce, Base(definesFile, aceopts), aceopts)
 		check(err)
 		text := Format(prettyprint, index.Tree.Root.String(), aceopts.NoCloseTagNames)
 		text += FormatSubtrees(prettyprint, index, aceopts.NoCloseTagNames)
@@ -81,7 +95,7 @@ func main() {
 	aceopts.AttributeNameClass = "className"
 	aceopts.FuncMap = templatefunc.JSXFuncs{}.MakeMap()
 
-	definesbase, defines, err := LoadAce(definesFile, "", aceopts)
+	defines, err := LoadAce(definesAce, nil, "", aceopts)
 	check(err)
 
 	if definesMode {
@@ -99,7 +113,7 @@ func main() {
 	check(err)
 
 	for _, t := range defines.Templates() {
-		name, tree := definesbase+t.Name(), t.Tree
+		name, tree := definesAce.Basename+t.Name(), t.Tree
 		if prettyprint {
 			text := Format(true, tree.Root.String(), noclose)
 			y, err := templatetext.New(name).Funcs(templatetext.FuncMap(aceopts.FuncMap)).Parse(text)
@@ -126,23 +140,31 @@ func Curly(parent, key, full string) interface{} {
 }
 
 // LoadAce is ace.Load without dealing with includes and setting Base'd names for the templates.
-func LoadAce(basename, innername string, opts *ace.Options) (string, *templatehtml.Template, error) {
-	base, err := ReadAce(basename, opts)
-	if err != nil {
-		return "", nil, err
+func LoadAce(base AceFile, inner *AceFile, innername string, opts *ace.Options) (*templatehtml.Template, error) {
+	/*
+		func LoadAce(basename, innername string, ..) {
+		base, err := NewAceFile(basename, nil, opts)
+		if err != nil {
+			return nil, err
+		}
+		inner, err := NewAceFile(innername, nil, opts)
+		if err != nil {
+			return nil, err
+		}
+	*/
+	if inner == nil {
+		in, err := NewAceFile(innername, nil, opts)
+		if err != nil {
+			return nil, err
+		}
+		inner = &in
 	}
-	inner, err := ReadAce(innername, opts)
-	if err != nil {
-		return "", nil, err
-	}
-	src := ace.NewSource(base, inner, nil)
+	src := ace.NewSource(base.File, inner.File, nil)
 	res, err := ace.ParseSource(src, opts)
 	if err != nil {
-		return "", nil, err
+		return nil, err
 	}
-	basebase := Base(basename, opts)
-	template, err := ace.CompileResult(basebase, res, opts)
-	return basebase, template, err
+	return ace.CompileResult(base.Basename, res, opts)
 }
 
 // Base returns filepath.Base'd filename sans extension if it matches opts.Extension.
@@ -157,17 +179,26 @@ func Base(filename string, opts *ace.Options) string {
 	return n
 }
 
-// ReadAce reads file and returns *ace.File Base-named.
-func ReadAce(filename string, opts *ace.Options) (*ace.File, error) {
-	var data []byte
-	if filename != "" {
+// NewAce returns *ace.File: may read filename if content is nil.
+// Ace will know the file by base name.
+func NewAceFile(filename string, content []byte, opts *ace.Options) (AceFile, error) {
+	if content == nil && filename != "" {
 		var err error
-		data, err = ioutil.ReadFile(filename)
+		content, err = ioutil.ReadFile(filename)
 		if err != nil {
-			return nil, err
+			return AceFile{}, err
 		}
 	}
-	return ace.NewFile(Base(filename, opts), data), nil
+	base := Base(filename, opts)
+	return AceFile{
+		File:     ace.NewFile(base, content),
+		Basename: base,
+	}, nil
+}
+
+type AceFile struct {
+	*ace.File
+	Basename string
 }
 
 // FormatSubtrees returns subtemplates trees forrmatted.
