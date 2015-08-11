@@ -1258,12 +1258,12 @@ define(function (require) {
     panelps: function panelps(Data, rows) {
       return React.createElement(
         "div",
-        { className: Data.Params.Psn != "!0" && Data.Params.Psn >= 0 ? "" : "panel panel-default"
+        { className: Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-" ? "" : "panel panel-default"
         },
         "  ",
         React.createElement(
           "div",
-          { className: Data.Params.Psn != "!0" && Data.Params.Psn >= 0 ? "" : "panel-heading"
+          { className: Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-" ? "" : "panel-heading"
           },
           "    ",
           React.createElement(
@@ -1273,7 +1273,7 @@ define(function (require) {
             "      ",
             React.createElement(
               "b",
-              { className: Data.Params.Psn != "!0" && Data.Params.Psn >= 0 ? "h4" : "h4 bg-info"
+              { className: Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-" ? "h4" : "h4 bg-info"
               },
               "Processes"
             ),
@@ -1284,7 +1284,7 @@ define(function (require) {
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.Psn != "!0" && Data.Params.Psn >= 0 ? "table collapse-hidden" : "table", id: "psconfig"
+          { className: Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-" ? "table collapse-hidden" : "table", id: "psconfig"
           },
           React.createElement(
             "tr",
@@ -1364,7 +1364,7 @@ define(function (require) {
                   "span",
                   { className: "badge"
                   },
-                  Data.Params.Psn == "!0" ? 0 : Data.Params.Psn < 0 ? -Data.Params.Psn : Data.Params.Psn
+                  Data.Params.Psn == "!0" ? "0" : Data.Params.Psn.replace(/^-/, "")
                 )
               )
             ),
@@ -1432,7 +1432,7 @@ define(function (require) {
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.Psn == "!0" || Data.Params.Psn == 0 ? "collapse-hidden" : "table table-hover"
+          { className: Data.Params.Psn == "!0" || Data.Params.Psn == "0" ? "collapse-hidden" : "table table-hover"
           },
           React.createElement(
             "thead",

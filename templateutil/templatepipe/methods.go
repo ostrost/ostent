@@ -30,18 +30,18 @@ func (n Nota) AttrKey(prefix string) template.HTMLAttr {
 
 func (_ Nota) AttrClassP(v Uncurler, fstclass, sndclass string) template.HTMLAttr {
 	s := v.Uncurl()
-	return SprintfAttr(" className={(%s != \"!0\" && %s >= 0) ? %q : %q}",
+	return SprintfAttr(` className={(%s != "!0" && %s.substr(0, 1) != "-") ? %q : %q}`,
 		s, s, fstclass, sndclass)
 }
 
 func (n Nota) Body() string {
 	s := n.Uncurl()
-	return fmt.Sprintf("{%s == \"!0\" ? 0 : (%s < 0 ? -%s : %s)}", s, s, s, s)
+	return fmt.Sprintf(`{%s == "!0" ? "0" : %s.replace(/^-/, "")}`, s, s)
 }
 
 func (_ Nota) AttrClassZero(v Uncurler, fstclass, sndclass string) template.HTMLAttr {
 	s := v.Uncurl()
-	return SprintfAttr(" className={(%s == \"!0\" || %s == 0) ? %q : %q}",
+	return SprintfAttr(` className={(%s == "!0" || %s == "0") ? %q : %q}`,
 		s, s, fstclass, sndclass)
 }
 

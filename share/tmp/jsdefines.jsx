@@ -496,14 +496,14 @@ define(function(require) {
     >{$proc.Name}</td
   ></tr
 >); },
-		panelps:         function(Data, rows)  { return (<div      className={(Data.Params.Psn != "!0" && Data.Params.Psn >= 0) ? "" : "panel panel-default"}
-  >  <div    className={(Data.Params.Psn != "!0" && Data.Params.Psn >= 0) ? "" : "panel-heading"}
+		panelps:         function(Data, rows)  { return (<div      className={(Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-") ? "" : "panel panel-default"}
+  >  <div    className={(Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-") ? "" : "panel-heading"}
     >    <a    href={Data.Params.Toggle.Psn} onClick={this.handleClick} className="panel-title btn-block"
-      >      <b  className={(Data.Params.Psn != "!0" && Data.Params.Psn >= 0) ? "h4" : "h4 bg-info"}
+      >      <b  className={(Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-") ? "h4" : "h4 bg-info"}
         >Processes</b
       >    </a
     >  </div
-  >  <table  className={(Data.Params.Psn != "!0" && Data.Params.Psn >= 0) ? "table collapse-hidden" : "table"} id="psconfig"
+  >  <table  className={(Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-") ? "table collapse-hidden" : "table"} id="psconfig"
     ><tr className="panel-config"
       ><td className="col-md-2"
         ><div className="nowrap text-right"
@@ -532,7 +532,7 @@ define(function(require) {
       ><td className="col-md-2"
         ><div className="nowrap text-right"
           >Rows&nbsp;<span className="badge"
-            >{Data.Params.Psn == "!0" ? 0 : (Data.Params.Psn < 0 ? -Data.Params.Psn : Data.Params.Psn)}</span
+            >{Data.Params.Psn == "!0" ? "0" : Data.Params.Psn.replace(/^-/, "")}</span
           ></div
         ></td
       ><td
@@ -562,7 +562,7 @@ define(function(require) {
         ></td
       ></tr
     >  </table
-  >  <table  className={(Data.Params.Psn == "!0" || Data.Params.Psn == 0) ? "collapse-hidden" : "table table-hover"}
+  >  <table  className={(Data.Params.Psn == "!0" || Data.Params.Psn == "0") ? "collapse-hidden" : "table table-hover"}
   ><thead
     ><tr
       ><th className="header text-right"

@@ -21,11 +21,11 @@ func SprintfAttr(format string, args ...interface{}) template.HTMLAttr {
 
 // AttrActionForm is for template.
 func (p Params) AttrActionForm() (interface{}, error) {
-	s, err := p.Encode()
+	qs, err := p.Encode()
 	if err != nil {
 		return nil, err
 	}
-	return SprintfAttr(" action=\"/form/%s\"", url.QueryEscape(s)), nil
+	return SprintfAttr(" action=\"/form/%s\"", url.QueryEscape(qs)), nil
 }
 
 func (p Params) AttrClassP(num *Num, fstclass, sndclass string) template.HTMLAttr {
@@ -70,9 +70,9 @@ func (p Params) AttrClassT(num Num, cmp int, fstclass, sndclass string) template
 // p is a pointer to flip (twice) the b.
 func (p *Params) HrefToggle(b *bool) (string, error) {
 	*b = !*b
-	s, err := p.Encode()
+	qs, err := p.Encode()
 	*b = !*b
-	return "?" + s, err
+	return "?" + qs, err
 }
 
 func (p *Params) HrefToggleHead(num *Num) (string, error) {
