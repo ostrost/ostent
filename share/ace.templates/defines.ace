@@ -52,111 +52,84 @@
   {{end}}
 
 = content define_ifbytes_table
-  table.table.table-hover
-    thead
-      tr
-        th Interface
-        th.text-right.nowrap title="BITS per second" In
-          span.unit
-            i b
-            | ps
-        th.text-right.nowrap title="BITS per second" Out
-          span.unit
-            i b
-            | ps
-        th.text-right.nowrap title="total BYTES modulo 4G" In
-          span.unit
-            i B
-            | %4G
-        th.text-right.nowrap title="total BYTES modulo 4G" Out
-          span.unit
-            i B
-            | %4G
-    tbody
-      {{template "defines::define_ifbytes_rows" .}}
+  {{$p := .Data.Params}}
+  | <table {{$p.AttrClassTab $p.Ifn $p.Ift 3 "table table-hover" "collapse-hidden"}}>{{/* 3 is IFBYTES */}}
+  thead
+    tr
+      th Interface
+      th.text-right.nowrap title="BITS per second" In
+        span.unit
+          i b
+          | ps
+      th.text-right.nowrap title="BITS per second" Out
+        span.unit
+          i b
+          | ps
+      th.text-right.nowrap title="total BYTES modulo 4G" In
+        span.unit
+          i B
+          | %4G
+      th.text-right.nowrap title="total BYTES modulo 4G" Out
+        span.unit
+          i B
+          | %4G
+  tbody
+    {{template "defines::define_ifbytes_rows" .}}
+  | </table>
 
 = content define_ifpackets_table
-  table.table.table-hover
-    thead
-      tr
-        th Interface
-        th.text-right.nowrap title="per second" In&nbsp;
-          span.unit ps
-        th.text-right.nowrap title="per second" Out&nbsp;
-          span.unit ps
-        th.text-right.nowrap title="total modulo 4G" In&nbsp;
-          span.unit %4G
-        th.text-right.nowrap title="total modulo 4G" Out&nbsp;
-          span.unit %4G
-    tbody
-      {{template "defines::define_ifpackets_rows" .}}
+  {{$p := .Data.Params}}
+  | <table {{$p.AttrClassTab $p.Ifn $p.Ift 1 "table table-hover" "collapse-hidden"}}>{{/* 1 is PACKETS */}}
+  thead
+    tr
+      th Interface
+      th.text-right.nowrap title="per second" In&nbsp;
+        span.unit ps
+      th.text-right.nowrap title="per second" Out&nbsp;
+        span.unit ps
+      th.text-right.nowrap title="total modulo 4G" In&nbsp;
+        span.unit %4G
+      th.text-right.nowrap title="total modulo 4G" Out&nbsp;
+        span.unit %4G
+  tbody
+    {{template "defines::define_ifpackets_rows" .}}
+  | </table>
 
 = content define_iferrors_table
-  table.table.table-hover
-    thead
-      tr
-        th Interface
-        th.text-right.nowrap title="per second" In&nbsp;
-          span.unit ps
-        th.text-right.nowrap title="per second" Out&nbsp;
-          span.unit ps
-        th.text-right.nowrap title="modulo 4G" In&nbsp;
-          span.unit %4G
-        th.text-right.nowrap title="modulo 4G" Out&nbsp;
-          span.unit %4G
-    tbody
-      {{template "defines::define_iferrors_rows" .}}
+  {{$p := .Data.Params}}
+  | <table {{$p.AttrClassTab $p.Ifn $p.Ift 2 "table table-hover" "collapse-hidden"}}>{{/* 2 is ERRORS */}}
+  thead
+    tr
+      th Interface
+      th.text-right.nowrap title="per second" In&nbsp;
+        span.unit ps
+      th.text-right.nowrap title="per second" Out&nbsp;
+        span.unit ps
+      th.text-right.nowrap title="modulo 4G" In&nbsp;
+        span.unit %4G
+      th.text-right.nowrap title="modulo 4G" Out&nbsp;
+        span.unit %4G
+  tbody
+    {{template "defines::define_iferrors_rows" .}}
+  | </table>
 
 = content define_panelif
   {{$p := .Data.Params}}
-  div
-    div
-      |
-        <a      {{$p.AttrHrefToggle $p.Configif}} {{class}}="btn-block">
-          <span {{$p.AttrClassN $p.Configif "h4 bg-info" "h4"}}>Interfaces</span>
-        </a>
-
-    div
-      | <div {{$p.AttrClassN $p.Configif "config-margintop" "config-margintop collapse-hidden"}} id="ifconfig">
-      | <form {{$p.AttrActionForm}} {{class}}="form-inline">
-      input.hidden-submit type=submit
-
-      div.btn-toolbar
-        div.btn-group.btn-group-sm role=group
-          |
-            <a {{$p.AttrClassN $p.Hideif "btn btn-default active" "btn btn-default"}}
-               {{$p.AttrHrefToggle $p.Hideif}}>Hidden</a>
-            <a {{$p.AttrClassN .Data.ExpandableIF "btn btn-default" "btn btn-default disabled"}}
-               {{$p.AttrHrefToggle $p.Expandif}}>{{.Data.ExpandtextIF}}</a>
-        div.btn-group.btn-group-sm role=group
-          {{template "defines::define_refresh" (Chain .Data "Refreshif")}}
-      | </form>
-
-      ul.nav.nav-tabs.config-margintop
-        / PACKETS
-        | <li {{$p.AttrClassT $p.Ift 1 "active" ""}}>
-        {{template "defines::enumlink" $p.Variate $p.Ift 1 "Packets" ""}}
-        / ERRORS
-        | </li><li {{$p.AttrClassT $p.Ift 2 "active" ""}}>
-        {{template "defines::enumlink" $p.Variate $p.Ift 2 "Errors" ""}}
-        / IFBYTES
-        | </li><li {{$p.AttrClassT $p.Ift 3 "active" ""}}>
-        {{template "defines::enumlink" $p.Variate $p.Ift 3 "Bytes" ""}}
-        | </li>
-      | </div>
-
-    div
-      | <div {{$p.AttrClassN $p.Hideif "collapse-hidden" ""}}>
-      / PACKETS
-      | <div {{$p.AttrClassT $p.Ift 1 "" "collapse-hidden"}}>
+  [[template "startpanel" Chain `$p.Ifn` "Interfaces"]]
+  [[template "configrow_delay"  `$p.Ifd`]]
+  [[template "configrow_rows"   `$p.Ifn`]]
+  [[template "configrow_select"]]
+        / Outstanding 3x indent is required
+        |
+          <li {{$p.AttrClassTab $p.Ifn $p.Ift 1 "active" ""}}>{{template "defines::enumlink" $p.Vlink $p.Ift 1 "Packets" ""}}</li>{{/* 1 is PACKETS */}}
+          <li {{$p.AttrClassTab $p.Ifn $p.Ift 2 "active" ""}}>{{template "defines::enumlink" $p.Vlink $p.Ift 2 "Errors" ""}}</li>{{/*  2 is ERRORS  */}}
+          <li {{$p.AttrClassTab $p.Ifn $p.Ift 3 "active" ""}}>{{template "defines::enumlink" $p.Vlink $p.Ift 3 "Bytes" ""}}</li>{{/*   3 is IFBYTES */}}
+  |
+      </table>
       {{template "defines::define_ifpackets_table" .}}
-      / ERRORS
-      | </div><div {{$p.AttrClassT $p.Ift 2 "" "collapse-hidden"}}>
       {{template "defines::define_iferrors_table" .}}
-      / IFBYTES
-      | </div><div {{$p.AttrClassT $p.Ift 3 "" "collapse-hidden"}}>
       {{template "defines::define_ifbytes_table" .}}
-      | </div></div>
+    </div>
 
 = content define_dfbytes_rows
   {{with rowsset .}}{{.}}{{else}}
@@ -190,77 +163,53 @@
 = content headerenumlink
   th {{class}}="header {{.AlignClass}}"
     |
-      <a href={{.LinkHref}} {{class}}={{.LinkClass}}>{{.LinkText}}
-        <span {{class}}={{.CaretClass}}></span>
+      <a href={{.LinkHref}} {{class}}={{.LinkClass}}>
+        {{.LinkText}}<span {{class}}={{.CaretClass}}></span>
       </a>
 
 = content define_dfbytes_table
   {{$p := .Data.Params}}
-  table.table.table-hover
-    thead
-      tr
-        {{template "defines::headerenumlink" $p.Variate $p.Dfk 1 "Device"  ""          }}{{/* FS    */}}
-        {{template "defines::headerenumlink" $p.Variate $p.Dfk 2 "Mounted" ""          }}{{/* MP    */}}
-        {{template "defines::headerenumlink" $p.Variate $p.Dfk 3 "Avail"   "text-right"}}{{/* AVAIL */}}
-        {{template "defines::headerenumlink" $p.Variate $p.Dfk 4 "Used"    "text-right"}}{{/* USED  */}}
-        {{template "defines::headerenumlink" $p.Variate $p.Dfk 5 "Total"   "text-right"}}{{/* TOTAL */}}
-    tbody
-      {{template "defines::define_dfbytes_rows" .}}
+  | <table {{$p.AttrClassTab $p.Dfn $p.Dft 2 "table table-hover" "collapse-hidden"}}>{{/* 2 is DFBYTES */}}
+  thead
+    tr
+      {{template "defines::headerenumlink" $p.Vlink $p.Dfk 1 "Device"  ""          }}{{/* FS    */}}
+      {{template "defines::headerenumlink" $p.Vlink $p.Dfk 2 "Mounted" ""          }}{{/* MP    */}}
+      {{template "defines::headerenumlink" $p.Vlink $p.Dfk 3 "Avail"   "text-right"}}{{/* AVAIL */}}
+      {{template "defines::headerenumlink" $p.Vlink $p.Dfk 4 "Used"    "text-right"}}{{/* USED  */}}
+      {{template "defines::headerenumlink" $p.Vlink $p.Dfk 5 "Total"   "text-right"}}{{/* TOTAL */}}
+  tbody
+    {{template "defines::define_dfbytes_rows" .}}
+  | </table>
 
 = content define_dfinodes_table
-  table.table.table-hover
-    thead
-      tr
-        th.header Device
-        th.header Mounted
-        th.header.text-right Avail
-        th.header.text-right Used
-        th.header.text-right Total
-    tbody
-      {{template "defines::define_dfinodes_rows" .}}
+  {{$p := .Data.Params}}
+  | <table {{$p.AttrClassTab $p.Dfn $p.Dft 1 "table table-hover" "collapse-hidden"}}>{{/* 1 is INODES */}}
+  thead
+    tr
+      th.header Device
+      th.header Mounted
+      th.header.text-right Avail
+      th.header.text-right Used
+      th.header.text-right Total
+  tbody
+    {{template "defines::define_dfinodes_rows" .}}
+  | </table>
 
 = content define_paneldf
   {{$p := .Data.Params}}
-  div
-    div
-      | <a    {{$p.AttrHrefToggle $p.Configdf}} {{class}}="btn-block">
-      | <span {{$p.AttrClassN $p.Configdf "h4 bg-info" "h4"}}>Disk usage</span></a>
-
-    div
-      | <div {{$p.AttrClassN $p.Configdf "config-margintop" "config-margintop collapse-hidden"}} id="dfconfig">
-      | <form {{$p.AttrActionForm}} {{class}}="form-inline">
-      input.hidden-submit type=submit
-
-      div.btn-toolbar
-        div.btn-group.btn-group-sm role=group
-          |
-            <a {{$p.AttrClassN $p.Hidedf "btn btn-default active" "btn btn-default"}}
-               {{$p.AttrHrefToggle $p.Hidedf}}>Hidden</a>
-            <a {{$p.AttrClassN .Data.ExpandableDF "btn btn-default" "btn btn-default disabled"}}
-               {{$p.AttrHrefToggle $p.Expanddf}}>{{.Data.ExpandtextDF}}</a>
-        div.btn-group.btn-group-sm role=group
-          {{template "defines::define_refresh" (Chain .Data "Refreshdf")}}
-      | </form>
-
-      ul.nav.nav-tabs.config-margintop
-        / INODES
-        | <li {{$p.AttrClassT $p.Dft 1 "active" ""}}>
-        {{template "defines::enumlink" $p.Variate $p.Dft 1 "Inodes" ""}}
-        / DFBYTES
-        | </li><li {{$p.AttrClassT $p.Dft 2 "active" ""}}>
-        {{template "defines::enumlink" $p.Variate $p.Dft 2 "Bytes" ""}}
-        | </li>
-      | </div>
-
-    div
-      | <div {{$p.AttrClassN $p.Hidedf "collapse-hidden" ""}}>
-      / INODES
-      | <div {{$p.AttrClassT $p.Dft 1 "" "collapse-hidden"}}>
+  [[template "startpanel" Chain `$p.Dfn` "Disk usage"]]
+  [[template "configrow_delay"  `$p.Dfd`]]
+  [[template "configrow_rows"   `$p.Dfn`]]
+  [[template "configrow_select"]]
+        / Outstanding 3x indent is required
+        |
+          <li {{$p.AttrClassTab $p.Dfn $p.Dft 1 "active" ""}}>{{template "defines::enumlink" $p.Vlink $p.Dft 1 "Inodes" ""}}</li>{{/* 1 is INODES */}}
+          <li {{$p.AttrClassTab $p.Dfn $p.Dft 2 "active" ""}}>{{template "defines::enumlink" $p.Vlink $p.Dft 2 "Bytes" ""}}</li>{{/* 2 is DFBYTES */}}
+  |
+      </table>
       {{template "defines::define_dfinodes_table" .}}
-      / DFBYTES
-      | </div><div {{$p.AttrClassT $p.Dft 2 "" "collapse-hidden"}}>
       {{template "defines::define_dfbytes_table" .}}
-      | </div></div>
+    </div>
 
 = content define_memrows
   {{with rowsset .}}{{.}}{{else}}
@@ -392,18 +341,18 @@
 
 = content define_pstable
   {{$p := .Data.Params}}
-  | <table {{$p.AttrClassZero $p.Psn "collapse-hidden" "table table-hover"}}>
+  | <table {{$p.AttrClassNonzero $p.Psn "table table-hover" "collapse-hidden"}}>
   thead
     tr
-      {{template "defines::headerenumlink" $p.Variate $p.Psk 1 "PID"     "text-right" }}
-      {{template "defines::headerenumlink" $p.Variate $p.Psk 8 "UID"     "text-right" }}
-      {{template "defines::headerenumlink" $p.Variate $p.Psk 9 "USER"    ""           }}
-      {{template "defines::headerenumlink" $p.Variate $p.Psk 2 "PR"      "text-right" }}{{/* PRI  */}}
-      {{template "defines::headerenumlink" $p.Variate $p.Psk 3 "NI"      "text-right" }}{{/* NICE */}}
-      {{template "defines::headerenumlink" $p.Variate $p.Psk 4 "VIRT"    "text-right" }}
-      {{template "defines::headerenumlink" $p.Variate $p.Psk 5 "RES"     "text-right" }}
-      {{template "defines::headerenumlink" $p.Variate $p.Psk 6 "TIME"    "text-center"}}
-      {{template "defines::headerenumlink" $p.Variate $p.Psk 7 "COMMAND" ""           }}{{/* NAME */}}
+      {{template "defines::headerenumlink" $p.Vlink $p.Psk 1 "PID"     "text-right" }}
+      {{template "defines::headerenumlink" $p.Vlink $p.Psk 8 "UID"     "text-right" }}
+      {{template "defines::headerenumlink" $p.Vlink $p.Psk 9 "USER"    ""           }}
+      {{template "defines::headerenumlink" $p.Vlink $p.Psk 2 "PR"      "text-right" }}{{/* PRI  */}}
+      {{template "defines::headerenumlink" $p.Vlink $p.Psk 3 "NI"      "text-right" }}{{/* NICE */}}
+      {{template "defines::headerenumlink" $p.Vlink $p.Psk 4 "VIRT"    "text-right" }}
+      {{template "defines::headerenumlink" $p.Vlink $p.Psk 5 "RES"     "text-right" }}
+      {{template "defines::headerenumlink" $p.Vlink $p.Psk 6 "TIME"    "text-center"}}
+      {{template "defines::headerenumlink" $p.Vlink $p.Psk 7 "COMMAND" ""           }}{{/* NAME */}}
   tbody
     {{template "defines::define_psrows" .}}
   | </table>
@@ -421,6 +370,16 @@
       <table {{$p.AttrClassP [[$N]] "table collapse-hidden" "table"}}>
 [[end]]
 
+/ 4 tds
+[[define "configrow_select"]]
+  tr.panel-config
+    td.col-md-2
+      div.text-right Select
+    td {{colspan}}=3
+      ul.nav.nav-pills
+[[end]]
+
+/ 4 tds
 [[define "configrow_delay"]]
 [[$D := .]]
   tr.panel-config
@@ -435,6 +394,7 @@
     td.col-md-10 {{colspan}}=2
 [[end]]
 
+/ 4 tds
 [[define "configrow_rows"]]
 [[$N := .]]
   tr.panel-config

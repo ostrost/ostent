@@ -50,7 +50,7 @@ define(function (require) {
           null,
           React.createElement(
             "a",
-            { href: Data.Params.Toggle.Configmem, onClick: this.handleClick, className: "btn-block"
+            { href: Data.Params.Tlinks.Configmem, onClick: this.handleClick, className: "btn-block"
             },
             "  ",
             React.createElement(
@@ -85,14 +85,14 @@ define(function (require) {
                   React.createElement(
                     "a",
                     { className: Data.Params.Hidemem ? "btn btn-default active" : "btn btn-default",
-                      href: Data.Params.Toggle.Hidemem, onClick: this.handleClick
+                      href: Data.Params.Tlinks.Hidemem, onClick: this.handleClick
                     },
                     "Hidden"
                   ),
                   React.createElement(
                     "a",
                     { className: Data.Params.Hideswap ? "btn btn-default active" : "btn btn-default",
-                      href: Data.Params.Toggle.Hideswap, onClick: this.handleClick
+                      href: Data.Params.Tlinks.Hideswap, onClick: this.handleClick
                     },
                     "Hide swap"
                   )
@@ -280,375 +280,468 @@ define(function (require) {
     panelif: function panelif(Data, r1, r2, r3) {
       return React.createElement(
         "div",
-        null,
+        { className: Data.Params.Ifn != "!0" && Data.Params.Ifn.substr(0, 1) != "-" ? "" : "panel panel-default"
+        },
+        "  ",
         React.createElement(
           "div",
-          null,
+          { className: Data.Params.Ifn != "!0" && Data.Params.Ifn.substr(0, 1) != "-" ? "" : "panel-heading"
+          },
+          "    ",
           React.createElement(
             "a",
-            { href: Data.Params.Toggle.Configif, onClick: this.handleClick, className: "btn-block"
+            { href: Data.Params.Tlinks.Ifn, onClick: this.handleClick, className: "panel-title btn-block"
             },
-            "  ",
+            "      ",
             React.createElement(
-              "span",
-              { className: Data.Params.Configif ? "h4 bg-info" : "h4"
+              "b",
+              { className: Data.Params.Ifn != "!0" && Data.Params.Ifn.substr(0, 1) != "-" ? "h4" : "h4 bg-info"
               },
               "Interfaces"
-            )
-          )
+            ),
+            "    "
+          ),
+          "  "
         ),
+        "  ",
         React.createElement(
-          "div",
-          null,
+          "table",
+          { className: Data.Params.Ifn != "!0" && Data.Params.Ifn.substr(0, 1) != "-" ? "table collapse-hidden" : "table"
+          },
           React.createElement(
-            "div",
-            { className: Data.Params.Configif ? "config-margintop" : "config-margintop collapse-hidden", id: "ifconfig"
+            "tr",
+            { className: "panel-config"
             },
             React.createElement(
-              "form",
-              { action: "/form/" + Data.Params, className: "form-inline"
+              "td",
+              { className: "col-md-2"
               },
-              React.createElement("input", { className: "hidden-submit", type: "submit"
-              }),
               React.createElement(
                 "div",
-                { className: "btn-toolbar"
+                { className: "nowrap text-right"
+                },
+                "Delay ",
+                React.createElement(
+                  "span",
+                  { className: "badge"
+                  },
+                  Data.Params.Ifd
+                )
+              )
+            ),
+            React.createElement(
+              "td",
+              null,
+              React.createElement(
+                "div",
+                { className: "btn-group nowrap-group", role: "group"
                 },
                 React.createElement(
-                  "div",
-                  { className: "btn-group btn-group-sm", role: "group"
+                  "a",
+                  { href: Data.Params.Dlinks.Ifd.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.Less.Class != null ? Data.Params.Dlinks.Ifd.Less.Class : "")
+
                   },
                   React.createElement(
-                    "a",
-                    { className: Data.Params.Hideif ? "btn btn-default active" : "btn btn-default",
-                      href: Data.Params.Toggle.Hideif, onClick: this.handleClick
+                    "span",
+                    { className: "xlabel xlabel-default"
                     },
-                    "Hidden"
+                    "-"
                   ),
-                  React.createElement(
-                    "a",
-                    { className: Data.ExpandableIF ? "btn btn-default" : "btn btn-default disabled",
-                      href: Data.Params.Toggle.Expandif, onClick: this.handleClick
-                    },
-                    Data.ExpandtextIF
-                  )
+                  " ",
+                  Data.Params.Dlinks.Ifd.Less.Text
                 ),
                 React.createElement(
-                  "div",
-                  { className: "btn-group btn-group-sm", role: "group"
+                  "a",
+                  { href: Data.Params.Dlinks.Ifd.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.More.Class != null ? Data.Params.Dlinks.Ifd.More.Class : "")
+
+                  },
+                  Data.Params.Dlinks.Ifd.More.Text,
+                  " ",
+                  React.createElement(
+                    "span",
+                    { className: "xlabel xlabel-default"
+                    },
+                    "+"
+                  )
+                )
+              )
+            ),
+            React.createElement("td", { className: "col-md-10", colSpan: "2"
+            })
+          ),
+          React.createElement(
+            "tr",
+            { className: "panel-config"
+            },
+            React.createElement(
+              "td",
+              { className: "col-md-2"
+              },
+              React.createElement(
+                "div",
+                { className: "nowrap text-right"
+                },
+                "Rows ",
+                React.createElement(
+                  "span",
+                  { className: "badge"
+                  },
+                  Data.Params.Ifn == "!0" ? "0" : Data.Params.Ifn.replace(/^-/, "")
+                )
+              )
+            ),
+            React.createElement(
+              "td",
+              null,
+              React.createElement(
+                "div",
+                { className: "btn-group nowrap-group", role: "group"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Nlinks.Ifn.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.Less.Class != null ? Data.Params.Nlinks.Ifn.Less.Class : "")
+
                   },
                   React.createElement(
-                    "div",
-                    { className: Data.Params.Errors && Data.Params.Errors.Refreshif ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"
+                    "span",
+                    { className: "xlabel xlabel-default"
                     },
-                    React.createElement(
-                      "span",
-                      { className: "input-group-addon"
-                      },
-                      "Refresh"
-                    ),
-                    "  ",
-                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.MinRefresh, name: "refreshif", value: Data.Params.Refreshif, onChange: this.handleChange
-                    })
+                    "-"
+                  ),
+                  " ",
+                  Data.Params.Nlinks.Ifn.Less.Text
+                ),
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Nlinks.Ifn.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.More.Class != null ? Data.Params.Nlinks.Ifn.More.Class : "")
+
+                  },
+                  Data.Params.Nlinks.Ifn.More.Text,
+                  " ",
+                  React.createElement(
+                    "span",
+                    { className: "xlabel xlabel-default"
+                    },
+                    "+"
                   )
                 )
               )
             ),
             React.createElement(
-              "ul",
-              { className: "nav nav-tabs config-margintop"
+              "td",
+              null,
+              React.createElement(
+                "div",
+                { className: "btn-group nowrap-group", role: "group"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Nlinks.Ifn.Zero.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.Zero.Class != null ? Data.Params.Nlinks.Ifn.Zero.Class : "")
+
+                  },
+                  Data.Params.Nlinks.Ifn.Zero.Text,
+                  " ",
+                  React.createElement("span", { className: "xlabel xlabel-default"
+                  })
+                )
+              )
+            ),
+            React.createElement("td", { className: "col-md-10"
+            })
+          ),
+          React.createElement(
+            "tr",
+            { className: "panel-config"
+            },
+            React.createElement(
+              "td",
+              { className: "col-md-2"
               },
               React.createElement(
-                "li",
-                { className: Data.Params.Ift == 1 ? "active" : ""
+                "div",
+                { className: "text-right"
                 },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Variations.Ift[1 - 1].LinkHref, onClick: this.handleClick
-                  },
-                  "Packets"
-                )
-              ),
+                "Select"
+              )
+            ),
+            React.createElement(
+              "td",
+              { colSpan: "3"
+              },
               React.createElement(
-                "li",
-                { className: Data.Params.Ift == 2 ? "active" : ""
+                "ul",
+                { className: "nav nav-pills"
                 },
                 React.createElement(
-                  "a",
-                  { href: Data.Params.Variations.Ift[2 - 1].LinkHref, onClick: this.handleClick
+                  "li",
+                  { className: Data.Params.Ifn != "!0" && Data.Params.Ifn != "0" && Data.Params.Ift == "1" ? "active" : ""
                   },
-                  "Errors"
-                )
-              ),
-              React.createElement(
-                "li",
-                { className: Data.Params.Ift == 3 ? "active" : ""
-                },
+                  React.createElement(
+                    "a",
+                    { href: Data.Params.Vlinks.Ift[1 - 1].LinkHref, onClick: this.handleClick
+                    },
+                    "Packets"
+                  )
+                ),
                 React.createElement(
-                  "a",
-                  { href: Data.Params.Variations.Ift[3 - 1].LinkHref, onClick: this.handleClick
+                  "li",
+                  { className: Data.Params.Ifn != "!0" && Data.Params.Ifn != "0" && Data.Params.Ift == "2" ? "active" : ""
                   },
-                  "Bytes"
+                  React.createElement(
+                    "a",
+                    { href: Data.Params.Vlinks.Ift[2 - 1].LinkHref, onClick: this.handleClick
+                    },
+                    "Errors"
+                  )
+                ),
+                React.createElement(
+                  "li",
+                  { className: Data.Params.Ifn != "!0" && Data.Params.Ifn != "0" && Data.Params.Ift == "3" ? "active" : ""
+                  },
+                  React.createElement(
+                    "a",
+                    { href: Data.Params.Vlinks.Ift[3 - 1].LinkHref, onClick: this.handleClick
+                    },
+                    "Bytes"
+                  )
                 )
               )
             )
+          ),
+          "  "
+        ),
+        "  ",
+        React.createElement(
+          "table",
+          { className: Data.Params.Ifn != "!0" && Data.Params.Ifn != "0" && Data.Params.Ift == "1" ? "table table-hover" : "collapse-hidden"
+          },
+          React.createElement(
+            "thead",
+            null,
+            React.createElement(
+              "tr",
+              null,
+              React.createElement(
+                "th",
+                null,
+                "Interface"
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right nowrap", title: "per second"
+                },
+                "In ",
+                React.createElement(
+                  "span",
+                  { className: "unit"
+                  },
+                  "ps"
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right nowrap", title: "per second"
+                },
+                "Out ",
+                React.createElement(
+                  "span",
+                  { className: "unit"
+                  },
+                  "ps"
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right nowrap", title: "total modulo 4G"
+                },
+                "In ",
+                React.createElement(
+                  "span",
+                  { className: "unit"
+                  },
+                  "%4G"
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right nowrap", title: "total modulo 4G"
+                },
+                "Out ",
+                React.createElement(
+                  "span",
+                  { className: "unit"
+                  },
+                  "%4G"
+                )
+              )
+            )
+          ),
+          React.createElement(
+            "tbody",
+            null,
+            r1
           )
         ),
         React.createElement(
-          "div",
-          null,
+          "table",
+          { className: Data.Params.Ifn != "!0" && Data.Params.Ifn != "0" && Data.Params.Ift == "2" ? "table table-hover" : "collapse-hidden"
+          },
           React.createElement(
-            "div",
-            { className: Data.Params.Hideif ? "collapse-hidden" : ""
-            },
+            "thead",
+            null,
             React.createElement(
-              "div",
-              { className: Data.Params.Ift == 1 ? "" : "collapse-hidden"
-              },
+              "tr",
+              null,
               React.createElement(
-                "table",
-                { className: "table table-hover"
+                "th",
+                null,
+                "Interface"
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right nowrap", title: "per second"
                 },
+                "In ",
                 React.createElement(
-                  "thead",
-                  null,
-                  React.createElement(
-                    "tr",
-                    null,
-                    React.createElement(
-                      "th",
-                      null,
-                      "Interface"
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "text-right nowrap", title: "per second"
-                      },
-                      "In ",
-                      React.createElement(
-                        "span",
-                        { className: "unit"
-                        },
-                        "ps"
-                      )
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "text-right nowrap", title: "per second"
-                      },
-                      "Out ",
-                      React.createElement(
-                        "span",
-                        { className: "unit"
-                        },
-                        "ps"
-                      )
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "text-right nowrap", title: "total modulo 4G"
-                      },
-                      "In ",
-                      React.createElement(
-                        "span",
-                        { className: "unit"
-                        },
-                        "%4G"
-                      )
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "text-right nowrap", title: "total modulo 4G"
-                      },
-                      "Out ",
-                      React.createElement(
-                        "span",
-                        { className: "unit"
-                        },
-                        "%4G"
-                      )
-                    )
-                  )
-                ),
-                React.createElement(
-                  "tbody",
-                  null,
-                  r1
+                  "span",
+                  { className: "unit"
+                  },
+                  "ps"
                 )
-              )
-            ),
-            React.createElement(
-              "div",
-              { className: Data.Params.Ift == 2 ? "" : "collapse-hidden"
-              },
+              ),
               React.createElement(
-                "table",
-                { className: "table table-hover"
+                "th",
+                { className: "text-right nowrap", title: "per second"
                 },
+                "Out ",
                 React.createElement(
-                  "thead",
-                  null,
-                  React.createElement(
-                    "tr",
-                    null,
-                    React.createElement(
-                      "th",
-                      null,
-                      "Interface"
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "text-right nowrap", title: "per second"
-                      },
-                      "In ",
-                      React.createElement(
-                        "span",
-                        { className: "unit"
-                        },
-                        "ps"
-                      )
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "text-right nowrap", title: "per second"
-                      },
-                      "Out ",
-                      React.createElement(
-                        "span",
-                        { className: "unit"
-                        },
-                        "ps"
-                      )
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "text-right nowrap", title: "modulo 4G"
-                      },
-                      "In ",
-                      React.createElement(
-                        "span",
-                        { className: "unit"
-                        },
-                        "%4G"
-                      )
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "text-right nowrap", title: "modulo 4G"
-                      },
-                      "Out ",
-                      React.createElement(
-                        "span",
-                        { className: "unit"
-                        },
-                        "%4G"
-                      )
-                    )
-                  )
-                ),
-                React.createElement(
-                  "tbody",
-                  null,
-                  r2
+                  "span",
+                  { className: "unit"
+                  },
+                  "ps"
                 )
-              )
-            ),
-            React.createElement(
-              "div",
-              { className: Data.Params.Ift == 3 ? "" : "collapse-hidden"
-              },
+              ),
               React.createElement(
-                "table",
-                { className: "table table-hover"
+                "th",
+                { className: "text-right nowrap", title: "modulo 4G"
                 },
+                "In ",
                 React.createElement(
-                  "thead",
-                  null,
-                  React.createElement(
-                    "tr",
-                    null,
-                    React.createElement(
-                      "th",
-                      null,
-                      "Interface"
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "text-right nowrap", title: "BITS per second"
-                      },
-                      "In",
-                      React.createElement(
-                        "span",
-                        { className: "unit"
-                        },
-                        React.createElement(
-                          "i",
-                          null,
-                          "b"
-                        ),
-                        "ps"
-                      )
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "text-right nowrap", title: "BITS per second"
-                      },
-                      "Out",
-                      React.createElement(
-                        "span",
-                        { className: "unit"
-                        },
-                        React.createElement(
-                          "i",
-                          null,
-                          "b"
-                        ),
-                        "ps"
-                      )
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "text-right nowrap", title: "total BYTES modulo 4G"
-                      },
-                      "In",
-                      React.createElement(
-                        "span",
-                        { className: "unit"
-                        },
-                        React.createElement(
-                          "i",
-                          null,
-                          "B"
-                        ),
-                        "%4G"
-                      )
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "text-right nowrap", title: "total BYTES modulo 4G"
-                      },
-                      "Out",
-                      React.createElement(
-                        "span",
-                        { className: "unit"
-                        },
-                        React.createElement(
-                          "i",
-                          null,
-                          "B"
-                        ),
-                        "%4G"
-                      )
-                    )
-                  )
-                ),
+                  "span",
+                  { className: "unit"
+                  },
+                  "%4G"
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right nowrap", title: "modulo 4G"
+                },
+                "Out ",
                 React.createElement(
-                  "tbody",
-                  null,
-                  r3
+                  "span",
+                  { className: "unit"
+                  },
+                  "%4G"
                 )
               )
             )
+          ),
+          React.createElement(
+            "tbody",
+            null,
+            r2
+          )
+        ),
+        React.createElement(
+          "table",
+          { className: Data.Params.Ifn != "!0" && Data.Params.Ifn != "0" && Data.Params.Ift == "3" ? "table table-hover" : "collapse-hidden"
+          },
+          React.createElement(
+            "thead",
+            null,
+            React.createElement(
+              "tr",
+              null,
+              React.createElement(
+                "th",
+                null,
+                "Interface"
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right nowrap", title: "BITS per second"
+                },
+                "In",
+                React.createElement(
+                  "span",
+                  { className: "unit"
+                  },
+                  React.createElement(
+                    "i",
+                    null,
+                    "b"
+                  ),
+                  "ps"
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right nowrap", title: "BITS per second"
+                },
+                "Out",
+                React.createElement(
+                  "span",
+                  { className: "unit"
+                  },
+                  React.createElement(
+                    "i",
+                    null,
+                    "b"
+                  ),
+                  "ps"
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right nowrap", title: "total BYTES modulo 4G"
+                },
+                "In",
+                React.createElement(
+                  "span",
+                  { className: "unit"
+                  },
+                  React.createElement(
+                    "i",
+                    null,
+                    "B"
+                  ),
+                  "%4G"
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right nowrap", title: "total BYTES modulo 4G"
+                },
+                "Out",
+                React.createElement(
+                  "span",
+                  { className: "unit"
+                  },
+                  React.createElement(
+                    "i",
+                    null,
+                    "B"
+                  ),
+                  "%4G"
+                )
+              )
+            )
+          ),
+          React.createElement(
+            "tbody",
+            null,
+            r3
           )
         )
       );
@@ -709,7 +802,7 @@ define(function (require) {
           null,
           React.createElement(
             "a",
-            { href: Data.Params.Toggle.Configcpu, onClick: this.handleClick, className: "btn-block"
+            { href: Data.Params.Tlinks.Configcpu, onClick: this.handleClick, className: "btn-block"
             },
             "  ",
             React.createElement(
@@ -744,14 +837,14 @@ define(function (require) {
                   React.createElement(
                     "a",
                     { className: Data.Params.Hidecpu ? "btn btn-default active" : "btn btn-default",
-                      href: Data.Params.Toggle.Hidecpu, onClick: this.handleClick
+                      href: Data.Params.Tlinks.Hidecpu, onClick: this.handleClick
                     },
                     "Hidden"
                   ),
                   React.createElement(
                     "a",
                     { className: Data.CPU.ExpandableCPU ? "btn btn-default" : "btn btn-default disabled",
-                      href: Data.Params.Toggle.Expandcpu, onClick: this.handleClick
+                      href: Data.Params.Tlinks.Expandcpu, onClick: this.handleClick
                     },
                     Data.CPU.ExpandtextCPU
                   )
@@ -935,256 +1028,355 @@ define(function (require) {
     paneldf: function paneldf(Data, r1, r2) {
       return React.createElement(
         "div",
-        null,
+        { className: Data.Params.Dfn != "!0" && Data.Params.Dfn.substr(0, 1) != "-" ? "" : "panel panel-default"
+        },
+        "  ",
         React.createElement(
           "div",
-          null,
+          { className: Data.Params.Dfn != "!0" && Data.Params.Dfn.substr(0, 1) != "-" ? "" : "panel-heading"
+          },
+          "    ",
           React.createElement(
             "a",
-            { href: Data.Params.Toggle.Configdf, onClick: this.handleClick, className: "btn-block"
+            { href: Data.Params.Tlinks.Dfn, onClick: this.handleClick, className: "panel-title btn-block"
             },
+            "      ",
             React.createElement(
-              "span",
-              { className: Data.Params.Configdf ? "h4 bg-info" : "h4"
+              "b",
+              { className: Data.Params.Dfn != "!0" && Data.Params.Dfn.substr(0, 1) != "-" ? "h4" : "h4 bg-info"
               },
               "Disk usage"
-            )
-          )
+            ),
+            "    "
+          ),
+          "  "
         ),
+        "  ",
         React.createElement(
-          "div",
-          null,
+          "table",
+          { className: Data.Params.Dfn != "!0" && Data.Params.Dfn.substr(0, 1) != "-" ? "table collapse-hidden" : "table"
+          },
           React.createElement(
-            "div",
-            { className: Data.Params.Configdf ? "config-margintop" : "config-margintop collapse-hidden", id: "dfconfig"
+            "tr",
+            { className: "panel-config"
             },
             React.createElement(
-              "form",
-              { action: "/form/" + Data.Params, className: "form-inline"
+              "td",
+              { className: "col-md-2"
               },
-              React.createElement("input", { className: "hidden-submit", type: "submit"
-              }),
               React.createElement(
                 "div",
-                { className: "btn-toolbar"
+                { className: "nowrap text-right"
+                },
+                "Delay ",
+                React.createElement(
+                  "span",
+                  { className: "badge"
+                  },
+                  Data.Params.Dfd
+                )
+              )
+            ),
+            React.createElement(
+              "td",
+              null,
+              React.createElement(
+                "div",
+                { className: "btn-group nowrap-group", role: "group"
                 },
                 React.createElement(
-                  "div",
-                  { className: "btn-group btn-group-sm", role: "group"
+                  "a",
+                  { href: Data.Params.Dlinks.Dfd.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Dfd.Less.Class != null ? Data.Params.Dlinks.Dfd.Less.Class : "")
+
                   },
                   React.createElement(
-                    "a",
-                    { className: Data.Params.Hidedf ? "btn btn-default active" : "btn btn-default",
-                      href: Data.Params.Toggle.Hidedf, onClick: this.handleClick
+                    "span",
+                    { className: "xlabel xlabel-default"
                     },
-                    "Hidden"
+                    "-"
                   ),
-                  React.createElement(
-                    "a",
-                    { className: Data.ExpandableDF ? "btn btn-default" : "btn btn-default disabled",
-                      href: Data.Params.Toggle.Expanddf, onClick: this.handleClick
-                    },
-                    Data.ExpandtextDF
-                  )
+                  " ",
+                  Data.Params.Dlinks.Dfd.Less.Text
                 ),
                 React.createElement(
-                  "div",
-                  { className: "btn-group btn-group-sm", role: "group"
+                  "a",
+                  { href: Data.Params.Dlinks.Dfd.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Dfd.More.Class != null ? Data.Params.Dlinks.Dfd.More.Class : "")
+
+                  },
+                  Data.Params.Dlinks.Dfd.More.Text,
+                  " ",
+                  React.createElement(
+                    "span",
+                    { className: "xlabel xlabel-default"
+                    },
+                    "+"
+                  )
+                )
+              )
+            ),
+            React.createElement("td", { className: "col-md-10", colSpan: "2"
+            })
+          ),
+          React.createElement(
+            "tr",
+            { className: "panel-config"
+            },
+            React.createElement(
+              "td",
+              { className: "col-md-2"
+              },
+              React.createElement(
+                "div",
+                { className: "nowrap text-right"
+                },
+                "Rows ",
+                React.createElement(
+                  "span",
+                  { className: "badge"
+                  },
+                  Data.Params.Dfn == "!0" ? "0" : Data.Params.Dfn.replace(/^-/, "")
+                )
+              )
+            ),
+            React.createElement(
+              "td",
+              null,
+              React.createElement(
+                "div",
+                { className: "btn-group nowrap-group", role: "group"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Nlinks.Dfn.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Dfn.Less.Class != null ? Data.Params.Nlinks.Dfn.Less.Class : "")
+
                   },
                   React.createElement(
-                    "div",
-                    { className: Data.Params.Errors && Data.Params.Errors.Refreshdf ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"
+                    "span",
+                    { className: "xlabel xlabel-default"
                     },
-                    React.createElement(
-                      "span",
-                      { className: "input-group-addon"
-                      },
-                      "Refresh"
-                    ),
-                    "  ",
-                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.MinRefresh, name: "refreshdf", value: Data.Params.Refreshdf, onChange: this.handleChange
-                    })
+                    "-"
+                  ),
+                  " ",
+                  Data.Params.Nlinks.Dfn.Less.Text
+                ),
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Nlinks.Dfn.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Dfn.More.Class != null ? Data.Params.Nlinks.Dfn.More.Class : "")
+
+                  },
+                  Data.Params.Nlinks.Dfn.More.Text,
+                  " ",
+                  React.createElement(
+                    "span",
+                    { className: "xlabel xlabel-default"
+                    },
+                    "+"
                   )
                 )
               )
             ),
             React.createElement(
-              "ul",
-              { className: "nav nav-tabs config-margintop"
-              },
+              "td",
+              null,
               React.createElement(
-                "li",
-                { className: Data.Params.Dft == 1 ? "active" : ""
+                "div",
+                { className: "btn-group nowrap-group", role: "group"
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Variations.Dft[1 - 1].LinkHref, onClick: this.handleClick
+                  { href: Data.Params.Nlinks.Dfn.Zero.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Dfn.Zero.Class != null ? Data.Params.Nlinks.Dfn.Zero.Class : "")
+
                   },
-                  "Inodes"
+                  Data.Params.Nlinks.Dfn.Zero.Text,
+                  " ",
+                  React.createElement("span", { className: "xlabel xlabel-default"
+                  })
+                )
+              )
+            ),
+            React.createElement("td", { className: "col-md-10"
+            })
+          ),
+          React.createElement(
+            "tr",
+            { className: "panel-config"
+            },
+            React.createElement(
+              "td",
+              { className: "col-md-2"
+              },
+              React.createElement(
+                "div",
+                { className: "text-right"
+                },
+                "Select"
+              )
+            ),
+            React.createElement(
+              "td",
+              { colSpan: "3"
+              },
+              React.createElement(
+                "ul",
+                { className: "nav nav-pills"
+                },
+                React.createElement(
+                  "li",
+                  { className: Data.Params.Dfn != "!0" && Data.Params.Dfn != "0" && Data.Params.Dft == "1" ? "active" : ""
+                  },
+                  React.createElement(
+                    "a",
+                    { href: Data.Params.Vlinks.Dft[1 - 1].LinkHref, onClick: this.handleClick
+                    },
+                    "Inodes"
+                  )
+                ),
+                React.createElement(
+                  "li",
+                  { className: Data.Params.Dfn != "!0" && Data.Params.Dfn != "0" && Data.Params.Dft == "2" ? "active" : ""
+                  },
+                  React.createElement(
+                    "a",
+                    { href: Data.Params.Vlinks.Dft[2 - 1].LinkHref, onClick: this.handleClick
+                    },
+                    "Bytes"
+                  )
+                )
+              )
+            )
+          ),
+          "  "
+        ),
+        "  ",
+        React.createElement(
+          "table",
+          { className: Data.Params.Dfn != "!0" && Data.Params.Dfn != "0" && Data.Params.Dft == "1" ? "table table-hover" : "collapse-hidden"
+          },
+          React.createElement(
+            "thead",
+            null,
+            React.createElement(
+              "tr",
+              null,
+              React.createElement(
+                "th",
+                { className: "header"
+                },
+                "Device"
+              ),
+              React.createElement(
+                "th",
+                { className: "header"
+                },
+                "Mounted"
+              ),
+              React.createElement(
+                "th",
+                { className: "header text-right"
+                },
+                "Avail"
+              ),
+              React.createElement(
+                "th",
+                { className: "header text-right"
+                },
+                "Used"
+              ),
+              React.createElement(
+                "th",
+                { className: "header text-right"
+                },
+                "Total"
+              )
+            )
+          ),
+          React.createElement(
+            "tbody",
+            null,
+            r1
+          )
+        ),
+        React.createElement(
+          "table",
+          { className: Data.Params.Dfn != "!0" && Data.Params.Dfn != "0" && Data.Params.Dft == "2" ? "table table-hover" : "collapse-hidden"
+          },
+          React.createElement(
+            "thead",
+            null,
+            React.createElement(
+              "tr",
+              null,
+              React.createElement(
+                "th",
+                { className: "header "
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Vlinks.Dfk[1 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[1 - 1].LinkClass
+                  },
+                  "  Device",
+                  React.createElement("span", { className: Data.Params.Vlinks.Dfk[1 - 1].CaretClass
+                  })
                 )
               ),
               React.createElement(
-                "li",
-                { className: Data.Params.Dft == 2 ? "active" : ""
+                "th",
+                { className: "header "
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Variations.Dft[2 - 1].LinkHref, onClick: this.handleClick
+                  { href: Data.Params.Vlinks.Dfk[2 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[2 - 1].LinkClass
                   },
-                  "Bytes"
+                  "  Mounted",
+                  React.createElement("span", { className: Data.Params.Vlinks.Dfk[2 - 1].CaretClass
+                  })
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "header text-right"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Vlinks.Dfk[3 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[3 - 1].LinkClass
+                  },
+                  "  Avail",
+                  React.createElement("span", { className: Data.Params.Vlinks.Dfk[3 - 1].CaretClass
+                  })
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "header text-right"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Vlinks.Dfk[4 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[4 - 1].LinkClass
+                  },
+                  "  Used",
+                  React.createElement("span", { className: Data.Params.Vlinks.Dfk[4 - 1].CaretClass
+                  })
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "header text-right"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Vlinks.Dfk[5 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[5 - 1].LinkClass
+                  },
+                  "  Total",
+                  React.createElement("span", { className: Data.Params.Vlinks.Dfk[5 - 1].CaretClass
+                  })
                 )
               )
             )
-          )
-        ),
-        React.createElement(
-          "div",
-          null,
+          ),
           React.createElement(
-            "div",
-            { className: Data.Params.Hidedf ? "collapse-hidden" : ""
-            },
-            React.createElement(
-              "div",
-              { className: Data.Params.Dft == 1 ? "" : "collapse-hidden"
-              },
-              React.createElement(
-                "table",
-                { className: "table table-hover"
-                },
-                React.createElement(
-                  "thead",
-                  null,
-                  React.createElement(
-                    "tr",
-                    null,
-                    React.createElement(
-                      "th",
-                      { className: "header"
-                      },
-                      "Device"
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "header"
-                      },
-                      "Mounted"
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "header text-right"
-                      },
-                      "Avail"
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "header text-right"
-                      },
-                      "Used"
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "header text-right"
-                      },
-                      "Total"
-                    )
-                  )
-                ),
-                React.createElement(
-                  "tbody",
-                  null,
-                  r1
-                )
-              )
-            ),
-            React.createElement(
-              "div",
-              { className: Data.Params.Dft == 2 ? "" : "collapse-hidden"
-              },
-              React.createElement(
-                "table",
-                { className: "table table-hover"
-                },
-                React.createElement(
-                  "thead",
-                  null,
-                  React.createElement(
-                    "tr",
-                    null,
-                    React.createElement(
-                      "th",
-                      { className: "header "
-                      },
-                      React.createElement(
-                        "a",
-                        { href: Data.Params.Variations.Dfk[1 - 1].LinkHref, className: Data.Params.Variations.Dfk[1 - 1].LinkClass
-                        },
-                        "Device",
-                        React.createElement("span", { className: Data.Params.Variations.Dfk[1 - 1].CaretClass
-                        })
-                      )
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "header "
-                      },
-                      React.createElement(
-                        "a",
-                        { href: Data.Params.Variations.Dfk[2 - 1].LinkHref, className: Data.Params.Variations.Dfk[2 - 1].LinkClass
-                        },
-                        "Mounted",
-                        React.createElement("span", { className: Data.Params.Variations.Dfk[2 - 1].CaretClass
-                        })
-                      )
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "header text-right"
-                      },
-                      React.createElement(
-                        "a",
-                        { href: Data.Params.Variations.Dfk[3 - 1].LinkHref, className: Data.Params.Variations.Dfk[3 - 1].LinkClass
-                        },
-                        "Avail",
-                        React.createElement("span", { className: Data.Params.Variations.Dfk[3 - 1].CaretClass
-                        })
-                      )
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "header text-right"
-                      },
-                      React.createElement(
-                        "a",
-                        { href: Data.Params.Variations.Dfk[4 - 1].LinkHref, className: Data.Params.Variations.Dfk[4 - 1].LinkClass
-                        },
-                        "Used",
-                        React.createElement("span", { className: Data.Params.Variations.Dfk[4 - 1].CaretClass
-                        })
-                      )
-                    ),
-                    React.createElement(
-                      "th",
-                      { className: "header text-right"
-                      },
-                      React.createElement(
-                        "a",
-                        { href: Data.Params.Variations.Dfk[5 - 1].LinkHref, className: Data.Params.Variations.Dfk[5 - 1].LinkClass
-                        },
-                        "Total",
-                        React.createElement("span", { className: Data.Params.Variations.Dfk[5 - 1].CaretClass
-                        })
-                      )
-                    )
-                  )
-                ),
-                React.createElement(
-                  "tbody",
-                  null,
-                  r2
-                )
-              )
-            )
+            "tbody",
+            null,
+            r2
           )
         )
       );
@@ -1268,7 +1460,7 @@ define(function (require) {
           "    ",
           React.createElement(
             "a",
-            { href: Data.Params.Toggle.Psn, onClick: this.handleClick, className: "panel-title btn-block"
+            { href: Data.Params.Tlinks.Psn, onClick: this.handleClick, className: "panel-title btn-block"
             },
             "      ",
             React.createElement(
@@ -1316,7 +1508,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Delayed.Psd.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Delayed.Psd.Less.Class != null ? Data.Params.Delayed.Psd.Less.Class : "")
+                  { href: Data.Params.Dlinks.Psd.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Psd.Less.Class != null ? Data.Params.Dlinks.Psd.Less.Class : "")
 
                   },
                   React.createElement(
@@ -1326,14 +1518,14 @@ define(function (require) {
                     "-"
                   ),
                   " ",
-                  Data.Params.Delayed.Psd.Less.Text
+                  Data.Params.Dlinks.Psd.Less.Text
                 ),
                 React.createElement(
                   "a",
-                  { href: Data.Params.Delayed.Psd.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Delayed.Psd.More.Class != null ? Data.Params.Delayed.Psd.More.Class : "")
+                  { href: Data.Params.Dlinks.Psd.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Psd.More.Class != null ? Data.Params.Dlinks.Psd.More.Class : "")
 
                   },
-                  Data.Params.Delayed.Psd.More.Text,
+                  Data.Params.Dlinks.Psd.More.Text,
                   " ",
                   React.createElement(
                     "span",
@@ -1377,7 +1569,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Numbered.Psn.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Numbered.Psn.Less.Class != null ? Data.Params.Numbered.Psn.Less.Class : "")
+                  { href: Data.Params.Nlinks.Psn.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Psn.Less.Class != null ? Data.Params.Nlinks.Psn.Less.Class : "")
 
                   },
                   React.createElement(
@@ -1387,14 +1579,14 @@ define(function (require) {
                     "-"
                   ),
                   " ",
-                  Data.Params.Numbered.Psn.Less.Text
+                  Data.Params.Nlinks.Psn.Less.Text
                 ),
                 React.createElement(
                   "a",
-                  { href: Data.Params.Numbered.Psn.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Numbered.Psn.More.Class != null ? Data.Params.Numbered.Psn.More.Class : "")
+                  { href: Data.Params.Nlinks.Psn.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Psn.More.Class != null ? Data.Params.Nlinks.Psn.More.Class : "")
 
                   },
-                  Data.Params.Numbered.Psn.More.Text,
+                  Data.Params.Nlinks.Psn.More.Text,
                   " ",
                   React.createElement(
                     "span",
@@ -1414,10 +1606,10 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Numbered.Psn.Zero.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Numbered.Psn.Zero.Class != null ? Data.Params.Numbered.Psn.Zero.Class : "")
+                  { href: Data.Params.Nlinks.Psn.Zero.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Psn.Zero.Class != null ? Data.Params.Nlinks.Psn.Zero.Class : "")
 
                   },
-                  Data.Params.Numbered.Psn.Zero.Text,
+                  Data.Params.Nlinks.Psn.Zero.Text,
                   " ",
                   React.createElement("span", { className: "xlabel xlabel-default"
                   })
@@ -1432,7 +1624,7 @@ define(function (require) {
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.Psn == "!0" || Data.Params.Psn == "0" ? "collapse-hidden" : "table table-hover"
+          { className: Data.Params.Psn != "!0" && Data.Params.Psn != "0" ? "table table-hover" : "collapse-hidden"
           },
           React.createElement(
             "thead",
@@ -1446,10 +1638,10 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Variations.Psk[1 - 1].LinkHref, className: Data.Params.Variations.Psk[1 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[1 - 1].LinkHref, className: Data.Params.Vlinks.Psk[1 - 1].LinkClass
                   },
-                  "PID",
-                  React.createElement("span", { className: Data.Params.Variations.Psk[1 - 1].CaretClass
+                  "  PID",
+                  React.createElement("span", { className: Data.Params.Vlinks.Psk[1 - 1].CaretClass
                   })
                 )
               ),
@@ -1459,10 +1651,10 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Variations.Psk[8 - 1].LinkHref, className: Data.Params.Variations.Psk[8 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[8 - 1].LinkHref, className: Data.Params.Vlinks.Psk[8 - 1].LinkClass
                   },
-                  "UID",
-                  React.createElement("span", { className: Data.Params.Variations.Psk[8 - 1].CaretClass
+                  "  UID",
+                  React.createElement("span", { className: Data.Params.Vlinks.Psk[8 - 1].CaretClass
                   })
                 )
               ),
@@ -1472,10 +1664,10 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Variations.Psk[9 - 1].LinkHref, className: Data.Params.Variations.Psk[9 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[9 - 1].LinkHref, className: Data.Params.Vlinks.Psk[9 - 1].LinkClass
                   },
-                  "USER",
-                  React.createElement("span", { className: Data.Params.Variations.Psk[9 - 1].CaretClass
+                  "  USER",
+                  React.createElement("span", { className: Data.Params.Vlinks.Psk[9 - 1].CaretClass
                   })
                 )
               ),
@@ -1485,10 +1677,10 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Variations.Psk[2 - 1].LinkHref, className: Data.Params.Variations.Psk[2 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[2 - 1].LinkHref, className: Data.Params.Vlinks.Psk[2 - 1].LinkClass
                   },
-                  "PR",
-                  React.createElement("span", { className: Data.Params.Variations.Psk[2 - 1].CaretClass
+                  "  PR",
+                  React.createElement("span", { className: Data.Params.Vlinks.Psk[2 - 1].CaretClass
                   })
                 )
               ),
@@ -1498,10 +1690,10 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Variations.Psk[3 - 1].LinkHref, className: Data.Params.Variations.Psk[3 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[3 - 1].LinkHref, className: Data.Params.Vlinks.Psk[3 - 1].LinkClass
                   },
-                  "NI",
-                  React.createElement("span", { className: Data.Params.Variations.Psk[3 - 1].CaretClass
+                  "  NI",
+                  React.createElement("span", { className: Data.Params.Vlinks.Psk[3 - 1].CaretClass
                   })
                 )
               ),
@@ -1511,10 +1703,10 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Variations.Psk[4 - 1].LinkHref, className: Data.Params.Variations.Psk[4 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[4 - 1].LinkHref, className: Data.Params.Vlinks.Psk[4 - 1].LinkClass
                   },
-                  "VIRT",
-                  React.createElement("span", { className: Data.Params.Variations.Psk[4 - 1].CaretClass
+                  "  VIRT",
+                  React.createElement("span", { className: Data.Params.Vlinks.Psk[4 - 1].CaretClass
                   })
                 )
               ),
@@ -1524,10 +1716,10 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Variations.Psk[5 - 1].LinkHref, className: Data.Params.Variations.Psk[5 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[5 - 1].LinkHref, className: Data.Params.Vlinks.Psk[5 - 1].LinkClass
                   },
-                  "RES",
-                  React.createElement("span", { className: Data.Params.Variations.Psk[5 - 1].CaretClass
+                  "  RES",
+                  React.createElement("span", { className: Data.Params.Vlinks.Psk[5 - 1].CaretClass
                   })
                 )
               ),
@@ -1537,10 +1729,10 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Variations.Psk[6 - 1].LinkHref, className: Data.Params.Variations.Psk[6 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[6 - 1].LinkHref, className: Data.Params.Vlinks.Psk[6 - 1].LinkClass
                   },
-                  "TIME",
-                  React.createElement("span", { className: Data.Params.Variations.Psk[6 - 1].CaretClass
+                  "  TIME",
+                  React.createElement("span", { className: Data.Params.Vlinks.Psk[6 - 1].CaretClass
                   })
                 )
               ),
@@ -1550,10 +1742,10 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Variations.Psk[7 - 1].LinkHref, className: Data.Params.Variations.Psk[7 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[7 - 1].LinkHref, className: Data.Params.Vlinks.Psk[7 - 1].LinkClass
                   },
-                  "COMMAND",
-                  React.createElement("span", { className: Data.Params.Variations.Psk[7 - 1].CaretClass
+                  "  COMMAND",
+                  React.createElement("span", { className: Data.Params.Vlinks.Psk[7 - 1].CaretClass
                   })
                 )
               )
@@ -1622,7 +1814,7 @@ define(function (require) {
           null,
           React.createElement(
             "a",
-            { href: Data.Params.Toggle.Configvg, onClick: this.handleClick, className: "btn-block"
+            { href: Data.Params.Tlinks.Configvg, onClick: this.handleClick, className: "btn-block"
             },
             "  ",
             React.createElement(
@@ -1657,7 +1849,7 @@ define(function (require) {
                   React.createElement(
                     "a",
                     { className: Data.Params.Hidevg ? "btn btn-default active" : "btn btn-default",
-                      href: Data.Params.Toggle.Hidevg, onClick: this.handleClick
+                      href: Data.Params.Tlinks.Hidevg, onClick: this.handleClick
                     },
                     "Hidden"
                   )

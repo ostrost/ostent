@@ -28,12 +28,12 @@ func (p Params) AttrActionForm() (interface{}, error) {
 	return SprintfAttr(" action=\"/form/%s\"", url.QueryEscape(qs)), nil
 }
 
-func (p Params) AttrClassP(num *Num, fstclass, sndclass string) template.HTMLAttr {
+func (p Params) AttrClassP(num Num, fstclass, sndclass string) template.HTMLAttr {
 	return p.AttrClassN(!num.Head, fstclass, sndclass)
 }
 
-func (p Params) AttrClassZero(num *Num, fstclass, sndclass string) template.HTMLAttr {
-	return p.AttrClassN(num.Body == 0, fstclass, sndclass)
+func (p Params) AttrClassNonzero(num Num, fstclass, sndclass string) template.HTMLAttr {
+	return p.AttrClassN(num.Body != 0, fstclass, sndclass)
 }
 
 func (p Params) AttrClassN(b bool, fstclass, sndclass string) template.HTMLAttr {
@@ -63,8 +63,8 @@ func (p *Params) AttrClassParamsError(m MultiError, name, fstclass, sndclass str
 	return p.AttrClassN(ok, fstclass, sndclass)
 }
 
-func (p Params) AttrClassT(num Num, cmp int, fstclass, sndclass string) template.HTMLAttr {
-	return p.AttrClassN(num.Body == cmp, fstclass, sndclass)
+func (p Params) AttrClassTab(num, tab Num, cmp int, fstclass, sndclass string) template.HTMLAttr {
+	return p.AttrClassN(num.Body != 0 && tab.Body == cmp, fstclass, sndclass)
 }
 
 // p is a pointer to flip (twice) the b.
@@ -176,7 +176,7 @@ func EnumClassAttrArgs(opt []string) (string, error) {
 }
 // */
 
-type Varlink struct {
+type VLink struct {
 	AlignClass string
 	CaretClass string
 	LinkClass  string
@@ -184,22 +184,23 @@ type Varlink struct {
 	LinkText   string `json:"-"` // static
 }
 
-func (p *Params) Variate(num *Num, cmp int, text, alignClass string) (Varlink, error) {
-	vl := Varlink{LinkText: text, LinkClass: "state"}
-	var toggleh bool
-	if num.Body == cmp {
+func (p *Params) Vlink(num *Num, body int, text, alignClass string) (VLink, error) {
+	vl := VLink{LinkText: text, LinkClass: "state"}
+	head := new(bool) // EncodeN will use .Head being false by default
+	if num.Body == body {
 		vl.CaretClass = "caret"
 		vl.LinkClass += " current"
-		if num.Body == cmp {
+		if (num.Alpha && !num.Head) || (!num.Alpha && num.Head) {
 			vl.LinkClass += " dropup"
-			toggleh = true
 		}
+		*head = !num.Head
 	}
-	qs, err := p.EncodeN(num, cmp, &toggleh)
+	qs, err := p.EncodeN(num, body, head)
 	if err != nil {
-		return Varlink{}, err
+		return VLink{}, err
 	}
 	vl.LinkHref = qs
+	vl.AlignClass = alignClass
 	return vl, nil
 }
 
@@ -250,15 +251,15 @@ func (pp PeriodParam) RefreshClassAttr(classes string) interface{} {
 */
 
 func (p *Params) EncodeN(num *Num, body int, thead *bool) (string, error) {
-	copy := num.Body
+	copy, head := num.Body, num.Head
 	num.Body = body
-	if thead != nil && *thead {
-		num.Head = !num.Head
+	if thead != nil {
+		num.Head = *thead
 	}
 	qs, err := p.Encode()
 	num.Body = copy
-	if thead != nil && *thead {
-		num.Head = !num.Head
+	if thead != nil {
+		num.Head = head
 	}
 	return "?" + qs, err
 }
@@ -308,7 +309,7 @@ func (p *Params) LinkN(num *Num, body int, badge string) (ALink, error) {
 	if badge == "" && num.Body == 0 { // "0" case && param is 0
 		class = " disabled active"
 	}
-	if badge == "+" && body >= num.Limit {
+	if badge == "+" && body > num.Limit {
 		class = " disabled"
 	}
 	if badge == "-" && body == 0 {

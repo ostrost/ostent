@@ -76,7 +76,7 @@ func (procs MPSlice) Ordered(para *params.Params) *PStable {
 		return pst
 	}
 
-	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(para.Psk, uids)) // not .StableSortBy
+	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(&para.Psk, uids)) // not .StableSortBy
 	for _, proc := range procs[:limitPS] {
 		pst.List = append(pst.List, operating.ProcData{
 			PID:      operating.Field(fmt.Sprintf("%d", proc.PID)),
@@ -116,11 +116,6 @@ type IndexData struct {
 	VERSION string
 
 	MinRefresh time.Duration
-
-	ExpandableDF *bool   `json:",omitempty"`
-	ExpandtextDF *string `json:",omitempty"`
-	ExpandableIF *bool   `json:",omitempty"`
-	ExpandtextIF *string `json:",omitempty"`
 }
 
 type PStable struct {
@@ -148,11 +143,6 @@ type IndexUpdate struct {
 	VagrantErrord   bool
 
 	Location *string `json:",omitempty"`
-
-	ExpandableDF *bool   `json:",omitempty"`
-	ExpandtextDF *string `json:",omitempty"`
-	ExpandableIF *bool   `json:",omitempty"`
-	ExpandtextIF *string `json:",omitempty"`
 }
 
 type Generic struct {
@@ -260,18 +250,20 @@ func (_ *IndexRegistry) InterfacePackets(mi operating.MetricInterface) (*operati
 	return mi.PacketsIn, mi.PacketsOut, false
 }
 
-func (ir *IndexRegistry) Interfaces(para *params.Params, ip InterfaceParts) ([]operating.InterfaceInfo, int) {
+func (ir *IndexRegistry) Interfaces(para *params.Params, ip InterfaceParts) []operating.InterfaceInfo {
 	private := ir.ListPrivateInterface()
+	para.Ifn.Limit = len(private)
 
 	private.SortSortBy(LessInterface)
+
 	var public []operating.InterfaceInfo
 	for i, mi := range private {
-		if !para.Expandif && i >= para.Toprows {
+		if i >= para.Ifn.Body {
 			break
 		}
 		public = append(public, FormatInterface(mi, ip))
 	}
-	return public, len(private)
+	return public
 }
 
 // ListPrivateInterface returns list of MetricInterface's by traversing the PrivateInterfaceRegistry.
@@ -354,44 +346,31 @@ func LessCPU(a, b operating.MetricCPU) bool {
 }
 
 func (ir *IndexRegistry) DF(para *params.Params, iu *IndexUpdate) bool {
-	if para.Hidedf {
-		iu.ExpandableDF = new(bool)
-		*iu.ExpandableDF = true
-		iu.ExpandtextDF = new(string)
-		*iu.ExpandtextDF = "Expanded"
-		return true
-	}
-	var lenp int
 	switch para.Dft.Body {
 	case enums.DFBYTES:
-		list, len := ir.DFbytes(para)
-		lenp, iu.DFbytes = len, &operating.DFbytes{List: list}
+		iu.DFbytes = &operating.DFbytes{List: ir.DFbytes(para)}
 	case enums.INODES:
-		list, len := ir.DFinodes(para)
-		lenp, iu.DFinodes = len, &operating.DFinodes{List: list}
+		iu.DFinodes = &operating.DFinodes{List: ir.DFinodes(para)}
 	default:
 		return false
 	}
-	iu.ExpandableDF = new(bool)
-	*iu.ExpandableDF = lenp > para.Toprows
-	iu.ExpandtextDF = new(string)
-	*iu.ExpandtextDF = fmt.Sprintf("Expanded (%d)", lenp)
 	return true
 }
 
-func (ir *IndexRegistry) DFbytes(para *params.Params) ([]operating.DiskBytes, int) {
+func (ir *IndexRegistry) DFbytes(para *params.Params) []operating.DiskBytes {
 	private := ir.ListPrivateDisk()
+	para.Dfn.Limit = len(private)
 
-	private.StableSortBy(LessDiskFunc(para.Dfk))
+	private.StableSortBy(LessDiskFunc(&para.Dfk))
 
 	var public []operating.DiskBytes
 	for i, disk := range private {
-		if !para.Expanddf && i > para.Toprows-1 {
+		if i >= para.Dfn.Body {
 			break
 		}
 		public = append(public, FormatDFbytes(disk))
 	}
-	return public, len(private)
+	return public
 }
 
 func FormatDFbytes(md operating.MetricDF) operating.DiskBytes {
@@ -411,19 +390,20 @@ func FormatDFbytes(md operating.MetricDF) operating.DiskBytes {
 	}
 }
 
-func (ir *IndexRegistry) DFinodes(para *params.Params) ([]operating.DiskInodes, int) {
+func (ir *IndexRegistry) DFinodes(para *params.Params) []operating.DiskInodes {
 	private := ir.ListPrivateDisk()
+	para.Dfn.Limit = len(private)
 
-	private.StableSortBy(LessDiskFunc(para.Dfk))
+	private.StableSortBy(LessDiskFunc(&para.Dfk))
 
 	var public []operating.DiskInodes
 	for i, disk := range private {
-		if !para.Expanddf && i > para.Toprows-1 {
+		if i >= para.Dfn.Body {
 			break
 		}
 		public = append(public, FormatDFinodes(disk))
 	}
-	return public, len(private)
+	return public
 }
 
 func FormatDFinodes(md operating.MetricDF) operating.DiskInodes {
@@ -467,31 +447,16 @@ func (procs MPSlice) IU(para *params.Params, iu *IndexUpdate) bool {
 }
 
 func (ir *IndexRegistry) IF(para *params.Params, iu *IndexUpdate) bool {
-	if para.Hideif {
-		iu.ExpandableIF = new(bool)
-		*iu.ExpandableIF = true
-		iu.ExpandtextIF = new(string)
-		*iu.ExpandtextIF = "Expanded"
-		return true
-	}
-	var lenp int
 	switch para.Ift.Body {
 	case enums.IFBYTES:
-		list, len := ir.Interfaces(para, ir.InterfaceBytes)
-		lenp, iu.IFbytes = len, &operating.Interfaces{List: list}
+		iu.IFbytes = &operating.Interfaces{List: ir.Interfaces(para, ir.InterfaceBytes)}
 	case enums.ERRORS:
-		list, len := Reg1s.Interfaces(para, ir.InterfaceErrors)
-		lenp, iu.IFerrors = len, &operating.Interfaces{List: list}
+		iu.IFerrors = &operating.Interfaces{List: Reg1s.Interfaces(para, ir.InterfaceErrors)}
 	case enums.PACKETS:
-		list, len := Reg1s.Interfaces(para, ir.InterfacePackets)
-		lenp, iu.IFpackets = len, &operating.Interfaces{List: list}
+		iu.IFpackets = &operating.Interfaces{List: Reg1s.Interfaces(para, ir.InterfacePackets)}
 	default:
 		return false
 	}
-	iu.ExpandableIF = new(bool)
-	*iu.ExpandableIF = lenp > para.Toprows
-	iu.ExpandtextIF = new(string)
-	*iu.ExpandtextIF = fmt.Sprintf("Expanded (%d)", lenp)
 	return true
 }
 
@@ -764,8 +729,8 @@ func getUpdates(req *http.Request, para *params.Params, forcerefresh bool) (Inde
 		{para.RefreshFunc(&para.Refreshmem), Reg1s.SWAP},
 		{para.RefreshFunc(&para.Refreshcpu), Reg1s.CPU},
 		{para.RefreshFunc(&para.Refreshvg), Reg1s.VG},
-		{para.RefreshFunc(&para.Refreshdf), Reg1s.DF},
-		{para.RefreshFunc(&para.Refreshif), Reg1s.IF},
+		{para.RefreshFunc(&para.Dfd), Reg1s.DF},
+		{para.RefreshFunc(&para.Ifd), Reg1s.IF},
 		{para.RefreshFunc(&para.Psd), psCopy.IU},
 
 		// always-shown bits:
@@ -810,13 +775,9 @@ func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 		DISTRIB: DISTRIB, // value set in init()
 		VERSION: VERSION, // value from server.go
 
-		MinRefresh:   minperiod.Duration,
-		Params:       updates.Params,
-		Generic:      updates.Generic,
-		ExpandableDF: updates.ExpandableDF,
-		ExpandtextDF: updates.ExpandtextDF,
-		ExpandableIF: updates.ExpandableIF,
-		ExpandtextIF: updates.ExpandtextIF,
+		MinRefresh: minperiod.Duration,
+		Params:     updates.Params,
+		Generic:    updates.Generic,
 	}
 
 	if updates.CPU != nil {

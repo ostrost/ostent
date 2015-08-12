@@ -25,7 +25,7 @@ var (
 func NewParams(minperiod flags.Period) *Params {
 	p := &Params{
 		Defaults:  make(map[interface{}]Num),
-		Ticks:     make(map[string]Ticks),
+		Ticks:     make(map[string]*Ticks),
 		MinPeriod: minperiod,
 	}
 
@@ -111,15 +111,15 @@ type Ticks struct {
 	Duration *Duration
 }
 
-func NewTicks(dp *Duration) Ticks {
-	return Ticks{Duration: dp}
+func NewTicks(dp *Duration) *Ticks {
+	return &Ticks{Duration: dp}
 }
 
 type Params struct {
 	Schema
 	Defaults  map[interface{}]Num `json:"-"`
 	Errors    MultiError          `json:",omitempty"`
-	Ticks     map[string]Ticks    `json:"-"`
+	Ticks     map[string]*Ticks   `json:"-"`
 	Toprows   int                 `json:"-"`
 	MinPeriod flags.Period        `json:"-"`
 }
@@ -127,84 +127,64 @@ type Params struct {
 type Schema struct {
 	Still     bool `url:"still,omitempty"`
 	Hidecpu   bool `url:"hidecpu,omitempty"`
-	Hidedf    bool `url:"hidedf,omitempty"`
-	Hideif    bool `url:"hideif,omitempty"`
 	Hidemem   bool `url:"hidemem,omitempty"`
 	Hideswap  bool `url:"hideswap,omitempty"`
 	Hidevg    bool `url:"hidevg,omitempty"`
 	Configcpu bool `url:"configcpu,omitempty"`
-	Configdf  bool `url:"configdf,omitempty"`
-	Configif  bool `url:"configif,omitempty"`
 	Configmem bool `url:"configmem,omitempty"`
 	Configvg  bool `url:"configvg,omitempty"`
-	Expanddf  bool `url:"expanddf,omitempty"`
-	Expandif  bool `url:"expandif,omitempty"`
 	Expandcpu bool `url:"expandcpu,omitempty"`
 
 	// Memn Num
 	// Cpun Num
-	// Dfn Num
-	// Ifn Num
+	Dfn Num `url:"dfn,default2"`
+	Ifn Num `url:"ifn,default2"`
 
 	// Psn encodes number of proccesses and ps config toggle.
 	// Negative value states config displaying and
 	// the absolute value still encodes the ps number.
-	Psn Num `url:"psn,default8"`            // limit
-	Psk Num `url:"psk,default1,enumerate9"` // sort, default PID
-	Dfk Num `url:"dfk,default1,enumerate5"` // sort, default FS
-	Dft Num `url:"dft,default2,enumerate2"` // tab, default DFBYTES
-	Ift Num `url:"ift,default3,enumerate3"` // tab, default IFBYTES
+	Psn Num `url:"psn,default8"`                    // limit
+	Psk Num `url:"psk,default1,enumerate9"`         // sort, default PID
+	Dfk Num `url:"dfk,default1,enumerate5"`         // sort, default FS
+	Dft Num `url:"dft,default2,enumerate2,posonly"` // tab, default DFBYTES
+	Ift Num `url:"ift,default3,enumerate3,posonly"` // tab, default IFBYTES
 
 	// The NewParams must populate .Ticks with EACH *d
+	Dfd Duration `url:"dfd,omitempty"`
+	Ifd Duration `url:"ifd,omitempty"`
 	Psd Duration `url:"psd,omitempty"`
 
 	Refreshcpu Duration `url:"refreshcpu,omitempty"`
-	Refreshdf  Duration `url:"refreshdf,omitempty"`
-	Refreshif  Duration `url:"refreshif,omitempty"`
 	Refreshmem Duration `url:"refreshmem,omitempty"`
 	Refreshvg  Duration `url:"refreshvg,omitempty"`
 }
 
-type Numbered struct {
+type Nlinks struct {
 	Zero, More, Less ALink
 }
-type Delayed struct {
+type Dlinks struct {
 	More, Less ALink
 }
 
 func (p *Params) MarshalJSON() ([]byte, error) {
 	d := struct {
 		Schema
-		Toggle     map[string]string
-		Delayed    map[string]Delayed
-		Numbered   map[string]Numbered
-		Variations map[string][]Varlink
-		// Defaults   map[string]Num
+		Tlinks map[string]string
+		Dlinks map[string]Dlinks
+		Nlinks map[string]Nlinks
+		Vlinks map[string][]VLink
 	}{
-		Schema:     p.Schema,
-		Toggle:     p.Toggles(),
-		Delayed:    p.Delayed(),
-		Numbered:   p.Numbered(),
-		Variations: p.Variations(),
-		// Defaults:   p.Defaults.StringKeysOnly(),
+		Schema: p.Schema,
+		Tlinks: p.Tlinks(),
+		Dlinks: p.Dlinks(),
+		Nlinks: p.Nlinks(),
+		Vlinks: p.Vlinks(),
 	}
 	return json.Marshal(d)
 }
 
-/*
-func (p Params) StringKeysOnly() map[string]Num {
-	m := make(map[string]Num)
-	for k, v := range p.Defaults {
-		if s, ok := k.(string); ok {
-			m[s] = v
-		}
-	}
-	return m
-}
-*/
-
-func (p Params) Numbered() map[string]Numbered {
-	m := make(map[string]Numbered)
+func (p Params) Nlinks() map[string]Nlinks {
+	m := make(map[string]Nlinks)
 	val := reflect.ValueOf(&p.Schema).Elem()
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
 		sf := typ.Field(i)
@@ -216,18 +196,18 @@ func (p Params) Numbered() map[string]Numbered {
 			continue
 		}
 		num := val.Field(i).Addr().Interface().(*Num)
-		red := Numbered{}
+		nl := Nlinks{}
 		// errors are ignored
-		red.Zero, _ = p.ZeroN(num)
-		red.More, _ = p.MoreN(num)
-		red.Less, _ = p.LessN(num)
-		m[sf.Name] = red
+		nl.Zero, _ = p.ZeroN(num)
+		nl.More, _ = p.MoreN(num)
+		nl.Less, _ = p.LessN(num)
+		m[sf.Name] = nl
 	}
 	return m
 }
 
-func (p Params) Delayed() map[string]Delayed {
-	m := make(map[string]Delayed)
+func (p Params) Dlinks() map[string]Dlinks {
+	m := make(map[string]Dlinks)
 	val := reflect.ValueOf(&p.Schema).Elem()
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
 		sf := typ.Field(i)
@@ -239,17 +219,17 @@ func (p Params) Delayed() map[string]Delayed {
 			continue
 		}
 		dur := val.Field(i).Addr().Interface().(*Duration)
-		dly := Delayed{}
+		dl := Dlinks{}
 		// errors are ignored
-		dly.More, _ = p.MoreD(dur)
-		dly.Less, _ = p.LessD(dur)
-		m[sf.Name] = dly
+		dl.More, _ = p.MoreD(dur)
+		dl.Less, _ = p.LessD(dur)
+		m[sf.Name] = dl
 	}
 	return m
 }
 
-func (p *Params) Variations() map[string][]Varlink {
-	m := make(map[string][]Varlink)
+func (p *Params) Vlinks() map[string][]VLink {
+	m := make(map[string][]VLink)
 	val := reflect.ValueOf(&p.Schema).Elem()
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
 		sf := typ.Field(i)
@@ -261,31 +241,38 @@ func (p *Params) Variations() map[string][]Varlink {
 			continue
 		}
 		v := val.Field(i).Addr().Interface().(*Num)
-		var links []Varlink
+		var vl []VLink
 		maxn, err := NumPrefix(tags[1:], "enumerate")
 		if err != nil { // err is gone
 			continue
 		}
 		for j := 1; j < maxn.Body+1; j++ { // indexed from 1
-			if vl, err := p.Variate(v, j, "", ""); err == nil { // err is gone
-				links = append(links, vl)
+			if v, err := p.Vlink(v, j, "", ""); err == nil { // err is gone
+				vl = append(vl, v)
 			}
 		}
-		m[sf.Name] = links
+		m[sf.Name] = vl
 	}
 	return m
 }
 
-func NumPrefix(words []string, prefix string) (Num, error) {
+func ContainsPrefix(words []string, prefix string) (string, bool) {
 	for _, w := range words {
 		if strings.HasPrefix(w, prefix) {
-			return DecodeNum(w[len(prefix):])
+			return w[len(prefix):], true // string may be ""
 		}
 	}
-	return Num{}, fmt.Errorf("%q not prefixing in %+v", prefix, words)
+	return "", false
 }
 
-func (p *Params) Toggles() map[string]string {
+func NumPrefix(words []string, prefix string) (Num, error) {
+	if s, ok := ContainsPrefix(words, prefix); ok && s != "" {
+		return DecodeNum(s)
+	}
+	return Num{}, fmt.Errorf("%q not prefixing with anything in %+v", prefix, words)
+}
+
+func (p *Params) Tlinks() map[string]string {
 	m := make(map[string]string)
 	val := reflect.ValueOf(&p.Schema).Elem()
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
@@ -322,15 +309,17 @@ func TagsOk(sf reflect.StructField) ([]string, bool) {
 }
 
 type Num struct {
-	Head        bool
-	Body        int
-	DefaultHead bool
-	DefaultBody int
-	Limit       int
+	Head         bool
+	Body         int
+	DefaultHead  bool
+	DefaultBody  int
+	Limit        int
+	Alpha        bool
+	PositiveOnly bool
 }
 
 func (num Num) EncodeValues(key string, values *url.Values) error {
-	if num.Head != num.DefaultHead || num.Body != num.DefaultBody {
+	if (!num.PositiveOnly && num.Head != num.DefaultHead) || num.Body != num.DefaultBody {
 		(*values)[key] = []string{num.String()}
 	}
 	return nil
@@ -340,7 +329,7 @@ func (num Num) MarshalJSON() ([]byte, error) { return json.Marshal(num.String())
 
 func (num Num) String() string {
 	var sym string
-	if num.Head {
+	if !num.PositiveOnly && num.Head {
 		sym = "-"
 		if num.Body == 0 {
 			sym = "!"
@@ -440,13 +429,18 @@ func (p *Params) SetDefaults(form url.Values, minperiod flags.Period) {
 			if !ok {
 				continue
 			}
+			tags, havetags := TagsOk(sf)
+			if havetags {
+				if _, ok := ContainsPrefix(tags[1:], "posonly"); ok {
+					num.PositiveOnly = true
+				}
+			}
 			num.DefaultHead = def.Head
 			num.DefaultBody = def.Body
 			if num.Head && num.Body != 0 { // all values specified, no need for defaults
 				continue
 			}
-			tags, ok := TagsOk(sf)
-			if !ok {
+			if !havetags {
 				continue
 			}
 			if _, ok := form[tags[0]]; ok { // have parameter

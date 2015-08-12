@@ -152,10 +152,10 @@
     >{{$disk.Total}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_dfbytes_table"}}{{$p := .Data.Params}}<table class="table table-hover"
+*/}}{{define "defines::define_dfbytes_table"}}{{$p := .Data.Params}}<table {{$p.AttrClassTab $p.Dfn $p.Dft 2 "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
-      >{{template "defines::headerenumlink" $p.Variate $p.Dfk 1 "Device" ""}}{{template "defines::headerenumlink" $p.Variate $p.Dfk 2 "Mounted" ""}}{{template "defines::headerenumlink" $p.Variate $p.Dfk 3 "Avail" "text-right"}}{{template "defines::headerenumlink" $p.Variate $p.Dfk 4 "Used" "text-right"}}{{template "defines::headerenumlink" $p.Variate $p.Dfk 5 "Total" "text-right"}}</tr
+      >{{template "defines::headerenumlink" $p.Vlink $p.Dfk 1 "Device" ""}}{{template "defines::headerenumlink" $p.Vlink $p.Dfk 2 "Mounted" ""}}{{template "defines::headerenumlink" $p.Vlink $p.Dfk 3 "Avail" "text-right"}}{{template "defines::headerenumlink" $p.Vlink $p.Dfk 4 "Used" "text-right"}}{{template "defines::headerenumlink" $p.Vlink $p.Dfk 5 "Total" "text-right"}}</tr
     ></thead
   ><tbody
     >{{template "defines::define_dfbytes_rows" .}}</tbody
@@ -174,7 +174,7 @@
     >{{$disk.Inodes}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_dfinodes_table"}}<table class="table table-hover"
+*/}}{{define "defines::define_dfinodes_table"}}{{$p := .Data.Params}}<table {{$p.AttrClassTab $p.Dfn $p.Dft 1 "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
       ><th class="header"
@@ -206,7 +206,7 @@
     >{{$if.Out}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_ifbytes_table"}}<table class="table table-hover"
+*/}}{{define "defines::define_ifbytes_table"}}{{$p := .Data.Params}}<table {{$p.AttrClassTab $p.Ifn $p.Ift 3 "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
       ><th
@@ -254,7 +254,7 @@
     >{{$if.Out}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_iferrors_table"}}<table class="table table-hover"
+*/}}{{define "defines::define_iferrors_table"}}{{$p := .Data.Params}}<table {{$p.AttrClassTab $p.Ifn $p.Ift 2 "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
       ><th
@@ -294,7 +294,7 @@
     >{{$if.Out}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_ifpackets_table"}}<table class="table table-hover"
+*/}}{{define "defines::define_ifpackets_table"}}{{$p := .Data.Params}}<table {{$p.AttrClassTab $p.Ifn $p.Ift 1 "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
       ><th
@@ -381,93 +381,124 @@
     ></div
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_paneldf"}}{{$p := .Data.Params}}<div
-  ><div
-    ><a    {{$p.AttrHrefToggle $p.Configdf}} {{class}}="btn-block"
-      ><span {{$p.AttrClassN $p.Configdf "h4 bg-info" "h4"}}
-        >Disk usage</span
-      ></a
-    ></div
-  ><div
-    ><div {{$p.AttrClassN $p.Configdf "config-margintop" "config-margintop collapse-hidden"}} id="dfconfig"
-      ><form {{$p.AttrActionForm}} {{class}}="form-inline"
-        ><input class="hidden-submit" type="submit"
-        ><div class="btn-toolbar"
-          ><div class="btn-group btn-group-sm" role="group"
-            ><a {{$p.AttrClassN $p.Hidedf "btn btn-default active" "btn btn-default"}}
-   {{$p.AttrHrefToggle $p.Hidedf}}
-              >Hidden</a
-            ><a {{$p.AttrClassN .Data.ExpandableDF "btn btn-default" "btn btn-default disabled"}}
-   {{$p.AttrHrefToggle $p.Expanddf}}
-              >{{.Data.ExpandtextDF}}</a
-            ></div
-          ><div class="btn-group btn-group-sm" role="group"
-            >{{template "defines::define_refresh" (Chain .Data "Refreshdf")}}</div
+*/}}{{define "defines::define_paneldf"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.Dfn "" "panel panel-default"}}
+  >  <div   {{$p.AttrClassP $p.Dfn "" "panel-heading"}}
+    >    <a   {{$p.AttrHrefToggleHead $p.Dfn}} {{class}}="panel-title btn-block"
+      >      <b {{$p.AttrClassP $p.Dfn "h4" "h4 bg-info"}}
+        >Disk usage</b
+      >    </a
+    >  </div
+  >  <table {{$p.AttrClassP $p.Dfn "table collapse-hidden" "table"}}
+    ><tr class="panel-config"
+      ><td class="col-md-2"
+        ><div class="nowrap text-right"
+          >Delay&nbsp;<span class="badge"
+            >{{$p.Dfd}}</span
           ></div
-        ></form
-      ><ul class="nav nav-tabs config-margintop"
-        ><li {{$p.AttrClassT $p.Dft 1 "active" ""}}
-          >{{template "defines::enumlink" $p.Variate $p.Dft 1 "Inodes" ""}}</li
-        ><li {{$p.AttrClassT $p.Dft 2 "active" ""}}
-          >{{template "defines::enumlink" $p.Variate $p.Dft 2 "Bytes" ""}}</li
-        ></ul
-      ></div
-    ></div
-  ><div
-    ><div {{$p.AttrClassN $p.Hidedf "collapse-hidden" ""}}
-      ><div {{$p.AttrClassT $p.Dft 1 "" "collapse-hidden"}}
-        >{{template "defines::define_dfinodes_table" .}}</div
-      ><div {{$p.AttrClassT $p.Dft 2 "" "collapse-hidden"}}
-        >{{template "defines::define_dfbytes_table" .}}</div
-      ></div
-    ></div
-  ></div
+        ></td
+      ><td
+        ><div class="btn-group nowrap-group" role="group"
+          >{{template "defines::badgedlinkleft" $p.LessD $p.Dfd}}{{template "defines::badgedlinkright" $p.MoreD $p.Dfd}}</div
+        ></td
+      ><td class="col-md-10" {{colspan}}="2"
+        ></td
+      ></tr
+    ><tr class="panel-config"
+      ><td class="col-md-2"
+        ><div class="nowrap text-right"
+          >Rows&nbsp;<span class="badge"
+            >{{$p.Dfn.Body}}</span
+          ></div
+        ></td
+      ><td
+        ><div class="btn-group nowrap-group" role="group"
+          >{{template "defines::badgedlinkleft" $p.LessN $p.Dfn}}{{template "defines::badgedlinkright" $p.MoreN $p.Dfn}}</div
+        ></td
+      ><td
+        ><div class="btn-group nowrap-group" role="group"
+          >{{template "defines::badgedlinkright" $p.ZeroN $p.Dfn}}</div
+        ></td
+      ><td class="col-md-10"
+        ></td
+      ></tr
+    ><tr class="panel-config"
+      ><td class="col-md-2"
+        ><div class="text-right"
+          >Select</div
+        ></td
+      ><td {{colspan}}="3"
+        ><ul class="nav nav-pills"
+          ><li {{$p.AttrClassTab $p.Dfn $p.Dft 1 "active" ""}}
+            >{{template "defines::enumlink" $p.Vlink $p.Dft 1 "Inodes" ""}}</li
+          ><li {{$p.AttrClassTab $p.Dfn $p.Dft 2 "active" ""}}
+            >{{template "defines::enumlink" $p.Vlink $p.Dft 2 "Bytes" ""}}</li
+          ></ul
+        ></td
+      ></tr
+    >  </table
+  >  {{template "defines::define_dfinodes_table" .}}
+  {{template "defines::define_dfbytes_table" .}}</div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelif"}}{{$p := .Data.Params}}<div
-  ><div
-    ><a      {{$p.AttrHrefToggle $p.Configif}} {{class}}="btn-block"
-      >  <span {{$p.AttrClassN $p.Configif "h4 bg-info" "h4"}}
-        >Interfaces</span
-      ></a
-    ></div
-  ><div
-    ><div {{$p.AttrClassN $p.Configif "config-margintop" "config-margintop collapse-hidden"}} id="ifconfig"
-      ><form {{$p.AttrActionForm}} {{class}}="form-inline"
-        ><input class="hidden-submit" type="submit"
-        ><div class="btn-toolbar"
-          ><div class="btn-group btn-group-sm" role="group"
-            ><a {{$p.AttrClassN $p.Hideif "btn btn-default active" "btn btn-default"}}
-   {{$p.AttrHrefToggle $p.Hideif}}
-              >Hidden</a
-            ><a {{$p.AttrClassN .Data.ExpandableIF "btn btn-default" "btn btn-default disabled"}}
-   {{$p.AttrHrefToggle $p.Expandif}}
-              >{{.Data.ExpandtextIF}}</a
-            ></div
-          ><div class="btn-group btn-group-sm" role="group"
-            >{{template "defines::define_refresh" (Chain .Data "Refreshif")}}</div
+*/}}{{define "defines::define_panelif"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.Ifn "" "panel panel-default"}}
+  >  <div   {{$p.AttrClassP $p.Ifn "" "panel-heading"}}
+    >    <a   {{$p.AttrHrefToggleHead $p.Ifn}} {{class}}="panel-title btn-block"
+      >      <b {{$p.AttrClassP $p.Ifn "h4" "h4 bg-info"}}
+        >Interfaces</b
+      >    </a
+    >  </div
+  >  <table {{$p.AttrClassP $p.Ifn "table collapse-hidden" "table"}}
+    ><tr class="panel-config"
+      ><td class="col-md-2"
+        ><div class="nowrap text-right"
+          >Delay&nbsp;<span class="badge"
+            >{{$p.Ifd}}</span
           ></div
-        ></form
-      ><ul class="nav nav-tabs config-margintop"
-        ><li {{$p.AttrClassT $p.Ift 1 "active" ""}}
-          >{{template "defines::enumlink" $p.Variate $p.Ift 1 "Packets" ""}}</li
-        ><li {{$p.AttrClassT $p.Ift 2 "active" ""}}
-          >{{template "defines::enumlink" $p.Variate $p.Ift 2 "Errors" ""}}</li
-        ><li {{$p.AttrClassT $p.Ift 3 "active" ""}}
-          >{{template "defines::enumlink" $p.Variate $p.Ift 3 "Bytes" ""}}</li
-        ></ul
-      ></div
-    ></div
-  ><div
-    ><div {{$p.AttrClassN $p.Hideif "collapse-hidden" ""}}
-      ><div {{$p.AttrClassT $p.Ift 1 "" "collapse-hidden"}}
-        >{{template "defines::define_ifpackets_table" .}}</div
-      ><div {{$p.AttrClassT $p.Ift 2 "" "collapse-hidden"}}
-        >{{template "defines::define_iferrors_table" .}}</div
-      ><div {{$p.AttrClassT $p.Ift 3 "" "collapse-hidden"}}
-        >{{template "defines::define_ifbytes_table" .}}</div
-      ></div
-    ></div
-  ></div
+        ></td
+      ><td
+        ><div class="btn-group nowrap-group" role="group"
+          >{{template "defines::badgedlinkleft" $p.LessD $p.Ifd}}{{template "defines::badgedlinkright" $p.MoreD $p.Ifd}}</div
+        ></td
+      ><td class="col-md-10" {{colspan}}="2"
+        ></td
+      ></tr
+    ><tr class="panel-config"
+      ><td class="col-md-2"
+        ><div class="nowrap text-right"
+          >Rows&nbsp;<span class="badge"
+            >{{$p.Ifn.Body}}</span
+          ></div
+        ></td
+      ><td
+        ><div class="btn-group nowrap-group" role="group"
+          >{{template "defines::badgedlinkleft" $p.LessN $p.Ifn}}{{template "defines::badgedlinkright" $p.MoreN $p.Ifn}}</div
+        ></td
+      ><td
+        ><div class="btn-group nowrap-group" role="group"
+          >{{template "defines::badgedlinkright" $p.ZeroN $p.Ifn}}</div
+        ></td
+      ><td class="col-md-10"
+        ></td
+      ></tr
+    ><tr class="panel-config"
+      ><td class="col-md-2"
+        ><div class="text-right"
+          >Select</div
+        ></td
+      ><td {{colspan}}="3"
+        ><ul class="nav nav-pills"
+          ><li {{$p.AttrClassTab $p.Ifn $p.Ift 1 "active" ""}}
+            >{{template "defines::enumlink" $p.Vlink $p.Ift 1 "Packets" ""}}</li
+          ><li {{$p.AttrClassTab $p.Ifn $p.Ift 2 "active" ""}}
+            >{{template "defines::enumlink" $p.Vlink $p.Ift 2 "Errors" ""}}</li
+          ><li {{$p.AttrClassTab $p.Ifn $p.Ift 3 "active" ""}}
+            >{{template "defines::enumlink" $p.Vlink $p.Ift 3 "Bytes" ""}}</li
+          ></ul
+        ></td
+      ></tr
+    >  </table
+  >  {{template "defines::define_ifpackets_table" .}}
+  {{template "defines::define_iferrors_table" .}}
+  {{template "defines::define_ifbytes_table" .}}</div
 >{{end}}{{/*
 */}}{{define "defines::define_panelmem"}}{{$p := .Data.Params}}<div
   ><div
@@ -594,10 +625,10 @@
     >{{$proc.Name}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_pstable"}}{{$p := .Data.Params}}<table {{$p.AttrClassZero $p.Psn "collapse-hidden" "table table-hover"}}
+*/}}{{define "defines::define_pstable"}}{{$p := .Data.Params}}<table {{$p.AttrClassNonzero $p.Psn "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
-      >{{template "defines::headerenumlink" $p.Variate $p.Psk 1 "PID" "text-right"}}{{template "defines::headerenumlink" $p.Variate $p.Psk 8 "UID" "text-right"}}{{template "defines::headerenumlink" $p.Variate $p.Psk 9 "USER" ""}}{{template "defines::headerenumlink" $p.Variate $p.Psk 2 "PR" "text-right"}}{{template "defines::headerenumlink" $p.Variate $p.Psk 3 "NI" "text-right"}}{{template "defines::headerenumlink" $p.Variate $p.Psk 4 "VIRT" "text-right"}}{{template "defines::headerenumlink" $p.Variate $p.Psk 5 "RES" "text-right"}}{{template "defines::headerenumlink" $p.Variate $p.Psk 6 "TIME" "text-center"}}{{template "defines::headerenumlink" $p.Variate $p.Psk 7 "COMMAND" ""}}</tr
+      >{{template "defines::headerenumlink" $p.Vlink $p.Psk 1 "PID" "text-right"}}{{template "defines::headerenumlink" $p.Vlink $p.Psk 8 "UID" "text-right"}}{{template "defines::headerenumlink" $p.Vlink $p.Psk 9 "USER" ""}}{{template "defines::headerenumlink" $p.Vlink $p.Psk 2 "PR" "text-right"}}{{template "defines::headerenumlink" $p.Vlink $p.Psk 3 "NI" "text-right"}}{{template "defines::headerenumlink" $p.Vlink $p.Psk 4 "VIRT" "text-right"}}{{template "defines::headerenumlink" $p.Vlink $p.Psk 5 "RES" "text-right"}}{{template "defines::headerenumlink" $p.Vlink $p.Psk 6 "TIME" "text-center"}}{{template "defines::headerenumlink" $p.Vlink $p.Psk 7 "COMMAND" ""}}</tr
     ></thead
   ><tbody
     >{{template "defines::define_psrows" .}}</tbody
@@ -655,8 +686,7 @@
 >{{end}}{{/*
 */}}{{define "defines::headerenumlink"}}<th {{class}}="header {{.AlignClass}}"
   ><a href={{.LinkHref}} {{class}}={{.LinkClass}}
-    >{{.LinkText}}
-  <span {{class}}={{.CaretClass}}
+    >  {{.LinkText}}<span {{class}}={{.CaretClass}}
       ></span
     ></a
   ></th

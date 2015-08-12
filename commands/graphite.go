@@ -45,11 +45,11 @@ func graphiteCommandLine(cli *flag.FlagSet) CommandLineHandler {
 }
 
 type Carbond struct {
-	Logger       *Logger
-	ServerAddr   string
-	Conn         net.Conn
-	params.Ticks // Expired, Tick methods
-	Failing      bool
+	Logger        *Logger
+	ServerAddr    string
+	Conn          net.Conn
+	*params.Ticks // Expired, Tick methods
+	Failing       bool
 }
 
 func (cd *Carbond) CloseChans()              {} // intentionally empty

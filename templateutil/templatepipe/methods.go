@@ -39,9 +39,9 @@ func (n Nota) Body() string {
 	return fmt.Sprintf(`{%s == "!0" ? "0" : %s.replace(/^-/, "")}`, s, s)
 }
 
-func (_ Nota) AttrClassZero(v Uncurler, fstclass, sndclass string) template.HTMLAttr {
+func (_ Nota) AttrClassNonzero(v Uncurler, fstclass, sndclass string) template.HTMLAttr {
 	s := v.Uncurl()
-	return SprintfAttr(` className={(%s == "!0" || %s == "0") ? %q : %q}`,
+	return SprintfAttr(` className={(%s != "!0" && %s != "0") ? %q : %q}`,
 		s, s, fstclass, sndclass)
 }
 
@@ -49,9 +49,10 @@ func (_ Nota) AttrClassN(v Uncurler, fstclass, sndclass string) template.HTMLAtt
 	return SprintfAttr(" className={%s ? %q : %q}", v.Uncurl(), fstclass, sndclass)
 }
 
-func (_ Nota) AttrClassT(v Uncurler, cmp int, fstclass, sndclass string) template.HTMLAttr {
-	return SprintfAttr(" className={%s == %d ? %q : %q}",
-		v.Uncurl(), cmp, fstclass, sndclass)
+func (_ Nota) AttrClassTab(num, tab Uncurler, cmp int, fstclass, sndclass string) template.HTMLAttr {
+	n := num.Uncurl()
+	return SprintfAttr(` className={(%s != "!0" && %s != "0" && %s == "%d") ? %q : %q}`,
+		n, n, tab.Uncurl(), cmp, fstclass, sndclass)
 }
 
 func (_ Nota) AttrClassParamsError(errs Uncurler, name, fstclass, sndclass string) template.HTMLAttr {
@@ -76,16 +77,15 @@ func (n Nota) EnumClassAttr(named, classif string, optelse ...string) (template.
 		n, uptr.Touint(), classif, classelse), nil
 } // */
 
-func (n Nota) Variate(this Uncurler, cmp int, text, alignClass string) interface{} {
+func (n Nota) Vlink(this Uncurler, cmp int, text, alignClass string) params.VLink {
 	split := strings.Split(this.Uncurl(), ".")
 	base := strings.Join(split[:len(split)-1], ".")
 	last := split[len(split)-1]
-	// param = Uncurl(param)
-	return params.Varlink{
+	return params.VLink{
 		AlignClass: alignClass,
-		CaretClass: fmt.Sprintf("{%s.Variations.%s[%d-1].%s}", base, last, cmp, "CaretClass"),
-		LinkClass:  fmt.Sprintf("{%s.Variations.%s[%d-1].%s}", base, last, cmp, "LinkClass"),
-		LinkHref:   fmt.Sprintf("{%s.Variations.%s[%d-1].%s}", base, last, cmp, "LinkHref"),
+		CaretClass: fmt.Sprintf("{%s.Vlinks.%s[%d-1].%s}", base, last, cmp, "CaretClass"),
+		LinkClass:  fmt.Sprintf("{%s.Vlinks.%s[%d-1].%s}", base, last, cmp, "LinkClass"),
+		LinkHref:   fmt.Sprintf("{%s.Vlinks.%s[%d-1].%s}", base, last, cmp, "LinkHref"),
 		LinkText:   text, // always static
 	}
 }
@@ -112,33 +112,33 @@ func (al ALink) Class(base string) string {
 	return fmt.Sprintf("{%q + \" \" + (%s != null ? %s : \"\")}", base, add, add)
 }
 
-func (n Nota) ZeroN(num Uncurler) (ALink, error) { return n.Numbered(num, "Zero", "") }
-func (n Nota) LessN(num Uncurler) (ALink, error) { return n.Numbered(num, "Less", "-") }
-func (n Nota) MoreN(num Uncurler) (ALink, error) { return n.Numbered(num, "More", "+") }
+func (n Nota) ZeroN(num Uncurler) (ALink, error) { return n.Nlink(num, "Zero", "") }
+func (n Nota) LessN(num Uncurler) (ALink, error) { return n.Nlink(num, "Less", "-") }
+func (n Nota) MoreN(num Uncurler) (ALink, error) { return n.Nlink(num, "More", "+") }
 
-func (n Nota) Numbered(v Uncurler, which, badge string) (ALink, error) {
+func (n Nota) Nlink(v Uncurler, which, badge string) (ALink, error) {
 	split := strings.Split(v.Uncurl(), ".")
 	base := strings.Join(split[:len(split)-1], ".")
 	last := split[len(split)-1]
 	var (
-		href  = fmt.Sprintf("{%s.Numbered.%s.%s.Href}", base, last, which)
-		text  = fmt.Sprintf("{%s.Numbered.%s.%s.Text}", base, last, which)
-		class = fmt.Sprintf("{%s.Numbered.%s.%s.Class}", base, last, which)
+		href  = fmt.Sprintf("{%s.Nlinks.%s.%s.Href}", base, last, which)
+		text  = fmt.Sprintf("{%s.Nlinks.%s.%s.Text}", base, last, which)
+		class = fmt.Sprintf("{%s.Nlinks.%s.%s.Class}", base, last, which)
 	)
 	return ALink{APlain: params.APlain{Href: href, Text: text, Badge: badge}, ExtraClass: class}, nil
 }
 
-func (n Nota) LessD(dur Uncurler) (ALink, error) { return n.Delayed(dur, "Less", "-") }
-func (n Nota) MoreD(dur Uncurler) (ALink, error) { return n.Delayed(dur, "More", "+") }
+func (n Nota) LessD(dur Uncurler) (ALink, error) { return n.Dlink(dur, "Less", "-") }
+func (n Nota) MoreD(dur Uncurler) (ALink, error) { return n.Dlink(dur, "More", "+") }
 
-func (n Nota) Delayed(v Uncurler, which, badge string) (ALink, error) {
+func (n Nota) Dlink(v Uncurler, which, badge string) (ALink, error) {
 	split := strings.Split(v.Uncurl(), ".")
 	base := strings.Join(split[:len(split)-1], ".")
 	last := split[len(split)-1]
 	var (
-		href  = fmt.Sprintf("{%s.Delayed.%s.%s.Href}", base, last, which)
-		text  = fmt.Sprintf("{%s.Delayed.%s.%s.Text}", base, last, which)
-		class = fmt.Sprintf("{%s.Delayed.%s.%s.Class}", base, last, which)
+		href  = fmt.Sprintf("{%s.Dlinks.%s.%s.Href}", base, last, which)
+		text  = fmt.Sprintf("{%s.Dlinks.%s.%s.Text}", base, last, which)
+		class = fmt.Sprintf("{%s.Dlinks.%s.%s.Class}", base, last, which)
 	)
 	return ALink{APlain: params.APlain{Href: href, Text: text, Badge: badge}, ExtraClass: class}, nil
 }
@@ -147,7 +147,7 @@ func (_ Nota) AttrHrefToggle(v Uncurler) interface{} {
 	split := strings.Split(v.Uncurl(), ".")
 	base := strings.Join(split[:len(split)-1], ".")
 	last := split[len(split)-1]
-	return fmt.Sprintf(" href={%s.Toggle.%s} onClick={this.handleClick}", base, last)
+	return fmt.Sprintf(" href={%s.Tlinks.%s} onClick={this.handleClick}", base, last)
 }
 
 func (n Nota) AttrHrefToggleHead(v Uncurler) interface{} {
