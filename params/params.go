@@ -1,439 +1,77 @@
 package params
 
-/*
-// Number is an enums.Uint with sign.
-type Number struct {
-	enums.Uint
-	Negative bool
-}
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"net/url"
+	"reflect"
+	"strconv"
+	"strings"
+	"time"
 
-// Upointer defines required (incl. pointer-) methods
-// for all enums.Uint-derived types interface.
-type Upointer interface {
-	enums.Uinter
-	Unmarshal(string, *bool) error
-	// UnmarshalJSON([]byte) error
-}
+	"github.com/google/go-querystring/query"
+	"github.com/gorilla/schema"
 
-// EnumLink has drop{down,up} link attributes.
-type EnumLink struct {
-	AlignClass string
-	Text       string `json:"-"` // static
-	Href       string
-	Class      string
-	CaretClass string
-}
+	"github.com/ostrost/ostent/flags"
+)
 
-// EncodeUint returns enums.uinter applied DropLink. .AlignClass is not filled.
-func (ep EnumParam) EncodeUint(pname string, uinter enums.Uinter) EnumLink {
-	values := ep.Query.ValuesCopy()
-	text, cur := ep.SetValue(values, pname, uinter)
-	dl := EnumLink{Text: text, Class: "state"}
-	if cur != nil {
-		dl.CaretClass = "caret"
-		dl.Class += " current"
-		if *cur {
-			dl.Class += " dropup"
-		}
-	}
-	dl.Href = "?" + ep.Query.ValuesEncode(values)
-	return dl
-}
-
-func (ep EnumParam) Title() (string, error) {
-	var text string
-	var uptr *enums.Uint
-	ep.Enumerate(func(name, s string, uter enums.Uinter) bool {
-		if u := uter.Touint(); u == ep.Number.Uint {
-			text = ep.EncodeUint(name, uter).Text
-			uptr = &u
-			return true
-		}
-		return false
-	})
-	if text != "" {
-		if *uptr == ep.EnumDecodec.Default.Uint {
-			return ep.EnumDecodec.TitlePrefix, nil
-		}
-		return ep.EnumDecodec.TitlePrefix + " " + strings.ToLower(text), nil
-	}
-	return "", fmt.Errorf("Cannot find text for EnumParam")
-}
-
-// SetValue modifies the values.
-func (ep EnumParam) SetValue(values url.Values, pname string, uinter enums.Uinter) (string, *bool) {
-	this := uinter.Touint()
-	_, low, err := uinter.Marshal()
-	if err != nil { // ignoring the error
-		return "", nil
-	}
-
-	text := ep.EnumDecodec.Text(strings.ToUpper(low))
-	ddef := ep.EnumDecodec.Default.Uint
-	dnum := ep.Number
-
-	// Default ordering is desc (values are numeric most of the time).
-	// Alpha values ordering: asc.
-	desc := !ep.IsAlpha(this)
-	if dnum.Negative {
-		desc = !desc
-	}
-	var ret *bool
-	if this == dnum.Uint {
-		ret = new(bool)
-		*ret = !desc
-	}
-	// for default, opposite of having a parameter is it's absence.
-	if this == ddef && ep.Specified {
-		values.Del(pname)
-		return text, ret
-	}
-	if this == dnum.Uint && !dnum.Negative && !ep.EnumDecodec.OnlyPositive {
-		low = "-" + low
-	}
-	values.Set(pname, low)
-	return text, ret
-}
-
-type EnumDecodec struct {
-	Pname        string
-	Default      Number
-	Alphas       []enums.Uint
-	Unew         func() (string, Upointer) `json:"-"` // func cannot be marshaled
-	Text         func(string) string       `json:"-"` // func cannot be marshaled
-	OnlyPositive bool
-	TitlePrefix  string
-}
-
-func (ep EnumParam) IsAlpha(p enums.Uint) bool {
-	for _, u := range ep.EnumDecodec.Alphas {
-		if u == p {
-			return true
-		}
-	}
-	return false
-}
-
-// TextFunc constructs string replacement func.
-// ab defines exact mapping, miss-case: fs funcs chain-apply.
-func TextFunc(ab map[string]string, fs ...func(string) string) func(string) string {
-	return func(s string) string {
-		if n, ok := ab[s]; ok {
-			return n
-		}
-		for _, f := range fs {
-			s = f(s)
-		}
-		return s
-	}
-}
-
-// TODO Enum* now handle sorting AND tabs:
-// - tabs don't need .Alphas
-// - tabs don't have negatives
-
-var EnumDecodecs = map[string]EnumDecodec{
-	"df": {
-		Default: Number{Uint: enums.Uint(enums.FS)},
-		Alphas:  []enums.Uint{enums.Uint(enums.FS), enums.Uint(enums.MP)},
-		Unew:    func() (string, Upointer) { return "df", new(enums.UintDF) },
-		Text:    TextFunc(map[string]string{"FS": "Device", "MP": "Mounted"}, strings.ToLower, strings.Title),
-	},
-	"dft": {
-		Default:      Number{Uint: enums.Uint(enums.DFBYTES)},
-		Unew:         func() (string, Upointer) { return "dft", new(enums.UintDFT) },
-		Text:         TextFunc(map[string]string{"DFBYTES": "Bytes"}, strings.ToLower, strings.Title),
-		OnlyPositive: true,
-		TitlePrefix:  "Disks",
-	},
-	"ift": {
-		Default:      Number{Uint: enums.Uint(enums.IFBYTES)},
-		Unew:         func() (string, Upointer) { return "ift", new(enums.UintIFT) },
-		Text:         TextFunc(map[string]string{"IFBYTES": "Bytes"}, strings.ToLower, strings.Title),
-		OnlyPositive: true,
-		TitlePrefix:  "Interfaces",
-	},
-	"ps": {
-		Default: Number{Uint: enums.Uint(enums.PID)},
-		Alphas:  []enums.Uint{enums.Uint(enums.NAME), enums.Uint(enums.USER)},
-		Unew:    func() (string, Upointer) { return "ps", new(enums.UintPS) },
-		Text:    TextFunc(map[string]string{"PRI": "PR", "NICE": "NI", "NAME": "COMMAND"}, strings.ToUpper),
-	},
-}
-
-var LimitDecodecs = map[string]LimitDecodec{"psn": {Default: 8}}
-
-var BoolDecodecs = map[string]BoolDecodec{
-	"still": {Default: false},
-
-	"hidecpu":  {Default: false},
-	"hidedf":   {Default: false},
-	"hideif":   {Default: false},
-	"hidemem":  {Default: false},
-	"hideps":   {Default: false},
-	"hideswap": {Default: false},
-	"hidevg":   {Default: false},
-
-	"configcpu": {Default: false},
-	"configdf":  {Default: false},
-	"configif":  {Default: false},
-	"configmem": {Default: false},
-	"configps":  {Default: false},
-	"configvg":  {Default: false},
-
-	"expanddf":  {Default: false},
-	"expandif":  {Default: false},
-	"expandcpu": {Default: false},
-}
-
-var PeriodParanames = []string{
-	"refreshcpu",
-	"refreshdf",
-	"refreshif",
-	"refreshmem",
-	"refreshps",
-	"refreshvg",
-}
-
-func (bp *BoolParam) Decode(form url.Values) {
-	values, ok := form[bp.BoolDecodec.Pname]
-	if !ok {
-		bp.Value = bp.BoolDecodec.Default
-		bp.Query.Del(bp.BoolDecodec.Pname)
-		return
-	}
-	var v string
-	if len(values) > 0 {
-		v = values[0]
-		if v == "1" || v == "true" || v == "True" || v == "TRUE" || v == "on" {
-			bp.QuerySet(nil, true)
-			bp.Query.Moved = true
-			return
-		}
-		if v != "" { // any value is invalid. Absence of parameter designates "false"
-			bp.Query.Del(bp.BoolDecodec.Pname)
-			return
-		}
-		bp.Value = true // v == ""
-	}
-	bp.QuerySet(nil, bp.Value)
-}
-
-// QuerySet modifies the values.
-func (bp BoolParam) QuerySet(values url.Values, value bool) {
-	if values == nil {
-		values = bp.Query.Values
-	}
-	if value == bp.BoolDecodec.Default {
-		values.Del(bp.BoolDecodec.Pname)
-	} else {
-		values.Set(bp.BoolDecodec.Pname, "")
-	}
-}
-
-func (ep *EnumParam) Decode(form url.Values) error {
-	_, uptr := ep.EnumDecodec.Unew()
-	n, spec, err := ep.Find(form[ep.EnumDecodec.Pname], uptr)
-	if err != nil {
-		return err
-	}
-	ep.Number = n
-	ep.Specified = spec
-	return nil
-}
-
-// Find side effects: uptr.Unmarshal and p.Values.Set
-func (ep *EnumParam) Find(values []string, uptr Upointer) (Number, bool, error) {
-	if len(values) == 0 || values[0] == "" {
-		return ep.EnumDecodec.Default, false, nil
-	}
-	var negate bool
-	in := values[0]
-	if in[0] == '-' {
-		in = in[1:]
-		negate = true
-	}
-	err := uptr.Unmarshal(in, &negate) // .UnmarshalJSON([]byte(fmt.Sprintf("%q", strings.ToUpper(in))))
-	if err != nil {
-		if _, ok := err.(enums.RenamedConstError); ok {
-			// The case when err (of type RenamedConstError) is set
-			// AND uptr actually holds corresponding ("renamed") value.
-			if _, l, err := uptr.Marshal(); err == nil {
-				if negate {
-					l = "-" + l
-				}
-				ep.Query.Set(ep.EnumDecodec.Pname, l)
-			}
-			ep.Query.Moved = true
-		}
-		return Number{}, true, err
-	}
-	n := Number{
-		Uint:     uptr.Touint(),
-		Negative: negate,
-	}
-	ep.Query.Set(ep.EnumDecodec.Pname, values[0])
-	return n, true, nil
-}
+var (
+	NumType      = reflect.TypeOf(Num{})
+	DurationType = reflect.TypeOf(Duration{})
+)
 
 // NewParams constructs new Params.
-// Global var BoolDecodecs, PeriodParanames are ranged.
 func NewParams(minperiod flags.Period) *Params {
-	p := &Params{}
-	p.NewQuery()
-	p.ENUM = NewParamsENUM(p)
-	p.BOOL = make(map[string]*BoolParam)
-	for k, v := range BoolDecodecs {
-		v.Pname = k
-		p.BOOL[k] = &BoolParam{
-			Query:       p.Query,
-			BoolDecodec: v,
-		}
+	p := &Params{
+		Defaults:  make(map[interface{}]Num),
+		Ticks:     make(map[string]*Ticks),
+		MinPeriod: minperiod,
 	}
-	p.LIMIT = make(map[string]*LimitParam)
-	for k, v := range LimitDecodecs {
-		v.Pname = k
-		p.LIMIT[k] = &LimitParam{
-			Query:        p.Query,
-			LimitDecodec: v,
+
+	val := reflect.ValueOf(&p.Schema).Elem()
+	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
+		sf := typ.Field(i)
+		tags, ok := TagsOk(sf)
+		if !ok || tags[0] == "" {
+			continue
 		}
-	}
-	p.PERIOD = make(map[string]*PeriodParam)
-	for _, k := range PeriodParanames {
-		p.PERIOD[k] = NewPeriodParam(minperiod, k, p.Query)
+		fv := val.Field(i)
+		if sft := sf.Type; sft == NumType {
+			if def, err := NumPrefix(tags[1:], "default"); err == nil { // otherwise err is ignored
+				num := fv.Addr().Interface()
+				p.Defaults[sf.Name] = def // ?
+				p.Defaults[num] = def
+			}
+		} else if sft == DurationType {
+			dur := fv.Addr().Interface().(*Duration)
+			p.Ticks[tags[0]] = NewTicks(dur)
+			// p.Defaults[dur] = def
+		}
 	}
 	return p
 }
 
-func NewPeriodParam(minperiod flags.Period, k string, q *Query) *PeriodParam {
-	return &PeriodParam{
-		Query: q,
-		PeriodDecodec: PeriodDecodec{
-			Pname: k,
-		},
-		Placeholder: minperiod,
-		Period:      flags.Period{Above: &minperiod.Duration},
-	}
-}
-
-// NewParamsENUM returns ENUM part of Params.
-// Global var EnumDecodecs is ranged.
-func NewParamsENUM(p *Params) map[string]*EnumParam {
-	if p == nil {
-		p = &Params{}
-		p.NewQuery()
-	}
-	enumap := make(map[string]*EnumParam)
-	for k, v := range EnumDecodecs {
-		v.Pname = k
-		enumap[k] = &EnumParam{
-			Query:       p.Query,
-			EnumDecodec: v,
+func (p Params) RefreshFunc(dp *Duration) func(bool) bool {
+	return func(force bool) bool {
+		if force {
+			return true
 		}
-	}
-	return enumap
-}
-
-// EnumParam represents enum parameter. Features MarshalJSON method
-// thus all fields are explicitly marked as non-marshallable.
-type EnumParam struct {
-	Query       *Query      `json:"-"` // url.Values here.
-	EnumDecodec EnumDecodec `json:"-"` // Read-only, an entry from global var EnumDecodecs.
-	Number      Number      `json:"-"` // Decoded Number.
-	Specified   bool        `json:"-"` // True if a valid value was specified for decoding.
-}
-
-func (ep EnumParam) LessorMore(r bool) bool {
-	// numeric values: flip r
-	if !ep.IsAlpha(ep.Number.Uint) {
-		r = !r
-	}
-	if ep.Number.Negative {
-		r = !r
-	}
-	return r
-}
-
-// MarshalJSON goes over all defined constants
-// (by the means of p.EnumDecodec.Unew() & .Marshal method of Uinter)
-// to returns a map of constants to DropLink.
-func (ep EnumParam) MarshalJSON() ([]byte, error) {
-	m := map[string]interface{}{} // DropLink{}
-	ep.Enumerate(func(name, s string, uter enums.Uinter) bool {
-		m[strings.ToUpper(s)] = ep.EncodeUint(name, uter)
+		for _, ti := range p.Ticks {
+			if dp == ti.Duration && ti.Expired() {
+				return true
+			}
+		}
 		return false
-	})
-	if title, err := ep.Title(); err == nil {
-		m["Title"] = title
-	}
-	m["Uint"] = fmt.Sprintf("%d", ep.Number.Uint)
-	return json.Marshal(m)
-}
-
-func (ep EnumParam) Enumerate(callback func(string, string, enums.Uinter) bool) {
-	name, uptr := ep.EnumDecodec.Unew()
-	uter := uptr.(enums.Uinter) // downcast. Upointer inlines Uinter.
-	marshal := uptr.Marshal
-	for i := 0; i < 100; i++ {
-		nextuter, s, err := marshal()
-		if err != nil {
-			break
-		}
-		if stop := callback(name, s, uter); stop {
-			break
-		}
-		marshal = nextuter.Marshal
-		uter = nextuter
 	}
 }
 
-func (bp BoolParam) MarshalJSON() ([]byte, error) {
-	return json.Marshal(struct {
-		Href  template.HTMLAttr
-		Value bool
-	}{
-		Href:  bp.EncodeToggle(),
-		Value: bp.Value,
-	})
-}
-
-func (p *Params) NewQuery() {
-	p.Query = &Query{ // new Query
-		Values: make(url.Values),
+func (p Params) Refresh(force bool) bool {
+	if force {
+		return true
 	}
-	for _, v := range p.BOOL {
-		v.Query = p.Query
-	}
-	for _, v := range p.ENUM {
-		v.Query = p.Query
-	}
-	for _, v := range p.LIMIT {
-		v.Query = p.Query
-	}
-	for _, v := range p.PERIOD {
-		v.Query = p.Query
-	}
-}
-
-func (p *Params) Decode(form url.Values) {
-	for _, v := range p.BOOL {
-		v.Decode(form)
-	}
-	for _, v := range p.ENUM {
-		v.Decode(form)
-	}
-	for _, v := range p.LIMIT {
-		v.Decode(form)
-	}
-	for _, v := range p.PERIOD {
-		v.Decode(form)
-	}
-	p.Toprows = map[bool]int{true: 1, false: 2}[p.BOOL["hideswap"].Value]
-}
-
-func (p *Params) Refresh(force bool) bool {
-	for _, v := range p.PERIOD {
-		if v.Refresh(force) {
+	for _, ti := range p.Ticks {
+		if ti.Expired() {
 			return true
 		}
 	}
@@ -445,213 +83,420 @@ func (p Params) Expired() bool {
 }
 
 func (p *Params) Tick() {
-	for _, v := range p.PERIOD {
+	for _, v := range p.Ticks {
 		v.Tick()
 	}
 }
 
-func (p *PeriodParam) Tick() {
-	p.Ticks++
-	if p.Ticks-1 >= int(time.Duration(p.Period.Duration)/time.Second) {
-		p.Ticks = 1 // expired
+func (ti Ticks) Expired() bool { return ti.Ticks <= 1 }
+
+func (ti *Ticks) Tick() {
+	ti.Ticks++
+	if ti.Ticks-1 >= int(ti.Duration.D/time.Second) {
+		ti.Ticks = 1 // expired
 	}
 }
 
-func (p PeriodParam) Refresh(forcerefresh bool) bool {
-	if forcerefresh {
-		return true
-	}
-	return p.Expired()
+type Ticks struct {
+	Ticks    int
+	Duration *Duration
 }
 
-func (p PeriodParam) Expired() bool {
-	return p.Ticks <= 1
+func NewTicks(dp *Duration) *Ticks {
+	return &Ticks{Duration: dp}
 }
 
 type Params struct {
-	BOOL    map[string]*BoolParam
-	ENUM    map[string]*EnumParam
-	LIMIT   map[string]*LimitParam
-	PERIOD  map[string]*PeriodParam
-	Toprows int `json:"-"`
-	Query   *Query
+	Schema
+	Defaults  map[interface{}]Num `json:"-"`
+	Ticks     map[string]*Ticks   `json:"-"`
+	MinPeriod flags.Period        `json:"-"`
 }
 
-type Query struct {
-	url.Values
-	Moved          bool
-	UpdateLocation bool
+type Schema struct {
+	Still bool `url:"still,omitempty"`
+
+	// The NewParams must populate .Ticks with EACH *Duration
+	Cpud Duration `url:"cpud,omitempty"`
+	Dfd  Duration `url:"dfd,omitempty"`
+	Ifd  Duration `url:"ifd,omitempty"`
+	Memd Duration `url:"memd,omitempty"`
+	Psd  Duration `url:"psd,omitempty"`
+	Vgd  Duration `url:"vgd,omitempty"`
+
+	// Num encodes a number and config toggle.
+	// "Negative" value states config displaying and
+	// the absolute value still encodes the number.
+
+	Cpun Num `url:"cpun,default2"`
+	Dfn  Num `url:"dfn,default2"`
+	Ifn  Num `url:"ifn,default2"`
+	Memn Num `url:"memn,default2"`
+	Psn  Num `url:"psn,default8"`
+	Vgn  Num `url:"vgn,default2"`
+
+	Dft Num `url:"dft,default2,enumerate2,posonly"` // tab, default DFBYTES
+	Ift Num `url:"ift,default3,enumerate3,posonly"` // tab, default IFBYTES
+	Psk Num `url:"psk,default1,enumerate9"`         // sort, default PID
+	Dfk Num `url:"dfk,default1,enumerate5"`         // sort, default FS
 }
 
-func (q Query) MarshalJSON() ([]byte, error) {
-	return json.Marshal(url.QueryEscape(q.ValuesEncode(nil)))
+type Nlinks struct {
+	Zero, More, Less ALink
+}
+type Dlinks struct {
+	More, Less ALink
 }
 
-func (q Query) ValuesCopy() url.Values {
-	copy := url.Values{}
-	for k, v := range q.Values {
-		copy[k] = v
-	}
-	return copy
-}
-
-type PeriodDecodec struct {
-	Pname string `json:"-"`
-}
-
-// PeriodParam represents period parameter.
-type PeriodParam struct {
-	Query         *Query `json:"-"` // Explicitly non-marshallable url.Values.
-	PeriodDecodec        // Read-only an entry from global var BoolDecoders.
-	// PeriodDecodec is inlined for access to .Pname for templates
-	Placeholder flags.Period
-	Period      flags.Period
-	Input       string
-	InputErrd   bool
-
-	// Params.Tick() must be called once per second; .Ticks is 1 when the period expired.
-	Ticks int `json:"-"` // Not to be marshaled.
-}
-
-func (pp *PeriodParam) Decode(form url.Values) {
-	values, ok := form[pp.PeriodDecodec.Pname]
-	if !ok || len(values) == 0 {
-		return
-	}
-	// empty values[0] is ok
-	if err := pp.Period.Set(values[0]); err != nil {
-		pp.Input, pp.InputErrd = values[0], true
-	} else {
-		pp.Input, pp.InputErrd = pp.Period.String(), false
-	}
-	if pp.Period.Duration != pp.Placeholder.Duration {
-		pp.Query.Set(pp.PeriodDecodec.Pname, pp.Input)
-	} else {
-		pp.Query.Del(pp.PeriodDecodec.Pname)
-	}
-	pp.Query.UpdateLocation = true // New location.
-}
-
-type LimitDecodec struct {
-	Pname   string
-	Default uint
-}
-
-type LimitParam struct {
-	Query        *Query       `json:"-"` // url.Values here.
-	LimitDecodec LimitDecodec `json:"-"` // Read-only, an entry from global var LimitDecoders.
-	Value        uint         `json:"-"` // Decoded value.
-}
-
-func (lp *LimitParam) Decode(form url.Values) {
-	values, ok := form[lp.LimitDecodec.Pname]
-	if !ok {
-		lp.Value = lp.LimitDecodec.Default
-		return
-	}
-	if len(values) == 0 {
-		lp.Query.Del(lp.LimitDecodec.Pname)
-		return
-	}
-	if i, err := strconv.Atoi(values[0]); err == nil && i > 0 && i <= 65536 {
-		lp.Value = uint(i)
-		lp.Query.Set(lp.LimitDecodec.Pname, fmt.Sprintf("%d", lp.Value))
-		return
-	}
-	lp.Query.Del(lp.LimitDecodec.Pname)
-}
-
-func (lp LimitParam) EncodeLess() template.HTMLAttr {
-	value := lp.Value
-	if value >= 2 {
-		g := math.Log2(float64(value))
-		n := math.Floor(g)
-		if n == g {
-			n--
-		}
-		value = uint(math.Pow(2, n))
-	}
-	return lp.Encode(&value)
-}
-
-func (lp LimitParam) EncodeMore() template.HTMLAttr {
-	value := lp.Value
-	if value <= 32768 { // up to 65536
-		value = uint(math.Pow(2, 1+math.Floor(math.Log2(float64(value)))))
-	}
-	return lp.Encode(&value)
-}
-
-func (lp LimitParam) Encode(this *uint) template.HTMLAttr {
-	if this == nil {
-		this = &lp.Value
-	}
-	values := lp.Query.ValuesCopy()
-	if *this != lp.LimitDecodec.Default {
-		values.Set(lp.LimitDecodec.Pname, fmt.Sprintf("%d", *this))
-	} else {
-		values.Del(lp.LimitDecodec.Pname)
-	}
-	return template.HTMLAttr("?" + lp.Query.ValuesEncode(values))
-}
-
-func (lp LimitParam) MarshalJSON() ([]byte, error) {
-	return json.Marshal(struct {
-		LessHref, MoreHref template.HTMLAttr
+func (p *Params) MarshalJSON() ([]byte, error) {
+	d := struct {
+		Schema
+		Tlinks map[string]string
+		Dlinks map[string]Dlinks
+		Nlinks map[string]Nlinks
+		Vlinks map[string][]VLink
 	}{
-		LessHref: lp.EncodeLess(),
-		MoreHref: lp.EncodeMore(),
-	})
-}
-
-type BoolDecodec struct {
-	Pname   string
-	Default bool
-}
-
-// BoolParam represents bool parameter. Features MarshalJSON method
-// thus all fields are explicitly marked as non-marshallable.
-type BoolParam struct {
-	Query       *Query      `json:"-"` // url.Values here.
-	BoolDecodec BoolDecodec `json:"-"` // Read-only, an entry from global var BoolDecoders.
-	Value       bool        `json:"-"` // Decoded value.
-}
-
-// EncodeToggle returns template.HTMLAttr having the bp value inverted and encoded.
-// The other values are copied from bp.Query.Values.
-func (bp BoolParam) EncodeToggle() template.HTMLAttr {
-	values := bp.Query.ValuesCopy()
-	bp.QuerySet(values, !bp.Value)
-	return template.HTMLAttr("?" + bp.Query.ValuesEncode(values))
-}
-
-func (q Query) ValuesEncode(v url.Values) string {
-	if v == nil {
-		v = q.Values
+		Schema: p.Schema,
+		Tlinks: p.Tlinks(),
+		Dlinks: p.Dlinks(),
+		Nlinks: p.Nlinks(),
+		Vlinks: p.Vlinks(),
 	}
-	if v == nil {
-		return ""
+	return json.Marshal(d)
+}
+
+func (p Params) Nlinks() map[string]Nlinks {
+	m := make(map[string]Nlinks)
+	val := reflect.ValueOf(&p.Schema).Elem()
+	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
+		sf := typ.Field(i)
+		if sf.Type != NumType {
+			continue
+		}
+		tags, ok := TagsOk(sf)
+		if !ok || tags[0] == "" {
+			continue
+		}
+		num := val.Field(i).Addr().Interface().(*Num)
+		nl := Nlinks{}
+		// errors are ignored
+		nl.Zero, _ = p.ZeroN(num)
+		nl.More, _ = p.MoreN(num)
+		nl.Less, _ = p.LessN(num)
+		m[sf.Name] = nl
 	}
-	var buf bytes.Buffer
-	keys := make([]string, 0, len(v))
-	for k := range v {
-		keys = append(keys, k)
+	return m
+}
+
+func (p Params) Dlinks() map[string]Dlinks {
+	m := make(map[string]Dlinks)
+	val := reflect.ValueOf(&p.Schema).Elem()
+	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
+		sf := typ.Field(i)
+		if sf.Type != DurationType {
+			continue
+		}
+		tags, ok := TagsOk(sf)
+		if !ok || tags[0] == "" {
+			continue
+		}
+		dur := val.Field(i).Addr().Interface().(*Duration)
+		dl := Dlinks{}
+		// errors are ignored
+		dl.More, _ = p.MoreD(dur)
+		dl.Less, _ = p.LessD(dur)
+		m[sf.Name] = dl
 	}
-	sort.Strings(keys)
-	for _, k := range keys {
-		vs := v[k]
-		prefix := url.QueryEscape(k)
-		for _, v := range vs {
-			if buf.Len() > 0 {
-				buf.WriteByte('&')
+	return m
+}
+
+func (p *Params) Vlinks() map[string][]VLink {
+	m := make(map[string][]VLink)
+	val := reflect.ValueOf(&p.Schema).Elem()
+	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
+		sf := typ.Field(i)
+		if sf.Type != NumType {
+			continue
+		}
+		tags, ok := TagsOk(sf)
+		if !ok || tags[0] == "" {
+			continue
+		}
+		v := val.Field(i).Addr().Interface().(*Num)
+		var vl []VLink
+		maxn, err := NumPrefix(tags[1:], "enumerate")
+		if err != nil { // err is gone
+			continue
+		}
+		for j := 1; j < maxn.Body+1; j++ { // indexed from 1
+			if v, err := p.Vlink(v, j, "", ""); err == nil { // err is gone
+				vl = append(vl, v)
 			}
-			buf.WriteString(prefix)
-			if v == "" {
+		}
+		m[sf.Name] = vl
+	}
+	return m
+}
+
+func ContainsPrefix(words []string, prefix string) (string, bool) {
+	for _, w := range words {
+		if strings.HasPrefix(w, prefix) {
+			return w[len(prefix):], true // string may be ""
+		}
+	}
+	return "", false
+}
+
+func NumPrefix(words []string, prefix string) (Num, error) {
+	if s, ok := ContainsPrefix(words, prefix); ok && s != "" {
+		return DecodeNum(s)
+	}
+	return Num{}, fmt.Errorf("%q not prefixing with anything in %+v", prefix, words)
+}
+
+func (p *Params) Tlinks() map[string]string {
+	m := make(map[string]string)
+	val := reflect.ValueOf(&p.Schema).Elem()
+	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
+		sf := typ.Field(i)
+		if tags, ok := TagsOk(sf); !ok || tags[0] == "" {
+			continue
+		}
+		if sf.Type.Kind() == reflect.Bool {
+			v := val.Field(i).Addr().Interface().(*bool)
+			if s, err := p.HrefToggle(v); err == nil {
+				m[sf.Name] = s
+			}
+		}
+		if sf.Type == NumType {
+			num := val.Field(i).Addr().Interface().(*Num)
+			if href, err := p.HrefToggleHead(num); err == nil {
+				m[sf.Name] = href
+			}
+		}
+	}
+	return m
+}
+
+func TagsOk(sf reflect.StructField) ([]string, bool) {
+	if sf.PkgPath != "" { // unexported
+		return nil, false
+	}
+
+	tag := sf.Tag.Get("url")
+	if tag == "" || tag == "-" {
+		return nil, false
+	}
+	return strings.Split(tag, ","), true
+}
+
+type Num struct {
+	Head         bool
+	Body         int
+	DefaultHead  bool
+	DefaultBody  int
+	Limit        int
+	Alpha        bool
+	PositiveOnly bool
+}
+
+func (num Num) EncodeValues(key string, values *url.Values) error {
+	if (!num.PositiveOnly && num.Head != num.DefaultHead) || num.Body != num.DefaultBody {
+		(*values)[key] = []string{num.String()}
+	}
+	return nil
+}
+
+func (num Num) MarshalJSON() ([]byte, error) { return json.Marshal(num.String()) }
+
+func (num Num) String() string {
+	var sym string
+	if !num.PositiveOnly && num.Head {
+		sym = "-"
+		if num.Body == 0 {
+			sym = "!"
+		}
+	}
+	return fmt.Sprintf("%s%d", sym, num.Body)
+}
+
+func DecodePositive(value string) (int, error) {
+	i, err := strconv.Atoi(value)
+	if err != nil {
+		return 0, err
+	}
+	if i < 0 {
+		return 0, fmt.Errorf("Integer decoded may not be negative")
+	}
+	return i, nil
+}
+
+func DecodeNum(value string) (Num, error) {
+	var head bool
+	if len(value) > 0 && (value[0] == '-' || value[0] == '!') {
+		head, value = true, value[1:]
+	}
+	body, err := DecodePositive(value)
+	if err != nil {
+		return Num{}, err
+	}
+	return Num{Head: head, Body: body}, nil
+}
+
+// ConvertNum is a schema decoder's converter into Num.
+func ConvertNum(value string) reflect.Value {
+	num, err := DecodeNum(value)
+	if err != nil { // err is lost
+		return reflect.Value{}
+	}
+	return reflect.ValueOf(num)
+}
+
+type Duration struct {
+	D       time.Duration
+	Default time.Duration
+}
+
+func (dur Duration) EncodeValues(key string, values *url.Values) error {
+	if dur.D != dur.Default {
+		(*values)[key] = []string{dur.String()}
+	}
+	return nil
+}
+
+func (dur Duration) MarshalJSON() ([]byte, error) { return json.Marshal(dur.String()) }
+
+func (dur Duration) String() string { return flags.DurationString(dur.D) }
+
+// ConvertDurationFunc creates a schema decoder's converter into Duration.
+func ConvertDurationFunc(minperiod flags.Period) func(string) reflect.Value {
+	return func(value string) reflect.Value {
+		p := flags.Period{Above: &minperiod.Duration}
+		if err := p.Set(value); err != nil {
+			return reflect.Value{}
+		}
+		return reflect.ValueOf(Duration{D: p.Duration})
+	}
+}
+
+func (p *Params) ResetSchema() {
+	val := reflect.ValueOf(&p.Schema).Elem()
+	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
+		sf := typ.Field(i)
+		fv := val.Field(i)
+		switch sf.Type.Kind() {
+		case reflect.Bool:
+			fv.SetBool(false)
+		case reflect.Int:
+			fv.SetInt(0)
+		}
+		switch sf.Type {
+		case NumType:
+			fv.Set(reflect.ValueOf(Num{}))
+		case DurationType:
+			fv.Set(reflect.ValueOf(Duration{}))
+		}
+	}
+}
+
+func (p *Params) SetDefaults(form url.Values, minperiod flags.Period) {
+	val := reflect.ValueOf(&p.Schema).Elem()
+	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
+		sf := typ.Field(i)
+		fv := val.Field(i)
+		switch sf.Type {
+		case NumType:
+			num := fv.Addr().Interface().(*Num)
+			def, ok := p.Defaults[num]
+			if !ok {
 				continue
 			}
-			buf.WriteString("=" + url.QueryEscape(v))
+			tags, havetags := TagsOk(sf)
+			if havetags {
+				if _, ok := ContainsPrefix(tags[1:], "posonly"); ok {
+					num.PositiveOnly = true
+				}
+			}
+			num.DefaultHead = def.Head
+			num.DefaultBody = def.Body
+			if num.Head && num.Body != 0 { // all values specified, no need for defaults
+				continue
+			}
+			if !havetags {
+				continue
+			}
+			if _, ok := form[tags[0]]; ok { // have parameter
+				continue
+			}
+			if !num.Head { // not allow false init value
+				num.Head = def.Head
+			}
+			if num.Body == 0 { // not allow 0 init value
+				num.Body = def.Body
+			}
+		case DurationType:
+			dur := fv.Addr().Interface().(*Duration)
+			dur.Default = minperiod.Duration
+			if dur.D != time.Duration(0) { // value specified, no need for defaults
+				continue
+			}
+			tags, ok := TagsOk(sf)
+			if !ok {
+				continue
+			}
+			if _, ok := form[tags[0]]; ok { // have parameter
+				continue
+			}
+			dur.D = minperiod.Duration
 		}
 	}
-	return buf.String()
 }
-// */
+
+func (p *Params) Decode(req *http.Request) error {
+	if err := req.ParseForm(); err != nil { // do ParseForm even if req.Form == nil
+		return err
+	}
+	var moved bool
+	if _, moved = req.Form["df"]; moved {
+		req.Form.Del("df")
+	}
+	if _, ok := req.Form["ps"]; ok {
+		req.Form.Del("ps")
+		moved = true
+	}
+
+	dec := schema.NewDecoder()
+	dec.SetAliasTag("url")
+	dec.IgnoreUnknownKeys(true)
+	dec.ZeroEmpty(true)
+	dec.RegisterConverter(Num{}, ConvertNum)
+	dec.RegisterConverter(Duration{}, ConvertDurationFunc(p.MinPeriod))
+
+	p.ResetSchema()
+	err := dec.Decode(&p.Schema, req.Form)
+	if err != nil {
+		return err
+	}
+	p.SetDefaults(req.Form, p.MinPeriod)
+	if !moved {
+		return nil
+	}
+	s, err := p.Encode()
+	if err != nil {
+		return err
+	}
+	return RenamedConstError("?" + s)
+}
+
+func (p Params) Encode() (string, error) {
+	values, err := query.Values(p.Schema)
+	if err != nil {
+		return "", err
+	}
+	return values.Encode(), nil
+}
+
+// RenamedConstError denotes an error.
+type RenamedConstError string
+
+func (rc RenamedConstError) Error() string { return string(rc) }

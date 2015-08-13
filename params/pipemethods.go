@@ -14,31 +14,25 @@ func SprintfAttr(format string, args ...interface{}) template.HTMLAttr {
 	return template.HTMLAttr(fmt.Sprintf(format, args...))
 }
 
-func (p Params) AttrClassP(num Num, fstclass, sndclass string) template.HTMLAttr {
-	return p.AttrClassN(!num.Head, fstclass, sndclass)
-}
-
-func (p Params) AttrClassNonzero(num Num, fstclass, sndclass string) template.HTMLAttr {
-	return p.AttrClassN(num.Body != 0, fstclass, sndclass)
-}
-
-func (p Params) AttrClassN(b bool, fstclass, sndclass string) template.HTMLAttr {
-	// p is unused
-	s := fstclass
-	if !b {
-		s = sndclass
+func (p Params) AttrClassP(num Num, class, sndclass string) template.HTMLAttr {
+	if num.Head {
+		class = sndclass
 	}
-	return SprintfAttr(" class=%q", s)
+	return SprintfAttr(" class=%q", class)
 }
 
-/*
-func (bp BoolParam) ToggleHrefAttr() interface{} {
-	return SprintfAttr(" href=\"%s\"", bp.EncodeToggle())
+func (p Params) AttrClassNonzero(num Num, class, sndclass string) template.HTMLAttr {
+	if num.Body == 0 {
+		class = sndclass
+	}
+	return SprintfAttr(" class=%q", class)
 }
-*/
 
-func (p Params) AttrClassTab(num, tab Num, cmp int, fstclass, sndclass string) template.HTMLAttr {
-	return p.AttrClassN(num.Body != 0 && tab.Body == cmp, fstclass, sndclass)
+func (p Params) AttrClassTab(num, tab Num, cmp int, class, sndclass string) template.HTMLAttr {
+	if num.Body == 0 || tab.Body != cmp {
+		class = sndclass
+	}
+	return SprintfAttr(" class=%q", class)
 }
 
 // p is a pointer to flip (twice) the b.
@@ -96,33 +90,6 @@ func (p *Params) AttrHrefToggleHead(num *Num) (interface{}, error) {
 	return SprintfAttr(" href=%q", href), err
 }
 
-/*
-func (ep EnumParam) EnumClassAttr(named, classif string, optelse ...string) (template.HTMLAttr, error) {
-	classelse, err := EnumClassAttrArgs(optelse)
-	if err != nil {
-		return template.HTMLAttr(""), err
-	}
-	_, uptr := ep.EnumDecodec.Unew()
-	if err := uptr.Unmarshal(named, new(bool)); err != nil {
-		return template.HTMLAttr(""), err
-	}
-	if ep.Number.Uint != uptr.Touint() {
-		classif = classelse
-	}
-	return SprintfAttr(" class=%q", classif), nil
-}
-
-func EnumClassAttrArgs(opt []string) (string, error) {
-	if len(opt) == 1 {
-		return opt[0], nil
-	} else if len(opt) > 1 {
-		return "", fmt.Errorf("number of args for EnumClassAttr: either 2 or 3 got %d",
-			2+len(opt))
-	}
-	return "", nil
-}
-// */
-
 type VLink struct {
 	AlignClass string
 	CaretClass string
@@ -150,52 +117,6 @@ func (p *Params) Vlink(num *Num, body int, text, alignClass string) (VLink, erro
 	vl.AlignClass = alignClass
 	return vl, nil
 }
-
-/*
-func (ep EnumParam) EnumLink(args ...string) (EnumLink, error) {
-	named, aclass := EnumLinkArgs(args)
-	pname, uptr := ep.EnumDecodec.Unew()
-	if err := uptr.Unmarshal(named, new(bool)); err != nil {
-		return EnumLink{}, err
-	}
-	l := ep.EncodeUint(pname, uptr)
-	l.AlignClass = aclass
-	return l, nil
-}
-
-func EnumLinkArgs(args []string) (string, string) {
-	var named string
-	if len(args) > 0 {
-		named = args[0]
-	}
-	aclass := "text-right" // default
-	if len(args) > 1 {
-		aclass = ""
-		if args[1] != "" {
-			aclass = "text-" + args[1]
-		}
-	}
-	return named, aclass
-}
-
-func (pp PeriodParam) PeriodNameAttr() interface{} {
-	return SprintfAttr(" name=%q", pp.Pname)
-}
-
-func (pp PeriodParam) PeriodValueAttr() interface{} {
-	if pp.Input == "" {
-		return template.HTMLAttr("")
-	}
-	return SprintfAttr(" value=\"%s\"", pp.Input)
-}
-
-func (pp PeriodParam) RefreshClassAttr(classes string) interface{} {
-	if pp.InputErrd {
-		classes += " has-warning"
-	}
-	return SprintfAttr(" class=%q", classes)
-}
-*/
 
 func (p *Params) EncodeN(num *Num, body int, thead *bool) (string, error) {
 	copy, head := num.Body, num.Head

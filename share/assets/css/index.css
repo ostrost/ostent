@@ -7385,9 +7385,6 @@ fieldset[disabled] .btn-danger.active {
   -webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1);
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1);
 }
-.config-margintop {
-  margin-top: 10px;
-}
 .padding-leftless {
   padding-left: 0;
 }
@@ -7414,6 +7411,7 @@ fieldset[disabled] .btn-danger.active {
   white-space: nowrap;
   overflow: hidden;
 }
+/*
 .collapse-checkbox:checked + .clip {
   text-decoration: overline;
   word-wrap: break-word;
@@ -7421,22 +7419,18 @@ fieldset[disabled] .btn-danger.active {
   white-space: normal;
   overflow-x: visible;
 }
-.hidden-submit {
-  display: none;
-}
+*/
 .collapse-hidden {
   display: none;
 }
-.collapse-collapse {
-  display: none;
-}
-.collapse-checkbox {
-  display: none;
-}
-.collapse-checkbox:checked ~ .collapse-collapse,
+/*
+.collapse-collapse { display: none; }
+.collapse-checkbox { display: none; }
+.collapse-checkbox:checked ~     .collapse-collapse,
 .collapse-checkbox:checked ~ div .collapse-collapse {
   display: block;
 }
+*/
 .nowrap {
   white-space: nowrap;
 }
@@ -7466,8 +7460,5 @@ table thead tr .header a:hover {
 table thead tr .header a.state.current {
   white-space: nowrap;
   vertical-align: middle;
-}
-.form-inline .input-group > .form-control.width-fourem {
-  width: 4em;
 }
 /*# sourceMappingURL=index.css.map */

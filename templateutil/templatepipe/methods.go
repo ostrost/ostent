@@ -41,36 +41,14 @@ func (_ Nota) AttrClassNonzero(v Uncurler, fstclass, sndclass string) template.H
 		s, s, fstclass, sndclass)
 }
 
-func (_ Nota) AttrClassN(v Uncurler, fstclass, sndclass string) template.HTMLAttr {
-	return SprintfAttr(" className={%s ? %q : %q}", v.Uncurl(), fstclass, sndclass)
-}
-
 func (_ Nota) AttrClassTab(num, tab Uncurler, cmp int, fstclass, sndclass string) template.HTMLAttr {
 	n := num.Uncurl()
 	return SprintfAttr(` className={(%s != "!0" && %s != "0" && %s == "%d") ? %q : %q}`,
 		n, n, tab.Uncurl(), cmp, fstclass, sndclass)
 }
 
-/*
-func (n Nota) EnumClassAttr(named, classif string, optelse ...string) (template.HTMLAttr, error) {
-	classelse, err := params.EnumClassAttrArgs(optelse)
-	if err != nil {
-		return template.HTMLAttr(""), err
-	}
-	eparams := params.NewParamsENUM(nil)
-	ed := eparams[n.Base()].EnumDecodec
-	_, uptr := ed.Unew()
-	if err := uptr.Unmarshal(named, new(bool)); err != nil {
-		return template.HTMLAttr(""), err
-	}
-	return SprintfAttr(" className={(%s.Uint == %d) ? %q : %q}",
-		n, uptr.Touint(), classif, classelse), nil
-} // */
-
 func (n Nota) Vlink(this Uncurler, cmp int, text, alignClass string) params.VLink {
-	split := strings.Split(this.Uncurl(), ".")
-	base := strings.Join(split[:len(split)-1], ".")
-	last := split[len(split)-1]
+	base, last := Split(this)
 	return params.VLink{
 		AlignClass: alignClass,
 		CaretClass: fmt.Sprintf("{%s.Vlinks.%s[%d-1].%s}", base, last, cmp, "CaretClass"),
@@ -79,21 +57,6 @@ func (n Nota) Vlink(this Uncurler, cmp int, text, alignClass string) params.VLin
 		LinkText:   text, // always static
 	}
 }
-
-/*
-func (n Nota) EnumLink(args ...string) (interface{}, error) {
-	named, aclass := params.EnumLinkArgs(args)
-	eparams := params.NewParamsENUM(nil)
-	ed := eparams[n.Base()].EnumDecodec
-	return params.EnumLink{
-		AlignClass: aclass,
-		Text:       ed.Text(named), // always static
-		Href:       fmt.Sprintf("{%s.%s.%s}", n, named, "Href"),
-		Class:      fmt.Sprintf("{%s.%s.%s}", n, named, "Class"),
-		CaretClass: fmt.Sprintf("{%s.%s.%s}", n, named, "CaretClass"),
-	}, nil
-}
-// */
 
 type ALink params.ALink
 
@@ -107,9 +70,7 @@ func (n Nota) LessN(num Uncurler) (ALink, error) { return n.Nlink(num, "Less", "
 func (n Nota) MoreN(num Uncurler) (ALink, error) { return n.Nlink(num, "More", "+") }
 
 func (n Nota) Nlink(v Uncurler, which, badge string) (ALink, error) {
-	split := strings.Split(v.Uncurl(), ".")
-	base := strings.Join(split[:len(split)-1], ".")
-	last := split[len(split)-1]
+	base, last := Split(v)
 	var (
 		href  = fmt.Sprintf("{%s.Nlinks.%s.%s.Href}", base, last, which)
 		text  = fmt.Sprintf("{%s.Nlinks.%s.%s.Text}", base, last, which)
@@ -122,9 +83,7 @@ func (n Nota) LessD(dur Uncurler) (ALink, error) { return n.Dlink(dur, "Less", "
 func (n Nota) MoreD(dur Uncurler) (ALink, error) { return n.Dlink(dur, "More", "+") }
 
 func (n Nota) Dlink(v Uncurler, which, badge string) (ALink, error) {
-	split := strings.Split(v.Uncurl(), ".")
-	base := strings.Join(split[:len(split)-1], ".")
-	last := split[len(split)-1]
+	base, last := Split(v)
 	var (
 		href  = fmt.Sprintf("{%s.Dlinks.%s.%s.Href}", base, last, which)
 		text  = fmt.Sprintf("{%s.Dlinks.%s.%s.Text}", base, last, which)
@@ -134,9 +93,7 @@ func (n Nota) Dlink(v Uncurler, which, badge string) (ALink, error) {
 }
 
 func (_ Nota) AttrHrefToggle(v Uncurler) interface{} {
-	split := strings.Split(v.Uncurl(), ".")
-	base := strings.Join(split[:len(split)-1], ".")
-	last := split[len(split)-1]
+	base, last := Split(v)
 	return fmt.Sprintf(" href={%s.Tlinks.%s} onClick={this.handleClick}", base, last)
 }
 
@@ -144,10 +101,11 @@ func (n Nota) AttrHrefToggleHead(v Uncurler) interface{} {
 	return n.AttrHrefToggle(v)
 }
 
-// Base is like filepath.Base on n with "." separator.
-func (n Nota) Base() string {
-	split := strings.Split(n.String(), ".")
-	return split[len(split)-1]
+// Split splits uncurled v by last ".".
+func Split(v Uncurler) (string, string) {
+	split := strings.Split(v.Uncurl(), ".")
+	return strings.Join(split[:len(split)-1], "."), split[len(split)-1]
+	// return split[len(split)-1]
 }
 
 func SprintfAttr(format string, args ...interface{}) template.HTMLAttr {
