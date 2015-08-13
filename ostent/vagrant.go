@@ -17,7 +17,7 @@ type VagrantMachines struct {
 
 func LessVgmachine(a, b operating.Vgmachine) bool { return a.UUID < b.UUID }
 
-func vagrantmachines() (*VagrantMachines, error) {
+func vagrantmachines(max int) (*VagrantMachines, error) {
 	currentUser, _ := user.Current()
 	lockFilename := currentUser.HomeDir + "/.vagrant.d/data/machine-index/index.lock"
 	indexFilename := currentUser.HomeDir + "/.vagrant.d/data/machine-index/index"
@@ -45,7 +45,12 @@ func vagrantmachines() (*VagrantMachines, error) {
 	}
 	machines := new(VagrantMachines)
 	if status.Machines != nil {
+		i := 0
 		for uuid, machine := range *status.Machines {
+			if max != 0 && i >= max {
+				break
+			}
+			i++
 			machine.UUID = operating.Field(uuid)
 			machines.List = append(machines.List, machine)
 		}
@@ -62,7 +67,7 @@ func init() {
 }
 
 func vgdispatch() { // (*fsnotify.FileEvent)
-	machines, err := vagrantmachines()
+	machines, err := vagrantmachines(0)
 	if err != nil { // an inconsistent write by vagrant? (although not with the flock)
 		return // ignoring the error
 	}

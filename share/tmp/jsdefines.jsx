@@ -14,41 +14,73 @@ define(function(require) {
     >{$mem.Total}</td
   ></tr
 >); },
-		panelmem:        function(Data, rows)  { return (<div
-  ><div
-    ><a       href={Data.Params.Tlinks.Configmem} onClick={this.handleClick} className="btn-block"
-      >  <span  className={Data.Params.Configmem ? "h4 bg-info" : "h4"}
-        >Memory</span
-      ></a
-    ></div
-  ><div
-    ><div  className={Data.Params.Configmem ? "config-margintop" : "config-margintop collapse-hidden"} id="memconfig"
-      ><form  action={"/form/"+Data.Params} className="form-inline"
-        ><input className="hidden-submit" type="submit"
-        ></input
-      ><div className="btn-toolbar"
-        ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.Hidemem ? "btn btn-default active" : "btn btn-default"}
-    href={Data.Params.Tlinks.Hidemem} onClick={this.handleClick} 
-            >Hidden</a
-          ><a  className={Data.Params.Hideswap ? "btn btn-default active" : "btn btn-default"}
-    href={Data.Params.Tlinks.Hideswap} onClick={this.handleClick}
-            >Hide swap</a
+		panelmem:        function(Data, rows)  { return (<div      className={(Data.Params.Memn != "!0" && Data.Params.Memn.substr(0, 1) != "-") ? "" : "panel panel-default"}
+  >  <div    className={(Data.Params.Memn != "!0" && Data.Params.Memn.substr(0, 1) != "-") ? "" : "panel-heading"}
+    >    <a    href={Data.Params.Tlinks.Memn} onClick={this.handleClick} className="panel-title btn-block"
+      >      <b  className={(Data.Params.Memn != "!0" && Data.Params.Memn.substr(0, 1) != "-") ? "h4" : "h4 bg-info"}
+        >Memory</b
+      >    </a
+    >  </div
+  >  <table  className={(Data.Params.Memn != "!0" && Data.Params.Memn.substr(0, 1) != "-") ? "table collapse-hidden" : "table"}
+    ><tr className="panel-config"
+      ><td className="col-md-2"
+        ><div className="nowrap text-right"
+          >Delay&nbsp;<span className="badge"
+            >{Data.Params.Memd}</span
           ></div
-        ><div className="btn-group btn-group-sm" role="group"
-          ><div  className={Data.Params.Errors && Data.Params.Errors.Refreshmem ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"}
-  ><span className="input-group-addon"
-    >Refresh</span
-  >  <input className="form-control refresh-input width-fourem" type="text" placeholder={Data.MinRefresh}  name="refreshmem"  value={Data.Params.Refreshmem} onChange={this.handleChange}
-  ></input></div
+        ></td
+      ><td
+        ><div className="btn-group nowrap-group" role="group"
+          ><a href={Data.Params.Dlinks.Memd.Less.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Dlinks.Memd.Less.Class != null ? Data.Params.Dlinks.Memd.Less.Class : "")}
+  
+  ><span className="xlabel xlabel-default"
+    >-</span
+  > {Data.Params.Dlinks.Memd.Less.Text}</a
+><a href={Data.Params.Dlinks.Memd.More.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Dlinks.Memd.More.Class != null ? Data.Params.Dlinks.Memd.More.Class : "")}
+  
+  >{Data.Params.Dlinks.Memd.More.Text} <span className="xlabel xlabel-default"
+    >+</span
+  ></a
 ></div
-        ></div
-      ></form
-    ></div
-  ></div
-><div
-  ><div  className={Data.Params.Hidemem ? "collapse-hidden" : ""}
-    ><table className="table table-hover"
+        ></td
+      ><td className="col-md-10" colSpan="2"
+        ></td
+      ></tr
+    ><tr className="panel-config"
+      ><td className="col-md-2"
+        ><div className="nowrap text-right"
+          >Rows&nbsp;<span className="badge"
+            >{Data.Params.Memn == "!0" ? "0" : Data.Params.Memn.replace(/^-/, "")}</span
+          ></div
+        ></td
+      ><td
+        ><div className="btn-group nowrap-group" role="group"
+          ><a href={Data.Params.Nlinks.Memn.Less.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.Memn.Less.Class != null ? Data.Params.Nlinks.Memn.Less.Class : "")}
+  
+  ><span className="xlabel xlabel-default"
+    >-</span
+  > {Data.Params.Nlinks.Memn.Less.Text}</a
+><a href={Data.Params.Nlinks.Memn.More.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.Memn.More.Class != null ? Data.Params.Nlinks.Memn.More.Class : "")}
+  
+  >{Data.Params.Nlinks.Memn.More.Text} <span className="xlabel xlabel-default"
+    >+</span
+  ></a
+></div
+        ></td
+      ><td
+        ><div className="btn-group nowrap-group" role="group"
+          ><a href={Data.Params.Nlinks.Memn.Zero.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.Memn.Zero.Class != null ? Data.Params.Nlinks.Memn.Zero.Class : "")}
+  
+  >{Data.Params.Nlinks.Memn.Zero.Text} <span className="xlabel xlabel-default"
+    ></span
+  ></a
+></div
+        ></td
+      ><td className="col-md-10"
+        ></td
+      ></tr
+    >  </table
+  >  <table  className={(Data.Params.Memn != "!0" && Data.Params.Memn != "0") ? "table table-hover" : "collapse-hidden"}
   ><thead
     ><tr
       ><th
@@ -64,8 +96,6 @@ define(function(require) {
   ><tbody
     >{rows}</tbody
   ></table
-></div
-  ></div
 ></div
 >); },
 
@@ -304,41 +334,73 @@ define(function(require) {
     ></td
   ></tr
 >); },
-		panelcpu:        function(Data, rows)  { return (<div
-  ><div
-    ><a       href={Data.Params.Tlinks.Configcpu} onClick={this.handleClick} className="btn-block"
-      >  <span  className={Data.Params.Configcpu ? "h4 bg-info" : "h4"}
-        >CPU</span
-      ></a
-    ></div
-  ><div
-    ><div  className={Data.Params.Configcpu ? "config-margintop" : "config-margintop collapse-hidden"} id="cpuconfig"
-      ><form  action={"/form/"+Data.Params} className="form-inline"
-        ><input className="hidden-submit" type="submit"
-        ></input
-      ><div className="btn-toolbar"
-        ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.Hidecpu ? "btn btn-default active" : "btn btn-default"}
-    href={Data.Params.Tlinks.Hidecpu} onClick={this.handleClick}
-            >Hidden</a
-          ><a  className={Data.CPU.ExpandableCPU ? "btn btn-default" : "btn btn-default disabled"}
-    href={Data.Params.Tlinks.Expandcpu} onClick={this.handleClick}
-            >{Data.CPU.ExpandtextCPU}</a
+		panelcpu:        function(Data, rows)  { return (<div      className={(Data.Params.Cpun != "!0" && Data.Params.Cpun.substr(0, 1) != "-") ? "" : "panel panel-default"}
+  >  <div    className={(Data.Params.Cpun != "!0" && Data.Params.Cpun.substr(0, 1) != "-") ? "" : "panel-heading"}
+    >    <a    href={Data.Params.Tlinks.Cpun} onClick={this.handleClick} className="panel-title btn-block"
+      >      <b  className={(Data.Params.Cpun != "!0" && Data.Params.Cpun.substr(0, 1) != "-") ? "h4" : "h4 bg-info"}
+        >CPU</b
+      >    </a
+    >  </div
+  >  <table  className={(Data.Params.Cpun != "!0" && Data.Params.Cpun.substr(0, 1) != "-") ? "table collapse-hidden" : "table"}
+    ><tr className="panel-config"
+      ><td className="col-md-2"
+        ><div className="nowrap text-right"
+          >Delay&nbsp;<span className="badge"
+            >{Data.Params.Cpud}</span
           ></div
-        ><div className="btn-group btn-group-sm" role="group"
-          ><div  className={Data.Params.Errors && Data.Params.Errors.Refreshcpu ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"}
-  ><span className="input-group-addon"
-    >Refresh</span
-  >  <input className="form-control refresh-input width-fourem" type="text" placeholder={Data.MinRefresh}  name="refreshcpu"  value={Data.Params.Refreshcpu} onChange={this.handleChange}
-  ></input></div
+        ></td
+      ><td
+        ><div className="btn-group nowrap-group" role="group"
+          ><a href={Data.Params.Dlinks.Cpud.Less.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Dlinks.Cpud.Less.Class != null ? Data.Params.Dlinks.Cpud.Less.Class : "")}
+  
+  ><span className="xlabel xlabel-default"
+    >-</span
+  > {Data.Params.Dlinks.Cpud.Less.Text}</a
+><a href={Data.Params.Dlinks.Cpud.More.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Dlinks.Cpud.More.Class != null ? Data.Params.Dlinks.Cpud.More.Class : "")}
+  
+  >{Data.Params.Dlinks.Cpud.More.Text} <span className="xlabel xlabel-default"
+    >+</span
+  ></a
 ></div
-        ></div
-      ></form
-    ></div
-  ></div
-><div
-  ><div  className={Data.Params.Hidecpu ? "collapse-hidden" : ""}
-    ><table className="table table-hover"
+        ></td
+      ><td className="col-md-10" colSpan="2"
+        ></td
+      ></tr
+    ><tr className="panel-config"
+      ><td className="col-md-2"
+        ><div className="nowrap text-right"
+          >Rows&nbsp;<span className="badge"
+            >{Data.Params.Cpun == "!0" ? "0" : Data.Params.Cpun.replace(/^-/, "")}</span
+          ></div
+        ></td
+      ><td
+        ><div className="btn-group nowrap-group" role="group"
+          ><a href={Data.Params.Nlinks.Cpun.Less.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.Cpun.Less.Class != null ? Data.Params.Nlinks.Cpun.Less.Class : "")}
+  
+  ><span className="xlabel xlabel-default"
+    >-</span
+  > {Data.Params.Nlinks.Cpun.Less.Text}</a
+><a href={Data.Params.Nlinks.Cpun.More.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.Cpun.More.Class != null ? Data.Params.Nlinks.Cpun.More.Class : "")}
+  
+  >{Data.Params.Nlinks.Cpun.More.Text} <span className="xlabel xlabel-default"
+    >+</span
+  ></a
+></div
+        ></td
+      ><td
+        ><div className="btn-group nowrap-group" role="group"
+          ><a href={Data.Params.Nlinks.Cpun.Zero.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.Cpun.Zero.Class != null ? Data.Params.Nlinks.Cpun.Zero.Class : "")}
+  
+  >{Data.Params.Nlinks.Cpun.Zero.Text} <span className="xlabel xlabel-default"
+    ></span
+  ></a
+></div
+        ></td
+      ><td className="col-md-10"
+        ></td
+      ></tr
+    >  </table
+  >  <table  className={(Data.Params.Cpun != "!0" && Data.Params.Cpun != "0") ? "table table-hover" : "collapse-hidden"}
   ><thead
     ><tr
       ><th
@@ -360,8 +422,6 @@ define(function(require) {
   ><tbody
     >{rows}</tbody
   ></table
-></div
-  ></div
 ></div
 >); },
 
@@ -709,38 +769,73 @@ define(function(require) {
     >{Data.VagrantError}</td
   ></tr
 >); },
-		panelvg:         function(Data, rows)  { return (<div
-  ><div
-    ><a       href={Data.Params.Tlinks.Configvg} onClick={this.handleClick} className="btn-block"
-      >  <span  className={Data.Params.Configvg ? "h4 bg-info" : "h4"}
-        >Vagrant</span
-      ></a
-    ></div
-  ><div
-    ><div  className={Data.Params.Configvg ? "config-margintop" : "config-margintop collapse-hidden"} id="vgconfig"
-      ><form  action={"/form/"+Data.Params} className="form-inline"
-        ><input className="hidden-submit" type="submit"
-        ></input
-      ><div className="btn-toolbar"
-        ><div className="btn-group btn-group-sm" role="group"
-          ><a  className={Data.Params.Hidevg ? "btn btn-default active" : "btn btn-default"}
-    href={Data.Params.Tlinks.Hidevg} onClick={this.handleClick}
-            >Hidden</a
+		panelvg:         function(Data, rows)  { return (<div      className={(Data.Params.Vgn != "!0" && Data.Params.Vgn.substr(0, 1) != "-") ? "" : "panel panel-default"}
+  >  <div    className={(Data.Params.Vgn != "!0" && Data.Params.Vgn.substr(0, 1) != "-") ? "" : "panel-heading"}
+    >    <a    href={Data.Params.Tlinks.Vgn} onClick={this.handleClick} className="panel-title btn-block"
+      >      <b  className={(Data.Params.Vgn != "!0" && Data.Params.Vgn.substr(0, 1) != "-") ? "h4" : "h4 bg-info"}
+        >Vagrant</b
+      >    </a
+    >  </div
+  >  <table  className={(Data.Params.Vgn != "!0" && Data.Params.Vgn.substr(0, 1) != "-") ? "table collapse-hidden" : "table"}
+    ><tr className="panel-config"
+      ><td className="col-md-2"
+        ><div className="nowrap text-right"
+          >Delay&nbsp;<span className="badge"
+            >{Data.Params.Vgd}</span
           ></div
-        ><div className="btn-group btn-group-sm" role="group"
-          ><div  className={Data.Params.Errors && Data.Params.Errors.Refreshvg ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"}
-  ><span className="input-group-addon"
-    >Refresh</span
-  >  <input className="form-control refresh-input width-fourem" type="text" placeholder={Data.MinRefresh}  name="refreshvg"  value={Data.Params.Refreshvg} onChange={this.handleChange}
-  ></input></div
+        ></td
+      ><td
+        ><div className="btn-group nowrap-group" role="group"
+          ><a href={Data.Params.Dlinks.Vgd.Less.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Dlinks.Vgd.Less.Class != null ? Data.Params.Dlinks.Vgd.Less.Class : "")}
+  
+  ><span className="xlabel xlabel-default"
+    >-</span
+  > {Data.Params.Dlinks.Vgd.Less.Text}</a
+><a href={Data.Params.Dlinks.Vgd.More.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Dlinks.Vgd.More.Class != null ? Data.Params.Dlinks.Vgd.More.Class : "")}
+  
+  >{Data.Params.Dlinks.Vgd.More.Text} <span className="xlabel xlabel-default"
+    >+</span
+  ></a
 ></div
-        ></div
-      ></form
-    ></div
-  ></div
-><div
-  ><div  className={Data.Params.Hidevg ? "collapse-hidden" : ""}
-    ><table className="table table-hover"
+        ></td
+      ><td className="col-md-10" colSpan="2"
+        ></td
+      ></tr
+    ><tr className="panel-config"
+      ><td className="col-md-2"
+        ><div className="nowrap text-right"
+          >Rows&nbsp;<span className="badge"
+            >{Data.Params.Vgn == "!0" ? "0" : Data.Params.Vgn.replace(/^-/, "")}</span
+          ></div
+        ></td
+      ><td
+        ><div className="btn-group nowrap-group" role="group"
+          ><a href={Data.Params.Nlinks.Vgn.Less.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.Vgn.Less.Class != null ? Data.Params.Nlinks.Vgn.Less.Class : "")}
+  
+  ><span className="xlabel xlabel-default"
+    >-</span
+  > {Data.Params.Nlinks.Vgn.Less.Text}</a
+><a href={Data.Params.Nlinks.Vgn.More.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.Vgn.More.Class != null ? Data.Params.Nlinks.Vgn.More.Class : "")}
+  
+  >{Data.Params.Nlinks.Vgn.More.Text} <span className="xlabel xlabel-default"
+    >+</span
+  ></a
+></div
+        ></td
+      ><td
+        ><div className="btn-group nowrap-group" role="group"
+          ><a href={Data.Params.Nlinks.Vgn.Zero.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.Vgn.Zero.Class != null ? Data.Params.Nlinks.Vgn.Zero.Class : "")}
+  
+  >{Data.Params.Nlinks.Vgn.Zero.Text} <span className="xlabel xlabel-default"
+    ></span
+  ></a
+></div
+        ></td
+      ><td className="col-md-10"
+        ></td
+      ></tr
+    >  </table
+  >  <table  className={(Data.Params.Vgn != "!0" && Data.Params.Vgn != "0") ? "table table-hover" : "collapse-hidden"}
   ><thead
     ><tr
       ><th
@@ -758,8 +853,6 @@ define(function(require) {
   ><tbody
     >{rows}</tbody
   ></table
-></div
-  ></div
 ></div
 >); }
 	};

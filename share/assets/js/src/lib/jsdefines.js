@@ -44,126 +44,213 @@ define(function (require) {
     panelmem: function panelmem(Data, rows) {
       return React.createElement(
         "div",
-        null,
+        { className: Data.Params.Memn != "!0" && Data.Params.Memn.substr(0, 1) != "-" ? "" : "panel panel-default"
+        },
+        "  ",
         React.createElement(
           "div",
-          null,
+          { className: Data.Params.Memn != "!0" && Data.Params.Memn.substr(0, 1) != "-" ? "" : "panel-heading"
+          },
+          "    ",
           React.createElement(
             "a",
-            { href: Data.Params.Tlinks.Configmem, onClick: this.handleClick, className: "btn-block"
+            { href: Data.Params.Tlinks.Memn, onClick: this.handleClick, className: "panel-title btn-block"
             },
-            "  ",
+            "      ",
             React.createElement(
-              "span",
-              { className: Data.Params.Configmem ? "h4 bg-info" : "h4"
+              "b",
+              { className: Data.Params.Memn != "!0" && Data.Params.Memn.substr(0, 1) != "-" ? "h4" : "h4 bg-info"
               },
               "Memory"
-            )
-          )
+            ),
+            "    "
+          ),
+          "  "
         ),
+        "  ",
         React.createElement(
-          "div",
-          null,
+          "table",
+          { className: Data.Params.Memn != "!0" && Data.Params.Memn.substr(0, 1) != "-" ? "table collapse-hidden" : "table"
+          },
           React.createElement(
-            "div",
-            { className: Data.Params.Configmem ? "config-margintop" : "config-margintop collapse-hidden", id: "memconfig"
+            "tr",
+            { className: "panel-config"
             },
             React.createElement(
-              "form",
-              { action: "/form/" + Data.Params, className: "form-inline"
+              "td",
+              { className: "col-md-2"
               },
-              React.createElement("input", { className: "hidden-submit", type: "submit"
-              }),
               React.createElement(
                 "div",
-                { className: "btn-toolbar"
+                { className: "nowrap text-right"
+                },
+                "Delay ",
+                React.createElement(
+                  "span",
+                  { className: "badge"
+                  },
+                  Data.Params.Memd
+                )
+              )
+            ),
+            React.createElement(
+              "td",
+              null,
+              React.createElement(
+                "div",
+                { className: "btn-group nowrap-group", role: "group"
                 },
                 React.createElement(
-                  "div",
-                  { className: "btn-group btn-group-sm", role: "group"
+                  "a",
+                  { href: Data.Params.Dlinks.Memd.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Memd.Less.Class != null ? Data.Params.Dlinks.Memd.Less.Class : "")
+
                   },
                   React.createElement(
-                    "a",
-                    { className: Data.Params.Hidemem ? "btn btn-default active" : "btn btn-default",
-                      href: Data.Params.Tlinks.Hidemem, onClick: this.handleClick
+                    "span",
+                    { className: "xlabel xlabel-default"
                     },
-                    "Hidden"
+                    "-"
                   ),
-                  React.createElement(
-                    "a",
-                    { className: Data.Params.Hideswap ? "btn btn-default active" : "btn btn-default",
-                      href: Data.Params.Tlinks.Hideswap, onClick: this.handleClick
-                    },
-                    "Hide swap"
-                  )
+                  " ",
+                  Data.Params.Dlinks.Memd.Less.Text
                 ),
                 React.createElement(
-                  "div",
-                  { className: "btn-group btn-group-sm", role: "group"
+                  "a",
+                  { href: Data.Params.Dlinks.Memd.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Memd.More.Class != null ? Data.Params.Dlinks.Memd.More.Class : "")
+
                   },
+                  Data.Params.Dlinks.Memd.More.Text,
+                  " ",
                   React.createElement(
-                    "div",
-                    { className: Data.Params.Errors && Data.Params.Errors.Refreshmem ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"
+                    "span",
+                    { className: "xlabel xlabel-default"
                     },
-                    React.createElement(
-                      "span",
-                      { className: "input-group-addon"
-                      },
-                      "Refresh"
-                    ),
-                    "  ",
-                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.MinRefresh, name: "refreshmem", value: Data.Params.Refreshmem, onChange: this.handleChange
-                    })
+                    "+"
                   )
                 )
               )
-            )
-          )
-        ),
-        React.createElement(
-          "div",
-          null,
+            ),
+            React.createElement("td", { className: "col-md-10", colSpan: "2"
+            })
+          ),
           React.createElement(
-            "div",
-            { className: Data.Params.Hidemem ? "collapse-hidden" : ""
+            "tr",
+            { className: "panel-config"
             },
             React.createElement(
-              "table",
-              { className: "table table-hover"
+              "td",
+              { className: "col-md-2"
               },
               React.createElement(
-                "thead",
-                null,
+                "div",
+                { className: "nowrap text-right"
+                },
+                "Rows ",
                 React.createElement(
-                  "tr",
-                  null,
-                  React.createElement("th", null),
+                  "span",
+                  { className: "badge"
+                  },
+                  Data.Params.Memn == "!0" ? "0" : Data.Params.Memn.replace(/^-/, "")
+                )
+              )
+            ),
+            React.createElement(
+              "td",
+              null,
+              React.createElement(
+                "div",
+                { className: "btn-group nowrap-group", role: "group"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Nlinks.Memn.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Memn.Less.Class != null ? Data.Params.Nlinks.Memn.Less.Class : "")
+
+                  },
                   React.createElement(
-                    "th",
-                    { className: "text-right"
+                    "span",
+                    { className: "xlabel xlabel-default"
                     },
-                    "Free"
+                    "-"
                   ),
+                  " ",
+                  Data.Params.Nlinks.Memn.Less.Text
+                ),
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Nlinks.Memn.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Memn.More.Class != null ? Data.Params.Nlinks.Memn.More.Class : "")
+
+                  },
+                  Data.Params.Nlinks.Memn.More.Text,
+                  " ",
                   React.createElement(
-                    "th",
-                    { className: "text-right"
+                    "span",
+                    { className: "xlabel xlabel-default"
                     },
-                    "Used"
-                  ),
-                  React.createElement(
-                    "th",
-                    { className: "text-right"
-                    },
-                    "Total"
+                    "+"
                   )
                 )
+              )
+            ),
+            React.createElement(
+              "td",
+              null,
+              React.createElement(
+                "div",
+                { className: "btn-group nowrap-group", role: "group"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Nlinks.Memn.Zero.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Memn.Zero.Class != null ? Data.Params.Nlinks.Memn.Zero.Class : "")
+
+                  },
+                  Data.Params.Nlinks.Memn.Zero.Text,
+                  " ",
+                  React.createElement("span", { className: "xlabel xlabel-default"
+                  })
+                )
+              )
+            ),
+            React.createElement("td", { className: "col-md-10"
+            })
+          ),
+          "  "
+        ),
+        "  ",
+        React.createElement(
+          "table",
+          { className: Data.Params.Memn != "!0" && Data.Params.Memn != "0" ? "table table-hover" : "collapse-hidden"
+          },
+          React.createElement(
+            "thead",
+            null,
+            React.createElement(
+              "tr",
+              null,
+              React.createElement("th", null),
+              React.createElement(
+                "th",
+                { className: "text-right"
+                },
+                "Free"
               ),
               React.createElement(
-                "tbody",
-                null,
-                rows
+                "th",
+                { className: "text-right"
+                },
+                "Used"
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right"
+                },
+                "Total"
               )
             )
+          ),
+          React.createElement(
+            "tbody",
+            null,
+            rows
           )
         )
       );
@@ -796,144 +883,231 @@ define(function (require) {
     panelcpu: function panelcpu(Data, rows) {
       return React.createElement(
         "div",
-        null,
+        { className: Data.Params.Cpun != "!0" && Data.Params.Cpun.substr(0, 1) != "-" ? "" : "panel panel-default"
+        },
+        "  ",
         React.createElement(
           "div",
-          null,
+          { className: Data.Params.Cpun != "!0" && Data.Params.Cpun.substr(0, 1) != "-" ? "" : "panel-heading"
+          },
+          "    ",
           React.createElement(
             "a",
-            { href: Data.Params.Tlinks.Configcpu, onClick: this.handleClick, className: "btn-block"
+            { href: Data.Params.Tlinks.Cpun, onClick: this.handleClick, className: "panel-title btn-block"
             },
-            "  ",
+            "      ",
             React.createElement(
-              "span",
-              { className: Data.Params.Configcpu ? "h4 bg-info" : "h4"
+              "b",
+              { className: Data.Params.Cpun != "!0" && Data.Params.Cpun.substr(0, 1) != "-" ? "h4" : "h4 bg-info"
               },
               "CPU"
-            )
-          )
+            ),
+            "    "
+          ),
+          "  "
         ),
+        "  ",
         React.createElement(
-          "div",
-          null,
+          "table",
+          { className: Data.Params.Cpun != "!0" && Data.Params.Cpun.substr(0, 1) != "-" ? "table collapse-hidden" : "table"
+          },
           React.createElement(
-            "div",
-            { className: Data.Params.Configcpu ? "config-margintop" : "config-margintop collapse-hidden", id: "cpuconfig"
+            "tr",
+            { className: "panel-config"
             },
             React.createElement(
-              "form",
-              { action: "/form/" + Data.Params, className: "form-inline"
+              "td",
+              { className: "col-md-2"
               },
-              React.createElement("input", { className: "hidden-submit", type: "submit"
-              }),
               React.createElement(
                 "div",
-                { className: "btn-toolbar"
+                { className: "nowrap text-right"
+                },
+                "Delay ",
+                React.createElement(
+                  "span",
+                  { className: "badge"
+                  },
+                  Data.Params.Cpud
+                )
+              )
+            ),
+            React.createElement(
+              "td",
+              null,
+              React.createElement(
+                "div",
+                { className: "btn-group nowrap-group", role: "group"
                 },
                 React.createElement(
-                  "div",
-                  { className: "btn-group btn-group-sm", role: "group"
+                  "a",
+                  { href: Data.Params.Dlinks.Cpud.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Cpud.Less.Class != null ? Data.Params.Dlinks.Cpud.Less.Class : "")
+
                   },
                   React.createElement(
-                    "a",
-                    { className: Data.Params.Hidecpu ? "btn btn-default active" : "btn btn-default",
-                      href: Data.Params.Tlinks.Hidecpu, onClick: this.handleClick
+                    "span",
+                    { className: "xlabel xlabel-default"
                     },
-                    "Hidden"
+                    "-"
                   ),
-                  React.createElement(
-                    "a",
-                    { className: Data.CPU.ExpandableCPU ? "btn btn-default" : "btn btn-default disabled",
-                      href: Data.Params.Tlinks.Expandcpu, onClick: this.handleClick
-                    },
-                    Data.CPU.ExpandtextCPU
-                  )
+                  " ",
+                  Data.Params.Dlinks.Cpud.Less.Text
                 ),
                 React.createElement(
-                  "div",
-                  { className: "btn-group btn-group-sm", role: "group"
+                  "a",
+                  { href: Data.Params.Dlinks.Cpud.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Cpud.More.Class != null ? Data.Params.Dlinks.Cpud.More.Class : "")
+
                   },
+                  Data.Params.Dlinks.Cpud.More.Text,
+                  " ",
                   React.createElement(
-                    "div",
-                    { className: Data.Params.Errors && Data.Params.Errors.Refreshcpu ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"
+                    "span",
+                    { className: "xlabel xlabel-default"
                     },
-                    React.createElement(
-                      "span",
-                      { className: "input-group-addon"
-                      },
-                      "Refresh"
-                    ),
-                    "  ",
-                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.MinRefresh, name: "refreshcpu", value: Data.Params.Refreshcpu, onChange: this.handleChange
-                    })
+                    "+"
                   )
                 )
               )
-            )
-          )
-        ),
-        React.createElement(
-          "div",
-          null,
+            ),
+            React.createElement("td", { className: "col-md-10", colSpan: "2"
+            })
+          ),
           React.createElement(
-            "div",
-            { className: Data.Params.Hidecpu ? "collapse-hidden" : ""
+            "tr",
+            { className: "panel-config"
             },
             React.createElement(
-              "table",
-              { className: "table table-hover"
+              "td",
+              { className: "col-md-2"
               },
               React.createElement(
-                "thead",
-                null,
+                "div",
+                { className: "nowrap text-right"
+                },
+                "Rows ",
                 React.createElement(
-                  "tr",
-                  null,
-                  React.createElement("th", null),
+                  "span",
+                  { className: "badge"
+                  },
+                  Data.Params.Cpun == "!0" ? "0" : Data.Params.Cpun.replace(/^-/, "")
+                )
+              )
+            ),
+            React.createElement(
+              "td",
+              null,
+              React.createElement(
+                "div",
+                { className: "btn-group nowrap-group", role: "group"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Nlinks.Cpun.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Cpun.Less.Class != null ? Data.Params.Nlinks.Cpun.Less.Class : "")
+
+                  },
                   React.createElement(
-                    "th",
-                    { className: "text-right nowrap"
+                    "span",
+                    { className: "xlabel xlabel-default"
                     },
-                    "User",
-                    React.createElement(
-                      "span",
-                      { className: "unit"
-                      },
-                      "%"
-                    )
+                    "-"
                   ),
+                  " ",
+                  Data.Params.Nlinks.Cpun.Less.Text
+                ),
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Nlinks.Cpun.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Cpun.More.Class != null ? Data.Params.Nlinks.Cpun.More.Class : "")
+
+                  },
+                  Data.Params.Nlinks.Cpun.More.Text,
+                  " ",
                   React.createElement(
-                    "th",
-                    { className: "text-right nowrap"
+                    "span",
+                    { className: "xlabel xlabel-default"
                     },
-                    "Sys",
-                    React.createElement(
-                      "span",
-                      { className: "unit"
-                      },
-                      "%"
-                    )
-                  ),
-                  React.createElement(
-                    "th",
-                    { className: "text-right nowrap"
-                    },
-                    "Idle",
-                    React.createElement(
-                      "span",
-                      { className: "unit"
-                      },
-                      "%"
-                    )
+                    "+"
                   )
+                )
+              )
+            ),
+            React.createElement(
+              "td",
+              null,
+              React.createElement(
+                "div",
+                { className: "btn-group nowrap-group", role: "group"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Nlinks.Cpun.Zero.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Cpun.Zero.Class != null ? Data.Params.Nlinks.Cpun.Zero.Class : "")
+
+                  },
+                  Data.Params.Nlinks.Cpun.Zero.Text,
+                  " ",
+                  React.createElement("span", { className: "xlabel xlabel-default"
+                  })
+                )
+              )
+            ),
+            React.createElement("td", { className: "col-md-10"
+            })
+          ),
+          "  "
+        ),
+        "  ",
+        React.createElement(
+          "table",
+          { className: Data.Params.Cpun != "!0" && Data.Params.Cpun != "0" ? "table table-hover" : "collapse-hidden"
+          },
+          React.createElement(
+            "thead",
+            null,
+            React.createElement(
+              "tr",
+              null,
+              React.createElement("th", null),
+              React.createElement(
+                "th",
+                { className: "text-right nowrap"
+                },
+                "User",
+                React.createElement(
+                  "span",
+                  { className: "unit"
+                  },
+                  "%"
                 )
               ),
               React.createElement(
-                "tbody",
-                null,
-                rows
+                "th",
+                { className: "text-right nowrap"
+                },
+                "Sys",
+                React.createElement(
+                  "span",
+                  { className: "unit"
+                  },
+                  "%"
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right nowrap"
+                },
+                "Idle",
+                React.createElement(
+                  "span",
+                  { className: "unit"
+                  },
+                  "%"
+                )
               )
             )
+          ),
+          React.createElement(
+            "tbody",
+            null,
+            rows
           )
         )
       );
@@ -1808,125 +1982,219 @@ define(function (require) {
     panelvg: function panelvg(Data, rows) {
       return React.createElement(
         "div",
-        null,
+        { className: Data.Params.Vgn != "!0" && Data.Params.Vgn.substr(0, 1) != "-" ? "" : "panel panel-default"
+        },
+        "  ",
         React.createElement(
           "div",
-          null,
+          { className: Data.Params.Vgn != "!0" && Data.Params.Vgn.substr(0, 1) != "-" ? "" : "panel-heading"
+          },
+          "    ",
           React.createElement(
             "a",
-            { href: Data.Params.Tlinks.Configvg, onClick: this.handleClick, className: "btn-block"
+            { href: Data.Params.Tlinks.Vgn, onClick: this.handleClick, className: "panel-title btn-block"
             },
-            "  ",
+            "      ",
             React.createElement(
-              "span",
-              { className: Data.Params.Configvg ? "h4 bg-info" : "h4"
+              "b",
+              { className: Data.Params.Vgn != "!0" && Data.Params.Vgn.substr(0, 1) != "-" ? "h4" : "h4 bg-info"
               },
               "Vagrant"
-            )
-          )
+            ),
+            "    "
+          ),
+          "  "
         ),
+        "  ",
         React.createElement(
-          "div",
-          null,
+          "table",
+          { className: Data.Params.Vgn != "!0" && Data.Params.Vgn.substr(0, 1) != "-" ? "table collapse-hidden" : "table"
+          },
           React.createElement(
-            "div",
-            { className: Data.Params.Configvg ? "config-margintop" : "config-margintop collapse-hidden", id: "vgconfig"
+            "tr",
+            { className: "panel-config"
             },
             React.createElement(
-              "form",
-              { action: "/form/" + Data.Params, className: "form-inline"
+              "td",
+              { className: "col-md-2"
               },
-              React.createElement("input", { className: "hidden-submit", type: "submit"
-              }),
               React.createElement(
                 "div",
-                { className: "btn-toolbar"
+                { className: "nowrap text-right"
+                },
+                "Delay ",
+                React.createElement(
+                  "span",
+                  { className: "badge"
+                  },
+                  Data.Params.Vgd
+                )
+              )
+            ),
+            React.createElement(
+              "td",
+              null,
+              React.createElement(
+                "div",
+                { className: "btn-group nowrap-group", role: "group"
                 },
                 React.createElement(
-                  "div",
-                  { className: "btn-group btn-group-sm", role: "group"
+                  "a",
+                  { href: Data.Params.Dlinks.Vgd.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Vgd.Less.Class != null ? Data.Params.Dlinks.Vgd.Less.Class : "")
+
                   },
                   React.createElement(
-                    "a",
-                    { className: Data.Params.Hidevg ? "btn btn-default active" : "btn btn-default",
-                      href: Data.Params.Tlinks.Hidevg, onClick: this.handleClick
+                    "span",
+                    { className: "xlabel xlabel-default"
                     },
-                    "Hidden"
-                  )
+                    "-"
+                  ),
+                  " ",
+                  Data.Params.Dlinks.Vgd.Less.Text
                 ),
                 React.createElement(
-                  "div",
-                  { className: "btn-group btn-group-sm", role: "group"
+                  "a",
+                  { href: Data.Params.Dlinks.Vgd.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Vgd.More.Class != null ? Data.Params.Dlinks.Vgd.More.Class : "")
+
                   },
+                  Data.Params.Dlinks.Vgd.More.Text,
+                  " ",
                   React.createElement(
-                    "div",
-                    { className: Data.Params.Errors && Data.Params.Errors.Refreshvg ? "input-group input-group-sm refresh-group has-warning" : "input-group input-group-sm refresh-group"
+                    "span",
+                    { className: "xlabel xlabel-default"
                     },
-                    React.createElement(
-                      "span",
-                      { className: "input-group-addon"
-                      },
-                      "Refresh"
-                    ),
-                    "  ",
-                    React.createElement("input", { className: "form-control refresh-input width-fourem", type: "text", placeholder: Data.MinRefresh, name: "refreshvg", value: Data.Params.Refreshvg, onChange: this.handleChange
-                    })
+                    "+"
                   )
                 )
               )
-            )
-          )
-        ),
-        React.createElement(
-          "div",
-          null,
+            ),
+            React.createElement("td", { className: "col-md-10", colSpan: "2"
+            })
+          ),
           React.createElement(
-            "div",
-            { className: Data.Params.Hidevg ? "collapse-hidden" : ""
+            "tr",
+            { className: "panel-config"
             },
             React.createElement(
-              "table",
-              { className: "table table-hover"
+              "td",
+              { className: "col-md-2"
               },
               React.createElement(
-                "thead",
-                null,
+                "div",
+                { className: "nowrap text-right"
+                },
+                "Rows ",
                 React.createElement(
-                  "tr",
-                  null,
+                  "span",
+                  { className: "badge"
+                  },
+                  Data.Params.Vgn == "!0" ? "0" : Data.Params.Vgn.replace(/^-/, "")
+                )
+              )
+            ),
+            React.createElement(
+              "td",
+              null,
+              React.createElement(
+                "div",
+                { className: "btn-group nowrap-group", role: "group"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Nlinks.Vgn.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Vgn.Less.Class != null ? Data.Params.Nlinks.Vgn.Less.Class : "")
+
+                  },
                   React.createElement(
-                    "th",
-                    null,
-                    "ID"
+                    "span",
+                    { className: "xlabel xlabel-default"
+                    },
+                    "-"
                   ),
+                  " ",
+                  Data.Params.Nlinks.Vgn.Less.Text
+                ),
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Nlinks.Vgn.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Vgn.More.Class != null ? Data.Params.Nlinks.Vgn.More.Class : "")
+
+                  },
+                  Data.Params.Nlinks.Vgn.More.Text,
+                  " ",
                   React.createElement(
-                    "th",
-                    null,
-                    "Name"
-                  ),
-                  React.createElement(
-                    "th",
-                    null,
-                    "Provider"
-                  ),
-                  React.createElement(
-                    "th",
-                    null,
-                    "State"
-                  ),
-                  React.createElement(
-                    "th",
-                    null,
-                    "Directory"
+                    "span",
+                    { className: "xlabel xlabel-default"
+                    },
+                    "+"
                   )
                 )
+              )
+            ),
+            React.createElement(
+              "td",
+              null,
+              React.createElement(
+                "div",
+                { className: "btn-group nowrap-group", role: "group"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Nlinks.Vgn.Zero.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Vgn.Zero.Class != null ? Data.Params.Nlinks.Vgn.Zero.Class : "")
+
+                  },
+                  Data.Params.Nlinks.Vgn.Zero.Text,
+                  " ",
+                  React.createElement("span", { className: "xlabel xlabel-default"
+                  })
+                )
+              )
+            ),
+            React.createElement("td", { className: "col-md-10"
+            })
+          ),
+          "  "
+        ),
+        "  ",
+        React.createElement(
+          "table",
+          { className: Data.Params.Vgn != "!0" && Data.Params.Vgn != "0" ? "table table-hover" : "collapse-hidden"
+          },
+          React.createElement(
+            "thead",
+            null,
+            React.createElement(
+              "tr",
+              null,
+              React.createElement(
+                "th",
+                null,
+                "ID"
               ),
               React.createElement(
-                "tbody",
+                "th",
                 null,
-                rows
+                "Name"
+              ),
+              React.createElement(
+                "th",
+                null,
+                "Provider"
+              ),
+              React.createElement(
+                "th",
+                null,
+                "State"
+              ),
+              React.createElement(
+                "th",
+                null,
+                "Directory"
               )
             )
+          ),
+          React.createElement(
+            "tbody",
+            null,
+            rows
           )
         )
       );

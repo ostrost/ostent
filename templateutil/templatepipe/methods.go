@@ -20,10 +20,6 @@ func (n Nota) Uncurl() string {
 	return Uncurl(n.String())
 }
 
-func (n Nota) AttrActionForm() template.HTMLAttr {
-	return SprintfAttr(" action={\"/form/\"+%s}", n.Uncurl())
-}
-
 func (n Nota) AttrKey(prefix string) template.HTMLAttr {
 	return SprintfAttr(" key={%q+%s}", prefix+"-", n.Uncurl())
 }
@@ -53,12 +49,6 @@ func (_ Nota) AttrClassTab(num, tab Uncurler, cmp int, fstclass, sndclass string
 	n := num.Uncurl()
 	return SprintfAttr(` className={(%s != "!0" && %s != "0" && %s == "%d") ? %q : %q}`,
 		n, n, tab.Uncurl(), cmp, fstclass, sndclass)
-}
-
-func (_ Nota) AttrClassParamsError(errs Uncurler, name, fstclass, sndclass string) template.HTMLAttr {
-	serrs := errs.Uncurl() // Uncurl(errs.(string)) // errs used to be interface{}
-	return SprintfAttr(" className={%s && %s.%s ? %q : %q}",
-		serrs, serrs, name, fstclass, sndclass)
 }
 
 /*
@@ -152,33 +142,6 @@ func (_ Nota) AttrHrefToggle(v Uncurler) interface{} {
 
 func (n Nota) AttrHrefToggleHead(v Uncurler) interface{} {
 	return n.AttrHrefToggle(v)
-}
-
-// Data.Params.RefreshXX RefreshXX
-func (n Nota) AttrNameRefresh(fieldName string) interface{} {
-	// TODO fieldName is "Refreshsmth", ought to have a map to actual parameter
-	// lowercase fieldName suffices for now
-	return fmt.Sprintf(" name=%q", strings.ToLower(fieldName))
-}
-
-func (n Nota) AttrValueRefresh(fieldName string) interface{} {
-	return fmt.Sprintf(" value={%s.%s} onChange={this.handleChange}",
-		n, fieldName)
-}
-
-/*
-func (n Nota) RefreshClassAttr(classes string) interface{} {
- 	return fmt.Sprintf(" className={%q + (%s.InputErrd ? %q : \"\")}",
- 		classes, n, " has-warning")
-}
-*/
-
-func (n Nota) AttrHrefLess(s string) interface{} {
-	return fmt.Sprintf(" href={%s.LessHref} onClick={this.handleClick}", n.Uncurl())
-}
-
-func (n Nota) AttrHrefMore(s string) interface{} {
-	return fmt.Sprintf(" href={%s.MoreHref} onClick={this.handleClick}", n.Uncurl())
 }
 
 // Base is like filepath.Base on n with "." separator.

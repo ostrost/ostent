@@ -1,17 +1,6 @@
 = content define_usepercent
   | <span {{class}}="label" data-usepercent={{.}}>{{.}}%</span>
 
-/ usage: {{template "defines::define_refresh" (Chain .Data "Refreshsmth")}}
-= content define_refresh
-  {{$data := (index . 0)}}{{/*   .Data         */}}
-  {{$n    := (index . 1)}}{{/*   "Refreshsmth" */}}
-  {{$p    := $data.Params}}
-  | <div {{$p.AttrClassParamsError $data.Params.Errors $n "input-group input-group-sm refresh-group has-warning" "input-group input-group-sm refresh-group"}}>
-  span.input-group-addon Refresh
-  |
-      <input {{class}}="form-control refresh-input width-fourem" type="text" placeholder={{$data.MinRefresh}} {{$p.AttrNameRefresh $n}} {{$p.AttrValueRefresh $n}}>{{jsxClose "input"}}
-    </div>
-
 = content define_ifbytes_rows
   {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IFbytes.List}}
@@ -224,46 +213,27 @@
   {{end}}
 
 = content define_memtable
-  table.table.table-hover
-    thead
-      tr
-        th
-        th.text-right Free
-        th.text-right Used
-        th.text-right Total
-    tbody
-      {{template "defines::define_memrows" .}}
+  {{$p := .Data.Params}}
+  | <table {{$p.AttrClassNonzero $p.Memn "table table-hover" "collapse-hidden"}}>
+  thead
+    tr
+      th
+      th.text-right Free
+      th.text-right Used
+      th.text-right Total
+  tbody
+    {{template "defines::define_memrows" .}}
+  | </table>
 
 = content define_panelmem
   {{$p := .Data.Params}}
-  div
-    div
-      |
-        <a      {{$p.AttrHrefToggle $p.Configmem}} {{class}}="btn-block">
-          <span {{$p.AttrClassN $p.Configmem "h4 bg-info" "h4"}}>Memory</span>
-        </a>
-
-    div
-      | <div {{$p.AttrClassN $p.Configmem "config-margintop" "config-margintop collapse-hidden"}} id="memconfig">
-      | <form {{$p.AttrActionForm}} {{class}}="form-inline">
-      input.hidden-submit type=submit
-
-      div.btn-toolbar
-        div.btn-group.btn-group-sm role=group
-          |
-            <a {{$p.AttrClassN $p.Hidemem  "btn btn-default active" "btn btn-default"}}
-               {{$p.AttrHrefToggle $p.Hidemem}} >Hidden</a>
-            <a {{$p.AttrClassN $p.Hideswap "btn btn-default active" "btn btn-default"}}
-               {{$p.AttrHrefToggle $p.Hideswap}}>Hide swap</a>
-        div.btn-group.btn-group-sm role=group
-          {{template "defines::define_refresh" (Chain .Data "Refreshmem")}}
-      | </form>
-      | </div>
-
-    div
-      | <div {{$p.AttrClassN $p.Hidemem "collapse-hidden" ""}}>
+  [[template "startpanel" Chain `$p.Memn` "Memory"]]
+  [[template "configrow_delay"  `$p.Memd`]]
+  [[template "configrow_rows"   `$p.Memn`]]
+  |
+      </table>
       {{template "defines::define_memtable" .}}
-      | </div>
+    </div>
 
 = content define_cpurows
   {{with rowsset .}}{{.}}{{else}}
@@ -278,49 +248,30 @@
   {{end}}
 
 = content define_cputable
-  table.table.table-hover
-    thead
-      tr
-        th
-        th.text-right.nowrap User
-          span.unit %
-        th.text-right.nowrap Sys
-          span.unit %
-        th.text-right.nowrap Idle
-          span.unit %
-    tbody
-      {{template "defines::define_cpurows" .}}
+  {{$p := .Data.Params}}
+  | <table {{$p.AttrClassNonzero $p.Cpun "table table-hover" "collapse-hidden"}}>
+  thead
+    tr
+      th
+      th.text-right.nowrap User
+        span.unit %
+      th.text-right.nowrap Sys
+        span.unit %
+      th.text-right.nowrap Idle
+        span.unit %
+  tbody
+    {{template "defines::define_cpurows" .}}
+  | </table>
 
 = content define_panelcpu
   {{$p := .Data.Params}}
-  div
-    div
-      |
-        <a      {{$p.AttrHrefToggle $p.Configcpu}} {{class}}="btn-block">
-          <span {{$p.AttrClassN $p.Configcpu "h4 bg-info" "h4"}}>CPU</span>
-        </a>
-
-    div
-      | <div {{$p.AttrClassN $p.Configcpu "config-margintop" "config-margintop collapse-hidden"}} id="cpuconfig">
-      | <form {{$p.AttrActionForm}} {{class}}="form-inline">
-      input.hidden-submit type=submit
-
-      div.btn-toolbar
-        div.btn-group.btn-group-sm role=group
-          |
-            <a {{$p.AttrClassN $p.Hidecpu "btn btn-default active" "btn btn-default"}}
-               {{$p.AttrHrefToggle $p.Hidecpu}}>Hidden</a>
-            <a {{$p.AttrClassN .Data.CPU.ExpandableCPU "btn btn-default" "btn btn-default disabled"}}
-               {{$p.AttrHrefToggle $p.Expandcpu}}>{{.Data.CPU.ExpandtextCPU}}</a>
-        div.btn-group.btn-group-sm role=group
-          {{template "defines::define_refresh" (Chain .Data "Refreshcpu")}}
-      | </form>
-      | </div>
-
-    div
-      | <div {{$p.AttrClassN $p.Hidecpu "collapse-hidden" ""}}>
+  [[template "startpanel" Chain `$p.Cpun` "CPU"]]
+  [[template "configrow_delay"  `$p.Cpud`]]
+  [[template "configrow_rows"   `$p.Cpun`]]
+  |
+      </table>
       {{template "defines::define_cputable" .}}
-      | </div>
+    </div>
 
 = content define_psrows
   {{with rowsset .}}{{.}}{{else}}
@@ -457,42 +408,25 @@
   {{end}}
 
 = content define_vgtable
-  table.table.table-hover
-    thead
-      tr
-        th ID
-        th Name
-        th Provider
-        th State
-        th Directory
-    tbody
-      {{template "defines::define_vgswitch" .}}
+  {{$p := .Data.Params}}
+  | <table {{$p.AttrClassNonzero $p.Vgn "table table-hover" "collapse-hidden"}}>
+  thead
+    tr
+      th ID
+      th Name
+      th Provider
+      th State
+      th Directory
+  tbody
+    {{template "defines::define_vgswitch" .}}
+  | </table>
 
 = content define_panelvg
   {{$p := .Data.Params}}
-  div
-    div
-      |
-        <a      {{$p.AttrHrefToggle $p.Configvg}} {{class}}="btn-block">
-          <span {{$p.AttrClassN $p.Configvg "h4 bg-info" "h4"}}>Vagrant</span>
-        </a>
-
-    div
-      | <div {{$p.AttrClassN $p.Configvg "config-margintop" "config-margintop collapse-hidden"}} id="vgconfig">
-      | <form {{$p.AttrActionForm}} {{class}}="form-inline">
-      input.hidden-submit type=submit
-
-      div.btn-toolbar
-        div.btn-group.btn-group-sm role=group
-          |
-            <a {{$p.AttrClassN $p.Hidevg "btn btn-default active" "btn btn-default"}}
-               {{$p.AttrHrefToggle $p.Hidevg}}>Hidden</a>
-        div.btn-group.btn-group-sm role=group
-          {{template "defines::define_refresh" (Chain .Data "Refreshvg")}}
-      | </form>
-      | </div>
-
-    div
-      | <div {{$p.AttrClassN $p.Hidevg "collapse-hidden" ""}}>
+  [[template "startpanel" Chain `$p.Vgn` "Vagrant"]]
+  [[template "configrow_delay"  `$p.Vgd`]]
+  [[template "configrow_rows"   `$p.Vgn`]]
+  |
+      </table>
       {{template "defines::define_vgtable" .}}
-      | </div>
+    </div>

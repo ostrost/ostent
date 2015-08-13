@@ -116,7 +116,7 @@
     ></td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_cputable"}}<table class="table table-hover"
+*/}}{{define "defines::define_cputable"}}{{$p := .Data.Params}}<table {{$p.AttrClassNonzero $p.Cpun "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
       ><th
@@ -332,7 +332,7 @@
     >{{$mem.Total}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_memtable"}}<table class="table table-hover"
+*/}}{{define "defines::define_memtable"}}{{$p := .Data.Params}}<table {{$p.AttrClassNonzero $p.Memn "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
       ><th
@@ -349,37 +349,48 @@
     >{{template "defines::define_memrows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_panelcpu"}}{{$p := .Data.Params}}<div
-  ><div
-    ><a      {{$p.AttrHrefToggle $p.Configcpu}} {{class}}="btn-block"
-      >  <span {{$p.AttrClassN $p.Configcpu "h4 bg-info" "h4"}}
-        >CPU</span
-      ></a
-    ></div
-  ><div
-    ><div {{$p.AttrClassN $p.Configcpu "config-margintop" "config-margintop collapse-hidden"}} id="cpuconfig"
-      ><form {{$p.AttrActionForm}} {{class}}="form-inline"
-        ><input class="hidden-submit" type="submit"
-        ><div class="btn-toolbar"
-          ><div class="btn-group btn-group-sm" role="group"
-            ><a {{$p.AttrClassN $p.Hidecpu "btn btn-default active" "btn btn-default"}}
-   {{$p.AttrHrefToggle $p.Hidecpu}}
-              >Hidden</a
-            ><a {{$p.AttrClassN .Data.CPU.ExpandableCPU "btn btn-default" "btn btn-default disabled"}}
-   {{$p.AttrHrefToggle $p.Expandcpu}}
-              >{{.Data.CPU.ExpandtextCPU}}</a
-            ></div
-          ><div class="btn-group btn-group-sm" role="group"
-            >{{template "defines::define_refresh" (Chain .Data "Refreshcpu")}}</div
+*/}}{{define "defines::define_panelcpu"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.Cpun "" "panel panel-default"}}
+  >  <div   {{$p.AttrClassP $p.Cpun "" "panel-heading"}}
+    >    <a   {{$p.AttrHrefToggleHead $p.Cpun}} {{class}}="panel-title btn-block"
+      >      <b {{$p.AttrClassP $p.Cpun "h4" "h4 bg-info"}}
+        >CPU</b
+      >    </a
+    >  </div
+  >  <table {{$p.AttrClassP $p.Cpun "table collapse-hidden" "table"}}
+    ><tr class="panel-config"
+      ><td class="col-md-2"
+        ><div class="nowrap text-right"
+          >Delay&nbsp;<span class="badge"
+            >{{$p.Cpud}}</span
           ></div
-        ></form
-      ></div
-    ></div
-  ><div
-    ><div {{$p.AttrClassN $p.Hidecpu "collapse-hidden" ""}}
-      >{{template "defines::define_cputable" .}}</div
-    ></div
-  ></div
+        ></td
+      ><td
+        ><div class="btn-group nowrap-group" role="group"
+          >{{template "defines::badgedlinkleft" $p.LessD $p.Cpud}}{{template "defines::badgedlinkright" $p.MoreD $p.Cpud}}</div
+        ></td
+      ><td class="col-md-10" {{colspan}}="2"
+        ></td
+      ></tr
+    ><tr class="panel-config"
+      ><td class="col-md-2"
+        ><div class="nowrap text-right"
+          >Rows&nbsp;<span class="badge"
+            >{{$p.Cpun.Body}}</span
+          ></div
+        ></td
+      ><td
+        ><div class="btn-group nowrap-group" role="group"
+          >{{template "defines::badgedlinkleft" $p.LessN $p.Cpun}}{{template "defines::badgedlinkright" $p.MoreN $p.Cpun}}</div
+        ></td
+      ><td
+        ><div class="btn-group nowrap-group" role="group"
+          >{{template "defines::badgedlinkright" $p.ZeroN $p.Cpun}}</div
+        ></td
+      ><td class="col-md-10"
+        ></td
+      ></tr
+    >  </table
+  >  {{template "defines::define_cputable" .}}</div
 >{{end}}{{/*
 */}}{{define "defines::define_paneldf"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.Dfn "" "panel panel-default"}}
   >  <div   {{$p.AttrClassP $p.Dfn "" "panel-heading"}}
@@ -500,37 +511,48 @@
   {{template "defines::define_iferrors_table" .}}
   {{template "defines::define_ifbytes_table" .}}</div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelmem"}}{{$p := .Data.Params}}<div
-  ><div
-    ><a      {{$p.AttrHrefToggle $p.Configmem}} {{class}}="btn-block"
-      >  <span {{$p.AttrClassN $p.Configmem "h4 bg-info" "h4"}}
-        >Memory</span
-      ></a
-    ></div
-  ><div
-    ><div {{$p.AttrClassN $p.Configmem "config-margintop" "config-margintop collapse-hidden"}} id="memconfig"
-      ><form {{$p.AttrActionForm}} {{class}}="form-inline"
-        ><input class="hidden-submit" type="submit"
-        ><div class="btn-toolbar"
-          ><div class="btn-group btn-group-sm" role="group"
-            ><a {{$p.AttrClassN $p.Hidemem "btn btn-default active" "btn btn-default"}}
-   {{$p.AttrHrefToggle $p.Hidemem}} 
-              >Hidden</a
-            ><a {{$p.AttrClassN $p.Hideswap "btn btn-default active" "btn btn-default"}}
-   {{$p.AttrHrefToggle $p.Hideswap}}
-              >Hide swap</a
-            ></div
-          ><div class="btn-group btn-group-sm" role="group"
-            >{{template "defines::define_refresh" (Chain .Data "Refreshmem")}}</div
+*/}}{{define "defines::define_panelmem"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.Memn "" "panel panel-default"}}
+  >  <div   {{$p.AttrClassP $p.Memn "" "panel-heading"}}
+    >    <a   {{$p.AttrHrefToggleHead $p.Memn}} {{class}}="panel-title btn-block"
+      >      <b {{$p.AttrClassP $p.Memn "h4" "h4 bg-info"}}
+        >Memory</b
+      >    </a
+    >  </div
+  >  <table {{$p.AttrClassP $p.Memn "table collapse-hidden" "table"}}
+    ><tr class="panel-config"
+      ><td class="col-md-2"
+        ><div class="nowrap text-right"
+          >Delay&nbsp;<span class="badge"
+            >{{$p.Memd}}</span
           ></div
-        ></form
-      ></div
-    ></div
-  ><div
-    ><div {{$p.AttrClassN $p.Hidemem "collapse-hidden" ""}}
-      >{{template "defines::define_memtable" .}}</div
-    ></div
-  ></div
+        ></td
+      ><td
+        ><div class="btn-group nowrap-group" role="group"
+          >{{template "defines::badgedlinkleft" $p.LessD $p.Memd}}{{template "defines::badgedlinkright" $p.MoreD $p.Memd}}</div
+        ></td
+      ><td class="col-md-10" {{colspan}}="2"
+        ></td
+      ></tr
+    ><tr class="panel-config"
+      ><td class="col-md-2"
+        ><div class="nowrap text-right"
+          >Rows&nbsp;<span class="badge"
+            >{{$p.Memn.Body}}</span
+          ></div
+        ></td
+      ><td
+        ><div class="btn-group nowrap-group" role="group"
+          >{{template "defines::badgedlinkleft" $p.LessN $p.Memn}}{{template "defines::badgedlinkright" $p.MoreN $p.Memn}}</div
+        ></td
+      ><td
+        ><div class="btn-group nowrap-group" role="group"
+          >{{template "defines::badgedlinkright" $p.ZeroN $p.Memn}}</div
+        ></td
+      ><td class="col-md-10"
+        ></td
+      ></tr
+    >  </table
+  >  {{template "defines::define_memtable" .}}</div
 >{{end}}{{/*
 */}}{{define "defines::define_panelps"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.Psn "" "panel panel-default"}}
   >  <div   {{$p.AttrClassP $p.Psn "" "panel-heading"}}
@@ -575,34 +597,48 @@
     >  </table
   >  {{template "defines::define_pstable" .}}</div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelvg"}}{{$p := .Data.Params}}<div
-  ><div
-    ><a      {{$p.AttrHrefToggle $p.Configvg}} {{class}}="btn-block"
-      >  <span {{$p.AttrClassN $p.Configvg "h4 bg-info" "h4"}}
-        >Vagrant</span
-      ></a
-    ></div
-  ><div
-    ><div {{$p.AttrClassN $p.Configvg "config-margintop" "config-margintop collapse-hidden"}} id="vgconfig"
-      ><form {{$p.AttrActionForm}} {{class}}="form-inline"
-        ><input class="hidden-submit" type="submit"
-        ><div class="btn-toolbar"
-          ><div class="btn-group btn-group-sm" role="group"
-            ><a {{$p.AttrClassN $p.Hidevg "btn btn-default active" "btn btn-default"}}
-   {{$p.AttrHrefToggle $p.Hidevg}}
-              >Hidden</a
-            ></div
-          ><div class="btn-group btn-group-sm" role="group"
-            >{{template "defines::define_refresh" (Chain .Data "Refreshvg")}}</div
+*/}}{{define "defines::define_panelvg"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.Vgn "" "panel panel-default"}}
+  >  <div   {{$p.AttrClassP $p.Vgn "" "panel-heading"}}
+    >    <a   {{$p.AttrHrefToggleHead $p.Vgn}} {{class}}="panel-title btn-block"
+      >      <b {{$p.AttrClassP $p.Vgn "h4" "h4 bg-info"}}
+        >Vagrant</b
+      >    </a
+    >  </div
+  >  <table {{$p.AttrClassP $p.Vgn "table collapse-hidden" "table"}}
+    ><tr class="panel-config"
+      ><td class="col-md-2"
+        ><div class="nowrap text-right"
+          >Delay&nbsp;<span class="badge"
+            >{{$p.Vgd}}</span
           ></div
-        ></form
-      ></div
-    ></div
-  ><div
-    ><div {{$p.AttrClassN $p.Hidevg "collapse-hidden" ""}}
-      >{{template "defines::define_vgtable" .}}</div
-    ></div
-  ></div
+        ></td
+      ><td
+        ><div class="btn-group nowrap-group" role="group"
+          >{{template "defines::badgedlinkleft" $p.LessD $p.Vgd}}{{template "defines::badgedlinkright" $p.MoreD $p.Vgd}}</div
+        ></td
+      ><td class="col-md-10" {{colspan}}="2"
+        ></td
+      ></tr
+    ><tr class="panel-config"
+      ><td class="col-md-2"
+        ><div class="nowrap text-right"
+          >Rows&nbsp;<span class="badge"
+            >{{$p.Vgn.Body}}</span
+          ></div
+        ></td
+      ><td
+        ><div class="btn-group nowrap-group" role="group"
+          >{{template "defines::badgedlinkleft" $p.LessN $p.Vgn}}{{template "defines::badgedlinkright" $p.MoreN $p.Vgn}}</div
+        ></td
+      ><td
+        ><div class="btn-group nowrap-group" role="group"
+          >{{template "defines::badgedlinkright" $p.ZeroN $p.Vgn}}</div
+        ></td
+      ><td class="col-md-10"
+        ></td
+      ></tr
+    >  </table
+  >  {{template "defines::define_vgtable" .}}</div
 >{{end}}{{/*
 */}}{{define "defines::define_psrows"}}{{with rowsset .}}{{.}}{{else}}{{range $proc := .Data.PStable.List}}<tr {{$proc.PID.AttrKey "ps-rowby-pid"}}
   ><td class="text-right"
@@ -634,12 +670,6 @@
     >{{template "defines::define_psrows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_refresh"}}{{$data := (index . 0)}}{{$n := (index . 1)}}{{$p := $data.Params}}<div {{$p.AttrClassParamsError $data.Params.Errors $n "input-group input-group-sm refresh-group has-warning" "input-group input-group-sm refresh-group"}}
-  ><span class="input-group-addon"
-    >Refresh</span
-  >  <input {{class}}="form-control refresh-input width-fourem" type="text" placeholder={{$data.MinRefresh}} {{$p.AttrNameRefresh $n}} {{$p.AttrValueRefresh $n}}
-  >{{jsxClose "input"}}</div
->{{end}}{{/*
 */}}{{define "defines::define_usepercent"}}<span {{class}}="label" data-usepercent={{.}}
   >{{.}}%</span
 >{{end}}{{/*
@@ -662,7 +692,7 @@
   ></tr
 >{{end}}{{end}}{{/*
 */}}{{define "defines::define_vgswitch"}}{{with rowsset .}}{{.}}{{else}}{{if eq .Data.VagrantErrord true}}{{template "defines::define_vgerror" .}}{{else}}{{template "defines::define_vgrows" .}}{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_vgtable"}}<table class="table table-hover"
+*/}}{{define "defines::define_vgtable"}}{{$p := .Data.Params}}<table {{$p.AttrClassNonzero $p.Vgn "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
       ><th

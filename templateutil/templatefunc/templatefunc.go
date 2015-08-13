@@ -16,12 +16,10 @@ func (f JSXFuncs) Chain(args ...interface{}) []interface{}  { return args }
 func (f HTMLFuncs) Chain(args ...interface{}) []interface{} { return args }
 
 // JSXClose returns empty template.HTML.
-func (f HTMLFuncs) JSXClose(string) (empty template.HTML) { return }
+// func (f HTMLFuncs) JSXClose(string) (empty template.HTML) { return }
 
 // JSXClose returns close tag markup as template.HTML.
-func (f JSXFuncs) JSXClose(tag string) template.HTML {
-	return template.HTML("</" + tag + ">")
-}
+// func (f JSXFuncs) JSXClose(tag string) template.HTML { return template.HTML("</" + tag + ">") }
 
 // JSXFuncs has methods implementing Functor.
 type JSXFuncs struct{}
@@ -41,10 +39,10 @@ func MakeMap(f Functor) template.FuncMap {
 		"rowsset": func(interface{}) string { return "" }, // empty pipeline
 		// acepp overrides rowsset and adds setrows
 
-		"class":    f.Class,
-		"colspan":  f.Colspan,
-		"jsxClose": f.JSXClose,
-		"Chain":    f.Chain,
+		"class":   f.Class,
+		"colspan": f.Colspan,
+		"Chain":   f.Chain,
+		// "jsxClose":       f.JSXClose,
 		// "attrKey":        f.AttrKey,
 		// "attrActionForm": f.AttrActionForm,
 	}
@@ -57,8 +55,8 @@ type Functor interface {
 	MakeMap() template.FuncMap
 	Class() string
 	Colspan() string
-	JSXClose(string) template.HTML
 	Chain(...interface{}) []interface{}
+	// JSXClose(string) template.HTML
 	// AttrKey(string) template.HTMLAttr
 	// AttrActionForm() template.HTMLAttr
 }
@@ -66,21 +64,11 @@ type Functor interface {
 func init() {
 	// check for Nota's interfaces compliance
 	_ = interface {
-		// operating (multiple types):
-		// TODO BoolClassAttr(string, string) template.HTMLAttr
-		AttrKey(string) template.HTMLAttr
+		AttrKey(string) template.HTMLAttr // in operating (multiple types)
 
-		AttrActionForm() template.HTMLAttr // Query
-		// TODO BoolParamClassAttr(string, string) template.HTMLAttr // BoolParam
-		// TODO DisabledAttr() interface{}                                          // BoolParam
 		// TODO ToggleHrefAttr() interface{}                                        // BoolParam
 		// TODO EnumClassAttr(string, string, ...string) (template.HTMLAttr, error) // EnumParam
 		// TODO EnumLink(...string) (interface{}, error) // EnumParam
-		AttrNameRefresh(string) interface{}  // PeriodParam
-		AttrValueRefresh(string) interface{} // PeriodParam
-		// TODO RefreshClassAttr(string) interface{} // PeriodParam
-		AttrHrefLess(string) interface{} // LimitParam
-		AttrHrefMore(string) interface{} // LimitParam
 	}(templatepipe.Nota(nil))
 }
 

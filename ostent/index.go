@@ -9,9 +9,7 @@ import (
 	"os/user"
 	"strings"
 	"sync"
-	"time"
 
-	"github.com/julienschmidt/httprouter"
 	metrics "github.com/rcrowley/go-metrics"
 	sigar "github.com/rzab/gosigar"
 
@@ -108,14 +106,12 @@ type IndexData struct {
 	IFerrors  operating.Interfaces
 	IFpackets operating.Interfaces
 
-	VagrantMachines *VagrantMachines
+	VagrantMachines VagrantMachines
 	VagrantError    string
 	VagrantErrord   bool
 
 	DISTRIB string
 	VERSION string
-
-	MinRefresh time.Duration
 }
 
 type PStable struct {
@@ -424,10 +420,10 @@ func FormatDFinodes(md operating.MetricDF) operating.DiskInodes {
 }
 
 func (ir *IndexRegistry) VG(para *params.Params, iu *IndexUpdate) bool {
-	if para.Hidevg {
+	if para.Vgn.Body == 0 {
 		return false
 	}
-	machines, err := vagrantmachines()
+	machines, err := vagrantmachines(para.Dfn.Body)
 	if err != nil {
 		iu.VagrantErrord = true
 		iu.VagrantError = err.Error()
@@ -461,7 +457,7 @@ func (ir *IndexRegistry) IF(para *params.Params, iu *IndexUpdate) bool {
 }
 
 func (ir *IndexRegistry) CPU(para *params.Params, iu *IndexUpdate) bool {
-	if para.Hidecpu {
+	if para.Cpun.Body == 0 {
 		return false
 	}
 	iu.CPU = ir.CPUInternal(para)
@@ -472,23 +468,17 @@ func (ir *IndexRegistry) CPUInternal(para *params.Params) *operating.CPUInfo {
 	cpu := &operating.CPUInfo{}
 	private := ir.ListPrivateCPU()
 
-	cpu.ExpandableCPU = new(bool)
-	*cpu.ExpandableCPU = len(private) > para.Toprows // one row reserved for "all N"
-	cpu.ExpandtextCPU = new(string)
-	*cpu.ExpandtextCPU = fmt.Sprintf("Expanded (%d)", len(private))
-
 	if len(private) == 1 {
 		cpu.List = []operating.CoreInfo{FormatCPU(private[0])}
+		para.Cpun.Limit = 1
 		return cpu
 	}
+	para.Cpun.Limit = len(private) + 1
 	private.SortSortBy(LessCPU)
-	var public []operating.CoreInfo
-	if !para.Expandcpu {
-		public = []operating.CoreInfo{FormatCPU(ir.PrivateCPUAll)}
-	}
+
+	public := []operating.CoreInfo{FormatCPU(ir.PrivateCPUAll)} // first row is "all N"
 	for i, mc := range private {
-		if !para.Expandcpu && i > para.Toprows-2 {
-			// "collapsed" view, head of the list
+		if i >= para.Cpun.Body-1 {
 			break
 		}
 		public = append(public, FormatCPU(mc))
@@ -544,16 +534,22 @@ func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) operating.MetricCPU
 	return i
 }
 
-func (ir *IndexRegistry) SWAP(para *params.Params, iu *IndexUpdate) bool {
-	if para.Hidemem || para.Hideswap {
-		// if MEM is hidden, so is SWAP
+func (ir *IndexRegistry) MEM(para *params.Params, iu *IndexUpdate) bool {
+	para.Memn.Limit = 2
+	if para.Memn.Body < 1 {
 		return false
 	}
-	if iu.MEM == nil {
-		iu.MEM = new(operating.MEM)
-	}
-	if iu.MEM.List == nil {
-		iu.MEM.List = []operating.Memory{}
+	iu.MEM = new(operating.MEM)
+	iu.MEM.List = []operating.Memory{}
+	iu.MEM.List = append(iu.MEM.List,
+		_getmem("RAM", sigar.Swap{
+			Total: uint64(ir.RAM.Total.Snapshot().Value()),
+			Free:  uint64(ir.RAM.Free.Snapshot().Value()),
+			Used:  ir.RAM.UsedValue(), // == .Total - .Free
+		}))
+
+	if para.Memn.Body < 2 {
+		return true
 	}
 	iu.MEM.List = append(iu.MEM.List,
 		_getmem("swap", sigar.Swap{
@@ -561,27 +557,6 @@ func (ir *IndexRegistry) SWAP(para *params.Params, iu *IndexUpdate) bool {
 			Free:  uint64(ir.Swap.Free.Snapshot().Value()),
 			Used:  uint64(ir.Swap.Used.Snapshot().Value()),
 		}))
-	return true
-}
-
-func (ir *IndexRegistry) MEM(para *params.Params, iu *IndexUpdate) bool {
-	if para.Hidemem {
-		return false
-	}
-	// para is unused
-	if iu.MEM == nil {
-		iu.MEM = new(operating.MEM)
-	}
-	if iu.MEM.List == nil {
-		iu.MEM.List = []operating.Memory{}
-	}
-	iu.MEM.List = append(iu.MEM.List,
-		_getmem("RAM", sigar.Swap{
-			Total: uint64(ir.RAM.Total.Snapshot().Value()),
-			Free:  uint64(ir.RAM.Free.Snapshot().Value()),
-			Used:  ir.RAM.UsedValue(), // == .Total - .Free
-		}),
-	)
 	return true
 }
 
@@ -715,7 +690,7 @@ func (s *Set) Expired(forcerefresh bool) bool {
 func getUpdates(req *http.Request, para *params.Params, forcerefresh bool) (IndexUpdate, bool, error) {
 	iu := IndexUpdate{}
 	if req != nil {
-		err := DecodeParam(para, req)
+		err := para.Decode(req)
 		if err != nil {
 			return iu, false, err
 		}
@@ -725,10 +700,9 @@ func getUpdates(req *http.Request, para *params.Params, forcerefresh bool) (Inde
 	psCopy := lastInfo.CopyPS()
 
 	set := []Set{
-		{para.RefreshFunc(&para.Refreshmem), Reg1s.MEM},
-		{para.RefreshFunc(&para.Refreshmem), Reg1s.SWAP},
-		{para.RefreshFunc(&para.Refreshcpu), Reg1s.CPU},
-		{para.RefreshFunc(&para.Refreshvg), Reg1s.VG},
+		{para.RefreshFunc(&para.Memd), Reg1s.MEM},
+		{para.RefreshFunc(&para.Cpud), Reg1s.CPU},
+		{para.RefreshFunc(&para.Vgd), Reg1s.VG},
 		{para.RefreshFunc(&para.Dfd), Reg1s.DF},
 		{para.RefreshFunc(&para.Ifd), Reg1s.IF},
 		{para.RefreshFunc(&para.Psd), psCopy.IU},
@@ -752,13 +726,6 @@ func getUpdates(req *http.Request, para *params.Params, forcerefresh bool) (Inde
 	return iu, updated, nil
 }
 
-func DecodeParam(para *params.Params, req *http.Request) error {
-	if err := req.ParseForm(); err != nil { // do ParseForm even if req.Form == nil
-		return err
-	}
-	return para.Decode(req)
-}
-
 func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 	if Connections.Len() == 0 {
 		// collect when there're no active connections, so Loop does not collect
@@ -775,9 +742,8 @@ func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 		DISTRIB: DISTRIB, // value set in init()
 		VERSION: VERSION, // value from server.go
 
-		MinRefresh: minperiod.Duration,
-		Params:     updates.Params,
-		Generic:    updates.Generic,
+		Params:  updates.Params,
+		Generic: updates.Generic,
 	}
 
 	if updates.CPU != nil {
@@ -804,7 +770,9 @@ func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
 	if updates.IFpackets != nil {
 		data.IFpackets = *updates.IFpackets
 	}
-	data.VagrantMachines = updates.VagrantMachines
+	if updates.VagrantMachines != nil {
+		data.VagrantMachines = *updates.VagrantMachines
+	}
 	data.VagrantError = updates.VagrantError
 	data.VagrantErrord = updates.VagrantErrord
 
@@ -827,23 +795,25 @@ func init() {
 // Set at init, result of system.Distrib.
 var DISTRIB string
 
+/*
 func FormRedirectFunc(minperiod flags.Period, wrap func(http.HandlerFunc) http.Handler) func(http.ResponseWriter, *http.Request, httprouter.Params) {
-	return func(w http.ResponseWriter, r *http.Request, muxpara httprouter.Params) {
-		wrap(func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, req *http.Request, muxpara httprouter.Params) {
+		wrap(func(w http.ResponseWriter, req *http.Request) {
 			where := "/"
 			if q := muxpara.ByName("Q"); q != "" {
-				r.URL.RawQuery = r.Form.Encode() + "&" + strings.TrimPrefix(q, "?")
-				r.Form = nil // reset the .Form for .ParseForm() to parse new r.URL.RawQuery.
+				req.URL.RawQuery = req.Form.Encode() + "&" + strings.TrimPrefix(q, "?")
+				req.Form = nil // reset the .Form for .ParseForm() to parse new r.URL.RawQuery.
 				para := params.NewParams(minperiod)
-				DecodeParam(para, r) // OR err.Error()
+				para.Decode(req) // OR err.Error()
 				if s, err := para.Encode(); err == nil {
 					where = "/?" + s
 				}
 			}
-			http.Redirect(w, r, where, http.StatusFound)
-		}).ServeHTTP(w, r)
+			http.Redirect(w, req, where, http.StatusFound)
+		}).ServeHTTP(w, req)
 	}
 }
+*/
 
 func IndexFunc(taggedbin bool, template *templateutil.LazyTemplate, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {

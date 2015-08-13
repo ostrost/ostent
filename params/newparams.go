@@ -52,15 +52,6 @@ func NewParams(minperiod flags.Period) *Params {
 	return p
 }
 
-func (p *Params) Decode(req *http.Request) error {
-	err := p.DecodeDecode(req)
-	if merr, ok := err.(MultiError); ok {
-		p.Errors = merr
-	}
-	p.Toprows = map[bool]int{true: 1, false: 2}[p.Hideswap]
-	return err
-}
-
 func (p Params) RefreshFunc(dp *Duration) func(bool) bool {
 	return func(force bool) bool {
 		if force {
@@ -118,45 +109,36 @@ func NewTicks(dp *Duration) *Ticks {
 type Params struct {
 	Schema
 	Defaults  map[interface{}]Num `json:"-"`
-	Errors    MultiError          `json:",omitempty"`
 	Ticks     map[string]*Ticks   `json:"-"`
-	Toprows   int                 `json:"-"`
 	MinPeriod flags.Period        `json:"-"`
 }
 
 type Schema struct {
-	Still     bool `url:"still,omitempty"`
-	Hidecpu   bool `url:"hidecpu,omitempty"`
-	Hidemem   bool `url:"hidemem,omitempty"`
-	Hideswap  bool `url:"hideswap,omitempty"`
-	Hidevg    bool `url:"hidevg,omitempty"`
-	Configcpu bool `url:"configcpu,omitempty"`
-	Configmem bool `url:"configmem,omitempty"`
-	Configvg  bool `url:"configvg,omitempty"`
-	Expandcpu bool `url:"expandcpu,omitempty"`
+	Still bool `url:"still,omitempty"`
 
-	// Memn Num
-	// Cpun Num
-	Dfn Num `url:"dfn,default2"`
-	Ifn Num `url:"ifn,default2"`
+	// The NewParams must populate .Ticks with EACH *Duration
+	Cpud Duration `url:"cpud,omitempty"`
+	Dfd  Duration `url:"dfd,omitempty"`
+	Ifd  Duration `url:"ifd,omitempty"`
+	Memd Duration `url:"memd,omitempty"`
+	Psd  Duration `url:"psd,omitempty"`
+	Vgd  Duration `url:"vgd,omitempty"`
 
-	// Psn encodes number of proccesses and ps config toggle.
-	// Negative value states config displaying and
-	// the absolute value still encodes the ps number.
-	Psn Num `url:"psn,default8"`                    // limit
-	Psk Num `url:"psk,default1,enumerate9"`         // sort, default PID
-	Dfk Num `url:"dfk,default1,enumerate5"`         // sort, default FS
+	// Num encodes a number and config toggle.
+	// "Negative" value states config displaying and
+	// the absolute value still encodes the number.
+
+	Cpun Num `url:"cpun,default2"`
+	Dfn  Num `url:"dfn,default2"`
+	Ifn  Num `url:"ifn,default2"`
+	Memn Num `url:"memn,default2"`
+	Psn  Num `url:"psn,default8"`
+	Vgn  Num `url:"vgn,default2"`
+
 	Dft Num `url:"dft,default2,enumerate2,posonly"` // tab, default DFBYTES
 	Ift Num `url:"ift,default3,enumerate3,posonly"` // tab, default IFBYTES
-
-	// The NewParams must populate .Ticks with EACH *d
-	Dfd Duration `url:"dfd,omitempty"`
-	Ifd Duration `url:"ifd,omitempty"`
-	Psd Duration `url:"psd,omitempty"`
-
-	Refreshcpu Duration `url:"refreshcpu,omitempty"`
-	Refreshmem Duration `url:"refreshmem,omitempty"`
-	Refreshvg  Duration `url:"refreshvg,omitempty"`
+	Psk Num `url:"psk,default1,enumerate9"`         // sort, default PID
+	Dfk Num `url:"dfk,default1,enumerate5"`         // sort, default FS
 }
 
 type Nlinks struct {
@@ -470,8 +452,8 @@ func (p *Params) SetDefaults(form url.Values, minperiod flags.Period) {
 	}
 }
 
-func (p *Params) DecodeDecode(req *http.Request) error {
-	if err := req.ParseForm(); err != nil {
+func (p *Params) Decode(req *http.Request) error {
+	if err := req.ParseForm(); err != nil { // do ParseForm even if req.Form == nil
 		return err
 	}
 	var moved bool
@@ -512,12 +494,6 @@ func (p Params) Encode() (string, error) {
 		return "", err
 	}
 	return values.Encode(), nil
-}
-
-type MultiError map[string]error
-
-func (e MultiError) Error() string {
-	return fmt.Sprintf("%d error(s)", len(e))
 }
 
 // RenamedConstError denotes an error.

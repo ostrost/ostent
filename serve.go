@@ -33,11 +33,6 @@ func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error 
 		mux.Handler("HEAD", "/", index)
 	}
 
-	if formred := ostent.FormRedirectFunc(PeriodFlag, chain.ThenFunc); true {
-		mux.GET("/form/*Q", formred)
-		mux.POST("/form/*Q", formred)
-	}
-
 	// chain is not used -- access is passed to log with.
 	mux.HandlerFunc("GET", "/index.ws", ostent.IndexWSFunc(access, errlog, PeriodFlag))
 	mux.HandlerFunc("GET", "/index.sse", ostent.IndexSSEFunc(access, PeriodFlag))

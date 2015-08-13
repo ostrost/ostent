@@ -5,27 +5,13 @@ import (
 	"fmt"
 	"html/template"
 	"math"
-	"net/url"
-	"reflect"
-	"strings"
 	"time"
-
-	"github.com/google/go-querystring/query"
 
 	"github.com/ostrost/ostent/flags"
 )
 
 func SprintfAttr(format string, args ...interface{}) template.HTMLAttr {
 	return template.HTMLAttr(fmt.Sprintf(format, args...))
-}
-
-// AttrActionForm is for template.
-func (p Params) AttrActionForm() (interface{}, error) {
-	qs, err := p.Encode()
-	if err != nil {
-		return nil, err
-	}
-	return SprintfAttr(" action=\"/form/%s\"", url.QueryEscape(qs)), nil
 }
 
 func (p Params) AttrClassP(num Num, fstclass, sndclass string) template.HTMLAttr {
@@ -46,22 +32,10 @@ func (p Params) AttrClassN(b bool, fstclass, sndclass string) template.HTMLAttr 
 }
 
 /*
-func (bp BoolParam) DisabledAttr() interface{} {
-	if !bp.Value {
-		return template.HTMLAttr("")
-	}
-	return SprintfAttr(" disabled=%q", "disabled")
-}
-
 func (bp BoolParam) ToggleHrefAttr() interface{} {
 	return SprintfAttr(" href=\"%s\"", bp.EncodeToggle())
 }
 */
-
-func (p *Params) AttrClassParamsError(m MultiError, name, fstclass, sndclass string) template.HTMLAttr {
-	_, ok := m[name]
-	return p.AttrClassN(ok, fstclass, sndclass)
-}
 
 func (p Params) AttrClassTab(num, tab Num, cmp int, fstclass, sndclass string) template.HTMLAttr {
 	return p.AttrClassN(num.Body != 0 && tab.Body == cmp, fstclass, sndclass)
@@ -120,33 +94,6 @@ func (p *Params) AttrHrefToggle(v *bool) (interface{}, error) {
 func (p *Params) AttrHrefToggleHead(num *Num) (interface{}, error) {
 	href, err := p.HrefToggleHead(num)
 	return SprintfAttr(" href=%q", href), err
-}
-
-// TODO In Decoder, have a cache of type=>fieldName=>tag(got,splitted)
-func (p Params) AttrNameRefresh(fieldName string) (interface{}, error) {
-	field, ok := reflect.TypeOf(p).FieldByName(fieldName)
-	if !ok {
-		return nil, fmt.Errorf("Params has no field %q", fieldName)
-	}
-	tag := strings.Split(field.Tag.Get("schema"), ",")[0]
-	return SprintfAttr(" name=%q", tag), nil
-}
-
-func (p Params) AttrValueRefresh(fieldName string) (interface{}, error) {
-	field, ok := reflect.TypeOf(p).FieldByName(fieldName)
-	if !ok {
-		return nil, fmt.Errorf("Params has no field %q", fieldName)
-	}
-	tag := strings.Split(field.Tag.Get("schema"), ",")[0]
-	values, err := query.Values(p)
-	if err != nil {
-		return nil, err
-	}
-	v, ok := values[tag]
-	if !ok || len(v) == 0 || v[0] == "" {
-		return template.HTMLAttr(""), nil
-	}
-	return SprintfAttr(" value=%q", v[0]), nil
 }
 
 /*
@@ -309,7 +256,7 @@ func (p *Params) LinkN(num *Num, body int, badge string) (ALink, error) {
 	if badge == "" && num.Body == 0 { // "0" case && param is 0
 		class = " disabled active"
 	}
-	if badge == "+" && body > num.Limit {
+	if badge == "+" && num.Body >= num.Limit && body > num.Limit {
 		class = " disabled"
 	}
 	if badge == "-" && body == 0 {
