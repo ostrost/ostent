@@ -41,7 +41,7 @@ func diskMeta(disk operating.MetricDF) operating.DiskMeta {
 	dirname := disk.DirName.Snapshot().Value()
 	return operating.DiskMeta{
 		DevName: devname,
-		DirName: operating.Field(dirname),
+		DirName: dirname,
 	}
 }
 
@@ -68,7 +68,7 @@ func (procs MPSlice) Ordered(para *params.Params) *PStable {
 
 	pst := &PStable{}
 	pst.N = new(int)
-	*pst.N = para.Psn.Limit
+	*pst.N = limitPS
 
 	if para.Psn.Body == 0 {
 		return pst
@@ -77,7 +77,7 @@ func (procs MPSlice) Ordered(para *params.Params) *PStable {
 	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(&para.Psk, uids)) // not .StableSortBy
 	for _, proc := range procs[:limitPS] {
 		pst.List = append(pst.List, operating.ProcData{
-			PID:      operating.Field(fmt.Sprintf("%d", proc.PID)),
+			PID:      proc.PID,
 			UID:      proc.UID,
 			Priority: proc.Priority,
 			Nice:     proc.Nice,
@@ -262,24 +262,24 @@ func (ir *IndexRegistry) Interfaces(para *params.Params, ip InterfaceParts) []op
 	return public
 }
 
-// ListPrivateInterface returns list of MetricInterface's by traversing the PrivateInterfaceRegistry.
+// ListPrivateInterface returns list of MetricInterface's by traversing the PrivateIFRegistry.
 func (ir *IndexRegistry) ListPrivateInterface() (lmi operating.MetricInterfaceSlice) {
-	ir.PrivateInterfaceRegistry.Each(func(name string, i interface{}) {
+	ir.PrivateIFRegistry.Each(func(name string, i interface{}) {
 		lmi = append(lmi, i.(operating.MetricInterface))
 	})
 	return lmi
 }
 
-// GetOrRegisterPrivateInterface produces a registered in PrivateInterfaceRegistry operating.MetricInterface.
+// GetOrRegisterPrivateInterface produces a registered in PrivateIFRegistry operating.MetricInterface.
 func (ir *IndexRegistry) GetOrRegisterPrivateInterface(name string) operating.MetricInterface {
 	ir.PrivateMutex.Lock()
 	defer ir.PrivateMutex.Unlock()
-	if metric := ir.PrivateInterfaceRegistry.Get(name); metric != nil {
+	if metric := ir.PrivateIFRegistry.Get(name); metric != nil {
 		return metric.(operating.MetricInterface)
 	}
 	i := operating.MetricInterface{
 		Interface: &operating.Interface{
-			Name:       operating.Field(name),
+			Name:       name,
 			BytesIn:    operating.NewGaugeDiff("interface-"+name+".if_octets.rx", ir.Registry),
 			BytesOut:   operating.NewGaugeDiff("interface-"+name+".if_octets.tx", ir.Registry),
 			ErrorsIn:   operating.NewGaugeDiff("interface-"+name+".if_errors.rx", ir.Registry),
@@ -288,7 +288,7 @@ func (ir *IndexRegistry) GetOrRegisterPrivateInterface(name string) operating.Me
 			PacketsOut: operating.NewGaugeDiff("interface-"+name+".if_packets.tx", ir.Registry),
 		},
 	}
-	ir.PrivateInterfaceRegistry.Register(name, i) // error is ignored
+	ir.PrivateIFRegistry.Register(name, i) // error is ignored
 	// errs when the type is not derived from (go-)metrics types
 	return i
 }
@@ -474,31 +474,32 @@ func (ir *IndexRegistry) CPUInternal(para *params.Params) *operating.CPUInfo {
 	private := ir.ListPrivateCPU()
 
 	if len(private) == 1 {
-		cpu.List = []operating.CoreInfo{FormatCPU(private[0])}
+		cpu.List = []operating.CoreInfo{FormatCPU("", private[0])}
 		para.Cpun.Limit = 1
 		return cpu
 	}
 	para.Cpun.Limit = len(private) + 1
 	private.SortSortBy(LessCPU)
 
-	public := []operating.CoreInfo{FormatCPU(ir.PrivateCPUAll)} // first row is "all N"
+	allabel := fmt.Sprintf("all %d", len(private))
+	public := []operating.CoreInfo{FormatCPU(allabel, ir.PrivateCPUAll)} // first: "all N"
+
 	for i, mc := range private {
 		if i >= para.Cpun.Body-1 {
 			break
 		}
-		public = append(public, FormatCPU(mc))
+		public = append(public, FormatCPU("", mc))
 	}
 	cpu.List = public
 	return cpu
 }
 
-func FormatCPU(mc operating.MetricCPU) operating.CoreInfo {
-	N := string(mc.N)
-	if prefix := "cpu-"; strings.HasPrefix(N, prefix) { // true for all but "all"
-		N = "#" + N[len(prefix):] // fmt.Sprintf("#%d", n)
+func FormatCPU(label string, mc operating.MetricCPU) operating.CoreInfo {
+	if label == "" {
+		label = "#" + strings.TrimPrefix(mc.N, "cpu-") // A non-"all" mc.
 	}
 	return operating.CoreInfo{
-		N:    operating.Field(N),
+		N:    label,
 		User: mc.User.SnapshotValueUint(),
 		Sys:  mc.Sys.SnapshotValueUint(),
 		Wait: mc.Wait.SnapshotValueUint(),
@@ -605,9 +606,6 @@ func (ir *IndexRegistry) UpdateCPU(cpus []sigar.Cpu) {
 		ir.GetOrRegisterPrivateCPU(coreno).Update(core)
 		operating.AddSCPU(&all, core)
 	}
-	if ir.PrivateCPUAll.N == "all" {
-		ir.PrivateCPUAll.N = operating.Field(fmt.Sprintf("all %d", len(cpus)))
-	}
 	ir.PrivateCPUAll.Update(all)
 }
 
@@ -642,12 +640,12 @@ func (mss *MSS) GetString(k string) string {
 }
 
 type IndexRegistry struct {
-	Registry                 metrics.Registry
-	PrivateCPUAll            operating.MetricCPU
-	PrivateCPURegistry       metrics.Registry // set of MetricCPUs is handled as a metric in this registry
-	PrivateInterfaceRegistry metrics.Registry // set of operating.MetricInterfaces is handled as a metric in this registry
-	PrivateDFRegistry        metrics.Registry // set of operating.MetricDFs is handled as a metric in this registry
-	PrivateMutex             sync.Mutex
+	Registry           metrics.Registry
+	PrivateCPUAll      operating.MetricCPU
+	PrivateCPURegistry metrics.Registry // set of MetricCPUs is handled as a metric in this registry
+	PrivateIFRegistry  metrics.Registry // set of operating.MetricInterfaces is handled as a metric in this registry
+	PrivateDFRegistry  metrics.Registry // set of operating.MetricDFs is handled as a metric in this registry
+	PrivateMutex       sync.Mutex
 
 	RAM  *operating.MetricRAM
 	Swap operating.MetricSwap
@@ -662,19 +660,18 @@ var (
 )
 
 func init() {
+	reg := metrics.NewRegistry()
 	Reg1s = IndexRegistry{
-		Registry:                 metrics.NewRegistry(),
-		PrivateCPURegistry:       metrics.NewRegistry(),
-		PrivateInterfaceRegistry: metrics.NewRegistry(),
-		PrivateDFRegistry:        metrics.NewRegistry(),
+		Registry: reg,
+		PrivateCPUAll: *system.NewMetricCPU(metrics.NewRegistry(),
+			"all" /* This "all" never used or referenced by */),
+		PrivateCPURegistry: metrics.NewRegistry(),
+		PrivateDFRegistry:  metrics.NewRegistry(),
+		PrivateIFRegistry:  metrics.NewRegistry(),
+		Load:               operating.NewMetricLoad(reg),
+		Swap:               operating.NewMetricSwap(reg),
+		RAM:                system.NewMetricRAM(reg),
 	}
-	Reg1s.PrivateCPUAll = /* *Reg1s.RegisterCPU */ *system.NewMetricCPU(
-		/* pcreg := */ metrics.NewRegistry(), "all")
-	// pcreg.Register("all", Reg1s.PrivateCPUAll)
-
-	Reg1s.RAM = system.NewMetricRAM(Reg1s.Registry)
-	Reg1s.Swap = operating.NewMetricSwap(Reg1s.Registry)
-	Reg1s.Load = operating.NewMetricLoad(Reg1s.Registry)
 }
 
 type Set struct {

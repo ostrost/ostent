@@ -99,7 +99,7 @@
     >{{.Badge}}</span
   ></a
 >{{end}}{{/*
-*/}}{{define "defines::define_cpurows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $core := .Data.CPU.List}}<tr {{$core.N.AttrKey "cpu-rowby-N"}}
+*/}}{{define "defines::define_cpurows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $core := .Data.CPU.List}}<tr {{AttrKey "cpu-rowby-N" $core.N}}
   ><td class="text-right nowrap"
     >{{$core.N}}</td
   ><td class="text-right"
@@ -147,7 +147,7 @@
     >{{template "defines::define_cpurows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_dfbytes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $disk := .Data.DFbytes.List}}<tr {{$disk.DirName.AttrKey "dfbytes-rowby-dirname"}}
+*/}}{{define "defines::define_dfbytes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $disk := .Data.DFbytes.List}}<tr {{AttrKey "dfbytes-rowby-dirname" $disk.DirName}}
   ><td
     >{{$disk.DevName}}</td
   ><td
@@ -169,7 +169,7 @@
     >{{template "defines::define_dfbytes_rows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_dfinodes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $disk := .Data.DFinodes.List}}<tr {{$disk.DirName.AttrKey "dfinodes-rowby-dirname"}}
+*/}}{{define "defines::define_dfinodes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $disk := .Data.DFinodes.List}}<tr {{AttrKey "dfinodes-rowby-dirname" $disk.DirName}}
   ><td
     >{{$disk.DevName}}</td
   ><td
@@ -201,7 +201,7 @@
     >{{template "defines::define_dfinodes_rows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_ifbytes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFbytes.List}}<tr {{$if.Name.AttrKey "ifbytes-rowby-name"}}
+*/}}{{define "defines::define_ifbytes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFbytes.List}}<tr {{AttrKey "ifbytes-rowby-name" $if.Name}}
   ><td
     >{{$if.Name}}</td
   ><td class="text-right"
@@ -249,7 +249,7 @@
     >{{template "defines::define_ifbytes_rows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_iferrors_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFerrors.List}}<tr {{$if.Name.AttrKey "iferrors-rowby-name"}}
+*/}}{{define "defines::define_iferrors_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFerrors.List}}<tr {{AttrKey "iferrors-rowby-name" $if.Name}}
   ><td
     >{{$if.Name}}</td
   ><td class="text-right"
@@ -289,7 +289,7 @@
     >{{template "defines::define_iferrors_rows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_ifpackets_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFpackets.List}}<tr {{$if.Name.AttrKey "ifpackets-rowby-name"}}
+*/}}{{define "defines::define_ifpackets_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFpackets.List}}<tr {{AttrKey "ifpackets-rowby-name" $if.Name}}
   ><td
     >{{$if.Name}}</td
   ><td class="text-right"
@@ -329,7 +329,7 @@
     >{{template "defines::define_ifpackets_rows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_memrows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $mem := .Data.MEM.List}}<tr {{$mem.Kind.AttrKey "mem-rowby-kind"}}
+*/}}{{define "defines::define_memrows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $mem := .Data.MEM.List}}<tr {{AttrKey "mem-rowby-kind" $mem.Kind}}
   ><td
     >{{$mem.Kind}}</td
   ><td class="text-right"
@@ -648,7 +648,7 @@
     >  </table
   >  {{template "defines::define_vgtable" .}}</div
 >{{end}}{{/*
-*/}}{{define "defines::define_psrows"}}{{with rowsset .}}{{.}}{{else}}{{range $proc := .Data.PStable.List}}<tr {{$proc.PID.AttrKey "ps-rowby-pid"}}
+*/}}{{define "defines::define_psrows"}}{{with rowsset .}}{{.}}{{else}}{{range $proc := .Data.PStable.List}}<tr {{AttrKey "ps-rowby-pid" $proc.PID}}
   ><td class="text-right"
     > {{$proc.PID}}</td
   ><td class="text-right"
@@ -686,7 +686,7 @@
     >{{.Data.VagrantError}}</td
   ></tr
 >{{end}}{{/*
-*/}}{{define "defines::define_vgrows"}}{{range $mach := .Data.VagrantMachines.List}}<tr {{$mach.UUID.AttrKey "vagrant-rowby-uuid"}}
+*/}}{{define "defines::define_vgrows"}}{{range $mach := .Data.VagrantMachines.List}}<tr {{AttrKey "vagrant-rowby-uuid" $mach.UUID}}
   ><td
     >{{$mach.UUID}}</td
   ><td

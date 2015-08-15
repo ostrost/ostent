@@ -20,10 +20,6 @@ func (n Nota) Uncurl() string {
 	return Uncurl(n.String())
 }
 
-func (n Nota) AttrKey(prefix string) template.HTMLAttr {
-	return SprintfAttr(" key={%q+%s}", prefix+"-", n.Uncurl())
-}
-
 func (_ Nota) AttrClassP(v Uncurler, fstclass, sndclass string) template.HTMLAttr {
 	s := v.Uncurl()
 	return SprintfAttr(` className={(%s != "!0" && %s.substr(0, 1) != "-") ? %q : %q}`,

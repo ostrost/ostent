@@ -51,7 +51,7 @@ func vagrantmachines(max int) (*VagrantMachines, error) {
 				break
 			}
 			i++
-			machine.UUID = operating.Field(uuid)
+			machine.UUID = uuid
 			machines.List = append(machines.List, machine)
 		}
 	}

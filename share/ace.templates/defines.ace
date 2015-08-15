@@ -4,7 +4,7 @@
 = content define_ifbytes_rows
   {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IFbytes.List}}
-      | <tr {{$if.Name.AttrKey "ifbytes-rowby-name"}}>
+      | <tr {{AttrKey "ifbytes-rowby-name" $if.Name}}>
       td {{$if.Name}}
       td.text-right {{$if.DeltaIn}}
       td.text-right {{$if.DeltaOut}}
@@ -17,7 +17,7 @@
 = content define_iferrors_rows
   {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IFerrors.List}}
-      | <tr {{$if.Name.AttrKey "iferrors-rowby-name"}}>
+      | <tr {{AttrKey "iferrors-rowby-name" $if.Name}}>
       td {{$if.Name}}
       td.text-right {{$if.DeltaIn}}
       td.text-right {{$if.DeltaOut}}
@@ -30,7 +30,7 @@
 = content define_ifpackets_rows
   {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IFpackets.List}}
-      | <tr {{$if.Name.AttrKey "ifpackets-rowby-name"}}>
+      | <tr {{AttrKey "ifpackets-rowby-name" $if.Name}}>
       td {{$if.Name}}
       td.text-right {{$if.DeltaIn}}
       td.text-right {{$if.DeltaOut}}
@@ -123,7 +123,7 @@
 = content define_dfbytes_rows
   {{with rowsset .}}{{.}}{{else}}
     {{range $disk := .Data.DFbytes.List}}
-      | <tr {{$disk.DirName.AttrKey "dfbytes-rowby-dirname"}}>
+      | <tr {{AttrKey "dfbytes-rowby-dirname" $disk.DirName}}>
       td {{$disk.DevName}}
       td {{$disk.DirName}}
       td.text-right {{$disk.Avail}}
@@ -136,7 +136,7 @@
 = content define_dfinodes_rows
   {{with rowsset .}}{{.}}{{else}}
     {{range $disk := .Data.DFinodes.List}}
-      | <tr {{$disk.DirName.AttrKey "dfinodes-rowby-dirname"}}>
+      | <tr {{AttrKey "dfinodes-rowby-dirname" $disk.DirName}}>
       td {{$disk.DevName}}
       td {{$disk.DirName}}
       td.text-right {{$disk.Ifree}}
@@ -203,7 +203,7 @@
 = content define_memrows
   {{with rowsset .}}{{.}}{{else}}
     {{range $i, $mem := .Data.MEM.List}}
-      | <tr {{$mem.Kind.AttrKey "mem-rowby-kind"}}>
+      | <tr {{AttrKey "mem-rowby-kind" $mem.Kind}}>
       td {{$mem.Kind}}
       td.text-right {{$mem.Free}}
       td.text-right {{template "defines::define_usepercent" $mem.UsePercent}}&nbsp;{{$mem.Used}}
@@ -238,7 +238,7 @@
 = content define_cpurows
   {{with rowsset .}}{{.}}{{else}}
     {{range $i, $core := .Data.CPU.List}}
-      | <tr {{$core.N.AttrKey "cpu-rowby-N"}}>
+      | <tr {{AttrKey "cpu-rowby-N" $core.N}}>
       td.text-right.nowrap {{$core.N}}
       td.text-right <span {{class}}="usepercent-text" data-usepercent={{$core.User}}>{{$core.User}}</span>
       td.text-right <span {{class}}="usepercent-text" data-usepercent={{$core.Sys}}>{{$core.Sys}}</span>
@@ -279,7 +279,7 @@
 = content define_psrows
   {{with rowsset .}}{{.}}{{else}}
     {{range $proc := .Data.PStable.List}}
-      | <tr {{$proc.PID.AttrKey "ps-rowby-pid"}}>
+      | <tr {{AttrKey "ps-rowby-pid" $proc.PID}}>
       td.text-right  {{$proc.PID}}
       td.text-right  {{$proc.UID}}
       td {{$proc.User}}
@@ -401,7 +401,7 @@
 
 = content define_vgrows
   {{range $mach := .Data.VagrantMachines.List}}
-    | <tr {{$mach.UUID.AttrKey "vagrant-rowby-uuid"}}>
+    | <tr {{AttrKey "vagrant-rowby-uuid" $mach.UUID}}>
     td {{$mach.UUID}}
     td {{$mach.Name}}
     td {{$mach.Provider}}

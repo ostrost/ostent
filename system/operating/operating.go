@@ -4,7 +4,6 @@
 package operating
 
 import (
-	"html/template"
 	"sync"
 
 	metrics "github.com/rcrowley/go-metrics"
@@ -13,7 +12,7 @@ import (
 
 // Memory type is a struct of memory metrics.
 type Memory struct {
-	Kind       Field
+	Kind       string
 	Total      string
 	Used       string
 	Free       string
@@ -34,7 +33,7 @@ type RAM struct {
 // DiskMeta type has common for DiskBytes and DiskInodes fields.
 type DiskMeta struct {
 	DevName string
-	DirName Field
+	DirName string
 }
 
 // DiskBytes type is a struct of disk bytes metrics.
@@ -67,7 +66,7 @@ type DFinodes struct {
 
 // InterfaceInfo type is a struct of interface metrics.
 type InterfaceInfo struct {
-	Name     Field
+	Name     string
 	In       string // with units
 	Out      string // with units
 	DeltaIn  string // with units
@@ -99,7 +98,7 @@ type ProcInfo struct {
 
 // ProcData type is a public (for index context, json marshaling) account of a process.
 type ProcData struct {
-	PID      Field
+	PID      uint
 	UID      uint
 	Priority int
 	Nice     int
@@ -256,7 +255,7 @@ type CPUInfo struct {
 
 // CoreInfo type is a struct of core metrics.
 type CoreInfo struct {
-	N    Field
+	N    string
 	User uint // percent without "%"
 	Sys  uint // percent without "%"
 	Wait uint // percent without "%"
@@ -273,8 +272,8 @@ type MetricCPU struct {
 }
 
 type CPU struct {
-	metrics.Healthcheck       // derive from one of (go-)metric types, otherwise it won't be registered
-	N                   Field // The "cpu-N"
+	metrics.Healthcheck        // derive from one of (go-)metric types, otherwise it won't be registered
+	N                   string // The "cpu-N"
 	User                *GaugePercent
 	Nice                *GaugePercent
 	Sys                 *GaugePercent
@@ -299,7 +298,7 @@ func (mc MetricCPU) Update(scpu sigar.Cpu) {
 func ExtraNewMetricCPU(r metrics.Registry, name string, extra CPUUpdater) *MetricCPU {
 	return &MetricCPU{
 		CPU: &CPU{
-			N:     Field(name),
+			N:     name,
 			User:  NewGaugePercent(name+".user", r),
 			Nice:  NewGaugePercent(name+".nice", r),
 			Sys:   NewGaugePercent(name+".system", r),
@@ -407,7 +406,7 @@ type MetricInterface struct {
 // Interface is a set of interface metrics.
 type Interface struct {
 	metrics.Healthcheck // derive from one of (go-)metric types, otherwise it won't be registered
-	Name                Field
+	Name                string
 	BytesIn             *GaugeDiff
 	BytesOut            *GaugeDiff
 	ErrorsIn            *GaugeDiff
@@ -437,17 +436,9 @@ type Getifdata interface {
 
 // +gen slice:"PkgSortBy"
 type Vgmachine struct {
-	UUID             Field
+	UUID             string
 	Name             string
 	Provider         string
 	State            string
 	Vagrantfile_path string // Directory
 }
-
-// Field is a string type with AttrKey method.
-type Field string
-
-func (f Field) String() string { return string(f) }
-
-// AttrKey returns empty attribute. In jsx that would be "key=%s".
-func (f Field) AttrKey(string) (empty template.HTMLAttr) { return }
