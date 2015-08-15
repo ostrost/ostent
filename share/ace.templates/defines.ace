@@ -250,7 +250,7 @@
 
 = content define_cputable
   {{$p := .Data.Params}}
-  | <table {{$p.AttrClassNonzero $p.Cpun "table table-hover" "collapse-hidden"}}>
+  | <table {{$p.AttrClassNonzero $p.CPUn "table table-hover" "collapse-hidden"}}>
   thead
     tr
       th
@@ -268,9 +268,9 @@
 
 = content define_panelcpu
   {{$p := .Data.Params}}
-  [[template "startpanel" Chain `$p.Cpun` "CPU"]]
-  [[template "configrow_delay"  `$p.Cpud`]]
-  [[template "configrow_rows"   `$p.Cpun`]]
+  [[template "startpanel" Chain `$p.CPUn` "CPU"]]
+  [[template "configrow_delay"  `$p.CPUd`]]
+  [[template "configrow_rows"   `$p.CPUn`]]
   |
       </table>
       {{template "defines::define_cputable" .}}

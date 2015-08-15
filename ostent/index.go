@@ -462,7 +462,7 @@ func (ir *IndexRegistry) IF(para *params.Params, iu *IndexUpdate) bool {
 }
 
 func (ir *IndexRegistry) CPU(para *params.Params, iu *IndexUpdate) bool {
-	if para.Cpun.Body == 0 {
+	if para.CPUn.Body == 0 {
 		return false
 	}
 	iu.CPU = ir.CPUInternal(para)
@@ -475,17 +475,17 @@ func (ir *IndexRegistry) CPUInternal(para *params.Params) *operating.CPUInfo {
 
 	if len(private) == 1 {
 		cpu.List = []operating.CoreInfo{FormatCPU("", private[0])}
-		para.Cpun.Limit = 1
+		para.CPUn.Limit = 1
 		return cpu
 	}
-	para.Cpun.Limit = len(private) + 1
+	para.CPUn.Limit = len(private) + 1
 	private.SortSortBy(LessCPU)
 
 	allabel := fmt.Sprintf("all %d", len(private))
 	public := []operating.CoreInfo{FormatCPU(allabel, ir.PrivateCPUAll)} // first: "all N"
 
 	for i, mc := range private {
-		if i >= para.Cpun.Body-1 {
+		if i >= para.CPUn.Body-1 {
 			break
 		}
 		public = append(public, FormatCPU("", mc))
@@ -699,12 +699,12 @@ func getUpdates(req *http.Request, para *params.Params, forcerefresh bool) (Inde
 	psCopy := lastInfo.CopyPS()
 
 	set := []Set{
-		{para.RefreshFunc(&para.Memd), Reg1s.MEM},
-		{para.RefreshFunc(&para.Cpud), Reg1s.CPU},
-		{para.RefreshFunc(&para.Vgd), Reg1s.VG},
+		{para.RefreshFunc(&para.CPUd), Reg1s.CPU},
 		{para.RefreshFunc(&para.Dfd), Reg1s.DF},
 		{para.RefreshFunc(&para.Ifd), Reg1s.IF},
+		{para.RefreshFunc(&para.Memd), Reg1s.MEM},
 		{para.RefreshFunc(&para.Psd), psCopy.IU},
+		{para.RefreshFunc(&para.Vgd), Reg1s.VG},
 
 		// always-shown bits:
 		{nil, RegMSS.HN},

@@ -117,7 +117,7 @@ type Schema struct {
 	Still bool `url:"still,omitempty"`
 
 	// The NewParams must populate .Ticks with EACH *Duration
-	Cpud Duration `url:"cpud,omitempty"`
+	CPUd Duration `url:"cpud,omitempty"`
 	Dfd  Duration `url:"dfd,omitempty"`
 	Ifd  Duration `url:"ifd,omitempty"`
 	Memd Duration `url:"memd,omitempty"`
@@ -128,7 +128,7 @@ type Schema struct {
 	// "Negative" value states config displaying and
 	// the absolute value still encodes the number.
 
-	Cpun Num `url:"cpun,default2"`
+	CPUn Num `url:"cpun,default2"`
 	Dfn  Num `url:"dfn,default2"`
 	Ifn  Num `url:"ifn,default2"`
 	Memn Num `url:"memn,default2"`

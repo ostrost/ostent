@@ -338,31 +338,31 @@ define(function(require) {
     ></td
   ></tr
 >); },
-		panelcpu:        function(Data, rows)  { return (<div      className={(Data.Params.Cpun != "!0" && Data.Params.Cpun.substr(0, 1) != "-") ? "" : "panel panel-default"}
-  >  <div    className={(Data.Params.Cpun != "!0" && Data.Params.Cpun.substr(0, 1) != "-") ? "" : "panel-heading"}
-    >    <a    href={Data.Params.Tlinks.Cpun} onClick={this.handleClick} className="panel-title btn-block"
-      >      <b  className={(Data.Params.Cpun != "!0" && Data.Params.Cpun.substr(0, 1) != "-") ? "h4" : "h4 bg-info"}
+		panelcpu:        function(Data, rows)  { return (<div      className={(Data.Params.CPUn != "!0" && Data.Params.CPUn.substr(0, 1) != "-") ? "" : "panel panel-default"}
+  >  <div    className={(Data.Params.CPUn != "!0" && Data.Params.CPUn.substr(0, 1) != "-") ? "" : "panel-heading"}
+    >    <a    href={Data.Params.Tlinks.CPUn} onClick={this.handleClick} className="panel-title btn-block"
+      >      <b  className={(Data.Params.CPUn != "!0" && Data.Params.CPUn.substr(0, 1) != "-") ? "h4" : "h4 bg-info"}
         >CPU</b
       >    </a
     >  </div
-  >  <table  className={(Data.Params.Cpun != "!0" && Data.Params.Cpun.substr(0, 1) != "-") ? "table collapse-hidden" : "table"}
+  >  <table  className={(Data.Params.CPUn != "!0" && Data.Params.CPUn.substr(0, 1) != "-") ? "table collapse-hidden" : "table"}
     ><tr className="panel-config"
       ><td className="col-md-2"
         ><div className="nowrap text-right"
           >Delay&nbsp;<span className="badge"
-            >{Data.Params.Cpud}</span
+            >{Data.Params.CPUd}</span
           ></div
         ></td
       ><td
         ><div className="btn-group nowrap-group" role="group"
-          ><a href={Data.Params.Dlinks.Cpud.Less.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Dlinks.Cpud.Less.Class != null ? Data.Params.Dlinks.Cpud.Less.Class : "")}
+          ><a href={Data.Params.Dlinks.CPUd.Less.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Dlinks.CPUd.Less.Class != null ? Data.Params.Dlinks.CPUd.Less.Class : "")}
   
   ><span className="xlabel xlabel-default"
     >-</span
-  > {Data.Params.Dlinks.Cpud.Less.Text}</a
-><a href={Data.Params.Dlinks.Cpud.More.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Dlinks.Cpud.More.Class != null ? Data.Params.Dlinks.Cpud.More.Class : "")}
+  > {Data.Params.Dlinks.CPUd.Less.Text}</a
+><a href={Data.Params.Dlinks.CPUd.More.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Dlinks.CPUd.More.Class != null ? Data.Params.Dlinks.CPUd.More.Class : "")}
   
-  >{Data.Params.Dlinks.Cpud.More.Text} <span className="xlabel xlabel-default"
+  >{Data.Params.Dlinks.CPUd.More.Text} <span className="xlabel xlabel-default"
     >+</span
   ></a
 ></div
@@ -374,28 +374,28 @@ define(function(require) {
       ><td className="col-md-2"
         ><div className="nowrap text-right"
           >Rows&nbsp;<span className="badge"
-            >{Data.Params.Cpun == "!0" ? "0" : Data.Params.Cpun.replace(/^-/, "")}</span
+            >{Data.Params.CPUn == "!0" ? "0" : Data.Params.CPUn.replace(/^-/, "")}</span
           ></div
         ></td
       ><td
         ><div className="btn-group nowrap-group" role="group"
-          ><a href={Data.Params.Nlinks.Cpun.Less.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.Cpun.Less.Class != null ? Data.Params.Nlinks.Cpun.Less.Class : "")}
+          ><a href={Data.Params.Nlinks.CPUn.Less.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Less.Class != null ? Data.Params.Nlinks.CPUn.Less.Class : "")}
   
   ><span className="xlabel xlabel-default"
     >-</span
-  > {Data.Params.Nlinks.Cpun.Less.Text}</a
-><a href={Data.Params.Nlinks.Cpun.More.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.Cpun.More.Class != null ? Data.Params.Nlinks.Cpun.More.Class : "")}
+  > {Data.Params.Nlinks.CPUn.Less.Text}</a
+><a href={Data.Params.Nlinks.CPUn.More.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.CPUn.More.Class != null ? Data.Params.Nlinks.CPUn.More.Class : "")}
   
-  >{Data.Params.Nlinks.Cpun.More.Text} <span className="xlabel xlabel-default"
+  >{Data.Params.Nlinks.CPUn.More.Text} <span className="xlabel xlabel-default"
     >+</span
   ></a
 ></div
         ></td
       ><td
         ><div className="btn-group nowrap-group" role="group"
-          ><a href={Data.Params.Nlinks.Cpun.Zero.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.Cpun.Zero.Class != null ? Data.Params.Nlinks.Cpun.Zero.Class : "")}
+          ><a href={Data.Params.Nlinks.CPUn.Zero.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Zero.Class != null ? Data.Params.Nlinks.CPUn.Zero.Class : "")}
   
-  >{Data.Params.Nlinks.Cpun.Zero.Text} <span className="xlabel xlabel-default"
+  >{Data.Params.Nlinks.CPUn.Zero.Text} <span className="xlabel xlabel-default"
     ></span
   ></a
 ></div
@@ -404,7 +404,7 @@ define(function(require) {
         ></td
       ></tr
     >  </table
-  >  <table  className={(Data.Params.Cpun != "!0" && Data.Params.Cpun != "0") ? "table table-hover" : "collapse-hidden"}
+  >  <table  className={(Data.Params.CPUn != "!0" && Data.Params.CPUn != "0") ? "table table-hover" : "collapse-hidden"}
   ><thead
     ><tr
       ><th

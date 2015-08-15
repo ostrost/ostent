@@ -120,7 +120,7 @@
     ></td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_cputable"}}{{$p := .Data.Params}}<table {{$p.AttrClassNonzero $p.Cpun "table table-hover" "collapse-hidden"}}
+*/}}{{define "defines::define_cputable"}}{{$p := .Data.Params}}<table {{$p.AttrClassNonzero $p.CPUn "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
       ><th
@@ -357,24 +357,24 @@
     >{{template "defines::define_memrows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_panelcpu"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.Cpun "" "panel panel-default"}}
-  >  <div   {{$p.AttrClassP $p.Cpun "" "panel-heading"}}
-    >    <a   {{$p.AttrHrefToggleHead $p.Cpun}} {{class}}="panel-title btn-block"
-      >      <b {{$p.AttrClassP $p.Cpun "h4" "h4 bg-info"}}
+*/}}{{define "defines::define_panelcpu"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.CPUn "" "panel panel-default"}}
+  >  <div   {{$p.AttrClassP $p.CPUn "" "panel-heading"}}
+    >    <a   {{$p.AttrHrefToggleHead $p.CPUn}} {{class}}="panel-title btn-block"
+      >      <b {{$p.AttrClassP $p.CPUn "h4" "h4 bg-info"}}
         >CPU</b
       >    </a
     >  </div
-  >  <table {{$p.AttrClassP $p.Cpun "table collapse-hidden" "table"}}
+  >  <table {{$p.AttrClassP $p.CPUn "table collapse-hidden" "table"}}
     ><tr class="panel-config"
       ><td class="col-md-2"
         ><div class="nowrap text-right"
           >Delay&nbsp;<span class="badge"
-            >{{$p.Cpud}}</span
+            >{{$p.CPUd}}</span
           ></div
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessD $p.Cpud}}{{template "defines::badgedlinkright" $p.MoreD $p.Cpud}}</div
+          >{{template "defines::badgedlinkleft" $p.LessD $p.CPUd}}{{template "defines::badgedlinkright" $p.MoreD $p.CPUd}}</div
         ></td
       ><td class="col-md-10" {{colspan}}="2"
         ></td
@@ -383,16 +383,16 @@
       ><td class="col-md-2"
         ><div class="nowrap text-right"
           >Rows&nbsp;<span class="badge"
-            >{{$p.Cpun.Body}}</span
+            >{{$p.CPUn.Body}}</span
           ></div
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessN $p.Cpun}}{{template "defines::badgedlinkright" $p.MoreN $p.Cpun}}</div
+          >{{template "defines::badgedlinkleft" $p.LessN $p.CPUn}}{{template "defines::badgedlinkright" $p.MoreN $p.CPUn}}</div
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkright" $p.ZeroN $p.Cpun}}</div
+          >{{template "defines::badgedlinkright" $p.ZeroN $p.CPUn}}</div
         ></td
       ><td class="col-md-10"
         ></td

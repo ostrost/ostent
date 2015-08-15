@@ -894,22 +894,22 @@ define(function (require) {
     panelcpu: function panelcpu(Data, rows) {
       return React.createElement(
         "div",
-        { className: Data.Params.Cpun != "!0" && Data.Params.Cpun.substr(0, 1) != "-" ? "" : "panel panel-default"
+        { className: Data.Params.CPUn != "!0" && Data.Params.CPUn.substr(0, 1) != "-" ? "" : "panel panel-default"
         },
         "  ",
         React.createElement(
           "div",
-          { className: Data.Params.Cpun != "!0" && Data.Params.Cpun.substr(0, 1) != "-" ? "" : "panel-heading"
+          { className: Data.Params.CPUn != "!0" && Data.Params.CPUn.substr(0, 1) != "-" ? "" : "panel-heading"
           },
           "    ",
           React.createElement(
             "a",
-            { href: Data.Params.Tlinks.Cpun, onClick: this.handleClick, className: "panel-title btn-block"
+            { href: Data.Params.Tlinks.CPUn, onClick: this.handleClick, className: "panel-title btn-block"
             },
             "      ",
             React.createElement(
               "b",
-              { className: Data.Params.Cpun != "!0" && Data.Params.Cpun.substr(0, 1) != "-" ? "h4" : "h4 bg-info"
+              { className: Data.Params.CPUn != "!0" && Data.Params.CPUn.substr(0, 1) != "-" ? "h4" : "h4 bg-info"
               },
               "CPU"
             ),
@@ -920,7 +920,7 @@ define(function (require) {
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.Cpun != "!0" && Data.Params.Cpun.substr(0, 1) != "-" ? "table collapse-hidden" : "table"
+          { className: Data.Params.CPUn != "!0" && Data.Params.CPUn.substr(0, 1) != "-" ? "table collapse-hidden" : "table"
           },
           React.createElement(
             "tr",
@@ -939,7 +939,7 @@ define(function (require) {
                   "span",
                   { className: "badge"
                   },
-                  Data.Params.Cpud
+                  Data.Params.CPUd
                 )
               )
             ),
@@ -952,7 +952,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Dlinks.Cpud.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Cpud.Less.Class != null ? Data.Params.Dlinks.Cpud.Less.Class : "")
+                  { href: Data.Params.Dlinks.CPUd.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.Less.Class != null ? Data.Params.Dlinks.CPUd.Less.Class : "")
 
                   },
                   React.createElement(
@@ -962,14 +962,14 @@ define(function (require) {
                     "-"
                   ),
                   " ",
-                  Data.Params.Dlinks.Cpud.Less.Text
+                  Data.Params.Dlinks.CPUd.Less.Text
                 ),
                 React.createElement(
                   "a",
-                  { href: Data.Params.Dlinks.Cpud.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Cpud.More.Class != null ? Data.Params.Dlinks.Cpud.More.Class : "")
+                  { href: Data.Params.Dlinks.CPUd.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.More.Class != null ? Data.Params.Dlinks.CPUd.More.Class : "")
 
                   },
-                  Data.Params.Dlinks.Cpud.More.Text,
+                  Data.Params.Dlinks.CPUd.More.Text,
                   " ",
                   React.createElement(
                     "span",
@@ -1000,7 +1000,7 @@ define(function (require) {
                   "span",
                   { className: "badge"
                   },
-                  Data.Params.Cpun == "!0" ? "0" : Data.Params.Cpun.replace(/^-/, "")
+                  Data.Params.CPUn == "!0" ? "0" : Data.Params.CPUn.replace(/^-/, "")
                 )
               )
             ),
@@ -1013,7 +1013,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Nlinks.Cpun.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Cpun.Less.Class != null ? Data.Params.Nlinks.Cpun.Less.Class : "")
+                  { href: Data.Params.Nlinks.CPUn.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Less.Class != null ? Data.Params.Nlinks.CPUn.Less.Class : "")
 
                   },
                   React.createElement(
@@ -1023,14 +1023,14 @@ define(function (require) {
                     "-"
                   ),
                   " ",
-                  Data.Params.Nlinks.Cpun.Less.Text
+                  Data.Params.Nlinks.CPUn.Less.Text
                 ),
                 React.createElement(
                   "a",
-                  { href: Data.Params.Nlinks.Cpun.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Cpun.More.Class != null ? Data.Params.Nlinks.Cpun.More.Class : "")
+                  { href: Data.Params.Nlinks.CPUn.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.More.Class != null ? Data.Params.Nlinks.CPUn.More.Class : "")
 
                   },
-                  Data.Params.Nlinks.Cpun.More.Text,
+                  Data.Params.Nlinks.CPUn.More.Text,
                   " ",
                   React.createElement(
                     "span",
@@ -1050,10 +1050,10 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Nlinks.Cpun.Zero.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Cpun.Zero.Class != null ? Data.Params.Nlinks.Cpun.Zero.Class : "")
+                  { href: Data.Params.Nlinks.CPUn.Zero.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Zero.Class != null ? Data.Params.Nlinks.CPUn.Zero.Class : "")
 
                   },
-                  Data.Params.Nlinks.Cpun.Zero.Text,
+                  Data.Params.Nlinks.CPUn.Zero.Text,
                   " ",
                   React.createElement("span", { className: "xlabel xlabel-default"
                   })
@@ -1068,7 +1068,7 @@ define(function (require) {
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.Cpun != "!0" && Data.Params.Cpun != "0" ? "table table-hover" : "collapse-hidden"
+          { className: Data.Params.CPUn != "!0" && Data.Params.CPUn != "0" ? "table table-hover" : "collapse-hidden"
           },
           React.createElement(
             "thead",
