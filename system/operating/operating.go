@@ -228,6 +228,10 @@ func NewGaugePercent(name string, r metrics.Registry) *GaugePercent {
 	}
 }
 
+func (gp *GaugePercent) SnapshotValueUint() uint {
+	return uint(gp.Percent.Snapshot().Value())
+}
+
 func (gp *GaugePercent) UpdatePercent(totalDelta int64, uabsolute uint64) {
 	gp.Mutex.Lock()
 	defer gp.Mutex.Unlock()
@@ -255,6 +259,7 @@ type CoreInfo struct {
 	N    Field
 	User uint // percent without "%"
 	Sys  uint // percent without "%"
+	Wait uint // percent without "%"
 	Idle uint // percent without "%"
 }
 
@@ -273,6 +278,7 @@ type CPU struct {
 	User                *GaugePercent
 	Nice                *GaugePercent
 	Sys                 *GaugePercent
+	Wait                *GaugePercent
 	Idle                *GaugePercent
 	Total               *GaugeDiff
 	Extra               CPUUpdater
@@ -283,6 +289,7 @@ func (mc MetricCPU) Update(scpu sigar.Cpu) {
 	mc.User.UpdatePercent(totalDelta, scpu.User)
 	mc.Nice.UpdatePercent(totalDelta, scpu.Nice)
 	mc.Sys.UpdatePercent(totalDelta, scpu.Sys)
+	mc.Wait.UpdatePercent(totalDelta, scpu.Wait)
 	mc.Idle.UpdatePercent(totalDelta, scpu.Idle)
 	if mc.Extra != nil {
 		mc.Extra.UpdateCPU(scpu, totalDelta)
@@ -296,6 +303,7 @@ func ExtraNewMetricCPU(r metrics.Registry, name string, extra CPUUpdater) *Metri
 			User:  NewGaugePercent(name+".user", r),
 			Nice:  NewGaugePercent(name+".nice", r),
 			Sys:   NewGaugePercent(name+".system", r),
+			Wait:  NewGaugePercent(name+".wait", r),
 			Idle:  NewGaugePercent(name+".idle", r),
 			Total: NewGaugeDiff(name+"-total", metrics.NewRegistry()),
 			Extra: extra,
@@ -308,8 +316,8 @@ func AddSCPU(dst *sigar.Cpu, other sigar.Cpu) {
 	dst.User += other.User
 	dst.Nice += other.Nice
 	dst.Sys += other.Sys
-	dst.Idle += other.Idle
 	dst.Wait += other.Wait
+	dst.Idle += other.Idle
 	dst.Irq += other.Irq
 	dst.SoftIrq += other.SoftIrq
 	dst.Stolen += other.Stolen

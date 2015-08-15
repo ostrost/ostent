@@ -873,6 +873,17 @@ define(function (require) {
           },
           React.createElement(
             "span",
+            { className: "usepercent-text", "data-usepercent": $core.Wait
+            },
+            $core.Wait
+          )
+        ),
+        React.createElement(
+          "td",
+          { className: "text-right"
+          },
+          React.createElement(
+            "span",
             { className: "usepercent-text-inverse", "data-usepercent": $core.Idle
             },
             $core.Idle
@@ -1083,6 +1094,18 @@ define(function (require) {
                 { className: "text-right nowrap"
                 },
                 "Sys",
+                React.createElement(
+                  "span",
+                  { className: "unit"
+                  },
+                  "%"
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right nowrap"
+                },
+                "Wait",
                 React.createElement(
                   "span",
                   { className: "unit"

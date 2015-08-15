@@ -329,6 +329,10 @@ define(function(require) {
       >{$core.Sys}</span
     ></td
   ><td className="text-right"
+    ><span className="usepercent-text" data-usepercent={$core.Wait}
+      >{$core.Wait}</span
+    ></td
+  ><td className="text-right"
     ><span className="usepercent-text-inverse" data-usepercent={$core.Idle}
       >{$core.Idle}</span
     ></td
@@ -411,6 +415,10 @@ define(function(require) {
         ></th
       ><th className="text-right nowrap"
         >Sys<span className="unit"
+          >%</span
+        ></th
+      ><th className="text-right nowrap"
+        >Wait<span className="unit"
           >%</span
         ></th
       ><th className="text-right nowrap"

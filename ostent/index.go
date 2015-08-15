@@ -331,14 +331,19 @@ func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) operating.M
 
 func LessCPU(a, b operating.MetricCPU) bool {
 	var (
-		auser = a.User.Percent.Snapshot().Value()
-		anice = a.Nice.Percent.Snapshot().Value()
-		asys  = a.Sys.Percent.Snapshot().Value()
-		buser = b.User.Percent.Snapshot().Value()
-		bnice = b.Nice.Percent.Snapshot().Value()
-		bsys  = b.Sys.Percent.Snapshot().Value()
+		aidle = a.Idle.Percent.Snapshot().Value()
+		bidle = b.Idle.Percent.Snapshot().Value()
+		/*
+			auser = a.User.Percent.Snapshot().Value()
+			anice = a.Nice.Percent.Snapshot().Value()
+			asys  = a.Sys.Percent.Snapshot().Value()
+			buser = b.User.Percent.Snapshot().Value()
+			bnice = b.Nice.Percent.Snapshot().Value()
+			bsys  = b.Sys.Percent.Snapshot().Value()
+		*/
 	)
-	return (auser + anice + asys) > (buser + bnice + bsys)
+	return aidle < bidle
+	// return (auser + anice + asys) > (buser + bnice + bsys)
 }
 
 func (ir *IndexRegistry) DF(para *params.Params, iu *IndexUpdate) bool {
@@ -488,19 +493,16 @@ func (ir *IndexRegistry) CPUInternal(para *params.Params) *operating.CPUInfo {
 }
 
 func FormatCPU(mc operating.MetricCPU) operating.CoreInfo {
-	user := uint(mc.User.Percent.Snapshot().Value()) // rounding
-	// .Nice is unused
-	sys := uint(mc.Sys.Percent.Snapshot().Value())   // rounding
-	idle := uint(mc.Idle.Percent.Snapshot().Value()) // rounding
 	N := string(mc.N)
 	if prefix := "cpu-"; strings.HasPrefix(N, prefix) { // true for all but "all"
 		N = "#" + N[len(prefix):] // fmt.Sprintf("#%d", n)
 	}
 	return operating.CoreInfo{
 		N:    operating.Field(N),
-		User: user,
-		Sys:  sys,
-		Idle: idle,
+		User: mc.User.SnapshotValueUint(),
+		Sys:  mc.Sys.SnapshotValueUint(),
+		Wait: mc.Wait.SnapshotValueUint(),
+		Idle: mc.Idle.SnapshotValueUint(),
 	}
 }
 

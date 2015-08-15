@@ -242,6 +242,7 @@
       td.text-right.nowrap {{$core.N}}
       td.text-right <span {{class}}="usepercent-text" data-usepercent={{$core.User}}>{{$core.User}}</span>
       td.text-right <span {{class}}="usepercent-text" data-usepercent={{$core.Sys}}>{{$core.Sys}}</span>
+      td.text-right <span {{class}}="usepercent-text" data-usepercent={{$core.Wait}}>{{$core.Wait}}</span>
       td.text-right <span {{class}}="usepercent-text-inverse" data-usepercent={{$core.Idle}}>{{$core.Idle}}</span>
       | </tr>
     {{end}}
@@ -256,6 +257,8 @@
       th.text-right.nowrap User
         span.unit %
       th.text-right.nowrap Sys
+        span.unit %
+      th.text-right.nowrap Wait
         span.unit %
       th.text-right.nowrap Idle
         span.unit %
