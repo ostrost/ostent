@@ -52,7 +52,7 @@ func (u upgrade) newerVersion() (string, error) {
 	return filepath.Base(redir.url.Path), nil
 }
 
-func (_ upgrade) mach() string {
+func RuntimeMach() string {
 	m := runtime.GOARCH
 	if m == "amd64" {
 		return "x86_64"
@@ -82,15 +82,17 @@ func (up *upgrade) Upgrade() bool {
 		up.logger.Print("Upgrade not applied, as requested")
 		return false
 	}
-	url := fmt.Sprintf("https://github.com/ostrost/ostent/releases/download/%s/%s.%s", newVersion, strings.Title(runtime.GOOS), up.mach())
-	// url = fmt.Sprintf("http://127.0.0.1:8000/%s.%s", strings.Title(runtime.GOOS), up.mach()) // testing
-	err, errecov := update.New().FromUrl(url)
+	url := fmt.Sprintf("https://github.com/ostrost/ostent/releases/download/%s/%s.%s",
+		newVersion, strings.Title(runtime.GOOS), RuntimeMach())
+	resp, err := http.Get(url)
 	if err != nil {
 		up.logger.Print(err)
 		return false
 	}
-	if errecov != nil {
-		up.logger.Print(errecov)
+	defer resp.Body.Close()
+	err = update.Apply(resp.Body, &update.Options{})
+	if err != nil {
+		up.logger.Print(err)
 		return false
 	}
 	up.logger.Printf("Upgraded successfully to release %s", newVersion[1:])
