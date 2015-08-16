@@ -12,31 +12,28 @@ import (
 )
 
 type Graphite struct {
-	Logger      *Logger
-	RefreshFlag flags.Period
-	ServerAddr  flags.Bind
+	Logger     *Logger
+	DelayFlag  flags.Delay
+	ServerAddr flags.Bind
 }
 
 func graphiteCommandLine(cli *flag.FlagSet) CommandLineHandler {
 	gr := &Graphite{
-		Logger:      NewLogger("[ostent sendto-graphite] "),
-		RefreshFlag: flags.Period{Duration: 10 * time.Second}, // 10s default
-		ServerAddr:  flags.NewBind(2003),
+		Logger:     NewLogger("[ostent sendto-graphite] "),
+		DelayFlag:  flags.Delay{Duration: 10 * time.Second}, // 10s default
+		ServerAddr: flags.NewBind(2003),
 	}
-	cli.Var(&gr.RefreshFlag, "graphite-delay", "Graphite `delay`")
+	cli.Var(&gr.DelayFlag, "graphite-delay", "Graphite `delay`")
 	cli.Var(&gr.ServerAddr, "graphite-host", "Graphite `host`")
 	return func() (AtexitHandler, bool, error) {
 		if gr.ServerAddr.Host == "" {
 			return nil, false, nil
 		}
-		ostent.AddBackground(func(defaultPeriod flags.Period) {
-			/* if gr.RefreshFlag.Duration == 0 { // if .RefreshFlag had no default
-				gr.RefreshFlag = defaultPeriod
-			} */
+		ostent.AddBackground(func() {
 			gc := &Carbond{
 				Logger:     gr.Logger,
 				ServerAddr: gr.ServerAddr.String(),
-				Duration:   &params.Duration{D: gr.RefreshFlag.Duration},
+				Delay:      &params.Delay{D: gr.DelayFlag.Duration},
 			}
 			ostent.Register <- gc
 		})
@@ -45,11 +42,11 @@ func graphiteCommandLine(cli *flag.FlagSet) CommandLineHandler {
 }
 
 type Carbond struct {
-	Logger           *Logger
-	ServerAddr       string
-	Conn             net.Conn
-	*params.Duration // Expired, Tick methods
-	Failing          bool
+	Logger        *Logger
+	ServerAddr    string
+	Conn          net.Conn
+	*params.Delay // Expired, Tick methods
+	Failing       bool
 }
 
 func (cd *Carbond) CloseChans()              {} // intentionally empty

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type Period struct {
+type Delay struct {
 	time.Duration
 	Above *time.Duration // optional
 }
@@ -24,17 +24,13 @@ func DurationString(dur time.Duration) string {
 	return s
 }
 
-// String returns Period string representation
-func (p Period) String() string {
-	return DurationString(p.Duration)
-}
+// String returns Delay string representation
+func (d Delay) String() string { return DurationString(d.Duration) }
 
-// MarshalJSON is for encoding/json marshaling into Period string representation
-func (p Period) MarshalJSON() ([]byte, error) {
-	return json.Marshal(p.String())
-}
+// MarshalJSON is for encoding/json marshaling into Delay string representation
+func (d Delay) MarshalJSON() ([]byte, error) { return json.Marshal(d.String()) }
 
-func (p *Period) Set(input string) error {
+func (d *Delay) Set(input string) error {
 	v, err := time.ParseDuration(input)
 	if err != nil {
 		return err
@@ -45,9 +41,9 @@ func (p *Period) Set(input string) error {
 	if v%time.Second != 0 {
 		return fmt.Errorf("Not a multiple of a second: %s", v)
 	}
-	if p.Above != nil && v < *p.Above {
-		return fmt.Errorf("Should be above %s: %s", *p.Above, v)
+	if d.Above != nil && v < *d.Above {
+		return fmt.Errorf("Should be above %s: %s", *d.Above, v)
 	}
-	p.Duration = v
+	d.Duration = v
 	return nil
 }

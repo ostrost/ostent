@@ -17,16 +17,16 @@ import (
 )
 
 var (
-	NumType      = reflect.TypeOf(Num{})
-	DurationType = reflect.TypeOf(Duration{})
+	NumType   = reflect.TypeOf(Num{})
+	DelayType = reflect.TypeOf(Delay{})
 )
 
 // NewParams constructs new Params.
-func NewParams(minperiod flags.Period) *Params {
+func NewParams(mindelay flags.Delay) *Params {
 	p := &Params{
-		Defaults:  make(map[interface{}]Num),
-		Durations: make(map[string]*Duration),
-		MinPeriod: minperiod,
+		Defaults: make(map[interface{}]Num),
+		Delays:   make(map[string]*Delay),
+		MinDelay: mindelay,
 	}
 
 	val := reflect.ValueOf(&p.Schema).Elem()
@@ -43,10 +43,10 @@ func NewParams(minperiod flags.Period) *Params {
 				p.Defaults[sf.Name] = def // ?
 				p.Defaults[num] = def
 			}
-		} else if sft == DurationType {
-			dur := fv.Addr().Interface().(*Duration)
-			p.Durations[tags[0]] = dur
-			// p.Defaults[dur] = def
+		} else if sft == DelayType {
+			d := fv.Addr().Interface().(*Delay)
+			p.Delays[tags[0]] = d
+			// p.Defaults[d] = def
 		}
 	}
 	return p
@@ -54,8 +54,8 @@ func NewParams(minperiod flags.Period) *Params {
 
 // Expired satisfying receiver interface.
 func (p Params) Expired() bool {
-	for _, dur := range p.Durations {
-		if dur.Expired() {
+	for _, d := range p.Delays {
+		if d.Expired() {
 			return true
 		}
 	}
@@ -63,38 +63,38 @@ func (p Params) Expired() bool {
 }
 
 // Expired satisfying receiver interface.
-func (dur Duration) Expired() bool { return dur.Ticks <= 1 }
+func (d Delay) Expired() bool { return d.Ticks <= 1 }
 
 func (p *Params) Tick() {
-	for _, dur := range p.Durations {
-		dur.Tick()
+	for _, d := range p.Delays {
+		d.Tick()
 	}
 }
 
-func (dur *Duration) Tick() {
-	dur.Ticks++
-	if dur.Ticks-1 >= int(dur.D/time.Second) {
-		dur.Ticks = 1 // expired
+func (d *Delay) Tick() {
+	d.Ticks++
+	if d.Ticks-1 >= int(d.D/time.Second) {
+		d.Ticks = 1 // expired
 	}
 }
 
 type Params struct {
 	Schema
-	Defaults  map[interface{}]Num  `json:"-"`
-	Durations map[string]*Duration `json:"-"`
-	MinPeriod flags.Period         `json:"-"`
+	Defaults map[interface{}]Num `json:"-"`
+	Delays   map[string]*Delay   `json:"-"`
+	MinDelay flags.Delay         `json:"-"`
 }
 
 type Schema struct {
 	Still bool `url:"still,omitempty"`
 
-	// The NewParams must populate .Durations with EACH *Duration
-	CPUd Duration `url:"cpud,omitempty"`
-	Dfd  Duration `url:"dfd,omitempty"`
-	Ifd  Duration `url:"ifd,omitempty"`
-	Memd Duration `url:"memd,omitempty"`
-	Psd  Duration `url:"psd,omitempty"`
-	Vgd  Duration `url:"vgd,omitempty"`
+	// The NewParams must populate .Delays with EACH *Delay
+	CPUd Delay `url:"cpud,omitempty"`
+	Dfd  Delay `url:"dfd,omitempty"`
+	Ifd  Delay `url:"ifd,omitempty"`
+	Memd Delay `url:"memd,omitempty"`
+	Psd  Delay `url:"psd,omitempty"`
+	Vgd  Delay `url:"vgd,omitempty"`
 
 	// Num encodes a number and config toggle.
 	// "Negative" value states config displaying and
@@ -165,18 +165,18 @@ func (p Params) Dlinks() map[string]Dlinks {
 	val := reflect.ValueOf(&p.Schema).Elem()
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
 		sf := typ.Field(i)
-		if sf.Type != DurationType {
+		if sf.Type != DelayType {
 			continue
 		}
 		tags, ok := TagsOk(sf)
 		if !ok || tags[0] == "" {
 			continue
 		}
-		dur := val.Field(i).Addr().Interface().(*Duration)
+		d := val.Field(i).Addr().Interface().(*Delay)
 		dl := Dlinks{}
 		// errors are ignored
-		dl.More, _ = p.MoreD(dur)
-		dl.Less, _ = p.LessD(dur)
+		dl.More, _ = p.MoreD(d)
+		dl.Less, _ = p.LessD(d)
 		m[sf.Name] = dl
 	}
 	return m
@@ -324,31 +324,31 @@ func ConvertNum(value string) reflect.Value {
 	return reflect.ValueOf(num)
 }
 
-type Duration struct {
+type Delay struct {
 	D       time.Duration
 	Default time.Duration
 	Ticks   int `json:"-"`
 }
 
-func (dur Duration) EncodeValues(key string, values *url.Values) error {
-	if dur.D != dur.Default {
-		(*values)[key] = []string{dur.String()}
+func (d Delay) EncodeValues(key string, values *url.Values) error {
+	if d.D != d.Default {
+		(*values)[key] = []string{d.String()}
 	}
 	return nil
 }
 
-func (dur Duration) MarshalJSON() ([]byte, error) { return json.Marshal(dur.String()) }
+func (d Delay) MarshalJSON() ([]byte, error) { return json.Marshal(d.String()) }
 
-func (dur Duration) String() string { return flags.DurationString(dur.D) }
+func (d Delay) String() string { return flags.DurationString(d.D) }
 
-// ConvertDurationFunc creates a schema decoder's converter into Duration.
-func ConvertDurationFunc(minperiod flags.Period) func(string) reflect.Value {
+// ConvertDelayFunc creates a schema decoder's converter into Delay.
+func ConvertDelayFunc(mindelay flags.Delay) func(string) reflect.Value {
 	return func(value string) reflect.Value {
-		p := flags.Period{Above: &minperiod.Duration}
-		if err := p.Set(value); err != nil {
+		d := flags.Delay{Above: &mindelay.Duration}
+		if err := d.Set(value); err != nil {
 			return reflect.Value{}
 		}
-		return reflect.ValueOf(Duration{D: p.Duration})
+		return reflect.ValueOf(Delay{D: d.Duration})
 	}
 }
 
@@ -366,13 +366,13 @@ func (p *Params) ResetSchema() {
 		switch sf.Type {
 		case NumType:
 			fv.Set(reflect.ValueOf(Num{}))
-		case DurationType:
-			fv.Set(reflect.ValueOf(Duration{}))
+		case DelayType:
+			fv.Set(reflect.ValueOf(Delay{}))
 		}
 	}
 }
 
-func (p *Params) SetDefaults(form url.Values, minperiod flags.Period) {
+func (p *Params) SetDefaults(form url.Values, mindelay flags.Delay) {
 	val := reflect.ValueOf(&p.Schema).Elem()
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
 		sf := typ.Field(i)
@@ -407,10 +407,10 @@ func (p *Params) SetDefaults(form url.Values, minperiod flags.Period) {
 			if num.Body == 0 { // not allow 0 init value
 				num.Body = def.Body
 			}
-		case DurationType:
-			dur := fv.Addr().Interface().(*Duration)
-			dur.Default = minperiod.Duration
-			if dur.D != time.Duration(0) { // value specified, no need for defaults
+		case DelayType:
+			d := fv.Addr().Interface().(*Delay)
+			d.Default = mindelay.Duration
+			if d.D != time.Duration(0) { // value specified, no need for defaults
 				continue
 			}
 			tags, ok := TagsOk(sf)
@@ -420,7 +420,7 @@ func (p *Params) SetDefaults(form url.Values, minperiod flags.Period) {
 			if _, ok := form[tags[0]]; ok { // have parameter
 				continue
 			}
-			dur.D = minperiod.Duration
+			d.D = mindelay.Duration
 		}
 	}
 }
@@ -443,14 +443,14 @@ func (p *Params) Decode(req *http.Request) error {
 	dec.IgnoreUnknownKeys(true)
 	dec.ZeroEmpty(true)
 	dec.RegisterConverter(Num{}, ConvertNum)
-	dec.RegisterConverter(Duration{}, ConvertDurationFunc(p.MinPeriod))
+	dec.RegisterConverter(Delay{}, ConvertDelayFunc(p.MinDelay))
 
 	p.ResetSchema()
 	err := dec.Decode(&p.Schema, req.Form)
 	if err != nil {
 		return err
 	}
-	p.SetDefaults(req.Form, p.MinPeriod)
+	p.SetDefaults(req.Form, p.MinDelay)
 	if !moved {
 		return nil
 	}

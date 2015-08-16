@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func TestPeriodStr(t *testing.T) {
+func TestDelayStr(t *testing.T) {
 	for _, v := range []struct {
 		dstr string
 		cmp  string
@@ -19,12 +19,12 @@ func TestPeriodStr(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		p := Period{Duration: td}
-		cmp := p.String()
+		d := Delay{Duration: td}
+		cmp := d.String()
 		if cmp != v.cmp {
 			t.Errorf("Mismatch: %q vs %q", cmp, v.cmp)
 		}
-		j, err := p.MarshalJSON()
+		j, err := d.MarshalJSON()
 		if err != nil {
 			t.Error(err)
 		}
@@ -34,7 +34,7 @@ func TestPeriodStr(t *testing.T) {
 	}
 }
 
-func TestPeriodSet(t *testing.T) {
+func TestDelaySet(t *testing.T) {
 	for _, v := range []struct {
 		dstr  string
 		above string
@@ -51,23 +51,23 @@ func TestPeriodSet(t *testing.T) {
 		if err != nil && err.Error() != v.err.Error() {
 			t.Error(err)
 		}
-		p := Period{Duration: td}
+		d := Delay{Duration: td}
 		if v.above != "" {
 			if ad, err := time.ParseDuration(v.above); err != nil {
 				t.Error(err)
 			} else {
-				p.Above = &ad
+				d.Above = &ad
 			}
 		}
-		err = p.Set(v.dstr)
+		err = d.Set(v.dstr)
 		if err != nil {
 			if err.Error() == v.err.Error() {
 				continue
 			}
 			t.Error(err)
 		}
-		if p.String() != v.str {
-			t.Errorf("Mismatch: %q vs %q", p.String(), v.str)
+		if d.String() != v.str {
+			t.Errorf("Mismatch: %q vs %q", d.String(), v.str)
 		}
 	}
 }

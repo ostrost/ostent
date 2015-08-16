@@ -193,15 +193,15 @@ func (p *Params) LinkN(num *Num, body int, badge string) (ALink, error) {
 	}, nil
 }
 
-func (p *Params) EncodeD(dur *Duration, set time.Duration) (string, error) {
-	copy := dur.D
-	dur.D = set
+func (p *Params) EncodeD(d *Delay, set time.Duration) (string, error) {
+	copy := d.D
+	d.D = set
 	qs, err := p.Encode()
-	dur.D = copy
+	d.D = copy
 	return "?" + qs, err
 }
 
-func DurationMore(dur Duration, step time.Duration) time.Duration {
+func DelayMore(d Delay, step time.Duration) time.Duration {
 	const s = time.Second
 	const m = time.Second * 60
 	var table = map[time.Duration]time.Duration{
@@ -216,12 +216,12 @@ func DurationMore(dur Duration, step time.Duration) time.Duration {
 		10 * m: 30 * m,
 		30 * m: 60 * m,
 	}
-	if d, ok := table[dur.D]; ok {
-		return d
+	if more, ok := table[d.D]; ok {
+		return more
 	}
-	return dur.D + step
+	return d.D + step
 }
-func DurationLess(dur Duration, step time.Duration) time.Duration {
+func DelayLess(d Delay, step time.Duration) time.Duration {
 	const s = time.Second
 	const m = time.Second * 60
 	var table = map[time.Duration]time.Duration{
@@ -237,26 +237,26 @@ func DurationLess(dur Duration, step time.Duration) time.Duration {
 		30 * m: 10 * m,
 		60 * m: 30 * m,
 	}
-	if d, ok := table[dur.D]; ok {
-		return d
+	if less, ok := table[d.D]; ok {
+		return less
 	}
-	return dur.D - step
+	return d.D - step
 }
 
-func (p *Params) MoreD(dur *Duration) (ALink, error) {
-	return p.LinkD(dur, DurationMore(*dur, p.MinPeriod.Duration), "+")
+func (p *Params) MoreD(d *Delay) (ALink, error) {
+	return p.LinkD(d, DelayMore(*d, p.MinDelay.Duration), "+")
 }
-func (p *Params) LessD(dur *Duration) (ALink, error) {
-	return p.LinkD(dur, DurationLess(*dur, p.MinPeriod.Duration), "-")
+func (p *Params) LessD(d *Delay) (ALink, error) {
+	return p.LinkD(d, DelayLess(*d, p.MinDelay.Duration), "-")
 }
 
-func (p *Params) LinkD(dur *Duration, set time.Duration, badge string) (ALink, error) {
-	href, err := p.EncodeD(dur, set)
+func (p *Params) LinkD(d *Delay, set time.Duration, badge string) (ALink, error) {
+	href, err := p.EncodeD(d, set)
 	if err != nil {
 		return ALink{}, err
 	}
 	var class string
-	if badge == "-" && dur.D == p.MinPeriod.Duration {
+	if badge == "-" && d.D == p.MinDelay.Duration {
 		class = " disabled"
 	}
 	return ALink{

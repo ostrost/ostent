@@ -11,19 +11,19 @@ import (
 
 type Influx struct {
 	// Logger      *Logger
-	RefreshFlag flags.Period
-	URL         string
-	Database    string
-	Username    string
-	Password    string
+	DelayFlag flags.Delay
+	URL       string
+	Database  string
+	Username  string
+	Password  string
 }
 
 func influxdbCommandLine(cli *flag.FlagSet) CommandLineHandler {
 	ix := &Influx{
 		// Logger:      NewLogger("[ostent sendto-influxdb] "),
-		RefreshFlag: flags.Period{Duration: 10 * time.Second}, // 10s default
+		DelayFlag: flags.Delay{Duration: 10 * time.Second}, // 10s default
 	}
-	cli.Var(&ix.RefreshFlag, "influxdb-delay", "InfluxDB `delay`")
+	cli.Var(&ix.DelayFlag, "influxdb-delay", "InfluxDB `delay`")
 	cli.StringVar(&ix.URL, "influxdb-url", "", "InfluxDB server `URL`")
 	cli.StringVar(&ix.Database, "influxdb-database", "ostent", "InfluxDB `database`")
 	cli.StringVar(&ix.Username, "influxdb-username", "", "InfluxDB `username`")
@@ -32,11 +32,8 @@ func influxdbCommandLine(cli *flag.FlagSet) CommandLineHandler {
 		if ix.URL == "" {
 			return nil, false, nil
 		}
-		ostent.AddBackground(func(defaultPeriod flags.Period) {
-			/* if ix.RefreshFlag.Duration == 0 { // if .RefreshFlag had no default
-				ix.RefreshFlag = defaultPeriod
-			} */
-			go influxdb.Influxdb(ostent.Reg1s.Registry, ix.RefreshFlag.Duration, &influxdb.Config{
+		ostent.AddBackground(func() {
+			go influxdb.Influxdb(ostent.Reg1s.Registry, ix.DelayFlag.Duration, &influxdb.Config{
 				URL:      ix.URL,
 				Database: ix.Database,
 				Username: ix.Username,

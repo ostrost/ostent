@@ -15,7 +15,7 @@ import (
 	"github.com/ostrost/ostent/params"
 )
 
-type backgroundHandler func(flags.Period)
+type backgroundHandler func()
 
 var (
 	jobs = struct {
@@ -30,11 +30,11 @@ func AddBackground(j backgroundHandler) {
 	jobs.added = append(jobs.added, j)
 }
 
-func RunBackground(defaultPeriod flags.Period) {
+func RunBackground(defaultDelay flags.Delay) {
 	jobs.mutex.Lock()
 	defer jobs.mutex.Unlock()
 	for _, j := range jobs.added {
-		go j(defaultPeriod)
+		go j()
 	}
 }
 
@@ -50,7 +50,7 @@ func SleepTilNextSecond() {
 }
 
 // Loop is the ostent background job
-func Loop(flags.Period) {
+func Loop() {
 	go func() {
 		for {
 			SleepTilNextSecond()
@@ -363,7 +363,7 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	stop := func() {
 		w.WriteHeader(http.StatusBadRequest) // well, not a bad request but a write failure
 	}
-	update, updated, err := getUpdates(r, sd.conn.para, sd.received != nil)
+	update, updated, err := getUpdates(r, sd.conn.para)
 	if err != nil || !updated { // nothing scheduled for the moment, no update
 		return
 	}
@@ -396,13 +396,13 @@ func (w dummyStatus) Write(b []byte) (int, error) {
 	// return len(b), nil
 }
 
-func IndexWSFunc(access *Access, errlog *log.Logger, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
+func IndexWSFunc(access *Access, errlog *log.Logger, mindelay flags.Delay) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
-		IndexWS(access, errlog, minperiod, w, req)
+		IndexWS(access, errlog, mindelay, w, req)
 	}
 }
 
-func IndexWS(access *Access, errlog *log.Logger, minperiod flags.Period, w http.ResponseWriter, req *http.Request) {
+func IndexWS(access *Access, errlog *log.Logger, mindelay flags.Delay, w http.ResponseWriter, req *http.Request) {
 	// Upgrader.Upgrade() has Origin check if .CheckOrigin is nil
 	upgrader := websocket.Upgrader{
 		HandshakeTimeout: 5 * time.Second,
@@ -421,7 +421,7 @@ func IndexWS(access *Access, errlog *log.Logger, minperiod flags.Period, w http.
 
 		receive: make(chan *received, 2),
 		pushch:  make(chan *IndexUpdate, 2),
-		para:    params.NewParams(minperiod),
+		para:    params.NewParams(mindelay),
 		access:  access,
 	}
 	Register <- c

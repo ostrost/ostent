@@ -52,7 +52,7 @@ func main() {
 		binPkg.RootDir(pkg.Dir)
 	}
 
-	ostent.RunBackground(PeriodFlag)
+	ostent.RunBackground(DelayFlag)
 
 	templatesLoaded := make(chan struct{}, 1)
 	go templates.InitTemplates(templatesLoaded) // NB after templates.RootDir

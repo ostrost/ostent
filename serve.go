@@ -14,12 +14,12 @@ import (
 	"github.com/ostrost/ostent/share/templates"
 )
 
-// PeriodFlag is a minimum refresh period for collection.
-var PeriodFlag = flags.Period{Duration: time.Second} // default
+// DelayFlag is a minimum refresh period for collection.
+var DelayFlag = flags.Delay{Duration: time.Second} // default
 
 func init() {
-	flag.Var(&PeriodFlag, "d", "Short for delay")
-	flag.Var(&PeriodFlag, "delay", "Collection `delay`")
+	flag.Var(&DelayFlag, "d", "Short for delay")
+	flag.Var(&DelayFlag, "delay", "Collection `delay`")
 }
 
 func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error {
@@ -28,14 +28,14 @@ func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error 
 	defer errclose()
 
 	if index := chain.ThenFunc(ostent.IndexFunc(taggedbin, templates.IndexTemplate,
-		PeriodFlag)); true {
+		DelayFlag)); true {
 		mux.Handler("GET", "/", index)
 		mux.Handler("HEAD", "/", index)
 	}
 
 	// chain is not used -- access is passed to log with.
-	mux.HandlerFunc("GET", "/index.ws", ostent.IndexWSFunc(access, errlog, PeriodFlag))
-	mux.HandlerFunc("GET", "/index.sse", ostent.IndexSSEFunc(access, PeriodFlag))
+	mux.HandlerFunc("GET", "/index.ws", ostent.IndexWSFunc(access, errlog, DelayFlag))
+	mux.HandlerFunc("GET", "/index.sse", ostent.IndexSSEFunc(access, DelayFlag))
 
 	if !taggedbin { // dev-only
 		mux.Handler("GET", "/panic", chain.ThenFunc(

@@ -696,7 +696,7 @@ func init() {
 	}
 }
 
-func getUpdates(req *http.Request, para *params.Params, forcerefresh bool) (IndexUpdate, bool, error) {
+func getUpdates(req *http.Request, para *params.Params) (IndexUpdate, bool, error) {
 	iu := IndexUpdate{}
 	if req != nil {
 		err := para.Decode(req)
@@ -728,14 +728,14 @@ func getUpdates(req *http.Request, para *params.Params, forcerefresh bool) (Inde
 	return iu, updated, nil
 }
 
-func indexData(minperiod flags.Period, req *http.Request) (IndexData, error) {
+func indexData(mindelay flags.Delay, req *http.Request) (IndexData, error) {
 	if Connections.Len() == 0 {
 		// collect when there're no active connections, so Loop does not collect
 		lastInfo.collect(&Machine{})
 	}
 
-	para := params.NewParams(minperiod)
-	updates, _, err := getUpdates(req, para, true)
+	para := params.NewParams(mindelay)
+	updates, _, err := getUpdates(req, para)
 	if err != nil {
 		return IndexData{}, err
 	}
@@ -798,14 +798,14 @@ func init() {
 var DISTRIB string
 
 /*
-func FormRedirectFunc(minperiod flags.Period, wrap func(http.HandlerFunc) http.Handler) func(http.ResponseWriter, *http.Request, httprouter.Params) {
+func FormRedirectFunc(mindelay flags.Delay, wrap func(http.HandlerFunc) http.Handler) func(http.ResponseWriter, *http.Request, httprouter.Params) {
 	return func(w http.ResponseWriter, req *http.Request, muxpara httprouter.Params) {
 		wrap(func(w http.ResponseWriter, req *http.Request) {
 			where := "/"
 			if q := muxpara.ByName("Q"); q != "" {
 				req.URL.RawQuery = req.Form.Encode() + "&" + strings.TrimPrefix(q, "?")
 				req.Form = nil // reset the .Form for .ParseForm() to parse new r.URL.RawQuery.
-				para := params.NewParams(minperiod)
+				para := params.NewParams(mindelay)
 				para.Decode(req) // OR err.Error()
 				if s, err := para.Encode(); err == nil {
 					where = "/?" + s
@@ -817,14 +817,14 @@ func FormRedirectFunc(minperiod flags.Period, wrap func(http.HandlerFunc) http.H
 }
 */
 
-func IndexFunc(taggedbin bool, template *templateutil.LazyTemplate, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
+func IndexFunc(taggedbin bool, template *templateutil.LazyTemplate, mindelay flags.Delay) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		index(taggedbin, template, minperiod, w, r)
+		index(taggedbin, template, mindelay, w, r)
 	}
 }
 
-func index(taggedbin bool, template *templateutil.LazyTemplate, minperiod flags.Period, w http.ResponseWriter, r *http.Request) {
-	id, err := indexData(minperiod, r)
+func index(taggedbin bool, template *templateutil.LazyTemplate, mindelay flags.Delay, w http.ResponseWriter, r *http.Request) {
+	id, err := indexData(mindelay, r)
 	if err != nil {
 		if _, ok := err.(params.RenamedConstError); ok {
 			http.Redirect(w, r, err.Error(), http.StatusFound)
@@ -847,7 +847,7 @@ func index(taggedbin bool, template *templateutil.LazyTemplate, minperiod flags.
 
 type SSE struct {
 	Writer      http.ResponseWriter // points to the writer
-	MinPeriod   flags.Period
+	MinDelay    flags.Delay
 	SentHeaders bool
 	Errord      bool
 }
@@ -856,7 +856,7 @@ type SSE struct {
 // passed as a copy, is unused. sse.Writer is there for writes.
 func (sse *SSE) ServeHTTP(_ http.ResponseWriter, r *http.Request) {
 	w := sse.Writer
-	id, err := indexData(sse.MinPeriod, r)
+	id, err := indexData(sse.MinDelay, r)
 	if err != nil {
 		if _, ok := err.(params.RenamedConstError); ok {
 			http.Redirect(w, r, err.Error(), http.StatusFound)
@@ -889,14 +889,14 @@ func (sse *SSE) SetHeader(name, value string) bool {
 	return true
 }
 
-func IndexSSEFunc(access *Access, minperiod flags.Period) func(http.ResponseWriter, *http.Request) {
+func IndexSSEFunc(access *Access, mindelay flags.Delay) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		IndexSSE(access, minperiod, w, r)
+		IndexSSE(access, mindelay, w, r)
 	}
 }
 
-func IndexSSE(access *Access, minperiod flags.Period, w http.ResponseWriter, r *http.Request) {
-	sse := &SSE{Writer: w, MinPeriod: minperiod}
+func IndexSSE(access *Access, mindelay flags.Delay, w http.ResponseWriter, r *http.Request) {
+	sse := &SSE{Writer: w, MinDelay: mindelay}
 	if access.Constructor(sse).ServeHTTP(nil, r); sse.Errord { // the request logging
 		return
 	}
