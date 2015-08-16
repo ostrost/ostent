@@ -36,7 +36,7 @@ func graphiteCommandLine(cli *flag.FlagSet) CommandLineHandler {
 			gc := &Carbond{
 				Logger:     gr.Logger,
 				ServerAddr: gr.ServerAddr.String(),
-				Ticks:      params.NewTicks(&params.Duration{D: gr.RefreshFlag.Duration}),
+				Duration:   &params.Duration{D: gr.RefreshFlag.Duration},
 			}
 			ostent.Register <- gc
 		})
@@ -45,11 +45,11 @@ func graphiteCommandLine(cli *flag.FlagSet) CommandLineHandler {
 }
 
 type Carbond struct {
-	Logger        *Logger
-	ServerAddr    string
-	Conn          net.Conn
-	*params.Ticks // Expired, Tick methods
-	Failing       bool
+	Logger           *Logger
+	ServerAddr       string
+	Conn             net.Conn
+	*params.Duration // Expired, Tick methods
+	Failing          bool
 }
 
 func (cd *Carbond) CloseChans()              {} // intentionally empty

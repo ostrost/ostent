@@ -25,7 +25,7 @@ var (
 func NewParams(minperiod flags.Period) *Params {
 	p := &Params{
 		Defaults:  make(map[interface{}]Num),
-		Ticks:     make(map[string]*Ticks),
+		Durations: make(map[string]*Duration),
 		MinPeriod: minperiod,
 	}
 
@@ -45,78 +45,50 @@ func NewParams(minperiod flags.Period) *Params {
 			}
 		} else if sft == DurationType {
 			dur := fv.Addr().Interface().(*Duration)
-			p.Ticks[tags[0]] = NewTicks(dur)
+			p.Durations[tags[0]] = dur
 			// p.Defaults[dur] = def
 		}
 	}
 	return p
 }
 
-func (p Params) RefreshFunc(dp *Duration) func(bool) bool {
-	return func(force bool) bool {
-		if force {
-			return true
-		}
-		for _, ti := range p.Ticks {
-			if dp == ti.Duration && ti.Expired() {
-				return true
-			}
-		}
-		return false
-	}
-}
-
-func (p Params) Refresh(force bool) bool {
-	if force {
-		return true
-	}
-	for _, ti := range p.Ticks {
-		if ti.Expired() {
+// Expired satisfying receiver interface.
+func (p Params) Expired() bool {
+	for _, dur := range p.Durations {
+		if dur.Expired() {
 			return true
 		}
 	}
 	return false
 }
 
-func (p Params) Expired() bool {
-	return p.Refresh(false)
-}
+// Expired satisfying receiver interface.
+func (dur Duration) Expired() bool { return dur.Ticks <= 1 }
 
 func (p *Params) Tick() {
-	for _, v := range p.Ticks {
-		v.Tick()
+	for _, dur := range p.Durations {
+		dur.Tick()
 	}
 }
 
-func (ti Ticks) Expired() bool { return ti.Ticks <= 1 }
-
-func (ti *Ticks) Tick() {
-	ti.Ticks++
-	if ti.Ticks-1 >= int(ti.Duration.D/time.Second) {
-		ti.Ticks = 1 // expired
+func (dur *Duration) Tick() {
+	dur.Ticks++
+	if dur.Ticks-1 >= int(dur.D/time.Second) {
+		dur.Ticks = 1 // expired
 	}
-}
-
-type Ticks struct {
-	Ticks    int
-	Duration *Duration
-}
-
-func NewTicks(dp *Duration) *Ticks {
-	return &Ticks{Duration: dp}
 }
 
 type Params struct {
 	Schema
-	Defaults  map[interface{}]Num `json:"-"`
-	Ticks     map[string]*Ticks   `json:"-"`
-	MinPeriod flags.Period        `json:"-"`
+	Defaults  map[interface{}]Num  `json:"-"`
+	Durations map[string]*Duration `json:"-"`
+	MinPeriod flags.Period         `json:"-"`
 }
 
 type Schema struct {
 	Still bool `url:"still,omitempty"`
 
-	// The NewParams must populate .Ticks with EACH *Duration
+	// The NewParams must populate .Durations with EACH *Duration
 	CPUd Duration `url:"cpud,omitempty"`
 	Dfd  Duration `url:"dfd,omitempty"`
 	Ifd  Duration `url:"ifd,omitempty"`
@@ -355,6 +327,7 @@ func ConvertNum(value string) reflect.Value {
 type Duration struct {
 	D       time.Duration
 	Default time.Duration
+	Ticks   int `json:"-"`
 }
 
 func (dur Duration) EncodeValues(key string, values *url.Values) error {

@@ -185,16 +185,19 @@ func (la *last) CopyPS() MPSlice {
 }
 
 func (mss *MSS) HN(para *params.Params, iu *IndexUpdate) bool {
+	// HN has no delay, always updates iu
 	iu.Hostname = mss.GetString("hostname")
 	return true
 }
 
 func (mss *MSS) IP(para *params.Params, iu *IndexUpdate) bool {
+	// IP has no delay, always updates iu
 	iu.IP = mss.GetString("ip")
 	return true
 }
 
 func (mss *MSS) UP(para *params.Params, iu *IndexUpdate) bool {
+	// UP has no delay, always updates iu
 	iu.Uptime = mss.GetString("uptime")
 	return true
 }
@@ -347,6 +350,9 @@ func LessCPU(a, b operating.MetricCPU) bool {
 }
 
 func (ir *IndexRegistry) DF(para *params.Params, iu *IndexUpdate) bool {
+	if !para.Dfd.Expired() {
+		return false
+	}
 	switch para.Dft.Body {
 	case enums.DFBYTES:
 		iu.DFbytes = &operating.DFbytes{List: ir.DFbytes(para)}
@@ -425,6 +431,9 @@ func FormatDFinodes(md operating.MetricDF) operating.DiskInodes {
 }
 
 func (ir *IndexRegistry) VG(para *params.Params, iu *IndexUpdate) bool {
+	if !para.Vgd.Expired() {
+		return false
+	}
 	if para.Vgn.Body == 0 {
 		return false
 	}
@@ -443,11 +452,17 @@ func (ir *IndexRegistry) VG(para *params.Params, iu *IndexUpdate) bool {
 type MPSlice operating.MetricProcSlice
 
 func (procs MPSlice) IU(para *params.Params, iu *IndexUpdate) bool {
+	if !para.Psd.Expired() {
+		return false
+	}
 	iu.PStable = procs.Ordered(para)
 	return true
 }
 
 func (ir *IndexRegistry) IF(para *params.Params, iu *IndexUpdate) bool {
+	if !para.Ifd.Expired() {
+		return false
+	}
 	switch para.Ift.Body {
 	case enums.IFBYTES:
 		iu.IFbytes = &operating.Interfaces{List: ir.Interfaces(para, ir.InterfaceBytes)}
@@ -462,6 +477,9 @@ func (ir *IndexRegistry) IF(para *params.Params, iu *IndexUpdate) bool {
 }
 
 func (ir *IndexRegistry) CPU(para *params.Params, iu *IndexUpdate) bool {
+	if !para.CPUd.Expired() {
+		return false
+	}
 	if para.CPUn.Body == 0 {
 		return false
 	}
@@ -538,6 +556,9 @@ func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) operating.MetricCPU
 }
 
 func (ir *IndexRegistry) MEM(para *params.Params, iu *IndexUpdate) bool {
+	if !para.Memd.Expired() {
+		return false
+	}
 	para.Memn.Limit = 2
 	if para.Memn.Body < 1 {
 		return false
@@ -564,6 +585,7 @@ func (ir *IndexRegistry) MEM(para *params.Params, iu *IndexUpdate) bool {
 }
 
 func (ir *IndexRegistry) LA(para *params.Params, iu *IndexUpdate) bool {
+	// LA has no delay, always updates iu
 	iu.LA = fmt.Sprintf("%.2f %.2f %.2f",
 		ir.Load.Short.Snapshot().Value(),
 		ir.Load.Mid.Snapshot().Value(),
@@ -674,18 +696,6 @@ func init() {
 	}
 }
 
-type Set struct {
-	Refresh func(bool) bool
-	Update  func(*params.Params, *IndexUpdate) bool
-}
-
-func (s *Set) Expired(forcerefresh bool) bool {
-	if s.Refresh == nil {
-		return true
-	}
-	return s.Refresh(forcerefresh)
-}
-
 func getUpdates(req *http.Request, para *params.Params, forcerefresh bool) (IndexUpdate, bool, error) {
 	iu := IndexUpdate{}
 	if req != nil {
@@ -698,27 +708,20 @@ func getUpdates(req *http.Request, para *params.Params, forcerefresh bool) (Inde
 	}
 	psCopy := lastInfo.CopyPS()
 
-	set := []Set{
-		{para.RefreshFunc(&para.CPUd), Reg1s.CPU},
-		{para.RefreshFunc(&para.Dfd), Reg1s.DF},
-		{para.RefreshFunc(&para.Ifd), Reg1s.IF},
-		{para.RefreshFunc(&para.Memd), Reg1s.MEM},
-		{para.RefreshFunc(&para.Psd), psCopy.IU},
-		{para.RefreshFunc(&para.Vgd), Reg1s.VG},
-
-		// always-shown bits:
-		{nil, RegMSS.HN},
-		{nil, RegMSS.UP},
-		{nil, RegMSS.IP},
-		{nil, Reg1s.LA},
-	}
-
 	var updated bool
-	for _, x := range set {
-		if !x.Expired(forcerefresh) { // this has side effect
-			continue
-		}
-		if x.Update(para, &iu) {
+	for _, update := range []func(*params.Params, *IndexUpdate) bool{
+		psCopy.IU,
+		RegMSS.HN,
+		RegMSS.IP,
+		RegMSS.UP,
+		Reg1s.MEM,
+		Reg1s.CPU,
+		Reg1s.DF,
+		Reg1s.IF,
+		Reg1s.LA,
+		Reg1s.VG,
+	} {
+		if update(para, &iu) {
 			updated = true
 		}
 	}
