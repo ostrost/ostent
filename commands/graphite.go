@@ -19,7 +19,7 @@ type Graphite struct {
 
 func graphiteCommandLine(cli *flag.FlagSet) CommandLineHandler {
 	gr := &Graphite{
-		Logger:     NewLogger("[ostent sendto-graphite] "),
+		Logger:     NewLogger("[ostent graphite] "),
 		DelayFlag:  flags.Delay{Duration: 10 * time.Second}, // 10s default
 		ServerAddr: flags.NewBind(2003),
 	}

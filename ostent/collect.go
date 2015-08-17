@@ -135,6 +135,10 @@ func (m *Machine) Interfaces(reg Registry, sreg S2SRegistry, wg *sync.WaitGroup)
 
 func (m *Machine) GetHostname() (string, error) {
 	// m is unused
+	return GetHostname()
+}
+
+func GetHostname() (string, error) {
 	hostname, err := os.Hostname()
 	if err == nil {
 		hostname = strings.Split(hostname, ".")[0]

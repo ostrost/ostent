@@ -77,7 +77,7 @@ type loggerPrint interface {
 
 // Banner prints a banner with the logger.
 func Banner(listenaddr string, suffix string, logger loggerPrint) {
-	hostname, _ := (&Machine{}).GetHostname()
+	hostname, _ := GetHostname()
 	var addrsp *[]net.Addr
 	if addrs, err := net.InterfaceAddrs(); err == nil {
 		addrsp = &addrs

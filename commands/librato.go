@@ -1,0 +1,50 @@
+package commands
+
+import (
+	"flag"
+	"time"
+
+	librato "github.com/mihasya/go-metrics-librato"
+
+	"github.com/ostrost/ostent/flags"
+	"github.com/ostrost/ostent/ostent"
+)
+
+type Librato struct {
+	DelayFlag            flags.Delay
+	Email, Token, Source string
+}
+
+func LibratoCommandLine(cli *flag.FlagSet) CommandLineHandler {
+	hostname, err := ostent.GetHostname()
+	if err != nil {
+		hostname = ""
+	}
+	lr := &Librato{
+		DelayFlag: flags.Delay{Duration: 10 * time.Second}, // 10s default
+	}
+	cli.Var(&lr.DelayFlag, "librato-delay", "Librato `delay`")
+	cli.StringVar(&lr.Email, "librato-email", "", "Librato `email`")
+	cli.StringVar(&lr.Token, "librato-token", "", "Librato `token`")
+	cli.StringVar(&lr.Source, "librato-source", hostname, "Librato `source`")
+	return func() (AtexitHandler, bool, error) {
+		if lr.Email == "" {
+			return nil, false, nil
+		}
+		ostent.AddBackground(func() {
+			go librato.Librato(ostent.Reg1s.Registry,
+				lr.DelayFlag.Duration,
+				lr.Email,
+				lr.Token,
+				lr.Source,
+				[]float64{0.95},
+				time.Millisecond,
+			)
+		})
+		return nil, false, nil
+	}
+}
+
+func init() {
+	AddCommandLine(LibratoCommandLine)
+}

@@ -5,12 +5,12 @@ import (
 	"time"
 
 	influxdb "github.com/ostrost/ostent/commands/go-metrics-influxdb"
+
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
 )
 
 type Influx struct {
-	// Logger      *Logger
 	DelayFlag flags.Delay
 	URL       string
 	Database  string
@@ -20,7 +20,6 @@ type Influx struct {
 
 func influxdbCommandLine(cli *flag.FlagSet) CommandLineHandler {
 	ix := &Influx{
-		// Logger:      NewLogger("[ostent sendto-influxdb] "),
 		DelayFlag: flags.Delay{Duration: 10 * time.Second}, // 10s default
 	}
 	cli.Var(&ix.DelayFlag, "influxdb-delay", "InfluxDB `delay`")
@@ -33,12 +32,13 @@ func influxdbCommandLine(cli *flag.FlagSet) CommandLineHandler {
 			return nil, false, nil
 		}
 		ostent.AddBackground(func() {
-			go influxdb.Influxdb(ostent.Reg1s.Registry, ix.DelayFlag.Duration, &influxdb.Config{
-				URL:      ix.URL,
-				Database: ix.Database,
-				Username: ix.Username,
-				Password: ix.Password,
-			})
+			go influxdb.Influxdb(ostent.Reg1s.Registry, ix.DelayFlag.Duration,
+				&influxdb.Config{
+					URL:      ix.URL,
+					Database: ix.Database,
+					Username: ix.Username,
+					Password: ix.Password,
+				})
 		})
 		return nil, false, nil
 	}
