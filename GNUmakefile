@@ -25,7 +25,7 @@ xargs=xargs --no-run-if-empty
 endif
 go-bindata=go-bindata -ignore '.*\.go'# Go regexp syntax for -ignore
 
-.PHONY: all32 all al init test covertest coverfunc coverhtml bindata bindata-dev bindata-bin
+.PHONY: all32 boot32 all al init test covertest coverfunc coverhtml bindata bindata-dev bindata-bin
 ifneq (init, $(MAKECMDGOALS))
 # before init:
 # - go list would fail (for *packagefiles)
@@ -83,8 +83,12 @@ al: $(packagefiles) $(devpackagefiles)
 $(destbin)/$(cmdname): $(packagefiles)
 	go build -ldflags '-s -w' -a -tags bin -o $@ $(package)
 $(destbin)/$(cmdname).32:
-	GOARCH=386 CGO_ENABLED=1 \
+	CGO_ENABLED=1 GOARCH=386 \
 	go build -ldflags '-s -w' -a -tags bin -o $@ $(package)
+boot32:
+	cd $(GOROOT)/src
+	CGO_ENABLED=1 GOARCH=386 \
+  ./make.bash --no-clean
 
 share/assets/css/index.css: share/style/index.less
 	type lessc  >/dev/null || exit 0; lessc --source-map $< $@
