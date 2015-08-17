@@ -8,9 +8,9 @@ env:
     - GVMINSTALLER_URL=https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer
     - DPL_GO=go1.4.2 # Deploy only when this matches GVM_GO in the matrix.
   matrix:
-    - GVM_GO=go1.4.2
-    - GVM_GO=go1.5rc1
   # - GVM_GO=tip
+    - GVM_GO=go1.5rc1
+    - GVM_GO=go1.4.2
 install:
   - set -e # errors are fatal
   - |
@@ -38,27 +38,32 @@ install:
 script: make --always-make test all # like make -B
 before_deploy:
   - |
+    if test x$GVM_GO \!= x$DPL_GO ; then
+      x64=.non-dpl-go-to-be-removed
+    fi
     if test x$TRAVIS_OS_NAME \!= xosx ; then # 32bit build on non-osx
       x32=.32
-      # make all32
-      # mv $HOME/gopath/bin/ostent.32 $HOME/gopath/bin/$ARTIF.32
+      make all32
     fi
-  - mv $HOME/gopath/bin/ostent    $HOME/gopath/bin/$ARTIF
+    test x$TRAVIS_OS_NAME \!= xosx && # 32bit build on non-osx
+    mv $HOME/gopath/bin/ostent.32  $HOME/gopath/bin/$ARTIF.32
+  - mv $HOME/gopath/bin/ostent     $HOME/gopath/bin/$ARTIF$x64
   - set +e # off fatal errors for travis-dpl
 after_deploy:
   - set -e # errors are fatal again
   - |
-    if test x$TRAVIS_OS_NAME \!= xosx ; then # 32bit build on non-osx
-      # mv $HOME/gopath/bin/$ARTIF.32 $HOME/gopath/bin/ostent.32
-    fi
-  - mv $HOME/gopath/bin/$ARTIF    $HOME/gopath/bin/ostent
+    test x$TRAVIS_OS_NAME \!= xosx && # 32bit build on non-osx
+    mv $HOME/gopath/bin/$ARTIF.32  $HOME/gopath/bin/ostent.32
+  - mv $HOME/gopath/bin/$ARTIF$x64 $HOME/gopath/bin/ostent
 deploy:
   file:
-    # - $HOME/gopath/bin/$ARTIF$x32
-    - $HOME/gopath/bin/$ARTIF
+    - $HOME/gopath/bin/$ARTIF$x32
+    - $HOME/gopath/bin/$ARTIF$x64
   skip_clean: true
   on:
     tags: true
+    prerelease: true
+    # condition may not work with prerelease:
     condition: $GVM_GO = $DPL_GO
   provider: releases # https://github.com/travis-ci/dpl#github-releases
   api_key:
