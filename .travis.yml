@@ -1,6 +1,10 @@
 os: [linux, osx] # ostrost/ostent flagged multi-os
 language: c # Go runtime is managed with gvm
 sudo: false
+addons:
+  apt:
+    packages:
+    - gcc-multilib
 env:
   global:
     # RC- prefix til travis-dpl is unable to deploy into github PRE-release
