@@ -6,6 +6,14 @@ import (
 	"text/template/parse"
 )
 
+// Uncurl is required by templatefunc.Uncurler interface.
+func (n Nota) Uncurl() string   { return Uncurl(n.String()) }
+func (c Curled) Uncurl() string { return Uncurl(string(c)) }
+
+func Uncurl(s string) string {
+	return strings.TrimSuffix(strings.TrimPrefix(s, "{"), "}")
+}
+
 type CurlyFunc func(string, string, string) interface{}
 
 func Data(cf CurlyFunc, root *template.Template) interface{} {
@@ -282,10 +290,6 @@ func CurlyX(parent, key, full string) interface{} {
 }
 
 type Curled string
-
-func (c Curled) Uncurl() string {
-	return strings.TrimSuffix(strings.TrimPrefix(string(c), "{"), "}")
-}
 
 func Curly(parent, key, full string) Curled {
 	return Curled(Curl(full))

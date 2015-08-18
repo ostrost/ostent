@@ -86,9 +86,12 @@ type Params struct {
 }
 
 type Schema struct {
-	Still bool `url:"still,omitempty"`
+	// Still is here to be preserved for url encoding.
+	// Not in use by Go code, but by js.
+	Still Num `url:"still,omitempty"`
 
 	// The NewParams must populate .Delays with EACH *Delay
+
 	CPUd Delay `url:"cpud,omitempty"`
 	Dfd  Delay `url:"dfd,omitempty"`
 	Ifd  Delay `url:"ifd,omitempty"`
@@ -234,12 +237,6 @@ func (p *Params) Tlinks() map[string]string {
 		if tags, ok := TagsOk(sf); !ok || tags[0] == "" {
 			continue
 		}
-		if sf.Type.Kind() == reflect.Bool {
-			v := val.Field(i).Addr().Interface().(*bool)
-			if s, err := p.HrefToggle(v); err == nil {
-				m[sf.Name] = s
-			}
-		}
 		if sf.Type == NumType {
 			num := val.Field(i).Addr().Interface().(*Num)
 			if href, err := p.HrefToggleNegative(num); err == nil {
@@ -352,12 +349,6 @@ func (p *Params) ResetSchema() {
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
 		sf := typ.Field(i)
 		fv := val.Field(i)
-		switch sf.Type.Kind() {
-		case reflect.Bool:
-			fv.SetBool(false)
-		case reflect.Int:
-			fv.SetInt(0)
-		}
 		switch sf.Type {
 		case NumType:
 			fv.Set(reflect.ValueOf(Num{}))

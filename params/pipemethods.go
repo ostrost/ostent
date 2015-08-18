@@ -35,14 +35,6 @@ func (p Params) AttrClassTab(num, tab Num, cmp int, class, sndclass string) temp
 	return SprintfAttr(" class=%q", class)
 }
 
-// p is a pointer to flip (twice) the b.
-func (p *Params) HrefToggle(b *bool) (string, error) {
-	*b = !*b
-	qs, err := p.Encode()
-	*b = !*b
-	return "?" + qs, err
-}
-
 func (p *Params) HrefToggleNegative(num *Num) (string, error) {
 	num.Negative = !num.Negative
 	qs, err := p.Encode()
@@ -76,12 +68,6 @@ func (al ALink) Class(base string) string {
 		return al.ExtraClass
 	}
 	return base + " " + al.ExtraClass
-}
-
-// p is a pointer to alter (and revert) v being part of p.
-func (p *Params) AttrHrefToggle(v *bool) (interface{}, error) {
-	href, err := p.HrefToggle(v)
-	return SprintfAttr(" href=%q", href), err
 }
 
 // p is a pointer to alter (and revert) num being part of p.

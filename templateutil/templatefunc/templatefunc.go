@@ -13,25 +13,16 @@ func (f HTMLFuncs) Class() string   { return "class" }
 func (f JSXFuncs) Colspan() string  { return "colSpan" }
 func (f HTMLFuncs) Colspan() string { return "colspan" }
 
-func (f JSXFuncs) Chain(args ...interface{}) []interface{}  { return args }
-func (f HTMLFuncs) Chain(args ...interface{}) []interface{} { return args }
+// Key returns empty attribute.
+func (f HTMLFuncs) Key(_ string, x interface{}) (empty template.HTMLAttr) { return }
 
-// AKFunc won't make it into template.FuncMap.
-// Instead, it constructs a func which will.
-// The func return a key attribute.
-// Mind it's arguments.
-func (f HTMLFuncs) AKFunc() interface{} {
-	return func(string, interface{}) (empty template.HTMLAttr) { return }
+// Key returns key attribute: prefix + uncurled x being an Uncurler.
+func (f JSXFuncs) Key(prefix string, x interface{}) template.HTMLAttr {
+	return SprintfAttr(" key={%q+%s}", prefix+"-", x.(Uncurler).Uncurl())
 }
 
-// AKFunc won't make it into template.FuncMap.
-// Instead, it constructs a func which will.
-// The func return a key attribute.
-// Mind it's arguments.
-func (f JSXFuncs) AKFunc() interface{} {
-	return func(prefix string, n Uncurler) template.HTMLAttr {
-		return template.HTMLAttr(fmt.Sprintf(" key={%q+%s}", prefix+"-", n.Uncurl()))
-	}
+func SprintfAttr(format string, args ...interface{}) template.HTMLAttr {
+	return template.HTMLAttr(fmt.Sprintf(format, args...))
 }
 
 type Uncurler interface {
@@ -56,8 +47,7 @@ func MakeMap(f Functor) template.FuncMap {
 		"rowsset": func(interface{}) string { return "" }, // empty pipeline
 		// acepp overrides rowsset and adds setrows
 
-		"AttrKey": f.AKFunc(),
-		"Chain":   f.Chain,
+		"AttrKey": f.Key,
 		"class":   f.Class,
 		"colspan": f.Colspan,
 	}
@@ -70,8 +60,7 @@ type Functor interface {
 	MakeMap() template.FuncMap
 	Class() string
 	Colspan() string
-	Chain(...interface{}) []interface{}
-	AKFunc() interface{}
+	Key(string, interface{}) template.HTMLAttr
 }
 
 /*
