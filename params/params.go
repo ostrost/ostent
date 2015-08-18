@@ -200,7 +200,7 @@ func (p *Params) Vlinks() map[string][]VLink {
 		if err != nil { // err is gone
 			continue
 		}
-		for j := 1; j < maxn.Body+1; j++ { // indexed from 1
+		for j := 1; j < maxn.Absolute+1; j++ { // indexed from 1
 			if v, err := p.Vlink(v, j, "", ""); err == nil { // err is gone
 				vl = append(vl, v)
 			}
@@ -242,7 +242,7 @@ func (p *Params) Tlinks() map[string]string {
 		}
 		if sf.Type == NumType {
 			num := val.Field(i).Addr().Interface().(*Num)
-			if href, err := p.HrefToggleHead(num); err == nil {
+			if href, err := p.HrefToggleNegative(num); err == nil {
 				m[sf.Name] = href
 			}
 		}
@@ -262,57 +262,51 @@ func TagsOk(sf reflect.StructField) ([]string, bool) {
 	return strings.Split(tag, ","), true
 }
 
+// Num has no MarshalJSON.
 type Num struct {
-	Head         bool
-	Body         int
-	DefaultHead  bool
-	DefaultBody  int
-	Limit        int
-	Alpha        bool
-	PositiveOnly bool
+	Negative        bool
+	Absolute        int
+	DefaultNegative bool `json:"-"`
+	DefaultAbsolute int  `json:"-"`
+	Limit           int  `json:"-"`
+	Alpha           bool `json:"-"`
+	PositiveOnly    bool `json:"-"`
+}
+
+// EncodeString returns string repr of Num.
+// Templates render .Absolute value explicitly.
+func (num Num) EncodeString() string {
+	var sym string
+	if !num.PositiveOnly && num.Negative {
+		sym = "-"
+		if num.Absolute == 0 {
+			sym = "!"
+		}
+	}
+	return fmt.Sprintf("%s%d", sym, num.Absolute)
 }
 
 func (num Num) EncodeValues(key string, values *url.Values) error {
-	if (!num.PositiveOnly && num.Head != num.DefaultHead) || num.Body != num.DefaultBody {
-		(*values)[key] = []string{num.String()}
+	if (!num.PositiveOnly && num.Negative != num.DefaultNegative) || num.Absolute != num.DefaultAbsolute {
+		(*values)[key] = []string{num.EncodeString()}
 	}
 	return nil
 }
 
-func (num Num) MarshalJSON() ([]byte, error) { return json.Marshal(num.String()) }
-
-func (num Num) String() string {
-	var sym string
-	if !num.PositiveOnly && num.Head {
-		sym = "-"
-		if num.Body == 0 {
-			sym = "!"
-		}
-	}
-	return fmt.Sprintf("%s%d", sym, num.Body)
-}
-
 func DecodePositive(value string) (int, error) {
 	i, err := strconv.Atoi(value)
-	if err != nil {
-		return 0, err
+	if err == nil && i < 0 {
+		return i, fmt.Errorf("Integer decoded may not be negative")
 	}
-	if i < 0 {
-		return 0, fmt.Errorf("Integer decoded may not be negative")
-	}
-	return i, nil
+	return i, err
 }
 
-func DecodeNum(value string) (Num, error) {
-	var head bool
+func DecodeNum(value string) (num Num, err error) {
 	if len(value) > 0 && (value[0] == '-' || value[0] == '!') {
-		head, value = true, value[1:]
+		num.Negative, value = true, value[1:]
 	}
-	body, err := DecodePositive(value)
-	if err != nil {
-		return Num{}, err
-	}
-	return Num{Head: head, Body: body}, nil
+	num.Absolute, err = DecodePositive(value)
+	return num, err
 }
 
 // ConvertNum is a schema decoder's converter into Num.
@@ -324,11 +318,16 @@ func ConvertNum(value string) reflect.Value {
 	return reflect.ValueOf(num)
 }
 
+// Delay has it's own MarshalJSON.
 type Delay struct {
 	D       time.Duration
 	Default time.Duration
-	Ticks   int `json:"-"`
+	Ticks   int
 }
+
+func (d Delay) String() string { return flags.DurationString(d.D) }
+
+func (d Delay) MarshalJSON() ([]byte, error) { return json.Marshal(d.String()) }
 
 func (d Delay) EncodeValues(key string, values *url.Values) error {
 	if d.D != d.Default {
@@ -336,10 +335,6 @@ func (d Delay) EncodeValues(key string, values *url.Values) error {
 	}
 	return nil
 }
-
-func (d Delay) MarshalJSON() ([]byte, error) { return json.Marshal(d.String()) }
-
-func (d Delay) String() string { return flags.DurationString(d.D) }
 
 // ConvertDelayFunc creates a schema decoder's converter into Delay.
 func ConvertDelayFunc(mindelay flags.Delay) func(string) reflect.Value {
@@ -390,9 +385,9 @@ func (p *Params) SetDefaults(form url.Values, mindelay flags.Delay) {
 					num.PositiveOnly = true
 				}
 			}
-			num.DefaultHead = def.Head
-			num.DefaultBody = def.Body
-			if num.Head && num.Body != 0 { // all values specified, no need for defaults
+			num.DefaultNegative = def.Negative
+			num.DefaultAbsolute = def.Absolute
+			if num.Negative && num.Absolute != 0 { // all values specified, no need for defaults
 				continue
 			}
 			if !havetags {
@@ -401,11 +396,11 @@ func (p *Params) SetDefaults(form url.Values, mindelay flags.Delay) {
 			if _, ok := form[tags[0]]; ok { // have parameter
 				continue
 			}
-			if !num.Head { // not allow false init value
-				num.Head = def.Head
+			if !num.Negative { // not allow false init value
+				num.Negative = def.Negative
 			}
-			if num.Body == 0 { // not allow 0 init value
-				num.Body = def.Body
+			if num.Absolute == 0 { // not allow 0 init value
+				num.Absolute = def.Absolute
 			}
 		case DelayType:
 			d := fv.Addr().Interface().(*Delay)

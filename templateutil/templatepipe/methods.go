@@ -21,26 +21,27 @@ func (n Nota) Uncurl() string {
 }
 
 func (_ Nota) AttrClassP(v Uncurler, fstclass, sndclass string) template.HTMLAttr {
-	s := v.Uncurl()
-	return SprintfAttr(` className={(%s != "!0" && %s.substr(0, 1) != "-") ? %q : %q}`,
-		s, s, fstclass, sndclass)
-}
-
-func (n Nota) Body() string {
-	s := n.Uncurl()
-	return fmt.Sprintf(`{%s == "!0" ? "0" : %s.replace(/^-/, "")}`, s, s)
+	return SprintfAttr(` className={!%s.Negative ? %q : %q}`,
+		v.Uncurl(), fstclass, sndclass)
+	// s := v.Uncurl()
+	// return SprintfAttr(` className={(%s != "!0" && %s.substr(0, 1) != "-") ? %q : %q}`,
+	// 	s, s, fstclass, sndclass)
 }
 
 func (_ Nota) AttrClassNonzero(v Uncurler, fstclass, sndclass string) template.HTMLAttr {
-	s := v.Uncurl()
-	return SprintfAttr(` className={(%s != "!0" && %s != "0") ? %q : %q}`,
-		s, s, fstclass, sndclass)
+	return SprintfAttr(` className={%s.Absolute != 0 ? %q : %q}`,
+		v.Uncurl(), fstclass, sndclass)
+	// s := v.Uncurl()
+	// return SprintfAttr(` className={(%s != "!0" && %s != "0") ? %q : %q}`,
+	// 	s, s, fstclass, sndclass)
 }
 
 func (_ Nota) AttrClassTab(num, tab Uncurler, cmp int, fstclass, sndclass string) template.HTMLAttr {
-	n := num.Uncurl()
-	return SprintfAttr(` className={(%s != "!0" && %s != "0" && %s == "%d") ? %q : %q}`,
-		n, n, tab.Uncurl(), cmp, fstclass, sndclass)
+	return SprintfAttr(` className={%s.Absolute != 0 && %s.Absolute == %d ? %q : %q}`,
+		num.Uncurl(), tab.Uncurl(), cmp, fstclass, sndclass)
+	// n := num.Uncurl()
+	// return SprintfAttr(` className={(%s != "!0" && %s != "0" && %s == "%d") ? %q : %q}`,
+	// 	n, n, tab.Uncurl(), cmp, fstclass, sndclass)
 }
 
 func (n Nota) Vlink(this Uncurler, cmp int, text, alignClass string) params.VLink {
@@ -93,7 +94,7 @@ func (_ Nota) AttrHrefToggle(v Uncurler) interface{} {
 	return fmt.Sprintf(" href={%s.Tlinks.%s} onClick={this.handleClick}", base, last)
 }
 
-func (n Nota) AttrHrefToggleHead(v Uncurler) interface{} {
+func (n Nota) AttrHrefToggleNegative(v Uncurler) interface{} {
 	return n.AttrHrefToggle(v)
 }
 

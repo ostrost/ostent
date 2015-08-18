@@ -317,7 +317,7 @@
   |
     <div     {{$p.AttrClassP [[$N]] "" "panel panel-default"}}>
       <div   {{$p.AttrClassP [[$N]] "" "panel-heading"}}>
-        <a   {{$p.AttrHrefToggleHead [[$N]]}} {{class}}="panel-title btn-block">
+        <a   {{$p.AttrHrefToggleNegative [[$N]]}} {{class}}="panel-title btn-block">
           <b {{$p.AttrClassP [[$N]] "h4" "h4 bg-info"}}>[[$title]]</b>
         </a>
       </div>
@@ -355,7 +355,7 @@
     td.col-md-2
       div.nowrap.text-right
         | Rows&nbsp;
-        span.badge {{[[$N]].Body}}
+        span.badge {{[[$N]].Absolute}}
     td
       div.btn-group.nowrap-group role=group
         {{template "defines::badgedlinkleft"  $p.LessN [[$N]]}}

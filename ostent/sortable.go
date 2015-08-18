@@ -10,7 +10,7 @@ import (
 func LessDiskFunc(by *params.Num) func(operating.MetricDF, operating.MetricDF) bool {
 	return func(a, b operating.MetricDF) bool {
 		r := false
-		switch by.Body {
+		switch by.Absolute {
 		case enums.FS:
 			by.Alpha = true
 			r = a.DevName.Snapshot().Value() < b.DevName.Snapshot().Value()
@@ -24,7 +24,7 @@ func LessDiskFunc(by *params.Num) func(operating.MetricDF, operating.MetricDF) b
 			by.Alpha = true
 			r = a.DirName.Snapshot().Value() < b.DirName.Snapshot().Value()
 		}
-		if by.Head {
+		if by.Negative {
 			return !r
 		}
 		return r
@@ -35,7 +35,7 @@ func LessDiskFunc(by *params.Num) func(operating.MetricDF, operating.MetricDF) b
 func LessProcFunc(by *params.Num, uids map[uint]string) func(operating.MetricProc, operating.MetricProc) bool {
 	return func(a, b operating.MetricProc) bool {
 		r := false
-		switch by.Body {
+		switch by.Absolute {
 		case enums.PID:
 			r = a.PID > b.PID
 		case enums.PRI:
@@ -57,7 +57,7 @@ func LessProcFunc(by *params.Num, uids map[uint]string) func(operating.MetricPro
 			by.Alpha = true
 			r = username(uids, a.UID) < username(uids, b.UID)
 		}
-		if by.Head {
+		if by.Negative {
 			return !r
 		}
 		return r

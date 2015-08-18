@@ -15,21 +15,21 @@ func SprintfAttr(format string, args ...interface{}) template.HTMLAttr {
 }
 
 func (p Params) AttrClassP(num Num, class, sndclass string) template.HTMLAttr {
-	if num.Head {
+	if num.Negative {
 		class = sndclass
 	}
 	return SprintfAttr(" class=%q", class)
 }
 
 func (p Params) AttrClassNonzero(num Num, class, sndclass string) template.HTMLAttr {
-	if num.Body == 0 {
+	if num.Absolute == 0 {
 		class = sndclass
 	}
 	return SprintfAttr(" class=%q", class)
 }
 
 func (p Params) AttrClassTab(num, tab Num, cmp int, class, sndclass string) template.HTMLAttr {
-	if num.Body == 0 || tab.Body != cmp {
+	if num.Absolute == 0 || tab.Absolute != cmp {
 		class = sndclass
 	}
 	return SprintfAttr(" class=%q", class)
@@ -43,10 +43,10 @@ func (p *Params) HrefToggle(b *bool) (string, error) {
 	return "?" + qs, err
 }
 
-func (p *Params) HrefToggleHead(num *Num) (string, error) {
-	num.Head = !num.Head
+func (p *Params) HrefToggleNegative(num *Num) (string, error) {
+	num.Negative = !num.Negative
 	qs, err := p.Encode()
-	num.Head = !num.Head
+	num.Negative = !num.Negative
 	return "?" + qs, err
 }
 
@@ -85,8 +85,8 @@ func (p *Params) AttrHrefToggle(v *bool) (interface{}, error) {
 }
 
 // p is a pointer to alter (and revert) num being part of p.
-func (p *Params) AttrHrefToggleHead(num *Num) (interface{}, error) {
-	href, err := p.HrefToggleHead(num)
+func (p *Params) AttrHrefToggleNegative(num *Num) (interface{}, error) {
+	href, err := p.HrefToggleNegative(num)
 	return SprintfAttr(" href=%q", href), err
 }
 
@@ -98,18 +98,18 @@ type VLink struct {
 	LinkText   string `json:"-"` // static
 }
 
-func (p *Params) Vlink(num *Num, body int, text, alignClass string) (VLink, error) {
+func (p *Params) Vlink(num *Num, absolute int, text, alignClass string) (VLink, error) {
 	vl := VLink{LinkText: text, LinkClass: "state"}
-	head := new(bool) // EncodeN will use .Head being false by default
-	if num.Body == body {
+	negative := new(bool) // EncodeN will use .Negative being false by default
+	if num.Absolute == absolute {
 		vl.CaretClass = "caret"
 		vl.LinkClass += " current"
-		if (num.Alpha && !num.Head) || (!num.Alpha && num.Head) {
+		if (num.Alpha && !num.Negative) || (!num.Alpha && num.Negative) {
 			vl.LinkClass += " dropup"
 		}
-		*head = !num.Head
+		*negative = !num.Negative
 	}
-	qs, err := p.EncodeN(num, body, head)
+	qs, err := p.EncodeN(num, absolute, negative)
 	if err != nil {
 		return VLink{}, err
 	}
@@ -118,16 +118,16 @@ func (p *Params) Vlink(num *Num, body int, text, alignClass string) (VLink, erro
 	return vl, nil
 }
 
-func (p *Params) EncodeN(num *Num, body int, thead *bool) (string, error) {
-	copy, head := num.Body, num.Head
-	num.Body = body
-	if thead != nil {
-		num.Head = *thead
+func (p *Params) EncodeN(num *Num, absolute int, setNegative *bool) (string, error) {
+	copy, ncopy := num.Absolute, num.Negative
+	num.Absolute = absolute
+	if setNegative != nil {
+		num.Negative = *setNegative
 	}
 	qs, err := p.Encode()
-	num.Body = copy
-	if thead != nil {
-		num.Head = head
+	num.Absolute = copy
+	if setNegative != nil {
+		num.Negative = ncopy
 	}
 	return "?" + qs, err
 }
@@ -165,28 +165,28 @@ func Pow2More(v int) int {
 }
 
 func (p *Params) ZeroN(num *Num) (ALink, error) { return p.LinkN(num, 0, "") }
-func (p *Params) MoreN(num *Num) (ALink, error) { return p.LinkN(num, Pow2More(num.Body), "+") }
-func (p *Params) LessN(num *Num) (ALink, error) { return p.LinkN(num, Pow2Less(num.Body), "-") }
+func (p *Params) MoreN(num *Num) (ALink, error) { return p.LinkN(num, Pow2More(num.Absolute), "+") }
+func (p *Params) LessN(num *Num) (ALink, error) { return p.LinkN(num, Pow2Less(num.Absolute), "-") }
 
-func (p *Params) LinkN(num *Num, body int, badge string) (ALink, error) {
-	href, err := p.EncodeN(num, body, nil)
+func (p *Params) LinkN(num *Num, absolute int, badge string) (ALink, error) {
+	href, err := p.EncodeN(num, absolute, nil)
 	if err != nil {
 		return ALink{}, err
 	}
 	var class string
-	if badge == "" && num.Body == 0 { // "0" case && param is 0
+	if badge == "" && num.Absolute == 0 { // "0" case && param is 0
 		class = " disabled active"
 	}
-	if badge == "+" && num.Body >= num.Limit && body > num.Limit {
+	if badge == "+" && num.Absolute >= num.Limit && absolute > num.Limit {
 		class = " disabled"
 	}
-	if badge == "-" && body == 0 {
+	if badge == "-" && absolute == 0 {
 		class = " disabled"
 	}
 	return ALink{
 		APlain: APlain{
 			Href:  href,
-			Text:  fmt.Sprintf("%d", body),
+			Text:  fmt.Sprintf("%d", absolute),
 			Badge: badge,
 		},
 		ExtraClass: class,

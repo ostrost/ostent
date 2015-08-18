@@ -14,14 +14,14 @@ define(function(require) {
     >{$mem.Total}</td
   ></tr
 >); },
-		panelmem:        function(Data, rows)  { return (<div      className={(Data.Params.Memn != "!0" && Data.Params.Memn.substr(0, 1) != "-") ? "" : "panel panel-default"}
-  >  <div    className={(Data.Params.Memn != "!0" && Data.Params.Memn.substr(0, 1) != "-") ? "" : "panel-heading"}
+		panelmem:        function(Data, rows)  { return (<div      className={!Data.Params.Memn.Negative ? "" : "panel panel-default"}
+  >  <div    className={!Data.Params.Memn.Negative ? "" : "panel-heading"}
     >    <a    href={Data.Params.Tlinks.Memn} onClick={this.handleClick} className="panel-title btn-block"
-      >      <b  className={(Data.Params.Memn != "!0" && Data.Params.Memn.substr(0, 1) != "-") ? "h4" : "h4 bg-info"}
+      >      <b  className={!Data.Params.Memn.Negative ? "h4" : "h4 bg-info"}
         >Memory</b
       >    </a
     >  </div
-  >  <table  className={(Data.Params.Memn != "!0" && Data.Params.Memn.substr(0, 1) != "-") ? "table collapse-hidden" : "table"}
+  >  <table  className={!Data.Params.Memn.Negative ? "table collapse-hidden" : "table"}
     ><tr className="panel-config"
       ><td className="col-md-2"
         ><div className="nowrap text-right"
@@ -50,7 +50,7 @@ define(function(require) {
       ><td className="col-md-2"
         ><div className="nowrap text-right"
           >Rows&nbsp;<span className="badge"
-            >{Data.Params.Memn == "!0" ? "0" : Data.Params.Memn.replace(/^-/, "")}</span
+            >{Data.Params.Memn.Absolute}</span
           ></div
         ></td
       ><td
@@ -80,7 +80,7 @@ define(function(require) {
         ></td
       ></tr
     >  </table
-  >  <table  className={(Data.Params.Memn != "!0" && Data.Params.Memn != "0") ? "table table-hover" : "collapse-hidden"}
+  >  <table  className={Data.Params.Memn.Absolute != 0 ? "table table-hover" : "collapse-hidden"}
   ><thead
     ><tr
       ><th
@@ -138,14 +138,14 @@ define(function(require) {
     >{$if.Out}</td
   ></tr
 >); },
-		panelif:         function(Data,r1,r2,r3){ return (<div      className={(Data.Params.Ifn != "!0" && Data.Params.Ifn.substr(0, 1) != "-") ? "" : "panel panel-default"}
-  >  <div    className={(Data.Params.Ifn != "!0" && Data.Params.Ifn.substr(0, 1) != "-") ? "" : "panel-heading"}
+		panelif:         function(Data,r1,r2,r3){ return (<div      className={!Data.Params.Ifn.Negative ? "" : "panel panel-default"}
+  >  <div    className={!Data.Params.Ifn.Negative ? "" : "panel-heading"}
     >    <a    href={Data.Params.Tlinks.Ifn} onClick={this.handleClick} className="panel-title btn-block"
-      >      <b  className={(Data.Params.Ifn != "!0" && Data.Params.Ifn.substr(0, 1) != "-") ? "h4" : "h4 bg-info"}
+      >      <b  className={!Data.Params.Ifn.Negative ? "h4" : "h4 bg-info"}
         >Interfaces</b
       >    </a
     >  </div
-  >  <table  className={(Data.Params.Ifn != "!0" && Data.Params.Ifn.substr(0, 1) != "-") ? "table collapse-hidden" : "table"}
+  >  <table  className={!Data.Params.Ifn.Negative ? "table collapse-hidden" : "table"}
     ><tr className="panel-config"
       ><td className="col-md-2"
         ><div className="nowrap text-right"
@@ -174,7 +174,7 @@ define(function(require) {
       ><td className="col-md-2"
         ><div className="nowrap text-right"
           >Rows&nbsp;<span className="badge"
-            >{Data.Params.Ifn == "!0" ? "0" : Data.Params.Ifn.replace(/^-/, "")}</span
+            >{Data.Params.Ifn.Absolute}</span
           ></div
         ></td
       ><td
@@ -210,15 +210,15 @@ define(function(require) {
         ></td
       ><td colSpan="3"
         ><ul className="nav nav-pills"
-          ><li  className={(Data.Params.Ifn != "!0" && Data.Params.Ifn != "0" && Data.Params.Ift == "1") ? "active" : ""}
+          ><li  className={Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 1 ? "active" : ""}
             ><a href={Data.Params.Vlinks.Ift[1-1].LinkHref} onClick={this.handleClick}
   >Packets</a
 ></li
-          ><li  className={(Data.Params.Ifn != "!0" && Data.Params.Ifn != "0" && Data.Params.Ift == "2") ? "active" : ""}
+          ><li  className={Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 2 ? "active" : ""}
             ><a href={Data.Params.Vlinks.Ift[2-1].LinkHref} onClick={this.handleClick}
   >Errors</a
 ></li
-          ><li  className={(Data.Params.Ifn != "!0" && Data.Params.Ifn != "0" && Data.Params.Ift == "3") ? "active" : ""}
+          ><li  className={Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 3 ? "active" : ""}
             ><a href={Data.Params.Vlinks.Ift[3-1].LinkHref} onClick={this.handleClick}
   >Bytes</a
 ></li
@@ -226,7 +226,7 @@ define(function(require) {
         ></td
       ></tr
     >  </table
-  >  <table  className={(Data.Params.Ifn != "!0" && Data.Params.Ifn != "0" && Data.Params.Ift == "1") ? "table table-hover" : "collapse-hidden"}
+  >  <table  className={Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 1 ? "table table-hover" : "collapse-hidden"}
   ><thead
     ><tr
       ><th
@@ -253,7 +253,7 @@ define(function(require) {
     >{r1}</tbody
   ></table
 >
-  <table  className={(Data.Params.Ifn != "!0" && Data.Params.Ifn != "0" && Data.Params.Ift == "2") ? "table table-hover" : "collapse-hidden"}
+  <table  className={Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 2 ? "table table-hover" : "collapse-hidden"}
   ><thead
     ><tr
       ><th
@@ -280,7 +280,7 @@ define(function(require) {
     >{r2}</tbody
   ></table
 >
-  <table  className={(Data.Params.Ifn != "!0" && Data.Params.Ifn != "0" && Data.Params.Ift == "3") ? "table table-hover" : "collapse-hidden"}
+  <table  className={Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 3 ? "table table-hover" : "collapse-hidden"}
   ><thead
     ><tr
       ><th
@@ -338,14 +338,14 @@ define(function(require) {
     ></td
   ></tr
 >); },
-		panelcpu:        function(Data, rows)  { return (<div      className={(Data.Params.CPUn != "!0" && Data.Params.CPUn.substr(0, 1) != "-") ? "" : "panel panel-default"}
-  >  <div    className={(Data.Params.CPUn != "!0" && Data.Params.CPUn.substr(0, 1) != "-") ? "" : "panel-heading"}
+		panelcpu:        function(Data, rows)  { return (<div      className={!Data.Params.CPUn.Negative ? "" : "panel panel-default"}
+  >  <div    className={!Data.Params.CPUn.Negative ? "" : "panel-heading"}
     >    <a    href={Data.Params.Tlinks.CPUn} onClick={this.handleClick} className="panel-title btn-block"
-      >      <b  className={(Data.Params.CPUn != "!0" && Data.Params.CPUn.substr(0, 1) != "-") ? "h4" : "h4 bg-info"}
+      >      <b  className={!Data.Params.CPUn.Negative ? "h4" : "h4 bg-info"}
         >CPU</b
       >    </a
     >  </div
-  >  <table  className={(Data.Params.CPUn != "!0" && Data.Params.CPUn.substr(0, 1) != "-") ? "table collapse-hidden" : "table"}
+  >  <table  className={!Data.Params.CPUn.Negative ? "table collapse-hidden" : "table"}
     ><tr className="panel-config"
       ><td className="col-md-2"
         ><div className="nowrap text-right"
@@ -374,7 +374,7 @@ define(function(require) {
       ><td className="col-md-2"
         ><div className="nowrap text-right"
           >Rows&nbsp;<span className="badge"
-            >{Data.Params.CPUn == "!0" ? "0" : Data.Params.CPUn.replace(/^-/, "")}</span
+            >{Data.Params.CPUn.Absolute}</span
           ></div
         ></td
       ><td
@@ -404,7 +404,7 @@ define(function(require) {
         ></td
       ></tr
     >  </table
-  >  <table  className={(Data.Params.CPUn != "!0" && Data.Params.CPUn != "0") ? "table table-hover" : "collapse-hidden"}
+  >  <table  className={Data.Params.CPUn.Absolute != 0 ? "table table-hover" : "collapse-hidden"}
   ><thead
     ><tr
       ><th
@@ -463,14 +463,14 @@ define(function(require) {
     >{$disk.Inodes}</td
   ></tr
 >); },
-		paneldf:         function(Data,r1,r2)  { return (<div      className={(Data.Params.Dfn != "!0" && Data.Params.Dfn.substr(0, 1) != "-") ? "" : "panel panel-default"}
-  >  <div    className={(Data.Params.Dfn != "!0" && Data.Params.Dfn.substr(0, 1) != "-") ? "" : "panel-heading"}
+		paneldf:         function(Data,r1,r2)  { return (<div      className={!Data.Params.Dfn.Negative ? "" : "panel panel-default"}
+  >  <div    className={!Data.Params.Dfn.Negative ? "" : "panel-heading"}
     >    <a    href={Data.Params.Tlinks.Dfn} onClick={this.handleClick} className="panel-title btn-block"
-      >      <b  className={(Data.Params.Dfn != "!0" && Data.Params.Dfn.substr(0, 1) != "-") ? "h4" : "h4 bg-info"}
+      >      <b  className={!Data.Params.Dfn.Negative ? "h4" : "h4 bg-info"}
         >Disk usage</b
       >    </a
     >  </div
-  >  <table  className={(Data.Params.Dfn != "!0" && Data.Params.Dfn.substr(0, 1) != "-") ? "table collapse-hidden" : "table"}
+  >  <table  className={!Data.Params.Dfn.Negative ? "table collapse-hidden" : "table"}
     ><tr className="panel-config"
       ><td className="col-md-2"
         ><div className="nowrap text-right"
@@ -499,7 +499,7 @@ define(function(require) {
       ><td className="col-md-2"
         ><div className="nowrap text-right"
           >Rows&nbsp;<span className="badge"
-            >{Data.Params.Dfn == "!0" ? "0" : Data.Params.Dfn.replace(/^-/, "")}</span
+            >{Data.Params.Dfn.Absolute}</span
           ></div
         ></td
       ><td
@@ -535,11 +535,11 @@ define(function(require) {
         ></td
       ><td colSpan="3"
         ><ul className="nav nav-pills"
-          ><li  className={(Data.Params.Dfn != "!0" && Data.Params.Dfn != "0" && Data.Params.Dft == "1") ? "active" : ""}
+          ><li  className={Data.Params.Dfn.Absolute != 0 && Data.Params.Dft.Absolute == 1 ? "active" : ""}
             ><a href={Data.Params.Vlinks.Dft[1-1].LinkHref} onClick={this.handleClick}
   >Inodes</a
 ></li
-          ><li  className={(Data.Params.Dfn != "!0" && Data.Params.Dfn != "0" && Data.Params.Dft == "2") ? "active" : ""}
+          ><li  className={Data.Params.Dfn.Absolute != 0 && Data.Params.Dft.Absolute == 2 ? "active" : ""}
             ><a href={Data.Params.Vlinks.Dft[2-1].LinkHref} onClick={this.handleClick}
   >Bytes</a
 ></li
@@ -547,7 +547,7 @@ define(function(require) {
         ></td
       ></tr
     >  </table
-  >  <table  className={(Data.Params.Dfn != "!0" && Data.Params.Dfn != "0" && Data.Params.Dft == "1") ? "table table-hover" : "collapse-hidden"}
+  >  <table  className={Data.Params.Dfn.Absolute != 0 && Data.Params.Dft.Absolute == 1 ? "table table-hover" : "collapse-hidden"}
   ><thead
     ><tr
       ><th className="header"
@@ -566,7 +566,7 @@ define(function(require) {
     >{r1}</tbody
   ></table
 >
-  <table  className={(Data.Params.Dfn != "!0" && Data.Params.Dfn != "0" && Data.Params.Dft == "2") ? "table table-hover" : "collapse-hidden"}
+  <table  className={Data.Params.Dfn.Absolute != 0 && Data.Params.Dft.Absolute == 2 ? "table table-hover" : "collapse-hidden"}
   ><thead
     ><tr
       ><th className="header "
@@ -628,14 +628,14 @@ define(function(require) {
     >{$proc.Name}</td
   ></tr
 >); },
-		panelps:         function(Data, rows)  { return (<div      className={(Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-") ? "" : "panel panel-default"}
-  >  <div    className={(Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-") ? "" : "panel-heading"}
+		panelps:         function(Data, rows)  { return (<div      className={!Data.Params.Psn.Negative ? "" : "panel panel-default"}
+  >  <div    className={!Data.Params.Psn.Negative ? "" : "panel-heading"}
     >    <a    href={Data.Params.Tlinks.Psn} onClick={this.handleClick} className="panel-title btn-block"
-      >      <b  className={(Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-") ? "h4" : "h4 bg-info"}
+      >      <b  className={!Data.Params.Psn.Negative ? "h4" : "h4 bg-info"}
         >Processes</b
       >    </a
     >  </div
-  >  <table  className={(Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-") ? "table collapse-hidden" : "table"}
+  >  <table  className={!Data.Params.Psn.Negative ? "table collapse-hidden" : "table"}
     ><tr className="panel-config"
       ><td className="col-md-2"
         ><div className="nowrap text-right"
@@ -664,7 +664,7 @@ define(function(require) {
       ><td className="col-md-2"
         ><div className="nowrap text-right"
           >Rows&nbsp;<span className="badge"
-            >{Data.Params.Psn == "!0" ? "0" : Data.Params.Psn.replace(/^-/, "")}</span
+            >{Data.Params.Psn.Absolute}</span
           ></div
         ></td
       ><td
@@ -694,7 +694,7 @@ define(function(require) {
         ></td
       ></tr
     >  </table
-  >  <table  className={(Data.Params.Psn != "!0" && Data.Params.Psn != "0") ? "table table-hover" : "collapse-hidden"}
+  >  <table  className={Data.Params.Psn.Absolute != 0 ? "table table-hover" : "collapse-hidden"}
   ><thead
     ><tr
       ><th className="header text-right"
@@ -777,14 +777,14 @@ define(function(require) {
     >{Data.VagrantError}</td
   ></tr
 >); },
-		panelvg:         function(Data, rows)  { return (<div      className={(Data.Params.Vgn != "!0" && Data.Params.Vgn.substr(0, 1) != "-") ? "" : "panel panel-default"}
-  >  <div    className={(Data.Params.Vgn != "!0" && Data.Params.Vgn.substr(0, 1) != "-") ? "" : "panel-heading"}
+		panelvg:         function(Data, rows)  { return (<div      className={!Data.Params.Vgn.Negative ? "" : "panel panel-default"}
+  >  <div    className={!Data.Params.Vgn.Negative ? "" : "panel-heading"}
     >    <a    href={Data.Params.Tlinks.Vgn} onClick={this.handleClick} className="panel-title btn-block"
-      >      <b  className={(Data.Params.Vgn != "!0" && Data.Params.Vgn.substr(0, 1) != "-") ? "h4" : "h4 bg-info"}
+      >      <b  className={!Data.Params.Vgn.Negative ? "h4" : "h4 bg-info"}
         >Vagrant</b
       >    </a
     >  </div
-  >  <table  className={(Data.Params.Vgn != "!0" && Data.Params.Vgn.substr(0, 1) != "-") ? "table collapse-hidden" : "table"}
+  >  <table  className={!Data.Params.Vgn.Negative ? "table collapse-hidden" : "table"}
     ><tr className="panel-config"
       ><td className="col-md-2"
         ><div className="nowrap text-right"
@@ -813,7 +813,7 @@ define(function(require) {
       ><td className="col-md-2"
         ><div className="nowrap text-right"
           >Rows&nbsp;<span className="badge"
-            >{Data.Params.Vgn == "!0" ? "0" : Data.Params.Vgn.replace(/^-/, "")}</span
+            >{Data.Params.Vgn.Absolute}</span
           ></div
         ></td
       ><td
@@ -843,7 +843,7 @@ define(function(require) {
         ></td
       ></tr
     >  </table
-  >  <table  className={(Data.Params.Vgn != "!0" && Data.Params.Vgn != "0") ? "table table-hover" : "collapse-hidden"}
+  >  <table  className={Data.Params.Vgn.Absolute != 0 ? "table table-hover" : "collapse-hidden"}
   ><thead
     ><tr
       ><th

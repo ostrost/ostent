@@ -44,12 +44,12 @@ define(function (require) {
     panelmem: function panelmem(Data, rows) {
       return React.createElement(
         "div",
-        { className: Data.Params.Memn != "!0" && Data.Params.Memn.substr(0, 1) != "-" ? "" : "panel panel-default"
+        { className: !Data.Params.Memn.Negative ? "" : "panel panel-default"
         },
         "  ",
         React.createElement(
           "div",
-          { className: Data.Params.Memn != "!0" && Data.Params.Memn.substr(0, 1) != "-" ? "" : "panel-heading"
+          { className: !Data.Params.Memn.Negative ? "" : "panel-heading"
           },
           "    ",
           React.createElement(
@@ -59,7 +59,7 @@ define(function (require) {
             "      ",
             React.createElement(
               "b",
-              { className: Data.Params.Memn != "!0" && Data.Params.Memn.substr(0, 1) != "-" ? "h4" : "h4 bg-info"
+              { className: !Data.Params.Memn.Negative ? "h4" : "h4 bg-info"
               },
               "Memory"
             ),
@@ -70,7 +70,7 @@ define(function (require) {
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.Memn != "!0" && Data.Params.Memn.substr(0, 1) != "-" ? "table collapse-hidden" : "table"
+          { className: !Data.Params.Memn.Negative ? "table collapse-hidden" : "table"
           },
           React.createElement(
             "tr",
@@ -150,7 +150,7 @@ define(function (require) {
                   "span",
                   { className: "badge"
                   },
-                  Data.Params.Memn == "!0" ? "0" : Data.Params.Memn.replace(/^-/, "")
+                  Data.Params.Memn.Absolute
                 )
               )
             ),
@@ -218,7 +218,7 @@ define(function (require) {
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.Memn != "!0" && Data.Params.Memn != "0" ? "table table-hover" : "collapse-hidden"
+          { className: Data.Params.Memn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
           },
           React.createElement(
             "thead",
@@ -367,12 +367,12 @@ define(function (require) {
     panelif: function panelif(Data, r1, r2, r3) {
       return React.createElement(
         "div",
-        { className: Data.Params.Ifn != "!0" && Data.Params.Ifn.substr(0, 1) != "-" ? "" : "panel panel-default"
+        { className: !Data.Params.Ifn.Negative ? "" : "panel panel-default"
         },
         "  ",
         React.createElement(
           "div",
-          { className: Data.Params.Ifn != "!0" && Data.Params.Ifn.substr(0, 1) != "-" ? "" : "panel-heading"
+          { className: !Data.Params.Ifn.Negative ? "" : "panel-heading"
           },
           "    ",
           React.createElement(
@@ -382,7 +382,7 @@ define(function (require) {
             "      ",
             React.createElement(
               "b",
-              { className: Data.Params.Ifn != "!0" && Data.Params.Ifn.substr(0, 1) != "-" ? "h4" : "h4 bg-info"
+              { className: !Data.Params.Ifn.Negative ? "h4" : "h4 bg-info"
               },
               "Interfaces"
             ),
@@ -393,7 +393,7 @@ define(function (require) {
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.Ifn != "!0" && Data.Params.Ifn.substr(0, 1) != "-" ? "table collapse-hidden" : "table"
+          { className: !Data.Params.Ifn.Negative ? "table collapse-hidden" : "table"
           },
           React.createElement(
             "tr",
@@ -473,7 +473,7 @@ define(function (require) {
                   "span",
                   { className: "badge"
                   },
-                  Data.Params.Ifn == "!0" ? "0" : Data.Params.Ifn.replace(/^-/, "")
+                  Data.Params.Ifn.Absolute
                 )
               )
             ),
@@ -561,7 +561,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "li",
-                  { className: Data.Params.Ifn != "!0" && Data.Params.Ifn != "0" && Data.Params.Ift == "1" ? "active" : ""
+                  { className: Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 1 ? "active" : ""
                   },
                   React.createElement(
                     "a",
@@ -572,7 +572,7 @@ define(function (require) {
                 ),
                 React.createElement(
                   "li",
-                  { className: Data.Params.Ifn != "!0" && Data.Params.Ifn != "0" && Data.Params.Ift == "2" ? "active" : ""
+                  { className: Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 2 ? "active" : ""
                   },
                   React.createElement(
                     "a",
@@ -583,7 +583,7 @@ define(function (require) {
                 ),
                 React.createElement(
                   "li",
-                  { className: Data.Params.Ifn != "!0" && Data.Params.Ifn != "0" && Data.Params.Ift == "3" ? "active" : ""
+                  { className: Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 3 ? "active" : ""
                   },
                   React.createElement(
                     "a",
@@ -600,7 +600,7 @@ define(function (require) {
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.Ifn != "!0" && Data.Params.Ifn != "0" && Data.Params.Ift == "1" ? "table table-hover" : "collapse-hidden"
+          { className: Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 1 ? "table table-hover" : "collapse-hidden"
           },
           React.createElement(
             "thead",
@@ -671,7 +671,7 @@ define(function (require) {
         ),
         React.createElement(
           "table",
-          { className: Data.Params.Ifn != "!0" && Data.Params.Ifn != "0" && Data.Params.Ift == "2" ? "table table-hover" : "collapse-hidden"
+          { className: Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 2 ? "table table-hover" : "collapse-hidden"
           },
           React.createElement(
             "thead",
@@ -742,7 +742,7 @@ define(function (require) {
         ),
         React.createElement(
           "table",
-          { className: Data.Params.Ifn != "!0" && Data.Params.Ifn != "0" && Data.Params.Ift == "3" ? "table table-hover" : "collapse-hidden"
+          { className: Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 3 ? "table table-hover" : "collapse-hidden"
           },
           React.createElement(
             "thead",
@@ -894,12 +894,12 @@ define(function (require) {
     panelcpu: function panelcpu(Data, rows) {
       return React.createElement(
         "div",
-        { className: Data.Params.CPUn != "!0" && Data.Params.CPUn.substr(0, 1) != "-" ? "" : "panel panel-default"
+        { className: !Data.Params.CPUn.Negative ? "" : "panel panel-default"
         },
         "  ",
         React.createElement(
           "div",
-          { className: Data.Params.CPUn != "!0" && Data.Params.CPUn.substr(0, 1) != "-" ? "" : "panel-heading"
+          { className: !Data.Params.CPUn.Negative ? "" : "panel-heading"
           },
           "    ",
           React.createElement(
@@ -909,7 +909,7 @@ define(function (require) {
             "      ",
             React.createElement(
               "b",
-              { className: Data.Params.CPUn != "!0" && Data.Params.CPUn.substr(0, 1) != "-" ? "h4" : "h4 bg-info"
+              { className: !Data.Params.CPUn.Negative ? "h4" : "h4 bg-info"
               },
               "CPU"
             ),
@@ -920,7 +920,7 @@ define(function (require) {
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.CPUn != "!0" && Data.Params.CPUn.substr(0, 1) != "-" ? "table collapse-hidden" : "table"
+          { className: !Data.Params.CPUn.Negative ? "table collapse-hidden" : "table"
           },
           React.createElement(
             "tr",
@@ -1000,7 +1000,7 @@ define(function (require) {
                   "span",
                   { className: "badge"
                   },
-                  Data.Params.CPUn == "!0" ? "0" : Data.Params.CPUn.replace(/^-/, "")
+                  Data.Params.CPUn.Absolute
                 )
               )
             ),
@@ -1068,7 +1068,7 @@ define(function (require) {
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.CPUn != "!0" && Data.Params.CPUn != "0" ? "table table-hover" : "collapse-hidden"
+          { className: Data.Params.CPUn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
           },
           React.createElement(
             "thead",
@@ -1225,12 +1225,12 @@ define(function (require) {
     paneldf: function paneldf(Data, r1, r2) {
       return React.createElement(
         "div",
-        { className: Data.Params.Dfn != "!0" && Data.Params.Dfn.substr(0, 1) != "-" ? "" : "panel panel-default"
+        { className: !Data.Params.Dfn.Negative ? "" : "panel panel-default"
         },
         "  ",
         React.createElement(
           "div",
-          { className: Data.Params.Dfn != "!0" && Data.Params.Dfn.substr(0, 1) != "-" ? "" : "panel-heading"
+          { className: !Data.Params.Dfn.Negative ? "" : "panel-heading"
           },
           "    ",
           React.createElement(
@@ -1240,7 +1240,7 @@ define(function (require) {
             "      ",
             React.createElement(
               "b",
-              { className: Data.Params.Dfn != "!0" && Data.Params.Dfn.substr(0, 1) != "-" ? "h4" : "h4 bg-info"
+              { className: !Data.Params.Dfn.Negative ? "h4" : "h4 bg-info"
               },
               "Disk usage"
             ),
@@ -1251,7 +1251,7 @@ define(function (require) {
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.Dfn != "!0" && Data.Params.Dfn.substr(0, 1) != "-" ? "table collapse-hidden" : "table"
+          { className: !Data.Params.Dfn.Negative ? "table collapse-hidden" : "table"
           },
           React.createElement(
             "tr",
@@ -1331,7 +1331,7 @@ define(function (require) {
                   "span",
                   { className: "badge"
                   },
-                  Data.Params.Dfn == "!0" ? "0" : Data.Params.Dfn.replace(/^-/, "")
+                  Data.Params.Dfn.Absolute
                 )
               )
             ),
@@ -1419,7 +1419,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "li",
-                  { className: Data.Params.Dfn != "!0" && Data.Params.Dfn != "0" && Data.Params.Dft == "1" ? "active" : ""
+                  { className: Data.Params.Dfn.Absolute != 0 && Data.Params.Dft.Absolute == 1 ? "active" : ""
                   },
                   React.createElement(
                     "a",
@@ -1430,7 +1430,7 @@ define(function (require) {
                 ),
                 React.createElement(
                   "li",
-                  { className: Data.Params.Dfn != "!0" && Data.Params.Dfn != "0" && Data.Params.Dft == "2" ? "active" : ""
+                  { className: Data.Params.Dfn.Absolute != 0 && Data.Params.Dft.Absolute == 2 ? "active" : ""
                   },
                   React.createElement(
                     "a",
@@ -1447,7 +1447,7 @@ define(function (require) {
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.Dfn != "!0" && Data.Params.Dfn != "0" && Data.Params.Dft == "1" ? "table table-hover" : "collapse-hidden"
+          { className: Data.Params.Dfn.Absolute != 0 && Data.Params.Dft.Absolute == 1 ? "table table-hover" : "collapse-hidden"
           },
           React.createElement(
             "thead",
@@ -1495,7 +1495,7 @@ define(function (require) {
         ),
         React.createElement(
           "table",
-          { className: Data.Params.Dfn != "!0" && Data.Params.Dfn != "0" && Data.Params.Dft == "2" ? "table table-hover" : "collapse-hidden"
+          { className: Data.Params.Dfn.Absolute != 0 && Data.Params.Dft.Absolute == 2 ? "table table-hover" : "collapse-hidden"
           },
           React.createElement(
             "thead",
@@ -1647,12 +1647,12 @@ define(function (require) {
     panelps: function panelps(Data, rows) {
       return React.createElement(
         "div",
-        { className: Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-" ? "" : "panel panel-default"
+        { className: !Data.Params.Psn.Negative ? "" : "panel panel-default"
         },
         "  ",
         React.createElement(
           "div",
-          { className: Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-" ? "" : "panel-heading"
+          { className: !Data.Params.Psn.Negative ? "" : "panel-heading"
           },
           "    ",
           React.createElement(
@@ -1662,7 +1662,7 @@ define(function (require) {
             "      ",
             React.createElement(
               "b",
-              { className: Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-" ? "h4" : "h4 bg-info"
+              { className: !Data.Params.Psn.Negative ? "h4" : "h4 bg-info"
               },
               "Processes"
             ),
@@ -1673,7 +1673,7 @@ define(function (require) {
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.Psn != "!0" && Data.Params.Psn.substr(0, 1) != "-" ? "table collapse-hidden" : "table"
+          { className: !Data.Params.Psn.Negative ? "table collapse-hidden" : "table"
           },
           React.createElement(
             "tr",
@@ -1753,7 +1753,7 @@ define(function (require) {
                   "span",
                   { className: "badge"
                   },
-                  Data.Params.Psn == "!0" ? "0" : Data.Params.Psn.replace(/^-/, "")
+                  Data.Params.Psn.Absolute
                 )
               )
             ),
@@ -1821,7 +1821,7 @@ define(function (require) {
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.Psn != "!0" && Data.Params.Psn != "0" ? "table table-hover" : "collapse-hidden"
+          { className: Data.Params.Psn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
           },
           React.createElement(
             "thead",
@@ -2005,12 +2005,12 @@ define(function (require) {
     panelvg: function panelvg(Data, rows) {
       return React.createElement(
         "div",
-        { className: Data.Params.Vgn != "!0" && Data.Params.Vgn.substr(0, 1) != "-" ? "" : "panel panel-default"
+        { className: !Data.Params.Vgn.Negative ? "" : "panel panel-default"
         },
         "  ",
         React.createElement(
           "div",
-          { className: Data.Params.Vgn != "!0" && Data.Params.Vgn.substr(0, 1) != "-" ? "" : "panel-heading"
+          { className: !Data.Params.Vgn.Negative ? "" : "panel-heading"
           },
           "    ",
           React.createElement(
@@ -2020,7 +2020,7 @@ define(function (require) {
             "      ",
             React.createElement(
               "b",
-              { className: Data.Params.Vgn != "!0" && Data.Params.Vgn.substr(0, 1) != "-" ? "h4" : "h4 bg-info"
+              { className: !Data.Params.Vgn.Negative ? "h4" : "h4 bg-info"
               },
               "Vagrant"
             ),
@@ -2031,7 +2031,7 @@ define(function (require) {
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.Vgn != "!0" && Data.Params.Vgn.substr(0, 1) != "-" ? "table collapse-hidden" : "table"
+          { className: !Data.Params.Vgn.Negative ? "table collapse-hidden" : "table"
           },
           React.createElement(
             "tr",
@@ -2111,7 +2111,7 @@ define(function (require) {
                   "span",
                   { className: "badge"
                   },
-                  Data.Params.Vgn == "!0" ? "0" : Data.Params.Vgn.replace(/^-/, "")
+                  Data.Params.Vgn.Absolute
                 )
               )
             ),
@@ -2179,7 +2179,7 @@ define(function (require) {
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.Vgn != "!0" && Data.Params.Vgn != "0" ? "table table-hover" : "collapse-hidden"
+          { className: Data.Params.Vgn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
           },
           React.createElement(
             "thead",

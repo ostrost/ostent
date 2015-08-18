@@ -61,7 +61,7 @@ func (procs MPSlice) Ordered(para *params.Params) *PStable {
 	uids := map[uint]string{}
 
 	para.Psn.Limit = len(procs)
-	limitPS := para.Psn.Body
+	limitPS := para.Psn.Absolute
 	if limitPS > para.Psn.Limit {
 		limitPS = para.Psn.Limit
 	}
@@ -70,7 +70,7 @@ func (procs MPSlice) Ordered(para *params.Params) *PStable {
 	pst.N = new(int)
 	*pst.N = limitPS
 
-	if para.Psn.Body == 0 {
+	if para.Psn.Absolute == 0 {
 		return pst
 	}
 
@@ -257,7 +257,7 @@ func (ir *IndexRegistry) Interfaces(para *params.Params, ip InterfaceParts) []op
 
 	var public []operating.InterfaceInfo
 	for i, mi := range private {
-		if i >= para.Ifn.Body {
+		if i >= para.Ifn.Absolute {
 			break
 		}
 		public = append(public, FormatInterface(mi, ip))
@@ -353,7 +353,7 @@ func (ir *IndexRegistry) DF(para *params.Params, iu *IndexUpdate) bool {
 	if !para.Dfd.Expired() {
 		return false
 	}
-	switch para.Dft.Body {
+	switch para.Dft.Absolute {
 	case enums.DFBYTES:
 		iu.DFbytes = &operating.DFbytes{List: ir.DFbytes(para)}
 	case enums.INODES:
@@ -372,7 +372,7 @@ func (ir *IndexRegistry) DFbytes(para *params.Params) []operating.DiskBytes {
 
 	var public []operating.DiskBytes
 	for i, disk := range private {
-		if i >= para.Dfn.Body {
+		if i >= para.Dfn.Absolute {
 			break
 		}
 		public = append(public, FormatDFbytes(disk))
@@ -405,7 +405,7 @@ func (ir *IndexRegistry) DFinodes(para *params.Params) []operating.DiskInodes {
 
 	var public []operating.DiskInodes
 	for i, disk := range private {
-		if i >= para.Dfn.Body {
+		if i >= para.Dfn.Absolute {
 			break
 		}
 		public = append(public, FormatDFinodes(disk))
@@ -434,10 +434,10 @@ func (ir *IndexRegistry) VG(para *params.Params, iu *IndexUpdate) bool {
 	if !para.Vgd.Expired() {
 		return false
 	}
-	if para.Vgn.Body == 0 {
+	if para.Vgn.Absolute == 0 {
 		return false
 	}
-	machines, err := vagrantmachines(para.Dfn.Body)
+	machines, err := vagrantmachines(para.Dfn.Absolute)
 	if err != nil {
 		iu.VagrantErrord = true
 		iu.VagrantError = err.Error()
@@ -463,7 +463,7 @@ func (ir *IndexRegistry) IF(para *params.Params, iu *IndexUpdate) bool {
 	if !para.Ifd.Expired() {
 		return false
 	}
-	switch para.Ift.Body {
+	switch para.Ift.Absolute {
 	case enums.IFBYTES:
 		iu.IFbytes = &operating.Interfaces{List: ir.Interfaces(para, ir.InterfaceBytes)}
 	case enums.ERRORS:
@@ -480,7 +480,7 @@ func (ir *IndexRegistry) CPU(para *params.Params, iu *IndexUpdate) bool {
 	if !para.CPUd.Expired() {
 		return false
 	}
-	if para.CPUn.Body == 0 {
+	if para.CPUn.Absolute == 0 {
 		return false
 	}
 	iu.CPU = ir.CPUInternal(para)
@@ -503,7 +503,7 @@ func (ir *IndexRegistry) CPUInternal(para *params.Params) *operating.CPUInfo {
 	public := []operating.CoreInfo{FormatCPU(allabel, ir.PrivateCPUAll)} // first: "all N"
 
 	for i, mc := range private {
-		if i >= para.CPUn.Body-1 {
+		if i >= para.CPUn.Absolute-1 {
 			break
 		}
 		public = append(public, FormatCPU("", mc))
@@ -560,7 +560,7 @@ func (ir *IndexRegistry) MEM(para *params.Params, iu *IndexUpdate) bool {
 		return false
 	}
 	para.Memn.Limit = 2
-	if para.Memn.Body < 1 {
+	if para.Memn.Absolute < 1 {
 		return false
 	}
 	iu.MEM = new(operating.MEM)
@@ -572,7 +572,7 @@ func (ir *IndexRegistry) MEM(para *params.Params, iu *IndexUpdate) bool {
 			Used:  ir.RAM.UsedValue(), // == .Total - .Free
 		}))
 
-	if para.Memn.Body < 2 {
+	if para.Memn.Absolute < 2 {
 		return true
 	}
 	iu.MEM.List = append(iu.MEM.List,

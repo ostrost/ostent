@@ -359,7 +359,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_panelcpu"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.CPUn "" "panel panel-default"}}
   >  <div   {{$p.AttrClassP $p.CPUn "" "panel-heading"}}
-    >    <a   {{$p.AttrHrefToggleHead $p.CPUn}} {{class}}="panel-title btn-block"
+    >    <a   {{$p.AttrHrefToggleNegative $p.CPUn}} {{class}}="panel-title btn-block"
       >      <b {{$p.AttrClassP $p.CPUn "h4" "h4 bg-info"}}
         >CPU</b
       >    </a
@@ -383,7 +383,7 @@
       ><td class="col-md-2"
         ><div class="nowrap text-right"
           >Rows&nbsp;<span class="badge"
-            >{{$p.CPUn.Body}}</span
+            >{{$p.CPUn.Absolute}}</span
           ></div
         ></td
       ><td
@@ -402,7 +402,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_paneldf"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.Dfn "" "panel panel-default"}}
   >  <div   {{$p.AttrClassP $p.Dfn "" "panel-heading"}}
-    >    <a   {{$p.AttrHrefToggleHead $p.Dfn}} {{class}}="panel-title btn-block"
+    >    <a   {{$p.AttrHrefToggleNegative $p.Dfn}} {{class}}="panel-title btn-block"
       >      <b {{$p.AttrClassP $p.Dfn "h4" "h4 bg-info"}}
         >Disk usage</b
       >    </a
@@ -426,7 +426,7 @@
       ><td class="col-md-2"
         ><div class="nowrap text-right"
           >Rows&nbsp;<span class="badge"
-            >{{$p.Dfn.Body}}</span
+            >{{$p.Dfn.Absolute}}</span
           ></div
         ></td
       ><td
@@ -460,7 +460,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_panelif"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.Ifn "" "panel panel-default"}}
   >  <div   {{$p.AttrClassP $p.Ifn "" "panel-heading"}}
-    >    <a   {{$p.AttrHrefToggleHead $p.Ifn}} {{class}}="panel-title btn-block"
+    >    <a   {{$p.AttrHrefToggleNegative $p.Ifn}} {{class}}="panel-title btn-block"
       >      <b {{$p.AttrClassP $p.Ifn "h4" "h4 bg-info"}}
         >Interfaces</b
       >    </a
@@ -484,7 +484,7 @@
       ><td class="col-md-2"
         ><div class="nowrap text-right"
           >Rows&nbsp;<span class="badge"
-            >{{$p.Ifn.Body}}</span
+            >{{$p.Ifn.Absolute}}</span
           ></div
         ></td
       ><td
@@ -521,7 +521,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_panelmem"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.Memn "" "panel panel-default"}}
   >  <div   {{$p.AttrClassP $p.Memn "" "panel-heading"}}
-    >    <a   {{$p.AttrHrefToggleHead $p.Memn}} {{class}}="panel-title btn-block"
+    >    <a   {{$p.AttrHrefToggleNegative $p.Memn}} {{class}}="panel-title btn-block"
       >      <b {{$p.AttrClassP $p.Memn "h4" "h4 bg-info"}}
         >Memory</b
       >    </a
@@ -545,7 +545,7 @@
       ><td class="col-md-2"
         ><div class="nowrap text-right"
           >Rows&nbsp;<span class="badge"
-            >{{$p.Memn.Body}}</span
+            >{{$p.Memn.Absolute}}</span
           ></div
         ></td
       ><td
@@ -564,7 +564,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_panelps"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.Psn "" "panel panel-default"}}
   >  <div   {{$p.AttrClassP $p.Psn "" "panel-heading"}}
-    >    <a   {{$p.AttrHrefToggleHead $p.Psn}} {{class}}="panel-title btn-block"
+    >    <a   {{$p.AttrHrefToggleNegative $p.Psn}} {{class}}="panel-title btn-block"
       >      <b {{$p.AttrClassP $p.Psn "h4" "h4 bg-info"}}
         >Processes</b
       >    </a
@@ -588,7 +588,7 @@
       ><td class="col-md-2"
         ><div class="nowrap text-right"
           >Rows&nbsp;<span class="badge"
-            >{{$p.Psn.Body}}</span
+            >{{$p.Psn.Absolute}}</span
           ></div
         ></td
       ><td
@@ -607,7 +607,7 @@
 >{{end}}{{/*
 */}}{{define "defines::define_panelvg"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.Vgn "" "panel panel-default"}}
   >  <div   {{$p.AttrClassP $p.Vgn "" "panel-heading"}}
-    >    <a   {{$p.AttrHrefToggleHead $p.Vgn}} {{class}}="panel-title btn-block"
+    >    <a   {{$p.AttrHrefToggleNegative $p.Vgn}} {{class}}="panel-title btn-block"
       >      <b {{$p.AttrClassP $p.Vgn "h4" "h4 bg-info"}}
         >Vagrant</b
       >    </a
@@ -631,7 +631,7 @@
       ><td class="col-md-2"
         ><div class="nowrap text-right"
           >Rows&nbsp;<span class="badge"
-            >{{$p.Vgn.Body}}</span
+            >{{$p.Vgn.Absolute}}</span
           ></div
         ></td
       ><td
