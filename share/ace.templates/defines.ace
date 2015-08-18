@@ -343,8 +343,8 @@
         span.badge {{[[$D]]}}
     td
       div.btn-group.nowrap-group role=group
-        {{template "defines::badgedlinkleft"  $p.LessD [[$D]]}}
-        {{template "defines::badgedlinkright" $p.MoreD [[$D]]}}
+        {{template "defines::badgedlinkleft"  $p.LessD [[$D]] "btn btn-default"}}
+        {{template "defines::badgedlinkright" $p.MoreD [[$D]] "btn btn-default"}}
     td.col-md-10 {{colspan}}=2
 [[end]]
 
@@ -358,12 +358,12 @@
         span.badge {{[[$N]].Absolute}}
     td
       div.btn-group.nowrap-group role=group
-        {{template "defines::badgedlinkleft"  $p.LessN [[$N]]}}
-        {{template "defines::badgedlinkright" $p.MoreN [[$N]]}}
+        {{template "defines::badgedlinkleft"  $p.LessN [[$N]] "btn btn-default"}}
+        {{template "defines::badgedlinkright" $p.MoreN [[$N]] "btn btn-default"}}
     td
       div.btn-group.nowrap-group role=group
         / a.btn.btn-default 8 (default)
-        {{template "defines::badgedlinkright" $p.ZeroN [[$N]]}}
+        {{template "defines::badgedlinkright" $p.ZeroN [[$N]] "btn btn-default"}}
     td.col-md-10
 [[end]]
 
@@ -379,11 +379,11 @@
 
 = content badgedlinkleft
   |
-    <a href={{.Href}} onClick={this.handleClick} {{class}}={{.Class "btn btn-default"}}
+    <a href={{.Href}} onClick={this.handleClick} {{class}}={{.Class}}
       ><span {{class}}="xlabel xlabel-default">{{.Badge}}</span> {{.Text}}</a>
 = content badgedlinkright
   |
-    <a href={{.Href}} onClick={this.handleClick} {{class}}={{.Class "btn btn-default"}}
+    <a href={{.Href}} onClick={this.handleClick} {{class}}={{.Class}}
       >{{.Text}} <span {{class}}="xlabel xlabel-default">{{.Badge}}</span></a>
 
 = content define_vgerror

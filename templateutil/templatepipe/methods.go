@@ -38,40 +38,55 @@ func (_ Nota) Vlink(this Uncurler, cmp int, text, alignClass string) params.VLin
 	}
 }
 
-// ALink is a shadow of params.ALink: has it's own Class method.
-// The .ExtraClass must contain uncurled string.
-type ALink params.ALink
-
-func (al ALink) Class(base string) string {
-	return fmt.Sprintf("{%q + \" \" + (%s != null ? %s : \"\")}",
-		base, al.ExtraClass, al.ExtraClass)
+func (_ Nota) ZeroN(num Uncurler, bclass string) (params.ALink, error) {
+	return Nlink(num, bclass, "Zero", "")
+}
+func (_ Nota) LessN(num Uncurler, bclass string) (params.ALink, error) {
+	return Nlink(num, bclass, "Less", "-")
+}
+func (_ Nota) MoreN(num Uncurler, bclass string) (params.ALink, error) {
+	return Nlink(num, bclass, "More", "+")
 }
 
-func (_ Nota) ZeroN(num Uncurler) (ALink, error) { return Nlink(num, "Zero", "") }
-func (_ Nota) LessN(num Uncurler) (ALink, error) { return Nlink(num, "Less", "-") }
-func (_ Nota) MoreN(num Uncurler) (ALink, error) { return Nlink(num, "More", "+") }
-
-func Nlink(v Uncurler, which, badge string) (ALink, error) {
+func Nlink(v Uncurler, bclass, which, badge string) (params.ALink, error) {
 	base, last := Split(v)
 	var (
-		href  = fmt.Sprintf( /**/ "{%s.Nlinks.%s.%s.Href}", base, last, which)
-		text  = fmt.Sprintf( /**/ "{%s.Nlinks.%s.%s.Text}", base, last, which)
-		class = fmt.Sprintf( /* */ "%s.Nlinks.%s.%s.Class", base, last, which) // not curled
+		href   = fmt.Sprintf( /**/ "{%s.Nlinks.%s.%s.Href}", base, last, which)
+		text   = fmt.Sprintf( /**/ "{%s.Nlinks.%s.%s.Text}", base, last, which)
+		eclass = fmt.Sprintf( /* */ "%s.Nlinks.%s.%s.ExtraClass", base, last, which) // not curled
 	)
-	return ALink{APlain: params.APlain{Href: href, Text: text, Badge: badge}, ExtraClass: class}, nil
+	return params.ALink{
+		Href:  href,
+		Text:  text,
+		Badge: badge,
+		Class: ConcatClass(bclass, eclass),
+	}, nil
 }
 
-func (_ Nota) LessD(dur Uncurler) (ALink, error) { return Dlink(dur, "Less", "-") }
-func (_ Nota) MoreD(dur Uncurler) (ALink, error) { return Dlink(dur, "More", "+") }
+func (_ Nota) LessD(dur Uncurler, bclass string) (params.ALink, error) {
+	return Dlink(dur, bclass, "Less", "-")
+}
+func (_ Nota) MoreD(dur Uncurler, bclass string) (params.ALink, error) {
+	return Dlink(dur, bclass, "More", "+")
+}
 
-func Dlink(v Uncurler, which, badge string) (ALink, error) {
+func Dlink(v Uncurler, bclass, which, badge string) (params.ALink, error) {
 	base, last := Split(v)
 	var (
-		href  = fmt.Sprintf( /**/ "{%s.Dlinks.%s.%s.Href}", base, last, which)
-		text  = fmt.Sprintf( /**/ "{%s.Dlinks.%s.%s.Text}", base, last, which)
-		class = fmt.Sprintf( /* */ "%s.Dlinks.%s.%s.Class", base, last, which)
+		href   = fmt.Sprintf( /**/ "{%s.Dlinks.%s.%s.Href}", base, last, which)
+		text   = fmt.Sprintf( /**/ "{%s.Dlinks.%s.%s.Text}", base, last, which)
+		eclass = fmt.Sprintf( /* */ "%s.Dlinks.%s.%s.ExtraClass", base, last, which) // not curled
 	)
-	return ALink{APlain: params.APlain{Href: href, Text: text, Badge: badge}, ExtraClass: class}, nil
+	return params.ALink{
+		Href:  href,
+		Text:  text,
+		Badge: badge,
+		Class: ConcatClass(bclass, eclass),
+	}, nil
+}
+
+func ConcatClass(bclass, eclass string) string {
+	return fmt.Sprintf("{%q + \" \" + (%s != null ? %s : \"\")}", bclass, eclass, eclass)
 }
 
 func (_ Nota) AttrHrefToggleNegative(v Uncurler) interface{} {

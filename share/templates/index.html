@@ -87,13 +87,13 @@
     ></body
   ></html
 >{{/*
-*/}}{{define "defines::badgedlinkleft"}}<a href={{.Href}} onClick={this.handleClick} {{class}}={{.Class "btn btn-default"}}
+*/}}{{define "defines::badgedlinkleft"}}<a href={{.Href}} onClick={this.handleClick} {{class}}={{.Class}}
   
   ><span {{class}}="xlabel xlabel-default"
     >{{.Badge}}</span
   > {{.Text}}</a
 >{{end}}{{/*
-*/}}{{define "defines::badgedlinkright"}}<a href={{.Href}} onClick={this.handleClick} {{class}}={{.Class "btn btn-default"}}
+*/}}{{define "defines::badgedlinkright"}}<a href={{.Href}} onClick={this.handleClick} {{class}}={{.Class}}
   
   >{{.Text}} <span {{class}}="xlabel xlabel-default"
     >{{.Badge}}</span
@@ -374,7 +374,7 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessD $p.CPUd}}{{template "defines::badgedlinkright" $p.MoreD $p.CPUd}}</div
+          >{{template "defines::badgedlinkleft" $p.LessD $p.CPUd "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreD $p.CPUd "btn btn-default"}}</div
         ></td
       ><td class="col-md-10" {{colspan}}="2"
         ></td
@@ -388,11 +388,11 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessN $p.CPUn}}{{template "defines::badgedlinkright" $p.MoreN $p.CPUn}}</div
+          >{{template "defines::badgedlinkleft" $p.LessN $p.CPUn "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreN $p.CPUn "btn btn-default"}}</div
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkright" $p.ZeroN $p.CPUn}}</div
+          >{{template "defines::badgedlinkright" $p.ZeroN $p.CPUn "btn btn-default"}}</div
         ></td
       ><td class="col-md-10"
         ></td
@@ -417,7 +417,7 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessD $p.Dfd}}{{template "defines::badgedlinkright" $p.MoreD $p.Dfd}}</div
+          >{{template "defines::badgedlinkleft" $p.LessD $p.Dfd "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreD $p.Dfd "btn btn-default"}}</div
         ></td
       ><td class="col-md-10" {{colspan}}="2"
         ></td
@@ -431,11 +431,11 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessN $p.Dfn}}{{template "defines::badgedlinkright" $p.MoreN $p.Dfn}}</div
+          >{{template "defines::badgedlinkleft" $p.LessN $p.Dfn "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreN $p.Dfn "btn btn-default"}}</div
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkright" $p.ZeroN $p.Dfn}}</div
+          >{{template "defines::badgedlinkright" $p.ZeroN $p.Dfn "btn btn-default"}}</div
         ></td
       ><td class="col-md-10"
         ></td
@@ -475,7 +475,7 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessD $p.Ifd}}{{template "defines::badgedlinkright" $p.MoreD $p.Ifd}}</div
+          >{{template "defines::badgedlinkleft" $p.LessD $p.Ifd "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreD $p.Ifd "btn btn-default"}}</div
         ></td
       ><td class="col-md-10" {{colspan}}="2"
         ></td
@@ -489,11 +489,11 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessN $p.Ifn}}{{template "defines::badgedlinkright" $p.MoreN $p.Ifn}}</div
+          >{{template "defines::badgedlinkleft" $p.LessN $p.Ifn "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreN $p.Ifn "btn btn-default"}}</div
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkright" $p.ZeroN $p.Ifn}}</div
+          >{{template "defines::badgedlinkright" $p.ZeroN $p.Ifn "btn btn-default"}}</div
         ></td
       ><td class="col-md-10"
         ></td
@@ -536,7 +536,7 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessD $p.Memd}}{{template "defines::badgedlinkright" $p.MoreD $p.Memd}}</div
+          >{{template "defines::badgedlinkleft" $p.LessD $p.Memd "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreD $p.Memd "btn btn-default"}}</div
         ></td
       ><td class="col-md-10" {{colspan}}="2"
         ></td
@@ -550,11 +550,11 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessN $p.Memn}}{{template "defines::badgedlinkright" $p.MoreN $p.Memn}}</div
+          >{{template "defines::badgedlinkleft" $p.LessN $p.Memn "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreN $p.Memn "btn btn-default"}}</div
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkright" $p.ZeroN $p.Memn}}</div
+          >{{template "defines::badgedlinkright" $p.ZeroN $p.Memn "btn btn-default"}}</div
         ></td
       ><td class="col-md-10"
         ></td
@@ -579,7 +579,7 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessD $p.Psd}}{{template "defines::badgedlinkright" $p.MoreD $p.Psd}}</div
+          >{{template "defines::badgedlinkleft" $p.LessD $p.Psd "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreD $p.Psd "btn btn-default"}}</div
         ></td
       ><td class="col-md-10" {{colspan}}="2"
         ></td
@@ -593,11 +593,11 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessN $p.Psn}}{{template "defines::badgedlinkright" $p.MoreN $p.Psn}}</div
+          >{{template "defines::badgedlinkleft" $p.LessN $p.Psn "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreN $p.Psn "btn btn-default"}}</div
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkright" $p.ZeroN $p.Psn}}</div
+          >{{template "defines::badgedlinkright" $p.ZeroN $p.Psn "btn btn-default"}}</div
         ></td
       ><td class="col-md-10"
         ></td
@@ -622,7 +622,7 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessD $p.Vgd}}{{template "defines::badgedlinkright" $p.MoreD $p.Vgd}}</div
+          >{{template "defines::badgedlinkleft" $p.LessD $p.Vgd "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreD $p.Vgd "btn btn-default"}}</div
         ></td
       ><td class="col-md-10" {{colspan}}="2"
         ></td
@@ -636,11 +636,11 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessN $p.Vgn}}{{template "defines::badgedlinkright" $p.MoreN $p.Vgn}}</div
+          >{{template "defines::badgedlinkleft" $p.LessN $p.Vgn "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreN $p.Vgn "btn btn-default"}}</div
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkright" $p.ZeroN $p.Vgn}}</div
+          >{{template "defines::badgedlinkright" $p.ZeroN $p.Vgn "btn btn-default"}}</div
         ></td
       ><td class="col-md-10"
         ></td

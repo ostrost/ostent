@@ -155,9 +155,9 @@ func (p Params) Nlinks() map[string]Nlinks {
 		num := val.Field(i).Addr().Interface().(*Num)
 		nl := Nlinks{}
 		// errors are ignored
-		nl.Zero, _ = p.ZeroN(num)
-		nl.More, _ = p.MoreN(num)
-		nl.Less, _ = p.LessN(num)
+		nl.Zero, _ = p.ZeroN(num, "")
+		nl.More, _ = p.MoreN(num, "")
+		nl.Less, _ = p.LessN(num, "")
 		m[sf.Name] = nl
 	}
 	return m
@@ -178,8 +178,8 @@ func (p Params) Dlinks() map[string]Dlinks {
 		d := val.Field(i).Addr().Interface().(*Delay)
 		dl := Dlinks{}
 		// errors are ignored
-		dl.More, _ = p.MoreD(d)
-		dl.Less, _ = p.LessD(d)
+		dl.More, _ = p.MoreD(d, "")
+		dl.Less, _ = p.LessD(d, "")
 		m[sf.Name] = dl
 	}
 	return m

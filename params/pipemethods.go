@@ -1,7 +1,6 @@
 package params
 
 import (
-	"encoding/json"
 	"fmt"
 	"html/template"
 	"math"
@@ -42,32 +41,12 @@ func (p *Params) HrefToggleNegative(num *Num) (string, error) {
 	return "?" + qs, err
 }
 
-type APlain struct {
-	Href  string
-	Text  string
-	Badge string `json:",omitempty"`
-}
-
 type ALink struct {
-	APlain
-	ExtraClass string `json:"-"`
-}
-
-func (al ALink) MarshalJSON() ([]byte, error) {
-	return json.Marshal(struct {
-		APlain
-		Class string `json:",omitempty"`
-	}{
-		APlain: al.APlain,
-		Class:  al.Class(""),
-	})
-}
-
-func (al ALink) Class(base string) string {
-	if base == "" {
-		return al.ExtraClass
-	}
-	return base + " " + al.ExtraClass
+	Href       string
+	Text       string
+	Badge      string `json:"-"`
+	Class      string `json:"-"`
+	ExtraClass string `json:",omitempty"`
 }
 
 // p is a pointer to alter (and revert) num being part of p.
@@ -150,32 +129,37 @@ func Pow2More(v int) int {
 	return v
 }
 
-func (p *Params) ZeroN(num *Num) (ALink, error) { return p.LinkN(num, 0, "") }
-func (p *Params) MoreN(num *Num) (ALink, error) { return p.LinkN(num, Pow2More(num.Absolute), "+") }
-func (p *Params) LessN(num *Num) (ALink, error) { return p.LinkN(num, Pow2Less(num.Absolute), "-") }
+func (p *Params) ZeroN(num *Num, bclass string) (ALink, error) {
+	return LinkN(p, num, bclass, 0, "")
+}
+func (p *Params) MoreN(num *Num, bclass string) (ALink, error) {
+	return LinkN(p, num, bclass, Pow2More(num.Absolute), "+")
+}
+func (p *Params) LessN(num *Num, bclass string) (ALink, error) {
+	return LinkN(p, num, bclass, Pow2Less(num.Absolute), "-")
+}
 
-func (p *Params) LinkN(num *Num, absolute int, badge string) (ALink, error) {
+func LinkN(p *Params, num *Num, bclass string, absolute int, badge string) (ALink, error) {
 	href, err := p.EncodeN(num, absolute, nil)
 	if err != nil {
 		return ALink{}, err
 	}
-	var class string
+	var eclass string
 	if badge == "" && num.Absolute == 0 { // "0" case && param is 0
-		class = " disabled active"
+		eclass = " disabled active"
 	}
 	if badge == "+" && num.Absolute >= num.Limit && absolute > num.Limit {
-		class = " disabled"
+		eclass = " disabled"
 	}
 	if badge == "-" && absolute == 0 {
-		class = " disabled"
+		eclass = " disabled"
 	}
 	return ALink{
-		APlain: APlain{
-			Href:  href,
-			Text:  fmt.Sprintf("%d", absolute),
-			Badge: badge,
-		},
-		ExtraClass: class,
+		Href:       href,
+		Text:       fmt.Sprintf("%d", absolute),
+		Badge:      badge,
+		Class:      bclass + " " + eclass,
+		ExtraClass: eclass,
 	}, nil
 }
 
@@ -229,28 +213,27 @@ func DelayLess(d Delay, step time.Duration) time.Duration {
 	return d.D - step
 }
 
-func (p *Params) MoreD(d *Delay) (ALink, error) {
-	return p.LinkD(d, DelayMore(*d, p.MinDelay.Duration), "+")
+func (p *Params) MoreD(d *Delay, bclass string) (ALink, error) {
+	return LinkD(p, d, bclass, DelayMore(*d, p.MinDelay.Duration), "+")
 }
-func (p *Params) LessD(d *Delay) (ALink, error) {
-	return p.LinkD(d, DelayLess(*d, p.MinDelay.Duration), "-")
+func (p *Params) LessD(d *Delay, bclass string) (ALink, error) {
+	return LinkD(p, d, bclass, DelayLess(*d, p.MinDelay.Duration), "-")
 }
 
-func (p *Params) LinkD(d *Delay, set time.Duration, badge string) (ALink, error) {
+func LinkD(p *Params, d *Delay, bclass string, set time.Duration, badge string) (ALink, error) {
 	href, err := p.EncodeD(d, set)
 	if err != nil {
 		return ALink{}, err
 	}
-	var class string
+	var eclass string
 	if badge == "-" && d.D == p.MinDelay.Duration {
-		class = " disabled"
+		eclass = " disabled"
 	}
 	return ALink{
-		APlain: APlain{
-			Href:  href,
-			Text:  flags.DurationString(set),
-			Badge: badge,
-		},
-		ExtraClass: class,
+		Href:       href,
+		Text:       flags.DurationString(set),
+		Badge:      badge,
+		Class:      bclass + " " + eclass,
+		ExtraClass: eclass,
 	}, nil
 }
