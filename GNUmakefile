@@ -87,8 +87,9 @@ $(destbin)/$(cmdname).32:
 	go build -ldflags '-s -w' -a -tags bin -o $@ $(package)
 boot32:
 	cd $(GOROOT)/src
+	which bash
 	CGO_ENABLED=1 GOARCH=386 \
-  ./make.bash --no-clean
+  bash ./make.bash --no-clean
 
 share/assets/css/index.css: share/style/index.less
 	type lessc  >/dev/null || exit 0; lessc --source-map $< $@
