@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os/user"
+	"sort"
 	"strings"
 	"sync"
 
@@ -57,9 +58,7 @@ func username(uids map[uint]string, uid uint) string {
 	return s
 }
 
-func (procs MPSlice) Ordered(para *params.Params) *PStable {
-	uids := map[uint]string{}
-
+func (procs ProcSlice) Ordered(para *params.Params) *PStable {
 	para.Psn.Limit = len(procs)
 	limitPS := para.Psn.Absolute
 	if limitPS > para.Psn.Limit {
@@ -74,7 +73,13 @@ func (procs MPSlice) Ordered(para *params.Params) *PStable {
 		return pst
 	}
 
-	operating.MetricProcSlice(procs).SortSortBy(LessProcFunc(&para.Psk, uids)) // not .StableSortBy
+	uids := map[uint]string{}
+	sort.Sort(ProcSort{ // not .Stable
+		Psn:       &para.Psk,
+		ProcSlice: procs,
+		UIDs:      uids,
+	})
+
 	for _, proc := range procs[:limitPS] {
 		pst.List = append(pst.List, operating.ProcData{
 			PID:      proc.PID,
@@ -150,7 +155,7 @@ type Generic struct {
 
 type last struct {
 	MU       sync.Mutex
-	ProcList operating.MetricProcSlice
+	ProcList ProcSlice
 }
 
 var lastInfo last
@@ -167,7 +172,7 @@ func (la *last) collect(c Collector) {
 	go c.LA(&Reg1s, &wg)                 // seven
 	go c.Interfaces(&Reg1s, RegMSS, &wg) // eight
 
-	pch := make(chan operating.MetricProcSlice, 1)
+	pch := make(chan ProcSlice, 1)
 	go c.Procs(pch)
 
 	la.MU.Lock()
@@ -176,10 +181,10 @@ func (la *last) collect(c Collector) {
 	wg.Wait()
 }
 
-func (la *last) CopyPS() MPSlice {
+func (la *last) CopyPS() ProcSlice {
 	la.MU.Lock()
 	defer la.MU.Unlock()
-	psCopy := make(MPSlice, len(la.ProcList))
+	psCopy := make(ProcSlice, len(la.ProcList))
 	copy(psCopy, la.ProcList)
 	return psCopy
 }
@@ -448,10 +453,10 @@ func (ir *IndexRegistry) VG(para *params.Params, iu *IndexUpdate) bool {
 	return true
 }
 
-// MPSlice is a operating.MetricProcSlice with some methods.
-type MPSlice operating.MetricProcSlice
+// ProcSlice is a list of ProcInfo.
+type ProcSlice []operating.ProcInfo
 
-func (procs MPSlice) IU(para *params.Params, iu *IndexUpdate) bool {
+func (procs ProcSlice) IU(para *params.Params, iu *IndexUpdate) bool {
 	if !para.Psd.Expired() {
 		return false
 	}

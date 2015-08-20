@@ -31,11 +31,22 @@ func LessDiskFunc(by *params.Num) func(operating.MetricDF, operating.MetricDF) b
 	}
 }
 
-// LessProcFunc makes a 'less' func for operating.MetricProc comparison.
-func LessProcFunc(by *params.Num, uids map[uint]string) func(operating.MetricProc, operating.MetricProc) bool {
-	return func(a, b operating.MetricProc) bool {
+// ProcSort is to facilitate ProcSlice sorting.
+type ProcSort struct {
+	Psn       *params.Num
+	ProcSlice ProcSlice
+	UIDs      map[uint]string
+}
+
+func (ps ProcSort) Len() int { return len(ps.ProcSlice) }
+
+func (ps ProcSort) Swap(i, j int) { ps.ProcSlice[i], ps.ProcSlice[j] = ps.ProcSlice[j], ps.ProcSlice[i] }
+
+// Less is sorting interface.
+func (ps ProcSort) Less(i, j int) bool {
+	if a, b := ps.ProcSlice[i], ps.ProcSlice[j]; true {
 		r := false
-		switch by.Absolute {
+		switch ps.Psn.Absolute {
 		case enums.PID:
 			r = a.PID > b.PID
 		case enums.PRI:
@@ -49,17 +60,18 @@ func LessProcFunc(by *params.Num, uids map[uint]string) func(operating.MetricPro
 		case enums.TIME:
 			r = a.Time > b.Time
 		case enums.NAME:
-			by.Alpha = true
+			ps.Psn.Alpha = true
 			r = a.Name < b.Name
 		case enums.UID:
 			r = a.UID > b.UID
 		case enums.USER:
-			by.Alpha = true
-			r = username(uids, a.UID) < username(uids, b.UID)
+			ps.Psn.Alpha = true
+			r = username(ps.UIDs, a.UID) < username(ps.UIDs, b.UID)
 		}
-		if by.Negative {
+		if ps.Psn.Negative {
 			return !r
 		}
 		return r
 	}
+	return false
 }

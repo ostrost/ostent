@@ -78,12 +78,6 @@ type Interfaces struct {
 	List []InterfaceInfo
 }
 
-// MetricProc hold a pointer to ProcInfo.
-// +gen slice:"PkgSortBy"
-type MetricProc struct {
-	*ProcInfo
-}
-
 // ProcInfo type is an internal account of a process.
 type ProcInfo struct {
 	PID      uint

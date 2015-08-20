@@ -33,7 +33,7 @@ type Collector interface {
 	RAM(Registry, *sync.WaitGroup)
 	Swap(Registry, *sync.WaitGroup)
 	Interfaces(Registry, S2SRegistry, *sync.WaitGroup)
-	Procs(chan<- operating.MetricProcSlice)
+	Procs(chan<- ProcSlice)
 	Disks(Registry, *sync.WaitGroup)
 	CPU(Registry, *sync.WaitGroup)
 }
@@ -234,9 +234,9 @@ func (m *Machine) Disks(reg Registry, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (m *Machine) Procs(CH chan<- operating.MetricProcSlice) {
+func (m *Machine) Procs(CH chan<- ProcSlice) {
 	// m is unused
-	var procs operating.MetricProcSlice
+	var procs ProcSlice
 	pls := sigar.ProcList{}
 	pls.Get()
 
@@ -258,8 +258,8 @@ func (m *Machine) Procs(CH chan<- operating.MetricProcSlice) {
 			continue
 		}
 
-		procs = append(procs, operating.MetricProc{
-			ProcInfo: &operating.ProcInfo{
+		procs = append(procs,
+			operating.ProcInfo{
 				PID:      uint(pid),
 				Priority: state.Priority,
 				Nice:     state.Nice,
@@ -269,8 +269,7 @@ func (m *Machine) Procs(CH chan<- operating.MetricProcSlice) {
 				UID:      state.Uid,
 				Size:     mem.Size,
 				Resident: mem.Resident,
-			},
-		})
+			})
 	}
 	CH <- procs
 }
