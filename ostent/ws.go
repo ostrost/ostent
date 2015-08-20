@@ -90,7 +90,8 @@ func Loop() {
 }
 
 type conn struct {
-	Conn *websocket.Conn
+	Conn     *websocket.Conn
+	ErrorLog *log.Logger
 
 	requestOrigin *http.Request
 
@@ -185,8 +186,7 @@ func (c *conn) CloseChans() {
 	defer func() {
 		defer c.mutex.Unlock()
 		if e := recover(); e != nil {
-			// TODO should be errlog.Printf
-			fmt.Printf("close panic (recovered) %+v\n", e)
+			c.ErrorLog.Printf("close error (recovered panic; from CloseChans) %+v\n", e)
 		}
 	}()
 	close(c.receive)
@@ -285,7 +285,7 @@ func (c *conn) receiveLoop(stop chan<- struct{}) { // read from the conn
 	}
 }
 
-func (c *conn) updateLoop(errlog *log.Logger, stop <-chan struct{}) { // write to the conn
+func (c *conn) updateLoop(stop <-chan struct{}) { // write to the conn
 loop:
 	for {
 		select {
@@ -293,7 +293,7 @@ loop:
 			if !ok {
 				return
 			}
-			if next := c.process(errlog, rd); next != nil {
+			if next := c.Process(rd); next != nil {
 				if *next {
 					continue loop
 				} else {
@@ -313,13 +313,17 @@ loop:
 	}
 }
 
-func (c *conn) process(errlog *log.Logger, rd *received) *bool {
+func (c *conn) Process(rd *received) *bool {
 	c.mutex.Lock()
 	defer func() {
 		c.mutex.Unlock()
 		if e := recover(); e != nil {
-			errlog.Printf("close panic (recovered) %+v\n", e)
-			c.writeError(fmt.Errorf("%s", fmt.Sprintf("%+v", e))) // an alert for the client
+			if _, ok := e.(websocket.CloseError); ok {
+				c.ErrorLog.Printf("close error (recovered panic; from Proccess) %+v\n", e)
+			} else {
+				c.ErrorLog.Printf("ws error (recovered panic; sent to client) %+v\n", e)
+				c.writeError(fmt.Errorf("%+v", e))
+			}
 		}
 	}()
 
@@ -415,7 +419,8 @@ func IndexWS(access *Access, errlog *log.Logger, mindelay flags.Delay, w http.Re
 	// req.Method == "GET" asserted by the mux
 	req.Form = nil // reset reused later .Form
 	c := &conn{
-		Conn: wsconn,
+		Conn:     wsconn,
+		ErrorLog: errlog,
 
 		requestOrigin: req,
 
@@ -430,8 +435,8 @@ func IndexWS(access *Access, errlog *log.Logger, mindelay flags.Delay, w http.Re
 		c.Conn.Close()
 	}()
 	stop := make(chan struct{}, 1)
-	go c.receiveLoop(stop)     // read from the client
-	c.updateLoop(errlog, stop) // write to the client
+	go c.receiveLoop(stop) // read from the client
+	c.updateLoop(stop)     // write to the client
 }
 
 func newfalse() *bool      { return new(bool) }
