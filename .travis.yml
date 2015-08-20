@@ -13,7 +13,7 @@ env:
     - DPL_GO=go1.4.2 # Deploy only when this matches GVM_GO in the matrix.
   matrix:
   # - GVM_GO=tip
-    - GVM_GO=go1.5rc1
+    - GVM_GO=go1.5
     - GVM_GO=go1.4.2
 install:
   - set -e # errors are fatal
