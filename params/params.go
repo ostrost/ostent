@@ -224,7 +224,9 @@ func ContainsPrefix(words []string, prefix string) (string, bool) {
 
 func NumPrefix(words []string, prefix string) (Num, error) {
 	if s, ok := ContainsPrefix(words, prefix); ok && s != "" {
-		return DecodeNum(s)
+		num := Num{}
+		err := num.UnmarshalText([]byte(s))
+		return num, err
 	}
 	return Num{}, fmt.Errorf("%q not prefixing with anything in %+v", prefix, words)
 }
@@ -290,34 +292,27 @@ func (num Num) EncodeValues(key string, values *url.Values) error {
 	return nil
 }
 
-func DecodePositive(value string) (int, error) {
-	i, err := strconv.Atoi(value)
-	if err == nil && i < 0 {
-		return i, fmt.Errorf("Integer decoded may not be negative")
+func (num *Num) UnmarshalText(text []byte) error {
+	var negative bool
+	if len(text) > 0 && (text[0] == '-' || text[0] == '!') {
+		negative, text = true, text[1:]
 	}
-	return i, err
-}
-
-func DecodeNum(value string) (num Num, err error) {
-	if len(value) > 0 && (value[0] == '-' || value[0] == '!') {
-		num.Negative, value = true, value[1:]
+	absolute, err := strconv.Atoi(string(text))
+	if err != nil {
+		return err
 	}
-	num.Absolute, err = DecodePositive(value)
-	return num, err
-}
-
-// ConvertNum is a schema decoder's converter into Num.
-func ConvertNum(value string) reflect.Value {
-	num, err := DecodeNum(value)
-	if err != nil { // err is lost
-		return reflect.Value{}
+	if absolute < 0 {
+		return fmt.Errorf("Integer decoded may not be negative")
 	}
-	return reflect.ValueOf(num)
+	num.Negative = negative
+	num.Absolute = absolute
+	return nil
 }
 
 // Delay has it's own MarshalJSON.
 type Delay struct {
 	D       time.Duration
+	Above   *time.Duration
 	Default time.Duration
 	Ticks   int
 }
@@ -333,18 +328,16 @@ func (d Delay) EncodeValues(key string, values *url.Values) error {
 	return nil
 }
 
-// ConvertDelayFunc creates a schema decoder's converter into Delay.
-func ConvertDelayFunc(mindelay flags.Delay) func(string) reflect.Value {
-	return func(value string) reflect.Value {
-		d := flags.Delay{Above: &mindelay.Duration}
-		if err := d.Set(value); err != nil {
-			return reflect.Value{}
-		}
-		return reflect.ValueOf(Delay{D: d.Duration})
+func (d *Delay) UnmarshalText(text []byte) error {
+	f := flags.Delay{Above: d.Above}
+	if err := f.Set(string(text)); err != nil {
+		return err
 	}
+	d.D = f.Duration
+	return nil
 }
 
-func (p *Params) ResetSchema() {
+func (p *Params) ResetSchema(mindelay flags.Delay) {
 	val := reflect.ValueOf(&p.Schema).Elem()
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
 		sf := typ.Field(i)
@@ -353,7 +346,7 @@ func (p *Params) ResetSchema() {
 		case NumType:
 			fv.Set(reflect.ValueOf(Num{}))
 		case DelayType:
-			fv.Set(reflect.ValueOf(Delay{}))
+			fv.Set(reflect.ValueOf(Delay{Above: &mindelay.Duration}))
 		}
 	}
 }
@@ -428,12 +421,9 @@ func (p *Params) Decode(req *http.Request) error {
 	dec.SetAliasTag("url")
 	dec.IgnoreUnknownKeys(true)
 	dec.ZeroEmpty(true)
-	dec.RegisterConverter(Num{}, ConvertNum)
-	dec.RegisterConverter(Delay{}, ConvertDelayFunc(p.MinDelay))
 
-	p.ResetSchema()
-	err := dec.Decode(&p.Schema, req.Form)
-	if err != nil {
+	p.ResetSchema(p.MinDelay)
+	if err := dec.Decode(&p.Schema, req.Form); err != nil {
 		return err
 	}
 	p.SetDefaults(req.Form, p.MinDelay)
