@@ -23,28 +23,19 @@ func NewBind(defport int) Bind {
 func (b Bind) String() string { return string(b.string) }
 func (b *Bind) Set(input string) error {
 	if input == "" {
-		b.Port = b.defport
-	} else {
-		if !strings.Contains(input, ":") {
-			input = ":" + input
-		}
-		var err error
-		b.Host, b.Port, err = net.SplitHostPort(input)
-		if err != nil {
+		input = ":" + b.defport
+	}
+	var err error
+	b.Host, b.Port, err = net.SplitHostPort(input)
+	if err != nil {
+		if strings.HasPrefix(err.Error(), "missing port in address") {
+			b.Host, b.Port = input, b.defport
+		} else {
 			return err
 		}
-		if b.Host == "*" {
-			b.Host = ""
-		} else if b.Port == "127" {
-			b.Host = "127.0.0.1"
-			b.Port = b.defport
-		}
-		if _, err = net.LookupPort("tcp", b.Port); err != nil {
-			if b.Host != "" {
-				return err
-			}
-			b.Host, b.Port = b.Port, b.defport
-		}
+	}
+	if _, err = net.LookupPort("tcp", b.Port); err != nil {
+		return err
 	}
 	b.string = b.Host + ":" + b.Port
 	return nil
