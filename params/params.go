@@ -294,18 +294,25 @@ func (num Num) EncodeValues(key string, values *url.Values) error {
 
 func (num *Num) UnmarshalText(text []byte) error {
 	var negative bool
-	if len(text) > 0 && (text[0] == '-' || text[0] == '!') {
+	if len(text) > 0 && text[0] == '!' {
 		negative, text = true, text[1:]
 	}
-	absolute, err := strconv.Atoi(string(text))
+	i, err := strconv.Atoi(string(text))
 	if err != nil {
 		return err
 	}
-	if absolute < 0 {
-		return fmt.Errorf("Integer decoded may not be negative")
+	num.Negative = i < 0
+	if !num.Negative && negative {
+		num.Negative = true
 	}
-	num.Negative = negative
-	num.Absolute = absolute
+	if num.Negative {
+		if num.PositiveOnly {
+			return fmt.Errorf("Integer decoded may not be negative")
+		}
+		num.Absolute = -i
+	} else {
+		num.Absolute = i
+	}
 	return nil
 }
 
@@ -344,7 +351,13 @@ func (p *Params) ResetSchema(mindelay flags.Delay) {
 		fv := val.Field(i)
 		switch sf.Type {
 		case NumType:
-			fv.Set(reflect.ValueOf(Num{}))
+			var posonly bool
+			if tags, ok := TagsOk(sf); ok {
+				if _, ok := ContainsPrefix(tags[1:], "posonly"); ok {
+					posonly = true
+				}
+			}
+			fv.Set(reflect.ValueOf(Num{PositiveOnly: posonly}))
 		case DelayType:
 			fv.Set(reflect.ValueOf(Delay{Above: &mindelay.Duration}))
 		}
