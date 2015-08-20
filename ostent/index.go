@@ -75,7 +75,7 @@ func (procs ProcSlice) Ordered(para *params.Params) *PStable {
 
 	uids := map[uint]string{}
 	sort.Sort(ProcSort{ // not .Stable
-		Psn:       &para.Psk,
+		Psk:       &para.Psk,
 		ProcSlice: procs,
 		UIDs:      uids,
 	})
@@ -207,7 +207,14 @@ func (mss *MSS) UP(para *params.Params, iu *IndexUpdate) bool {
 	return true
 }
 
-func LessInterface(a, b operating.MetricInterface) bool {
+// InterfaceSlice is a list of MetricInterface.
+type InterfaceSlice []operating.MetricInterface
+
+// Len, Swap and Less satisfy sorting interface.
+func (is InterfaceSlice) Len() int      { return len(is) }
+func (is InterfaceSlice) Swap(i, j int) { is[i], is[j] = is[j], is[i] }
+func (is InterfaceSlice) Less(i, j int) bool {
+	a, b := is[i], is[j]
 	amatch := RXlo.Match([]byte(a.Name))
 	bmatch := RXlo.Match([]byte(b.Name))
 	if !(amatch && bmatch) {
@@ -256,9 +263,9 @@ func (_ *IndexRegistry) InterfacePackets(mi operating.MetricInterface) (*operati
 
 func (ir *IndexRegistry) Interfaces(para *params.Params, ip InterfaceParts) []operating.InterfaceInfo {
 	private := ir.ListPrivateInterface()
-	para.Ifn.Limit = len(private)
+	para.Ifn.Limit = private.Len()
 
-	private.SortSortBy(LessInterface)
+	sort.Sort(private) // not .Stable
 
 	var public []operating.InterfaceInfo
 	for i, mi := range private {
@@ -271,11 +278,11 @@ func (ir *IndexRegistry) Interfaces(para *params.Params, ip InterfaceParts) []op
 }
 
 // ListPrivateInterface returns list of MetricInterface's by traversing the PrivateIFRegistry.
-func (ir *IndexRegistry) ListPrivateInterface() (lmi operating.MetricInterfaceSlice) {
+func (ir *IndexRegistry) ListPrivateInterface() (is InterfaceSlice) {
 	ir.PrivateIFRegistry.Each(func(name string, i interface{}) {
-		lmi = append(lmi, i.(operating.MetricInterface))
+		is = append(is, i.(operating.MetricInterface))
 	})
-	return lmi
+	return is
 }
 
 // GetOrRegisterPrivateInterface produces a registered in PrivateIFRegistry operating.MetricInterface.
@@ -337,7 +344,14 @@ func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) operating.M
 	return i
 }
 
-func LessCPU(a, b operating.MetricCPU) bool {
+// CPUSlice is a list of MetricCPU.
+type CPUSlice []operating.MetricCPU
+
+// Len, Swap and Less satisfy sorting interface.
+func (cs CPUSlice) Len() int      { return len(cs) }
+func (cs CPUSlice) Swap(i, j int) { cs[i], cs[j] = cs[j], cs[i] }
+func (cs CPUSlice) Less(i, j int) bool {
+	a, b := cs[i], cs[j]
 	var (
 		aidle = a.Idle.Percent.Snapshot().Value()
 		bidle = b.Idle.Percent.Snapshot().Value()
@@ -373,7 +387,10 @@ func (ir *IndexRegistry) DFbytes(para *params.Params) []operating.DiskBytes {
 	private := ir.ListPrivateDisk()
 	para.Dfn.Limit = len(private)
 
-	private.StableSortBy(LessDiskFunc(&para.Dfk))
+	sort.Stable(DiskSort{
+		Dfk:       &para.Dfk,
+		DiskSlice: private,
+	})
 
 	var public []operating.DiskBytes
 	for i, disk := range private {
@@ -406,7 +423,10 @@ func (ir *IndexRegistry) DFinodes(para *params.Params) []operating.DiskInodes {
 	private := ir.ListPrivateDisk()
 	para.Dfn.Limit = len(private)
 
-	private.StableSortBy(LessDiskFunc(&para.Dfk))
+	sort.Stable(DiskSort{
+		Dfk:       &para.Dfk,
+		DiskSlice: private,
+	})
 
 	var public []operating.DiskInodes
 	for i, disk := range private {
@@ -496,15 +516,15 @@ func (ir *IndexRegistry) CPUInternal(para *params.Params) *operating.CPUInfo {
 	cpu := &operating.CPUInfo{}
 	private := ir.ListPrivateCPU()
 
-	if len(private) == 1 {
+	if private.Len() == 1 {
 		cpu.List = []operating.CoreInfo{FormatCPU("", private[0])}
 		para.CPUn.Limit = 1
 		return cpu
 	}
-	para.CPUn.Limit = len(private) + 1
-	private.SortSortBy(LessCPU)
+	para.CPUn.Limit = private.Len() + 1
+	sort.Sort(private)
 
-	allabel := fmt.Sprintf("all %d", len(private))
+	allabel := fmt.Sprintf("all %d", private.Len())
 	public := []operating.CoreInfo{FormatCPU(allabel, ir.PrivateCPUAll)} // first: "all N"
 
 	for i, mc := range private {
@@ -531,19 +551,22 @@ func FormatCPU(label string, mc operating.MetricCPU) operating.CoreInfo {
 }
 
 // ListPrivateCPU returns list of operating.MetricCPU's by traversing the PrivateCPURegistry.
-func (ir *IndexRegistry) ListPrivateCPU() (lmc operating.MetricCPUSlice) {
+func (ir *IndexRegistry) ListPrivateCPU() (cs CPUSlice) {
 	ir.PrivateCPURegistry.Each(func(name string, i interface{}) {
-		lmc = append(lmc, i.(operating.MetricCPU))
+		cs = append(cs, i.(operating.MetricCPU))
 	})
-	return lmc
+	return cs
 }
 
+// DiskSlice is a list of MetricDF.
+type DiskSlice []operating.MetricDF
+
 // ListPrivateDisk returns list of operating.MetricDF's by traversing the PrivateDFRegistry.
-func (ir *IndexRegistry) ListPrivateDisk() (lmd operating.MetricDFSlice) {
+func (ir *IndexRegistry) ListPrivateDisk() (ds DiskSlice) {
 	ir.PrivateDFRegistry.Each(func(name string, i interface{}) {
-		lmd = append(lmd, i.(operating.MetricDF))
+		ds = append(ds, i.(operating.MetricDF))
 	})
-	return lmd
+	return ds
 }
 
 // GetOrRegisterPrivateCPU produces a registered in PrivateCPURegistry MetricCPU.

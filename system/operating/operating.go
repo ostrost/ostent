@@ -1,5 +1,3 @@
-//go:generate gen
-
 // Package operating (as oppose to system) holds platform-independant code.
 package operating
 
@@ -260,7 +258,6 @@ type CPUUpdater interface {
 	UpdateCPU(sigar.Cpu, int64)
 }
 
-// +gen slice:"PkgSortBy"
 type MetricCPU struct {
 	*CPU
 }
@@ -351,7 +348,6 @@ func (sms *StandardMetricString) Update(new string) {
 	sms.string = new
 }
 
-// +gen slice:"PkgSortBy"
 type MetricDF struct {
 	*DF
 }
@@ -392,7 +388,6 @@ func (md *DF) Update(fs sigar.FileSystem, usage sigar.FileSystemUsage) {
 }
 
 // MetricInterface hold a pointer to Interface.
-// +gen slice:"PkgSortBy"
 type MetricInterface struct {
 	*Interface
 }
@@ -428,7 +423,6 @@ type Getifdata interface {
 	GetOutPackets() uint
 }
 
-// +gen slice:"PkgSortBy"
 type Vgmachine struct {
 	UUID             string
 	Name             string

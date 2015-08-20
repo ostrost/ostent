@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"os/user"
+	"sort"
 	"syscall"
 	"time"
 
@@ -11,11 +12,15 @@ import (
 	"github.com/ostrost/ostent/system/operating"
 )
 
+type VgmachineSlice []operating.Vgmachine
+
 type VagrantMachines struct {
-	List operating.VgmachineSlice
+	List VgmachineSlice
 }
 
-func LessVgmachine(a, b operating.Vgmachine) bool { return a.UUID < b.UUID }
+func (vs VgmachineSlice) Len() int           { return len(vs) }
+func (vs VgmachineSlice) Swap(i, j int)      { vs[i], vs[j] = vs[j], vs[i] }
+func (vs VgmachineSlice) Less(i, j int) bool { return vs[i].UUID < vs[j].UUID }
 
 func vagrantmachines(max int) (*VagrantMachines, error) {
 	currentUser, _ := user.Current()
@@ -55,7 +60,7 @@ func vagrantmachines(max int) (*VagrantMachines, error) {
 			machines.List = append(machines.List, machine)
 		}
 	}
-	machines.List.StableSortBy(LessVgmachine)
+	sort.Stable(machines.List)
 	return machines, nil
 }
 

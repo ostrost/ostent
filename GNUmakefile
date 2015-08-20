@@ -54,12 +54,10 @@ all32: $(destbin)/$(cmdname).32
 endif
 init:
 	go get -u -v \
-github.com/clipperhouse/gen \
 github.com/jteeuwen/go-bindata/go-bindata \
 github.com/skelterjohn/rerun \
 github.com/yosssi/ace \
 golang.org/x/net/html
-	cd system/operating && gen add github.com/ostrost/slice
 	go get -v $(package)
 	go get -v -a -tags bin $(package)
 
@@ -74,8 +72,6 @@ test:
 covertest:           ; go test -coverprofile=coverage.out -covermode=count -v $(singletestpackage)
 coverfunc: covertest ; go tool  cover  -func=coverage.out
 coverhtml: covertest ; go tool  cover  -html=coverage.out
-
-system/operating/%_slice.go:     system/operating/operating.go ; cd $(dir $@) && go generate
 
 al: $(packagefiles) $(devpackagefiles)
 # al: like `all' but without final go build $(package). For when rerun does the build
