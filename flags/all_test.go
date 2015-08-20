@@ -3,6 +3,7 @@ package flags
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"testing"
 	"time"
 )
@@ -73,6 +74,13 @@ func TestDelaySet(t *testing.T) {
 }
 
 func TestBindSet(t *testing.T) {
+	var traviserrs []error
+	if os.Getenv("TRAVIS_OS_NAME") != "" {
+		traviserrs = []error{
+			fmt.Errorf("unknown port tcp/8001"),
+			fmt.Errorf("unknown port tcp/9050"),
+		}
+	}
 	for _, v := range []struct {
 		a    string
 		cmp  string
@@ -97,7 +105,11 @@ func TestBindSet(t *testing.T) {
 		b := NewBind(9050)
 		if err := b.Set(v.a); err != nil {
 			unknownerr := true
-			for _, x := range v.errs {
+			errs := v.errs
+			if errs == nil {
+				errs = traviserrs
+			}
+			for _, x := range errs {
 				if err.Error() == x.Error() {
 					unknownerr = false
 					break
@@ -107,6 +119,8 @@ func TestBindSet(t *testing.T) {
 				t.Errorf("Error: %q\nExpected errors: %+v\n", err, v.errs)
 			}
 			continue
+		} else if v.errs != nil {
+			t.Errorf("Error: %q\nExpected errors: %+v\n", err, v.errs)
 		}
 		if b.string != v.cmp {
 			t.Errorf("Mismatch: Bind %v == %v != %v\n", v.a, v.cmp, b.string)
