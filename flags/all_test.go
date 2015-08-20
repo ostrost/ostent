@@ -3,7 +3,6 @@ package flags
 import (
 	"bytes"
 	"fmt"
-	"os"
 	"testing"
 	"time"
 )
@@ -74,19 +73,16 @@ func TestDelaySet(t *testing.T) {
 }
 
 func TestBindSet(t *testing.T) {
-	var traviserrs []error
-	if os.Getenv("TRAVIS_OS_NAME") != "" {
-		traviserrs = []error{
-			fmt.Errorf("unknown port tcp/8001"),
-			fmt.Errorf("unknown port tcp/9050"),
-		}
+	portserrs := []error{
+		fmt.Errorf("unknown port tcp/8001"),
+		fmt.Errorf("unknown port tcp/9050"),
 	}
 	for _, v := range []struct {
 		a    string
 		cmp  string
 		errs []error
 	}{
-		{"a:b:", "", []error{fmt.Errorf("too many colons in address a:b:")}},
+		{"a:b:", "", []error{fmt.Errorf("too many colons in address " + "a:b:")}},
 		{"localhost:nonexistent", "", []error{
 			fmt.Errorf("lookup tcp/nonexistent: Servname not supported for ai_socktype"),
 			fmt.Errorf("lookup tcp/nonexistent: nodename nor servname provided, or not known"),
@@ -105,11 +101,7 @@ func TestBindSet(t *testing.T) {
 		b := NewBind(9050)
 		if err := b.Set(v.a); err != nil {
 			unknownerr := true
-			errs := v.errs
-			if errs == nil {
-				errs = traviserrs
-			}
-			for _, x := range errs {
+			for _, x := range append(portserrs, v.errs...) {
 				if err.Error() == x.Error() {
 					unknownerr = false
 					break
