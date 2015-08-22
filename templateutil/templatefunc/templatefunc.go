@@ -44,6 +44,7 @@ func (f HTMLFuncs) MakeMap() template.FuncMap { return MakeMap(f) }
 // MakeMap constructs template.FuncMap off f implementation.
 func MakeMap(f Functor) template.FuncMap {
 	return template.FuncMap{
+		"HTML":    func(s string) template.HTML { return template.HTML(s) },
 		"rowsset": func(interface{}) string { return "" }, // empty pipeline
 		// acepp overrides rowsset and adds setrows
 

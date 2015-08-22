@@ -2,7 +2,12 @@
 // sources:
 // css/index.css
 // css/index.css.map
-// favicon.png
+// favicon.ico
+// favicons/favicon-120.png
+// favicons/favicon-144.png
+// favicons/favicon-152.png
+// favicons/favicon-180.png
+// favicons/favicon-32.png
 // js/requirejs/2.1.18/require.min.js
 // js/src/lib/jsdefines.js
 // js/src/milk/build.js
@@ -76,10 +81,100 @@ func cssIndexCssMap() (*asset, error) {
 	return a, err
 }
 
-// faviconPng reads file data from disk. It returns an error on failure.
-func faviconPng() (*asset, error) {
-	path := filepath.Join(rootDir, "favicon.png")
-	name := "favicon.png"
+// faviconIco reads file data from disk. It returns an error on failure.
+func faviconIco() (*asset, error) {
+	path := filepath.Join(rootDir, "favicon.ico")
+	name := "favicon.ico"
+	bytes, err := bindataRead(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// faviconsFavicon120Png reads file data from disk. It returns an error on failure.
+func faviconsFavicon120Png() (*asset, error) {
+	path := filepath.Join(rootDir, "favicons/favicon-120.png")
+	name := "favicons/favicon-120.png"
+	bytes, err := bindataRead(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// faviconsFavicon144Png reads file data from disk. It returns an error on failure.
+func faviconsFavicon144Png() (*asset, error) {
+	path := filepath.Join(rootDir, "favicons/favicon-144.png")
+	name := "favicons/favicon-144.png"
+	bytes, err := bindataRead(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// faviconsFavicon152Png reads file data from disk. It returns an error on failure.
+func faviconsFavicon152Png() (*asset, error) {
+	path := filepath.Join(rootDir, "favicons/favicon-152.png")
+	name := "favicons/favicon-152.png"
+	bytes, err := bindataRead(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// faviconsFavicon180Png reads file data from disk. It returns an error on failure.
+func faviconsFavicon180Png() (*asset, error) {
+	path := filepath.Join(rootDir, "favicons/favicon-180.png")
+	name := "favicons/favicon-180.png"
+	bytes, err := bindataRead(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// faviconsFavicon32Png reads file data from disk. It returns an error on failure.
+func faviconsFavicon32Png() (*asset, error) {
+	path := filepath.Join(rootDir, "favicons/favicon-32.png")
+	name := "favicons/favicon-32.png"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
@@ -310,7 +405,12 @@ func AssetNames() []string {
 var _bindata = map[string]func() (*asset, error){
 	"css/index.css": cssIndexCss,
 	"css/index.css.map": cssIndexCssMap,
-	"favicon.png": faviconPng,
+	"favicon.ico": faviconIco,
+	"favicons/favicon-120.png": faviconsFavicon120Png,
+	"favicons/favicon-144.png": faviconsFavicon144Png,
+	"favicons/favicon-152.png": faviconsFavicon152Png,
+	"favicons/favicon-180.png": faviconsFavicon180Png,
+	"favicons/favicon-32.png": faviconsFavicon32Png,
 	"js/requirejs/2.1.18/require.min.js": jsRequirejs2118RequireMinJs,
 	"js/src/lib/jsdefines.js": jsSrcLibJsdefinesJs,
 	"js/src/milk/build.js": jsSrcMilkBuildJs,
@@ -368,7 +468,19 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"index.css.map": &bintree{cssIndexCssMap, map[string]*bintree{
 		}},
 	}},
-	"favicon.png": &bintree{faviconPng, map[string]*bintree{
+	"favicon.ico": &bintree{faviconIco, map[string]*bintree{
+	}},
+	"favicons": &bintree{nil, map[string]*bintree{
+		"favicon-120.png": &bintree{faviconsFavicon120Png, map[string]*bintree{
+		}},
+		"favicon-144.png": &bintree{faviconsFavicon144Png, map[string]*bintree{
+		}},
+		"favicon-152.png": &bintree{faviconsFavicon152Png, map[string]*bintree{
+		}},
+		"favicon-180.png": &bintree{faviconsFavicon180Png, map[string]*bintree{
+		}},
+		"favicon-32.png": &bintree{faviconsFavicon32Png, map[string]*bintree{
+		}},
 	}},
 	"js": &bintree{nil, map[string]*bintree{
 		"requirejs": &bintree{nil, map[string]*bintree{
