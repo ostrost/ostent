@@ -6,6 +6,7 @@ import (
 
 	librato "github.com/mihasya/go-metrics-librato"
 
+	"github.com/ostrost/ostent/commands/extpoints"
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
 )
@@ -15,7 +16,7 @@ type Librato struct {
 	Email, Token, Source string
 }
 
-func LibratoCommandLine(cli *flag.FlagSet) CommandLineHandler {
+func LibratoCommandLine(cli *flag.FlagSet) extpoints.CommandLineHandler {
 	hostname, err := ostent.GetHostname()
 	if err != nil {
 		hostname = ""
@@ -27,7 +28,7 @@ func LibratoCommandLine(cli *flag.FlagSet) CommandLineHandler {
 	cli.StringVar(&lr.Email, "librato-email", "", "Librato `email`")
 	cli.StringVar(&lr.Token, "librato-token", "", "Librato `token`")
 	cli.StringVar(&lr.Source, "librato-source", hostname, "Librato `source`")
-	return func() (AtexitHandler, bool, error) {
+	return func() (extpoints.AtexitHandler, bool, error) {
 		if lr.Email == "" {
 			return nil, false, nil
 		}

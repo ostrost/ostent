@@ -7,6 +7,8 @@ import (
 	"log"
 	"os"
 	"sort"
+
+	"github.com/ostrost/ostent/commands/extpoints"
 )
 
 func UsageFunc(fs *flag.FlagSet) func() {
@@ -20,14 +22,14 @@ func UsageFunc(fs *flag.FlagSet) func() {
 }
 
 type help struct {
-	logger    *Logger
+	Log       *extpoints.Log
 	isCommand bool
 	listing   string
 }
 
 func (h help) usage(k string, makes makeCommandHandler) {
-	fs, _, _ := setupFlagset(k, makes, []SetupLogger{func(l *Logger) {
-		l.Out = h.logger.Out // although `makes' must not use l.Out outside the Run
+	fs, _, _ := setupFlagset(k, makes, []extpoints.SetupLog{func(l *extpoints.Log) {
+		l.Out = h.Log.Out // although `makes' must not use l.Out outside the Run
 	}})
 	// fs.Usage is ignored
 	fs.VisitAll(func(f *flag.Flag) { // mimics fs.PrintDefaults
@@ -36,7 +38,7 @@ func (h help) usage(k string, makes makeCommandHandler) {
 			format = "  -%s=%q: %s\n" // put quotes on the value
 		}
 		format = "   " + format
-		h.logger.Printf(format, f.Name, f.DefValue, f.Usage)
+		h.Log.Printf(format, f.Name, f.DefValue, f.Usage)
 	})
 }
 
@@ -54,8 +56,8 @@ func (h *help) Run() {
 		if !found {
 			log.Fatalf("%s: No such command\n", h.listing)
 		} else {
-			h.logger.Println("Usage of command:")
-			h.logger.Printf("   %s\n", h.listing)
+			h.Log.Println("Usage of command:")
+			h.Log.Printf("   %s\n", h.listing)
 			if makes, ok := commands.added.makes[h.listing]; ok {
 				h.usage(h.listing, makes)
 			}
@@ -67,19 +69,19 @@ func (h *help) Run() {
 	if !h.isCommand {
 		fstline = fmt.Sprintf("Commands of %s:", os.Args[0]) // as in usage
 	}
-	h.logger.Println(fstline)
+	h.Log.Println(fstline)
 	for _, name := range commands.added.Names {
-		h.logger.Printf("   %s\n", name)
+		h.Log.Printf("   %s\n", name)
 		if makes, ok := commands.added.makes[name]; ok {
 			h.usage(name, makes)
 		}
 	}
 }
 
-func newHelp(logout io.Writer, loggerOptions ...SetupLogger) *help {
+func newHelp(logout io.Writer, loggerOptions ...extpoints.SetupLog) *help {
 	return &help{
-		logger: NewLogger("", append([]SetupLogger{
-			func(l *Logger) {
+		Log: NewLog("", append([]extpoints.SetupLog{
+			func(l *extpoints.Log) {
 				l.Out = logout
 				l.Flag = 0
 			},
@@ -87,11 +89,11 @@ func newHelp(logout io.Writer, loggerOptions ...SetupLogger) *help {
 	}
 }
 
-func setupCommands(fs *flag.FlagSet, loggerOptions ...SetupLogger) (CommandHandler, io.Writer) {
+func setupCommands(fs *flag.FlagSet, loggerOptions ...extpoints.SetupLog) (extpoints.CommandHandler, io.Writer) {
 	h := newHelp(os.Stdout, loggerOptions...)
 	h.isCommand = true
 	fs.StringVar(&h.listing, "h", "", "A command")
-	return h.Run, h.logger
+	return h.Run, h.Log
 }
 
 func init() {

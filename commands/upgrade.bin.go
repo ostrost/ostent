@@ -16,6 +16,8 @@ import (
 	"time"
 
 	update "github.com/inconshreveable/go-update"
+
+	"github.com/ostrost/ostent/commands/extpoints"
 	"github.com/ostrost/ostent/ostent"
 )
 
@@ -65,37 +67,37 @@ func RuntimeMach() string {
 func (up *upgrade) Upgrade() bool {
 	newVersion, err := up.newerVersion()
 	if err != nil {
-		up.logger.Print(err)
+		up.Log.Print(err)
 		return false
 	}
 	if newVersion == "" || newVersion[0] != 'v' {
-		up.logger.Printf("Version unexpected: %q", newVersion)
+		up.Log.Printf("Version unexpected: %q", newVersion)
 		return false
 	}
 	if newVersion == "v"+ostent.VERSION {
-		up.logger.Printf("Current version %q is up to date", ostent.VERSION)
+		up.Log.Printf("Current version %q is up to date", ostent.VERSION)
 		return false
 	}
-	up.logger.Printf("Upgrade available: release %s\n", newVersion[1:])
-	up.logger.Printf("Upgrading from current version %s\n", ostent.VERSION)
+	up.Log.Printf("Upgrade available: release %s\n", newVersion[1:])
+	up.Log.Printf("Upgrading from current version %s\n", ostent.VERSION)
 	if up.DonotUpgrade {
-		up.logger.Print("Upgrade not applied, as requested")
+		up.Log.Print("Upgrade not applied, as requested")
 		return false
 	}
 	url := fmt.Sprintf("https://github.com/ostrost/ostent/releases/download/%s/%s.%s",
 		newVersion, strings.Title(runtime.GOOS), RuntimeMach())
 	resp, err := http.Get(url)
 	if err != nil {
-		up.logger.Print(err)
+		up.Log.Print(err)
 		return false
 	}
 	defer resp.Body.Close()
 	err = update.Apply(resp.Body, &update.Options{})
 	if err != nil {
-		up.logger.Print(err)
+		up.Log.Print(err)
 		return false
 	}
-	up.logger.Printf("Upgraded successfully to release %s", newVersion[1:])
+	up.Log.Printf("Upgraded successfully to release %s", newVersion[1:])
 	up.hadUpgrade = true
 	if up.AfterUpgradeFunc != nil {
 		up.AfterUpgradeFunc()
@@ -125,9 +127,9 @@ func (up upgrade) Run() {
 		return
 	}
 	if up.isCommand {
-		up.logger.Println("Checking for upgrades")
+		up.Log.Println("Checking for upgrades")
 	} else {
-		up.logger.Println("Initial check for upgrades; run with -ugradelater to disable")
+		up.Log.Println("Initial check for upgrades; run with -ugradelater to disable")
 	}
 	up.Upgrade()
 }
@@ -135,7 +137,7 @@ func (up upgrade) Run() {
 type upgrade struct {
 	DonotUpgrade        bool
 	UpgradeLater        bool
-	logger              *Logger
+	Log                 *extpoints.Log
 	hadUpgrade          bool
 	FirstUpgradeStopper func() bool
 	AfterUpgradeFunc    func()
@@ -147,26 +149,30 @@ func (up upgrade) HadUpgrade() bool {
 }
 
 func (up *upgrade) AddCommandLine() *upgrade {
-	AddCommandLine(func(cli *flag.FlagSet) CommandLineHandler {
+	AddCommandLine(func(cli *flag.FlagSet) extpoints.CommandLineHandler {
 		cli.BoolVar(&up.UpgradeLater, "upgradelater", false, "Upgrade later.")
 		return nil
 	})
 	return up
 }
 
-func NewUpgrade(loggerOptions ...SetupLogger) *upgrade {
+func NewUpgrade(loggerOptions ...extpoints.SetupLog) *upgrade {
 	return &upgrade{
-		logger: NewLogger("[ostent upgrade] ", loggerOptions...),
+		Log: NewLog("[ostent upgrade] ", loggerOptions...),
 	}
 }
 
-func upgradeCommand(fs *flag.FlagSet, loggerOptions ...SetupLogger) (CommandHandler, io.Writer) {
+func (u Upgrades) SetupCommand(fs *flag.FlagSet, loggerOptions ...extpoints.SetupLog) (extpoints.CommandHandler, io.Writer) {
 	up := NewUpgrade(loggerOptions...)
 	up.isCommand = true
 	fs.BoolVar(&up.DonotUpgrade, "n", false, "Do not upgrade, just log if there's an upgrade.")
-	return up.Run, up.logger
+	return up.Run, up.Log
 }
 
+type Upgrades struct{}
+
 func init() {
-	AddCommand("upgrade", upgradeCommand)
+	u := Upgrades{}
+	AddCommand("upgrade", u.SetupCommand)
+	// extpoints.Commands.Register(u, "upgrade")
 }

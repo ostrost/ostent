@@ -7,20 +7,22 @@ import (
 	"flag"
 	"os"
 	"runtime/pprof"
+
+	"github.com/ostrost/ostent/commands/extpoints"
 )
 
 type ProfileHeap struct {
-	Log    *Logger
+	Log    *extpoints.Log
 	Output string
 	File   *os.File
 }
 
-func ProfileHeapCLI(cli *flag.FlagSet) CommandLineHandler {
+func ProfileHeapCLI(cli *flag.FlagSet) extpoints.CommandLineHandler {
 	ph := &ProfileHeap{
-		Log: NewLogger("[ostent profile-heap] "),
+		Log: NewLog("[ostent profile-heap] "),
 	}
 	cli.StringVar(&ph.Output, "profile-heap", "", "Profiling heap output `filename`")
-	return func() (AtexitHandler, bool, error) {
+	return func() (extpoints.AtexitHandler, bool, error) {
 		if ph.Output == "" {
 			return nil, false, nil
 		}
@@ -49,17 +51,17 @@ func (ph *ProfileHeap) Run() (err error) {
 /* ******************************************************************************** */
 
 type ProfileCPU struct {
-	Log    *Logger
+	Log    *extpoints.Log
 	Output string
 	File   *os.File
 }
 
-func ProfileCPUCLI(cli *flag.FlagSet) CommandLineHandler {
+func ProfileCPUCLI(cli *flag.FlagSet) extpoints.CommandLineHandler {
 	pc := &ProfileCPU{
-		Log: NewLogger("[ostent profile-cpu] "),
+		Log: NewLog("[ostent profile-cpu] "),
 	}
 	cli.StringVar(&pc.Output, "profile-cpu", "", "Profiling CPU output `filename`")
-	return func() (AtexitHandler, bool, error) {
+	return func() (extpoints.AtexitHandler, bool, error) {
 		if pc.Output == "" {
 			return nil, false, nil
 		}

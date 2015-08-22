@@ -38,12 +38,12 @@ func (wr webserver) Run() {
 		}
 
 		if err := goagain.Kill(); err != nil {
-			wr.logger.Fatalln(err)
+			wr.Log.Fatalln(err)
 		}
 	}
 
 	if _, err := goagain.Wait(listen); err != nil { // signals before won't be catched
-		wr.logger.Fatalln(err)
+		wr.Log.Fatalln(err)
 	}
 
 	// shutting down
@@ -53,7 +53,7 @@ func (wr webserver) Run() {
 	}
 
 	if err := listen.Close(); err != nil {
-		wr.logger.Fatalln(err)
+		wr.Log.Fatalln(err)
 	}
 	time.Sleep(time.Second)
 }

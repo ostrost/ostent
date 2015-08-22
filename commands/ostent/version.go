@@ -6,21 +6,22 @@ import (
 	"os"
 
 	"github.com/ostrost/ostent/commands"
+	"github.com/ostrost/ostent/commands/extpoints"
 	"github.com/ostrost/ostent/ostent"
 )
 
 type Version struct {
-	Log *commands.Logger
+	Log *extpoints.Log
 }
 
 func (v Version) Run() {
 	v.Log.Println(ostent.VERSION)
 }
 
-func NewVersion(logOptions ...commands.SetupLogger) *Version {
+func NewVersion(logOptions ...extpoints.SetupLog) *Version {
 	return &Version{
-		Log: commands.NewLogger("", append([]commands.SetupLogger{
-			func(l *commands.Logger) {
+		Log: commands.NewLog("", append([]extpoints.SetupLog{
+			func(l *extpoints.Log) {
 				l.Out = os.Stdout
 				l.Flag = 0
 			},
@@ -28,16 +29,16 @@ func NewVersion(logOptions ...commands.SetupLogger) *Version {
 	}
 }
 
-func VersionCommand(_ *flag.FlagSet, logOptions ...commands.SetupLogger) (commands.CommandHandler, io.Writer) {
+func VersionCommand(_ *flag.FlagSet, logOptions ...extpoints.SetupLog) (extpoints.CommandHandler, io.Writer) {
 	v := NewVersion(logOptions...)
 	return v.Run, v.Log
 }
 
-func VersionCLI(cli *flag.FlagSet) commands.CommandLineHandler {
+func VersionCLI(cli *flag.FlagSet) extpoints.CommandLineHandler {
 	var fv bool
 	cli.BoolVar(&fv, "v", false, "Short for version")
 	cli.BoolVar(&fv, "version", false, "Print version and exit")
-	return func() (commands.AtexitHandler, bool, error) {
+	return func() (extpoints.AtexitHandler, bool, error) {
 		if fv {
 			NewVersion().Run()
 			return nil, true, nil

@@ -7,11 +7,12 @@ import (
 	"net"
 	"os"
 
+	"github.com/ostrost/ostent/commands/extpoints"
 	"github.com/ostrost/ostent/flags"
 )
 
 type webserver struct {
-	logger       *Logger
+	Log          *extpoints.Log
 	Bind         flags.Bind
 	ServeFunc    func(net.Listener)
 	FirstRunFunc func() bool
@@ -21,7 +22,7 @@ type webserver struct {
 func (wr webserver) NetListen() net.Listener {
 	listen, err := net.Listen("tcp", wr.Bind.String())
 	if err != nil {
-		wr.logger.Fatal(err)
+		wr.Log.Fatal(err)
 	}
 	return listen
 }
@@ -35,7 +36,7 @@ func InitStdLog() {
 
 func NewWebserver(defport int) *webserver {
 	return &webserver{
-		logger: NewLogger(fmt.Sprintf("[%d][ostent webserver] ", os.Getpid()), func(l *Logger) {
+		Log: NewLog(fmt.Sprintf("[%d][ostent webserver] ", os.Getpid()), func(l *extpoints.Log) {
 			l.Flag |= log.Lmicroseconds
 		}),
 		Bind: flags.NewBind(defport),
@@ -43,7 +44,7 @@ func NewWebserver(defport int) *webserver {
 }
 
 func (ws *webserver) AddCommandLine() *webserver {
-	AddCommandLine(func(cli *flag.FlagSet) CommandLineHandler {
+	AddCommandLine(func(cli *flag.FlagSet) extpoints.CommandLineHandler {
 		cli.Var(&ws.Bind, "b", "short for bind")
 		cli.Var(&ws.Bind, "bind", "Bind `address`")
 		return nil

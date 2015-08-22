@@ -6,6 +6,7 @@ import (
 
 	influxdb "github.com/ostrost/ostent/commands/go-metrics-influxdb"
 
+	"github.com/ostrost/ostent/commands/extpoints"
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
 )
@@ -18,7 +19,7 @@ type Influx struct {
 	Password  string
 }
 
-func influxdbCommandLine(cli *flag.FlagSet) CommandLineHandler {
+func influxdbCommandLine(cli *flag.FlagSet) extpoints.CommandLineHandler {
 	ix := &Influx{
 		DelayFlag: flags.Delay{Duration: 10 * time.Second}, // 10s default
 	}
@@ -27,7 +28,7 @@ func influxdbCommandLine(cli *flag.FlagSet) CommandLineHandler {
 	cli.StringVar(&ix.Database, "influxdb-database", "ostent", "InfluxDB `database`")
 	cli.StringVar(&ix.Username, "influxdb-username", "", "InfluxDB `username`")
 	cli.StringVar(&ix.Password, "influxdb-password", "", "InfluxDB `password`")
-	return func() (AtexitHandler, bool, error) {
+	return func() (extpoints.AtexitHandler, bool, error) {
 		if ix.URL == "" {
 			return nil, false, nil
 		}

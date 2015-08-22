@@ -7,18 +7,16 @@ import (
 	"log"
 	"os"
 	"sync"
+
+	"github.com/ostrost/ostent/commands/extpoints"
 )
 
 type atexitMaker interface {
-	makeAtexitHandler() AtexitHandler
+	makeAtexitHandler() extpoints.AtexitHandler
 }
 
-type AtexitHandler func()
-type CommandHandler func()
-type CommandLineHandler func() (AtexitHandler, bool, error)
-
-type makeSub func(*flag.FlagSet, []string) (CommandHandler, error, []string)
-type makeCommandHandler func(*flag.FlagSet, ...SetupLogger) (CommandHandler, io.Writer)
+type makeSub func(*flag.FlagSet, []string) (extpoints.CommandHandler, error, []string)
+type makeCommandHandler func(*flag.FlagSet, ...extpoints.SetupLog) (extpoints.CommandHandler, io.Writer)
 
 type addedCommands struct {
 	makes map[string]makeCommandHandler
@@ -36,11 +34,11 @@ var (
 	}
 	commandline = struct {
 		mutex sync.Mutex
-		added []CommandLineHandler
+		added []extpoints.CommandLineHandler
 	}{}
 )
 
-func AddCommandLine(hfunc func(*flag.FlagSet) CommandLineHandler) {
+func AddCommandLine(hfunc func(*flag.FlagSet) extpoints.CommandLineHandler) {
 	s := hfunc(flag.CommandLine) // NB global flag.CommandLine
 	if s == nil {
 		return
@@ -57,13 +55,13 @@ func AddCommand(name string, makes makeCommandHandler) {
 	commands.added.Names = append(commands.added.Names, name)
 }
 
-func setupFlagset(name string, makes makeCommandHandler, loggerSetups []SetupLogger) (*flag.FlagSet, CommandHandler, io.Writer) {
+func setupFlagset(name string, makes makeCommandHandler, loggerSetups []extpoints.SetupLog) (*flag.FlagSet, extpoints.CommandHandler, io.Writer) {
 	fs := flag.NewFlagSet(name, flag.ContinueOnError)
 	run, output := makes(fs, loggerSetups...)
 	return fs, run, output
 }
 
-func setup(name string, arguments []string, makes makeCommandHandler, loggerSetups []SetupLogger) (CommandHandler, error, []string) {
+func setup(name string, arguments []string, makes makeCommandHandler, loggerSetups []extpoints.SetupLog) (extpoints.CommandHandler, error, []string) {
 	fs, run, output := setupFlagset(name, makes, loggerSetups)
 	err := fs.Parse(arguments)
 	if err == nil && output != nil {
@@ -72,7 +70,7 @@ func setup(name string, arguments []string, makes makeCommandHandler, loggerSetu
 	return run, err, fs.Args()
 }
 
-func ParseCommand(handlers []CommandHandler, args []string, loggerOptions ...SetupLogger) ([]CommandHandler, error) {
+func ParseCommand(handlers []extpoints.CommandHandler, args []string, loggerOptions ...extpoints.SetupLog) ([]extpoints.CommandHandler, error) {
 	if len(args) == 0 || args[0] == "" {
 		return handlers, nil
 	}
@@ -88,21 +86,21 @@ func ParseCommand(handlers []CommandHandler, args []string, loggerOptions ...Set
 	return ParseCommand(append(handlers, handler), nextargs)
 }
 
-func parseCommands() ([]CommandHandler, error) {
+func parseCommands() ([]extpoints.CommandHandler, error) {
 	commands.mutex.Lock()
 	defer commands.mutex.Unlock()
-	return ParseCommand([]CommandHandler{}, flag.Args() /* no SetupLogger passed */)
+	return ParseCommand([]extpoints.CommandHandler{}, flag.Args() /* no SetupLog passed */)
 }
 
 // true is when to abort
-func ArgCommands() (bool, AtexitHandler) {
+func ArgCommands() (bool, extpoints.AtexitHandler) {
 	handlers, err := parseCommands()
 	if err != nil {
 		log.Fatal(err)
 		return true, func() {} // useless return
 	}
 
-	finish := []AtexitHandler{}
+	finish := []extpoints.AtexitHandler{}
 	atexit := func() {
 		for _, exit := range finish {
 			exit()
@@ -147,38 +145,18 @@ func ArgCommands() (bool, AtexitHandler) {
 	return true, atexit
 }
 
-type SetupLogger func(*Logger)
-
-func NewLogger(prefix string, options ...SetupLogger) *Logger {
-	logger := &Logger{ // defaults
+func NewLog(prefix string, options ...extpoints.SetupLog) *extpoints.Log {
+	l := &extpoints.Log{ // defaults
 		Out:  os.Stderr,
 		Flag: log.LstdFlags,
 	}
 	for _, option := range options {
-		option(logger)
+		option(l)
 	}
-	logger.Logger = log.New(
-		logger.Out,
+	l.Logger = log.New(
+		l.Out,
 		prefix,
-		logger.Flag,
+		l.Flag,
 	)
-	return logger
-}
-
-type Logger struct { // also an io.Writer
-	*log.Logger           // wrapping a *log.Logger
-	Out         io.Writer // an argument for log.New
-	Flag        int       // an argument for log.New
-}
-
-// satisfying io.Writer interface
-func (l *Logger) Write(p []byte) (int, error) {
-	l.Logger.Printf("%s", p)
-	return len(p), nil
-}
-
-func (l *Logger) fatalif(err error) {
-	if err != nil {
-		l.Fatalln(err)
-	}
+	return l
 }
