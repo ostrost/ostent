@@ -4,7 +4,7 @@ import (
 	"flag"
 	"time"
 
-	influxdb "github.com/ostrost/ostent/commands/go-metrics-influxdb"
+	influxdb "github.com/vrischmann/go-metrics-influxdb"
 
 	"github.com/ostrost/ostent/commands/extpoints"
 	"github.com/ostrost/ostent/flags"
@@ -33,13 +33,13 @@ func influxdbCommandLine(cli *flag.FlagSet) extpoints.CommandLineHandler {
 			return nil, false, nil
 		}
 		ostent.AddBackground(func() {
-			go influxdb.Influxdb(ostent.Reg1s.Registry, ix.DelayFlag.Duration,
-				&influxdb.Config{
-					URL:      ix.URL,
-					Database: ix.Database,
-					Username: ix.Username,
-					Password: ix.Password,
-				})
+			go influxdb.InfluxDB(ostent.Reg1s.Registry,
+				ix.DelayFlag.Duration,
+				ix.URL,
+				ix.Database,
+				ix.Username,
+				ix.Password,
+			)
 		})
 		return nil, false, nil
 	}
