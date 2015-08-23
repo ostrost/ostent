@@ -10,9 +10,43 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gorilla/context"
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
+
+	"github.com/ostrost/ostent/flags"
+	"github.com/ostrost/ostent/templateutil"
 )
+
+// AddContext is a middleware to context.Set.
+func AddContext(key, val interface{}) func(http.Handler) http.Handler {
+	return func(handler http.Handler) http.Handler { // Constructor
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			context.Set(r, key, val)
+			handler.ServeHTTP(w, r)
+		})
+	}
+}
+
+type ContextID int
+
+const (
+	CAccess ContextID = iota
+	CErrorLog
+	CIndexTemplate
+	CMinDelay
+	CTaggedBin
+)
+
+func ContextAccess(r *http.Request) *Access       { return GetContext(r, CAccess).(*Access) }
+func ContextErrorLog(r *http.Request) *log.Logger { return GetContext(r, CErrorLog).(*log.Logger) }
+func ContextIndexTemplate(r *http.Request) *templateutil.LazyTemplate {
+	return GetContext(r, CIndexTemplate).(*templateutil.LazyTemplate)
+}
+func ContextMinDelay(r *http.Request) flags.Delay { return GetContext(r, CMinDelay).(flags.Delay) }
+func ContextTaggedBin(r *http.Request) bool       { return GetContext(r, CTaggedBin).(bool) }
+
+func GetContext(r *http.Request, id ContextID) interface{} { return context.Get(r, id) }
 
 // Muxmap is a type of a map of pattern to HandlerFunc.
 type Muxmap map[string]http.HandlerFunc

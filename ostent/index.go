@@ -21,7 +21,6 @@ import (
 	"github.com/ostrost/ostent/params/enums"
 	"github.com/ostrost/ostent/system"
 	"github.com/ostrost/ostent/system/operating"
-	"github.com/ostrost/ostent/templateutil"
 )
 
 type diskInfo struct {
@@ -845,13 +844,12 @@ func FormRedirectFunc(mindelay flags.Delay, wrap func(http.HandlerFunc) http.Han
 }
 */
 
-func IndexFunc(taggedbin bool, template *templateutil.LazyTemplate, mindelay flags.Delay) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		index(taggedbin, template, mindelay, w, r)
-	}
-}
-
-func index(taggedbin bool, template *templateutil.LazyTemplate, mindelay flags.Delay, w http.ResponseWriter, r *http.Request) {
+func Index(w http.ResponseWriter, r *http.Request) {
+	var (
+		mindelay  = ContextMinDelay(r)
+		taggedbin = ContextTaggedBin(r)
+		template  = ContextIndexTemplate(r)
+	)
 	id, err := indexData(mindelay, r)
 	if err != nil {
 		if _, ok := err.(params.RenamedConstError); ok {
@@ -917,13 +915,11 @@ func (sse *SSE) SetHeader(name, value string) bool {
 	return true
 }
 
-func IndexSSEFunc(access *Access, mindelay flags.Delay) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		IndexSSE(access, mindelay, w, r)
-	}
-}
-
-func IndexSSE(access *Access, mindelay flags.Delay, w http.ResponseWriter, r *http.Request) {
+func IndexSSE(w http.ResponseWriter, r *http.Request) {
+	var (
+		access   = ContextAccess(r)
+		mindelay = ContextMinDelay(r)
+	)
 	sse := &SSE{Writer: w, MinDelay: mindelay}
 	if access.Constructor(sse).ServeHTTP(nil, r); sse.Errord { // the request logging
 		return

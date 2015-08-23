@@ -8,6 +8,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/gorilla/context"
+	"github.com/justinas/alice"
+
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/share/assets"
@@ -27,15 +30,22 @@ func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error 
 	errlog, errclose := ostent.NewErrorLog()
 	defer errclose()
 
-	if index := chain.ThenFunc(ostent.IndexFunc(taggedbin, templates.IndexTemplate,
-		DelayFlag)); true {
-		mux.Handler("GET", "/", index)
-		mux.Handler("HEAD", "/", index)
-	}
+	indexChain := chain.Append(context.ClearHandler,
+		ostent.AddContext(ostent.CIndexTemplate, templates.IndexTemplate),
+		ostent.AddContext(ostent.CMinDelay, DelayFlag),
+		ostent.AddContext(ostent.CTaggedBin, taggedbin))
 
-	// chain is not used -- access is passed to log with.
-	mux.HandlerFunc("GET", "/index.ws", ostent.IndexWSFunc(access, errlog, DelayFlag))
-	mux.HandlerFunc("GET", "/index.sse", ostent.IndexSSEFunc(access, DelayFlag))
+	indexHandler := indexChain.ThenFunc(ostent.Index)
+	mux.Handler("GET", "/", indexHandler)
+	mux.Handler("HEAD", "/", indexHandler)
+
+	// chain is not used -- access to log with is passed in context.
+	wschain := alice.New(context.ClearHandler,
+		ostent.AddContext(ostent.CAccess, access),
+		ostent.AddContext(ostent.CErrorLog, errlog),
+		ostent.AddContext(ostent.CMinDelay, DelayFlag))
+	mux.Handler("GET", "/index.ws", wschain.ThenFunc(ostent.IndexWS))
+	mux.Handler("GET", "/index.sse", wschain.ThenFunc(ostent.IndexSSE))
 
 	if !taggedbin { // dev-only
 		mux.Handler("GET", "/panic", chain.ThenFunc(

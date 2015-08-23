@@ -400,13 +400,12 @@ func (w dummyStatus) Write(b []byte) (int, error) {
 	// return len(b), nil
 }
 
-func IndexWSFunc(access *Access, errlog *log.Logger, mindelay flags.Delay) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, req *http.Request) {
-		IndexWS(access, errlog, mindelay, w, req)
-	}
-}
-
-func IndexWS(access *Access, errlog *log.Logger, mindelay flags.Delay, w http.ResponseWriter, req *http.Request) {
+func IndexWS(w http.ResponseWriter, req *http.Request) {
+	var (
+		access   = ContextAccess(req)
+		errlog   = ContextErrorLog(req)
+		mindelay = ContextMinDelay(req)
+	)
 	// Upgrader.Upgrade() has Origin check if .CheckOrigin is nil
 	upgrader := websocket.Upgrader{
 		HandshakeTimeout: 5 * time.Second,
