@@ -47,10 +47,6 @@ func NewAccess(taggedbin bool) *Access {
 	return a
 }
 
-func (a *Access) PanicHandler(w http.ResponseWriter, req *http.Request, recd interface{}) {
-	a.Constructor(PanicHandlerFunc(a.TaggedBin, recd)).ServeHTTP(w, req)
-}
-
 func (a *Access) Constructor(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		start := time.Now()

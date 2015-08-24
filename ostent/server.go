@@ -35,6 +35,7 @@ const (
 	CErrorLog
 	CIndexTemplate
 	CMinDelay
+	CPanicError // has no getter
 	CTaggedBin
 )
 
@@ -55,7 +56,14 @@ func NewServery(taggedbin bool, extramap Muxmap) (*httprouter.Router, alice.Chai
 	access := NewAccess(taggedbin)
 	chain := alice.New(access.Constructor)
 	mux := httprouter.New()
-	mux.PanicHandler = access.PanicHandler
+	mux.NotFound = chain.ThenFunc(http.NotFound)
+	phandler := chain.Append(context.ClearHandler,
+		AddContext(CTaggedBin, taggedbin)).
+		ThenFunc(PanicHandler)
+	mux.PanicHandler = func(w http.ResponseWriter, r *http.Request, recd interface{}) {
+		context.Set(r, CPanicError, recd)
+		phandler.ServeHTTP(w, r)
+	}
 	for path, handler := range extramap {
 		h := chain.Then(handler)
 		mux.Handler("GET", path, h)
