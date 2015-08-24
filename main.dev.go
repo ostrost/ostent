@@ -26,9 +26,8 @@ var (
 )
 
 func main() {
-	flag.Usage = commands.UsageFunc(flag.CommandLine)
 	webserver := commands.NewWebserver(8050).AddCommandLine()
-	flag.Parse()
+	commands.Parse(flag.CommandLine, os.Args[1:])
 
 	errd, atexit := commands.ArgCommands()
 	defer atexit()

@@ -20,7 +20,7 @@ type assetsRestore struct {
 	destdir string
 }
 
-func assetsRestoreCommand(fs *flag.FlagSet, loggerOptions ...extpoints.SetupLog) (extpoints.CommandHandler, io.Writer) {
+func (_ Assets) SetupCommand(fs *flag.FlagSet, loggerOptions ...extpoints.SetupLog) (extpoints.CommandHandler, io.Writer) {
 	ae := &assetsRestore{
 		destdir: ostent.VERSION,
 		Log:     NewLog("[ostent restore-assets] ", loggerOptions...),
@@ -85,6 +85,8 @@ func (ae assetsRestore) Check(err error) {
 	}
 }
 
+type Assets struct{}
+
 func init() {
-	AddCommand("restore-assets", assetsRestoreCommand)
+	extpoints.Commands.Register(Assets{}, "restore-assets")
 }

@@ -27,10 +27,11 @@ func init() {
 }
 
 func main() {
-	flag.Usage = commands.UsageFunc(flag.CommandLine)
-	webserver := commands.NewWebserver(8050).AddCommandLine()
-	upgrade := commands.NewUpgrade().AddCommandLine()
-	flag.Parse()
+	var (
+		webserver = commands.NewWebserver(8050).AddCommandLine()
+		upgrade   = commands.NewUpgrade().AddCommandLine()
+	)
+	commands.Parse(flag.CommandLine, os.Args[1:])
 
 	errd, atexit := commands.ArgCommands()
 	defer atexit()

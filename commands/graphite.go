@@ -19,7 +19,7 @@ type Graphite struct {
 	ServerAddr flags.Bind
 }
 
-func graphiteCommandLine(cli *flag.FlagSet) extpoints.CommandLineHandler {
+func (_ Graphites) SetupFlagSet(cli *flag.FlagSet) extpoints.CommandLineHandler {
 	gr := &Graphite{
 		Log:        NewLog("[ostent graphite] "),
 		DelayFlag:  flags.Delay{Duration: 10 * time.Second}, // 10s default
@@ -79,6 +79,8 @@ func (cd *Carbond) Tack() {
 	}
 }
 
+type Graphites struct{}
+
 func init() {
-	AddCommandLine(graphiteCommandLine)
+	extpoints.CommandLines.Register(Graphites{}, "graphite")
 }

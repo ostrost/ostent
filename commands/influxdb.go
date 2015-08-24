@@ -19,7 +19,7 @@ type Influx struct {
 	Password  string
 }
 
-func influxdbCommandLine(cli *flag.FlagSet) extpoints.CommandLineHandler {
+func (_ Influxes) SetupFlagSet(cli *flag.FlagSet) extpoints.CommandLineHandler {
 	ix := &Influx{
 		DelayFlag: flags.Delay{Duration: 10 * time.Second}, // 10s default
 	}
@@ -45,6 +45,8 @@ func influxdbCommandLine(cli *flag.FlagSet) extpoints.CommandLineHandler {
 	}
 }
 
+type Influxes struct{}
+
 func init() {
-	AddCommandLine(influxdbCommandLine)
+	extpoints.CommandLines.Register(Influxes{}, "influxdb")
 }

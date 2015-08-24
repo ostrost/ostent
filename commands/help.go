@@ -11,24 +11,25 @@ import (
 	"github.com/ostrost/ostent/commands/extpoints"
 )
 
-func UsageFunc(fs *flag.FlagSet) func() {
+func (h *help) UsageFunc(fs *flag.FlagSet) func() {
 	return func() {
 		// default usage
-		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+		fmt.Fprintf(h.Output, "Usage of %s:\n", os.Args[0])
 		fs.PrintDefaults() // flag.PrintDefaults()
 		// continued usage:
-		newHelp(os.Stderr).Run()
+		h.Run()
 	}
 }
 
 type help struct {
+	Output    io.Writer
 	Log       *extpoints.Log
 	isCommand bool
 	listing   string
 }
 
-func (h help) usage(k string, makes makeCommandHandler) {
-	fs, _, _ := setupFlagset(k, makes, []extpoints.SetupLog{func(l *extpoints.Log) {
+func (h help) usage(k string, cmd extpoints.Command) {
+	fs, _, _ := setupFlagset(k, cmd, []extpoints.SetupLog{func(l *extpoints.Log) {
 		l.Out = h.Log.Out // although `makes' must not use l.Out outside the Run
 	}})
 	// fs.Usage is ignored
@@ -43,43 +44,33 @@ func (h help) usage(k string, makes makeCommandHandler) {
 }
 
 func (h *help) Run() {
-	commands.mutex.Lock()
-	defer commands.mutex.Unlock()
 	if h.listing != "" {
-		found := false
-		for _, name := range commands.added.Names {
-			if name == h.listing {
-				found = true
-				break
-			}
-		}
-		if !found {
+		cmd := extpoints.Commands.Lookup(h.listing)
+		if cmd == nil {
 			log.Fatalf("%s: No such command\n", h.listing)
-		} else {
-			h.Log.Println("Usage of command:")
-			h.Log.Printf("   %s\n", h.listing)
-			if makes, ok := commands.added.makes[h.listing]; ok {
-				h.usage(h.listing, makes)
-			}
+			return
 		}
+		h.Log.Println("Usage of command:")
+		h.Log.Printf("   %s\n", h.listing)
+		h.usage(h.listing, cmd)
 		return
 	}
-	sort.Strings(commands.added.Names)
 	fstline := "Commands available:"
 	if !h.isCommand {
 		fstline = fmt.Sprintf("Commands of %s:", os.Args[0]) // as in usage
 	}
 	h.Log.Println(fstline)
-	for _, name := range commands.added.Names {
+	names := extpoints.Commands.Names()
+	sort.Strings(names)
+	for _, name := range names {
 		h.Log.Printf("   %s\n", name)
-		if makes, ok := commands.added.makes[name]; ok {
-			h.usage(name, makes)
-		}
+		h.usage(name, extpoints.Commands.Lookup(name))
 	}
 }
 
-func newHelp(logout io.Writer, loggerOptions ...extpoints.SetupLog) *help {
+func NewHelp(logout io.Writer, loggerOptions ...extpoints.SetupLog) *help {
 	return &help{
+		Output: logout,
 		Log: NewLog("", append([]extpoints.SetupLog{
 			func(l *extpoints.Log) {
 				l.Out = logout
@@ -89,13 +80,15 @@ func newHelp(logout io.Writer, loggerOptions ...extpoints.SetupLog) *help {
 	}
 }
 
-func setupCommands(fs *flag.FlagSet, loggerOptions ...extpoints.SetupLog) (extpoints.CommandHandler, io.Writer) {
-	h := newHelp(os.Stdout, loggerOptions...)
+func (_ Helps) SetupCommand(fs *flag.FlagSet, loggerOptions ...extpoints.SetupLog) (extpoints.CommandHandler, io.Writer) {
+	h := NewHelp(os.Stdout, loggerOptions...)
 	h.isCommand = true
 	fs.StringVar(&h.listing, "h", "", "A command")
 	return h.Run, h.Log
 }
 
+type Helps struct{}
+
 func init() {
-	AddCommand("commands", setupCommands)
+	extpoints.Commands.Register(Helps{}, "help")
 }

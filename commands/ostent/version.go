@@ -29,12 +29,12 @@ func NewVersion(logOptions ...extpoints.SetupLog) *Version {
 	}
 }
 
-func VersionCommand(_ *flag.FlagSet, logOptions ...extpoints.SetupLog) (extpoints.CommandHandler, io.Writer) {
+func (_ Versions) SetupCommand(_ *flag.FlagSet, logOptions ...extpoints.SetupLog) (extpoints.CommandHandler, io.Writer) {
 	v := NewVersion(logOptions...)
 	return v.Run, v.Log
 }
 
-func VersionCLI(cli *flag.FlagSet) extpoints.CommandLineHandler {
+func (_ Versions) SetupFlagSet(cli *flag.FlagSet) extpoints.CommandLineHandler {
 	var fv bool
 	cli.BoolVar(&fv, "v", false, "Short for version")
 	cli.BoolVar(&fv, "version", false, "Print version and exit")
@@ -47,7 +47,9 @@ func VersionCLI(cli *flag.FlagSet) extpoints.CommandLineHandler {
 	}
 }
 
+type Versions struct{}
+
 func init() {
-	commands.AddCommand("version", VersionCommand)
-	commands.AddCommandLine(VersionCLI)
+	extpoints.Commands.Register(Versions{}, "version")
+	extpoints.CommandLines.Register(Versions{}, "version")
 }

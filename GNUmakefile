@@ -55,6 +55,7 @@ endif
 init:
 	go get -u -v \
 github.com/jteeuwen/go-bindata/go-bindata \
+github.com/progrium/go-extpoints \
 github.com/skelterjohn/rerun \
 github.com/yosssi/ace \
 golang.org/x/net/html
@@ -72,6 +73,8 @@ test:
 covertest:           ; go test -coverprofile=coverage.out -covermode=count -v $(singletestpackage)
 coverfunc: covertest ; go tool  cover  -func=coverage.out
 coverhtml: covertest ; go tool  cover  -html=coverage.out
+
+commands/extpoints/extpoints.go: commands/extpoints/interface.go ; cd $(dir $@) && go generate
 
 al: $(packagefiles) $(devpackagefiles)
 # al: like `all' but without final go build $(package). For when rerun does the build

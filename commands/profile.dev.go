@@ -17,7 +17,7 @@ type ProfileHeap struct {
 	File   *os.File
 }
 
-func ProfileHeapCLI(cli *flag.FlagSet) extpoints.CommandLineHandler {
+func (_ ProfilesHeap) SetupFlagSet(cli *flag.FlagSet) extpoints.CommandLineHandler {
 	ph := &ProfileHeap{
 		Log: NewLog("[ostent profile-heap] "),
 	}
@@ -56,7 +56,7 @@ type ProfileCPU struct {
 	File   *os.File
 }
 
-func ProfileCPUCLI(cli *flag.FlagSet) extpoints.CommandLineHandler {
+func (_ ProfilesCPU) SetupFlagSet(cli *flag.FlagSet) extpoints.CommandLineHandler {
 	pc := &ProfileCPU{
 		Log: NewLog("[ostent profile-cpu] "),
 	}
@@ -88,7 +88,10 @@ func (pc *ProfileCPU) Run() (err error) {
 	return err
 }
 
+type ProfilesCPU struct{}
+type ProfilesHeap struct{}
+
 func init() {
-	AddCommandLine(ProfileCPUCLI)
-	AddCommandLine(ProfileHeapCLI)
+	extpoints.CommandLines.Register(ProfilesCPU{}, "profile-cpu")
+	extpoints.CommandLines.Register(ProfilesHeap{}, "profile-heap")
 }

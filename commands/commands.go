@@ -6,63 +6,18 @@ import (
 	"io"
 	"log"
 	"os"
-	"sync"
 
 	"github.com/ostrost/ostent/commands/extpoints"
 )
 
-type atexitMaker interface {
-	makeAtexitHandler() extpoints.AtexitHandler
-}
-
-type makeSub func(*flag.FlagSet, []string) (extpoints.CommandHandler, error, []string)
-type makeCommandHandler func(*flag.FlagSet, ...extpoints.SetupLog) (extpoints.CommandHandler, io.Writer)
-
-type addedCommands struct {
-	makes map[string]makeCommandHandler
-	Names []string
-}
-
-var (
-	commands = struct {
-		mutex sync.Mutex
-		added addedCommands
-	}{
-		added: addedCommands{
-			makes: make(map[string]makeCommandHandler),
-		},
-	}
-	commandline = struct {
-		mutex sync.Mutex
-		added []extpoints.CommandLineHandler
-	}{}
-)
-
-func AddCommandLine(hfunc func(*flag.FlagSet) extpoints.CommandLineHandler) {
-	s := hfunc(flag.CommandLine) // NB global flag.CommandLine
-	if s == nil {
-		return
-	}
-	commandline.mutex.Lock()
-	defer commandline.mutex.Unlock()
-	commandline.added = append(commandline.added, s)
-}
-
-func AddCommand(name string, makes makeCommandHandler) {
-	commands.mutex.Lock()
-	defer commands.mutex.Unlock()
-	commands.added.makes[name] = makes
-	commands.added.Names = append(commands.added.Names, name)
-}
-
-func setupFlagset(name string, makes makeCommandHandler, loggerSetups []extpoints.SetupLog) (*flag.FlagSet, extpoints.CommandHandler, io.Writer) {
+func setupFlagset(name string, cmd extpoints.Command, loggerSetups []extpoints.SetupLog) (*flag.FlagSet, extpoints.CommandHandler, io.Writer) {
 	fs := flag.NewFlagSet(name, flag.ContinueOnError)
-	run, output := makes(fs, loggerSetups...)
+	run, output := cmd.SetupCommand(fs, loggerSetups...)
 	return fs, run, output
 }
 
-func setup(name string, arguments []string, makes makeCommandHandler, loggerSetups []extpoints.SetupLog) (extpoints.CommandHandler, error, []string) {
-	fs, run, output := setupFlagset(name, makes, loggerSetups)
+func setup(name string, arguments []string, cmd extpoints.Command, loggerSetups []extpoints.SetupLog) (extpoints.CommandHandler, error, []string) {
+	fs, run, output := setupFlagset(name, cmd, loggerSetups)
 	err := fs.Parse(arguments)
 	if err == nil && output != nil {
 		fs.SetOutput(output)
@@ -75,11 +30,11 @@ func ParseCommand(handlers []extpoints.CommandHandler, args []string, loggerOpti
 		return handlers, nil
 	}
 	name := args[0]
-	ctor, ok := commands.added.makes[name]
-	if !ok {
+	cmd := extpoints.Commands.Lookup(name)
+	if cmd == nil {
 		return handlers, fmt.Errorf("%s: No such command\n", name)
 	}
-	handler, err, nextargs := setup(name, args[1:], ctor, loggerOptions)
+	handler, err, nextargs := setup(name, args[1:], cmd, loggerOptions)
 	if err != nil {
 		return handlers, err
 	}
@@ -87,8 +42,6 @@ func ParseCommand(handlers []extpoints.CommandHandler, args []string, loggerOpti
 }
 
 func parseCommands() ([]extpoints.CommandHandler, error) {
-	commands.mutex.Lock()
-	defer commands.mutex.Unlock()
 	return ParseCommand([]extpoints.CommandHandler{}, flag.Args() /* no SetupLog passed */)
 }
 
@@ -108,12 +61,9 @@ func ArgCommands() (bool, extpoints.AtexitHandler) {
 	}
 
 	if stop := func() bool {
-		commandline.mutex.Lock()
-		defer commandline.mutex.Unlock()
-
-		if len(commandline.added) > 0 {
+		if len(CLIHandlers) > 0 {
 			stop := false
-			for _, clh := range commandline.added {
+			for _, clh := range CLIHandlers {
 				if clh == nil {
 					continue
 				}
@@ -143,6 +93,16 @@ func ArgCommands() (bool, extpoints.AtexitHandler) {
 		handler()
 	}
 	return true, atexit
+}
+
+var CLIHandlers []extpoints.CommandLineHandler
+
+func Parse(fs *flag.FlagSet, arguments []string) {
+	for _, cli := range extpoints.CommandLines.All() {
+		CLIHandlers = append(CLIHandlers, cli.SetupFlagSet(fs))
+	}
+	fs.Usage = NewHelp(os.Stderr).UsageFunc(fs)
+	fs.Parse(arguments)
 }
 
 func NewLog(prefix string, options ...extpoints.SetupLog) *extpoints.Log {

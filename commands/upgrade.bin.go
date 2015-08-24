@@ -148,14 +148,6 @@ func (up upgrade) HadUpgrade() bool {
 	return up.hadUpgrade
 }
 
-func (up *upgrade) AddCommandLine() *upgrade {
-	AddCommandLine(func(cli *flag.FlagSet) extpoints.CommandLineHandler {
-		cli.BoolVar(&up.UpgradeLater, "upgradelater", false, "Upgrade later.")
-		return nil
-	})
-	return up
-}
-
 func NewUpgrade(loggerOptions ...extpoints.SetupLog) *upgrade {
 	return &upgrade{
 		Log: NewLog("[ostent upgrade] ", loggerOptions...),
@@ -169,10 +161,18 @@ func (u Upgrades) SetupCommand(fs *flag.FlagSet, loggerOptions ...extpoints.Setu
 	return up.Run, up.Log
 }
 
+func (up *upgrade) SetupFlagSet(cli *flag.FlagSet) extpoints.CommandLineHandler {
+	cli.BoolVar(&up.UpgradeLater, "upgradelater", false, "Upgrade later.")
+	return nil
+}
+
+func (up *upgrade) AddCommandLine() *upgrade {
+	extpoints.CommandLines.Register(up, "upgrade")
+	return up
+}
+
 type Upgrades struct{}
 
 func init() {
-	u := Upgrades{}
-	AddCommand("upgrade", u.SetupCommand)
-	// extpoints.Commands.Register(u, "upgrade")
+	extpoints.Commands.Register(Upgrades{}, "upgrade")
 }

@@ -16,7 +16,7 @@ type Librato struct {
 	Email, Token, Source string
 }
 
-func LibratoCommandLine(cli *flag.FlagSet) extpoints.CommandLineHandler {
+func (_ Libratos) SetupFlagSet(cli *flag.FlagSet) extpoints.CommandLineHandler {
 	hostname, err := ostent.GetHostname()
 	if err != nil {
 		hostname = ""
@@ -46,6 +46,8 @@ func LibratoCommandLine(cli *flag.FlagSet) extpoints.CommandLineHandler {
 	}
 }
 
+type Libratos struct{}
+
 func init() {
-	AddCommandLine(LibratoCommandLine)
+	extpoints.CommandLines.Register(Libratos{}, "librato")
 }

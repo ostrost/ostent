@@ -43,11 +43,13 @@ func NewWebserver(defport int) *webserver {
 	}
 }
 
+func (ws *webserver) SetupFlagSet(cli *flag.FlagSet) extpoints.CommandLineHandler {
+	cli.Var(&ws.Bind, "b", "short for bind")
+	cli.Var(&ws.Bind, "bind", "Bind `address`")
+	return nil
+}
+
 func (ws *webserver) AddCommandLine() *webserver {
-	AddCommandLine(func(cli *flag.FlagSet) extpoints.CommandLineHandler {
-		cli.Var(&ws.Bind, "b", "short for bind")
-		cli.Var(&ws.Bind, "bind", "Bind `address`")
-		return nil
-	})
+	extpoints.CommandLines.Register(ws, "webserver")
 	return ws
 }
