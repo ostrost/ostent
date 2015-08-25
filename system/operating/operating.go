@@ -324,16 +324,16 @@ type StandardMetricString struct {
 	Mutex sync.Mutex
 }
 
-type MetricStringSnapshot StandardMetricString
+type MetricStringSnapshot string
 
-func (mss *MetricStringSnapshot) Snapshot() MetricString { return mss }
-func (mss *MetricStringSnapshot) Value() string          { return mss.string }
-func (*MetricStringSnapshot) Update(string)              { panic("Update called on a MetricStringSnapshot") }
+func (mss MetricStringSnapshot) Snapshot() MetricString { return mss }
+func (mss MetricStringSnapshot) Value() string          { return string(mss) }
+func (MetricStringSnapshot) Update(string)              { panic("Update called on a MetricStringSnapshot") }
 
 func (sms *StandardMetricString) Snapshot() MetricString {
 	sms.Mutex.Lock()
 	defer sms.Mutex.Unlock()
-	return ((*MetricStringSnapshot)(sms))
+	return MetricStringSnapshot(sms.string)
 }
 
 func (sms *StandardMetricString) Value() string {
