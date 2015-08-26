@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"strings"
 
-	"github.com/ostrost/ostent/templateutil/templatepipe"
+	"github.com/ostrost/ostent/params"
 )
 
 func (f JSXFuncs) Class() string    { return "className" }
@@ -13,27 +13,156 @@ func (f HTMLFuncs) Class() string   { return "class" }
 func (f JSXFuncs) Colspan() string  { return "colSpan" }
 func (f HTMLFuncs) Colspan() string { return "colspan" }
 
-// Key returns empty attribute.
-func (f HTMLFuncs) Key(_ string, x interface{}) (empty template.HTMLAttr) { return }
+func (f JSXFuncs) ClassNonzero(x interface{}, class, sndclass string) template.HTMLAttr {
+	return SprintfAttr(` className={%s.Absolute != 0 ? %q : %q}`,
+		x.(Uncurler).Uncurl(), class, sndclass)
+}
+
+func (f HTMLFuncs) ClassNonzero(x interface{}, class, sndclass string) template.HTMLAttr {
+	if x.(params.Num).Absolute == 0 {
+		class = sndclass
+	}
+	return SprintfAttr(" class=%q", class)
+}
+
+func (f JSXFuncs) ClassPositive(x interface{}, class, sndclass string) template.HTMLAttr {
+	return SprintfAttr(` className={!%s.Negative ? %q : %q}`,
+		x.(Uncurler).Uncurl(), class, sndclass)
+}
+
+func (f HTMLFuncs) ClassPositive(x interface{}, class, sndclass string) template.HTMLAttr {
+	if x.(params.Num).Negative {
+		class = sndclass
+	}
+	return SprintfAttr(" class=%q", class)
+}
+
+func (f JSXFuncs) ClassTab(num, tab interface{}, cmp int, class, sndclass string) template.HTMLAttr {
+	return SprintfAttr(` className={%s.Absolute != 0 && %s.Absolute == %d ? %q : %q}`,
+		num.(Uncurler).Uncurl(), tab.(Uncurler).Uncurl(), cmp, class, sndclass)
+}
+
+func (f HTMLFuncs) ClassTab(num, tab interface{}, cmp int, class, sndclass string) template.HTMLAttr {
+	if num.(params.Num).Absolute == 0 || tab.(params.Num).Absolute != cmp {
+		class = sndclass
+	}
+	return SprintfAttr(" class=%q", class)
+}
 
 // Key returns key attribute: prefix + uncurled x being an Uncurler.
 func (f JSXFuncs) Key(prefix string, x interface{}) template.HTMLAttr {
 	return SprintfAttr(" key={%q+%s}", prefix+"-", x.(Uncurler).Uncurl())
 }
 
-func SprintfAttr(format string, args ...interface{}) template.HTMLAttr {
-	return template.HTMLAttr(fmt.Sprintf(format, args...))
+// Key returns empty attribute.
+func (f HTMLFuncs) Key(_ string, x interface{}) (empty template.HTMLAttr) { return }
+
+func (f JSXFuncs) FuncHrefT() interface{} {
+	return func(_, n Uncurler) (template.HTMLAttr, error) {
+		base, last := f.Split(n)
+		return SprintfAttr(" href={%s.Tlinks.%s} onClick={this.handleClick}",
+			base, last), nil
+	}
 }
 
-type Uncurler interface {
-	Uncurl() string
+func (f HTMLFuncs) FuncHrefT() interface{} { return f.ParamsFuncs.HrefT }
+
+func (f JSXFuncs) FuncLessD() interface{} {
+	return func(_, dur Uncurler, bclass string) (params.ALink, error) {
+		return f.Dlink(dur, bclass, "Less", "-")
+	}
+}
+
+func (f JSXFuncs) FuncMoreD() interface{} {
+	return func(_, dur Uncurler, bclass string) (params.ALink, error) {
+		return f.Dlink(dur, bclass, "More", "+")
+	}
+}
+
+func (f HTMLFuncs) FuncLessD() interface{} { return f.ParamsFuncs.LessD }
+func (f HTMLFuncs) FuncMoreD() interface{} { return f.ParamsFuncs.MoreD }
+
+func (f JSXFuncs) FuncLessN() interface{} {
+	return func(_, num Uncurler, bclass string) (params.ALink, error) {
+		return f.Nlink(num, bclass, "Less", "-")
+	}
+}
+
+func (f JSXFuncs) FuncMoreN() interface{} {
+	return func(_, num Uncurler, bclass string) (params.ALink, error) {
+		return f.Nlink(num, bclass, "More", "+")
+	}
+}
+
+func (f JSXFuncs) FuncZeroN() interface{} {
+	return func(_, num Uncurler, bclass string) (params.ALink, error) {
+		return f.Nlink(num, bclass, "Zero", "")
+	}
+}
+
+func (f HTMLFuncs) FuncLessN() interface{} { return f.ParamsFuncs.LessN }
+func (f HTMLFuncs) FuncMoreN() interface{} { return f.ParamsFuncs.MoreN }
+func (f HTMLFuncs) FuncZeroN() interface{} { return f.ParamsFuncs.ZeroN }
+
+func (f JSXFuncs) FuncVlink() interface{} {
+	return func(_, this Uncurler, cmp int, text, alignClass string) params.VLink {
+		base, last := f.Split(this)
+		return params.VLink{
+			AlignClass: alignClass,
+			CaretClass: fmt.Sprintf("{%s.Vlinks.%s[%d-1].%s}", base, last, cmp, "CaretClass"),
+			LinkClass:  fmt.Sprintf("{%s.Vlinks.%s[%d-1].%s}", base, last, cmp, "LinkClass"),
+			LinkHref:   fmt.Sprintf("{%s.Vlinks.%s[%d-1].%s}", base, last, cmp, "LinkHref"),
+			LinkText:   text, // always static
+		}
+	}
+}
+
+func (f HTMLFuncs) FuncVlink() interface{} { return f.ParamsFuncs.Vlink }
+
+func (f JSXFuncs) Dlink(v Uncurler, bclass, which, badge string) (params.ALink, error) {
+	base, last := f.Split(v)
+	var (
+		href   = fmt.Sprintf( /**/ "{%s.Dlinks.%s.%s.Href}", base, last, which)
+		text   = fmt.Sprintf( /**/ "{%s.Dlinks.%s.%s.Text}", base, last, which)
+		eclass = fmt.Sprintf( /* */ "%s.Dlinks.%s.%s.ExtraClass", base, last, which) // not curled
+	)
+	return params.ALink{
+		Href:  href,
+		Text:  text,
+		Badge: badge,
+		Class: f.ConcatClass(bclass, eclass),
+	}, nil
+}
+
+func (f JSXFuncs) ConcatClass(bclass, eclass string) string {
+	return fmt.Sprintf("{%q + \" \" + (%s != null ? %s : \"\")}", bclass, eclass, eclass)
+}
+
+func (f JSXFuncs) Nlink(v Uncurler, bclass, which, badge string) (params.ALink, error) {
+	base, last := f.Split(v)
+	var (
+		href   = fmt.Sprintf( /**/ "{%s.Nlinks.%s.%s.Href}", base, last, which)
+		text   = fmt.Sprintf( /**/ "{%s.Nlinks.%s.%s.Text}", base, last, which)
+		eclass = fmt.Sprintf( /* */ "%s.Nlinks.%s.%s.ExtraClass", base, last, which) // not curled
+	)
+	return params.ALink{
+		Href:  href,
+		Text:  text,
+		Badge: badge,
+		Class: f.ConcatClass(bclass, eclass),
+	}, nil
+}
+
+func (f JSXFuncs) Split(v Uncurler) (string, string) {
+	split := strings.Split(v.Uncurl(), ".")
+	return strings.Join(split[:len(split)-1], "."), split[len(split)-1]
 }
 
 // JSXFuncs has methods implementing Functor.
 type JSXFuncs struct{}
 
 // HTMLFuncs has methods implementing Functor.
-type HTMLFuncs struct{}
+type HTMLFuncs struct{ params.ParamsFuncs }
 
 // MakeMap is dull but required.
 func (f JSXFuncs) MakeMap() template.FuncMap { return MakeMap(f) }
@@ -48,9 +177,21 @@ func MakeMap(f Functor) template.FuncMap {
 		"rowsset": func(interface{}) string { return "" }, // empty pipeline
 		// acepp overrides rowsset and adds setrows
 
-		"AttrKey": f.Key,
 		"class":   f.Class,
 		"colspan": f.Colspan,
+
+		"AttrKey":       f.Key,
+		"ClassNonzero":  f.ClassNonzero,
+		"ClassPositive": f.ClassPositive,
+		"ClassTab":      f.ClassTab,
+
+		"HrefT": f.FuncHrefT(),
+		"LessD": f.FuncLessD(),
+		"MoreD": f.FuncMoreD(),
+		"LessN": f.FuncLessN(),
+		"MoreN": f.FuncMoreN(),
+		"ZeroN": f.FuncZeroN(),
+		"Vlink": f.FuncVlink(),
 	}
 }
 
@@ -61,54 +202,24 @@ type Functor interface {
 	MakeMap() template.FuncMap
 	Class() string
 	Colspan() string
+	ClassNonzero(interface{}, string, string) template.HTMLAttr
+	ClassPositive(interface{}, string, string) template.HTMLAttr
+	ClassTab(interface{}, interface{}, int, string, string) template.HTMLAttr
 	Key(string, interface{}) template.HTMLAttr
+
+	FuncHrefT() interface{}
+	FuncLessD() interface{}
+	FuncMoreD() interface{}
+	FuncLessN() interface{}
+	FuncMoreN() interface{}
+	FuncZeroN() interface{}
+	FuncVlink() interface{}
 }
 
-/*
-func init() {
-	// check for Nota's interfaces compliance
-	_ = interface { ... }(templatepipe.Nota(nil))
-} */
-
-// SetKFunc constructs a func which
-// sets k key to templatepipe.Curly(string (n))
-// in passed interface{} (v) being a templatepipe.Nota.
-// SetKFunc is used by acepp only.
-func SetKFunc(k string) func(interface{}, string) interface{} {
-	return func(v interface{}, n string) interface{} {
-		if args := strings.Split(n, " "); len(args) > 1 {
-			var list []string
-			for _, arg := range args {
-				list = append(list, templatepipe.Curl(arg))
-			}
-			v.(templatepipe.Nota)[k] = list
-			return v
-		}
-		v.(templatepipe.Nota)[k] = templatepipe.Curl(n)
-		return v
-	}
+func SprintfAttr(format string, args ...interface{}) template.HTMLAttr {
+	return template.HTMLAttr(fmt.Sprintf(format, args...))
 }
 
-// GetKFunc constructs a func which
-// gets, deletes and returns k key
-// in passed interface{} (v) being a templatepipe.Nota.
-// GetKFunc is used by acepp only.
-func GetKFunc(k string) func(interface{}) interface{} {
-	return func(v interface{}) interface{} {
-		h, ok := v.(templatepipe.Nota)
-		if !ok {
-			return "" // empty pipeline, affects dispatch
-		}
-		n := h[k]
-		if args, ok := n.([]string); ok {
-			if len(args) > 1 {
-				h[k] = args[1:]
-			} else {
-				delete(h, k)
-			}
-			return args[0]
-		}
-		delete(h, k)
-		return n // may also be empty, affects dispatch
-	}
+type Uncurler interface {
+	Uncurl() string
 }

@@ -105,8 +105,8 @@ func main() {
 
 	funcs := aceopts.FuncMap
 	// override setrows & set the rowsset
-	funcs["setrows"] = templatefunc.SetKFunc(".OverrideRows")
-	funcs["rowsset"] = templatefunc.GetKFunc(".OverrideRows")
+	funcs["setrows"] = templatepipe.SetKFunc(".OverrideRows")
+	funcs["rowsset"] = templatepipe.GetKFunc(".OverrideRows")
 
 	jsdefines, err := templatetext.New(Base(inputFile, aceopts)).
 		Funcs(templatetext.FuncMap(funcs)).ParseFiles(inputFile)

@@ -80,6 +80,7 @@ func (d *Delay) Tick() {
 
 type Params struct {
 	Schema
+	ParamsFuncs
 	Defaults map[interface{}]Num `json:"-"`
 	Delays   map[string]*Delay   `json:"-"`
 	MinDelay flags.Delay         `json:"-"`
@@ -123,6 +124,22 @@ type Dlinks struct {
 	More, Less ALink
 }
 
+type ALink struct {
+	Href       string
+	Text       string
+	Badge      string `json:"-"`
+	Class      string `json:"-"`
+	ExtraClass string `json:",omitempty"`
+}
+
+type VLink struct {
+	AlignClass string
+	CaretClass string
+	LinkClass  string
+	LinkHref   string
+	LinkText   string `json:"-"` // static
+}
+
 func (p *Params) MarshalJSON() ([]byte, error) {
 	d := struct {
 		Schema
@@ -155,9 +172,9 @@ func (p Params) Nlinks() map[string]Nlinks {
 		num := val.Field(i).Addr().Interface().(*Num)
 		nl := Nlinks{}
 		// errors are ignored
-		nl.Zero, _ = p.ZeroN(num, "")
-		nl.More, _ = p.MoreN(num, "")
-		nl.Less, _ = p.LessN(num, "")
+		nl.Zero, _ = p.ZeroN(&p, num, "")
+		nl.More, _ = p.MoreN(&p, num, "")
+		nl.Less, _ = p.LessN(&p, num, "")
 		m[sf.Name] = nl
 	}
 	return m
@@ -178,8 +195,8 @@ func (p Params) Dlinks() map[string]Dlinks {
 		d := val.Field(i).Addr().Interface().(*Delay)
 		dl := Dlinks{}
 		// errors are ignored
-		dl.More, _ = p.MoreD(d, "")
-		dl.Less, _ = p.LessD(d, "")
+		dl.More, _ = p.MoreD(&p, d, "")
+		dl.Less, _ = p.LessD(&p, d, "")
 		m[sf.Name] = dl
 	}
 	return m
@@ -204,7 +221,7 @@ func (p *Params) Vlinks() map[string][]VLink {
 			continue
 		}
 		for j := 1; j < maxn.Absolute+1; j++ { // indexed from 1
-			if v, err := p.Vlink(v, j, "", ""); err == nil { // err is gone
+			if v, err := p.Vlink(p, v, j, "", ""); err == nil { // err is gone
 				vl = append(vl, v)
 			}
 		}
@@ -241,7 +258,7 @@ func (p *Params) Tlinks() map[string]string {
 		}
 		if sf.Type == NumType {
 			num := val.Field(i).Addr().Interface().(*Num)
-			if href, err := p.HrefToggleNegative(num); err == nil {
+			if href, err := p.EncodeT(num); err == nil {
 				m[sf.Name] = href
 			}
 		}
@@ -456,6 +473,35 @@ func (p Params) Encode() (string, error) {
 		return "", err
 	}
 	return values.Encode(), nil
+}
+
+func (p *Params) EncodeD(d *Delay, set time.Duration) (string, error) {
+	copy := d.D
+	d.D = set
+	qs, err := p.Encode()
+	d.D = copy
+	return "?" + qs, err
+}
+
+func (p *Params) EncodeT(num *Num) (string, error) {
+	num.Negative = !num.Negative
+	qs, err := p.Encode()
+	num.Negative = !num.Negative
+	return "?" + qs, err
+}
+
+func (p *Params) EncodeN(num *Num, absolute int, setNegative *bool) (string, error) {
+	copy, ncopy := num.Absolute, num.Negative
+	num.Absolute = absolute
+	if setNegative != nil {
+		num.Negative = *setNegative
+	}
+	qs, err := p.Encode()
+	num.Absolute = copy
+	if setNegative != nil {
+		num.Negative = ncopy
+	}
+	return "?" + qs, err
 }
 
 // RenamedConstError denotes an error.

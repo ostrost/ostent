@@ -1,17 +1,15 @@
-package templatefunc
+package templatepipe
 
 import (
 	"bytes"
 	"testing"
 	"text/template"
-
-	"github.com/ostrost/ostent/templateutil/templatepipe"
 )
 
 func ExecuteWithHashTest(t *testing.T, tm *template.Template, expected string) {
-	d := templatepipe.Dotted{}
-	d.Append([]string{"a"}, nil) // non-string result from templatepipe.Encurl
-	h := templatepipe.Encurl(templatepipe.CurlyX, d, 0)
+	d := Dotted{}
+	d.Append([]string{"a"}, nil) // non-string result from Encurl
+	h := Encurl(CurlyX, d, 0)
 	if _, ok := h.(string); ok {
 		t.Errorf("Encurl expected to return non-string on %+v input", d)
 	}
@@ -46,8 +44,8 @@ func TestKFuncs(t *testing.T) {
 
 func SetKText(t *testing.T, in, expected string) {
 	override := ".Override"
-	h := SetKFunc(override)(templatepipe.Nota{}, in)
-	d, ok := h.(templatepipe.Nota)[override]
+	h := SetKFunc(override)(Nota{}, in)
+	d, ok := h.(Nota)[override]
 	if !ok {
 		t.Errorf("SetK[%q] is not okd.", override)
 	}

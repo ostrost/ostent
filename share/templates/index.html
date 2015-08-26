@@ -125,7 +125,7 @@
     ></td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_cputable"}}{{$p := .Data.Params}}<table {{$p.AttrClassNonzero $p.CPUn "table table-hover" "collapse-hidden"}}
+*/}}{{define "defines::define_cputable"}}{{$p := .Data.Params}}<table {{ClassNonzero $p.CPUn "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
       ><th
@@ -165,10 +165,10 @@
     >{{$disk.Total}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_dfbytes_table"}}{{$p := .Data.Params}}<table {{$p.AttrClassTab $p.Dfn $p.Dft 2 "table table-hover" "collapse-hidden"}}
+*/}}{{define "defines::define_dfbytes_table"}}{{$p := .Data.Params}}<table {{ClassTab $p.Dfn $p.Dft 2 "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
-      >{{template "defines::headerenumlink" $p.Vlink $p.Dfk 1 "Device" ""}}{{template "defines::headerenumlink" $p.Vlink $p.Dfk 2 "Mounted" ""}}{{template "defines::headerenumlink" $p.Vlink $p.Dfk 3 "Avail" "text-right"}}{{template "defines::headerenumlink" $p.Vlink $p.Dfk 4 "Used" "text-right"}}{{template "defines::headerenumlink" $p.Vlink $p.Dfk 5 "Total" "text-right"}}</tr
+      >{{template "defines::headerenumlink" Vlink $p $p.Dfk 1 "Device" ""}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 3 "Avail" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 4 "Used" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 5 "Total" "text-right"}}</tr
     ></thead
   ><tbody
     >{{template "defines::define_dfbytes_rows" .}}</tbody
@@ -187,7 +187,7 @@
     >{{$disk.Inodes}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_dfinodes_table"}}{{$p := .Data.Params}}<table {{$p.AttrClassTab $p.Dfn $p.Dft 1 "table table-hover" "collapse-hidden"}}
+*/}}{{define "defines::define_dfinodes_table"}}{{$p := .Data.Params}}<table {{ClassTab $p.Dfn $p.Dft 1 "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
       ><th class="header"
@@ -219,7 +219,7 @@
     >{{$if.Out}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_ifbytes_table"}}{{$p := .Data.Params}}<table {{$p.AttrClassTab $p.Ifn $p.Ift 3 "table table-hover" "collapse-hidden"}}
+*/}}{{define "defines::define_ifbytes_table"}}{{$p := .Data.Params}}<table {{ClassTab $p.Ifn $p.Ift 3 "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
       ><th
@@ -267,7 +267,7 @@
     >{{$if.Out}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_iferrors_table"}}{{$p := .Data.Params}}<table {{$p.AttrClassTab $p.Ifn $p.Ift 2 "table table-hover" "collapse-hidden"}}
+*/}}{{define "defines::define_iferrors_table"}}{{$p := .Data.Params}}<table {{ClassTab $p.Ifn $p.Ift 2 "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
       ><th
@@ -307,7 +307,7 @@
     >{{$if.Out}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_ifpackets_table"}}{{$p := .Data.Params}}<table {{$p.AttrClassTab $p.Ifn $p.Ift 1 "table table-hover" "collapse-hidden"}}
+*/}}{{define "defines::define_ifpackets_table"}}{{$p := .Data.Params}}<table {{ClassTab $p.Ifn $p.Ift 1 "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
       ><th
@@ -345,7 +345,7 @@
     >{{$mem.Total}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_memtable"}}{{$p := .Data.Params}}<table {{$p.AttrClassNonzero $p.Memn "table table-hover" "collapse-hidden"}}
+*/}}{{define "defines::define_memtable"}}{{$p := .Data.Params}}<table {{ClassNonzero $p.Memn "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
       ><th
@@ -362,14 +362,14 @@
     >{{template "defines::define_memrows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_panelcpu"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.CPUn "" "panel panel-default"}}
-  >  <div   {{$p.AttrClassP $p.CPUn "" "panel-heading"}}
-    >    <a   {{$p.AttrHrefToggleNegative $p.CPUn}} {{class}}="panel-title btn-block"
-      >      <b {{$p.AttrClassP $p.CPUn "h4" "h4 bg-info"}}
+*/}}{{define "defines::define_panelcpu"}}{{$p := .Data.Params}}<div     {{ClassPositive $p.CPUn "" "panel panel-default"}}
+  >  <div   {{ClassPositive $p.CPUn "" "panel-heading"}}
+    >    <a   {{HrefT $p $p.CPUn}} {{class}}="panel-title btn-block"
+      >      <b {{ClassPositive $p.CPUn "h4" "h4 bg-info"}}
         >CPU</b
       >    </a
     >  </div
-  >  <table {{$p.AttrClassP $p.CPUn "table collapse-hidden" "table"}}
+  >  <table {{ClassPositive $p.CPUn "table collapse-hidden" "table"}}
     ><tr class="panel-config"
       ><td class="col-md-2"
         ><div class="nowrap text-right"
@@ -379,7 +379,7 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessD $p.CPUd "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreD $p.CPUd "btn btn-default"}}</div
+          >{{template "defines::badgedlinkleft" LessD $p $p.CPUd "btn btn-default"}}{{template "defines::badgedlinkright" MoreD $p $p.CPUd "btn btn-default"}}</div
         ></td
       ><td class="col-md-10" {{colspan}}="2"
         ></td
@@ -393,11 +393,11 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessN $p.CPUn "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreN $p.CPUn "btn btn-default"}}</div
+          >{{template "defines::badgedlinkleft" LessN $p $p.CPUn "btn btn-default"}}{{template "defines::badgedlinkright" MoreN $p $p.CPUn "btn btn-default"}}</div
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkright" $p.ZeroN $p.CPUn "btn btn-default"}}</div
+          >{{template "defines::badgedlinkright" ZeroN $p $p.CPUn "btn btn-default"}}</div
         ></td
       ><td class="col-md-10"
         ></td
@@ -405,14 +405,14 @@
     >  </table
   >  {{template "defines::define_cputable" .}}</div
 >{{end}}{{/*
-*/}}{{define "defines::define_paneldf"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.Dfn "" "panel panel-default"}}
-  >  <div   {{$p.AttrClassP $p.Dfn "" "panel-heading"}}
-    >    <a   {{$p.AttrHrefToggleNegative $p.Dfn}} {{class}}="panel-title btn-block"
-      >      <b {{$p.AttrClassP $p.Dfn "h4" "h4 bg-info"}}
+*/}}{{define "defines::define_paneldf"}}{{$p := .Data.Params}}<div     {{ClassPositive $p.Dfn "" "panel panel-default"}}
+  >  <div   {{ClassPositive $p.Dfn "" "panel-heading"}}
+    >    <a   {{HrefT $p $p.Dfn}} {{class}}="panel-title btn-block"
+      >      <b {{ClassPositive $p.Dfn "h4" "h4 bg-info"}}
         >Disk usage</b
       >    </a
     >  </div
-  >  <table {{$p.AttrClassP $p.Dfn "table collapse-hidden" "table"}}
+  >  <table {{ClassPositive $p.Dfn "table collapse-hidden" "table"}}
     ><tr class="panel-config"
       ><td class="col-md-2"
         ><div class="nowrap text-right"
@@ -422,7 +422,7 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessD $p.Dfd "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreD $p.Dfd "btn btn-default"}}</div
+          >{{template "defines::badgedlinkleft" LessD $p $p.Dfd "btn btn-default"}}{{template "defines::badgedlinkright" MoreD $p $p.Dfd "btn btn-default"}}</div
         ></td
       ><td class="col-md-10" {{colspan}}="2"
         ></td
@@ -436,11 +436,11 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessN $p.Dfn "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreN $p.Dfn "btn btn-default"}}</div
+          >{{template "defines::badgedlinkleft" LessN $p $p.Dfn "btn btn-default"}}{{template "defines::badgedlinkright" MoreN $p $p.Dfn "btn btn-default"}}</div
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkright" $p.ZeroN $p.Dfn "btn btn-default"}}</div
+          >{{template "defines::badgedlinkright" ZeroN $p $p.Dfn "btn btn-default"}}</div
         ></td
       ><td class="col-md-10"
         ></td
@@ -452,10 +452,10 @@
         ></td
       ><td {{colspan}}="3"
         ><ul class="nav nav-pills"
-          ><li {{$p.AttrClassTab $p.Dfn $p.Dft 1 "active" ""}}
-            >{{template "defines::enumlink" $p.Vlink $p.Dft 1 "Inodes" ""}}</li
-          ><li {{$p.AttrClassTab $p.Dfn $p.Dft 2 "active" ""}}
-            >{{template "defines::enumlink" $p.Vlink $p.Dft 2 "Bytes" ""}}</li
+          ><li {{ClassTab $p.Dfn $p.Dft 1 "active" ""}}
+            >{{template "defines::enumlink" Vlink $p $p.Dft 1 "Inodes" ""}}</li
+          ><li {{ClassTab $p.Dfn $p.Dft 2 "active" ""}}
+            >{{template "defines::enumlink" Vlink $p $p.Dft 2 "Bytes" ""}}</li
           ></ul
         ></td
       ></tr
@@ -463,14 +463,14 @@
   >  {{template "defines::define_dfinodes_table" .}}
   {{template "defines::define_dfbytes_table" .}}</div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelif"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.Ifn "" "panel panel-default"}}
-  >  <div   {{$p.AttrClassP $p.Ifn "" "panel-heading"}}
-    >    <a   {{$p.AttrHrefToggleNegative $p.Ifn}} {{class}}="panel-title btn-block"
-      >      <b {{$p.AttrClassP $p.Ifn "h4" "h4 bg-info"}}
+*/}}{{define "defines::define_panelif"}}{{$p := .Data.Params}}<div     {{ClassPositive $p.Ifn "" "panel panel-default"}}
+  >  <div   {{ClassPositive $p.Ifn "" "panel-heading"}}
+    >    <a   {{HrefT $p $p.Ifn}} {{class}}="panel-title btn-block"
+      >      <b {{ClassPositive $p.Ifn "h4" "h4 bg-info"}}
         >Interfaces</b
       >    </a
     >  </div
-  >  <table {{$p.AttrClassP $p.Ifn "table collapse-hidden" "table"}}
+  >  <table {{ClassPositive $p.Ifn "table collapse-hidden" "table"}}
     ><tr class="panel-config"
       ><td class="col-md-2"
         ><div class="nowrap text-right"
@@ -480,7 +480,7 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessD $p.Ifd "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreD $p.Ifd "btn btn-default"}}</div
+          >{{template "defines::badgedlinkleft" LessD $p $p.Ifd "btn btn-default"}}{{template "defines::badgedlinkright" MoreD $p $p.Ifd "btn btn-default"}}</div
         ></td
       ><td class="col-md-10" {{colspan}}="2"
         ></td
@@ -494,11 +494,11 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessN $p.Ifn "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreN $p.Ifn "btn btn-default"}}</div
+          >{{template "defines::badgedlinkleft" LessN $p $p.Ifn "btn btn-default"}}{{template "defines::badgedlinkright" MoreN $p $p.Ifn "btn btn-default"}}</div
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkright" $p.ZeroN $p.Ifn "btn btn-default"}}</div
+          >{{template "defines::badgedlinkright" ZeroN $p $p.Ifn "btn btn-default"}}</div
         ></td
       ><td class="col-md-10"
         ></td
@@ -510,12 +510,12 @@
         ></td
       ><td {{colspan}}="3"
         ><ul class="nav nav-pills"
-          ><li {{$p.AttrClassTab $p.Ifn $p.Ift 1 "active" ""}}
-            >{{template "defines::enumlink" $p.Vlink $p.Ift 1 "Packets" ""}}</li
-          ><li {{$p.AttrClassTab $p.Ifn $p.Ift 2 "active" ""}}
-            >{{template "defines::enumlink" $p.Vlink $p.Ift 2 "Errors" ""}}</li
-          ><li {{$p.AttrClassTab $p.Ifn $p.Ift 3 "active" ""}}
-            >{{template "defines::enumlink" $p.Vlink $p.Ift 3 "Bytes" ""}}</li
+          ><li {{ClassTab $p.Ifn $p.Ift 1 "active" ""}}
+            >{{template "defines::enumlink" Vlink $p $p.Ift 1 "Packets" ""}}</li
+          ><li {{ClassTab $p.Ifn $p.Ift 2 "active" ""}}
+            >{{template "defines::enumlink" Vlink $p $p.Ift 2 "Errors" ""}}</li
+          ><li {{ClassTab $p.Ifn $p.Ift 3 "active" ""}}
+            >{{template "defines::enumlink" Vlink $p $p.Ift 3 "Bytes" ""}}</li
           ></ul
         ></td
       ></tr
@@ -524,14 +524,14 @@
   {{template "defines::define_iferrors_table" .}}
   {{template "defines::define_ifbytes_table" .}}</div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelmem"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.Memn "" "panel panel-default"}}
-  >  <div   {{$p.AttrClassP $p.Memn "" "panel-heading"}}
-    >    <a   {{$p.AttrHrefToggleNegative $p.Memn}} {{class}}="panel-title btn-block"
-      >      <b {{$p.AttrClassP $p.Memn "h4" "h4 bg-info"}}
+*/}}{{define "defines::define_panelmem"}}{{$p := .Data.Params}}<div     {{ClassPositive $p.Memn "" "panel panel-default"}}
+  >  <div   {{ClassPositive $p.Memn "" "panel-heading"}}
+    >    <a   {{HrefT $p $p.Memn}} {{class}}="panel-title btn-block"
+      >      <b {{ClassPositive $p.Memn "h4" "h4 bg-info"}}
         >Memory</b
       >    </a
     >  </div
-  >  <table {{$p.AttrClassP $p.Memn "table collapse-hidden" "table"}}
+  >  <table {{ClassPositive $p.Memn "table collapse-hidden" "table"}}
     ><tr class="panel-config"
       ><td class="col-md-2"
         ><div class="nowrap text-right"
@@ -541,7 +541,7 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessD $p.Memd "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreD $p.Memd "btn btn-default"}}</div
+          >{{template "defines::badgedlinkleft" LessD $p $p.Memd "btn btn-default"}}{{template "defines::badgedlinkright" MoreD $p $p.Memd "btn btn-default"}}</div
         ></td
       ><td class="col-md-10" {{colspan}}="2"
         ></td
@@ -555,11 +555,11 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessN $p.Memn "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreN $p.Memn "btn btn-default"}}</div
+          >{{template "defines::badgedlinkleft" LessN $p $p.Memn "btn btn-default"}}{{template "defines::badgedlinkright" MoreN $p $p.Memn "btn btn-default"}}</div
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkright" $p.ZeroN $p.Memn "btn btn-default"}}</div
+          >{{template "defines::badgedlinkright" ZeroN $p $p.Memn "btn btn-default"}}</div
         ></td
       ><td class="col-md-10"
         ></td
@@ -567,14 +567,14 @@
     >  </table
   >  {{template "defines::define_memtable" .}}</div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelps"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.Psn "" "panel panel-default"}}
-  >  <div   {{$p.AttrClassP $p.Psn "" "panel-heading"}}
-    >    <a   {{$p.AttrHrefToggleNegative $p.Psn}} {{class}}="panel-title btn-block"
-      >      <b {{$p.AttrClassP $p.Psn "h4" "h4 bg-info"}}
+*/}}{{define "defines::define_panelps"}}{{$p := .Data.Params}}<div     {{ClassPositive $p.Psn "" "panel panel-default"}}
+  >  <div   {{ClassPositive $p.Psn "" "panel-heading"}}
+    >    <a   {{HrefT $p $p.Psn}} {{class}}="panel-title btn-block"
+      >      <b {{ClassPositive $p.Psn "h4" "h4 bg-info"}}
         >Processes</b
       >    </a
     >  </div
-  >  <table {{$p.AttrClassP $p.Psn "table collapse-hidden" "table"}}
+  >  <table {{ClassPositive $p.Psn "table collapse-hidden" "table"}}
     ><tr class="panel-config"
       ><td class="col-md-2"
         ><div class="nowrap text-right"
@@ -584,7 +584,7 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessD $p.Psd "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreD $p.Psd "btn btn-default"}}</div
+          >{{template "defines::badgedlinkleft" LessD $p $p.Psd "btn btn-default"}}{{template "defines::badgedlinkright" MoreD $p $p.Psd "btn btn-default"}}</div
         ></td
       ><td class="col-md-10" {{colspan}}="2"
         ></td
@@ -598,11 +598,11 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessN $p.Psn "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreN $p.Psn "btn btn-default"}}</div
+          >{{template "defines::badgedlinkleft" LessN $p $p.Psn "btn btn-default"}}{{template "defines::badgedlinkright" MoreN $p $p.Psn "btn btn-default"}}</div
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkright" $p.ZeroN $p.Psn "btn btn-default"}}</div
+          >{{template "defines::badgedlinkright" ZeroN $p $p.Psn "btn btn-default"}}</div
         ></td
       ><td class="col-md-10"
         ></td
@@ -610,14 +610,14 @@
     >  </table
   >  {{template "defines::define_pstable" .}}</div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelvg"}}{{$p := .Data.Params}}<div     {{$p.AttrClassP $p.Vgn "" "panel panel-default"}}
-  >  <div   {{$p.AttrClassP $p.Vgn "" "panel-heading"}}
-    >    <a   {{$p.AttrHrefToggleNegative $p.Vgn}} {{class}}="panel-title btn-block"
-      >      <b {{$p.AttrClassP $p.Vgn "h4" "h4 bg-info"}}
+*/}}{{define "defines::define_panelvg"}}{{$p := .Data.Params}}<div     {{ClassPositive $p.Vgn "" "panel panel-default"}}
+  >  <div   {{ClassPositive $p.Vgn "" "panel-heading"}}
+    >    <a   {{HrefT $p $p.Vgn}} {{class}}="panel-title btn-block"
+      >      <b {{ClassPositive $p.Vgn "h4" "h4 bg-info"}}
         >Vagrant</b
       >    </a
     >  </div
-  >  <table {{$p.AttrClassP $p.Vgn "table collapse-hidden" "table"}}
+  >  <table {{ClassPositive $p.Vgn "table collapse-hidden" "table"}}
     ><tr class="panel-config"
       ><td class="col-md-2"
         ><div class="nowrap text-right"
@@ -627,7 +627,7 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessD $p.Vgd "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreD $p.Vgd "btn btn-default"}}</div
+          >{{template "defines::badgedlinkleft" LessD $p $p.Vgd "btn btn-default"}}{{template "defines::badgedlinkright" MoreD $p $p.Vgd "btn btn-default"}}</div
         ></td
       ><td class="col-md-10" {{colspan}}="2"
         ></td
@@ -641,11 +641,11 @@
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" $p.LessN $p.Vgn "btn btn-default"}}{{template "defines::badgedlinkright" $p.MoreN $p.Vgn "btn btn-default"}}</div
+          >{{template "defines::badgedlinkleft" LessN $p $p.Vgn "btn btn-default"}}{{template "defines::badgedlinkright" MoreN $p $p.Vgn "btn btn-default"}}</div
         ></td
       ><td
         ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkright" $p.ZeroN $p.Vgn "btn btn-default"}}</div
+          >{{template "defines::badgedlinkright" ZeroN $p $p.Vgn "btn btn-default"}}</div
         ></td
       ><td class="col-md-10"
         ></td
@@ -674,10 +674,10 @@
     >{{$proc.Name}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_pstable"}}{{$p := .Data.Params}}<table {{$p.AttrClassNonzero $p.Psn "table table-hover" "collapse-hidden"}}
+*/}}{{define "defines::define_pstable"}}{{$p := .Data.Params}}<table {{ClassNonzero $p.Psn "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
-      >{{template "defines::headerenumlink" $p.Vlink $p.Psk 1 "PID" "text-right"}}{{template "defines::headerenumlink" $p.Vlink $p.Psk 8 "UID" "text-right"}}{{template "defines::headerenumlink" $p.Vlink $p.Psk 9 "USER" ""}}{{template "defines::headerenumlink" $p.Vlink $p.Psk 2 "PR" "text-right"}}{{template "defines::headerenumlink" $p.Vlink $p.Psk 3 "NI" "text-right"}}{{template "defines::headerenumlink" $p.Vlink $p.Psk 4 "VIRT" "text-right"}}{{template "defines::headerenumlink" $p.Vlink $p.Psk 5 "RES" "text-right"}}{{template "defines::headerenumlink" $p.Vlink $p.Psk 6 "TIME" "text-center"}}{{template "defines::headerenumlink" $p.Vlink $p.Psk 7 "COMMAND" ""}}</tr
+      >{{template "defines::headerenumlink" Vlink $p $p.Psk 1 "PID" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 8 "UID" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 9 "USER" ""}}{{template "defines::headerenumlink" Vlink $p $p.Psk 2 "PR" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 3 "NI" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 4 "VIRT" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 5 "RES" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 6 "TIME" "text-center"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 7 "COMMAND" ""}}</tr
     ></thead
   ><tbody
     >{{template "defines::define_psrows" .}}</tbody
@@ -705,7 +705,7 @@
   ></tr
 >{{end}}{{end}}{{/*
 */}}{{define "defines::define_vgswitch"}}{{with rowsset .}}{{.}}{{else}}{{if eq .Data.VagrantErrord true}}{{template "defines::define_vgerror" .}}{{else}}{{template "defines::define_vgrows" .}}{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_vgtable"}}{{$p := .Data.Params}}<table {{$p.AttrClassNonzero $p.Vgn "table table-hover" "collapse-hidden"}}
+*/}}{{define "defines::define_vgtable"}}{{$p := .Data.Params}}<table {{ClassNonzero $p.Vgn "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
       ><th
