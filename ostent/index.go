@@ -459,16 +459,16 @@ func (ir *IndexRegistry) VG(para *params.Params, iu *IndexUpdate) bool {
 		return false
 	}
 	if para.Vgn.Absolute == 0 {
+		para.Vgn.Limit = 1
 		return false
 	}
 	machines, err := vagrantmachines(para.Dfn.Absolute)
 	if err != nil {
-		iu.VagrantErrord = true
-		iu.VagrantError = err.Error()
+		iu.VagrantErrord, iu.VagrantError = true, err.Error()
 		return true
 	}
-	iu.VagrantErrord = false
-	iu.VagrantMachines = machines
+	para.Vgn.Limit = len(machines.List)
+	iu.VagrantErrord, iu.VagrantMachines = false, machines
 	return true
 }
 
@@ -505,6 +505,7 @@ func (ir *IndexRegistry) CPU(para *params.Params, iu *IndexUpdate) bool {
 		return false
 	}
 	if para.CPUn.Absolute == 0 {
+		para.CPUn.Limit = 1
 		return false
 	}
 	iu.CPU = ir.CPUInternal(para)
