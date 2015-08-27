@@ -40,7 +40,7 @@ func NetAddressIP() (string, error) {
 
 func TestInterfaceIP(t *testing.T) {
 	fip := &FoundIP{}
-	if err := (&Machine{}).ApplyperInterface(fip.Next); err != nil {
+	if err := (Machine{}).ApplyperInterface(fip.Next); err != nil {
 		t.Error(err)
 		return
 	}

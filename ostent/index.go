@@ -759,7 +759,7 @@ func getUpdates(req *http.Request, para *params.Params) (IndexUpdate, bool, erro
 func indexData(mindelay flags.Delay, req *http.Request) (IndexData, error) {
 	if Connections.Len() == 0 {
 		// collect when there're no active connections, so Loop does not collect
-		lastInfo.collect(&Machine{})
+		lastInfo.collect(Machine{})
 	}
 
 	para := params.NewParams(mindelay)

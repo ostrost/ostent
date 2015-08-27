@@ -54,7 +54,7 @@ func Loop() {
 	go func() {
 		for {
 			SleepTilNextSecond()
-			lastInfo.collect(&Machine{})
+			lastInfo.collect(Machine{})
 
 			Connections.tick()
 			if exes := Connections.expired(); len(exes) != 0 {

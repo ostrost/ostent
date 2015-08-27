@@ -80,7 +80,7 @@ func HardwareInterface(name string) bool {
 type Machine struct{}
 
 // ApplyperInterface calls apply for each found hardware interface.
-func (m *Machine) ApplyperInterface(apply func(getifaddrs.IfData) bool) error {
+func (m Machine) ApplyperInterface(apply func(getifaddrs.IfData) bool) error {
 	// m is unused
 	gotifaddrs, err := getifaddrs.Getifaddrs()
 	if err != nil {
@@ -113,7 +113,7 @@ func (fip *FoundIP) Next(ifdata getifaddrs.IfData) bool {
 }
 
 // Interfaces registers the interfaces with the reg and send first non-loopback IP to the chan
-func (m *Machine) Interfaces(reg Registry, sreg S2SRegistry, wg *sync.WaitGroup) {
+func (m Machine) Interfaces(reg Registry, sreg S2SRegistry, wg *sync.WaitGroup) {
 	fip := FoundIP{}
 	m.ApplyperInterface(func(ifdata getifaddrs.IfData) bool {
 		fip.Next(ifdata)
@@ -133,7 +133,7 @@ func (m *Machine) Interfaces(reg Registry, sreg S2SRegistry, wg *sync.WaitGroup)
 	wg.Done()
 }
 
-func (m *Machine) GetHostname() (string, error) {
+func (m Machine) GetHostname() (string, error) {
 	// m is unused
 	return GetHostname()
 }
@@ -146,21 +146,23 @@ func GetHostname() (string, error) {
 	return hostname, err
 }
 
-func (m *Machine) Hostname(sreg S2SRegistry, wg *sync.WaitGroup) {
+func (m Machine) Hostname(sreg S2SRegistry, wg *sync.WaitGroup) {
 	if hostname, err := m.GetHostname(); err == nil {
 		sreg.SetString("hostname", hostname)
 	}
 	wg.Done()
 }
 
-func (m *Machine) Uptime(sreg S2SRegistry, wg *sync.WaitGroup) {
+func (m Machine) Uptime(sreg S2SRegistry, wg *sync.WaitGroup) {
+	// m is unused
 	uptime := sigar.Uptime{}
 	uptime.Get()
 	sreg.SetString("uptime", format.FormatUptime(uptime.Length))
 	wg.Done()
 }
 
-func (m *Machine) LA(reg Registry, wg *sync.WaitGroup) {
+func (m Machine) LA(reg Registry, wg *sync.WaitGroup) {
+	// m is unused
 	la := sigar.LoadAverage{}
 	la.Get()
 	reg.UpdateLoadAverage(la)
@@ -180,7 +182,7 @@ func _getmem(kind string, in sigar.Swap) operating.Memory {
 	}
 }
 
-func (m *Machine) RAM(reg Registry, wg *sync.WaitGroup) {
+func (m Machine) RAM(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	got := sigar.Mem{}
 	extra1, extra2, _ := sigar.GetExtra(&got)
@@ -198,7 +200,7 @@ func (m *Machine) RAM(reg Registry, wg *sync.WaitGroup) {
 	// TODO wired  := vm_data.wire_count   << 12 (pagesoze)
 }
 
-func (m *Machine) Swap(reg Registry, wg *sync.WaitGroup) {
+func (m Machine) Swap(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	got := sigar.Swap{}
 	got.Get()
@@ -206,7 +208,7 @@ func (m *Machine) Swap(reg Registry, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (m *Machine) Disks(reg Registry, wg *sync.WaitGroup) {
+func (m Machine) Disks(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	fls := sigar.FileSystemList{}
 	fls.Get()
@@ -234,7 +236,7 @@ func (m *Machine) Disks(reg Registry, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (m *Machine) Procs(CH chan<- ProcSlice) {
+func (m Machine) Procs(CH chan<- ProcSlice) {
 	// m is unused
 	var procs ProcSlice
 	pls := sigar.ProcList{}
@@ -274,7 +276,7 @@ func (m *Machine) Procs(CH chan<- ProcSlice) {
 	CH <- procs
 }
 
-func (m *Machine) CPU(reg Registry, wg *sync.WaitGroup) {
+func (m Machine) CPU(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	cl := sigar.CpuList{}
 	cl.Get()
