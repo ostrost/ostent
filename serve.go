@@ -23,6 +23,8 @@ var DelayFlag = flags.Delay{Duration: time.Second} // default
 func init() {
 	flag.Var(&DelayFlag, "d", "Short for delay")
 	flag.Var(&DelayFlag, "delay", "Collection `delay`")
+	ostent.AddBackground(ostent.ConnectionsLoop)
+	ostent.AddBackground(ostent.CollectLoop)
 }
 
 func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error {

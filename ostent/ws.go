@@ -38,10 +38,6 @@ func RunBackground(defaultDelay flags.Delay) {
 	}
 }
 
-func init() {
-	AddBackground(Loop)
-}
-
 // SleepTilNextSecond sleeps til precisely next second.
 func SleepTilNextSecond() {
 	now := time.Now()
@@ -49,25 +45,28 @@ func SleepTilNextSecond() {
 	time.Sleep(nextsecond)
 }
 
-// Loop is the ostent background job
-func Loop() {
+// CollectLoop is a ostent background job: collect the metrics.
+func CollectLoop() {
 	go func() {
 		for {
 			SleepTilNextSecond()
 			lastInfo.collect(Machine{})
-
-			Connections.tick()
-			if exes := Connections.expired(); len(exes) != 0 {
-				for _, c := range exes {
-					c.Tack()
-				}
-			}
 		}
 	}()
-
 	go func() {
 		if err := vgwatch(); err != nil { // vagrant
 			// ignoring the error
+		}
+	}()
+}
+
+// ConnectionsLoop is a ostent background job: serve connections.
+func ConnectionsLoop() {
+	go func() {
+		for {
+			SleepTilNextSecond()
+			Connections.tick()
+			Connections.Tack()
 		}
 	}()
 
@@ -81,10 +80,6 @@ func Loop() {
 
 		case conn := <-unregister:
 			Connections.unreg(conn)
-			/*
-				if Connections.unreg(conn) == 0 { // if no connections left
-					lastInfo.reset_prev()
-				} // */
 		}
 	}
 }
@@ -148,7 +143,9 @@ func (cs *conns) Tack() {
 	defer cs.mutex.Unlock()
 
 	for c := range cs.connmap {
-		c.Tack()
+		if c.Expired() {
+			c.Tack()
+		}
 	}
 }
 
@@ -193,13 +190,6 @@ func (c *conn) CloseChans() {
 	close(c.pushch)
 }
 
-// Len return the number of active connections
-func (cs *conns) Len() int {
-	cs.mutex.Lock()
-	defer cs.mutex.Unlock()
-	return len(cs.connmap)
-}
-
 func (cs *conns) unreg(r receiver) {
 	r.CloseChans()
 
@@ -215,19 +205,6 @@ func (cs *conns) tick() {
 	for c := range cs.connmap {
 		c.Tick()
 	}
-}
-
-func (cs *conns) expired() []receiver {
-	cs.mutex.Lock()
-	defer cs.mutex.Unlock()
-	exes := []receiver{}
-
-	for c := range cs.connmap {
-		if c.Expired() {
-			exes = append(exes, c)
-		}
-	}
-	return exes
 }
 
 var (
