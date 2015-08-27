@@ -16,7 +16,6 @@ import (
 
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/format"
-	"github.com/ostrost/ostent/getifaddrs"
 	"github.com/ostrost/ostent/params"
 	"github.com/ostrost/ostent/params/enums"
 	"github.com/ostrost/ostent/system"
@@ -659,7 +658,7 @@ func (ir *IndexRegistry) UpdateCPU(cpus []sigar.Cpu) {
 	ir.PrivateCPUAll.Update(all)
 }
 
-func (ir *IndexRegistry) UpdateIFdata(ifdata getifaddrs.IfData) {
+func (ir *IndexRegistry) UpdateIFdata(ifdata IfData) {
 	ir.Mutex.Lock()
 	defer ir.Mutex.Unlock()
 	ir.GetOrRegisterPrivateInterface(ifdata.Name).Update(ifdata)

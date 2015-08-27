@@ -2,8 +2,10 @@ package ostent
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"os/user"
+	"path/filepath"
 	"sort"
 	"syscall"
 	"time"
@@ -23,10 +25,13 @@ func (vs VgmachineSlice) Swap(i, j int)      { vs[i], vs[j] = vs[j], vs[i] }
 func (vs VgmachineSlice) Less(i, j int) bool { return vs[i].UUID < vs[j].UUID }
 
 func vagrantmachines(max int) (*VagrantMachines, error) {
-	currentUser, _ := user.Current()
-	lockFilename := currentUser.HomeDir + "/.vagrant.d/data/machine-index/index.lock"
-	indexFilename := currentUser.HomeDir + "/.vagrant.d/data/machine-index/index"
-
+	var (
+		lockFilename  = HomePath(".vagrant.d/data/machine-index/index.lock")
+		indexFilename = HomePath(".vagrant.d/data/machine-index/index")
+	)
+	if lockFilename == "" || indexFilename == "" {
+		return nil, fmt.Errorf("Cannot locate home directory")
+	}
 	lock_file, err := os.Open(lockFilename)
 	if err != nil {
 		return nil, err
@@ -64,11 +69,23 @@ func vagrantmachines(max int) (*VagrantMachines, error) {
 	return machines, nil
 }
 
+func HomePath(postfix string) string {
+	var home string
+	if currentUser, err := user.Current(); err == nil {
+		home = currentUser.HomeDir
+	} else {
+		home = os.Getenv("HOME")
+	}
+	if home != "" {
+		return filepath.Join(home, postfix)
+	}
+	return ""
+}
+
 var vgmachineindexFilename string
 
 func init() {
-	currentUser, _ := user.Current()
-	vgmachineindexFilename = currentUser.HomeDir + "/.vagrant.d/data/machine-index/index"
+	vgmachineindexFilename = HomePath(".vagrant.d/data/machine-index/index")
 }
 
 func vgdispatch() { // (*fsnotify.FileEvent)
@@ -87,6 +104,9 @@ func vgdispatch() { // (*fsnotify.FileEvent)
 }
 
 func vgchange() error {
+	if vgmachineindexFilename == "" {
+		return fmt.Errorf("Cannot locate home directory")
+	}
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		return err

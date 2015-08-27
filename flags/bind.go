@@ -35,7 +35,9 @@ func (b *Bind) Set(input string) error {
 		}
 	}
 	if _, err = net.LookupPort("tcp", b.Port); err != nil {
-		return err
+		if !strings.HasPrefix(err.Error(), "unknown port tcp/") {
+			return err
+		}
 	}
 	b.string = b.Host + ":" + b.Port
 	return nil

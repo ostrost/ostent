@@ -8,15 +8,32 @@ import (
 	"sync"
 
 	"github.com/ostrost/ostent/format"
-	"github.com/ostrost/ostent/getifaddrs"
 	"github.com/ostrost/ostent/system"
 	"github.com/ostrost/ostent/system/operating"
 	sigar "github.com/rzab/gosigar"
 )
 
+type IfData struct {
+	IP         string
+	Name       string
+	InBytes    uint
+	OutBytes   uint
+	InPackets  uint
+	OutPackets uint
+	InErrors   uint
+	OutErrors  uint
+}
+
+func (id IfData) GetInBytes() uint    { return id.InBytes }
+func (id IfData) GetOutBytes() uint   { return id.OutBytes }
+func (id IfData) GetInErrors() uint   { return id.InErrors }
+func (id IfData) GetOutErrors() uint  { return id.OutErrors }
+func (id IfData) GetInPackets() uint  { return id.InPackets }
+func (id IfData) GetOutPackets() uint { return id.OutPackets }
+
 // Registry has updates with sigar values.
 type Registry interface {
-	UpdateIFdata(getifaddrs.IfData)
+	UpdateIFdata(IfData)
 	UpdateCPU([]sigar.Cpu)
 	UpdateLoadAverage(sigar.LoadAverage)
 	UpdateSwap(sigar.Swap)
@@ -78,60 +95,6 @@ func HardwareInterface(name string) bool {
 
 // Machine implements Collector by collecting the maching metrics.
 type Machine struct{}
-
-// ApplyperInterface calls apply for each found hardware interface.
-func (m Machine) ApplyperInterface(apply func(getifaddrs.IfData) bool) error {
-	// m is unused
-	gotifaddrs, err := getifaddrs.Getifaddrs()
-	if err != nil {
-		return err
-	}
-	for _, ifdata := range gotifaddrs {
-		if !HardwareInterface(ifdata.Name) {
-			continue
-		}
-		if !apply(ifdata) {
-			break
-		}
-	}
-	return nil
-}
-
-type FoundIP struct {
-	string
-}
-
-func (fip *FoundIP) Next(ifdata getifaddrs.IfData) bool {
-	if fip.string != "" {
-		return false
-	}
-	if !RXlo.MatchString(ifdata.Name) { // non-loopback
-		fip.string = ifdata.IP
-		return false
-	}
-	return true
-}
-
-// Interfaces registers the interfaces with the reg and send first non-loopback IP to the chan
-func (m Machine) Interfaces(reg Registry, sreg S2SRegistry, wg *sync.WaitGroup) {
-	fip := FoundIP{}
-	m.ApplyperInterface(func(ifdata getifaddrs.IfData) bool {
-		fip.Next(ifdata)
-		if ifdata.InBytes == 0 &&
-			ifdata.OutBytes == 0 &&
-			ifdata.InPackets == 0 &&
-			ifdata.OutPackets == 0 &&
-			ifdata.InErrors == 0 &&
-			ifdata.OutErrors == 0 {
-			// nothing
-		} else {
-			reg.UpdateIFdata(ifdata)
-		}
-		return true
-	})
-	sreg.SetString("ip", fip.string)
-	wg.Done()
-}
 
 func (m Machine) GetHostname() (string, error) {
 	// m is unused

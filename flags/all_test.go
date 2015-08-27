@@ -73,20 +73,15 @@ func TestDelaySet(t *testing.T) {
 }
 
 func TestBindSet(t *testing.T) {
-	portserrs := []error{
-		fmt.Errorf("unknown port tcp/8001"),
-		fmt.Errorf("unknown port tcp/9050"),
-	}
 	for _, v := range []struct {
 		a    string
 		cmp  string
 		errs []error
 	}{
 		{"a:b:", "", []error{fmt.Errorf("too many colons in address " + "a:b:")}},
-		{"localhost:nonexistent", "", []error{
+		{"localhost:nonexistent", "localhost:nonexistent", []error{
 			fmt.Errorf("lookup tcp/nonexistent: Servname not supported for ai_socktype"),
 			fmt.Errorf("lookup tcp/nonexistent: nodename nor servname provided, or not known"),
-			fmt.Errorf("unknown port tcp/nonexistent"),
 		}},
 		{"localhost", "localhost:9050", nil},
 		{"", ":9050", nil},
@@ -101,17 +96,15 @@ func TestBindSet(t *testing.T) {
 		b := NewBind(9050)
 		if err := b.Set(v.a); err != nil {
 			unknownerr := true
-			for _, x := range append(portserrs, v.errs...) {
+			for _, x := range v.errs {
 				if err.Error() == x.Error() {
 					unknownerr = false
 					break
 				}
 			}
-			if unknownerr {
-				t.Errorf("Error: %q\nExpected errors: %+v\n", err, v.errs)
+			if !unknownerr {
+				continue
 			}
-			continue
-		} else if v.errs != nil {
 			t.Errorf("Error: %q\nExpected errors: %+v\n", err, v.errs)
 		}
 		if b.string != v.cmp {
