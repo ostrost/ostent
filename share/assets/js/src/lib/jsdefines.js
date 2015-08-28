@@ -1848,10 +1848,10 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Vlinks.Psk[8 - 1].LinkHref, className: Data.Params.Vlinks.Psk[8 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[2 - 1].LinkHref, className: Data.Params.Vlinks.Psk[2 - 1].LinkClass
                   },
                   "  UID",
-                  React.createElement("span", { className: Data.Params.Vlinks.Psk[8 - 1].CaretClass
+                  React.createElement("span", { className: Data.Params.Vlinks.Psk[2 - 1].CaretClass
                   })
                 )
               ),
@@ -1861,35 +1861,9 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Vlinks.Psk[9 - 1].LinkHref, className: Data.Params.Vlinks.Psk[9 - 1].LinkClass
-                  },
-                  "  USER",
-                  React.createElement("span", { className: Data.Params.Vlinks.Psk[9 - 1].CaretClass
-                  })
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "header text-right"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Vlinks.Psk[2 - 1].LinkHref, className: Data.Params.Vlinks.Psk[2 - 1].LinkClass
-                  },
-                  "  PR",
-                  React.createElement("span", { className: Data.Params.Vlinks.Psk[2 - 1].CaretClass
-                  })
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "header text-right"
-                },
-                React.createElement(
-                  "a",
                   { href: Data.Params.Vlinks.Psk[3 - 1].LinkHref, className: Data.Params.Vlinks.Psk[3 - 1].LinkClass
                   },
-                  "  NI",
+                  "  USER",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[3 - 1].CaretClass
                   })
                 )
@@ -1902,7 +1876,7 @@ define(function (require) {
                   "a",
                   { href: Data.Params.Vlinks.Psk[4 - 1].LinkHref, className: Data.Params.Vlinks.Psk[4 - 1].LinkClass
                   },
-                  "  VIRT",
+                  "  PR",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[4 - 1].CaretClass
                   })
                 )
@@ -1915,8 +1889,34 @@ define(function (require) {
                   "a",
                   { href: Data.Params.Vlinks.Psk[5 - 1].LinkHref, className: Data.Params.Vlinks.Psk[5 - 1].LinkClass
                   },
-                  "  RES",
+                  "  NI",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[5 - 1].CaretClass
+                  })
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "header text-right"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Vlinks.Psk[6 - 1].LinkHref, className: Data.Params.Vlinks.Psk[6 - 1].LinkClass
+                  },
+                  "  VIRT",
+                  React.createElement("span", { className: Data.Params.Vlinks.Psk[6 - 1].CaretClass
+                  })
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "header text-right"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Vlinks.Psk[7 - 1].LinkHref, className: Data.Params.Vlinks.Psk[7 - 1].LinkClass
+                  },
+                  "  RES",
+                  React.createElement("span", { className: Data.Params.Vlinks.Psk[7 - 1].CaretClass
                   })
                 )
               ),
@@ -1926,10 +1926,10 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Vlinks.Psk[6 - 1].LinkHref, className: Data.Params.Vlinks.Psk[6 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[8 - 1].LinkHref, className: Data.Params.Vlinks.Psk[8 - 1].LinkClass
                   },
                   "  TIME",
-                  React.createElement("span", { className: Data.Params.Vlinks.Psk[6 - 1].CaretClass
+                  React.createElement("span", { className: Data.Params.Vlinks.Psk[8 - 1].CaretClass
                   })
                 )
               ),
@@ -1939,10 +1939,10 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Vlinks.Psk[7 - 1].LinkHref, className: Data.Params.Vlinks.Psk[7 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[9 - 1].LinkHref, className: Data.Params.Vlinks.Psk[9 - 1].LinkClass
                   },
                   "  COMMAND",
-                  React.createElement("span", { className: Data.Params.Vlinks.Psk[7 - 1].CaretClass
+                  React.createElement("span", { className: Data.Params.Vlinks.Psk[9 - 1].CaretClass
                   })
                 )
               )

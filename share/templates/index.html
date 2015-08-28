@@ -677,7 +677,7 @@
 */}}{{define "defines::define_pstable"}}{{$p := .Data.Params}}<table {{ClassNonzero $p.Psn "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
-      >{{template "defines::headerenumlink" Vlink $p $p.Psk 1 "PID" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 8 "UID" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 9 "USER" ""}}{{template "defines::headerenumlink" Vlink $p $p.Psk 2 "PR" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 3 "NI" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 4 "VIRT" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 5 "RES" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 6 "TIME" "text-center"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 7 "COMMAND" ""}}</tr
+      >{{template "defines::headerenumlink" Vlink $p $p.Psk 1 "PID" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 2 "UID" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 3 "USER" ""}}{{template "defines::headerenumlink" Vlink $p $p.Psk 4 "PR" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 5 "NI" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 6 "VIRT" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 7 "RES" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 8 "TIME" "text-center"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 9 "COMMAND" ""}}</tr
     ></thead
   ><tbody
     >{{template "defines::define_psrows" .}}</tbody

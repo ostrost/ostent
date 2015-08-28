@@ -5,9 +5,9 @@ const (
 	_     int = iota
 	FS        // 1
 	MP        // 2
-	TOTAL     // 3
+	AVAIL     // 3
 	USED      // 4
-	AVAIL     // 5
+	TOTAL     // 5
 )
 
 // Constants for DF tabs.
@@ -29,12 +29,12 @@ const (
 const (
 	_    int = iota
 	PID      // 1
-	PRI      // 2
-	NICE     // 3
-	VIRT     // 4
-	RES      // 5
-	TIME     // 6
-	NAME     // 7
-	UID      // 8
-	USER     // 9
+	UID      // 2
+	USER     // 3
+	PRI      // 4
+	NICE     // 5
+	VIRT     // 6
+	RES      // 7
+	TIME     // 8
+	NAME     // 9
 )
