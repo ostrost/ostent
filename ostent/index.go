@@ -11,8 +11,8 @@ import (
 	"strings"
 	"sync"
 
+	sigar "github.com/ostrost/gosigar"
 	metrics "github.com/rcrowley/go-metrics"
-	sigar "github.com/rzab/gosigar"
 
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/format"

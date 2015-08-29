@@ -3,9 +3,10 @@
 package system
 
 import (
-	"github.com/ostrost/ostent/system/operating"
+	sigar "github.com/ostrost/gosigar"
 	metrics "github.com/rcrowley/go-metrics"
-	sigar "github.com/rzab/gosigar"
+
+	"github.com/ostrost/ostent/system/operating"
 )
 
 type ExtraMetricRAM struct {

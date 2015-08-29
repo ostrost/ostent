@@ -4,8 +4,8 @@ package operating
 import (
 	"sync"
 
+	sigar "github.com/ostrost/gosigar"
 	metrics "github.com/rcrowley/go-metrics"
-	sigar "github.com/rzab/gosigar"
 )
 
 // Memory type is a struct of memory metrics.

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	sigar "github.com/rzab/gosigar"
+	sigar "github.com/ostrost/gosigar"
 )
 
 // Distrib returns system distribution and version string.

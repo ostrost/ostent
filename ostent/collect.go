@@ -7,10 +7,11 @@ import (
 	"strings"
 	"sync"
 
+	sigar "github.com/ostrost/gosigar"
+
 	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/system"
 	"github.com/ostrost/ostent/system/operating"
-	sigar "github.com/rzab/gosigar"
 )
 
 type IfData struct {
