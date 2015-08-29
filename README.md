@@ -14,7 +14,7 @@ The interactive UI ([**demo**](http://demo.ostrost.com/)):
 
 The metrics collected and exported:
 - RAM, swap usage
-- CPU usage, Load average
+- CPU usage, load average
 - Disk space usage in bytes and inodes
 - Network ins and outs in bytes, packets and errors
 
@@ -22,8 +22,7 @@ The processes top is on-display only.
 
 The exporting is kept on par with [collectd](https://collectd.org/)
 [reporting](https://collectd.org/wiki/index.php/Plugin:Write_Graphite)
-with `StoreRates true`,
-although the metrics naming is slightly different.
+, although the metrics naming is slightly different.
 
 ## Install
 
@@ -112,12 +111,12 @@ clone your fork as if it was `github.com/ostrost/ostent` package for Go:
 ## Make
 
 `make` rebuilds these **commited to the repo** files:
-- `share/templates/bindata.*.go`
 - `share/assets/bindata.*.go`
-- `share/assets/js/src/milk/*.js`
-- `share/assets/js/src/lib/*.js`
-- `share/templates/*.html`
 - `share/assets/css/*.css`
+- `share/assets/js/src/lib/*.js`
+- `share/assets/js/src/milk/*.js`
+- `share/templates/*.html`
+- `share/templates/bindata.*.go`
 - `share/tmp/*.jsx`
 
 If you don't change source files, content re-generated
@@ -143,7 +142,7 @@ self-upgrading via [go-update](https://github.com/inconshreveable/go-update).
 ## The assets
 
 The binaries, to be stand-alone, have the assets and templates embeded.
-Unless you specifically build with `-tags bin` (e.g with make),
+Unless you specifically build with `-tags bin` (e.g. with make),
 the content is not embeded for the ease of development:
 with `rerun`, asset requests are served from the actual files.
 Bin-built `ostent restore-assets` can be used to copy (extract) assets on disk.
