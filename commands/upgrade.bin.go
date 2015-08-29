@@ -92,6 +92,16 @@ func (up *upgrade) Upgrade() bool {
 		return false
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK /* 200 */ &&
+		resp.StatusCode != http.StatusNotModified /* 304 */ {
+		up.Log.Printf("Status not good: %d", resp.StatusCode)
+		return false
+	}
+	/*
+		if ct := resp.Header().Get("Content-Type"); ct != "application/octet-stream" {
+			up.Log.Printf("Content-Type is not application/octet-stream: %q", ct)
+			return false
+		} // */
 	err = update.Apply(resp.Body, &update.Options{})
 	if err != nil {
 		up.Log.Print(err)
