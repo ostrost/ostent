@@ -171,4 +171,4 @@ func bannerText(listenaddr, hostname, suffix string, addrsp *[]net.Addr, logger 
 // VERSION of the latest known release.
 // Unused in non-bin mode.
 // Compared with in github.com/ostrost/ostent/ostent[+build bin]
-const VERSION = "0.2.0"
+const VERSION = "0.4.0"
