@@ -21,8 +21,8 @@ The metrics collected and exported:
 The processes top is on-display only.
 
 The exporting is kept on par with [collectd](https://collectd.org/)
-[reporting](https://collectd.org/wiki/index.php/Plugin:Write_Graphite)
-, although the metrics naming is slightly different.
+[reporting](https://collectd.org/wiki/index.php/Plugin:Write_Graphite),
+although the metrics naming is slightly different.
 
 ## Install
 
