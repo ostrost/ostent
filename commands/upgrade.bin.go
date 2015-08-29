@@ -75,7 +75,7 @@ func (up *upgrade) Upgrade() bool {
 		return false
 	}
 	if newVersion == "v"+ostent.VERSION {
-		up.Log.Printf("Current version %q is up to date", ostent.VERSION)
+		// up.Log.Printf("Current version %q is up to date", ostent.VERSION)
 		return false
 	}
 	up.Log.Printf("Upgrade available: release %s\n", newVersion[1:])
