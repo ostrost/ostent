@@ -7,8 +7,6 @@ addons:
     - gcc-multilib
 env:
   global:
-    # RC- prefix til travis-dpl is unable to deploy into github PRE-release
-    - ARTIF="RC-`uname -sm | tr ' ' .`"
     - GVMINSTALLER_URL=https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer
     - DPL_GO=go1.5 # Deploy only when this matches GVM_GO in the matrix.
   matrix:
@@ -41,27 +39,31 @@ install:
 script: make --always-make test all # like make -B
 before_deploy:
   - |
+    # rc- prefix til travis-dpl is unable to deploy into github PRE-release
+    os=rc-$(uname -s)
+    x64=.$(uname -m)
     if test x$GVM_GO \!= x$DPL_GO ; then
       x64=.non-dpl-go-to-be-removed
     fi
+    x32=$x64
     if test x$TRAVIS_OS_NAME \!= xosx ; then # 32bit build on non-osx
-      x32=.32
+      x32=i686
       make boot32 all32
-    mv $HOME/gopath/bin/ostent.32  $HOME/gopath/bin/$ARTIF.32
+      mv $HOME/gopath/bin/ostent.32 $HOME/gopath/bin/$os$x32
     fi
-  - mv $HOME/gopath/bin/ostent     $HOME/gopath/bin/$ARTIF$x64
+  - :;mv $HOME/gopath/bin/ostent    $HOME/gopath/bin/$os$x64
   - set +e # off fatal errors for travis-dpl
 after_deploy:
   - set -e # errors are fatal again
   - |
     if test x$TRAVIS_OS_NAME \!= xosx ; then # 32bit build on non-osx
-    mv $HOME/gopath/bin/$ARTIF.32  $HOME/gopath/bin/ostent.32
+      mv $HOME/gopath/bin/$os$x32 $HOME/gopath/bin/ostent.32
     fi
-  - mv $HOME/gopath/bin/$ARTIF$x64 $HOME/gopath/bin/ostent
+  - :;mv $HOME/gopath/bin/$os$x64 $HOME/gopath/bin/ostent
 deploy:
   file:
-    - $HOME/gopath/bin/$ARTIF$x32
-    - $HOME/gopath/bin/$ARTIF$x64
+    - $HOME/gopath/bin/$os$x32
+    - $HOME/gopath/bin/$os$x64
   skip_clean: true
   on:
     tags: true
