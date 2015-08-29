@@ -2,38 +2,36 @@
 [![GoDoc](https://godoc.org/github.com/ostrost/ostent?status.svg)](https://godoc.org/github.com/ostrost/ostent)
 [![Travis CI](https://travis-ci.org/ostrost/ostent.svg?branch=master)](https://travis-ci.org/ostrost/ostent)
 
-`ostent` collects and displays system metrics and optionally relays to Graphite and/or InfluxDB.
+ostent collects system metrics to display and relay to
 
-The displaying part ([**demo**](http://demo.ostrost.com/)) is interactive and customizable.
+- Graphite
+- InfluxDB
+- Librato
+
+The interactive UI ([**demo**](http://demo.ostrost.com/)):
 
 ![Screenshot](https://www.ostrost.com/ostent/screenshot.png)
 
-The metrics:
-- **Collected and exported**:
-  - RAM, swap usage
-  - Interfaces bytes, packets, errors ins and outs
-  - CPU usage
-  - Disk usage
-  - Load average
-- **On display only**:
-  - System's OS, IP and uptime
-  - Processes top
-  - vagrant global-status
+The metrics collected and exported:
+- RAM, swap usage
+- CPU usage, Load average
+- Disk space usage in bytes and inodes
+- Network ins and outs in bytes, packets and errors
 
-The exporting to Graphite and InfluxDB is kept on par with [collectd](https://collectd.org/)
-[reporting](https://collectd.org/wiki/index.php/Plugin:Write_Graphite) to Graphite with `StoreRates true`,
+The processes top is on-display only.
+
+The exporting is kept on par with [collectd](https://collectd.org/)
+[reporting](https://collectd.org/wiki/index.php/Plugin:Write_Graphite)
+with `StoreRates true`,
 although the metrics naming is slightly different.
 
-## Running
+## Install
 
-ostent a single executable without dependecies, no extra files required (everything is builtin).
-Drop it in and just run; being root is unnecesary. There're [flags](#usage) if you have to.
+ostent is a single executable (everything is builtin) without dependecies.
 
-[Run the code](#running-the-code) if you want to, otherwise grab a binary.
+Release binaries self-upgrade whenever there's new stable release.
 
-## Install Release binaries
-
-These binaries self-upgrade whenever there's new stable release and
+Binaries builds by courtesy of [Travis CI](https://travis-ci.org/ostrost/ostent),
 distributed by [GitHub Releases](https://github.com/ostrost/ostent/releases).
 
 Install & run with `curl -sSL https://github.com/ostrost/ostent/raw/master/ostent.sh | sh`
@@ -43,31 +41,36 @@ Platforms
    - Linux [64-bit](https://github.com/ostrost/ostent/releases/download/v0.2.0/Linux.x86_64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.2.0/Linux.i686)
    - [Mac OS X](https://github.com/ostrost/ostent/releases/download/v0.2.0/Darwin.x86_64) (64-bit)
 
-FreeBSD (10 amd64 and i386 probably) is to be published with a new release.
-The master code is runnable already.
-
 ## Usage
 
 ```
 Usage of ostent:
-  -bind=:8050: Bind address
-  -delay=1s: Collection delay
+  -bind address (default *:8050)
+  -delay duration (default 1s)
+        Collection delay
 
-  -graphite-host=: Graphite host
-  -graphite-delay=10s: Graphite delay
+  -graphite-host address
+        Specify Graphite addess to enable exporting to
+  -graphite-delay duration (default 10s)
 
-  -influxdb-url="": InfluxDB server URL
-  -influxdb-username="": InfluxDB username
-  -influxdb-password="": InfluxDB password
-  -influxdb-database="ostent": InfluxDB database
-  -influxdb-delay=10s: InfluxDB delay
+  -influxdb-url URL
+        Specify InfluxDB server URL to enable exporting to
+  -influxdb-database database (default "ostent")
+  -influxdb-delay duration (default 10s)
+  -influxdb-username username
+  -influxdb-password password
+        Optional, if server requires the pair
+
+  -librato-email token
+  -librato-token token
+        Specify email and token to enable exporting to Librato
+  -librato-source source (default hostname value)
+  -librato-delay duration (default 10s)
 ```
 
-Unless `-bind` (`-b` for short) is set, ostent binds to `*:8050`.
-The bind and Graphite addresses are specified like `IP[:port]`
-(default ports being 8050 and 2003 respectively).
-InfluxDB server must be specified as an URL `http://ADDRESS`.
-A delay is a number and a unit: `s` for seconds, `m` for minutes etc.
+Addresses are specified like `host[:port]`.
+InfluxDB server must be 0.9.0 or above, URL specified as `http://host[:post]`.
+Any duration (delay) is a number and a unit: `s` for seconds, `m` for minutes etc.
 
 Here's how it goes:
 
@@ -114,7 +117,7 @@ clone your fork as if it was `github.com/ostrost/ostent` package for Go:
 - `share/templates/bindata.*.go`
 - `share/assets/bindata.*.go`
 - `share/assets/js/src/milk/*.js`
-- `share/assets/js/src/gen/*.js`
+- `share/assets/js/src/lib/*.js`
 - `share/templates/*.html`
 - `share/assets/css/*.css`
 - `share/tmp/*.jsx`
