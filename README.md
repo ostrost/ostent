@@ -37,6 +37,7 @@ Platforms:
 
    - [Mac OS X](https://github.com/ostrost/ostent/releases/download/v0.4.0/Darwin.x86_64)
    - Linux [64-bit](https://github.com/ostrost/ostent/releases/download/v0.4.0/Linux.x86_64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.4.0/Linux.i686)
+   - FreeBSD [64-bit](https://github.com/ostrost/ostent/releases/download/v0.4.0/FreeBSD.amd64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.4.0/FreeBSD.i386)
 
 ## Usage
 
