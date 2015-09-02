@@ -51,7 +51,7 @@ func main() {
 		binPkg.RootDir(pkg.Dir)
 	}
 
-	ostent.RunBackground(DelayFlag)
+	ostent.RunBackground(MinDelayFlag)
 
 	templatesLoaded := make(chan struct{}, 1)
 	go templates.InitTemplates(templatesLoaded) // NB after templates.RootDir

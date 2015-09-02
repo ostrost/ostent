@@ -22,11 +22,12 @@ var (
 )
 
 // NewParams constructs new Params.
-func NewParams(mindelay flags.Delay) *Params {
+func NewParams(mindelay, maxdelay flags.Delay) *Params {
 	p := &Params{
 		Defaults: make(map[interface{}]Num),
 		Delays:   make(map[string]*Delay),
 		MinDelay: mindelay,
+		MaxDelay: maxdelay,
 	}
 
 	val := reflect.ValueOf(&p.Schema).Elem()
@@ -84,6 +85,7 @@ type Params struct {
 	Defaults map[interface{}]Num `json:"-"`
 	Delays   map[string]*Delay   `json:"-"`
 	MinDelay flags.Delay         `json:"-"`
+	MaxDelay flags.Delay         `json:"-"`
 }
 
 type Schema struct {
@@ -337,6 +339,7 @@ func (num *Num) UnmarshalText(text []byte) error {
 type Delay struct {
 	D       time.Duration
 	Above   *time.Duration
+	Below   *time.Duration
 	Default time.Duration
 	Ticks   int
 }
@@ -353,7 +356,7 @@ func (d Delay) EncodeValues(key string, values *url.Values) error {
 }
 
 func (d *Delay) UnmarshalText(text []byte) error {
-	f := flags.Delay{Above: d.Above}
+	f := flags.Delay{Above: d.Above, Below: d.Below}
 	if err := f.Set(string(text)); err != nil {
 		return err
 	}
@@ -361,7 +364,7 @@ func (d *Delay) UnmarshalText(text []byte) error {
 	return nil
 }
 
-func (p *Params) ResetSchema(mindelay flags.Delay) {
+func (p *Params) ResetSchema(mindelay, maxdelay flags.Delay) {
 	val := reflect.ValueOf(&p.Schema).Elem()
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
 		sf := typ.Field(i)
@@ -376,7 +379,10 @@ func (p *Params) ResetSchema(mindelay flags.Delay) {
 			}
 			fv.Set(reflect.ValueOf(Num{PositiveOnly: posonly}))
 		case DelayType:
-			fv.Set(reflect.ValueOf(Delay{Above: &mindelay.Duration}))
+			fv.Set(reflect.ValueOf(Delay{
+				Above: &mindelay.Duration,
+				Below: &maxdelay.Duration,
+			}))
 		}
 	}
 }
@@ -452,7 +458,7 @@ func (p *Params) Decode(req *http.Request) error {
 	dec.IgnoreUnknownKeys(true)
 	dec.ZeroEmpty(true)
 
-	p.ResetSchema(p.MinDelay)
+	p.ResetSchema(p.MinDelay, p.MaxDelay)
 	if err := dec.Decode(&p.Schema, req.Form); err != nil {
 		return err
 	}

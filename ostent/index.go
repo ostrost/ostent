@@ -755,8 +755,8 @@ func getUpdates(req *http.Request, para *params.Params) (IndexUpdate, bool, erro
 	return iu, updated, nil
 }
 
-func indexData(mindelay flags.Delay, req *http.Request) (IndexData, error) {
-	para := params.NewParams(mindelay)
+func indexData(mindelay, maxdelay flags.Delay, req *http.Request) (IndexData, error) {
+	para := params.NewParams(mindelay, maxdelay)
 	updates, _, err := getUpdates(req, para)
 	if err != nil {
 		return IndexData{}, err
@@ -820,14 +820,14 @@ func init() {
 var DISTRIB string
 
 /*
-func FormRedirectFunc(mindelay flags.Delay, wrap func(http.HandlerFunc) http.Handler) func(http.ResponseWriter, *http.Request, httprouter.Params) {
+func FormRedirectFunc(mindelay, maxdelay flags.Delay, wrap func(http.HandlerFunc) http.Handler) func(http.ResponseWriter, *http.Request, httprouter.Params) {
 	return func(w http.ResponseWriter, req *http.Request, muxpara httprouter.Params) {
 		wrap(func(w http.ResponseWriter, req *http.Request) {
 			where := "/"
 			if q := muxpara.ByName("Q"); q != "" {
 				req.URL.RawQuery = req.Form.Encode() + "&" + strings.TrimPrefix(q, "?")
 				req.Form = nil // reset the .Form for .ParseForm() to parse new r.URL.RawQuery.
-				para := params.NewParams(mindelay)
+				para := params.NewParams(mindelay, maxdelay)
 				para.Decode(req) // OR err.Error()
 				if s, err := para.Encode(); err == nil {
 					where = "/?" + s
@@ -842,10 +842,11 @@ func FormRedirectFunc(mindelay flags.Delay, wrap func(http.HandlerFunc) http.Han
 func Index(w http.ResponseWriter, r *http.Request) {
 	var (
 		mindelay  = ContextMinDelay(r)
+		maxdelay  = ContextMaxDelay(r)
 		taggedbin = ContextTaggedBin(r)
 		template  = ContextIndexTemplate(r)
 	)
-	id, err := indexData(mindelay, r)
+	id, err := indexData(mindelay, maxdelay, r)
 	if err != nil {
 		if _, ok := err.(params.RenamedConstError); ok {
 			http.Redirect(w, r, err.Error(), http.StatusFound)
@@ -869,6 +870,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 type SSE struct {
 	Writer      http.ResponseWriter // points to the writer
 	MinDelay    flags.Delay
+	MaxDelay    flags.Delay
 	SentHeaders bool
 	Errord      bool
 }
@@ -877,7 +879,7 @@ type SSE struct {
 // passed as a copy, is unused. sse.Writer is there for writes.
 func (sse *SSE) ServeHTTP(_ http.ResponseWriter, r *http.Request) {
 	w := sse.Writer
-	id, err := indexData(sse.MinDelay, r)
+	id, err := indexData(sse.MinDelay, sse.MaxDelay, r)
 	if err != nil {
 		if _, ok := err.(params.RenamedConstError); ok {
 			http.Redirect(w, r, err.Error(), http.StatusFound)

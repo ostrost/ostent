@@ -10,6 +10,7 @@ import (
 type Delay struct {
 	time.Duration
 	Above *time.Duration // optional
+	Below *time.Duration // optional
 }
 
 // DurationString returns string representation of dur.
@@ -43,6 +44,9 @@ func (d *Delay) Set(input string) error {
 	}
 	if d.Above != nil && v < *d.Above {
 		return fmt.Errorf("Should be above %s: %s", *d.Above, v)
+	}
+	if d.Below != nil && v > *d.Below {
+		return fmt.Errorf("Should be below %s: %s", *d.Below, v)
 	}
 	d.Duration = v
 	return nil

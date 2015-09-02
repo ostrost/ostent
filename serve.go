@@ -17,12 +17,17 @@ import (
 	"github.com/ostrost/ostent/share/templates"
 )
 
-// DelayFlag is a minimum refresh period for collection.
-var DelayFlag = flags.Delay{Duration: time.Second} // default
+var (
+	// MinDelayFlag is a minimum refresh period for collection.
+	MinDelayFlag = flags.Delay{Duration: time.Second} // default
+	// MaxDelayFlag is a maximum refresh period for collection.
+	MaxDelayFlag = flags.Delay{Duration: 10 * time.Minute} // default
+)
 
 func init() {
-	flag.Var(&DelayFlag, "d", "Short for delay")
-	flag.Var(&DelayFlag, "delay", "Collection `delay`")
+	flag.Var(&MinDelayFlag, "d", "Short for min-delay")
+	flag.Var(&MinDelayFlag, "min-delay", "Collection `delay`")
+	flag.Var(&MaxDelayFlag, "max-delay", "Collection `delay`")
 	ostent.AddBackground(ostent.ConnectionsLoop)
 	ostent.AddBackground(ostent.CollectLoop)
 }
@@ -32,9 +37,14 @@ func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error 
 	errlog, errclose := ostent.NewErrorLog()
 	defer errclose()
 
+	if MaxDelayFlag.Duration < MinDelayFlag.Duration {
+		MaxDelayFlag.Duration = MinDelayFlag.Duration
+	}
+
 	indexChain := chain.Append(context.ClearHandler,
 		ostent.AddContext(ostent.CIndexTemplate, templates.IndexTemplate),
-		ostent.AddContext(ostent.CMinDelay, DelayFlag),
+		ostent.AddContext(ostent.CMinDelay, MinDelayFlag),
+		ostent.AddContext(ostent.CMaxDelay, MaxDelayFlag),
 		ostent.AddContext(ostent.CTaggedBin, taggedbin))
 
 	indexHandler := indexChain.ThenFunc(ostent.Index)
@@ -45,7 +55,8 @@ func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error 
 	wschain := alice.New(context.ClearHandler,
 		ostent.AddContext(ostent.CAccess, access),
 		ostent.AddContext(ostent.CErrorLog, errlog),
-		ostent.AddContext(ostent.CMinDelay, DelayFlag))
+		ostent.AddContext(ostent.CMinDelay, MinDelayFlag),
+		ostent.AddContext(ostent.CMaxDelay, MaxDelayFlag))
 	mux.Handler("GET", "/index.ws", wschain.ThenFunc(ostent.IndexWS))
 	mux.Handler("GET", "/index.sse", wschain.ThenFunc(ostent.IndexSSE))
 

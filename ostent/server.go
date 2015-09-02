@@ -35,6 +35,7 @@ const (
 	CErrorLog
 	CIndexTemplate
 	CMinDelay
+	CMaxDelay
 	CPanicError // has no getter
 	CTaggedBin
 )
@@ -45,6 +46,7 @@ func ContextIndexTemplate(r *http.Request) *templateutil.LazyTemplate {
 	return GetContext(r, CIndexTemplate).(*templateutil.LazyTemplate)
 }
 func ContextMinDelay(r *http.Request) flags.Delay { return GetContext(r, CMinDelay).(flags.Delay) }
+func ContextMaxDelay(r *http.Request) flags.Delay { return GetContext(r, CMaxDelay).(flags.Delay) }
 func ContextTaggedBin(r *http.Request) bool       { return GetContext(r, CTaggedBin).(bool) }
 
 func GetContext(r *http.Request, id ContextID) interface{} { return context.Get(r, id) }

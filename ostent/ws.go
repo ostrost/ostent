@@ -382,6 +382,7 @@ func IndexWS(w http.ResponseWriter, req *http.Request) {
 		access   = ContextAccess(req)
 		errlog   = ContextErrorLog(req)
 		mindelay = ContextMinDelay(req)
+		maxdelay = ContextMaxDelay(req)
 	)
 	// Upgrader.Upgrade() has Origin check if .CheckOrigin is nil
 	upgrader := websocket.Upgrader{
@@ -402,7 +403,7 @@ func IndexWS(w http.ResponseWriter, req *http.Request) {
 
 		receive: make(chan *received, 2),
 		pushch:  make(chan *IndexUpdate, 2),
-		para:    params.NewParams(mindelay),
+		para:    params.NewParams(mindelay, maxdelay),
 		access:  access,
 	}
 	Register <- c

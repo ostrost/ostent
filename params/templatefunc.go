@@ -108,7 +108,10 @@ func (f ParamsFuncs) LinkD(p *Params, d *Delay, bclass string, set time.Duration
 	}
 	var eclass string
 	if badge == "-" && d.D == p.MinDelay.Duration {
-		eclass = " disabled"
+		eclass, href = " disabled", "?"
+	}
+	if badge == "+" && d.D == p.MaxDelay.Duration {
+		eclass, href = " disabled", "?"
 	}
 	return ALink{
 		Href:       href,
@@ -161,13 +164,13 @@ func (f ParamsFuncs) LinkN(p *Params, num *Num, bclass string, absolute int, bad
 	}
 	var eclass string
 	if badge == "" && num.Absolute == 0 { // "0" case && param is 0
-		eclass = " disabled active"
+		eclass, href = " disabled active", "?"
 	}
 	if badge == "+" && num.Absolute >= num.Limit && absolute > num.Limit {
-		eclass = " disabled"
+		eclass, href = " disabled", "?"
 	}
 	if badge == "-" && absolute == 0 {
-		eclass = " disabled"
+		eclass, href = " disabled", "?"
 	}
 	return ALink{
 		Href:       href,
