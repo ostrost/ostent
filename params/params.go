@@ -39,7 +39,11 @@ func NewParams(mindelay, maxdelay flags.Delay) *Params {
 		}
 		fv := val.Field(i)
 		if sft := sf.Type; sft == NumType {
-			if def, err := NumPrefix(tags[1:], "default"); err == nil { // otherwise err is ignored
+			def, err := NumPrefix(tags[1:], "default")
+			if err != nil {
+				err = def.UnmarshalText([]byte("1")) // the default "default"
+			}
+			if err == nil {
 				num := fv.Addr().Interface()
 				p.Defaults[sf.Name] = def // ?
 				p.Defaults[num] = def
@@ -111,7 +115,7 @@ type Schema struct {
 	Ifn  Num `url:"ifn,default2"`
 	Memn Num `url:"memn,default2"`
 	Psn  Num `url:"psn,default8"`
-	Vgn  Num `url:"vgn,default2"`
+	Vgn  Num `url:"vgn"`
 
 	Dft Num `url:"dft,default2,enumerate2,posonly"` // tab, default DFBYTES
 	Ift Num `url:"ift,default3,enumerate3,posonly"` // tab, default IFBYTES
