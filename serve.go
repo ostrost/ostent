@@ -26,8 +26,8 @@ var (
 
 func init() {
 	flag.Var(&MinDelayFlag, "d", "Short for min-delay")
-	flag.Var(&MinDelayFlag, "min-delay", "Collection `delay`")
-	flag.Var(&MaxDelayFlag, "max-delay", "Collection `delay`")
+	flag.Var(&MinDelayFlag, "min-delay", "Collection and minimum for UI `delay`")
+	flag.Var(&MaxDelayFlag, "max-delay", "Maximum for UI `delay`")
 	ostent.AddBackground(ostent.ConnectionsLoop)
 	ostent.AddBackground(ostent.CollectLoop)
 }

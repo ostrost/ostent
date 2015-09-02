@@ -44,8 +44,10 @@ Platforms:
 ```
 Usage of ostent:
   -bind address (default *:8050)
-  -delay duration (default 1s)
-        Collection delay
+  -min-delay duration (default 1s)
+        Collection and minimum for UI delay
+  -max-delay duration (default 10m)
+        Maximum for UI delay
 
   -graphite-host address
         Specify Graphite addess to enable exporting to
