@@ -98,24 +98,30 @@ func (f ParamsFuncs) DelayLess(d Delay, step time.Duration) time.Duration {
 
 func (f ParamsFuncs) LinkD(p *Params, d *Delay, bclass string, set time.Duration, badge string) (ALink, error) {
 	// f is unused
+	al := ALink{
+		Href:       "?",                   // Default
+		ExtraClass: " disabled ",          //         Disabled
+		Class:      " disabled " + bclass, //                  Values
+
+		Text:  flags.DurationString(set), // Final
+		Badge: badge,                     //       Values
+	}
 	href, err := p.EncodeD(d, set)
 	if err != nil {
-		return ALink{}, err
+		return al, err
 	}
-	var eclass string
-	if badge == "-" && d.D == p.MinDelay.Duration {
-		eclass, href = " disabled", "?"
+	switch badge {
+	case "-":
+		if d.D > p.MinDelay.Duration {
+			al.Href, al.ExtraClass = href, ""
+		}
+	case "+":
+		if d.D < p.MaxDelay.Duration {
+			al.Href, al.ExtraClass = href, ""
+		}
 	}
-	if badge == "+" && d.D == p.MaxDelay.Duration {
-		eclass, href = " disabled", "?"
-	}
-	return ALink{
-		Href:       href,
-		Text:       flags.DurationString(set),
-		Badge:      badge,
-		Class:      bclass + " " + eclass,
-		ExtraClass: eclass,
-	}, nil
+	al.Class = al.ExtraClass + " " + bclass // Eventually
+	return al, nil
 }
 
 func (f ParamsFuncs) Pow2Less(v int) int {
@@ -154,24 +160,31 @@ func (f ParamsFuncs) Pow2More(v int) int {
 
 func (f ParamsFuncs) LinkN(p *Params, num *Num, bclass string, absolute int, badge string) (ALink, error) {
 	// f is unused
+	al := ALink{ // defaults
+		Href:       "?",                   // Default
+		ExtraClass: " disabled ",          //         Disabled
+		Class:      " disabled " + bclass, //                  Values
+
+		Text:  fmt.Sprintf("%d", absolute), // Final
+		Badge: badge,                       //       Values
+	}
 	href, err := p.EncodeN(num, absolute, nil)
 	if err != nil {
-		return ALink{}, err
+		return al, err
 	}
-	var eclass string
-	if badge == "+" && num.Absolute >= num.Limit && absolute > num.Limit {
-		eclass, href = " disabled", "?"
+	switch badge {
+	case "+":
+		// when num.Limit is 0, it's unknown, so enable the button
+		if num.Limit == 0 || num.Absolute < num.Limit || absolute <= num.Limit {
+			al.Href, al.ExtraClass = href, ""
+		}
+	case "-":
+		if absolute > 0 || num.Absolute > 0 {
+			al.Href, al.ExtraClass = href, ""
+		}
 	}
-	if badge == "-" && absolute == 0 {
-		eclass, href = " disabled", "?"
-	}
-	return ALink{
-		Href:       href,
-		Text:       fmt.Sprintf("%d", absolute),
-		Badge:      badge,
-		Class:      bclass + " " + eclass,
-		ExtraClass: eclass,
-	}, nil
+	al.Class = al.ExtraClass + " " + bclass // Eventually
+	return al, nil
 }
 
 type ParamsFuncs struct{}
