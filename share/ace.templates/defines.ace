@@ -329,7 +329,7 @@
   tr.panel-config
     td.col-md-2
       div.text-right Select
-    td {{colspan}}=3
+    td {{colspan}}=2
       ul.nav.nav-pills
 [[end]]
 
@@ -345,7 +345,7 @@
       div.btn-group.nowrap-group role=group
         {{template "defines::badgedlinkleft"  LessD $p [[$D]] "btn btn-default"}}
         {{template "defines::badgedlinkright" MoreD $p [[$D]] "btn btn-default"}}
-    td.col-md-10 {{colspan}}=2
+    td.col-md-10
 [[end]]
 
 / 4 tds
@@ -360,10 +360,6 @@
       div.btn-group.nowrap-group role=group
         {{template "defines::badgedlinkleft"  LessN $p [[$N]] "btn btn-default"}}
         {{template "defines::badgedlinkright" MoreN $p [[$N]] "btn btn-default"}}
-    td
-      div.btn-group.nowrap-group role=group
-        / a.btn.btn-default 8 (default)
-        {{template "defines::badgedlinkright" ZeroN $p [[$N]] "btn btn-default"}}
     td.col-md-10
 [[end]]
 

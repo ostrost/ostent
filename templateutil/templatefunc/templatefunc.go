@@ -94,15 +94,8 @@ func (f JSXFuncs) FuncMoreN() interface{} {
 	}
 }
 
-func (f JSXFuncs) FuncZeroN() interface{} {
-	return func(_, num Uncurler, bclass string) (params.ALink, error) {
-		return f.Nlink(num, bclass, "Zero", "")
-	}
-}
-
 func (f HTMLFuncs) FuncLessN() interface{} { return f.ParamsFuncs.LessN }
 func (f HTMLFuncs) FuncMoreN() interface{} { return f.ParamsFuncs.MoreN }
-func (f HTMLFuncs) FuncZeroN() interface{} { return f.ParamsFuncs.ZeroN }
 
 func (f JSXFuncs) FuncVlink() interface{} {
 	return func(_, this Uncurler, cmp int, text, alignClass string) params.VLink {
@@ -190,7 +183,6 @@ func MakeMap(f Functor) template.FuncMap {
 		"MoreD": f.FuncMoreD(),
 		"LessN": f.FuncLessN(),
 		"MoreN": f.FuncMoreN(),
-		"ZeroN": f.FuncZeroN(),
 		"Vlink": f.FuncVlink(),
 	}
 }
@@ -212,7 +204,6 @@ type Functor interface {
 	FuncMoreD() interface{}
 	FuncLessN() interface{}
 	FuncMoreN() interface{}
-	FuncZeroN() interface{}
 	FuncVlink() interface{}
 }
 

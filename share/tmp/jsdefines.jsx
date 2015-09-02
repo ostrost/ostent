@@ -43,7 +43,7 @@ define(function(require) {
   ></a
 ></div
         ></td
-      ><td className="col-md-10" colSpan="2"
+      ><td className="col-md-10"
         ></td
       ></tr
     ><tr className="panel-config"
@@ -64,15 +64,6 @@ define(function(require) {
   
   >{Data.Params.Nlinks.Memn.More.Text} <span className="xlabel xlabel-default"
     >+</span
-  ></a
-></div
-        ></td
-      ><td
-        ><div className="btn-group nowrap-group" role="group"
-          ><a href={Data.Params.Nlinks.Memn.Zero.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.Memn.Zero.ExtraClass != null ? Data.Params.Nlinks.Memn.Zero.ExtraClass : "")}
-  
-  >{Data.Params.Nlinks.Memn.Zero.Text} <span className="xlabel xlabel-default"
-    ></span
   ></a
 ></div
         ></td
@@ -167,7 +158,7 @@ define(function(require) {
   ></a
 ></div
         ></td
-      ><td className="col-md-10" colSpan="2"
+      ><td className="col-md-10"
         ></td
       ></tr
     ><tr className="panel-config"
@@ -191,15 +182,6 @@ define(function(require) {
   ></a
 ></div
         ></td
-      ><td
-        ><div className="btn-group nowrap-group" role="group"
-          ><a href={Data.Params.Nlinks.Ifn.Zero.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.Ifn.Zero.ExtraClass != null ? Data.Params.Nlinks.Ifn.Zero.ExtraClass : "")}
-  
-  >{Data.Params.Nlinks.Ifn.Zero.Text} <span className="xlabel xlabel-default"
-    ></span
-  ></a
-></div
-        ></td
       ><td className="col-md-10"
         ></td
       ></tr
@@ -208,7 +190,7 @@ define(function(require) {
         ><div className="text-right"
           >Select</div
         ></td
-      ><td colSpan="3"
+      ><td colSpan="2"
         ><ul className="nav nav-pills"
           ><li  className={Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 1 ? "active" : ""}
             ><a href={Data.Params.Vlinks.Ift[1-1].LinkHref} onClick={this.handleClick}
@@ -367,7 +349,7 @@ define(function(require) {
   ></a
 ></div
         ></td
-      ><td className="col-md-10" colSpan="2"
+      ><td className="col-md-10"
         ></td
       ></tr
     ><tr className="panel-config"
@@ -388,15 +370,6 @@ define(function(require) {
   
   >{Data.Params.Nlinks.CPUn.More.Text} <span className="xlabel xlabel-default"
     >+</span
-  ></a
-></div
-        ></td
-      ><td
-        ><div className="btn-group nowrap-group" role="group"
-          ><a href={Data.Params.Nlinks.CPUn.Zero.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Zero.ExtraClass != null ? Data.Params.Nlinks.CPUn.Zero.ExtraClass : "")}
-  
-  >{Data.Params.Nlinks.CPUn.Zero.Text} <span className="xlabel xlabel-default"
-    ></span
   ></a
 ></div
         ></td
@@ -492,7 +465,7 @@ define(function(require) {
   ></a
 ></div
         ></td
-      ><td className="col-md-10" colSpan="2"
+      ><td className="col-md-10"
         ></td
       ></tr
     ><tr className="panel-config"
@@ -516,15 +489,6 @@ define(function(require) {
   ></a
 ></div
         ></td
-      ><td
-        ><div className="btn-group nowrap-group" role="group"
-          ><a href={Data.Params.Nlinks.Dfn.Zero.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.Dfn.Zero.ExtraClass != null ? Data.Params.Nlinks.Dfn.Zero.ExtraClass : "")}
-  
-  >{Data.Params.Nlinks.Dfn.Zero.Text} <span className="xlabel xlabel-default"
-    ></span
-  ></a
-></div
-        ></td
       ><td className="col-md-10"
         ></td
       ></tr
@@ -533,7 +497,7 @@ define(function(require) {
         ><div className="text-right"
           >Select</div
         ></td
-      ><td colSpan="3"
+      ><td colSpan="2"
         ><ul className="nav nav-pills"
           ><li  className={Data.Params.Dfn.Absolute != 0 && Data.Params.Dft.Absolute == 1 ? "active" : ""}
             ><a href={Data.Params.Vlinks.Dft[1-1].LinkHref} onClick={this.handleClick}
@@ -657,7 +621,7 @@ define(function(require) {
   ></a
 ></div
         ></td
-      ><td className="col-md-10" colSpan="2"
+      ><td className="col-md-10"
         ></td
       ></tr
     ><tr className="panel-config"
@@ -678,15 +642,6 @@ define(function(require) {
   
   >{Data.Params.Nlinks.Psn.More.Text} <span className="xlabel xlabel-default"
     >+</span
-  ></a
-></div
-        ></td
-      ><td
-        ><div className="btn-group nowrap-group" role="group"
-          ><a href={Data.Params.Nlinks.Psn.Zero.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.Psn.Zero.ExtraClass != null ? Data.Params.Nlinks.Psn.Zero.ExtraClass : "")}
-  
-  >{Data.Params.Nlinks.Psn.Zero.Text} <span className="xlabel xlabel-default"
-    ></span
   ></a
 ></div
         ></td
@@ -806,7 +761,7 @@ define(function(require) {
   ></a
 ></div
         ></td
-      ><td className="col-md-10" colSpan="2"
+      ><td className="col-md-10"
         ></td
       ></tr
     ><tr className="panel-config"
@@ -827,15 +782,6 @@ define(function(require) {
   
   >{Data.Params.Nlinks.Vgn.More.Text} <span className="xlabel xlabel-default"
     >+</span
-  ></a
-></div
-        ></td
-      ><td
-        ><div className="btn-group nowrap-group" role="group"
-          ><a href={Data.Params.Nlinks.Vgn.Zero.Href} onClick={this.handleClick} className={"btn btn-default" + " " + (Data.Params.Nlinks.Vgn.Zero.ExtraClass != null ? Data.Params.Nlinks.Vgn.Zero.ExtraClass : "")}
-  
-  >{Data.Params.Nlinks.Vgn.Zero.Text} <span className="xlabel xlabel-default"
-    ></span
   ></a
 ></div
         ></td

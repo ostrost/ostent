@@ -30,10 +30,6 @@ func (f ParamsFuncs) MoreN(p *Params, num *Num, bclass string) (ALink, error) {
 	return f.LinkN(p, num, bclass, f.Pow2More(num.Absolute), "+")
 }
 
-func (f ParamsFuncs) ZeroN(p *Params, num *Num, bclass string) (ALink, error) {
-	return f.LinkN(p, num, bclass, 0, "")
-}
-
 func (f ParamsFuncs) Vlink(p *Params, num *Num, absolute int, text, alignClass string) (VLink, error) {
 	// f is unused
 	vl := VLink{LinkText: text, LinkClass: "state"}
@@ -163,9 +159,6 @@ func (f ParamsFuncs) LinkN(p *Params, num *Num, bclass string, absolute int, bad
 		return ALink{}, err
 	}
 	var eclass string
-	if badge == "" && num.Absolute == 0 { // "0" case && param is 0
-		eclass, href = " disabled active", "?"
-	}
 	if badge == "+" && num.Absolute >= num.Limit && absolute > num.Limit {
 		eclass, href = " disabled", "?"
 	}

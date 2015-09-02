@@ -120,7 +120,7 @@ type Schema struct {
 }
 
 type Nlinks struct {
-	Zero, More, Less ALink
+	More, Less ALink
 }
 type Dlinks struct {
 	More, Less ALink
@@ -174,7 +174,6 @@ func (p Params) Nlinks() map[string]Nlinks {
 		num := val.Field(i).Addr().Interface().(*Num)
 		nl := Nlinks{}
 		// errors are ignored
-		nl.Zero, _ = p.ZeroN(&p, num, "")
 		nl.More, _ = p.MoreN(&p, num, "")
 		nl.Less, _ = p.LessN(&p, num, "")
 		m[sf.Name] = nl

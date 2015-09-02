@@ -130,7 +130,7 @@ define(function (require) {
                 )
               )
             ),
-            React.createElement("td", { className: "col-md-10", colSpan: "2"
+            React.createElement("td", { className: "col-md-10"
             })
           ),
           React.createElement(
@@ -188,25 +188,6 @@ define(function (require) {
                     },
                     "+"
                   )
-                )
-              )
-            ),
-            React.createElement(
-              "td",
-              null,
-              React.createElement(
-                "div",
-                { className: "btn-group nowrap-group", role: "group"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Nlinks.Memn.Zero.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Memn.Zero.ExtraClass != null ? Data.Params.Nlinks.Memn.Zero.ExtraClass : "")
-
-                  },
-                  Data.Params.Nlinks.Memn.Zero.Text,
-                  " ",
-                  React.createElement("span", { className: "xlabel xlabel-default"
-                  })
                 )
               )
             ),
@@ -453,7 +434,7 @@ define(function (require) {
                 )
               )
             ),
-            React.createElement("td", { className: "col-md-10", colSpan: "2"
+            React.createElement("td", { className: "col-md-10"
             })
           ),
           React.createElement(
@@ -514,25 +495,6 @@ define(function (require) {
                 )
               )
             ),
-            React.createElement(
-              "td",
-              null,
-              React.createElement(
-                "div",
-                { className: "btn-group nowrap-group", role: "group"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Nlinks.Ifn.Zero.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.Zero.ExtraClass != null ? Data.Params.Nlinks.Ifn.Zero.ExtraClass : "")
-
-                  },
-                  Data.Params.Nlinks.Ifn.Zero.Text,
-                  " ",
-                  React.createElement("span", { className: "xlabel xlabel-default"
-                  })
-                )
-              )
-            ),
             React.createElement("td", { className: "col-md-10"
             })
           ),
@@ -553,7 +515,7 @@ define(function (require) {
             ),
             React.createElement(
               "td",
-              { colSpan: "3"
+              { colSpan: "2"
               },
               React.createElement(
                 "ul",
@@ -980,7 +942,7 @@ define(function (require) {
                 )
               )
             ),
-            React.createElement("td", { className: "col-md-10", colSpan: "2"
+            React.createElement("td", { className: "col-md-10"
             })
           ),
           React.createElement(
@@ -1038,25 +1000,6 @@ define(function (require) {
                     },
                     "+"
                   )
-                )
-              )
-            ),
-            React.createElement(
-              "td",
-              null,
-              React.createElement(
-                "div",
-                { className: "btn-group nowrap-group", role: "group"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Nlinks.CPUn.Zero.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Zero.ExtraClass != null ? Data.Params.Nlinks.CPUn.Zero.ExtraClass : "")
-
-                  },
-                  Data.Params.Nlinks.CPUn.Zero.Text,
-                  " ",
-                  React.createElement("span", { className: "xlabel xlabel-default"
-                  })
                 )
               )
             ),
@@ -1311,7 +1254,7 @@ define(function (require) {
                 )
               )
             ),
-            React.createElement("td", { className: "col-md-10", colSpan: "2"
+            React.createElement("td", { className: "col-md-10"
             })
           ),
           React.createElement(
@@ -1372,25 +1315,6 @@ define(function (require) {
                 )
               )
             ),
-            React.createElement(
-              "td",
-              null,
-              React.createElement(
-                "div",
-                { className: "btn-group nowrap-group", role: "group"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Nlinks.Dfn.Zero.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Dfn.Zero.ExtraClass != null ? Data.Params.Nlinks.Dfn.Zero.ExtraClass : "")
-
-                  },
-                  Data.Params.Nlinks.Dfn.Zero.Text,
-                  " ",
-                  React.createElement("span", { className: "xlabel xlabel-default"
-                  })
-                )
-              )
-            ),
             React.createElement("td", { className: "col-md-10"
             })
           ),
@@ -1411,7 +1335,7 @@ define(function (require) {
             ),
             React.createElement(
               "td",
-              { colSpan: "3"
+              { colSpan: "2"
               },
               React.createElement(
                 "ul",
@@ -1733,7 +1657,7 @@ define(function (require) {
                 )
               )
             ),
-            React.createElement("td", { className: "col-md-10", colSpan: "2"
+            React.createElement("td", { className: "col-md-10"
             })
           ),
           React.createElement(
@@ -1791,25 +1715,6 @@ define(function (require) {
                     },
                     "+"
                   )
-                )
-              )
-            ),
-            React.createElement(
-              "td",
-              null,
-              React.createElement(
-                "div",
-                { className: "btn-group nowrap-group", role: "group"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Nlinks.Psn.Zero.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Psn.Zero.ExtraClass != null ? Data.Params.Nlinks.Psn.Zero.ExtraClass : "")
-
-                  },
-                  Data.Params.Nlinks.Psn.Zero.Text,
-                  " ",
-                  React.createElement("span", { className: "xlabel xlabel-default"
-                  })
                 )
               )
             ),
@@ -2091,7 +1996,7 @@ define(function (require) {
                 )
               )
             ),
-            React.createElement("td", { className: "col-md-10", colSpan: "2"
+            React.createElement("td", { className: "col-md-10"
             })
           ),
           React.createElement(
@@ -2149,25 +2054,6 @@ define(function (require) {
                     },
                     "+"
                   )
-                )
-              )
-            ),
-            React.createElement(
-              "td",
-              null,
-              React.createElement(
-                "div",
-                { className: "btn-group nowrap-group", role: "group"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Nlinks.Vgn.Zero.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Vgn.Zero.ExtraClass != null ? Data.Params.Nlinks.Vgn.Zero.ExtraClass : "")
-
-                  },
-                  Data.Params.Nlinks.Vgn.Zero.Text,
-                  " ",
-                  React.createElement("span", { className: "xlabel xlabel-default"
-                  })
                 )
               )
             ),
