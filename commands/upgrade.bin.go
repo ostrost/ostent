@@ -102,7 +102,7 @@ func (up *upgrade) Upgrade() bool {
 			up.Log.Printf("Content-Type is not application/octet-stream: %q", ct)
 			return false
 		} // */
-	err = update.Apply(resp.Body, &update.Options{})
+	err = update.Apply(resp.Body, update.Options{})
 	if err != nil {
 		up.Log.Print(err)
 		return false
