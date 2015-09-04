@@ -20,6 +20,7 @@ import (
 	"github.com/ostrost/ostent/params/enums"
 	"github.com/ostrost/ostent/system"
 	"github.com/ostrost/ostent/system/operating"
+	"github.com/ostrost/ostent/templateutil"
 )
 
 type diskInfo struct {
@@ -839,14 +840,39 @@ func FormRedirectFunc(mindelay, maxdelay flags.Delay, wrap func(http.HandlerFunc
 }
 */
 
-func Index(w http.ResponseWriter, r *http.Request) {
-	var (
-		mindelay  = ContextMinDelay(r)
-		maxdelay  = ContextMaxDelay(r)
-		taggedbin = ContextTaggedBin(r)
-		template  = ContextIndexTemplate(r)
-	)
-	id, err := indexData(mindelay, maxdelay, r)
+type ServeSSE struct {
+	Access   *Access
+	MinDelay flags.Delay
+}
+
+type ServeWS struct {
+	ServeSSE
+	ErrLog   *log.Logger
+	MaxDelay flags.Delay
+}
+
+type ServeIndex struct {
+	ServeWS
+	TaggedBin     bool
+	IndexTemplate *templateutil.LazyTemplate
+}
+
+func NewServeSSE(access *Access, mindelay flags.Delay) *ServeSSE {
+	return &ServeSSE{Access: access, MinDelay: mindelay}
+}
+
+func NewServeWS(ss ServeSSE, errlog *log.Logger, maxdelay flags.Delay) *ServeWS {
+	return &ServeWS{ServeSSE: ss, ErrLog: errlog, MaxDelay: maxdelay}
+}
+
+func NewServeIndex(sw ServeWS, taggedbin bool, template *templateutil.LazyTemplate) *ServeIndex {
+	return &ServeIndex{ServeWS: sw, TaggedBin: taggedbin, IndexTemplate: template}
+}
+
+// Index renders index page.
+// si is read-only, pointer is for not copying.
+func (si *ServeIndex) Index(w http.ResponseWriter, r *http.Request) {
+	id, err := indexData(si.MinDelay, si.MaxDelay, r)
 	if err != nil {
 		if _, ok := err.(params.RenamedConstError); ok {
 			http.Redirect(w, r, err.Error(), http.StatusFound)
@@ -855,11 +881,11 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	response := template.Response(w, struct {
+	response := si.IndexTemplate.Response(w, struct {
 		TAGGEDbin bool
 		Data      IndexData
 	}{
-		TAGGEDbin: taggedbin,
+		TAGGEDbin: si.TaggedBin,
 		Data:      id,
 	})
 	response.Header().Set("Content-Type", "text/html")
@@ -912,13 +938,11 @@ func (sse *SSE) SetHeader(name, value string) bool {
 	return true
 }
 
-func IndexSSE(w http.ResponseWriter, r *http.Request) {
-	var (
-		access   = ContextAccess(r)
-		mindelay = ContextMinDelay(r)
-	)
-	sse := &SSE{Writer: w, MinDelay: mindelay}
-	if access.Constructor(sse).ServeHTTP(nil, r); sse.Errord { // the request logging
+// IndexSSE serves SSE updates.
+// ss is read-only, pointer is for not copying.
+func (ss *ServeSSE) IndexSSE(w http.ResponseWriter, r *http.Request) {
+	sse := &SSE{Writer: w, MinDelay: ss.MinDelay}
+	if ss.Access.Constructor(sse).ServeHTTP(nil, r); sse.Errord { // the request logging
 		return
 	}
 	for { // loop is access-log-free

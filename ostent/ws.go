@@ -377,13 +377,9 @@ func (w dummyStatus) Write(b []byte) (int, error) {
 	// return len(b), nil
 }
 
-func IndexWS(w http.ResponseWriter, req *http.Request) {
-	var (
-		access   = ContextAccess(req)
-		errlog   = ContextErrorLog(req)
-		mindelay = ContextMinDelay(req)
-		maxdelay = ContextMaxDelay(req)
-	)
+// IndexWS serves ws updates.
+// sw is read-only, pointer is for not copying.
+func (sw *ServeWS) IndexWS(w http.ResponseWriter, req *http.Request) {
 	// Upgrader.Upgrade() has Origin check if .CheckOrigin is nil
 	upgrader := websocket.Upgrader{
 		HandshakeTimeout: 5 * time.Second,
@@ -397,14 +393,14 @@ func IndexWS(w http.ResponseWriter, req *http.Request) {
 	req.Form = nil // reset reused later .Form
 	c := &conn{
 		Conn:     wsconn,
-		ErrorLog: errlog,
+		ErrorLog: sw.ErrLog,
 
 		requestOrigin: req,
 
 		receive: make(chan *received, 2),
 		pushch:  make(chan *IndexUpdate, 2),
-		para:    params.NewParams(mindelay, maxdelay),
-		access:  access,
+		para:    params.NewParams(sw.MinDelay, sw.MaxDelay),
+		access:  sw.Access,
 	}
 	Register <- c
 	defer func() {

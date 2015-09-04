@@ -8,9 +8,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/gorilla/context"
-	"github.com/justinas/alice"
-
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/share/assets"
@@ -41,24 +38,15 @@ func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error 
 		MaxDelayFlag.Duration = MinDelayFlag.Duration
 	}
 
-	indexChain := chain.Append(context.ClearHandler,
-		ostent.AddContext(ostent.CIndexTemplate, templates.IndexTemplate),
-		ostent.AddContext(ostent.CMinDelay, MinDelayFlag),
-		ostent.AddContext(ostent.CMaxDelay, MaxDelayFlag),
-		ostent.AddContext(ostent.CTaggedBin, taggedbin))
+	ss := ostent.NewServeSSE(access, MinDelayFlag)
+	mux.Handler("GET", "/index.sse", http.HandlerFunc(ss.IndexSSE))
+	sw := ostent.NewServeWS(*ss, errlog, MaxDelayFlag)
+	mux.Handler("GET", "/index.ws", http.HandlerFunc(sw.IndexWS))
 
-	indexHandler := indexChain.ThenFunc(ostent.Index)
+	si := ostent.NewServeIndex(*sw, taggedbin, templates.IndexTemplate)
+	indexHandler := chain.ThenFunc(si.Index)
 	mux.Handler("GET", "/", indexHandler)
 	mux.Handler("HEAD", "/", indexHandler)
-
-	// chain is not used -- access to log with is passed in context.
-	wschain := alice.New(context.ClearHandler,
-		ostent.AddContext(ostent.CAccess, access),
-		ostent.AddContext(ostent.CErrorLog, errlog),
-		ostent.AddContext(ostent.CMinDelay, MinDelayFlag),
-		ostent.AddContext(ostent.CMaxDelay, MaxDelayFlag))
-	mux.Handler("GET", "/index.ws", wschain.ThenFunc(ostent.IndexWS))
-	mux.Handler("GET", "/index.sse", wschain.ThenFunc(ostent.IndexSSE))
 
 	if !taggedbin { // dev-only
 		mux.Handler("GET", "/panic", chain.ThenFunc(

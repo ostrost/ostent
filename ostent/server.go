@@ -13,43 +13,13 @@ import (
 	"github.com/gorilla/context"
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
-
-	"github.com/ostrost/ostent/flags"
-	"github.com/ostrost/ostent/templateutil"
 )
-
-// AddContext is a middleware to context.Set.
-func AddContext(key, val interface{}) func(http.Handler) http.Handler {
-	return func(handler http.Handler) http.Handler { // Constructor
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			context.Set(r, key, val)
-			handler.ServeHTTP(w, r)
-		})
-	}
-}
 
 type ContextID int
 
 const (
-	CAccess ContextID = iota
-	CErrorLog
-	CIndexTemplate
-	CMinDelay
-	CMaxDelay
-	CPanicError // has no getter
-	CTaggedBin
+	CPanicError ContextID = iota
 )
-
-func ContextAccess(r *http.Request) *Access       { return GetContext(r, CAccess).(*Access) }
-func ContextErrorLog(r *http.Request) *log.Logger { return GetContext(r, CErrorLog).(*log.Logger) }
-func ContextIndexTemplate(r *http.Request) *templateutil.LazyTemplate {
-	return GetContext(r, CIndexTemplate).(*templateutil.LazyTemplate)
-}
-func ContextMinDelay(r *http.Request) flags.Delay { return GetContext(r, CMinDelay).(flags.Delay) }
-func ContextMaxDelay(r *http.Request) flags.Delay { return GetContext(r, CMaxDelay).(flags.Delay) }
-func ContextTaggedBin(r *http.Request) bool       { return GetContext(r, CTaggedBin).(bool) }
-
-func GetContext(r *http.Request, id ContextID) interface{} { return context.Get(r, id) }
 
 // Muxmap is a type of a map of pattern to HandlerFunc.
 type Muxmap map[string]http.HandlerFunc
@@ -59,9 +29,8 @@ func NewServery(taggedbin bool, extramap Muxmap) (*httprouter.Router, alice.Chai
 	chain := alice.New(access.Constructor)
 	mux := httprouter.New()
 	mux.NotFound = chain.ThenFunc(http.NotFound)
-	phandler := chain.Append(context.ClearHandler,
-		AddContext(CTaggedBin, taggedbin)).
-		ThenFunc(PanicHandler)
+	phandler := chain.Append(context.ClearHandler).
+		ThenFunc(NewServePanic(taggedbin).PanicHandler)
 	mux.PanicHandler = func(w http.ResponseWriter, r *http.Request, recd interface{}) {
 		context.Set(r, CPanicError, recd)
 		phandler.ServeHTTP(w, r)

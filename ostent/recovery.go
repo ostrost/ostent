@@ -8,21 +8,22 @@ import (
 	"github.com/gorilla/context"
 )
 
-func PanicHandler(w http.ResponseWriter, r *http.Request) {
-	var (
-		taggedbin = ContextTaggedBin(r)
-		recd      = context.Get(r, CPanicError)
-	)
+type ServePanic struct{ TaggedBin bool }
+
+func NewServePanic(taggedbin bool) *ServePanic { return &ServePanic{TaggedBin: taggedbin} }
+
+func (sp *ServePanic) PanicHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(PanicStatusCode)
 
 	var description string
+	recd := context.Get(r, CPanicError)
 	if err, ok := recd.(error); ok {
 		description = err.Error()
 	} else if s, ok := recd.(string); ok {
 		description = s
 	}
 	var stack string
-	if !taggedbin {
+	if !sp.TaggedBin {
 		sbuf := make([]byte, 4096-len(PanicStatusText)-len(description))
 		size := runtime.Stack(sbuf, false)
 		stack = string(sbuf[:size])
