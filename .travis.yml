@@ -8,11 +8,11 @@ addons:
 env:
   global:
     - GVMINSTALLER_URL=https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer
-    - DPL_GO=go1.4.2 # Deploy only when this matches GVM_GO in the matrix.
+    - DPL_GO=go1.5 # Deploy only when this matches GVM_GO in the matrix.
   matrix:
-  # - GVM_GO=tip
-    - GVM_GO=go1.5
     - GVM_GO=go1.4.2
+    - GVM_GO=go1.5
+  # - GVM_GO=tip
 install:
   - set -e # errors are fatal
   - |
@@ -49,7 +49,9 @@ before_deploy:
     x32=$x64
     if test x$TRAVIS_OS_NAME \!= xosx ; then # 32bit build on non-osx
       x32=.i686
-      make boot32 all32
+      gvm install go1.4.2 --binary || true
+      make boot32 GOROOT_BOOTSTRAP=~/.gvm/gos/go1.4.2
+      make all32
       : ; mv $HOME/gopath/bin/ostent.32 $HOME/gopath/bin/$os$x32
     fi
     : : ; mv $HOME/gopath/bin/ostent    $HOME/gopath/bin/$os$x64
