@@ -3,13 +3,13 @@
 # This repo clone location (final subdirectories) defines package name thus
 # it should be */github.com/[ostrost]/ostent to make package=github.com/[ostrost]/ostent
 package=$(shell echo $$PWD | awk -F/ '{ OFS="/"; print $$(NF-2), $$(NF-1), $$NF }')
+otemplateppackage=$(package)/cmd/ostent-templatepp
+
 testpackage?=./...
 singletestpackage=$(testpackage)
 ifeq ($(testpackage), ./...)
 singletestpackage=$(package)
 endif
-
-acepp.go=$(shell go list -f '{{.Dir}}' github.com/ostrost/ostent)/templateutil/acepp.go
 
 shareprefix=share
 assets_devgo    = $(shareprefix)/assets/bindata.dev.go
@@ -25,7 +25,8 @@ xargs=xargs --no-run-if-empty
 endif
 go-bindata=go-bindata -ignore '.*\.go'# Go regexp syntax for -ignore
 
-.PHONY: all32 boot32 all al init test covertest coverfunc coverhtml bindata bindata-dev bindata-bin
+.PHONY: all al init test covertest coverfunc coverhtml bindata bindata-dev bindata-bin
+.PHONY: all32 boot32
 ifneq (init, $(MAKECMDGOALS))
 # before init:
 # - go list would fail (for *packagefiles)
@@ -48,6 +49,10 @@ go list -tags   bin  -f '$(golistfiles)' | sed -n "s,^ *,,g; s,$(PWD)/,,p" | sor
 devpackagefiles=$(shell \
 go list -tags '!bin' -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(package) | $(xargs) \
 go list -tags '!bin' -f '$(golistfiles)' | sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort)
+otemplateppfiles=$(shell \
+go list -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(otemplateppackage) | $(xargs) \
+go list -f '$(golistfiles)' | sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort)
+otemplatepp=$(destbin)/$(notdir $(otemplateppackage))
 
 all: $(destbin)/$(cmdname)
 all32: $(destbin)/$(cmdname).32
@@ -79,6 +84,8 @@ commands/extpoints/extpoints.go: commands/extpoints/interface.go ; cd $(dir $@) 
 al: $(packagefiles) $(devpackagefiles)
 # al: like `all' but without final go build $(package). For when rerun does the build
 
+$(otemplatepp): $(otemplateppfiles)
+	go build -o $@ $(otemplateppackage)
 $(destbin)/$(cmdname): $(packagefiles)
 	go build -ldflags '-s -w' -a -tags bin -o $@ $(package)
 $(destbin)/$(cmdname).32:
@@ -98,10 +105,10 @@ share/assets/js/src/milk/index.js: share/coffee/index.coffee
 share/assets/js/min/index.min.js: $(shell find share/assets/js/src/ -type f)
 	type r.js   >/dev/null || exit 0; cd share/assets/js/src/milk && r.js -o build.js
 
-share/templates/index.html: share/ace.templates/index.ace share/ace.templates/defines.ace $(acepp.go)
-	go run $(acepp.go) -defines share/ace.templates/defines.ace -output $@ $<
-share/tmp/jsdefines.jsx: share/ace.templates/jsdefines.js.tmpl share/ace.templates/defines.ace $(acepp.go)
-	go run $(acepp.go) -defines share/ace.templates/defines.ace -output $@ -javascript $<
+share/templates/index.html: share/ace.templates/index.ace share/ace.templates/defines.ace $(otemplatepp)
+	$(otemplatepp) -defines share/ace.templates/defines.ace -output $@ $<
+share/tmp/jsdefines.jsx: share/ace.templates/jsdefines.js.tmpl share/ace.templates/defines.ace $(otemplatepp)
+	$(otemplatepp) -defines share/ace.templates/defines.ace -output $@ -javascript $<
 
 $(templates_bingo) $(templates_devgo): $(shell find share/templates/ -type f \! -name \*.go)
 
