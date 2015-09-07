@@ -20,10 +20,10 @@ a.panel-title { &:extend(a); } // .panel-title has color: inherit
   background-color: @pre-bg;
 }
 
-.unit { // pre colors
-  color: @pre-color;
-  background-color: @pre-bg;
-}
+.normal { font-weight: normal; }
+
+.text-graylighter { color: @gray-lighter; }
+.table-hover tr:hover .text-graylighter { &:extend(.text-muted); }
 
 .clip {
   cursor: pointer;
@@ -53,9 +53,8 @@ a.panel-title { &:extend(a); } // .panel-title has color: inherit
 }
 */
 
-.nowrap { white-space: nowrap; }
 .nowrap-group {
-  white-space: nowrap;
+  &:extend(.text-nowrap);
   .btn {
     float: none;
     display: inline-block;

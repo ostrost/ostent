@@ -64,11 +64,24 @@ type DFinodes struct {
 
 // InterfaceInfo type is a struct of interface metrics.
 type InterfaceInfo struct {
-	Name     string
-	In       string // with units
-	Out      string // with units
-	DeltaIn  string // with units
-	DeltaOut string // with units
+	Name string
+
+	// strings with units
+
+	BytesIn      string
+	BytesOut     string
+	DeltaBitsIn  string
+	DeltaBitsOut string
+
+	ErrorsIn       string
+	ErrorsOut      string
+	DeltaErrorsIn  string
+	DeltaErrorsOut string
+
+	PacketsIn       string
+	PacketsOut      string
+	DeltaPacketsIn  string
+	DeltaPacketsOut string
 }
 
 // Interfaces type has a list of Interface.

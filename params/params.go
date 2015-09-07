@@ -95,7 +95,7 @@ type Params struct {
 type Schema struct {
 	// Still is here to be preserved for url encoding.
 	// Not in use by Go code, but by js.
-	Still Num `url:"still,omitempty"`
+	Still Num `url:"still,default0"`
 
 	// The NewParams must populate .Delays with EACH *Delay
 
@@ -118,7 +118,6 @@ type Schema struct {
 	Vgn  Num `url:"vgn"`
 
 	Dft Num `url:"dft,default2,enumerate2,posonly"` // tab, default DFBYTES
-	Ift Num `url:"ift,default3,enumerate3,posonly"` // tab, default IFBYTES
 	Psk Num `url:"psk,default1,enumerate9"`         // sort, default PID
 	Dfk Num `url:"dfk,default1,enumerate5"`         // sort, default FS
 }
@@ -453,6 +452,10 @@ func (p *Params) Decode(req *http.Request) error {
 	}
 	if _, ok := req.Form["ps"]; ok {
 		req.Form.Del("ps")
+		moved = true
+	}
+	if _, ok := req.Form["ift"]; ok {
+		req.Form.Del("ift")
 		moved = true
 	}
 

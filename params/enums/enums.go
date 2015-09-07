@@ -17,14 +17,6 @@ const (
 	DFBYTES     // 2
 )
 
-// Constants for IF tabs.
-const (
-	_       int = iota
-	PACKETS     // 1
-	ERRORS      // 2
-	IFBYTES     // 3
-)
-
 // Constants for PS sorting criterion.
 const (
 	_    int = iota

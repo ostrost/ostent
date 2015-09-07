@@ -1,105 +1,60 @@
 = content define_usepercent
   | <span {{class}}="label" data-usepercent={{.}}>{{.}}%</span>
 
-= content define_ifbytes_rows
+= content define_ifrows
   {{with rowsset .}}{{.}}{{else}}
-    {{range $if := .Data.IFbytes.List}}
-      | <tr {{AttrKey "ifbytes-rowby-name" $if.Name}}>
+    {{range $if := .Data.IF.List}}
+      | <tr {{AttrKey "if-rowby-name" $if.Name}}>
       td {{$if.Name}}
-      td.text-right {{$if.DeltaIn}}
-      td.text-right {{$if.DeltaOut}}
-      td.text-right {{$if.In}}
-      td.text-right {{$if.Out}}
+      td.text-right.text-nowrap
+        span.text-graylighter title="Total BYTES IN modulo 4G" {{$if.BytesIn}}
+        |  
+        span title="Bits IN per second" {{$if.DeltaBitsIn}}
+      td.text-right.text-nowrap
+        span.text-graylighter title="Total BYTES OUT modulo 4G" {{$if.BytesOut}}
+        |  
+        span title="Bits OUT per second" {{$if.DeltaBitsOut}}
+      td.text-right.text-nowrap
+        span.text-graylighter title="Total packets IN modulo 4G" {{$if.PacketsIn}}
+        |  
+        span title="Packets IN per second" {{$if.DeltaPacketsIn}}
+      td.text-right.text-nowrap
+        span.text-graylighter title="Total packets OUT modulo 4G" {{$if.PacketsOut}}
+        |  
+        span title="Packets OUT per second" {{$if.DeltaPacketsOut}}
+      td.text-right.text-nowrap
+        span.text-graylighter title="Total errors IN modulo 4G" {{$if.ErrorsIn}}
+        |  
+        span title="Errors IN per second" {{$if.DeltaErrorsIn}}
+      td.text-right.text-nowrap
+        span.text-graylighter title="Total errors OUT modulo 4G" {{$if.ErrorsOut}}
+        |  
+        span title="Errors OUT per second" {{$if.DeltaErrorsOut}}
       | </tr>
     {{end}}
   {{end}}
 
-= content define_iferrors_rows
-  {{with rowsset .}}{{.}}{{else}}
-    {{range $if := .Data.IFerrors.List}}
-      | <tr {{AttrKey "iferrors-rowby-name" $if.Name}}>
-      td {{$if.Name}}
-      td.text-right {{$if.DeltaIn}}
-      td.text-right {{$if.DeltaOut}}
-      td.text-right {{$if.In}}
-      td.text-right {{$if.Out}}
-      | </tr>
-    {{end}}
-  {{end}}
-
-= content define_ifpackets_rows
-  {{with rowsset .}}{{.}}{{else}}
-    {{range $if := .Data.IFpackets.List}}
-      | <tr {{AttrKey "ifpackets-rowby-name" $if.Name}}>
-      td {{$if.Name}}
-      td.text-right {{$if.DeltaIn}}
-      td.text-right {{$if.DeltaOut}}
-      td.text-right {{$if.In}}
-      td.text-right {{$if.Out}}
-      | </tr>
-    {{end}}
-  {{end}}
-
-= content define_ifbytes_table
+= content define_iftable
   {{$p := .Data.Params}}
-  | <table {{ClassTab $p.Ifn $p.Ift 3 "table table-hover" "collapse-hidden"}}>{{/* 3 is IFBYTES */}}
+  | <table {{ClassNonzero $p.Ifn "table table-hover" "collapse-hidden"}}>
   thead
     tr
       th Interface
-      th.text-right.nowrap title="BITS per second" In
-        span.unit
-          i b
-          | ps
-      th.text-right.nowrap title="BITS per second" Out
-        span.unit
-          i b
-          | ps
-      th.text-right.nowrap title="total BYTES modulo 4G" In
-        span.unit
-          i B
-          | %4G
-      th.text-right.nowrap title="total BYTES modulo 4G" Out
-        span.unit
-          i B
-          | %4G
+      th.text-right.normal {{colspan}}=6
+        | Bits 
+        b title="Bits IN per second" In
+        | , 
+        b title="Bits OUT per second" Out
+        |  | Packets 
+        b title="Packets IN per second" In
+        | , 
+        b title="Packets OUT per second" Out
+        |  | Errors 
+        b title="Errors IN per second" In
+        | , 
+        b title="Errors OUT per second" Out
   tbody
-    {{template "defines::define_ifbytes_rows" .}}
-  | </table>
-
-= content define_ifpackets_table
-  {{$p := .Data.Params}}
-  | <table {{ClassTab $p.Ifn $p.Ift 1 "table table-hover" "collapse-hidden"}}>{{/* 1 is PACKETS */}}
-  thead
-    tr
-      th Interface
-      th.text-right.nowrap title="per second" In&nbsp;
-        span.unit ps
-      th.text-right.nowrap title="per second" Out&nbsp;
-        span.unit ps
-      th.text-right.nowrap title="total modulo 4G" In&nbsp;
-        span.unit %4G
-      th.text-right.nowrap title="total modulo 4G" Out&nbsp;
-        span.unit %4G
-  tbody
-    {{template "defines::define_ifpackets_rows" .}}
-  | </table>
-
-= content define_iferrors_table
-  {{$p := .Data.Params}}
-  | <table {{ClassTab $p.Ifn $p.Ift 2 "table table-hover" "collapse-hidden"}}>{{/* 2 is ERRORS */}}
-  thead
-    tr
-      th Interface
-      th.text-right.nowrap title="per second" In&nbsp;
-        span.unit ps
-      th.text-right.nowrap title="per second" Out&nbsp;
-        span.unit ps
-      th.text-right.nowrap title="modulo 4G" In&nbsp;
-        span.unit %4G
-      th.text-right.nowrap title="modulo 4G" Out&nbsp;
-        span.unit %4G
-  tbody
-    {{template "defines::define_iferrors_rows" .}}
+    {{template "defines::define_ifrows" .}}
   | </table>
 
 = content define_panelif
@@ -107,17 +62,9 @@
   [[template "startpanel" Chain `$p.Ifn` "Interfaces"]]
   [[template "configrow_delay"  `$p.Ifd`]]
   [[template "configrow_rows"   `$p.Ifn`]]
-  [[template "configrow_select"]]
-        / Outstanding 3x indent is required
-        |
-          <li {{ClassTab $p.Ifn $p.Ift 1 "active" ""}}>{{template "defines::enumlink" Vlink $p $p.Ift 1 "Packets" ""}}</li>{{/* 1 is PACKETS */}}
-          <li {{ClassTab $p.Ifn $p.Ift 2 "active" ""}}>{{template "defines::enumlink" Vlink $p $p.Ift 2 "Errors" ""}}</li>{{/*  2 is ERRORS  */}}
-          <li {{ClassTab $p.Ifn $p.Ift 3 "active" ""}}>{{template "defines::enumlink" Vlink $p $p.Ift 3 "Bytes" ""}}</li>{{/*   3 is IFBYTES */}}
   |
       </table>
-      {{template "defines::define_ifpackets_table" .}}
-      {{template "defines::define_iferrors_table" .}}
-      {{template "defines::define_ifbytes_table" .}}
+      {{template "defines::define_iftable" .}}
     </div>
 
 = content define_dfbytes_rows
@@ -239,7 +186,7 @@
   {{with rowsset .}}{{.}}{{else}}
     {{range $i, $core := .Data.CPU.List}}
       | <tr {{AttrKey "cpu-rowby-N" $core.N}}>
-      td.text-right.nowrap {{$core.N}}
+      td.text-right.text-nowrap {{$core.N}}
       td.text-right <span {{class}}="usepercent-text" data-usepercent={{$core.User}}>{{$core.User}}</span>
       td.text-right <span {{class}}="usepercent-text" data-usepercent={{$core.Sys}}>{{$core.Sys}}</span>
       td.text-right <span {{class}}="usepercent-text" data-usepercent={{$core.Wait}}>{{$core.Wait}}</span>
@@ -254,14 +201,10 @@
   thead
     tr
       th
-      th.text-right.nowrap User
-        span.unit %
-      th.text-right.nowrap Sys
-        span.unit %
-      th.text-right.nowrap Wait
-        span.unit %
-      th.text-right.nowrap Idle
-        span.unit %
+      th.text-right User%
+      th.text-right Sys%
+      th.text-right Wait%
+      th.text-right Idle%
   tbody
     {{template "defines::define_cpurows" .}}
   | </table>
@@ -278,7 +221,7 @@
 
 = content define_psrows
   {{with rowsset .}}{{.}}{{else}}
-    {{range $proc := .Data.PStable.List}}
+    {{range $proc := .Data.PS.List}}
       | <tr {{AttrKey "ps-rowby-pid" $proc.PID}}>
       td.text-right  {{$proc.PID}}
       td.text-right  {{$proc.UID}}
@@ -338,7 +281,7 @@
 [[$D := .]]
   tr.panel-config
     td.col-md-2
-      div.nowrap.text-right
+      div.text-right.text-nowrap
         | Delay&nbsp;
         span.badge {{[[$D]]}}
     td
@@ -353,7 +296,7 @@
 [[$N := .]]
   tr.panel-config
     td.col-md-2
-      div.nowrap.text-right
+      div.text-right.text-nowrap
         | Rows&nbsp;
         span.badge {{[[$N]].Absolute}}
     td

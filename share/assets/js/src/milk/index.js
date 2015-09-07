@@ -140,16 +140,12 @@
         return void 0;
       }
     };
-    this.IFCLASS = React.createClass({
+    this.IFClass = React.createClass({
       mixins: [HandlerMixin],
       getInitialState: function() {
         return {
           Params: Data.Params,
-          IFbytes: Data.IFbytes,
-          IFerrors: Data.IFerrors,
-          IFpackets: Data.IFpackets,
-          ExpandableIF: Data.ExpandableIF,
-          ExpandtextIF: Data.ExpandtextIF
+          IF: Data.IF
         };
       },
       render: function() {
@@ -157,43 +153,23 @@
         Data = this.state;
         return jsdefines.panelif.bind(this)(Data, (function() {
           var i, len, ref, ref1, ref2, results;
-          ref2 = (ref = Data != null ? (ref1 = Data.IFpackets) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
+          ref2 = (ref = Data != null ? (ref1 = Data.IF) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
           for (i = 0, len = ref2.length; i < len; i++) {
             $if = ref2[i];
-            results.push(jsdefines.ifpackets_rows(Data, $if));
-          }
-          return results;
-        })(), (function() {
-          var i, len, ref, ref1, ref2, results;
-          ref2 = (ref = Data != null ? (ref1 = Data.IFerrors) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
-          results = [];
-          for (i = 0, len = ref2.length; i < len; i++) {
-            $if = ref2[i];
-            results.push(jsdefines.iferrors_rows(Data, $if));
-          }
-          return results;
-        })(), (function() {
-          var i, len, ref, ref1, ref2, results;
-          ref2 = (ref = Data != null ? (ref1 = Data.IFbytes) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
-          results = [];
-          for (i = 0, len = ref2.length; i < len; i++) {
-            $if = ref2[i];
-            results.push(jsdefines.ifbytes_rows(Data, $if));
+            results.push(jsdefines.if_rows(Data, $if));
           }
           return results;
         })());
       }
     });
-    this.DFCLASS = React.createClass({
+    this.DFClass = React.createClass({
       mixins: [HandlerMixin],
       getInitialState: function() {
         return {
           Params: Data.Params,
           DFbytes: Data.DFbytes,
-          DFinodes: Data.DFinodes,
-          ExpandableDF: Data.ExpandableDF,
-          ExpandtextDF: Data.ExpandtextDF
+          DFinodes: Data.DFinodes
         };
       },
       render: function() {
@@ -220,7 +196,7 @@
         })());
       }
     });
-    this.MEMtableCLASS = React.createClass({
+    this.MEMClass = React.createClass({
       mixins: [HandlerMixin],
       getInitialState: function() {
         return {
@@ -243,7 +219,7 @@
         })());
       }
     });
-    this.CPUtableCLASS = React.createClass({
+    this.CPUClass = React.createClass({
       mixins: [HandlerMixin],
       getInitialState: function() {
         return {
@@ -266,12 +242,12 @@
         })());
       }
     });
-    this.PStableCLASS = React.createClass({
+    this.PSClass = React.createClass({
       mixins: [HandlerMixin],
       getInitialState: function() {
         return {
           Params: Data.Params,
-          PStable: Data.PStable
+          PS: Data.PS
         };
       },
       render: function() {
@@ -279,7 +255,7 @@
         Data = this.state;
         return jsdefines.panelps.bind(this)(Data, (function() {
           var i, len, ref, ref1, ref2, results;
-          ref2 = (ref = Data != null ? (ref1 = Data.PStable) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
+          ref2 = (ref = Data != null ? (ref1 = Data.PS) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
           for (i = 0, len = ref2.length; i < len; i++) {
             $proc = ref2[i];
@@ -289,7 +265,7 @@
         })());
       }
     });
-    this.VGtableCLASS = React.createClass({
+    this.VGClass = React.createClass({
       mixins: [HandlerMixin],
       getInitialState: function() {
         return {
@@ -319,9 +295,9 @@
         return jsdefines.panelvg.bind(this)(Data, rows);
       }
     });
-    this.NewTextCLASS = function(reduce) {
+    this.TextClass = function(reduce) {
       return React.createClass({
-        newstate: function(data) {
+        Reduce: function(data) {
           var v;
           v = reduce(data);
           if (v != null) {
@@ -331,7 +307,7 @@
           }
         },
         getInitialState: function() {
-          return this.newstate(Data);
+          return this.Reduce(Data);
         },
         render: function() {
           return React.DOM.span(null, this.state.Text);
@@ -350,27 +326,30 @@
       }
     };
     update = function() {
-      var cputable, dftable, hn, iftable, ip, la, memtable, onmessage, pstable, up, vgtable;
+      var CPU, DF, HN, IF, IP, LA, MEM, PS, UP, VG, onmessage, render;
+      render = function(id, cl) {
+        return React.render(React.createElement(cl), document.getElementById(id));
+      };
       if ((typeof data !== "undefined" && data !== null ? data.IP : void 0) != null) {
-        ip = React.render(React.createElement(NewTextCLASS(function(data) {
+        IP = render('ip', TextClass(function(data) {
           return data != null ? data.IP : void 0;
-        })), $('#ip').get(0));
+        }));
       }
-      hn = React.render(React.createElement(NewTextCLASS(function(data) {
-        return data != null ? data.Hostname : void 0;
-      })), $('#hn').get(0));
-      up = React.render(React.createElement(NewTextCLASS(function(data) {
-        return data != null ? data.Uptime : void 0;
-      })), $('#up').get(0));
-      la = React.render(React.createElement(NewTextCLASS(function(data) {
+      HN = render('hn', TextClass(function(data) {
+        return data != null ? data.HN : void 0;
+      }));
+      UP = render('up', TextClass(function(data) {
+        return data != null ? data.UP : void 0;
+      }));
+      LA = render('la', TextClass(function(data) {
         return data != null ? data.LA : void 0;
-      })), $('#la').get(0));
-      memtable = React.render(React.createElement(MEMtableCLASS), document.getElementById('mem' + '-' + 'table'));
-      pstable = React.render(React.createElement(PStableCLASS), document.getElementById('ps' + '-' + 'table'));
-      dftable = React.render(React.createElement(DFCLASS), document.getElementById('df' + '-' + 'table'));
-      cputable = React.render(React.createElement(CPUtableCLASS), document.getElementById('cpu' + '-' + 'table'));
-      iftable = React.render(React.createElement(IFCLASS), document.getElementById('if' + '-' + 'table'));
-      vgtable = React.render(React.createElement(VGtableCLASS), document.getElementById('vg' + '-' + 'table'));
+      }));
+      MEM = render('mem', MEMClass);
+      PS = render('ps', PSClass);
+      DF = render('df', DFClass);
+      CPU = render('cpu', CPUClass);
+      IF = render('if', IFClass);
+      VG = render('vg', VGClass);
       onmessage = function(event) {
         var data;
         data = JSON.parse(event.data);
@@ -390,40 +369,34 @@
           console.log('Error', data.Error);
           return;
         }
-        if (ip != null) {
-          setState(ip, ip.newstate(data));
+        if (IP != null) {
+          setState(IP, IP.Reduce(data));
         }
-        setState(hn, hn.newstate(data));
-        setState(up, up.newstate(data));
-        setState(la, la.newstate(data));
-        setState(pstable, {
+        setState(HN, HN.Reduce(data));
+        setState(UP, UP.Reduce(data));
+        setState(LA, LA.Reduce(data));
+        setState(PS, {
           Params: data.Params,
-          PStable: data.PStable
+          PS: data.PS
         });
-        setState(memtable, {
+        setState(MEM, {
           Params: data.Params,
           MEM: data.MEM
         });
-        setState(cputable, {
+        setState(CPU, {
           Params: data.Params,
           CPU: data.CPU
         });
-        setState(iftable, {
+        setState(IF, {
           Params: data.Params,
-          IFbytes: data.IFbytes,
-          IFerrors: data.IFerrors,
-          IFpackets: data.IFpackets,
-          ExpandableIF: data.ExpandableIF,
-          ExpandtextIF: data.ExpandtextIF
+          IF: data.IF
         });
-        setState(dftable, {
+        setState(DF, {
           Params: data.Params,
           DFbytes: data.DFbytes,
-          DFinodes: data.DFinodes,
-          ExpandableDF: data.ExpandableDF,
-          ExpandtextDF: data.ExpandtextDF
+          DFinodes: data.DFinodes
         });
-        setState(vgtable, {
+        setState(VG, {
           Params: data.Params,
           VagrantMachines: data.VagrantMachines,
           VagrantError: data.VagrantError,

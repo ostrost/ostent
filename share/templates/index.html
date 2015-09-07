@@ -3,7 +3,7 @@
   ><head
     ><meta charset="utf-8"
     ><title
-      >{{.Data.Hostname}} ostent</title
+      >{{.Data.HN}} ostent</title
     ><meta http-equiv="X-UA-Compatible" content="IE=edge"
     ><meta name="viewport" content="width=device-width, initial-scale=1"
     >{{HTML "<!"}}--[if IE]><link rel="shortcut icon" href="/favicon.ico"
@@ -30,8 +30,8 @@
             ><span class="icon-bar"
               ></span
             ></button
-          ><a id="hn" class="navbar-brand clip" style="max-width: 12ch" href="/" title="hostname {{.Data.Hostname}}"
-            >{{.Data.Hostname}}</a
+          ><a id="hn" class="navbar-brand clip" style="max-width: 12ch" href="/" title="hostname {{.Data.HN}}"
+            >{{.Data.HN}}</a
           ></div
         ><div id="navbar-collapse" class="collapse navbar-collapse"
           ><ul class="nav navbar-nav"
@@ -52,7 +52,7 @@
             ><li class="navbar-text navbar-text-marginless"
               ><code class="navbar-codeline"
                 >up&nbsp;<span id="up"
-                  >{{.Data.Uptime}}</span
+                  >{{.Data.UP}}</span
                 ></code
               ></li
             ><li class="navbar-text navbar-text-marginless"
@@ -67,23 +67,23 @@
       ></nav
     ><div class="container-fluid"
       ><div class="row"
-        ><div id="mem-table" class="col-md-4 col-md-offset-1"
+        ><div id="mem" class="col-md-4 col-md-offset-1"
           >{{template "defines::define_panelmem" .}}</div
-        ><div id="df-table" class="col-md-5 col-md-offset-1"
+        ><div id="df" class="col-md-5 col-md-offset-1"
           >{{template "defines::define_paneldf" .}}</div
         ></div
       ><div class="row"
-        ><div id="cpu-table" class="col-md-4 col-md-offset-1"
+        ><div id="cpu" class="col-md-4 col-md-offset-1"
           >{{template "defines::define_panelcpu" .}}</div
-        ><div id="if-table" class="col-md-5 col-md-offset-1"
+        ><div id="if" class="col-md-5 col-md-offset-1"
           >{{template "defines::define_panelif" .}}</div
         ></div
       ><div class="row"
-        ><div id="ps-table" class="col-md-10 col-md-offset-1"
+        ><div id="ps" class="col-md-10 col-md-offset-1"
           >{{template "defines::define_panelps" .}}</div
         ></div
       ><div class="row"
-        ><div id="vg-table" class="col-md-10 col-md-offset-1"
+        ><div id="vg" class="col-md-10 col-md-offset-1"
           >{{template "defines::define_panelvg" .}}</div
         ></div
       ></div
@@ -105,7 +105,7 @@
   ></a
 >{{end}}{{/*
 */}}{{define "defines::define_cpurows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $core := .Data.CPU.List}}<tr {{AttrKey "cpu-rowby-N" $core.N}}
-  ><td class="text-right nowrap"
+  ><td class="text-right text-nowrap"
     >{{$core.N}}</td
   ><td class="text-right"
     ><span {{class}}="usepercent-text" data-usepercent={{$core.User}}
@@ -130,22 +130,14 @@
     ><tr
       ><th
         ></th
-      ><th class="text-right nowrap"
-        >User<span class="unit"
-          >%</span
-        ></th
-      ><th class="text-right nowrap"
-        >Sys<span class="unit"
-          >%</span
-        ></th
-      ><th class="text-right nowrap"
-        >Wait<span class="unit"
-          >%</span
-        ></th
-      ><th class="text-right nowrap"
-        >Idle<span class="unit"
-          >%</span
-        ></th
+      ><th class="text-right"
+        >User%</th
+      ><th class="text-right"
+        >Sys%</th
+      ><th class="text-right"
+        >Wait%</th
+      ><th class="text-right"
+        >Idle%</th
       ></tr
     ></thead
   ><tbody
@@ -206,132 +198,70 @@
     >{{template "defines::define_dfinodes_rows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_ifbytes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFbytes.List}}<tr {{AttrKey "ifbytes-rowby-name" $if.Name}}
+*/}}{{define "defines::define_ifrows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IF.List}}<tr {{AttrKey "if-rowby-name" $if.Name}}
   ><td
     >{{$if.Name}}</td
-  ><td class="text-right"
-    >{{$if.DeltaIn}}</td
-  ><td class="text-right"
-    >{{$if.DeltaOut}}</td
-  ><td class="text-right"
-    >{{$if.In}}</td
-  ><td class="text-right"
-    >{{$if.Out}}</td
+  ><td class="text-right text-nowrap"
+    ><span class="text-graylighter" title="Total BYTES IN modulo 4G"
+      >{{$if.BytesIn}}</span
+    > <span title="Bits IN per second"
+      >{{$if.DeltaBitsIn}}</span
+    ></td
+  ><td class="text-right text-nowrap"
+    ><span class="text-graylighter" title="Total BYTES OUT modulo 4G"
+      >{{$if.BytesOut}}</span
+    > <span title="Bits OUT per second"
+      >{{$if.DeltaBitsOut}}</span
+    ></td
+  ><td class="text-right text-nowrap"
+    ><span class="text-graylighter" title="Total packets IN modulo 4G"
+      >{{$if.PacketsIn}}</span
+    > <span title="Packets IN per second"
+      >{{$if.DeltaPacketsIn}}</span
+    ></td
+  ><td class="text-right text-nowrap"
+    ><span class="text-graylighter" title="Total packets OUT modulo 4G"
+      >{{$if.PacketsOut}}</span
+    > <span title="Packets OUT per second"
+      >{{$if.DeltaPacketsOut}}</span
+    ></td
+  ><td class="text-right text-nowrap"
+    ><span class="text-graylighter" title="Total errors IN modulo 4G"
+      >{{$if.ErrorsIn}}</span
+    > <span title="Errors IN per second"
+      >{{$if.DeltaErrorsIn}}</span
+    ></td
+  ><td class="text-right text-nowrap"
+    ><span class="text-graylighter" title="Total errors OUT modulo 4G"
+      >{{$if.ErrorsOut}}</span
+    > <span title="Errors OUT per second"
+      >{{$if.DeltaErrorsOut}}</span
+    ></td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_ifbytes_table"}}{{$p := .Data.Params}}<table {{ClassTab $p.Ifn $p.Ift 3 "table table-hover" "collapse-hidden"}}
+*/}}{{define "defines::define_iftable"}}{{$p := .Data.Params}}<table {{ClassNonzero $p.Ifn "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
       ><th
         >Interface</th
-      ><th class="text-right nowrap" title="BITS per second"
-        >In<span class="unit"
-          ><i
-            >b</i
-          >ps</span
-        ></th
-      ><th class="text-right nowrap" title="BITS per second"
-        >Out<span class="unit"
-          ><i
-            >b</i
-          >ps</span
-        ></th
-      ><th class="text-right nowrap" title="total BYTES modulo 4G"
-        >In<span class="unit"
-          ><i
-            >B</i
-          >%4G</span
-        ></th
-      ><th class="text-right nowrap" title="total BYTES modulo 4G"
-        >Out<span class="unit"
-          ><i
-            >B</i
-          >%4G</span
+      ><th class="text-right normal" {{colspan}}="6"
+        >Bits <b title="Bits IN per second"
+          >In</b
+        >, <b title="Bits OUT per second"
+          >Out</b
+        > | Packets <b title="Packets IN per second"
+          >In</b
+        >, <b title="Packets OUT per second"
+          >Out</b
+        > | Errors <b title="Errors IN per second"
+          >In</b
+        >, <b title="Errors OUT per second"
+          >Out</b
         ></th
       ></tr
     ></thead
   ><tbody
-    >{{template "defines::define_ifbytes_rows" .}}</tbody
-  ></table
->{{end}}{{/*
-*/}}{{define "defines::define_iferrors_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFerrors.List}}<tr {{AttrKey "iferrors-rowby-name" $if.Name}}
-  ><td
-    >{{$if.Name}}</td
-  ><td class="text-right"
-    >{{$if.DeltaIn}}</td
-  ><td class="text-right"
-    >{{$if.DeltaOut}}</td
-  ><td class="text-right"
-    >{{$if.In}}</td
-  ><td class="text-right"
-    >{{$if.Out}}</td
-  ></tr
->{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_iferrors_table"}}{{$p := .Data.Params}}<table {{ClassTab $p.Ifn $p.Ift 2 "table table-hover" "collapse-hidden"}}
-  ><thead
-    ><tr
-      ><th
-        >Interface</th
-      ><th class="text-right nowrap" title="per second"
-        >In&nbsp;<span class="unit"
-          >ps</span
-        ></th
-      ><th class="text-right nowrap" title="per second"
-        >Out&nbsp;<span class="unit"
-          >ps</span
-        ></th
-      ><th class="text-right nowrap" title="modulo 4G"
-        >In&nbsp;<span class="unit"
-          >%4G</span
-        ></th
-      ><th class="text-right nowrap" title="modulo 4G"
-        >Out&nbsp;<span class="unit"
-          >%4G</span
-        ></th
-      ></tr
-    ></thead
-  ><tbody
-    >{{template "defines::define_iferrors_rows" .}}</tbody
-  ></table
->{{end}}{{/*
-*/}}{{define "defines::define_ifpackets_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IFpackets.List}}<tr {{AttrKey "ifpackets-rowby-name" $if.Name}}
-  ><td
-    >{{$if.Name}}</td
-  ><td class="text-right"
-    >{{$if.DeltaIn}}</td
-  ><td class="text-right"
-    >{{$if.DeltaOut}}</td
-  ><td class="text-right"
-    >{{$if.In}}</td
-  ><td class="text-right"
-    >{{$if.Out}}</td
-  ></tr
->{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_ifpackets_table"}}{{$p := .Data.Params}}<table {{ClassTab $p.Ifn $p.Ift 1 "table table-hover" "collapse-hidden"}}
-  ><thead
-    ><tr
-      ><th
-        >Interface</th
-      ><th class="text-right nowrap" title="per second"
-        >In&nbsp;<span class="unit"
-          >ps</span
-        ></th
-      ><th class="text-right nowrap" title="per second"
-        >Out&nbsp;<span class="unit"
-          >ps</span
-        ></th
-      ><th class="text-right nowrap" title="total modulo 4G"
-        >In&nbsp;<span class="unit"
-          >%4G</span
-        ></th
-      ><th class="text-right nowrap" title="total modulo 4G"
-        >Out&nbsp;<span class="unit"
-          >%4G</span
-        ></th
-      ></tr
-    ></thead
-  ><tbody
-    >{{template "defines::define_ifpackets_rows" .}}</tbody
+    >{{template "defines::define_ifrows" .}}</tbody
   ></table
 >{{end}}{{/*
 */}}{{define "defines::define_memrows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $mem := .Data.MEM.List}}<tr {{AttrKey "mem-rowby-kind" $mem.Kind}}
@@ -372,7 +302,7 @@
   >  <table {{ClassPositive $p.CPUn "table collapse-hidden" "table"}}
     ><tr class="panel-config"
       ><td class="col-md-2"
-        ><div class="nowrap text-right"
+        ><div class="text-right text-nowrap"
           >Delay&nbsp;<span class="badge"
             >{{$p.CPUd}}</span
           ></div
@@ -386,7 +316,7 @@
       ></tr
     ><tr class="panel-config"
       ><td class="col-md-2"
-        ><div class="nowrap text-right"
+        ><div class="text-right text-nowrap"
           >Rows&nbsp;<span class="badge"
             >{{$p.CPUn.Absolute}}</span
           ></div
@@ -411,7 +341,7 @@
   >  <table {{ClassPositive $p.Dfn "table collapse-hidden" "table"}}
     ><tr class="panel-config"
       ><td class="col-md-2"
-        ><div class="nowrap text-right"
+        ><div class="text-right text-nowrap"
           >Delay&nbsp;<span class="badge"
             >{{$p.Dfd}}</span
           ></div
@@ -425,7 +355,7 @@
       ></tr
     ><tr class="panel-config"
       ><td class="col-md-2"
-        ><div class="nowrap text-right"
+        ><div class="text-right text-nowrap"
           >Rows&nbsp;<span class="badge"
             >{{$p.Dfn.Absolute}}</span
           ></div
@@ -465,7 +395,7 @@
   >  <table {{ClassPositive $p.Ifn "table collapse-hidden" "table"}}
     ><tr class="panel-config"
       ><td class="col-md-2"
-        ><div class="nowrap text-right"
+        ><div class="text-right text-nowrap"
           >Delay&nbsp;<span class="badge"
             >{{$p.Ifd}}</span
           ></div
@@ -479,7 +409,7 @@
       ></tr
     ><tr class="panel-config"
       ><td class="col-md-2"
-        ><div class="nowrap text-right"
+        ><div class="text-right text-nowrap"
           >Rows&nbsp;<span class="badge"
             >{{$p.Ifn.Absolute}}</span
           ></div
@@ -491,26 +421,8 @@
       ><td class="col-md-10"
         ></td
       ></tr
-    ><tr class="panel-config"
-      ><td class="col-md-2"
-        ><div class="text-right"
-          >Select</div
-        ></td
-      ><td {{colspan}}="2"
-        ><ul class="nav nav-pills"
-          ><li {{ClassTab $p.Ifn $p.Ift 1 "active" ""}}
-            >{{template "defines::enumlink" Vlink $p $p.Ift 1 "Packets" ""}}</li
-          ><li {{ClassTab $p.Ifn $p.Ift 2 "active" ""}}
-            >{{template "defines::enumlink" Vlink $p $p.Ift 2 "Errors" ""}}</li
-          ><li {{ClassTab $p.Ifn $p.Ift 3 "active" ""}}
-            >{{template "defines::enumlink" Vlink $p $p.Ift 3 "Bytes" ""}}</li
-          ></ul
-        ></td
-      ></tr
     >  </table
-  >  {{template "defines::define_ifpackets_table" .}}
-  {{template "defines::define_iferrors_table" .}}
-  {{template "defines::define_ifbytes_table" .}}</div
+  >  {{template "defines::define_iftable" .}}</div
 >{{end}}{{/*
 */}}{{define "defines::define_panelmem"}}{{$p := .Data.Params}}<div     {{ClassPositive $p.Memn "" "panel panel-default"}}
   >  <div   {{ClassPositive $p.Memn "" "panel-heading"}}
@@ -522,7 +434,7 @@
   >  <table {{ClassPositive $p.Memn "table collapse-hidden" "table"}}
     ><tr class="panel-config"
       ><td class="col-md-2"
-        ><div class="nowrap text-right"
+        ><div class="text-right text-nowrap"
           >Delay&nbsp;<span class="badge"
             >{{$p.Memd}}</span
           ></div
@@ -536,7 +448,7 @@
       ></tr
     ><tr class="panel-config"
       ><td class="col-md-2"
-        ><div class="nowrap text-right"
+        ><div class="text-right text-nowrap"
           >Rows&nbsp;<span class="badge"
             >{{$p.Memn.Absolute}}</span
           ></div
@@ -561,7 +473,7 @@
   >  <table {{ClassPositive $p.Psn "table collapse-hidden" "table"}}
     ><tr class="panel-config"
       ><td class="col-md-2"
-        ><div class="nowrap text-right"
+        ><div class="text-right text-nowrap"
           >Delay&nbsp;<span class="badge"
             >{{$p.Psd}}</span
           ></div
@@ -575,7 +487,7 @@
       ></tr
     ><tr class="panel-config"
       ><td class="col-md-2"
-        ><div class="nowrap text-right"
+        ><div class="text-right text-nowrap"
           >Rows&nbsp;<span class="badge"
             >{{$p.Psn.Absolute}}</span
           ></div
@@ -600,7 +512,7 @@
   >  <table {{ClassPositive $p.Vgn "table collapse-hidden" "table"}}
     ><tr class="panel-config"
       ><td class="col-md-2"
-        ><div class="nowrap text-right"
+        ><div class="text-right text-nowrap"
           >Delay&nbsp;<span class="badge"
             >{{$p.Vgd}}</span
           ></div
@@ -614,7 +526,7 @@
       ></tr
     ><tr class="panel-config"
       ><td class="col-md-2"
-        ><div class="nowrap text-right"
+        ><div class="text-right text-nowrap"
           >Rows&nbsp;<span class="badge"
             >{{$p.Vgn.Absolute}}</span
           ></div
@@ -629,7 +541,7 @@
     >  </table
   >  {{template "defines::define_vgtable" .}}</div
 >{{end}}{{/*
-*/}}{{define "defines::define_psrows"}}{{with rowsset .}}{{.}}{{else}}{{range $proc := .Data.PStable.List}}<tr {{AttrKey "ps-rowby-pid" $proc.PID}}
+*/}}{{define "defines::define_psrows"}}{{with rowsset .}}{{.}}{{else}}{{range $proc := .Data.PS.List}}<tr {{AttrKey "ps-rowby-pid" $proc.PID}}
   ><td class="text-right"
     > {{$proc.PID}}</td
   ><td class="text-right"

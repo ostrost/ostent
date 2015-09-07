@@ -82,7 +82,7 @@ define(function (require) {
               },
               React.createElement(
                 "div",
-                { className: "nowrap text-right"
+                { className: "text-right text-nowrap"
                 },
                 "Delay ",
                 React.createElement(
@@ -143,7 +143,7 @@ define(function (require) {
               },
               React.createElement(
                 "div",
-                { className: "nowrap text-right"
+                { className: "text-right text-nowrap"
                 },
                 "Rows ",
                 React.createElement(
@@ -237,10 +237,10 @@ define(function (require) {
       );
     },
 
-    ifbytes_rows: function ifbytes_rows(Data, $if) {
+    if_rows: function if_rows(Data, $if) {
       return React.createElement(
         "tr",
-        { key: "ifbytes-rowby-name-" + $if.Name
+        { key: "if-rowby-name-" + $if.Name
         },
         React.createElement(
           "td",
@@ -249,103 +249,115 @@ define(function (require) {
         ),
         React.createElement(
           "td",
-          { className: "text-right"
+          { className: "text-right text-nowrap"
           },
-          $if.DeltaIn
+          React.createElement(
+            "span",
+            { className: "text-graylighter", title: "Total BYTES IN modulo 4G"
+            },
+            $if.BytesIn
+          ),
+          " ",
+          React.createElement(
+            "span",
+            { title: "Bits IN per second"
+            },
+            $if.DeltaBitsIn
+          )
         ),
         React.createElement(
           "td",
-          { className: "text-right"
+          { className: "text-right text-nowrap"
           },
-          $if.DeltaOut
+          React.createElement(
+            "span",
+            { className: "text-graylighter", title: "Total BYTES OUT modulo 4G"
+            },
+            $if.BytesOut
+          ),
+          " ",
+          React.createElement(
+            "span",
+            { title: "Bits OUT per second"
+            },
+            $if.DeltaBitsOut
+          )
         ),
         React.createElement(
           "td",
-          { className: "text-right"
+          { className: "text-right text-nowrap"
           },
-          $if.In
+          React.createElement(
+            "span",
+            { className: "text-graylighter", title: "Total packets IN modulo 4G"
+            },
+            $if.PacketsIn
+          ),
+          " ",
+          React.createElement(
+            "span",
+            { title: "Packets IN per second"
+            },
+            $if.DeltaPacketsIn
+          )
         ),
         React.createElement(
           "td",
-          { className: "text-right"
+          { className: "text-right text-nowrap"
           },
-          $if.Out
+          React.createElement(
+            "span",
+            { className: "text-graylighter", title: "Total packets OUT modulo 4G"
+            },
+            $if.PacketsOut
+          ),
+          " ",
+          React.createElement(
+            "span",
+            { title: "Packets OUT per second"
+            },
+            $if.DeltaPacketsOut
+          )
+        ),
+        React.createElement(
+          "td",
+          { className: "text-right text-nowrap"
+          },
+          React.createElement(
+            "span",
+            { className: "text-graylighter", title: "Total errors IN modulo 4G"
+            },
+            $if.ErrorsIn
+          ),
+          " ",
+          React.createElement(
+            "span",
+            { title: "Errors IN per second"
+            },
+            $if.DeltaErrorsIn
+          )
+        ),
+        React.createElement(
+          "td",
+          { className: "text-right text-nowrap"
+          },
+          React.createElement(
+            "span",
+            { className: "text-graylighter", title: "Total errors OUT modulo 4G"
+            },
+            $if.ErrorsOut
+          ),
+          " ",
+          React.createElement(
+            "span",
+            { title: "Errors OUT per second"
+            },
+            $if.DeltaErrorsOut
+          )
         )
       );
     },
-    iferrors_rows: function iferrors_rows(Data, $if) {
-      return React.createElement(
-        "tr",
-        { key: "iferrors-rowby-name-" + $if.Name
-        },
-        React.createElement(
-          "td",
-          null,
-          $if.Name
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          $if.DeltaIn
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          $if.DeltaOut
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          $if.In
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          $if.Out
-        )
-      );
-    },
-    ifpackets_rows: function ifpackets_rows(Data, $if) {
-      return React.createElement(
-        "tr",
-        { key: "ifpackets-rowby-name-" + $if.Name
-        },
-        React.createElement(
-          "td",
-          null,
-          $if.Name
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          $if.DeltaIn
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          $if.DeltaOut
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          $if.In
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          $if.Out
-        )
-      );
-    },
-    panelif: function panelif(Data, r1, r2, r3) {
+    panelif: function panelif(Data, rows) {
       return React.createElement(
         "div",
         { className: !Data.Params.Ifn.Negative ? "" : "panel panel-default"
@@ -386,7 +398,7 @@ define(function (require) {
               },
               React.createElement(
                 "div",
-                { className: "nowrap text-right"
+                { className: "text-right text-nowrap"
                 },
                 "Delay ",
                 React.createElement(
@@ -447,7 +459,7 @@ define(function (require) {
               },
               React.createElement(
                 "div",
-                { className: "nowrap text-right"
+                { className: "text-right text-nowrap"
                 },
                 "Rows ",
                 React.createElement(
@@ -498,71 +510,12 @@ define(function (require) {
             React.createElement("td", { className: "col-md-10"
             })
           ),
-          React.createElement(
-            "tr",
-            { className: "panel-config"
-            },
-            React.createElement(
-              "td",
-              { className: "col-md-2"
-              },
-              React.createElement(
-                "div",
-                { className: "text-right"
-                },
-                "Select"
-              )
-            ),
-            React.createElement(
-              "td",
-              { colSpan: "2"
-              },
-              React.createElement(
-                "ul",
-                { className: "nav nav-pills"
-                },
-                React.createElement(
-                  "li",
-                  { className: Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 1 ? "active" : ""
-                  },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Vlinks.Ift[1 - 1].LinkHref, onClick: this.handleClick
-                    },
-                    "Packets"
-                  )
-                ),
-                React.createElement(
-                  "li",
-                  { className: Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 2 ? "active" : ""
-                  },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Vlinks.Ift[2 - 1].LinkHref, onClick: this.handleClick
-                    },
-                    "Errors"
-                  )
-                ),
-                React.createElement(
-                  "li",
-                  { className: Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 3 ? "active" : ""
-                  },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Vlinks.Ift[3 - 1].LinkHref, onClick: this.handleClick
-                    },
-                    "Bytes"
-                  )
-                )
-              )
-            )
-          ),
           "  "
         ),
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 1 ? "table table-hover" : "collapse-hidden"
+          { className: Data.Params.Ifn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
           },
           React.createElement(
             "thead",
@@ -577,121 +530,49 @@ define(function (require) {
               ),
               React.createElement(
                 "th",
-                { className: "text-right nowrap", title: "per second"
+                { className: "text-right normal", colSpan: "6"
                 },
-                "In ",
+                "Bits ",
                 React.createElement(
-                  "span",
-                  { className: "unit"
+                  "b",
+                  { title: "Bits IN per second"
                   },
-                  "ps"
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right nowrap", title: "per second"
-                },
-                "Out ",
+                  "In"
+                ),
+                ", ",
                 React.createElement(
-                  "span",
-                  { className: "unit"
+                  "b",
+                  { title: "Bits OUT per second"
                   },
-                  "ps"
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right nowrap", title: "total modulo 4G"
-                },
-                "In ",
+                  "Out"
+                ),
+                " | Packets ",
                 React.createElement(
-                  "span",
-                  { className: "unit"
+                  "b",
+                  { title: "Packets IN per second"
                   },
-                  "%4G"
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right nowrap", title: "total modulo 4G"
-                },
-                "Out ",
+                  "In"
+                ),
+                ", ",
                 React.createElement(
-                  "span",
-                  { className: "unit"
+                  "b",
+                  { title: "Packets OUT per second"
                   },
-                  "%4G"
-                )
-              )
-            )
-          ),
-          React.createElement(
-            "tbody",
-            null,
-            r1
-          )
-        ),
-        React.createElement(
-          "table",
-          { className: Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 2 ? "table table-hover" : "collapse-hidden"
-          },
-          React.createElement(
-            "thead",
-            null,
-            React.createElement(
-              "tr",
-              null,
-              React.createElement(
-                "th",
-                null,
-                "Interface"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right nowrap", title: "per second"
-                },
-                "In ",
+                  "Out"
+                ),
+                " | Errors ",
                 React.createElement(
-                  "span",
-                  { className: "unit"
+                  "b",
+                  { title: "Errors IN per second"
                   },
-                  "ps"
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right nowrap", title: "per second"
-                },
-                "Out ",
+                  "In"
+                ),
+                ", ",
                 React.createElement(
-                  "span",
-                  { className: "unit"
+                  "b",
+                  { title: "Errors OUT per second"
                   },
-                  "ps"
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right nowrap", title: "modulo 4G"
-                },
-                "In ",
-                React.createElement(
-                  "span",
-                  { className: "unit"
-                  },
-                  "%4G"
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right nowrap", title: "modulo 4G"
-                },
-                "Out ",
-                React.createElement(
-                  "span",
-                  { className: "unit"
-                  },
-                  "%4G"
+                  "Out"
                 )
               )
             )
@@ -699,98 +580,7 @@ define(function (require) {
           React.createElement(
             "tbody",
             null,
-            r2
-          )
-        ),
-        React.createElement(
-          "table",
-          { className: Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 3 ? "table table-hover" : "collapse-hidden"
-          },
-          React.createElement(
-            "thead",
-            null,
-            React.createElement(
-              "tr",
-              null,
-              React.createElement(
-                "th",
-                null,
-                "Interface"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right nowrap", title: "BITS per second"
-                },
-                "In",
-                React.createElement(
-                  "span",
-                  { className: "unit"
-                  },
-                  React.createElement(
-                    "i",
-                    null,
-                    "b"
-                  ),
-                  "ps"
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right nowrap", title: "BITS per second"
-                },
-                "Out",
-                React.createElement(
-                  "span",
-                  { className: "unit"
-                  },
-                  React.createElement(
-                    "i",
-                    null,
-                    "b"
-                  ),
-                  "ps"
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right nowrap", title: "total BYTES modulo 4G"
-                },
-                "In",
-                React.createElement(
-                  "span",
-                  { className: "unit"
-                  },
-                  React.createElement(
-                    "i",
-                    null,
-                    "B"
-                  ),
-                  "%4G"
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right nowrap", title: "total BYTES modulo 4G"
-                },
-                "Out",
-                React.createElement(
-                  "span",
-                  { className: "unit"
-                  },
-                  React.createElement(
-                    "i",
-                    null,
-                    "B"
-                  ),
-                  "%4G"
-                )
-              )
-            )
-          ),
-          React.createElement(
-            "tbody",
-            null,
-            r3
+            rows
           )
         )
       );
@@ -803,7 +593,7 @@ define(function (require) {
         },
         React.createElement(
           "td",
-          { className: "text-right nowrap"
+          { className: "text-right text-nowrap"
           },
           $core.N
         ),
@@ -894,7 +684,7 @@ define(function (require) {
               },
               React.createElement(
                 "div",
-                { className: "nowrap text-right"
+                { className: "text-right text-nowrap"
                 },
                 "Delay ",
                 React.createElement(
@@ -955,7 +745,7 @@ define(function (require) {
               },
               React.createElement(
                 "div",
-                { className: "nowrap text-right"
+                { className: "text-right text-nowrap"
                 },
                 "Rows ",
                 React.createElement(
@@ -1022,51 +812,27 @@ define(function (require) {
               React.createElement("th", null),
               React.createElement(
                 "th",
-                { className: "text-right nowrap"
+                { className: "text-right"
                 },
-                "User",
-                React.createElement(
-                  "span",
-                  { className: "unit"
-                  },
-                  "%"
-                )
+                "User%"
               ),
               React.createElement(
                 "th",
-                { className: "text-right nowrap"
+                { className: "text-right"
                 },
-                "Sys",
-                React.createElement(
-                  "span",
-                  { className: "unit"
-                  },
-                  "%"
-                )
+                "Sys%"
               ),
               React.createElement(
                 "th",
-                { className: "text-right nowrap"
+                { className: "text-right"
                 },
-                "Wait",
-                React.createElement(
-                  "span",
-                  { className: "unit"
-                  },
-                  "%"
-                )
+                "Wait%"
               ),
               React.createElement(
                 "th",
-                { className: "text-right nowrap"
+                { className: "text-right"
                 },
-                "Idle",
-                React.createElement(
-                  "span",
-                  { className: "unit"
-                  },
-                  "%"
-                )
+                "Idle%"
               )
             )
           ),
@@ -1206,7 +972,7 @@ define(function (require) {
               },
               React.createElement(
                 "div",
-                { className: "nowrap text-right"
+                { className: "text-right text-nowrap"
                 },
                 "Delay ",
                 React.createElement(
@@ -1267,7 +1033,7 @@ define(function (require) {
               },
               React.createElement(
                 "div",
-                { className: "nowrap text-right"
+                { className: "text-right text-nowrap"
                 },
                 "Rows ",
                 React.createElement(
@@ -1609,7 +1375,7 @@ define(function (require) {
               },
               React.createElement(
                 "div",
-                { className: "nowrap text-right"
+                { className: "text-right text-nowrap"
                 },
                 "Delay ",
                 React.createElement(
@@ -1670,7 +1436,7 @@ define(function (require) {
               },
               React.createElement(
                 "div",
-                { className: "nowrap text-right"
+                { className: "text-right text-nowrap"
                 },
                 "Rows ",
                 React.createElement(
@@ -1948,7 +1714,7 @@ define(function (require) {
               },
               React.createElement(
                 "div",
-                { className: "nowrap text-right"
+                { className: "text-right text-nowrap"
                 },
                 "Delay ",
                 React.createElement(
@@ -2009,7 +1775,7 @@ define(function (require) {
               },
               React.createElement(
                 "div",
-                { className: "nowrap text-right"
+                { className: "text-right text-nowrap"
                 },
                 "Rows ",
                 React.createElement(

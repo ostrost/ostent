@@ -1317,7 +1317,8 @@ mark,
 .text-justify {
   text-align: justify;
 }
-.text-nowrap {
+.text-nowrap,
+.nowrap-group {
   white-space: nowrap;
 }
 .text-lowercase {
@@ -1329,7 +1330,8 @@ mark,
 .text-capitalize {
   text-transform: capitalize;
 }
-.text-muted {
+.text-muted,
+.table-hover tr:hover .text-graylighter {
   color: #777777;
 }
 .text-primary {
@@ -7400,9 +7402,11 @@ fieldset[disabled] .btn-danger.active {
   color: #333333;
   background-color: #f5f5f5;
 }
-.unit {
-  color: #333333;
-  background-color: #f5f5f5;
+.normal {
+  font-weight: normal;
+}
+.text-graylighter {
+  color: #eeeeee;
 }
 .clip {
   cursor: pointer;
@@ -7431,12 +7435,6 @@ fieldset[disabled] .btn-danger.active {
   display: block;
 }
 */
-.nowrap {
-  white-space: nowrap;
-}
-.nowrap-group {
-  white-space: nowrap;
-}
 .nowrap-group .btn {
   float: none;
   display: inline-block;

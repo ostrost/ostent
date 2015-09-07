@@ -113,31 +113,23 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'], ($, React, j
       e.preventDefault()  # checked/selected state
       return undefined
 
-  @IFCLASS = React.createClass
+  @IFClass = React.createClass
     mixins: [HandlerMixin]
     getInitialState: () -> { # a global Data
-      Params:       Data.Params
-      IFbytes:      Data.IFbytes
-      IFerrors:     Data.IFerrors
-      IFpackets:    Data.IFpackets
-      ExpandableIF: Data.ExpandableIF
-      ExpandtextIF: Data.ExpandtextIF
+      Params: Data.Params
+      IF:     Data.IF
     }
     render: () ->
       Data = @state
-      return jsdefines.panelif.bind(this)(Data,
-            (jsdefines.ifpackets_rows(Data, $if) for $if in Data?.IFpackets?.List ? []),
-            (jsdefines.iferrors_rows(Data, $if) for $if in Data?.IFerrors?.List ? []),
-            (jsdefines.ifbytes_rows(Data, $if) for $if in Data?.IFbytes?.List ? []))
+      return jsdefines.panelif.bind(this)(Data, (jsdefines.if_rows(Data, $if
+      ) for $if in Data?.IF?.List ? []))
 
-  @DFCLASS = React.createClass
+  @DFClass = React.createClass
     mixins: [HandlerMixin]
     getInitialState: () -> { # a global Data
       Params:       Data.Params
       DFbytes:      Data.DFbytes
       DFinodes:     Data.DFinodes
-      ExpandableDF: Data.ExpandableDF
-      ExpandtextDF: Data.ExpandtextDF
     }
     render: () ->
       Data = @state
@@ -145,40 +137,40 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'], ($, React, j
              (jsdefines.dfinodes_rows(Data, $disk) for $disk in Data?.DFinodes?.List ? []),
              (jsdefines.dfbytes_rows(Data, $disk) for $disk in Data?.DFbytes?.List ? []))
 
-  @MEMtableCLASS = React.createClass
+  @MEMClass = React.createClass
     mixins: [HandlerMixin]
-    getInitialState: () -> {
-      Params: Data.Params,  # a global Data
-      MEM:    Data.MEM,    # a global Data
+    getInitialState: () -> { # a global Data
+      Params: Data.Params
+      MEM:    Data.MEM
     }
     render: () ->
       Data = @state
       return jsdefines.panelmem.bind(this)(Data, (jsdefines.mem_rows(Data, $mem
       ) for $mem in Data?.MEM?.List ? []))
 
-  @CPUtableCLASS = React.createClass
+  @CPUClass = React.createClass
     mixins: [HandlerMixin]
-    getInitialState: () -> {
-      Params: Data.Params, # a global Data
-      CPU:    Data.CPU,    # a global Data
+    getInitialState: () -> { # a global Data
+      Params: Data.Params
+      CPU:    Data.CPU
     }
     render: () ->
       Data = @state
       return jsdefines.panelcpu.bind(this)(Data, (jsdefines.cpu_rows(Data, $core
       ) for $core in Data?.CPU?.List ? []))
 
-  @PStableCLASS = React.createClass
+  @PSClass = React.createClass
     mixins: [HandlerMixin]
-    getInitialState: () -> {
-      Params:  Data.Params, # a global Data
-      PStable: Data.PStable # a global Data
+    getInitialState: () -> { # a global Data
+      Params: Data.Params
+      PS:     Data.PS
     }
     render: () ->
       Data = @state
       return jsdefines.panelps.bind(this)(Data, (jsdefines.ps_rows(Data, $proc
-      ) for $proc in Data?.PStable?.List ? []))
+      ) for $proc in Data?.PS?.List ? []))
 
-  @VGtableCLASS = React.createClass
+  @VGClass = React.createClass
     mixins: [HandlerMixin]
     getInitialState: () -> { # a global Data:
       Params:          Data.Params
@@ -195,11 +187,11 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'], ($, React, j
         ) for $mach in Data?.VagrantMachines?.List ? [])
       return jsdefines.panelvg.bind(this)(Data, rows)
 
-  @NewTextCLASS = (reduce) -> React.createClass
-    newstate: (data) ->
+  @TextClass = (reduce) -> React.createClass
+    Reduce: (data) ->
       v = reduce(data)
       return {Text: v} if v?
-    getInitialState: () -> @newstate(Data) # a global Data
+    getInitialState: () -> @Reduce(Data) # a global Data
     render: () -> React.DOM.span(null, @state.Text)
 
   @setState = (obj, data) ->
@@ -208,19 +200,18 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'], ($, React, j
       return obj.setState(data)
 
   update = () ->
-    # coffeelint: disable=max_line_length
-    ip = React.render(React.createElement(NewTextCLASS((data) -> data?.IP       )), $('#ip').get(0)) if data?.IP?
-    hn = React.render(React.createElement(NewTextCLASS((data) -> data?.Hostname )), $('#hn').get(0))
-    up = React.render(React.createElement(NewTextCLASS((data) -> data?.Uptime   )), $('#up').get(0))
-    la = React.render(React.createElement(NewTextCLASS((data) -> data?.LA       )), $('#la').get(0))
-
-    memtable  = React.render(React.createElement(MEMtableCLASS), document.getElementById('mem' +'-'+ 'table'))
-    pstable   = React.render(React.createElement(PStableCLASS),  document.getElementById('ps'  +'-'+ 'table'))
-    dftable   = React.render(React.createElement(DFCLASS),       document.getElementById('df'  +'-'+ 'table'))
-    cputable  = React.render(React.createElement(CPUtableCLASS), document.getElementById('cpu' +'-'+ 'table'))
-    iftable   = React.render(React.createElement(IFCLASS),       document.getElementById('if'  +'-'+ 'table'))
-    vgtable   = React.render(React.createElement(VGtableCLASS),  document.getElementById('vg'  +'-'+ 'table'))
-    # coffeelint: enable=max_line_length
+    render = (id, cl) ->
+      React.render(React.createElement(cl), document.getElementById(id))
+    IP  = render('ip', TextClass((data) -> data?.IP)) if data?.IP?
+    HN  = render('hn', TextClass((data) -> data?.HN))
+    UP  = render('up', TextClass((data) -> data?.UP))
+    LA  = render('la', TextClass((data) -> data?.LA))
+    MEM = render('mem', MEMClass)
+    PS  = render('ps',  PSClass)
+    DF  = render('df',  DFClass)
+    CPU = render('cpu', CPUClass)
+    IF  = render('if',  IFClass)
+    VG  = render('vg',  VGClass)
 
     onmessage = (event) ->
       data = JSON.parse(event.data)
@@ -237,30 +228,21 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'], ($, React, j
         console.log 'Error', data.Error
         return
 
-      setState(ip, ip.newstate(data)) if ip?
-      setState(hn, hn.newstate(data))
-      setState(up, up.newstate(data))
-      setState(la, la.newstate(data))
+      setState(IP, IP.Reduce(data)) if IP?
+      setState(HN, HN.Reduce(data))
+      setState(UP, UP.Reduce(data))
+      setState(LA, LA.Reduce(data))
 
-      setState(pstable,  {Params: data.Params, PStable:  data.PStable})
-      setState(memtable, {Params: data.Params, MEM: data.MEM})
-      setState(cputable, {Params: data.Params, CPU: data.CPU})
-      setState(iftable, {
-        Params:       data.Params
-        IFbytes:      data.IFbytes
-        IFerrors:     data.IFerrors
-        IFpackets:    data.IFpackets
-        ExpandableIF: data.ExpandableIF
-        ExpandtextIF: data.ExpandtextIF
-      })
-      setState(dftable, {
+      setState(PS,  {Params: data.Params, PS:  data.PS })
+      setState(MEM, {Params: data.Params, MEM: data.MEM})
+      setState(CPU, {Params: data.Params, CPU: data.CPU})
+      setState(IF,  {Params: data.Params, IF:  data.IF })
+      setState(DF, {
         Params:       data.Params
         DFbytes:      data.DFbytes
         DFinodes:     data.DFinodes
-        ExpandableDF: data.ExpandableDF
-        ExpandtextDF: data.ExpandtextDF
       })
-      setState(vgtable, {
+      setState(VG, {
         Params:          data.Params,
         VagrantMachines: data.VagrantMachines,
         VagrantError:    data.VagrantError,

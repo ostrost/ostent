@@ -24,7 +24,7 @@ define(function(require) {
   >  <table  className={!Data.Params.Memn.Negative ? "table collapse-hidden" : "table"}
     ><tr className="panel-config"
       ><td className="col-md-2"
-        ><div className="nowrap text-right"
+        ><div className="text-right text-nowrap"
           >Delay&nbsp;<span className="badge"
             >{Data.Params.Memd}</span
           ></div
@@ -48,7 +48,7 @@ define(function(require) {
       ></tr
     ><tr className="panel-config"
       ><td className="col-md-2"
-        ><div className="nowrap text-right"
+        ><div className="text-right text-nowrap"
           >Rows&nbsp;<span className="badge"
             >{Data.Params.Memn.Absolute}</span
           ></div
@@ -90,46 +90,48 @@ define(function(require) {
 ></div
 >); },
 
-		ifbytes_rows:    function(Data, $if)   { return (<tr  key={"ifbytes-rowby-name-"+$if.Name}
+		if_rows:         function(Data, $if)   { return (<tr  key={"if-rowby-name-"+$if.Name}
   ><td
     >{$if.Name}</td
-  ><td className="text-right"
-    >{$if.DeltaIn}</td
-  ><td className="text-right"
-    >{$if.DeltaOut}</td
-  ><td className="text-right"
-    >{$if.In}</td
-  ><td className="text-right"
-    >{$if.Out}</td
+  ><td className="text-right text-nowrap"
+    ><span className="text-graylighter" title="Total BYTES IN modulo 4G"
+      >{$if.BytesIn}</span
+    > <span title="Bits IN per second"
+      >{$if.DeltaBitsIn}</span
+    ></td
+  ><td className="text-right text-nowrap"
+    ><span className="text-graylighter" title="Total BYTES OUT modulo 4G"
+      >{$if.BytesOut}</span
+    > <span title="Bits OUT per second"
+      >{$if.DeltaBitsOut}</span
+    ></td
+  ><td className="text-right text-nowrap"
+    ><span className="text-graylighter" title="Total packets IN modulo 4G"
+      >{$if.PacketsIn}</span
+    > <span title="Packets IN per second"
+      >{$if.DeltaPacketsIn}</span
+    ></td
+  ><td className="text-right text-nowrap"
+    ><span className="text-graylighter" title="Total packets OUT modulo 4G"
+      >{$if.PacketsOut}</span
+    > <span title="Packets OUT per second"
+      >{$if.DeltaPacketsOut}</span
+    ></td
+  ><td className="text-right text-nowrap"
+    ><span className="text-graylighter" title="Total errors IN modulo 4G"
+      >{$if.ErrorsIn}</span
+    > <span title="Errors IN per second"
+      >{$if.DeltaErrorsIn}</span
+    ></td
+  ><td className="text-right text-nowrap"
+    ><span className="text-graylighter" title="Total errors OUT modulo 4G"
+      >{$if.ErrorsOut}</span
+    > <span title="Errors OUT per second"
+      >{$if.DeltaErrorsOut}</span
+    ></td
   ></tr
 >); },
-		iferrors_rows:   function(Data, $if)   { return (<tr  key={"iferrors-rowby-name-"+$if.Name}
-  ><td
-    >{$if.Name}</td
-  ><td className="text-right"
-    >{$if.DeltaIn}</td
-  ><td className="text-right"
-    >{$if.DeltaOut}</td
-  ><td className="text-right"
-    >{$if.In}</td
-  ><td className="text-right"
-    >{$if.Out}</td
-  ></tr
->); },
-		ifpackets_rows:  function(Data, $if)   { return (<tr  key={"ifpackets-rowby-name-"+$if.Name}
-  ><td
-    >{$if.Name}</td
-  ><td className="text-right"
-    >{$if.DeltaIn}</td
-  ><td className="text-right"
-    >{$if.DeltaOut}</td
-  ><td className="text-right"
-    >{$if.In}</td
-  ><td className="text-right"
-    >{$if.Out}</td
-  ></tr
->); },
-		panelif:         function(Data,r1,r2,r3){ return (<div      className={!Data.Params.Ifn.Negative ? "" : "panel panel-default"}
+		panelif:         function(Data, rows)  { return (<div      className={!Data.Params.Ifn.Negative ? "" : "panel panel-default"}
   >  <div    className={!Data.Params.Ifn.Negative ? "" : "panel-heading"}
     >    <a    href={Data.Params.Tlinks.Ifn} onClick={this.handleClick} className="panel-title btn-block"
       >      <b  className={!Data.Params.Ifn.Negative ? "h4" : "h4 bg-info"}
@@ -139,7 +141,7 @@ define(function(require) {
   >  <table  className={!Data.Params.Ifn.Negative ? "table collapse-hidden" : "table"}
     ><tr className="panel-config"
       ><td className="col-md-2"
-        ><div className="nowrap text-right"
+        ><div className="text-right text-nowrap"
           >Delay&nbsp;<span className="badge"
             >{Data.Params.Ifd}</span
           ></div
@@ -163,7 +165,7 @@ define(function(require) {
       ></tr
     ><tr className="panel-config"
       ><td className="col-md-2"
-        ><div className="nowrap text-right"
+        ><div className="text-right text-nowrap"
           >Rows&nbsp;<span className="badge"
             >{Data.Params.Ifn.Absolute}</span
           ></div
@@ -185,122 +187,36 @@ define(function(require) {
       ><td className="col-md-10"
         ></td
       ></tr
-    ><tr className="panel-config"
-      ><td className="col-md-2"
-        ><div className="text-right"
-          >Select</div
-        ></td
-      ><td colSpan="2"
-        ><ul className="nav nav-pills"
-          ><li  className={Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 1 ? "active" : ""}
-            ><a href={Data.Params.Vlinks.Ift[1-1].LinkHref} onClick={this.handleClick}
-  >Packets</a
-></li
-          ><li  className={Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 2 ? "active" : ""}
-            ><a href={Data.Params.Vlinks.Ift[2-1].LinkHref} onClick={this.handleClick}
-  >Errors</a
-></li
-          ><li  className={Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 3 ? "active" : ""}
-            ><a href={Data.Params.Vlinks.Ift[3-1].LinkHref} onClick={this.handleClick}
-  >Bytes</a
-></li
-          ></ul
-        ></td
-      ></tr
     >  </table
-  >  <table  className={Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 1 ? "table table-hover" : "collapse-hidden"}
+  >  <table  className={Data.Params.Ifn.Absolute != 0 ? "table table-hover" : "collapse-hidden"}
   ><thead
     ><tr
       ><th
         >Interface</th
-      ><th className="text-right nowrap" title="per second"
-        >In&nbsp;<span className="unit"
-          >ps</span
-        ></th
-      ><th className="text-right nowrap" title="per second"
-        >Out&nbsp;<span className="unit"
-          >ps</span
-        ></th
-      ><th className="text-right nowrap" title="total modulo 4G"
-        >In&nbsp;<span className="unit"
-          >%4G</span
-        ></th
-      ><th className="text-right nowrap" title="total modulo 4G"
-        >Out&nbsp;<span className="unit"
-          >%4G</span
+      ><th className="text-right normal" colSpan="6"
+        >Bits <b title="Bits IN per second"
+          >In</b
+        >, <b title="Bits OUT per second"
+          >Out</b
+        > | Packets <b title="Packets IN per second"
+          >In</b
+        >, <b title="Packets OUT per second"
+          >Out</b
+        > | Errors <b title="Errors IN per second"
+          >In</b
+        >, <b title="Errors OUT per second"
+          >Out</b
         ></th
       ></tr
     ></thead
   ><tbody
-    >{r1}</tbody
-  ></table
->
-  <table  className={Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 2 ? "table table-hover" : "collapse-hidden"}
-  ><thead
-    ><tr
-      ><th
-        >Interface</th
-      ><th className="text-right nowrap" title="per second"
-        >In&nbsp;<span className="unit"
-          >ps</span
-        ></th
-      ><th className="text-right nowrap" title="per second"
-        >Out&nbsp;<span className="unit"
-          >ps</span
-        ></th
-      ><th className="text-right nowrap" title="modulo 4G"
-        >In&nbsp;<span className="unit"
-          >%4G</span
-        ></th
-      ><th className="text-right nowrap" title="modulo 4G"
-        >Out&nbsp;<span className="unit"
-          >%4G</span
-        ></th
-      ></tr
-    ></thead
-  ><tbody
-    >{r2}</tbody
-  ></table
->
-  <table  className={Data.Params.Ifn.Absolute != 0 && Data.Params.Ift.Absolute == 3 ? "table table-hover" : "collapse-hidden"}
-  ><thead
-    ><tr
-      ><th
-        >Interface</th
-      ><th className="text-right nowrap" title="BITS per second"
-        >In<span className="unit"
-          ><i
-            >b</i
-          >ps</span
-        ></th
-      ><th className="text-right nowrap" title="BITS per second"
-        >Out<span className="unit"
-          ><i
-            >b</i
-          >ps</span
-        ></th
-      ><th className="text-right nowrap" title="total BYTES modulo 4G"
-        >In<span className="unit"
-          ><i
-            >B</i
-          >%4G</span
-        ></th
-      ><th className="text-right nowrap" title="total BYTES modulo 4G"
-        >Out<span className="unit"
-          ><i
-            >B</i
-          >%4G</span
-        ></th
-      ></tr
-    ></thead
-  ><tbody
-    >{r3}</tbody
+    >{rows}</tbody
   ></table
 ></div
 >); },
 
 		cpu_rows:        function(Data, $core) { return (<tr  key={"cpu-rowby-N-"+$core.N}
-  ><td className="text-right nowrap"
+  ><td className="text-right text-nowrap"
     >{$core.N}</td
   ><td className="text-right"
     ><span className="usepercent-text" data-usepercent={$core.User}
@@ -330,7 +246,7 @@ define(function(require) {
   >  <table  className={!Data.Params.CPUn.Negative ? "table collapse-hidden" : "table"}
     ><tr className="panel-config"
       ><td className="col-md-2"
-        ><div className="nowrap text-right"
+        ><div className="text-right text-nowrap"
           >Delay&nbsp;<span className="badge"
             >{Data.Params.CPUd}</span
           ></div
@@ -354,7 +270,7 @@ define(function(require) {
       ></tr
     ><tr className="panel-config"
       ><td className="col-md-2"
-        ><div className="nowrap text-right"
+        ><div className="text-right text-nowrap"
           >Rows&nbsp;<span className="badge"
             >{Data.Params.CPUn.Absolute}</span
           ></div
@@ -382,22 +298,14 @@ define(function(require) {
     ><tr
       ><th
         ></th
-      ><th className="text-right nowrap"
-        >User<span className="unit"
-          >%</span
-        ></th
-      ><th className="text-right nowrap"
-        >Sys<span className="unit"
-          >%</span
-        ></th
-      ><th className="text-right nowrap"
-        >Wait<span className="unit"
-          >%</span
-        ></th
-      ><th className="text-right nowrap"
-        >Idle<span className="unit"
-          >%</span
-        ></th
+      ><th className="text-right"
+        >User%</th
+      ><th className="text-right"
+        >Sys%</th
+      ><th className="text-right"
+        >Wait%</th
+      ><th className="text-right"
+        >Idle%</th
       ></tr
     ></thead
   ><tbody
@@ -446,7 +354,7 @@ define(function(require) {
   >  <table  className={!Data.Params.Dfn.Negative ? "table collapse-hidden" : "table"}
     ><tr className="panel-config"
       ><td className="col-md-2"
-        ><div className="nowrap text-right"
+        ><div className="text-right text-nowrap"
           >Delay&nbsp;<span className="badge"
             >{Data.Params.Dfd}</span
           ></div
@@ -470,7 +378,7 @@ define(function(require) {
       ></tr
     ><tr className="panel-config"
       ><td className="col-md-2"
-        ><div className="nowrap text-right"
+        ><div className="text-right text-nowrap"
           >Rows&nbsp;<span className="badge"
             >{Data.Params.Dfn.Absolute}</span
           ></div
@@ -602,7 +510,7 @@ define(function(require) {
   >  <table  className={!Data.Params.Psn.Negative ? "table collapse-hidden" : "table"}
     ><tr className="panel-config"
       ><td className="col-md-2"
-        ><div className="nowrap text-right"
+        ><div className="text-right text-nowrap"
           >Delay&nbsp;<span className="badge"
             >{Data.Params.Psd}</span
           ></div
@@ -626,7 +534,7 @@ define(function(require) {
       ></tr
     ><tr className="panel-config"
       ><td className="col-md-2"
-        ><div className="nowrap text-right"
+        ><div className="text-right text-nowrap"
           >Rows&nbsp;<span className="badge"
             >{Data.Params.Psn.Absolute}</span
           ></div
@@ -742,7 +650,7 @@ define(function(require) {
   >  <table  className={!Data.Params.Vgn.Negative ? "table collapse-hidden" : "table"}
     ><tr className="panel-config"
       ><td className="col-md-2"
-        ><div className="nowrap text-right"
+        ><div className="text-right text-nowrap"
           >Delay&nbsp;<span className="badge"
             >{Data.Params.Vgd}</span
           ></div
@@ -766,7 +674,7 @@ define(function(require) {
       ></tr
     ><tr className="panel-config"
       ><td className="col-md-2"
-        ><div className="nowrap text-right"
+        ><div className="text-right text-nowrap"
           >Rows&nbsp;<span className="badge"
             >{Data.Params.Vgn.Absolute}</span
           ></div

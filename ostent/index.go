@@ -57,19 +57,19 @@ func username(uids map[uint]string, uid uint) string {
 	return s
 }
 
-func (procs ProcSlice) Ordered(para *params.Params) *PStable {
+func (procs ProcSlice) Ordered(para *params.Params) *PS {
 	para.Psn.Limit = len(procs)
 	limitPS := para.Psn.Absolute
 	if limitPS > para.Psn.Limit {
 		limitPS = para.Psn.Limit
 	}
 
-	pst := &PStable{}
-	pst.N = new(int)
-	*pst.N = limitPS
+	ps := &PS{}
+	ps.N = new(int)
+	*ps.N = limitPS
 
 	if para.Psn.Absolute == 0 {
-		return pst
+		return ps
 	}
 
 	uids := map[uint]string{}
@@ -80,7 +80,7 @@ func (procs ProcSlice) Ordered(para *params.Params) *PStable {
 	})
 
 	for _, proc := range procs[:limitPS] {
-		pst.List = append(pst.List, operating.ProcData{
+		ps.List = append(ps.List, operating.ProcData{
 			PID:      proc.PID,
 			UID:      proc.UID,
 			Priority: proc.Priority,
@@ -92,23 +92,22 @@ func (procs ProcSlice) Ordered(para *params.Params) *PStable {
 			Resident: format.HumanB(proc.Resident),
 		})
 	}
-	return pst
+	return ps
 }
 
 type IndexData struct {
+	Params *params.Params `json:",omitempty"`
+
 	Generic // inline non-pointer
 
-	CPU     operating.CPUInfo
-	MEM     operating.MEM
-	Params  *params.Params `json:",omitempty"`
-	PStable PStable
+	CPU operating.CPUInfo
+	MEM operating.MEM
+	PS  PS
 
 	DFbytes  operating.DFbytes  `json:",omitempty"`
 	DFinodes operating.DFinodes `json:",omitempty"`
 
-	IFbytes   operating.Interfaces
-	IFerrors  operating.Interfaces
-	IFpackets operating.Interfaces
+	IF operating.Interfaces
 
 	VagrantMachines VagrantMachines
 	VagrantError    string
@@ -118,25 +117,24 @@ type IndexData struct {
 	VERSION string
 }
 
-type PStable struct {
+type PS struct {
 	List []operating.ProcData `json:",omitempty"`
 	N    *int                 `json:",omitempty"`
 }
 
 type IndexUpdate struct {
+	Params *params.Params `json:",omitempty"`
+
 	Generic // inline non-pointer
 
-	CPU     *operating.CPUInfo `json:",omitempty"`
-	MEM     *operating.MEM     `json:",omitempty"`
-	Params  *params.Params     `json:",omitempty"`
-	PStable *PStable           `json:",omitempty"`
+	CPU *operating.CPUInfo `json:",omitempty"`
+	MEM *operating.MEM     `json:",omitempty"`
+	PS  *PS                `json:",omitempty"`
 
 	DFbytes  *operating.DFbytes  `json:",omitempty"`
 	DFinodes *operating.DFinodes `json:",omitempty"`
 
-	IFbytes   *operating.Interfaces `json:",omitempty"`
-	IFerrors  *operating.Interfaces `json:",omitempty"`
-	IFpackets *operating.Interfaces `json:",omitempty"`
+	IF *operating.Interfaces `json:",omitempty"`
 
 	VagrantMachines *VagrantMachines `json:",omitempty"`
 	VagrantError    string
@@ -146,10 +144,10 @@ type IndexUpdate struct {
 }
 
 type Generic struct {
-	Hostname string `json:",omitempty"`
-	Uptime   string `json:",omitempty"`
-	LA       string `json:",omitempty"`
-	IP       string `json:",omitempty"`
+	HN string `json:",omitempty"`
+	UP string `json:",omitempty"`
+	LA string `json:",omitempty"`
+	IP string `json:",omitempty"`
 }
 
 type last struct {
@@ -190,7 +188,7 @@ func (la *last) CopyPS() ProcSlice {
 
 func (mss *MSS) HN(para *params.Params, iu *IndexUpdate) bool {
 	// HN has no delay, always updates iu
-	iu.Hostname = mss.GetString("hostname")
+	iu.HN = mss.GetString("hostname")
 	return true
 }
 
@@ -202,7 +200,7 @@ func (mss *MSS) IP(para *params.Params, iu *IndexUpdate) bool {
 
 func (mss *MSS) UP(para *params.Params, iu *IndexUpdate) bool {
 	// UP has no delay, always updates iu
-	iu.Uptime = mss.GetString("uptime")
+	iu.UP = mss.GetString("uptime")
 	return true
 }
 
@@ -226,41 +224,41 @@ func (is InterfaceSlice) Less(i, j int) bool {
 	return a.Name < b.Name
 }
 
-func FormatInterface(mi operating.MetricInterface, ip InterfaceParts) operating.InterfaceInfo {
-	ing, outg, isbytes := ip(mi)
-	deltain, in := ing.Values()
-	deltaout, out := outg.Values()
-	form := format.HumanUnitless
-	deltaForm := format.HumanUnitless // format.Ps
-	if isbytes {
-		form = format.HumanB
-		deltaForm = func(c uint64) string { // , p uint64
-			// return format.Bps(8, c, p) // format.Bps64(8, {in,out}, 0)
-			return format.HumanBits(c * 8) // passing the bits
-		}
-	}
-	return operating.InterfaceInfo{
-		Name:     mi.Name,
-		In:       form(uint64(in)),            // format.HumanB(uint64(in)),  // with units
-		Out:      form(uint64(out)),           // format.HumanB(uint64(out)), // with units
-		DeltaIn:  deltaForm(uint64(deltain)),  // format.Bps64(8, in, 0),     // with units
-		DeltaOut: deltaForm(uint64(deltaout)), // format.Bps64(8, out, 0),    // with units
-	}
+func FormatInterfaces(mi operating.MetricInterface) operating.InterfaceInfo {
+	ii := operating.InterfaceInfo{Name: mi.Name}
+	type (
+		From [2]*operating.GaugeDiff
+		To   [4]*string
+	)
+	FormatInterfaces1024(From{mi.BytesIn, mi.BytesOut}, To{&ii.BytesIn, &ii.BytesOut, &ii.DeltaBitsIn, &ii.DeltaBitsOut})
+	FormatInterfaces1000(From{mi.ErrorsIn, mi.ErrorsOut}, To{&ii.ErrorsIn, &ii.ErrorsOut, &ii.DeltaErrorsIn, &ii.DeltaErrorsOut})
+	FormatInterfaces1000(From{mi.PacketsIn, mi.PacketsOut}, To{&ii.PacketsIn, &ii.PacketsOut, &ii.DeltaPacketsIn, &ii.DeltaPacketsOut})
+	return ii
 }
 
-type InterfaceParts func(operating.MetricInterface) (*operating.GaugeDiff, *operating.GaugeDiff, bool)
+func FormatInterfaces1024(pair [2]*operating.GaugeDiff, info [4]*string) {
+	var (
+		deltain, in   = pair[0].Values()
+		deltaout, out = pair[1].Values()
+	)
+	*info[0] = format.HumanB(uint64(in))
+	*info[1] = format.HumanB(uint64(out))
+	*info[2] = format.HumanBits(uint64(8 * deltain))
+	*info[3] = format.HumanBits(uint64(8 * deltaout))
+}
 
-func (_ *IndexRegistry) InterfaceBytes(mi operating.MetricInterface) (*operating.GaugeDiff, *operating.GaugeDiff, bool) {
-	return mi.BytesIn, mi.BytesOut, true
-}
-func (_ *IndexRegistry) InterfaceErrors(mi operating.MetricInterface) (*operating.GaugeDiff, *operating.GaugeDiff, bool) {
-	return mi.ErrorsIn, mi.ErrorsOut, false
-}
-func (_ *IndexRegistry) InterfacePackets(mi operating.MetricInterface) (*operating.GaugeDiff, *operating.GaugeDiff, bool) {
-	return mi.PacketsIn, mi.PacketsOut, false
+func FormatInterfaces1000(pair [2]*operating.GaugeDiff, info [4]*string) {
+	var (
+		deltain, in   = pair[0].Values()
+		deltaout, out = pair[1].Values()
+	)
+	*info[0] = format.HumanUnitless(uint64(in))
+	*info[1] = format.HumanUnitless(uint64(out))
+	*info[2] = format.HumanUnitless(uint64(deltain))
+	*info[3] = format.HumanUnitless(uint64(deltaout))
 }
 
-func (ir *IndexRegistry) Interfaces(para *params.Params, ip InterfaceParts) []operating.InterfaceInfo {
+func (ir *IndexRegistry) Interfaces(para *params.Params) []operating.InterfaceInfo {
 	private := ir.ListPrivateInterface()
 	para.Ifn.Limit = private.Len()
 
@@ -271,7 +269,7 @@ func (ir *IndexRegistry) Interfaces(para *params.Params, ip InterfaceParts) []op
 		if i >= para.Ifn.Absolute {
 			break
 		}
-		public = append(public, FormatInterface(mi, ip))
+		public = append(public, FormatInterfaces(mi))
 	}
 	return public
 }
@@ -479,7 +477,7 @@ func (procs ProcSlice) IU(para *params.Params, iu *IndexUpdate) bool {
 	if !para.Psd.Expired() {
 		return false
 	}
-	iu.PStable = procs.Ordered(para)
+	iu.PS = procs.Ordered(para)
 	return true
 }
 
@@ -487,16 +485,7 @@ func (ir *IndexRegistry) IF(para *params.Params, iu *IndexUpdate) bool {
 	if !para.Ifd.Expired() {
 		return false
 	}
-	switch para.Ift.Absolute {
-	case enums.IFBYTES:
-		iu.IFbytes = &operating.Interfaces{List: ir.Interfaces(para, ir.InterfaceBytes)}
-	case enums.ERRORS:
-		iu.IFerrors = &operating.Interfaces{List: Reg1s.Interfaces(para, ir.InterfaceErrors)}
-	case enums.PACKETS:
-		iu.IFpackets = &operating.Interfaces{List: Reg1s.Interfaces(para, ir.InterfacePackets)}
-	default:
-		return false
-	}
+	iu.IF = &operating.Interfaces{List: ir.Interfaces(para)}
 	return true
 }
 
@@ -777,8 +766,8 @@ func indexData(mindelay, maxdelay flags.Delay, req *http.Request) (IndexData, er
 	if updates.MEM != nil {
 		data.MEM = *updates.MEM
 	}
-	if updates.PStable != nil {
-		data.PStable = *updates.PStable
+	if updates.PS != nil {
+		data.PS = *updates.PS
 	}
 	if updates.DFbytes != nil {
 		data.DFbytes = *updates.DFbytes
@@ -786,14 +775,8 @@ func indexData(mindelay, maxdelay flags.Delay, req *http.Request) (IndexData, er
 	if updates.DFinodes != nil {
 		data.DFinodes = *updates.DFinodes
 	}
-	if updates.IFbytes != nil {
-		data.IFbytes = *updates.IFbytes
-	}
-	if updates.IFerrors != nil {
-		data.IFerrors = *updates.IFerrors
-	}
-	if updates.IFpackets != nil {
-		data.IFpackets = *updates.IFpackets
+	if updates.IF != nil {
+		data.IF = *updates.IF
 	}
 	if updates.VagrantMachines != nil {
 		data.VagrantMachines = *updates.VagrantMachines
