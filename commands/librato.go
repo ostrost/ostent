@@ -17,7 +17,7 @@ type Librato struct {
 }
 
 func (_ Libratos) SetupFlagSet(cli *flag.FlagSet) extpoints.CommandLineHandler {
-	hostname, err := ostent.GetHostname()
+	hostname, err := ostent.GetHN()
 	if err != nil {
 		hostname = ""
 	}

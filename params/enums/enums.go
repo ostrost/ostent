@@ -10,13 +10,6 @@ const (
 	TOTAL     // 5
 )
 
-// Constants for DF tabs.
-const (
-	_       int = iota
-	INODES      // 1
-	DFBYTES     // 2
-)
-
 // Constants for PS sorting criterion.
 const (
 	_    int = iota

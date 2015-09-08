@@ -168,8 +168,7 @@
       getInitialState: function() {
         return {
           Params: Data.Params,
-          DFbytes: Data.DFbytes,
-          DFinodes: Data.DFinodes
+          DF: Data.DFbytes
         };
       },
       render: function() {
@@ -177,20 +176,11 @@
         Data = this.state;
         return jsdefines.paneldf.bind(this)(Data, (function() {
           var i, len, ref, ref1, ref2, results;
-          ref2 = (ref = Data != null ? (ref1 = Data.DFinodes) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
+          ref2 = (ref = Data != null ? (ref1 = Data.DF) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
           for (i = 0, len = ref2.length; i < len; i++) {
             $disk = ref2[i];
-            results.push(jsdefines.dfinodes_rows(Data, $disk));
-          }
-          return results;
-        })(), (function() {
-          var i, len, ref, ref1, ref2, results;
-          ref2 = (ref = Data != null ? (ref1 = Data.DFbytes) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
-          results = [];
-          for (i = 0, len = ref2.length; i < len; i++) {
-            $disk = ref2[i];
-            results.push(jsdefines.dfbytes_rows(Data, $disk));
+            results.push(jsdefines.df_rows(Data, $disk));
           }
           return results;
         })());
@@ -279,7 +269,7 @@
         var $mach, Data, rows;
         Data = this.state;
         if (((Data != null ? Data.VagrantErrord : void 0) != null) && Data.VagrantErrord) {
-          rows = [jsdefines.vagrant_error.bind(this)(Data)];
+          rows = [jsdefines.vg_error.bind(this)(Data)];
         } else {
           rows = (function() {
             var i, len, ref, ref1, ref2, results;
@@ -287,7 +277,7 @@
             results = [];
             for (i = 0, len = ref2.length; i < len; i++) {
               $mach = ref2[i];
-              results.push(jsdefines.vagrant_rows.bind(this)(Data, $mach));
+              results.push(jsdefines.vg_rows.bind(this)(Data, $mach));
             }
             return results;
           }).call(this);
@@ -393,8 +383,7 @@
         });
         setState(DF, {
           Params: data.Params,
-          DFbytes: data.DFbytes,
-          DFinodes: data.DFinodes
+          DF: data.DF
         });
         setState(VG, {
           Params: data.Params,

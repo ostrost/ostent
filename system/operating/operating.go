@@ -28,42 +28,33 @@ type RAM struct {
 	Extra2 uint64 // linux:cached   // darwin:active
 }
 
-// DiskMeta type has common for DiskBytes and DiskInodes fields.
-type DiskMeta struct {
+// DFData type is a struct of disk metrics.
+type DFData struct {
 	DevName string
 	DirName string
-}
 
-// DiskBytes type is a struct of disk bytes metrics.
-type DiskBytes struct {
-	DiskMeta
-	Total      string // with units
-	Used       string // with units
-	Avail      string // with units
+	// strings with units
+
+	// inodes
+	Inodes      string
+	Iused       string
+	Ifree       string
+	IusePercent string // without %
+
+	// bytes
+	Total      string
+	Used       string
+	Avail      string
 	UsePercent string // without %
 }
 
-// DiskInodes type is a struct of disk inodes metrics.
-type DiskInodes struct {
-	DiskMeta
-	Inodes      string // with units
-	Iused       string // with units
-	Ifree       string // with units
-	IusePercent string // without %
+// DF type has a list of DFData.
+type DF struct {
+	List []DFData
 }
 
-// DFbytes type has a list of DiskBytes.
-type DFbytes struct {
-	List []DiskBytes
-}
-
-// DFinodes type has a list of DiskInodes.
-type DFinodes struct {
-	List []DiskInodes
-}
-
-// InterfaceInfo type is a struct of interface metrics.
-type InterfaceInfo struct {
+// IFData type is a struct of interface metrics.
+type IFData struct {
 	Name string
 
 	// strings with units
@@ -84,13 +75,13 @@ type InterfaceInfo struct {
 	DeltaPacketsOut string
 }
 
-// Interfaces type has a list of Interface.
-type Interfaces struct {
-	List []InterfaceInfo
+// IF type has a list of IFData.
+type IF struct {
+	List []IFData
 }
 
-// ProcInfo type is an internal account of a process.
-type ProcInfo struct {
+// PSInfo type is an internal account of a process.
+type PSInfo struct {
 	PID      uint
 	Priority int
 	Nice     int
@@ -101,8 +92,8 @@ type ProcInfo struct {
 	Resident uint64
 }
 
-// ProcData type is a public (for index context, json marshaling) account of a process.
-type ProcData struct {
+// PSData type is a public (for index context, json marshaling) account of a process.
+type PSData struct {
 	PID      uint
 	UID      uint
 	Priority int
@@ -253,13 +244,13 @@ func (gp *GaugePercent) UpdatePercent(totalDelta int64, uabsolute uint64) {
 	}
 }
 
-// CPUInfo type has a list of CoreInfo.
-type CPUInfo struct {
-	List []CoreInfo
+// CPU type has a list of CPUData.
+type CPU struct {
+	List []CPUData
 }
 
-// CoreInfo type is a struct of core metrics.
-type CoreInfo struct {
+// CPUData type is a struct of cpu metrics.
+type CPUData struct {
 	N    string
 	User uint // percent without "%"
 	Sys  uint // percent without "%"
@@ -272,10 +263,6 @@ type CPUUpdater interface {
 }
 
 type MetricCPU struct {
-	*CPU
-}
-
-type CPU struct {
 	metrics.Healthcheck        // derive from one of (go-)metric types, otherwise it won't be registered
 	N                   string // The "cpu-N"
 	User                *GaugePercent
@@ -287,7 +274,7 @@ type CPU struct {
 	Extra               CPUUpdater
 }
 
-func (mc MetricCPU) Update(scpu sigar.Cpu) {
+func (mc *MetricCPU) Update(scpu sigar.Cpu) {
 	totalDelta := mc.Total.UpdateAbsolute(int64(scpu.Total()))
 	mc.User.UpdatePercent(totalDelta, scpu.User)
 	mc.Nice.UpdatePercent(totalDelta, scpu.Nice)
@@ -301,16 +288,14 @@ func (mc MetricCPU) Update(scpu sigar.Cpu) {
 
 func ExtraNewMetricCPU(r metrics.Registry, name string, extra CPUUpdater) *MetricCPU {
 	return &MetricCPU{
-		CPU: &CPU{
-			N:     name,
-			User:  NewGaugePercent(name+".user", r),
-			Nice:  NewGaugePercent(name+".nice", r),
-			Sys:   NewGaugePercent(name+".system", r),
-			Wait:  NewGaugePercent(name+".wait", r),
-			Idle:  NewGaugePercent(name+".idle", r),
-			Total: NewGaugeDiff(name+"-total", metrics.NewRegistry()),
-			Extra: extra,
-		},
+		N:     name,
+		User:  NewGaugePercent(name+".user", r),
+		Nice:  NewGaugePercent(name+".nice", r),
+		Sys:   NewGaugePercent(name+".system", r),
+		Wait:  NewGaugePercent(name+".wait", r),
+		Idle:  NewGaugePercent(name+".idle", r),
+		Total: NewGaugeDiff(name+"-total", metrics.NewRegistry()),
+		Extra: extra,
 	}
 }
 
@@ -362,10 +347,6 @@ func (sms *StandardMetricString) Update(new string) {
 }
 
 type MetricDF struct {
-	*DF
-}
-
-type DF struct {
 	metrics.Healthcheck // derive from one of (go-)metric types, otherwise it won't be registered
 	DevName             MetricString
 	Free                metrics.GaugeFloat64
@@ -382,7 +363,7 @@ type DF struct {
 }
 
 // Update reads usage and fs and updates the corresponding fields in DF.
-func (md *DF) Update(fs sigar.FileSystem, usage sigar.FileSystemUsage) {
+func (md *MetricDF) Update(fs sigar.FileSystem, usage sigar.FileSystemUsage) {
 	md.DevName.Update(fs.DevName)
 	md.DirName.Update(fs.DirName)
 	md.Free.Update(float64(usage.Free << 10))
@@ -400,13 +381,8 @@ func (md *DF) Update(fs sigar.FileSystem, usage sigar.FileSystemUsage) {
 	}
 }
 
-// MetricInterface hold a pointer to Interface.
-type MetricInterface struct {
-	*Interface
-}
-
-// Interface is a set of interface metrics.
-type Interface struct {
+// MetricIF set of interface metrics.
+type MetricIF struct {
 	metrics.Healthcheck // derive from one of (go-)metric types, otherwise it won't be registered
 	Name                string
 	BytesIn             *GaugeDiff
@@ -417,14 +393,14 @@ type Interface struct {
 	PacketsOut          *GaugeDiff
 }
 
-// Update reads ifdata and updates the corresponding fields in Interface.
-func (i *Interface) Update(ifdata Getifdata) {
-	i.BytesIn.UpdateAbsolute(int64(ifdata.GetInBytes()))
-	i.BytesOut.UpdateAbsolute(int64(ifdata.GetOutBytes()))
-	i.ErrorsIn.UpdateAbsolute(int64(ifdata.GetInErrors()))
-	i.ErrorsOut.UpdateAbsolute(int64(ifdata.GetOutErrors()))
-	i.PacketsIn.UpdateAbsolute(int64(ifdata.GetInPackets()))
-	i.PacketsOut.UpdateAbsolute(int64(ifdata.GetOutPackets()))
+// Update reads ifdata and updates the corresponding fields in MetricIF.
+func (mi *MetricIF) Update(ifdata Getifdata) {
+	mi.BytesIn.UpdateAbsolute(int64(ifdata.GetInBytes()))
+	mi.BytesOut.UpdateAbsolute(int64(ifdata.GetOutBytes()))
+	mi.ErrorsIn.UpdateAbsolute(int64(ifdata.GetInErrors()))
+	mi.ErrorsOut.UpdateAbsolute(int64(ifdata.GetOutErrors()))
+	mi.PacketsIn.UpdateAbsolute(int64(ifdata.GetInPackets()))
+	mi.PacketsOut.UpdateAbsolute(int64(ifdata.GetOutPackets()))
 }
 
 type Getifdata interface {

@@ -16,7 +16,7 @@ func NetAddressIP() (string, error) {
 		if iface.Flags&net.FlagLoopback != 0 {
 			continue
 		}
-		if !HardwareInterface(iface.Name) {
+		if !HardwareIF(iface.Name) {
 			continue
 		}
 		if aa, err := iface.Addrs(); err == nil {
@@ -38,9 +38,9 @@ func NetAddressIP() (string, error) {
 	return "", nil
 }
 
-func TestInterfaceIP(t *testing.T) {
+func TestIFIP(t *testing.T) {
 	fip := &FoundIP{}
-	if err := (Machine{}).ApplyperInterface(fip.Next); err != nil {
+	if err := (Machine{}).ApplyperIF(fip.Next); err != nil {
 		t.Error(err)
 		return
 	}

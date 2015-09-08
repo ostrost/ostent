@@ -34,9 +34,9 @@ func (id IfData) GetOutPackets() uint { return id.OutPackets }
 
 // Registry has updates with sigar values.
 type Registry interface {
-	UpdateIFdata(IfData)
+	UpdateIF(IfData)
 	UpdateCPU([]sigar.Cpu)
-	UpdateLoadAverage(sigar.LoadAverage)
+	UpdateLA(sigar.LoadAverage)
 	UpdateSwap(sigar.Swap)
 	UpdateRAM(sigar.Mem, uint64, uint64)
 	UpdateDF(sigar.FileSystem, sigar.FileSystemUsage)
@@ -44,15 +44,15 @@ type Registry interface {
 
 // Collector is collection interface.
 type Collector interface {
-	GetHostname() (string, error)
-	Hostname(S2SRegistry, *sync.WaitGroup)
-	Uptime(S2SRegistry, *sync.WaitGroup)
+	GetHN() (string, error)
+	HN(S2SRegistry, *sync.WaitGroup)
+	UP(S2SRegistry, *sync.WaitGroup)
 	LA(Registry, *sync.WaitGroup)
 	RAM(Registry, *sync.WaitGroup)
 	Swap(Registry, *sync.WaitGroup)
-	Interfaces(Registry, S2SRegistry, *sync.WaitGroup)
-	Procs(chan<- ProcSlice)
-	Disks(Registry, *sync.WaitGroup)
+	IF(Registry, S2SRegistry, *sync.WaitGroup)
+	PS(chan<- PSSlice)
+	DF(Registry, *sync.WaitGroup)
 	CPU(Registry, *sync.WaitGroup)
 }
 
@@ -76,8 +76,8 @@ var (
 	RXairdrop = regexp.MustCompile("^p2p\\d+$")
 )
 
-// HardwareInterface returns false for known virtual/software network interface name.
-func HardwareInterface(name string) bool {
+// HardwareIF returns false for known virtual/software network interface name.
+func HardwareIF(name string) bool {
 	if RXbridge.MatchString(name) ||
 		RXvboxnet.MatchString(name) {
 		return false
@@ -97,12 +97,12 @@ func HardwareInterface(name string) bool {
 // Machine implements Collector by collecting the maching metrics.
 type Machine struct{}
 
-func (m Machine) GetHostname() (string, error) {
+func (m Machine) GetHN() (string, error) {
 	// m is unused
-	return GetHostname()
+	return GetHN()
 }
 
-func GetHostname() (string, error) {
+func GetHN() (string, error) {
 	hostname, err := os.Hostname()
 	if err == nil {
 		hostname = strings.Split(hostname, ".")[0]
@@ -110,14 +110,14 @@ func GetHostname() (string, error) {
 	return hostname, err
 }
 
-func (m Machine) Hostname(sreg S2SRegistry, wg *sync.WaitGroup) {
-	if hostname, err := m.GetHostname(); err == nil {
+func (m Machine) HN(sreg S2SRegistry, wg *sync.WaitGroup) {
+	if hostname, err := m.GetHN(); err == nil {
 		sreg.SetString("hostname", hostname)
 	}
 	wg.Done()
 }
 
-func (m Machine) Uptime(sreg S2SRegistry, wg *sync.WaitGroup) {
+func (m Machine) UP(sreg S2SRegistry, wg *sync.WaitGroup) {
 	// m is unused
 	uptime := sigar.Uptime{}
 	uptime.Get()
@@ -129,7 +129,7 @@ func (m Machine) LA(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	la := sigar.LoadAverage{}
 	la.Get()
-	reg.UpdateLoadAverage(la)
+	reg.UpdateLA(la)
 	wg.Done()
 }
 
@@ -172,7 +172,7 @@ func (m Machine) Swap(reg Registry, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (m Machine) Disks(reg Registry, wg *sync.WaitGroup) {
+func (m Machine) DF(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	fls := sigar.FileSystemList{}
 	fls.Get()
@@ -200,9 +200,9 @@ func (m Machine) Disks(reg Registry, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (m Machine) Procs(CH chan<- ProcSlice) {
+func (m Machine) PS(CH chan<- PSSlice) {
 	// m is unused
-	var procs ProcSlice
+	var pss PSSlice
 	pls := sigar.ProcList{}
 	pls.Get()
 
@@ -224,20 +224,19 @@ func (m Machine) Procs(CH chan<- ProcSlice) {
 			continue
 		}
 
-		procs = append(procs,
-			operating.ProcInfo{
-				PID:      uint(pid),
-				Priority: state.Priority,
-				Nice:     state.Nice,
-				Time:     time.Total,
-				Name:     system.ProcName(pid, state.Name),
-				// Name:  strings.Join(append([]string{system.ProcName(pid, state.Name)}, args.List[1:]...), " "),
-				UID:      state.Uid,
-				Size:     mem.Size,
-				Resident: mem.Resident,
-			})
+		pss = append(pss, &operating.PSInfo{
+			PID:      uint(pid),
+			Priority: state.Priority,
+			Nice:     state.Nice,
+			Time:     time.Total,
+			Name:     system.ProcName(pid, state.Name),
+			// Name:  strings.Join(append([]string{system.ProcName(pid, state.Name)}, args.List[1:]...), " "),
+			UID:      state.Uid,
+			Size:     mem.Size,
+			Resident: mem.Resident,
+		})
 	}
-	CH <- procs
+	CH <- pss
 }
 
 func (m Machine) CPU(reg Registry, wg *sync.WaitGroup) {

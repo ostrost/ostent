@@ -8,15 +8,15 @@ import (
 	"github.com/ostrost/ostent/getifaddrs"
 )
 
-// ApplyperInterface calls apply for each found hardware interface.
-func (m Machine) ApplyperInterface(apply func(getifaddrs.IfData) bool) error {
+// ApplyperIF calls apply for each found hardware interface.
+func (m Machine) ApplyperIF(apply func(getifaddrs.IfData) bool) error {
 	// m is unused
 	gotifaddrs, err := getifaddrs.Getifaddrs()
 	if err != nil {
 		return err
 	}
 	for _, ifdata := range gotifaddrs {
-		if !HardwareInterface(ifdata.Name) {
+		if !HardwareIF(ifdata.Name) {
 			continue
 		}
 		if !apply(ifdata) {
@@ -27,9 +27,9 @@ func (m Machine) ApplyperInterface(apply func(getifaddrs.IfData) bool) error {
 }
 
 // Interfaces registers the interfaces with the reg and first non-loopback IP with the sreg.
-func (m Machine) Interfaces(reg Registry, sreg S2SRegistry, wg *sync.WaitGroup) {
+func (m Machine) IF(reg Registry, sreg S2SRegistry, wg *sync.WaitGroup) {
 	fip := FoundIP{}
-	m.ApplyperInterface(func(ifdata getifaddrs.IfData) bool {
+	m.ApplyperIF(func(ifdata getifaddrs.IfData) bool {
 		fip.Next(ifdata)
 		if ifdata.InBytes == 0 &&
 			ifdata.OutBytes == 0 &&
@@ -39,7 +39,7 @@ func (m Machine) Interfaces(reg Registry, sreg S2SRegistry, wg *sync.WaitGroup) 
 			ifdata.OutErrors == 0 {
 			// nothing
 		} else {
-			reg.UpdateIFdata(IfData{
+			reg.UpdateIF(IfData{
 				Name:       ifdata.Name,
 				InBytes:    ifdata.InBytes,
 				OutBytes:   ifdata.OutBytes,

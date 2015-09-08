@@ -242,9 +242,11 @@ define(function (require) {
         "tr",
         { key: "if-rowby-name-" + $if.Name
         },
+        "  ",
         React.createElement(
           "td",
-          null,
+          { className: "text-nowrap clip12", title: $if.Name
+          },
           $if.Name
         ),
         React.createElement(
@@ -845,93 +847,82 @@ define(function (require) {
       );
     },
 
-    dfbytes_rows: function dfbytes_rows(Data, $disk) {
+    df_rows: function df_rows(Data, $disk) {
       return React.createElement(
         "tr",
-        { key: "dfbytes-rowby-dirname-" + $disk.DirName
+        { key: "df-rowby-dirname-" + $disk.DirName
         },
+        "  ",
         React.createElement(
           "td",
-          null,
+          { className: "text-nowrap clip12", title: $disk.DevName
+          },
           $disk.DevName
         ),
+        "  ",
         React.createElement(
           "td",
-          null,
+          { className: "text-nowrap clip12", title: $disk.DirName
+          },
           $disk.DirName
         ),
         React.createElement(
           "td",
-          { className: "text-right"
+          { className: "text-right text-nowrap"
           },
+          React.createElement(
+            "span",
+            { className: "text-graylighter", title: "Inodes free"
+            },
+            $disk.Ifree
+          ),
+          " ",
           $disk.Avail
         ),
         React.createElement(
           "td",
-          { className: "text-right"
+          { className: "text-right text-nowrap bg-usepercent", "data-usepercent": $disk.UsePercent
           },
           React.createElement(
             "span",
-            { className: "label", "data-usepercent": $disk.UsePercent
-            },
-            $disk.UsePercent,
-            "%"
-          ),
-          " ",
-          $disk.Used
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          $disk.Total
-        )
-      );
-    },
-    dfinodes_rows: function dfinodes_rows(Data, $disk) {
-      return React.createElement(
-        "tr",
-        { key: "dfinodes-rowby-dirname-" + $disk.DirName
-        },
-        React.createElement(
-          "td",
-          null,
-          $disk.DevName
-        ),
-        React.createElement(
-          "td",
-          null,
-          $disk.DirName
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          $disk.Ifree
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          React.createElement(
-            "span",
-            { className: "label", "data-usepercent": $disk.IusePercent
+            { className: "text-graylighter", title: "Inodes use%"
             },
             $disk.IusePercent,
             "%"
           ),
-          " ",
-          $disk.Iused
+          " ",
+          $disk.UsePercent,
+          "%"
         ),
         React.createElement(
           "td",
-          { className: "text-right"
+          { className: "text-right text-nowrap"
           },
-          $disk.Inodes
+          React.createElement(
+            "span",
+            { className: "text-graylighter", title: "Inodes used"
+            },
+            $disk.Iused
+          ),
+          " ",
+          $disk.Used
+        ),
+        React.createElement(
+          "td",
+          { className: "text-right text-nowrap"
+          },
+          React.createElement(
+            "span",
+            { className: "text-graylighter", title: "Inodes total"
+            },
+            $disk.Inodes
+          ),
+          " ",
+          $disk.Total
         )
       );
     },
-    paneldf: function paneldf(Data, r1, r2) {
+    paneldf: function paneldf(Data, rows) {
       return React.createElement(
         "div",
         { className: !Data.Params.Dfn.Negative ? "" : "panel panel-default"
@@ -1084,108 +1075,12 @@ define(function (require) {
             React.createElement("td", { className: "col-md-10"
             })
           ),
-          React.createElement(
-            "tr",
-            { className: "panel-config"
-            },
-            React.createElement(
-              "td",
-              { className: "col-md-2"
-              },
-              React.createElement(
-                "div",
-                { className: "text-right"
-                },
-                "Select"
-              )
-            ),
-            React.createElement(
-              "td",
-              { colSpan: "2"
-              },
-              React.createElement(
-                "ul",
-                { className: "nav nav-pills"
-                },
-                React.createElement(
-                  "li",
-                  { className: Data.Params.Dfn.Absolute != 0 && Data.Params.Dft.Absolute == 1 ? "active" : ""
-                  },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Vlinks.Dft[1 - 1].LinkHref, onClick: this.handleClick
-                    },
-                    "Inodes"
-                  )
-                ),
-                React.createElement(
-                  "li",
-                  { className: Data.Params.Dfn.Absolute != 0 && Data.Params.Dft.Absolute == 2 ? "active" : ""
-                  },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Vlinks.Dft[2 - 1].LinkHref, onClick: this.handleClick
-                    },
-                    "Bytes"
-                  )
-                )
-              )
-            )
-          ),
           "  "
         ),
         "  ",
         React.createElement(
           "table",
-          { className: Data.Params.Dfn.Absolute != 0 && Data.Params.Dft.Absolute == 1 ? "table table-hover" : "collapse-hidden"
-          },
-          React.createElement(
-            "thead",
-            null,
-            React.createElement(
-              "tr",
-              null,
-              React.createElement(
-                "th",
-                { className: "header"
-                },
-                "Device"
-              ),
-              React.createElement(
-                "th",
-                { className: "header"
-                },
-                "Mounted"
-              ),
-              React.createElement(
-                "th",
-                { className: "header text-right"
-                },
-                "Avail"
-              ),
-              React.createElement(
-                "th",
-                { className: "header text-right"
-                },
-                "Used"
-              ),
-              React.createElement(
-                "th",
-                { className: "header text-right"
-                },
-                "Total"
-              )
-            )
-          ),
-          React.createElement(
-            "tbody",
-            null,
-            r1
-          )
-        ),
-        React.createElement(
-          "table",
-          { className: Data.Params.Dfn.Absolute != 0 && Data.Params.Dft.Absolute == 2 ? "table table-hover" : "collapse-hidden"
+          { className: Data.Params.Dfn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
           },
           React.createElement(
             "thead",
@@ -1236,6 +1131,12 @@ define(function (require) {
                 "th",
                 { className: "header text-right"
                 },
+                "Use"
+              ),
+              React.createElement(
+                "th",
+                { className: "header text-right"
+                },
                 React.createElement(
                   "a",
                   { href: Data.Params.Vlinks.Dfk[4 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[4 - 1].LinkClass
@@ -1263,7 +1164,7 @@ define(function (require) {
           React.createElement(
             "tbody",
             null,
-            r2
+            rows
           )
         )
       );
@@ -1628,7 +1529,7 @@ define(function (require) {
       );
     },
 
-    vagrant_rows: function vagrant_rows(Data, $mach) {
+    vg_rows: function vg_rows(Data, $mach) {
       return React.createElement(
         "tr",
         { key: "vagrant-rowby-uuid-" + $mach.UUID
@@ -1660,7 +1561,7 @@ define(function (require) {
         )
       );
     },
-    vagrant_error: function vagrant_error(Data) {
+    vg_error: function vg_error(Data) {
       return React.createElement(
         "tr",
         { key: "vgerror"

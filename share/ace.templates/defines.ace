@@ -4,8 +4,9 @@
 = content define_ifrows
   {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IF.List}}
-      | <tr {{AttrKey "if-rowby-name" $if.Name}}>
-      td {{$if.Name}}
+      |
+        <tr {{AttrKey "if-rowby-name" $if.Name}}>
+          <td {{class}}="text-nowrap clip12" title={{$if.Name}}>{{$if.Name}}</td>
       td.text-right.text-nowrap
         span.text-graylighter title="Total BYTES IN modulo 4G" {{$if.BytesIn}}
         |  
@@ -67,28 +68,31 @@
       {{template "defines::define_iftable" .}}
     </div>
 
-= content define_dfbytes_rows
+= content define_dfrows
   {{with rowsset .}}{{.}}{{else}}
-    {{range $disk := .Data.DFbytes.List}}
-      | <tr {{AttrKey "dfbytes-rowby-dirname" $disk.DirName}}>
-      td {{$disk.DevName}}
-      td {{$disk.DirName}}
-      td.text-right {{$disk.Avail}}
-      td.text-right {{template "defines::define_usepercent" $disk.UsePercent}}&nbsp;{{$disk.Used}}
-      td.text-right {{$disk.Total}}
-      | </tr>
-    {{end}}
-  {{end}}
+    {{range $disk := .Data.DF.List}}
+      |
+        <tr {{AttrKey "df-rowby-dirname" $disk.DirName}}>
+          <td {{class}}="text-nowrap clip12" title={{$disk.DevName}}>{{$disk.DevName}}</td>
+          <td {{class}}="text-nowrap clip12" title={{$disk.DirName}}>{{$disk.DirName}}</td>
+      td.text-right.text-nowrap
+        span.text-graylighter title="Inodes free" {{$disk.Ifree}}
+        |  {{$disk.Avail}}
+      | <td {{class}}="text-right text-nowrap bg-usepercent" data-usepercent={{$disk.UsePercent}}>
+      span.text-graylighter title="Inodes use%" {{$disk.IusePercent}}%
+        / {{template "defines::define_usepercent" $disk.IusePercent}}
+      |  {{$disk.UsePercent}}%
+      | </td>
+      td.text-right.text-nowrap
+        span.text-graylighter title="Inodes used" {{$disk.Iused}}
+        |  {{$disk.Used}}
+      td.text-right.text-nowrap
+        span.text-graylighter title="Inodes total" {{$disk.Inodes}}
+        |  {{$disk.Total}}
 
-= content define_dfinodes_rows
-  {{with rowsset .}}{{.}}{{else}}
-    {{range $disk := .Data.DFinodes.List}}
-      | <tr {{AttrKey "dfinodes-rowby-dirname" $disk.DirName}}>
-      td {{$disk.DevName}}
-      td {{$disk.DirName}}
-      td.text-right {{$disk.Ifree}}
-      td.text-right {{template "defines::define_usepercent" $disk.IusePercent}}&nbsp;{{$disk.Iused}}
-      td.text-right {{$disk.Inodes}}
+      / td.text-right {{$disk.Ifree}}
+      / td.text-right {{template "defines::define_usepercent" $disk.IusePercent}}&nbsp;{{$disk.Iused}}
+      / td.text-right {{$disk.Inodes}}
       | </tr>
     {{end}}
   {{end}}
@@ -103,32 +107,35 @@
         {{.LinkText}}<span {{class}}={{.CaretClass}}></span>
       </a>
 
-= content define_dfbytes_table
+= content define_dftable
   {{$p := .Data.Params}}
-  | <table {{ClassTab $p.Dfn $p.Dft 2 "table table-hover" "collapse-hidden"}}>{{/* 2 is DFBYTES */}}
+  | <table {{ClassNonzero $p.Dfn "table table-hover" "collapse-hidden"}}>
   thead
     tr
       {{template "defines::headerenumlink" Vlink $p $p.Dfk 1 "Device"  ""          }}{{/* FS    */}}
       {{template "defines::headerenumlink" Vlink $p $p.Dfk 2 "Mounted" ""          }}{{/* MP    */}}
+      / th.header.text-right
+        | Bytes 
+        b Avail
+        | , 
+        b Used
+        | , 
+        b Total
+        |  | Inodes 
+        b Avail
+        | , 
+        b Used
+        | , 
+        b Total
+      / th.header.text-right Avail
+      / th.header.text-right Used
+      / th.header.text-right Total
       {{template "defines::headerenumlink" Vlink $p $p.Dfk 3 "Avail"   "text-right"}}{{/* AVAIL */}}
+      th.header.text-right Use
       {{template "defines::headerenumlink" Vlink $p $p.Dfk 4 "Used"    "text-right"}}{{/* USED  */}}
       {{template "defines::headerenumlink" Vlink $p $p.Dfk 5 "Total"   "text-right"}}{{/* TOTAL */}}
   tbody
-    {{template "defines::define_dfbytes_rows" .}}
-  | </table>
-
-= content define_dfinodes_table
-  {{$p := .Data.Params}}
-  | <table {{ClassTab $p.Dfn $p.Dft 1 "table table-hover" "collapse-hidden"}}>{{/* 1 is INODES */}}
-  thead
-    tr
-      th.header Device
-      th.header Mounted
-      th.header.text-right Avail
-      th.header.text-right Used
-      th.header.text-right Total
-  tbody
-    {{template "defines::define_dfinodes_rows" .}}
+    {{template "defines::define_dfrows" .}}
   | </table>
 
 = content define_paneldf
@@ -136,15 +143,9 @@
   [[template "startpanel" Chain `$p.Dfn` "Disk usage"]]
   [[template "configrow_delay"  `$p.Dfd`]]
   [[template "configrow_rows"   `$p.Dfn`]]
-  [[template "configrow_select"]]
-        / Outstanding 3x indent is required
-        |
-          <li {{ClassTab $p.Dfn $p.Dft 1 "active" ""}}>{{template "defines::enumlink" Vlink $p $p.Dft 1 "Inodes" ""}}</li>{{/* 1 is INODES */}}
-          <li {{ClassTab $p.Dfn $p.Dft 2 "active" ""}}>{{template "defines::enumlink" Vlink $p $p.Dft 2 "Bytes" ""}}</li>{{/* 2 is DFBYTES */}}
   |
       </table>
-      {{template "defines::define_dfinodes_table" .}}
-      {{template "defines::define_dfbytes_table" .}}
+      {{template "defines::define_dftable" .}}
     </div>
 
 = content define_memrows
@@ -267,16 +268,6 @@
       <table {{ClassPositive [[$N]] "table collapse-hidden" "table"}}>
 [[end]]
 
-/ 4 tds
-[[define "configrow_select"]]
-  tr.panel-config
-    td.col-md-2
-      div.text-right Select
-    td {{colspan}}=2
-      ul.nav.nav-pills
-[[end]]
-
-/ 4 tds
 [[define "configrow_delay"]]
 [[$D := .]]
   tr.panel-config
@@ -291,7 +282,6 @@
     td.col-md-10
 [[end]]
 
-/ 4 tds
 [[define "configrow_rows"]]
 [[$N := .]]
   tr.panel-config

@@ -27,7 +27,7 @@ html
             span.icon-bar
             span.icon-bar
             span.icon-bar
-          a.navbar-brand.clip#hn style="max-width: 12ch" href=/ title="hostname {{.Data.HN}}" {{.Data.HN}}
+          a.navbar-brand.clip12#hn href=/ title="hostname {{.Data.HN}}" {{.Data.HN}}
 
         div.collapse.navbar-collapse#navbar-collapse
           ul.nav.navbar-nav

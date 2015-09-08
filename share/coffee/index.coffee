@@ -10,7 +10,8 @@ require.config
     jsdefines: 'lib/jsdefines'
 
 # main require
-require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'], ($, React, jsdefines) ->
+require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
+($, React, jsdefines) ->
   # domReady, bscollapse "required" for r.js only.
   updates = undefined # events source. set later
   neweventsource = (onmessage) ->
@@ -101,7 +102,10 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'], ($, React, j
     }
 
   HandlerMixin =
-    handleChange: (e) -> @handle(e, false, '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1))
+    handleChange: (e) -> @handle(e, false,
+     '?' + e.target.name +
+     '=' + e.target.value +
+     '&' + location.search.substr(1))
     handleClick: (e) ->
       href = e.target.getAttribute('href')
       href = $(e.target).parent().get(0).getAttribute('href') if !href?
@@ -127,15 +131,13 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'], ($, React, j
   @DFClass = React.createClass
     mixins: [HandlerMixin]
     getInitialState: () -> { # a global Data
-      Params:       Data.Params
-      DFbytes:      Data.DFbytes
-      DFinodes:     Data.DFinodes
+      Params: Data.Params
+      DF:     Data.DFbytes
     }
     render: () ->
       Data = @state
       return jsdefines.paneldf.bind(this)(Data,
-             (jsdefines.dfinodes_rows(Data, $disk) for $disk in Data?.DFinodes?.List ? []),
-             (jsdefines.dfbytes_rows(Data, $disk) for $disk in Data?.DFbytes?.List ? []))
+             (jsdefines.df_rows(Data, $disk) for $disk in Data?.DF?.List ? []))
 
   @MEMClass = React.createClass
     mixins: [HandlerMixin]
@@ -181,9 +183,9 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'], ($, React, j
     render: () ->
       Data = @state
       if Data?.VagrantErrord? and Data.VagrantErrord
-        rows = [jsdefines.vagrant_error.bind(this)(Data)]
+        rows = [jsdefines.vg_error.bind(this)(Data)]
       else
-        rows = (jsdefines.vagrant_rows.bind(this)(Data, $mach
+        rows = (jsdefines.vg_rows.bind(this)(Data, $mach
         ) for $mach in Data?.VagrantMachines?.List ? [])
       return jsdefines.panelvg.bind(this)(Data, rows)
 
@@ -237,11 +239,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'], ($, React, j
       setState(MEM, {Params: data.Params, MEM: data.MEM})
       setState(CPU, {Params: data.Params, CPU: data.CPU})
       setState(IF,  {Params: data.Params, IF:  data.IF })
-      setState(DF, {
-        Params:       data.Params
-        DFbytes:      data.DFbytes
-        DFinodes:     data.DFinodes
-      })
+      setState(DF,  {Params: data.Params, DF:  data.DF })
       setState(VG, {
         Params:          data.Params,
         VagrantMachines: data.VagrantMachines,

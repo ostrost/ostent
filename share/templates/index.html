@@ -30,7 +30,7 @@
             ><span class="icon-bar"
               ></span
             ></button
-          ><a id="hn" class="navbar-brand clip" style="max-width: 12ch" href="/" title="hostname {{.Data.HN}}"
+          ><a id="hn" class="navbar-brand clip12" href="/" title="hostname {{.Data.HN}}"
             >{{.Data.HN}}</a
           ></div
         ><div id="navbar-collapse" class="collapse navbar-collapse"
@@ -144,62 +144,42 @@
     >{{template "defines::define_cpurows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_dfbytes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $disk := .Data.DFbytes.List}}<tr {{AttrKey "dfbytes-rowby-dirname" $disk.DirName}}
-  ><td
+*/}}{{define "defines::define_dfrows"}}{{with rowsset .}}{{.}}{{else}}{{range $disk := .Data.DF.List}}<tr {{AttrKey "df-rowby-dirname" $disk.DirName}}
+  >  <td {{class}}="text-nowrap clip12" title={{$disk.DevName}}
     >{{$disk.DevName}}</td
-  ><td
+  >  <td {{class}}="text-nowrap clip12" title={{$disk.DirName}}
     >{{$disk.DirName}}</td
-  ><td class="text-right"
-    >{{$disk.Avail}}</td
-  ><td class="text-right"
-    >{{template "defines::define_usepercent" $disk.UsePercent}}&nbsp;{{$disk.Used}}</td
-  ><td class="text-right"
-    >{{$disk.Total}}</td
+  ><td class="text-right text-nowrap"
+    ><span class="text-graylighter" title="Inodes free"
+      >{{$disk.Ifree}}</span
+    > {{$disk.Avail}}</td
+  ><td {{class}}="text-right text-nowrap bg-usepercent" data-usepercent={{$disk.UsePercent}}
+    ><span class="text-graylighter" title="Inodes use%"
+      >{{$disk.IusePercent}}%</span
+    > {{$disk.UsePercent}}%</td
+  ><td class="text-right text-nowrap"
+    ><span class="text-graylighter" title="Inodes used"
+      >{{$disk.Iused}}</span
+    > {{$disk.Used}}</td
+  ><td class="text-right text-nowrap"
+    ><span class="text-graylighter" title="Inodes total"
+      >{{$disk.Inodes}}</span
+    > {{$disk.Total}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_dfbytes_table"}}{{$p := .Data.Params}}<table {{ClassTab $p.Dfn $p.Dft 2 "table table-hover" "collapse-hidden"}}
+*/}}{{define "defines::define_dftable"}}{{$p := .Data.Params}}<table {{ClassNonzero $p.Dfn "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
-      >{{template "defines::headerenumlink" Vlink $p $p.Dfk 1 "Device" ""}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 3 "Avail" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 4 "Used" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 5 "Total" "text-right"}}</tr
+      >{{template "defines::headerenumlink" Vlink $p $p.Dfk 1 "Device" ""}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 3 "Avail" "text-right"}}<th class="header text-right"
+        >Use</th
+      >{{template "defines::headerenumlink" Vlink $p $p.Dfk 4 "Used" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 5 "Total" "text-right"}}</tr
     ></thead
   ><tbody
-    >{{template "defines::define_dfbytes_rows" .}}</tbody
-  ></table
->{{end}}{{/*
-*/}}{{define "defines::define_dfinodes_rows"}}{{with rowsset .}}{{.}}{{else}}{{range $disk := .Data.DFinodes.List}}<tr {{AttrKey "dfinodes-rowby-dirname" $disk.DirName}}
-  ><td
-    >{{$disk.DevName}}</td
-  ><td
-    >{{$disk.DirName}}</td
-  ><td class="text-right"
-    >{{$disk.Ifree}}</td
-  ><td class="text-right"
-    >{{template "defines::define_usepercent" $disk.IusePercent}}&nbsp;{{$disk.Iused}}</td
-  ><td class="text-right"
-    >{{$disk.Inodes}}</td
-  ></tr
->{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_dfinodes_table"}}{{$p := .Data.Params}}<table {{ClassTab $p.Dfn $p.Dft 1 "table table-hover" "collapse-hidden"}}
-  ><thead
-    ><tr
-      ><th class="header"
-        >Device</th
-      ><th class="header"
-        >Mounted</th
-      ><th class="header text-right"
-        >Avail</th
-      ><th class="header text-right"
-        >Used</th
-      ><th class="header text-right"
-        >Total</th
-      ></tr
-    ></thead
-  ><tbody
-    >{{template "defines::define_dfinodes_rows" .}}</tbody
+    >{{template "defines::define_dfrows" .}}</tbody
   ></table
 >{{end}}{{/*
 */}}{{define "defines::define_ifrows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IF.List}}<tr {{AttrKey "if-rowby-name" $if.Name}}
-  ><td
+  >  <td {{class}}="text-nowrap clip12" title={{$if.Name}}
     >{{$if.Name}}</td
   ><td class="text-right text-nowrap"
     ><span class="text-graylighter" title="Total BYTES IN modulo 4G"
@@ -367,23 +347,8 @@
       ><td class="col-md-10"
         ></td
       ></tr
-    ><tr class="panel-config"
-      ><td class="col-md-2"
-        ><div class="text-right"
-          >Select</div
-        ></td
-      ><td {{colspan}}="2"
-        ><ul class="nav nav-pills"
-          ><li {{ClassTab $p.Dfn $p.Dft 1 "active" ""}}
-            >{{template "defines::enumlink" Vlink $p $p.Dft 1 "Inodes" ""}}</li
-          ><li {{ClassTab $p.Dfn $p.Dft 2 "active" ""}}
-            >{{template "defines::enumlink" Vlink $p $p.Dft 2 "Bytes" ""}}</li
-          ></ul
-        ></td
-      ></tr
     >  </table
-  >  {{template "defines::define_dfinodes_table" .}}
-  {{template "defines::define_dfbytes_table" .}}</div
+  >  {{template "defines::define_dftable" .}}</div
 >{{end}}{{/*
 */}}{{define "defines::define_panelif"}}{{$p := .Data.Params}}<div     {{ClassPositive $p.Ifn "" "panel panel-default"}}
   >  <div   {{ClassPositive $p.Ifn "" "panel-heading"}}

@@ -5,17 +5,17 @@ import (
 	"github.com/ostrost/ostent/params/enums"
 )
 
-// DiskSort is to facilitate DiskSlice sorting.
-type DiskSort struct {
-	Dfk       *params.Num
-	DiskSlice DiskSlice
+// DFSort is to facilitate DFSlice sorting.
+type DFSort struct {
+	Dfk     *params.Num
+	DFSlice DFSlice
 }
 
 // Len, Swap and Less satisfy sorting interface.
-func (ds DiskSort) Len() int      { return len(ds.DiskSlice) }
-func (ds DiskSort) Swap(i, j int) { ds.DiskSlice[i], ds.DiskSlice[j] = ds.DiskSlice[j], ds.DiskSlice[i] }
-func (ds DiskSort) Less(i, j int) bool {
-	if a, b := ds.DiskSlice[i], ds.DiskSlice[j]; true {
+func (ds DFSort) Len() int      { return len(ds.DFSlice) }
+func (ds DFSort) Swap(i, j int) { ds.DFSlice[i], ds.DFSlice[j] = ds.DFSlice[j], ds.DFSlice[i] }
+func (ds DFSort) Less(i, j int) bool {
+	if a, b := ds.DFSlice[i], ds.DFSlice[j]; true {
 		r := false
 		switch ds.Dfk.Absolute {
 		case enums.FS:
@@ -39,18 +39,18 @@ func (ds DiskSort) Less(i, j int) bool {
 	return false
 }
 
-// ProcSort is to facilitate ProcSlice sorting.
-type ProcSort struct {
-	Psk       *params.Num
-	ProcSlice ProcSlice
-	UIDs      map[uint]string
+// PSSort is to facilitate PSSlice sorting.
+type PSSort struct {
+	Psk     *params.Num
+	PSSlice PSSlice
+	UIDs    map[uint]string
 }
 
 // Len, Swap and Less satisfy sorting interface.
-func (ps ProcSort) Len() int      { return len(ps.ProcSlice) }
-func (ps ProcSort) Swap(i, j int) { ps.ProcSlice[i], ps.ProcSlice[j] = ps.ProcSlice[j], ps.ProcSlice[i] }
-func (ps ProcSort) Less(i, j int) bool {
-	if a, b := ps.ProcSlice[i], ps.ProcSlice[j]; true {
+func (ps PSSort) Len() int      { return len(ps.PSSlice) }
+func (ps PSSort) Swap(i, j int) { ps.PSSlice[i], ps.PSSlice[j] = ps.PSSlice[j], ps.PSSlice[i] }
+func (ps PSSort) Less(i, j int) bool {
+	if a, b := ps.PSSlice[i], ps.PSSlice[j]; true {
 		r := false
 		switch ps.Psk.Absolute {
 		case enums.PID:

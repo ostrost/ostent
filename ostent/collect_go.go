@@ -6,7 +6,7 @@ import (
 	"sync"
 )
 
-// Interfaces is no-op without cgo.
-func (m Machine) Interfaces(_ Registry, _ S2SRegistry, wg *sync.WaitGroup) {
+// IF is no-op without cgo.
+func (m Machine) IF(_ Registry, _ S2SRegistry, wg *sync.WaitGroup) {
 	wg.Done()
 }

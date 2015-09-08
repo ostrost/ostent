@@ -37,18 +37,6 @@ func (f HTMLFuncs) ClassPositive(x interface{}, class, sndclass string) template
 	return SprintfAttr(" class=%q", class)
 }
 
-func (f JSXFuncs) ClassTab(num, tab interface{}, cmp int, class, sndclass string) template.HTMLAttr {
-	return SprintfAttr(` className={%s.Absolute != 0 && %s.Absolute == %d ? %q : %q}`,
-		num.(Uncurler).Uncurl(), tab.(Uncurler).Uncurl(), cmp, class, sndclass)
-}
-
-func (f HTMLFuncs) ClassTab(num, tab interface{}, cmp int, class, sndclass string) template.HTMLAttr {
-	if num.(params.Num).Absolute == 0 || tab.(params.Num).Absolute != cmp {
-		class = sndclass
-	}
-	return SprintfAttr(" class=%q", class)
-}
-
 // Key returns key attribute: prefix + uncurled x being an Uncurler.
 func (f JSXFuncs) Key(prefix string, x interface{}) template.HTMLAttr {
 	return SprintfAttr(" key={%q+%s}", prefix+"-", x.(Uncurler).Uncurl())
@@ -176,7 +164,6 @@ func MakeMap(f Functor) template.FuncMap {
 		"AttrKey":       f.Key,
 		"ClassNonzero":  f.ClassNonzero,
 		"ClassPositive": f.ClassPositive,
-		"ClassTab":      f.ClassTab,
 
 		"HrefT": f.FuncHrefT(),
 		"LessD": f.FuncLessD(),
@@ -196,7 +183,6 @@ type Functor interface {
 	Colspan() string
 	ClassNonzero(interface{}, string, string) template.HTMLAttr
 	ClassPositive(interface{}, string, string) template.HTMLAttr
-	ClassTab(interface{}, interface{}, int, string, string) template.HTMLAttr
 	Key(string, interface{}) template.HTMLAttr
 
 	FuncHrefT() interface{}

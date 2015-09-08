@@ -1,7 +1,7 @@
 define(function(require) {
 	var React = require('react');
 	return {
-		mem_rows:        function(Data, $mem)  { return (<tr  key={"mem-rowby-kind-"+$mem.Kind}
+		mem_rows: function(Data, $mem)  { return (<tr  key={"mem-rowby-kind-"+$mem.Kind}
   ><td
     >{$mem.Kind}</td
   ><td className="text-right"
@@ -14,7 +14,7 @@ define(function(require) {
     >{$mem.Total}</td
   ></tr
 >); },
-		panelmem:        function(Data, rows)  { return (<div      className={!Data.Params.Memn.Negative ? "" : "panel panel-default"}
+		panelmem: function(Data, rows)  { return (<div      className={!Data.Params.Memn.Negative ? "" : "panel panel-default"}
   >  <div    className={!Data.Params.Memn.Negative ? "" : "panel-heading"}
     >    <a    href={Data.Params.Tlinks.Memn} onClick={this.handleClick} className="panel-title btn-block"
       >      <b  className={!Data.Params.Memn.Negative ? "h4" : "h4 bg-info"}
@@ -90,8 +90,8 @@ define(function(require) {
 ></div
 >); },
 
-		if_rows:         function(Data, $if)   { return (<tr  key={"if-rowby-name-"+$if.Name}
-  ><td
+		if_rows:  function(Data, $if)   { return (<tr  key={"if-rowby-name-"+$if.Name}
+  >  <td className="text-nowrap clip12" title={$if.Name}
     >{$if.Name}</td
   ><td className="text-right text-nowrap"
     ><span className="text-graylighter" title="Total BYTES IN modulo 4G"
@@ -131,7 +131,7 @@ define(function(require) {
     ></td
   ></tr
 >); },
-		panelif:         function(Data, rows)  { return (<div      className={!Data.Params.Ifn.Negative ? "" : "panel panel-default"}
+		panelif:  function(Data, rows)  { return (<div      className={!Data.Params.Ifn.Negative ? "" : "panel panel-default"}
   >  <div    className={!Data.Params.Ifn.Negative ? "" : "panel-heading"}
     >    <a    href={Data.Params.Tlinks.Ifn} onClick={this.handleClick} className="panel-title btn-block"
       >      <b  className={!Data.Params.Ifn.Negative ? "h4" : "h4 bg-info"}
@@ -215,7 +215,7 @@ define(function(require) {
 ></div
 >); },
 
-		cpu_rows:        function(Data, $core) { return (<tr  key={"cpu-rowby-N-"+$core.N}
+		cpu_rows: function(Data, $core) { return (<tr  key={"cpu-rowby-N-"+$core.N}
   ><td className="text-right text-nowrap"
     >{$core.N}</td
   ><td className="text-right"
@@ -236,7 +236,7 @@ define(function(require) {
     ></td
   ></tr
 >); },
-		panelcpu:        function(Data, rows)  { return (<div      className={!Data.Params.CPUn.Negative ? "" : "panel panel-default"}
+		panelcpu: function(Data, rows)  { return (<div      className={!Data.Params.CPUn.Negative ? "" : "panel panel-default"}
   >  <div    className={!Data.Params.CPUn.Negative ? "" : "panel-heading"}
     >    <a    href={Data.Params.Tlinks.CPUn} onClick={this.handleClick} className="panel-title btn-block"
       >      <b  className={!Data.Params.CPUn.Negative ? "h4" : "h4 bg-info"}
@@ -314,37 +314,30 @@ define(function(require) {
 ></div
 >); },
 
-		dfbytes_rows:    function(Data, $disk) { return (<tr  key={"dfbytes-rowby-dirname-"+$disk.DirName}
-  ><td
+		df_rows:  function(Data, $disk) { return (<tr  key={"df-rowby-dirname-"+$disk.DirName}
+  >  <td className="text-nowrap clip12" title={$disk.DevName}
     >{$disk.DevName}</td
-  ><td
+  >  <td className="text-nowrap clip12" title={$disk.DirName}
     >{$disk.DirName}</td
-  ><td className="text-right"
-    >{$disk.Avail}</td
-  ><td className="text-right"
-    ><span className="label" data-usepercent={$disk.UsePercent}
-  >{$disk.UsePercent}%</span
->&nbsp;{$disk.Used}</td
-  ><td className="text-right"
-    >{$disk.Total}</td
+  ><td className="text-right text-nowrap"
+    ><span className="text-graylighter" title="Inodes free"
+      >{$disk.Ifree}</span
+    > {$disk.Avail}</td
+  ><td className="text-right text-nowrap bg-usepercent" data-usepercent={$disk.UsePercent}
+    ><span className="text-graylighter" title="Inodes use%"
+      >{$disk.IusePercent}%</span
+    > {$disk.UsePercent}%</td
+  ><td className="text-right text-nowrap"
+    ><span className="text-graylighter" title="Inodes used"
+      >{$disk.Iused}</span
+    > {$disk.Used}</td
+  ><td className="text-right text-nowrap"
+    ><span className="text-graylighter" title="Inodes total"
+      >{$disk.Inodes}</span
+    > {$disk.Total}</td
   ></tr
 >); },
-		dfinodes_rows:   function(Data, $disk) { return (<tr  key={"dfinodes-rowby-dirname-"+$disk.DirName}
-  ><td
-    >{$disk.DevName}</td
-  ><td
-    >{$disk.DirName}</td
-  ><td className="text-right"
-    >{$disk.Ifree}</td
-  ><td className="text-right"
-    ><span className="label" data-usepercent={$disk.IusePercent}
-  >{$disk.IusePercent}%</span
->&nbsp;{$disk.Iused}</td
-  ><td className="text-right"
-    >{$disk.Inodes}</td
-  ></tr
->); },
-		paneldf:         function(Data,r1,r2)  { return (<div      className={!Data.Params.Dfn.Negative ? "" : "panel panel-default"}
+		paneldf:  function(Data,rows)  { return (<div      className={!Data.Params.Dfn.Negative ? "" : "panel panel-default"}
   >  <div    className={!Data.Params.Dfn.Negative ? "" : "panel-heading"}
     >    <a    href={Data.Params.Tlinks.Dfn} onClick={this.handleClick} className="panel-title btn-block"
       >      <b  className={!Data.Params.Dfn.Negative ? "h4" : "h4 bg-info"}
@@ -400,45 +393,8 @@ define(function(require) {
       ><td className="col-md-10"
         ></td
       ></tr
-    ><tr className="panel-config"
-      ><td className="col-md-2"
-        ><div className="text-right"
-          >Select</div
-        ></td
-      ><td colSpan="2"
-        ><ul className="nav nav-pills"
-          ><li  className={Data.Params.Dfn.Absolute != 0 && Data.Params.Dft.Absolute == 1 ? "active" : ""}
-            ><a href={Data.Params.Vlinks.Dft[1-1].LinkHref} onClick={this.handleClick}
-  >Inodes</a
-></li
-          ><li  className={Data.Params.Dfn.Absolute != 0 && Data.Params.Dft.Absolute == 2 ? "active" : ""}
-            ><a href={Data.Params.Vlinks.Dft[2-1].LinkHref} onClick={this.handleClick}
-  >Bytes</a
-></li
-          ></ul
-        ></td
-      ></tr
     >  </table
-  >  <table  className={Data.Params.Dfn.Absolute != 0 && Data.Params.Dft.Absolute == 1 ? "table table-hover" : "collapse-hidden"}
-  ><thead
-    ><tr
-      ><th className="header"
-        >Device</th
-      ><th className="header"
-        >Mounted</th
-      ><th className="header text-right"
-        >Avail</th
-      ><th className="header text-right"
-        >Used</th
-      ><th className="header text-right"
-        >Total</th
-      ></tr
-    ></thead
-  ><tbody
-    >{r1}</tbody
-  ></table
->
-  <table  className={Data.Params.Dfn.Absolute != 0 && Data.Params.Dft.Absolute == 2 ? "table table-hover" : "collapse-hidden"}
+  >  <table  className={Data.Params.Dfn.Absolute != 0 ? "table table-hover" : "collapse-hidden"}
   ><thead
     ><tr
       ><th className="header "
@@ -460,6 +416,8 @@ define(function(require) {
     ></a
   ></th
 ><th className="header text-right"
+        >Use</th
+      ><th className="header text-right"
   ><a href={Data.Params.Vlinks.Dfk[4-1].LinkHref} className={Data.Params.Vlinks.Dfk[4-1].LinkClass}
     >  Used<span className={Data.Params.Vlinks.Dfk[4-1].CaretClass}
       ></span
@@ -474,12 +432,12 @@ define(function(require) {
 ></tr
     ></thead
   ><tbody
-    >{r2}</tbody
+    >{rows}</tbody
   ></table
 ></div
 >); },
 
-		ps_rows:         function(Data, $proc) { return (<tr  key={"ps-rowby-pid-"+$proc.PID}
+		ps_rows:  function(Data, $proc) { return (<tr  key={"ps-rowby-pid-"+$proc.PID}
   ><td className="text-right"
     > {$proc.PID}</td
   ><td className="text-right"
@@ -500,7 +458,7 @@ define(function(require) {
     >{$proc.Name}</td
   ></tr
 >); },
-		panelps:         function(Data, rows)  { return (<div      className={!Data.Params.Psn.Negative ? "" : "panel panel-default"}
+		panelps:  function(Data, rows)  { return (<div      className={!Data.Params.Psn.Negative ? "" : "panel panel-default"}
   >  <div    className={!Data.Params.Psn.Negative ? "" : "panel-heading"}
     >    <a    href={Data.Params.Tlinks.Psn} onClick={this.handleClick} className="panel-title btn-block"
       >      <b  className={!Data.Params.Psn.Negative ? "h4" : "h4 bg-info"}
@@ -622,7 +580,7 @@ define(function(require) {
 ></div
 >); },
 
-		vagrant_rows:    function(Data, $mach) { return (<tr  key={"vagrant-rowby-uuid-"+$mach.UUID}
+		vg_rows:  function(Data, $mach) { return (<tr  key={"vagrant-rowby-uuid-"+$mach.UUID}
   ><td
     >{$mach.UUID}</td
   ><td
@@ -635,12 +593,12 @@ define(function(require) {
     >{$mach.Vagrantfile_path}</td
   ></tr
 >); },
-		vagrant_error:   function(Data)        { return (<tr key="vgerror"
+		vg_error: function(Data)        { return (<tr key="vgerror"
   ><td colSpan="5"
     >{Data.VagrantError}</td
   ></tr
 >); },
-		panelvg:         function(Data, rows)  { return (<div      className={!Data.Params.Vgn.Negative ? "" : "panel panel-default"}
+		panelvg:  function(Data, rows)  { return (<div      className={!Data.Params.Vgn.Negative ? "" : "panel panel-default"}
   >  <div    className={!Data.Params.Vgn.Negative ? "" : "panel-heading"}
     >    <a    href={Data.Params.Tlinks.Vgn} onClick={this.handleClick} className="panel-title btn-block"
       >      <b  className={!Data.Params.Vgn.Negative ? "h4" : "h4 bg-info"}
