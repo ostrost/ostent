@@ -138,11 +138,11 @@ func _getmem(kind string, in sigar.Swap) operating.Memory {
 	used, approxused, _ := format.HumanBandback(in.Used)
 
 	return operating.Memory{
-		Kind:       kind,
-		Total:      total,
-		Used:       used,
-		Free:       format.HumanB(in.Free),
-		UsePercent: format.FormatPercent(approxused, approxtotal),
+		Kind:   kind,
+		Total:  total,
+		Used:   used,
+		Free:   format.HumanB(in.Free),
+		UsePct: format.FormatPercent(approxused, approxtotal),
 	}
 }
 

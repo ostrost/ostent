@@ -172,15 +172,15 @@
         };
       },
       render: function() {
-        var $disk, Data;
+        var $df, Data;
         Data = this.state;
         return jsdefines.paneldf.bind(this)(Data, (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.DF) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
           for (i = 0, len = ref2.length; i < len; i++) {
-            $disk = ref2[i];
-            results.push(jsdefines.df_rows(Data, $disk));
+            $df = ref2[i];
+            results.push(jsdefines.df_rows(Data, $df));
           }
           return results;
         })());
@@ -218,15 +218,15 @@
         };
       },
       render: function() {
-        var $core, Data;
+        var $cpu, Data;
         Data = this.state;
         return jsdefines.panelcpu.bind(this)(Data, (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.CPU) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
           for (i = 0, len = ref2.length; i < len; i++) {
-            $core = ref2[i];
-            results.push(jsdefines.cpu_rows(Data, $core));
+            $cpu = ref2[i];
+            results.push(jsdefines.cpu_rows(Data, $cpu));
           }
           return results;
         })());
@@ -241,15 +241,15 @@
         };
       },
       render: function() {
-        var $proc, Data;
+        var $ps, Data;
         Data = this.state;
         return jsdefines.panelps.bind(this)(Data, (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.PS) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
           for (i = 0, len = ref2.length; i < len; i++) {
-            $proc = ref2[i];
-            results.push(jsdefines.ps_rows(Data, $proc));
+            $ps = ref2[i];
+            results.push(jsdefines.ps_rows(Data, $ps));
           }
           return results;
         })());
@@ -266,7 +266,7 @@
         };
       },
       render: function() {
-        var $mach, Data, rows;
+        var $vgm, Data, rows;
         Data = this.state;
         if (((Data != null ? Data.VagrantErrord : void 0) != null) && Data.VagrantErrord) {
           rows = [jsdefines.vg_error.bind(this)(Data)];
@@ -276,8 +276,8 @@
             ref2 = (ref = Data != null ? (ref1 = Data.VagrantMachines) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
             results = [];
             for (i = 0, len = ref2.length; i < len; i++) {
-              $mach = ref2[i];
-              results.push(jsdefines.vg_rows.bind(this)(Data, $mach));
+              $vgm = ref2[i];
+              results.push(jsdefines.vg_rows.bind(this)(Data, $vgm));
             }
             return results;
           }).call(this);

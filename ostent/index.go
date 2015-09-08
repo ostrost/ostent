@@ -290,18 +290,18 @@ func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) *operating.
 	}
 	r, unusedr := ir.Registry, metrics.NewRegistry()
 	i := &operating.MetricDF{
-		DevName:     &operating.StandardMetricString{}, // unregistered
-		DirName:     &operating.StandardMetricString{}, // unregistered
-		Free:        metrics.NewRegisteredGaugeFloat64(label("free"), r),
-		Reserved:    metrics.NewRegisteredGaugeFloat64(label("reserved"), r),
-		Total:       metrics.NewRegisteredGauge(label("total"), unusedr),
-		Used:        metrics.NewRegisteredGaugeFloat64(label("used"), r),
-		Avail:       metrics.NewRegisteredGauge(label("avail"), unusedr),
-		UsePercent:  metrics.NewRegisteredGaugeFloat64(label("usepercent"), unusedr),
-		Inodes:      metrics.NewRegisteredGauge(label("inodes"), unusedr),
-		Iused:       metrics.NewRegisteredGauge(label("iused"), unusedr),
-		Ifree:       metrics.NewRegisteredGauge(label("ifree"), unusedr),
-		IusePercent: metrics.NewRegisteredGaugeFloat64(label("iusepercent"), unusedr),
+		DevName:  &operating.StandardMetricString{}, // unregistered
+		DirName:  &operating.StandardMetricString{}, // unregistered
+		Free:     metrics.NewRegisteredGaugeFloat64(label("free"), r),
+		Reserved: metrics.NewRegisteredGaugeFloat64(label("reserved"), r),
+		Total:    metrics.NewRegisteredGauge(label("total"), unusedr),
+		Used:     metrics.NewRegisteredGaugeFloat64(label("used"), r),
+		Avail:    metrics.NewRegisteredGauge(label("avail"), unusedr),
+		UsePct:   metrics.NewRegisteredGaugeFloat64(label("usepercent"), unusedr),
+		Inodes:   metrics.NewRegisteredGauge(label("inodes"), unusedr),
+		Iused:    metrics.NewRegisteredGauge(label("iused"), unusedr),
+		Ifree:    metrics.NewRegisteredGauge(label("ifree"), unusedr),
+		IusePct:  metrics.NewRegisteredGaugeFloat64(label("iusepercent"), unusedr),
 	}
 	ir.PrivateDFRegistry.Register(fs.DevName, i) // error is ignored
 	// errs when the type is not derived from (go-)metrics types
@@ -315,21 +315,9 @@ type CPUSlice []*operating.MetricCPU
 func (cs CPUSlice) Len() int      { return len(cs) }
 func (cs CPUSlice) Swap(i, j int) { cs[i], cs[j] = cs[j], cs[i] }
 func (cs CPUSlice) Less(i, j int) bool {
-	a, b := cs[i], cs[j]
-	var (
-		aidle = a.Idle.Percent.Snapshot().Value()
-		bidle = b.Idle.Percent.Snapshot().Value()
-		/*
-			auser = a.User.Percent.Snapshot().Value()
-			anice = a.Nice.Percent.Snapshot().Value()
-			asys  = a.Sys.Percent.Snapshot().Value()
-			buser = b.User.Percent.Snapshot().Value()
-			bnice = b.Nice.Percent.Snapshot().Value()
-			bsys  = b.Sys.Percent.Snapshot().Value()
-		*/
-	)
+	aidle := cs[i].IdlePct.Percent.Snapshot().Value()
+	bidle := cs[j].IdlePct.Percent.Snapshot().Value()
 	return aidle < bidle
-	// return (auser + anice + asys) > (buser + bnice + bsys)
 }
 
 func (ir *IndexRegistry) DF(para *params.Params, iu *IndexUpdate) bool {
@@ -375,16 +363,16 @@ func FormatDF(md *operating.MetricDF) operating.DFData {
 	total, approxtotal, _ := format.HumanBandback(uint64(vtotal))
 	used, approxused, _ := format.HumanBandback(uint64(vused))
 	return operating.DFData{
-		DevName:     vdevname,
-		DirName:     vdirname,
-		Inodes:      itotal,
-		Iused:       iused,
-		Ifree:       format.HumanB(uint64(vifree)),
-		IusePercent: format.FormatPercent(approxiused, approxitotal),
-		Total:       total,
-		Used:        used,
-		Avail:       format.HumanB(uint64(vavail)),
-		UsePercent:  format.FormatPercent(approxused, approxtotal),
+		DevName: vdevname,
+		DirName: vdirname,
+		Inodes:  itotal,
+		Iused:   iused,
+		Ifree:   format.HumanB(uint64(vifree)),
+		IusePct: format.FormatPercent(approxiused, approxitotal),
+		Total:   total,
+		Used:    used,
+		Avail:   format.HumanB(uint64(vavail)),
+		UsePct:  format.FormatPercent(approxused, approxtotal),
 	}
 }
 
@@ -464,11 +452,11 @@ func FormatCPU(label string, mc *operating.MetricCPU) operating.CPUData {
 		label = "#" + strings.TrimPrefix(mc.N, "cpu-") // A non-"all" mc.
 	}
 	return operating.CPUData{
-		N:    label,
-		User: mc.User.SnapshotValueUint(),
-		Sys:  mc.Sys.SnapshotValueUint(),
-		Wait: mc.Wait.SnapshotValueUint(),
-		Idle: mc.Idle.SnapshotValueUint(),
+		N:       label,
+		UserPct: mc.UserPct.SnapshotValueUint(),
+		SysPct:  mc.SysPct.SnapshotValueUint(),
+		WaitPct: mc.WaitPct.SnapshotValueUint(),
+		IdlePct: mc.IdlePct.SnapshotValueUint(),
 	}
 }
 

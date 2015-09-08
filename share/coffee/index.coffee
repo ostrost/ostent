@@ -137,7 +137,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
     render: () ->
       Data = @state
       return jsdefines.paneldf.bind(this)(Data,
-             (jsdefines.df_rows(Data, $disk) for $disk in Data?.DF?.List ? []))
+             (jsdefines.df_rows(Data, $df) for $df in Data?.DF?.List ? []))
 
   @MEMClass = React.createClass
     mixins: [HandlerMixin]
@@ -158,8 +158,8 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
     }
     render: () ->
       Data = @state
-      return jsdefines.panelcpu.bind(this)(Data, (jsdefines.cpu_rows(Data, $core
-      ) for $core in Data?.CPU?.List ? []))
+      return jsdefines.panelcpu.bind(this)(Data, (jsdefines.cpu_rows(Data, $cpu
+      ) for $cpu in Data?.CPU?.List ? []))
 
   @PSClass = React.createClass
     mixins: [HandlerMixin]
@@ -169,8 +169,8 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
     }
     render: () ->
       Data = @state
-      return jsdefines.panelps.bind(this)(Data, (jsdefines.ps_rows(Data, $proc
-      ) for $proc in Data?.PS?.List ? []))
+      return jsdefines.panelps.bind(this)(Data, (jsdefines.ps_rows(Data, $ps
+      ) for $ps in Data?.PS?.List ? []))
 
   @VGClass = React.createClass
     mixins: [HandlerMixin]
@@ -185,8 +185,8 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
       if Data?.VagrantErrord? and Data.VagrantErrord
         rows = [jsdefines.vg_error.bind(this)(Data)]
       else
-        rows = (jsdefines.vg_rows.bind(this)(Data, $mach
-        ) for $mach in Data?.VagrantMachines?.List ? [])
+        rows = (jsdefines.vg_rows.bind(this)(Data, $vgm
+        ) for $vgm in Data?.VagrantMachines?.List ? [])
       return jsdefines.panelvg.bind(this)(Data, rows)
 
   @TextClass = (reduce) -> React.createClass

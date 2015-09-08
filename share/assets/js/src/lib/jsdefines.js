@@ -21,16 +21,15 @@ define(function (require) {
         ),
         React.createElement(
           "td",
+          { className: "text-right bg-usepct", "data-usepct": $mem.UsePct
+          },
+          $mem.UsePct,
+          "%"
+        ),
+        React.createElement(
+          "td",
           { className: "text-right"
           },
-          React.createElement(
-            "span",
-            { className: "label", "data-usepercent": $mem.UsePercent
-            },
-            $mem.UsePercent,
-            "%"
-          ),
-          " ",
           $mem.Used
         ),
         React.createElement(
@@ -213,6 +212,12 @@ define(function (require) {
                 { className: "text-right"
                 },
                 "Free"
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right"
+                },
+                "Use%"
               ),
               React.createElement(
                 "th",
@@ -588,60 +593,44 @@ define(function (require) {
       );
     },
 
-    cpu_rows: function cpu_rows(Data, $core) {
+    cpu_rows: function cpu_rows(Data, $cpu) {
       return React.createElement(
         "tr",
-        { key: "cpu-rowby-N-" + $core.N
+        { key: "cpu-rowby-N-" + $cpu.N
         },
         React.createElement(
           "td",
           { className: "text-right text-nowrap"
           },
-          $core.N
+          $cpu.N
         ),
         React.createElement(
           "td",
-          { className: "text-right"
+          { className: "text-right bg-usepct", "data-usepct": $cpu.UserPct
           },
-          React.createElement(
-            "span",
-            { className: "usepercent-text", "data-usepercent": $core.User
-            },
-            $core.User
-          )
+          $cpu.UserPct,
+          "%"
         ),
         React.createElement(
           "td",
-          { className: "text-right"
+          { className: "text-right bg-usepct", "data-usepct": $cpu.SysPct
           },
-          React.createElement(
-            "span",
-            { className: "usepercent-text", "data-usepercent": $core.Sys
-            },
-            $core.Sys
-          )
+          $cpu.SysPct,
+          "%"
         ),
         React.createElement(
           "td",
-          { className: "text-right"
+          { className: "text-right bg-usepct", "data-usepct": $cpu.WaitPct
           },
-          React.createElement(
-            "span",
-            { className: "usepercent-text", "data-usepercent": $core.Wait
-            },
-            $core.Wait
-          )
+          $cpu.WaitPct,
+          "%"
         ),
         React.createElement(
           "td",
-          { className: "text-right"
+          { className: "text-right bg-usepct-inverse", "data-usepct": $cpu.IdlePct
           },
-          React.createElement(
-            "span",
-            { className: "usepercent-text-inverse", "data-usepercent": $core.Idle
-            },
-            $core.Idle
-          )
+          $cpu.IdlePct,
+          "%"
         )
       );
     },
@@ -816,25 +805,25 @@ define(function (require) {
                 "th",
                 { className: "text-right"
                 },
-                "User%"
+                "User"
               ),
               React.createElement(
                 "th",
                 { className: "text-right"
                 },
-                "Sys%"
+                "Sys"
               ),
               React.createElement(
                 "th",
                 { className: "text-right"
                 },
-                "Wait%"
+                "Wait"
               ),
               React.createElement(
                 "th",
                 { className: "text-right"
                 },
-                "Idle%"
+                "Idle"
               )
             )
           ),
@@ -847,24 +836,24 @@ define(function (require) {
       );
     },
 
-    df_rows: function df_rows(Data, $disk) {
+    df_rows: function df_rows(Data, $df) {
       return React.createElement(
         "tr",
-        { key: "df-rowby-dirname-" + $disk.DirName
+        { key: "df-rowby-dirname-" + $df.DirName
         },
         "  ",
         React.createElement(
           "td",
-          { className: "text-nowrap clip12", title: $disk.DevName
+          { className: "text-nowrap clip12", title: $df.DevName
           },
-          $disk.DevName
+          $df.DevName
         ),
         "  ",
         React.createElement(
           "td",
-          { className: "text-nowrap clip12", title: $disk.DirName
+          { className: "text-nowrap clip12", title: $df.DirName
           },
-          $disk.DirName
+          $df.DirName
         ),
         React.createElement(
           "td",
@@ -874,24 +863,24 @@ define(function (require) {
             "span",
             { className: "text-graylighter", title: "Inodes free"
             },
-            $disk.Ifree
+            $df.Ifree
           ),
           " ",
-          $disk.Avail
+          $df.Avail
         ),
         React.createElement(
           "td",
-          { className: "text-right text-nowrap bg-usepercent", "data-usepercent": $disk.UsePercent
+          { className: "text-right text-nowrap bg-usepct", "data-usepct": $df.UsePct
           },
           React.createElement(
             "span",
             { className: "text-graylighter", title: "Inodes use%"
             },
-            $disk.IusePercent,
+            $df.IusePct,
             "%"
           ),
           " ",
-          $disk.UsePercent,
+          $df.UsePct,
           "%"
         ),
         React.createElement(
@@ -902,10 +891,10 @@ define(function (require) {
             "span",
             { className: "text-graylighter", title: "Inodes used"
             },
-            $disk.Iused
+            $df.Iused
           ),
           " ",
-          $disk.Used
+          $df.Used
         ),
         React.createElement(
           "td",
@@ -915,10 +904,10 @@ define(function (require) {
             "span",
             { className: "text-graylighter", title: "Inodes total"
             },
-            $disk.Inodes
+            $df.Inodes
           ),
           " ",
-          $disk.Total
+          $df.Total
         )
       );
     },
@@ -1177,68 +1166,68 @@ define(function (require) {
       );
     },
 
-    ps_rows: function ps_rows(Data, $proc) {
+    ps_rows: function ps_rows(Data, $ps) {
       return React.createElement(
         "tr",
-        { key: "ps-rowby-pid-" + $proc.PID
+        { key: "ps-rowby-pid-" + $ps.PID
         },
         React.createElement(
           "td",
           { className: "text-right"
           },
           " ",
-          $proc.PID
+          $ps.PID
         ),
         React.createElement(
           "td",
           { className: "text-right"
           },
           " ",
-          $proc.UID
+          $ps.UID
         ),
         React.createElement(
           "td",
           null,
-          $proc.User
+          $ps.User
         ),
         React.createElement(
           "td",
           { className: "text-right"
           },
           " ",
-          $proc.Priority
+          $ps.Priority
         ),
         React.createElement(
           "td",
           { className: "text-right"
           },
           " ",
-          $proc.Nice
+          $ps.Nice
         ),
         React.createElement(
           "td",
           { className: "text-right"
           },
           " ",
-          $proc.Size
+          $ps.Size
         ),
         React.createElement(
           "td",
           { className: "text-right"
           },
           " ",
-          $proc.Resident
+          $ps.Resident
         ),
         React.createElement(
           "td",
           { className: "text-center"
           },
-          $proc.Time
+          $ps.Time
         ),
         React.createElement(
           "td",
           null,
-          $proc.Name
+          $ps.Name
         )
       );
     },
@@ -1536,35 +1525,35 @@ define(function (require) {
       );
     },
 
-    vg_rows: function vg_rows(Data, $mach) {
+    vg_rows: function vg_rows(Data, $vgm) {
       return React.createElement(
         "tr",
-        { key: "vagrant-rowby-uuid-" + $mach.UUID
+        { key: "vagrant-rowby-uuid-" + $vgm.UUID
         },
         React.createElement(
           "td",
           null,
-          $mach.UUID
+          $vgm.UUID
         ),
         React.createElement(
           "td",
           null,
-          $mach.Name
+          $vgm.Name
         ),
         React.createElement(
           "td",
           null,
-          $mach.Provider
+          $vgm.Provider
         ),
         React.createElement(
           "td",
           null,
-          $mach.State
+          $vgm.State
         ),
         React.createElement(
           "td",
           null,
-          $mach.Vagrantfile_path
+          $vgm.Vagrantfile_path
         )
       );
     },

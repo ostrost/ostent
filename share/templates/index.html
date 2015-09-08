@@ -104,25 +104,17 @@
     >{{.Badge}}</span
   ></a
 >{{end}}{{/*
-*/}}{{define "defines::define_cpurows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $core := .Data.CPU.List}}<tr {{AttrKey "cpu-rowby-N" $core.N}}
+*/}}{{define "defines::define_cpurows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $cpu := .Data.CPU.List}}<tr {{AttrKey "cpu-rowby-N" $cpu.N}}
   ><td class="text-right text-nowrap"
-    >{{$core.N}}</td
-  ><td class="text-right"
-    ><span {{class}}="usepercent-text" data-usepercent={{$core.User}}
-      >{{$core.User}}</span
-    ></td
-  ><td class="text-right"
-    ><span {{class}}="usepercent-text" data-usepercent={{$core.Sys}}
-      >{{$core.Sys}}</span
-    ></td
-  ><td class="text-right"
-    ><span {{class}}="usepercent-text" data-usepercent={{$core.Wait}}
-      >{{$core.Wait}}</span
-    ></td
-  ><td class="text-right"
-    ><span {{class}}="usepercent-text-inverse" data-usepercent={{$core.Idle}}
-      >{{$core.Idle}}</span
-    ></td
+    >{{$cpu.N}}</td
+  ><td {{class}}="text-right bg-usepct" data-usepct={{$cpu.UserPct}}
+    >{{$cpu.UserPct}}%</td
+  ><td {{class}}="text-right bg-usepct" data-usepct={{$cpu.SysPct}}
+    >{{$cpu.SysPct}}%</td
+  ><td {{class}}="text-right bg-usepct" data-usepct={{$cpu.WaitPct}}
+    >{{$cpu.WaitPct}}%</td
+  ><td {{class}}="text-right bg-usepct-inverse" data-usepct={{$cpu.IdlePct}}
+    >{{$cpu.IdlePct}}%</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
 */}}{{define "defines::define_cputable"}}{{$p := .Data.Params}}<table {{ClassNonzero $p.CPUn "table table-hover" "collapse-hidden"}}
@@ -131,40 +123,40 @@
       ><th
         ></th
       ><th class="text-right"
-        >User%</th
+        >User</th
       ><th class="text-right"
-        >Sys%</th
+        >Sys</th
       ><th class="text-right"
-        >Wait%</th
+        >Wait</th
       ><th class="text-right"
-        >Idle%</th
+        >Idle</th
       ></tr
     ></thead
   ><tbody
     >{{template "defines::define_cpurows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_dfrows"}}{{with rowsset .}}{{.}}{{else}}{{range $disk := .Data.DF.List}}<tr {{AttrKey "df-rowby-dirname" $disk.DirName}}
-  >  <td {{class}}="text-nowrap clip12" title={{$disk.DevName}}
-    >{{$disk.DevName}}</td
-  >  <td {{class}}="text-nowrap clip12" title={{$disk.DirName}}
-    >{{$disk.DirName}}</td
+*/}}{{define "defines::define_dfrows"}}{{with rowsset .}}{{.}}{{else}}{{range $df := .Data.DF.List}}<tr {{AttrKey "df-rowby-dirname" $df.DirName}}
+  >  <td {{class}}="text-nowrap clip12" title={{$df.DevName}}
+    >{{$df.DevName}}</td
+  >  <td {{class}}="text-nowrap clip12" title={{$df.DirName}}
+    >{{$df.DirName}}</td
   ><td class="text-right text-nowrap"
     ><span class="text-graylighter" title="Inodes free"
-      >{{$disk.Ifree}}</span
-    > {{$disk.Avail}}</td
-  ><td {{class}}="text-right text-nowrap bg-usepercent" data-usepercent={{$disk.UsePercent}}
+      >{{$df.Ifree}}</span
+    > {{$df.Avail}}</td
+  ><td {{class}}="text-right text-nowrap bg-usepct" data-usepct={{$df.UsePct}}
     ><span class="text-graylighter" title="Inodes use%"
-      >{{$disk.IusePercent}}%</span
-    > {{$disk.UsePercent}}%</td
+      >{{$df.IusePct}}%</span
+    > {{$df.UsePct}}%</td
   ><td class="text-right text-nowrap"
     ><span class="text-graylighter" title="Inodes used"
-      >{{$disk.Iused}}</span
-    > {{$disk.Used}}</td
+      >{{$df.Iused}}</span
+    > {{$df.Used}}</td
   ><td class="text-right text-nowrap"
     ><span class="text-graylighter" title="Inodes total"
-      >{{$disk.Inodes}}</span
-    > {{$disk.Total}}</td
+      >{{$df.Inodes}}</span
+    > {{$df.Total}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
 */}}{{define "defines::define_dftable"}}{{$p := .Data.Params}}<table {{ClassNonzero $p.Dfn "table table-hover" "collapse-hidden"}}
@@ -247,8 +239,10 @@
     >{{$mem.Kind}}</td
   ><td class="text-right"
     >{{$mem.Free}}</td
+  ><td {{class}}="text-right bg-usepct" data-usepct={{$mem.UsePct}}
+    >{{$mem.UsePct}}%</td
   ><td class="text-right"
-    >{{template "defines::define_usepercent" $mem.UsePercent}}&nbsp;{{$mem.Used}}</td
+    >{{$mem.Used}}</td
   ><td class="text-right"
     >{{$mem.Total}}</td
   ></tr
@@ -260,6 +254,8 @@
         ></th
       ><th class="text-right"
         >Free</th
+      ><th class="text-right"
+        >Use%</th
       ><th class="text-right"
         >Used</th
       ><th class="text-right"
@@ -504,25 +500,25 @@
     >  </table
   >  {{template "defines::define_vgtable" .}}</div
 >{{end}}{{/*
-*/}}{{define "defines::define_psrows"}}{{with rowsset .}}{{.}}{{else}}{{range $proc := .Data.PS.List}}<tr {{AttrKey "ps-rowby-pid" $proc.PID}}
+*/}}{{define "defines::define_psrows"}}{{with rowsset .}}{{.}}{{else}}{{range $ps := .Data.PS.List}}<tr {{AttrKey "ps-rowby-pid" $ps.PID}}
   ><td class="text-right"
-    > {{$proc.PID}}</td
+    > {{$ps.PID}}</td
   ><td class="text-right"
-    > {{$proc.UID}}</td
+    > {{$ps.UID}}</td
   ><td
-    >{{$proc.User}}</td
+    >{{$ps.User}}</td
   ><td class="text-right"
-    > {{$proc.Priority}}</td
+    > {{$ps.Priority}}</td
   ><td class="text-right"
-    > {{$proc.Nice}}</td
+    > {{$ps.Nice}}</td
   ><td class="text-right"
-    > {{$proc.Size}}</td
+    > {{$ps.Size}}</td
   ><td class="text-right"
-    > {{$proc.Resident}}</td
+    > {{$ps.Resident}}</td
   ><td class="text-center"
-    >{{$proc.Time}}</td
+    >{{$ps.Time}}</td
   ><td
-    >{{$proc.Name}}</td
+    >{{$ps.Name}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
 */}}{{define "defines::define_pstable"}}{{$p := .Data.Params}}<table {{ClassNonzero $p.Psn "table table-hover" "collapse-hidden"}}
@@ -534,25 +530,22 @@
     >{{template "defines::define_psrows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_usepercent"}}<span {{class}}="label" data-usepercent={{.}}
-  >{{.}}%</span
->{{end}}{{/*
 */}}{{define "defines::define_vgerror"}}<tr key="vgerror"
   ><td {{colspan}}="5"
     >{{.Data.VagrantError}}</td
   ></tr
 >{{end}}{{/*
-*/}}{{define "defines::define_vgrows"}}{{range $mach := .Data.VagrantMachines.List}}<tr {{AttrKey "vagrant-rowby-uuid" $mach.UUID}}
+*/}}{{define "defines::define_vgrows"}}{{range $vgm := .Data.VagrantMachines.List}}<tr {{AttrKey "vagrant-rowby-uuid" $vgm.UUID}}
   ><td
-    >{{$mach.UUID}}</td
+    >{{$vgm.UUID}}</td
   ><td
-    >{{$mach.Name}}</td
+    >{{$vgm.Name}}</td
   ><td
-    >{{$mach.Provider}}</td
+    >{{$vgm.Provider}}</td
   ><td
-    >{{$mach.State}}</td
+    >{{$vgm.State}}</td
   ><td
-    >{{$mach.Vagrantfile_path}}</td
+    >{{$vgm.Vagrantfile_path}}</td
   ></tr
 >{{end}}{{end}}{{/*
 */}}{{define "defines::define_vgswitch"}}{{with rowsset .}}{{.}}{{else}}{{if eq .Data.VagrantErrord true}}{{template "defines::define_vgerror" .}}{{else}}{{template "defines::define_vgrows" .}}{{end}}{{end}}{{end}}{{/*

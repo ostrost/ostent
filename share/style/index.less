@@ -22,7 +22,7 @@ a.panel-title { &:extend(a); } // .panel-title has color: inherit
 
 .normal { font-weight: normal; }
 
-.text-graylighter { color: @gray-lighter; }
+.table-hover .text-graylighter { color: @gray-lighter; }
 .table-hover tr:hover .text-graylighter { &:extend(.text-muted); }
 
 .clip12 {
@@ -83,93 +83,47 @@ table thead tr .header a {
   }
 }
 
-.label[data-usepercent="0"],
-.label[data-usepercent="1"],
-.label[data-usepercent="2"],
-.label[data-usepercent="3"],
-.label[data-usepercent="4"],
-.label[data-usepercent="5"],
-.label[data-usepercent="6"],
-.label[data-usepercent="7"],
-.label[data-usepercent="8"],
-.label[data-usepercent="9"],
-.label[data-usepercent^="1"]:not([data-usepercent="100"]) { &:extend(.label-success); }
+.bg-usepct[data-usepct="0"],
+.bg-usepct[data-usepct="1"],
+.bg-usepct[data-usepct="2"],
+.bg-usepct[data-usepct="3"],
+.bg-usepct[data-usepct="4"],
+.bg-usepct[data-usepct="5"],
+.bg-usepct[data-usepct="6"],
+.bg-usepct[data-usepct="7"],
+.bg-usepct[data-usepct="8"],
+.bg-usepct[data-usepct="9"],
+.bg-usepct[data-usepct^="1"]:not([data-usepct="100"]) { &:extend(.bg-success); }
 
-.label[data-usepercent^="2"]:not([data-usepercent="2"]),
-.label[data-usepercent^="3"]:not([data-usepercent="3"]),
-.label[data-usepercent^="4"]:not([data-usepercent="4"]),
-.label[data-usepercent^="5"]:not([data-usepercent="5"]),
-.label[data-usepercent^="6"]:not([data-usepercent="6"]),
-.label[data-usepercent^="7"]:not([data-usepercent="7"]) { &:extend(.label-info); }
+.bg-usepct[data-usepct^="2"]:not([data-usepct="2"]),
+.bg-usepct[data-usepct^="3"]:not([data-usepct="3"]),
+.bg-usepct[data-usepct^="4"]:not([data-usepct="4"]),
+.bg-usepct[data-usepct^="5"]:not([data-usepct="5"]),
+.bg-usepct[data-usepct^="6"]:not([data-usepct="6"]),
+.bg-usepct[data-usepct^="7"]:not([data-usepct="7"]) { &:extend(.bg-info); }
 
-.label[data-usepercent^="8"]:not([data-usepercent="8"]) { &:extend(.label-warning); }
-.label[data-usepercent^="9"]:not([data-usepercent="9"]),
-.label[data-usepercent="100"] { &:extend(.label-danger); }
+.bg-usepct[data-usepct^="8"]:not([data-usepct="8"]) { &:extend(.bg-warning); }
+.bg-usepct[data-usepct^="9"]:not([data-usepct="9"]),
+.bg-usepct[data-usepct="100"] { &:extend(.bg-danger); }
 
-.usepercent-text[data-usepercent="0"],
-.usepercent-text[data-usepercent="1"],
-.usepercent-text[data-usepercent="2"],
-.usepercent-text[data-usepercent="3"],
-.usepercent-text[data-usepercent="4"],
-.usepercent-text[data-usepercent="5"],
-.usepercent-text[data-usepercent="6"],
-.usepercent-text[data-usepercent="7"],
-.usepercent-text[data-usepercent="8"],
-.usepercent-text[data-usepercent="9"],
-.usepercent-text[data-usepercent^="1"]:not([data-usepercent="100"]) { &:extend(.text-success); }
+.bg-usepct-inverse[data-usepct="0"],
+.bg-usepct-inverse[data-usepct="1"],
+.bg-usepct-inverse[data-usepct="2"],
+.bg-usepct-inverse[data-usepct="3"],
+.bg-usepct-inverse[data-usepct="4"],
+.bg-usepct-inverse[data-usepct="5"],
+.bg-usepct-inverse[data-usepct="6"],
+.bg-usepct-inverse[data-usepct="7"],
+.bg-usepct-inverse[data-usepct="8"],
+.bg-usepct-inverse[data-usepct="9"] { &:extend(.bg-danger); }
+.bg-usepct-inverse[data-usepct^="1"]:not([data-usepct="1"]):not([data-usepct="100"]) { &:extend(.bg-warning); }
 
-.usepercent-text[data-usepercent^="2"]:not([data-usepercent="2"]),
-.usepercent-text[data-usepercent^="3"]:not([data-usepercent="3"]),
-.usepercent-text[data-usepercent^="4"]:not([data-usepercent="4"]),
-.usepercent-text[data-usepercent^="5"]:not([data-usepercent="5"]),
-.usepercent-text[data-usepercent^="6"]:not([data-usepercent="6"]),
-.usepercent-text[data-usepercent^="7"]:not([data-usepercent="7"]) { &:extend(.text-info); }
-
-.usepercent-text[data-usepercent^="8"]:not([data-usepercent="8"]) { &:extend(.text-warning); }
-.usepercent-text[data-usepercent^="9"]:not([data-usepercent="9"]),
-.usepercent-text[data-usepercent="100"] { &:extend(.text-danger); }
-
-.usepercent-text-inverse[data-usepercent="0"],
-.usepercent-text-inverse[data-usepercent="1"],
-.usepercent-text-inverse[data-usepercent="2"],
-.usepercent-text-inverse[data-usepercent="3"],
-.usepercent-text-inverse[data-usepercent="4"],
-.usepercent-text-inverse[data-usepercent="5"],
-.usepercent-text-inverse[data-usepercent="6"],
-.usepercent-text-inverse[data-usepercent="7"],
-.usepercent-text-inverse[data-usepercent="8"],
-.usepercent-text-inverse[data-usepercent="9"] { &:extend(.text-danger); }
-.usepercent-text-inverse[data-usepercent^="1"]:not([data-usepercent="1"]):not([data-usepercent="100"]) { &:extend(.text-warning); }
-
-.usepercent-text-inverse[data-usepercent^="2"]:not([data-usepercent="2"]),
-.usepercent-text-inverse[data-usepercent^="3"]:not([data-usepercent="3"]),
-.usepercent-text-inverse[data-usepercent^="4"]:not([data-usepercent="4"]),
-.usepercent-text-inverse[data-usepercent^="5"]:not([data-usepercent="5"]),
-.usepercent-text-inverse[data-usepercent^="6"]:not([data-usepercent="6"]),
-.usepercent-text-inverse[data-usepercent^="7"]:not([data-usepercent="7"]),
-.usepercent-text-inverse[data-usepercent^="8"]:not([data-usepercent="8"]) { &:extend(.text-info); }
-.usepercent-text-inverse[data-usepercent^="9"]:not([data-usepercent="9"]),
-.usepercent-text-inverse[data-usepercent="100"] { &:extend(.text-success); }
-
-.bg-usepercent[data-usepercent="0"],
-.bg-usepercent[data-usepercent="1"],
-.bg-usepercent[data-usepercent="2"],
-.bg-usepercent[data-usepercent="3"],
-.bg-usepercent[data-usepercent="4"],
-.bg-usepercent[data-usepercent="5"],
-.bg-usepercent[data-usepercent="6"],
-.bg-usepercent[data-usepercent="7"],
-.bg-usepercent[data-usepercent="8"],
-.bg-usepercent[data-usepercent="9"],
-.bg-usepercent[data-usepercent^="1"]:not([data-usepercent="100"]) { &:extend(.bg-success); }
-
-.bg-usepercent[data-usepercent^="2"]:not([data-usepercent="2"]),
-.bg-usepercent[data-usepercent^="3"]:not([data-usepercent="3"]),
-.bg-usepercent[data-usepercent^="4"]:not([data-usepercent="4"]),
-.bg-usepercent[data-usepercent^="5"]:not([data-usepercent="5"]),
-.bg-usepercent[data-usepercent^="6"]:not([data-usepercent="6"]),
-.bg-usepercent[data-usepercent^="7"]:not([data-usepercent="7"]) { &:extend(.bg-info); }
-
-.bg-usepercent[data-usepercent^="8"]:not([data-usepercent="8"]) { &:extend(.bg-warning); }
-.bg-usepercent[data-usepercent^="9"]:not([data-usepercent="9"]),
-.bg-usepercent[data-usepercent="100"] { &:extend(.bg-danger); }
+.bg-usepct-inverse[data-usepct^="2"]:not([data-usepct="2"]),
+.bg-usepct-inverse[data-usepct^="3"]:not([data-usepct="3"]),
+.bg-usepct-inverse[data-usepct^="4"]:not([data-usepct="4"]),
+.bg-usepct-inverse[data-usepct^="5"]:not([data-usepct="5"]),
+.bg-usepct-inverse[data-usepct^="6"]:not([data-usepct="6"]),
+.bg-usepct-inverse[data-usepct^="7"]:not([data-usepct="7"]),
+.bg-usepct-inverse[data-usepct^="8"]:not([data-usepct="8"]) { &:extend(.bg-info); }
+.bg-usepct-inverse[data-usepct^="9"]:not([data-usepct="9"]),
+.bg-usepct-inverse[data-usepct="100"] { &:extend(.bg-success); }

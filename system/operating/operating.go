@@ -10,11 +10,11 @@ import (
 
 // Memory type is a struct of memory metrics.
 type Memory struct {
-	Kind       string
-	Total      string
-	Used       string
-	Free       string
-	UsePercent string
+	Kind   string
+	Total  string
+	Used   string
+	Free   string
+	UsePct string
 }
 
 // MEM type has a list of Memory.
@@ -36,16 +36,16 @@ type DFData struct {
 	// strings with units
 
 	// inodes
-	Inodes      string
-	Iused       string
-	Ifree       string
-	IusePercent string // without %
+	Inodes  string
+	Iused   string
+	Ifree   string
+	IusePct string // without %
 
 	// bytes
-	Total      string
-	Used       string
-	Avail      string
-	UsePercent string // without %
+	Total  string
+	Used   string
+	Avail  string
+	UsePct string // without %
 }
 
 // DF type has a list of DFData.
@@ -251,11 +251,12 @@ type CPU struct {
 
 // CPUData type is a struct of cpu metrics.
 type CPUData struct {
-	N    string
-	User uint // percent without "%"
-	Sys  uint // percent without "%"
-	Wait uint // percent without "%"
-	Idle uint // percent without "%"
+	N string
+	// Pcts without "%"
+	UserPct uint
+	SysPct  uint
+	WaitPct uint
+	IdlePct uint
 }
 
 type CPUUpdater interface {
@@ -263,24 +264,25 @@ type CPUUpdater interface {
 }
 
 type MetricCPU struct {
-	metrics.Healthcheck        // derive from one of (go-)metric types, otherwise it won't be registered
-	N                   string // The "cpu-N"
-	User                *GaugePercent
-	Nice                *GaugePercent
-	Sys                 *GaugePercent
-	Wait                *GaugePercent
-	Idle                *GaugePercent
-	Total               *GaugeDiff
-	Extra               CPUUpdater
+	// derive from one of (go-)metric types, otherwise it won't be registered
+	metrics.Healthcheck
+	N       string // The "cpu-N"
+	UserPct *GaugePercent
+	NicePct *GaugePercent
+	SysPct  *GaugePercent
+	WaitPct *GaugePercent
+	IdlePct *GaugePercent
+	Total   *GaugeDiff
+	Extra   CPUUpdater
 }
 
 func (mc *MetricCPU) Update(scpu sigar.Cpu) {
 	totalDelta := mc.Total.UpdateAbsolute(int64(scpu.Total()))
-	mc.User.UpdatePercent(totalDelta, scpu.User)
-	mc.Nice.UpdatePercent(totalDelta, scpu.Nice)
-	mc.Sys.UpdatePercent(totalDelta, scpu.Sys)
-	mc.Wait.UpdatePercent(totalDelta, scpu.Wait)
-	mc.Idle.UpdatePercent(totalDelta, scpu.Idle)
+	mc.UserPct.UpdatePercent(totalDelta, scpu.User)
+	mc.NicePct.UpdatePercent(totalDelta, scpu.Nice)
+	mc.SysPct.UpdatePercent(totalDelta, scpu.Sys)
+	mc.WaitPct.UpdatePercent(totalDelta, scpu.Wait)
+	mc.IdlePct.UpdatePercent(totalDelta, scpu.Idle)
 	if mc.Extra != nil {
 		mc.Extra.UpdateCPU(scpu, totalDelta)
 	}
@@ -288,14 +290,14 @@ func (mc *MetricCPU) Update(scpu sigar.Cpu) {
 
 func ExtraNewMetricCPU(r metrics.Registry, name string, extra CPUUpdater) *MetricCPU {
 	return &MetricCPU{
-		N:     name,
-		User:  NewGaugePercent(name+".user", r),
-		Nice:  NewGaugePercent(name+".nice", r),
-		Sys:   NewGaugePercent(name+".system", r),
-		Wait:  NewGaugePercent(name+".wait", r),
-		Idle:  NewGaugePercent(name+".idle", r),
-		Total: NewGaugeDiff(name+"-total", metrics.NewRegistry()),
-		Extra: extra,
+		N:       name,
+		UserPct: NewGaugePercent(name+".user", r),
+		NicePct: NewGaugePercent(name+".nice", r),
+		SysPct:  NewGaugePercent(name+".system", r),
+		WaitPct: NewGaugePercent(name+".wait", r),
+		IdlePct: NewGaugePercent(name+".idle", r),
+		Total:   NewGaugeDiff(name+"-total", metrics.NewRegistry()),
+		Extra:   extra,
 	}
 }
 
@@ -347,19 +349,20 @@ func (sms *StandardMetricString) Update(new string) {
 }
 
 type MetricDF struct {
-	metrics.Healthcheck // derive from one of (go-)metric types, otherwise it won't be registered
-	DevName             MetricString
-	Free                metrics.GaugeFloat64
-	Reserved            metrics.GaugeFloat64
-	Total               metrics.Gauge
-	Used                metrics.GaugeFloat64
-	Avail               metrics.Gauge
-	UsePercent          metrics.GaugeFloat64
-	Inodes              metrics.Gauge
-	Iused               metrics.Gauge
-	Ifree               metrics.Gauge
-	IusePercent         metrics.GaugeFloat64
-	DirName             MetricString
+	// derive from one of (go-)metric types, otherwise it won't be registered
+	metrics.Healthcheck
+	DevName  MetricString
+	Free     metrics.GaugeFloat64
+	Reserved metrics.GaugeFloat64
+	Total    metrics.Gauge
+	Used     metrics.GaugeFloat64
+	Avail    metrics.Gauge
+	UsePct   metrics.GaugeFloat64
+	Inodes   metrics.Gauge
+	Iused    metrics.Gauge
+	Ifree    metrics.Gauge
+	IusePct  metrics.GaugeFloat64
+	DirName  MetricString
 }
 
 // Update reads usage and fs and updates the corresponding fields in DF.
@@ -371,26 +374,27 @@ func (md *MetricDF) Update(fs sigar.FileSystem, usage sigar.FileSystemUsage) {
 	md.Total.Update(int64(usage.Total << 10))
 	md.Used.Update(float64(usage.Used << 10))
 	md.Avail.Update(int64(usage.Avail << 10))
-	md.UsePercent.Update(usage.UsePercent())
+	md.UsePct.Update(usage.UsePercent())
 	md.Inodes.Update(int64(usage.Files))
 	md.Iused.Update(int64(usage.Files - usage.FreeFiles))
 	md.Ifree.Update(int64(usage.FreeFiles))
-	if iusePercent := 0.0; usage.Files != 0 {
-		iusePercent = float64(100) * float64(usage.Files-usage.FreeFiles) / float64(usage.Files)
-		md.IusePercent.Update(iusePercent)
+	if iusepct := 0.0; usage.Files != 0 {
+		iusepct = float64(100) * float64(usage.Files-usage.FreeFiles) / float64(usage.Files)
+		md.IusePct.Update(iusepct)
 	}
 }
 
 // MetricIF set of interface metrics.
 type MetricIF struct {
-	metrics.Healthcheck // derive from one of (go-)metric types, otherwise it won't be registered
-	Name                string
-	BytesIn             *GaugeDiff
-	BytesOut            *GaugeDiff
-	ErrorsIn            *GaugeDiff
-	ErrorsOut           *GaugeDiff
-	PacketsIn           *GaugeDiff
-	PacketsOut          *GaugeDiff
+	// derive from one of (go-)metric types, otherwise it won't be registered
+	metrics.Healthcheck
+	Name       string
+	BytesIn    *GaugeDiff
+	BytesOut   *GaugeDiff
+	ErrorsIn   *GaugeDiff
+	ErrorsOut  *GaugeDiff
+	PacketsIn  *GaugeDiff
+	PacketsOut *GaugeDiff
 }
 
 // Update reads ifdata and updates the corresponding fields in MetricIF.

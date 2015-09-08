@@ -1,6 +1,3 @@
-= content define_usepercent
-  | <span {{class}}="label" data-usepercent={{.}}>{{.}}%</span>
-
 = content define_ifrows
   {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IF.List}}
@@ -70,29 +67,24 @@
 
 = content define_dfrows
   {{with rowsset .}}{{.}}{{else}}
-    {{range $disk := .Data.DF.List}}
+    {{range $df := .Data.DF.List}}
       |
-        <tr {{AttrKey "df-rowby-dirname" $disk.DirName}}>
-          <td {{class}}="text-nowrap clip12" title={{$disk.DevName}}>{{$disk.DevName}}</td>
-          <td {{class}}="text-nowrap clip12" title={{$disk.DirName}}>{{$disk.DirName}}</td>
+        <tr {{AttrKey "df-rowby-dirname" $df.DirName}}>
+          <td {{class}}="text-nowrap clip12" title={{$df.DevName}}>{{$df.DevName}}</td>
+          <td {{class}}="text-nowrap clip12" title={{$df.DirName}}>{{$df.DirName}}</td>
       td.text-right.text-nowrap
-        span.text-graylighter title="Inodes free" {{$disk.Ifree}}
-        |  {{$disk.Avail}}
-      | <td {{class}}="text-right text-nowrap bg-usepercent" data-usepercent={{$disk.UsePercent}}>
-      span.text-graylighter title="Inodes use%" {{$disk.IusePercent}}%
-        / {{template "defines::define_usepercent" $disk.IusePercent}}
-      |  {{$disk.UsePercent}}%
+        span.text-graylighter title="Inodes free" {{$df.Ifree}}
+        |  {{$df.Avail}}
+      | <td {{class}}="text-right text-nowrap bg-usepct" data-usepct={{$df.UsePct}}>
+      span.text-graylighter title="Inodes use%" {{$df.IusePct}}%
+      |  {{$df.UsePct}}%
       | </td>
       td.text-right.text-nowrap
-        span.text-graylighter title="Inodes used" {{$disk.Iused}}
-        |  {{$disk.Used}}
+        span.text-graylighter title="Inodes used" {{$df.Iused}}
+        |  {{$df.Used}}
       td.text-right.text-nowrap
-        span.text-graylighter title="Inodes total" {{$disk.Inodes}}
-        |  {{$disk.Total}}
-
-      / td.text-right {{$disk.Ifree}}
-      / td.text-right {{template "defines::define_usepercent" $disk.IusePercent}}&nbsp;{{$disk.Iused}}
-      / td.text-right {{$disk.Inodes}}
+        span.text-graylighter title="Inodes total" {{$df.Inodes}}
+        |  {{$df.Total}}
       | </tr>
     {{end}}
   {{end}}
@@ -138,7 +130,8 @@
       | <tr {{AttrKey "mem-rowby-kind" $mem.Kind}}>
       td {{$mem.Kind}}
       td.text-right {{$mem.Free}}
-      td.text-right {{template "defines::define_usepercent" $mem.UsePercent}}&nbsp;{{$mem.Used}}
+      | <td {{class}}="text-right bg-usepct" data-usepct={{$mem.UsePct}}>{{$mem.UsePct}}%</td>
+      td.text-right {{$mem.Used}}
       td.text-right {{$mem.Total}}
       | </tr>
     {{end}}
@@ -151,6 +144,7 @@
     tr
       th
       th.text-right Free
+      th.text-right Use%
       th.text-right Used
       th.text-right Total
   tbody
@@ -169,13 +163,13 @@
 
 = content define_cpurows
   {{with rowsset .}}{{.}}{{else}}
-    {{range $i, $core := .Data.CPU.List}}
-      | <tr {{AttrKey "cpu-rowby-N" $core.N}}>
-      td.text-right.text-nowrap {{$core.N}}
-      td.text-right <span {{class}}="usepercent-text" data-usepercent={{$core.User}}>{{$core.User}}</span>
-      td.text-right <span {{class}}="usepercent-text" data-usepercent={{$core.Sys}}>{{$core.Sys}}</span>
-      td.text-right <span {{class}}="usepercent-text" data-usepercent={{$core.Wait}}>{{$core.Wait}}</span>
-      td.text-right <span {{class}}="usepercent-text-inverse" data-usepercent={{$core.Idle}}>{{$core.Idle}}</span>
+    {{range $i, $cpu := .Data.CPU.List}}
+      | <tr {{AttrKey "cpu-rowby-N" $cpu.N}}>
+      td.text-right.text-nowrap {{$cpu.N}}
+      | <td {{class}}="text-right bg-usepct" data-usepct={{$cpu.UserPct}}>{{$cpu.UserPct}}%</td>
+      | <td {{class}}="text-right bg-usepct" data-usepct={{$cpu.SysPct}}>{{$cpu.SysPct}}%</td>
+      | <td {{class}}="text-right bg-usepct" data-usepct={{$cpu.WaitPct}}>{{$cpu.WaitPct}}%</td>
+      | <td {{class}}="text-right bg-usepct-inverse" data-usepct={{$cpu.IdlePct}}>{{$cpu.IdlePct}}%</td>
       | </tr>
     {{end}}
   {{end}}
@@ -186,10 +180,10 @@
   thead
     tr
       th
-      th.text-right User%
-      th.text-right Sys%
-      th.text-right Wait%
-      th.text-right Idle%
+      th.text-right User
+      th.text-right Sys
+      th.text-right Wait
+      th.text-right Idle
   tbody
     {{template "defines::define_cpurows" .}}
   | </table>
@@ -206,17 +200,17 @@
 
 = content define_psrows
   {{with rowsset .}}{{.}}{{else}}
-    {{range $proc := .Data.PS.List}}
-      | <tr {{AttrKey "ps-rowby-pid" $proc.PID}}>
-      td.text-right  {{$proc.PID}}
-      td.text-right  {{$proc.UID}}
-      td {{$proc.User}}
-      td.text-right  {{$proc.Priority}}
-      td.text-right  {{$proc.Nice}}
-      td.text-right  {{$proc.Size}}
-      td.text-right  {{$proc.Resident}}
-      td.text-center {{$proc.Time}}
-      td {{$proc.Name}}
+    {{range $ps := .Data.PS.List}}
+      | <tr {{AttrKey "ps-rowby-pid" $ps.PID}}>
+      td.text-right  {{$ps.PID}}
+      td.text-right  {{$ps.UID}}
+      td {{$ps.User}}
+      td.text-right  {{$ps.Priority}}
+      td.text-right  {{$ps.Nice}}
+      td.text-right  {{$ps.Size}}
+      td.text-right  {{$ps.Resident}}
+      td.text-center {{$ps.Time}}
+      td {{$ps.Name}}
       | </tr>
     {{end}}
   {{end}}
@@ -313,13 +307,13 @@
   {{end}}
 
 = content define_vgrows
-  {{range $mach := .Data.VagrantMachines.List}}
-    | <tr {{AttrKey "vagrant-rowby-uuid" $mach.UUID}}>
-    td {{$mach.UUID}}
-    td {{$mach.Name}}
-    td {{$mach.Provider}}
-    td {{$mach.State}}
-    td {{$mach.Vagrantfile_path}}
+  {{range $vgm := .Data.VagrantMachines.List}}
+    | <tr {{AttrKey "vagrant-rowby-uuid" $vgm.UUID}}>
+    td {{$vgm.UUID}}
+    td {{$vgm.Name}}
+    td {{$vgm.Provider}}
+    td {{$vgm.State}}
+    td {{$vgm.Vagrantfile_path}}
     | </tr>
   {{end}}
 
