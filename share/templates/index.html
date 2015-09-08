@@ -92,17 +92,11 @@
     ></body
   ></html
 >{{/*
-*/}}{{define "defines::badgedlinkleft"}}<a href={{.Href}} onClick={this.handleClick} {{class}}={{.Class}}
-  
-  ><span {{class}}="xlabel xlabel-default"
-    >{{.Badge}}</span
-  > {{.Text}}</a
+*/}}{{define "defines::alink_badgeleft"}}<a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+  >{{.Badge}} {{.Text}}</a
 >{{end}}{{/*
-*/}}{{define "defines::badgedlinkright"}}<a href={{.Href}} onClick={this.handleClick} {{class}}={{.Class}}
-  
-  >{{.Text}} <span {{class}}="xlabel xlabel-default"
-    >{{.Badge}}</span
-  ></a
+*/}}{{define "defines::alink_badgeright"}}<a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+  >{{.Text}} {{.Badge}}</a
 >{{end}}{{/*
 */}}{{define "defines::define_cpurows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $cpu := .Data.CPU.List}}<tr {{AttrKey "cpu-rowby-N" $cpu.N}}
   ><td class="text-right text-nowrap"
@@ -161,8 +155,8 @@
 >{{end}}{{end}}{{end}}{{/*
 */}}{{define "defines::define_dftable"}}{{$p := .Data.Params}}<table {{ClassNonzero $p.Dfn "table table-hover" "collapse-hidden"}}
   ><thead
-    ><tr
-      >{{template "defines::headerenumlink" Vlink $p $p.Dfk 1 "Device" ""}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 3 "Avail" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 4 "Use%" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 5 "Used" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 6 "Total" "text-right"}}</tr
+    ><tr class="text-nowrap"
+      >{{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail" "text-right"}}{{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%" "text-right"}}{{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used" "text-right"}}{{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total" "text-right"}}</tr
     ></thead
   ><tbody
     >{{template "defines::define_dfrows" .}}</tbody
@@ -266,239 +260,203 @@
     >{{template "defines::define_memrows" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::define_panelcpu"}}{{$p := .Data.Params}}<div     {{ClassPositive $p.CPUn "" "panel panel-default"}}
-  >  <div   {{ClassPositive $p.CPUn "" "panel-heading"}}
-    >    <a   {{HrefT $p $p.CPUn}} {{class}}="panel-title btn-block"
-      >      <b {{ClassPositive $p.CPUn "h4" "h4 bg-info"}}
-        >CPU</b
-      >    </a
-    >  </div
-  >  <table {{ClassPositive $p.CPUn "table collapse-hidden" "table"}}
-    ><tr class="panel-config"
-      ><td class="col-md-2"
-        ><div class="text-right text-nowrap"
-          >Delay&nbsp;<span class="badge"
-            >{{$p.CPUd}}</span
-          ></div
-        ></td
-      ><td
-        ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" LessD $p $p.CPUd "btn btn-default"}}{{template "defines::badgedlinkright" MoreD $p $p.CPUd "btn btn-default"}}</div
-        ></td
-      ><td class="col-md-10"
-        ></td
-      ></tr
-    ><tr class="panel-config"
-      ><td class="col-md-2"
-        ><div class="text-right text-nowrap"
-          >Rows&nbsp;<span class="badge"
-            >{{$p.CPUn.Absolute}}</span
-          ></div
-        ></td
-      ><td
-        ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" LessN $p $p.CPUn "btn btn-default"}}{{template "defines::badgedlinkright" MoreN $p $p.CPUn "btn btn-default"}}</div
-        ></td
-      ><td class="col-md-10"
-        ></td
-      ></tr
-    >  </table
-  >  {{template "defines::define_cputable" .}}</div
+*/}}{{define "defines::define_panelcpu"}}{{$p := .Data.Params}}<div {{ClassPositive $p.CPUn "" "panel panel-default"}}
+  ><div class="h4 padding-left-like-panel-heading"
+    ><a {{HrefT $p $p.CPUn}}
+      >CPU</a
+    ></div
+  ><ul  {{ClassPositive $p.CPUn "collapse-hidden" "list-group"}}
+    ><li class="list-group-item text-nowrap th"
+      ><ul class="list-inline"
+        ><li
+          ><span
+            ><b
+              >Delay</b
+            > <span class="badge"
+              >{{$p.CPUd}}</span
+            ></span
+          > <div class="btn-group"
+            >{{template "defines::alink_badgeleft" LessD $p $p.CPUd "btn btn-default"}}{{template "defines::alink_badgeright" MoreD $p $p.CPUd "btn btn-default"}}</div
+          ></li
+        ><li
+          ><span
+            ><b
+              >Rows</b
+            > <span class="badge"
+              >{{$p.CPUn.Absolute}}</span
+            ></span
+          > <div class="btn-group"
+            >{{template "defines::alink_badgeleft" LessN $p $p.CPUn "btn btn-default"}}{{template "defines::alink_badgeright" MoreN $p $p.CPUn "btn btn-default"}}</div
+          ></li
+        ></ul
+      ></li
+    ></ul
+  >{{template "defines::define_cputable" .}}</div
 >{{end}}{{/*
-*/}}{{define "defines::define_paneldf"}}{{$p := .Data.Params}}<div     {{ClassPositive $p.Dfn "" "panel panel-default"}}
-  >  <div   {{ClassPositive $p.Dfn "" "panel-heading"}}
-    >    <a   {{HrefT $p $p.Dfn}} {{class}}="panel-title btn-block"
-      >      <b {{ClassPositive $p.Dfn "h4" "h4 bg-info"}}
-        >Disk usage</b
-      >    </a
-    >  </div
-  >  <table {{ClassPositive $p.Dfn "table collapse-hidden" "table"}}
-    ><tr class="panel-config"
-      ><td class="col-md-2"
-        ><div class="text-right text-nowrap"
-          >Delay&nbsp;<span class="badge"
-            >{{$p.Dfd}}</span
-          ></div
-        ></td
-      ><td
-        ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" LessD $p $p.Dfd "btn btn-default"}}{{template "defines::badgedlinkright" MoreD $p $p.Dfd "btn btn-default"}}</div
-        ></td
-      ><td class="col-md-10"
-        ></td
-      ></tr
-    ><tr class="panel-config"
-      ><td class="col-md-2"
-        ><div class="text-right text-nowrap"
-          >Rows&nbsp;<span class="badge"
-            >{{$p.Dfn.Absolute}}</span
-          ></div
-        ></td
-      ><td
-        ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" LessN $p $p.Dfn "btn btn-default"}}{{template "defines::badgedlinkright" MoreN $p $p.Dfn "btn btn-default"}}</div
-        ></td
-      ><td class="col-md-10"
-        ></td
-      ></tr
-    >  </table
-  >  {{template "defines::define_dftable" .}}</div
+*/}}{{define "defines::define_paneldf"}}{{$p := .Data.Params}}<div {{ClassPositive $p.Dfn "" "panel panel-default"}}
+  ><div class="h4 padding-left-like-panel-heading"
+    ><a {{HrefT $p $p.Dfn}}
+      >Disk usage</a
+    ></div
+  ><ul  {{ClassPositive $p.Dfn "collapse-hidden" "list-group"}}
+    ><li class="list-group-item text-nowrap th"
+      ><ul class="list-inline"
+        ><li
+          ><span
+            ><b
+              >Delay</b
+            > <span class="badge"
+              >{{$p.Dfd}}</span
+            ></span
+          > <div class="btn-group"
+            >{{template "defines::alink_badgeleft" LessD $p $p.Dfd "btn btn-default"}}{{template "defines::alink_badgeright" MoreD $p $p.Dfd "btn btn-default"}}</div
+          ></li
+        ><li
+          ><span
+            ><b
+              >Rows</b
+            > <span class="badge"
+              >{{$p.Dfn.Absolute}}</span
+            ></span
+          > <div class="btn-group"
+            >{{template "defines::alink_badgeleft" LessN $p $p.Dfn "btn btn-default"}}{{template "defines::alink_badgeright" MoreN $p $p.Dfn "btn btn-default"}}</div
+          ></li
+        ></ul
+      ></li
+    ></ul
+  >{{template "defines::define_dftable" .}}</div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelif"}}{{$p := .Data.Params}}<div     {{ClassPositive $p.Ifn "" "panel panel-default"}}
-  >  <div   {{ClassPositive $p.Ifn "" "panel-heading"}}
-    >    <a   {{HrefT $p $p.Ifn}} {{class}}="panel-title btn-block"
-      >      <b {{ClassPositive $p.Ifn "h4" "h4 bg-info"}}
-        >Interfaces</b
-      >    </a
-    >  </div
-  >  <table {{ClassPositive $p.Ifn "table collapse-hidden" "table"}}
-    ><tr class="panel-config"
-      ><td class="col-md-2"
-        ><div class="text-right text-nowrap"
-          >Delay&nbsp;<span class="badge"
-            >{{$p.Ifd}}</span
-          ></div
-        ></td
-      ><td
-        ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" LessD $p $p.Ifd "btn btn-default"}}{{template "defines::badgedlinkright" MoreD $p $p.Ifd "btn btn-default"}}</div
-        ></td
-      ><td class="col-md-10"
-        ></td
-      ></tr
-    ><tr class="panel-config"
-      ><td class="col-md-2"
-        ><div class="text-right text-nowrap"
-          >Rows&nbsp;<span class="badge"
-            >{{$p.Ifn.Absolute}}</span
-          ></div
-        ></td
-      ><td
-        ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" LessN $p $p.Ifn "btn btn-default"}}{{template "defines::badgedlinkright" MoreN $p $p.Ifn "btn btn-default"}}</div
-        ></td
-      ><td class="col-md-10"
-        ></td
-      ></tr
-    >  </table
-  >  {{template "defines::define_iftable" .}}</div
+*/}}{{define "defines::define_panelif"}}{{$p := .Data.Params}}<div {{ClassPositive $p.Ifn "" "panel panel-default"}}
+  ><div class="h4 padding-left-like-panel-heading"
+    ><a {{HrefT $p $p.Ifn}}
+      >Interfaces</a
+    ></div
+  ><ul  {{ClassPositive $p.Ifn "collapse-hidden" "list-group"}}
+    ><li class="list-group-item text-nowrap th"
+      ><ul class="list-inline"
+        ><li
+          ><span
+            ><b
+              >Delay</b
+            > <span class="badge"
+              >{{$p.Ifd}}</span
+            ></span
+          > <div class="btn-group"
+            >{{template "defines::alink_badgeleft" LessD $p $p.Ifd "btn btn-default"}}{{template "defines::alink_badgeright" MoreD $p $p.Ifd "btn btn-default"}}</div
+          ></li
+        ><li
+          ><span
+            ><b
+              >Rows</b
+            > <span class="badge"
+              >{{$p.Ifn.Absolute}}</span
+            ></span
+          > <div class="btn-group"
+            >{{template "defines::alink_badgeleft" LessN $p $p.Ifn "btn btn-default"}}{{template "defines::alink_badgeright" MoreN $p $p.Ifn "btn btn-default"}}</div
+          ></li
+        ></ul
+      ></li
+    ></ul
+  >{{template "defines::define_iftable" .}}</div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelmem"}}{{$p := .Data.Params}}<div     {{ClassPositive $p.Memn "" "panel panel-default"}}
-  >  <div   {{ClassPositive $p.Memn "" "panel-heading"}}
-    >    <a   {{HrefT $p $p.Memn}} {{class}}="panel-title btn-block"
-      >      <b {{ClassPositive $p.Memn "h4" "h4 bg-info"}}
-        >Memory</b
-      >    </a
-    >  </div
-  >  <table {{ClassPositive $p.Memn "table collapse-hidden" "table"}}
-    ><tr class="panel-config"
-      ><td class="col-md-2"
-        ><div class="text-right text-nowrap"
-          >Delay&nbsp;<span class="badge"
-            >{{$p.Memd}}</span
-          ></div
-        ></td
-      ><td
-        ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" LessD $p $p.Memd "btn btn-default"}}{{template "defines::badgedlinkright" MoreD $p $p.Memd "btn btn-default"}}</div
-        ></td
-      ><td class="col-md-10"
-        ></td
-      ></tr
-    ><tr class="panel-config"
-      ><td class="col-md-2"
-        ><div class="text-right text-nowrap"
-          >Rows&nbsp;<span class="badge"
-            >{{$p.Memn.Absolute}}</span
-          ></div
-        ></td
-      ><td
-        ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" LessN $p $p.Memn "btn btn-default"}}{{template "defines::badgedlinkright" MoreN $p $p.Memn "btn btn-default"}}</div
-        ></td
-      ><td class="col-md-10"
-        ></td
-      ></tr
-    >  </table
-  >  {{template "defines::define_memtable" .}}</div
+*/}}{{define "defines::define_panelmem"}}{{$p := .Data.Params}}<div {{ClassPositive $p.Memn "" "panel panel-default"}}
+  ><div class="h4 padding-left-like-panel-heading"
+    ><a {{HrefT $p $p.Memn}}
+      >Memory</a
+    ></div
+  ><ul  {{ClassPositive $p.Memn "collapse-hidden" "list-group"}}
+    ><li class="list-group-item text-nowrap th"
+      ><ul class="list-inline"
+        ><li
+          ><span
+            ><b
+              >Delay</b
+            > <span class="badge"
+              >{{$p.Memd}}</span
+            ></span
+          > <div class="btn-group"
+            >{{template "defines::alink_badgeleft" LessD $p $p.Memd "btn btn-default"}}{{template "defines::alink_badgeright" MoreD $p $p.Memd "btn btn-default"}}</div
+          ></li
+        ><li
+          ><span
+            ><b
+              >Rows</b
+            > <span class="badge"
+              >{{$p.Memn.Absolute}}</span
+            ></span
+          > <div class="btn-group"
+            >{{template "defines::alink_badgeleft" LessN $p $p.Memn "btn btn-default"}}{{template "defines::alink_badgeright" MoreN $p $p.Memn "btn btn-default"}}</div
+          ></li
+        ></ul
+      ></li
+    ></ul
+  >{{template "defines::define_memtable" .}}</div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelps"}}{{$p := .Data.Params}}<div     {{ClassPositive $p.Psn "" "panel panel-default"}}
-  >  <div   {{ClassPositive $p.Psn "" "panel-heading"}}
-    >    <a   {{HrefT $p $p.Psn}} {{class}}="panel-title btn-block"
-      >      <b {{ClassPositive $p.Psn "h4" "h4 bg-info"}}
-        >Processes</b
-      >    </a
-    >  </div
-  >  <table {{ClassPositive $p.Psn "table collapse-hidden" "table"}}
-    ><tr class="panel-config"
-      ><td class="col-md-2"
-        ><div class="text-right text-nowrap"
-          >Delay&nbsp;<span class="badge"
-            >{{$p.Psd}}</span
-          ></div
-        ></td
-      ><td
-        ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" LessD $p $p.Psd "btn btn-default"}}{{template "defines::badgedlinkright" MoreD $p $p.Psd "btn btn-default"}}</div
-        ></td
-      ><td class="col-md-10"
-        ></td
-      ></tr
-    ><tr class="panel-config"
-      ><td class="col-md-2"
-        ><div class="text-right text-nowrap"
-          >Rows&nbsp;<span class="badge"
-            >{{$p.Psn.Absolute}}</span
-          ></div
-        ></td
-      ><td
-        ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" LessN $p $p.Psn "btn btn-default"}}{{template "defines::badgedlinkright" MoreN $p $p.Psn "btn btn-default"}}</div
-        ></td
-      ><td class="col-md-10"
-        ></td
-      ></tr
-    >  </table
-  >  {{template "defines::define_pstable" .}}</div
+*/}}{{define "defines::define_panelps"}}{{$p := .Data.Params}}<div {{ClassPositive $p.Psn "" "panel panel-default"}}
+  ><div class="h4 padding-left-like-panel-heading"
+    ><a {{HrefT $p $p.Psn}}
+      >Processes</a
+    ></div
+  ><ul  {{ClassPositive $p.Psn "collapse-hidden" "list-group"}}
+    ><li class="list-group-item text-nowrap th"
+      ><ul class="list-inline"
+        ><li
+          ><span
+            ><b
+              >Delay</b
+            > <span class="badge"
+              >{{$p.Psd}}</span
+            ></span
+          > <div class="btn-group"
+            >{{template "defines::alink_badgeleft" LessD $p $p.Psd "btn btn-default"}}{{template "defines::alink_badgeright" MoreD $p $p.Psd "btn btn-default"}}</div
+          ></li
+        ><li
+          ><span
+            ><b
+              >Rows</b
+            > <span class="badge"
+              >{{$p.Psn.Absolute}}</span
+            ></span
+          > <div class="btn-group"
+            >{{template "defines::alink_badgeleft" LessN $p $p.Psn "btn btn-default"}}{{template "defines::alink_badgeright" MoreN $p $p.Psn "btn btn-default"}}</div
+          ></li
+        ></ul
+      ></li
+    ></ul
+  >{{template "defines::define_pstable" .}}</div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelvg"}}{{$p := .Data.Params}}<div     {{ClassPositive $p.Vgn "" "panel panel-default"}}
-  >  <div   {{ClassPositive $p.Vgn "" "panel-heading"}}
-    >    <a   {{HrefT $p $p.Vgn}} {{class}}="panel-title btn-block"
-      >      <b {{ClassPositive $p.Vgn "h4" "h4 bg-info"}}
-        >Vagrant</b
-      >    </a
-    >  </div
-  >  <table {{ClassPositive $p.Vgn "table collapse-hidden" "table"}}
-    ><tr class="panel-config"
-      ><td class="col-md-2"
-        ><div class="text-right text-nowrap"
-          >Delay&nbsp;<span class="badge"
-            >{{$p.Vgd}}</span
-          ></div
-        ></td
-      ><td
-        ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" LessD $p $p.Vgd "btn btn-default"}}{{template "defines::badgedlinkright" MoreD $p $p.Vgd "btn btn-default"}}</div
-        ></td
-      ><td class="col-md-10"
-        ></td
-      ></tr
-    ><tr class="panel-config"
-      ><td class="col-md-2"
-        ><div class="text-right text-nowrap"
-          >Rows&nbsp;<span class="badge"
-            >{{$p.Vgn.Absolute}}</span
-          ></div
-        ></td
-      ><td
-        ><div class="btn-group nowrap-group" role="group"
-          >{{template "defines::badgedlinkleft" LessN $p $p.Vgn "btn btn-default"}}{{template "defines::badgedlinkright" MoreN $p $p.Vgn "btn btn-default"}}</div
-        ></td
-      ><td class="col-md-10"
-        ></td
-      ></tr
-    >  </table
-  >  {{template "defines::define_vgtable" .}}</div
+*/}}{{define "defines::define_panelvg"}}{{$p := .Data.Params}}<div {{ClassPositive $p.Vgn "" "panel panel-default"}}
+  ><div class="h4 padding-left-like-panel-heading"
+    ><a {{HrefT $p $p.Vgn}}
+      >Vagrant</a
+    ></div
+  ><ul  {{ClassPositive $p.Vgn "collapse-hidden" "list-group"}}
+    ><li class="list-group-item text-nowrap th"
+      ><ul class="list-inline"
+        ><li
+          ><span
+            ><b
+              >Delay</b
+            > <span class="badge"
+              >{{$p.Vgd}}</span
+            ></span
+          > <div class="btn-group"
+            >{{template "defines::alink_badgeleft" LessD $p $p.Vgd "btn btn-default"}}{{template "defines::alink_badgeright" MoreD $p $p.Vgd "btn btn-default"}}</div
+          ></li
+        ><li
+          ><span
+            ><b
+              >Rows</b
+            > <span class="badge"
+              >{{$p.Vgn.Absolute}}</span
+            ></span
+          > <div class="btn-group"
+            >{{template "defines::alink_badgeleft" LessN $p $p.Vgn "btn btn-default"}}{{template "defines::alink_badgeright" MoreN $p $p.Vgn "btn btn-default"}}</div
+          ></li
+        ></ul
+      ></li
+    ></ul
+  >{{template "defines::define_vgtable" .}}</div
 >{{end}}{{/*
 */}}{{define "defines::define_psrows"}}{{with rowsset .}}{{.}}{{else}}{{range $ps := .Data.PS.List}}<tr {{AttrKey "ps-rowby-pid" $ps.PID}}
   ><td class="text-right"
@@ -523,8 +481,8 @@
 >{{end}}{{end}}{{end}}{{/*
 */}}{{define "defines::define_pstable"}}{{$p := .Data.Params}}<table {{ClassNonzero $p.Psn "table table-hover" "collapse-hidden"}}
   ><thead
-    ><tr
-      >{{template "defines::headerenumlink" Vlink $p $p.Psk 1 "PID" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 2 "UID" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 3 "USER" ""}}{{template "defines::headerenumlink" Vlink $p $p.Psk 4 "PR" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 5 "NI" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 6 "VIRT" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 7 "RES" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 8 "TIME" "text-center"}}{{template "defines::headerenumlink" Vlink $p $p.Psk 9 "COMMAND" ""}}</tr
+    ><tr class="text-nowrap"
+      >{{template "defines::thvlink" Vlink $p $p.Psk 1 "PID" "text-right"}}{{template "defines::thvlink" Vlink $p $p.Psk 2 "UID" "text-right"}}{{template "defines::thvlink" Vlink $p $p.Psk 3 "USER" ""}}{{template "defines::thvlink" Vlink $p $p.Psk 4 "PR" "text-right"}}{{template "defines::thvlink" Vlink $p $p.Psk 5 "NI" "text-right"}}{{template "defines::thvlink" Vlink $p $p.Psk 6 "VIRT" "text-right"}}{{template "defines::thvlink" Vlink $p $p.Psk 7 "RES" "text-right"}}{{template "defines::thvlink" Vlink $p $p.Psk 8 "TIME" "text-center"}}{{template "defines::thvlink" Vlink $p $p.Psk 9 "COMMAND" ""}}</tr
     ></thead
   ><tbody
     >{{template "defines::define_psrows" .}}</tbody
@@ -568,12 +526,9 @@
     >{{template "defines::define_vgswitch" .}}</tbody
   ></table
 >{{end}}{{/*
-*/}}{{define "defines::enumlink"}}<a href={{.LinkHref}} onClick={this.handleClick}
-  >{{.LinkText}}</a
->{{end}}{{/*
-*/}}{{define "defines::headerenumlink"}}<th {{class}}="header {{.AlignClass}}"
+*/}}{{define "defines::thvlink"}}<th {{class}}="header {{.AlignClass}}"
   ><a href={{.LinkHref}} {{class}}={{.LinkClass}}
-    >  {{.LinkText}}<span {{class}}={{.CaretClass}}
+    >{{.LinkText}}<span {{class}}={{.CaretClass}}
       ></span
     ></a
   ></th

@@ -45,157 +45,112 @@ define(function (require) {
         "div",
         { className: !Data.Params.Memn.Negative ? "" : "panel panel-default"
         },
-        "  ",
         React.createElement(
           "div",
-          { className: !Data.Params.Memn.Negative ? "" : "panel-heading"
+          { className: "h4 padding-left-like-panel-heading"
           },
-          "    ",
           React.createElement(
             "a",
-            { href: Data.Params.Tlinks.Memn, onClick: this.handleClick, className: "panel-title btn-block"
+            { href: Data.Params.Tlinks.Memn, onClick: this.handleClick
             },
-            "      ",
-            React.createElement(
-              "b",
-              { className: !Data.Params.Memn.Negative ? "h4" : "h4 bg-info"
-              },
-              "Memory"
-            ),
-            "    "
-          ),
-          "  "
+            "Memory"
+          )
         ),
-        "  ",
         React.createElement(
-          "table",
-          { className: !Data.Params.Memn.Negative ? "table collapse-hidden" : "table"
+          "ul",
+          { className: !Data.Params.Memn.Negative ? "collapse-hidden" : "list-group"
           },
           React.createElement(
-            "tr",
-            { className: "panel-config"
+            "li",
+            { className: "list-group-item text-nowrap th"
             },
             React.createElement(
-              "td",
-              { className: "col-md-2"
+              "ul",
+              { className: "list-inline"
               },
               React.createElement(
-                "div",
-                { className: "text-right text-nowrap"
-                },
-                "Delay ",
+                "li",
+                null,
                 React.createElement(
                   "span",
-                  { className: "badge"
-                  },
-                  Data.Params.Memd
-                )
-              )
-            ),
-            React.createElement(
-              "td",
-              null,
-              React.createElement(
-                "div",
-                { className: "btn-group nowrap-group", role: "group"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Dlinks.Memd.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Memd.Less.ExtraClass != null ? Data.Params.Dlinks.Memd.Less.ExtraClass : "")
-
-                  },
+                  null,
                   React.createElement(
-                    "span",
-                    { className: "xlabel xlabel-default"
-                    },
-                    "-"
+                    "b",
+                    null,
+                    "Delay"
                   ),
                   " ",
-                  Data.Params.Dlinks.Memd.Less.Text
+                  React.createElement(
+                    "span",
+                    { className: "badge"
+                    },
+                    Data.Params.Memd
+                  )
                 ),
+                " ",
                 React.createElement(
-                  "a",
-                  { href: Data.Params.Dlinks.Memd.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Memd.More.ExtraClass != null ? Data.Params.Dlinks.Memd.More.ExtraClass : "")
-
+                  "div",
+                  { className: "btn-group"
                   },
-                  Data.Params.Dlinks.Memd.More.Text,
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Dlinks.Memd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Memd.Less.ExtraClass != null ? Data.Params.Dlinks.Memd.Less.ExtraClass : "")
+                    },
+                    "- ",
+                    Data.Params.Dlinks.Memd.Less.Text
+                  ),
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Dlinks.Memd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Memd.More.ExtraClass != null ? Data.Params.Dlinks.Memd.More.ExtraClass : "")
+                    },
+                    Data.Params.Dlinks.Memd.More.Text,
+                    " +"
+                  )
+                )
+              ),
+              React.createElement(
+                "li",
+                null,
+                React.createElement(
+                  "span",
+                  null,
+                  React.createElement(
+                    "b",
+                    null,
+                    "Rows"
+                  ),
                   " ",
                   React.createElement(
                     "span",
-                    { className: "xlabel xlabel-default"
+                    { className: "badge"
                     },
-                    "+"
+                    Data.Params.Memn.Absolute
+                  )
+                ),
+                " ",
+                React.createElement(
+                  "div",
+                  { className: "btn-group"
+                  },
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Nlinks.Memn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Memn.Less.ExtraClass != null ? Data.Params.Nlinks.Memn.Less.ExtraClass : "")
+                    },
+                    "- ",
+                    Data.Params.Nlinks.Memn.Less.Text
+                  ),
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Nlinks.Memn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Memn.More.ExtraClass != null ? Data.Params.Nlinks.Memn.More.ExtraClass : "")
+                    },
+                    Data.Params.Nlinks.Memn.More.Text,
+                    " +"
                   )
                 )
               )
-            ),
-            React.createElement("td", { className: "col-md-10"
-            })
-          ),
-          React.createElement(
-            "tr",
-            { className: "panel-config"
-            },
-            React.createElement(
-              "td",
-              { className: "col-md-2"
-              },
-              React.createElement(
-                "div",
-                { className: "text-right text-nowrap"
-                },
-                "Rows ",
-                React.createElement(
-                  "span",
-                  { className: "badge"
-                  },
-                  Data.Params.Memn.Absolute
-                )
-              )
-            ),
-            React.createElement(
-              "td",
-              null,
-              React.createElement(
-                "div",
-                { className: "btn-group nowrap-group", role: "group"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Nlinks.Memn.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Memn.Less.ExtraClass != null ? Data.Params.Nlinks.Memn.Less.ExtraClass : "")
-
-                  },
-                  React.createElement(
-                    "span",
-                    { className: "xlabel xlabel-default"
-                    },
-                    "-"
-                  ),
-                  " ",
-                  Data.Params.Nlinks.Memn.Less.Text
-                ),
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Nlinks.Memn.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Memn.More.ExtraClass != null ? Data.Params.Nlinks.Memn.More.ExtraClass : "")
-
-                  },
-                  Data.Params.Nlinks.Memn.More.Text,
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "xlabel xlabel-default"
-                    },
-                    "+"
-                  )
-                )
-              )
-            ),
-            React.createElement("td", { className: "col-md-10"
-            })
-          ),
-          "  "
+            )
+          )
         ),
-        "  ",
         React.createElement(
           "table",
           { className: Data.Params.Memn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
@@ -369,157 +324,112 @@ define(function (require) {
         "div",
         { className: !Data.Params.Ifn.Negative ? "" : "panel panel-default"
         },
-        "  ",
         React.createElement(
           "div",
-          { className: !Data.Params.Ifn.Negative ? "" : "panel-heading"
+          { className: "h4 padding-left-like-panel-heading"
           },
-          "    ",
           React.createElement(
             "a",
-            { href: Data.Params.Tlinks.Ifn, onClick: this.handleClick, className: "panel-title btn-block"
+            { href: Data.Params.Tlinks.Ifn, onClick: this.handleClick
             },
-            "      ",
-            React.createElement(
-              "b",
-              { className: !Data.Params.Ifn.Negative ? "h4" : "h4 bg-info"
-              },
-              "Interfaces"
-            ),
-            "    "
-          ),
-          "  "
+            "Interfaces"
+          )
         ),
-        "  ",
         React.createElement(
-          "table",
-          { className: !Data.Params.Ifn.Negative ? "table collapse-hidden" : "table"
+          "ul",
+          { className: !Data.Params.Ifn.Negative ? "collapse-hidden" : "list-group"
           },
           React.createElement(
-            "tr",
-            { className: "panel-config"
+            "li",
+            { className: "list-group-item text-nowrap th"
             },
             React.createElement(
-              "td",
-              { className: "col-md-2"
+              "ul",
+              { className: "list-inline"
               },
               React.createElement(
-                "div",
-                { className: "text-right text-nowrap"
-                },
-                "Delay ",
+                "li",
+                null,
                 React.createElement(
                   "span",
-                  { className: "badge"
-                  },
-                  Data.Params.Ifd
-                )
-              )
-            ),
-            React.createElement(
-              "td",
-              null,
-              React.createElement(
-                "div",
-                { className: "btn-group nowrap-group", role: "group"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Dlinks.Ifd.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.Less.ExtraClass != null ? Data.Params.Dlinks.Ifd.Less.ExtraClass : "")
-
-                  },
+                  null,
                   React.createElement(
-                    "span",
-                    { className: "xlabel xlabel-default"
-                    },
-                    "-"
+                    "b",
+                    null,
+                    "Delay"
                   ),
                   " ",
-                  Data.Params.Dlinks.Ifd.Less.Text
+                  React.createElement(
+                    "span",
+                    { className: "badge"
+                    },
+                    Data.Params.Ifd
+                  )
                 ),
+                " ",
                 React.createElement(
-                  "a",
-                  { href: Data.Params.Dlinks.Ifd.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.More.ExtraClass != null ? Data.Params.Dlinks.Ifd.More.ExtraClass : "")
-
+                  "div",
+                  { className: "btn-group"
                   },
-                  Data.Params.Dlinks.Ifd.More.Text,
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Dlinks.Ifd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.Less.ExtraClass != null ? Data.Params.Dlinks.Ifd.Less.ExtraClass : "")
+                    },
+                    "- ",
+                    Data.Params.Dlinks.Ifd.Less.Text
+                  ),
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Dlinks.Ifd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.More.ExtraClass != null ? Data.Params.Dlinks.Ifd.More.ExtraClass : "")
+                    },
+                    Data.Params.Dlinks.Ifd.More.Text,
+                    " +"
+                  )
+                )
+              ),
+              React.createElement(
+                "li",
+                null,
+                React.createElement(
+                  "span",
+                  null,
+                  React.createElement(
+                    "b",
+                    null,
+                    "Rows"
+                  ),
                   " ",
                   React.createElement(
                     "span",
-                    { className: "xlabel xlabel-default"
+                    { className: "badge"
                     },
-                    "+"
+                    Data.Params.Ifn.Absolute
+                  )
+                ),
+                " ",
+                React.createElement(
+                  "div",
+                  { className: "btn-group"
+                  },
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Nlinks.Ifn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.Less.ExtraClass != null ? Data.Params.Nlinks.Ifn.Less.ExtraClass : "")
+                    },
+                    "- ",
+                    Data.Params.Nlinks.Ifn.Less.Text
+                  ),
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Nlinks.Ifn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.More.ExtraClass != null ? Data.Params.Nlinks.Ifn.More.ExtraClass : "")
+                    },
+                    Data.Params.Nlinks.Ifn.More.Text,
+                    " +"
                   )
                 )
               )
-            ),
-            React.createElement("td", { className: "col-md-10"
-            })
-          ),
-          React.createElement(
-            "tr",
-            { className: "panel-config"
-            },
-            React.createElement(
-              "td",
-              { className: "col-md-2"
-              },
-              React.createElement(
-                "div",
-                { className: "text-right text-nowrap"
-                },
-                "Rows ",
-                React.createElement(
-                  "span",
-                  { className: "badge"
-                  },
-                  Data.Params.Ifn.Absolute
-                )
-              )
-            ),
-            React.createElement(
-              "td",
-              null,
-              React.createElement(
-                "div",
-                { className: "btn-group nowrap-group", role: "group"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Nlinks.Ifn.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.Less.ExtraClass != null ? Data.Params.Nlinks.Ifn.Less.ExtraClass : "")
-
-                  },
-                  React.createElement(
-                    "span",
-                    { className: "xlabel xlabel-default"
-                    },
-                    "-"
-                  ),
-                  " ",
-                  Data.Params.Nlinks.Ifn.Less.Text
-                ),
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Nlinks.Ifn.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.More.ExtraClass != null ? Data.Params.Nlinks.Ifn.More.ExtraClass : "")
-
-                  },
-                  Data.Params.Nlinks.Ifn.More.Text,
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "xlabel xlabel-default"
-                    },
-                    "+"
-                  )
-                )
-              )
-            ),
-            React.createElement("td", { className: "col-md-10"
-            })
-          ),
-          "  "
+            )
+          )
         ),
-        "  ",
         React.createElement(
           "table",
           { className: Data.Params.Ifn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
@@ -639,157 +549,112 @@ define(function (require) {
         "div",
         { className: !Data.Params.CPUn.Negative ? "" : "panel panel-default"
         },
-        "  ",
         React.createElement(
           "div",
-          { className: !Data.Params.CPUn.Negative ? "" : "panel-heading"
+          { className: "h4 padding-left-like-panel-heading"
           },
-          "    ",
           React.createElement(
             "a",
-            { href: Data.Params.Tlinks.CPUn, onClick: this.handleClick, className: "panel-title btn-block"
+            { href: Data.Params.Tlinks.CPUn, onClick: this.handleClick
             },
-            "      ",
-            React.createElement(
-              "b",
-              { className: !Data.Params.CPUn.Negative ? "h4" : "h4 bg-info"
-              },
-              "CPU"
-            ),
-            "    "
-          ),
-          "  "
+            "CPU"
+          )
         ),
-        "  ",
         React.createElement(
-          "table",
-          { className: !Data.Params.CPUn.Negative ? "table collapse-hidden" : "table"
+          "ul",
+          { className: !Data.Params.CPUn.Negative ? "collapse-hidden" : "list-group"
           },
           React.createElement(
-            "tr",
-            { className: "panel-config"
+            "li",
+            { className: "list-group-item text-nowrap th"
             },
             React.createElement(
-              "td",
-              { className: "col-md-2"
+              "ul",
+              { className: "list-inline"
               },
               React.createElement(
-                "div",
-                { className: "text-right text-nowrap"
-                },
-                "Delay ",
+                "li",
+                null,
                 React.createElement(
                   "span",
-                  { className: "badge"
-                  },
-                  Data.Params.CPUd
-                )
-              )
-            ),
-            React.createElement(
-              "td",
-              null,
-              React.createElement(
-                "div",
-                { className: "btn-group nowrap-group", role: "group"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Dlinks.CPUd.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.Less.ExtraClass != null ? Data.Params.Dlinks.CPUd.Less.ExtraClass : "")
-
-                  },
+                  null,
                   React.createElement(
-                    "span",
-                    { className: "xlabel xlabel-default"
-                    },
-                    "-"
+                    "b",
+                    null,
+                    "Delay"
                   ),
                   " ",
-                  Data.Params.Dlinks.CPUd.Less.Text
+                  React.createElement(
+                    "span",
+                    { className: "badge"
+                    },
+                    Data.Params.CPUd
+                  )
                 ),
+                " ",
                 React.createElement(
-                  "a",
-                  { href: Data.Params.Dlinks.CPUd.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.More.ExtraClass != null ? Data.Params.Dlinks.CPUd.More.ExtraClass : "")
-
+                  "div",
+                  { className: "btn-group"
                   },
-                  Data.Params.Dlinks.CPUd.More.Text,
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Dlinks.CPUd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.Less.ExtraClass != null ? Data.Params.Dlinks.CPUd.Less.ExtraClass : "")
+                    },
+                    "- ",
+                    Data.Params.Dlinks.CPUd.Less.Text
+                  ),
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Dlinks.CPUd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.More.ExtraClass != null ? Data.Params.Dlinks.CPUd.More.ExtraClass : "")
+                    },
+                    Data.Params.Dlinks.CPUd.More.Text,
+                    " +"
+                  )
+                )
+              ),
+              React.createElement(
+                "li",
+                null,
+                React.createElement(
+                  "span",
+                  null,
+                  React.createElement(
+                    "b",
+                    null,
+                    "Rows"
+                  ),
                   " ",
                   React.createElement(
                     "span",
-                    { className: "xlabel xlabel-default"
+                    { className: "badge"
                     },
-                    "+"
+                    Data.Params.CPUn.Absolute
+                  )
+                ),
+                " ",
+                React.createElement(
+                  "div",
+                  { className: "btn-group"
+                  },
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Nlinks.CPUn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Less.ExtraClass != null ? Data.Params.Nlinks.CPUn.Less.ExtraClass : "")
+                    },
+                    "- ",
+                    Data.Params.Nlinks.CPUn.Less.Text
+                  ),
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Nlinks.CPUn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.More.ExtraClass != null ? Data.Params.Nlinks.CPUn.More.ExtraClass : "")
+                    },
+                    Data.Params.Nlinks.CPUn.More.Text,
+                    " +"
                   )
                 )
               )
-            ),
-            React.createElement("td", { className: "col-md-10"
-            })
-          ),
-          React.createElement(
-            "tr",
-            { className: "panel-config"
-            },
-            React.createElement(
-              "td",
-              { className: "col-md-2"
-              },
-              React.createElement(
-                "div",
-                { className: "text-right text-nowrap"
-                },
-                "Rows ",
-                React.createElement(
-                  "span",
-                  { className: "badge"
-                  },
-                  Data.Params.CPUn.Absolute
-                )
-              )
-            ),
-            React.createElement(
-              "td",
-              null,
-              React.createElement(
-                "div",
-                { className: "btn-group nowrap-group", role: "group"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Nlinks.CPUn.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Less.ExtraClass != null ? Data.Params.Nlinks.CPUn.Less.ExtraClass : "")
-
-                  },
-                  React.createElement(
-                    "span",
-                    { className: "xlabel xlabel-default"
-                    },
-                    "-"
-                  ),
-                  " ",
-                  Data.Params.Nlinks.CPUn.Less.Text
-                ),
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Nlinks.CPUn.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.More.ExtraClass != null ? Data.Params.Nlinks.CPUn.More.ExtraClass : "")
-
-                  },
-                  Data.Params.Nlinks.CPUn.More.Text,
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "xlabel xlabel-default"
-                    },
-                    "+"
-                  )
-                )
-              )
-            ),
-            React.createElement("td", { className: "col-md-10"
-            })
-          ),
-          "  "
+            )
+          )
         ),
-        "  ",
         React.createElement(
           "table",
           { className: Data.Params.CPUn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
@@ -916,157 +781,112 @@ define(function (require) {
         "div",
         { className: !Data.Params.Dfn.Negative ? "" : "panel panel-default"
         },
-        "  ",
         React.createElement(
           "div",
-          { className: !Data.Params.Dfn.Negative ? "" : "panel-heading"
+          { className: "h4 padding-left-like-panel-heading"
           },
-          "    ",
           React.createElement(
             "a",
-            { href: Data.Params.Tlinks.Dfn, onClick: this.handleClick, className: "panel-title btn-block"
+            { href: Data.Params.Tlinks.Dfn, onClick: this.handleClick
             },
-            "      ",
-            React.createElement(
-              "b",
-              { className: !Data.Params.Dfn.Negative ? "h4" : "h4 bg-info"
-              },
-              "Disk usage"
-            ),
-            "    "
-          ),
-          "  "
+            "Disk usage"
+          )
         ),
-        "  ",
         React.createElement(
-          "table",
-          { className: !Data.Params.Dfn.Negative ? "table collapse-hidden" : "table"
+          "ul",
+          { className: !Data.Params.Dfn.Negative ? "collapse-hidden" : "list-group"
           },
           React.createElement(
-            "tr",
-            { className: "panel-config"
+            "li",
+            { className: "list-group-item text-nowrap th"
             },
             React.createElement(
-              "td",
-              { className: "col-md-2"
+              "ul",
+              { className: "list-inline"
               },
               React.createElement(
-                "div",
-                { className: "text-right text-nowrap"
-                },
-                "Delay ",
+                "li",
+                null,
                 React.createElement(
                   "span",
-                  { className: "badge"
-                  },
-                  Data.Params.Dfd
-                )
-              )
-            ),
-            React.createElement(
-              "td",
-              null,
-              React.createElement(
-                "div",
-                { className: "btn-group nowrap-group", role: "group"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Dlinks.Dfd.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Dfd.Less.ExtraClass != null ? Data.Params.Dlinks.Dfd.Less.ExtraClass : "")
-
-                  },
+                  null,
                   React.createElement(
-                    "span",
-                    { className: "xlabel xlabel-default"
-                    },
-                    "-"
+                    "b",
+                    null,
+                    "Delay"
                   ),
                   " ",
-                  Data.Params.Dlinks.Dfd.Less.Text
+                  React.createElement(
+                    "span",
+                    { className: "badge"
+                    },
+                    Data.Params.Dfd
+                  )
                 ),
+                " ",
                 React.createElement(
-                  "a",
-                  { href: Data.Params.Dlinks.Dfd.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Dfd.More.ExtraClass != null ? Data.Params.Dlinks.Dfd.More.ExtraClass : "")
-
+                  "div",
+                  { className: "btn-group"
                   },
-                  Data.Params.Dlinks.Dfd.More.Text,
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Dlinks.Dfd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Dfd.Less.ExtraClass != null ? Data.Params.Dlinks.Dfd.Less.ExtraClass : "")
+                    },
+                    "- ",
+                    Data.Params.Dlinks.Dfd.Less.Text
+                  ),
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Dlinks.Dfd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Dfd.More.ExtraClass != null ? Data.Params.Dlinks.Dfd.More.ExtraClass : "")
+                    },
+                    Data.Params.Dlinks.Dfd.More.Text,
+                    " +"
+                  )
+                )
+              ),
+              React.createElement(
+                "li",
+                null,
+                React.createElement(
+                  "span",
+                  null,
+                  React.createElement(
+                    "b",
+                    null,
+                    "Rows"
+                  ),
                   " ",
                   React.createElement(
                     "span",
-                    { className: "xlabel xlabel-default"
+                    { className: "badge"
                     },
-                    "+"
+                    Data.Params.Dfn.Absolute
+                  )
+                ),
+                " ",
+                React.createElement(
+                  "div",
+                  { className: "btn-group"
+                  },
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Nlinks.Dfn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Dfn.Less.ExtraClass != null ? Data.Params.Nlinks.Dfn.Less.ExtraClass : "")
+                    },
+                    "- ",
+                    Data.Params.Nlinks.Dfn.Less.Text
+                  ),
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Nlinks.Dfn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Dfn.More.ExtraClass != null ? Data.Params.Nlinks.Dfn.More.ExtraClass : "")
+                    },
+                    Data.Params.Nlinks.Dfn.More.Text,
+                    " +"
                   )
                 )
               )
-            ),
-            React.createElement("td", { className: "col-md-10"
-            })
-          ),
-          React.createElement(
-            "tr",
-            { className: "panel-config"
-            },
-            React.createElement(
-              "td",
-              { className: "col-md-2"
-              },
-              React.createElement(
-                "div",
-                { className: "text-right text-nowrap"
-                },
-                "Rows ",
-                React.createElement(
-                  "span",
-                  { className: "badge"
-                  },
-                  Data.Params.Dfn.Absolute
-                )
-              )
-            ),
-            React.createElement(
-              "td",
-              null,
-              React.createElement(
-                "div",
-                { className: "btn-group nowrap-group", role: "group"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Nlinks.Dfn.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Dfn.Less.ExtraClass != null ? Data.Params.Nlinks.Dfn.Less.ExtraClass : "")
-
-                  },
-                  React.createElement(
-                    "span",
-                    { className: "xlabel xlabel-default"
-                    },
-                    "-"
-                  ),
-                  " ",
-                  Data.Params.Nlinks.Dfn.Less.Text
-                ),
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Nlinks.Dfn.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Dfn.More.ExtraClass != null ? Data.Params.Nlinks.Dfn.More.ExtraClass : "")
-
-                  },
-                  Data.Params.Nlinks.Dfn.More.Text,
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "xlabel xlabel-default"
-                    },
-                    "+"
-                  )
-                )
-              )
-            ),
-            React.createElement("td", { className: "col-md-10"
-            })
-          ),
-          "  "
+            )
+          )
         ),
-        "  ",
         React.createElement(
           "table",
           { className: Data.Params.Dfn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
@@ -1076,7 +896,8 @@ define(function (require) {
             null,
             React.createElement(
               "tr",
-              null,
+              { className: "text-nowrap"
+              },
               React.createElement(
                 "th",
                 { className: "header "
@@ -1085,7 +906,7 @@ define(function (require) {
                   "a",
                   { href: Data.Params.Vlinks.Dfk[1 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[1 - 1].LinkClass
                   },
-                  "  Device",
+                  "Device",
                   React.createElement("span", { className: Data.Params.Vlinks.Dfk[1 - 1].CaretClass
                   })
                 )
@@ -1098,7 +919,7 @@ define(function (require) {
                   "a",
                   { href: Data.Params.Vlinks.Dfk[2 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[2 - 1].LinkClass
                   },
-                  "  Mounted",
+                  "Mounted",
                   React.createElement("span", { className: Data.Params.Vlinks.Dfk[2 - 1].CaretClass
                   })
                 )
@@ -1111,7 +932,7 @@ define(function (require) {
                   "a",
                   { href: Data.Params.Vlinks.Dfk[3 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[3 - 1].LinkClass
                   },
-                  "  Avail",
+                  "Avail",
                   React.createElement("span", { className: Data.Params.Vlinks.Dfk[3 - 1].CaretClass
                   })
                 )
@@ -1124,7 +945,7 @@ define(function (require) {
                   "a",
                   { href: Data.Params.Vlinks.Dfk[4 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[4 - 1].LinkClass
                   },
-                  "  Use%",
+                  "Use%",
                   React.createElement("span", { className: Data.Params.Vlinks.Dfk[4 - 1].CaretClass
                   })
                 )
@@ -1137,7 +958,7 @@ define(function (require) {
                   "a",
                   { href: Data.Params.Vlinks.Dfk[5 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[5 - 1].LinkClass
                   },
-                  "  Used",
+                  "Used",
                   React.createElement("span", { className: Data.Params.Vlinks.Dfk[5 - 1].CaretClass
                   })
                 )
@@ -1150,7 +971,7 @@ define(function (require) {
                   "a",
                   { href: Data.Params.Vlinks.Dfk[6 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[6 - 1].LinkClass
                   },
-                  "  Total",
+                  "Total",
                   React.createElement("span", { className: Data.Params.Vlinks.Dfk[6 - 1].CaretClass
                   })
                 )
@@ -1236,157 +1057,112 @@ define(function (require) {
         "div",
         { className: !Data.Params.Psn.Negative ? "" : "panel panel-default"
         },
-        "  ",
         React.createElement(
           "div",
-          { className: !Data.Params.Psn.Negative ? "" : "panel-heading"
+          { className: "h4 padding-left-like-panel-heading"
           },
-          "    ",
           React.createElement(
             "a",
-            { href: Data.Params.Tlinks.Psn, onClick: this.handleClick, className: "panel-title btn-block"
+            { href: Data.Params.Tlinks.Psn, onClick: this.handleClick
             },
-            "      ",
-            React.createElement(
-              "b",
-              { className: !Data.Params.Psn.Negative ? "h4" : "h4 bg-info"
-              },
-              "Processes"
-            ),
-            "    "
-          ),
-          "  "
+            "Processes"
+          )
         ),
-        "  ",
         React.createElement(
-          "table",
-          { className: !Data.Params.Psn.Negative ? "table collapse-hidden" : "table"
+          "ul",
+          { className: !Data.Params.Psn.Negative ? "collapse-hidden" : "list-group"
           },
           React.createElement(
-            "tr",
-            { className: "panel-config"
+            "li",
+            { className: "list-group-item text-nowrap th"
             },
             React.createElement(
-              "td",
-              { className: "col-md-2"
+              "ul",
+              { className: "list-inline"
               },
               React.createElement(
-                "div",
-                { className: "text-right text-nowrap"
-                },
-                "Delay ",
+                "li",
+                null,
                 React.createElement(
                   "span",
-                  { className: "badge"
-                  },
-                  Data.Params.Psd
-                )
-              )
-            ),
-            React.createElement(
-              "td",
-              null,
-              React.createElement(
-                "div",
-                { className: "btn-group nowrap-group", role: "group"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Dlinks.Psd.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Psd.Less.ExtraClass != null ? Data.Params.Dlinks.Psd.Less.ExtraClass : "")
-
-                  },
+                  null,
                   React.createElement(
-                    "span",
-                    { className: "xlabel xlabel-default"
-                    },
-                    "-"
+                    "b",
+                    null,
+                    "Delay"
                   ),
                   " ",
-                  Data.Params.Dlinks.Psd.Less.Text
+                  React.createElement(
+                    "span",
+                    { className: "badge"
+                    },
+                    Data.Params.Psd
+                  )
                 ),
+                " ",
                 React.createElement(
-                  "a",
-                  { href: Data.Params.Dlinks.Psd.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Psd.More.ExtraClass != null ? Data.Params.Dlinks.Psd.More.ExtraClass : "")
-
+                  "div",
+                  { className: "btn-group"
                   },
-                  Data.Params.Dlinks.Psd.More.Text,
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Dlinks.Psd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Psd.Less.ExtraClass != null ? Data.Params.Dlinks.Psd.Less.ExtraClass : "")
+                    },
+                    "- ",
+                    Data.Params.Dlinks.Psd.Less.Text
+                  ),
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Dlinks.Psd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Psd.More.ExtraClass != null ? Data.Params.Dlinks.Psd.More.ExtraClass : "")
+                    },
+                    Data.Params.Dlinks.Psd.More.Text,
+                    " +"
+                  )
+                )
+              ),
+              React.createElement(
+                "li",
+                null,
+                React.createElement(
+                  "span",
+                  null,
+                  React.createElement(
+                    "b",
+                    null,
+                    "Rows"
+                  ),
                   " ",
                   React.createElement(
                     "span",
-                    { className: "xlabel xlabel-default"
+                    { className: "badge"
                     },
-                    "+"
+                    Data.Params.Psn.Absolute
+                  )
+                ),
+                " ",
+                React.createElement(
+                  "div",
+                  { className: "btn-group"
+                  },
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Nlinks.Psn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Psn.Less.ExtraClass != null ? Data.Params.Nlinks.Psn.Less.ExtraClass : "")
+                    },
+                    "- ",
+                    Data.Params.Nlinks.Psn.Less.Text
+                  ),
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Nlinks.Psn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Psn.More.ExtraClass != null ? Data.Params.Nlinks.Psn.More.ExtraClass : "")
+                    },
+                    Data.Params.Nlinks.Psn.More.Text,
+                    " +"
                   )
                 )
               )
-            ),
-            React.createElement("td", { className: "col-md-10"
-            })
-          ),
-          React.createElement(
-            "tr",
-            { className: "panel-config"
-            },
-            React.createElement(
-              "td",
-              { className: "col-md-2"
-              },
-              React.createElement(
-                "div",
-                { className: "text-right text-nowrap"
-                },
-                "Rows ",
-                React.createElement(
-                  "span",
-                  { className: "badge"
-                  },
-                  Data.Params.Psn.Absolute
-                )
-              )
-            ),
-            React.createElement(
-              "td",
-              null,
-              React.createElement(
-                "div",
-                { className: "btn-group nowrap-group", role: "group"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Nlinks.Psn.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Psn.Less.ExtraClass != null ? Data.Params.Nlinks.Psn.Less.ExtraClass : "")
-
-                  },
-                  React.createElement(
-                    "span",
-                    { className: "xlabel xlabel-default"
-                    },
-                    "-"
-                  ),
-                  " ",
-                  Data.Params.Nlinks.Psn.Less.Text
-                ),
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Nlinks.Psn.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Psn.More.ExtraClass != null ? Data.Params.Nlinks.Psn.More.ExtraClass : "")
-
-                  },
-                  Data.Params.Nlinks.Psn.More.Text,
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "xlabel xlabel-default"
-                    },
-                    "+"
-                  )
-                )
-              )
-            ),
-            React.createElement("td", { className: "col-md-10"
-            })
-          ),
-          "  "
+            )
+          )
         ),
-        "  ",
         React.createElement(
           "table",
           { className: Data.Params.Psn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
@@ -1396,7 +1172,8 @@ define(function (require) {
             null,
             React.createElement(
               "tr",
-              null,
+              { className: "text-nowrap"
+              },
               React.createElement(
                 "th",
                 { className: "header text-right"
@@ -1405,7 +1182,7 @@ define(function (require) {
                   "a",
                   { href: Data.Params.Vlinks.Psk[1 - 1].LinkHref, className: Data.Params.Vlinks.Psk[1 - 1].LinkClass
                   },
-                  "  PID",
+                  "PID",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[1 - 1].CaretClass
                   })
                 )
@@ -1418,7 +1195,7 @@ define(function (require) {
                   "a",
                   { href: Data.Params.Vlinks.Psk[2 - 1].LinkHref, className: Data.Params.Vlinks.Psk[2 - 1].LinkClass
                   },
-                  "  UID",
+                  "UID",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[2 - 1].CaretClass
                   })
                 )
@@ -1431,7 +1208,7 @@ define(function (require) {
                   "a",
                   { href: Data.Params.Vlinks.Psk[3 - 1].LinkHref, className: Data.Params.Vlinks.Psk[3 - 1].LinkClass
                   },
-                  "  USER",
+                  "USER",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[3 - 1].CaretClass
                   })
                 )
@@ -1444,7 +1221,7 @@ define(function (require) {
                   "a",
                   { href: Data.Params.Vlinks.Psk[4 - 1].LinkHref, className: Data.Params.Vlinks.Psk[4 - 1].LinkClass
                   },
-                  "  PR",
+                  "PR",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[4 - 1].CaretClass
                   })
                 )
@@ -1457,7 +1234,7 @@ define(function (require) {
                   "a",
                   { href: Data.Params.Vlinks.Psk[5 - 1].LinkHref, className: Data.Params.Vlinks.Psk[5 - 1].LinkClass
                   },
-                  "  NI",
+                  "NI",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[5 - 1].CaretClass
                   })
                 )
@@ -1470,7 +1247,7 @@ define(function (require) {
                   "a",
                   { href: Data.Params.Vlinks.Psk[6 - 1].LinkHref, className: Data.Params.Vlinks.Psk[6 - 1].LinkClass
                   },
-                  "  VIRT",
+                  "VIRT",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[6 - 1].CaretClass
                   })
                 )
@@ -1483,7 +1260,7 @@ define(function (require) {
                   "a",
                   { href: Data.Params.Vlinks.Psk[7 - 1].LinkHref, className: Data.Params.Vlinks.Psk[7 - 1].LinkClass
                   },
-                  "  RES",
+                  "RES",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[7 - 1].CaretClass
                   })
                 )
@@ -1496,7 +1273,7 @@ define(function (require) {
                   "a",
                   { href: Data.Params.Vlinks.Psk[8 - 1].LinkHref, className: Data.Params.Vlinks.Psk[8 - 1].LinkClass
                   },
-                  "  TIME",
+                  "TIME",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[8 - 1].CaretClass
                   })
                 )
@@ -1509,7 +1286,7 @@ define(function (require) {
                   "a",
                   { href: Data.Params.Vlinks.Psk[9 - 1].LinkHref, className: Data.Params.Vlinks.Psk[9 - 1].LinkClass
                   },
-                  "  COMMAND",
+                  "COMMAND",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[9 - 1].CaretClass
                   })
                 )
@@ -1575,157 +1352,112 @@ define(function (require) {
         "div",
         { className: !Data.Params.Vgn.Negative ? "" : "panel panel-default"
         },
-        "  ",
         React.createElement(
           "div",
-          { className: !Data.Params.Vgn.Negative ? "" : "panel-heading"
+          { className: "h4 padding-left-like-panel-heading"
           },
-          "    ",
           React.createElement(
             "a",
-            { href: Data.Params.Tlinks.Vgn, onClick: this.handleClick, className: "panel-title btn-block"
+            { href: Data.Params.Tlinks.Vgn, onClick: this.handleClick
             },
-            "      ",
-            React.createElement(
-              "b",
-              { className: !Data.Params.Vgn.Negative ? "h4" : "h4 bg-info"
-              },
-              "Vagrant"
-            ),
-            "    "
-          ),
-          "  "
+            "Vagrant"
+          )
         ),
-        "  ",
         React.createElement(
-          "table",
-          { className: !Data.Params.Vgn.Negative ? "table collapse-hidden" : "table"
+          "ul",
+          { className: !Data.Params.Vgn.Negative ? "collapse-hidden" : "list-group"
           },
           React.createElement(
-            "tr",
-            { className: "panel-config"
+            "li",
+            { className: "list-group-item text-nowrap th"
             },
             React.createElement(
-              "td",
-              { className: "col-md-2"
+              "ul",
+              { className: "list-inline"
               },
               React.createElement(
-                "div",
-                { className: "text-right text-nowrap"
-                },
-                "Delay ",
+                "li",
+                null,
                 React.createElement(
                   "span",
-                  { className: "badge"
-                  },
-                  Data.Params.Vgd
-                )
-              )
-            ),
-            React.createElement(
-              "td",
-              null,
-              React.createElement(
-                "div",
-                { className: "btn-group nowrap-group", role: "group"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Dlinks.Vgd.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Vgd.Less.ExtraClass != null ? Data.Params.Dlinks.Vgd.Less.ExtraClass : "")
-
-                  },
+                  null,
                   React.createElement(
-                    "span",
-                    { className: "xlabel xlabel-default"
-                    },
-                    "-"
+                    "b",
+                    null,
+                    "Delay"
                   ),
                   " ",
-                  Data.Params.Dlinks.Vgd.Less.Text
+                  React.createElement(
+                    "span",
+                    { className: "badge"
+                    },
+                    Data.Params.Vgd
+                  )
                 ),
+                " ",
                 React.createElement(
-                  "a",
-                  { href: Data.Params.Dlinks.Vgd.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Dlinks.Vgd.More.ExtraClass != null ? Data.Params.Dlinks.Vgd.More.ExtraClass : "")
-
+                  "div",
+                  { className: "btn-group"
                   },
-                  Data.Params.Dlinks.Vgd.More.Text,
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Dlinks.Vgd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Vgd.Less.ExtraClass != null ? Data.Params.Dlinks.Vgd.Less.ExtraClass : "")
+                    },
+                    "- ",
+                    Data.Params.Dlinks.Vgd.Less.Text
+                  ),
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Dlinks.Vgd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Vgd.More.ExtraClass != null ? Data.Params.Dlinks.Vgd.More.ExtraClass : "")
+                    },
+                    Data.Params.Dlinks.Vgd.More.Text,
+                    " +"
+                  )
+                )
+              ),
+              React.createElement(
+                "li",
+                null,
+                React.createElement(
+                  "span",
+                  null,
+                  React.createElement(
+                    "b",
+                    null,
+                    "Rows"
+                  ),
                   " ",
                   React.createElement(
                     "span",
-                    { className: "xlabel xlabel-default"
+                    { className: "badge"
                     },
-                    "+"
+                    Data.Params.Vgn.Absolute
+                  )
+                ),
+                " ",
+                React.createElement(
+                  "div",
+                  { className: "btn-group"
+                  },
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Nlinks.Vgn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Vgn.Less.ExtraClass != null ? Data.Params.Nlinks.Vgn.Less.ExtraClass : "")
+                    },
+                    "- ",
+                    Data.Params.Nlinks.Vgn.Less.Text
+                  ),
+                  React.createElement(
+                    "a",
+                    { onClick: this.handleClick, href: Data.Params.Nlinks.Vgn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Vgn.More.ExtraClass != null ? Data.Params.Nlinks.Vgn.More.ExtraClass : "")
+                    },
+                    Data.Params.Nlinks.Vgn.More.Text,
+                    " +"
                   )
                 )
               )
-            ),
-            React.createElement("td", { className: "col-md-10"
-            })
-          ),
-          React.createElement(
-            "tr",
-            { className: "panel-config"
-            },
-            React.createElement(
-              "td",
-              { className: "col-md-2"
-              },
-              React.createElement(
-                "div",
-                { className: "text-right text-nowrap"
-                },
-                "Rows ",
-                React.createElement(
-                  "span",
-                  { className: "badge"
-                  },
-                  Data.Params.Vgn.Absolute
-                )
-              )
-            ),
-            React.createElement(
-              "td",
-              null,
-              React.createElement(
-                "div",
-                { className: "btn-group nowrap-group", role: "group"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Nlinks.Vgn.Less.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Vgn.Less.ExtraClass != null ? Data.Params.Nlinks.Vgn.Less.ExtraClass : "")
-
-                  },
-                  React.createElement(
-                    "span",
-                    { className: "xlabel xlabel-default"
-                    },
-                    "-"
-                  ),
-                  " ",
-                  Data.Params.Nlinks.Vgn.Less.Text
-                ),
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Nlinks.Vgn.More.Href, onClick: this.handleClick, className: "btn btn-default" + " " + (Data.Params.Nlinks.Vgn.More.ExtraClass != null ? Data.Params.Nlinks.Vgn.More.ExtraClass : "")
-
-                  },
-                  Data.Params.Nlinks.Vgn.More.Text,
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "xlabel xlabel-default"
-                    },
-                    "+"
-                  )
-                )
-              )
-            ),
-            React.createElement("td", { className: "col-md-10"
-            })
-          ),
-          "  "
+            )
+          )
         ),
-        "  ",
         React.createElement(
           "table",
           { className: Data.Params.Vgn.Absolute != 0 ? "table table-hover" : "collapse-hidden"

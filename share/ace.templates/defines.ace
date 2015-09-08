@@ -1,3 +1,43 @@
+[[define "startpanel"]]
+[[$N := (index . 0)]]
+[[$D := (index . 1)]]
+[[$t := (index . 2)]]
+  | <div {{ClassPositive [[$N]] "" "panel panel-default"}}>
+  div.h4.padding-left-like-panel-heading <a {{HrefT $p [[$N]]}}>[[$t]]</a>
+  | <ul  {{ClassPositive [[$N]] "collapse-hidden" "list-group"}}>
+  li.list-group-item.text-nowrap.th
+    ul.list-inline
+      li
+        span
+          b Delay
+          |  
+          span.badge {{[[$D]]}}
+        |  
+        div.btn-group
+          {{template "defines::alink_badgeleft"  LessD $p [[$D]] "btn btn-default"}}
+          {{template "defines::alink_badgeright" MoreD $p [[$D]] "btn btn-default"}}
+      li
+        span
+          b Rows
+          |  
+          span.badge {{[[$N]].Absolute}}
+        |  
+        div.btn-group
+          {{template "defines::alink_badgeleft"  LessN $p [[$N]] "btn btn-default"}}
+          {{template "defines::alink_badgeright" MoreN $p [[$N]] "btn btn-default"}}
+  | </ul>
+[[end]]
+
+= content alink_badgeleft
+  | <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}>{{.Badge}} {{.Text}}</a>
+= content alink_badgeright
+  | <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}>{{.Text}} {{.Badge}}</a>
+
+= content thvlink
+  th {{class}}="header {{.AlignClass}}"
+    | <a href={{.LinkHref}} {{class}}={{.LinkClass}}>{{.LinkText}}
+    | <span {{class}}={{.CaretClass}}></span></a>
+
 = content define_ifrows
   {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IF.List}}
@@ -57,12 +97,9 @@
 
 = content define_panelif
   {{$p := .Data.Params}}
-  [[template "startpanel" Chain `$p.Ifn` "Interfaces"]]
-  [[template "configrow_delay"  `$p.Ifd`]]
-  [[template "configrow_rows"   `$p.Ifn`]]
+  [[template "startpanel" Chain `$p.Ifn` `$p.Ifd` "Interfaces"]]
   |
-      </table>
-      {{template "defines::define_iftable" .}}
+    {{template "defines::define_iftable" .}}
     </div>
 
 = content define_dfrows
@@ -89,39 +126,26 @@
     {{end}}
   {{end}}
 
-= content enumlink
-  | <a href={{.LinkHref}} onClick={this.handleClick}>{{.LinkText}}</a>
-
-= content headerenumlink
-  th {{class}}="header {{.AlignClass}}"
-    |
-      <a href={{.LinkHref}} {{class}}={{.LinkClass}}>
-        {{.LinkText}}<span {{class}}={{.CaretClass}}></span>
-      </a>
-
 = content define_dftable
   {{$p := .Data.Params}}
   | <table {{ClassNonzero $p.Dfn "table table-hover" "collapse-hidden"}}>
   thead
-    tr
-      {{template "defines::headerenumlink" Vlink $p $p.Dfk 1 "Device"  ""          }}{{/* FS     */}}
-      {{template "defines::headerenumlink" Vlink $p $p.Dfk 2 "Mounted" ""          }}{{/* MP     */}}
-      {{template "defines::headerenumlink" Vlink $p $p.Dfk 3 "Avail"   "text-right"}}{{/* AVAIL  */}}
-      {{template "defines::headerenumlink" Vlink $p $p.Dfk 4 "Use%"    "text-right"}}{{/* USEPCT */}}
-      {{template "defines::headerenumlink" Vlink $p $p.Dfk 5 "Used"    "text-right"}}{{/* USED   */}}
-      {{template "defines::headerenumlink" Vlink $p $p.Dfk 6 "Total"   "text-right"}}{{/* TOTAL  */}}
+    tr.text-nowrap
+      {{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device"  ""          }}{{/* FS     */}}
+      {{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""          }}{{/* MP     */}}
+      {{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail"   "text-right"}}{{/* AVAIL  */}}
+      {{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%"    "text-right"}}{{/* USEPCT */}}
+      {{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used"    "text-right"}}{{/* USED   */}}
+      {{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total"   "text-right"}}{{/* TOTAL  */}}
   tbody
     {{template "defines::define_dfrows" .}}
   | </table>
 
 = content define_paneldf
   {{$p := .Data.Params}}
-  [[template "startpanel" Chain `$p.Dfn` "Disk usage"]]
-  [[template "configrow_delay"  `$p.Dfd`]]
-  [[template "configrow_rows"   `$p.Dfn`]]
+  [[template "startpanel" Chain `$p.Dfn` `$p.Dfd` "Disk usage"]]
   |
-      </table>
-      {{template "defines::define_dftable" .}}
+    {{template "defines::define_dftable" .}}
     </div>
 
 = content define_memrows
@@ -153,12 +177,9 @@
 
 = content define_panelmem
   {{$p := .Data.Params}}
-  [[template "startpanel" Chain `$p.Memn` "Memory"]]
-  [[template "configrow_delay"  `$p.Memd`]]
-  [[template "configrow_rows"   `$p.Memn`]]
+  [[template "startpanel" Chain `$p.Memn` `$p.Memd` "Memory"]]
   |
-      </table>
-      {{template "defines::define_memtable" .}}
+    {{template "defines::define_memtable" .}}
     </div>
 
 = content define_cpurows
@@ -190,12 +211,9 @@
 
 = content define_panelcpu
   {{$p := .Data.Params}}
-  [[template "startpanel" Chain `$p.CPUn` "CPU"]]
-  [[template "configrow_delay"  `$p.CPUd`]]
-  [[template "configrow_rows"   `$p.CPUn`]]
+  [[template "startpanel" Chain `$p.CPUn` `$p.CPUd` "CPU"]]
   |
-      </table>
-      {{template "defines::define_cputable" .}}
+    {{template "defines::define_cputable" .}}
     </div>
 
 = content define_psrows
@@ -219,79 +237,26 @@
   {{$p := .Data.Params}}
   | <table {{ClassNonzero $p.Psn "table table-hover" "collapse-hidden"}}>
   thead
-    tr
-      {{template "defines::headerenumlink" Vlink $p $p.Psk 1 "PID"     "text-right" }}
-      {{template "defines::headerenumlink" Vlink $p $p.Psk 2 "UID"     "text-right" }}
-      {{template "defines::headerenumlink" Vlink $p $p.Psk 3 "USER"    ""           }}
-      {{template "defines::headerenumlink" Vlink $p $p.Psk 4 "PR"      "text-right" }}{{/* PRI  */}}
-      {{template "defines::headerenumlink" Vlink $p $p.Psk 5 "NI"      "text-right" }}{{/* NICE */}}
-      {{template "defines::headerenumlink" Vlink $p $p.Psk 6 "VIRT"    "text-right" }}
-      {{template "defines::headerenumlink" Vlink $p $p.Psk 7 "RES"     "text-right" }}
-      {{template "defines::headerenumlink" Vlink $p $p.Psk 8 "TIME"    "text-center"}}
-      {{template "defines::headerenumlink" Vlink $p $p.Psk 9 "COMMAND" ""           }}{{/* NAME */}}
+    tr.text-nowrap
+      {{template "defines::thvlink" Vlink $p $p.Psk 1 "PID"     "text-right" }}
+      {{template "defines::thvlink" Vlink $p $p.Psk 2 "UID"     "text-right" }}
+      {{template "defines::thvlink" Vlink $p $p.Psk 3 "USER"    ""           }}
+      {{template "defines::thvlink" Vlink $p $p.Psk 4 "PR"      "text-right" }}{{/* PRI  */}}
+      {{template "defines::thvlink" Vlink $p $p.Psk 5 "NI"      "text-right" }}{{/* NICE */}}
+      {{template "defines::thvlink" Vlink $p $p.Psk 6 "VIRT"    "text-right" }}
+      {{template "defines::thvlink" Vlink $p $p.Psk 7 "RES"     "text-right" }}
+      {{template "defines::thvlink" Vlink $p $p.Psk 8 "TIME"    "text-center"}}
+      {{template "defines::thvlink" Vlink $p $p.Psk 9 "COMMAND" ""           }}{{/* NAME */}}
   tbody
     {{template "defines::define_psrows" .}}
   | </table>
 
-[[define "startpanel"]]
-[[$N     := (index . 0)]]
-[[$title := (index . 1)]]
-  |
-    <div     {{ClassPositive [[$N]] "" "panel panel-default"}}>
-      <div   {{ClassPositive [[$N]] "" "panel-heading"}}>
-        <a   {{HrefT $p [[$N]]}} {{class}}="panel-title btn-block">
-          <b {{ClassPositive [[$N]] "h4" "h4 bg-info"}}>[[$title]]</b>
-        </a>
-      </div>
-      <table {{ClassPositive [[$N]] "table collapse-hidden" "table"}}>
-[[end]]
-
-[[define "configrow_delay"]]
-[[$D := .]]
-  tr.panel-config
-    td.col-md-2
-      div.text-right.text-nowrap
-        | Delay&nbsp;
-        span.badge {{[[$D]]}}
-    td
-      div.btn-group.nowrap-group role=group
-        {{template "defines::badgedlinkleft"  LessD $p [[$D]] "btn btn-default"}}
-        {{template "defines::badgedlinkright" MoreD $p [[$D]] "btn btn-default"}}
-    td.col-md-10
-[[end]]
-
-[[define "configrow_rows"]]
-[[$N := .]]
-  tr.panel-config
-    td.col-md-2
-      div.text-right.text-nowrap
-        | Rows&nbsp;
-        span.badge {{[[$N]].Absolute}}
-    td
-      div.btn-group.nowrap-group role=group
-        {{template "defines::badgedlinkleft"  LessN $p [[$N]] "btn btn-default"}}
-        {{template "defines::badgedlinkright" MoreN $p [[$N]] "btn btn-default"}}
-    td.col-md-10
-[[end]]
-
 = content define_panelps
   {{$p := .Data.Params}}
-  [[template "startpanel" Chain `$p.Psn` "Processes"]]
-  [[template "configrow_delay"  `$p.Psd`]]
-  [[template "configrow_rows"   `$p.Psn`]]
+  [[template "startpanel" Chain `$p.Psn` `$p.Psd` "Processes"]]
   |
-      </table>
-      {{template "defines::define_pstable" .}}
+    {{template "defines::define_pstable" .}}
     </div>
-
-= content badgedlinkleft
-  |
-    <a href={{.Href}} onClick={this.handleClick} {{class}}={{.Class}}
-      ><span {{class}}="xlabel xlabel-default">{{.Badge}}</span> {{.Text}}</a>
-= content badgedlinkright
-  |
-    <a href={{.Href}} onClick={this.handleClick} {{class}}={{.Class}}
-      >{{.Text}} <span {{class}}="xlabel xlabel-default">{{.Badge}}</span></a>
 
 = content define_vgerror
   tr key="vgerror"
@@ -333,10 +298,7 @@
 
 = content define_panelvg
   {{$p := .Data.Params}}
-  [[template "startpanel" Chain `$p.Vgn` "Vagrant"]]
-  [[template "configrow_delay"  `$p.Vgd`]]
-  [[template "configrow_rows"   `$p.Vgn`]]
+  [[template "startpanel" Chain `$p.Vgn` `$p.Vgd` "Vagrant"]]
   |
-      </table>
-      {{template "defines::define_vgtable" .}}
+    {{template "defines::define_vgtable" .}}
     </div>

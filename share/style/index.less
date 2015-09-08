@@ -5,10 +5,8 @@
 
 @navbar-height: 40px;
 
-.panel-default > .panel-heading a { &:extend(a); }
-a.panel-title { &:extend(a); } // .panel-title has color: inherit
-
 .padding-leftless { padding-left: 0; }
+.padding-left-like-panel-heading { padding-left: 15px; }
 
 .navbar-text-marginless:not(:last-child) { margin-right: 0; }
 .navbar-text-marginless:not(.first-text) { margin-left:  0; }
@@ -54,30 +52,16 @@ a.panel-title { &:extend(a); } // .panel-title has color: inherit
 }
 */
 
-.nowrap-group {
-  &:extend(.text-nowrap);
-  .btn {
-    float: none;
-    display: inline-block;
-  }
-}
+table th, .th { background-color: @panel-default-heading-bg; }
 
-table tr.panel-config, table th {
-    background-color: @panel-default-heading-bg;
-    font-weight: bold; // this is for .panel-config, table th is bold anyway
-    td { vertical-align: middle; }
-}
-
-table thead tr .header a {
-  color: black;
+table th.header a {
+  color: inherit;
+  text-decoration: none;
   &:hover {
     // &:extend(a); &:extend(a:hover);
     color: @link-color;
-    text-decoration: none;
   }
-  &.state.current {
-    white-space: nowrap;
-    // font-weight: bold;
+  &.state {
     // https://stackoverflow.com/q/8376795
     vertical-align: middle; // this DOES NOT make the line 1px higher
   }
