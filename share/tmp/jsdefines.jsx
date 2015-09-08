@@ -416,16 +416,20 @@ define(function(require) {
     ></a
   ></th
 ><th className="header text-right"
-        >Use</th
-      ><th className="header text-right"
   ><a href={Data.Params.Vlinks.Dfk[4-1].LinkHref} className={Data.Params.Vlinks.Dfk[4-1].LinkClass}
-    >  Used<span className={Data.Params.Vlinks.Dfk[4-1].CaretClass}
+    >  Use%<span className={Data.Params.Vlinks.Dfk[4-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
   ><a href={Data.Params.Vlinks.Dfk[5-1].LinkHref} className={Data.Params.Vlinks.Dfk[5-1].LinkClass}
-    >  Total<span className={Data.Params.Vlinks.Dfk[5-1].CaretClass}
+    >  Used<span className={Data.Params.Vlinks.Dfk[5-1].CaretClass}
+      ></span
+    ></a
+  ></th
+><th className="header text-right"
+  ><a href={Data.Params.Vlinks.Dfk[6-1].LinkHref} className={Data.Params.Vlinks.Dfk[6-1].LinkClass}
+    >  Total<span className={Data.Params.Vlinks.Dfk[6-1].CaretClass}
       ></span
     ></a
   ></th

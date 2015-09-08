@@ -16,6 +16,31 @@ import (
 	"github.com/ostrost/ostent/flags"
 )
 
+// Constants for DF sorting criterion.
+const (
+	_      int = iota
+	FS         // 1
+	MP         // 2
+	AVAIL      // 3
+	USEPCT     // 4
+	USED       // 5
+	TOTAL      // 6
+)
+
+// Constants for PS sorting criterion.
+const (
+	_    int = iota
+	PID      // 1
+	UID      // 2
+	USER     // 3
+	PRI      // 4
+	NICE     // 5
+	VIRT     // 6
+	RES      // 7
+	TIME     // 8
+	NAME     // 9
+)
+
 var (
 	NumType   = reflect.TypeOf(Num{})
 	DelayType = reflect.TypeOf(Delay{})
@@ -118,7 +143,7 @@ type Schema struct {
 	Vgn  Num `url:"vgn"`
 
 	Psk Num `url:"psk,default1,enumerate9"` // sort, default PID
-	Dfk Num `url:"dfk,default1,enumerate5"` // sort, default FS
+	Dfk Num `url:"dfk,default1,enumerate6"` // sort, default FS
 }
 
 type Nlinks struct {

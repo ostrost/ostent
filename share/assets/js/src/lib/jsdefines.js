@@ -1131,17 +1131,11 @@ define(function (require) {
                 "th",
                 { className: "header text-right"
                 },
-                "Use"
-              ),
-              React.createElement(
-                "th",
-                { className: "header text-right"
-                },
                 React.createElement(
                   "a",
                   { href: Data.Params.Vlinks.Dfk[4 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[4 - 1].LinkClass
                   },
-                  "  Used",
+                  "  Use%",
                   React.createElement("span", { className: Data.Params.Vlinks.Dfk[4 - 1].CaretClass
                   })
                 )
@@ -1154,8 +1148,21 @@ define(function (require) {
                   "a",
                   { href: Data.Params.Vlinks.Dfk[5 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[5 - 1].LinkClass
                   },
-                  "  Total",
+                  "  Used",
                   React.createElement("span", { className: Data.Params.Vlinks.Dfk[5 - 1].CaretClass
+                  })
+                )
+              ),
+              React.createElement(
+                "th",
+                { className: "header text-right"
+                },
+                React.createElement(
+                  "a",
+                  { href: Data.Params.Vlinks.Dfk[6 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[6 - 1].LinkClass
+                  },
+                  "  Total",
+                  React.createElement("span", { className: Data.Params.Vlinks.Dfk[6 - 1].CaretClass
                   })
                 )
               )

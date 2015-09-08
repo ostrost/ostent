@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/ostrost/ostent/flags"
-	"github.com/ostrost/ostent/params/enums"
 )
 
 var TestPeriodFlag = flags.Period{Duration: time.Second} // default
@@ -49,14 +48,14 @@ func TestLinks(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if num := df.Number; num.Negative || num.Uint != enums.Uint(enums.MP) {
+	if num := df.Number; num.Negative || num.Uint != params.Uint(MP) {
 		t.Errorf("Decode failed: %+v\n", num)
 	}
 
-	if total := df.EncodeUint("df", enums.TOTAL); total.Href != "?df=total" || total.Class != "state" || total.CaretClass != "" {
+	if total := df.EncodeUint("df", TOTAL); total.Href != "?df=total" || total.Class != "state" || total.CaretClass != "" {
 		t.Fatalf("Encode failed: total: %+v", total)
 	}
-	if mp := df.EncodeUint("df", enums.MP); mp.Href != "?df=-mp" || mp.Class != "state current dropup" || mp.CaretClass != "caret" {
+	if mp := df.EncodeUint("df", MP); mp.Href != "?df=-mp" || mp.Class != "state current dropup" || mp.CaretClass != "caret" {
 		t.Fatalf("Encode failed: mp: %+v", mp)
 	}
 
@@ -95,7 +94,7 @@ func CheckRedirect(t *testing.T, form Form, names []string, moved string) {
 		if err == nil {
 			t.Fatalf("RenamedConstError expected, got nil")
 		}
-		if _, ok := err.(enums.RenamedConstError); !ok {
+		if _, ok := err.(RenamedConstError); !ok {
 			t.Fatalf("RenamedConstError expected, got: %s", err)
 		}
 	}

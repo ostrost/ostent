@@ -170,9 +170,7 @@
 */}}{{define "defines::define_dftable"}}{{$p := .Data.Params}}<table {{ClassNonzero $p.Dfn "table table-hover" "collapse-hidden"}}
   ><thead
     ><tr
-      >{{template "defines::headerenumlink" Vlink $p $p.Dfk 1 "Device" ""}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 3 "Avail" "text-right"}}<th class="header text-right"
-        >Use</th
-      >{{template "defines::headerenumlink" Vlink $p $p.Dfk 4 "Used" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 5 "Total" "text-right"}}</tr
+      >{{template "defines::headerenumlink" Vlink $p $p.Dfk 1 "Device" ""}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 3 "Avail" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 4 "Use%" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 5 "Used" "text-right"}}{{template "defines::headerenumlink" Vlink $p $p.Dfk 6 "Total" "text-right"}}</tr
     ></thead
   ><tbody
     >{{template "defines::define_dfrows" .}}</tbody

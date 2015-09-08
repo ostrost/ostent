@@ -112,28 +112,12 @@
   | <table {{ClassNonzero $p.Dfn "table table-hover" "collapse-hidden"}}>
   thead
     tr
-      {{template "defines::headerenumlink" Vlink $p $p.Dfk 1 "Device"  ""          }}{{/* FS    */}}
-      {{template "defines::headerenumlink" Vlink $p $p.Dfk 2 "Mounted" ""          }}{{/* MP    */}}
-      / th.header.text-right
-        | Bytes 
-        b Avail
-        | , 
-        b Used
-        | , 
-        b Total
-        |  | Inodes 
-        b Avail
-        | , 
-        b Used
-        | , 
-        b Total
-      / th.header.text-right Avail
-      / th.header.text-right Used
-      / th.header.text-right Total
-      {{template "defines::headerenumlink" Vlink $p $p.Dfk 3 "Avail"   "text-right"}}{{/* AVAIL */}}
-      th.header.text-right Use
-      {{template "defines::headerenumlink" Vlink $p $p.Dfk 4 "Used"    "text-right"}}{{/* USED  */}}
-      {{template "defines::headerenumlink" Vlink $p $p.Dfk 5 "Total"   "text-right"}}{{/* TOTAL */}}
+      {{template "defines::headerenumlink" Vlink $p $p.Dfk 1 "Device"  ""          }}{{/* FS     */}}
+      {{template "defines::headerenumlink" Vlink $p $p.Dfk 2 "Mounted" ""          }}{{/* MP     */}}
+      {{template "defines::headerenumlink" Vlink $p $p.Dfk 3 "Avail"   "text-right"}}{{/* AVAIL  */}}
+      {{template "defines::headerenumlink" Vlink $p $p.Dfk 4 "Use%"    "text-right"}}{{/* USEPCT */}}
+      {{template "defines::headerenumlink" Vlink $p $p.Dfk 5 "Used"    "text-right"}}{{/* USED   */}}
+      {{template "defines::headerenumlink" Vlink $p $p.Dfk 6 "Total"   "text-right"}}{{/* TOTAL  */}}
   tbody
     {{template "defines::define_dfrows" .}}
   | </table>

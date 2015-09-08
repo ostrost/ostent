@@ -2,7 +2,6 @@ package ostent
 
 import (
 	"github.com/ostrost/ostent/params"
-	"github.com/ostrost/ostent/params/enums"
 )
 
 // DFSort is to facilitate DFSlice sorting.
@@ -18,16 +17,24 @@ func (ds DFSort) Less(i, j int) bool {
 	if a, b := ds.DFSlice[i], ds.DFSlice[j]; true {
 		r := false
 		switch ds.Dfk.Absolute {
-		case enums.FS:
+		case params.FS:
 			ds.Dfk.Alpha = true
 			r = a.DevName.Snapshot().Value() < b.DevName.Snapshot().Value()
-		case enums.TOTAL:
+		case params.TOTAL:
 			r = a.Total.Snapshot().Value() > b.Total.Snapshot().Value()
-		case enums.USED:
+		case params.USEPCT:
+			var (
+				vau = a.Used.Snapshot().Value()  // float64
+				vbu = b.Used.Snapshot().Value()  // float64
+				vat = a.Total.Snapshot().Value() // int64
+				vbt = b.Total.Snapshot().Value() // int64
+			)
+			r = (vau / float64(vat)) > (vbu / float64(vbt))
+		case params.USED:
 			r = a.Used.Snapshot().Value() > b.Used.Snapshot().Value()
-		case enums.AVAIL:
+		case params.AVAIL:
 			r = a.Avail.Snapshot().Value() > b.Avail.Snapshot().Value()
-		case enums.MP:
+		case params.MP:
 			ds.Dfk.Alpha = true
 			r = a.DirName.Snapshot().Value() < b.DirName.Snapshot().Value()
 		}
@@ -53,24 +60,24 @@ func (ps PSSort) Less(i, j int) bool {
 	if a, b := ps.PSSlice[i], ps.PSSlice[j]; true {
 		r := false
 		switch ps.Psk.Absolute {
-		case enums.PID:
+		case params.PID:
 			r = a.PID > b.PID
-		case enums.PRI:
+		case params.PRI:
 			r = a.Priority > b.Priority
-		case enums.NICE:
+		case params.NICE:
 			r = a.Nice > b.Nice
-		case enums.VIRT:
+		case params.VIRT:
 			r = a.Size > b.Size
-		case enums.RES:
+		case params.RES:
 			r = a.Resident > b.Resident
-		case enums.TIME:
+		case params.TIME:
 			r = a.Time > b.Time
-		case enums.NAME:
+		case params.NAME:
 			ps.Psk.Alpha = true
 			r = a.Name < b.Name
-		case enums.UID:
+		case params.UID:
 			r = a.UID > b.UID
-		case enums.USER:
+		case params.USER:
 			ps.Psk.Alpha = true
 			r = username(ps.UIDs, a.UID) < username(ps.UIDs, b.UID)
 		}
