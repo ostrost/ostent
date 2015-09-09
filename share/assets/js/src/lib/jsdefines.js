@@ -202,7 +202,6 @@ define(function (require) {
         "tr",
         { key: "if-rowby-name-" + $if.Name
         },
-        "  ",
         React.createElement(
           "td",
           { className: "text-nowrap clip12", title: $if.Name
@@ -215,35 +214,16 @@ define(function (require) {
           },
           React.createElement(
             "span",
-            { className: "text-graylighter", title: "Total BYTES IN modulo 4G"
+            { className: "text-graylighter", title: "Total BYTES modulo 4G"
             },
-            $if.BytesIn
-          ),
-          " ",
-          React.createElement(
-            "span",
-            { title: "Bits IN per second"
-            },
-            $if.DeltaBitsIn
-          )
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right text-nowrap"
-          },
-          React.createElement(
-            "span",
-            { className: "text-graylighter", title: "Total BYTES OUT modulo 4G"
-            },
+            $if.BytesIn,
+            "/",
             $if.BytesOut
           ),
           " ",
-          React.createElement(
-            "span",
-            { title: "Bits OUT per second"
-            },
-            $if.DeltaBitsOut
-          )
+          $if.DeltaBitsIn,
+          "/",
+          $if.DeltaBitsOut
         ),
         React.createElement(
           "td",
@@ -251,35 +231,16 @@ define(function (require) {
           },
           React.createElement(
             "span",
-            { className: "text-graylighter", title: "Total packets IN modulo 4G"
+            { className: "text-graylighter", title: "Total packets modulo 4G"
             },
-            $if.PacketsIn
-          ),
-          " ",
-          React.createElement(
-            "span",
-            { title: "Packets IN per second"
-            },
-            $if.DeltaPacketsIn
-          )
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right text-nowrap"
-          },
-          React.createElement(
-            "span",
-            { className: "text-graylighter", title: "Total packets OUT modulo 4G"
-            },
+            $if.PacketsIn,
+            "/",
             $if.PacketsOut
           ),
           " ",
-          React.createElement(
-            "span",
-            { title: "Packets OUT per second"
-            },
-            $if.DeltaPacketsOut
-          )
+          $if.DeltaPacketsIn,
+          "/",
+          $if.DeltaPacketsOut
         ),
         React.createElement(
           "td",
@@ -287,35 +248,16 @@ define(function (require) {
           },
           React.createElement(
             "span",
-            { className: "text-graylighter", title: "Total errors IN modulo 4G"
+            { className: "text-graylighter", title: "Total errors modulo 4G"
             },
-            $if.ErrorsIn
-          ),
-          " ",
-          React.createElement(
-            "span",
-            { title: "Errors IN per second"
-            },
-            $if.DeltaErrorsIn
-          )
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right text-nowrap"
-          },
-          React.createElement(
-            "span",
-            { className: "text-graylighter", title: "Total errors OUT modulo 4G"
-            },
+            $if.ErrorsIn,
+            "/",
             $if.ErrorsOut
           ),
           " ",
-          React.createElement(
-            "span",
-            { title: "Errors OUT per second"
-            },
-            $if.DeltaErrorsOut
-          )
+          $if.DeltaErrorsIn,
+          "/",
+          $if.DeltaErrorsOut
         )
       );
     },
@@ -447,50 +389,21 @@ define(function (require) {
               ),
               React.createElement(
                 "th",
-                { className: "text-right normal", colSpan: "6"
+                { className: "text-right col-md-3", title: "Bits per second"
                 },
-                "Bits ",
-                React.createElement(
-                  "b",
-                  { title: "Bits IN per second"
-                  },
-                  "In"
-                ),
-                ", ",
-                React.createElement(
-                  "b",
-                  { title: "Bits OUT per second"
-                  },
-                  "Out"
-                ),
-                " | Packets ",
-                React.createElement(
-                  "b",
-                  { title: "Packets IN per second"
-                  },
-                  "In"
-                ),
-                ", ",
-                React.createElement(
-                  "b",
-                  { title: "Packets OUT per second"
-                  },
-                  "Out"
-                ),
-                " | Errors ",
-                React.createElement(
-                  "b",
-                  { title: "Errors IN per second"
-                  },
-                  "In"
-                ),
-                ", ",
-                React.createElement(
-                  "b",
-                  { title: "Errors OUT per second"
-                  },
-                  "Out"
-                )
+                "Bits In/Out"
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right col-md-3", title: "Packets per second"
+                },
+                "Packets In/Out"
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right col-md-3", title: "Errors per second"
+                },
+                "Errors In/Out"
               )
             )
           ),

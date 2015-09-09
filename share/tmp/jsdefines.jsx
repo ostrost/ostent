@@ -75,44 +75,20 @@ define(function(require) {
 >); },
 
 		if_rows:  function(Data, $if)  { return (<tr  key={"if-rowby-name-"+$if.Name}
-  >  <td className="text-nowrap clip12" title={$if.Name}
+  ><td className="text-nowrap clip12" title={$if.Name}
     >{$if.Name}</td
   ><td className="text-right text-nowrap"
-    ><span className="text-graylighter" title="Total BYTES IN modulo 4G"
-      >{$if.BytesIn}</span
-    > <span title="Bits IN per second"
-      >{$if.DeltaBitsIn}</span
-    ></td
+    ><span className="text-graylighter" title="Total BYTES modulo 4G"
+      >{$if.BytesIn}/{$if.BytesOut}</span
+    > {$if.DeltaBitsIn}/{$if.DeltaBitsOut}</td
   ><td className="text-right text-nowrap"
-    ><span className="text-graylighter" title="Total BYTES OUT modulo 4G"
-      >{$if.BytesOut}</span
-    > <span title="Bits OUT per second"
-      >{$if.DeltaBitsOut}</span
-    ></td
+    ><span className="text-graylighter" title="Total packets modulo 4G"
+      >{$if.PacketsIn}/{$if.PacketsOut}</span
+    > {$if.DeltaPacketsIn}/{$if.DeltaPacketsOut}</td
   ><td className="text-right text-nowrap"
-    ><span className="text-graylighter" title="Total packets IN modulo 4G"
-      >{$if.PacketsIn}</span
-    > <span title="Packets IN per second"
-      >{$if.DeltaPacketsIn}</span
-    ></td
-  ><td className="text-right text-nowrap"
-    ><span className="text-graylighter" title="Total packets OUT modulo 4G"
-      >{$if.PacketsOut}</span
-    > <span title="Packets OUT per second"
-      >{$if.DeltaPacketsOut}</span
-    ></td
-  ><td className="text-right text-nowrap"
-    ><span className="text-graylighter" title="Total errors IN modulo 4G"
-      >{$if.ErrorsIn}</span
-    > <span title="Errors IN per second"
-      >{$if.DeltaErrorsIn}</span
-    ></td
-  ><td className="text-right text-nowrap"
-    ><span className="text-graylighter" title="Total errors OUT modulo 4G"
-      >{$if.ErrorsOut}</span
-    > <span title="Errors OUT per second"
-      >{$if.DeltaErrorsOut}</span
-    ></td
+    ><span className="text-graylighter" title="Total errors modulo 4G"
+      >{$if.ErrorsIn}/{$if.ErrorsOut}</span
+    > {$if.DeltaErrorsIn}/{$if.DeltaErrorsOut}</td
   ></tr
 >); },
 		panelif:  function(Data, rows) { return (<div  className={!Data.Params.Ifn.Negative ? "" : "panel panel-default"}
@@ -159,20 +135,12 @@ define(function(require) {
     ><tr
       ><th
         >Interface</th
-      ><th className="text-right normal" colSpan="6"
-        >Bits <b title="Bits IN per second"
-          >In</b
-        >, <b title="Bits OUT per second"
-          >Out</b
-        > | Packets <b title="Packets IN per second"
-          >In</b
-        >, <b title="Packets OUT per second"
-          >Out</b
-        > | Errors <b title="Errors IN per second"
-          >In</b
-        >, <b title="Errors OUT per second"
-          >Out</b
-        ></th
+      ><th className="text-right col-md-3" title="Bits per second"
+        >Bits In/Out</th
+      ><th className="text-right col-md-3" title="Packets per second"
+        >Packets In/Out</th
+      ><th className="text-right col-md-3" title="Errors per second"
+        >Errors In/Out</th
       ></tr
     ></thead
   ><tbody

@@ -41,33 +41,17 @@
 = content define_ifrows
   {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IF.List}}
-      |
-        <tr {{AttrKey "if-rowby-name" $if.Name}}>
-          <td {{class}}="text-nowrap clip12" title={{$if.Name}}>{{$if.Name}}</td>
+      | <tr {{AttrKey "if-rowby-name" $if.Name}}>
+      | <td {{class}}="text-nowrap clip12" title={{$if.Name}}>{{$if.Name}}</td>
       td.text-right.text-nowrap
-        span.text-graylighter title="Total BYTES IN modulo 4G" {{$if.BytesIn}}
-        |  
-        span title="Bits IN per second" {{$if.DeltaBitsIn}}
+        span.text-graylighter title="Total BYTES modulo 4G" {{$if.BytesIn}}/{{$if.BytesOut}}
+        |  {{$if.DeltaBitsIn}}/{{$if.DeltaBitsOut}}
       td.text-right.text-nowrap
-        span.text-graylighter title="Total BYTES OUT modulo 4G" {{$if.BytesOut}}
-        |  
-        span title="Bits OUT per second" {{$if.DeltaBitsOut}}
+        span.text-graylighter title="Total packets modulo 4G" {{$if.PacketsIn}}/{{$if.PacketsOut}}
+        |  {{$if.DeltaPacketsIn}}/{{$if.DeltaPacketsOut}}
       td.text-right.text-nowrap
-        span.text-graylighter title="Total packets IN modulo 4G" {{$if.PacketsIn}}
-        |  
-        span title="Packets IN per second" {{$if.DeltaPacketsIn}}
-      td.text-right.text-nowrap
-        span.text-graylighter title="Total packets OUT modulo 4G" {{$if.PacketsOut}}
-        |  
-        span title="Packets OUT per second" {{$if.DeltaPacketsOut}}
-      td.text-right.text-nowrap
-        span.text-graylighter title="Total errors IN modulo 4G" {{$if.ErrorsIn}}
-        |  
-        span title="Errors IN per second" {{$if.DeltaErrorsIn}}
-      td.text-right.text-nowrap
-        span.text-graylighter title="Total errors OUT modulo 4G" {{$if.ErrorsOut}}
-        |  
-        span title="Errors OUT per second" {{$if.DeltaErrorsOut}}
+        span.text-graylighter title="Total errors modulo 4G" {{$if.ErrorsIn}}/{{$if.ErrorsOut}}
+        |  {{$if.DeltaErrorsIn}}/{{$if.DeltaErrorsOut}}
       | </tr>
     {{end}}
   {{end}}
@@ -78,19 +62,9 @@
   thead
     tr
       th Interface
-      th.text-right.normal {{colspan}}=6
-        | Bits 
-        b title="Bits IN per second" In
-        | , 
-        b title="Bits OUT per second" Out
-        |  | Packets 
-        b title="Packets IN per second" In
-        | , 
-        b title="Packets OUT per second" Out
-        |  | Errors 
-        b title="Errors IN per second" In
-        | , 
-        b title="Errors OUT per second" Out
+      th.text-right.col-md-3 title="Bits per second" Bits In/Out
+      th.text-right.col-md-3 title="Packets per second" Packets In/Out
+      th.text-right.col-md-3 title="Errors per second" Errors In/Out
   tbody
     {{template "defines::define_ifrows" .}}
   | </table>

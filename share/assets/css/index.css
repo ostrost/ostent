@@ -7386,8 +7386,6 @@ fieldset[disabled] .btn-danger.active {
 }
 .clip12 {
   max-width: 12ch;
-  cursor: pointer;
-  margin-bottom: 0px;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
