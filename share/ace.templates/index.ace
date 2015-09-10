@@ -38,10 +38,6 @@ html
                 | os {{.Data.DISTRIB}}
             li.navbar-text.navbar-text-marginless
               code.navbar-codeline
-                | ip&nbsp;
-                span#ip {{.Data.IP}}
-            li.navbar-text.navbar-text-marginless
-              code.navbar-codeline
                 | up&nbsp;
                 span#up {{.Data.UP}}
             li.navbar-text.navbar-text-marginless
@@ -53,12 +49,12 @@ html
       div.row
         div.col-md-4.col-md-offset-1#mem
           {{template "defines::define_panelmem" .}}
-        div.col-md-5.col-md-offset-1#df
+        div.col-md-6#df
           {{template "defines::define_paneldf" .}}
       div.row
         div.col-md-4.col-md-offset-1#cpu
           {{template "defines::define_panelcpu" .}}
-        div.col-md-5.col-md-offset-1#if
+        div.col-md-6#if
           {{template "defines::define_panelif" .}}
       div.row
         div.col-md-10.col-md-offset-1#ps

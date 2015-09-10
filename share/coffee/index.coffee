@@ -204,7 +204,6 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
   update = () ->
     render = (id, cl) ->
       React.render(React.createElement(cl), document.getElementById(id))
-    IP  = render('ip', TextClass((data) -> data?.IP)) if data?.IP?
     HN  = render('hn', TextClass((data) -> data?.HN))
     UP  = render('up', TextClass((data) -> data?.UP))
     LA  = render('la', TextClass((data) -> data?.LA))
@@ -230,7 +229,6 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
         console.log 'Error', data.Error
         return
 
-      setState(IP, IP.Reduce(data)) if IP?
       setState(HN, HN.Reduce(data))
       setState(UP, UP.Reduce(data))
       setState(LA, LA.Reduce(data))

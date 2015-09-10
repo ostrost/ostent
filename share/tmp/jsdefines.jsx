@@ -77,14 +77,22 @@ define(function(require) {
 		if_rows:  function(Data, $if)  { return (<tr  key={"if-rowby-name-"+$if.Name}
   ><td className="text-nowrap clip12" title={$if.Name}
     >{$if.Name}</td
+  ><td className="text-right"
+    >{$if.IP}</td
   ><td className="text-right text-nowrap"
     ><span className="text-graylighter" title="Total BYTES modulo 4G"
       >{$if.BytesIn}/{$if.BytesOut}</span
-    > {$if.DeltaBitsIn}/{$if.DeltaBitsOut}</td
+    > <span title="BITS per second"
+      >{$if.DeltaBitsIn}/{$if.DeltaBitsOut}</span
+    ></td
   ><td className="text-right text-nowrap"
     ><span className="text-graylighter" title="Total packets modulo 4G"
       >{$if.PacketsIn}/{$if.PacketsOut}</span
     > {$if.DeltaPacketsIn}/{$if.DeltaPacketsOut}</td
+  ><td className="text-right text-nowrap"
+    ><span className="text-graylighter" title="Total drops modulo 4G"
+      >{$if.DropsIn}/{$if.DropsOut}</span
+    > {$if.DeltaDropsIn}/{$if.DeltaDropsOut}</td
   ><td className="text-right text-nowrap"
     ><span className="text-graylighter" title="Total errors modulo 4G"
       >{$if.ErrorsIn}/{$if.ErrorsOut}</span
@@ -135,12 +143,18 @@ define(function(require) {
     ><tr
       ><th
         >Interface</th
-      ><th className="text-right col-md-3" title="Bits per second"
-        >Bits In/Out</th
-      ><th className="text-right col-md-3" title="Packets per second"
-        >Packets In/Out</th
-      ><th className="text-right col-md-3" title="Errors per second"
-        >Errors In/Out</th
+      ><th className="text-right"
+        >IP</th
+      ><th className="text-right text-nowrap col-md-2" title="Bits In/Out per second"
+        >IO <i
+          >b</i
+        >ps</th
+      ><th className="text-right text-nowrap col-md-2" title="Packets In/Out per second"
+        >Packets IO</th
+      ><th className="text-right text-nowrap col-md-2" title="Drops In/Out per second"
+        >Drops IO</th
+      ><th className="text-right text-nowrap col-md-2" title="Errors In/Out per second"
+        >Errors IO</th
       ></tr
     ></thead
   ><tbody

@@ -24,6 +24,9 @@ u_int32_t Opackets(void *data) { return ((struct if_data *)data)->ifi_opackets; 
 u_int32_t Ierrors(void *data) { return ((struct if_data *)data)->ifi_ierrors; }
 u_int32_t Oerrors(void *data) { return ((struct if_data *)data)->ifi_oerrors; }
 
+u_int32_t Idrops(void *data) { return ((struct if_data *)data)->ifi_iqdrops; }
+u_int32_t Odrops(void *data) { return ((struct if_data *)data)->ifi_oqdrops; }
+
 #else
 #include <linux/if_link.h>
 u_int32_t Ibytes(void *data) { return ((struct rtnl_link_stats *)data)->rx_bytes; }
@@ -34,6 +37,9 @@ u_int32_t Opackets(void *data) { return ((struct rtnl_link_stats *)data)->tx_pac
 
 u_int32_t Ierrors(void *data) { return ((struct rtnl_link_stats *)data)->rx_errors; }
 u_int32_t Oerrors(void *data) { return ((struct rtnl_link_stats *)data)->tx_errors; }
+
+u_int32_t Idrops(void *data) { return ((struct rtnl_link_stats *)data)->rx_dropped; }
+u_int32_t Odrops(void *data) { return ((struct rtnl_link_stats *)data)->tx_dropped; }
 #endif
 
 char ADDR[INET_ADDRSTRLEN];
@@ -49,12 +55,17 @@ type IfData struct {
 	OutBytes   uint
 	InPackets  uint
 	OutPackets uint
+	InDrops    uint
+	OutDrops   uint
 	InErrors   uint
 	OutErrors  uint
 }
 
+func (id IfData) GetIP() string       { return id.IP }
 func (id IfData) GetInBytes() uint    { return id.InBytes }
 func (id IfData) GetOutBytes() uint   { return id.OutBytes }
+func (id IfData) GetInDrops() uint    { return id.InDrops }
+func (id IfData) GetOutDrops() uint   { return id.OutDrops }
 func (id IfData) GetInErrors() uint   { return id.InErrors }
 func (id IfData) GetOutErrors() uint  { return id.OutErrors }
 func (id IfData) GetInPackets() uint  { return id.InPackets }
@@ -112,6 +123,8 @@ func Getifaddrs() ([]IfData, error) {
 			OutBytes:   uint(C.Obytes(data)),
 			InPackets:  uint(C.Ipackets(data)),
 			OutPackets: uint(C.Opackets(data)),
+			InDrops:    uint(C.Idrops(data)),
+			OutDrops:   uint(C.Odrops(data)),
 			InErrors:   uint(C.Ierrors(data)),
 			OutErrors:  uint(C.Oerrors(data)),
 		}

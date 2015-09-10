@@ -43,12 +43,17 @@
     {{range $if := .Data.IF.List}}
       | <tr {{AttrKey "if-rowby-name" $if.Name}}>
       | <td {{class}}="text-nowrap clip12" title={{$if.Name}}>{{$if.Name}}</td>
+      td.text-right {{$if.IP}}
       td.text-right.text-nowrap
         span.text-graylighter title="Total BYTES modulo 4G" {{$if.BytesIn}}/{{$if.BytesOut}}
-        |  {{$if.DeltaBitsIn}}/{{$if.DeltaBitsOut}}
+        |  
+        span title="BITS per second" {{$if.DeltaBitsIn}}/{{$if.DeltaBitsOut}}
       td.text-right.text-nowrap
         span.text-graylighter title="Total packets modulo 4G" {{$if.PacketsIn}}/{{$if.PacketsOut}}
         |  {{$if.DeltaPacketsIn}}/{{$if.DeltaPacketsOut}}
+      td.text-right.text-nowrap
+        span.text-graylighter title="Total drops modulo 4G" {{$if.DropsIn}}/{{$if.DropsOut}}
+        |  {{$if.DeltaDropsIn}}/{{$if.DeltaDropsOut}}
       td.text-right.text-nowrap
         span.text-graylighter title="Total errors modulo 4G" {{$if.ErrorsIn}}/{{$if.ErrorsOut}}
         |  {{$if.DeltaErrorsIn}}/{{$if.DeltaErrorsOut}}
@@ -62,9 +67,14 @@
   thead
     tr
       th Interface
-      th.text-right.col-md-3 title="Bits per second" Bits In/Out
-      th.text-right.col-md-3 title="Packets per second" Packets In/Out
-      th.text-right.col-md-3 title="Errors per second" Errors In/Out
+      th.text-right IP
+      th.text-right.text-nowrap.col-md-2 title="Bits In/Out per second"
+        | IO 
+        i b
+        | ps
+      th.text-right.text-nowrap.col-md-2 title="Packets In/Out per second" Packets IO
+      th.text-right.text-nowrap.col-md-2 title="Drops In/Out per second" Drops IO
+      th.text-right.text-nowrap.col-md-2 title="Errors In/Out per second" Errors IO
   tbody
     {{template "defines::define_ifrows" .}}
   | </table>

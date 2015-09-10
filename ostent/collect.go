@@ -15,18 +15,23 @@ import (
 )
 
 type IfData struct {
-	IP         string
 	Name       string
+	IP         string
 	InBytes    uint
 	OutBytes   uint
 	InPackets  uint
 	OutPackets uint
+	InDrops    uint
+	OutDrops   uint
 	InErrors   uint
 	OutErrors  uint
 }
 
+func (id IfData) GetIP() string       { return id.IP }
 func (id IfData) GetInBytes() uint    { return id.InBytes }
 func (id IfData) GetOutBytes() uint   { return id.OutBytes }
+func (id IfData) GetInDrops() uint    { return id.InDrops }
+func (id IfData) GetOutDrops() uint   { return id.OutDrops }
 func (id IfData) GetInErrors() uint   { return id.InErrors }
 func (id IfData) GetOutErrors() uint  { return id.OutErrors }
 func (id IfData) GetInPackets() uint  { return id.InPackets }
@@ -50,35 +55,31 @@ type Collector interface {
 	LA(Registry, *sync.WaitGroup)
 	RAM(Registry, *sync.WaitGroup)
 	Swap(Registry, *sync.WaitGroup)
-	IF(Registry, S2SRegistry, *sync.WaitGroup)
+	IF(Registry, *sync.WaitGroup)
 	PS(chan<- PSSlice)
 	DF(Registry, *sync.WaitGroup)
 	CPU(Registry, *sync.WaitGroup)
 }
 
+// These are regexps to match network interfaces.
 var (
-	// RXlo is a regexp to match loopback network interface
-	RXlo = regexp.MustCompile("^lo\\d*$")
-
-	// RXfw is a regexp to match non-hardware network interface
-	RXfw = regexp.MustCompile("^fw\\d+$")
-	// RXgif is a regexp to match non-hardware network interface
-	RXgif = regexp.MustCompile("^gif\\d+$")
-	// RXstf is a regexp to match non-hardware network interface
-	RXstf = regexp.MustCompile("^stf\\d+$")
-	// RXwdl is a regexp to match non-hardware network interface
-	RXwdl = regexp.MustCompile("^awdl\\d+$")
-	// RXbridge is a regexp to match non-hardware network interface
-	RXbridge = regexp.MustCompile("^bridge\\d+$")
-	// RXvboxnet is a regexp to match non-hardware network interface
+	RXlo      = regexp.MustCompile("^lo\\d*$")
+	RXvbr     = regexp.MustCompile("^virbr\\d+$")
+	RXvbrnic  = regexp.MustCompile("^virbr\\d+-nic$")
+	RXbridge  = regexp.MustCompile("^bridge\\d+$")
 	RXvboxnet = regexp.MustCompile("^vboxnet\\d+$")
-	// RXairdrop is a regexp to match non-hardware network interface
+	RXfw      = regexp.MustCompile("^fw\\d+$")
+	RXgif     = regexp.MustCompile("^gif\\d+$")
+	RXstf     = regexp.MustCompile("^stf\\d+$")
+	RXwdl     = regexp.MustCompile("^awdl\\d+$")
 	RXairdrop = regexp.MustCompile("^p2p\\d+$")
 )
 
 // HardwareIF returns false for known virtual/software network interface name.
 func HardwareIF(name string) bool {
-	if RXbridge.MatchString(name) ||
+	if RXvbr.MatchString(name) ||
+		RXvbrnic.MatchString(name) ||
+		RXbridge.MatchString(name) ||
 		RXvboxnet.MatchString(name) {
 		return false
 	}

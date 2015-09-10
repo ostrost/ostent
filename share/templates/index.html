@@ -45,12 +45,6 @@
               ></li
             ><li class="navbar-text navbar-text-marginless"
               ><code class="navbar-codeline"
-                >ip&nbsp;<span id="ip"
-                  >{{.Data.IP}}</span
-                ></code
-              ></li
-            ><li class="navbar-text navbar-text-marginless"
-              ><code class="navbar-codeline"
                 >up&nbsp;<span id="up"
                   >{{.Data.UP}}</span
                 ></code
@@ -69,13 +63,13 @@
       ><div class="row"
         ><div id="mem" class="col-md-4 col-md-offset-1"
           >{{template "defines::define_panelmem" .}}</div
-        ><div id="df" class="col-md-5 col-md-offset-1"
+        ><div id="df" class="col-md-6"
           >{{template "defines::define_paneldf" .}}</div
         ></div
       ><div class="row"
         ><div id="cpu" class="col-md-4 col-md-offset-1"
           >{{template "defines::define_panelcpu" .}}</div
-        ><div id="if" class="col-md-5 col-md-offset-1"
+        ><div id="if" class="col-md-6"
           >{{template "defines::define_panelif" .}}</div
         ></div
       ><div class="row"
@@ -165,14 +159,22 @@
 */}}{{define "defines::define_ifrows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IF.List}}<tr {{AttrKey "if-rowby-name" $if.Name}}
   ><td {{class}}="text-nowrap clip12" title={{$if.Name}}
     >{{$if.Name}}</td
+  ><td class="text-right"
+    >{{$if.IP}}</td
   ><td class="text-right text-nowrap"
     ><span class="text-graylighter" title="Total BYTES modulo 4G"
       >{{$if.BytesIn}}/{{$if.BytesOut}}</span
-    > {{$if.DeltaBitsIn}}/{{$if.DeltaBitsOut}}</td
+    > <span title="BITS per second"
+      >{{$if.DeltaBitsIn}}/{{$if.DeltaBitsOut}}</span
+    ></td
   ><td class="text-right text-nowrap"
     ><span class="text-graylighter" title="Total packets modulo 4G"
       >{{$if.PacketsIn}}/{{$if.PacketsOut}}</span
     > {{$if.DeltaPacketsIn}}/{{$if.DeltaPacketsOut}}</td
+  ><td class="text-right text-nowrap"
+    ><span class="text-graylighter" title="Total drops modulo 4G"
+      >{{$if.DropsIn}}/{{$if.DropsOut}}</span
+    > {{$if.DeltaDropsIn}}/{{$if.DeltaDropsOut}}</td
   ><td class="text-right text-nowrap"
     ><span class="text-graylighter" title="Total errors modulo 4G"
       >{{$if.ErrorsIn}}/{{$if.ErrorsOut}}</span
@@ -184,12 +186,18 @@
     ><tr
       ><th
         >Interface</th
-      ><th class="text-right col-md-3" title="Bits per second"
-        >Bits In/Out</th
-      ><th class="text-right col-md-3" title="Packets per second"
-        >Packets In/Out</th
-      ><th class="text-right col-md-3" title="Errors per second"
-        >Errors In/Out</th
+      ><th class="text-right"
+        >IP</th
+      ><th class="text-right text-nowrap col-md-2" title="Bits In/Out per second"
+        >IO <i
+          >b</i
+        >ps</th
+      ><th class="text-right text-nowrap col-md-2" title="Packets In/Out per second"
+        >Packets IO</th
+      ><th class="text-right text-nowrap col-md-2" title="Drops In/Out per second"
+        >Drops IO</th
+      ><th class="text-right text-nowrap col-md-2" title="Errors In/Out per second"
+        >Errors IO</th
       ></tr
     ></thead
   ><tbody

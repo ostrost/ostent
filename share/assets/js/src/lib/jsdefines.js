@@ -210,6 +210,12 @@ define(function (require) {
         ),
         React.createElement(
           "td",
+          { className: "text-right"
+          },
+          $if.IP
+        ),
+        React.createElement(
+          "td",
           { className: "text-right text-nowrap"
           },
           React.createElement(
@@ -221,9 +227,14 @@ define(function (require) {
             $if.BytesOut
           ),
           " ",
-          $if.DeltaBitsIn,
-          "/",
-          $if.DeltaBitsOut
+          React.createElement(
+            "span",
+            { title: "BITS per second"
+            },
+            $if.DeltaBitsIn,
+            "/",
+            $if.DeltaBitsOut
+          )
         ),
         React.createElement(
           "td",
@@ -241,6 +252,23 @@ define(function (require) {
           $if.DeltaPacketsIn,
           "/",
           $if.DeltaPacketsOut
+        ),
+        React.createElement(
+          "td",
+          { className: "text-right text-nowrap"
+          },
+          React.createElement(
+            "span",
+            { className: "text-graylighter", title: "Total drops modulo 4G"
+            },
+            $if.DropsIn,
+            "/",
+            $if.DropsOut
+          ),
+          " ",
+          $if.DeltaDropsIn,
+          "/",
+          $if.DeltaDropsOut
         ),
         React.createElement(
           "td",
@@ -389,21 +417,39 @@ define(function (require) {
               ),
               React.createElement(
                 "th",
-                { className: "text-right col-md-3", title: "Bits per second"
+                { className: "text-right"
                 },
-                "Bits In/Out"
+                "IP"
               ),
               React.createElement(
                 "th",
-                { className: "text-right col-md-3", title: "Packets per second"
+                { className: "text-right text-nowrap col-md-2", title: "Bits In/Out per second"
                 },
-                "Packets In/Out"
+                "IO ",
+                React.createElement(
+                  "i",
+                  null,
+                  "b"
+                ),
+                "ps"
               ),
               React.createElement(
                 "th",
-                { className: "text-right col-md-3", title: "Errors per second"
+                { className: "text-right text-nowrap col-md-2", title: "Packets In/Out per second"
                 },
-                "Errors In/Out"
+                "Packets IO"
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right text-nowrap col-md-2", title: "Drops In/Out per second"
+                },
+                "Drops IO"
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right text-nowrap col-md-2", title: "Errors In/Out per second"
+                },
+                "Errors IO"
               )
             )
           ),

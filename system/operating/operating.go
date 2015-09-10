@@ -56,6 +56,7 @@ type DF struct {
 // IFData type is a struct of interface metrics.
 type IFData struct {
 	Name string
+	IP   string
 
 	// strings with units
 
@@ -63,6 +64,11 @@ type IFData struct {
 	BytesOut     string
 	DeltaBitsIn  string
 	DeltaBitsOut string
+
+	DropsIn       string
+	DropsOut      string
+	DeltaDropsIn  string
+	DeltaDropsOut string
 
 	ErrorsIn       string
 	ErrorsOut      string
@@ -389,8 +395,11 @@ type MetricIF struct {
 	// derive from one of (go-)metric types, otherwise it won't be registered
 	metrics.Healthcheck
 	Name       string
+	IP         MetricString
 	BytesIn    *GaugeDiff
 	BytesOut   *GaugeDiff
+	DropsIn    *GaugeDiff
+	DropsOut   *GaugeDiff
 	ErrorsIn   *GaugeDiff
 	ErrorsOut  *GaugeDiff
 	PacketsIn  *GaugeDiff
@@ -399,8 +408,11 @@ type MetricIF struct {
 
 // Update reads ifdata and updates the corresponding fields in MetricIF.
 func (mi *MetricIF) Update(ifdata Getifdata) {
+	mi.IP.Update(ifdata.GetIP())
 	mi.BytesIn.UpdateAbsolute(int64(ifdata.GetInBytes()))
 	mi.BytesOut.UpdateAbsolute(int64(ifdata.GetOutBytes()))
+	mi.DropsIn.UpdateAbsolute(int64(ifdata.GetInDrops()))
+	mi.DropsOut.UpdateAbsolute(int64(ifdata.GetOutDrops()))
 	mi.ErrorsIn.UpdateAbsolute(int64(ifdata.GetInErrors()))
 	mi.ErrorsOut.UpdateAbsolute(int64(ifdata.GetOutErrors()))
 	mi.PacketsIn.UpdateAbsolute(int64(ifdata.GetInPackets()))
@@ -408,8 +420,11 @@ func (mi *MetricIF) Update(ifdata Getifdata) {
 }
 
 type Getifdata interface {
+	GetIP() string
 	GetInBytes() uint
 	GetOutBytes() uint
+	GetInDrops() uint
+	GetOutDrops() uint
 	GetInErrors() uint
 	GetOutErrors() uint
 	GetInPackets() uint

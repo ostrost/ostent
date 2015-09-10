@@ -316,15 +316,10 @@
       }
     };
     update = function() {
-      var CPU, DF, HN, IF, IP, LA, MEM, PS, UP, VG, onmessage, render;
+      var CPU, DF, HN, IF, LA, MEM, PS, UP, VG, onmessage, render;
       render = function(id, cl) {
         return React.render(React.createElement(cl), document.getElementById(id));
       };
-      if ((typeof data !== "undefined" && data !== null ? data.IP : void 0) != null) {
-        IP = render('ip', TextClass(function(data) {
-          return data != null ? data.IP : void 0;
-        }));
-      }
       HN = render('hn', TextClass(function(data) {
         return data != null ? data.HN : void 0;
       }));
@@ -358,9 +353,6 @@
         if (data.Error != null) {
           console.log('Error', data.Error);
           return;
-        }
-        if (IP != null) {
-          setState(IP, IP.Reduce(data));
         }
         setState(HN, HN.Reduce(data));
         setState(UP, UP.Reduce(data));

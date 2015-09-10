@@ -118,7 +118,6 @@ type Generic struct {
 	HN string `json:",omitempty"`
 	UP string `json:",omitempty"`
 	LA string `json:",omitempty"`
-	IP string `json:",omitempty"`
 }
 
 type last struct {
@@ -130,15 +129,15 @@ var lastInfo last
 
 func (la *last) collect(c Collector) {
 	var wg sync.WaitGroup
-	wg.Add(8)                    // EIGHT:
-	go c.CPU(&Reg1s, &wg)        // one
-	go c.RAM(&Reg1s, &wg)        // two
-	go c.Swap(&Reg1s, &wg)       // three
-	go c.DF(&Reg1s, &wg)         // four
-	go c.HN(RegMSS, &wg)         // five
-	go c.UP(RegMSS, &wg)         // six
-	go c.LA(&Reg1s, &wg)         // seven
-	go c.IF(&Reg1s, RegMSS, &wg) // eight
+	wg.Add(8)              // EIGHT:
+	go c.CPU(&Reg1s, &wg)  // one
+	go c.RAM(&Reg1s, &wg)  // two
+	go c.Swap(&Reg1s, &wg) // three
+	go c.DF(&Reg1s, &wg)   // four
+	go c.HN(RegMSS, &wg)   // five
+	go c.UP(RegMSS, &wg)   // six
+	go c.LA(&Reg1s, &wg)   // seven
+	go c.IF(&Reg1s, &wg)   // eight
 
 	pch := make(chan PSSlice, 1)
 	go c.PS(pch)
@@ -160,12 +159,6 @@ func (la *last) CopyPS() PSSlice {
 func (mss *MSS) HN(para *params.Params, iu *IndexUpdate) bool {
 	// HN has no delay, always updates iu
 	iu.HN = mss.GetString("hostname")
-	return true
-}
-
-func (mss *MSS) IP(para *params.Params, iu *IndexUpdate) bool {
-	// IP has no delay, always updates iu
-	iu.IP = mss.GetString("ip")
 	return true
 }
 
@@ -196,12 +189,16 @@ func (is IFSlice) Less(i, j int) bool {
 }
 
 func FormatIF(mi *operating.MetricIF) operating.IFData {
-	ii := operating.IFData{Name: mi.Name}
+	ii := operating.IFData{
+		Name: mi.Name,
+		IP:   mi.IP.Snapshot().Value(),
+	}
 	type (
 		From [2]*operating.GaugeDiff
 		To   [4]*string
 	)
 	FormatIF1024(From{mi.BytesIn, mi.BytesOut}, To{&ii.BytesIn, &ii.BytesOut, &ii.DeltaBitsIn, &ii.DeltaBitsOut})
+	FormatIF1000(From{mi.DropsIn, mi.DropsOut}, To{&ii.DropsIn, &ii.DropsOut, &ii.DeltaDropsIn, &ii.DeltaDropsOut})
 	FormatIF1000(From{mi.ErrorsIn, mi.ErrorsOut}, To{&ii.ErrorsIn, &ii.ErrorsOut, &ii.DeltaErrorsIn, &ii.DeltaErrorsOut})
 	FormatIF1000(From{mi.PacketsIn, mi.PacketsOut}, To{&ii.PacketsIn, &ii.PacketsOut, &ii.DeltaPacketsIn, &ii.DeltaPacketsOut})
 	return ii
@@ -262,8 +259,11 @@ func (ir *IndexRegistry) GetOrRegisterPrivateIF(name string) *operating.MetricIF
 	}
 	i := &operating.MetricIF{
 		Name:       name,
+		IP:         &operating.StandardMetricString{},
 		BytesIn:    operating.NewGaugeDiff("interface-"+name+".if_octets.rx", ir.Registry),
 		BytesOut:   operating.NewGaugeDiff("interface-"+name+".if_octets.tx", ir.Registry),
+		DropsIn:    operating.NewGaugeDiff("interface-"+name+".if_drops.rx", ir.Registry),
+		DropsOut:   operating.NewGaugeDiff("interface-"+name+".if_drops.tx", ir.Registry),
 		ErrorsIn:   operating.NewGaugeDiff("interface-"+name+".if_errors.rx", ir.Registry),
 		ErrorsOut:  operating.NewGaugeDiff("interface-"+name+".if_errors.tx", ir.Registry),
 		PacketsIn:  operating.NewGaugeDiff("interface-"+name+".if_packets.rx", ir.Registry),
@@ -650,7 +650,6 @@ func getUpdates(req *http.Request, para *params.Params) (IndexUpdate, bool, erro
 	for _, update := range []func(*params.Params, *IndexUpdate) bool{
 		psCopy.IU,
 		RegMSS.HN,
-		RegMSS.IP,
 		RegMSS.UP,
 		Reg1s.MEM,
 		Reg1s.CPU,
