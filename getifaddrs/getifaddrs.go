@@ -44,6 +44,7 @@ u_int32_t Odrops(void *data) { return ((struct rtnl_link_stats *)data)->tx_dropp
 
 char ADDR[INET_ADDRSTRLEN];
 */
+// #cgo CFLAGS: -D_IFI_OQDROPS
 import "C"
 import "unsafe"
 
