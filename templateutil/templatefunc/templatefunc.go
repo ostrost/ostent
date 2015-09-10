@@ -37,6 +37,30 @@ func (f HTMLFuncs) ClassPositive(x interface{}, class, sndclass string) template
 	return SprintfAttr(" class=%q", class)
 }
 
+func (f JSXFuncs) ClassMutext(x interface{}) template.HTMLAttr {
+	return SprintfAttr(" className={%s == \"0\" ? %q : \"\"}",
+		x.(Uncurler).Uncurl(), "mutext")
+}
+
+func (f HTMLFuncs) ClassMutext(x interface{}) template.HTMLAttr {
+	if x.(string) == "0" {
+		return SprintfAttr(" class=%q", "mutext")
+	}
+	return SprintfAttr("")
+}
+
+func (f JSXFuncs) ClassMutext2(x, y interface{}) template.HTMLAttr {
+	return SprintfAttr(" className={%s == \"0\" || %s == \"0\" ? %q : \"\"}",
+		x.(Uncurler).Uncurl(), x.(Uncurler).Uncurl(), "mutext")
+}
+
+func (f HTMLFuncs) ClassMutext2(x, y interface{}) template.HTMLAttr {
+	if x.(string) == "0" || y.(string) == "0" {
+		return SprintfAttr(" class=%q", "mutext")
+	}
+	return SprintfAttr("")
+}
+
 // Key returns key attribute: prefix + uncurled x being an Uncurler.
 func (f JSXFuncs) Key(prefix string, x interface{}) template.HTMLAttr {
 	return SprintfAttr(" key={%q+%s}", prefix+"-", x.(Uncurler).Uncurl())
@@ -164,6 +188,8 @@ func MakeMap(f Functor) template.FuncMap {
 		"AttrKey":       f.Key,
 		"ClassNonzero":  f.ClassNonzero,
 		"ClassPositive": f.ClassPositive,
+		"ClassMutext":   f.ClassMutext,
+		"ClassMutext2":  f.ClassMutext2,
 
 		"HrefT": f.FuncHrefT(),
 		"LessD": f.FuncLessD(),
@@ -183,6 +209,8 @@ type Functor interface {
 	Colspan() string
 	ClassNonzero(interface{}, string, string) template.HTMLAttr
 	ClassPositive(interface{}, string, string) template.HTMLAttr
+	ClassMutext(interface{}) template.HTMLAttr
+	ClassMutext2(interface{}, interface{}) template.HTMLAttr
 	Key(string, interface{}) template.HTMLAttr
 
 	FuncHrefT() interface{}

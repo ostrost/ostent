@@ -4,20 +4,20 @@ define(function(require) {
 		mem_rows: function(Data, $mem) { return ({{template "defines::define_memrows"   .}}); },
 		panelmem: function(Data, rows) { return ({{template "defines::define_panelmem" setrows . `rows`}}); },
 
-		if_rows:  function(Data, $if)  { return ({{template "defines::define_ifrows"   .}}); },
-		panelif:  function(Data, rows) { return ({{template "defines::define_panelif"  setrows . `rows`}}); },
+		df_rows:  function(Data, $df)  { return ({{template "defines::define_dfrows"   .}}); },
+		paneldf:  function(Data,rows)  { return ({{template "defines::define_paneldf"   setrows . `rows`}}); },
 
 		cpu_rows: function(Data, $cpu) { return ({{template "defines::define_cpurows"  .}}); },
 		panelcpu: function(Data, rows) { return ({{template "defines::define_panelcpu" setrows . `rows`}}); },
 
-		df_rows:  function(Data, $df)  { return ({{template "defines::define_dfrows"   .}}); },
-		paneldf:  function(Data,rows)  { return ({{template "defines::define_paneldf"   setrows . `rows`}}); },
+		if_rows:  function(Data, $if)  { return ({{template "defines::define_ifrows"   .}}); },
+		panelif:  function(Data, rows) { return ({{template "defines::define_panelif"  setrows . `rows`}}); },
 
 		ps_rows:  function(Data, $ps)  { return ({{template "defines::define_psrows"   .}}); },
 		panelps:  function(Data, rows) { return ({{template "defines::define_panelps"  setrows . `rows`}}); },
 
-		vg_rows:  function(Data, $vgm) { return ({{template "defines::define_vgrows"   .}}); },
 		vg_error: function(Data)       { return ({{template "defines::define_vgerror"  .}}); },
+		vg_rows:  function(Data, $vgm) { return ({{template "defines::define_vgrows"   .}}); },
 		panelvg:  function(Data, rows) { return ({{template "defines::define_panelvg"  setrows . `rows`}}); }
 	};
 });

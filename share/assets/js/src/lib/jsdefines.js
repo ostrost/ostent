@@ -197,473 +197,6 @@ define(function (require) {
       );
     },
 
-    if_rows: function if_rows(Data, $if) {
-      return React.createElement(
-        "tr",
-        { key: "if-rowby-name-" + $if.Name
-        },
-        React.createElement(
-          "td",
-          { className: "text-nowrap clip12", title: $if.Name
-          },
-          $if.Name
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          $if.IP
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right text-nowrap"
-          },
-          React.createElement(
-            "span",
-            { className: "mutext", title: "Total BYTES modulo 4G"
-            },
-            $if.BytesIn,
-            "/",
-            $if.BytesOut
-          ),
-          " ",
-          React.createElement(
-            "span",
-            { title: "BITS per second"
-            },
-            $if.DeltaBitsIn,
-            "/",
-            $if.DeltaBitsOut
-          )
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right text-nowrap"
-          },
-          React.createElement(
-            "span",
-            { className: "mutext", title: "Total packets modulo 4G"
-            },
-            $if.PacketsIn,
-            "/",
-            $if.PacketsOut
-          ),
-          " ",
-          $if.DeltaPacketsIn,
-          "/",
-          $if.DeltaPacketsOut
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right text-nowrap"
-          },
-          React.createElement(
-            "span",
-            { className: "mutext", title: "Total drops modulo 4G"
-            },
-            $if.DropsIn,
-            "/",
-            $if.DropsOut
-          ),
-          " ",
-          $if.DeltaDropsIn,
-          "/",
-          $if.DeltaDropsOut
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right text-nowrap"
-          },
-          React.createElement(
-            "span",
-            { className: "mutext", title: "Total errors modulo 4G"
-            },
-            $if.ErrorsIn,
-            "/",
-            $if.ErrorsOut
-          ),
-          " ",
-          $if.DeltaErrorsIn,
-          "/",
-          $if.DeltaErrorsOut
-        )
-      );
-    },
-    panelif: function panelif(Data, rows) {
-      return React.createElement(
-        "div",
-        { className: !Data.Params.Ifn.Negative ? "" : "panel panel-default"
-        },
-        React.createElement(
-          "div",
-          { className: "h4 padding-left-like-panel-heading"
-          },
-          React.createElement(
-            "a",
-            { href: Data.Params.Tlinks.Ifn, onClick: this.handleClick
-            },
-            "Interfaces"
-          )
-        ),
-        React.createElement(
-          "ul",
-          { className: !Data.Params.Ifn.Negative ? "collapse-hidden" : "list-group"
-          },
-          React.createElement(
-            "li",
-            { className: "list-group-item text-nowrap th"
-            },
-            React.createElement(
-              "ul",
-              { className: "list-inline"
-              },
-              React.createElement(
-                "li",
-                null,
-                React.createElement(
-                  "span",
-                  null,
-                  React.createElement(
-                    "b",
-                    null,
-                    "Delay"
-                  ),
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "badge"
-                    },
-                    Data.Params.Ifd
-                  )
-                ),
-                " ",
-                React.createElement(
-                  "div",
-                  { className: "btn-group"
-                  },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Dlinks.Ifd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.Less.ExtraClass != null ? Data.Params.Dlinks.Ifd.Less.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    "- ",
-                    Data.Params.Dlinks.Ifd.Less.Text
-                  ),
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Dlinks.Ifd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.More.ExtraClass != null ? Data.Params.Dlinks.Ifd.More.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    Data.Params.Dlinks.Ifd.More.Text,
-                    " +"
-                  )
-                )
-              ),
-              React.createElement(
-                "li",
-                null,
-                React.createElement(
-                  "span",
-                  null,
-                  React.createElement(
-                    "b",
-                    null,
-                    "Rows"
-                  ),
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "badge"
-                    },
-                    Data.Params.Ifn.Absolute
-                  )
-                ),
-                " ",
-                React.createElement(
-                  "div",
-                  { className: "btn-group"
-                  },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Nlinks.Ifn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.Less.ExtraClass != null ? Data.Params.Nlinks.Ifn.Less.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    "- ",
-                    Data.Params.Nlinks.Ifn.Less.Text
-                  ),
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Nlinks.Ifn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.More.ExtraClass != null ? Data.Params.Nlinks.Ifn.More.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    Data.Params.Nlinks.Ifn.More.Text,
-                    " +"
-                  )
-                )
-              )
-            )
-          )
-        ),
-        React.createElement(
-          "table",
-          { className: Data.Params.Ifn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
-          },
-          React.createElement(
-            "thead",
-            null,
-            React.createElement(
-              "tr",
-              null,
-              React.createElement(
-                "th",
-                null,
-                "Interface"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right"
-                },
-                "IP"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right text-nowrap col-md-2", title: "Bits In/Out per second"
-                },
-                "IO ",
-                React.createElement(
-                  "i",
-                  null,
-                  "b"
-                ),
-                "ps"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right text-nowrap col-md-2", title: "Packets In/Out per second"
-                },
-                "Packets IO"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right text-nowrap col-md-2", title: "Drops In/Out per second"
-                },
-                "Drops IO"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right text-nowrap col-md-2", title: "Errors In/Out per second"
-                },
-                "Errors IO"
-              )
-            )
-          ),
-          React.createElement(
-            "tbody",
-            null,
-            rows
-          )
-        )
-      );
-    },
-
-    cpu_rows: function cpu_rows(Data, $cpu) {
-      return React.createElement(
-        "tr",
-        { key: "cpu-rowby-N-" + $cpu.N
-        },
-        React.createElement(
-          "td",
-          { className: "text-right text-nowrap"
-          },
-          $cpu.N
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right bg-usepct",
-            "data-usepct": $cpu.UserPct
-          },
-          $cpu.UserPct,
-          "%"
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right bg-usepct",
-            "data-usepct": $cpu.SysPct
-          },
-          $cpu.SysPct,
-          "%"
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right bg-usepct",
-            "data-usepct": $cpu.WaitPct
-          },
-          $cpu.WaitPct,
-          "%"
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right bg-usepct-inverse",
-            "data-usepct": $cpu.IdlePct
-          },
-          $cpu.IdlePct,
-          "%"
-        )
-      );
-    },
-    panelcpu: function panelcpu(Data, rows) {
-      return React.createElement(
-        "div",
-        { className: !Data.Params.CPUn.Negative ? "" : "panel panel-default"
-        },
-        React.createElement(
-          "div",
-          { className: "h4 padding-left-like-panel-heading"
-          },
-          React.createElement(
-            "a",
-            { href: Data.Params.Tlinks.CPUn, onClick: this.handleClick
-            },
-            "CPU"
-          )
-        ),
-        React.createElement(
-          "ul",
-          { className: !Data.Params.CPUn.Negative ? "collapse-hidden" : "list-group"
-          },
-          React.createElement(
-            "li",
-            { className: "list-group-item text-nowrap th"
-            },
-            React.createElement(
-              "ul",
-              { className: "list-inline"
-              },
-              React.createElement(
-                "li",
-                null,
-                React.createElement(
-                  "span",
-                  null,
-                  React.createElement(
-                    "b",
-                    null,
-                    "Delay"
-                  ),
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "badge"
-                    },
-                    Data.Params.CPUd
-                  )
-                ),
-                " ",
-                React.createElement(
-                  "div",
-                  { className: "btn-group"
-                  },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Dlinks.CPUd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.Less.ExtraClass != null ? Data.Params.Dlinks.CPUd.Less.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    "- ",
-                    Data.Params.Dlinks.CPUd.Less.Text
-                  ),
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Dlinks.CPUd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.More.ExtraClass != null ? Data.Params.Dlinks.CPUd.More.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    Data.Params.Dlinks.CPUd.More.Text,
-                    " +"
-                  )
-                )
-              ),
-              React.createElement(
-                "li",
-                null,
-                React.createElement(
-                  "span",
-                  null,
-                  React.createElement(
-                    "b",
-                    null,
-                    "Rows"
-                  ),
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "badge"
-                    },
-                    Data.Params.CPUn.Absolute
-                  )
-                ),
-                " ",
-                React.createElement(
-                  "div",
-                  { className: "btn-group"
-                  },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Nlinks.CPUn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Less.ExtraClass != null ? Data.Params.Nlinks.CPUn.Less.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    "- ",
-                    Data.Params.Nlinks.CPUn.Less.Text
-                  ),
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Nlinks.CPUn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.More.ExtraClass != null ? Data.Params.Nlinks.CPUn.More.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    Data.Params.Nlinks.CPUn.More.Text,
-                    " +"
-                  )
-                )
-              )
-            )
-          )
-        ),
-        React.createElement(
-          "table",
-          { className: Data.Params.CPUn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
-          },
-          React.createElement(
-            "thead",
-            null,
-            React.createElement(
-              "tr",
-              null,
-              React.createElement("th", null),
-              React.createElement(
-                "th",
-                { className: "text-right"
-                },
-                "User"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right"
-                },
-                "Sys"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right"
-                },
-                "Wait"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right"
-                },
-                "Idle"
-              )
-            )
-          ),
-          React.createElement(
-            "tbody",
-            null,
-            rows
-          )
-        )
-      );
-    },
-
     df_rows: function df_rows(Data, $df) {
       return React.createElement(
         "tr",
@@ -938,6 +471,493 @@ define(function (require) {
                   React.createElement("span", { className: Data.Params.Vlinks.Dfk[6 - 1].CaretClass
                   })
                 )
+              )
+            )
+          ),
+          React.createElement(
+            "tbody",
+            null,
+            rows
+          )
+        )
+      );
+    },
+
+    cpu_rows: function cpu_rows(Data, $cpu) {
+      return React.createElement(
+        "tr",
+        { key: "cpu-rowby-N-" + $cpu.N
+        },
+        React.createElement(
+          "td",
+          { className: "text-right text-nowrap"
+          },
+          $cpu.N
+        ),
+        React.createElement(
+          "td",
+          { className: "text-right bg-usepct",
+            "data-usepct": $cpu.UserPct
+          },
+          $cpu.UserPct,
+          "%"
+        ),
+        React.createElement(
+          "td",
+          { className: "text-right bg-usepct",
+            "data-usepct": $cpu.SysPct
+          },
+          $cpu.SysPct,
+          "%"
+        ),
+        React.createElement(
+          "td",
+          { className: "text-right bg-usepct",
+            "data-usepct": $cpu.WaitPct
+          },
+          $cpu.WaitPct,
+          "%"
+        ),
+        React.createElement(
+          "td",
+          { className: "text-right bg-usepct-inverse",
+            "data-usepct": $cpu.IdlePct
+          },
+          $cpu.IdlePct,
+          "%"
+        )
+      );
+    },
+    panelcpu: function panelcpu(Data, rows) {
+      return React.createElement(
+        "div",
+        { className: !Data.Params.CPUn.Negative ? "" : "panel panel-default"
+        },
+        React.createElement(
+          "div",
+          { className: "h4 padding-left-like-panel-heading"
+          },
+          React.createElement(
+            "a",
+            { href: Data.Params.Tlinks.CPUn, onClick: this.handleClick
+            },
+            "CPU"
+          )
+        ),
+        React.createElement(
+          "ul",
+          { className: !Data.Params.CPUn.Negative ? "collapse-hidden" : "list-group"
+          },
+          React.createElement(
+            "li",
+            { className: "list-group-item text-nowrap th"
+            },
+            React.createElement(
+              "ul",
+              { className: "list-inline"
+              },
+              React.createElement(
+                "li",
+                null,
+                React.createElement(
+                  "span",
+                  null,
+                  React.createElement(
+                    "b",
+                    null,
+                    "Delay"
+                  ),
+                  " ",
+                  React.createElement(
+                    "span",
+                    { className: "badge"
+                    },
+                    Data.Params.CPUd
+                  )
+                ),
+                " ",
+                React.createElement(
+                  "div",
+                  { className: "btn-group"
+                  },
+                  React.createElement(
+                    "a",
+                    { href: Data.Params.Dlinks.CPUd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.Less.ExtraClass != null ? Data.Params.Dlinks.CPUd.Less.ExtraClass : ""), onClick: this.handleClick
+                    },
+                    "- ",
+                    Data.Params.Dlinks.CPUd.Less.Text
+                  ),
+                  React.createElement(
+                    "a",
+                    { href: Data.Params.Dlinks.CPUd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.More.ExtraClass != null ? Data.Params.Dlinks.CPUd.More.ExtraClass : ""), onClick: this.handleClick
+                    },
+                    Data.Params.Dlinks.CPUd.More.Text,
+                    " +"
+                  )
+                )
+              ),
+              React.createElement(
+                "li",
+                null,
+                React.createElement(
+                  "span",
+                  null,
+                  React.createElement(
+                    "b",
+                    null,
+                    "Rows"
+                  ),
+                  " ",
+                  React.createElement(
+                    "span",
+                    { className: "badge"
+                    },
+                    Data.Params.CPUn.Absolute
+                  )
+                ),
+                " ",
+                React.createElement(
+                  "div",
+                  { className: "btn-group"
+                  },
+                  React.createElement(
+                    "a",
+                    { href: Data.Params.Nlinks.CPUn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Less.ExtraClass != null ? Data.Params.Nlinks.CPUn.Less.ExtraClass : ""), onClick: this.handleClick
+                    },
+                    "- ",
+                    Data.Params.Nlinks.CPUn.Less.Text
+                  ),
+                  React.createElement(
+                    "a",
+                    { href: Data.Params.Nlinks.CPUn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.More.ExtraClass != null ? Data.Params.Nlinks.CPUn.More.ExtraClass : ""), onClick: this.handleClick
+                    },
+                    Data.Params.Nlinks.CPUn.More.Text,
+                    " +"
+                  )
+                )
+              )
+            )
+          )
+        ),
+        React.createElement(
+          "table",
+          { className: Data.Params.CPUn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
+          },
+          React.createElement(
+            "thead",
+            null,
+            React.createElement(
+              "tr",
+              null,
+              React.createElement("th", null),
+              React.createElement(
+                "th",
+                { className: "text-right"
+                },
+                "User"
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right"
+                },
+                "Sys"
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right"
+                },
+                "Wait"
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right"
+                },
+                "Idle"
+              )
+            )
+          ),
+          React.createElement(
+            "tbody",
+            null,
+            rows
+          )
+        )
+      );
+    },
+
+    if_rows: function if_rows(Data, $if) {
+      return React.createElement(
+        "tr",
+        { key: "if-rowby-name-" + $if.Name
+        },
+        React.createElement(
+          "td",
+          { className: "text-nowrap clip12", title: $if.Name
+          },
+          $if.Name
+        ),
+        React.createElement(
+          "td",
+          { className: "text-right"
+          },
+          $if.IP
+        ),
+        React.createElement(
+          "td",
+          { className: "text-right text-nowrap"
+          },
+          React.createElement(
+            "span",
+            { className: "mutext", title: "Total BYTES modulo 4G"
+            },
+            $if.BytesIn,
+            "/",
+            $if.BytesOut
+          ),
+          " ",
+          React.createElement(
+            "span",
+            { title: "BITS per second"
+            },
+            $if.DeltaBitsIn,
+            "/",
+            $if.DeltaBitsOut
+          )
+        ),
+        React.createElement(
+          "td",
+          { className: "text-right text-nowrap"
+          },
+          React.createElement(
+            "span",
+            { className: "mutext", title: "Total packets modulo 4G"
+            },
+            $if.PacketsIn,
+            "/",
+            $if.PacketsOut
+          ),
+          " ",
+          $if.DeltaPacketsIn,
+          "/",
+          $if.DeltaPacketsOut
+        ),
+        React.createElement(
+          "td",
+          { className: "text-right text-nowrap"
+          },
+          React.createElement(
+            "span",
+            { className: "mutext", title: "Total drops/errors modulo 4G"
+            },
+            $if.DropsIn,
+            "/",
+            $if.DropsOut,
+            "/",
+            $if.ErrorsIn,
+            "/",
+            $if.ErrorsOut
+          ),
+          " ",
+          React.createElement(
+            "span",
+            { className: $if.DeltaDropsIn == "0" ? "mutext" : ""
+            },
+            $if.DeltaDropsIn
+          ),
+          React.createElement(
+            "span",
+            { className: $if.DeltaDropsOut == "0" || $if.DeltaDropsOut == "0" ? "mutext" : ""
+            },
+            "/"
+          ),
+          React.createElement(
+            "span",
+            { className: $if.DeltaDropsOut == "0" ? "mutext" : ""
+            },
+            $if.DeltaDropsOut
+          ),
+          React.createElement(
+            "span",
+            { className: $if.DeltaErrorsIn == "0" || $if.DeltaErrorsIn == "0" ? "mutext" : ""
+            },
+            "/"
+          ),
+          React.createElement(
+            "span",
+            { className: $if.DeltaErrorsIn == "0" ? "mutext" : ""
+            },
+            $if.DeltaErrorsIn
+          ),
+          React.createElement(
+            "span",
+            { className: $if.DeltaErrorsOut == "0" || $if.DeltaErrorsOut == "0" ? "mutext" : ""
+            },
+            "/"
+          ),
+          React.createElement(
+            "span",
+            { className: $if.DeltaErrorsOut == "0" ? "mutext" : ""
+            },
+            $if.DeltaErrorsOut
+          )
+        )
+      );
+    },
+    panelif: function panelif(Data, rows) {
+      return React.createElement(
+        "div",
+        { className: !Data.Params.Ifn.Negative ? "" : "panel panel-default"
+        },
+        React.createElement(
+          "div",
+          { className: "h4 padding-left-like-panel-heading"
+          },
+          React.createElement(
+            "a",
+            { href: Data.Params.Tlinks.Ifn, onClick: this.handleClick
+            },
+            "Interfaces"
+          )
+        ),
+        React.createElement(
+          "ul",
+          { className: !Data.Params.Ifn.Negative ? "collapse-hidden" : "list-group"
+          },
+          React.createElement(
+            "li",
+            { className: "list-group-item text-nowrap th"
+            },
+            React.createElement(
+              "ul",
+              { className: "list-inline"
+              },
+              React.createElement(
+                "li",
+                null,
+                React.createElement(
+                  "span",
+                  null,
+                  React.createElement(
+                    "b",
+                    null,
+                    "Delay"
+                  ),
+                  " ",
+                  React.createElement(
+                    "span",
+                    { className: "badge"
+                    },
+                    Data.Params.Ifd
+                  )
+                ),
+                " ",
+                React.createElement(
+                  "div",
+                  { className: "btn-group"
+                  },
+                  React.createElement(
+                    "a",
+                    { href: Data.Params.Dlinks.Ifd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.Less.ExtraClass != null ? Data.Params.Dlinks.Ifd.Less.ExtraClass : ""), onClick: this.handleClick
+                    },
+                    "- ",
+                    Data.Params.Dlinks.Ifd.Less.Text
+                  ),
+                  React.createElement(
+                    "a",
+                    { href: Data.Params.Dlinks.Ifd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.More.ExtraClass != null ? Data.Params.Dlinks.Ifd.More.ExtraClass : ""), onClick: this.handleClick
+                    },
+                    Data.Params.Dlinks.Ifd.More.Text,
+                    " +"
+                  )
+                )
+              ),
+              React.createElement(
+                "li",
+                null,
+                React.createElement(
+                  "span",
+                  null,
+                  React.createElement(
+                    "b",
+                    null,
+                    "Rows"
+                  ),
+                  " ",
+                  React.createElement(
+                    "span",
+                    { className: "badge"
+                    },
+                    Data.Params.Ifn.Absolute
+                  )
+                ),
+                " ",
+                React.createElement(
+                  "div",
+                  { className: "btn-group"
+                  },
+                  React.createElement(
+                    "a",
+                    { href: Data.Params.Nlinks.Ifn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.Less.ExtraClass != null ? Data.Params.Nlinks.Ifn.Less.ExtraClass : ""), onClick: this.handleClick
+                    },
+                    "- ",
+                    Data.Params.Nlinks.Ifn.Less.Text
+                  ),
+                  React.createElement(
+                    "a",
+                    { href: Data.Params.Nlinks.Ifn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.More.ExtraClass != null ? Data.Params.Nlinks.Ifn.More.ExtraClass : ""), onClick: this.handleClick
+                    },
+                    Data.Params.Nlinks.Ifn.More.Text,
+                    " +"
+                  )
+                )
+              )
+            )
+          )
+        ),
+        React.createElement(
+          "table",
+          { className: Data.Params.Ifn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
+          },
+          React.createElement(
+            "thead",
+            null,
+            React.createElement(
+              "tr",
+              null,
+              React.createElement(
+                "th",
+                null,
+                "Interface"
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right"
+                },
+                "IP"
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right text-nowrap col-md-3", title: "Bits In/Out per second"
+                },
+                "IO ",
+                React.createElement(
+                  "i",
+                  null,
+                  "b"
+                ),
+                "ps"
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right text-nowrap col-md-3", title: "Packets In/Out per second"
+                },
+                "Packets IO/s"
+              ),
+              React.createElement(
+                "th",
+                { className: "text-right text-nowrap col-md-3", title: "Drops/Errors In/Out per second"
+                },
+                "Loss IO/s"
               )
             )
           ),
@@ -1265,6 +1285,19 @@ define(function (require) {
       );
     },
 
+    vg_error: function vg_error(Data) {
+      return React.createElement(
+        "tr",
+        { key: "vgerror"
+        },
+        React.createElement(
+          "td",
+          { colSpan: "5"
+          },
+          Data.VagrantError
+        )
+      );
+    },
     vg_rows: function vg_rows(Data, $vgm) {
       return React.createElement(
         "tr",
@@ -1294,19 +1327,6 @@ define(function (require) {
           "td",
           null,
           $vgm.Vagrantfile_path
-        )
-      );
-    },
-    vg_error: function vg_error(Data) {
-      return React.createElement(
-        "tr",
-        { key: "vgerror"
-        },
-        React.createElement(
-          "td",
-          { colSpan: "5"
-          },
-          Data.VagrantError
         )
       );
     },

@@ -74,172 +74,6 @@ define(function(require) {
   ></div
 >); },
 
-		if_rows:  function(Data, $if)  { return (<tr  key={"if-rowby-name-"+$if.Name}
-  ><td className="text-nowrap clip12" title={$if.Name}
-    >{$if.Name}</td
-  ><td className="text-right"
-    >{$if.IP}</td
-  ><td className="text-right text-nowrap"
-    ><span className="mutext" title="Total BYTES modulo 4G"
-      >{$if.BytesIn}/{$if.BytesOut}</span
-    > <span title="BITS per second"
-      >{$if.DeltaBitsIn}/{$if.DeltaBitsOut}</span
-    ></td
-  ><td className="text-right text-nowrap"
-    ><span className="mutext" title="Total packets modulo 4G"
-      >{$if.PacketsIn}/{$if.PacketsOut}</span
-    > {$if.DeltaPacketsIn}/{$if.DeltaPacketsOut}</td
-  ><td className="text-right text-nowrap"
-    ><span className="mutext" title="Total drops modulo 4G"
-      >{$if.DropsIn}/{$if.DropsOut}</span
-    > {$if.DeltaDropsIn}/{$if.DeltaDropsOut}</td
-  ><td className="text-right text-nowrap"
-    ><span className="mutext" title="Total errors modulo 4G"
-      >{$if.ErrorsIn}/{$if.ErrorsOut}</span
-    > {$if.DeltaErrorsIn}/{$if.DeltaErrorsOut}</td
-  ></tr
->); },
-		panelif:  function(Data, rows) { return (<div  className={!Data.Params.Ifn.Negative ? "" : "panel panel-default"}
-  ><div className="h4 padding-left-like-panel-heading"
-    ><a  href={Data.Params.Tlinks.Ifn} onClick={this.handleClick}
-      >Interfaces</a
-    ></div
-  ><ul   className={!Data.Params.Ifn.Negative ? "collapse-hidden" : "list-group"}
-    ><li className="list-group-item text-nowrap th"
-      ><ul className="list-inline"
-        ><li
-          ><span
-            ><b
-              >Delay</b
-            > <span className="badge"
-              >{Data.Params.Ifd}</span
-            ></span
-          > <div className="btn-group"
-            ><a href={Data.Params.Dlinks.Ifd.Less.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.Ifd.Less.ExtraClass != null ? Data.Params.Dlinks.Ifd.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.Params.Dlinks.Ifd.Less.Text}</a
-><a href={Data.Params.Dlinks.Ifd.More.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.Ifd.More.ExtraClass != null ? Data.Params.Dlinks.Ifd.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.Params.Dlinks.Ifd.More.Text} +</a
-></div
-          ></li
-        ><li
-          ><span
-            ><b
-              >Rows</b
-            > <span className="badge"
-              >{Data.Params.Ifn.Absolute}</span
-            ></span
-          > <div className="btn-group"
-            ><a href={Data.Params.Nlinks.Ifn.Less.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.Ifn.Less.ExtraClass != null ? Data.Params.Nlinks.Ifn.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.Params.Nlinks.Ifn.Less.Text}</a
-><a href={Data.Params.Nlinks.Ifn.More.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.Ifn.More.ExtraClass != null ? Data.Params.Nlinks.Ifn.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.Params.Nlinks.Ifn.More.Text} +</a
-></div
-          ></li
-        ></ul
-      ></li
-    ></ul
-  ><table  className={Data.Params.Ifn.Absolute != 0 ? "table table-hover" : "collapse-hidden"}
-    ><thead
-      ><tr
-        ><th
-          >Interface</th
-        ><th className="text-right"
-          >IP</th
-        ><th className="text-right text-nowrap col-md-2" title="Bits In/Out per second"
-          >IO <i
-            >b</i
-          >ps</th
-        ><th className="text-right text-nowrap col-md-2" title="Packets In/Out per second"
-          >Packets IO</th
-        ><th className="text-right text-nowrap col-md-2" title="Drops In/Out per second"
-          >Drops IO</th
-        ><th className="text-right text-nowrap col-md-2" title="Errors In/Out per second"
-          >Errors IO</th
-        ></tr
-      ></thead
-    ><tbody
-      >{rows}</tbody
-    ></table
-  ></div
->); },
-
-		cpu_rows: function(Data, $cpu) { return (<tr  key={"cpu-rowby-N-"+$cpu.N}
-  ><td className="text-right text-nowrap"
-    >{$cpu.N}</td
-  ><td className="text-right bg-usepct"
-  data-usepct={$cpu.UserPct}
-    >{$cpu.UserPct}%</td
-  ><td className="text-right bg-usepct"
-  data-usepct={$cpu.SysPct}
-    >{$cpu.SysPct}%</td
-  ><td className="text-right bg-usepct"
-  data-usepct={$cpu.WaitPct}
-    >{$cpu.WaitPct}%</td
-  ><td className="text-right bg-usepct-inverse"
-  data-usepct={$cpu.IdlePct}
-    >{$cpu.IdlePct}%</td
-  ></tr
->); },
-		panelcpu: function(Data, rows) { return (<div  className={!Data.Params.CPUn.Negative ? "" : "panel panel-default"}
-  ><div className="h4 padding-left-like-panel-heading"
-    ><a  href={Data.Params.Tlinks.CPUn} onClick={this.handleClick}
-      >CPU</a
-    ></div
-  ><ul   className={!Data.Params.CPUn.Negative ? "collapse-hidden" : "list-group"}
-    ><li className="list-group-item text-nowrap th"
-      ><ul className="list-inline"
-        ><li
-          ><span
-            ><b
-              >Delay</b
-            > <span className="badge"
-              >{Data.Params.CPUd}</span
-            ></span
-          > <div className="btn-group"
-            ><a href={Data.Params.Dlinks.CPUd.Less.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.CPUd.Less.ExtraClass != null ? Data.Params.Dlinks.CPUd.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.Params.Dlinks.CPUd.Less.Text}</a
-><a href={Data.Params.Dlinks.CPUd.More.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.CPUd.More.ExtraClass != null ? Data.Params.Dlinks.CPUd.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.Params.Dlinks.CPUd.More.Text} +</a
-></div
-          ></li
-        ><li
-          ><span
-            ><b
-              >Rows</b
-            > <span className="badge"
-              >{Data.Params.CPUn.Absolute}</span
-            ></span
-          > <div className="btn-group"
-            ><a href={Data.Params.Nlinks.CPUn.Less.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Less.ExtraClass != null ? Data.Params.Nlinks.CPUn.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.Params.Nlinks.CPUn.Less.Text}</a
-><a href={Data.Params.Nlinks.CPUn.More.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.CPUn.More.ExtraClass != null ? Data.Params.Nlinks.CPUn.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.Params.Nlinks.CPUn.More.Text} +</a
-></div
-          ></li
-        ></ul
-      ></li
-    ></ul
-  ><table  className={Data.Params.CPUn.Absolute != 0 ? "table table-hover" : "collapse-hidden"}
-    ><thead
-      ><tr
-        ><th
-          ></th
-        ><th className="text-right"
-          >User</th
-        ><th className="text-right"
-          >Sys</th
-        ><th className="text-right"
-          >Wait</th
-        ><th className="text-right"
-          >Idle</th
-        ></tr
-      ></thead
-    ><tbody
-      >{rows}</tbody
-    ></table
-  ></div
->); },
-
 		df_rows:  function(Data, $df)  { return (<tr  key={"df-rowby-dirname-"+$df.DirName}
   >  <td className="text-nowrap clip12" title={$df.DevName}
     >{$df.DevName}</td
@@ -342,6 +176,180 @@ define(function(require) {
     ></a
   ></th
 ></tr
+      ></thead
+    ><tbody
+      >{rows}</tbody
+    ></table
+  ></div
+>); },
+
+		cpu_rows: function(Data, $cpu) { return (<tr  key={"cpu-rowby-N-"+$cpu.N}
+  ><td className="text-right text-nowrap"
+    >{$cpu.N}</td
+  ><td className="text-right bg-usepct"
+  data-usepct={$cpu.UserPct}
+    >{$cpu.UserPct}%</td
+  ><td className="text-right bg-usepct"
+  data-usepct={$cpu.SysPct}
+    >{$cpu.SysPct}%</td
+  ><td className="text-right bg-usepct"
+  data-usepct={$cpu.WaitPct}
+    >{$cpu.WaitPct}%</td
+  ><td className="text-right bg-usepct-inverse"
+  data-usepct={$cpu.IdlePct}
+    >{$cpu.IdlePct}%</td
+  ></tr
+>); },
+		panelcpu: function(Data, rows) { return (<div  className={!Data.Params.CPUn.Negative ? "" : "panel panel-default"}
+  ><div className="h4 padding-left-like-panel-heading"
+    ><a  href={Data.Params.Tlinks.CPUn} onClick={this.handleClick}
+      >CPU</a
+    ></div
+  ><ul   className={!Data.Params.CPUn.Negative ? "collapse-hidden" : "list-group"}
+    ><li className="list-group-item text-nowrap th"
+      ><ul className="list-inline"
+        ><li
+          ><span
+            ><b
+              >Delay</b
+            > <span className="badge"
+              >{Data.Params.CPUd}</span
+            ></span
+          > <div className="btn-group"
+            ><a href={Data.Params.Dlinks.CPUd.Less.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.CPUd.Less.ExtraClass != null ? Data.Params.Dlinks.CPUd.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.Params.Dlinks.CPUd.Less.Text}</a
+><a href={Data.Params.Dlinks.CPUd.More.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.CPUd.More.ExtraClass != null ? Data.Params.Dlinks.CPUd.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.Params.Dlinks.CPUd.More.Text} +</a
+></div
+          ></li
+        ><li
+          ><span
+            ><b
+              >Rows</b
+            > <span className="badge"
+              >{Data.Params.CPUn.Absolute}</span
+            ></span
+          > <div className="btn-group"
+            ><a href={Data.Params.Nlinks.CPUn.Less.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Less.ExtraClass != null ? Data.Params.Nlinks.CPUn.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.Params.Nlinks.CPUn.Less.Text}</a
+><a href={Data.Params.Nlinks.CPUn.More.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.CPUn.More.ExtraClass != null ? Data.Params.Nlinks.CPUn.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.Params.Nlinks.CPUn.More.Text} +</a
+></div
+          ></li
+        ></ul
+      ></li
+    ></ul
+  ><table  className={Data.Params.CPUn.Absolute != 0 ? "table table-hover" : "collapse-hidden"}
+    ><thead
+      ><tr
+        ><th
+          ></th
+        ><th className="text-right"
+          >User</th
+        ><th className="text-right"
+          >Sys</th
+        ><th className="text-right"
+          >Wait</th
+        ><th className="text-right"
+          >Idle</th
+        ></tr
+      ></thead
+    ><tbody
+      >{rows}</tbody
+    ></table
+  ></div
+>); },
+
+		if_rows:  function(Data, $if)  { return (<tr  key={"if-rowby-name-"+$if.Name}
+  ><td className="text-nowrap clip12" title={$if.Name}
+    >{$if.Name}</td
+  ><td className="text-right"
+    >{$if.IP}</td
+  ><td className="text-right text-nowrap"
+    ><span className="mutext" title="Total BYTES modulo 4G"
+      >{$if.BytesIn}/{$if.BytesOut}</span
+    > <span title="BITS per second"
+      >{$if.DeltaBitsIn}/{$if.DeltaBitsOut}</span
+    ></td
+  ><td className="text-right text-nowrap"
+    ><span className="mutext" title="Total packets modulo 4G"
+      >{$if.PacketsIn}/{$if.PacketsOut}</span
+    > {$if.DeltaPacketsIn}/{$if.DeltaPacketsOut}</td
+  ><td className="text-right text-nowrap"
+    ><span className="mutext" title="Total drops/errors modulo 4G"
+      >{$if.DropsIn}/{$if.DropsOut}/{$if.ErrorsIn}/{$if.ErrorsOut}</span
+    > <span  className={$if.DeltaDropsIn == "0" ? "mutext" : ""}
+      >{$if.DeltaDropsIn}</span
+    ><span  className={$if.DeltaDropsOut == "0" || $if.DeltaDropsOut == "0" ? "mutext" : ""}
+      >/</span
+    ><span  className={$if.DeltaDropsOut == "0" ? "mutext" : ""}
+      >{$if.DeltaDropsOut}</span
+    ><span  className={$if.DeltaErrorsIn == "0" || $if.DeltaErrorsIn == "0" ? "mutext" : ""}
+      >/</span
+    ><span  className={$if.DeltaErrorsIn == "0" ? "mutext" : ""}
+      >{$if.DeltaErrorsIn}</span
+    ><span  className={$if.DeltaErrorsOut == "0" || $if.DeltaErrorsOut == "0" ? "mutext" : ""}
+      >/</span
+    ><span  className={$if.DeltaErrorsOut == "0" ? "mutext" : ""}
+      >{$if.DeltaErrorsOut}</span
+    ></td
+  ></tr
+>); },
+		panelif:  function(Data, rows) { return (<div  className={!Data.Params.Ifn.Negative ? "" : "panel panel-default"}
+  ><div className="h4 padding-left-like-panel-heading"
+    ><a  href={Data.Params.Tlinks.Ifn} onClick={this.handleClick}
+      >Interfaces</a
+    ></div
+  ><ul   className={!Data.Params.Ifn.Negative ? "collapse-hidden" : "list-group"}
+    ><li className="list-group-item text-nowrap th"
+      ><ul className="list-inline"
+        ><li
+          ><span
+            ><b
+              >Delay</b
+            > <span className="badge"
+              >{Data.Params.Ifd}</span
+            ></span
+          > <div className="btn-group"
+            ><a href={Data.Params.Dlinks.Ifd.Less.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.Ifd.Less.ExtraClass != null ? Data.Params.Dlinks.Ifd.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.Params.Dlinks.Ifd.Less.Text}</a
+><a href={Data.Params.Dlinks.Ifd.More.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.Ifd.More.ExtraClass != null ? Data.Params.Dlinks.Ifd.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.Params.Dlinks.Ifd.More.Text} +</a
+></div
+          ></li
+        ><li
+          ><span
+            ><b
+              >Rows</b
+            > <span className="badge"
+              >{Data.Params.Ifn.Absolute}</span
+            ></span
+          > <div className="btn-group"
+            ><a href={Data.Params.Nlinks.Ifn.Less.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.Ifn.Less.ExtraClass != null ? Data.Params.Nlinks.Ifn.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.Params.Nlinks.Ifn.Less.Text}</a
+><a href={Data.Params.Nlinks.Ifn.More.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.Ifn.More.ExtraClass != null ? Data.Params.Nlinks.Ifn.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.Params.Nlinks.Ifn.More.Text} +</a
+></div
+          ></li
+        ></ul
+      ></li
+    ></ul
+  ><table  className={Data.Params.Ifn.Absolute != 0 ? "table table-hover" : "collapse-hidden"}
+    ><thead
+      ><tr
+        ><th
+          >Interface</th
+        ><th className="text-right"
+          >IP</th
+        ><th className="text-right text-nowrap col-md-3" title="Bits In/Out per second"
+          >IO <i
+            >b</i
+          >ps</th
+        ><th className="text-right text-nowrap col-md-3" title="Packets In/Out per second"
+          >Packets IO/s</th
+        ><th className="text-right text-nowrap col-md-3" title="Drops/Errors In/Out per second"
+          >Loss IO/s</th
+        ></tr
       ></thead
     ><tbody
       >{rows}</tbody
@@ -474,6 +482,11 @@ define(function(require) {
   ></div
 >); },
 
+		vg_error: function(Data)       { return (<tr key="vgerror"
+  ><td colSpan="5"
+    >{Data.VagrantError}</td
+  ></tr
+>); },
 		vg_rows:  function(Data, $vgm) { return (<tr  key={"vagrant-rowby-uuid-"+$vgm.UUID}
   ><td
     >{$vgm.UUID}</td
@@ -485,11 +498,6 @@ define(function(require) {
     >{$vgm.State}</td
   ><td
     >{$vgm.Vagrantfile_path}</td
-  ></tr
->); },
-		vg_error: function(Data)       { return (<tr key="vgerror"
-  ><td colSpan="5"
-    >{Data.VagrantError}</td
   ></tr
 >); },
 		panelvg:  function(Data, rows) { return (<div  className={!Data.Params.Vgn.Negative ? "" : "panel panel-default"}

@@ -148,13 +148,23 @@
       >{{$if.PacketsIn}}/{{$if.PacketsOut}}</span
     > {{$if.DeltaPacketsIn}}/{{$if.DeltaPacketsOut}}</td
   ><td class="text-right text-nowrap"
-    ><span class="mutext" title="Total drops modulo 4G"
-      >{{$if.DropsIn}}/{{$if.DropsOut}}</span
-    > {{$if.DeltaDropsIn}}/{{$if.DeltaDropsOut}}</td
-  ><td class="text-right text-nowrap"
-    ><span class="mutext" title="Total errors modulo 4G"
-      >{{$if.ErrorsIn}}/{{$if.ErrorsOut}}</span
-    > {{$if.DeltaErrorsIn}}/{{$if.DeltaErrorsOut}}</td
+    ><span class="mutext" title="Total drops/errors modulo 4G"
+      >{{$if.DropsIn}}/{{$if.DropsOut}}/{{$if.ErrorsIn}}/{{$if.ErrorsOut}}</span
+    > <span {{ClassMutext $if.DeltaDropsIn}}
+      >{{$if.DeltaDropsIn}}</span
+    ><span {{ClassMutext2 $if.DeltaDropsOut $if.DeltaDropsIn}}
+      >/</span
+    ><span {{ClassMutext $if.DeltaDropsOut}}
+      >{{$if.DeltaDropsOut}}</span
+    ><span {{ClassMutext2 $if.DeltaErrorsIn $if.DeltaDropsOut}}
+      >/</span
+    ><span {{ClassMutext $if.DeltaErrorsIn}}
+      >{{$if.DeltaErrorsIn}}</span
+    ><span {{ClassMutext2 $if.DeltaErrorsOut $if.DeltaErrorsIn}}
+      >/</span
+    ><span {{ClassMutext $if.DeltaErrorsOut}}
+      >{{$if.DeltaErrorsOut}}</span
+    ></td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
 */}}{{define "defines::define_memrows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $mem := .Data.MEM.List}}<tr {{AttrKey "mem-rowby-kind" $mem.Kind}}
@@ -300,16 +310,14 @@
           >Interface</th
         ><th class="text-right"
           >IP</th
-        ><th class="text-right text-nowrap col-md-2" title="Bits In/Out per second"
+        ><th class="text-right text-nowrap col-md-3" title="Bits In/Out per second"
           >IO <i
             >b</i
           >ps</th
-        ><th class="text-right text-nowrap col-md-2" title="Packets In/Out per second"
-          >Packets IO</th
-        ><th class="text-right text-nowrap col-md-2" title="Drops In/Out per second"
-          >Drops IO</th
-        ><th class="text-right text-nowrap col-md-2" title="Errors In/Out per second"
-          >Errors IO</th
+        ><th class="text-right text-nowrap col-md-3" title="Packets In/Out per second"
+          >Packets IO/s</th
+        ><th class="text-right text-nowrap col-md-3" title="Drops/Errors In/Out per second"
+          >Loss IO/s</th
         ></tr
       ></thead
     ><tbody
