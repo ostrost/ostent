@@ -25,7 +25,11 @@ u_int32_t Ierrors(void *data) { return ((struct if_data *)data)->ifi_ierrors; }
 u_int32_t Oerrors(void *data) { return ((struct if_data *)data)->ifi_oerrors; }
 
 u_int32_t Idrops(void *data) { return ((struct if_data *)data)->ifi_iqdrops; }
+#ifndef __APPLE__ // NOT APPLE
 u_int32_t Odrops(void *data) { return ((struct if_data *)data)->ifi_oqdrops; }
+#else
+u_int32_t Odrops(void *data) { return 0; }
+#endif
 
 #else
 #include <linux/if_link.h>
