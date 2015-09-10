@@ -1324,7 +1324,7 @@ mark,
   text-transform: capitalize;
 }
 .text-muted,
-.table-hover tr:hover .text-graylighter {
+.table-hover tr:hover .mutext {
   color: #777777;
 }
 .text-primary {
@@ -7381,7 +7381,7 @@ fieldset[disabled] .btn-danger.active {
 .normal {
   font-weight: normal;
 }
-.table-hover .text-graylighter {
+.table-hover .mutext {
   color: #eeeeee;
 }
 .clip12 {

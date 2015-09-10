@@ -94,14 +94,14 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Dlinks.Memd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Memd.Less.ExtraClass != null ? Data.Params.Dlinks.Memd.Less.ExtraClass : "")
+                    { href: Data.Params.Dlinks.Memd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Memd.Less.ExtraClass != null ? Data.Params.Dlinks.Memd.Less.ExtraClass : ""), onClick: this.handleClick
                     },
                     "- ",
                     Data.Params.Dlinks.Memd.Less.Text
                   ),
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Dlinks.Memd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Memd.More.ExtraClass != null ? Data.Params.Dlinks.Memd.More.ExtraClass : "")
+                    { href: Data.Params.Dlinks.Memd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Memd.More.ExtraClass != null ? Data.Params.Dlinks.Memd.More.ExtraClass : ""), onClick: this.handleClick
                     },
                     Data.Params.Dlinks.Memd.More.Text,
                     " +"
@@ -134,14 +134,14 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Nlinks.Memn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Memn.Less.ExtraClass != null ? Data.Params.Nlinks.Memn.Less.ExtraClass : "")
+                    { href: Data.Params.Nlinks.Memn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Memn.Less.ExtraClass != null ? Data.Params.Nlinks.Memn.Less.ExtraClass : ""), onClick: this.handleClick
                     },
                     "- ",
                     Data.Params.Nlinks.Memn.Less.Text
                   ),
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Nlinks.Memn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Memn.More.ExtraClass != null ? Data.Params.Nlinks.Memn.More.ExtraClass : "")
+                    { href: Data.Params.Nlinks.Memn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Memn.More.ExtraClass != null ? Data.Params.Nlinks.Memn.More.ExtraClass : ""), onClick: this.handleClick
                     },
                     Data.Params.Nlinks.Memn.More.Text,
                     " +"
@@ -220,7 +220,7 @@ define(function (require) {
           },
           React.createElement(
             "span",
-            { className: "text-graylighter", title: "Total BYTES modulo 4G"
+            { className: "mutext", title: "Total BYTES modulo 4G"
             },
             $if.BytesIn,
             "/",
@@ -242,7 +242,7 @@ define(function (require) {
           },
           React.createElement(
             "span",
-            { className: "text-graylighter", title: "Total packets modulo 4G"
+            { className: "mutext", title: "Total packets modulo 4G"
             },
             $if.PacketsIn,
             "/",
@@ -259,7 +259,7 @@ define(function (require) {
           },
           React.createElement(
             "span",
-            { className: "text-graylighter", title: "Total drops modulo 4G"
+            { className: "mutext", title: "Total drops modulo 4G"
             },
             $if.DropsIn,
             "/",
@@ -276,7 +276,7 @@ define(function (require) {
           },
           React.createElement(
             "span",
-            { className: "text-graylighter", title: "Total errors modulo 4G"
+            { className: "mutext", title: "Total errors modulo 4G"
             },
             $if.ErrorsIn,
             "/",
@@ -343,14 +343,14 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Dlinks.Ifd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.Less.ExtraClass != null ? Data.Params.Dlinks.Ifd.Less.ExtraClass : "")
+                    { href: Data.Params.Dlinks.Ifd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.Less.ExtraClass != null ? Data.Params.Dlinks.Ifd.Less.ExtraClass : ""), onClick: this.handleClick
                     },
                     "- ",
                     Data.Params.Dlinks.Ifd.Less.Text
                   ),
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Dlinks.Ifd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.More.ExtraClass != null ? Data.Params.Dlinks.Ifd.More.ExtraClass : "")
+                    { href: Data.Params.Dlinks.Ifd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.More.ExtraClass != null ? Data.Params.Dlinks.Ifd.More.ExtraClass : ""), onClick: this.handleClick
                     },
                     Data.Params.Dlinks.Ifd.More.Text,
                     " +"
@@ -383,14 +383,14 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Nlinks.Ifn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.Less.ExtraClass != null ? Data.Params.Nlinks.Ifn.Less.ExtraClass : "")
+                    { href: Data.Params.Nlinks.Ifn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.Less.ExtraClass != null ? Data.Params.Nlinks.Ifn.Less.ExtraClass : ""), onClick: this.handleClick
                     },
                     "- ",
                     Data.Params.Nlinks.Ifn.Less.Text
                   ),
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Nlinks.Ifn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.More.ExtraClass != null ? Data.Params.Nlinks.Ifn.More.ExtraClass : "")
+                    { href: Data.Params.Nlinks.Ifn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.More.ExtraClass != null ? Data.Params.Nlinks.Ifn.More.ExtraClass : ""), onClick: this.handleClick
                     },
                     Data.Params.Nlinks.Ifn.More.Text,
                     " +"
@@ -475,28 +475,32 @@ define(function (require) {
         ),
         React.createElement(
           "td",
-          { className: "text-right bg-usepct", "data-usepct": $cpu.UserPct
+          { className: "text-right bg-usepct",
+            "data-usepct": $cpu.UserPct
           },
           $cpu.UserPct,
           "%"
         ),
         React.createElement(
           "td",
-          { className: "text-right bg-usepct", "data-usepct": $cpu.SysPct
+          { className: "text-right bg-usepct",
+            "data-usepct": $cpu.SysPct
           },
           $cpu.SysPct,
           "%"
         ),
         React.createElement(
           "td",
-          { className: "text-right bg-usepct", "data-usepct": $cpu.WaitPct
+          { className: "text-right bg-usepct",
+            "data-usepct": $cpu.WaitPct
           },
           $cpu.WaitPct,
           "%"
         ),
         React.createElement(
           "td",
-          { className: "text-right bg-usepct-inverse", "data-usepct": $cpu.IdlePct
+          { className: "text-right bg-usepct-inverse",
+            "data-usepct": $cpu.IdlePct
           },
           $cpu.IdlePct,
           "%"
@@ -557,14 +561,14 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Dlinks.CPUd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.Less.ExtraClass != null ? Data.Params.Dlinks.CPUd.Less.ExtraClass : "")
+                    { href: Data.Params.Dlinks.CPUd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.Less.ExtraClass != null ? Data.Params.Dlinks.CPUd.Less.ExtraClass : ""), onClick: this.handleClick
                     },
                     "- ",
                     Data.Params.Dlinks.CPUd.Less.Text
                   ),
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Dlinks.CPUd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.More.ExtraClass != null ? Data.Params.Dlinks.CPUd.More.ExtraClass : "")
+                    { href: Data.Params.Dlinks.CPUd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.More.ExtraClass != null ? Data.Params.Dlinks.CPUd.More.ExtraClass : ""), onClick: this.handleClick
                     },
                     Data.Params.Dlinks.CPUd.More.Text,
                     " +"
@@ -597,14 +601,14 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Nlinks.CPUn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Less.ExtraClass != null ? Data.Params.Nlinks.CPUn.Less.ExtraClass : "")
+                    { href: Data.Params.Nlinks.CPUn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Less.ExtraClass != null ? Data.Params.Nlinks.CPUn.Less.ExtraClass : ""), onClick: this.handleClick
                     },
                     "- ",
                     Data.Params.Nlinks.CPUn.Less.Text
                   ),
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Nlinks.CPUn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.More.ExtraClass != null ? Data.Params.Nlinks.CPUn.More.ExtraClass : "")
+                    { href: Data.Params.Nlinks.CPUn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.More.ExtraClass != null ? Data.Params.Nlinks.CPUn.More.ExtraClass : ""), onClick: this.handleClick
                     },
                     Data.Params.Nlinks.CPUn.More.Text,
                     " +"
@@ -685,7 +689,7 @@ define(function (require) {
           },
           React.createElement(
             "span",
-            { className: "text-graylighter", title: "Inodes free"
+            { className: "mutext", title: "Inodes free"
             },
             $df.Ifree
           ),
@@ -694,11 +698,11 @@ define(function (require) {
         ),
         React.createElement(
           "td",
-          { className: "text-right text-nowrap bg-usepct", "data-usepct": $df.UsePct
+          { className: "text-right bg-usepct text-nowrap", "data-usepct": $df.UsePct
           },
           React.createElement(
             "span",
-            { className: "text-graylighter", title: "Inodes use%"
+            { className: "mutext", title: "Inodes use%"
             },
             $df.IusePct,
             "%"
@@ -713,7 +717,7 @@ define(function (require) {
           },
           React.createElement(
             "span",
-            { className: "text-graylighter", title: "Inodes used"
+            { className: "mutext", title: "Inodes used"
             },
             $df.Iused
           ),
@@ -726,7 +730,7 @@ define(function (require) {
           },
           React.createElement(
             "span",
-            { className: "text-graylighter", title: "Inodes total"
+            { className: "mutext", title: "Inodes total"
             },
             $df.Inodes
           ),
@@ -789,14 +793,14 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Dlinks.Dfd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Dfd.Less.ExtraClass != null ? Data.Params.Dlinks.Dfd.Less.ExtraClass : "")
+                    { href: Data.Params.Dlinks.Dfd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Dfd.Less.ExtraClass != null ? Data.Params.Dlinks.Dfd.Less.ExtraClass : ""), onClick: this.handleClick
                     },
                     "- ",
                     Data.Params.Dlinks.Dfd.Less.Text
                   ),
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Dlinks.Dfd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Dfd.More.ExtraClass != null ? Data.Params.Dlinks.Dfd.More.ExtraClass : "")
+                    { href: Data.Params.Dlinks.Dfd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Dfd.More.ExtraClass != null ? Data.Params.Dlinks.Dfd.More.ExtraClass : ""), onClick: this.handleClick
                     },
                     Data.Params.Dlinks.Dfd.More.Text,
                     " +"
@@ -829,14 +833,14 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Nlinks.Dfn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Dfn.Less.ExtraClass != null ? Data.Params.Nlinks.Dfn.Less.ExtraClass : "")
+                    { href: Data.Params.Nlinks.Dfn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Dfn.Less.ExtraClass != null ? Data.Params.Nlinks.Dfn.Less.ExtraClass : ""), onClick: this.handleClick
                     },
                     "- ",
                     Data.Params.Nlinks.Dfn.Less.Text
                   ),
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Nlinks.Dfn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Dfn.More.ExtraClass != null ? Data.Params.Nlinks.Dfn.More.ExtraClass : "")
+                    { href: Data.Params.Nlinks.Dfn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Dfn.More.ExtraClass != null ? Data.Params.Nlinks.Dfn.More.ExtraClass : ""), onClick: this.handleClick
                     },
                     Data.Params.Nlinks.Dfn.More.Text,
                     " +"
@@ -863,7 +867,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Vlinks.Dfk[1 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[1 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Dfk[1 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[1 - 1].LinkClass, onClick: this.handleClick
                   },
                   "Device",
                   React.createElement("span", { className: Data.Params.Vlinks.Dfk[1 - 1].CaretClass
@@ -876,7 +880,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Vlinks.Dfk[2 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[2 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Dfk[2 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[2 - 1].LinkClass, onClick: this.handleClick
                   },
                   "Mounted",
                   React.createElement("span", { className: Data.Params.Vlinks.Dfk[2 - 1].CaretClass
@@ -889,7 +893,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Vlinks.Dfk[3 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[3 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Dfk[3 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[3 - 1].LinkClass, onClick: this.handleClick
                   },
                   "Avail",
                   React.createElement("span", { className: Data.Params.Vlinks.Dfk[3 - 1].CaretClass
@@ -902,7 +906,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Vlinks.Dfk[4 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[4 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Dfk[4 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[4 - 1].LinkClass, onClick: this.handleClick
                   },
                   "Use%",
                   React.createElement("span", { className: Data.Params.Vlinks.Dfk[4 - 1].CaretClass
@@ -915,7 +919,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Vlinks.Dfk[5 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[5 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Dfk[5 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[5 - 1].LinkClass, onClick: this.handleClick
                   },
                   "Used",
                   React.createElement("span", { className: Data.Params.Vlinks.Dfk[5 - 1].CaretClass
@@ -928,7 +932,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Vlinks.Dfk[6 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[6 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Dfk[6 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[6 - 1].LinkClass, onClick: this.handleClick
                   },
                   "Total",
                   React.createElement("span", { className: Data.Params.Vlinks.Dfk[6 - 1].CaretClass
@@ -1065,14 +1069,14 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Dlinks.Psd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Psd.Less.ExtraClass != null ? Data.Params.Dlinks.Psd.Less.ExtraClass : "")
+                    { href: Data.Params.Dlinks.Psd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Psd.Less.ExtraClass != null ? Data.Params.Dlinks.Psd.Less.ExtraClass : ""), onClick: this.handleClick
                     },
                     "- ",
                     Data.Params.Dlinks.Psd.Less.Text
                   ),
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Dlinks.Psd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Psd.More.ExtraClass != null ? Data.Params.Dlinks.Psd.More.ExtraClass : "")
+                    { href: Data.Params.Dlinks.Psd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Psd.More.ExtraClass != null ? Data.Params.Dlinks.Psd.More.ExtraClass : ""), onClick: this.handleClick
                     },
                     Data.Params.Dlinks.Psd.More.Text,
                     " +"
@@ -1105,14 +1109,14 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Nlinks.Psn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Psn.Less.ExtraClass != null ? Data.Params.Nlinks.Psn.Less.ExtraClass : "")
+                    { href: Data.Params.Nlinks.Psn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Psn.Less.ExtraClass != null ? Data.Params.Nlinks.Psn.Less.ExtraClass : ""), onClick: this.handleClick
                     },
                     "- ",
                     Data.Params.Nlinks.Psn.Less.Text
                   ),
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Nlinks.Psn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Psn.More.ExtraClass != null ? Data.Params.Nlinks.Psn.More.ExtraClass : "")
+                    { href: Data.Params.Nlinks.Psn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Psn.More.ExtraClass != null ? Data.Params.Nlinks.Psn.More.ExtraClass : ""), onClick: this.handleClick
                     },
                     Data.Params.Nlinks.Psn.More.Text,
                     " +"
@@ -1139,7 +1143,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Vlinks.Psk[1 - 1].LinkHref, className: Data.Params.Vlinks.Psk[1 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[1 - 1].LinkHref, className: Data.Params.Vlinks.Psk[1 - 1].LinkClass, onClick: this.handleClick
                   },
                   "PID",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[1 - 1].CaretClass
@@ -1152,7 +1156,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Vlinks.Psk[2 - 1].LinkHref, className: Data.Params.Vlinks.Psk[2 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[2 - 1].LinkHref, className: Data.Params.Vlinks.Psk[2 - 1].LinkClass, onClick: this.handleClick
                   },
                   "UID",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[2 - 1].CaretClass
@@ -1165,7 +1169,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Vlinks.Psk[3 - 1].LinkHref, className: Data.Params.Vlinks.Psk[3 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[3 - 1].LinkHref, className: Data.Params.Vlinks.Psk[3 - 1].LinkClass, onClick: this.handleClick
                   },
                   "USER",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[3 - 1].CaretClass
@@ -1178,7 +1182,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Vlinks.Psk[4 - 1].LinkHref, className: Data.Params.Vlinks.Psk[4 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[4 - 1].LinkHref, className: Data.Params.Vlinks.Psk[4 - 1].LinkClass, onClick: this.handleClick
                   },
                   "PR",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[4 - 1].CaretClass
@@ -1191,7 +1195,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Vlinks.Psk[5 - 1].LinkHref, className: Data.Params.Vlinks.Psk[5 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[5 - 1].LinkHref, className: Data.Params.Vlinks.Psk[5 - 1].LinkClass, onClick: this.handleClick
                   },
                   "NI",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[5 - 1].CaretClass
@@ -1204,7 +1208,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Vlinks.Psk[6 - 1].LinkHref, className: Data.Params.Vlinks.Psk[6 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[6 - 1].LinkHref, className: Data.Params.Vlinks.Psk[6 - 1].LinkClass, onClick: this.handleClick
                   },
                   "VIRT",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[6 - 1].CaretClass
@@ -1217,7 +1221,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Vlinks.Psk[7 - 1].LinkHref, className: Data.Params.Vlinks.Psk[7 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[7 - 1].LinkHref, className: Data.Params.Vlinks.Psk[7 - 1].LinkClass, onClick: this.handleClick
                   },
                   "RES",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[7 - 1].CaretClass
@@ -1230,7 +1234,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Vlinks.Psk[8 - 1].LinkHref, className: Data.Params.Vlinks.Psk[8 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[8 - 1].LinkHref, className: Data.Params.Vlinks.Psk[8 - 1].LinkClass, onClick: this.handleClick
                   },
                   "TIME",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[8 - 1].CaretClass
@@ -1243,7 +1247,7 @@ define(function (require) {
                 },
                 React.createElement(
                   "a",
-                  { href: Data.Params.Vlinks.Psk[9 - 1].LinkHref, className: Data.Params.Vlinks.Psk[9 - 1].LinkClass
+                  { href: Data.Params.Vlinks.Psk[9 - 1].LinkHref, className: Data.Params.Vlinks.Psk[9 - 1].LinkClass, onClick: this.handleClick
                   },
                   "COMMAND",
                   React.createElement("span", { className: Data.Params.Vlinks.Psk[9 - 1].CaretClass
@@ -1360,14 +1364,14 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Dlinks.Vgd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Vgd.Less.ExtraClass != null ? Data.Params.Dlinks.Vgd.Less.ExtraClass : "")
+                    { href: Data.Params.Dlinks.Vgd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Vgd.Less.ExtraClass != null ? Data.Params.Dlinks.Vgd.Less.ExtraClass : ""), onClick: this.handleClick
                     },
                     "- ",
                     Data.Params.Dlinks.Vgd.Less.Text
                   ),
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Dlinks.Vgd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Vgd.More.ExtraClass != null ? Data.Params.Dlinks.Vgd.More.ExtraClass : "")
+                    { href: Data.Params.Dlinks.Vgd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Vgd.More.ExtraClass != null ? Data.Params.Dlinks.Vgd.More.ExtraClass : ""), onClick: this.handleClick
                     },
                     Data.Params.Dlinks.Vgd.More.Text,
                     " +"
@@ -1400,14 +1404,14 @@ define(function (require) {
                   },
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Nlinks.Vgn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Vgn.Less.ExtraClass != null ? Data.Params.Nlinks.Vgn.Less.ExtraClass : "")
+                    { href: Data.Params.Nlinks.Vgn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Vgn.Less.ExtraClass != null ? Data.Params.Nlinks.Vgn.Less.ExtraClass : ""), onClick: this.handleClick
                     },
                     "- ",
                     Data.Params.Nlinks.Vgn.Less.Text
                   ),
                   React.createElement(
                     "a",
-                    { onClick: this.handleClick, href: Data.Params.Nlinks.Vgn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Vgn.More.ExtraClass != null ? Data.Params.Nlinks.Vgn.More.ExtraClass : "")
+                    { href: Data.Params.Nlinks.Vgn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Vgn.More.ExtraClass != null ? Data.Params.Nlinks.Vgn.More.ExtraClass : ""), onClick: this.handleClick
                     },
                     Data.Params.Nlinks.Vgn.More.Text,
                     " +"

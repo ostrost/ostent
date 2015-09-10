@@ -30,20 +30,13 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
           return))
         return
 
-      statesel = 'table thead tr .header a.state'
       again = (e) ->
-        $(statesel).unbind('click')
         window.setTimeout(init, 5000) if !e.wasClean
         return
 
       conn.onclose   = () -> console.log('sse closed (should recover)')
       conn.onerror   = () -> console.log('sse errord (should recover)')
       conn.onmessage = onmessage
-
-      $(statesel).click(() ->
-        history.pushState({path: @path}, '', @href)
-        sendSearch(@search)
-        return false)
       return
 
     init()
@@ -79,20 +72,13 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
           return))
         return
 
-      statesel = 'table thead tr .header a.state'
       again = (e) ->
-        $(statesel).unbind('click')
         window.setTimeout(init, 5000) if !e.wasClean
         return
 
       conn.onclose   = again
       conn.onerror   = again
       conn.onmessage = onmessage
-
-      $(statesel).click(() ->
-        history.pushState({path: @path}, '', @href)
-        sendSearch(@search)
-        return false)
       return
 
     init()

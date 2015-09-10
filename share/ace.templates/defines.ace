@@ -29,14 +29,16 @@
 [[end]]
 
 = content alink_badgeleft
-  | <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}>{{.Badge}} {{.Text}}</a>
+  | <a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}
+  |   >{{.Badge}} {{.Text}}</a>
 = content alink_badgeright
-  | <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}>{{.Text}} {{.Badge}}</a>
+  | <a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}
+  |   >{{.Text}} {{.Badge}}</a>
 
 = content thvlink
   th {{class}}="header {{.AlignClass}}"
-    | <a href={{.LinkHref}} {{class}}={{.LinkClass}}>{{.LinkText}}
-    | <span {{class}}={{.CaretClass}}></span></a>
+    | <a href={{.LinkHref}} {{class}}={{.LinkClass}} onClick={this.handleClick}
+    |   >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>
 
 = content define_ifrows
   {{with rowsset .}}{{.}}{{else}}
@@ -45,24 +47,25 @@
       | <td {{class}}="text-nowrap clip12" title={{$if.Name}}>{{$if.Name}}</td>
       td.text-right {{$if.IP}}
       td.text-right.text-nowrap
-        span.text-graylighter title="Total BYTES modulo 4G" {{$if.BytesIn}}/{{$if.BytesOut}}
+        span.mutext title="Total BYTES modulo 4G" {{$if.BytesIn}}/{{$if.BytesOut}}
         |  
         span title="BITS per second" {{$if.DeltaBitsIn}}/{{$if.DeltaBitsOut}}
       td.text-right.text-nowrap
-        span.text-graylighter title="Total packets modulo 4G" {{$if.PacketsIn}}/{{$if.PacketsOut}}
+        span.mutext title="Total packets modulo 4G" {{$if.PacketsIn}}/{{$if.PacketsOut}}
         |  {{$if.DeltaPacketsIn}}/{{$if.DeltaPacketsOut}}
       td.text-right.text-nowrap
-        span.text-graylighter title="Total drops modulo 4G" {{$if.DropsIn}}/{{$if.DropsOut}}
+        span.mutext title="Total drops modulo 4G" {{$if.DropsIn}}/{{$if.DropsOut}}
         |  {{$if.DeltaDropsIn}}/{{$if.DeltaDropsOut}}
       td.text-right.text-nowrap
-        span.text-graylighter title="Total errors modulo 4G" {{$if.ErrorsIn}}/{{$if.ErrorsOut}}
+        span.mutext title="Total errors modulo 4G" {{$if.ErrorsIn}}/{{$if.ErrorsOut}}
         |  {{$if.DeltaErrorsIn}}/{{$if.DeltaErrorsOut}}
       | </tr>
     {{end}}
   {{end}}
 
-= content define_iftable
+= content define_panelif
   {{$p := .Data.Params}}
+  [[template "startpanel" Chain `$p.Ifn` `$p.Ifd` "Interfaces"]]
   | <table {{ClassNonzero $p.Ifn "table table-hover" "collapse-hidden"}}>
   thead
     tr
@@ -77,14 +80,7 @@
       th.text-right.text-nowrap.col-md-2 title="Errors In/Out per second" Errors IO
   tbody
     {{template "defines::define_ifrows" .}}
-  | </table>
-
-= content define_panelif
-  {{$p := .Data.Params}}
-  [[template "startpanel" Chain `$p.Ifn` `$p.Ifd` "Interfaces"]]
-  |
-    {{template "defines::define_iftable" .}}
-    </div>
+  | </table></div>
 
 = content define_dfrows
   {{with rowsset .}}{{.}}{{else}}
@@ -94,43 +90,40 @@
           <td {{class}}="text-nowrap clip12" title={{$df.DevName}}>{{$df.DevName}}</td>
           <td {{class}}="text-nowrap clip12" title={{$df.DirName}}>{{$df.DirName}}</td>
       td.text-right.text-nowrap
-        span.text-graylighter title="Inodes free" {{$df.Ifree}}
+        span.mutext title="Inodes free" {{$df.Ifree}}
         |  {{$df.Avail}}
-      | <td {{class}}="text-right text-nowrap bg-usepct" data-usepct={{$df.UsePct}}>
-      span.text-graylighter title="Inodes use%" {{$df.IusePct}}%
-      |  {{$df.UsePct}}%
-      | </td>
+
+      | <td {{class}}="text-right bg-usepct text-nowrap"
+      | data-usepct={{$df.UsePct}}>
+      span.mutext title="Inodes use%" {{$df.IusePct}}%
+      |  {{$df.UsePct}}%</td>
+
       td.text-right.text-nowrap
-        span.text-graylighter title="Inodes used" {{$df.Iused}}
+        span.mutext title="Inodes used" {{$df.Iused}}
         |  {{$df.Used}}
       td.text-right.text-nowrap
-        span.text-graylighter title="Inodes total" {{$df.Inodes}}
+        span.mutext title="Inodes total" {{$df.Inodes}}
         |  {{$df.Total}}
       | </tr>
     {{end}}
   {{end}}
 
-= content define_dftable
-  {{$p := .Data.Params}}
-  | <table {{ClassNonzero $p.Dfn "table table-hover" "collapse-hidden"}}>
-  thead
-    tr.text-nowrap
-      {{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device"  ""          }}{{/* FS     */}}
-      {{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""          }}{{/* MP     */}}
-      {{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail"   "text-right"}}{{/* AVAIL  */}}
-      {{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%"    "text-right"}}{{/* USEPCT */}}
-      {{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used"    "text-right"}}{{/* USED   */}}
-      {{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total"   "text-right"}}{{/* TOTAL  */}}
-  tbody
-    {{template "defines::define_dfrows" .}}
-  | </table>
-
 = content define_paneldf
   {{$p := .Data.Params}}
   [[template "startpanel" Chain `$p.Dfn` `$p.Dfd` "Disk usage"]]
-  |
-    {{template "defines::define_dftable" .}}
-    </div>
+  | <table {{ClassNonzero $p.Dfn "table table-hover" "collapse-hidden"}}>
+  thead
+    tr.text-nowrap
+      {{$r := "text-right"}}
+      {{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device"  ""}}{{/* FS     */}}
+      {{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{/* MP     */}}
+      {{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail"   $r}}{{/* AVAIL  */}}
+      {{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%"    $r}}{{/* USEPCT */}}
+      {{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used"    $r}}{{/* USED   */}}
+      {{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total"   $r}}{{/* TOTAL  */}}
+  tbody
+    {{template "defines::define_dfrows" .}}
+  | </table></div>
 
 = content define_memrows
   {{with rowsset .}}{{.}}{{else}}
@@ -138,15 +131,17 @@
       | <tr {{AttrKey "mem-rowby-kind" $mem.Kind}}>
       td {{$mem.Kind}}
       td.text-right {{$mem.Free}}
-      | <td {{class}}="text-right bg-usepct" data-usepct={{$mem.UsePct}}>{{$mem.UsePct}}%</td>
+      | <td {{class}}="text-right bg-usepct"
+      | data-usepct={{$mem.UsePct}}>{{$mem.UsePct}}%</td>
       td.text-right {{$mem.Used}}
       td.text-right {{$mem.Total}}
       | </tr>
     {{end}}
   {{end}}
 
-= content define_memtable
+= content define_panelmem
   {{$p := .Data.Params}}
+  [[template "startpanel" Chain `$p.Memn` `$p.Memd` "Memory"]]
   | <table {{ClassNonzero $p.Memn "table table-hover" "collapse-hidden"}}>
   thead
     tr
@@ -157,30 +152,29 @@
       th.text-right Total
   tbody
     {{template "defines::define_memrows" .}}
-  | </table>
-
-= content define_panelmem
-  {{$p := .Data.Params}}
-  [[template "startpanel" Chain `$p.Memn` `$p.Memd` "Memory"]]
-  |
-    {{template "defines::define_memtable" .}}
-    </div>
+  | </table></div>
 
 = content define_cpurows
   {{with rowsset .}}{{.}}{{else}}
     {{range $i, $cpu := .Data.CPU.List}}
       | <tr {{AttrKey "cpu-rowby-N" $cpu.N}}>
       td.text-right.text-nowrap {{$cpu.N}}
-      | <td {{class}}="text-right bg-usepct" data-usepct={{$cpu.UserPct}}>{{$cpu.UserPct}}%</td>
-      | <td {{class}}="text-right bg-usepct" data-usepct={{$cpu.SysPct}}>{{$cpu.SysPct}}%</td>
-      | <td {{class}}="text-right bg-usepct" data-usepct={{$cpu.WaitPct}}>{{$cpu.WaitPct}}%</td>
-      | <td {{class}}="text-right bg-usepct-inverse" data-usepct={{$cpu.IdlePct}}>{{$cpu.IdlePct}}%</td>
-      | </tr>
+      |
+        <td {{class}}="text-right bg-usepct"
+          data-usepct={{$cpu.UserPct}}>{{$cpu.UserPct}}%</td>
+        <td {{class}}="text-right bg-usepct"
+          data-usepct={{$cpu.SysPct}}>{{$cpu.SysPct}}%</td>
+        <td {{class}}="text-right bg-usepct"
+          data-usepct={{$cpu.WaitPct}}>{{$cpu.WaitPct}}%</td>
+        <td {{class}}="text-right bg-usepct-inverse"
+          data-usepct={{$cpu.IdlePct}}>{{$cpu.IdlePct}}%</td>
+        </tr>
     {{end}}
   {{end}}
 
-= content define_cputable
+= content define_panelcpu
   {{$p := .Data.Params}}
+  [[template "startpanel" Chain `$p.CPUn` `$p.CPUd` "CPU"]]
   | <table {{ClassNonzero $p.CPUn "table table-hover" "collapse-hidden"}}>
   thead
     tr
@@ -191,14 +185,7 @@
       th.text-right Idle
   tbody
     {{template "defines::define_cpurows" .}}
-  | </table>
-
-= content define_panelcpu
-  {{$p := .Data.Params}}
-  [[template "startpanel" Chain `$p.CPUn` `$p.CPUd` "CPU"]]
-  |
-    {{template "defines::define_cputable" .}}
-    </div>
+  | </table></div>
 
 = content define_psrows
   {{with rowsset .}}{{.}}{{else}}
@@ -217,30 +204,26 @@
     {{end}}
   {{end}}
 
-= content define_pstable
-  {{$p := .Data.Params}}
-  | <table {{ClassNonzero $p.Psn "table table-hover" "collapse-hidden"}}>
-  thead
-    tr.text-nowrap
-      {{template "defines::thvlink" Vlink $p $p.Psk 1 "PID"     "text-right" }}
-      {{template "defines::thvlink" Vlink $p $p.Psk 2 "UID"     "text-right" }}
-      {{template "defines::thvlink" Vlink $p $p.Psk 3 "USER"    ""           }}
-      {{template "defines::thvlink" Vlink $p $p.Psk 4 "PR"      "text-right" }}{{/* PRI  */}}
-      {{template "defines::thvlink" Vlink $p $p.Psk 5 "NI"      "text-right" }}{{/* NICE */}}
-      {{template "defines::thvlink" Vlink $p $p.Psk 6 "VIRT"    "text-right" }}
-      {{template "defines::thvlink" Vlink $p $p.Psk 7 "RES"     "text-right" }}
-      {{template "defines::thvlink" Vlink $p $p.Psk 8 "TIME"    "text-center"}}
-      {{template "defines::thvlink" Vlink $p $p.Psk 9 "COMMAND" ""           }}{{/* NAME */}}
-  tbody
-    {{template "defines::define_psrows" .}}
-  | </table>
-
 = content define_panelps
   {{$p := .Data.Params}}
   [[template "startpanel" Chain `$p.Psn` `$p.Psd` "Processes"]]
-  |
-    {{template "defines::define_pstable" .}}
-    </div>
+  | <table {{ClassNonzero $p.Psn "table table-hover" "collapse-hidden"}}>
+  thead
+    tr.text-nowrap
+      {{$r := "text-right"}}
+      {{$c := "text-center"}}
+      {{template "defines::thvlink" Vlink $p $p.Psk 1 "PID"     $r}}
+      {{template "defines::thvlink" Vlink $p $p.Psk 2 "UID"     $r}}
+      {{template "defines::thvlink" Vlink $p $p.Psk 3 "USER"    ""}}
+      {{template "defines::thvlink" Vlink $p $p.Psk 4 "PR"      $r}}{{/* PRI  */}}
+      {{template "defines::thvlink" Vlink $p $p.Psk 5 "NI"      $r}}{{/* NICE */}}
+      {{template "defines::thvlink" Vlink $p $p.Psk 6 "VIRT"    $r}}
+      {{template "defines::thvlink" Vlink $p $p.Psk 7 "RES"     $r}}
+      {{template "defines::thvlink" Vlink $p $p.Psk 8 "TIME"    $c}}
+      {{template "defines::thvlink" Vlink $p $p.Psk 9 "COMMAND" ""}}{{/* NAME */}}
+  tbody
+    {{template "defines::define_psrows" .}}
+  | </table></div>
 
 = content define_vgerror
   tr key="vgerror"
@@ -266,8 +249,9 @@
     | </tr>
   {{end}}
 
-= content define_vgtable
+= content define_panelvg
   {{$p := .Data.Params}}
+  [[template "startpanel" Chain `$p.Vgn` `$p.Vgd` "Vagrant"]]
   | <table {{ClassNonzero $p.Vgn "table table-hover" "collapse-hidden"}}>
   thead
     tr
@@ -278,11 +262,4 @@
       th Directory
   tbody
     {{template "defines::define_vgswitch" .}}
-  | </table>
-
-= content define_panelvg
-  {{$p := .Data.Params}}
-  [[template "startpanel" Chain `$p.Vgn` `$p.Vgd` "Vagrant"]]
-  |
-    {{template "defines::define_vgtable" .}}
-    </div>
+  | </table></div>

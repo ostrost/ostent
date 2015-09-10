@@ -86,130 +86,83 @@
     ></body
   ></html
 >{{/*
-*/}}{{define "defines::alink_badgeleft"}}<a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+*/}}{{define "defines::alink_badgeleft"}}<a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}  
   >{{.Badge}} {{.Text}}</a
 >{{end}}{{/*
-*/}}{{define "defines::alink_badgeright"}}<a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+*/}}{{define "defines::alink_badgeright"}}<a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}  
   >{{.Text}} {{.Badge}}</a
 >{{end}}{{/*
 */}}{{define "defines::define_cpurows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $cpu := .Data.CPU.List}}<tr {{AttrKey "cpu-rowby-N" $cpu.N}}
   ><td class="text-right text-nowrap"
     >{{$cpu.N}}</td
-  ><td {{class}}="text-right bg-usepct" data-usepct={{$cpu.UserPct}}
+  ><td {{class}}="text-right bg-usepct"
+  data-usepct={{$cpu.UserPct}}
     >{{$cpu.UserPct}}%</td
-  ><td {{class}}="text-right bg-usepct" data-usepct={{$cpu.SysPct}}
+  ><td {{class}}="text-right bg-usepct"
+  data-usepct={{$cpu.SysPct}}
     >{{$cpu.SysPct}}%</td
-  ><td {{class}}="text-right bg-usepct" data-usepct={{$cpu.WaitPct}}
+  ><td {{class}}="text-right bg-usepct"
+  data-usepct={{$cpu.WaitPct}}
     >{{$cpu.WaitPct}}%</td
-  ><td {{class}}="text-right bg-usepct-inverse" data-usepct={{$cpu.IdlePct}}
+  ><td {{class}}="text-right bg-usepct-inverse"
+  data-usepct={{$cpu.IdlePct}}
     >{{$cpu.IdlePct}}%</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_cputable"}}{{$p := .Data.Params}}<table {{ClassNonzero $p.CPUn "table table-hover" "collapse-hidden"}}
-  ><thead
-    ><tr
-      ><th
-        ></th
-      ><th class="text-right"
-        >User</th
-      ><th class="text-right"
-        >Sys</th
-      ><th class="text-right"
-        >Wait</th
-      ><th class="text-right"
-        >Idle</th
-      ></tr
-    ></thead
-  ><tbody
-    >{{template "defines::define_cpurows" .}}</tbody
-  ></table
->{{end}}{{/*
 */}}{{define "defines::define_dfrows"}}{{with rowsset .}}{{.}}{{else}}{{range $df := .Data.DF.List}}<tr {{AttrKey "df-rowby-dirname" $df.DirName}}
   >  <td {{class}}="text-nowrap clip12" title={{$df.DevName}}
     >{{$df.DevName}}</td
   >  <td {{class}}="text-nowrap clip12" title={{$df.DirName}}
     >{{$df.DirName}}</td
   ><td class="text-right text-nowrap"
-    ><span class="text-graylighter" title="Inodes free"
+    ><span class="mutext" title="Inodes free"
       >{{$df.Ifree}}</span
     > {{$df.Avail}}</td
-  ><td {{class}}="text-right text-nowrap bg-usepct" data-usepct={{$df.UsePct}}
-    ><span class="text-graylighter" title="Inodes use%"
+  ><td {{class}}="text-right bg-usepct text-nowrap"data-usepct={{$df.UsePct}}
+    ><span class="mutext" title="Inodes use%"
       >{{$df.IusePct}}%</span
     > {{$df.UsePct}}%</td
   ><td class="text-right text-nowrap"
-    ><span class="text-graylighter" title="Inodes used"
+    ><span class="mutext" title="Inodes used"
       >{{$df.Iused}}</span
     > {{$df.Used}}</td
   ><td class="text-right text-nowrap"
-    ><span class="text-graylighter" title="Inodes total"
+    ><span class="mutext" title="Inodes total"
       >{{$df.Inodes}}</span
     > {{$df.Total}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_dftable"}}{{$p := .Data.Params}}<table {{ClassNonzero $p.Dfn "table table-hover" "collapse-hidden"}}
-  ><thead
-    ><tr class="text-nowrap"
-      >{{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail" "text-right"}}{{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%" "text-right"}}{{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used" "text-right"}}{{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total" "text-right"}}</tr
-    ></thead
-  ><tbody
-    >{{template "defines::define_dfrows" .}}</tbody
-  ></table
->{{end}}{{/*
 */}}{{define "defines::define_ifrows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IF.List}}<tr {{AttrKey "if-rowby-name" $if.Name}}
   ><td {{class}}="text-nowrap clip12" title={{$if.Name}}
     >{{$if.Name}}</td
   ><td class="text-right"
     >{{$if.IP}}</td
   ><td class="text-right text-nowrap"
-    ><span class="text-graylighter" title="Total BYTES modulo 4G"
+    ><span class="mutext" title="Total BYTES modulo 4G"
       >{{$if.BytesIn}}/{{$if.BytesOut}}</span
     > <span title="BITS per second"
       >{{$if.DeltaBitsIn}}/{{$if.DeltaBitsOut}}</span
     ></td
   ><td class="text-right text-nowrap"
-    ><span class="text-graylighter" title="Total packets modulo 4G"
+    ><span class="mutext" title="Total packets modulo 4G"
       >{{$if.PacketsIn}}/{{$if.PacketsOut}}</span
     > {{$if.DeltaPacketsIn}}/{{$if.DeltaPacketsOut}}</td
   ><td class="text-right text-nowrap"
-    ><span class="text-graylighter" title="Total drops modulo 4G"
+    ><span class="mutext" title="Total drops modulo 4G"
       >{{$if.DropsIn}}/{{$if.DropsOut}}</span
     > {{$if.DeltaDropsIn}}/{{$if.DeltaDropsOut}}</td
   ><td class="text-right text-nowrap"
-    ><span class="text-graylighter" title="Total errors modulo 4G"
+    ><span class="mutext" title="Total errors modulo 4G"
       >{{$if.ErrorsIn}}/{{$if.ErrorsOut}}</span
     > {{$if.DeltaErrorsIn}}/{{$if.DeltaErrorsOut}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_iftable"}}{{$p := .Data.Params}}<table {{ClassNonzero $p.Ifn "table table-hover" "collapse-hidden"}}
-  ><thead
-    ><tr
-      ><th
-        >Interface</th
-      ><th class="text-right"
-        >IP</th
-      ><th class="text-right text-nowrap col-md-2" title="Bits In/Out per second"
-        >IO <i
-          >b</i
-        >ps</th
-      ><th class="text-right text-nowrap col-md-2" title="Packets In/Out per second"
-        >Packets IO</th
-      ><th class="text-right text-nowrap col-md-2" title="Drops In/Out per second"
-        >Drops IO</th
-      ><th class="text-right text-nowrap col-md-2" title="Errors In/Out per second"
-        >Errors IO</th
-      ></tr
-    ></thead
-  ><tbody
-    >{{template "defines::define_ifrows" .}}</tbody
-  ></table
->{{end}}{{/*
 */}}{{define "defines::define_memrows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $mem := .Data.MEM.List}}<tr {{AttrKey "mem-rowby-kind" $mem.Kind}}
   ><td
     >{{$mem.Kind}}</td
   ><td class="text-right"
     >{{$mem.Free}}</td
-  ><td {{class}}="text-right bg-usepct" data-usepct={{$mem.UsePct}}
+  ><td {{class}}="text-right bg-usepct"data-usepct={{$mem.UsePct}}
     >{{$mem.UsePct}}%</td
   ><td class="text-right"
     >{{$mem.Used}}</td
@@ -217,25 +170,6 @@
     >{{$mem.Total}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_memtable"}}{{$p := .Data.Params}}<table {{ClassNonzero $p.Memn "table table-hover" "collapse-hidden"}}
-  ><thead
-    ><tr
-      ><th
-        ></th
-      ><th class="text-right"
-        >Free</th
-      ><th class="text-right"
-        >Use%</th
-      ><th class="text-right"
-        >Used</th
-      ><th class="text-right"
-        >Total</th
-      ></tr
-    ></thead
-  ><tbody
-    >{{template "defines::define_memrows" .}}</tbody
-  ></table
->{{end}}{{/*
 */}}{{define "defines::define_panelcpu"}}{{$p := .Data.Params}}<div {{ClassPositive $p.CPUn "" "panel panel-default"}}
   ><div class="h4 padding-left-like-panel-heading"
     ><a {{HrefT $p $p.CPUn}}
@@ -267,7 +201,25 @@
         ></ul
       ></li
     ></ul
-  >{{template "defines::define_cputable" .}}</div
+  ><table {{ClassNonzero $p.CPUn "table table-hover" "collapse-hidden"}}
+    ><thead
+      ><tr
+        ><th
+          ></th
+        ><th class="text-right"
+          >User</th
+        ><th class="text-right"
+          >Sys</th
+        ><th class="text-right"
+          >Wait</th
+        ><th class="text-right"
+          >Idle</th
+        ></tr
+      ></thead
+    ><tbody
+      >{{template "defines::define_cpurows" .}}</tbody
+    ></table
+  ></div
 >{{end}}{{/*
 */}}{{define "defines::define_paneldf"}}{{$p := .Data.Params}}<div {{ClassPositive $p.Dfn "" "panel panel-default"}}
   ><div class="h4 padding-left-like-panel-heading"
@@ -300,7 +252,15 @@
         ></ul
       ></li
     ></ul
-  >{{template "defines::define_dftable" .}}</div
+  ><table {{ClassNonzero $p.Dfn "table table-hover" "collapse-hidden"}}
+    ><thead
+      ><tr class="text-nowrap"
+        >{{$r := "text-right"}}{{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total" $r}}</tr
+      ></thead
+    ><tbody
+      >{{template "defines::define_dfrows" .}}</tbody
+    ></table
+  ></div
 >{{end}}{{/*
 */}}{{define "defines::define_panelif"}}{{$p := .Data.Params}}<div {{ClassPositive $p.Ifn "" "panel panel-default"}}
   ><div class="h4 padding-left-like-panel-heading"
@@ -333,7 +293,29 @@
         ></ul
       ></li
     ></ul
-  >{{template "defines::define_iftable" .}}</div
+  ><table {{ClassNonzero $p.Ifn "table table-hover" "collapse-hidden"}}
+    ><thead
+      ><tr
+        ><th
+          >Interface</th
+        ><th class="text-right"
+          >IP</th
+        ><th class="text-right text-nowrap col-md-2" title="Bits In/Out per second"
+          >IO <i
+            >b</i
+          >ps</th
+        ><th class="text-right text-nowrap col-md-2" title="Packets In/Out per second"
+          >Packets IO</th
+        ><th class="text-right text-nowrap col-md-2" title="Drops In/Out per second"
+          >Drops IO</th
+        ><th class="text-right text-nowrap col-md-2" title="Errors In/Out per second"
+          >Errors IO</th
+        ></tr
+      ></thead
+    ><tbody
+      >{{template "defines::define_ifrows" .}}</tbody
+    ></table
+  ></div
 >{{end}}{{/*
 */}}{{define "defines::define_panelmem"}}{{$p := .Data.Params}}<div {{ClassPositive $p.Memn "" "panel panel-default"}}
   ><div class="h4 padding-left-like-panel-heading"
@@ -366,7 +348,25 @@
         ></ul
       ></li
     ></ul
-  >{{template "defines::define_memtable" .}}</div
+  ><table {{ClassNonzero $p.Memn "table table-hover" "collapse-hidden"}}
+    ><thead
+      ><tr
+        ><th
+          ></th
+        ><th class="text-right"
+          >Free</th
+        ><th class="text-right"
+          >Use%</th
+        ><th class="text-right"
+          >Used</th
+        ><th class="text-right"
+          >Total</th
+        ></tr
+      ></thead
+    ><tbody
+      >{{template "defines::define_memrows" .}}</tbody
+    ></table
+  ></div
 >{{end}}{{/*
 */}}{{define "defines::define_panelps"}}{{$p := .Data.Params}}<div {{ClassPositive $p.Psn "" "panel panel-default"}}
   ><div class="h4 padding-left-like-panel-heading"
@@ -399,7 +399,15 @@
         ></ul
       ></li
     ></ul
-  >{{template "defines::define_pstable" .}}</div
+  ><table {{ClassNonzero $p.Psn "table table-hover" "collapse-hidden"}}
+    ><thead
+      ><tr class="text-nowrap"
+        >{{$r := "text-right"}}{{$c := "text-center"}}{{template "defines::thvlink" Vlink $p $p.Psk 1 "PID" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 2 "UID" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 3 "USER" ""}}{{template "defines::thvlink" Vlink $p $p.Psk 4 "PR" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 5 "NI" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 6 "VIRT" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 7 "RES" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 8 "TIME" $c}}{{template "defines::thvlink" Vlink $p $p.Psk 9 "COMMAND" ""}}</tr
+      ></thead
+    ><tbody
+      >{{template "defines::define_psrows" .}}</tbody
+    ></table
+  ></div
 >{{end}}{{/*
 */}}{{define "defines::define_panelvg"}}{{$p := .Data.Params}}<div {{ClassPositive $p.Vgn "" "panel panel-default"}}
   ><div class="h4 padding-left-like-panel-heading"
@@ -432,7 +440,25 @@
         ></ul
       ></li
     ></ul
-  >{{template "defines::define_vgtable" .}}</div
+  ><table {{ClassNonzero $p.Vgn "table table-hover" "collapse-hidden"}}
+    ><thead
+      ><tr
+        ><th
+          >ID</th
+        ><th
+          >Name</th
+        ><th
+          >Provider</th
+        ><th
+          >State</th
+        ><th
+          >Directory</th
+        ></tr
+      ></thead
+    ><tbody
+      >{{template "defines::define_vgswitch" .}}</tbody
+    ></table
+  ></div
 >{{end}}{{/*
 */}}{{define "defines::define_psrows"}}{{with rowsset .}}{{.}}{{else}}{{range $ps := .Data.PS.List}}<tr {{AttrKey "ps-rowby-pid" $ps.PID}}
   ><td class="text-right"
@@ -455,15 +481,6 @@
     >{{$ps.Name}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_pstable"}}{{$p := .Data.Params}}<table {{ClassNonzero $p.Psn "table table-hover" "collapse-hidden"}}
-  ><thead
-    ><tr class="text-nowrap"
-      >{{template "defines::thvlink" Vlink $p $p.Psk 1 "PID" "text-right"}}{{template "defines::thvlink" Vlink $p $p.Psk 2 "UID" "text-right"}}{{template "defines::thvlink" Vlink $p $p.Psk 3 "USER" ""}}{{template "defines::thvlink" Vlink $p $p.Psk 4 "PR" "text-right"}}{{template "defines::thvlink" Vlink $p $p.Psk 5 "NI" "text-right"}}{{template "defines::thvlink" Vlink $p $p.Psk 6 "VIRT" "text-right"}}{{template "defines::thvlink" Vlink $p $p.Psk 7 "RES" "text-right"}}{{template "defines::thvlink" Vlink $p $p.Psk 8 "TIME" "text-center"}}{{template "defines::thvlink" Vlink $p $p.Psk 9 "COMMAND" ""}}</tr
-    ></thead
-  ><tbody
-    >{{template "defines::define_psrows" .}}</tbody
-  ></table
->{{end}}{{/*
 */}}{{define "defines::define_vgerror"}}<tr key="vgerror"
   ><td {{colspan}}="5"
     >{{.Data.VagrantError}}</td
@@ -483,27 +500,8 @@
   ></tr
 >{{end}}{{end}}{{/*
 */}}{{define "defines::define_vgswitch"}}{{with rowsset .}}{{.}}{{else}}{{if eq .Data.VagrantErrord true}}{{template "defines::define_vgerror" .}}{{else}}{{template "defines::define_vgrows" .}}{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_vgtable"}}{{$p := .Data.Params}}<table {{ClassNonzero $p.Vgn "table table-hover" "collapse-hidden"}}
-  ><thead
-    ><tr
-      ><th
-        >ID</th
-      ><th
-        >Name</th
-      ><th
-        >Provider</th
-      ><th
-        >State</th
-      ><th
-        >Directory</th
-      ></tr
-    ></thead
-  ><tbody
-    >{{template "defines::define_vgswitch" .}}</tbody
-  ></table
->{{end}}{{/*
 */}}{{define "defines::thvlink"}}<th {{class}}="header {{.AlignClass}}"
-  ><a href={{.LinkHref}} {{class}}={{.LinkClass}}
+  ><a href={{.LinkHref}} {{class}}={{.LinkClass}} onClick={this.handleClick}  
     >{{.LinkText}}<span {{class}}={{.CaretClass}}
       ></span
     ></a

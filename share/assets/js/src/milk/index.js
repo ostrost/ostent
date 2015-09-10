@@ -29,16 +29,14 @@
         return window.setTimeout(init, 1000);
       };
       init = function() {
-        var again, statesel;
+        var again;
         conn = new EventSource('/index.sse' + location.search);
         conn.onopen = function() {
           $(window).bind('popstate', (function() {
             sendSearch(location.search);
           }));
         };
-        statesel = 'table thead tr .header a.state';
         again = function(e) {
-          $(statesel).unbind('click');
           if (!e.wasClean) {
             window.setTimeout(init, 5000);
           }
@@ -50,13 +48,6 @@
           return console.log('sse errord (should recover)');
         };
         conn.onmessage = onmessage;
-        $(statesel).click(function() {
-          history.pushState({
-            path: this.path
-          }, '', this.href);
-          sendSearch(this.search);
-          return false;
-        });
       };
       init();
       return {
@@ -83,7 +74,7 @@
         }));
       };
       init = function() {
-        var again, hostport, statesel;
+        var again, hostport;
         hostport = window.location.hostname + (location.port ? ':' + location.port : '');
         conn = new WebSocket('ws://' + hostport + '/index.ws');
         conn.onopen = function() {
@@ -92,9 +83,7 @@
             sendSearch(location.search);
           }));
         };
-        statesel = 'table thead tr .header a.state';
         again = function(e) {
-          $(statesel).unbind('click');
           if (!e.wasClean) {
             window.setTimeout(init, 5000);
           }
@@ -102,13 +91,6 @@
         conn.onclose = again;
         conn.onerror = again;
         conn.onmessage = onmessage;
-        $(statesel).click(function() {
-          history.pushState({
-            path: this.path
-          }, '', this.href);
-          sendSearch(this.search);
-          return false;
-        });
       };
       init();
       return {
