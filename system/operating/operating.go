@@ -457,11 +457,3 @@ type IfAddress interface {
 	PacketsIn() uint
 	PacketsOut() uint
 }
-
-type Vgmachine struct {
-	UUID             string
-	Name             string
-	Provider         string
-	State            string
-	Vagrantfile_path string // Directory
-}

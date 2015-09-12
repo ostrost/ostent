@@ -59,9 +59,6 @@ html
       div.row
         div.col-md-10.col-md-offset-1#ps
           {{template "defines::define_panelps" .}}
-      div.row
-        div.col-md-10.col-md-offset-1#vg
-          {{template "defines::define_panelvg" .}}
 
     = javascript
       var Data = {{.Data}};

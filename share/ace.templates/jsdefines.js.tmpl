@@ -14,10 +14,6 @@ define(function(require) {
 		panelif:  function(Data, rows) { return ({{template "defines::define_panelif"  setrows . `rows`}}); },
 
 		ps_rows:  function(Data, $ps)  { return ({{template "defines::define_psrows"   .}}); },
-		panelps:  function(Data, rows) { return ({{template "defines::define_panelps"  setrows . `rows`}}); },
-
-		vg_error: function(Data)       { return ({{template "defines::define_vgerror"  .}}); },
-		vg_rows:  function(Data, $vgm) { return ({{template "defines::define_vgrows"   .}}); },
-		panelvg:  function(Data, rows) { return ({{template "defines::define_panelvg"  setrows . `rows`}}); }
+		panelps:  function(Data, rows) { return ({{template "defines::define_panelps"  setrows . `rows`}}); }
 	};
 });

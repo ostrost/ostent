@@ -83,10 +83,6 @@ type IndexData struct {
 	IF  operating.IF
 	PS  PS
 
-	VagrantMachines VagrantMachines
-	VagrantError    string
-	VagrantErrord   bool
-
 	DISTRIB string
 	VERSION string
 }
@@ -106,10 +102,6 @@ type IndexUpdate struct {
 	CPU *operating.CPU `json:",omitempty"`
 	IF  *operating.IF  `json:",omitempty"`
 	PS  *PS            `json:",omitempty"`
-
-	VagrantMachines *VagrantMachines `json:",omitempty"`
-	VagrantError    string
-	VagrantErrord   bool
 
 	Location *string `json:",omitempty"`
 }
@@ -356,24 +348,6 @@ func FormatDF(md *operating.MetricDF) operating.DFData {
 		Avail:   format.HumanB(uint64(vavail)),
 		UsePct:  format.FormatPercent(approxused, approxtotal),
 	}
-}
-
-func (ir *IndexRegistry) VG(para *params.Params, iu *IndexUpdate) bool {
-	if !para.Vgd.Expired() {
-		return false
-	}
-	if para.Vgn.Absolute == 0 {
-		para.Vgn.Limit = 1
-		return false
-	}
-	machines, err := vagrantmachines(para.Dfn.Absolute)
-	if err != nil {
-		iu.VagrantErrord, iu.VagrantError = true, err.Error()
-		return true
-	}
-	para.Vgn.Limit = len(machines.List)
-	iu.VagrantErrord, iu.VagrantMachines = false, machines
-	return true
 }
 
 // PSSlice is a list of PSInfo.
@@ -638,7 +612,6 @@ func getUpdates(req *http.Request, para *params.Params) (IndexUpdate, bool, erro
 		Reg1s.DF,
 		Reg1s.IF,
 		Reg1s.LA,
-		Reg1s.VG,
 	} {
 		if update(para, &iu) {
 			updated = true
@@ -677,12 +650,6 @@ func indexData(mindelay, maxdelay flags.Delay, req *http.Request) (IndexData, er
 	if updates.IF != nil {
 		data.IF = *updates.IF
 	}
-	if updates.VagrantMachines != nil {
-		data.VagrantMachines = *updates.VagrantMachines
-	}
-	data.VagrantError = updates.VagrantError
-	data.VagrantErrord = updates.VagrantErrord
-
 	return data, nil
 }
 

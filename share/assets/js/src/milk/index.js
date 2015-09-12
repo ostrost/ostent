@@ -237,36 +237,6 @@
         })());
       }
     });
-    this.VGClass = React.createClass({
-      mixins: [HandlerMixin],
-      getInitialState: function() {
-        return {
-          Params: Data.Params,
-          VagrantMachines: Data.VagrantMachines,
-          VagrantError: Data.VagrantError,
-          VagrantErrord: Data.VagrantErrord
-        };
-      },
-      render: function() {
-        var $vgm, Data, rows;
-        Data = this.state;
-        if (((Data != null ? Data.VagrantErrord : void 0) != null) && Data.VagrantErrord) {
-          rows = [jsdefines.vg_error.bind(this)(Data)];
-        } else {
-          rows = (function() {
-            var i, len, ref, ref1, ref2, results;
-            ref2 = (ref = Data != null ? (ref1 = Data.VagrantMachines) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
-            results = [];
-            for (i = 0, len = ref2.length; i < len; i++) {
-              $vgm = ref2[i];
-              results.push(jsdefines.vg_rows.bind(this)(Data, $vgm));
-            }
-            return results;
-          }).call(this);
-        }
-        return jsdefines.panelvg.bind(this)(Data, rows);
-      }
-    });
     this.TextClass = function(reduce) {
       return React.createClass({
         Reduce: function(data) {
@@ -298,7 +268,7 @@
       }
     };
     update = function() {
-      var CPU, DF, HN, IF, LA, MEM, PS, UP, VG, onmessage, render;
+      var CPU, DF, HN, IF, LA, MEM, PS, UP, onmessage, render;
       render = function(id, cl) {
         return React.render(React.createElement(cl), document.getElementById(id));
       };
@@ -316,7 +286,6 @@
       DF = render('df', DFClass);
       CPU = render('cpu', CPUClass);
       IF = render('if', IFClass);
-      VG = render('vg', VGClass);
       onmessage = function(event) {
         var data;
         data = JSON.parse(event.data);
@@ -358,12 +327,6 @@
         setState(DF, {
           Params: data.Params,
           DF: data.DF
-        });
-        setState(VG, {
-          Params: data.Params,
-          VagrantMachines: data.VagrantMachines,
-          VagrantError: data.VagrantError,
-          VagrantErrord: data.VagrantErrord
         });
         if (data.Location != null) {
           history.pushState({}, '', data.Location);

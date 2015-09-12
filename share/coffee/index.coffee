@@ -158,23 +158,6 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
       return jsdefines.panelps.bind(this)(Data, (jsdefines.ps_rows(Data, $ps
       ) for $ps in Data?.PS?.List ? []))
 
-  @VGClass = React.createClass
-    mixins: [HandlerMixin]
-    getInitialState: () -> { # a global Data:
-      Params:          Data.Params
-      VagrantMachines: Data.VagrantMachines
-      VagrantError:    Data.VagrantError
-      VagrantErrord:   Data.VagrantErrord
-    }
-    render: () ->
-      Data = @state
-      if Data?.VagrantErrord? and Data.VagrantErrord
-        rows = [jsdefines.vg_error.bind(this)(Data)]
-      else
-        rows = (jsdefines.vg_rows.bind(this)(Data, $vgm
-        ) for $vgm in Data?.VagrantMachines?.List ? [])
-      return jsdefines.panelvg.bind(this)(Data, rows)
-
   @TextClass = (reduce) -> React.createClass
     Reduce: (data) ->
       v = reduce(data)
@@ -198,7 +181,6 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
     DF  = render('df',  DFClass)
     CPU = render('cpu', CPUClass)
     IF  = render('if',  IFClass)
-    VG  = render('vg',  VGClass)
 
     onmessage = (event) ->
       data = JSON.parse(event.data)
@@ -224,12 +206,6 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
       setState(CPU, {Params: data.Params, CPU: data.CPU})
       setState(IF,  {Params: data.Params, IF:  data.IF })
       setState(DF,  {Params: data.Params, DF:  data.DF })
-      setState(VG, {
-        Params:          data.Params,
-        VagrantMachines: data.VagrantMachines,
-        VagrantError:    data.VagrantError,
-        VagrantErrord:   data.VagrantErrord
-      })
 
       if data.Location?
         history.pushState({}, '', data.Location)

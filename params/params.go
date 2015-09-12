@@ -129,7 +129,6 @@ type Schema struct {
 	Ifd  Delay `url:"ifd,omitempty"`
 	Memd Delay `url:"memd,omitempty"`
 	Psd  Delay `url:"psd,omitempty"`
-	Vgd  Delay `url:"vgd,omitempty"`
 
 	// Num encodes a number and config toggle.
 	// "Negative" value states config displaying and
@@ -140,7 +139,6 @@ type Schema struct {
 	Ifn  Num `url:"ifn,default2"`
 	Memn Num `url:"memn,default2"`
 	Psn  Num `url:"psn,default8"`
-	Vgn  Num `url:"vgn"`
 
 	Psk Num `url:"psk,default1,enumerate9"` // sort, default PID
 	Dfk Num `url:"dfk,default1,enumerate6"` // sort, default FS
@@ -484,6 +482,14 @@ func (p *Params) Decode(req *http.Request) error {
 	}
 	if _, ok := req.Form["ift"]; ok {
 		req.Form.Del("ift")
+		moved = true
+	}
+	if _, ok := req.Form["vgd"]; ok {
+		req.Form.Del("vgd")
+		moved = true
+	}
+	if _, ok := req.Form["vgn"]; ok {
+		req.Form.Del("vgn")
 		moved = true
 	}
 

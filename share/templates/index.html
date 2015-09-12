@@ -76,10 +76,6 @@
         ><div id="ps" class="col-md-10 col-md-offset-1"
           >{{template "defines::define_panelps" .}}</div
         ></div
-      ><div class="row"
-        ><div id="vg" class="col-md-10 col-md-offset-1"
-          >{{template "defines::define_panelvg" .}}</div
-        ></div
       ></div
     ><script type="text/javascript"
       >var Data = {{.Data}};</script
@@ -405,57 +401,6 @@
     ></table
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelvg"}}{{$p := .Data.Params}}<div {{ClassPositive $p.Vgn "" "panel panel-default"}}
-  ><div class="h4 padding-left-like-panel-heading"
-    ><a {{HrefT $p $p.Vgn}}
-      >Vagrant</a
-    ></div
-  ><ul  {{ClassPositive $p.Vgn "collapse-hidden" "list-group"}}
-    ><li class="list-group-item text-nowrap th"
-      ><ul class="list-inline"
-        ><li
-          ><span
-            ><b
-              >Delay</b
-            > <span class="badge"
-              >{{$p.Vgd}}</span
-            ></span
-          > <div class="btn-group"
-            >{{template "defines::alink_badgeleft" LessD $p $p.Vgd "btn btn-default"}}{{template "defines::alink_badgeright" MoreD $p $p.Vgd "btn btn-default"}}</div
-          ></li
-        ><li
-          ><span
-            ><b
-              >Rows</b
-            > <span class="badge"
-              >{{$p.Vgn.Absolute}}</span
-            ></span
-          > <div class="btn-group"
-            >{{template "defines::alink_badgeleft" LessN $p $p.Vgn "btn btn-default"}}{{template "defines::alink_badgeright" MoreN $p $p.Vgn "btn btn-default"}}</div
-          ></li
-        ></ul
-      ></li
-    ></ul
-  ><table {{ClassNonzero $p.Vgn "table table-hover" "collapse-hidden"}}
-    ><thead
-      ><tr
-        ><th
-          >ID</th
-        ><th
-          >Name</th
-        ><th
-          >Provider</th
-        ><th
-          >State</th
-        ><th
-          >Directory</th
-        ></tr
-      ></thead
-    ><tbody
-      >{{template "defines::define_vgswitch" .}}</tbody
-    ></table
-  ></div
->{{end}}{{/*
 */}}{{define "defines::define_psrows"}}{{with rowsset .}}{{.}}{{else}}{{range $ps := .Data.PS.List}}<tr {{AttrKey "ps-rowby-pid" $ps.PID}}
   ><td class="text-right"
     > {{$ps.PID}}</td
@@ -477,25 +422,6 @@
     >{{$ps.Name}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_vgerror"}}<tr key="vgerror"
-  ><td {{colspan}}="5"
-    >{{.Data.VagrantError}}</td
-  ></tr
->{{end}}{{/*
-*/}}{{define "defines::define_vgrows"}}{{range $vgm := .Data.VagrantMachines.List}}<tr {{AttrKey "vagrant-rowby-uuid" $vgm.UUID}}
-  ><td
-    >{{$vgm.UUID}}</td
-  ><td
-    >{{$vgm.Name}}</td
-  ><td
-    >{{$vgm.Provider}}</td
-  ><td
-    >{{$vgm.State}}</td
-  ><td
-    >{{$vgm.Vagrantfile_path}}</td
-  ></tr
->{{end}}{{end}}{{/*
-*/}}{{define "defines::define_vgswitch"}}{{with rowsset .}}{{.}}{{else}}{{if eq .Data.VagrantErrord true}}{{template "defines::define_vgerror" .}}{{else}}{{template "defines::define_vgrows" .}}{{end}}{{end}}{{end}}{{/*
 */}}{{define "defines::thvlink"}}<th {{class}}="header {{.AlignClass}}"
   ><a href={{.LinkHref}} {{class}}={{.LinkClass}} onClick={this.handleClick}  
     >{{.LinkText}}<span {{class}}={{.CaretClass}}

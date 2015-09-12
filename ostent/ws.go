@@ -53,11 +53,6 @@ func CollectLoop() {
 			lastInfo.collect(Machine{})
 		}
 	}()
-	go func() {
-		if err := vgwatch(); err != nil { // vagrant
-			// ignoring the error
-		}
-	}()
 }
 
 // ConnectionsLoop is a ostent background job: serve connections.
@@ -72,14 +67,10 @@ func ConnectionsLoop() {
 
 	for {
 		select {
-		case update := <-iUPDATES:
-			Connections.Push(update)
-
 		case conn := <-Register:
-			Connections.reg(conn)
-
-		case conn := <-unregister:
-			Connections.unreg(conn)
+			Connections.Reg(conn)
+		case conn := <-Unregister:
+			Connections.Unreg(conn)
 		}
 	}
 }
@@ -117,16 +108,9 @@ func (c *conn) Tack() {
 	c.receive <- nil
 }
 
-func (c *conn) Push(update *IndexUpdate) {
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-	c.pushch <- update
-}
-
 type receiver interface {
 	Tick()
 	Tack()
-	Push(*IndexUpdate)
 	Reload()
 	Expired() bool
 	CloseChans()
@@ -162,19 +146,9 @@ func (cs *conns) Reload() bool {
 	return reloaded
 }
 
-func (cs *conns) Push(update *IndexUpdate) {
+func (cs *conns) Reg(r receiver) {
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
-
-	for c := range cs.connmap {
-		c.Push(update)
-	}
-}
-
-func (cs *conns) reg(r receiver) {
-	cs.mutex.Lock()
-	defer cs.mutex.Unlock()
-
 	cs.connmap[r] = struct{}{}
 }
 
@@ -190,7 +164,7 @@ func (c *conn) CloseChans() {
 	close(c.pushch)
 }
 
-func (cs *conns) unreg(r receiver) {
+func (cs *conns) Unreg(r receiver) {
 	r.CloseChans()
 
 	cs.mutex.Lock()
@@ -212,8 +186,7 @@ var (
 	// active websocket connections. The only method is Reload.
 	Connections = conns{connmap: make(map[receiver]struct{})}
 
-	iUPDATES   = make(chan *IndexUpdate) // the channel for off-the-clock IndexUpdate to push
-	unregister = make(chan receiver)
+	Unregister = make(chan receiver)
 	Register   = make(chan receiver, 1)
 )
 
@@ -404,7 +377,7 @@ func (sw *ServeWS) IndexWS(w http.ResponseWriter, req *http.Request) {
 	}
 	Register <- c
 	defer func() {
-		unregister <- c
+		Unregister <- c
 		c.Conn.Close()
 	}()
 	stop := make(chan struct{}, 1)
