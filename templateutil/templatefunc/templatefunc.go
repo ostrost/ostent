@@ -43,22 +43,50 @@ func (f JSXFuncs) ClassMutext(x interface{}) template.HTMLAttr {
 }
 
 func (f HTMLFuncs) ClassMutext(x interface{}) template.HTMLAttr {
-	if x.(string) == "0" {
+	if f.IsStringZero(x) {
 		return SprintfAttr(" class=%q", "mutext")
 	}
 	return SprintfAttr("")
 }
 
-func (f JSXFuncs) ClassMutext2(x, y interface{}) template.HTMLAttr {
-	return SprintfAttr(" className={%s == \"0\" || %s == \"0\" ? %q : \"\"}",
-		x.(Uncurler).Uncurl(), x.(Uncurler).Uncurl(), "mutext")
+func (f JSXFuncs) ClassMutext4(x1, x2, y1, y2 interface{}) template.HTMLAttr {
+	return SprintfAttr(" className={(%s && %s && %s && %s) ? %q : \"\"}",
+		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", x1.(Uncurler).Uncurl()),
+		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", x2.(Uncurler).Uncurl()),
+		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", y1.(Uncurler).Uncurl()),
+		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", y2.(Uncurler).Uncurl()),
+		"mutext")
 }
 
-func (f HTMLFuncs) ClassMutext2(x, y interface{}) template.HTMLAttr {
-	if x.(string) == "0" || y.(string) == "0" {
+func (f HTMLFuncs) ClassMutext4(x1, x2, y1, y2 interface{}) template.HTMLAttr {
+	if f.IsStringZero(x1) && f.IsStringZero(x2) &&
+		f.IsStringZero(y1) && f.IsStringZero(y2) {
 		return SprintfAttr(" class=%q", "mutext")
 	}
 	return SprintfAttr("")
+}
+
+func (f HTMLFuncs) IsStringZero(x interface{}) bool {
+	if s, ok := x.(string); ok {
+		if s == "0" {
+			return true
+		}
+	} else if s, ok := x.(*string); ok && (s == nil || *s == "0") {
+		return true
+	}
+	return false
+}
+
+func (f JSXFuncs) PrefixNonNil(x interface{}, prefix string) string {
+	return fmt.Sprintf("{%[1]s != null ? (%[2]q+%[1]s) : \"\"}",
+		x.(Uncurler).Uncurl(), prefix)
+}
+
+func (f HTMLFuncs) PrefixNonNil(x interface{}, prefix string) string {
+	if s := x.(*string); s != nil {
+		return prefix + *s
+	}
+	return ""
 }
 
 // Key returns key attribute: prefix + uncurled x being an Uncurler.
@@ -188,8 +216,8 @@ func MakeMap(f Functor) template.FuncMap {
 		"AttrKey":       f.Key,
 		"ClassNonzero":  f.ClassNonzero,
 		"ClassPositive": f.ClassPositive,
-		"ClassMutext":   f.ClassMutext,
-		"ClassMutext2":  f.ClassMutext2,
+		"ClassMutext4":  f.ClassMutext4,
+		"PrefixNonNil":  f.PrefixNonNil,
 
 		"HrefT": f.FuncHrefT(),
 		"LessD": f.FuncLessD(),
@@ -209,8 +237,8 @@ type Functor interface {
 	Colspan() string
 	ClassNonzero(interface{}, string, string) template.HTMLAttr
 	ClassPositive(interface{}, string, string) template.HTMLAttr
-	ClassMutext(interface{}) template.HTMLAttr
-	ClassMutext2(interface{}, interface{}) template.HTMLAttr
+	ClassMutext4(interface{}, interface{}, interface{}, interface{}) template.HTMLAttr
+	PrefixNonNil(interface{}, string) string
 	Key(string, interface{}) template.HTMLAttr
 
 	FuncHrefT() interface{}

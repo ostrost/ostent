@@ -14,32 +14,9 @@ import (
 	"github.com/ostrost/ostent/system/operating"
 )
 
-type IfData struct {
-	Name       string
-	IP         string
-	InBytes    uint
-	OutBytes   uint
-	InPackets  uint
-	OutPackets uint
-	InDrops    uint
-	OutDrops   uint
-	InErrors   uint
-	OutErrors  uint
-}
-
-func (id IfData) GetIP() string       { return id.IP }
-func (id IfData) GetInBytes() uint    { return id.InBytes }
-func (id IfData) GetOutBytes() uint   { return id.OutBytes }
-func (id IfData) GetInDrops() uint    { return id.InDrops }
-func (id IfData) GetOutDrops() uint   { return id.OutDrops }
-func (id IfData) GetInErrors() uint   { return id.InErrors }
-func (id IfData) GetOutErrors() uint  { return id.OutErrors }
-func (id IfData) GetInPackets() uint  { return id.InPackets }
-func (id IfData) GetOutPackets() uint { return id.OutPackets }
-
 // Registry has updates with sigar values.
 type Registry interface {
-	UpdateIF(IfData)
+	UpdateIF(operating.IfAddress)
 	UpdateCPU([]sigar.Cpu)
 	UpdateLA(sigar.LoadAverage)
 	UpdateSwap(sigar.Swap)

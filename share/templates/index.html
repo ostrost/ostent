@@ -148,22 +148,10 @@
       >{{$if.PacketsIn}}/{{$if.PacketsOut}}</span
     > {{$if.DeltaPacketsIn}}/{{$if.DeltaPacketsOut}}</td
   ><td class="text-right text-nowrap"
-    ><span class="mutext" title="Total drops/errors modulo 4G"
-      >{{$if.DropsIn}}/{{$if.DropsOut}}/{{$if.ErrorsIn}}/{{$if.ErrorsOut}}</span
-    > <span {{ClassMutext $if.DeltaDropsIn}}
-      >{{$if.DeltaDropsIn}}</span
-    ><span {{ClassMutext2 $if.DeltaDropsOut $if.DeltaDropsIn}}
-      >/</span
-    ><span {{ClassMutext $if.DeltaDropsOut}}
-      >{{$if.DeltaDropsOut}}</span
-    ><span {{ClassMutext2 $if.DeltaErrorsIn $if.DeltaDropsOut}}
-      >/</span
-    ><span {{ClassMutext $if.DeltaErrorsIn}}
-      >{{$if.DeltaErrorsIn}}</span
-    ><span {{ClassMutext2 $if.DeltaErrorsOut $if.DeltaErrorsIn}}
-      >/</span
-    ><span {{ClassMutext $if.DeltaErrorsOut}}
-      >{{$if.DeltaErrorsOut}}</span
+    ><span class="mutext" title="Total drops|errors modulo 4G"
+      >{{$if.DropsIn}}{{PrefixNonNil $if.DropsOut "/"}}|{{$if.ErrorsIn}}/{{$if.ErrorsOut}}</span
+    > <span {{ClassMutext4 $if.DeltaDropsIn $if.DeltaDropsOut $if.DeltaErrorsIn $if.DeltaErrorsOut}}
+      >{{$if.DeltaDropsIn}}{{PrefixNonNil $if.DeltaDropsOut "/"}}|{{$if.DeltaErrorsIn}}/{{$if.DeltaErrorsOut}}</span
     ></td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
@@ -315,9 +303,9 @@
             >b</i
           >ps</th
         ><th class="text-right text-nowrap col-md-3" title="Packets In/Out per second"
-          >Packets IO/s</th
-        ><th class="text-right text-nowrap col-md-3" title="Drops/Errors In/Out per second"
-          >Loss IO/s</th
+          >Packets IO ps</th
+        ><th class="text-right text-nowrap col-md-3" title="Drops|Errors In/Out per second"
+          >Loss IO ps</th
         ></tr
       ></thead
     ><tbody

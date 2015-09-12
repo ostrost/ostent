@@ -193,37 +193,30 @@ func FormatIF(mi *operating.MetricIF) operating.IFData {
 		Name: mi.Name,
 		IP:   mi.IP.Snapshot().Value(),
 	}
-	type (
-		From [2]*operating.GaugeDiff
-		To   [4]*string
-	)
-	FormatIF1024(From{mi.BytesIn, mi.BytesOut}, To{&ii.BytesIn, &ii.BytesOut, &ii.DeltaBitsIn, &ii.DeltaBitsOut})
-	FormatIF1000(From{mi.DropsIn, mi.DropsOut}, To{&ii.DropsIn, &ii.DropsOut, &ii.DeltaDropsIn, &ii.DeltaDropsOut})
-	FormatIF1000(From{mi.ErrorsIn, mi.ErrorsOut}, To{&ii.ErrorsIn, &ii.ErrorsOut, &ii.DeltaErrorsIn, &ii.DeltaErrorsOut})
-	FormatIF1000(From{mi.PacketsIn, mi.PacketsOut}, To{&ii.PacketsIn, &ii.PacketsOut, &ii.DeltaPacketsIn, &ii.DeltaPacketsOut})
+	FormatIF1024(mi.BytesIn, &ii.BytesIn, &ii.DeltaBitsIn)
+	FormatIF1024(mi.BytesOut, &ii.BytesOut, &ii.DeltaBitsOut)
+	FormatIF1000(mi.DropsIn, &ii.DropsIn, &ii.DeltaDropsIn)
+	FormatIF1000(mi.ErrorsIn, &ii.ErrorsIn, &ii.DeltaErrorsIn)
+	FormatIF1000(mi.ErrorsOut, &ii.ErrorsOut, &ii.DeltaErrorsOut)
+	FormatIF1000(mi.PacketsIn, &ii.PacketsIn, &ii.DeltaPacketsIn)
+	FormatIF1000(mi.PacketsOut, &ii.PacketsOut, &ii.DeltaPacketsOut)
+	if mi.DropsOut != nil {
+		ii.DropsOut, ii.DeltaDropsOut = new(string), new(string)
+		FormatIF1000(mi.DropsOut, ii.DropsOut, ii.DeltaDropsOut)
+	}
 	return ii
 }
 
-func FormatIF1024(pair [2]*operating.GaugeDiff, info [4]*string) {
-	var (
-		deltain, in   = pair[0].Values()
-		deltaout, out = pair[1].Values()
-	)
-	*info[0] = format.HumanB(uint64(in))
-	*info[1] = format.HumanB(uint64(out))
-	*info[2] = format.HumanBits(uint64(8 * deltain))
-	*info[3] = format.HumanBits(uint64(8 * deltaout))
+func FormatIF1024(diff *operating.GaugeDiff, info1, info2 *string) {
+	delta, abs := diff.Values()
+	*info1 = format.HumanB(uint64(abs))
+	*info2 = format.HumanBits(uint64(8 * delta))
 }
 
-func FormatIF1000(pair [2]*operating.GaugeDiff, info [4]*string) {
-	var (
-		deltain, in   = pair[0].Values()
-		deltaout, out = pair[1].Values()
-	)
-	*info[0] = format.HumanUnitless(uint64(in))
-	*info[1] = format.HumanUnitless(uint64(out))
-	*info[2] = format.HumanUnitless(uint64(deltain))
-	*info[3] = format.HumanUnitless(uint64(deltaout))
+func FormatIF1000(diff *operating.GaugeDiff, info1, info2 *string) {
+	delta, abs := diff.Values()
+	*info1 = format.HumanUnitless(uint64(abs))
+	*info2 = format.HumanUnitless(uint64(delta))
 }
 
 func (ir *IndexRegistry) GetIF(para *params.Params) []operating.IFData {
@@ -257,18 +250,7 @@ func (ir *IndexRegistry) GetOrRegisterPrivateIF(name string) *operating.MetricIF
 	if metric := ir.PrivateIFRegistry.Get(name); metric != nil {
 		return metric.(*operating.MetricIF)
 	}
-	i := &operating.MetricIF{
-		Name:       name,
-		IP:         &operating.StandardMetricString{},
-		BytesIn:    operating.NewGaugeDiff("interface-"+name+".if_octets.rx", ir.Registry),
-		BytesOut:   operating.NewGaugeDiff("interface-"+name+".if_octets.tx", ir.Registry),
-		DropsIn:    operating.NewGaugeDiff("interface-"+name+".if_drops.rx", ir.Registry),
-		DropsOut:   operating.NewGaugeDiff("interface-"+name+".if_drops.tx", ir.Registry),
-		ErrorsIn:   operating.NewGaugeDiff("interface-"+name+".if_errors.rx", ir.Registry),
-		ErrorsOut:  operating.NewGaugeDiff("interface-"+name+".if_errors.tx", ir.Registry),
-		PacketsIn:  operating.NewGaugeDiff("interface-"+name+".if_packets.rx", ir.Registry),
-		PacketsOut: operating.NewGaugeDiff("interface-"+name+".if_packets.tx", ir.Registry),
-	}
+	i := operating.NewMetricIF(ir.Registry, name)
 	ir.PrivateIFRegistry.Register(name, i) // error is ignored
 	// errs when the type is not derived from (go-)metrics types
 	return i
@@ -569,10 +551,10 @@ func (ir *IndexRegistry) UpdateCPU(cpuslice []sigar.Cpu) {
 	ir.PrivateCPUAll.Update(all)
 }
 
-func (ir *IndexRegistry) UpdateIF(ifdata IfData) {
+func (ir *IndexRegistry) UpdateIF(ifaddr operating.IfAddress) {
 	ir.Mutex.Lock()
 	defer ir.Mutex.Unlock()
-	ir.GetOrRegisterPrivateIF(ifdata.Name).Update(ifdata)
+	ir.GetOrRegisterPrivateIF(ifaddr.Name()).Update(ifaddr)
 }
 
 // S2SRegistry is for string kv storage.

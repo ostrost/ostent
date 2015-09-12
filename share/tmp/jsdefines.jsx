@@ -276,22 +276,10 @@ define(function(require) {
       >{$if.PacketsIn}/{$if.PacketsOut}</span
     > {$if.DeltaPacketsIn}/{$if.DeltaPacketsOut}</td
   ><td className="text-right text-nowrap"
-    ><span className="mutext" title="Total drops/errors modulo 4G"
-      >{$if.DropsIn}/{$if.DropsOut}/{$if.ErrorsIn}/{$if.ErrorsOut}</span
-    > <span  className={$if.DeltaDropsIn == "0" ? "mutext" : ""}
-      >{$if.DeltaDropsIn}</span
-    ><span  className={$if.DeltaDropsOut == "0" || $if.DeltaDropsOut == "0" ? "mutext" : ""}
-      >/</span
-    ><span  className={$if.DeltaDropsOut == "0" ? "mutext" : ""}
-      >{$if.DeltaDropsOut}</span
-    ><span  className={$if.DeltaErrorsIn == "0" || $if.DeltaErrorsIn == "0" ? "mutext" : ""}
-      >/</span
-    ><span  className={$if.DeltaErrorsIn == "0" ? "mutext" : ""}
-      >{$if.DeltaErrorsIn}</span
-    ><span  className={$if.DeltaErrorsOut == "0" || $if.DeltaErrorsOut == "0" ? "mutext" : ""}
-      >/</span
-    ><span  className={$if.DeltaErrorsOut == "0" ? "mutext" : ""}
-      >{$if.DeltaErrorsOut}</span
+    ><span className="mutext" title="Total drops|errors modulo 4G"
+      >{$if.DropsIn}{$if.DropsOut != null ? ("/"+$if.DropsOut) : ""}|{$if.ErrorsIn}/{$if.ErrorsOut}</span
+    > <span  className={(($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0")) ? "mutext" : ""}
+      >{$if.DeltaDropsIn}{$if.DeltaDropsOut != null ? ("/"+$if.DeltaDropsOut) : ""}|{$if.DeltaErrorsIn}/{$if.DeltaErrorsOut}</span
     ></td
   ></tr
 >); },
@@ -346,9 +334,9 @@ define(function(require) {
             >b</i
           >ps</th
         ><th className="text-right text-nowrap col-md-3" title="Packets In/Out per second"
-          >Packets IO/s</th
-        ><th className="text-right text-nowrap col-md-3" title="Drops/Errors In/Out per second"
-          >Loss IO/s</th
+          >Packets IO ps</th
+        ><th className="text-right text-nowrap col-md-3" title="Drops|Errors In/Out per second"
+          >Loss IO ps</th
         ></tr
       ></thead
     ><tbody

@@ -14,24 +14,7 @@ package getifaddrs
 #define AF_LINK AF_PACKET
 #endif
 
-#ifndef __linux__ // NOT LINUX
-u_int32_t Ibytes(void *data) { return ((struct if_data *)data)->ifi_ibytes; }
-u_int32_t Obytes(void *data) { return ((struct if_data *)data)->ifi_obytes; }
-
-u_int32_t Ipackets(void *data) { return ((struct if_data *)data)->ifi_ipackets; }
-u_int32_t Opackets(void *data) { return ((struct if_data *)data)->ifi_opackets; }
-
-u_int32_t Ierrors(void *data) { return ((struct if_data *)data)->ifi_ierrors; }
-u_int32_t Oerrors(void *data) { return ((struct if_data *)data)->ifi_oerrors; }
-
-u_int32_t Idrops(void *data) { return ((struct if_data *)data)->ifi_iqdrops; }
-#ifndef __APPLE__ // NOT APPLE
-u_int32_t Odrops(void *data) { return ((struct if_data *)data)->ifi_oqdrops; }
-#else
-u_int32_t Odrops(void *data) { return 0; }
-#endif
-
-#else
+#ifdef __linux__
 #include <linux/if_link.h>
 u_int32_t Ibytes(void *data) { return ((struct rtnl_link_stats *)data)->rx_bytes; }
 u_int32_t Obytes(void *data) { return ((struct rtnl_link_stats *)data)->tx_bytes; }
@@ -43,38 +26,50 @@ u_int32_t Ierrors(void *data) { return ((struct rtnl_link_stats *)data)->rx_erro
 u_int32_t Oerrors(void *data) { return ((struct rtnl_link_stats *)data)->tx_errors; }
 
 u_int32_t Idrops(void *data) { return ((struct rtnl_link_stats *)data)->rx_dropped; }
-u_int32_t Odrops(void *data) { return ((struct rtnl_link_stats *)data)->tx_dropped; }
+
+#else // freebsd, darwin
+u_int32_t Ibytes(void *data) { return ((struct if_data *)data)->ifi_ibytes; }
+u_int32_t Obytes(void *data) { return ((struct if_data *)data)->ifi_obytes; }
+
+u_int32_t Ipackets(void *data) { return ((struct if_data *)data)->ifi_ipackets; }
+u_int32_t Opackets(void *data) { return ((struct if_data *)data)->ifi_opackets; }
+
+u_int32_t Ierrors(void *data) { return ((struct if_data *)data)->ifi_ierrors; }
+u_int32_t Oerrors(void *data) { return ((struct if_data *)data)->ifi_oerrors; }
+
+u_int32_t Idrops(void *data) { return ((struct if_data *)data)->ifi_iqdrops; }
 #endif
 
 char ADDR[INET_ADDRSTRLEN];
 */
-// #cgo CFLAGS: -D_IFI_OQDROPS
 import "C"
 import "unsafe"
 
-// IfData is a struct with interface info.
-type IfData struct {
-	IP         string
-	Name       string
-	InBytes    uint
-	OutBytes   uint
-	InPackets  uint
-	OutPackets uint
-	InDrops    uint
-	OutDrops   uint
-	InErrors   uint
-	OutErrors  uint
+// IfAddr is a struct with interface info.
+type IfAddr struct {
+	IfaIP         string
+	IfaName       string
+	IfaBytesIn    uint
+	IfaBytesOut   uint
+	IfaPacketsIn  uint
+	IfaPacketsOut uint
+	IfaDropsIn    uint
+	IfaDropsOut   *uint // nil in darwin
+	IfaErrorsIn   uint
+	IfaErrorsOut  uint
 }
 
-func (id IfData) GetIP() string       { return id.IP }
-func (id IfData) GetInBytes() uint    { return id.InBytes }
-func (id IfData) GetOutBytes() uint   { return id.OutBytes }
-func (id IfData) GetInDrops() uint    { return id.InDrops }
-func (id IfData) GetOutDrops() uint   { return id.OutDrops }
-func (id IfData) GetInErrors() uint   { return id.InErrors }
-func (id IfData) GetOutErrors() uint  { return id.OutErrors }
-func (id IfData) GetInPackets() uint  { return id.InPackets }
-func (id IfData) GetOutPackets() uint { return id.OutPackets }
+// GetName and other methods may be combined into an interface.
+func (ia IfAddr) IP() string       { return ia.IfaIP }
+func (ia IfAddr) Name() string     { return ia.IfaName }
+func (ia IfAddr) BytesIn() uint    { return ia.IfaBytesIn }
+func (ia IfAddr) BytesOut() uint   { return ia.IfaBytesOut }
+func (ia IfAddr) DropsIn() uint    { return ia.IfaDropsIn }
+func (ia IfAddr) DropsOut() *uint  { return ia.IfaDropsOut }
+func (ia IfAddr) ErrorsIn() uint   { return ia.IfaErrorsIn }
+func (ia IfAddr) ErrorsOut() uint  { return ia.IfaErrorsOut }
+func (ia IfAddr) PacketsIn() uint  { return ia.IfaPacketsIn }
+func (ia IfAddr) PacketsOut() uint { return ia.IfaPacketsOut }
 
 func ntop(fi *C.struct_ifaddrs) (string, bool) {
 	if fi.ifa_addr == nil {
@@ -94,18 +89,18 @@ func ntop(fi *C.struct_ifaddrs) (string, bool) {
 	return C.GoString((*C.char)(unsafe.Pointer(&C.ADDR))), true
 }
 
-// Getifaddrs returns a list of IfData. Unlike with getifaddrs(3) the
-// IfData has merged link level and interface address data.
-func Getifaddrs() ([]IfData, error) {
+// Getifaddrs returns a list of IfAddr. Unlike with getifaddrs(3) the
+// IfAddr has merged link level and interface address data.
+func Getifaddrs() ([]IfAddr, error) {
+	ret := []IfAddr{}
+
 	var ifaces *C.struct_ifaddrs
 	if rc, err := C.getifaddrs(&ifaces); rc != 0 {
-		return []IfData{}, err
+		return ret, err
 	}
 	defer C.freeifaddrs(ifaces)
 
 	ips := make(map[string]string)
-	ifs := []IfData{}
-
 	for fi := ifaces; fi != nil; fi = fi.ifa_next {
 		if fi.ifa_addr == nil {
 			continue
@@ -122,29 +117,28 @@ func Getifaddrs() ([]IfData, error) {
 		}
 
 		data := fi.ifa_data
-		it := IfData{
-			Name:       ifaName,
-			InBytes:    uint(C.Ibytes(data)),
-			OutBytes:   uint(C.Obytes(data)),
-			InPackets:  uint(C.Ipackets(data)),
-			OutPackets: uint(C.Opackets(data)),
-			InDrops:    uint(C.Idrops(data)),
-			OutDrops:   uint(C.Odrops(data)),
-			InErrors:   uint(C.Ierrors(data)),
-			OutErrors:  uint(C.Oerrors(data)),
+		ia := IfAddr{
+			IfaName:       ifaName,
+			IfaBytesIn:    uint(C.Ibytes(data)),
+			IfaBytesOut:   uint(C.Obytes(data)),
+			IfaPacketsIn:  uint(C.Ipackets(data)),
+			IfaPacketsOut: uint(C.Opackets(data)),
+			IfaDropsIn:    uint(C.Idrops(data)),
+			IfaDropsOut:   IfaDropsOut(data), // may return nil
+			IfaErrorsIn:   uint(C.Ierrors(data)),
+			IfaErrorsOut:  uint(C.Oerrors(data)),
 		}
 		if ip, ok := ips[ifaName]; ok {
-			it.IP = ip
+			ia.IfaIP = ip
 		}
-		ifs = append(ifs, it)
+		ret = append(ret, ia)
 	}
-	for i, ifdata := range ifs {
-		if ifdata.IP != "" {
-			continue
-		}
-		if ip, ok := ips[ifdata.Name]; ok {
-			ifs[i].IP = ip
+	for i, ifaddr := range ret {
+		if ifaddr.IfaIP == "" {
+			if ip, ok := ips[ifaddr.IfaName]; ok {
+				ret[i].IfaIP = ip
+			}
 		}
 	}
-	return ifs, nil
+	return ret, nil
 }

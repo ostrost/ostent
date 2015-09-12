@@ -747,12 +747,11 @@ define(function (require) {
           },
           React.createElement(
             "span",
-            { className: "mutext", title: "Total drops/errors modulo 4G"
+            { className: "mutext", title: "Total drops|errors modulo 4G"
             },
             $if.DropsIn,
-            "/",
-            $if.DropsOut,
-            "/",
+            $if.DropsOut != null ? "/" + $if.DropsOut : "",
+            "|",
             $if.ErrorsIn,
             "/",
             $if.ErrorsOut
@@ -760,44 +759,13 @@ define(function (require) {
           " ",
           React.createElement(
             "span",
-            { className: $if.DeltaDropsIn == "0" ? "mutext" : ""
+            { className: ($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0") ? "mutext" : ""
             },
-            $if.DeltaDropsIn
-          ),
-          React.createElement(
-            "span",
-            { className: $if.DeltaDropsOut == "0" || $if.DeltaDropsOut == "0" ? "mutext" : ""
-            },
-            "/"
-          ),
-          React.createElement(
-            "span",
-            { className: $if.DeltaDropsOut == "0" ? "mutext" : ""
-            },
-            $if.DeltaDropsOut
-          ),
-          React.createElement(
-            "span",
-            { className: $if.DeltaErrorsIn == "0" || $if.DeltaErrorsIn == "0" ? "mutext" : ""
-            },
-            "/"
-          ),
-          React.createElement(
-            "span",
-            { className: $if.DeltaErrorsIn == "0" ? "mutext" : ""
-            },
-            $if.DeltaErrorsIn
-          ),
-          React.createElement(
-            "span",
-            { className: $if.DeltaErrorsOut == "0" || $if.DeltaErrorsOut == "0" ? "mutext" : ""
-            },
-            "/"
-          ),
-          React.createElement(
-            "span",
-            { className: $if.DeltaErrorsOut == "0" ? "mutext" : ""
-            },
+            $if.DeltaDropsIn,
+            $if.DeltaDropsOut != null ? "/" + $if.DeltaDropsOut : "",
+            "|",
+            $if.DeltaErrorsIn,
+            "/",
             $if.DeltaErrorsOut
           )
         )
@@ -951,13 +919,13 @@ define(function (require) {
                 "th",
                 { className: "text-right text-nowrap col-md-3", title: "Packets In/Out per second"
                 },
-                "Packets IO/s"
+                "Packets IO ps"
               ),
               React.createElement(
                 "th",
-                { className: "text-right text-nowrap col-md-3", title: "Drops/Errors In/Out per second"
+                { className: "text-right text-nowrap col-md-3", title: "Drops|Errors In/Out per second"
                 },
-                "Loss IO/s"
+                "Loss IO ps"
               )
             )
           ),
