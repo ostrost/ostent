@@ -28,16 +28,13 @@ func (b *Bind) Set(input string) error {
 	var err error
 	b.Host, b.Port, err = net.SplitHostPort(input)
 	if err != nil {
-		if strings.HasPrefix(err.Error(), "missing port in address") {
-			b.Host, b.Port = input, b.defport
-		} else {
+		if !strings.HasPrefix(err.Error(), "missing port in address") {
 			return err
 		}
+		b.Host, b.Port = input, b.defport
 	}
 	if _, err = net.LookupPort("tcp", b.Port); err != nil {
-		if !strings.HasPrefix(err.Error(), "unknown port tcp/") {
-			return err
-		}
+		return err
 	}
 	b.string = b.Host + ":" + b.Port
 	return nil
