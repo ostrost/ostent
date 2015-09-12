@@ -80,6 +80,7 @@ func TestBindSet(t *testing.T) {
 	}{
 		{"a:b:", "", []error{fmt.Errorf("too many colons in address " + "a:b:")}},
 		{"localhost:nonexistent", "localhost:nonexistent", []error{
+			fmt.Errorf("unknown port tcp/nonexistent"),
 			fmt.Errorf("lookup tcp/nonexistent: Servname not supported for ai_socktype"),
 			fmt.Errorf("lookup tcp/nonexistent: nodename nor servname provided, or not known"),
 		}},
