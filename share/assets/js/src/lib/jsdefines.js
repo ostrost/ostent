@@ -58,7 +58,7 @@ define(function (require) {
         ),
         React.createElement(
           "ul",
-          { className: !Data.Params.Memn.Negative ? "collapse-hidden" : "list-group"
+          { className: !Data.Params.Memn.Negative ? "hidden" : "list-group"
           },
           React.createElement(
             "li",
@@ -153,7 +153,7 @@ define(function (require) {
         ),
         React.createElement(
           "table",
-          { className: Data.Params.Memn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
+          { className: Data.Params.Memn.Absolute != 0 ? "table table-hover" : "hidden"
           },
           React.createElement(
             "thead",
@@ -290,7 +290,7 @@ define(function (require) {
         ),
         React.createElement(
           "ul",
-          { className: !Data.Params.Dfn.Negative ? "collapse-hidden" : "list-group"
+          { className: !Data.Params.Dfn.Negative ? "hidden" : "list-group"
           },
           React.createElement(
             "li",
@@ -385,7 +385,7 @@ define(function (require) {
         ),
         React.createElement(
           "table",
-          { className: Data.Params.Dfn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
+          { className: Data.Params.Dfn.Absolute != 0 ? "table table-hover" : "hidden"
           },
           React.createElement(
             "thead",
@@ -546,7 +546,7 @@ define(function (require) {
         ),
         React.createElement(
           "ul",
-          { className: !Data.Params.CPUn.Negative ? "collapse-hidden" : "list-group"
+          { className: !Data.Params.CPUn.Negative ? "hidden" : "list-group"
           },
           React.createElement(
             "li",
@@ -641,7 +641,7 @@ define(function (require) {
         ),
         React.createElement(
           "table",
-          { className: Data.Params.CPUn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
+          { className: Data.Params.CPUn.Absolute != 0 ? "table table-hover" : "hidden"
           },
           React.createElement(
             "thead",
@@ -708,19 +708,34 @@ define(function (require) {
           },
           React.createElement(
             "span",
-            { className: "mutext", title: "Total BYTES modulo 4G"
+            { className: "mutext"
             },
-            $if.BytesIn,
+            React.createElement(
+              "span",
+              { title: "Total BYTES In modulo 4G"
+              },
+              $if.BytesIn
+            ),
             "/",
-            $if.BytesOut
+            React.createElement(
+              "span",
+              { title: "Total BYTES Out modulo 4G"
+              },
+              $if.BytesOut
+            )
           ),
           " ",
           React.createElement(
             "span",
-            { title: "BITS per second"
+            { title: "BITS In per second"
             },
-            $if.DeltaBitsIn,
-            "/",
+            $if.DeltaBitsIn
+          ),
+          "/",
+          React.createElement(
+            "span",
+            { title: "BITS Out per second"
+            },
             $if.DeltaBitsOut
           )
         ),
@@ -730,16 +745,36 @@ define(function (require) {
           },
           React.createElement(
             "span",
-            { className: "mutext", title: "Total packets modulo 4G"
+            { className: "mutext"
             },
-            $if.PacketsIn,
+            React.createElement(
+              "span",
+              { title: "Total packets In modulo 4G"
+              },
+              $if.PacketsIn
+            ),
             "/",
-            $if.PacketsOut
+            React.createElement(
+              "span",
+              { title: "Total packets Out modulo 4G"
+              },
+              $if.PacketsOut
+            )
           ),
           " ",
-          $if.DeltaPacketsIn,
+          React.createElement(
+            "span",
+            { title: "Packets In per second"
+            },
+            $if.DeltaPacketsIn
+          ),
           "/",
-          $if.DeltaPacketsOut
+          React.createElement(
+            "span",
+            { title: "Packets Out per second"
+            },
+            $if.DeltaPacketsOut
+          )
         ),
         React.createElement(
           "td",
@@ -747,26 +782,78 @@ define(function (require) {
           },
           React.createElement(
             "span",
-            { className: "mutext", title: "Total drops|errors modulo 4G"
+            { className: "mutext", title: "Total drops,errors modulo 4G"
             },
-            $if.DropsIn,
-            $if.DropsOut != null ? "/" + $if.DropsOut : "",
-            "|",
-            $if.ErrorsIn,
+            React.createElement(
+              "span",
+              { title: "Total drops In modulo 4G"
+              },
+              $if.DropsIn
+            ),
+            React.createElement(
+              "span",
+              { className: $if.DropsOut != null ? "" : "hidden"
+              },
+              "/"
+            ),
+            React.createElement(
+              "span",
+              { className: $if.DropsOut != null ? "" : "hidden", title: "Total drops Out modulo 4G"
+              },
+              $if.DropsOut
+            ),
+            ",",
+            React.createElement(
+              "span",
+              { title: "Total errors In modulo 4G"
+              },
+              $if.ErrorsIn
+            ),
             "/",
-            $if.ErrorsOut
+            React.createElement(
+              "span",
+              { title: "Total errors Out modulo 4G"
+              },
+              $if.ErrorsOut
+            )
           ),
           " ",
           React.createElement(
             "span",
             { className: ($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0") ? "mutext" : ""
             },
-            $if.DeltaDropsIn,
-            $if.DeltaDropsOut != null ? "/" + $if.DeltaDropsOut : "",
-            "|",
-            $if.DeltaErrorsIn,
+            React.createElement(
+              "span",
+              { title: "Drops In per second"
+              },
+              $if.DeltaDropsIn
+            ),
+            React.createElement(
+              "span",
+              { className: $if.DeltaDropsOut != null ? "" : "hidden"
+              },
+              "/"
+            ),
+            React.createElement(
+              "span",
+              { className: $if.DeltaDropsOut != null ? "" : "hidden", title: "Drops Out per second"
+              },
+              $if.DeltaDropsOut
+            ),
+            ",",
+            React.createElement(
+              "span",
+              { title: "Errors In per second"
+              },
+              $if.DeltaErrorsIn
+            ),
             "/",
-            $if.DeltaErrorsOut
+            React.createElement(
+              "span",
+              { title: "Errors Out per second"
+              },
+              $if.DeltaErrorsOut
+            )
           )
         )
       );
@@ -789,7 +876,7 @@ define(function (require) {
         ),
         React.createElement(
           "ul",
-          { className: !Data.Params.Ifn.Negative ? "collapse-hidden" : "list-group"
+          { className: !Data.Params.Ifn.Negative ? "hidden" : "list-group"
           },
           React.createElement(
             "li",
@@ -884,7 +971,7 @@ define(function (require) {
         ),
         React.createElement(
           "table",
-          { className: Data.Params.Ifn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
+          { className: Data.Params.Ifn.Absolute != 0 ? "table table-hover" : "hidden"
           },
           React.createElement(
             "thead",
@@ -923,7 +1010,7 @@ define(function (require) {
               ),
               React.createElement(
                 "th",
-                { className: "text-right text-nowrap col-md-3", title: "Drops|Errors In/Out per second"
+                { className: "text-right text-nowrap col-md-3", title: "Drops,Errors In/Out per second"
                 },
                 "Loss IO ps"
               )
@@ -1021,7 +1108,7 @@ define(function (require) {
         ),
         React.createElement(
           "ul",
-          { className: !Data.Params.Psn.Negative ? "collapse-hidden" : "list-group"
+          { className: !Data.Params.Psn.Negative ? "hidden" : "list-group"
           },
           React.createElement(
             "li",
@@ -1116,7 +1203,7 @@ define(function (require) {
         ),
         React.createElement(
           "table",
-          { className: Data.Params.Psn.Absolute != 0 ? "table table-hover" : "collapse-hidden"
+          { className: Data.Params.Psn.Absolute != 0 ? "table table-hover" : "hidden"
           },
           React.createElement(
             "thead",

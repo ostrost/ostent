@@ -7399,9 +7399,6 @@ fieldset[disabled] .btn-danger.active {
   overflow-x: visible;
 }
 */
-.collapse-hidden {
-  display: none;
-}
 /*
 .collapse-collapse { display: none; }
 .collapse-checkbox { display: none; }

@@ -13,12 +13,53 @@ func (f HTMLFuncs) Class() string   { return "class" }
 func (f JSXFuncs) Colspan() string  { return "colSpan" }
 func (f HTMLFuncs) Colspan() string { return "colspan" }
 
-func (f JSXFuncs) ClassNonzero(x interface{}, class, sndclass string) template.HTMLAttr {
+func (f JSXFuncs) ClassAllZero(x1, x2, y1, y2 interface{}, class string) template.HTMLAttr {
+	return SprintfAttr(" className={(%s && %s && %s && %s) ? %q : \"\"}",
+		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", x1.(Uncurler).Uncurl()),
+		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", x2.(Uncurler).Uncurl()),
+		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", y1.(Uncurler).Uncurl()),
+		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", y2.(Uncurler).Uncurl()),
+		class)
+}
+
+func (f HTMLFuncs) ClassAllZero(x1, x2, y1, y2 interface{}, class string) template.HTMLAttr {
+	if f.IsStringZero(x1) && f.IsStringZero(x2) &&
+		f.IsStringZero(y1) && f.IsStringZero(y2) {
+		return SprintfAttr(" class=%q", class)
+	}
+	return SprintfAttr("")
+}
+
+// IsStringZero is internal (not required for interface)
+func (f HTMLFuncs) IsStringZero(x interface{}) bool {
+	if s, ok := x.(string); ok {
+		if s == "0" {
+			return true
+		}
+	} else if s, ok := x.(*string); ok && (s == nil || *s == "0") {
+		return true
+	}
+	return false
+}
+
+func (f JSXFuncs) ClassNonNil(x interface{}, class, sndclass string) template.HTMLAttr {
+	return SprintfAttr(" className={%s != null ? %q : %q}",
+		x.(Uncurler).Uncurl(), class, sndclass)
+}
+
+func (f HTMLFuncs) ClassNonNil(x interface{}, class, sndclass string) template.HTMLAttr {
+	if s := x.(*string); s == nil {
+		class = sndclass
+	}
+	return SprintfAttr(" class=%q", class)
+}
+
+func (f JSXFuncs) ClassNonZero(x interface{}, class, sndclass string) template.HTMLAttr {
 	return SprintfAttr(` className={%s.Absolute != 0 ? %q : %q}`,
 		x.(Uncurler).Uncurl(), class, sndclass)
 }
 
-func (f HTMLFuncs) ClassNonzero(x interface{}, class, sndclass string) template.HTMLAttr {
+func (f HTMLFuncs) ClassNonZero(x interface{}, class, sndclass string) template.HTMLAttr {
 	if x.(params.Num).Absolute == 0 {
 		class = sndclass
 	}
@@ -35,58 +76,6 @@ func (f HTMLFuncs) ClassPositive(x interface{}, class, sndclass string) template
 		class = sndclass
 	}
 	return SprintfAttr(" class=%q", class)
-}
-
-func (f JSXFuncs) ClassMutext(x interface{}) template.HTMLAttr {
-	return SprintfAttr(" className={%s == \"0\" ? %q : \"\"}",
-		x.(Uncurler).Uncurl(), "mutext")
-}
-
-func (f HTMLFuncs) ClassMutext(x interface{}) template.HTMLAttr {
-	if f.IsStringZero(x) {
-		return SprintfAttr(" class=%q", "mutext")
-	}
-	return SprintfAttr("")
-}
-
-func (f JSXFuncs) ClassMutext4(x1, x2, y1, y2 interface{}) template.HTMLAttr {
-	return SprintfAttr(" className={(%s && %s && %s && %s) ? %q : \"\"}",
-		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", x1.(Uncurler).Uncurl()),
-		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", x2.(Uncurler).Uncurl()),
-		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", y1.(Uncurler).Uncurl()),
-		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", y2.(Uncurler).Uncurl()),
-		"mutext")
-}
-
-func (f HTMLFuncs) ClassMutext4(x1, x2, y1, y2 interface{}) template.HTMLAttr {
-	if f.IsStringZero(x1) && f.IsStringZero(x2) &&
-		f.IsStringZero(y1) && f.IsStringZero(y2) {
-		return SprintfAttr(" class=%q", "mutext")
-	}
-	return SprintfAttr("")
-}
-
-func (f HTMLFuncs) IsStringZero(x interface{}) bool {
-	if s, ok := x.(string); ok {
-		if s == "0" {
-			return true
-		}
-	} else if s, ok := x.(*string); ok && (s == nil || *s == "0") {
-		return true
-	}
-	return false
-}
-
-func (f JSXFuncs) PrefixNonNil(x interface{}, prefix string) string {
-	return fmt.Sprintf("{%[1]s != null ? (%[2]q+%[1]s) : \"\"}",
-		x.(Uncurler).Uncurl(), prefix)
-}
-
-func (f HTMLFuncs) PrefixNonNil(x interface{}, prefix string) string {
-	if s := x.(*string); s != nil {
-		return prefix + *s
-	}
-	return ""
 }
 
 // Key returns key attribute: prefix + uncurled x being an Uncurler.
@@ -167,10 +156,12 @@ func (f JSXFuncs) Dlink(v Uncurler, bclass, which, badge string) (params.ALink, 
 	}, nil
 }
 
+// ConcatClass is internal (not required for interface)
 func (f JSXFuncs) ConcatClass(bclass, eclass string) string {
 	return fmt.Sprintf("{%q + \" \" + (%s != null ? %s : \"\")}", bclass, eclass, eclass)
 }
 
+// Nlink is internal (not required for interface)
 func (f JSXFuncs) Nlink(v Uncurler, bclass, which, badge string) (params.ALink, error) {
 	base, last := f.Split(v)
 	var (
@@ -186,6 +177,7 @@ func (f JSXFuncs) Nlink(v Uncurler, bclass, which, badge string) (params.ALink, 
 	}, nil
 }
 
+// Split is internal (not required for interface)
 func (f JSXFuncs) Split(v Uncurler) (string, string) {
 	split := strings.Split(v.Uncurl(), ".")
 	return strings.Join(split[:len(split)-1], "."), split[len(split)-1]
@@ -213,11 +205,11 @@ func MakeMap(f Functor) template.FuncMap {
 		"class":   f.Class,
 		"colspan": f.Colspan,
 
-		"AttrKey":       f.Key,
-		"ClassNonzero":  f.ClassNonzero,
+		"ClassAllZero":  f.ClassAllZero,
+		"ClassNonNil":   f.ClassNonNil,
+		"ClassNonZero":  f.ClassNonZero,
 		"ClassPositive": f.ClassPositive,
-		"ClassMutext4":  f.ClassMutext4,
-		"PrefixNonNil":  f.PrefixNonNil,
+		"Key":           f.Key,
 
 		"HrefT": f.FuncHrefT(),
 		"LessD": f.FuncLessD(),
@@ -233,12 +225,13 @@ var Funcs = HTMLFuncs{}.MakeMap()
 
 type Functor interface {
 	MakeMap() template.FuncMap
+
 	Class() string
 	Colspan() string
-	ClassNonzero(interface{}, string, string) template.HTMLAttr
+	ClassAllZero(interface{}, interface{}, interface{}, interface{}, string) template.HTMLAttr
+	ClassNonNil(interface{}, string, string) template.HTMLAttr
+	ClassNonZero(interface{}, string, string) template.HTMLAttr
 	ClassPositive(interface{}, string, string) template.HTMLAttr
-	ClassMutext4(interface{}, interface{}, interface{}, interface{}) template.HTMLAttr
-	PrefixNonNil(interface{}, string) string
 	Key(string, interface{}) template.HTMLAttr
 
 	FuncHrefT() interface{}

@@ -88,7 +88,7 @@
 */}}{{define "defines::alink_badgeright"}}<a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}  
   >{{.Text}} {{.Badge}}</a
 >{{end}}{{/*
-*/}}{{define "defines::define_cpurows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $cpu := .Data.CPU.List}}<tr {{AttrKey "cpu-rowby-N" $cpu.N}}
+*/}}{{define "defines::define_cpurows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $cpu := .Data.CPU.List}}<tr {{Key "cpu-rowby-N" $cpu.N}}
   ><td class="text-right text-nowrap"
     >{{$cpu.N}}</td
   ><td {{class}}="text-right bg-usepct"
@@ -105,7 +105,7 @@
     >{{$cpu.IdlePct}}%</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_dfrows"}}{{with rowsset .}}{{.}}{{else}}{{range $df := .Data.DF.List}}<tr {{AttrKey "df-rowby-dirname" $df.DirName}}
+*/}}{{define "defines::define_dfrows"}}{{with rowsset .}}{{.}}{{else}}{{range $df := .Data.DF.List}}<tr {{Key "df-rowby-dirname" $df.DirName}}
   >  <td {{class}}="text-nowrap clip12" title={{$df.DevName}}
     >{{$df.DevName}}</td
   >  <td {{class}}="text-nowrap clip12" title={{$df.DirName}}
@@ -128,30 +128,64 @@
     > {{$df.Total}}</td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_ifrows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IF.List}}<tr {{AttrKey "if-rowby-name" $if.Name}}
+*/}}{{define "defines::define_ifrows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IF.List}}<tr {{Key "if-rowby-name" $if.Name}}
   ><td {{class}}="text-nowrap clip12" title={{$if.Name}}
     >{{$if.Name}}</td
   ><td class="text-right"
     >{{$if.IP}}</td
   ><td class="text-right text-nowrap"
-    ><span class="mutext" title="Total BYTES modulo 4G"
-      >{{$if.BytesIn}}/{{$if.BytesOut}}</span
-    > <span title="BITS per second"
-      >{{$if.DeltaBitsIn}}/{{$if.DeltaBitsOut}}</span
+    ><span class="mutext"
+      ><span title="Total BYTES In modulo 4G"
+        >{{$if.BytesIn}}</span
+      >/<span title="Total BYTES Out modulo 4G"
+        >{{$if.BytesOut}}</span
+      ></span
+    > <span title="BITS In per second"
+      >{{$if.DeltaBitsIn}}</span
+    >/<span title="BITS Out per second"
+      >{{$if.DeltaBitsOut}}</span
     ></td
   ><td class="text-right text-nowrap"
-    ><span class="mutext" title="Total packets modulo 4G"
-      >{{$if.PacketsIn}}/{{$if.PacketsOut}}</span
-    > {{$if.DeltaPacketsIn}}/{{$if.DeltaPacketsOut}}</td
+    ><span class="mutext"
+      ><span title="Total packets In modulo 4G"
+        >{{$if.PacketsIn}}</span
+      >/<span title="Total packets Out modulo 4G"
+        >{{$if.PacketsOut}}</span
+      ></span
+    > <span title="Packets In per second"
+      >{{$if.DeltaPacketsIn}}</span
+    >/<span title="Packets Out per second"
+      >{{$if.DeltaPacketsOut}}</span
+    ></td
   ><td class="text-right text-nowrap"
-    ><span class="mutext" title="Total drops|errors modulo 4G"
-      >{{$if.DropsIn}}{{PrefixNonNil $if.DropsOut "/"}}|{{$if.ErrorsIn}}/{{$if.ErrorsOut}}</span
-    > <span {{ClassMutext4 $if.DeltaDropsIn $if.DeltaDropsOut $if.DeltaErrorsIn $if.DeltaErrorsOut}}
-      >{{$if.DeltaDropsIn}}{{PrefixNonNil $if.DeltaDropsOut "/"}}|{{$if.DeltaErrorsIn}}/{{$if.DeltaErrorsOut}}</span
+    ><span class="mutext" title="Total drops,errors modulo 4G"
+      ><span title="Total drops In modulo 4G"
+        >{{$if.DropsIn}}</span
+      ><span {{ClassNonNil $if.DropsOut "" "hidden"}}
+        >/</span
+      ><span {{ClassNonNil $if.DropsOut "" "hidden"}} title="Total drops Out modulo 4G"
+        >{{$if.DropsOut}}</span
+      >,<span title="Total errors In modulo 4G"
+        >{{$if.ErrorsIn}}</span
+      >/<span title="Total errors Out modulo 4G"
+        >{{$if.ErrorsOut}}</span
+      ></span
+    > <span {{ClassAllZero $if.DeltaDropsIn $if.DeltaDropsOut $if.DeltaErrorsIn $if.DeltaErrorsOut "mutext"}}
+      ><span title="Drops In per second"
+        >{{$if.DeltaDropsIn}}</span
+      ><span {{ClassNonNil $if.DeltaDropsOut "" "hidden"}}
+        >/</span
+      ><span {{ClassNonNil $if.DeltaDropsOut "" "hidden"}} title="Drops Out per second"
+        >{{$if.DeltaDropsOut}}</span
+      >,<span title="Errors In per second"
+        >{{$if.DeltaErrorsIn}}</span
+      >/<span title="Errors Out per second"
+        >{{$if.DeltaErrorsOut}}</span
+      ></span
     ></td
   ></tr
 >{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_memrows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $mem := .Data.MEM.List}}<tr {{AttrKey "mem-rowby-kind" $mem.Kind}}
+*/}}{{define "defines::define_memrows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $mem := .Data.MEM.List}}<tr {{Key "mem-rowby-kind" $mem.Kind}}
   ><td
     >{{$mem.Kind}}</td
   ><td class="text-right"
@@ -169,7 +203,7 @@
     ><a {{HrefT $p $p.CPUn}}
       >CPU</a
     ></div
-  ><ul  {{ClassPositive $p.CPUn "collapse-hidden" "list-group"}}
+  ><ul  {{ClassPositive $p.CPUn "hidden" "list-group"}}
     ><li class="list-group-item text-nowrap th"
       ><ul class="list-inline"
         ><li
@@ -195,7 +229,7 @@
         ></ul
       ></li
     ></ul
-  ><table {{ClassNonzero $p.CPUn "table table-hover" "collapse-hidden"}}
+  ><table {{ClassNonZero $p.CPUn "table table-hover" "hidden"}}
     ><thead
       ><tr
         ><th
@@ -220,7 +254,7 @@
     ><a {{HrefT $p $p.Dfn}}
       >Disk usage</a
     ></div
-  ><ul  {{ClassPositive $p.Dfn "collapse-hidden" "list-group"}}
+  ><ul  {{ClassPositive $p.Dfn "hidden" "list-group"}}
     ><li class="list-group-item text-nowrap th"
       ><ul class="list-inline"
         ><li
@@ -246,7 +280,7 @@
         ></ul
       ></li
     ></ul
-  ><table {{ClassNonzero $p.Dfn "table table-hover" "collapse-hidden"}}
+  ><table {{ClassNonZero $p.Dfn "table table-hover" "hidden"}}
     ><thead
       ><tr class="text-nowrap"
         >{{$r := "text-right"}}{{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total" $r}}</tr
@@ -261,7 +295,7 @@
     ><a {{HrefT $p $p.Ifn}}
       >Interfaces</a
     ></div
-  ><ul  {{ClassPositive $p.Ifn "collapse-hidden" "list-group"}}
+  ><ul  {{ClassPositive $p.Ifn "hidden" "list-group"}}
     ><li class="list-group-item text-nowrap th"
       ><ul class="list-inline"
         ><li
@@ -287,7 +321,7 @@
         ></ul
       ></li
     ></ul
-  ><table {{ClassNonzero $p.Ifn "table table-hover" "collapse-hidden"}}
+  ><table {{ClassNonZero $p.Ifn "table table-hover" "hidden"}}
     ><thead
       ><tr
         ><th
@@ -300,7 +334,7 @@
           >ps</th
         ><th class="text-right text-nowrap col-md-3" title="Packets In/Out per second"
           >Packets IO ps</th
-        ><th class="text-right text-nowrap col-md-3" title="Drops|Errors In/Out per second"
+        ><th class="text-right text-nowrap col-md-3" title="Drops,Errors In/Out per second"
           >Loss IO ps</th
         ></tr
       ></thead
@@ -314,7 +348,7 @@
     ><a {{HrefT $p $p.Memn}}
       >Memory</a
     ></div
-  ><ul  {{ClassPositive $p.Memn "collapse-hidden" "list-group"}}
+  ><ul  {{ClassPositive $p.Memn "hidden" "list-group"}}
     ><li class="list-group-item text-nowrap th"
       ><ul class="list-inline"
         ><li
@@ -340,7 +374,7 @@
         ></ul
       ></li
     ></ul
-  ><table {{ClassNonzero $p.Memn "table table-hover" "collapse-hidden"}}
+  ><table {{ClassNonZero $p.Memn "table table-hover" "hidden"}}
     ><thead
       ><tr
         ><th
@@ -365,7 +399,7 @@
     ><a {{HrefT $p $p.Psn}}
       >Processes</a
     ></div
-  ><ul  {{ClassPositive $p.Psn "collapse-hidden" "list-group"}}
+  ><ul  {{ClassPositive $p.Psn "hidden" "list-group"}}
     ><li class="list-group-item text-nowrap th"
       ><ul class="list-inline"
         ><li
@@ -391,7 +425,7 @@
         ></ul
       ></li
     ></ul
-  ><table {{ClassNonzero $p.Psn "table table-hover" "collapse-hidden"}}
+  ><table {{ClassNonZero $p.Psn "table table-hover" "hidden"}}
     ><thead
       ><tr class="text-nowrap"
         >{{$r := "text-right"}}{{$c := "text-center"}}{{template "defines::thvlink" Vlink $p $p.Psk 1 "PID" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 2 "UID" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 3 "USER" ""}}{{template "defines::thvlink" Vlink $p $p.Psk 4 "PR" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 5 "NI" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 6 "VIRT" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 7 "RES" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 8 "TIME" $c}}{{template "defines::thvlink" Vlink $p $p.Psk 9 "COMMAND" ""}}</tr
@@ -401,7 +435,7 @@
     ></table
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_psrows"}}{{with rowsset .}}{{.}}{{else}}{{range $ps := .Data.PS.List}}<tr {{AttrKey "ps-rowby-pid" $ps.PID}}
+*/}}{{define "defines::define_psrows"}}{{with rowsset .}}{{.}}{{else}}{{range $ps := .Data.PS.List}}<tr {{Key "ps-rowby-pid" $ps.PID}}
   ><td class="text-right"
     > {{$ps.PID}}</td
   ><td class="text-right"

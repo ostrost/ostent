@@ -19,7 +19,7 @@ define(function(require) {
     ><a  href={Data.Params.Tlinks.Memn} onClick={this.handleClick}
       >Memory</a
     ></div
-  ><ul   className={!Data.Params.Memn.Negative ? "collapse-hidden" : "list-group"}
+  ><ul   className={!Data.Params.Memn.Negative ? "hidden" : "list-group"}
     ><li className="list-group-item text-nowrap th"
       ><ul className="list-inline"
         ><li
@@ -53,7 +53,7 @@ define(function(require) {
         ></ul
       ></li
     ></ul
-  ><table  className={Data.Params.Memn.Absolute != 0 ? "table table-hover" : "collapse-hidden"}
+  ><table  className={Data.Params.Memn.Absolute != 0 ? "table table-hover" : "hidden"}
     ><thead
       ><tr
         ><th
@@ -102,7 +102,7 @@ define(function(require) {
     ><a  href={Data.Params.Tlinks.Dfn} onClick={this.handleClick}
       >Disk usage</a
     ></div
-  ><ul   className={!Data.Params.Dfn.Negative ? "collapse-hidden" : "list-group"}
+  ><ul   className={!Data.Params.Dfn.Negative ? "hidden" : "list-group"}
     ><li className="list-group-item text-nowrap th"
       ><ul className="list-inline"
         ><li
@@ -136,7 +136,7 @@ define(function(require) {
         ></ul
       ></li
     ></ul
-  ><table  className={Data.Params.Dfn.Absolute != 0 ? "table table-hover" : "collapse-hidden"}
+  ><table  className={Data.Params.Dfn.Absolute != 0 ? "table table-hover" : "hidden"}
     ><thead
       ><tr className="text-nowrap"
         ><th className="header "
@@ -205,7 +205,7 @@ define(function(require) {
     ><a  href={Data.Params.Tlinks.CPUn} onClick={this.handleClick}
       >CPU</a
     ></div
-  ><ul   className={!Data.Params.CPUn.Negative ? "collapse-hidden" : "list-group"}
+  ><ul   className={!Data.Params.CPUn.Negative ? "hidden" : "list-group"}
     ><li className="list-group-item text-nowrap th"
       ><ul className="list-inline"
         ><li
@@ -239,7 +239,7 @@ define(function(require) {
         ></ul
       ></li
     ></ul
-  ><table  className={Data.Params.CPUn.Absolute != 0 ? "table table-hover" : "collapse-hidden"}
+  ><table  className={Data.Params.CPUn.Absolute != 0 ? "table table-hover" : "hidden"}
     ><thead
       ><tr
         ><th
@@ -266,20 +266,54 @@ define(function(require) {
   ><td className="text-right"
     >{$if.IP}</td
   ><td className="text-right text-nowrap"
-    ><span className="mutext" title="Total BYTES modulo 4G"
-      >{$if.BytesIn}/{$if.BytesOut}</span
-    > <span title="BITS per second"
-      >{$if.DeltaBitsIn}/{$if.DeltaBitsOut}</span
+    ><span className="mutext"
+      ><span title="Total BYTES In modulo 4G"
+        >{$if.BytesIn}</span
+      >/<span title="Total BYTES Out modulo 4G"
+        >{$if.BytesOut}</span
+      ></span
+    > <span title="BITS In per second"
+      >{$if.DeltaBitsIn}</span
+    >/<span title="BITS Out per second"
+      >{$if.DeltaBitsOut}</span
     ></td
   ><td className="text-right text-nowrap"
-    ><span className="mutext" title="Total packets modulo 4G"
-      >{$if.PacketsIn}/{$if.PacketsOut}</span
-    > {$if.DeltaPacketsIn}/{$if.DeltaPacketsOut}</td
+    ><span className="mutext"
+      ><span title="Total packets In modulo 4G"
+        >{$if.PacketsIn}</span
+      >/<span title="Total packets Out modulo 4G"
+        >{$if.PacketsOut}</span
+      ></span
+    > <span title="Packets In per second"
+      >{$if.DeltaPacketsIn}</span
+    >/<span title="Packets Out per second"
+      >{$if.DeltaPacketsOut}</span
+    ></td
   ><td className="text-right text-nowrap"
-    ><span className="mutext" title="Total drops|errors modulo 4G"
-      >{$if.DropsIn}{$if.DropsOut != null ? ("/"+$if.DropsOut) : ""}|{$if.ErrorsIn}/{$if.ErrorsOut}</span
+    ><span className="mutext" title="Total drops,errors modulo 4G"
+      ><span title="Total drops In modulo 4G"
+        >{$if.DropsIn}</span
+      ><span  className={$if.DropsOut != null ? "" : "hidden"}
+        >/</span
+      ><span  className={$if.DropsOut != null ? "" : "hidden"} title="Total drops Out modulo 4G"
+        >{$if.DropsOut}</span
+      >,<span title="Total errors In modulo 4G"
+        >{$if.ErrorsIn}</span
+      >/<span title="Total errors Out modulo 4G"
+        >{$if.ErrorsOut}</span
+      ></span
     > <span  className={(($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0")) ? "mutext" : ""}
-      >{$if.DeltaDropsIn}{$if.DeltaDropsOut != null ? ("/"+$if.DeltaDropsOut) : ""}|{$if.DeltaErrorsIn}/{$if.DeltaErrorsOut}</span
+      ><span title="Drops In per second"
+        >{$if.DeltaDropsIn}</span
+      ><span  className={$if.DeltaDropsOut != null ? "" : "hidden"}
+        >/</span
+      ><span  className={$if.DeltaDropsOut != null ? "" : "hidden"} title="Drops Out per second"
+        >{$if.DeltaDropsOut}</span
+      >,<span title="Errors In per second"
+        >{$if.DeltaErrorsIn}</span
+      >/<span title="Errors Out per second"
+        >{$if.DeltaErrorsOut}</span
+      ></span
     ></td
   ></tr
 >); },
@@ -288,7 +322,7 @@ define(function(require) {
     ><a  href={Data.Params.Tlinks.Ifn} onClick={this.handleClick}
       >Interfaces</a
     ></div
-  ><ul   className={!Data.Params.Ifn.Negative ? "collapse-hidden" : "list-group"}
+  ><ul   className={!Data.Params.Ifn.Negative ? "hidden" : "list-group"}
     ><li className="list-group-item text-nowrap th"
       ><ul className="list-inline"
         ><li
@@ -322,7 +356,7 @@ define(function(require) {
         ></ul
       ></li
     ></ul
-  ><table  className={Data.Params.Ifn.Absolute != 0 ? "table table-hover" : "collapse-hidden"}
+  ><table  className={Data.Params.Ifn.Absolute != 0 ? "table table-hover" : "hidden"}
     ><thead
       ><tr
         ><th
@@ -335,7 +369,7 @@ define(function(require) {
           >ps</th
         ><th className="text-right text-nowrap col-md-3" title="Packets In/Out per second"
           >Packets IO ps</th
-        ><th className="text-right text-nowrap col-md-3" title="Drops|Errors In/Out per second"
+        ><th className="text-right text-nowrap col-md-3" title="Drops,Errors In/Out per second"
           >Loss IO ps</th
         ></tr
       ></thead
@@ -371,7 +405,7 @@ define(function(require) {
     ><a  href={Data.Params.Tlinks.Psn} onClick={this.handleClick}
       >Processes</a
     ></div
-  ><ul   className={!Data.Params.Psn.Negative ? "collapse-hidden" : "list-group"}
+  ><ul   className={!Data.Params.Psn.Negative ? "hidden" : "list-group"}
     ><li className="list-group-item text-nowrap th"
       ><ul className="list-inline"
         ><li
@@ -405,7 +439,7 @@ define(function(require) {
         ></ul
       ></li
     ></ul
-  ><table  className={Data.Params.Psn.Absolute != 0 ? "table table-hover" : "collapse-hidden"}
+  ><table  className={Data.Params.Psn.Absolute != 0 ? "table table-hover" : "hidden"}
     ><thead
       ><tr className="text-nowrap"
         ><th className="header text-right"

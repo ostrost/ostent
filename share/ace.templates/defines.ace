@@ -4,7 +4,7 @@
 [[$t := (index . 2)]]
   | <div {{ClassPositive [[$N]] "" "panel panel-default"}}>
   div.h4.padding-left-like-panel-heading <a {{HrefT $p [[$N]]}}>[[$t]]</a>
-  | <ul  {{ClassPositive [[$N]] "collapse-hidden" "list-group"}}>
+  | <ul  {{ClassPositive [[$N]] "hidden" "list-group"}}>
   li.list-group-item.text-nowrap.th
     ul.list-inline
       li
@@ -43,7 +43,7 @@
 = content define_panelmem
   {{$p := .Data.Params}}
   [[template "startpanel" Chain `$p.Memn` `$p.Memd` "Memory"]]
-  | <table {{ClassNonzero $p.Memn "table table-hover" "collapse-hidden"}}>
+  | <table {{ClassNonZero $p.Memn "table table-hover" "hidden"}}>
   thead
     tr
       th
@@ -58,7 +58,7 @@
 = content define_memrows
   {{with rowsset .}}{{.}}{{else}}
     {{range $i, $mem := .Data.MEM.List}}
-      | <tr {{AttrKey "mem-rowby-kind" $mem.Kind}}>
+      | <tr {{Key "mem-rowby-kind" $mem.Kind}}>
       td {{$mem.Kind}}
       td.text-right {{$mem.Free}}
       | <td {{class}}="text-right bg-usepct"
@@ -72,7 +72,7 @@
 = content define_paneldf
   {{$p := .Data.Params}}
   [[template "startpanel" Chain `$p.Dfn` `$p.Dfd` "Disk usage"]]
-  | <table {{ClassNonzero $p.Dfn "table table-hover" "collapse-hidden"}}>
+  | <table {{ClassNonZero $p.Dfn "table table-hover" "hidden"}}>
   thead
     tr.text-nowrap
       {{$r := "text-right"}}
@@ -90,7 +90,7 @@
   {{with rowsset .}}{{.}}{{else}}
     {{range $df := .Data.DF.List}}
       |
-        <tr {{AttrKey "df-rowby-dirname" $df.DirName}}>
+        <tr {{Key "df-rowby-dirname" $df.DirName}}>
           <td {{class}}="text-nowrap clip12" title={{$df.DevName}}>{{$df.DevName}}</td>
           <td {{class}}="text-nowrap clip12" title={{$df.DirName}}>{{$df.DirName}}</td>
       td.text-right.text-nowrap
@@ -115,7 +115,7 @@
 = content define_panelcpu
   {{$p := .Data.Params}}
   [[template "startpanel" Chain `$p.CPUn` `$p.CPUd` "CPU"]]
-  | <table {{ClassNonzero $p.CPUn "table table-hover" "collapse-hidden"}}>
+  | <table {{ClassNonZero $p.CPUn "table table-hover" "hidden"}}>
   thead
     tr
       th
@@ -130,7 +130,7 @@
 = content define_cpurows
   {{with rowsset .}}{{.}}{{else}}
     {{range $i, $cpu := .Data.CPU.List}}
-      | <tr {{AttrKey "cpu-rowby-N" $cpu.N}}>
+      | <tr {{Key "cpu-rowby-N" $cpu.N}}>
       td.text-right.text-nowrap {{$cpu.N}}
       |
         <td {{class}}="text-right bg-usepct"
@@ -148,7 +148,7 @@
 = content define_panelif
   {{$p := .Data.Params}}
   [[template "startpanel" Chain `$p.Ifn` `$p.Ifd` "Interfaces"]]
-  | <table {{ClassNonzero $p.Ifn "table table-hover" "collapse-hidden"}}>
+  | <table {{ClassNonZero $p.Ifn "table table-hover" "hidden"}}>
   thead
     tr
       th Interface
@@ -158,7 +158,7 @@
         i b
         | ps
       th.text-right.text-nowrap.col-md-3 title="Packets In/Out per second" Packets IO ps
-      th.text-right.text-nowrap.col-md-3 title="Drops|Errors In/Out per second" Loss IO ps
+      th.text-right.text-nowrap.col-md-3 title="Drops,Errors In/Out per second" Loss IO ps
   tbody
     {{template "defines::define_ifrows" .}}
   | </table></div>
@@ -166,24 +166,46 @@
 = content define_ifrows
   {{with rowsset .}}{{.}}{{else}}
     {{range $if := .Data.IF.List}}
-      | <tr {{AttrKey "if-rowby-name" $if.Name}}>
+      | <tr {{Key "if-rowby-name" $if.Name}}>
       | <td {{class}}="text-nowrap clip12" title={{$if.Name}}>{{$if.Name}}</td>
       td.text-right {{$if.IP}}
       td.text-right.text-nowrap
-        span.mutext title="Total BYTES modulo 4G" {{$if.BytesIn}}/{{$if.BytesOut}}
+        span.mutext
+          span title="Total BYTES In modulo 4G" {{$if.BytesIn}}
+          | /
+          span title="Total BYTES Out modulo 4G" {{$if.BytesOut}}
         |  
-        span title="BITS per second" {{$if.DeltaBitsIn}}/{{$if.DeltaBitsOut}}
+        span title="BITS In per second" {{$if.DeltaBitsIn}}
+        | /
+        span title="BITS Out per second" {{$if.DeltaBitsOut}}
       td.text-right.text-nowrap
-        span.mutext title="Total packets modulo 4G" {{$if.PacketsIn}}/{{$if.PacketsOut}}
-        |  {{$if.DeltaPacketsIn}}/{{$if.DeltaPacketsOut}}
-      td.text-right.text-nowrap
-        span.mutext title="Total drops|errors modulo 4G"
-          | {{$if.DropsIn}}
-          | {{PrefixNonNil $if.DropsOut "/"}}
-          | |{{$if.ErrorsIn}}/{{$if.ErrorsOut}}
+        span.mutext
+          span title="Total packets In modulo 4G" {{$if.PacketsIn}}
+          | /
+          span title="Total packets Out modulo 4G" {{$if.PacketsOut}}
         |  
-        | <span {{ClassMutext4 $if.DeltaDropsIn $if.DeltaDropsOut $if.DeltaErrorsIn $if.DeltaErrorsOut}}>
-        | {{$if.DeltaDropsIn}}{{PrefixNonNil $if.DeltaDropsOut "/"}}|{{$if.DeltaErrorsIn}}/{{$if.DeltaErrorsOut}}</span>
+        span title="Packets In per second" {{$if.DeltaPacketsIn}}
+        | /
+        span title="Packets Out per second" {{$if.DeltaPacketsOut}}
+      td.text-right.text-nowrap
+        span.mutext title="Total drops,errors modulo 4G"
+          span title="Total drops In modulo 4G" {{$if.DropsIn}}
+          | <span {{ClassNonNil $if.DropsOut "" "hidden"}}>/</span>
+          | <span {{ClassNonNil $if.DropsOut "" "hidden"}} title="Total drops Out modulo 4G">{{$if.DropsOut}}</span>
+          | ,
+          span title="Total errors In modulo 4G" {{$if.ErrorsIn}}
+          | /
+          span title="Total errors Out modulo 4G" {{$if.ErrorsOut}}
+        |  
+        | <span {{ClassAllZero $if.DeltaDropsIn $if.DeltaDropsOut $if.DeltaErrorsIn $if.DeltaErrorsOut "mutext"}}>
+        span title="Drops In per second" {{$if.DeltaDropsIn}}
+        | <span {{ClassNonNil $if.DeltaDropsOut "" "hidden"}}>/</span>
+        | <span {{ClassNonNil $if.DeltaDropsOut "" "hidden"}} title="Drops Out per second">{{$if.DeltaDropsOut}}</span>
+        | ,
+        span title="Errors In per second" {{$if.DeltaErrorsIn}}
+        | /
+        span title="Errors Out per second" {{$if.DeltaErrorsOut}}
+        | </span>
       | </tr>
     {{end}}
   {{end}}
@@ -191,7 +213,7 @@
 = content define_panelps
   {{$p := .Data.Params}}
   [[template "startpanel" Chain `$p.Psn` `$p.Psd` "Processes"]]
-  | <table {{ClassNonzero $p.Psn "table table-hover" "collapse-hidden"}}>
+  | <table {{ClassNonZero $p.Psn "table table-hover" "hidden"}}>
   thead
     tr.text-nowrap
       {{$r := "text-right"}}
@@ -212,7 +234,7 @@
 = content define_psrows
   {{with rowsset .}}{{.}}{{else}}
     {{range $ps := .Data.PS.List}}
-      | <tr {{AttrKey "ps-rowby-pid" $ps.PID}}>
+      | <tr {{Key "ps-rowby-pid" $ps.PID}}>
       td.text-right  {{$ps.PID}}
       td.text-right  {{$ps.UID}}
       td {{$ps.User}}
