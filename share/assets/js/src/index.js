@@ -6,7 +6,6 @@
         deps: ['jquery']
       }
     },
-    baseUrl: '/js/src',
     urlArgs: "bust=" + (new Date()).getTime(),
     paths: {
       domReady: 'vendor/requirejs-domready/2.0.1/domReady',

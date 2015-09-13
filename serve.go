@@ -8,6 +8,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/gorilla/context"
+
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/share/assets"
@@ -40,13 +42,11 @@ func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error 
 
 	ss := ostent.NewServeSSE(access, MinDelayFlag)
 	mux.Handler("GET", "/index.sse", http.HandlerFunc(ss.IndexSSE))
-	sw := ostent.NewServeWS(*ss, errlog, MaxDelayFlag)
+	sw := ostent.NewServeWS(ss, errlog, MaxDelayFlag)
 	mux.Handler("GET", "/index.ws", http.HandlerFunc(sw.IndexWS))
 
-	si := ostent.NewServeIndex(*sw, taggedbin, templates.IndexTemplate)
-	indexHandler := chain.ThenFunc(si.Index)
-	mux.Handler("GET", "/", indexHandler)
-	mux.Handler("HEAD", "/", indexHandler)
+	si := ostent.NewServeIndex(sw, taggedbin, templates.IndexTemplate)
+	ostent.GEAD(mux, "/", chain.ThenFunc(si.Index))
 
 	if !taggedbin { // dev-only
 		mux.Handler("GET", "/panic", chain.ThenFunc(
@@ -55,17 +55,22 @@ func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error 
 			}))
 	}
 
-	logger := log.New(os.Stderr, "[ostent] ", 0)
+	sa := ostent.ServeAssets{
+		Log:                 log.New(os.Stderr, "[ostent] ", 0),
+		AssetFunc:           assets.Asset,
+		AssetInfoFunc:       assets.AssetInfo,
+		AssetAltModTimeFunc: AssetAltModTimeFunc, // from main.*.go
+	}
 	for _, path := range assets.AssetNames() {
-		hf := chain.Then(ostent.ServeContentFunc(
-			AssetReadFunc(assets.Asset),
-			AssetInfoFunc(assets.AssetInfo),
-			path, logger))
-		mux.Handler("GET", "/"+path, hf)
-		mux.Handler("HEAD", "/"+path, hf)
+		pattern := path
+		if path != "favicon.ico" && path != "robots.txt" {
+			pattern = ostent.VERSION + "/" + path // the Version prefix
+		}
+		cchain := chain.Append(context.ClearHandler, ostent.AddAssetPathContextFunc(path))
+		ostent.GEAD(mux, "/"+pattern, cchain.ThenFunc(sa.Serve))
 	}
 
-	ostent.Banner(listener.Addr().String(), "ostent", logger)
+	ostent.Banner(listener.Addr().String(), "ostent", sa.Log)
 	s := &http.Server{
 		ErrorLog: errlog,
 		Handler:  mux,

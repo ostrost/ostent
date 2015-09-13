@@ -351,8 +351,7 @@ func (w dummyStatus) Write(b []byte) (int, error) {
 }
 
 // IndexWS serves ws updates.
-// sw is read-only, pointer is for not copying.
-func (sw *ServeWS) IndexWS(w http.ResponseWriter, req *http.Request) {
+func (sw ServeWS) IndexWS(w http.ResponseWriter, req *http.Request) {
 	// Upgrader.Upgrade() has Origin check if .CheckOrigin is nil
 	upgrader := websocket.Upgrader{
 		HandshakeTimeout: 5 * time.Second,

@@ -1,5 +1,5 @@
 <!DOCTYPE html
-><html
+>{{$v := .OstentVersion}}<html
   ><head
     ><meta charset="utf-8"
     ><title
@@ -7,13 +7,13 @@
     ><meta http-equiv="X-UA-Compatible" content="IE=edge"
     ><meta name="viewport" content="width=device-width, initial-scale=1"
     >{{HTML "<!"}}--[if IE]><link rel="shortcut icon" href="/favicon.ico"
-    >{{HTML "<!"}}[endif]--><link rel="icon" sizes="32x32" href="/favicons/favicon-32.png" type="image/png"
-    ><link rel="apple-touch-icon" sizes="120x120" href="/favicons/favicon-120.png"
-    ><link rel="apple-touch-icon" sizes="144x144" href="/favicons/favicon-144.png"
-    ><link rel="apple-touch-icon" sizes="152x152" href="/favicons/favicon-152.png"
-    ><link rel="apple-touch-icon" sizes="180x180" href="/favicons/favicon-180.png"
-    ><link rel="stylesheet" type="text/css" href="/css/index.css"
-    ><script type="text/javascript" charset="utf-8" src="/js/requirejs/2.1.18/require.min.js" data-main="/js/{{if .TAGGEDbin}}min/index.min.js{{else}}src/milk/index.js{{end}}"
+    >{{HTML "<!"}}[endif]--><link rel="icon" sizes="32x32" href="/{{$v}}favicons/favicon-32.png" type="image/png"
+    ><link rel="apple-touch-icon" sizes="120x120" href="/{{$v}}/favicons/favicon-120.png"
+    ><link rel="apple-touch-icon" sizes="144x144" href="/{{$v}}/favicons/favicon-144.png"
+    ><link rel="apple-touch-icon" sizes="152x152" href="/{{$v}}/favicons/favicon-152.png"
+    ><link rel="apple-touch-icon" sizes="180x180" href="/{{$v}}/favicons/favicon-180.png"
+    ><link rel="stylesheet" type="text/css" href="/{{$v}}/css/index.css"
+    ><script type="text/javascript" charset="utf-8" src="/{{$v}}/js/requirejs/2.1.18/require.min.js" data-main="/{{$v}}/js/{{if .TAGGEDbin}}min/index.min.js{{else}}src/index.js{{end}}"
       ></script
     ></head
   ><body
@@ -36,7 +36,7 @@
         ><div id="navbar-collapse" class="collapse navbar-collapse"
           ><ul class="nav navbar-nav"
             ><li class="active"
-              ><a href="https://www.ostrost.com/ostent/releases/latest?cmp={{.Data.VERSION}}"
+              ><a href="https://www.ostrost.com/ostent/releases/latest?cmp={{$v}}"
                 >ostent</a
               ></li
             ><li class="navbar-text navbar-text-marginless first-text"

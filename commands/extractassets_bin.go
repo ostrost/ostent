@@ -37,46 +37,68 @@ func (ae *assetsRestore) Run() {
 	if _, err := os.Stat(ae.destdir); err == nil {
 		ae.Log.Fatalf("%s: File exists\n", ae.destdir)
 	}
+	// RestoreAssets (among other things) creates DestDir.
 	ae.Check(assets.RestoreAssets(ae.destdir, ""))
-	// ae.Check(os.Mkdir(ae.destdir, os.ModePerm))
 	for _, name := range assets.AssetNames() {
+		ae.Check(ae.Gzip(name))
+	}
+}
+
+func (ae *assetsRestore) Gzip(name string) error {
+	if true { // indent
 		text, err := assets.Asset(name)
 		if err != nil {
 			ae.Log.Printf("assets.Asset: %s: %s", name, err)
-			continue
+			return nil // continue
 		}
 		full := filepath.Join(ae.destdir, name)
-		/* dir := filepath.Dir(full)
-		if _, err := os.Stat(dir); err != nil {
-			ae.Check(os.MkdirAll(dir, os.ModePerm))
+		if name == "favicon.ico" || name == "robots.txt" {
+			if err := ae.Symlink(name, full); err != nil {
+				ae.Log.Printf("Symlink: %s: %s", name, err)
+				return nil // continue
+			}
 		}
 
-		file, err := os.Create(full)
-		ae.Check(err)
-
-		_, err = file.Write(text)
-		ae.Check(err)
-		file.Close() // */
-
 		now := time.Now()
-		ae.Check(os.Chtimes(full, now, now))
+		if err := os.Chtimes(full, now, now); err != nil {
+			return err
+		}
 
 		if len(text) <= 1024 {
-			continue
+			return nil // continue
 		}
 
 		gzfile, err := os.Create(full + ".gz")
-		ae.Check(err)
+		if err != nil {
+			return err
+		}
 
 		gzwriter := gzip.NewWriter(gzfile)
 		_, err = gzwriter.Write(text)
-		ae.Check(err)
+		if err != nil {
+			return err
+		}
 
 		gzwriter.Close()
 		gzfile.Close()
 
-		ae.Check(os.Chtimes(full+".gz", now, now))
+		return os.Chtimes(full+".gz", now, now)
 	}
+}
+
+func (ae *assetsRestore) Symlink(name, full string) error {
+	if dest, err := os.Readlink(name); err != nil {
+		if !os.IsNotExist(err) {
+			return err
+		}
+	} else {
+		ae.Log.Printf("Removing symlink %q pointing to %q", name, dest)
+		if err := os.Remove(name); err != nil {
+			return err
+		}
+	}
+	return os.Symlink(full, name)
+	// no need to os.Chtimes as os.Symlink will set the times to about now
 }
 
 func (ae assetsRestore) Check(err error) {

@@ -9,9 +9,9 @@
 // favicons/favicon-180.png
 // favicons/favicon-32.png
 // js/requirejs/2.1.18/require.min.js
+// js/src/build.js
+// js/src/index.js
 // js/src/lib/jsdefines.js
-// js/src/milk/build.js
-// js/src/milk/index.js
 // js/src/vendor/bootstrap/3.3.5-collapse/bootstrap.min.js
 // js/src/vendor/jquery/2.1.4/jquery.min.js
 // js/src/vendor/react/0.13.3/react.min.js
@@ -207,46 +207,46 @@ func jsRequirejs2118RequireMinJs() (*asset, error) {
 	return a, err
 }
 
+// jsSrcBuildJs reads file data from disk. It returns an error on failure.
+func jsSrcBuildJs() (*asset, error) {
+	path := filepath.Join(rootDir, "js/src/build.js")
+	name := "js/src/build.js"
+	bytes, err := bindataRead(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// jsSrcIndexJs reads file data from disk. It returns an error on failure.
+func jsSrcIndexJs() (*asset, error) {
+	path := filepath.Join(rootDir, "js/src/index.js")
+	name := "js/src/index.js"
+	bytes, err := bindataRead(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
 // jsSrcLibJsdefinesJs reads file data from disk. It returns an error on failure.
 func jsSrcLibJsdefinesJs() (*asset, error) {
 	path := filepath.Join(rootDir, "js/src/lib/jsdefines.js")
 	name := "js/src/lib/jsdefines.js"
-	bytes, err := bindataRead(path, name)
-	if err != nil {
-		return nil, err
-	}
-
-	fi, err := os.Stat(path)
-	if err != nil {
-		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
-	}
-
-	a := &asset{bytes: bytes, info: fi}
-	return a, err
-}
-
-// jsSrcMilkBuildJs reads file data from disk. It returns an error on failure.
-func jsSrcMilkBuildJs() (*asset, error) {
-	path := filepath.Join(rootDir, "js/src/milk/build.js")
-	name := "js/src/milk/build.js"
-	bytes, err := bindataRead(path, name)
-	if err != nil {
-		return nil, err
-	}
-
-	fi, err := os.Stat(path)
-	if err != nil {
-		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
-	}
-
-	a := &asset{bytes: bytes, info: fi}
-	return a, err
-}
-
-// jsSrcMilkIndexJs reads file data from disk. It returns an error on failure.
-func jsSrcMilkIndexJs() (*asset, error) {
-	path := filepath.Join(rootDir, "js/src/milk/index.js")
-	name := "js/src/milk/index.js"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
@@ -412,9 +412,9 @@ var _bindata = map[string]func() (*asset, error){
 	"favicons/favicon-180.png": faviconsFavicon180Png,
 	"favicons/favicon-32.png": faviconsFavicon32Png,
 	"js/requirejs/2.1.18/require.min.js": jsRequirejs2118RequireMinJs,
+	"js/src/build.js": jsSrcBuildJs,
+	"js/src/index.js": jsSrcIndexJs,
 	"js/src/lib/jsdefines.js": jsSrcLibJsdefinesJs,
-	"js/src/milk/build.js": jsSrcMilkBuildJs,
-	"js/src/milk/index.js": jsSrcMilkIndexJs,
 	"js/src/vendor/bootstrap/3.3.5-collapse/bootstrap.min.js": jsSrcVendorBootstrap335CollapseBootstrapMinJs,
 	"js/src/vendor/jquery/2.1.4/jquery.min.js": jsSrcVendorJquery214JqueryMinJs,
 	"js/src/vendor/react/0.13.3/react.min.js": jsSrcVendorReact0133ReactMinJs,
@@ -490,14 +490,12 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			}},
 		}},
 		"src": &bintree{nil, map[string]*bintree{
+			"build.js": &bintree{jsSrcBuildJs, map[string]*bintree{
+			}},
+			"index.js": &bintree{jsSrcIndexJs, map[string]*bintree{
+			}},
 			"lib": &bintree{nil, map[string]*bintree{
 				"jsdefines.js": &bintree{jsSrcLibJsdefinesJs, map[string]*bintree{
-				}},
-			}},
-			"milk": &bintree{nil, map[string]*bintree{
-				"build.js": &bintree{jsSrcMilkBuildJs, map[string]*bintree{
-				}},
-				"index.js": &bintree{jsSrcMilkIndexJs, map[string]*bintree{
 				}},
 			}},
 			"vendor": &bintree{nil, map[string]*bintree{

@@ -19,7 +19,17 @@ type ContextID int
 
 const (
 	CPanicError ContextID = iota
+	CAssetPath
 )
+
+func AddAssetPathContextFunc(path string) func(http.Handler) http.Handler {
+	return func(handler http.Handler) http.Handler { // Constructor
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			context.Set(r, CAssetPath, path)
+			handler.ServeHTTP(w, r)
+		})
+	}
+}
 
 // Muxmap is a type of a map of pattern to HandlerFunc.
 type Muxmap map[string]http.HandlerFunc
@@ -37,11 +47,15 @@ func NewServery(taggedbin bool, extramap Muxmap) (*httprouter.Router, alice.Chai
 	}
 	for path, handler := range extramap {
 		h := chain.Then(handler)
-		mux.Handler("GET", path, h)
-		mux.Handler("HEAD", path, h)
+		GEAD(mux, path, h)
 		mux.Handler("POST", path, h)
 	}
 	return mux, chain, access
+}
+
+func GEAD(mux *httprouter.Router, path string, handler http.Handler) {
+	mux.Handler("GET" /* */, path, handler)
+	mux.Handler("HEAD" /**/, path, handler)
 }
 
 // TimeInfo is for AssetInfoFunc: a reduced os.FileInfo.
@@ -61,27 +75,48 @@ func AssetReadFunc(readfunc func(string) ([]byte, error)) func(string) ([]byte, 
 	return readfunc
 }
 
-// ServeContentFunc does http.ServeContent the readFunc (Asset or UncompressedAsset) result.
-// infofunc is typically AssetInfo. modtimefunc may override info.Modtime() result.
-func ServeContentFunc(
-	readfunc func(string) ([]byte, error),
-	infofunc func(string) (TimeInfo, error),
-	path string, logger *log.Logger) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		text, err := readfunc(path)
-		if err != nil {
-			logger.Println(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		info, err := infofunc(path)
-		if err != nil {
-			logger.Println(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		http.ServeContent(w, r, path, info.ModTime(), bytes.NewReader(text))
+type ServeAssets struct {
+	Log                 *log.Logger
+	AssetFunc           func(string) ([]byte, error)
+	AssetInfoFunc       func(string) (os.FileInfo, error)
+	AssetAltModTimeFunc func() time.Time // may be nil
+}
+
+// Serve does http.ServeContent with asset content and info.
+func (sa ServeAssets) Serve(w http.ResponseWriter, r *http.Request) {
+	p := context.Get(r, CAssetPath)
+	if p == nil {
+		err := fmt.Errorf("ServeAssets.Serve must receive CAssetPath in context")
+		sa.Log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
+	path, ok := p.(string)
+	if !ok {
+		err := fmt.Errorf("ServeAssets.Serve received non-string CAssetPath in context")
+		sa.Log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	text, err := sa.AssetFunc(path)
+	if err != nil {
+		sa.Log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	var mt time.Time
+	if sa.AssetAltModTimeFunc != nil {
+		mt = sa.AssetAltModTimeFunc()
+	} else {
+		info, err := sa.AssetInfoFunc(path)
+		if err != nil {
+			sa.Log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		mt = info.ModTime()
+	}
+	http.ServeContent(w, r, path, mt, bytes.NewReader(text))
 }
 
 type loggerPrint interface {

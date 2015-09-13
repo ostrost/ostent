@@ -84,7 +84,6 @@ type IndexData struct {
 	PS  PS
 
 	DISTRIB string
-	VERSION string
 }
 
 type PS struct {
@@ -628,11 +627,10 @@ func indexData(mindelay, maxdelay flags.Delay, req *http.Request) (IndexData, er
 	}
 
 	data := IndexData{
-		DISTRIB: DISTRIB, // value set in init()
-		VERSION: VERSION, // value from server.go
-
 		Params:  updates.Params,
 		Generic: updates.Generic,
+
+		DISTRIB: DISTRIB, // value set in init()
 	}
 
 	if updates.CPU != nil {
@@ -703,24 +701,24 @@ type ServeWS struct {
 type ServeIndex struct {
 	ServeWS
 	TaggedBin     bool
+	OstentVersion string
 	IndexTemplate *templateutil.LazyTemplate
 }
 
-func NewServeSSE(access *Access, mindelay flags.Delay) *ServeSSE {
-	return &ServeSSE{Access: access, MinDelay: mindelay}
+func NewServeSSE(access *Access, mindelay flags.Delay) ServeSSE {
+	return ServeSSE{Access: access, MinDelay: mindelay}
 }
 
-func NewServeWS(ss ServeSSE, errlog *log.Logger, maxdelay flags.Delay) *ServeWS {
-	return &ServeWS{ServeSSE: ss, ErrLog: errlog, MaxDelay: maxdelay}
+func NewServeWS(ss ServeSSE, errlog *log.Logger, maxdelay flags.Delay) ServeWS {
+	return ServeWS{ServeSSE: ss, ErrLog: errlog, MaxDelay: maxdelay}
 }
 
-func NewServeIndex(sw ServeWS, taggedbin bool, template *templateutil.LazyTemplate) *ServeIndex {
-	return &ServeIndex{ServeWS: sw, TaggedBin: taggedbin, IndexTemplate: template}
+func NewServeIndex(sw ServeWS, taggedbin bool, template *templateutil.LazyTemplate) ServeIndex {
+	return ServeIndex{ServeWS: sw, TaggedBin: taggedbin, IndexTemplate: template, OstentVersion: VERSION /* value from server.go */}
 }
 
 // Index renders index page.
-// si is read-only, pointer is for not copying.
-func (si *ServeIndex) Index(w http.ResponseWriter, r *http.Request) {
+func (si ServeIndex) Index(w http.ResponseWriter, r *http.Request) {
 	id, err := indexData(si.MinDelay, si.MaxDelay, r)
 	if err != nil {
 		if _, ok := err.(params.RenamedConstError); ok {
@@ -731,11 +729,13 @@ func (si *ServeIndex) Index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	response := si.IndexTemplate.Response(w, struct {
-		TAGGEDbin bool
-		Data      IndexData
+		TAGGEDbin     bool
+		OstentVersion string
+		Data          IndexData
 	}{
-		TAGGEDbin: si.TaggedBin,
-		Data:      id,
+		TAGGEDbin:     si.TaggedBin,
+		OstentVersion: si.OstentVersion,
+		Data:          id,
 	})
 	response.Header().Set("Content-Type", "text/html")
 	response.SetContentLength()
@@ -788,8 +788,7 @@ func (sse *SSE) SetHeader(name, value string) bool {
 }
 
 // IndexSSE serves SSE updates.
-// ss is read-only, pointer is for not copying.
-func (ss *ServeSSE) IndexSSE(w http.ResponseWriter, r *http.Request) {
+func (ss ServeSSE) IndexSSE(w http.ResponseWriter, r *http.Request) {
 	sse := &SSE{Writer: w, MinDelay: ss.MinDelay}
 	if ss.Access.Constructor(sse).ServeHTTP(nil, r); sse.Errord { // the request logging
 		return

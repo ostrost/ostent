@@ -6,7 +6,6 @@ import (
 	"flag"
 	"net"
 	"os"
-	"sync"
 	"time"
 
 	"github.com/ostrost/ostent/commands"
@@ -16,10 +15,10 @@ import (
 )
 
 var (
-	// AssetInfoFunc is for wrapping bindata's AssetInfo func.
-	AssetInfoFunc = BinAssetInfoFunc
-	// AssetReadFunc is for wrapping bindata's Asset func.
-	AssetReadFunc = BinAssetReadFunc
+	// BootTime is the boot time.
+	BootTime = time.Now()
+	// AssetAltModTimeFunc returns BootTime to be asset ModTime.
+	AssetAltModTimeFunc = func() time.Time { return BootTime }
 )
 
 func init() {
@@ -59,52 +58,4 @@ func main() {
 		ostent.RunBackground(MinDelayFlag)
 	}
 	webserver.Run()
-}
-
-var (
-	// BootTime is the boot time.
-	BootTime = time.Now()
-	// ReadCache is a cache in AssetReadFunc.
-	ReadCache struct {
-		MU     sync.Mutex
-		Byname map[string][]byte
-	}
-)
-
-// BinAssetInfoFunc wraps bindata's AssetInfo func. ModTime is always BootTime.
-func BinAssetInfoFunc(infofunc func(string) (os.FileInfo, error)) func(string) (ostent.TimeInfo, error) {
-	return func(name string) (ostent.TimeInfo, error) {
-		_, err := infofunc(name)
-		if err != nil {
-			return nil, err
-		}
-		return BootInfo{}, nil
-	}
-}
-
-// BinAssetReadFunc wraps bindata's Asset func. Result is from cache or cached.
-func BinAssetReadFunc(readfunc func(string) ([]byte, error)) func(string) ([]byte, error) {
-	return func(name string) ([]byte, error) {
-		return Read(readfunc, name)
-	}
-}
-
-// BootInfo is a ostent.TimeInfo implementation.
-type BootInfo struct{}
-
-// ModTime returns BootTime.
-func (bi BootInfo) ModTime() time.Time { return BootTime } // bi is unused
-
-// Read returns cached readfunc result.
-func Read(readfunc func(string) ([]byte, error), name string) ([]byte, error) {
-	ReadCache.MU.Lock()
-	defer ReadCache.MU.Unlock()
-	if text, ok := ReadCache.Byname[name]; ok {
-		return text, nil
-	}
-	text, err := readfunc(name)
-	if err != nil {
-		ReadCache.Byname[name] = text
-	}
-	return text, err
 }

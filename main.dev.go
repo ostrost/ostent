@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/ostrost/ostent/commands"
 	_ "github.com/ostrost/ostent/commands/ostent"
@@ -18,12 +19,8 @@ import (
 	"github.com/ostrost/ostent/share/templates"
 )
 
-var (
-	// AssetInfoFunc is for wrapping bindata's AssetInfo func.
-	AssetInfoFunc = ostent.AssetInfoFunc
-	// AssetReadFunc is for wrapping bindata's Asset func.
-	AssetReadFunc = ostent.AssetReadFunc
-)
+// AssetAltModTimeFunc is nil.
+var AssetAltModTimeFunc func() time.Time
 
 func main() {
 	webserver := commands.NewWebserver(8050).AddCommandLine()
