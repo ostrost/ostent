@@ -148,4 +148,4 @@ The binaries, to be stand-alone, have the assets and templates embeded.
 Unless you specifically build with `-tags bin` (e.g. with make),
 the content is not embeded for the ease of development:
 with `rerun`, asset requests are served from the actual files.
-Bin-built `ostent restore-assets` can be used to copy (extract) assets on disk.
+Bin-built `ostent extractassets` can be used to copy assets on disk.
