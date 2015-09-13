@@ -9,7 +9,7 @@ html
 
     = conditionalComment hidden IE
       <link rel="shortcut icon" href="/favicon.ico">
-    link rel=icon sizes=32x32 href=/{{$v}}favicons/favicon-32.png type=image/png
+    link rel=icon sizes=32x32 href=/{{$v}}/favicons/favicon-32.png type=image/png
     link rel=apple-touch-icon sizes=120x120 href=/{{$v}}/favicons/favicon-120.png
     link rel=apple-touch-icon sizes=144x144 href=/{{$v}}/favicons/favicon-144.png
     link rel=apple-touch-icon sizes=152x152 href=/{{$v}}/favicons/favicon-152.png
