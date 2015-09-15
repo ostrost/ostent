@@ -4,7 +4,6 @@ package main
 
 import (
 	"flag"
-	"go/build"
 	"log"
 	"net/http/pprof"
 	"os"
@@ -15,7 +14,6 @@ import (
 	"github.com/ostrost/ostent/commands"
 	_ "github.com/ostrost/ostent/commands/ostent"
 	"github.com/ostrost/ostent/ostent"
-	"github.com/ostrost/ostent/share/assets"
 	"github.com/ostrost/ostent/share/templates"
 )
 
@@ -31,21 +29,6 @@ func main() {
 
 	if errd {
 		return
-	}
-
-	// RootDir's of packages having dev bindata
-	for _, binPkg := range []struct {
-		pkgPath string
-		RootDir func(string)
-	}{
-		{"github.com/ostrost/ostent/share/assets", assets.RootDir},
-		{"github.com/ostrost/ostent/share/templates", templates.RootDir},
-	} {
-		pkg, err := build.Import(binPkg.pkgPath, "", build.FindOnly)
-		if err != nil {
-			log.Fatal(err)
-		}
-		binPkg.RootDir(pkg.Dir)
 	}
 
 	ostent.RunBackground(MinDelayFlag)

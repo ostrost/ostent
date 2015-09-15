@@ -2,7 +2,20 @@
 
 package assets
 
+import (
+	"go/build"
+	"log"
+)
+
+// ThisPkgPath defined for looking up the package directory.
+const ThisPkgPath = "github.com/ostrost/ostent/share/assets"
+
 var rootDir string
 
-// RootDir sets the prefix for asset files
-func RootDir(dir string) { rootDir = dir }
+func init() {
+	pkg, err := build.Import(ThisPkgPath, "", build.FindOnly)
+	if err != nil {
+		log.Fatal(err)
+	}
+	rootDir = pkg.Dir
+}
