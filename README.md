@@ -16,7 +16,7 @@ The metrics collected and exported:
 - RAM, swap usage
 - CPU usage, load average
 - Disk space usage in bytes and inodes
-- Network ins and outs in bytes, packets and errors
+- Network ins and outs in bytes, packets, drops and errors
 
 The processes top is on-display only.
 
@@ -35,9 +35,9 @@ Install & run with `curl -sSL https://github.com/ostrost/ostent/raw/master/osten
 
 Platforms:
 
-   - [Mac OS X](https://github.com/ostrost/ostent/releases/download/v0.4.1/Darwin.x86_64)
-   - Linux [64-bit](https://github.com/ostrost/ostent/releases/download/v0.4.1/Linux.x86_64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.4.1/Linux.i686)
-   - FreeBSD [64-bit](https://github.com/ostrost/ostent/releases/download/v0.4.0/FreeBSD.amd64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.4.0/FreeBSD.i386)
+   - [Mac OS X](https://github.com/ostrost/ostent/releases/download/v0.4.2/Darwin.x86_64)
+   - Linux [64-bit](https://github.com/ostrost/ostent/releases/download/v0.4.2/Linux.x86_64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.4.2/Linux.i686)
+   - FreeBSD [64-bit](https://github.com/ostrost/ostent/releases/download/v0.4.2/FreeBSD.amd64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.4.2/FreeBSD.i386)
 
 ## Usage
 
