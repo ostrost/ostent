@@ -34,7 +34,7 @@ func AddAssetPathContextFunc(path string) func(http.Handler) http.Handler {
 // Muxmap is a type of a map of pattern to HandlerFunc.
 type Muxmap map[string]http.HandlerFunc
 
-func NewServery(taggedbin bool, extramap Muxmap) (*httprouter.Router, alice.Chain, *Access) {
+func NewServery(taggedbin bool) (*httprouter.Router, alice.Chain, *Access) {
 	access := NewAccess(taggedbin)
 	chain := alice.New(access.Constructor)
 	mux := httprouter.New()
@@ -44,11 +44,6 @@ func NewServery(taggedbin bool, extramap Muxmap) (*httprouter.Router, alice.Chai
 	mux.PanicHandler = func(w http.ResponseWriter, r *http.Request, recd interface{}) {
 		context.Set(r, CPanicError, recd)
 		phandler.ServeHTTP(w, r)
-	}
-	for path, handler := range extramap {
-		h := chain.Then(handler)
-		GEAD(mux, path, h)
-		mux.Handler("POST", path, h)
 	}
 	return mux, chain, access
 }

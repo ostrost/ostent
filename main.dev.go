@@ -5,11 +5,15 @@ package main
 import (
 	"flag"
 	"log"
+	"net/http"
 	"net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/julienschmidt/httprouter"
+	"github.com/justinas/alice"
 
 	"github.com/ostrost/ostent/commands"
 	_ "github.com/ostrost/ostent/commands/ostent"
@@ -34,18 +38,13 @@ func main() {
 	ostent.RunBackground(MinDelayFlag)
 
 	templatesLoaded := make(chan struct{}, 1)
-	go templates.InitTemplates(templatesLoaded) // NB after templates.RootDir
+	go templates.InitTemplates(templatesLoaded)
 
 	listen := webserver.NetListen()
 	errch := make(chan error, 2)
 	go func(ch chan<- error) {
 		<-templatesLoaded
-		ch <- Serve(listen, false, ostent.Muxmap{
-			"/debug/pprof/{name}":  pprof.Index,
-			"/debug/pprof/cmdline": pprof.Cmdline,
-			"/debug/pprof/profile": pprof.Profile,
-			"/debug/pprof/symbol":  pprof.Symbol,
-		})
+		ch <- Serve(listen, false, PprofExtra)
 	}(errch)
 	sigch := make(chan os.Signal, 2)
 	signal.Notify(sigch,
@@ -62,4 +61,34 @@ wait:
 			log.Fatal(err)
 		}
 	}
+}
+
+func (ps PprofServe) Serve(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	name := params.ByName("name")
+	var handler func(http.ResponseWriter, *http.Request)
+	switch name {
+	case "cmdline":
+		handler = pprof.Cmdline
+	case "profile":
+		handler = pprof.Profile
+	case "symbol":
+		handler = pprof.Symbol
+	// TODO case "trace": handler = pprof.Trace // in go1.5
+	default:
+		handler = pprof.Index
+	}
+	if handler == nil {
+		http.NotFound(w, r)
+		return
+	}
+	ps.Chain.ThenFunc(handler).ServeHTTP(w, r)
+}
+
+type PprofServe struct{ Chain alice.Chain }
+
+func PprofExtra(mux *httprouter.Router, chain alice.Chain) {
+	handle := PprofServe{chain}.Serve
+	mux.Handle("GET", "/debug/pprof/:name", handle)
+	mux.Handle("HEAD", "/debug/pprof/:name", handle)
+	mux.Handle("POST", "/debug/pprof/:name", handle)
 }

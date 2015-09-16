@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/gorilla/context"
+	"github.com/julienschmidt/httprouter"
+	"github.com/justinas/alice"
 
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
@@ -31,8 +33,8 @@ func init() {
 	ostent.AddBackground(ostent.CollectLoop)
 }
 
-func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error {
-	mux, chain, access := ostent.NewServery(taggedbin, extramap)
+func Serve(listener net.Listener, taggedbin bool, extra func(*httprouter.Router, alice.Chain)) error {
+	mux, chain, access := ostent.NewServery(taggedbin)
 	errlog, errclose := ostent.NewErrorLog()
 	defer errclose()
 
@@ -46,7 +48,9 @@ func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error 
 	mux.Handler("GET", "/index.ws", http.HandlerFunc(sw.IndexWS))
 
 	si := ostent.NewServeIndex(sw, taggedbin, templates.IndexTemplate)
-	ostent.GEAD(mux, "/", chain.ThenFunc(si.Index))
+	index := chain.ThenFunc(si.Index)
+	mux.Handler("GET", "/", index)
+	mux.Handler("HEAD", "/", index)
 
 	if !taggedbin { // dev-only
 		mux.Handler("GET", "/panic", chain.ThenFunc(
@@ -67,7 +71,12 @@ func Serve(listener net.Listener, taggedbin bool, extramap ostent.Muxmap) error 
 			pattern = ostent.VERSION + "/" + path // the Version prefix
 		}
 		cchain := chain.Append(context.ClearHandler, ostent.AddAssetPathContextFunc(path))
-		ostent.GEAD(mux, "/"+pattern, cchain.ThenFunc(sa.Serve))
+		handler := cchain.ThenFunc(sa.Serve)
+		mux.Handler("GET", "/"+pattern, handler)
+		mux.Handler("HEAD", "/"+pattern, handler)
+	}
+	if extra != nil {
+		extra(mux, chain)
 	}
 
 	ostent.Banner(listener.Addr().String(), "ostent", sa.Log)
