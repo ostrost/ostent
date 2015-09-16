@@ -48,15 +48,19 @@ func Serve(listener net.Listener, taggedbin bool, extra func(*httprouter.Router,
 	mux.Handler("GET", "/index.ws", http.HandlerFunc(sw.IndexWS))
 
 	si := ostent.NewServeIndex(sw, taggedbin, templates.IndexTemplate)
-	index := chain.ThenFunc(si.Index)
-	mux.Handler("GET", "/", index)
-	mux.Handler("HEAD", "/", index)
+	if p, h := "/", chain.ThenFunc(si.Index); true {
+		mux.Handler("GET", p, h)
+		mux.Handler("HEAD", p, h)
+	}
 
 	if !taggedbin { // dev-only
-		mux.Handler("GET", "/panic", chain.ThenFunc(
+		if p, h := "/panic", chain.ThenFunc(
 			func(w http.ResponseWriter, r *http.Request) {
 				panic("/panic")
-			}))
+			}); true {
+			mux.Handler("GET", p, h)
+			mux.Handler("HEAD", p, h)
+		}
 	}
 
 	sa := ostent.ServeAssets{
@@ -66,14 +70,14 @@ func Serve(listener net.Listener, taggedbin bool, extra func(*httprouter.Router,
 		AssetAltModTimeFunc: AssetAltModTimeFunc, // from main.*.go
 	}
 	for _, path := range assets.AssetNames() {
-		pattern := path
+		p := "/" + path
 		if path != "favicon.ico" && path != "robots.txt" {
-			pattern = ostent.VERSION + "/" + path // the Version prefix
+			p = "/" + ostent.VERSION + "/" + path // the Version prefix
 		}
 		cchain := chain.Append(context.ClearHandler, ostent.AddAssetPathContextFunc(path))
-		handler := cchain.ThenFunc(sa.Serve)
-		mux.Handler("GET", "/"+pattern, handler)
-		mux.Handler("HEAD", "/"+pattern, handler)
+		h := cchain.ThenFunc(sa.Serve)
+		mux.Handler("GET", p, h)
+		mux.Handler("HEAD", p, h)
 	}
 	if extra != nil {
 		extra(mux, chain)

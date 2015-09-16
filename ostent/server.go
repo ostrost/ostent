@@ -31,9 +31,6 @@ func AddAssetPathContextFunc(path string) func(http.Handler) http.Handler {
 	}
 }
 
-// Muxmap is a type of a map of pattern to HandlerFunc.
-type Muxmap map[string]http.HandlerFunc
-
 func NewServery(taggedbin bool) (*httprouter.Router, alice.Chain, *Access) {
 	access := NewAccess(taggedbin)
 	chain := alice.New(access.Constructor)
@@ -46,11 +43,6 @@ func NewServery(taggedbin bool) (*httprouter.Router, alice.Chain, *Access) {
 		phandler.ServeHTTP(w, r)
 	}
 	return mux, chain, access
-}
-
-func GEAD(mux *httprouter.Router, path string, handler http.Handler) {
-	mux.Handler("GET" /* */, path, handler)
-	mux.Handler("HEAD" /**/, path, handler)
 }
 
 // TimeInfo is for AssetInfoFunc: a reduced os.FileInfo.

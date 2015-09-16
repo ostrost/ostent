@@ -23,10 +23,11 @@ type Readfunc func(string) ([]byte, error)
 type LazyTemplate struct {
 	MU sync.Mutex // protects everything
 
+	// arguments to NewLT (all required):
 	// these accessed in InitClean thus also protected by MU
-	Readfunc Readfunc         // required (argument to NewLT)
-	Filename string           // required (argument to NewLT)
-	Funcmap  template.FuncMap // required (argument to NewLT)
+	Readfunc Readfunc
+	Filename string
+	Funcmap  template.FuncMap
 
 	Template *template.Template
 	Err      error
