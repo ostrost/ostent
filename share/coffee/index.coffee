@@ -104,58 +104,48 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
 
   @IFClass = React.createClass
     mixins: [HandlerMixin]
-    getInitialState: () -> { # a global Data
-      Params: Data.Params
-      IF:     Data.IF
-    }
+    getInitialState: () -> @Reduce(Data) # a global Data
+    Reduce: (data) -> {Params: data.Params, IF: data.IF}
     render: () ->
       Data = @state
-      return jsdefines.panelif.bind(this)(Data, (jsdefines.if_rows(Data, $if
-      ) for $if in Data?.IF?.List ? []))
+      rows = (jsdefines.if_rows(Data, $if) for $if in Data?.IF?.List ? [])
+      return (jsdefines.panelif.bind(this)(Data, rows))
 
   @DFClass = React.createClass
     mixins: [HandlerMixin]
-    getInitialState: () -> { # a global Data
-      Params: Data.Params
-      DF:     Data.DFbytes
-    }
+    getInitialState: () -> @Reduce(Data) # a global Data
+    Reduce: (data) -> {Params: data.Params, DF: data.DF}
     render: () ->
       Data = @state
-      return jsdefines.paneldf.bind(this)(Data,
-             (jsdefines.df_rows(Data, $df) for $df in Data?.DF?.List ? []))
+      rows = (jsdefines.df_rows(Data, $df) for $df in Data?.DF?.List ? [])
+      return (jsdefines.paneldf.bind(this)(Data, rows))
 
   @MEMClass = React.createClass
     mixins: [HandlerMixin]
-    getInitialState: () -> { # a global Data
-      Params: Data.Params
-      MEM:    Data.MEM
-    }
+    getInitialState: () -> @Reduce(Data) # a global Data
+    Reduce: (data) -> {Params: data.Params, MEM: data.MEM}
     render: () ->
       Data = @state
-      return jsdefines.panelmem.bind(this)(Data, (jsdefines.mem_rows(Data, $mem
-      ) for $mem in Data?.MEM?.List ? []))
+      rows = (jsdefines.mem_rows(Data, $mem) for $mem in Data?.MEM?.List ? [])
+      return (jsdefines.panelmem.bind(this)(Data, rows))
 
   @CPUClass = React.createClass
     mixins: [HandlerMixin]
-    getInitialState: () -> { # a global Data
-      Params: Data.Params
-      CPU:    Data.CPU
-    }
+    getInitialState: () -> @Reduce(Data) # a global Data
+    Reduce: (data) -> {Params: data.Params, CPU: data.CPU}
     render: () ->
       Data = @state
-      return jsdefines.panelcpu.bind(this)(Data, (jsdefines.cpu_rows(Data, $cpu
-      ) for $cpu in Data?.CPU?.List ? []))
+      rows = (jsdefines.cpu_rows(Data, $cpu) for $cpu in Data?.CPU?.List ? [])
+      return (jsdefines.panelcpu.bind(this)(Data, rows))
 
   @PSClass = React.createClass
     mixins: [HandlerMixin]
-    getInitialState: () -> { # a global Data
-      Params: Data.Params
-      PS:     Data.PS
-    }
+    getInitialState: () -> @Reduce(Data) # a global Data
+    Reduce: (data) -> {Params: data.Params, PS: data.PS}
     render: () ->
       Data = @state
-      return jsdefines.panelps.bind(this)(Data, (jsdefines.ps_rows(Data, $ps
-      ) for $ps in Data?.PS?.List ? []))
+      rows = (jsdefines.ps_rows(Data, $ps) for $ps in Data?.PS?.List ? [])
+      return (jsdefines.panelps.bind(this)(Data, rows))
 
   @TextClass = (reduce) -> React.createClass
     Reduce: (data) ->
@@ -196,15 +186,14 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
         console.log 'Error', data.Error
         return
 
-      setState(HN, HN.Reduce(data))
-      setState(UP, UP.Reduce(data))
-      setState(LA, LA.Reduce(data))
-
-      setState(PS,  {Params: data.Params, PS:  data.PS })
-      setState(MEM, {Params: data.Params, MEM: data.MEM})
-      setState(CPU, {Params: data.Params, CPU: data.CPU})
-      setState(IF,  {Params: data.Params, IF:  data.IF })
-      setState(DF,  {Params: data.Params, DF:  data.DF })
+      setState(HN,  HN.Reduce(data))
+      setState(UP,  UP.Reduce(data))
+      setState(LA,  LA.Reduce(data))
+      setState(PS,  PS.Reduce(data))
+      setState(MEM, MEM.Reduce(data))
+      setState(CPU, CPU.Reduce(data))
+      setState(IF,  IF.Reduce(data))
+      setState(DF,  DF.Reduce(data))
 
       if data.Location?
         history.pushState({}, '', data.Location)

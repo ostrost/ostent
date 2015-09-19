@@ -124,15 +124,18 @@
     this.IFClass = React.createClass({
       mixins: [HandlerMixin],
       getInitialState: function() {
+        return this.Reduce(Data);
+      },
+      Reduce: function(data) {
         return {
-          Params: Data.Params,
-          IF: Data.IF
+          Params: data.Params,
+          IF: data.IF
         };
       },
       render: function() {
-        var $if, Data;
+        var $if, Data, rows;
         Data = this.state;
-        return jsdefines.panelif.bind(this)(Data, (function() {
+        rows = (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.IF) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
@@ -141,21 +144,25 @@
             results.push(jsdefines.if_rows(Data, $if));
           }
           return results;
-        })());
+        })();
+        return jsdefines.panelif.bind(this)(Data, rows);
       }
     });
     this.DFClass = React.createClass({
       mixins: [HandlerMixin],
       getInitialState: function() {
+        return this.Reduce(Data);
+      },
+      Reduce: function(data) {
         return {
-          Params: Data.Params,
-          DF: Data.DFbytes
+          Params: data.Params,
+          DF: data.DF
         };
       },
       render: function() {
-        var $df, Data;
+        var $df, Data, rows;
         Data = this.state;
-        return jsdefines.paneldf.bind(this)(Data, (function() {
+        rows = (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.DF) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
@@ -164,21 +171,25 @@
             results.push(jsdefines.df_rows(Data, $df));
           }
           return results;
-        })());
+        })();
+        return jsdefines.paneldf.bind(this)(Data, rows);
       }
     });
     this.MEMClass = React.createClass({
       mixins: [HandlerMixin],
       getInitialState: function() {
+        return this.Reduce(Data);
+      },
+      Reduce: function(data) {
         return {
-          Params: Data.Params,
-          MEM: Data.MEM
+          Params: data.Params,
+          MEM: data.MEM
         };
       },
       render: function() {
-        var $mem, Data;
+        var $mem, Data, rows;
         Data = this.state;
-        return jsdefines.panelmem.bind(this)(Data, (function() {
+        rows = (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.MEM) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
@@ -187,21 +198,25 @@
             results.push(jsdefines.mem_rows(Data, $mem));
           }
           return results;
-        })());
+        })();
+        return jsdefines.panelmem.bind(this)(Data, rows);
       }
     });
     this.CPUClass = React.createClass({
       mixins: [HandlerMixin],
       getInitialState: function() {
+        return this.Reduce(Data);
+      },
+      Reduce: function(data) {
         return {
-          Params: Data.Params,
-          CPU: Data.CPU
+          Params: data.Params,
+          CPU: data.CPU
         };
       },
       render: function() {
-        var $cpu, Data;
+        var $cpu, Data, rows;
         Data = this.state;
-        return jsdefines.panelcpu.bind(this)(Data, (function() {
+        rows = (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.CPU) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
@@ -210,21 +225,25 @@
             results.push(jsdefines.cpu_rows(Data, $cpu));
           }
           return results;
-        })());
+        })();
+        return jsdefines.panelcpu.bind(this)(Data, rows);
       }
     });
     this.PSClass = React.createClass({
       mixins: [HandlerMixin],
       getInitialState: function() {
+        return this.Reduce(Data);
+      },
+      Reduce: function(data) {
         return {
-          Params: Data.Params,
-          PS: Data.PS
+          Params: data.Params,
+          PS: data.PS
         };
       },
       render: function() {
-        var $ps, Data;
+        var $ps, Data, rows;
         Data = this.state;
-        return jsdefines.panelps.bind(this)(Data, (function() {
+        rows = (function() {
           var i, len, ref, ref1, ref2, results;
           ref2 = (ref = Data != null ? (ref1 = Data.PS) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
           results = [];
@@ -233,7 +252,8 @@
             results.push(jsdefines.ps_rows(Data, $ps));
           }
           return results;
-        })());
+        })();
+        return jsdefines.panelps.bind(this)(Data, rows);
       }
     });
     this.TextClass = function(reduce) {
@@ -307,26 +327,11 @@
         setState(HN, HN.Reduce(data));
         setState(UP, UP.Reduce(data));
         setState(LA, LA.Reduce(data));
-        setState(PS, {
-          Params: data.Params,
-          PS: data.PS
-        });
-        setState(MEM, {
-          Params: data.Params,
-          MEM: data.MEM
-        });
-        setState(CPU, {
-          Params: data.Params,
-          CPU: data.CPU
-        });
-        setState(IF, {
-          Params: data.Params,
-          IF: data.IF
-        });
-        setState(DF, {
-          Params: data.Params,
-          DF: data.DF
-        });
+        setState(PS, PS.Reduce(data));
+        setState(MEM, MEM.Reduce(data));
+        setState(CPU, CPU.Reduce(data));
+        setState(IF, IF.Reduce(data));
+        setState(DF, DF.Reduce(data));
         if (data.Location != null) {
           history.pushState({}, '', data.Location);
         }

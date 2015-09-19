@@ -1,11 +1,11 @@
 define(function(require) {
 	var React = require('react');
 	return {
-		mem_rows: function(Data, $mem) { return ({{template "defines::define_memrows"   .}}); },
+		mem_rows: function(Data, $mem) { return ({{template "defines::define_memrows"  .}}); },
 		panelmem: function(Data, rows) { return ({{template "defines::define_panelmem" setrows . `rows`}}); },
 
 		df_rows:  function(Data, $df)  { return ({{template "defines::define_dfrows"   .}}); },
-		paneldf:  function(Data,rows)  { return ({{template "defines::define_paneldf"   setrows . `rows`}}); },
+		paneldf:  function(Data, rows) { return ({{template "defines::define_paneldf"  setrows . `rows`}}); },
 
 		cpu_rows: function(Data, $cpu) { return ({{template "defines::define_cpurows"  .}}); },
 		panelcpu: function(Data, rows) { return ({{template "defines::define_panelcpu" setrows . `rows`}}); },

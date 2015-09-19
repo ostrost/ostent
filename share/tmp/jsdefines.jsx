@@ -97,7 +97,7 @@ define(function(require) {
     > {$df.Total}</td
   ></tr
 >); },
-		paneldf:  function(Data,rows)  { return (<div  className={!Data.Params.Dfn.Negative ? "" : "panel panel-default"}
+		paneldf:  function(Data, rows) { return (<div  className={!Data.Params.Dfn.Negative ? "" : "panel panel-default"}
   ><div className="h4 padding-left-like-panel-heading"
     ><a  href={Data.Params.Tlinks.Dfn} onClick={this.handleClick}
       >Disk usage</a
