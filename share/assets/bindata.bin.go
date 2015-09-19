@@ -95,7 +95,7 @@ func cssIndexCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "css/index.css", size: 172127, mode: os.FileMode(384), modTime: time.Unix(1400000000, 0)}
+	info := bindataFileInfo{name: "css/index.css", size: 172127, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -115,7 +115,7 @@ func cssIndexCssMap() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "css/index.css.map", size: 84009, mode: os.FileMode(384), modTime: time.Unix(1400000000, 0)}
+	info := bindataFileInfo{name: "css/index.css.map", size: 84009, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -135,7 +135,7 @@ func faviconIco() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "favicon.ico", size: 5430, mode: os.FileMode(384), modTime: time.Unix(1400000000, 0)}
+	info := bindataFileInfo{name: "favicon.ico", size: 5430, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -155,7 +155,7 @@ func faviconsFavicon120Png() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "favicons/favicon-120.png", size: 3991, mode: os.FileMode(384), modTime: time.Unix(1400000000, 0)}
+	info := bindataFileInfo{name: "favicons/favicon-120.png", size: 3991, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -175,7 +175,7 @@ func faviconsFavicon144Png() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "favicons/favicon-144.png", size: 4969, mode: os.FileMode(384), modTime: time.Unix(1400000000, 0)}
+	info := bindataFileInfo{name: "favicons/favicon-144.png", size: 4969, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -195,7 +195,7 @@ func faviconsFavicon152Png() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "favicons/favicon-152.png", size: 5262, mode: os.FileMode(384), modTime: time.Unix(1400000000, 0)}
+	info := bindataFileInfo{name: "favicons/favicon-152.png", size: 5262, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -215,7 +215,7 @@ func faviconsFavicon180Png() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "favicons/favicon-180.png", size: 6473, mode: os.FileMode(384), modTime: time.Unix(1400000000, 0)}
+	info := bindataFileInfo{name: "favicons/favicon-180.png", size: 6473, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -235,7 +235,7 @@ func faviconsFavicon32Png() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "favicons/favicon-32.png", size: 844, mode: os.FileMode(384), modTime: time.Unix(1400000000, 0)}
+	info := bindataFileInfo{name: "favicons/favicon-32.png", size: 844, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -255,7 +255,7 @@ func jsMinIndexMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "js/min/index.min.js", size: 235888, mode: os.FileMode(384), modTime: time.Unix(1400000000, 0)}
+	info := bindataFileInfo{name: "js/min/index.min.js", size: 235888, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -275,7 +275,7 @@ func jsRequirejs2120RequireMinJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "js/requirejs/2.1.20/require.min.js", size: 15524, mode: os.FileMode(384), modTime: time.Unix(1400000000, 0)}
+	info := bindataFileInfo{name: "js/requirejs/2.1.20/require.min.js", size: 15524, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
@@ -295,7 +295,7 @@ func robotsTxt() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "robots.txt", size: 26, mode: os.FileMode(384), modTime: time.Unix(1400000000, 0)}
+	info := bindataFileInfo{name: "robots.txt", size: 26, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
 	a := &asset{bytes: bytes, info:  info}
 	return a, nil
 }
