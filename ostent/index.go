@@ -728,7 +728,7 @@ func (si ServeIndex) Index(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	response := si.IndexTemplate.Response(w, struct {
+	si.IndexTemplate.Apply(w, struct {
 		TAGGEDbin     bool
 		OstentVersion string
 		Data          IndexData
@@ -737,9 +737,6 @@ func (si ServeIndex) Index(w http.ResponseWriter, r *http.Request) {
 		OstentVersion: si.OstentVersion,
 		Data:          id,
 	})
-	response.Header().Set("Content-Type", "text/html")
-	response.SetContentLength()
-	response.Send()
 }
 
 type SSE struct {

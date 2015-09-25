@@ -23,8 +23,7 @@ type Readfunc func(string) ([]byte, error)
 type LazyTemplate struct {
 	MU sync.Mutex // protects everything
 
-	// arguments to NewLT (all required):
-	// these accessed in InitClean thus also protected by MU
+	// arguments to NewLT (all required)
 	Readfunc Readfunc
 	Filename string
 	Funcmap  template.FuncMap
@@ -34,132 +33,54 @@ type LazyTemplate struct {
 }
 
 // MustInit is a Must func for LazyTemplate.
-func MustInit(l *LazyTemplate) {
-	l.MU.Lock()
-	defer l.MU.Unlock()
-	err := l.Init()
-	template.Must(l.Template, err)
+func MustInit(lt *LazyTemplate) {
+	lt.MU.Lock()
+	defer lt.MU.Unlock()
+	lt.Init()
+	template.Must(lt.Template, lt.Err)
 }
 
-// Init is internal. Keeps .Err and/may call InitClean.
-func (l *LazyTemplate) Init() error {
-	if l.Err != nil {
-		return l.Err
+// Init is internal and lock-free.
+func (lt *LazyTemplate) Init() {
+	if lt.Err != nil {
+		return
 	}
-	err := l.InitClean()
+	if lt.Template != nil {
+		return
+	}
+	if lt.Readfunc == nil {
+		lt.Err = fmt.Errorf("templateutil: readfunc is nil for %q reading", lt.Filename)
+		return
+	}
+	text, err := lt.Readfunc(lt.Filename)
 	if err != nil {
-		l.Err = err
+		lt.Err = err
+		return
 	}
-	return err
+	t := template.New(lt.Filename)
+	if lt.Funcmap != nil {
+		t.Funcs(lt.Funcmap)
+	}
+	lt.Template, lt.Err = t.Parse(string(text))
 }
 
-// InitClean is internal. The init without .Err handling.
-func (l *LazyTemplate) InitClean() error {
-	if l.Template != nil {
-		return nil
-	}
-	if l.Readfunc == nil {
-		return fmt.Errorf("templateutil: readfunc is nil for %q reading", l.Filename)
-	}
-	text, err := l.Readfunc(l.Filename)
-	if err != nil {
-		return err
-	}
-	t := template.New(l.Filename)
-	if l.Funcmap != nil {
-		t.Funcs(l.Funcmap)
-	}
-	t, err = t.Parse(string(text))
-	if err != nil {
-		return err
-	}
-	l.Template = t
-	return nil
-}
-
-// LookupApply wraps ApplyTemplate with l.Template.Lookup(name).
-func (l *LazyTemplate) LookupApply(name string, data interface{}) (string, error) {
-	buf, err := l.ApplyTemplate(func() (*template.Template, string) {
-		return l.Template.Lookup(name), name
-	}, data)
-	if err != nil {
-		return "", err
-	}
-	return buf.String(), nil
-}
-
-// BufferApply wraps ApplyTemplate with l.Template.
-func (l *LazyTemplate) BufferApply(data interface{}) (*bytes.Buffer, error) {
-	return l.ApplyTemplate(nil, data)
-}
-
-// ApplyTemplate is internal. Gets a the template, clones and executes.
-// getter is called after l.Init so it can rely on l.Template presence.
-func (l *LazyTemplate) ApplyTemplate(getter func() (*template.Template, string), data interface{}) (*bytes.Buffer, error) {
-	var clone *template.Template
-	if err := func() error {
-		l.MU.Lock()
-		defer l.MU.Unlock()
-		if err := l.Init(); err != nil {
-			return err
+// Apply clones .Template to execute it into w.
+func (lt *LazyTemplate) Apply(w http.ResponseWriter, data interface{}) {
+	clone, err := func() (*template.Template, error) {
+		lt.MU.Lock()
+		defer lt.MU.Unlock()
+		if lt.Init(); lt.Err != nil {
+			return nil, lt.Err
 		}
-		var t *template.Template
-		if getter == nil {
-			t = l.Template
-		} else {
-			var name string
-			t, name = getter()
-			if t == nil {
-				return fmt.Errorf("template: %q is undefined", name)
-			}
-		}
-		var err error
-		clone, err = t.Clone()
-		return err
-	}(); err != nil {
-		return nil, err
+		return lt.Template.Clone()
+	}()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	buf := new(bytes.Buffer)
-	err := clone.Execute(buf, data)
-	return buf, err
-}
-
-// Response is there to .Apply (implicitly) and then .Send explicitly.
-// The Send replies with http.Error if it has preceded in Apply.
-func (l *LazyTemplate) Response(w http.ResponseWriter, data interface{}) TemplateWriter {
-	tw := TemplateWriter{Writer: w}
-	tw.Buf, tw.Err = l.BufferApply(data)
-	return tw
-}
-
-// TemplateWriter allows applying template first, dealing with error later.
-type TemplateWriter struct {
-	Writer http.ResponseWriter
-	Buf    *bytes.Buffer
-	Err    error
-}
-
-// Header is a proxy to http.ResponseWriter.Header.
-func (tw *TemplateWriter) Header() http.Header {
-	if tw.Err != nil {
-		return map[string][]string{}
-	}
-	return tw.Writer.Header()
-}
-
-// SetContentLength sets Content-Length header to .Buf length.
-func (tw *TemplateWriter) SetContentLength() {
-	if tw.Err == nil {
-		tw.Header().Set("Content-Length", strconv.Itoa(tw.Buf.Len()))
-	}
-}
-
-// Send writes to the .Writer what has been buffered in .Buf.
-// Or reports the .Err if it has come from LazyTemplate.Response.
-func (tw *TemplateWriter) Send() {
-	if tw.Err != nil {
-		http.Error(tw.Writer, tw.Err.Error(), http.StatusInternalServerError)
-	} else {
-		io.Copy(tw.Writer, tw.Buf) // or w.Write(Buf.Bytes())
-	}
+	err = clone.Execute(buf, data)
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Set("Content-Length", strconv.Itoa(buf.Len()))
+	io.Copy(w, buf) // or w.Write(buf.Bytes())
 }
