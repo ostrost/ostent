@@ -33,6 +33,7 @@ func (_ Influxes) SetupFlagSet(cli *flag.FlagSet) extpoints.CommandLineHandler {
 			return nil, false, nil
 		}
 		ostent.AddBackground(func() {
+			ostent.AllExporters.AddExporter("influxdb")
 			go influxdb.InfluxDB(ostent.Reg1s.Registry,
 				ix.DelayFlag.Duration,
 				ix.URL,

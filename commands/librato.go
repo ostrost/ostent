@@ -33,6 +33,7 @@ func (_ Libratos) SetupFlagSet(cli *flag.FlagSet) extpoints.CommandLineHandler {
 			return nil, false, nil
 		}
 		ostent.AddBackground(func() {
+			ostent.AllExporters.AddExporter("librato")
 			go librato.Librato(ostent.Reg1s.Registry,
 				lr.DelayFlag.Duration,
 				lr.Email,

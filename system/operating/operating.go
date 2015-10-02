@@ -186,10 +186,11 @@ type GaugeDiff struct {
 }
 
 func NewGaugeDiff(name string, r metrics.Registry) *GaugeDiff {
+	dummyr := metrics.NewRegistry()
 	return &GaugeDiff{
 		Delta:    metrics.NewRegisteredGauge(name, r),
-		Absolute: metrics.NewRegisteredGauge(name+"-absolute", metrics.NewRegistry()),
-		Previous: metrics.NewRegisteredGauge(name+"-previous", metrics.NewRegistry()),
+		Absolute: metrics.NewRegisteredGauge(name+"-absolute", dummyr),
+		Previous: metrics.NewRegisteredGauge(name+"-previous", dummyr),
 	}
 }
 

@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"time"
 
 	sigar "github.com/ostrost/gosigar"
 	metrics "github.com/rcrowley/go-metrics"
@@ -112,13 +113,22 @@ type Generic struct {
 }
 
 type last struct {
-	MU      sync.Mutex
-	PSSlice PSSlice
+	MU            sync.Mutex
+	PSSlice       PSSlice
+	LastCollected time.Time
 }
 
 var lastInfo last
 
-func (la *last) collect(c Collector) {
+func (la *last) collect(when time.Time, wantprocs bool) {
+	la.MU.Lock()
+	defer la.MU.Unlock()
+	if !la.LastCollected.IsZero() && la.LastCollected.Add(time.Second).After(when) {
+		return
+	}
+	la.LastCollected = when
+
+	c := Machine{}
 	var wg sync.WaitGroup
 	wg.Add(8)              // EIGHT:
 	go c.CPU(&Reg1s, &wg)  // one
@@ -130,12 +140,11 @@ func (la *last) collect(c Collector) {
 	go c.LA(&Reg1s, &wg)   // seven
 	go c.IF(&Reg1s, &wg)   // eight
 
-	pch := make(chan PSSlice, 1)
-	go c.PS(pch)
-
-	la.MU.Lock()
-	defer la.MU.Unlock()
-	la.PSSlice = <-pch
+	if wantprocs {
+		pch := make(chan PSSlice, 1)
+		go c.PS(pch)
+		la.PSSlice = <-pch
+	}
 	wg.Wait()
 }
 
@@ -599,6 +608,7 @@ func getUpdates(req *http.Request, para *params.Params) (IndexUpdate, bool, erro
 		// iu.Location = newloc // may be nil
 		iu.Params = para
 	}
+	lastInfo.collect(NextSecond(), para.NonZeroPsn())
 	psCopy := lastInfo.CopyPS()
 
 	var updated bool
@@ -791,7 +801,8 @@ func (ss ServeSSE) IndexSSE(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	for { // loop is access-log-free
-		SleepTilNextSecond() // TODO is it second?
+		_, sleep := NextSecondDelta()
+		time.Sleep(sleep)
 		if sse.ServeHTTP(nil, r); sse.Errord {
 			break
 		}

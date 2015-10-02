@@ -144,6 +144,8 @@ type Schema struct {
 	Dfk Num `url:"dfk,default1,enumerate6"` // sort, default FS
 }
 
+func (p Params) NonZeroPsn() bool { return p.Psn.Absolute != 0 }
+
 type Nlinks struct {
 	More, Less ALink
 }

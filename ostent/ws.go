@@ -38,33 +38,33 @@ func RunBackground(defaultDelay flags.Delay) {
 	}
 }
 
-// SleepTilNextSecond sleeps til precisely next second.
-func SleepTilNextSecond() {
+// NextSecond returns precisely next second in Time.
+func NextSecond() time.Time {
+	return time.Now().Truncate(time.Second).Add(time.Second)
+}
+
+// NextSecondDelta returns precisely next second in Time and Duration.
+func NextSecondDelta() (time.Time, time.Duration) {
 	now := time.Now()
-	nextsecond := now.Truncate(time.Second).Add(time.Second).Sub(now)
-	time.Sleep(nextsecond)
+	when := now.Truncate(time.Second).Add(time.Second)
+	return when, when.Sub(now)
 }
 
 // CollectLoop is a ostent background job: collect the metrics.
 func CollectLoop() {
-	go func() {
-		for {
-			SleepTilNextSecond()
-			lastInfo.collect(Machine{})
+	for {
+		when, sleep := NextSecondDelta()
+		time.Sleep(sleep)
+		if AllExporters.NonZero() || Connections.NonZero() {
+			lastInfo.collect(when, Connections.NonZeroWantProcs())
 		}
-	}()
+		Connections.tick()
+		Connections.Tack()
+	}
 }
 
 // ConnectionsLoop is a ostent background job: serve connections.
 func ConnectionsLoop() {
-	go func() {
-		for {
-			SleepTilNextSecond()
-			Connections.tick()
-			Connections.Tack()
-		}
-	}()
-
 	for {
 		select {
 		case conn := <-Register:
@@ -82,7 +82,6 @@ type conn struct {
 	requestOrigin *http.Request
 
 	receive chan *received
-	pushch  chan *IndexUpdate
 	para    *params.Params
 	access  *Access
 
@@ -102,6 +101,12 @@ func (c *conn) Tick() {
 	c.para.Tick()
 }
 
+func (c *conn) WantProcs() bool {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	return c.para.NonZeroPsn()
+}
+
 func (c *conn) Tack() {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -114,12 +119,31 @@ type receiver interface {
 	Reload()
 	Expired() bool
 	CloseChans()
+	WantProcs() bool
 }
 
 type connmap map[receiver]struct{}
 type conns struct {
 	connmap
 	mutex sync.Mutex
+}
+
+func (cs *conns) NonZero() bool {
+	cs.mutex.Lock()
+	defer cs.mutex.Unlock()
+	return len(cs.connmap) != 0
+}
+
+func (cs *conns) NonZeroWantProcs() bool {
+	cs.mutex.Lock()
+	defer cs.mutex.Unlock()
+
+	for c := range cs.connmap {
+		if c.WantProcs() {
+			return true
+		}
+	}
+	return false
 }
 
 func (cs *conns) Tack() {
@@ -161,7 +185,6 @@ func (c *conn) CloseChans() {
 		}
 	}()
 	close(c.receive)
-	close(c.pushch)
 }
 
 func (cs *conns) Unreg(r receiver) {
@@ -181,10 +204,30 @@ func (cs *conns) tick() {
 	}
 }
 
+// Exporters keeps exporters list.
+type Exporters struct {
+	MU        sync.Mutex
+	Exporters map[string]struct{}
+}
+
+func (es *Exporters) NonZero() bool {
+	es.MU.Lock()
+	defer es.MU.Unlock()
+	return len(es.Exporters) != 0
+}
+
+func (es *Exporters) AddExporter(name string) {
+	es.MU.Lock()
+	defer es.MU.Unlock()
+	es.Exporters[name] = struct{}{}
+}
+
 var (
 	// Connections is an instance of unexported conns type to hold
 	// active websocket connections. The only method is Reload.
 	Connections = conns{connmap: make(map[receiver]struct{})}
+
+	AllExporters = Exporters{Exporters: make(map[string]struct{})}
 
 	Unregister = make(chan receiver)
 	Register   = make(chan receiver, 1)
@@ -249,13 +292,6 @@ loop:
 				} else {
 					return
 				}
-			}
-		case update, ok := <-c.pushch:
-			if !ok {
-				return
-			}
-			if err := c.writeJSON(update); err != nil {
-				return
 			}
 		case _ = <-stop:
 			return
@@ -370,7 +406,6 @@ func (sw ServeWS) IndexWS(w http.ResponseWriter, req *http.Request) {
 		requestOrigin: req,
 
 		receive: make(chan *received, 2),
-		pushch:  make(chan *IndexUpdate, 2),
 		para:    params.NewParams(sw.MinDelay, sw.MaxDelay),
 		access:  sw.Access,
 	}

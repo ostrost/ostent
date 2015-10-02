@@ -37,6 +37,7 @@ func (_ Graphites) SetupFlagSet(cli *flag.FlagSet) extpoints.CommandLineHandler 
 				ServerAddr: gr.ServerAddr.String(),
 				Delay:      &params.Delay{D: gr.DelayFlag.Duration},
 			}
+			ostent.AllExporters.AddExporter("graphite")
 			ostent.Register <- gc
 		})
 		return nil, false, nil
@@ -51,9 +52,9 @@ type Carbond struct {
 	Failing       bool
 }
 
-func (cd *Carbond) CloseChans()              {} // intentionally empty
-func (cd *Carbond) Reload()                  {} // intentionally empty
-func (cd *Carbond) Push(*ostent.IndexUpdate) {} // TODO?
+func (cd Carbond) CloseChans()     {} // intentionally empty
+func (cd Carbond) Reload()         {} // intentionally empty
+func (cd Carbond) WantProcs() bool { return false }
 
 func (cd *Carbond) Tack() {
 	addr, err := net.ResolveTCPAddr("tcp", cd.ServerAddr)
