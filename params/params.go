@@ -138,7 +138,7 @@ type Schema struct {
 	Dfn  Num `url:"dfn,default-2"`
 	Ifn  Num `url:"ifn,default-2"`
 	Memn Num `url:"memn,default-2"`
-	Psn  Num `url:"psn,default-8"`
+	Psn  Num `url:"psn,default0"`
 
 	Psk Num `url:"psk,default1,enumerate9"` // sort, default PID
 	Dfk Num `url:"dfk,default1,enumerate6"` // sort, default FS
