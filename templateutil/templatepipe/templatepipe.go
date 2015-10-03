@@ -1,6 +1,7 @@
 package templatepipe
 
 import (
+	"fmt"
 	"strings"
 	"text/template"
 	"text/template/parse"
@@ -20,196 +21,117 @@ func Data(cf CurlyFunc, root *template.Template) interface{} {
 	if root == nil || root.Tree == nil || root.Tree.Root == nil {
 		return "{}"
 	}
-	data := Dotted{}
-	vars := map[string][]string{}
+	c := Context{Vars: make(map[string][]string)}
 	for _, node := range root.Tree.Root.Nodes {
-		DataNode(root, node, &data, vars, nil)
+		c.Node(node, NodeArgs{Template: root})
 	}
 	if cf == nil {
 		cf = CurlyX
 	}
-	return Encurl(cf, data, 0)
+	return Encurl(cf, c.Dotted, 0)
 }
 
-func DataNode(root *template.Template, node parse.Node, data *Dotted, vars map[string][]string, prefixwords []string) {
-	if true {
-		switch node.Type() {
-		case parse.NodeWith:
-			withNode := node.(*parse.WithNode)
-			arg0 := withNode.Pipe.Cmds[0].Args[0].String()
-			var withv string
-			if len(arg0) > 0 && arg0[0] == '.' {
-				if decl := withNode.Pipe.Decl; len(decl) > 0 {
-					// just {{with $ := ...}} cases
+type NodeArgs struct {
+	Template    *template.Template
+	PrefixWords []string
+	Decl        []*parse.VariableNode
+}
 
-					withv = decl[0].Ident[0]
-					words := strings.Split(arg0[1:], ".")
-					vars[withv] = words
-					data.Append(words, prefixwords)
-				}
-			}
-			if withNode.List != nil {
-				for _, n := range withNode.List.Nodes {
-					DataNode(root, n, data, vars, prefixwords)
-				}
-			}
-			if withNode.ElseList != nil {
-				for _, n := range withNode.ElseList.Nodes {
-					DataNode(root, n, data, vars, prefixwords)
-				}
-			}
-			if withv != "" {
-				delete(vars, withv)
-			}
-		case parse.NodeTemplate:
-			tnode := node.(*parse.TemplateNode)
-			var tawords []string
-			for _, cmd := range tnode.Pipe.Cmds {
-				for _, arg := range cmd.Args {
-					s := arg.String()
-					if len(s) == 1 || s[0] != '$' {
-						continue
-					}
-					x := strings.Split(s, ".")
-					if words, ok := vars[x[0]]; ok {
-						words := append(words, x[1:]...)
-						data.Append(words, prefixwords)
-					}
-				}
-				break
-			}
-			for _, arg := range tnode.Pipe.Cmds[0].Args {
-				s := arg.String()
-				if len(s) > 1 && s[0] == '.' {
-					tawords = strings.Split(s[1:], ".")
-					data.Append(tawords, prefixwords)
-					break // just one argument (pipeline) to "{{template}}" allowed anyway
-				}
-			}
-			if sub := root.Lookup(tnode.Name); sub != nil && sub.Tree != nil && sub.Tree.Root != nil {
-				for _, n := range sub.Tree.Root.Nodes {
-					pw := prefixwords
-					if tawords != nil {
-						pw = append(prefixwords, tawords...)
-					}
-					DataNode(root, n, data, vars, pw)
-				}
-			}
-		case parse.NodeAction:
-			actionNode := node.(*parse.ActionNode)
-			decl := actionNode.Pipe.Decl
+type Context struct {
+	Dotted Dotted              // end result
+	Vars   map[string][]string // for vars kept between Node* methods calls
+}
 
-			for _, cmd := range actionNode.Pipe.Cmds {
-				if cmd.NodeType != parse.NodeCommand {
-					continue
-				}
-				for _, arg := range cmd.Args {
-					var ident []string
-					switch arg.Type() {
-					case parse.NodeChain:
-						chain := arg.(*parse.ChainNode)
-						if chain.Node.Type() == parse.NodePipe {
-							pipe := chain.Node.(*parse.PipeNode)
-							for _, arg := range pipe.Cmds[0].Args {
-								if arg.Type() == parse.NodeField {
-									w := arg.String()
-									if len(w) > 0 && w[0] == '.' {
-										data.Append(strings.Split(w[1:], "."), prefixwords)
-									}
-								}
-							}
-						}
-					case parse.NodeField:
-						ident = arg.(*parse.FieldNode).Ident
+func (c *Context) Touch(na NodeArgs, words []string) {
+	c.Dotted.Append(words, na.PrefixWords)
+	if len(na.Decl) > 0 && len(na.Decl[0].Ident) > 0 {
+		c.Vars[na.Decl[0].Ident[0]] = words
+	}
+}
 
-						if len(decl) > 0 && len(decl[0].Ident) > 0 {
-							vars[decl[0].Ident[0]] = ident
-						}
-						data.Append(ident, prefixwords)
+func (c *Context) Ranging(rangeNode *parse.RangeNode, na NodeArgs) {
+	var (
+		decl  = rangeNode.Pipe.Decl[len(rangeNode.Pipe.Decl)-1].String()
+		field = rangeNode.Pipe.Cmds[0].Args[0].(*parse.FieldNode)
+	)
+	leaf := c.Dotted.Append(field.Ident, na.PrefixWords)
+	leaf.Keys = append(leaf.Keys, getKeys(decl, rangeNode.List)...)
+	leaf.Decl = decl // redefined $
+	leaf.Ranged = true
+}
 
-					case parse.NodeVariable:
-						ident = arg.(*parse.VariableNode).Ident
+func (c *Context) Node(node parse.Node, na NodeArgs) {
+	switch node.Type() {
+	// plain recursives:
+	case parse.NodeCommand:
+		for _, n := range node.(*parse.CommandNode).Args {
+			c.Node(n, na)
+		}
+	case parse.NodeList:
+		for _, n := range node.(*parse.ListNode).Nodes {
+			c.Node(n, na)
+		}
+	case parse.NodePipe:
+		for _, n := range node.(*parse.PipeNode).Cmds {
+			c.Node(n, na)
+		}
 
-						if words, ok := vars[ident[0]]; ok {
-							words := append(words, ident[1:]...)
-							data.Append(words, prefixwords)
-							if len(decl) > 0 && len(decl[0].Ident) > 0 {
-								vars[decl[0].Ident[0]] = words
-							}
-						} else if ident[0] == "$data" {
-							words := append([]string{"Data"}, ident[1:]...)
-							data.Append(words, prefixwords)
-						}
-					}
-				}
-			}
-		case parse.NodeRange:
-			rangeNode := node.(*parse.RangeNode)
-			decl := rangeNode.Pipe.Decl[len(rangeNode.Pipe.Decl)-1].String()
-			keys := []string{}
+	// recursives:
+	case parse.NodeAction:
+		an := node.(*parse.ActionNode)
+		na.Decl = an.Pipe.Decl // !
+		c.Node(an.Pipe, na)
+	case parse.NodeWith:
+		with := node.(*parse.WithNode)
+		c.Node(with.Pipe, na)
+		c.Node(with.List, na)
+		c.Node(with.ElseList, na)
+	case parse.NodeTemplate:
+		t := node.(*parse.TemplateNode)
+		c.Node(t.Pipe, na)
+		if s := na.Template.Lookup(t.Name); s != nil && s.Tree != nil && s.Tree.Root != nil {
+			c.Node(s.Tree.Root, na)
+		}
 
-			for _, ifnode := range rangeNode.List.Nodes {
-				switch ifnode.Type() {
-				case parse.NodeAction:
-					keys = append(keys, getKeys(decl, ifnode)...)
-				case parse.NodeIf:
-					for _, z := range ifnode.(*parse.IfNode).List.Nodes {
-						if z.Type() == parse.NodeAction {
-							keys = append(keys, getKeys(decl, z)...)
-						}
-					}
-				case parse.NodeTemplate:
-					// DataNode(root, ifnode, data, vars, prefixwords)
-					arg0 := ifnode.(*parse.TemplateNode).Pipe.Cmds[0].Args[0]
-					if arg0.Type() == parse.NodePipe {
-						cmd0 := arg0.(*parse.PipeNode).Cmds[0]
-						if cmd0.Type() == parse.NodeCommand {
-							for _, a := range cmd0.Args {
-								if s, prefix := a.String(), decl+"."; strings.HasPrefix(s, prefix) {
-									keys = append(keys, strings.Split(strings.TrimPrefix(s, prefix), ".")...)
-								}
-							}
-						}
-					} else if arg0.Type() == parse.NodeVariable {
-						keys = append(keys, arg0.(*parse.VariableNode).Ident[1:]...)
-					}
-				}
-			}
-
-			// fml
-			arg0 := rangeNode.Pipe.Cmds[0].Args[0].String()
-			words, ok := vars[arg0]
-			if !ok && len(arg0) > 0 && arg0[0] == '.' {
-				words = strings.Split(arg0[1:], ".")
-				data.Append(words, prefixwords)
-				ok = true
-			}
-			if ok {
-				if leaf := data.Find(words); leaf != nil {
-					leaf.Ranged = true
-					leaf.Keys = append(leaf.Keys, keys...)
-					leaf.Decl = decl // redefined $
-				}
-			}
+	// touchers:
+	case parse.NodeRange:
+		c.Ranging(node.(*parse.RangeNode), na)
+	case parse.NodeField:
+		c.Touch(na, node.(*parse.FieldNode).Ident)
+	case parse.NodeVariable:
+		v := node.(*parse.VariableNode)
+		if words, ok := c.Vars[v.Ident[0]]; ok {
+			c.Touch(na, append(words, v.Ident[1:]...))
 		}
 	}
 }
 
-func getKeys(decl string, parseNode parse.Node) (keys []string) {
-	for _, cmd := range parseNode.(*parse.ActionNode).Pipe.Cmds {
-		if cmd.NodeType != parse.NodeCommand {
-			continue
+func getKeys(decl string, node parse.Node) (keys []string) {
+	switch node.Type() {
+	case parse.NodeAction:
+		return getKeys(decl, node.(*parse.ActionNode).Pipe)
+	case parse.NodeIf:
+		return getKeys(decl, node.(*parse.IfNode).List)
+	case parse.NodeTemplate:
+		return getKeys(decl, node.(*parse.TemplateNode).Pipe)
+	case parse.NodeCommand:
+		for _, arg := range node.(*parse.CommandNode).Args {
+			keys = append(keys, getKeys(decl, arg)...)
 		}
-		for _, arg := range cmd.Args {
-			if arg.Type() != parse.NodeVariable {
-				continue
-			}
-			ident := arg.(*parse.VariableNode).Ident
-			if len(ident) < 2 || ident[0] != decl {
-				continue
-			}
-			keys = append(keys, ident[1])
+	case parse.NodeList:
+		for _, n := range node.(*parse.ListNode).Nodes {
+			keys = append(keys, getKeys(decl, n)...)
 		}
+	case parse.NodePipe:
+		for _, cmd := range node.(*parse.PipeNode).Cmds {
+			keys = append(keys, getKeys(decl, cmd)...)
+		}
+	case parse.NodeVariable:
+		ident := node.(*parse.VariableNode).Ident
+		if len(ident) < 2 || ident[0] != decl {
+			panic(fmt.Errorf("Unexpected ident: %+v", ident))
+		}
+		return ident[1:]
 	}
 	return
 }
@@ -226,23 +148,22 @@ type Dotted struct {
 }
 
 // Append adds words into d.
-func (d *Dotted) Append(words []string, prefix []string) {
+func (d *Dotted) Append(words []string, prefix []string) *Dotted {
 	if prefix != nil {
 		words = append(prefix, words...)
 	}
 	if len(words) == 0 {
-		return
+		return d
 	}
 	if l := d.Leave(words[0]); l != nil {
-		l.Append(words[1:], nil) // recursion
-		return
+		return l.Append(words[1:], nil)
 	}
 	n := &Dotted{Parent: d, Name: words[0]}
 	d.Leaves = append(d.Leaves, n)
-	n.Append(words[1:], nil) // recursion
+	return n.Append(words[1:], nil)
 }
 
-// Find traverses d to find by words.
+// Find traverses d to search by words. Used by tests.
 func (d *Dotted) Find(words []string) *Dotted {
 	if len(words) == 0 {
 		return d
