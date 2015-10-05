@@ -35,7 +35,7 @@ func main() {
 		return
 	}
 
-	ostent.RunBackground(MinDelayFlag)
+	ostent.RunBackground()
 
 	templatesLoaded := make(chan struct{}, 1)
 	go templates.InitTemplates(templatesLoaded)

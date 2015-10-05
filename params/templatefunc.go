@@ -15,11 +15,11 @@ func (f ParamsFuncs) HrefT(p *Params, num *Num) (template.HTMLAttr, error) {
 }
 
 func (f ParamsFuncs) LessD(p *Params, d *Delay, bclass string) (ALink, error) {
-	return f.LinkD(p, d, bclass, f.DelayLess(*d, p.MinDelay.Duration), "-")
+	return f.LinkD(p, d, bclass, f.DelayLess(*d, p.DelayBounds.Min.Duration), "-")
 }
 
 func (f ParamsFuncs) MoreD(p *Params, d *Delay, bclass string) (ALink, error) {
-	return f.LinkD(p, d, bclass, f.DelayMore(*d, p.MinDelay.Duration), "+")
+	return f.LinkD(p, d, bclass, f.DelayMore(*d, p.DelayBounds.Min.Duration), "+")
 }
 
 func (f ParamsFuncs) LessN(p *Params, num *Num, bclass string) (ALink, error) {
@@ -112,11 +112,11 @@ func (f ParamsFuncs) LinkD(p *Params, d *Delay, bclass string, set time.Duration
 	}
 	switch badge {
 	case "-":
-		if d.D > p.MinDelay.Duration {
+		if d.D > p.DelayBounds.Min.Duration {
 			al.Href, al.ExtraClass = href, ""
 		}
 	case "+":
-		if d.D < p.MaxDelay.Duration {
+		if d.D < p.DelayBounds.Max.Duration {
 			al.Href, al.ExtraClass = href, ""
 		}
 	}

@@ -47,12 +47,11 @@ var (
 )
 
 // NewParams constructs new Params.
-func NewParams(mindelay, maxdelay flags.Delay) *Params {
+func NewParams(dbounds flags.DelayBounds) *Params {
 	p := &Params{
-		Defaults: make(map[interface{}]Num),
-		Delays:   make(map[string]*Delay),
-		MinDelay: mindelay,
-		MaxDelay: maxdelay,
+		Defaults:    make(map[interface{}]Num),
+		Delays:      make(map[string]*Delay),
+		DelayBounds: dbounds,
 	}
 
 	val := reflect.ValueOf(&p.Schema).Elem()
@@ -111,10 +110,9 @@ func (d *Delay) Tick() {
 type Params struct {
 	Schema
 	ParamsFuncs
-	Defaults map[interface{}]Num `json:"-"`
-	Delays   map[string]*Delay   `json:"-"`
-	MinDelay flags.Delay         `json:"-"`
-	MaxDelay flags.Delay         `json:"-"`
+	Defaults    map[interface{}]Num `json:"-"`
+	Delays      map[string]*Delay   `json:"-"`
+	DelayBounds flags.DelayBounds   `json:"-"`
 }
 
 type Schema struct {
@@ -390,7 +388,7 @@ func (d *Delay) UnmarshalText(text []byte) error {
 	return nil
 }
 
-func (p *Params) ResetSchema(mindelay, maxdelay flags.Delay) {
+func (p *Params) ResetSchema() {
 	val := reflect.ValueOf(&p.Schema).Elem()
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
 		sf := typ.Field(i)
@@ -406,14 +404,14 @@ func (p *Params) ResetSchema(mindelay, maxdelay flags.Delay) {
 			fv.Set(reflect.ValueOf(Num{PositiveOnly: posonly}))
 		case DelayType:
 			fv.Set(reflect.ValueOf(Delay{
-				Above: &mindelay.Duration,
-				Below: &maxdelay.Duration,
+				Above: &p.DelayBounds.Min.Duration,
+				Below: &p.DelayBounds.Max.Duration,
 			}))
 		}
 	}
 }
 
-func (p *Params) SetDefaults(form url.Values, mindelay flags.Delay) {
+func (p *Params) SetDefaults(form url.Values) {
 	val := reflect.ValueOf(&p.Schema).Elem()
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
 		sf := typ.Field(i)
@@ -450,7 +448,7 @@ func (p *Params) SetDefaults(form url.Values, mindelay flags.Delay) {
 			}
 		case DelayType:
 			d := fv.Addr().Interface().(*Delay)
-			d.Default = mindelay.Duration
+			d.Default = p.DelayBounds.Min.Duration
 			if d.D != time.Duration(0) { // value specified, no need for defaults
 				continue
 			}
@@ -461,7 +459,7 @@ func (p *Params) SetDefaults(form url.Values, mindelay flags.Delay) {
 			if _, ok := form[tags[0]]; ok { // have parameter
 				continue
 			}
-			d.D = mindelay.Duration
+			d.D = p.DelayBounds.Min.Duration
 		}
 	}
 }
@@ -490,11 +488,11 @@ func (p *Params) Decode(req *http.Request) error {
 	dec.IgnoreUnknownKeys(true)
 	dec.ZeroEmpty(true)
 
-	p.ResetSchema(p.MinDelay, p.MaxDelay)
+	p.ResetSchema()
 	if err := dec.Decode(&p.Schema, req.Form); err != nil {
 		return err
 	}
-	p.SetDefaults(req.Form, p.MinDelay)
+	p.SetDefaults(req.Form)
 	if !moved {
 		return nil
 	}

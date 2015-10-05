@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+type DelayBounds struct{ Max, Min Delay }
+
 type Delay struct {
 	time.Duration
 	Above *time.Duration // optional

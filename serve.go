@@ -18,17 +18,16 @@ import (
 	"github.com/ostrost/ostent/share/templates"
 )
 
-var (
-	// MinDelayFlag is a minimum refresh period for collection.
-	MinDelayFlag = flags.Delay{Duration: time.Second} // default
-	// MaxDelayFlag is a maximum refresh period for collection.
-	MaxDelayFlag = flags.Delay{Duration: 10 * time.Minute} // default
-)
+var DelayFlags = flags.DelayBounds{
+	Max: flags.Delay{Duration: 10 * time.Minute},
+	Min: flags.Delay{Duration: time.Second},
+	// 10m and 1s are corresponding defaults
+}
 
 func init() {
-	flag.Var(&MinDelayFlag, "d", "Short for min-delay")
-	flag.Var(&MinDelayFlag, "min-delay", "Collection and minimum for UI `delay`")
-	flag.Var(&MaxDelayFlag, "max-delay", "Maximum for UI `delay`")
+	flag.Var(&DelayFlags.Max, "max-delay", "Maximum for UI `delay`")
+	flag.Var(&DelayFlags.Min, "min-delay", "Collect and minimum for UI `delay`")
+	flag.Var(&DelayFlags.Min, "d", "Short for min-delay")
 	ostent.AddBackground(ostent.ConnectionsLoop)
 	ostent.AddBackground(ostent.CollectLoop)
 }
@@ -38,13 +37,13 @@ func Serve(listener net.Listener, taggedbin bool, extra func(*httprouter.Router,
 	errlog, errclose := ostent.NewErrorLog()
 	defer errclose()
 
-	if MaxDelayFlag.Duration < MinDelayFlag.Duration {
-		MaxDelayFlag.Duration = MinDelayFlag.Duration
+	if DelayFlags.Max.Duration < DelayFlags.Min.Duration {
+		DelayFlags.Max.Duration = DelayFlags.Min.Duration
 	}
 
-	ss := ostent.NewServeSSE(access, MinDelayFlag)
+	ss := ostent.NewServeSSE(access, DelayFlags)
 	mux.Handler("GET", "/index.sse", http.HandlerFunc(ss.IndexSSE))
-	sw := ostent.NewServeWS(ss, errlog, MaxDelayFlag)
+	sw := ostent.NewServeWS(ss, errlog)
 	mux.Handler("GET", "/index.ws", http.HandlerFunc(sw.IndexWS))
 
 	si := ostent.NewServeIndex(sw, taggedbin, templates.IndexTemplate)

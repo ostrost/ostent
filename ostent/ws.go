@@ -11,7 +11,6 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/params"
 )
 
@@ -30,7 +29,7 @@ func AddBackground(j backgroundHandler) {
 	jobs.added = append(jobs.added, j)
 }
 
-func RunBackground(defaultDelay flags.Delay) {
+func RunBackground() {
 	jobs.mutex.Lock()
 	defer jobs.mutex.Unlock()
 	for _, j := range jobs.added {
@@ -406,7 +405,7 @@ func (sw ServeWS) IndexWS(w http.ResponseWriter, req *http.Request) {
 		requestOrigin: req,
 
 		receive: make(chan *received, 2),
-		para:    params.NewParams(sw.MinDelay, sw.MaxDelay),
+		para:    params.NewParams(sw.DelayBounds),
 		access:  sw.Access,
 	}
 	Register <- c

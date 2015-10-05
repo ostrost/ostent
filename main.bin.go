@@ -55,7 +55,7 @@ func main() {
 	webserver.FirstRunFunc = upgrade.HadUpgrade
 	if !upgrade.HadUpgrade() {
 		// RunBackground unless just had an upgrade and gonna relaunch anyway
-		ostent.RunBackground(MinDelayFlag)
+		ostent.RunBackground()
 	}
 	webserver.Run()
 }

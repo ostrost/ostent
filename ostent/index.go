@@ -102,8 +102,6 @@ type IndexUpdate struct {
 	CPU *operating.CPU `json:",omitempty"`
 	IF  *operating.IF  `json:",omitempty"`
 	PS  *PS            `json:",omitempty"`
-
-	Location *string `json:",omitempty"`
 }
 
 type Generic struct {
@@ -601,11 +599,9 @@ func init() {
 func getUpdates(req *http.Request, para *params.Params) (IndexUpdate, bool, error) {
 	iu := IndexUpdate{}
 	if req != nil {
-		err := para.Decode(req)
-		if err != nil {
+		if err := para.Decode(req); err != nil {
 			return iu, false, err
 		}
-		// iu.Location = newloc // may be nil
 		iu.Params = para
 	}
 	lastInfo.collect(NextSecond(), para.NonZeroPsn())
@@ -629,8 +625,7 @@ func getUpdates(req *http.Request, para *params.Params) (IndexUpdate, bool, erro
 	return iu, updated, nil
 }
 
-func indexData(mindelay, maxdelay flags.Delay, req *http.Request) (IndexData, error) {
-	para := params.NewParams(mindelay, maxdelay)
+func indexData(req *http.Request, para *params.Params) (IndexData, error) {
 	updates, _, err := getUpdates(req, para)
 	if err != nil {
 		return IndexData{}, err
@@ -677,35 +672,14 @@ func init() {
 // Set at init, result of system.Distrib.
 var DISTRIB string
 
-/*
-func FormRedirectFunc(mindelay, maxdelay flags.Delay, wrap func(http.HandlerFunc) http.Handler) func(http.ResponseWriter, *http.Request, httprouter.Params) {
-	return func(w http.ResponseWriter, req *http.Request, muxpara httprouter.Params) {
-		wrap(func(w http.ResponseWriter, req *http.Request) {
-			where := "/"
-			if q := muxpara.ByName("Q"); q != "" {
-				req.URL.RawQuery = req.Form.Encode() + "&" + strings.TrimPrefix(q, "?")
-				req.Form = nil // reset the .Form for .ParseForm() to parse new r.URL.RawQuery.
-				para := params.NewParams(mindelay, maxdelay)
-				para.Decode(req) // OR err.Error()
-				if s, err := para.Encode(); err == nil {
-					where = "/?" + s
-				}
-			}
-			http.Redirect(w, req, where, http.StatusFound)
-		}).ServeHTTP(w, req)
-	}
-}
-*/
-
 type ServeSSE struct {
-	Access   *Access
-	MinDelay flags.Delay
+	Access *Access
+	flags.DelayBounds
 }
 
 type ServeWS struct {
 	ServeSSE
-	ErrLog   *log.Logger
-	MaxDelay flags.Delay
+	ErrLog *log.Logger
 }
 
 type ServeIndex struct {
@@ -715,12 +689,12 @@ type ServeIndex struct {
 	IndexTemplate *templateutil.LazyTemplate
 }
 
-func NewServeSSE(access *Access, mindelay flags.Delay) ServeSSE {
-	return ServeSSE{Access: access, MinDelay: mindelay}
+func NewServeSSE(access *Access, dbounds flags.DelayBounds) ServeSSE {
+	return ServeSSE{Access: access, DelayBounds: dbounds}
 }
 
-func NewServeWS(ss ServeSSE, errlog *log.Logger, maxdelay flags.Delay) ServeWS {
-	return ServeWS{ServeSSE: ss, ErrLog: errlog, MaxDelay: maxdelay}
+func NewServeWS(ss ServeSSE, errlog *log.Logger) ServeWS {
+	return ServeWS{ServeSSE: ss, ErrLog: errlog}
 }
 
 func NewServeIndex(sw ServeWS, taggedbin bool, template *templateutil.LazyTemplate) ServeIndex {
@@ -729,7 +703,8 @@ func NewServeIndex(sw ServeWS, taggedbin bool, template *templateutil.LazyTempla
 
 // Index renders index page.
 func (si ServeIndex) Index(w http.ResponseWriter, r *http.Request) {
-	id, err := indexData(si.MinDelay, si.MaxDelay, r)
+	para := params.NewParams(si.DelayBounds)
+	id, err := indexData(r, para)
 	if err != nil {
 		if _, ok := err.(params.RenamedConstError); ok {
 			http.Redirect(w, r, err.Error(), http.StatusFound)
@@ -751,8 +726,7 @@ func (si ServeIndex) Index(w http.ResponseWriter, r *http.Request) {
 
 type SSE struct {
 	Writer      http.ResponseWriter // points to the writer
-	MinDelay    flags.Delay
-	MaxDelay    flags.Delay
+	Params      *params.Params
 	SentHeaders bool
 	Errord      bool
 }
@@ -761,7 +735,7 @@ type SSE struct {
 // passed as a copy, is unused. sse.Writer is there for writes.
 func (sse *SSE) ServeHTTP(_ http.ResponseWriter, r *http.Request) {
 	w := sse.Writer
-	id, err := indexData(sse.MinDelay, sse.MaxDelay, r)
+	id, err := indexData(r, sse.Params)
 	if err != nil {
 		if _, ok := err.(params.RenamedConstError); ok {
 			http.Redirect(w, r, err.Error(), http.StatusFound)
@@ -796,7 +770,7 @@ func (sse *SSE) SetHeader(name, value string) bool {
 
 // IndexSSE serves SSE updates.
 func (ss ServeSSE) IndexSSE(w http.ResponseWriter, r *http.Request) {
-	sse := &SSE{Writer: w, MinDelay: ss.MinDelay}
+	sse := &SSE{Writer: w, Params: params.NewParams(ss.DelayBounds)}
 	if ss.Access.Constructor(sse).ServeHTTP(nil, r); sse.Errord { // the request logging
 		return
 	}
