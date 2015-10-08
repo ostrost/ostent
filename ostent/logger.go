@@ -2,10 +2,12 @@ package ostent
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
 
@@ -14,17 +16,16 @@ import (
 
 // NewErrorLog creates a logger and returns a func to defer.
 func NewErrorLog() (*log.Logger, func() error) {
-	logger := logrus.New()
-	logger.Formatter = &logrus.TextFormatter{
-		FullTimestamp: true,
-	}
-	errlog := logger.Writer()
-	return log.New(errlog, "", 0), errlog.Close
+	xlog := logrus.New() // into os.Stderr
+	xlog.Formatter = &logrus.TextFormatter{FullTimestamp: true}
+	// , TimestampFormat: "02/Jan/2006:15:04:05 -0700",
+	wlog := xlog.Writer()
+	return log.New(wlog, "", 0), wlog.Close
 }
 
 type Access struct {
 	TaggedBin bool
-	Logger    *logrus.Logger
+	Log       *logrus.Logger
 	Hosts     struct {
 		Mutex sync.Mutex
 		Hosts map[string]struct{}
@@ -32,18 +33,10 @@ type Access struct {
 }
 
 func NewAccess(taggedbin bool) *Access {
-	logger := logrus.New()
-	/* logger.Formatter = &logrus.TextFormatter{
-		// DisableTimestamp:true,
-		FullTimestamp:   true,
-		TimestampFormat: "02/Jan/2006:15:04:05 -0700",
-	} // */
-	logger.Formatter = &AccessFormatter{}
-	a := &Access{
-		TaggedBin: taggedbin,
-		Logger:    logger,
-	}
+	a := &Access{TaggedBin: taggedbin}
 	a.Hosts.Hosts = make(map[string]struct{})
+	a.Log = logrus.New() // into os.Stderr
+	a.Log.Formatter = &AccessFormat{}
 	return a
 }
 
@@ -52,46 +45,49 @@ func (a *Access) Constructor(handler http.Handler) http.Handler {
 		start := time.Now()
 		rsp := &Responding{ResponseWriter: w}
 		handler.ServeHTTP(rsp, req)
-
-		if entry := a.Entry(start, *rsp, req); a.TaggedBin && rsp.StatusGood() {
-			a.InfoForGood(entry, req)
-		} else {
-			entry.Info("")
-		}
+		a.DoLog(start, req, rsp)
 	})
 }
 
-func (a *Access) Entry(start time.Time, rsp Responding, req *http.Request) *logrus.Entry {
-	since := ZEROTIME.Add(time.Since(start)).Format("5.0000s")
-	host := RemoteHost(req)
-
+// DoLog logs the arguments specifics.
+func (a *Access) DoLog(start time.Time, req *http.Request, rsp *Responding) {
+	since := ZeroTime.Add(time.Since(start))
+	host, _, err := net.SplitHostPort(req.RemoteAddr)
+	if err != nil {
+		host = req.RemoteAddr
+	}
 	uri := req.URL.Path // OR req.RequestURI ??
 	if req.Form != nil && len(req.Form) > 0 {
 		uri += "?" + req.Form.Encode()
 	}
-	return a.Logger.WithFields(logrus.Fields{
-		"code":      rsp.Status,
-		"duration":  since,
+	// msg is unused by formatter
+	msg, entry := "msg", a.Log.WithFields(logrus.Fields{
+		// every value must be string for formatter
 		"host":      host,
 		"method":    req.Method,
-		"proto":     req.Proto,
-		"referer":   req.Header.Get("Referer"),
-		"size":      rsp.Size,
 		"uri":       uri,
+		"proto":     req.Proto,
+		"code":      fmt.Sprintf("%d", rsp.Status),
+		"size":      fmt.Sprintf("%d", rsp.Size),
+		"referer":   req.Header.Get("Referer"),
 		"useragent": req.Header.Get("User-Agent"),
+		"duration":  since.Format("5.0000s"),
 	})
-}
-
-func (a *Access) InfoForGood(entry *logrus.Entry, req *http.Request) {
-	if host := RemoteHost(req); !a.Seen(host) {
-		entry.Data["comment"] = fmt.Sprintf(
-			";last info-logged successful request from %s", host)
-		entry.Info("")
-	} else {
-		entry.Debug("")
+	if !a.TaggedBin || !rsp.StatusGood() {
+		entry.Info(msg)
+		return
 	}
+	if a.Seen(host) {
+		entry.Debug(msg)
+		return
+	}
+	entry.Data["comment"] = fmt.Sprintf(
+		";last logged successful request from %s", host)
+	entry.Info(msg)
 }
 
+// Seen returns whether host has been recorded.
+// The record is created if it did not exist.
 func (a *Access) Seen(host string) bool {
 	a.Hosts.Mutex.Lock()
 	defer a.Hosts.Mutex.Unlock()
@@ -102,42 +98,47 @@ func (a *Access) Seen(host string) bool {
 	return false
 }
 
-func RemoteHost(req *http.Request) string {
-	host, _, err := net.SplitHostPort(req.RemoteAddr)
-	if err != nil {
-		host = req.RemoteAddr
+// ZeroTime is zero time for formatting duration from it.
+var ZeroTime, _ = time.Parse("15:04:05", "00:00:00")
+
+// AccessFormat is a dummy struct with Format method.
+type AccessFormat struct{}
+
+// Format conforms to logrus.Formatter interface.
+func (af *AccessFormat) Format(entry *logrus.Entry) ([]byte, error) {
+	buf := bytes.NewBuffer(make([]byte, 256))
+	WriteField(buf, entry.Data["host"], " - - [")
+	WriteField(buf, entry.Time.Format("02/Jan/2006:15:04:05 -0700"), "] ")
+	WriteField(buf, entry.Data["method"])
+	WriteField(buf, entry.Data["uri"])
+	WriteField(buf, entry.Data["proto"])
+	WriteField(buf, entry.Data["code"])
+	WriteField(buf, entry.Data["size"])
+	WriteField(buf, strconv.Quote(entry.Data["referer"].(string)))
+	WriteField(buf, strconv.Quote(entry.Data["useragent"].(string)), "\t;")
+	WriteField(buf, entry.Data["duration"], "")
+	if comment, ok := entry.Data["comment"]; ok {
+		WriteField(buf, "\t", comment.(string))
 	}
-	return host
+	WriteField(buf, "\n", "")
+	return buf.Bytes(), nil
 }
 
-var ZEROTIME, _ = time.Parse("15:04:05", "00:00:00")
-
-type AccessFormatter struct{}
-
-func (af *AccessFormatter) Format(entry *logrus.Entry) ([]byte, error) {
-	f := entry.Data
-	comment, okc := f["comment"]
-	if !okc {
-		comment = ""
-	} else if s, ok := comment.(string); ok && s != "" {
-		comment = "\t" + s
+// WriteField is a helper to write val and optional posts[0] or a whitespace.
+// The name relate to use with logrus.Entry.Data fields, no other Field relation.
+func WriteField(buf *bytes.Buffer, val interface{}, posts ...string) {
+	if s := val.(string); s == "" {
+		buf.WriteString("-")
+	} else if s == `""` {
+		buf.WriteString(`"-"`)
+	} else {
+		buf.WriteString(s)
 	}
-	echo := func(v interface{}) interface{} {
-		if s, ok := v.(string); ok && s == "" {
-			return "-"
-		}
-		return v
+	if len(posts) == 0 {
+		buf.WriteString(" ")
+	} else { // just [0] is written
+		buf.WriteString(posts[0])
 	}
-	return []byte(fmt.Sprintf("%s - - [%s] %#v %d %d %#v %#v\t;%s%s\n",
-		f["host"],
-		entry.Time.Format("02/Jan/2006:15:04:05 -0700"),
-		fmt.Sprintf("%s %s %s", f["method"], f["uri"], f["proto"]),
-		f["code"],
-		f["size"],
-		echo(f["referer"]),
-		echo(f["useragent"]),
-		f["duration"],
-		comment)), nil
 }
 
 type Responding struct {
