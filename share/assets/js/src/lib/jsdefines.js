@@ -1,1343 +1,2483 @@
 "use strict";
 
+var _typeofReactElement = typeof Symbol === "function" && Symbol["for"] && Symbol["for"]("react.element") || 60103;
+
 define(function (require) {
   var React = require('react');
   return {
     mem_rows: function mem_rows(Data, $mem) {
-      return React.createElement(
-        "tr",
-        { key: "mem-rowby-kind-" + $mem.Kind
+      return {
+        $$typeof: _typeofReactElement,
+        type: "tr",
+        key: "mem-rowby-kind-" + $mem.Kind,
+        ref: null,
+        props: {
+          children: [{
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: $mem.Kind
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: $mem.Free,
+              className: "text-right"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: [$mem.UsePct, "%"],
+              className: "text-right bg-usepct",
+              "data-usepct": $mem.UsePct
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: $mem.Used,
+              className: "text-right"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: $mem.Total,
+              className: "text-right"
+            },
+            _owner: null
+          }]
         },
-        React.createElement(
-          "td",
-          null,
-          $mem.Kind
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          $mem.Free
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right bg-usepct", "data-usepct": $mem.UsePct
-          },
-          $mem.UsePct,
-          "%"
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          $mem.Used
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          $mem.Total
-        )
-      );
+        _owner: null
+      };
     },
     panelmem: function panelmem(Data, rows) {
-      return React.createElement(
-        "div",
-        { className: !Data.Params.Memn.Negative ? "" : "panel panel-default"
-        },
-        React.createElement(
-          "div",
-          { className: "h4 padding-left-like-panel-heading"
-          },
-          React.createElement(
-            "a",
-            { href: Data.Params.Tlinks.Memn, onClick: this.handleClick
-            },
-            "Memory"
-          )
-        ),
-        React.createElement(
-          "ul",
-          { className: !Data.Params.Memn.Negative ? "hidden" : "list-group"
-          },
-          React.createElement(
-            "li",
-            { className: "list-group-item text-nowrap th"
-            },
-            React.createElement(
-              "ul",
-              { className: "list-inline"
+      return {
+        $$typeof: _typeofReactElement,
+        type: "div",
+        key: null,
+        ref: null,
+        props: {
+          children: [{
+            $$typeof: _typeofReactElement,
+            type: "div",
+            key: null,
+            ref: null,
+            props: {
+              children: {
+                $$typeof: _typeofReactElement,
+                type: "a",
+                key: null,
+                ref: null,
+                props: {
+                  children: "Memory",
+                  href: Data.Params.Tlinks.Memn,
+                  onClick: this.handleClick
+                },
+                _owner: null
               },
-              React.createElement(
-                "li",
-                null,
-                React.createElement(
-                  "span",
-                  null,
-                  React.createElement(
-                    "b",
-                    null,
-                    "Delay"
-                  ),
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "badge"
+              className: "h4 padding-left-like-panel-heading"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "ul",
+            key: null,
+            ref: null,
+            props: {
+              children: {
+                $$typeof: _typeofReactElement,
+                type: "li",
+                key: null,
+                ref: null,
+                props: {
+                  children: {
+                    $$typeof: _typeofReactElement,
+                    type: "ul",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: [{
+                        $$typeof: _typeofReactElement,
+                        type: "li",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: [{
+                            $$typeof: _typeofReactElement,
+                            type: "span",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "b",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: "Delay"
+                                },
+                                _owner: null
+                              }, " ", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: Data.Params.Memd,
+                                  className: "badge"
+                                },
+                                _owner: null
+                              }]
+                            },
+                            _owner: null
+                          }, " ", {
+                            $$typeof: _typeofReactElement,
+                            type: "div",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: ["- ", Data.Params.Dlinks.Memd.Less.Text],
+                                  href: Data.Params.Dlinks.Memd.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.Memd.Less.ExtraClass != null ? Data.Params.Dlinks.Memd.Less.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }, {
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: [Data.Params.Dlinks.Memd.More.Text, " +"],
+                                  href: Data.Params.Dlinks.Memd.More.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.Memd.More.ExtraClass != null ? Data.Params.Dlinks.Memd.More.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }],
+                              className: "btn-group"
+                            },
+                            _owner: null
+                          }]
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "li",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: [{
+                            $$typeof: _typeofReactElement,
+                            type: "span",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "b",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: "Rows"
+                                },
+                                _owner: null
+                              }, " ", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: Data.Params.Memn.Absolute,
+                                  className: "badge"
+                                },
+                                _owner: null
+                              }]
+                            },
+                            _owner: null
+                          }, " ", {
+                            $$typeof: _typeofReactElement,
+                            type: "div",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: ["- ", Data.Params.Nlinks.Memn.Less.Text],
+                                  href: Data.Params.Nlinks.Memn.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.Memn.Less.ExtraClass != null ? Data.Params.Nlinks.Memn.Less.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }, {
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: [Data.Params.Nlinks.Memn.More.Text, " +"],
+                                  href: Data.Params.Nlinks.Memn.More.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.Memn.More.ExtraClass != null ? Data.Params.Nlinks.Memn.More.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }],
+                              className: "btn-group"
+                            },
+                            _owner: null
+                          }]
+                        },
+                        _owner: null
+                      }],
+                      className: "list-inline"
                     },
-                    Data.Params.Memd
-                  )
-                ),
-                " ",
-                React.createElement(
-                  "div",
-                  { className: "btn-group"
+                    _owner: null
                   },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Dlinks.Memd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Memd.Less.ExtraClass != null ? Data.Params.Dlinks.Memd.Less.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    "- ",
-                    Data.Params.Dlinks.Memd.Less.Text
-                  ),
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Dlinks.Memd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Memd.More.ExtraClass != null ? Data.Params.Dlinks.Memd.More.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    Data.Params.Dlinks.Memd.More.Text,
-                    " +"
-                  )
-                )
-              ),
-              React.createElement(
-                "li",
-                null,
-                React.createElement(
-                  "span",
-                  null,
-                  React.createElement(
-                    "b",
-                    null,
-                    "Rows"
-                  ),
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "badge"
-                    },
-                    Data.Params.Memn.Absolute
-                  )
-                ),
-                " ",
-                React.createElement(
-                  "div",
-                  { className: "btn-group"
-                  },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Nlinks.Memn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Memn.Less.ExtraClass != null ? Data.Params.Nlinks.Memn.Less.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    "- ",
-                    Data.Params.Nlinks.Memn.Less.Text
-                  ),
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Nlinks.Memn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Memn.More.ExtraClass != null ? Data.Params.Nlinks.Memn.More.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    Data.Params.Nlinks.Memn.More.Text,
-                    " +"
-                  )
-                )
-              )
-            )
-          )
-        ),
-        React.createElement(
-          "table",
-          { className: Data.Params.Memn.Absolute != 0 ? "table table-hover" : "hidden"
-          },
-          React.createElement(
-            "thead",
-            null,
-            React.createElement(
-              "tr",
-              null,
-              React.createElement("th", null),
-              React.createElement(
-                "th",
-                { className: "text-right"
+                  className: "list-group-item text-nowrap th"
                 },
-                "Free"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right"
+                _owner: null
+              },
+              className: !Data.Params.Memn.Negative ? "hidden" : "list-group"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "table",
+            key: null,
+            ref: null,
+            props: {
+              children: [{
+                $$typeof: _typeofReactElement,
+                type: "thead",
+                key: null,
+                ref: null,
+                props: {
+                  children: {
+                    $$typeof: _typeofReactElement,
+                    type: "tr",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: [{
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {},
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: "Free",
+                          className: "text-right"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: "Use%",
+                          className: "text-right"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: "Used",
+                          className: "text-right"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: "Total",
+                          className: "text-right"
+                        },
+                        _owner: null
+                      }]
+                    },
+                    _owner: null
+                  }
                 },
-                "Use%"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right"
+                _owner: null
+              }, {
+                $$typeof: _typeofReactElement,
+                type: "tbody",
+                key: null,
+                ref: null,
+                props: {
+                  children: rows
                 },
-                "Used"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right"
-                },
-                "Total"
-              )
-            )
-          ),
-          React.createElement(
-            "tbody",
-            null,
-            rows
-          )
-        )
-      );
+                _owner: null
+              }],
+              className: Data.Params.Memn.Absolute != 0 ? "table table-hover" : "hidden"
+            },
+            _owner: null
+          }],
+          className: !Data.Params.Memn.Negative ? "" : "panel panel-default"
+        },
+        _owner: null
+      };
     },
 
     df_rows: function df_rows(Data, $df) {
-      return React.createElement(
-        "tr",
-        { key: "df-rowby-dirname-" + $df.DirName
+      return {
+        $$typeof: _typeofReactElement,
+        type: "tr",
+        key: "df-rowby-dirname-" + $df.DirName,
+        ref: null,
+        props: {
+          children: ["  ", {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: $df.DevName,
+              className: "text-nowrap clip12",
+              title: $df.DevName
+            },
+            _owner: null
+          }, "  ", {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: $df.DirName,
+              className: "text-nowrap clip12",
+              title: $df.DirName
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: [{
+                $$typeof: _typeofReactElement,
+                type: "span",
+                key: null,
+                ref: null,
+                props: {
+                  children: $df.Ifree,
+                  className: "mutext",
+                  title: "Inodes free"
+                },
+                _owner: null
+              }, " ", $df.Avail],
+              className: "text-right text-nowrap"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: [{
+                $$typeof: _typeofReactElement,
+                type: "span",
+                key: null,
+                ref: null,
+                props: {
+                  children: [$df.IusePct, "%"],
+                  className: "mutext",
+                  title: "Inodes use%"
+                },
+                _owner: null
+              }, " ", $df.UsePct, "%"],
+              className: "text-right bg-usepct text-nowrap",
+              "data-usepct": $df.UsePct
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: [{
+                $$typeof: _typeofReactElement,
+                type: "span",
+                key: null,
+                ref: null,
+                props: {
+                  children: $df.Iused,
+                  className: "mutext",
+                  title: "Inodes used"
+                },
+                _owner: null
+              }, " ", $df.Used],
+              className: "text-right text-nowrap"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: [{
+                $$typeof: _typeofReactElement,
+                type: "span",
+                key: null,
+                ref: null,
+                props: {
+                  children: $df.Inodes,
+                  className: "mutext",
+                  title: "Inodes total"
+                },
+                _owner: null
+              }, " ", $df.Total],
+              className: "text-right text-nowrap"
+            },
+            _owner: null
+          }]
         },
-        "  ",
-        React.createElement(
-          "td",
-          { className: "text-nowrap clip12", title: $df.DevName
-          },
-          $df.DevName
-        ),
-        "  ",
-        React.createElement(
-          "td",
-          { className: "text-nowrap clip12", title: $df.DirName
-          },
-          $df.DirName
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right text-nowrap"
-          },
-          React.createElement(
-            "span",
-            { className: "mutext", title: "Inodes free"
-            },
-            $df.Ifree
-          ),
-          " ",
-          $df.Avail
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right bg-usepct text-nowrap", "data-usepct": $df.UsePct
-          },
-          React.createElement(
-            "span",
-            { className: "mutext", title: "Inodes use%"
-            },
-            $df.IusePct,
-            "%"
-          ),
-          " ",
-          $df.UsePct,
-          "%"
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right text-nowrap"
-          },
-          React.createElement(
-            "span",
-            { className: "mutext", title: "Inodes used"
-            },
-            $df.Iused
-          ),
-          " ",
-          $df.Used
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right text-nowrap"
-          },
-          React.createElement(
-            "span",
-            { className: "mutext", title: "Inodes total"
-            },
-            $df.Inodes
-          ),
-          " ",
-          $df.Total
-        )
-      );
+        _owner: null
+      };
     },
     paneldf: function paneldf(Data, rows) {
-      return React.createElement(
-        "div",
-        { className: !Data.Params.Dfn.Negative ? "" : "panel panel-default"
+      return {
+        $$typeof: _typeofReactElement,
+        type: "div",
+        key: null,
+        ref: null,
+        props: {
+          children: [{
+            $$typeof: _typeofReactElement,
+            type: "div",
+            key: null,
+            ref: null,
+            props: {
+              children: {
+                $$typeof: _typeofReactElement,
+                type: "a",
+                key: null,
+                ref: null,
+                props: {
+                  children: "Disk usage",
+                  href: Data.Params.Tlinks.Dfn,
+                  onClick: this.handleClick
+                },
+                _owner: null
+              },
+              className: "h4 padding-left-like-panel-heading"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "ul",
+            key: null,
+            ref: null,
+            props: {
+              children: {
+                $$typeof: _typeofReactElement,
+                type: "li",
+                key: null,
+                ref: null,
+                props: {
+                  children: {
+                    $$typeof: _typeofReactElement,
+                    type: "ul",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: [{
+                        $$typeof: _typeofReactElement,
+                        type: "li",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: [{
+                            $$typeof: _typeofReactElement,
+                            type: "span",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "b",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: "Delay"
+                                },
+                                _owner: null
+                              }, " ", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: Data.Params.Dfd,
+                                  className: "badge"
+                                },
+                                _owner: null
+                              }]
+                            },
+                            _owner: null
+                          }, " ", {
+                            $$typeof: _typeofReactElement,
+                            type: "div",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: ["- ", Data.Params.Dlinks.Dfd.Less.Text],
+                                  href: Data.Params.Dlinks.Dfd.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.Dfd.Less.ExtraClass != null ? Data.Params.Dlinks.Dfd.Less.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }, {
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: [Data.Params.Dlinks.Dfd.More.Text, " +"],
+                                  href: Data.Params.Dlinks.Dfd.More.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.Dfd.More.ExtraClass != null ? Data.Params.Dlinks.Dfd.More.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }],
+                              className: "btn-group"
+                            },
+                            _owner: null
+                          }]
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "li",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: [{
+                            $$typeof: _typeofReactElement,
+                            type: "span",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "b",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: "Rows"
+                                },
+                                _owner: null
+                              }, " ", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: Data.Params.Dfn.Absolute,
+                                  className: "badge"
+                                },
+                                _owner: null
+                              }]
+                            },
+                            _owner: null
+                          }, " ", {
+                            $$typeof: _typeofReactElement,
+                            type: "div",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: ["- ", Data.Params.Nlinks.Dfn.Less.Text],
+                                  href: Data.Params.Nlinks.Dfn.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.Dfn.Less.ExtraClass != null ? Data.Params.Nlinks.Dfn.Less.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }, {
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: [Data.Params.Nlinks.Dfn.More.Text, " +"],
+                                  href: Data.Params.Nlinks.Dfn.More.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.Dfn.More.ExtraClass != null ? Data.Params.Nlinks.Dfn.More.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }],
+                              className: "btn-group"
+                            },
+                            _owner: null
+                          }]
+                        },
+                        _owner: null
+                      }],
+                      className: "list-inline"
+                    },
+                    _owner: null
+                  },
+                  className: "list-group-item text-nowrap th"
+                },
+                _owner: null
+              },
+              className: !Data.Params.Dfn.Negative ? "hidden" : "list-group"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "table",
+            key: null,
+            ref: null,
+            props: {
+              children: [{
+                $$typeof: _typeofReactElement,
+                type: "thead",
+                key: null,
+                ref: null,
+                props: {
+                  children: {
+                    $$typeof: _typeofReactElement,
+                    type: "tr",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: [{
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: {
+                            $$typeof: _typeofReactElement,
+                            type: "a",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: ["Device", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  className: Data.Params.Vlinks.Dfk[1 - 1].CaretClass
+                                },
+                                _owner: null
+                              }],
+                              href: Data.Params.Vlinks.Dfk[1 - 1].LinkHref,
+                              className: Data.Params.Vlinks.Dfk[1 - 1].LinkClass,
+                              onClick: this.handleClick
+                            },
+                            _owner: null
+                          },
+                          className: "header "
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: {
+                            $$typeof: _typeofReactElement,
+                            type: "a",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: ["Mounted", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  className: Data.Params.Vlinks.Dfk[2 - 1].CaretClass
+                                },
+                                _owner: null
+                              }],
+                              href: Data.Params.Vlinks.Dfk[2 - 1].LinkHref,
+                              className: Data.Params.Vlinks.Dfk[2 - 1].LinkClass,
+                              onClick: this.handleClick
+                            },
+                            _owner: null
+                          },
+                          className: "header "
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: {
+                            $$typeof: _typeofReactElement,
+                            type: "a",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: ["Avail", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  className: Data.Params.Vlinks.Dfk[3 - 1].CaretClass
+                                },
+                                _owner: null
+                              }],
+                              href: Data.Params.Vlinks.Dfk[3 - 1].LinkHref,
+                              className: Data.Params.Vlinks.Dfk[3 - 1].LinkClass,
+                              onClick: this.handleClick
+                            },
+                            _owner: null
+                          },
+                          className: "header text-right"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: {
+                            $$typeof: _typeofReactElement,
+                            type: "a",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: ["Use%", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  className: Data.Params.Vlinks.Dfk[4 - 1].CaretClass
+                                },
+                                _owner: null
+                              }],
+                              href: Data.Params.Vlinks.Dfk[4 - 1].LinkHref,
+                              className: Data.Params.Vlinks.Dfk[4 - 1].LinkClass,
+                              onClick: this.handleClick
+                            },
+                            _owner: null
+                          },
+                          className: "header text-right"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: {
+                            $$typeof: _typeofReactElement,
+                            type: "a",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: ["Used", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  className: Data.Params.Vlinks.Dfk[5 - 1].CaretClass
+                                },
+                                _owner: null
+                              }],
+                              href: Data.Params.Vlinks.Dfk[5 - 1].LinkHref,
+                              className: Data.Params.Vlinks.Dfk[5 - 1].LinkClass,
+                              onClick: this.handleClick
+                            },
+                            _owner: null
+                          },
+                          className: "header text-right"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: {
+                            $$typeof: _typeofReactElement,
+                            type: "a",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: ["Total", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  className: Data.Params.Vlinks.Dfk[6 - 1].CaretClass
+                                },
+                                _owner: null
+                              }],
+                              href: Data.Params.Vlinks.Dfk[6 - 1].LinkHref,
+                              className: Data.Params.Vlinks.Dfk[6 - 1].LinkClass,
+                              onClick: this.handleClick
+                            },
+                            _owner: null
+                          },
+                          className: "header text-right"
+                        },
+                        _owner: null
+                      }],
+                      className: "text-nowrap"
+                    },
+                    _owner: null
+                  }
+                },
+                _owner: null
+              }, {
+                $$typeof: _typeofReactElement,
+                type: "tbody",
+                key: null,
+                ref: null,
+                props: {
+                  children: rows
+                },
+                _owner: null
+              }],
+              className: Data.Params.Dfn.Absolute != 0 ? "table table-hover" : "hidden"
+            },
+            _owner: null
+          }],
+          className: !Data.Params.Dfn.Negative ? "" : "panel panel-default"
         },
-        React.createElement(
-          "div",
-          { className: "h4 padding-left-like-panel-heading"
-          },
-          React.createElement(
-            "a",
-            { href: Data.Params.Tlinks.Dfn, onClick: this.handleClick
-            },
-            "Disk usage"
-          )
-        ),
-        React.createElement(
-          "ul",
-          { className: !Data.Params.Dfn.Negative ? "hidden" : "list-group"
-          },
-          React.createElement(
-            "li",
-            { className: "list-group-item text-nowrap th"
-            },
-            React.createElement(
-              "ul",
-              { className: "list-inline"
-              },
-              React.createElement(
-                "li",
-                null,
-                React.createElement(
-                  "span",
-                  null,
-                  React.createElement(
-                    "b",
-                    null,
-                    "Delay"
-                  ),
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "badge"
-                    },
-                    Data.Params.Dfd
-                  )
-                ),
-                " ",
-                React.createElement(
-                  "div",
-                  { className: "btn-group"
-                  },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Dlinks.Dfd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Dfd.Less.ExtraClass != null ? Data.Params.Dlinks.Dfd.Less.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    "- ",
-                    Data.Params.Dlinks.Dfd.Less.Text
-                  ),
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Dlinks.Dfd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Dfd.More.ExtraClass != null ? Data.Params.Dlinks.Dfd.More.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    Data.Params.Dlinks.Dfd.More.Text,
-                    " +"
-                  )
-                )
-              ),
-              React.createElement(
-                "li",
-                null,
-                React.createElement(
-                  "span",
-                  null,
-                  React.createElement(
-                    "b",
-                    null,
-                    "Rows"
-                  ),
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "badge"
-                    },
-                    Data.Params.Dfn.Absolute
-                  )
-                ),
-                " ",
-                React.createElement(
-                  "div",
-                  { className: "btn-group"
-                  },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Nlinks.Dfn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Dfn.Less.ExtraClass != null ? Data.Params.Nlinks.Dfn.Less.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    "- ",
-                    Data.Params.Nlinks.Dfn.Less.Text
-                  ),
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Nlinks.Dfn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Dfn.More.ExtraClass != null ? Data.Params.Nlinks.Dfn.More.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    Data.Params.Nlinks.Dfn.More.Text,
-                    " +"
-                  )
-                )
-              )
-            )
-          )
-        ),
-        React.createElement(
-          "table",
-          { className: Data.Params.Dfn.Absolute != 0 ? "table table-hover" : "hidden"
-          },
-          React.createElement(
-            "thead",
-            null,
-            React.createElement(
-              "tr",
-              { className: "text-nowrap"
-              },
-              React.createElement(
-                "th",
-                { className: "header "
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Vlinks.Dfk[1 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[1 - 1].LinkClass, onClick: this.handleClick
-                  },
-                  "Device",
-                  React.createElement("span", { className: Data.Params.Vlinks.Dfk[1 - 1].CaretClass
-                  })
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "header "
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Vlinks.Dfk[2 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[2 - 1].LinkClass, onClick: this.handleClick
-                  },
-                  "Mounted",
-                  React.createElement("span", { className: Data.Params.Vlinks.Dfk[2 - 1].CaretClass
-                  })
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "header text-right"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Vlinks.Dfk[3 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[3 - 1].LinkClass, onClick: this.handleClick
-                  },
-                  "Avail",
-                  React.createElement("span", { className: Data.Params.Vlinks.Dfk[3 - 1].CaretClass
-                  })
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "header text-right"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Vlinks.Dfk[4 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[4 - 1].LinkClass, onClick: this.handleClick
-                  },
-                  "Use%",
-                  React.createElement("span", { className: Data.Params.Vlinks.Dfk[4 - 1].CaretClass
-                  })
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "header text-right"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Vlinks.Dfk[5 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[5 - 1].LinkClass, onClick: this.handleClick
-                  },
-                  "Used",
-                  React.createElement("span", { className: Data.Params.Vlinks.Dfk[5 - 1].CaretClass
-                  })
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "header text-right"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Vlinks.Dfk[6 - 1].LinkHref, className: Data.Params.Vlinks.Dfk[6 - 1].LinkClass, onClick: this.handleClick
-                  },
-                  "Total",
-                  React.createElement("span", { className: Data.Params.Vlinks.Dfk[6 - 1].CaretClass
-                  })
-                )
-              )
-            )
-          ),
-          React.createElement(
-            "tbody",
-            null,
-            rows
-          )
-        )
-      );
+        _owner: null
+      };
     },
 
     cpu_rows: function cpu_rows(Data, $cpu) {
-      return React.createElement(
-        "tr",
-        { key: "cpu-rowby-N-" + $cpu.N
+      return {
+        $$typeof: _typeofReactElement,
+        type: "tr",
+        key: "cpu-rowby-N-" + $cpu.N,
+        ref: null,
+        props: {
+          children: [{
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: $cpu.N,
+              className: "text-right text-nowrap"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: [$cpu.UserPct, "%"],
+              className: "text-right bg-usepct",
+              "data-usepct": $cpu.UserPct
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: [$cpu.SysPct, "%"],
+              className: "text-right bg-usepct",
+              "data-usepct": $cpu.SysPct
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: [$cpu.WaitPct, "%"],
+              className: "text-right bg-usepct",
+              "data-usepct": $cpu.WaitPct
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: [$cpu.IdlePct, "%"],
+              className: "text-right bg-usepct-inverse",
+              "data-usepct": $cpu.IdlePct
+            },
+            _owner: null
+          }]
         },
-        React.createElement(
-          "td",
-          { className: "text-right text-nowrap"
-          },
-          $cpu.N
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right bg-usepct",
-            "data-usepct": $cpu.UserPct
-          },
-          $cpu.UserPct,
-          "%"
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right bg-usepct",
-            "data-usepct": $cpu.SysPct
-          },
-          $cpu.SysPct,
-          "%"
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right bg-usepct",
-            "data-usepct": $cpu.WaitPct
-          },
-          $cpu.WaitPct,
-          "%"
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right bg-usepct-inverse",
-            "data-usepct": $cpu.IdlePct
-          },
-          $cpu.IdlePct,
-          "%"
-        )
-      );
+        _owner: null
+      };
     },
     panelcpu: function panelcpu(Data, rows) {
-      return React.createElement(
-        "div",
-        { className: !Data.Params.CPUn.Negative ? "" : "panel panel-default"
-        },
-        React.createElement(
-          "div",
-          { className: "h4 padding-left-like-panel-heading"
-          },
-          React.createElement(
-            "a",
-            { href: Data.Params.Tlinks.CPUn, onClick: this.handleClick
-            },
-            "CPU"
-          )
-        ),
-        React.createElement(
-          "ul",
-          { className: !Data.Params.CPUn.Negative ? "hidden" : "list-group"
-          },
-          React.createElement(
-            "li",
-            { className: "list-group-item text-nowrap th"
-            },
-            React.createElement(
-              "ul",
-              { className: "list-inline"
+      return {
+        $$typeof: _typeofReactElement,
+        type: "div",
+        key: null,
+        ref: null,
+        props: {
+          children: [{
+            $$typeof: _typeofReactElement,
+            type: "div",
+            key: null,
+            ref: null,
+            props: {
+              children: {
+                $$typeof: _typeofReactElement,
+                type: "a",
+                key: null,
+                ref: null,
+                props: {
+                  children: "CPU",
+                  href: Data.Params.Tlinks.CPUn,
+                  onClick: this.handleClick
+                },
+                _owner: null
               },
-              React.createElement(
-                "li",
-                null,
-                React.createElement(
-                  "span",
-                  null,
-                  React.createElement(
-                    "b",
-                    null,
-                    "Delay"
-                  ),
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "badge"
+              className: "h4 padding-left-like-panel-heading"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "ul",
+            key: null,
+            ref: null,
+            props: {
+              children: {
+                $$typeof: _typeofReactElement,
+                type: "li",
+                key: null,
+                ref: null,
+                props: {
+                  children: {
+                    $$typeof: _typeofReactElement,
+                    type: "ul",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: [{
+                        $$typeof: _typeofReactElement,
+                        type: "li",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: [{
+                            $$typeof: _typeofReactElement,
+                            type: "span",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "b",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: "Delay"
+                                },
+                                _owner: null
+                              }, " ", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: Data.Params.CPUd,
+                                  className: "badge"
+                                },
+                                _owner: null
+                              }]
+                            },
+                            _owner: null
+                          }, " ", {
+                            $$typeof: _typeofReactElement,
+                            type: "div",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: ["- ", Data.Params.Dlinks.CPUd.Less.Text],
+                                  href: Data.Params.Dlinks.CPUd.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.Less.ExtraClass != null ? Data.Params.Dlinks.CPUd.Less.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }, {
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: [Data.Params.Dlinks.CPUd.More.Text, " +"],
+                                  href: Data.Params.Dlinks.CPUd.More.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.More.ExtraClass != null ? Data.Params.Dlinks.CPUd.More.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }],
+                              className: "btn-group"
+                            },
+                            _owner: null
+                          }]
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "li",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: [{
+                            $$typeof: _typeofReactElement,
+                            type: "span",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "b",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: "Rows"
+                                },
+                                _owner: null
+                              }, " ", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: Data.Params.CPUn.Absolute,
+                                  className: "badge"
+                                },
+                                _owner: null
+                              }]
+                            },
+                            _owner: null
+                          }, " ", {
+                            $$typeof: _typeofReactElement,
+                            type: "div",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: ["- ", Data.Params.Nlinks.CPUn.Less.Text],
+                                  href: Data.Params.Nlinks.CPUn.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Less.ExtraClass != null ? Data.Params.Nlinks.CPUn.Less.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }, {
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: [Data.Params.Nlinks.CPUn.More.Text, " +"],
+                                  href: Data.Params.Nlinks.CPUn.More.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.More.ExtraClass != null ? Data.Params.Nlinks.CPUn.More.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }],
+                              className: "btn-group"
+                            },
+                            _owner: null
+                          }]
+                        },
+                        _owner: null
+                      }],
+                      className: "list-inline"
                     },
-                    Data.Params.CPUd
-                  )
-                ),
-                " ",
-                React.createElement(
-                  "div",
-                  { className: "btn-group"
+                    _owner: null
                   },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Dlinks.CPUd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.Less.ExtraClass != null ? Data.Params.Dlinks.CPUd.Less.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    "- ",
-                    Data.Params.Dlinks.CPUd.Less.Text
-                  ),
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Dlinks.CPUd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.More.ExtraClass != null ? Data.Params.Dlinks.CPUd.More.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    Data.Params.Dlinks.CPUd.More.Text,
-                    " +"
-                  )
-                )
-              ),
-              React.createElement(
-                "li",
-                null,
-                React.createElement(
-                  "span",
-                  null,
-                  React.createElement(
-                    "b",
-                    null,
-                    "Rows"
-                  ),
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "badge"
-                    },
-                    Data.Params.CPUn.Absolute
-                  )
-                ),
-                " ",
-                React.createElement(
-                  "div",
-                  { className: "btn-group"
-                  },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Nlinks.CPUn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Less.ExtraClass != null ? Data.Params.Nlinks.CPUn.Less.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    "- ",
-                    Data.Params.Nlinks.CPUn.Less.Text
-                  ),
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Nlinks.CPUn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.More.ExtraClass != null ? Data.Params.Nlinks.CPUn.More.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    Data.Params.Nlinks.CPUn.More.Text,
-                    " +"
-                  )
-                )
-              )
-            )
-          )
-        ),
-        React.createElement(
-          "table",
-          { className: Data.Params.CPUn.Absolute != 0 ? "table table-hover" : "hidden"
-          },
-          React.createElement(
-            "thead",
-            null,
-            React.createElement(
-              "tr",
-              null,
-              React.createElement("th", null),
-              React.createElement(
-                "th",
-                { className: "text-right"
+                  className: "list-group-item text-nowrap th"
                 },
-                "User"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right"
+                _owner: null
+              },
+              className: !Data.Params.CPUn.Negative ? "hidden" : "list-group"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "table",
+            key: null,
+            ref: null,
+            props: {
+              children: [{
+                $$typeof: _typeofReactElement,
+                type: "thead",
+                key: null,
+                ref: null,
+                props: {
+                  children: {
+                    $$typeof: _typeofReactElement,
+                    type: "tr",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: [{
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {},
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: "User",
+                          className: "text-right"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: "Sys",
+                          className: "text-right"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: "Wait",
+                          className: "text-right"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: "Idle",
+                          className: "text-right"
+                        },
+                        _owner: null
+                      }]
+                    },
+                    _owner: null
+                  }
                 },
-                "Sys"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right"
+                _owner: null
+              }, {
+                $$typeof: _typeofReactElement,
+                type: "tbody",
+                key: null,
+                ref: null,
+                props: {
+                  children: rows
                 },
-                "Wait"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right"
-                },
-                "Idle"
-              )
-            )
-          ),
-          React.createElement(
-            "tbody",
-            null,
-            rows
-          )
-        )
-      );
+                _owner: null
+              }],
+              className: Data.Params.CPUn.Absolute != 0 ? "table table-hover" : "hidden"
+            },
+            _owner: null
+          }],
+          className: !Data.Params.CPUn.Negative ? "" : "panel panel-default"
+        },
+        _owner: null
+      };
     },
 
     if_rows: function if_rows(Data, $if) {
-      return React.createElement(
-        "tr",
-        { key: "if-rowby-name-" + $if.Name
+      return {
+        $$typeof: _typeofReactElement,
+        type: "tr",
+        key: "if-rowby-name-" + $if.Name,
+        ref: null,
+        props: {
+          children: [{
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: $if.Name,
+              className: "text-nowrap clip12",
+              title: $if.Name
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: $if.IP,
+              className: "text-right"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: [{
+                $$typeof: _typeofReactElement,
+                type: "span",
+                key: null,
+                ref: null,
+                props: {
+                  children: [{
+                    $$typeof: _typeofReactElement,
+                    type: "span",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: $if.BytesIn,
+                      title: "Total BYTES In modulo 4G"
+                    },
+                    _owner: null
+                  }, "/", {
+                    $$typeof: _typeofReactElement,
+                    type: "span",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: $if.BytesOut,
+                      title: "Total BYTES Out modulo 4G"
+                    },
+                    _owner: null
+                  }],
+                  className: "mutext"
+                },
+                _owner: null
+              }, " ", {
+                $$typeof: _typeofReactElement,
+                type: "span",
+                key: null,
+                ref: null,
+                props: {
+                  children: $if.DeltaBitsIn,
+                  title: "BITS In per second"
+                },
+                _owner: null
+              }, "/", {
+                $$typeof: _typeofReactElement,
+                type: "span",
+                key: null,
+                ref: null,
+                props: {
+                  children: $if.DeltaBitsOut,
+                  title: "BITS Out per second"
+                },
+                _owner: null
+              }],
+              className: "text-right text-nowrap"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: [{
+                $$typeof: _typeofReactElement,
+                type: "span",
+                key: null,
+                ref: null,
+                props: {
+                  children: [{
+                    $$typeof: _typeofReactElement,
+                    type: "span",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: $if.PacketsIn,
+                      title: "Total packets In modulo 4G"
+                    },
+                    _owner: null
+                  }, "/", {
+                    $$typeof: _typeofReactElement,
+                    type: "span",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: $if.PacketsOut,
+                      title: "Total packets Out modulo 4G"
+                    },
+                    _owner: null
+                  }],
+                  className: "mutext"
+                },
+                _owner: null
+              }, " ", {
+                $$typeof: _typeofReactElement,
+                type: "span",
+                key: null,
+                ref: null,
+                props: {
+                  children: $if.DeltaPacketsIn,
+                  title: "Packets In per second"
+                },
+                _owner: null
+              }, "/", {
+                $$typeof: _typeofReactElement,
+                type: "span",
+                key: null,
+                ref: null,
+                props: {
+                  children: $if.DeltaPacketsOut,
+                  title: "Packets Out per second"
+                },
+                _owner: null
+              }],
+              className: "text-right text-nowrap"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: [{
+                $$typeof: _typeofReactElement,
+                type: "span",
+                key: null,
+                ref: null,
+                props: {
+                  children: [{
+                    $$typeof: _typeofReactElement,
+                    type: "span",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: $if.DropsIn,
+                      title: "Total drops In modulo 4G"
+                    },
+                    _owner: null
+                  }, {
+                    $$typeof: _typeofReactElement,
+                    type: "span",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: "/",
+                      className: $if.DropsOut != null ? "" : "hidden"
+                    },
+                    _owner: null
+                  }, {
+                    $$typeof: _typeofReactElement,
+                    type: "span",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: $if.DropsOut,
+                      className: $if.DropsOut != null ? "" : "hidden",
+                      title: "Total drops Out modulo 4G"
+                    },
+                    _owner: null
+                  }, ",", {
+                    $$typeof: _typeofReactElement,
+                    type: "span",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: $if.ErrorsIn,
+                      title: "Total errors In modulo 4G"
+                    },
+                    _owner: null
+                  }, "/", {
+                    $$typeof: _typeofReactElement,
+                    type: "span",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: $if.ErrorsOut,
+                      title: "Total errors Out modulo 4G"
+                    },
+                    _owner: null
+                  }],
+                  className: "mutext",
+                  title: "Total drops,errors modulo 4G"
+                },
+                _owner: null
+              }, " ", {
+                $$typeof: _typeofReactElement,
+                type: "span",
+                key: null,
+                ref: null,
+                props: {
+                  children: [{
+                    $$typeof: _typeofReactElement,
+                    type: "span",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: $if.DeltaDropsIn,
+                      title: "Drops In per second"
+                    },
+                    _owner: null
+                  }, {
+                    $$typeof: _typeofReactElement,
+                    type: "span",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: "/",
+                      className: $if.DeltaDropsOut != null ? "" : "hidden"
+                    },
+                    _owner: null
+                  }, {
+                    $$typeof: _typeofReactElement,
+                    type: "span",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: $if.DeltaDropsOut,
+                      className: $if.DeltaDropsOut != null ? "" : "hidden",
+                      title: "Drops Out per second"
+                    },
+                    _owner: null
+                  }, ",", {
+                    $$typeof: _typeofReactElement,
+                    type: "span",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: $if.DeltaErrorsIn,
+                      title: "Errors In per second"
+                    },
+                    _owner: null
+                  }, "/", {
+                    $$typeof: _typeofReactElement,
+                    type: "span",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: $if.DeltaErrorsOut,
+                      title: "Errors Out per second"
+                    },
+                    _owner: null
+                  }],
+                  className: ($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0") ? "mutext" : ""
+                },
+                _owner: null
+              }],
+              className: "text-right text-nowrap"
+            },
+            _owner: null
+          }]
         },
-        React.createElement(
-          "td",
-          { className: "text-nowrap clip12", title: $if.Name
-          },
-          $if.Name
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          $if.IP
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right text-nowrap"
-          },
-          React.createElement(
-            "span",
-            { className: "mutext"
-            },
-            React.createElement(
-              "span",
-              { title: "Total BYTES In modulo 4G"
-              },
-              $if.BytesIn
-            ),
-            "/",
-            React.createElement(
-              "span",
-              { title: "Total BYTES Out modulo 4G"
-              },
-              $if.BytesOut
-            )
-          ),
-          " ",
-          React.createElement(
-            "span",
-            { title: "BITS In per second"
-            },
-            $if.DeltaBitsIn
-          ),
-          "/",
-          React.createElement(
-            "span",
-            { title: "BITS Out per second"
-            },
-            $if.DeltaBitsOut
-          )
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right text-nowrap"
-          },
-          React.createElement(
-            "span",
-            { className: "mutext"
-            },
-            React.createElement(
-              "span",
-              { title: "Total packets In modulo 4G"
-              },
-              $if.PacketsIn
-            ),
-            "/",
-            React.createElement(
-              "span",
-              { title: "Total packets Out modulo 4G"
-              },
-              $if.PacketsOut
-            )
-          ),
-          " ",
-          React.createElement(
-            "span",
-            { title: "Packets In per second"
-            },
-            $if.DeltaPacketsIn
-          ),
-          "/",
-          React.createElement(
-            "span",
-            { title: "Packets Out per second"
-            },
-            $if.DeltaPacketsOut
-          )
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right text-nowrap"
-          },
-          React.createElement(
-            "span",
-            { className: "mutext", title: "Total drops,errors modulo 4G"
-            },
-            React.createElement(
-              "span",
-              { title: "Total drops In modulo 4G"
-              },
-              $if.DropsIn
-            ),
-            React.createElement(
-              "span",
-              { className: $if.DropsOut != null ? "" : "hidden"
-              },
-              "/"
-            ),
-            React.createElement(
-              "span",
-              { className: $if.DropsOut != null ? "" : "hidden", title: "Total drops Out modulo 4G"
-              },
-              $if.DropsOut
-            ),
-            ",",
-            React.createElement(
-              "span",
-              { title: "Total errors In modulo 4G"
-              },
-              $if.ErrorsIn
-            ),
-            "/",
-            React.createElement(
-              "span",
-              { title: "Total errors Out modulo 4G"
-              },
-              $if.ErrorsOut
-            )
-          ),
-          " ",
-          React.createElement(
-            "span",
-            { className: ($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0") ? "mutext" : ""
-            },
-            React.createElement(
-              "span",
-              { title: "Drops In per second"
-              },
-              $if.DeltaDropsIn
-            ),
-            React.createElement(
-              "span",
-              { className: $if.DeltaDropsOut != null ? "" : "hidden"
-              },
-              "/"
-            ),
-            React.createElement(
-              "span",
-              { className: $if.DeltaDropsOut != null ? "" : "hidden", title: "Drops Out per second"
-              },
-              $if.DeltaDropsOut
-            ),
-            ",",
-            React.createElement(
-              "span",
-              { title: "Errors In per second"
-              },
-              $if.DeltaErrorsIn
-            ),
-            "/",
-            React.createElement(
-              "span",
-              { title: "Errors Out per second"
-              },
-              $if.DeltaErrorsOut
-            )
-          )
-        )
-      );
+        _owner: null
+      };
     },
     panelif: function panelif(Data, rows) {
-      return React.createElement(
-        "div",
-        { className: !Data.Params.Ifn.Negative ? "" : "panel panel-default"
-        },
-        React.createElement(
-          "div",
-          { className: "h4 padding-left-like-panel-heading"
-          },
-          React.createElement(
-            "a",
-            { href: Data.Params.Tlinks.Ifn, onClick: this.handleClick
-            },
-            "Interfaces"
-          )
-        ),
-        React.createElement(
-          "ul",
-          { className: !Data.Params.Ifn.Negative ? "hidden" : "list-group"
-          },
-          React.createElement(
-            "li",
-            { className: "list-group-item text-nowrap th"
-            },
-            React.createElement(
-              "ul",
-              { className: "list-inline"
+      return {
+        $$typeof: _typeofReactElement,
+        type: "div",
+        key: null,
+        ref: null,
+        props: {
+          children: [{
+            $$typeof: _typeofReactElement,
+            type: "div",
+            key: null,
+            ref: null,
+            props: {
+              children: {
+                $$typeof: _typeofReactElement,
+                type: "a",
+                key: null,
+                ref: null,
+                props: {
+                  children: "Interfaces",
+                  href: Data.Params.Tlinks.Ifn,
+                  onClick: this.handleClick
+                },
+                _owner: null
               },
-              React.createElement(
-                "li",
-                null,
-                React.createElement(
-                  "span",
-                  null,
-                  React.createElement(
-                    "b",
-                    null,
-                    "Delay"
-                  ),
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "badge"
+              className: "h4 padding-left-like-panel-heading"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "ul",
+            key: null,
+            ref: null,
+            props: {
+              children: {
+                $$typeof: _typeofReactElement,
+                type: "li",
+                key: null,
+                ref: null,
+                props: {
+                  children: {
+                    $$typeof: _typeofReactElement,
+                    type: "ul",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: [{
+                        $$typeof: _typeofReactElement,
+                        type: "li",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: [{
+                            $$typeof: _typeofReactElement,
+                            type: "span",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "b",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: "Delay"
+                                },
+                                _owner: null
+                              }, " ", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: Data.Params.Ifd,
+                                  className: "badge"
+                                },
+                                _owner: null
+                              }]
+                            },
+                            _owner: null
+                          }, " ", {
+                            $$typeof: _typeofReactElement,
+                            type: "div",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: ["- ", Data.Params.Dlinks.Ifd.Less.Text],
+                                  href: Data.Params.Dlinks.Ifd.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.Less.ExtraClass != null ? Data.Params.Dlinks.Ifd.Less.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }, {
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: [Data.Params.Dlinks.Ifd.More.Text, " +"],
+                                  href: Data.Params.Dlinks.Ifd.More.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.More.ExtraClass != null ? Data.Params.Dlinks.Ifd.More.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }],
+                              className: "btn-group"
+                            },
+                            _owner: null
+                          }]
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "li",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: [{
+                            $$typeof: _typeofReactElement,
+                            type: "span",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "b",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: "Rows"
+                                },
+                                _owner: null
+                              }, " ", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: Data.Params.Ifn.Absolute,
+                                  className: "badge"
+                                },
+                                _owner: null
+                              }]
+                            },
+                            _owner: null
+                          }, " ", {
+                            $$typeof: _typeofReactElement,
+                            type: "div",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: ["- ", Data.Params.Nlinks.Ifn.Less.Text],
+                                  href: Data.Params.Nlinks.Ifn.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.Less.ExtraClass != null ? Data.Params.Nlinks.Ifn.Less.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }, {
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: [Data.Params.Nlinks.Ifn.More.Text, " +"],
+                                  href: Data.Params.Nlinks.Ifn.More.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.More.ExtraClass != null ? Data.Params.Nlinks.Ifn.More.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }],
+                              className: "btn-group"
+                            },
+                            _owner: null
+                          }]
+                        },
+                        _owner: null
+                      }],
+                      className: "list-inline"
                     },
-                    Data.Params.Ifd
-                  )
-                ),
-                " ",
-                React.createElement(
-                  "div",
-                  { className: "btn-group"
+                    _owner: null
                   },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Dlinks.Ifd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.Less.ExtraClass != null ? Data.Params.Dlinks.Ifd.Less.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    "- ",
-                    Data.Params.Dlinks.Ifd.Less.Text
-                  ),
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Dlinks.Ifd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.More.ExtraClass != null ? Data.Params.Dlinks.Ifd.More.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    Data.Params.Dlinks.Ifd.More.Text,
-                    " +"
-                  )
-                )
-              ),
-              React.createElement(
-                "li",
-                null,
-                React.createElement(
-                  "span",
-                  null,
-                  React.createElement(
-                    "b",
-                    null,
-                    "Rows"
-                  ),
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "badge"
-                    },
-                    Data.Params.Ifn.Absolute
-                  )
-                ),
-                " ",
-                React.createElement(
-                  "div",
-                  { className: "btn-group"
-                  },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Nlinks.Ifn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.Less.ExtraClass != null ? Data.Params.Nlinks.Ifn.Less.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    "- ",
-                    Data.Params.Nlinks.Ifn.Less.Text
-                  ),
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Nlinks.Ifn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.More.ExtraClass != null ? Data.Params.Nlinks.Ifn.More.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    Data.Params.Nlinks.Ifn.More.Text,
-                    " +"
-                  )
-                )
-              )
-            )
-          )
-        ),
-        React.createElement(
-          "table",
-          { className: Data.Params.Ifn.Absolute != 0 ? "table table-hover" : "hidden"
-          },
-          React.createElement(
-            "thead",
-            null,
-            React.createElement(
-              "tr",
-              null,
-              React.createElement(
-                "th",
-                null,
-                "Interface"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right"
+                  className: "list-group-item text-nowrap th"
                 },
-                "IP"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right text-nowrap col-md-3", title: "Bits In/Out per second"
+                _owner: null
+              },
+              className: !Data.Params.Ifn.Negative ? "hidden" : "list-group"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "table",
+            key: null,
+            ref: null,
+            props: {
+              children: [{
+                $$typeof: _typeofReactElement,
+                type: "thead",
+                key: null,
+                ref: null,
+                props: {
+                  children: {
+                    $$typeof: _typeofReactElement,
+                    type: "tr",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: [{
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: "Interface"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: "IP",
+                          className: "text-right"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: ["IO ", {
+                            $$typeof: _typeofReactElement,
+                            type: "i",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: "b"
+                            },
+                            _owner: null
+                          }, "ps"],
+                          className: "text-right text-nowrap col-md-3",
+                          title: "Bits In/Out per second"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: "Packets IO ps",
+                          className: "text-right text-nowrap col-md-3",
+                          title: "Packets In/Out per second"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: "Loss IO ps",
+                          className: "text-right text-nowrap col-md-3",
+                          title: "Drops,Errors In/Out per second"
+                        },
+                        _owner: null
+                      }]
+                    },
+                    _owner: null
+                  }
                 },
-                "IO ",
-                React.createElement(
-                  "i",
-                  null,
-                  "b"
-                ),
-                "ps"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right text-nowrap col-md-3", title: "Packets In/Out per second"
+                _owner: null
+              }, {
+                $$typeof: _typeofReactElement,
+                type: "tbody",
+                key: null,
+                ref: null,
+                props: {
+                  children: rows
                 },
-                "Packets IO ps"
-              ),
-              React.createElement(
-                "th",
-                { className: "text-right text-nowrap col-md-3", title: "Drops,Errors In/Out per second"
-                },
-                "Loss IO ps"
-              )
-            )
-          ),
-          React.createElement(
-            "tbody",
-            null,
-            rows
-          )
-        )
-      );
+                _owner: null
+              }],
+              className: Data.Params.Ifn.Absolute != 0 ? "table table-hover" : "hidden"
+            },
+            _owner: null
+          }],
+          className: !Data.Params.Ifn.Negative ? "" : "panel panel-default"
+        },
+        _owner: null
+      };
     },
 
     ps_rows: function ps_rows(Data, $ps) {
-      return React.createElement(
-        "tr",
-        { key: "ps-rowby-pid-" + $ps.PID
+      return {
+        $$typeof: _typeofReactElement,
+        type: "tr",
+        key: "ps-rowby-pid-" + $ps.PID,
+        ref: null,
+        props: {
+          children: [{
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: [" ", $ps.PID],
+              className: "text-right"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: [" ", $ps.UID],
+              className: "text-right"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: $ps.User
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: [" ", $ps.Priority],
+              className: "text-right"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: [" ", $ps.Nice],
+              className: "text-right"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: [" ", $ps.Size],
+              className: "text-right"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: [" ", $ps.Resident],
+              className: "text-right"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: $ps.Time,
+              className: "text-center"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "td",
+            key: null,
+            ref: null,
+            props: {
+              children: $ps.Name
+            },
+            _owner: null
+          }]
         },
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          " ",
-          $ps.PID
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          " ",
-          $ps.UID
-        ),
-        React.createElement(
-          "td",
-          null,
-          $ps.User
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          " ",
-          $ps.Priority
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          " ",
-          $ps.Nice
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          " ",
-          $ps.Size
-        ),
-        React.createElement(
-          "td",
-          { className: "text-right"
-          },
-          " ",
-          $ps.Resident
-        ),
-        React.createElement(
-          "td",
-          { className: "text-center"
-          },
-          $ps.Time
-        ),
-        React.createElement(
-          "td",
-          null,
-          $ps.Name
-        )
-      );
+        _owner: null
+      };
     },
     panelps: function panelps(Data, rows) {
-      return React.createElement(
-        "div",
-        { className: !Data.Params.Psn.Negative ? "" : "panel panel-default"
+      return {
+        $$typeof: _typeofReactElement,
+        type: "div",
+        key: null,
+        ref: null,
+        props: {
+          children: [{
+            $$typeof: _typeofReactElement,
+            type: "div",
+            key: null,
+            ref: null,
+            props: {
+              children: {
+                $$typeof: _typeofReactElement,
+                type: "a",
+                key: null,
+                ref: null,
+                props: {
+                  children: "Processes",
+                  href: Data.Params.Tlinks.Psn,
+                  onClick: this.handleClick
+                },
+                _owner: null
+              },
+              className: "h4 padding-left-like-panel-heading"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "ul",
+            key: null,
+            ref: null,
+            props: {
+              children: {
+                $$typeof: _typeofReactElement,
+                type: "li",
+                key: null,
+                ref: null,
+                props: {
+                  children: {
+                    $$typeof: _typeofReactElement,
+                    type: "ul",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: [{
+                        $$typeof: _typeofReactElement,
+                        type: "li",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: [{
+                            $$typeof: _typeofReactElement,
+                            type: "span",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "b",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: "Delay"
+                                },
+                                _owner: null
+                              }, " ", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: Data.Params.Psd,
+                                  className: "badge"
+                                },
+                                _owner: null
+                              }]
+                            },
+                            _owner: null
+                          }, " ", {
+                            $$typeof: _typeofReactElement,
+                            type: "div",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: ["- ", Data.Params.Dlinks.Psd.Less.Text],
+                                  href: Data.Params.Dlinks.Psd.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.Psd.Less.ExtraClass != null ? Data.Params.Dlinks.Psd.Less.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }, {
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: [Data.Params.Dlinks.Psd.More.Text, " +"],
+                                  href: Data.Params.Dlinks.Psd.More.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.Psd.More.ExtraClass != null ? Data.Params.Dlinks.Psd.More.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }],
+                              className: "btn-group"
+                            },
+                            _owner: null
+                          }]
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "li",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: [{
+                            $$typeof: _typeofReactElement,
+                            type: "span",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "b",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: "Rows"
+                                },
+                                _owner: null
+                              }, " ", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: Data.Params.Psn.Absolute,
+                                  className: "badge"
+                                },
+                                _owner: null
+                              }]
+                            },
+                            _owner: null
+                          }, " ", {
+                            $$typeof: _typeofReactElement,
+                            type: "div",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: [{
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: ["- ", Data.Params.Nlinks.Psn.Less.Text],
+                                  href: Data.Params.Nlinks.Psn.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.Psn.Less.ExtraClass != null ? Data.Params.Nlinks.Psn.Less.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }, {
+                                $$typeof: _typeofReactElement,
+                                type: "a",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  children: [Data.Params.Nlinks.Psn.More.Text, " +"],
+                                  href: Data.Params.Nlinks.Psn.More.Href,
+                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.Psn.More.ExtraClass != null ? Data.Params.Nlinks.Psn.More.ExtraClass : ""),
+                                  onClick: this.handleClick
+                                },
+                                _owner: null
+                              }],
+                              className: "btn-group"
+                            },
+                            _owner: null
+                          }]
+                        },
+                        _owner: null
+                      }],
+                      className: "list-inline"
+                    },
+                    _owner: null
+                  },
+                  className: "list-group-item text-nowrap th"
+                },
+                _owner: null
+              },
+              className: !Data.Params.Psn.Negative ? "hidden" : "list-group"
+            },
+            _owner: null
+          }, {
+            $$typeof: _typeofReactElement,
+            type: "table",
+            key: null,
+            ref: null,
+            props: {
+              children: [{
+                $$typeof: _typeofReactElement,
+                type: "thead",
+                key: null,
+                ref: null,
+                props: {
+                  children: {
+                    $$typeof: _typeofReactElement,
+                    type: "tr",
+                    key: null,
+                    ref: null,
+                    props: {
+                      children: [{
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: {
+                            $$typeof: _typeofReactElement,
+                            type: "a",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: ["PID", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  className: Data.Params.Vlinks.Psk[1 - 1].CaretClass
+                                },
+                                _owner: null
+                              }],
+                              href: Data.Params.Vlinks.Psk[1 - 1].LinkHref,
+                              className: Data.Params.Vlinks.Psk[1 - 1].LinkClass,
+                              onClick: this.handleClick
+                            },
+                            _owner: null
+                          },
+                          className: "header text-right"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: {
+                            $$typeof: _typeofReactElement,
+                            type: "a",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: ["UID", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  className: Data.Params.Vlinks.Psk[2 - 1].CaretClass
+                                },
+                                _owner: null
+                              }],
+                              href: Data.Params.Vlinks.Psk[2 - 1].LinkHref,
+                              className: Data.Params.Vlinks.Psk[2 - 1].LinkClass,
+                              onClick: this.handleClick
+                            },
+                            _owner: null
+                          },
+                          className: "header text-right"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: {
+                            $$typeof: _typeofReactElement,
+                            type: "a",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: ["USER", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  className: Data.Params.Vlinks.Psk[3 - 1].CaretClass
+                                },
+                                _owner: null
+                              }],
+                              href: Data.Params.Vlinks.Psk[3 - 1].LinkHref,
+                              className: Data.Params.Vlinks.Psk[3 - 1].LinkClass,
+                              onClick: this.handleClick
+                            },
+                            _owner: null
+                          },
+                          className: "header "
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: {
+                            $$typeof: _typeofReactElement,
+                            type: "a",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: ["PR", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  className: Data.Params.Vlinks.Psk[4 - 1].CaretClass
+                                },
+                                _owner: null
+                              }],
+                              href: Data.Params.Vlinks.Psk[4 - 1].LinkHref,
+                              className: Data.Params.Vlinks.Psk[4 - 1].LinkClass,
+                              onClick: this.handleClick
+                            },
+                            _owner: null
+                          },
+                          className: "header text-right"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: {
+                            $$typeof: _typeofReactElement,
+                            type: "a",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: ["NI", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  className: Data.Params.Vlinks.Psk[5 - 1].CaretClass
+                                },
+                                _owner: null
+                              }],
+                              href: Data.Params.Vlinks.Psk[5 - 1].LinkHref,
+                              className: Data.Params.Vlinks.Psk[5 - 1].LinkClass,
+                              onClick: this.handleClick
+                            },
+                            _owner: null
+                          },
+                          className: "header text-right"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: {
+                            $$typeof: _typeofReactElement,
+                            type: "a",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: ["VIRT", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  className: Data.Params.Vlinks.Psk[6 - 1].CaretClass
+                                },
+                                _owner: null
+                              }],
+                              href: Data.Params.Vlinks.Psk[6 - 1].LinkHref,
+                              className: Data.Params.Vlinks.Psk[6 - 1].LinkClass,
+                              onClick: this.handleClick
+                            },
+                            _owner: null
+                          },
+                          className: "header text-right"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: {
+                            $$typeof: _typeofReactElement,
+                            type: "a",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: ["RES", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  className: Data.Params.Vlinks.Psk[7 - 1].CaretClass
+                                },
+                                _owner: null
+                              }],
+                              href: Data.Params.Vlinks.Psk[7 - 1].LinkHref,
+                              className: Data.Params.Vlinks.Psk[7 - 1].LinkClass,
+                              onClick: this.handleClick
+                            },
+                            _owner: null
+                          },
+                          className: "header text-right"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: {
+                            $$typeof: _typeofReactElement,
+                            type: "a",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: ["TIME", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  className: Data.Params.Vlinks.Psk[8 - 1].CaretClass
+                                },
+                                _owner: null
+                              }],
+                              href: Data.Params.Vlinks.Psk[8 - 1].LinkHref,
+                              className: Data.Params.Vlinks.Psk[8 - 1].LinkClass,
+                              onClick: this.handleClick
+                            },
+                            _owner: null
+                          },
+                          className: "header text-center"
+                        },
+                        _owner: null
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: "th",
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: {
+                            $$typeof: _typeofReactElement,
+                            type: "a",
+                            key: null,
+                            ref: null,
+                            props: {
+                              children: ["COMMAND", {
+                                $$typeof: _typeofReactElement,
+                                type: "span",
+                                key: null,
+                                ref: null,
+                                props: {
+                                  className: Data.Params.Vlinks.Psk[9 - 1].CaretClass
+                                },
+                                _owner: null
+                              }],
+                              href: Data.Params.Vlinks.Psk[9 - 1].LinkHref,
+                              className: Data.Params.Vlinks.Psk[9 - 1].LinkClass,
+                              onClick: this.handleClick
+                            },
+                            _owner: null
+                          },
+                          className: "header "
+                        },
+                        _owner: null
+                      }],
+                      className: "text-nowrap"
+                    },
+                    _owner: null
+                  }
+                },
+                _owner: null
+              }, {
+                $$typeof: _typeofReactElement,
+                type: "tbody",
+                key: null,
+                ref: null,
+                props: {
+                  children: rows
+                },
+                _owner: null
+              }],
+              className: Data.Params.Psn.Absolute != 0 ? "table table-hover" : "hidden"
+            },
+            _owner: null
+          }],
+          className: !Data.Params.Psn.Negative ? "" : "panel panel-default"
         },
-        React.createElement(
-          "div",
-          { className: "h4 padding-left-like-panel-heading"
-          },
-          React.createElement(
-            "a",
-            { href: Data.Params.Tlinks.Psn, onClick: this.handleClick
-            },
-            "Processes"
-          )
-        ),
-        React.createElement(
-          "ul",
-          { className: !Data.Params.Psn.Negative ? "hidden" : "list-group"
-          },
-          React.createElement(
-            "li",
-            { className: "list-group-item text-nowrap th"
-            },
-            React.createElement(
-              "ul",
-              { className: "list-inline"
-              },
-              React.createElement(
-                "li",
-                null,
-                React.createElement(
-                  "span",
-                  null,
-                  React.createElement(
-                    "b",
-                    null,
-                    "Delay"
-                  ),
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "badge"
-                    },
-                    Data.Params.Psd
-                  )
-                ),
-                " ",
-                React.createElement(
-                  "div",
-                  { className: "btn-group"
-                  },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Dlinks.Psd.Less.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Psd.Less.ExtraClass != null ? Data.Params.Dlinks.Psd.Less.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    "- ",
-                    Data.Params.Dlinks.Psd.Less.Text
-                  ),
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Dlinks.Psd.More.Href, className: "btn btn-default" + " " + (Data.Params.Dlinks.Psd.More.ExtraClass != null ? Data.Params.Dlinks.Psd.More.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    Data.Params.Dlinks.Psd.More.Text,
-                    " +"
-                  )
-                )
-              ),
-              React.createElement(
-                "li",
-                null,
-                React.createElement(
-                  "span",
-                  null,
-                  React.createElement(
-                    "b",
-                    null,
-                    "Rows"
-                  ),
-                  " ",
-                  React.createElement(
-                    "span",
-                    { className: "badge"
-                    },
-                    Data.Params.Psn.Absolute
-                  )
-                ),
-                " ",
-                React.createElement(
-                  "div",
-                  { className: "btn-group"
-                  },
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Nlinks.Psn.Less.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Psn.Less.ExtraClass != null ? Data.Params.Nlinks.Psn.Less.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    "- ",
-                    Data.Params.Nlinks.Psn.Less.Text
-                  ),
-                  React.createElement(
-                    "a",
-                    { href: Data.Params.Nlinks.Psn.More.Href, className: "btn btn-default" + " " + (Data.Params.Nlinks.Psn.More.ExtraClass != null ? Data.Params.Nlinks.Psn.More.ExtraClass : ""), onClick: this.handleClick
-                    },
-                    Data.Params.Nlinks.Psn.More.Text,
-                    " +"
-                  )
-                )
-              )
-            )
-          )
-        ),
-        React.createElement(
-          "table",
-          { className: Data.Params.Psn.Absolute != 0 ? "table table-hover" : "hidden"
-          },
-          React.createElement(
-            "thead",
-            null,
-            React.createElement(
-              "tr",
-              { className: "text-nowrap"
-              },
-              React.createElement(
-                "th",
-                { className: "header text-right"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Vlinks.Psk[1 - 1].LinkHref, className: Data.Params.Vlinks.Psk[1 - 1].LinkClass, onClick: this.handleClick
-                  },
-                  "PID",
-                  React.createElement("span", { className: Data.Params.Vlinks.Psk[1 - 1].CaretClass
-                  })
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "header text-right"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Vlinks.Psk[2 - 1].LinkHref, className: Data.Params.Vlinks.Psk[2 - 1].LinkClass, onClick: this.handleClick
-                  },
-                  "UID",
-                  React.createElement("span", { className: Data.Params.Vlinks.Psk[2 - 1].CaretClass
-                  })
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "header "
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Vlinks.Psk[3 - 1].LinkHref, className: Data.Params.Vlinks.Psk[3 - 1].LinkClass, onClick: this.handleClick
-                  },
-                  "USER",
-                  React.createElement("span", { className: Data.Params.Vlinks.Psk[3 - 1].CaretClass
-                  })
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "header text-right"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Vlinks.Psk[4 - 1].LinkHref, className: Data.Params.Vlinks.Psk[4 - 1].LinkClass, onClick: this.handleClick
-                  },
-                  "PR",
-                  React.createElement("span", { className: Data.Params.Vlinks.Psk[4 - 1].CaretClass
-                  })
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "header text-right"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Vlinks.Psk[5 - 1].LinkHref, className: Data.Params.Vlinks.Psk[5 - 1].LinkClass, onClick: this.handleClick
-                  },
-                  "NI",
-                  React.createElement("span", { className: Data.Params.Vlinks.Psk[5 - 1].CaretClass
-                  })
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "header text-right"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Vlinks.Psk[6 - 1].LinkHref, className: Data.Params.Vlinks.Psk[6 - 1].LinkClass, onClick: this.handleClick
-                  },
-                  "VIRT",
-                  React.createElement("span", { className: Data.Params.Vlinks.Psk[6 - 1].CaretClass
-                  })
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "header text-right"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Vlinks.Psk[7 - 1].LinkHref, className: Data.Params.Vlinks.Psk[7 - 1].LinkClass, onClick: this.handleClick
-                  },
-                  "RES",
-                  React.createElement("span", { className: Data.Params.Vlinks.Psk[7 - 1].CaretClass
-                  })
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "header text-center"
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Vlinks.Psk[8 - 1].LinkHref, className: Data.Params.Vlinks.Psk[8 - 1].LinkClass, onClick: this.handleClick
-                  },
-                  "TIME",
-                  React.createElement("span", { className: Data.Params.Vlinks.Psk[8 - 1].CaretClass
-                  })
-                )
-              ),
-              React.createElement(
-                "th",
-                { className: "header "
-                },
-                React.createElement(
-                  "a",
-                  { href: Data.Params.Vlinks.Psk[9 - 1].LinkHref, className: Data.Params.Vlinks.Psk[9 - 1].LinkClass, onClick: this.handleClick
-                  },
-                  "COMMAND",
-                  React.createElement("span", { className: Data.Params.Vlinks.Psk[9 - 1].CaretClass
-                  })
-                )
-              )
-            )
-          ),
-          React.createElement(
-            "tbody",
-            null,
-            rows
-          )
-        )
-      );
+        _owner: null
+      };
     }
   };
 });

@@ -99,7 +99,7 @@ boot32:
 share/assets/css/index.css: share/style/index.less
 	type lessc  >/dev/null || exit 0; lessc --source-map $< $@
 share/assets/js/src/lib/jsdefines.js: share/tmp/jsdefines.jsx
-	type babel  >/dev/null || exit 0; babel $^ -o $@
+	type babel  >/dev/null || exit 0; babel --optional optimisation.react.constantElements --optional optimisation.react.inlineElements $^ -o $@
 share/assets/js/src/index.js: share/coffee/index.coffee
 	type coffee >/dev/null || exit 0; coffee -p $^ >/dev/null && coffee -o $(@D)/ $^
 share/assets/js/min/index.min.js: $(shell find share/assets/js/src/ -type f)
