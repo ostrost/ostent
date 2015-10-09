@@ -4,6 +4,9 @@
     shim: {
       bscollapse: {
         deps: ['jquery']
+      },
+      reactDOM: {
+        deps: ['react']
       }
     },
     urlArgs: "bust=" + (new Date()).getTime(),
@@ -11,12 +14,13 @@
       domReady: 'vendor/requirejs-domready/2.0.1/domReady',
       jquery: 'vendor/jquery/2.1.4/jquery.min',
       bscollapse: 'vendor/bootstrap/3.3.5-collapse/bootstrap.min',
-      react: 'vendor/react/0.13.3/react.min',
+      react: 'vendor/react/0.14.0/react-with-addons.min',
+      reactDOM: 'vendor/react/0.14.0/react-dom.min',
       jsdefines: 'lib/jsdefines'
     }
   });
 
-  require(['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'], function($, React, jsdefines) {
+  require(['jquery', 'react', 'reactDOM', 'jsdefines', 'domReady', 'bscollapse'], function($, React, ReactDOM, jsdefines) {
     var HandlerMixin, neweventsource, newwebsocket, update, updates;
     updates = void 0;
     neweventsource = function(onmessage) {
@@ -122,7 +126,7 @@
       }
     };
     this.IFClass = React.createClass({
-      mixins: [HandlerMixin],
+      mixins: [React.addons.PureRenderMixin, HandlerMixin],
       getInitialState: function() {
         return this.Reduce(Data);
       },
@@ -149,7 +153,7 @@
       }
     });
     this.DFClass = React.createClass({
-      mixins: [HandlerMixin],
+      mixins: [React.addons.PureRenderMixin, HandlerMixin],
       getInitialState: function() {
         return this.Reduce(Data);
       },
@@ -176,7 +180,7 @@
       }
     });
     this.MEMClass = React.createClass({
-      mixins: [HandlerMixin],
+      mixins: [React.addons.PureRenderMixin, HandlerMixin],
       getInitialState: function() {
         return this.Reduce(Data);
       },
@@ -203,7 +207,7 @@
       }
     });
     this.CPUClass = React.createClass({
-      mixins: [HandlerMixin],
+      mixins: [React.addons.PureRenderMixin, HandlerMixin],
       getInitialState: function() {
         return this.Reduce(Data);
       },
@@ -230,7 +234,7 @@
       }
     });
     this.PSClass = React.createClass({
-      mixins: [HandlerMixin],
+      mixins: [React.addons.PureRenderMixin, HandlerMixin],
       getInitialState: function() {
         return this.Reduce(Data);
       },
@@ -289,7 +293,7 @@
     update = function() {
       var CPU, DF, HN, IF, LA, MEM, PS, UP, onmessage, render;
       render = function(id, cl) {
-        return React.render(React.createElement(cl), document.getElementById(id));
+        return ReactDOM.render(React.createElement(cl), document.getElementById(id));
       };
       HN = render('hn', TextClass(function(data) {
         return data != null ? data.HN : void 0;

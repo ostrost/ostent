@@ -1,16 +1,19 @@
 require.config
-  shim: {bscollapse: {deps: ['jquery']}} #, bootstrap: {deps: ['jquery']}
+  shim:
+    bscollapse: {deps: ['jquery']}, # bootstrap:
+    reactDOM:   {deps: ['react']},
   urlArgs: "bust=" + (new Date()).getTime()
   paths:
-    domReady:  'vendor/requirejs-domready/2.0.1/domReady'
-    jquery:    'vendor/jquery/2.1.4/jquery.min'
-    bscollapse:'vendor/bootstrap/3.3.5-collapse/bootstrap.min'
-    react:     'vendor/react/0.13.3/react.min'
-    jsdefines: 'lib/jsdefines'
+    domReady:   'vendor/requirejs-domready/2.0.1/domReady'
+    jquery:     'vendor/jquery/2.1.4/jquery.min'
+    bscollapse: 'vendor/bootstrap/3.3.5-collapse/bootstrap.min'
+    react:      'vendor/react/0.14.0/react-with-addons.min'
+    reactDOM:   'vendor/react/0.14.0/react-dom.min'
+    jsdefines:  'lib/jsdefines'
 
 # main require
-require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
-($, React, jsdefines) ->
+require ['jquery', 'react', 'reactDOM', 'jsdefines', 'domReady', 'bscollapse'],
+($, React, ReactDOM, jsdefines) ->
   # domReady, bscollapse "required" for r.js only.
   updates = undefined # events source. set later
   neweventsource = (onmessage) ->
@@ -103,7 +106,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
       return undefined
 
   @IFClass = React.createClass
-    mixins: [HandlerMixin]
+    mixins: [React.addons.PureRenderMixin, HandlerMixin]
     getInitialState: () -> @Reduce(Data) # a global Data
     Reduce: (data) -> {Params: data.Params, IF: data.IF}
     render: () ->
@@ -112,7 +115,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
       return (jsdefines.panelif.bind(this)(Data, rows))
 
   @DFClass = React.createClass
-    mixins: [HandlerMixin]
+    mixins: [React.addons.PureRenderMixin, HandlerMixin]
     getInitialState: () -> @Reduce(Data) # a global Data
     Reduce: (data) -> {Params: data.Params, DF: data.DF}
     render: () ->
@@ -121,7 +124,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
       return (jsdefines.paneldf.bind(this)(Data, rows))
 
   @MEMClass = React.createClass
-    mixins: [HandlerMixin]
+    mixins: [React.addons.PureRenderMixin, HandlerMixin]
     getInitialState: () -> @Reduce(Data) # a global Data
     Reduce: (data) -> {Params: data.Params, MEM: data.MEM}
     render: () ->
@@ -130,7 +133,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
       return (jsdefines.panelmem.bind(this)(Data, rows))
 
   @CPUClass = React.createClass
-    mixins: [HandlerMixin]
+    mixins: [React.addons.PureRenderMixin, HandlerMixin]
     getInitialState: () -> @Reduce(Data) # a global Data
     Reduce: (data) -> {Params: data.Params, CPU: data.CPU}
     render: () ->
@@ -139,7 +142,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
       return (jsdefines.panelcpu.bind(this)(Data, rows))
 
   @PSClass = React.createClass
-    mixins: [HandlerMixin]
+    mixins: [React.addons.PureRenderMixin, HandlerMixin]
     getInitialState: () -> @Reduce(Data) # a global Data
     Reduce: (data) -> {Params: data.Params, PS: data.PS}
     render: () ->
@@ -161,7 +164,7 @@ require ['jquery', 'react', 'jsdefines', 'domReady', 'bscollapse'],
 
   update = () ->
     render = (id, cl) ->
-      React.render(React.createElement(cl), document.getElementById(id))
+      ReactDOM.render(React.createElement(cl), document.getElementById(id))
     HN  = render('hn', TextClass((data) -> data?.HN))
     UP  = render('up', TextClass((data) -> data?.UP))
     LA  = render('la', TextClass((data) -> data?.LA))

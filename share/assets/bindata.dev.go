@@ -14,7 +14,8 @@
 // js/src/lib/jsdefines.js
 // js/src/vendor/bootstrap/3.3.5-collapse/bootstrap.min.js
 // js/src/vendor/jquery/2.1.4/jquery.min.js
-// js/src/vendor/react/0.13.3/react.min.js
+// js/src/vendor/react/0.14.0/react-dom.min.js
+// js/src/vendor/react/0.14.0/react-with-addons.min.js
 // js/src/vendor/requirejs-domready/2.0.1/domReady.js
 // robots.txt
 // DO NOT EDIT!
@@ -297,10 +298,28 @@ func jsSrcVendorJquery214JqueryMinJs() (*asset, error) {
 	return a, err
 }
 
-// jsSrcVendorReact0133ReactMinJs reads file data from disk. It returns an error on failure.
-func jsSrcVendorReact0133ReactMinJs() (*asset, error) {
-	path := filepath.Join(rootDir, "js/src/vendor/react/0.13.3/react.min.js")
-	name := "js/src/vendor/react/0.13.3/react.min.js"
+// jsSrcVendorReact0140ReactDomMinJs reads file data from disk. It returns an error on failure.
+func jsSrcVendorReact0140ReactDomMinJs() (*asset, error) {
+	path := filepath.Join(rootDir, "js/src/vendor/react/0.14.0/react-dom.min.js")
+	name := "js/src/vendor/react/0.14.0/react-dom.min.js"
+	bytes, err := bindataRead(path, name)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := os.Stat(path)
+	if err != nil {
+		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
+	}
+
+	a := &asset{bytes: bytes, info: fi}
+	return a, err
+}
+
+// jsSrcVendorReact0140ReactWithAddonsMinJs reads file data from disk. It returns an error on failure.
+func jsSrcVendorReact0140ReactWithAddonsMinJs() (*asset, error) {
+	path := filepath.Join(rootDir, "js/src/vendor/react/0.14.0/react-with-addons.min.js")
+	name := "js/src/vendor/react/0.14.0/react-with-addons.min.js"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
@@ -417,7 +436,8 @@ var _bindata = map[string]func() (*asset, error){
 	"js/src/lib/jsdefines.js": jsSrcLibJsdefinesJs,
 	"js/src/vendor/bootstrap/3.3.5-collapse/bootstrap.min.js": jsSrcVendorBootstrap335CollapseBootstrapMinJs,
 	"js/src/vendor/jquery/2.1.4/jquery.min.js": jsSrcVendorJquery214JqueryMinJs,
-	"js/src/vendor/react/0.13.3/react.min.js": jsSrcVendorReact0133ReactMinJs,
+	"js/src/vendor/react/0.14.0/react-dom.min.js": jsSrcVendorReact0140ReactDomMinJs,
+	"js/src/vendor/react/0.14.0/react-with-addons.min.js": jsSrcVendorReact0140ReactWithAddonsMinJs,
 	"js/src/vendor/requirejs-domready/2.0.1/domReady.js": jsSrcVendorRequirejsDomready201DomreadyJs,
 	"robots.txt": robotsTxt,
 }
@@ -512,8 +532,10 @@ var _bintree = &bintree{nil, map[string]*bintree{
 					}},
 				}},
 				"react": &bintree{nil, map[string]*bintree{
-					"0.13.3": &bintree{nil, map[string]*bintree{
-						"react.min.js": &bintree{jsSrcVendorReact0133ReactMinJs, map[string]*bintree{
+					"0.14.0": &bintree{nil, map[string]*bintree{
+						"react-dom.min.js": &bintree{jsSrcVendorReact0140ReactDomMinJs, map[string]*bintree{
+						}},
+						"react-with-addons.min.js": &bintree{jsSrcVendorReact0140ReactWithAddonsMinJs, map[string]*bintree{
 						}},
 					}},
 				}},
