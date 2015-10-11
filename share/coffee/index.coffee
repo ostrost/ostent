@@ -15,7 +15,6 @@ require.config
 require ['jquery', 'react', 'reactDOM', 'jsdefines', 'domReady', 'bscollapse'],
 ($, React, ReactDOM, jsdefines) ->
   # domReady, bscollapse "required" for r.js only.
-  updates = undefined # events source. set later
   neweventsource = (onmessage) ->
     conn = null
     sendSearch = (search) ->
@@ -89,67 +88,6 @@ require ['jquery', 'react', 'reactDOM', 'jsdefines', 'domReady', 'bscollapse'],
       close: () -> conn.close()
     }
 
-  HandlerMixin =
-    handleChange: (e) -> @handle(e, false,
-     '?' + e.target.name +
-     '=' + e.target.value +
-     '&' + location.search.substr(1))
-    handleClick: (e) ->
-      href = e.target.getAttribute('href')
-      href = $(e.target).parent().get(0).getAttribute('href') if !href?
-      @handle(e, true, href)
-    handle: (e, ps, href) ->
-      history.pushState({}, '', href) if ps
-      updates.sendSearch(href)
-      e.stopPropagation() # preserves checkbox/radio
-      e.preventDefault()  # checked/selected state
-      return undefined
-
-  @IFClass = React.createClass
-    mixins: [React.addons.PureRenderMixin, HandlerMixin]
-    getInitialState: () -> @Reduce(Data) # a global Data
-    Reduce: (data) -> {Params: data.Params, IF: data.IF}
-    render: () ->
-      Data = @state
-      rows = (jsdefines.if_rows(Data, $if) for $if in Data?.IF?.List ? [])
-      return (jsdefines.panelif.bind(this)(Data, rows))
-
-  @DFClass = React.createClass
-    mixins: [React.addons.PureRenderMixin, HandlerMixin]
-    getInitialState: () -> @Reduce(Data) # a global Data
-    Reduce: (data) -> {Params: data.Params, DF: data.DF}
-    render: () ->
-      Data = @state
-      rows = (jsdefines.df_rows(Data, $df) for $df in Data?.DF?.List ? [])
-      return (jsdefines.paneldf.bind(this)(Data, rows))
-
-  @MEMClass = React.createClass
-    mixins: [React.addons.PureRenderMixin, HandlerMixin]
-    getInitialState: () -> @Reduce(Data) # a global Data
-    Reduce: (data) -> {Params: data.Params, MEM: data.MEM}
-    render: () ->
-      Data = @state
-      rows = (jsdefines.mem_rows(Data, $mem) for $mem in Data?.MEM?.List ? [])
-      return (jsdefines.panelmem.bind(this)(Data, rows))
-
-  @CPUClass = React.createClass
-    mixins: [React.addons.PureRenderMixin, HandlerMixin]
-    getInitialState: () -> @Reduce(Data) # a global Data
-    Reduce: (data) -> {Params: data.Params, CPU: data.CPU}
-    render: () ->
-      Data = @state
-      rows = (jsdefines.cpu_rows(Data, $cpu) for $cpu in Data?.CPU?.List ? [])
-      return (jsdefines.panelcpu.bind(this)(Data, rows))
-
-  @PSClass = React.createClass
-    mixins: [React.addons.PureRenderMixin, HandlerMixin]
-    getInitialState: () -> @Reduce(Data) # a global Data
-    Reduce: (data) -> {Params: data.Params, PS: data.PS}
-    render: () ->
-      Data = @state
-      rows = (jsdefines.ps_rows(Data, $ps) for $ps in Data?.PS?.List ? [])
-      return (jsdefines.panelps.bind(this)(Data, rows))
-
   @TextClass = (reduce) -> React.createClass
     Reduce: (data) ->
       v = reduce(data)
@@ -168,11 +106,11 @@ require ['jquery', 'react', 'reactDOM', 'jsdefines', 'domReady', 'bscollapse'],
     HN  = render('hn', TextClass((data) -> data?.HN))
     UP  = render('up', TextClass((data) -> data?.UP))
     LA  = render('la', TextClass((data) -> data?.LA))
-    MEM = render('mem', MEMClass)
-    PS  = render('ps',  PSClass)
-    DF  = render('df',  DFClass)
-    CPU = render('cpu', CPUClass)
-    IF  = render('if',  IFClass)
+    MEM = render('mem', jsdefines.define_panelmem)
+    PS  = render('ps',  jsdefines.define_panelps)
+    DF  = render('df',  jsdefines.define_paneldf)
+    CPU = render('cpu', jsdefines.define_panelcpu)
+    IF  = render('if',  jsdefines.define_panelif)
 
     onmessage = (event) ->
       data = JSON.parse(event.data)
@@ -180,9 +118,9 @@ require ['jquery', 'react', 'reactDOM', 'jsdefines', 'domReady', 'bscollapse'],
 
       if data.Reload? and data.Reload
         window.setTimeout((() -> location.reload(true)), 5000)
-        window.setTimeout(updates.close, 2000)
+        window.setTimeout(window.updates.close, 2000)
         console.log('in 5s: location.reload(true)')
-        console.log('in 2s: updates.close()')
+        console.log('in 2s: window.updates.close()')
         return
 
       if data.Error?
@@ -203,8 +141,8 @@ require ['jquery', 'react', 'reactDOM', 'jsdefines', 'domReady', 'bscollapse'],
 
       return
 
-    updates = newwebsocket(onmessage)
-  # updates = neweventsource(onmessage)
+    window.updates = newwebsocket(onmessage)
+  # window.updates = neweventsource(onmessage)
     return # end of `update'
 
   require ['domReady', 'jquery'], (domReady, $) ->

@@ -1,25 +1,47 @@
 define(function(require) {
-	var React = require('react');
-	return {
-		mem_rows: function(Data, $mem) { return (<tr  key={"mem-rowby-kind-"+$mem.Kind}
-  ><td
-    >{$mem.Kind}</td
-  ><td className="text-right"
-    >{$mem.Free}</td
-  ><td className="text-right bg-usepct"data-usepct={$mem.UsePct}
-    >{$mem.UsePct}%</td
-  ><td className="text-right"
-    >{$mem.Used}</td
-  ><td className="text-right"
-    >{$mem.Total}</td
-  ></tr
->); },
-		panelmem: function(Data, rows) { return (<div  className={!Data.Params.Memn.Negative ? "" : "panel panel-default"}
+  var React = require('react');
+  var jsdefines = {};
+  jsdefines.HandlerMixin = {
+    handleClick: function(e) {
+      var href = e.target.getAttribute('href');
+      if (href == null) {
+        href = $(e.target).parent().get(0).getAttribute('href');
+      }
+      history.pushState({}, '', href);
+      window.updates.sendSearch(href);
+      e.stopPropagation();
+      e.preventDefault();
+      return void 0;
+    }
+  };
+  // all the define_* templates transformed into jsdefines.define_* = ...;
+
+  jsdefines.define_panelcpu = React.createClass({
+    mixins: [React.addons.PureRenderMixin, jsdefines.HandlerMixin],
+    List: function(data) { // static
+      var list;
+      if (data != null && data["CPU"] != null && (list = data["CPU"].List) != null) {
+        return list;
+      }
+      return [];
+    },
+    Reduce: function(data) { // static
+      return {
+        Params: data.Params,
+        CPU: data.CPU
+      };
+    },
+    getInitialState: function() {
+      return this.Reduce(Data); // global Data
+    },
+    render: function() {
+      var Data = this.state;
+      return <div  className={!Data.Params.CPUn.Negative ? "" : "panel panel-default"}
   ><div className="h4 padding-left-like-panel-heading"
-    ><a  href={Data.Params.Tlinks.Memn} onClick={this.handleClick}
-      >Memory</a
+    ><a  href={Data.Params.Tlinks.CPUn} onClick={this.handleClick}
+      >CPU</a
     ></div
-  ><ul   className={!Data.Params.Memn.Negative ? "hidden" : "list-group"}
+  ><ul   className={!Data.Params.CPUn.Negative ? "hidden" : "list-group"}
     ><li className="list-group-item text-nowrap th"
       ><ul className="list-inline"
         ><li
@@ -27,13 +49,13 @@ define(function(require) {
             ><b
               >Delay</b
             > <span className="badge"
-              >{Data.Params.Memd}</span
+              >{Data.Params.CPUd}</span
             ></span
           > <div className="btn-group"
-            ><a href={Data.Params.Dlinks.Memd.Less.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.Memd.Less.ExtraClass != null ? Data.Params.Dlinks.Memd.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.Params.Dlinks.Memd.Less.Text}</a
-><a href={Data.Params.Dlinks.Memd.More.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.Memd.More.ExtraClass != null ? Data.Params.Dlinks.Memd.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.Params.Dlinks.Memd.More.Text} +</a
+            ><a href={Data.Params.Dlinks.CPUd.Less.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.CPUd.Less.ExtraClass != null ? Data.Params.Dlinks.CPUd.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.Params.Dlinks.CPUd.Less.Text}</a
+><a href={Data.Params.Dlinks.CPUd.More.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.CPUd.More.ExtraClass != null ? Data.Params.Dlinks.CPUd.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.Params.Dlinks.CPUd.More.Text} +</a
 ></div
           ></li
         ><li
@@ -41,63 +63,78 @@ define(function(require) {
             ><b
               >Rows</b
             > <span className="badge"
-              >{Data.Params.Memn.Absolute}</span
+              >{Data.Params.CPUn.Absolute}</span
             ></span
           > <div className="btn-group"
-            ><a href={Data.Params.Nlinks.Memn.Less.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.Memn.Less.ExtraClass != null ? Data.Params.Nlinks.Memn.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.Params.Nlinks.Memn.Less.Text}</a
-><a href={Data.Params.Nlinks.Memn.More.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.Memn.More.ExtraClass != null ? Data.Params.Nlinks.Memn.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.Params.Nlinks.Memn.More.Text} +</a
+            ><a href={Data.Params.Nlinks.CPUn.Less.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Less.ExtraClass != null ? Data.Params.Nlinks.CPUn.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.Params.Nlinks.CPUn.Less.Text}</a
+><a href={Data.Params.Nlinks.CPUn.More.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.CPUn.More.ExtraClass != null ? Data.Params.Nlinks.CPUn.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.Params.Nlinks.CPUn.More.Text} +</a
 ></div
           ></li
         ></ul
       ></li
     ></ul
-  ><table  className={Data.Params.Memn.Absolute != 0 ? "table table-hover" : "hidden"}
+  ><table  className={Data.Params.CPUn.Absolute != 0 ? "table table-hover" : "hidden"}
     ><thead
       ><tr
         ><th
           ></th
         ><th className="text-right"
-          >Free</th
+          >User</th
         ><th className="text-right"
-          >Use%</th
+          >Sys</th
         ><th className="text-right"
-          >Used</th
+          >Wait</th
         ><th className="text-right"
-          >Total</th
+          >Idle</th
         ></tr
       ></thead
     ><tbody
-      >{rows}</tbody
+      >{this.List(Data).map(function($cpu) { return<tr  key={"cpu-rowby-N-"+$cpu.N}
+  ><td className="text-right text-nowrap"
+    >{$cpu.N}</td
+  ><td className="text-right bg-usepct"
+  data-usepct={$cpu.UserPct}
+    >{$cpu.UserPct}%</td
+  ><td className="text-right bg-usepct"
+  data-usepct={$cpu.SysPct}
+    >{$cpu.SysPct}%</td
+  ><td className="text-right bg-usepct"
+  data-usepct={$cpu.WaitPct}
+    >{$cpu.WaitPct}%</td
+  ><td className="text-right bg-usepct-inverse"
+  data-usepct={$cpu.IdlePct}
+    >{$cpu.IdlePct}%</td
+  ></tr
+>})}</tbody
     ></table
   ></div
->); },
+>;
+    }
+  });
 
-		df_rows:  function(Data, $df)  { return (<tr  key={"df-rowby-dirname-"+$df.DirName}
-  >  <td className="text-nowrap clip12" title={$df.DevName}
-    >{$df.DevName}</td
-  >  <td className="text-nowrap clip12" title={$df.DirName}
-    >{$df.DirName}</td
-  ><td className="text-right text-nowrap"
-    ><span className="mutext" title="Inodes free"
-      >{$df.Ifree}</span
-    > {$df.Avail}</td
-  ><td className="text-right bg-usepct text-nowrap"data-usepct={$df.UsePct}
-    ><span className="mutext" title="Inodes use%"
-      >{$df.IusePct}%</span
-    > {$df.UsePct}%</td
-  ><td className="text-right text-nowrap"
-    ><span className="mutext" title="Inodes used"
-      >{$df.Iused}</span
-    > {$df.Used}</td
-  ><td className="text-right text-nowrap"
-    ><span className="mutext" title="Inodes total"
-      >{$df.Inodes}</span
-    > {$df.Total}</td
-  ></tr
->); },
-		paneldf:  function(Data, rows) { return (<div  className={!Data.Params.Dfn.Negative ? "" : "panel panel-default"}
+  jsdefines.define_paneldf = React.createClass({
+    mixins: [React.addons.PureRenderMixin, jsdefines.HandlerMixin],
+    List: function(data) { // static
+      var list;
+      if (data != null && data["DF"] != null && (list = data["DF"].List) != null) {
+        return list;
+      }
+      return [];
+    },
+    Reduce: function(data) { // static
+      return {
+        Params: data.Params,
+        DF: data.DF
+      };
+    },
+    getInitialState: function() {
+      return this.Reduce(Data); // global Data
+    },
+    render: function() {
+      var Data = this.state;
+      return <div  className={!Data.Params.Dfn.Negative ? "" : "panel panel-default"}
   ><div className="h4 padding-left-like-panel-heading"
     ><a  href={Data.Params.Tlinks.Dfn} onClick={this.handleClick}
       >Disk usage</a
@@ -178,146 +215,56 @@ define(function(require) {
 ></tr
       ></thead
     ><tbody
-      >{rows}</tbody
+      >{this.List(Data).map(function($df) { return<tr  key={"df-rowby-dirname-"+$df.DirName}
+  >  <td className="text-nowrap clip12" title={$df.DevName}
+    >{$df.DevName}</td
+  >  <td className="text-nowrap clip12" title={$df.DirName}
+    >{$df.DirName}</td
+  ><td className="text-right text-nowrap"
+    ><span className="mutext" title="Inodes free"
+      >{$df.Ifree}</span
+    > {$df.Avail}</td
+  ><td className="text-right bg-usepct text-nowrap"data-usepct={$df.UsePct}
+    ><span className="mutext" title="Inodes use%"
+      >{$df.IusePct}%</span
+    > {$df.UsePct}%</td
+  ><td className="text-right text-nowrap"
+    ><span className="mutext" title="Inodes used"
+      >{$df.Iused}</span
+    > {$df.Used}</td
+  ><td className="text-right text-nowrap"
+    ><span className="mutext" title="Inodes total"
+      >{$df.Inodes}</span
+    > {$df.Total}</td
+  ></tr
+>})}</tbody
     ></table
   ></div
->); },
+>;
+    }
+  });
 
-		cpu_rows: function(Data, $cpu) { return (<tr  key={"cpu-rowby-N-"+$cpu.N}
-  ><td className="text-right text-nowrap"
-    >{$cpu.N}</td
-  ><td className="text-right bg-usepct"
-  data-usepct={$cpu.UserPct}
-    >{$cpu.UserPct}%</td
-  ><td className="text-right bg-usepct"
-  data-usepct={$cpu.SysPct}
-    >{$cpu.SysPct}%</td
-  ><td className="text-right bg-usepct"
-  data-usepct={$cpu.WaitPct}
-    >{$cpu.WaitPct}%</td
-  ><td className="text-right bg-usepct-inverse"
-  data-usepct={$cpu.IdlePct}
-    >{$cpu.IdlePct}%</td
-  ></tr
->); },
-		panelcpu: function(Data, rows) { return (<div  className={!Data.Params.CPUn.Negative ? "" : "panel panel-default"}
-  ><div className="h4 padding-left-like-panel-heading"
-    ><a  href={Data.Params.Tlinks.CPUn} onClick={this.handleClick}
-      >CPU</a
-    ></div
-  ><ul   className={!Data.Params.CPUn.Negative ? "hidden" : "list-group"}
-    ><li className="list-group-item text-nowrap th"
-      ><ul className="list-inline"
-        ><li
-          ><span
-            ><b
-              >Delay</b
-            > <span className="badge"
-              >{Data.Params.CPUd}</span
-            ></span
-          > <div className="btn-group"
-            ><a href={Data.Params.Dlinks.CPUd.Less.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.CPUd.Less.ExtraClass != null ? Data.Params.Dlinks.CPUd.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.Params.Dlinks.CPUd.Less.Text}</a
-><a href={Data.Params.Dlinks.CPUd.More.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.CPUd.More.ExtraClass != null ? Data.Params.Dlinks.CPUd.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.Params.Dlinks.CPUd.More.Text} +</a
-></div
-          ></li
-        ><li
-          ><span
-            ><b
-              >Rows</b
-            > <span className="badge"
-              >{Data.Params.CPUn.Absolute}</span
-            ></span
-          > <div className="btn-group"
-            ><a href={Data.Params.Nlinks.CPUn.Less.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Less.ExtraClass != null ? Data.Params.Nlinks.CPUn.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.Params.Nlinks.CPUn.Less.Text}</a
-><a href={Data.Params.Nlinks.CPUn.More.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.CPUn.More.ExtraClass != null ? Data.Params.Nlinks.CPUn.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.Params.Nlinks.CPUn.More.Text} +</a
-></div
-          ></li
-        ></ul
-      ></li
-    ></ul
-  ><table  className={Data.Params.CPUn.Absolute != 0 ? "table table-hover" : "hidden"}
-    ><thead
-      ><tr
-        ><th
-          ></th
-        ><th className="text-right"
-          >User</th
-        ><th className="text-right"
-          >Sys</th
-        ><th className="text-right"
-          >Wait</th
-        ><th className="text-right"
-          >Idle</th
-        ></tr
-      ></thead
-    ><tbody
-      >{rows}</tbody
-    ></table
-  ></div
->); },
-
-		if_rows:  function(Data, $if)  { return (<tr  key={"if-rowby-name-"+$if.Name}
-  ><td className="text-nowrap clip12" title={$if.Name}
-    >{$if.Name}</td
-  ><td className="text-right"
-    >{$if.IP}</td
-  ><td className="text-right text-nowrap"
-    ><span className="mutext"
-      ><span title="Total BYTES In modulo 4G"
-        >{$if.BytesIn}</span
-      >/<span title="Total BYTES Out modulo 4G"
-        >{$if.BytesOut}</span
-      ></span
-    > <span title="BITS In per second"
-      >{$if.DeltaBitsIn}</span
-    >/<span title="BITS Out per second"
-      >{$if.DeltaBitsOut}</span
-    ></td
-  ><td className="text-right text-nowrap"
-    ><span className="mutext"
-      ><span title="Total packets In modulo 4G"
-        >{$if.PacketsIn}</span
-      >/<span title="Total packets Out modulo 4G"
-        >{$if.PacketsOut}</span
-      ></span
-    > <span title="Packets In per second"
-      >{$if.DeltaPacketsIn}</span
-    >/<span title="Packets Out per second"
-      >{$if.DeltaPacketsOut}</span
-    ></td
-  ><td className="text-right text-nowrap"
-    ><span className="mutext" title="Total drops,errors modulo 4G"
-      ><span title="Total drops In modulo 4G"
-        >{$if.DropsIn}</span
-      ><span  className={$if.DropsOut != null ? "" : "hidden"}
-        >/</span
-      ><span  className={$if.DropsOut != null ? "" : "hidden"} title="Total drops Out modulo 4G"
-        >{$if.DropsOut}</span
-      >,<span title="Total errors In modulo 4G"
-        >{$if.ErrorsIn}</span
-      >/<span title="Total errors Out modulo 4G"
-        >{$if.ErrorsOut}</span
-      ></span
-    > <span  className={(($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0")) ? "mutext" : ""}
-      ><span title="Drops In per second"
-        >{$if.DeltaDropsIn}</span
-      ><span  className={$if.DeltaDropsOut != null ? "" : "hidden"}
-        >/</span
-      ><span  className={$if.DeltaDropsOut != null ? "" : "hidden"} title="Drops Out per second"
-        >{$if.DeltaDropsOut}</span
-      >,<span title="Errors In per second"
-        >{$if.DeltaErrorsIn}</span
-      >/<span title="Errors Out per second"
-        >{$if.DeltaErrorsOut}</span
-      ></span
-    ></td
-  ></tr
->); },
-		panelif:  function(Data, rows) { return (<div  className={!Data.Params.Ifn.Negative ? "" : "panel panel-default"}
+  jsdefines.define_panelif = React.createClass({
+    mixins: [React.addons.PureRenderMixin, jsdefines.HandlerMixin],
+    List: function(data) { // static
+      var list;
+      if (data != null && data["IF"] != null && (list = data["IF"].List) != null) {
+        return list;
+      }
+      return [];
+    },
+    Reduce: function(data) { // static
+      return {
+        Params: data.Params,
+        IF: data.IF
+      };
+    },
+    getInitialState: function() {
+      return this.Reduce(Data); // global Data
+    },
+    render: function() {
+      var Data = this.state;
+      return <div  className={!Data.Params.Ifn.Negative ? "" : "panel panel-default"}
   ><div className="h4 padding-left-like-panel-heading"
     ><a  href={Data.Params.Tlinks.Ifn} onClick={this.handleClick}
       >Interfaces</a
@@ -374,33 +321,184 @@ define(function(require) {
         ></tr
       ></thead
     ><tbody
-      >{rows}</tbody
+      >{this.List(Data).map(function($if) { return<tr  key={"if-rowby-name-"+$if.Name}
+  ><td className="text-nowrap clip12" title={$if.Name}
+    >{$if.Name}</td
+  ><td className="text-right"
+    >{$if.IP}</td
+  ><td className="text-right text-nowrap"
+    ><span className="mutext"
+      ><span title="Total BYTES In modulo 4G"
+        >{$if.BytesIn}</span
+      >/<span title="Total BYTES Out modulo 4G"
+        >{$if.BytesOut}</span
+      ></span
+    > <span title="BITS In per second"
+      >{$if.DeltaBitsIn}</span
+    >/<span title="BITS Out per second"
+      >{$if.DeltaBitsOut}</span
+    ></td
+  ><td className="text-right text-nowrap"
+    ><span className="mutext"
+      ><span title="Total packets In modulo 4G"
+        >{$if.PacketsIn}</span
+      >/<span title="Total packets Out modulo 4G"
+        >{$if.PacketsOut}</span
+      ></span
+    > <span title="Packets In per second"
+      >{$if.DeltaPacketsIn}</span
+    >/<span title="Packets Out per second"
+      >{$if.DeltaPacketsOut}</span
+    ></td
+  ><td className="text-right text-nowrap"
+    ><span className="mutext" title="Total drops,errors modulo 4G"
+      ><span title="Total drops In modulo 4G"
+        >{$if.DropsIn}</span
+      ><span  className={$if.DropsOut != null ? "" : "hidden"}
+        >/</span
+      ><span  className={$if.DropsOut != null ? "" : "hidden"} title="Total drops Out modulo 4G"
+        >{$if.DropsOut}</span
+      >,<span title="Total errors In modulo 4G"
+        >{$if.ErrorsIn}</span
+      >/<span title="Total errors Out modulo 4G"
+        >{$if.ErrorsOut}</span
+      ></span
+    > <span  className={(($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0")) ? "mutext" : ""}
+      ><span title="Drops In per second"
+        >{$if.DeltaDropsIn}</span
+      ><span  className={$if.DeltaDropsOut != null ? "" : "hidden"}
+        >/</span
+      ><span  className={$if.DeltaDropsOut != null ? "" : "hidden"} title="Drops Out per second"
+        >{$if.DeltaDropsOut}</span
+      >,<span title="Errors In per second"
+        >{$if.DeltaErrorsIn}</span
+      >/<span title="Errors Out per second"
+        >{$if.DeltaErrorsOut}</span
+      ></span
+    ></td
+  ></tr
+>})}</tbody
     ></table
   ></div
->); },
+>;
+    }
+  });
 
-		ps_rows:  function(Data, $ps)  { return (<tr  key={"ps-rowby-pid-"+$ps.PID}
-  ><td className="text-right"
-    > {$ps.PID}</td
-  ><td className="text-right"
-    > {$ps.UID}</td
+  jsdefines.define_panelmem = React.createClass({
+    mixins: [React.addons.PureRenderMixin, jsdefines.HandlerMixin],
+    List: function(data) { // static
+      var list;
+      if (data != null && data["MEM"] != null && (list = data["MEM"].List) != null) {
+        return list;
+      }
+      return [];
+    },
+    Reduce: function(data) { // static
+      return {
+        Params: data.Params,
+        MEM: data.MEM
+      };
+    },
+    getInitialState: function() {
+      return this.Reduce(Data); // global Data
+    },
+    render: function() {
+      var Data = this.state;
+      return <div  className={!Data.Params.Memn.Negative ? "" : "panel panel-default"}
+  ><div className="h4 padding-left-like-panel-heading"
+    ><a  href={Data.Params.Tlinks.Memn} onClick={this.handleClick}
+      >Memory</a
+    ></div
+  ><ul   className={!Data.Params.Memn.Negative ? "hidden" : "list-group"}
+    ><li className="list-group-item text-nowrap th"
+      ><ul className="list-inline"
+        ><li
+          ><span
+            ><b
+              >Delay</b
+            > <span className="badge"
+              >{Data.Params.Memd}</span
+            ></span
+          > <div className="btn-group"
+            ><a href={Data.Params.Dlinks.Memd.Less.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.Memd.Less.ExtraClass != null ? Data.Params.Dlinks.Memd.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.Params.Dlinks.Memd.Less.Text}</a
+><a href={Data.Params.Dlinks.Memd.More.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.Memd.More.ExtraClass != null ? Data.Params.Dlinks.Memd.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.Params.Dlinks.Memd.More.Text} +</a
+></div
+          ></li
+        ><li
+          ><span
+            ><b
+              >Rows</b
+            > <span className="badge"
+              >{Data.Params.Memn.Absolute}</span
+            ></span
+          > <div className="btn-group"
+            ><a href={Data.Params.Nlinks.Memn.Less.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.Memn.Less.ExtraClass != null ? Data.Params.Nlinks.Memn.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.Params.Nlinks.Memn.Less.Text}</a
+><a href={Data.Params.Nlinks.Memn.More.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.Memn.More.ExtraClass != null ? Data.Params.Nlinks.Memn.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.Params.Nlinks.Memn.More.Text} +</a
+></div
+          ></li
+        ></ul
+      ></li
+    ></ul
+  ><table  className={Data.Params.Memn.Absolute != 0 ? "table table-hover" : "hidden"}
+    ><thead
+      ><tr
+        ><th
+          ></th
+        ><th className="text-right"
+          >Free</th
+        ><th className="text-right"
+          >Use%</th
+        ><th className="text-right"
+          >Used</th
+        ><th className="text-right"
+          >Total</th
+        ></tr
+      ></thead
+    ><tbody
+      >{this.List(Data).map(function($mem) { return<tr  key={"mem-rowby-kind-"+$mem.Kind}
   ><td
-    >{$ps.User}</td
+    >{$mem.Kind}</td
   ><td className="text-right"
-    > {$ps.Priority}</td
+    >{$mem.Free}</td
+  ><td className="text-right bg-usepct"data-usepct={$mem.UsePct}
+    >{$mem.UsePct}%</td
   ><td className="text-right"
-    > {$ps.Nice}</td
+    >{$mem.Used}</td
   ><td className="text-right"
-    > {$ps.Size}</td
-  ><td className="text-right"
-    > {$ps.Resident}</td
-  ><td className="text-center"
-    >{$ps.Time}</td
-  ><td
-    >{$ps.Name}</td
+    >{$mem.Total}</td
   ></tr
->); },
-		panelps:  function(Data, rows) { return (<div  className={!Data.Params.Psn.Negative ? "" : "panel panel-default"}
+>})}</tbody
+    ></table
+  ></div
+>;
+    }
+  });
+
+  jsdefines.define_panelps = React.createClass({
+    mixins: [React.addons.PureRenderMixin, jsdefines.HandlerMixin],
+    List: function(data) { // static
+      var list;
+      if (data != null && data["PS"] != null && (list = data["PS"].List) != null) {
+        return list;
+      }
+      return [];
+    },
+    Reduce: function(data) { // static
+      return {
+        Params: data.Params,
+        PS: data.PS
+      };
+    },
+    getInitialState: function() {
+      return this.Reduce(Data); // global Data
+    },
+    render: function() {
+      var Data = this.state;
+      return <div  className={!Data.Params.Psn.Negative ? "" : "panel panel-default"}
   ><div className="h4 padding-left-like-panel-heading"
     ><a  href={Data.Params.Tlinks.Psn} onClick={this.handleClick}
       >Processes</a
@@ -499,9 +597,31 @@ define(function(require) {
 ></tr
       ></thead
     ><tbody
-      >{rows}</tbody
+      >{this.List(Data).map(function($ps) { return<tr  key={"ps-rowby-pid-"+$ps.PID}
+  ><td className="text-right"
+    > {$ps.PID}</td
+  ><td className="text-right"
+    > {$ps.UID}</td
+  ><td
+    >{$ps.User}</td
+  ><td className="text-right"
+    > {$ps.Priority}</td
+  ><td className="text-right"
+    > {$ps.Nice}</td
+  ><td className="text-right"
+    > {$ps.Size}</td
+  ><td className="text-right"
+    > {$ps.Resident}</td
+  ><td className="text-center"
+    >{$ps.Time}</td
+  ><td
+    >{$ps.Name}</td
+  ></tr
+>})}</tbody
     ></table
   ></div
->); }
-	};
+>;
+    }
+  });
+  return jsdefines;
 });

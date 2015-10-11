@@ -88,7 +88,7 @@
 */}}{{define "defines::alink_badgeright"}}<a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}  
   >{{.Text}} {{.Badge}}</a
 >{{end}}{{/*
-*/}}{{define "defines::define_cpurows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $cpu := .Data.CPU.List}}<tr {{Key "cpu-rowby-N" $cpu.N}}
+*/}}{{define "defines::define_cpurows"}}{{range $cpu := .Data.CPU.List}}{{jsx `{this.List(Data).map(function($cpu) { return`}}<tr {{Key "cpu-rowby-N" $cpu.N}}
   ><td class="text-right text-nowrap"
     >{{$cpu.N}}</td
   ><td {{class}}="text-right bg-usepct"
@@ -104,8 +104,8 @@
   data-usepct={{$cpu.IdlePct}}
     >{{$cpu.IdlePct}}%</td
   ></tr
->{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_dfrows"}}{{with rowsset .}}{{.}}{{else}}{{range $df := .Data.DF.List}}<tr {{Key "df-rowby-dirname" $df.DirName}}
+>{{jsx `})}`}}{{end}}{{end}}{{/*
+*/}}{{define "defines::define_dfrows"}}{{range $df := .Data.DF.List}}{{jsx `{this.List(Data).map(function($df) { return`}}<tr {{Key "df-rowby-dirname" $df.DirName}}
   >  <td {{class}}="text-nowrap clip12" title={{$df.DevName}}
     >{{$df.DevName}}</td
   >  <td {{class}}="text-nowrap clip12" title={{$df.DirName}}
@@ -127,8 +127,8 @@
       >{{$df.Inodes}}</span
     > {{$df.Total}}</td
   ></tr
->{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_ifrows"}}{{with rowsset .}}{{.}}{{else}}{{range $if := .Data.IF.List}}<tr {{Key "if-rowby-name" $if.Name}}
+>{{jsx `})}`}}{{end}}{{end}}{{/*
+*/}}{{define "defines::define_ifrows"}}{{range $if := .Data.IF.List}}{{jsx `{this.List(Data).map(function($if) { return`}}<tr {{Key "if-rowby-name" $if.Name}}
   ><td {{class}}="text-nowrap clip12" title={{$if.Name}}
     >{{$if.Name}}</td
   ><td class="text-right"
@@ -184,8 +184,8 @@
       ></span
     ></td
   ></tr
->{{end}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_memrows"}}{{with rowsset .}}{{.}}{{else}}{{range $i, $mem := .Data.MEM.List}}<tr {{Key "mem-rowby-kind" $mem.Kind}}
+>{{jsx `})}`}}{{end}}{{end}}{{/*
+*/}}{{define "defines::define_memrows"}}{{range $mem := .Data.MEM.List}}{{jsx `{this.List(Data).map(function($mem) { return`}}<tr {{Key "mem-rowby-kind" $mem.Kind}}
   ><td
     >{{$mem.Kind}}</td
   ><td class="text-right"
@@ -197,7 +197,7 @@
   ><td class="text-right"
     >{{$mem.Total}}</td
   ></tr
->{{end}}{{end}}{{end}}{{/*
+>{{jsx `})}`}}{{end}}{{end}}{{/*
 */}}{{define "defines::define_panelcpu"}}{{$p := .Data.Params}}<div {{ClassPositive $p.CPUn "" "panel panel-default"}}
   ><div class="h4 padding-left-like-panel-heading"
     ><a {{HrefT $p $p.CPUn}}
@@ -435,7 +435,7 @@
     ></table
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_psrows"}}{{with rowsset .}}{{.}}{{else}}{{range $ps := .Data.PS.List}}<tr {{Key "ps-rowby-pid" $ps.PID}}
+*/}}{{define "defines::define_psrows"}}{{range $ps := .Data.PS.List}}{{jsx `{this.List(Data).map(function($ps) { return`}}<tr {{Key "ps-rowby-pid" $ps.PID}}
   ><td class="text-right"
     > {{$ps.PID}}</td
   ><td class="text-right"
@@ -455,7 +455,7 @@
   ><td
     >{{$ps.Name}}</td
   ></tr
->{{end}}{{end}}{{end}}{{/*
+>{{jsx `})}`}}{{end}}{{end}}{{/*
 */}}{{define "defines::thvlink"}}<th {{class}}="header {{.AlignClass}}"
   ><a href={{.LinkHref}} {{class}}={{.LinkClass}} onClick={this.handleClick}  
     >{{.LinkText}}<span {{class}}={{.CaretClass}}

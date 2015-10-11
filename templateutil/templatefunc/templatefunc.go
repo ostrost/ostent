@@ -13,6 +13,9 @@ func (f HTMLFuncs) Class() string   { return "class" }
 func (f JSXFuncs) Colspan() string  { return "colSpan" }
 func (f HTMLFuncs) Colspan() string { return "colspan" }
 
+func (f JSXFuncs) JSX(s string) template.HTML        { return template.HTML(s) }
+func (f HTMLFuncs) JSX(string) (empty template.HTML) { return }
+
 func (f JSXFuncs) ClassAllZero(x1, x2, y1, y2 interface{}, class string) template.HTMLAttr {
 	return SprintfAttr(" className={(%s && %s && %s && %s) ? %q : \"\"}",
 		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", x1.(Uncurler).Uncurl()),
@@ -198,12 +201,11 @@ func (f HTMLFuncs) MakeMap() template.FuncMap { return MakeMap(f) }
 // MakeMap constructs template.FuncMap off f implementation.
 func MakeMap(f Functor) template.FuncMap {
 	return template.FuncMap{
-		"HTML":    func(s string) template.HTML { return template.HTML(s) },
-		"rowsset": func(interface{}) string { return "" }, // empty pipeline
-		// acepp overrides rowsset and adds setrows
+		"HTML": func(s string) template.HTML { return template.HTML(s) },
 
 		"class":   f.Class,
 		"colspan": f.Colspan,
+		"jsx":     f.JSX,
 
 		"ClassAllZero":  f.ClassAllZero,
 		"ClassNonNil":   f.ClassNonNil,
@@ -228,6 +230,7 @@ type Functor interface {
 
 	Class() string
 	Colspan() string
+	JSX(string) template.HTML
 	ClassAllZero(interface{}, interface{}, interface{}, interface{}, string) template.HTMLAttr
 	ClassNonNil(interface{}, string, string) template.HTMLAttr
 	ClassNonZero(interface{}, string, string) template.HTMLAttr

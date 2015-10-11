@@ -21,8 +21,7 @@
   });
 
   require(['jquery', 'react', 'reactDOM', 'jsdefines', 'domReady', 'bscollapse'], function($, React, ReactDOM, jsdefines) {
-    var HandlerMixin, neweventsource, newwebsocket, update, updates;
-    updates = void 0;
+    var neweventsource, newwebsocket, update;
     neweventsource = function(onmessage) {
       var conn, init, sendSearch;
       conn = null;
@@ -103,163 +102,6 @@
         }
       };
     };
-    HandlerMixin = {
-      handleChange: function(e) {
-        return this.handle(e, false, '?' + e.target.name + '=' + e.target.value + '&' + location.search.substr(1));
-      },
-      handleClick: function(e) {
-        var href;
-        href = e.target.getAttribute('href');
-        if (href == null) {
-          href = $(e.target).parent().get(0).getAttribute('href');
-        }
-        return this.handle(e, true, href);
-      },
-      handle: function(e, ps, href) {
-        if (ps) {
-          history.pushState({}, '', href);
-        }
-        updates.sendSearch(href);
-        e.stopPropagation();
-        e.preventDefault();
-        return void 0;
-      }
-    };
-    this.IFClass = React.createClass({
-      mixins: [React.addons.PureRenderMixin, HandlerMixin],
-      getInitialState: function() {
-        return this.Reduce(Data);
-      },
-      Reduce: function(data) {
-        return {
-          Params: data.Params,
-          IF: data.IF
-        };
-      },
-      render: function() {
-        var $if, Data, rows;
-        Data = this.state;
-        rows = (function() {
-          var i, len, ref, ref1, ref2, results;
-          ref2 = (ref = Data != null ? (ref1 = Data.IF) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
-          results = [];
-          for (i = 0, len = ref2.length; i < len; i++) {
-            $if = ref2[i];
-            results.push(jsdefines.if_rows(Data, $if));
-          }
-          return results;
-        })();
-        return jsdefines.panelif.bind(this)(Data, rows);
-      }
-    });
-    this.DFClass = React.createClass({
-      mixins: [React.addons.PureRenderMixin, HandlerMixin],
-      getInitialState: function() {
-        return this.Reduce(Data);
-      },
-      Reduce: function(data) {
-        return {
-          Params: data.Params,
-          DF: data.DF
-        };
-      },
-      render: function() {
-        var $df, Data, rows;
-        Data = this.state;
-        rows = (function() {
-          var i, len, ref, ref1, ref2, results;
-          ref2 = (ref = Data != null ? (ref1 = Data.DF) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
-          results = [];
-          for (i = 0, len = ref2.length; i < len; i++) {
-            $df = ref2[i];
-            results.push(jsdefines.df_rows(Data, $df));
-          }
-          return results;
-        })();
-        return jsdefines.paneldf.bind(this)(Data, rows);
-      }
-    });
-    this.MEMClass = React.createClass({
-      mixins: [React.addons.PureRenderMixin, HandlerMixin],
-      getInitialState: function() {
-        return this.Reduce(Data);
-      },
-      Reduce: function(data) {
-        return {
-          Params: data.Params,
-          MEM: data.MEM
-        };
-      },
-      render: function() {
-        var $mem, Data, rows;
-        Data = this.state;
-        rows = (function() {
-          var i, len, ref, ref1, ref2, results;
-          ref2 = (ref = Data != null ? (ref1 = Data.MEM) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
-          results = [];
-          for (i = 0, len = ref2.length; i < len; i++) {
-            $mem = ref2[i];
-            results.push(jsdefines.mem_rows(Data, $mem));
-          }
-          return results;
-        })();
-        return jsdefines.panelmem.bind(this)(Data, rows);
-      }
-    });
-    this.CPUClass = React.createClass({
-      mixins: [React.addons.PureRenderMixin, HandlerMixin],
-      getInitialState: function() {
-        return this.Reduce(Data);
-      },
-      Reduce: function(data) {
-        return {
-          Params: data.Params,
-          CPU: data.CPU
-        };
-      },
-      render: function() {
-        var $cpu, Data, rows;
-        Data = this.state;
-        rows = (function() {
-          var i, len, ref, ref1, ref2, results;
-          ref2 = (ref = Data != null ? (ref1 = Data.CPU) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
-          results = [];
-          for (i = 0, len = ref2.length; i < len; i++) {
-            $cpu = ref2[i];
-            results.push(jsdefines.cpu_rows(Data, $cpu));
-          }
-          return results;
-        })();
-        return jsdefines.panelcpu.bind(this)(Data, rows);
-      }
-    });
-    this.PSClass = React.createClass({
-      mixins: [React.addons.PureRenderMixin, HandlerMixin],
-      getInitialState: function() {
-        return this.Reduce(Data);
-      },
-      Reduce: function(data) {
-        return {
-          Params: data.Params,
-          PS: data.PS
-        };
-      },
-      render: function() {
-        var $ps, Data, rows;
-        Data = this.state;
-        rows = (function() {
-          var i, len, ref, ref1, ref2, results;
-          ref2 = (ref = Data != null ? (ref1 = Data.PS) != null ? ref1.List : void 0 : void 0) != null ? ref : [];
-          results = [];
-          for (i = 0, len = ref2.length; i < len; i++) {
-            $ps = ref2[i];
-            results.push(jsdefines.ps_rows(Data, $ps));
-          }
-          return results;
-        })();
-        return jsdefines.panelps.bind(this)(Data, rows);
-      }
-    });
     this.TextClass = function(reduce) {
       return React.createClass({
         Reduce: function(data) {
@@ -304,11 +146,11 @@
       LA = render('la', TextClass(function(data) {
         return data != null ? data.LA : void 0;
       }));
-      MEM = render('mem', MEMClass);
-      PS = render('ps', PSClass);
-      DF = render('df', DFClass);
-      CPU = render('cpu', CPUClass);
-      IF = render('if', IFClass);
+      MEM = render('mem', jsdefines.define_panelmem);
+      PS = render('ps', jsdefines.define_panelps);
+      DF = render('df', jsdefines.define_paneldf);
+      CPU = render('cpu', jsdefines.define_panelcpu);
+      IF = render('if', jsdefines.define_panelif);
       onmessage = function(event) {
         var data;
         data = JSON.parse(event.data);
@@ -319,9 +161,9 @@
           window.setTimeout((function() {
             return location.reload(true);
           }), 5000);
-          window.setTimeout(updates.close, 2000);
+          window.setTimeout(window.updates.close, 2000);
           console.log('in 5s: location.reload(true)');
-          console.log('in 2s: updates.close()');
+          console.log('in 2s: window.updates.close()');
           return;
         }
         if (data.Error != null) {
@@ -340,7 +182,7 @@
           history.pushState({}, '', data.Location);
         }
       };
-      updates = newwebsocket(onmessage);
+      window.updates = newwebsocket(onmessage);
     };
     return require(['domReady', 'jquery'], function(domReady, $) {
       return domReady(function() {
