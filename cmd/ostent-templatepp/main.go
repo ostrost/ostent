@@ -138,7 +138,7 @@ func main() {
   // all the define_* templates transformed into jsdefines.define_* = ...;
 `)
 	for _, t := range definesTemplates {
-		if tname := t.Name(); strings.HasPrefix(tname, "::define_") && !strings.HasSuffix(tname, "rows") {
+		if tname := t.Name(); strings.HasPrefix(tname, "::define_") {
 			check(WriteJsdefine(definesonly, tname[2:], definesAce.Basename+tname, buf))
 		}
 	}

@@ -88,116 +88,6 @@
 */}}{{define "defines::alink_badgeright"}}<a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}  
   >{{.Text}} {{.Badge}}</a
 >{{end}}{{/*
-*/}}{{define "defines::define_cpurows"}}{{range $cpu := .Data.CPU.List}}{{jsx `{this.List(Data).map(function($cpu) { return`}}<tr {{Key "cpu-rowby-N" $cpu.N}}
-  ><td class="text-right text-nowrap"
-    >{{$cpu.N}}</td
-  ><td {{class}}="text-right bg-usepct"
-  data-usepct={{$cpu.UserPct}}
-    >{{$cpu.UserPct}}%</td
-  ><td {{class}}="text-right bg-usepct"
-  data-usepct={{$cpu.SysPct}}
-    >{{$cpu.SysPct}}%</td
-  ><td {{class}}="text-right bg-usepct"
-  data-usepct={{$cpu.WaitPct}}
-    >{{$cpu.WaitPct}}%</td
-  ><td {{class}}="text-right bg-usepct-inverse"
-  data-usepct={{$cpu.IdlePct}}
-    >{{$cpu.IdlePct}}%</td
-  ></tr
->{{jsx `})}`}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_dfrows"}}{{range $df := .Data.DF.List}}{{jsx `{this.List(Data).map(function($df) { return`}}<tr {{Key "df-rowby-dirname" $df.DirName}}
-  >  <td {{class}}="text-nowrap clip12" title={{$df.DevName}}
-    >{{$df.DevName}}</td
-  >  <td {{class}}="text-nowrap clip12" title={{$df.DirName}}
-    >{{$df.DirName}}</td
-  ><td class="text-right text-nowrap"
-    ><span class="mutext" title="Inodes free"
-      >{{$df.Ifree}}</span
-    > {{$df.Avail}}</td
-  ><td {{class}}="text-right bg-usepct text-nowrap"data-usepct={{$df.UsePct}}
-    ><span class="mutext" title="Inodes use%"
-      >{{$df.IusePct}}%</span
-    > {{$df.UsePct}}%</td
-  ><td class="text-right text-nowrap"
-    ><span class="mutext" title="Inodes used"
-      >{{$df.Iused}}</span
-    > {{$df.Used}}</td
-  ><td class="text-right text-nowrap"
-    ><span class="mutext" title="Inodes total"
-      >{{$df.Inodes}}</span
-    > {{$df.Total}}</td
-  ></tr
->{{jsx `})}`}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_ifrows"}}{{range $if := .Data.IF.List}}{{jsx `{this.List(Data).map(function($if) { return`}}<tr {{Key "if-rowby-name" $if.Name}}
-  ><td {{class}}="text-nowrap clip12" title={{$if.Name}}
-    >{{$if.Name}}</td
-  ><td class="text-right"
-    >{{$if.IP}}</td
-  ><td class="text-right text-nowrap"
-    ><span class="mutext"
-      ><span title="Total BYTES In modulo 4G"
-        >{{$if.BytesIn}}</span
-      >/<span title="Total BYTES Out modulo 4G"
-        >{{$if.BytesOut}}</span
-      ></span
-    > <span title="BITS In per second"
-      >{{$if.DeltaBitsIn}}</span
-    >/<span title="BITS Out per second"
-      >{{$if.DeltaBitsOut}}</span
-    ></td
-  ><td class="text-right text-nowrap"
-    ><span class="mutext"
-      ><span title="Total packets In modulo 4G"
-        >{{$if.PacketsIn}}</span
-      >/<span title="Total packets Out modulo 4G"
-        >{{$if.PacketsOut}}</span
-      ></span
-    > <span title="Packets In per second"
-      >{{$if.DeltaPacketsIn}}</span
-    >/<span title="Packets Out per second"
-      >{{$if.DeltaPacketsOut}}</span
-    ></td
-  ><td class="text-right text-nowrap"
-    ><span class="mutext" title="Total drops,errors modulo 4G"
-      ><span title="Total drops In modulo 4G"
-        >{{$if.DropsIn}}</span
-      ><span {{ClassNonNil $if.DropsOut "" "hidden"}}
-        >/</span
-      ><span {{ClassNonNil $if.DropsOut "" "hidden"}} title="Total drops Out modulo 4G"
-        >{{$if.DropsOut}}</span
-      >,<span title="Total errors In modulo 4G"
-        >{{$if.ErrorsIn}}</span
-      >/<span title="Total errors Out modulo 4G"
-        >{{$if.ErrorsOut}}</span
-      ></span
-    > <span {{ClassAllZero $if.DeltaDropsIn $if.DeltaDropsOut $if.DeltaErrorsIn $if.DeltaErrorsOut "mutext"}}
-      ><span title="Drops In per second"
-        >{{$if.DeltaDropsIn}}</span
-      ><span {{ClassNonNil $if.DeltaDropsOut "" "hidden"}}
-        >/</span
-      ><span {{ClassNonNil $if.DeltaDropsOut "" "hidden"}} title="Drops Out per second"
-        >{{$if.DeltaDropsOut}}</span
-      >,<span title="Errors In per second"
-        >{{$if.DeltaErrorsIn}}</span
-      >/<span title="Errors Out per second"
-        >{{$if.DeltaErrorsOut}}</span
-      ></span
-    ></td
-  ></tr
->{{jsx `})}`}}{{end}}{{end}}{{/*
-*/}}{{define "defines::define_memrows"}}{{range $mem := .Data.MEM.List}}{{jsx `{this.List(Data).map(function($mem) { return`}}<tr {{Key "mem-rowby-kind" $mem.Kind}}
-  ><td
-    >{{$mem.Kind}}</td
-  ><td class="text-right"
-    >{{$mem.Free}}</td
-  ><td {{class}}="text-right bg-usepct"data-usepct={{$mem.UsePct}}
-    >{{$mem.UsePct}}%</td
-  ><td class="text-right"
-    >{{$mem.Used}}</td
-  ><td class="text-right"
-    >{{$mem.Total}}</td
-  ></tr
->{{jsx `})}`}}{{end}}{{end}}{{/*
 */}}{{define "defines::define_panelcpu"}}{{$p := .Data.Params}}<div {{ClassPositive $p.CPUn "" "panel panel-default"}}
   ><div class="h4 padding-left-like-panel-heading"
     ><a {{HrefT $p $p.CPUn}}
@@ -245,7 +135,23 @@
         ></tr
       ></thead
     ><tbody
-      >{{template "defines::define_cpurows" .}}</tbody
+      >{{range $cpu := .Data.CPU.List}}{{jsx `{this.List(Data).map(function($cpu) { return`}}<tr {{Key "cpu-rowby-N" $cpu.N}}
+        ><td class="text-right text-nowrap"
+          >{{$cpu.N}}</td
+        ><td {{class}}="text-right bg-usepct"
+  data-usepct={{$cpu.UserPct}}
+          >{{$cpu.UserPct}}%</td
+        ><td {{class}}="text-right bg-usepct"
+  data-usepct={{$cpu.SysPct}}
+          >{{$cpu.SysPct}}%</td
+        ><td {{class}}="text-right bg-usepct"
+  data-usepct={{$cpu.WaitPct}}
+          >{{$cpu.WaitPct}}%</td
+        ><td {{class}}="text-right bg-usepct-inverse"
+  data-usepct={{$cpu.IdlePct}}
+          >{{$cpu.IdlePct}}%</td
+        ></tr
+      >{{jsx `})}`}}{{end}}</tbody
     ></table
   ></div
 >{{end}}{{/*
@@ -286,7 +192,29 @@
         >{{$r := "text-right"}}{{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total" $r}}</tr
       ></thead
     ><tbody
-      >{{template "defines::define_dfrows" .}}</tbody
+      >{{range $df := .Data.DF.List}}{{jsx `{this.List(Data).map(function($df) { return`}}<tr {{Key "df-rowby-dirname" $df.DirName}}
+        >  <td {{class}}="text-nowrap clip12" title={{$df.DevName}}
+          >{{$df.DevName}}</td
+        >  <td {{class}}="text-nowrap clip12" title={{$df.DirName}}
+          >{{$df.DirName}}</td
+        ><td class="text-right text-nowrap"
+          ><span class="mutext" title="Inodes free"
+            >{{$df.Ifree}}</span
+          > {{$df.Avail}}</td
+        ><td {{class}}="text-right bg-usepct text-nowrap"data-usepct={{$df.UsePct}}
+          ><span class="mutext" title="Inodes use%"
+            >{{$df.IusePct}}%</span
+          > {{$df.UsePct}}%</td
+        ><td class="text-right text-nowrap"
+          ><span class="mutext" title="Inodes used"
+            >{{$df.Iused}}</span
+          > {{$df.Used}}</td
+        ><td class="text-right text-nowrap"
+          ><span class="mutext" title="Inodes total"
+            >{{$df.Inodes}}</span
+          > {{$df.Total}}</td
+        ></tr
+      >{{jsx `})}`}}{{end}}</tbody
     ></table
   ></div
 >{{end}}{{/*
@@ -339,7 +267,63 @@
         ></tr
       ></thead
     ><tbody
-      >{{template "defines::define_ifrows" .}}</tbody
+      >{{range $if := .Data.IF.List}}{{jsx `{this.List(Data).map(function($if) { return`}}<tr {{Key "if-rowby-name" $if.Name}}
+        ><td {{class}}="text-nowrap clip12" title={{$if.Name}}
+          >{{$if.Name}}</td
+        ><td class="text-right"
+          >{{$if.IP}}</td
+        ><td class="text-right text-nowrap"
+          ><span class="mutext"
+            ><span title="Total BYTES In modulo 4G"
+              >{{$if.BytesIn}}</span
+            >/<span title="Total BYTES Out modulo 4G"
+              >{{$if.BytesOut}}</span
+            ></span
+          > <span title="BITS In per second"
+            >{{$if.DeltaBitsIn}}</span
+          >/<span title="BITS Out per second"
+            >{{$if.DeltaBitsOut}}</span
+          ></td
+        ><td class="text-right text-nowrap"
+          ><span class="mutext"
+            ><span title="Total packets In modulo 4G"
+              >{{$if.PacketsIn}}</span
+            >/<span title="Total packets Out modulo 4G"
+              >{{$if.PacketsOut}}</span
+            ></span
+          > <span title="Packets In per second"
+            >{{$if.DeltaPacketsIn}}</span
+          >/<span title="Packets Out per second"
+            >{{$if.DeltaPacketsOut}}</span
+          ></td
+        ><td class="text-right text-nowrap"
+          ><span class="mutext" title="Total drops,errors modulo 4G"
+            ><span title="Total drops In modulo 4G"
+              >{{$if.DropsIn}}</span
+            ><span {{ClassNonNil $if.DropsOut "" "hidden"}}
+              >/</span
+            ><span {{ClassNonNil $if.DropsOut "" "hidden"}} title="Total drops Out modulo 4G"
+              >{{$if.DropsOut}}</span
+            >,<span title="Total errors In modulo 4G"
+              >{{$if.ErrorsIn}}</span
+            >/<span title="Total errors Out modulo 4G"
+              >{{$if.ErrorsOut}}</span
+            ></span
+          > <span {{ClassAllZero $if.DeltaDropsIn $if.DeltaDropsOut $if.DeltaErrorsIn $if.DeltaErrorsOut "mutext"}}
+            ><span title="Drops In per second"
+              >{{$if.DeltaDropsIn}}</span
+            ><span {{ClassNonNil $if.DeltaDropsOut "" "hidden"}}
+              >/</span
+            ><span {{ClassNonNil $if.DeltaDropsOut "" "hidden"}} title="Drops Out per second"
+              >{{$if.DeltaDropsOut}}</span
+            >,<span title="Errors In per second"
+              >{{$if.DeltaErrorsIn}}</span
+            >/<span title="Errors Out per second"
+              >{{$if.DeltaErrorsOut}}</span
+            ></span
+          ></td
+        ></tr
+      >{{jsx `})}`}}{{end}}</tbody
     ></table
   ></div
 >{{end}}{{/*
@@ -390,7 +374,19 @@
         ></tr
       ></thead
     ><tbody
-      >{{template "defines::define_memrows" .}}</tbody
+      >{{range $mem := .Data.MEM.List}}{{jsx `{this.List(Data).map(function($mem) { return`}}<tr {{Key "mem-rowby-kind" $mem.Kind}}
+        ><td
+          >{{$mem.Kind}}</td
+        ><td class="text-right"
+          >{{$mem.Free}}</td
+        ><td {{class}}="text-right bg-usepct"data-usepct={{$mem.UsePct}}
+          >{{$mem.UsePct}}%</td
+        ><td class="text-right"
+          >{{$mem.Used}}</td
+        ><td class="text-right"
+          >{{$mem.Total}}</td
+        ></tr
+      >{{jsx `})}`}}{{end}}</tbody
     ></table
   ></div
 >{{end}}{{/*
@@ -431,31 +427,30 @@
         >{{$r := "text-right"}}{{$c := "text-center"}}{{template "defines::thvlink" Vlink $p $p.Psk 1 "PID" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 2 "UID" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 3 "USER" ""}}{{template "defines::thvlink" Vlink $p $p.Psk 4 "PR" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 5 "NI" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 6 "VIRT" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 7 "RES" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 8 "TIME" $c}}{{template "defines::thvlink" Vlink $p $p.Psk 9 "COMMAND" ""}}</tr
       ></thead
     ><tbody
-      >{{template "defines::define_psrows" .}}</tbody
+      >{{range $ps := .Data.PS.List}}{{jsx `{this.List(Data).map(function($ps) { return`}}<tr {{Key "ps-rowby-pid" $ps.PID}}
+        ><td class="text-right"
+          > {{$ps.PID}}</td
+        ><td class="text-right"
+          > {{$ps.UID}}</td
+        ><td
+          >{{$ps.User}}</td
+        ><td class="text-right"
+          > {{$ps.Priority}}</td
+        ><td class="text-right"
+          > {{$ps.Nice}}</td
+        ><td class="text-right"
+          > {{$ps.Size}}</td
+        ><td class="text-right"
+          > {{$ps.Resident}}</td
+        ><td class="text-center"
+          >{{$ps.Time}}</td
+        ><td
+          >{{$ps.Name}}</td
+        ></tr
+      >{{jsx `})}`}}{{end}}</tbody
     ></table
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_psrows"}}{{range $ps := .Data.PS.List}}{{jsx `{this.List(Data).map(function($ps) { return`}}<tr {{Key "ps-rowby-pid" $ps.PID}}
-  ><td class="text-right"
-    > {{$ps.PID}}</td
-  ><td class="text-right"
-    > {{$ps.UID}}</td
-  ><td
-    >{{$ps.User}}</td
-  ><td class="text-right"
-    > {{$ps.Priority}}</td
-  ><td class="text-right"
-    > {{$ps.Nice}}</td
-  ><td class="text-right"
-    > {{$ps.Size}}</td
-  ><td class="text-right"
-    > {{$ps.Resident}}</td
-  ><td class="text-center"
-    >{{$ps.Time}}</td
-  ><td
-    >{{$ps.Name}}</td
-  ></tr
->{{jsx `})}`}}{{end}}{{end}}{{/*
 */}}{{define "defines::thvlink"}}<th {{class}}="header {{.AlignClass}}"
   ><a href={{.LinkHref}} {{class}}={{.LinkClass}} onClick={this.handleClick}  
     >{{.LinkText}}<span {{class}}={{.CaretClass}}

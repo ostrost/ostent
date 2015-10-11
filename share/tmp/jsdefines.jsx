@@ -92,22 +92,22 @@ define(function(require) {
       ></thead
     ><tbody
       >{this.List(Data).map(function($cpu) { return<tr  key={"cpu-rowby-N-"+$cpu.N}
-  ><td className="text-right text-nowrap"
-    >{$cpu.N}</td
-  ><td className="text-right bg-usepct"
+        ><td className="text-right text-nowrap"
+          >{$cpu.N}</td
+        ><td className="text-right bg-usepct"
   data-usepct={$cpu.UserPct}
-    >{$cpu.UserPct}%</td
-  ><td className="text-right bg-usepct"
+          >{$cpu.UserPct}%</td
+        ><td className="text-right bg-usepct"
   data-usepct={$cpu.SysPct}
-    >{$cpu.SysPct}%</td
-  ><td className="text-right bg-usepct"
+          >{$cpu.SysPct}%</td
+        ><td className="text-right bg-usepct"
   data-usepct={$cpu.WaitPct}
-    >{$cpu.WaitPct}%</td
-  ><td className="text-right bg-usepct-inverse"
+          >{$cpu.WaitPct}%</td
+        ><td className="text-right bg-usepct-inverse"
   data-usepct={$cpu.IdlePct}
-    >{$cpu.IdlePct}%</td
-  ></tr
->})}</tbody
+          >{$cpu.IdlePct}%</td
+        ></tr
+      >})}</tbody
     ></table
   ></div
 >;
@@ -216,28 +216,28 @@ define(function(require) {
       ></thead
     ><tbody
       >{this.List(Data).map(function($df) { return<tr  key={"df-rowby-dirname-"+$df.DirName}
-  >  <td className="text-nowrap clip12" title={$df.DevName}
-    >{$df.DevName}</td
-  >  <td className="text-nowrap clip12" title={$df.DirName}
-    >{$df.DirName}</td
-  ><td className="text-right text-nowrap"
-    ><span className="mutext" title="Inodes free"
-      >{$df.Ifree}</span
-    > {$df.Avail}</td
-  ><td className="text-right bg-usepct text-nowrap"data-usepct={$df.UsePct}
-    ><span className="mutext" title="Inodes use%"
-      >{$df.IusePct}%</span
-    > {$df.UsePct}%</td
-  ><td className="text-right text-nowrap"
-    ><span className="mutext" title="Inodes used"
-      >{$df.Iused}</span
-    > {$df.Used}</td
-  ><td className="text-right text-nowrap"
-    ><span className="mutext" title="Inodes total"
-      >{$df.Inodes}</span
-    > {$df.Total}</td
-  ></tr
->})}</tbody
+        >  <td className="text-nowrap clip12" title={$df.DevName}
+          >{$df.DevName}</td
+        >  <td className="text-nowrap clip12" title={$df.DirName}
+          >{$df.DirName}</td
+        ><td className="text-right text-nowrap"
+          ><span className="mutext" title="Inodes free"
+            >{$df.Ifree}</span
+          > {$df.Avail}</td
+        ><td className="text-right bg-usepct text-nowrap"data-usepct={$df.UsePct}
+          ><span className="mutext" title="Inodes use%"
+            >{$df.IusePct}%</span
+          > {$df.UsePct}%</td
+        ><td className="text-right text-nowrap"
+          ><span className="mutext" title="Inodes used"
+            >{$df.Iused}</span
+          > {$df.Used}</td
+        ><td className="text-right text-nowrap"
+          ><span className="mutext" title="Inodes total"
+            >{$df.Inodes}</span
+          > {$df.Total}</td
+        ></tr
+      >})}</tbody
     ></table
   ></div
 >;
@@ -322,62 +322,62 @@ define(function(require) {
       ></thead
     ><tbody
       >{this.List(Data).map(function($if) { return<tr  key={"if-rowby-name-"+$if.Name}
-  ><td className="text-nowrap clip12" title={$if.Name}
-    >{$if.Name}</td
-  ><td className="text-right"
-    >{$if.IP}</td
-  ><td className="text-right text-nowrap"
-    ><span className="mutext"
-      ><span title="Total BYTES In modulo 4G"
-        >{$if.BytesIn}</span
-      >/<span title="Total BYTES Out modulo 4G"
-        >{$if.BytesOut}</span
-      ></span
-    > <span title="BITS In per second"
-      >{$if.DeltaBitsIn}</span
-    >/<span title="BITS Out per second"
-      >{$if.DeltaBitsOut}</span
-    ></td
-  ><td className="text-right text-nowrap"
-    ><span className="mutext"
-      ><span title="Total packets In modulo 4G"
-        >{$if.PacketsIn}</span
-      >/<span title="Total packets Out modulo 4G"
-        >{$if.PacketsOut}</span
-      ></span
-    > <span title="Packets In per second"
-      >{$if.DeltaPacketsIn}</span
-    >/<span title="Packets Out per second"
-      >{$if.DeltaPacketsOut}</span
-    ></td
-  ><td className="text-right text-nowrap"
-    ><span className="mutext" title="Total drops,errors modulo 4G"
-      ><span title="Total drops In modulo 4G"
-        >{$if.DropsIn}</span
-      ><span  className={$if.DropsOut != null ? "" : "hidden"}
-        >/</span
-      ><span  className={$if.DropsOut != null ? "" : "hidden"} title="Total drops Out modulo 4G"
-        >{$if.DropsOut}</span
-      >,<span title="Total errors In modulo 4G"
-        >{$if.ErrorsIn}</span
-      >/<span title="Total errors Out modulo 4G"
-        >{$if.ErrorsOut}</span
-      ></span
-    > <span  className={(($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0")) ? "mutext" : ""}
-      ><span title="Drops In per second"
-        >{$if.DeltaDropsIn}</span
-      ><span  className={$if.DeltaDropsOut != null ? "" : "hidden"}
-        >/</span
-      ><span  className={$if.DeltaDropsOut != null ? "" : "hidden"} title="Drops Out per second"
-        >{$if.DeltaDropsOut}</span
-      >,<span title="Errors In per second"
-        >{$if.DeltaErrorsIn}</span
-      >/<span title="Errors Out per second"
-        >{$if.DeltaErrorsOut}</span
-      ></span
-    ></td
-  ></tr
->})}</tbody
+        ><td className="text-nowrap clip12" title={$if.Name}
+          >{$if.Name}</td
+        ><td className="text-right"
+          >{$if.IP}</td
+        ><td className="text-right text-nowrap"
+          ><span className="mutext"
+            ><span title="Total BYTES In modulo 4G"
+              >{$if.BytesIn}</span
+            >/<span title="Total BYTES Out modulo 4G"
+              >{$if.BytesOut}</span
+            ></span
+          > <span title="BITS In per second"
+            >{$if.DeltaBitsIn}</span
+          >/<span title="BITS Out per second"
+            >{$if.DeltaBitsOut}</span
+          ></td
+        ><td className="text-right text-nowrap"
+          ><span className="mutext"
+            ><span title="Total packets In modulo 4G"
+              >{$if.PacketsIn}</span
+            >/<span title="Total packets Out modulo 4G"
+              >{$if.PacketsOut}</span
+            ></span
+          > <span title="Packets In per second"
+            >{$if.DeltaPacketsIn}</span
+          >/<span title="Packets Out per second"
+            >{$if.DeltaPacketsOut}</span
+          ></td
+        ><td className="text-right text-nowrap"
+          ><span className="mutext" title="Total drops,errors modulo 4G"
+            ><span title="Total drops In modulo 4G"
+              >{$if.DropsIn}</span
+            ><span  className={$if.DropsOut != null ? "" : "hidden"}
+              >/</span
+            ><span  className={$if.DropsOut != null ? "" : "hidden"} title="Total drops Out modulo 4G"
+              >{$if.DropsOut}</span
+            >,<span title="Total errors In modulo 4G"
+              >{$if.ErrorsIn}</span
+            >/<span title="Total errors Out modulo 4G"
+              >{$if.ErrorsOut}</span
+            ></span
+          > <span  className={(($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0")) ? "mutext" : ""}
+            ><span title="Drops In per second"
+              >{$if.DeltaDropsIn}</span
+            ><span  className={$if.DeltaDropsOut != null ? "" : "hidden"}
+              >/</span
+            ><span  className={$if.DeltaDropsOut != null ? "" : "hidden"} title="Drops Out per second"
+              >{$if.DeltaDropsOut}</span
+            >,<span title="Errors In per second"
+              >{$if.DeltaErrorsIn}</span
+            >/<span title="Errors Out per second"
+              >{$if.DeltaErrorsOut}</span
+            ></span
+          ></td
+        ></tr
+      >})}</tbody
     ></table
   ></div
 >;
@@ -460,18 +460,18 @@ define(function(require) {
       ></thead
     ><tbody
       >{this.List(Data).map(function($mem) { return<tr  key={"mem-rowby-kind-"+$mem.Kind}
-  ><td
-    >{$mem.Kind}</td
-  ><td className="text-right"
-    >{$mem.Free}</td
-  ><td className="text-right bg-usepct"data-usepct={$mem.UsePct}
-    >{$mem.UsePct}%</td
-  ><td className="text-right"
-    >{$mem.Used}</td
-  ><td className="text-right"
-    >{$mem.Total}</td
-  ></tr
->})}</tbody
+        ><td
+          >{$mem.Kind}</td
+        ><td className="text-right"
+          >{$mem.Free}</td
+        ><td className="text-right bg-usepct"data-usepct={$mem.UsePct}
+          >{$mem.UsePct}%</td
+        ><td className="text-right"
+          >{$mem.Used}</td
+        ><td className="text-right"
+          >{$mem.Total}</td
+        ></tr
+      >})}</tbody
     ></table
   ></div
 >;
@@ -598,26 +598,26 @@ define(function(require) {
       ></thead
     ><tbody
       >{this.List(Data).map(function($ps) { return<tr  key={"ps-rowby-pid-"+$ps.PID}
-  ><td className="text-right"
-    > {$ps.PID}</td
-  ><td className="text-right"
-    > {$ps.UID}</td
-  ><td
-    >{$ps.User}</td
-  ><td className="text-right"
-    > {$ps.Priority}</td
-  ><td className="text-right"
-    > {$ps.Nice}</td
-  ><td className="text-right"
-    > {$ps.Size}</td
-  ><td className="text-right"
-    > {$ps.Resident}</td
-  ><td className="text-center"
-    >{$ps.Time}</td
-  ><td
-    >{$ps.Name}</td
-  ></tr
->})}</tbody
+        ><td className="text-right"
+          > {$ps.PID}</td
+        ><td className="text-right"
+          > {$ps.UID}</td
+        ><td
+          >{$ps.User}</td
+        ><td className="text-right"
+          > {$ps.Priority}</td
+        ><td className="text-right"
+          > {$ps.Nice}</td
+        ><td className="text-right"
+          > {$ps.Size}</td
+        ><td className="text-right"
+          > {$ps.Resident}</td
+        ><td className="text-center"
+          >{$ps.Time}</td
+        ><td
+          >{$ps.Name}</td
+        ></tr
+      >})}</tbody
     ></table
   ></div
 >;
