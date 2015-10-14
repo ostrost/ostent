@@ -28,7 +28,8 @@ html
             span.icon-bar
             span.icon-bar
             span.icon-bar
-          a.navbar-brand.clip12#hn href=/ title="hostname {{.Data.HN}}" {{.Data.HN}}
+          span.updates data-define=define_linkbrand
+            {{template "defines::define_linkbrand" .}}
 
         div.collapse.navbar-collapse#navbar-collapse
           ul.nav.navbar-nav
@@ -40,25 +41,27 @@ html
             li.navbar-text.navbar-text-marginless
               code.navbar-codeline
                 | up&nbsp;
-                span#up {{.Data.UP}}
+                span.updates data-define=define_spanup
+                  {{template "defines::define_spanup" .}}
             li.navbar-text.navbar-text-marginless
               code.navbar-codeline
                 | la&nbsp;
-                span#la {{.Data.LA}}
+                span.updates data-define=define_spanla
+                  {{template "defines::define_spanla" .}}
 
     div.container-fluid
       div.row
-        div.col-md-4.col-md-offset-1#mem
+        div.col-md-4.col-md-offset-1.updates data-define=define_panelmem
           {{template "defines::define_panelmem" .}}
-        div.col-md-6#df
+        div.col-md-6.updates data-define=define_paneldf
           {{template "defines::define_paneldf" .}}
       div.row
-        div.col-md-4.col-md-offset-1#cpu
+        div.col-md-4.col-md-offset-1.updates data-define=define_panelcpu
           {{template "defines::define_panelcpu" .}}
-        div.col-md-6#if
+        div.col-md-6.updates data-define=define_panelif
           {{template "defines::define_panelif" .}}
       div.row
-        div.col-md-10.col-md-offset-1#ps
+        div.col-md-10.col-md-offset-1.updates data-define=define_panelps
           {{template "defines::define_panelps" .}}
 
     = javascript

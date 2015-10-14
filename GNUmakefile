@@ -107,8 +107,8 @@ share/assets/js/min/index.min.js: $(shell find share/assets/js/src/ -type f)
 
 share/templates/index.html: share/ace.templates/index.ace share/ace.templates/defines.ace $(otemplatepp)
 	$(otemplatepp) -defines share/ace.templates/defines.ace -output $@ $<
-share/tmp/jsdefines.jsx: share/ace.templates/defines.ace $(otemplatepp)
-	$(otemplatepp) -defines share/ace.templates/defines.ace -output $@ -javascript
+share/tmp/jsdefines.jsx: share/ace.templates/jsdefines.jstmpl share/ace.templates/defines.ace $(otemplatepp)
+	$(otemplatepp) -defines share/ace.templates/defines.ace -output $@ -javascript $<
 
 $(templates_bingo) $(templates_devgo): $(shell find share/templates/ -type f \! -name \*.go)
 

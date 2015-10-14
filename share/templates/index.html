@@ -30,8 +30,8 @@
             ><span class="icon-bar"
               ></span
             ></button
-          ><a id="hn" class="navbar-brand clip12" href="/" title="hostname {{.Data.HN}}"
-            >{{.Data.HN}}</a
+          ><span class="updates" data-define="define_linkbrand"
+            >{{template "defines::define_linkbrand" .}}</span
           ></div
         ><div id="navbar-collapse" class="collapse navbar-collapse"
           ><ul class="nav navbar-nav"
@@ -45,14 +45,14 @@
               ></li
             ><li class="navbar-text navbar-text-marginless"
               ><code class="navbar-codeline"
-                >up&nbsp;<span id="up"
-                  >{{.Data.UP}}</span
+                >up&nbsp;<span class="updates" data-define="define_spanup"
+                  >{{template "defines::define_spanup" .}}</span
                 ></code
               ></li
             ><li class="navbar-text navbar-text-marginless"
               ><code class="navbar-codeline"
-                >la&nbsp;<span id="la"
-                  >{{.Data.LA}}</span
+                >la&nbsp;<span class="updates" data-define="define_spanla"
+                  >{{template "defines::define_spanla" .}}</span
                 ></code
               ></li
             ></ul
@@ -61,19 +61,19 @@
       ></nav
     ><div class="container-fluid"
       ><div class="row"
-        ><div id="mem" class="col-md-4 col-md-offset-1"
+        ><div class="col-md-4 col-md-offset-1 updates" data-define="define_panelmem"
           >{{template "defines::define_panelmem" .}}</div
-        ><div id="df" class="col-md-6"
+        ><div class="col-md-6 updates" data-define="define_paneldf"
           >{{template "defines::define_paneldf" .}}</div
         ></div
       ><div class="row"
-        ><div id="cpu" class="col-md-4 col-md-offset-1"
+        ><div class="col-md-4 col-md-offset-1 updates" data-define="define_panelcpu"
           >{{template "defines::define_panelcpu" .}}</div
-        ><div id="if" class="col-md-6"
+        ><div class="col-md-6 updates" data-define="define_panelif"
           >{{template "defines::define_panelif" .}}</div
         ></div
       ><div class="row"
-        ><div id="ps" class="col-md-10 col-md-offset-1"
+        ><div class="col-md-10 col-md-offset-1 updates" data-define="define_panelps"
           >{{template "defines::define_panelps" .}}</div
         ></div
       ></div
@@ -87,6 +87,9 @@
 >{{end}}{{/*
 */}}{{define "defines::alink_badgeright"}}<a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}  
   >{{.Text}} {{.Badge}}</a
+>{{end}}{{/*
+*/}}{{define "defines::define_linkbrand"}}<a {{class}}="navbar-brand clip12" href="/"   {{TitlePrefixed "hostname " .Data.HN}}
+  >{{.Data.HN}}</a
 >{{end}}{{/*
 */}}{{define "defines::define_panelcpu"}}{{$p := .Data.Params}}<div {{ClassPositive $p.CPUn "" "panel panel-default"}}
   ><div class="h4 padding-left-like-panel-heading"
@@ -450,6 +453,12 @@
       >{{jsx `})}`}}{{end}}</tbody
     ></table
   ></div
+>{{end}}{{/*
+*/}}{{define "defines::define_spanla"}}<span
+  >{{.Data.LA}}</span
+>{{end}}{{/*
+*/}}{{define "defines::define_spanup"}}<span
+  >{{.Data.UP}}</span
 >{{end}}{{/*
 */}}{{define "defines::thvlink"}}<th {{class}}="header {{.AlignClass}}"
   ><a href={{.LinkHref}} {{class}}={{.LinkClass}} onClick={this.handleClick}  

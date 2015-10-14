@@ -5,6 +5,28 @@ var _typeofReactElement = typeof Symbol === 'function' && Symbol['for'] && Symbo
 define(function (require) {
   var React = require('react');
   var jsdefines = {};
+  jsdefines.StateHandlingMixin = { // requires .Reduce method
+    getInitialState: function getInitialState() {
+      return this.StateFrom(Data); // global Data
+    },
+    NewState: function NewState(data) {
+      var state = this.StateFrom(data);
+      if (state != null) {
+        this.setState(state);
+      }
+    },
+    StateFrom: function StateFrom(data) {
+      var state = this.Reduce(data);
+      if (state != null) {
+        for (var key in state) {
+          if (state[key] == null) {
+            delete state[key];
+          }
+        }
+      }
+      return state;
+    }
+  };
   jsdefines.HandlerMixin = {
     handleClick: function handleClick(e) {
       var href = e.target.getAttribute('href');
@@ -18,32 +40,55 @@ define(function (require) {
       return void 0;
     }
   };
-  // all the define_* templates transformed into jsdefines.define_* = ...;
+
+  // transformed from define_* templates:
+
+  jsdefines.define_linkbrand = React.createClass({
+    displayName: 'define_linkbrand',
+
+    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+    Reduce: function Reduce(data) {
+      return {
+        HN: data.HN
+      };
+    },
+    render: function render() {
+      var Data = this.state; // shadow global Data
+      return {
+        $$typeof: _typeofReactElement,
+        type: 'a',
+        key: null,
+        ref: null,
+        props: {
+          children: Data.HN,
+          className: 'navbar-brand clip12',
+          href: '/',
+          title: "hostname " + Data.HN
+        },
+        _owner: null
+      };
+    }
+  });
 
   jsdefines.define_panelcpu = React.createClass({
     displayName: 'define_panelcpu',
 
-    mixins: [React.addons.PureRenderMixin, jsdefines.HandlerMixin],
+    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     List: function List(data) {
-      // static
-      var list;
+      var list = undefined;
       if (data != null && data["CPU"] != null && (list = data["CPU"].List) != null) {
         return list;
       }
       return [];
     },
     Reduce: function Reduce(data) {
-      // static
       return {
         Params: data.Params,
         CPU: data.CPU
       };
     },
-    getInitialState: function getInitialState() {
-      return this.Reduce(Data); // global Data
-    },
     render: function render() {
-      var Data = this.state;
+      var Data = this.state; // shadow global Data
       return {
         $$typeof: _typeofReactElement,
         type: 'div',
@@ -403,27 +448,22 @@ define(function (require) {
   jsdefines.define_paneldf = React.createClass({
     displayName: 'define_paneldf',
 
-    mixins: [React.addons.PureRenderMixin, jsdefines.HandlerMixin],
+    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     List: function List(data) {
-      // static
-      var list;
+      var list = undefined;
       if (data != null && data["DF"] != null && (list = data["DF"].List) != null) {
         return list;
       }
       return [];
     },
     Reduce: function Reduce(data) {
-      // static
       return {
         Params: data.Params,
         DF: data.DF
       };
     },
-    getInitialState: function getInitialState() {
-      return this.Reduce(Data); // global Data
-    },
     render: function render() {
-      var Data = this.state;
+      var Data = this.state; // shadow global Data
       return {
         $$typeof: _typeofReactElement,
         type: 'div',
@@ -976,27 +1016,22 @@ define(function (require) {
   jsdefines.define_panelif = React.createClass({
     displayName: 'define_panelif',
 
-    mixins: [React.addons.PureRenderMixin, jsdefines.HandlerMixin],
+    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     List: function List(data) {
-      // static
-      var list;
+      var list = undefined;
       if (data != null && data["IF"] != null && (list = data["IF"].List) != null) {
         return list;
       }
       return [];
     },
     Reduce: function Reduce(data) {
-      // static
       return {
         Params: data.Params,
         IF: data.IF
       };
     },
-    getInitialState: function getInitialState() {
-      return this.Reduce(Data); // global Data
-    },
     render: function render() {
-      var Data = this.state;
+      var Data = this.state; // shadow global Data
       return {
         $$typeof: _typeofReactElement,
         type: 'div',
@@ -1590,27 +1625,22 @@ define(function (require) {
   jsdefines.define_panelmem = React.createClass({
     displayName: 'define_panelmem',
 
-    mixins: [React.addons.PureRenderMixin, jsdefines.HandlerMixin],
+    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     List: function List(data) {
-      // static
-      var list;
+      var list = undefined;
       if (data != null && data["MEM"] != null && (list = data["MEM"].List) != null) {
         return list;
       }
       return [];
     },
     Reduce: function Reduce(data) {
-      // static
       return {
         Params: data.Params,
         MEM: data.MEM
       };
     },
-    getInitialState: function getInitialState() {
-      return this.Reduce(Data); // global Data
-    },
     render: function render() {
-      var Data = this.state;
+      var Data = this.state; // shadow global Data
       return {
         $$typeof: _typeofReactElement,
         type: 'div',
@@ -1966,27 +1996,22 @@ define(function (require) {
   jsdefines.define_panelps = React.createClass({
     displayName: 'define_panelps',
 
-    mixins: [React.addons.PureRenderMixin, jsdefines.HandlerMixin],
+    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     List: function List(data) {
-      // static
-      var list;
+      var list = undefined;
       if (data != null && data["PS"] != null && (list = data["PS"].List) != null) {
         return list;
       }
       return [];
     },
     Reduce: function Reduce(data) {
-      // static
       return {
         Params: data.Params,
         PS: data.PS
       };
     },
-    getInitialState: function getInitialState() {
-      return this.Reduce(Data); // global Data
-    },
     render: function render() {
-      var Data = this.state;
+      var Data = this.state; // shadow global Data
       return {
         $$typeof: _typeofReactElement,
         type: 'div',
@@ -2609,5 +2634,54 @@ define(function (require) {
       };
     }
   });
+
+  jsdefines.define_spanla = React.createClass({
+    displayName: 'define_spanla',
+
+    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+    Reduce: function Reduce(data) {
+      return {
+        LA: data.LA
+      };
+    },
+    render: function render() {
+      var Data = this.state; // shadow global Data
+      return {
+        $$typeof: _typeofReactElement,
+        type: 'span',
+        key: null,
+        ref: null,
+        props: {
+          children: Data.LA
+        },
+        _owner: null
+      };
+    }
+  });
+
+  jsdefines.define_spanup = React.createClass({
+    displayName: 'define_spanup',
+
+    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+    Reduce: function Reduce(data) {
+      return {
+        UP: data.UP
+      };
+    },
+    render: function render() {
+      var Data = this.state; // shadow global Data
+      return {
+        $$typeof: _typeofReactElement,
+        type: 'span',
+        key: null,
+        ref: null,
+        props: {
+          children: Data.UP
+        },
+        _owner: null
+      };
+    }
+  });
+
   return jsdefines;
 });

@@ -60,7 +60,7 @@ require ['jquery', 'react', 'reactDOM', 'jsdefines', 'domReady', 'bscollapse'],
       if !conn? ||
          conn.readyState != conn.OPEN
         console.log('Not connected, cannot send search', search)
-        return
+        return null
       return conn.send(JSON.stringify({Search: search}))
     init = () ->
       hostport = window.location.hostname +
@@ -88,29 +88,11 @@ require ['jquery', 'react', 'reactDOM', 'jsdefines', 'domReady', 'bscollapse'],
       close: () -> conn.close()
     }
 
-  @TextClass = (reduce) -> React.createClass
-    Reduce: (data) ->
-      v = reduce(data)
-      return {Text: v} if v?
-    getInitialState: () -> @Reduce(Data) # a global Data
-    render: () -> React.DOM.span(null, @state.Text)
-
-  @setState = (obj, data) ->
-    if data?
-      delete data[key] for key of data when !data[key]?
-      return obj.setState(data)
-
   update = () ->
-    render = (id, cl) ->
-      ReactDOM.render(React.createElement(cl), document.getElementById(id))
-    HN  = render('hn', TextClass((data) -> data?.HN))
-    UP  = render('up', TextClass((data) -> data?.UP))
-    LA  = render('la', TextClass((data) -> data?.LA))
-    MEM = render('mem', jsdefines.define_panelmem)
-    PS  = render('ps',  jsdefines.define_panelps)
-    DF  = render('df',  jsdefines.define_paneldf)
-    CPU = render('cpu', jsdefines.define_panelcpu)
-    IF  = render('if',  jsdefines.define_panelif)
+    render_define = (el) ->
+      cl = jsdefines[$(el).attr('data-define')]
+      ReactDOM.render(React.createElement(cl), el)
+    els = (render_define(el) for el in $('.updates'))
 
     onmessage = (event) ->
       data = JSON.parse(event.data)
@@ -127,18 +109,7 @@ require ['jquery', 'react', 'reactDOM', 'jsdefines', 'domReady', 'bscollapse'],
         console.log 'Error', data.Error
         return
 
-      setState(HN,  HN.Reduce(data))
-      setState(UP,  UP.Reduce(data))
-      setState(LA,  LA.Reduce(data))
-      setState(PS,  PS.Reduce(data))
-      setState(MEM, MEM.Reduce(data))
-      setState(CPU, CPU.Reduce(data))
-      setState(IF,  IF.Reduce(data))
-      setState(DF,  DF.Reduce(data))
-
-      if data.Location?
-        history.pushState({}, '', data.Location)
-
+      el.NewState(data) for el in els
       return
 
     window.updates = newwebsocket(onmessage)
@@ -149,6 +120,7 @@ require ['jquery', 'react', 'reactDOM', 'jsdefines', 'domReady', 'bscollapse'],
     domReady () ->
       update() unless (42 for param in location.search.substr(1).split(
         '&') when (param.split('=')[0] == 'still')).length
+      return null
 
 # Local variables:
 # coffee-tab-width: 2

@@ -16,6 +16,13 @@ func (f HTMLFuncs) Colspan() string { return "colspan" }
 func (f JSXFuncs) JSX(s string) template.HTML        { return template.HTML(s) }
 func (f HTMLFuncs) JSX(string) (empty template.HTML) { return }
 
+func (f JSXFuncs) TitlePrefixed(prefix string, v interface{}) template.HTMLAttr {
+	return SprintfAttr(` title={%q + %s}`, prefix, v.(Uncurler).Uncurl())
+}
+func (f HTMLFuncs) TitlePrefixed(prefix string, v interface{}) template.HTMLAttr {
+	return SprintfAttr(` title="%s %s"`, prefix, v.(string))
+}
+
 func (f JSXFuncs) ClassAllZero(x1, x2, y1, y2 interface{}, class string) template.HTMLAttr {
 	return SprintfAttr(" className={(%s && %s && %s && %s) ? %q : \"\"}",
 		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", x1.(Uncurler).Uncurl()),
@@ -207,6 +214,7 @@ func MakeMap(f Functor) template.FuncMap {
 		"colspan": f.Colspan,
 		"jsx":     f.JSX,
 
+		"TitlePrefixed": f.TitlePrefixed,
 		"ClassAllZero":  f.ClassAllZero,
 		"ClassNonNil":   f.ClassNonNil,
 		"ClassNonZero":  f.ClassNonZero,
@@ -231,6 +239,7 @@ type Functor interface {
 	Class() string
 	Colspan() string
 	JSX(string) template.HTML
+	TitlePrefixed(string, interface{}) template.HTMLAttr
 	ClassAllZero(interface{}, interface{}, interface{}, interface{}, string) template.HTMLAttr
 	ClassNonNil(interface{}, string, string) template.HTMLAttr
 	ClassNonZero(interface{}, string, string) template.HTMLAttr

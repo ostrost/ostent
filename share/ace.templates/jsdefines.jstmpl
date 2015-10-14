@@ -1,0 +1,67 @@
+define(function(require) {
+  let React = require('react');
+  let jsdefines = {};
+  jsdefines.StateHandlingMixin = { // requires .Reduce method
+    getInitialState: function() {
+      return this.StateFrom(Data); // global Data
+    },
+    NewState: function(data) {
+      let state = this.StateFrom(data);
+      if (state != null) {
+        this.setState(state);
+      }
+    },
+    StateFrom: function(data) {
+      let state = this.Reduce(data);
+      if (state != null) {
+        for (let key in state) {
+          if (state[key] == null) {
+            delete state[key];
+          }
+        }
+      }
+      return state;
+    }
+  };
+  jsdefines.HandlerMixin = {
+    handleClick: function(e) {
+      let href = e.target.getAttribute('href');
+      if (href == null) {
+        href = $(e.target).parent().get(0).getAttribute('href');
+      }
+      history.pushState({}, '', href);
+      window.updates.sendSearch(href);
+      e.stopPropagation();
+      e.preventDefault();
+      return void 0;
+    }
+  };
+
+  // transformed from define_* templates:
+{{range $d := .Defines}}{{$q := printf "%q" $d.Iterable}}
+  jsdefines.{{$d.ShortName}} = React.createClass({
+    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+    {{if .NeedList}}{{/*
+*/}}List: function(data) {
+      let list;
+      if (data != null && data[{{$q}}] != null && (list = data[{{$q}}].List) != null) {
+        return list;
+      }
+      return [];
+    },
+    {{end}}{{/*
+*/}}Reduce: function(data) {
+      return {
+        {{if .UsesParams}}Params: data.Params,
+        {{end}}{{/*
+*/}}{{$d.Iterable}}: data.{{$d.Iterable}}
+      };
+    },
+    render: function() {
+      let Data = this.state; // shadow global Data
+      return {{$d.JSX}};
+    }
+  });
+{{end}}
+  return jsdefines;
+});

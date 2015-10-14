@@ -47,7 +47,7 @@ func main() {
 	flag.Parse()
 
 	inputFile := flag.Arg(0)
-	if !definesMode && !jsdefinesMode && inputFile == "" {
+	if !definesMode && inputFile == "" {
 		fmt.Fprintf(os.Stderr, "No template specified.\n")
 		flag.Usage() // exits 64
 		return
@@ -99,6 +99,9 @@ func main() {
 		return
 	}
 
+	jstemplate, err := templatetext.ParseFiles(inputFile)
+	check(err)
+
 	definesonly := templatetext.New("jsdefines").
 		Funcs(templatetext.FuncMap(aceopts.FuncMap))
 
@@ -106,7 +109,11 @@ func main() {
 	sort.Stable(definesTemplates)
 
 	for _, t := range definesTemplates {
-		name, tree := definesAce.Basename+t.Name(), t.Tree
+		name := t.Name()
+		if !strings.HasPrefix(name, definesAce.Basename+"::") {
+			name = definesAce.Basename + name
+		}
+		tree := t.Tree
 		if prettyprint {
 			text := Format(true, tree.Root.String(), defaultNoclose)
 			pretty, err := templatetext.New(name).
@@ -118,34 +125,27 @@ func main() {
 		check(err)
 	}
 
-	buf := new(bytes.Buffer)
-	fmt.Fprintf(buf, `define(function(require) {
-  var React = require('react');
-  var jsdefines = {};
-  jsdefines.HandlerMixin = {
-    handleClick: function(e) {
-      var href = e.target.getAttribute('href');
-      if (href == null) {
-        href = $(e.target).parent().get(0).getAttribute('href');
-      }
-      history.pushState({}, '', href);
-      window.updates.sendSearch(href);
-      e.stopPropagation();
-      e.preventDefault();
-      return void 0;
-    }
-  };
-  // all the define_* templates transformed into jsdefines.define_* = ...;
-`)
+	jdata := struct{ Defines []Define }{}
 	for _, t := range definesTemplates {
-		if tname := t.Name(); strings.HasPrefix(tname, "::define_") {
-			check(WriteJsdefine(definesonly, tname[2:], definesAce.Basename+tname, buf))
+		names := strings.Split(t.Name(), "::")
+		tname := names[len(names)-1]
+		if strings.HasPrefix(tname, "define_") {
+			define, err := MakeDefine(definesonly, tname, definesAce.Basename+"::"+tname)
+			check(err)
+			jdata.Defines = append(jdata.Defines, define)
 		}
 	}
-	fmt.Fprintf(buf, `  return jsdefines;
-});
-`)
+	buf := new(bytes.Buffer)
+	check(jstemplate.Execute(buf, jdata))
 	check(WriteFile(outputFile, buf.String()))
+}
+
+type Define struct {
+	ShortName  string
+	Iterable   string
+	NeedList   bool
+	UsesParams bool
+	JSX        string
 }
 
 // SortableTemplates is for just sorting.
@@ -155,55 +155,40 @@ func (st SortableTemplates) Len() int           { return len(st) }
 func (st SortableTemplates) Less(i, j int) bool { return st[i].Name() < st[j].Name() }
 func (st SortableTemplates) Swap(i, j int)      { st[i], st[j] = st[j], st[i] }
 
-func WriteJsdefine(definesonly *templatetext.Template, shortname, fullname string, buf *bytes.Buffer) error {
+func MakeDefine(definesonly *templatetext.Template, shortname, fullname string) (Define, error) {
+	define := Define{ShortName: shortname}
 	t, err := definesonly.Clone()
 	if err != nil {
-		return err
+		return define, err
 	}
 	if t, err = t.Parse(fmt.Sprintf(`{{template %q .}}`, fullname)); err != nil {
-		return err
+		return define, err
 	}
+
 	data := templatepipe.Data(Curly, t)
-	var iterable string
-	for k := range data.(templatepipe.Nota)["Data"].(templatepipe.Nota) {
-		if k != "." && k != "Params" {
-			if iterable != "" {
-				return fmt.Errorf("Key %q is second: iterable already by %q", k, iterable)
+	if nota, ok := data.(templatepipe.Nota); ok {
+		for k, v := range nota["Data"].(templatepipe.Nota) {
+			if k == "Params" {
+				define.UsesParams = true
+			} else if k != "." {
+				if define.Iterable != "" {
+					return define, fmt.Errorf("Key %q is second: iterable already by %q", k, define.Iterable)
+				}
+				define.Iterable = k
+				if n, ok := v.(templatepipe.Nota); ok {
+					if _, ok := n["List"]; ok {
+						define.NeedList = true
+					}
+				}
 			}
-			iterable = k
 		}
 	}
 	html := new(bytes.Buffer)
 	if err := t.Execute(html, data); err != nil {
-		return err
+		return define, err
 	}
-
-	fmt.Fprintf(buf, `
-  jsdefines.%[1]s = React.createClass({
-    mixins: [React.addons.PureRenderMixin, jsdefines.HandlerMixin],
-    List: function(data) { // static
-      var list;
-      if (data != null && data[%[2]q] != null && (list = data[%[2]q].List) != null) {
-        return list;
-      }
-      return [];
-    },
-    Reduce: function(data) { // static
-      return {
-        Params: data.Params,
-        %[2]s: data.%[2]s
-      };
-    },
-    getInitialState: function() {
-      return this.Reduce(Data); // global Data
-    },
-    render: function() {
-      var Data = this.state;
-      return %[3]s;
-    }
-  });
-`, shortname, iterable, html.String())
-	return nil
+	define.JSX = html.String()
+	return define, nil
 }
 
 var vtype = reflect.TypeOf(templatepipe.Nota(nil))

@@ -69,7 +69,7 @@
         }
         if ((conn == null) || conn.readyState !== conn.OPEN) {
           console.log('Not connected, cannot send search', search);
-          return;
+          return null;
         }
         return conn.send(JSON.stringify({
           Search: search
@@ -102,57 +102,25 @@
         }
       };
     };
-    this.TextClass = function(reduce) {
-      return React.createClass({
-        Reduce: function(data) {
-          var v;
-          v = reduce(data);
-          if (v != null) {
-            return {
-              Text: v
-            };
-          }
-        },
-        getInitialState: function() {
-          return this.Reduce(Data);
-        },
-        render: function() {
-          return React.DOM.span(null, this.state.Text);
-        }
-      });
-    };
-    this.setState = function(obj, data) {
-      var key;
-      if (data != null) {
-        for (key in data) {
-          if (data[key] == null) {
-            delete data[key];
-          }
-        }
-        return obj.setState(data);
-      }
-    };
     update = function() {
-      var CPU, DF, HN, IF, LA, MEM, PS, UP, onmessage, render;
-      render = function(id, cl) {
-        return ReactDOM.render(React.createElement(cl), document.getElementById(id));
+      var el, els, onmessage, render_define;
+      render_define = function(el) {
+        var cl;
+        cl = jsdefines[$(el).attr('data-define')];
+        return ReactDOM.render(React.createElement(cl), el);
       };
-      HN = render('hn', TextClass(function(data) {
-        return data != null ? data.HN : void 0;
-      }));
-      UP = render('up', TextClass(function(data) {
-        return data != null ? data.UP : void 0;
-      }));
-      LA = render('la', TextClass(function(data) {
-        return data != null ? data.LA : void 0;
-      }));
-      MEM = render('mem', jsdefines.define_panelmem);
-      PS = render('ps', jsdefines.define_panelps);
-      DF = render('df', jsdefines.define_paneldf);
-      CPU = render('cpu', jsdefines.define_panelcpu);
-      IF = render('if', jsdefines.define_panelif);
+      els = (function() {
+        var i, len, ref, results;
+        ref = $('.updates');
+        results = [];
+        for (i = 0, len = ref.length; i < len; i++) {
+          el = ref[i];
+          results.push(render_define(el));
+        }
+        return results;
+      })();
       onmessage = function(event) {
-        var data;
+        var data, i, len;
         data = JSON.parse(event.data);
         if (data == null) {
           return;
@@ -170,16 +138,9 @@
           console.log('Error', data.Error);
           return;
         }
-        setState(HN, HN.Reduce(data));
-        setState(UP, UP.Reduce(data));
-        setState(LA, LA.Reduce(data));
-        setState(PS, PS.Reduce(data));
-        setState(MEM, MEM.Reduce(data));
-        setState(CPU, CPU.Reduce(data));
-        setState(IF, IF.Reduce(data));
-        setState(DF, DF.Reduce(data));
-        if (data.Location != null) {
-          history.pushState({}, '', data.Location);
+        for (i = 0, len = els.length; i < len; i++) {
+          el = els[i];
+          el.NewState(data);
         }
       };
       window.updates = newwebsocket(onmessage);
@@ -199,8 +160,9 @@
           }
           return results;
         })()).length) {
-          return update();
+          update();
         }
+        return null;
       });
     });
   });

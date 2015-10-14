@@ -1,9 +1,31 @@
 define(function(require) {
-  var React = require('react');
-  var jsdefines = {};
+  let React = require('react');
+  let jsdefines = {};
+  jsdefines.StateHandlingMixin = { // requires .Reduce method
+    getInitialState: function() {
+      return this.StateFrom(Data); // global Data
+    },
+    NewState: function(data) {
+      let state = this.StateFrom(data);
+      if (state != null) {
+        this.setState(state);
+      }
+    },
+    StateFrom: function(data) {
+      let state = this.Reduce(data);
+      if (state != null) {
+        for (let key in state) {
+          if (state[key] == null) {
+            delete state[key];
+          }
+        }
+      }
+      return state;
+    }
+  };
   jsdefines.HandlerMixin = {
     handleClick: function(e) {
-      var href = e.target.getAttribute('href');
+      let href = e.target.getAttribute('href');
       if (href == null) {
         href = $(e.target).parent().get(0).getAttribute('href');
       }
@@ -14,28 +36,41 @@ define(function(require) {
       return void 0;
     }
   };
-  // all the define_* templates transformed into jsdefines.define_* = ...;
+
+  // transformed from define_* templates:
+
+  jsdefines.define_linkbrand = React.createClass({
+    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+    Reduce: function(data) {
+      return {
+        HN: data.HN
+      };
+    },
+    render: function() {
+      let Data = this.state; // shadow global Data
+      return <a className="navbar-brand clip12" href="/"    title={"hostname " + Data.HN}
+  >{Data.HN}</a
+>;
+    }
+  });
 
   jsdefines.define_panelcpu = React.createClass({
-    mixins: [React.addons.PureRenderMixin, jsdefines.HandlerMixin],
-    List: function(data) { // static
-      var list;
+    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+    List: function(data) {
+      let list;
       if (data != null && data["CPU"] != null && (list = data["CPU"].List) != null) {
         return list;
       }
       return [];
     },
-    Reduce: function(data) { // static
+    Reduce: function(data) {
       return {
         Params: data.Params,
         CPU: data.CPU
       };
     },
-    getInitialState: function() {
-      return this.Reduce(Data); // global Data
-    },
     render: function() {
-      var Data = this.state;
+      let Data = this.state; // shadow global Data
       return <div  className={!Data.Params.CPUn.Negative ? "" : "panel panel-default"}
   ><div className="h4 padding-left-like-panel-heading"
     ><a  href={Data.Params.Tlinks.CPUn} onClick={this.handleClick}
@@ -115,25 +150,22 @@ define(function(require) {
   });
 
   jsdefines.define_paneldf = React.createClass({
-    mixins: [React.addons.PureRenderMixin, jsdefines.HandlerMixin],
-    List: function(data) { // static
-      var list;
+    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+    List: function(data) {
+      let list;
       if (data != null && data["DF"] != null && (list = data["DF"].List) != null) {
         return list;
       }
       return [];
     },
-    Reduce: function(data) { // static
+    Reduce: function(data) {
       return {
         Params: data.Params,
         DF: data.DF
       };
     },
-    getInitialState: function() {
-      return this.Reduce(Data); // global Data
-    },
     render: function() {
-      var Data = this.state;
+      let Data = this.state; // shadow global Data
       return <div  className={!Data.Params.Dfn.Negative ? "" : "panel panel-default"}
   ><div className="h4 padding-left-like-panel-heading"
     ><a  href={Data.Params.Tlinks.Dfn} onClick={this.handleClick}
@@ -245,25 +277,22 @@ define(function(require) {
   });
 
   jsdefines.define_panelif = React.createClass({
-    mixins: [React.addons.PureRenderMixin, jsdefines.HandlerMixin],
-    List: function(data) { // static
-      var list;
+    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+    List: function(data) {
+      let list;
       if (data != null && data["IF"] != null && (list = data["IF"].List) != null) {
         return list;
       }
       return [];
     },
-    Reduce: function(data) { // static
+    Reduce: function(data) {
       return {
         Params: data.Params,
         IF: data.IF
       };
     },
-    getInitialState: function() {
-      return this.Reduce(Data); // global Data
-    },
     render: function() {
-      var Data = this.state;
+      let Data = this.state; // shadow global Data
       return <div  className={!Data.Params.Ifn.Negative ? "" : "panel panel-default"}
   ><div className="h4 padding-left-like-panel-heading"
     ><a  href={Data.Params.Tlinks.Ifn} onClick={this.handleClick}
@@ -385,25 +414,22 @@ define(function(require) {
   });
 
   jsdefines.define_panelmem = React.createClass({
-    mixins: [React.addons.PureRenderMixin, jsdefines.HandlerMixin],
-    List: function(data) { // static
-      var list;
+    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+    List: function(data) {
+      let list;
       if (data != null && data["MEM"] != null && (list = data["MEM"].List) != null) {
         return list;
       }
       return [];
     },
-    Reduce: function(data) { // static
+    Reduce: function(data) {
       return {
         Params: data.Params,
         MEM: data.MEM
       };
     },
-    getInitialState: function() {
-      return this.Reduce(Data); // global Data
-    },
     render: function() {
-      var Data = this.state;
+      let Data = this.state; // shadow global Data
       return <div  className={!Data.Params.Memn.Negative ? "" : "panel panel-default"}
   ><div className="h4 padding-left-like-panel-heading"
     ><a  href={Data.Params.Tlinks.Memn} onClick={this.handleClick}
@@ -479,25 +505,22 @@ define(function(require) {
   });
 
   jsdefines.define_panelps = React.createClass({
-    mixins: [React.addons.PureRenderMixin, jsdefines.HandlerMixin],
-    List: function(data) { // static
-      var list;
+    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+    List: function(data) {
+      let list;
       if (data != null && data["PS"] != null && (list = data["PS"].List) != null) {
         return list;
       }
       return [];
     },
-    Reduce: function(data) { // static
+    Reduce: function(data) {
       return {
         Params: data.Params,
         PS: data.PS
       };
     },
-    getInitialState: function() {
-      return this.Reduce(Data); // global Data
-    },
     render: function() {
-      var Data = this.state;
+      let Data = this.state; // shadow global Data
       return <div  className={!Data.Params.Psn.Negative ? "" : "panel panel-default"}
   ><div className="h4 padding-left-like-panel-heading"
     ><a  href={Data.Params.Tlinks.Psn} onClick={this.handleClick}
@@ -623,5 +646,36 @@ define(function(require) {
 >;
     }
   });
+
+  jsdefines.define_spanla = React.createClass({
+    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+    Reduce: function(data) {
+      return {
+        LA: data.LA
+      };
+    },
+    render: function() {
+      let Data = this.state; // shadow global Data
+      return <span
+  >{Data.LA}</span
+>;
+    }
+  });
+
+  jsdefines.define_spanup = React.createClass({
+    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+    Reduce: function(data) {
+      return {
+        UP: data.UP
+      };
+    },
+    render: function() {
+      let Data = this.state; // shadow global Data
+      return <span
+  >{Data.UP}</span
+>;
+    }
+  });
+
   return jsdefines;
 });

@@ -40,6 +40,13 @@
     | <a href={{.LinkHref}} {{class}}={{.LinkClass}} onClick={this.handleClick}
     |   >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>
 
+= content define_linkbrand
+  | <a {{class}}="navbar-brand clip12" href="/"
+  |    {{TitlePrefixed "hostname " .Data.HN}}>{{.Data.HN}}</a>
+
+{{define "defines::define_spanla"}}<span>{{.Data.LA}}</span>{{end}}
+{{define "defines::define_spanup"}}<span>{{.Data.UP}}</span>{{end}}
+
 = content define_panelmem
   {{$p := .Data.Params}}
   [[template "startpanel" Chain `$p.Memn` `$p.Memd` "Memory"]]
