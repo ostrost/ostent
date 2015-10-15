@@ -62,10 +62,16 @@ func (c *Context) Ranging(rangeNode *parse.RangeNode, na NodeArgs) {
 
 func (c *Context) Node(node parse.Node, na NodeArgs) {
 	switch node.Type() {
-	// plain recursives:
+	// straightforward recursives:
 	case parse.NodeCommand:
 		for _, n := range node.(*parse.CommandNode).Args {
 			c.Node(n, na)
+		}
+	case parse.NodeIf:
+		fi := node.(*parse.IfNode)
+		c.Node(fi.List, na)
+		if fi.ElseList != nil {
+			c.Node(fi.ElseList, na)
 		}
 	case parse.NodeList:
 		for _, n := range node.(*parse.ListNode).Nodes {
@@ -75,17 +81,17 @@ func (c *Context) Node(node parse.Node, na NodeArgs) {
 		for _, n := range node.(*parse.PipeNode).Cmds {
 			c.Node(n, na)
 		}
-
-	// recursives:
-	case parse.NodeAction:
-		an := node.(*parse.ActionNode)
-		na.Decl = an.Pipe.Decl // !
-		c.Node(an.Pipe, na)
 	case parse.NodeWith:
 		with := node.(*parse.WithNode)
 		c.Node(with.Pipe, na)
 		c.Node(with.List, na)
 		c.Node(with.ElseList, na)
+
+	// other recursives:
+	case parse.NodeAction:
+		an := node.(*parse.ActionNode)
+		na.Decl = an.Pipe.Decl // !
+		c.Node(an.Pipe, na)
 	case parse.NodeTemplate:
 		t := node.(*parse.TemplateNode)
 		c.Node(t.Pipe, na)

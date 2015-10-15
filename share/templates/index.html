@@ -41,7 +41,7 @@
               ></li
             ><li class="navbar-text navbar-text-marginless first-text"
               ><code class="navbar-codeline"
-                >os {{.Data.DISTRIB}}</code
+                >os {{.Distrib}}</code
               ></li
             ><li class="navbar-text navbar-text-marginless"
               ><code class="navbar-codeline"
@@ -138,7 +138,7 @@
         ></tr
       ></thead
     ><tbody
-      >{{range $cpu := .Data.CPU.List}}{{jsx `{this.List(Data).map(function($cpu) { return`}}<tr {{Key "cpu-rowby-N" $cpu.N}}
+      >{{if .Data.CPU}}{{range $cpu := .Data.CPU.List}}{{jsx `{this.List(Data).map(function($cpu) { return`}}<tr {{Key "cpu-rowby-N" $cpu.N}}
         ><td class="text-right text-nowrap"
           >{{$cpu.N}}</td
         ><td {{class}}="text-right bg-usepct"
@@ -154,7 +154,7 @@
   data-usepct={{$cpu.IdlePct}}
           >{{$cpu.IdlePct}}%</td
         ></tr
-      >{{jsx `})}`}}{{end}}</tbody
+      >{{jsx `})}`}}{{end}}{{end}}</tbody
     ></table
   ></div
 >{{end}}{{/*
@@ -195,7 +195,7 @@
         >{{$r := "text-right"}}{{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total" $r}}</tr
       ></thead
     ><tbody
-      >{{range $df := .Data.DF.List}}{{jsx `{this.List(Data).map(function($df) { return`}}<tr {{Key "df-rowby-dirname" $df.DirName}}
+      >{{if .Data.DF}}{{range $df := .Data.DF.List}}{{jsx `{this.List(Data).map(function($df) { return`}}<tr {{Key "df-rowby-dirname" $df.DirName}}
         >  <td {{class}}="text-nowrap clip12" title={{$df.DevName}}
           >{{$df.DevName}}</td
         >  <td {{class}}="text-nowrap clip12" title={{$df.DirName}}
@@ -217,7 +217,7 @@
             >{{$df.Inodes}}</span
           > {{$df.Total}}</td
         ></tr
-      >{{jsx `})}`}}{{end}}</tbody
+      >{{jsx `})}`}}{{end}}{{end}}</tbody
     ></table
   ></div
 >{{end}}{{/*
@@ -270,7 +270,7 @@
         ></tr
       ></thead
     ><tbody
-      >{{range $if := .Data.IF.List}}{{jsx `{this.List(Data).map(function($if) { return`}}<tr {{Key "if-rowby-name" $if.Name}}
+      >{{if .Data.IF}}{{range $if := .Data.IF.List}}{{jsx `{this.List(Data).map(function($if) { return`}}<tr {{Key "if-rowby-name" $if.Name}}
         ><td {{class}}="text-nowrap clip12" title={{$if.Name}}
           >{{$if.Name}}</td
         ><td class="text-right"
@@ -326,7 +326,7 @@
             ></span
           ></td
         ></tr
-      >{{jsx `})}`}}{{end}}</tbody
+      >{{jsx `})}`}}{{end}}{{end}}</tbody
     ></table
   ></div
 >{{end}}{{/*
@@ -377,7 +377,7 @@
         ></tr
       ></thead
     ><tbody
-      >{{range $mem := .Data.MEM.List}}{{jsx `{this.List(Data).map(function($mem) { return`}}<tr {{Key "mem-rowby-kind" $mem.Kind}}
+      >{{if .Data.MEM}}{{range $mem := .Data.MEM.List}}{{jsx `{this.List(Data).map(function($mem) { return`}}<tr {{Key "mem-rowby-kind" $mem.Kind}}
         ><td
           >{{$mem.Kind}}</td
         ><td class="text-right"
@@ -389,7 +389,7 @@
         ><td class="text-right"
           >{{$mem.Total}}</td
         ></tr
-      >{{jsx `})}`}}{{end}}</tbody
+      >{{jsx `})}`}}{{end}}{{end}}</tbody
     ></table
   ></div
 >{{end}}{{/*
@@ -430,7 +430,7 @@
         >{{$r := "text-right"}}{{$c := "text-center"}}{{template "defines::thvlink" Vlink $p $p.Psk 1 "PID" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 2 "UID" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 3 "USER" ""}}{{template "defines::thvlink" Vlink $p $p.Psk 4 "PR" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 5 "NI" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 6 "VIRT" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 7 "RES" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 8 "TIME" $c}}{{template "defines::thvlink" Vlink $p $p.Psk 9 "COMMAND" ""}}</tr
       ></thead
     ><tbody
-      >{{range $ps := .Data.PS.List}}{{jsx `{this.List(Data).map(function($ps) { return`}}<tr {{Key "ps-rowby-pid" $ps.PID}}
+      >{{if .Data.PS}}{{range $ps := .Data.PS.List}}{{jsx `{this.List(Data).map(function($ps) { return`}}<tr {{Key "ps-rowby-pid" $ps.PID}}
         ><td class="text-right"
           > {{$ps.PID}}</td
         ><td class="text-right"
@@ -450,7 +450,7 @@
         ><td
           >{{$ps.Name}}</td
         ></tr
-      >{{jsx `})}`}}{{end}}</tbody
+      >{{jsx `})}`}}{{end}}{{end}}</tbody
     ></table
   ></div
 >{{end}}{{/*

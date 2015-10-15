@@ -37,7 +37,7 @@ html
               a href=https://www.ostrost.com/ostent/releases/latest?cmp={{$v}} ostent
             li.navbar-text.navbar-text-marginless.first-text
               code.navbar-codeline
-                | os {{.Data.DISTRIB}}
+                | os {{.Distrib}}
             li.navbar-text.navbar-text-marginless
               code.navbar-codeline
                 | up&nbsp;

@@ -73,20 +73,6 @@ func (pss PSSlice) Ordered(para *params.Params) *PS {
 	return ps
 }
 
-type IndexData struct {
-	Params *params.Params `json:",omitempty"`
-
-	Generic // inline non-pointer
-
-	MEM operating.MEM
-	DF  operating.DF
-	CPU operating.CPU
-	IF  operating.IF
-	PS  PS
-
-	DISTRIB string
-}
-
 type PS struct {
 	List []operating.PSData `json:",omitempty"`
 	N    *int               `json:",omitempty"`
@@ -625,37 +611,6 @@ func getUpdates(req *http.Request, para *params.Params) (IndexUpdate, bool, erro
 	return iu, updated, nil
 }
 
-func indexData(req *http.Request, para *params.Params) (IndexData, error) {
-	updates, _, err := getUpdates(req, para)
-	if err != nil {
-		return IndexData{}, err
-	}
-
-	data := IndexData{
-		Params:  updates.Params,
-		Generic: updates.Generic,
-
-		DISTRIB: DISTRIB, // value set in init()
-	}
-
-	if updates.CPU != nil {
-		data.CPU = *updates.CPU
-	}
-	if updates.MEM != nil {
-		data.MEM = *updates.MEM
-	}
-	if updates.PS != nil {
-		data.PS = *updates.PS
-	}
-	if updates.DF != nil {
-		data.DF = *updates.DF
-	}
-	if updates.IF != nil {
-		data.IF = *updates.IF
-	}
-	return data, nil
-}
-
 func statusLine(status int) string {
 	return fmt.Sprintf("%d %s", status, http.StatusText(status))
 }
@@ -685,7 +640,6 @@ type ServeWS struct {
 type ServeIndex struct {
 	ServeWS
 	TaggedBin     bool
-	OstentVersion string
 	IndexTemplate *templateutil.LazyTemplate
 }
 
@@ -698,13 +652,13 @@ func NewServeWS(ss ServeSSE, errlog *log.Logger) ServeWS {
 }
 
 func NewServeIndex(sw ServeWS, taggedbin bool, template *templateutil.LazyTemplate) ServeIndex {
-	return ServeIndex{ServeWS: sw, TaggedBin: taggedbin, IndexTemplate: template, OstentVersion: VERSION /* value from server.go */}
+	return ServeIndex{ServeWS: sw, TaggedBin: taggedbin, IndexTemplate: template}
 }
 
 // Index renders index page.
 func (si ServeIndex) Index(w http.ResponseWriter, r *http.Request) {
 	para := params.NewParams(si.DelayBounds)
-	id, err := indexData(r, para)
+	updates, _, err := getUpdates(r, para)
 	if err != nil {
 		if _, ok := err.(params.RenamedConstError); ok {
 			http.Redirect(w, r, err.Error(), http.StatusFound)
@@ -715,12 +669,14 @@ func (si ServeIndex) Index(w http.ResponseWriter, r *http.Request) {
 	}
 	si.IndexTemplate.Apply(w, struct {
 		TAGGEDbin     bool
+		Distrib       string
 		OstentVersion string
-		Data          IndexData
+		Data          IndexUpdate
 	}{
 		TAGGEDbin:     si.TaggedBin,
-		OstentVersion: si.OstentVersion,
-		Data:          id,
+		Distrib:       DISTRIB, // value set in init()
+		OstentVersion: VERSION, // value from server.go
+		Data:          updates,
 	})
 }
 
@@ -735,7 +691,7 @@ type SSE struct {
 // passed as a copy, is unused. sse.Writer is there for writes.
 func (sse *SSE) ServeHTTP(_ http.ResponseWriter, r *http.Request) {
 	w := sse.Writer
-	id, err := indexData(r, sse.Params)
+	updates, _, err := getUpdates(r, sse.Params)
 	if err != nil {
 		if _, ok := err.(params.RenamedConstError); ok {
 			http.Redirect(w, r, err.Error(), http.StatusFound)
@@ -743,7 +699,7 @@ func (sse *SSE) ServeHTTP(_ http.ResponseWriter, r *http.Request) {
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	text, err := json.Marshal(id)
+	text, err := json.Marshal(updates)
 	if err != nil {
 		sse.Errord = true
 		// what would http.Error do
