@@ -39,17 +39,17 @@ define(function(require) {
 
   // transformed from define_* templates:
 
-  jsdefines.define_linkbrand = React.createClass({
+  jsdefines.define_hostname = React.createClass({
     mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     Reduce: function(data) {
       return {
-        HN: data.HN
+        hostname: data.hostname
       };
     },
     render: function() {
       let Data = this.state; // shadow global Data
-      return <a className="navbar-brand clip12" href="/"    title={"hostname " + Data.HN}
-  >{Data.HN}</a
+      return <a className="navbar-brand clip12" href="/"    title={"hostname " + Data.hostname}
+  >{Data.hostname}</a
 >;
     }
   });
@@ -58,25 +58,25 @@ define(function(require) {
     mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     List: function(data) {
       let list;
-      if (data != null && data["CPU"] != null && (list = data["CPU"].List) != null) {
+      if (data != null && data["cpu"] != null && (list = data["cpu"].List) != null) {
         return list;
       }
       return [];
     },
     Reduce: function(data) {
       return {
-        Params: data.Params,
-        CPU: data.CPU
+        params: data.params,
+        cpu: data.cpu
       };
     },
     render: function() {
       let Data = this.state; // shadow global Data
-      return <div  className={!Data.Params.CPUn.Negative ? "" : "panel panel-default"}
+      return <div  className={!Data.params.CPUn.Negative ? "" : "panel panel-default"}
   ><div className="h4 padding-left-like-panel-heading"
-    ><a  href={Data.Params.Tlinks.CPUn} onClick={this.handleClick}
+    ><a  href={Data.params.Tlinks.CPUn} onClick={this.handleClick}
       >CPU</a
     ></div
-  ><ul   className={!Data.Params.CPUn.Negative ? "hidden" : "list-group"}
+  ><ul   className={!Data.params.CPUn.Negative ? "hidden" : "list-group"}
     ><li className="list-group-item text-nowrap th"
       ><ul className="list-inline"
         ><li
@@ -84,13 +84,13 @@ define(function(require) {
             ><b
               >Delay</b
             > <span className="badge"
-              >{Data.Params.CPUd}</span
+              >{Data.params.CPUd}</span
             ></span
           > <div className="btn-group"
-            ><a href={Data.Params.Dlinks.CPUd.Less.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.CPUd.Less.ExtraClass != null ? Data.Params.Dlinks.CPUd.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.Params.Dlinks.CPUd.Less.Text}</a
-><a href={Data.Params.Dlinks.CPUd.More.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.CPUd.More.ExtraClass != null ? Data.Params.Dlinks.CPUd.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.Params.Dlinks.CPUd.More.Text} +</a
+            ><a href={Data.params.Dlinks.CPUd.Less.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Dlinks.CPUd.Less.Text}</a
+><a href={Data.params.Dlinks.CPUd.More.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Dlinks.CPUd.More.Text} +</a
 ></div
           ></li
         ><li
@@ -98,19 +98,19 @@ define(function(require) {
             ><b
               >Rows</b
             > <span className="badge"
-              >{Data.Params.CPUn.Absolute}</span
+              >{Data.params.CPUn.Absolute}</span
             ></span
           > <div className="btn-group"
-            ><a href={Data.Params.Nlinks.CPUn.Less.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Less.ExtraClass != null ? Data.Params.Nlinks.CPUn.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.Params.Nlinks.CPUn.Less.Text}</a
-><a href={Data.Params.Nlinks.CPUn.More.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.CPUn.More.ExtraClass != null ? Data.Params.Nlinks.CPUn.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.Params.Nlinks.CPUn.More.Text} +</a
+            ><a href={Data.params.Nlinks.CPUn.Less.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Nlinks.CPUn.Less.Text}</a
+><a href={Data.params.Nlinks.CPUn.More.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Nlinks.CPUn.More.Text} +</a
 ></div
           ></li
         ></ul
       ></li
     ></ul
-  ><table  className={Data.Params.CPUn.Absolute != 0 ? "table table-hover" : "hidden"}
+  ><table  className={Data.params.CPUn.Absolute != 0 ? "table table-hover" : "hidden"}
     ><thead
       ><tr
         ><th
@@ -153,25 +153,25 @@ define(function(require) {
     mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     List: function(data) {
       let list;
-      if (data != null && data["DF"] != null && (list = data["DF"].List) != null) {
+      if (data != null && data["diskUsage"] != null && (list = data["diskUsage"].List) != null) {
         return list;
       }
       return [];
     },
     Reduce: function(data) {
       return {
-        Params: data.Params,
-        DF: data.DF
+        params: data.params,
+        diskUsage: data.diskUsage
       };
     },
     render: function() {
       let Data = this.state; // shadow global Data
-      return <div  className={!Data.Params.Dfn.Negative ? "" : "panel panel-default"}
+      return <div  className={!Data.params.Dfn.Negative ? "" : "panel panel-default"}
   ><div className="h4 padding-left-like-panel-heading"
-    ><a  href={Data.Params.Tlinks.Dfn} onClick={this.handleClick}
+    ><a  href={Data.params.Tlinks.Dfn} onClick={this.handleClick}
       >Disk usage</a
     ></div
-  ><ul   className={!Data.Params.Dfn.Negative ? "hidden" : "list-group"}
+  ><ul   className={!Data.params.Dfn.Negative ? "hidden" : "list-group"}
     ><li className="list-group-item text-nowrap th"
       ><ul className="list-inline"
         ><li
@@ -179,13 +179,13 @@ define(function(require) {
             ><b
               >Delay</b
             > <span className="badge"
-              >{Data.Params.Dfd}</span
+              >{Data.params.Dfd}</span
             ></span
           > <div className="btn-group"
-            ><a href={Data.Params.Dlinks.Dfd.Less.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.Dfd.Less.ExtraClass != null ? Data.Params.Dlinks.Dfd.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.Params.Dlinks.Dfd.Less.Text}</a
-><a href={Data.Params.Dlinks.Dfd.More.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.Dfd.More.ExtraClass != null ? Data.Params.Dlinks.Dfd.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.Params.Dlinks.Dfd.More.Text} +</a
+            ><a href={Data.params.Dlinks.Dfd.Less.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Dlinks.Dfd.Less.Text}</a
+><a href={Data.params.Dlinks.Dfd.More.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Dlinks.Dfd.More.Text} +</a
 ></div
           ></li
         ><li
@@ -193,54 +193,54 @@ define(function(require) {
             ><b
               >Rows</b
             > <span className="badge"
-              >{Data.Params.Dfn.Absolute}</span
+              >{Data.params.Dfn.Absolute}</span
             ></span
           > <div className="btn-group"
-            ><a href={Data.Params.Nlinks.Dfn.Less.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.Dfn.Less.ExtraClass != null ? Data.Params.Nlinks.Dfn.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.Params.Nlinks.Dfn.Less.Text}</a
-><a href={Data.Params.Nlinks.Dfn.More.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.Dfn.More.ExtraClass != null ? Data.Params.Nlinks.Dfn.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.Params.Nlinks.Dfn.More.Text} +</a
+            ><a href={Data.params.Nlinks.Dfn.Less.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Nlinks.Dfn.Less.Text}</a
+><a href={Data.params.Nlinks.Dfn.More.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Nlinks.Dfn.More.Text} +</a
 ></div
           ></li
         ></ul
       ></li
     ></ul
-  ><table  className={Data.Params.Dfn.Absolute != 0 ? "table table-hover" : "hidden"}
+  ><table  className={Data.params.Dfn.Absolute != 0 ? "table table-hover" : "hidden"}
     ><thead
       ><tr className="text-nowrap"
         ><th className="header "
-  ><a href={Data.Params.Vlinks.Dfk[1-1].LinkHref} className={Data.Params.Vlinks.Dfk[1-1].LinkClass} onClick={this.handleClick}  
-    >Device<span className={Data.Params.Vlinks.Dfk[1-1].CaretClass}
+  ><a href={Data.params.Vlinks.Dfk[1-1].LinkHref} className={Data.params.Vlinks.Dfk[1-1].LinkClass} onClick={this.handleClick}  
+    >Device<span className={Data.params.Vlinks.Dfk[1-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header "
-  ><a href={Data.Params.Vlinks.Dfk[2-1].LinkHref} className={Data.Params.Vlinks.Dfk[2-1].LinkClass} onClick={this.handleClick}  
-    >Mounted<span className={Data.Params.Vlinks.Dfk[2-1].CaretClass}
+  ><a href={Data.params.Vlinks.Dfk[2-1].LinkHref} className={Data.params.Vlinks.Dfk[2-1].LinkClass} onClick={this.handleClick}  
+    >Mounted<span className={Data.params.Vlinks.Dfk[2-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Params.Vlinks.Dfk[3-1].LinkHref} className={Data.Params.Vlinks.Dfk[3-1].LinkClass} onClick={this.handleClick}  
-    >Avail<span className={Data.Params.Vlinks.Dfk[3-1].CaretClass}
+  ><a href={Data.params.Vlinks.Dfk[3-1].LinkHref} className={Data.params.Vlinks.Dfk[3-1].LinkClass} onClick={this.handleClick}  
+    >Avail<span className={Data.params.Vlinks.Dfk[3-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Params.Vlinks.Dfk[4-1].LinkHref} className={Data.Params.Vlinks.Dfk[4-1].LinkClass} onClick={this.handleClick}  
-    >Use%<span className={Data.Params.Vlinks.Dfk[4-1].CaretClass}
+  ><a href={Data.params.Vlinks.Dfk[4-1].LinkHref} className={Data.params.Vlinks.Dfk[4-1].LinkClass} onClick={this.handleClick}  
+    >Use%<span className={Data.params.Vlinks.Dfk[4-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Params.Vlinks.Dfk[5-1].LinkHref} className={Data.Params.Vlinks.Dfk[5-1].LinkClass} onClick={this.handleClick}  
-    >Used<span className={Data.Params.Vlinks.Dfk[5-1].CaretClass}
+  ><a href={Data.params.Vlinks.Dfk[5-1].LinkHref} className={Data.params.Vlinks.Dfk[5-1].LinkClass} onClick={this.handleClick}  
+    >Used<span className={Data.params.Vlinks.Dfk[5-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Params.Vlinks.Dfk[6-1].LinkHref} className={Data.Params.Vlinks.Dfk[6-1].LinkClass} onClick={this.handleClick}  
-    >Total<span className={Data.Params.Vlinks.Dfk[6-1].CaretClass}
+  ><a href={Data.params.Vlinks.Dfk[6-1].LinkHref} className={Data.params.Vlinks.Dfk[6-1].LinkClass} onClick={this.handleClick}  
+    >Total<span className={Data.params.Vlinks.Dfk[6-1].CaretClass}
       ></span
     ></a
   ></th
@@ -280,25 +280,25 @@ define(function(require) {
     mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     List: function(data) {
       let list;
-      if (data != null && data["IF"] != null && (list = data["IF"].List) != null) {
+      if (data != null && data["ifaddrs"] != null && (list = data["ifaddrs"].List) != null) {
         return list;
       }
       return [];
     },
     Reduce: function(data) {
       return {
-        Params: data.Params,
-        IF: data.IF
+        params: data.params,
+        ifaddrs: data.ifaddrs
       };
     },
     render: function() {
       let Data = this.state; // shadow global Data
-      return <div  className={!Data.Params.Ifn.Negative ? "" : "panel panel-default"}
+      return <div  className={!Data.params.Ifn.Negative ? "" : "panel panel-default"}
   ><div className="h4 padding-left-like-panel-heading"
-    ><a  href={Data.Params.Tlinks.Ifn} onClick={this.handleClick}
+    ><a  href={Data.params.Tlinks.Ifn} onClick={this.handleClick}
       >Interfaces</a
     ></div
-  ><ul   className={!Data.Params.Ifn.Negative ? "hidden" : "list-group"}
+  ><ul   className={!Data.params.Ifn.Negative ? "hidden" : "list-group"}
     ><li className="list-group-item text-nowrap th"
       ><ul className="list-inline"
         ><li
@@ -306,13 +306,13 @@ define(function(require) {
             ><b
               >Delay</b
             > <span className="badge"
-              >{Data.Params.Ifd}</span
+              >{Data.params.Ifd}</span
             ></span
           > <div className="btn-group"
-            ><a href={Data.Params.Dlinks.Ifd.Less.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.Ifd.Less.ExtraClass != null ? Data.Params.Dlinks.Ifd.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.Params.Dlinks.Ifd.Less.Text}</a
-><a href={Data.Params.Dlinks.Ifd.More.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.Ifd.More.ExtraClass != null ? Data.Params.Dlinks.Ifd.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.Params.Dlinks.Ifd.More.Text} +</a
+            ><a href={Data.params.Dlinks.Ifd.Less.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Dlinks.Ifd.Less.Text}</a
+><a href={Data.params.Dlinks.Ifd.More.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Dlinks.Ifd.More.Text} +</a
 ></div
           ></li
         ><li
@@ -320,19 +320,19 @@ define(function(require) {
             ><b
               >Rows</b
             > <span className="badge"
-              >{Data.Params.Ifn.Absolute}</span
+              >{Data.params.Ifn.Absolute}</span
             ></span
           > <div className="btn-group"
-            ><a href={Data.Params.Nlinks.Ifn.Less.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.Ifn.Less.ExtraClass != null ? Data.Params.Nlinks.Ifn.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.Params.Nlinks.Ifn.Less.Text}</a
-><a href={Data.Params.Nlinks.Ifn.More.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.Ifn.More.ExtraClass != null ? Data.Params.Nlinks.Ifn.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.Params.Nlinks.Ifn.More.Text} +</a
+            ><a href={Data.params.Nlinks.Ifn.Less.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Nlinks.Ifn.Less.Text}</a
+><a href={Data.params.Nlinks.Ifn.More.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Nlinks.Ifn.More.Text} +</a
 ></div
           ></li
         ></ul
       ></li
     ></ul
-  ><table  className={Data.Params.Ifn.Absolute != 0 ? "table table-hover" : "hidden"}
+  ><table  className={Data.params.Ifn.Absolute != 0 ? "table table-hover" : "hidden"}
     ><thead
       ><tr
         ><th
@@ -417,25 +417,25 @@ define(function(require) {
     mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     List: function(data) {
       let list;
-      if (data != null && data["MEM"] != null && (list = data["MEM"].List) != null) {
+      if (data != null && data["memory"] != null && (list = data["memory"].List) != null) {
         return list;
       }
       return [];
     },
     Reduce: function(data) {
       return {
-        Params: data.Params,
-        MEM: data.MEM
+        params: data.params,
+        memory: data.memory
       };
     },
     render: function() {
       let Data = this.state; // shadow global Data
-      return <div  className={!Data.Params.Memn.Negative ? "" : "panel panel-default"}
+      return <div  className={!Data.params.Memn.Negative ? "" : "panel panel-default"}
   ><div className="h4 padding-left-like-panel-heading"
-    ><a  href={Data.Params.Tlinks.Memn} onClick={this.handleClick}
+    ><a  href={Data.params.Tlinks.Memn} onClick={this.handleClick}
       >Memory</a
     ></div
-  ><ul   className={!Data.Params.Memn.Negative ? "hidden" : "list-group"}
+  ><ul   className={!Data.params.Memn.Negative ? "hidden" : "list-group"}
     ><li className="list-group-item text-nowrap th"
       ><ul className="list-inline"
         ><li
@@ -443,13 +443,13 @@ define(function(require) {
             ><b
               >Delay</b
             > <span className="badge"
-              >{Data.Params.Memd}</span
+              >{Data.params.Memd}</span
             ></span
           > <div className="btn-group"
-            ><a href={Data.Params.Dlinks.Memd.Less.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.Memd.Less.ExtraClass != null ? Data.Params.Dlinks.Memd.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.Params.Dlinks.Memd.Less.Text}</a
-><a href={Data.Params.Dlinks.Memd.More.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.Memd.More.ExtraClass != null ? Data.Params.Dlinks.Memd.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.Params.Dlinks.Memd.More.Text} +</a
+            ><a href={Data.params.Dlinks.Memd.Less.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Dlinks.Memd.Less.Text}</a
+><a href={Data.params.Dlinks.Memd.More.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Dlinks.Memd.More.Text} +</a
 ></div
           ></li
         ><li
@@ -457,19 +457,19 @@ define(function(require) {
             ><b
               >Rows</b
             > <span className="badge"
-              >{Data.Params.Memn.Absolute}</span
+              >{Data.params.Memn.Absolute}</span
             ></span
           > <div className="btn-group"
-            ><a href={Data.Params.Nlinks.Memn.Less.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.Memn.Less.ExtraClass != null ? Data.Params.Nlinks.Memn.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.Params.Nlinks.Memn.Less.Text}</a
-><a href={Data.Params.Nlinks.Memn.More.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.Memn.More.ExtraClass != null ? Data.Params.Nlinks.Memn.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.Params.Nlinks.Memn.More.Text} +</a
+            ><a href={Data.params.Nlinks.Memn.Less.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Nlinks.Memn.Less.Text}</a
+><a href={Data.params.Nlinks.Memn.More.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Nlinks.Memn.More.Text} +</a
 ></div
           ></li
         ></ul
       ></li
     ></ul
-  ><table  className={Data.Params.Memn.Absolute != 0 ? "table table-hover" : "hidden"}
+  ><table  className={Data.params.Memn.Absolute != 0 ? "table table-hover" : "hidden"}
     ><thead
       ><tr
         ><th
@@ -508,25 +508,25 @@ define(function(require) {
     mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     List: function(data) {
       let list;
-      if (data != null && data["PS"] != null && (list = data["PS"].List) != null) {
+      if (data != null && data["procs"] != null && (list = data["procs"].List) != null) {
         return list;
       }
       return [];
     },
     Reduce: function(data) {
       return {
-        Params: data.Params,
-        PS: data.PS
+        params: data.params,
+        procs: data.procs
       };
     },
     render: function() {
       let Data = this.state; // shadow global Data
-      return <div  className={!Data.Params.Psn.Negative ? "" : "panel panel-default"}
+      return <div  className={!Data.params.Psn.Negative ? "" : "panel panel-default"}
   ><div className="h4 padding-left-like-panel-heading"
-    ><a  href={Data.Params.Tlinks.Psn} onClick={this.handleClick}
+    ><a  href={Data.params.Tlinks.Psn} onClick={this.handleClick}
       >Processes</a
     ></div
-  ><ul   className={!Data.Params.Psn.Negative ? "hidden" : "list-group"}
+  ><ul   className={!Data.params.Psn.Negative ? "hidden" : "list-group"}
     ><li className="list-group-item text-nowrap th"
       ><ul className="list-inline"
         ><li
@@ -534,13 +534,13 @@ define(function(require) {
             ><b
               >Delay</b
             > <span className="badge"
-              >{Data.Params.Psd}</span
+              >{Data.params.Psd}</span
             ></span
           > <div className="btn-group"
-            ><a href={Data.Params.Dlinks.Psd.Less.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.Psd.Less.ExtraClass != null ? Data.Params.Dlinks.Psd.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.Params.Dlinks.Psd.Less.Text}</a
-><a href={Data.Params.Dlinks.Psd.More.Href} className={"btn btn-default" + " " + (Data.Params.Dlinks.Psd.More.ExtraClass != null ? Data.Params.Dlinks.Psd.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.Params.Dlinks.Psd.More.Text} +</a
+            ><a href={Data.params.Dlinks.Psd.Less.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Dlinks.Psd.Less.Text}</a
+><a href={Data.params.Dlinks.Psd.More.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Dlinks.Psd.More.Text} +</a
 ></div
           ></li
         ><li
@@ -548,72 +548,72 @@ define(function(require) {
             ><b
               >Rows</b
             > <span className="badge"
-              >{Data.Params.Psn.Absolute}</span
+              >{Data.params.Psn.Absolute}</span
             ></span
           > <div className="btn-group"
-            ><a href={Data.Params.Nlinks.Psn.Less.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.Psn.Less.ExtraClass != null ? Data.Params.Nlinks.Psn.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.Params.Nlinks.Psn.Less.Text}</a
-><a href={Data.Params.Nlinks.Psn.More.Href} className={"btn btn-default" + " " + (Data.Params.Nlinks.Psn.More.ExtraClass != null ? Data.Params.Nlinks.Psn.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.Params.Nlinks.Psn.More.Text} +</a
+            ><a href={Data.params.Nlinks.Psn.Less.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Nlinks.Psn.Less.Text}</a
+><a href={Data.params.Nlinks.Psn.More.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Nlinks.Psn.More.Text} +</a
 ></div
           ></li
         ></ul
       ></li
     ></ul
-  ><table  className={Data.Params.Psn.Absolute != 0 ? "table table-hover" : "hidden"}
+  ><table  className={Data.params.Psn.Absolute != 0 ? "table table-hover" : "hidden"}
     ><thead
       ><tr className="text-nowrap"
         ><th className="header text-right"
-  ><a href={Data.Params.Vlinks.Psk[1-1].LinkHref} className={Data.Params.Vlinks.Psk[1-1].LinkClass} onClick={this.handleClick}  
-    >PID<span className={Data.Params.Vlinks.Psk[1-1].CaretClass}
+  ><a href={Data.params.Vlinks.Psk[1-1].LinkHref} className={Data.params.Vlinks.Psk[1-1].LinkClass} onClick={this.handleClick}  
+    >PID<span className={Data.params.Vlinks.Psk[1-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Params.Vlinks.Psk[2-1].LinkHref} className={Data.Params.Vlinks.Psk[2-1].LinkClass} onClick={this.handleClick}  
-    >UID<span className={Data.Params.Vlinks.Psk[2-1].CaretClass}
+  ><a href={Data.params.Vlinks.Psk[2-1].LinkHref} className={Data.params.Vlinks.Psk[2-1].LinkClass} onClick={this.handleClick}  
+    >UID<span className={Data.params.Vlinks.Psk[2-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header "
-  ><a href={Data.Params.Vlinks.Psk[3-1].LinkHref} className={Data.Params.Vlinks.Psk[3-1].LinkClass} onClick={this.handleClick}  
-    >USER<span className={Data.Params.Vlinks.Psk[3-1].CaretClass}
+  ><a href={Data.params.Vlinks.Psk[3-1].LinkHref} className={Data.params.Vlinks.Psk[3-1].LinkClass} onClick={this.handleClick}  
+    >USER<span className={Data.params.Vlinks.Psk[3-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Params.Vlinks.Psk[4-1].LinkHref} className={Data.Params.Vlinks.Psk[4-1].LinkClass} onClick={this.handleClick}  
-    >PR<span className={Data.Params.Vlinks.Psk[4-1].CaretClass}
+  ><a href={Data.params.Vlinks.Psk[4-1].LinkHref} className={Data.params.Vlinks.Psk[4-1].LinkClass} onClick={this.handleClick}  
+    >PR<span className={Data.params.Vlinks.Psk[4-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Params.Vlinks.Psk[5-1].LinkHref} className={Data.Params.Vlinks.Psk[5-1].LinkClass} onClick={this.handleClick}  
-    >NI<span className={Data.Params.Vlinks.Psk[5-1].CaretClass}
+  ><a href={Data.params.Vlinks.Psk[5-1].LinkHref} className={Data.params.Vlinks.Psk[5-1].LinkClass} onClick={this.handleClick}  
+    >NI<span className={Data.params.Vlinks.Psk[5-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Params.Vlinks.Psk[6-1].LinkHref} className={Data.Params.Vlinks.Psk[6-1].LinkClass} onClick={this.handleClick}  
-    >VIRT<span className={Data.Params.Vlinks.Psk[6-1].CaretClass}
+  ><a href={Data.params.Vlinks.Psk[6-1].LinkHref} className={Data.params.Vlinks.Psk[6-1].LinkClass} onClick={this.handleClick}  
+    >VIRT<span className={Data.params.Vlinks.Psk[6-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-right"
-  ><a href={Data.Params.Vlinks.Psk[7-1].LinkHref} className={Data.Params.Vlinks.Psk[7-1].LinkClass} onClick={this.handleClick}  
-    >RES<span className={Data.Params.Vlinks.Psk[7-1].CaretClass}
+  ><a href={Data.params.Vlinks.Psk[7-1].LinkHref} className={Data.params.Vlinks.Psk[7-1].LinkClass} onClick={this.handleClick}  
+    >RES<span className={Data.params.Vlinks.Psk[7-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header text-center"
-  ><a href={Data.Params.Vlinks.Psk[8-1].LinkHref} className={Data.Params.Vlinks.Psk[8-1].LinkClass} onClick={this.handleClick}  
-    >TIME<span className={Data.Params.Vlinks.Psk[8-1].CaretClass}
+  ><a href={Data.params.Vlinks.Psk[8-1].LinkHref} className={Data.params.Vlinks.Psk[8-1].LinkClass} onClick={this.handleClick}  
+    >TIME<span className={Data.params.Vlinks.Psk[8-1].CaretClass}
       ></span
     ></a
   ></th
 ><th className="header "
-  ><a href={Data.Params.Vlinks.Psk[9-1].LinkHref} className={Data.Params.Vlinks.Psk[9-1].LinkClass} onClick={this.handleClick}  
-    >COMMAND<span className={Data.Params.Vlinks.Psk[9-1].CaretClass}
+  ><a href={Data.params.Vlinks.Psk[9-1].LinkHref} className={Data.params.Vlinks.Psk[9-1].LinkClass} onClick={this.handleClick}  
+    >COMMAND<span className={Data.params.Vlinks.Psk[9-1].CaretClass}
       ></span
     ></a
   ></th
@@ -647,32 +647,32 @@ define(function(require) {
     }
   });
 
-  jsdefines.define_spanla = React.createClass({
+  jsdefines.define_loadavg = React.createClass({
     mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     Reduce: function(data) {
       return {
-        LA: data.LA
+        loadavg: data.loadavg
       };
     },
     render: function() {
       let Data = this.state; // shadow global Data
       return <span
-  >{Data.LA}</span
+  >{Data.loadavg}</span
 >;
     }
   });
 
-  jsdefines.define_spanup = React.createClass({
+  jsdefines.define_uptime = React.createClass({
     mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     Reduce: function(data) {
       return {
-        UP: data.UP
+        uptime: data.uptime
       };
     },
     render: function() {
       let Data = this.state; // shadow global Data
       return <span
-  >{Data.UP}</span
+  >{Data.uptime}</span
 >;
     }
   });

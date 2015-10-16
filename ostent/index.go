@@ -78,22 +78,29 @@ type PS struct {
 	N    *int               `json:",omitempty"`
 }
 
-type IndexUpdate struct {
-	Params *params.Params `json:",omitempty"`
+// IndexData is a data map for templates and marshalling.
+// Keys (even abbrevs eg CPU) intentionally start with lowercase.
+// Observed keys with types (in a struct formatting):
+/*
+var _ = struct {
+	params    *params.Params `json:",omitempty"` // nil omitted
+	hostname  string         `json:",omitempty"` // empty omitted
+	loadavg   string         `json:",omitempty"` // empty omitted
+	uptime    string         `json:",omitempty"` // empty omitted
+	memory    *operating.MEM `json:",omitempty"` // nil omitted
+	diskUsage *operating.DF  `json:",omitempty"` // nil omitted
+	cpu       *operating.CPU `json:",omitempty"` // nil omitted
+	ifaddrs   *operating.IF  `json:",omitempty"` // nil omitted
+	procs     *PS            `json:",omitempty"` // nil omitted
+}{}
 
-	Generic // inline non-pointer
+// */
+type IndexData map[string]interface{}
 
-	MEM *operating.MEM `json:",omitempty"`
-	DF  *operating.DF  `json:",omitempty"`
-	CPU *operating.CPU `json:",omitempty"`
-	IF  *operating.IF  `json:",omitempty"`
-	PS  *PS            `json:",omitempty"`
-}
-
-type Generic struct {
-	HN string `json:",omitempty"`
-	UP string `json:",omitempty"`
-	LA string `json:",omitempty"`
+func (data IndexData) SetString(k, v string) {
+	if v != "" {
+		data[k] = v
+	}
 }
 
 type last struct {
@@ -140,15 +147,15 @@ func (la *last) CopyPS() PSSlice {
 	return psCopy
 }
 
-func (mss *MSS) HN(para *params.Params, iu *IndexUpdate) bool {
-	// HN has no delay, always updates iu
-	iu.HN = mss.GetString("hostname")
+func (mss *MSS) HN(para *params.Params, data IndexData) bool {
+	// HN has no delay, always updates data
+	data.SetString("hostname", mss.GetString("hostname"))
 	return true
 }
 
-func (mss *MSS) UP(para *params.Params, iu *IndexUpdate) bool {
-	// UP has no delay, always updates iu
-	iu.UP = mss.GetString("uptime")
+func (mss *MSS) UP(para *params.Params, data IndexData) bool {
+	// UP has no delay, always updates data
+	data.SetString("uptime", mss.GetString("uptime"))
 	return true
 }
 
@@ -286,11 +293,11 @@ func (cs CPUSlice) Less(i, j int) bool {
 	return aidle < bidle
 }
 
-func (ir *IndexRegistry) DF(para *params.Params, iu *IndexUpdate) bool {
+func (ir *IndexRegistry) DF(para *params.Params, data IndexData) bool {
 	if !para.Dfd.Expired() {
 		return false
 	}
-	iu.DF = &operating.DF{List: ir.GetDF(para)}
+	data["diskUsage"] = &operating.DF{List: ir.GetDF(para)}
 	return true
 }
 
@@ -345,23 +352,23 @@ func FormatDF(md *operating.MetricDF) operating.DFData {
 // PSSlice is a list of PSInfo.
 type PSSlice []*operating.PSInfo
 
-func (pss PSSlice) IU(para *params.Params, iu *IndexUpdate) bool {
+func (pss PSSlice) IU(para *params.Params, data IndexData) bool {
 	if !para.Psd.Expired() {
 		return false
 	}
-	iu.PS = pss.Ordered(para)
+	data["procs"] = pss.Ordered(para)
 	return true
 }
 
-func (ir *IndexRegistry) IF(para *params.Params, iu *IndexUpdate) bool {
+func (ir *IndexRegistry) IF(para *params.Params, data IndexData) bool {
 	if !para.Ifd.Expired() {
 		return false
 	}
-	iu.IF = &operating.IF{List: ir.GetIF(para)}
+	data["ifaddrs"] = &operating.IF{List: ir.GetIF(para)}
 	return true
 }
 
-func (ir *IndexRegistry) CPU(para *params.Params, iu *IndexUpdate) bool {
+func (ir *IndexRegistry) CPU(para *params.Params, data IndexData) bool {
 	if !para.CPUd.Expired() {
 		return false
 	}
@@ -369,7 +376,7 @@ func (ir *IndexRegistry) CPU(para *params.Params, iu *IndexUpdate) bool {
 		para.CPUn.Limit = 1
 		return false
 	}
-	iu.CPU = &operating.CPU{List: ir.GetCPU(para)}
+	data["cpu"] = &operating.CPU{List: ir.GetCPU(para)}
 	return true
 }
 
@@ -441,7 +448,7 @@ func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) *operating.MetricCP
 	return i
 }
 
-func (ir *IndexRegistry) MEM(para *params.Params, iu *IndexUpdate) bool {
+func (ir *IndexRegistry) MEM(para *params.Params, data IndexData) bool {
 	if !para.Memd.Expired() {
 		return false
 	}
@@ -449,19 +456,20 @@ func (ir *IndexRegistry) MEM(para *params.Params, iu *IndexUpdate) bool {
 	if para.Memn.Absolute < 1 {
 		return false
 	}
-	iu.MEM = new(operating.MEM)
-	iu.MEM.List = []operating.Memory{}
-	iu.MEM.List = append(iu.MEM.List,
+	mem := new(operating.MEM)
+	mem.List = []operating.Memory{}
+	mem.List = append(mem.List,
 		_getmem("RAM", sigar.Swap{
 			Total: uint64(ir.RAM.Total.Snapshot().Value()),
 			Free:  uint64(ir.RAM.Free.Snapshot().Value()),
 			Used:  ir.RAM.UsedValue(), // == .Total - .Free
 		}))
+	data["memory"] = mem
 
 	if para.Memn.Absolute < 2 {
 		return true
 	}
-	iu.MEM.List = append(iu.MEM.List,
+	mem.List = append(mem.List,
 		_getmem("swap", sigar.Swap{
 			Total: ir.Swap.TotalValue(),
 			Free:  uint64(ir.Swap.Free.Snapshot().Value()),
@@ -470,9 +478,9 @@ func (ir *IndexRegistry) MEM(para *params.Params, iu *IndexUpdate) bool {
 	return true
 }
 
-func (ir *IndexRegistry) LA(para *params.Params, iu *IndexUpdate) bool {
-	// LA has no delay, always updates iu
-	iu.LA = fmt.Sprintf("%.2f %.2f %.2f",
+func (ir *IndexRegistry) LA(para *params.Params, data IndexData) bool {
+	// LA has no delay, always updates data
+	data["loadavg"] = fmt.Sprintf("%.2f %.2f %.2f",
 		ir.Load.Short.Snapshot().Value(),
 		ir.Load.Mid.Snapshot().Value(),
 		ir.Load.Long.Snapshot().Value())
@@ -582,19 +590,22 @@ func init() {
 	}
 }
 
-func getUpdates(req *http.Request, para *params.Params) (IndexUpdate, bool, error) {
-	iu := IndexUpdate{}
+func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
+	data := IndexData{}
 	if req != nil {
 		if err := para.Decode(req); err != nil {
-			return iu, false, err
+			return data, false, err
 		}
-		iu.Params = para
+		// data features "params" only when req is not nil (new request).
+		// So updaters do not read data for it, but expect non-nil para as an argument.
+		data["params"] = para
 	}
 	lastInfo.collect(NextSecond(), para.NonZeroPsn())
 	psCopy := lastInfo.CopyPS()
 
 	var updated bool
-	for _, update := range []func(*params.Params, *IndexUpdate) bool{
+	for _, update := range []func(*params.Params, IndexData) bool{
+		// These are updaters:
 		psCopy.IU,
 		RegMSS.HN,
 		RegMSS.UP,
@@ -604,11 +615,11 @@ func getUpdates(req *http.Request, para *params.Params) (IndexUpdate, bool, erro
 		Reg1s.IF,
 		Reg1s.LA,
 	} {
-		if update(para, &iu) {
+		if update(para, data) {
 			updated = true
 		}
 	}
-	return iu, updated, nil
+	return data, updated, nil
 }
 
 func statusLine(status int) string {
@@ -658,7 +669,7 @@ func NewServeIndex(sw ServeWS, taggedbin bool, template *templateutil.LazyTempla
 // Index renders index page.
 func (si ServeIndex) Index(w http.ResponseWriter, r *http.Request) {
 	para := params.NewParams(si.DelayBounds)
-	updates, _, err := getUpdates(r, para)
+	data, _, err := Updates(r, para)
 	if err != nil {
 		if _, ok := err.(params.RenamedConstError); ok {
 			http.Redirect(w, r, err.Error(), http.StatusFound)
@@ -671,12 +682,12 @@ func (si ServeIndex) Index(w http.ResponseWriter, r *http.Request) {
 		TAGGEDbin     bool
 		Distrib       string
 		OstentVersion string
-		Data          IndexUpdate
+		Data          IndexData
 	}{
 		TAGGEDbin:     si.TaggedBin,
 		Distrib:       DISTRIB, // value set in init()
 		OstentVersion: VERSION, // value from server.go
-		Data:          updates,
+		Data:          data,
 	})
 }
 
@@ -691,7 +702,7 @@ type SSE struct {
 // passed as a copy, is unused. sse.Writer is there for writes.
 func (sse *SSE) ServeHTTP(_ http.ResponseWriter, r *http.Request) {
 	w := sse.Writer
-	updates, _, err := getUpdates(r, sse.Params)
+	data, _, err := Updates(r, sse.Params)
 	if err != nil {
 		if _, ok := err.(params.RenamedConstError); ok {
 			http.Redirect(w, r, err.Error(), http.StatusFound)
@@ -699,7 +710,7 @@ func (sse *SSE) ServeHTTP(_ http.ResponseWriter, r *http.Request) {
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	text, err := json.Marshal(updates)
+	text, err := json.Marshal(data)
 	if err != nil {
 		sse.Errord = true
 		// what would http.Error do

@@ -40,15 +40,16 @@
     | <a href={{.LinkHref}} {{class}}={{.LinkClass}} onClick={this.handleClick}
     |   >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>
 
-= content define_linkbrand
+= content define_hostname
+  / this is expected to be a part of navbar.
   | <a {{class}}="navbar-brand clip12" href="/"
-  |    {{TitlePrefixed "hostname " .Data.HN}}>{{.Data.HN}}</a>
+  |    {{TitlePrefixed "hostname " .Data.hostname}}>{{.Data.hostname}}</a>
 
-{{define "defines::define_spanla"}}<span>{{.Data.LA}}</span>{{end}}
-{{define "defines::define_spanup"}}<span>{{.Data.UP}}</span>{{end}}
+{{define "defines::define_loadavg"}}<span>{{.Data.loadavg}}</span>{{end}}
+{{define "defines::define_uptime"}}<span>{{.Data.uptime}}</span>{{end}}
 
 = content define_panelmem
-  {{$p := .Data.Params}}
+  {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Memn` `$p.Memd` "Memory"]]
   | <table {{ClassNonZero $p.Memn "table table-hover" "hidden"}}>
   thead
@@ -59,8 +60,8 @@
       th.text-right Used
       th.text-right Total
   tbody
-    {{if .Data.MEM}}
-      {{range $mem := .Data.MEM.List}}
+    {{if .Data.memory}}
+      {{range $mem := .Data.memory.List}}
         {{jsx  `{this.List(Data).map(function($mem) { return`}}
         | <tr {{Key "mem-rowby-kind" $mem.Kind}}>
         td {{$mem.Kind}}
@@ -76,7 +77,7 @@
   | </table></div>
 
 = content define_paneldf
-  {{$p := .Data.Params}}
+  {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Dfn` `$p.Dfd` "Disk usage"]]
   | <table {{ClassNonZero $p.Dfn "table table-hover" "hidden"}}>
   thead
@@ -89,8 +90,8 @@
       {{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used"    $r}}{{/* USED   */}}
       {{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total"   $r}}{{/* TOTAL  */}}
   tbody
-    {{if .Data.DF}}
-      {{range $df := .Data.DF.List}}
+    {{if .Data.diskUsage}}
+      {{range $df := .Data.diskUsage.List}}
         {{jsx `{this.List(Data).map(function($df) { return`}}
         |
           <tr {{Key "df-rowby-dirname" $df.DirName}}>
@@ -118,7 +119,7 @@
   | </table></div>
 
 = content define_panelcpu
-  {{$p := .Data.Params}}
+  {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.CPUn` `$p.CPUd` "CPU"]]
   | <table {{ClassNonZero $p.CPUn "table table-hover" "hidden"}}>
   thead
@@ -129,8 +130,8 @@
       th.text-right Wait
       th.text-right Idle
   tbody
-    {{if .Data.CPU}}
-      {{range $cpu := .Data.CPU.List}}
+    {{if .Data.cpu}}
+      {{range $cpu := .Data.cpu.List}}
         {{jsx  `{this.List(Data).map(function($cpu) { return`}}
         | <tr {{Key "cpu-rowby-N" $cpu.N}}>
         td.text-right.text-nowrap {{$cpu.N}}
@@ -150,7 +151,7 @@
   | </table></div>
 
 = content define_panelif
-  {{$p := .Data.Params}}
+  {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Ifn` `$p.Ifd` "Interfaces"]]
   | <table {{ClassNonZero $p.Ifn "table table-hover" "hidden"}}>
   thead
@@ -164,8 +165,8 @@
       th.text-right.text-nowrap.col-md-3 title="Packets In/Out per second" Packets IO ps
       th.text-right.text-nowrap.col-md-3 title="Drops,Errors In/Out per second" Loss IO ps
   tbody
-    {{if .Data.IF}}
-      {{range $if := .Data.IF.List}}
+    {{if .Data.ifaddrs}}
+      {{range $if := .Data.ifaddrs.List}}
         {{jsx `{this.List(Data).map(function($if) { return`}}
         | <tr {{Key "if-rowby-name" $if.Name}}>
         | <td {{class}}="text-nowrap clip12" title={{$if.Name}}>{{$if.Name}}</td>
@@ -214,7 +215,7 @@
   | </table></div>
 
 = content define_panelps
-  {{$p := .Data.Params}}
+  {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Psn` `$p.Psd` "Processes"]]
   | <table {{ClassNonZero $p.Psn "table table-hover" "hidden"}}>
   thead
@@ -231,8 +232,8 @@
       {{template "defines::thvlink" Vlink $p $p.Psk 8 "TIME"    $c}}
       {{template "defines::thvlink" Vlink $p $p.Psk 9 "COMMAND" ""}}{{/* NAME */}}
   tbody
-    {{if .Data.PS}}
-      {{range $ps := .Data.PS.List}}
+    {{if .Data.procs}}
+      {{range $ps := .Data.procs.List}}
         {{jsx `{this.List(Data).map(function($ps) { return`}}
         | <tr {{Key "ps-rowby-pid" $ps.PID}}>
         td.text-right  {{$ps.PID}}

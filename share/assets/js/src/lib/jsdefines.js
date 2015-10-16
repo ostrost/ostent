@@ -43,13 +43,13 @@ define(function (require) {
 
   // transformed from define_* templates:
 
-  jsdefines.define_linkbrand = React.createClass({
-    displayName: 'define_linkbrand',
+  jsdefines.define_hostname = React.createClass({
+    displayName: 'define_hostname',
 
     mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     Reduce: function Reduce(data) {
       return {
-        HN: data.HN
+        hostname: data.hostname
       };
     },
     render: function render() {
@@ -60,10 +60,10 @@ define(function (require) {
         key: null,
         ref: null,
         props: {
-          children: Data.HN,
+          children: Data.hostname,
           className: 'navbar-brand clip12',
           href: '/',
-          title: "hostname " + Data.HN
+          title: "hostname " + Data.hostname
         },
         _owner: null
       };
@@ -76,15 +76,15 @@ define(function (require) {
     mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     List: function List(data) {
       var list = undefined;
-      if (data != null && data["CPU"] != null && (list = data["CPU"].List) != null) {
+      if (data != null && data["cpu"] != null && (list = data["cpu"].List) != null) {
         return list;
       }
       return [];
     },
     Reduce: function Reduce(data) {
       return {
-        Params: data.Params,
-        CPU: data.CPU
+        params: data.params,
+        cpu: data.cpu
       };
     },
     render: function render() {
@@ -108,7 +108,7 @@ define(function (require) {
                 ref: null,
                 props: {
                   children: 'CPU',
-                  href: Data.Params.Tlinks.CPUn,
+                  href: Data.params.Tlinks.CPUn,
                   onClick: this.handleClick
                 },
                 _owner: null
@@ -161,7 +161,7 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: Data.Params.CPUd,
+                                  children: Data.params.CPUd,
                                   className: 'badge'
                                 },
                                 _owner: null
@@ -180,9 +180,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: ['- ', Data.Params.Dlinks.CPUd.Less.Text],
-                                  href: Data.Params.Dlinks.CPUd.Less.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.Less.ExtraClass != null ? Data.Params.Dlinks.CPUd.Less.ExtraClass : ""),
+                                  children: ['- ', Data.params.Dlinks.CPUd.Less.Text],
+                                  href: Data.params.Dlinks.CPUd.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -192,9 +192,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: [Data.Params.Dlinks.CPUd.More.Text, ' +'],
-                                  href: Data.Params.Dlinks.CPUd.More.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.CPUd.More.ExtraClass != null ? Data.Params.Dlinks.CPUd.More.ExtraClass : ""),
+                                  children: [Data.params.Dlinks.CPUd.More.Text, ' +'],
+                                  href: Data.params.Dlinks.CPUd.More.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -232,7 +232,7 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: Data.Params.CPUn.Absolute,
+                                  children: Data.params.CPUn.Absolute,
                                   className: 'badge'
                                 },
                                 _owner: null
@@ -251,9 +251,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: ['- ', Data.Params.Nlinks.CPUn.Less.Text],
-                                  href: Data.Params.Nlinks.CPUn.Less.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.Less.ExtraClass != null ? Data.Params.Nlinks.CPUn.Less.ExtraClass : ""),
+                                  children: ['- ', Data.params.Nlinks.CPUn.Less.Text],
+                                  href: Data.params.Nlinks.CPUn.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -263,9 +263,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: [Data.Params.Nlinks.CPUn.More.Text, ' +'],
-                                  href: Data.Params.Nlinks.CPUn.More.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.CPUn.More.ExtraClass != null ? Data.Params.Nlinks.CPUn.More.ExtraClass : ""),
+                                  children: [Data.params.Nlinks.CPUn.More.Text, ' +'],
+                                  href: Data.params.Nlinks.CPUn.More.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -285,7 +285,7 @@ define(function (require) {
                 },
                 _owner: null
               },
-              className: !Data.Params.CPUn.Negative ? "hidden" : "list-group"
+              className: !Data.params.CPUn.Negative ? "hidden" : "list-group"
             },
             _owner: null
           }, {
@@ -434,11 +434,11 @@ define(function (require) {
                 },
                 _owner: null
               }],
-              className: Data.Params.CPUn.Absolute != 0 ? "table table-hover" : "hidden"
+              className: Data.params.CPUn.Absolute != 0 ? "table table-hover" : "hidden"
             },
             _owner: null
           }],
-          className: !Data.Params.CPUn.Negative ? "" : "panel panel-default"
+          className: !Data.params.CPUn.Negative ? "" : "panel panel-default"
         },
         _owner: null
       };
@@ -451,15 +451,15 @@ define(function (require) {
     mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     List: function List(data) {
       var list = undefined;
-      if (data != null && data["DF"] != null && (list = data["DF"].List) != null) {
+      if (data != null && data["diskUsage"] != null && (list = data["diskUsage"].List) != null) {
         return list;
       }
       return [];
     },
     Reduce: function Reduce(data) {
       return {
-        Params: data.Params,
-        DF: data.DF
+        params: data.params,
+        diskUsage: data.diskUsage
       };
     },
     render: function render() {
@@ -483,7 +483,7 @@ define(function (require) {
                 ref: null,
                 props: {
                   children: 'Disk usage',
-                  href: Data.Params.Tlinks.Dfn,
+                  href: Data.params.Tlinks.Dfn,
                   onClick: this.handleClick
                 },
                 _owner: null
@@ -536,7 +536,7 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: Data.Params.Dfd,
+                                  children: Data.params.Dfd,
                                   className: 'badge'
                                 },
                                 _owner: null
@@ -555,9 +555,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: ['- ', Data.Params.Dlinks.Dfd.Less.Text],
-                                  href: Data.Params.Dlinks.Dfd.Less.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.Dfd.Less.ExtraClass != null ? Data.Params.Dlinks.Dfd.Less.ExtraClass : ""),
+                                  children: ['- ', Data.params.Dlinks.Dfd.Less.Text],
+                                  href: Data.params.Dlinks.Dfd.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -567,9 +567,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: [Data.Params.Dlinks.Dfd.More.Text, ' +'],
-                                  href: Data.Params.Dlinks.Dfd.More.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.Dfd.More.ExtraClass != null ? Data.Params.Dlinks.Dfd.More.ExtraClass : ""),
+                                  children: [Data.params.Dlinks.Dfd.More.Text, ' +'],
+                                  href: Data.params.Dlinks.Dfd.More.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -607,7 +607,7 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: Data.Params.Dfn.Absolute,
+                                  children: Data.params.Dfn.Absolute,
                                   className: 'badge'
                                 },
                                 _owner: null
@@ -626,9 +626,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: ['- ', Data.Params.Nlinks.Dfn.Less.Text],
-                                  href: Data.Params.Nlinks.Dfn.Less.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.Dfn.Less.ExtraClass != null ? Data.Params.Nlinks.Dfn.Less.ExtraClass : ""),
+                                  children: ['- ', Data.params.Nlinks.Dfn.Less.Text],
+                                  href: Data.params.Nlinks.Dfn.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -638,9 +638,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: [Data.Params.Nlinks.Dfn.More.Text, ' +'],
-                                  href: Data.Params.Nlinks.Dfn.More.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.Dfn.More.ExtraClass != null ? Data.Params.Nlinks.Dfn.More.ExtraClass : ""),
+                                  children: [Data.params.Nlinks.Dfn.More.Text, ' +'],
+                                  href: Data.params.Nlinks.Dfn.More.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -660,7 +660,7 @@ define(function (require) {
                 },
                 _owner: null
               },
-              className: !Data.Params.Dfn.Negative ? "hidden" : "list-group"
+              className: !Data.params.Dfn.Negative ? "hidden" : "list-group"
             },
             _owner: null
           }, {
@@ -699,12 +699,12 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  className: Data.Params.Vlinks.Dfk[1 - 1].CaretClass
+                                  className: Data.params.Vlinks.Dfk[1 - 1].CaretClass
                                 },
                                 _owner: null
                               }],
-                              href: Data.Params.Vlinks.Dfk[1 - 1].LinkHref,
-                              className: Data.Params.Vlinks.Dfk[1 - 1].LinkClass,
+                              href: Data.params.Vlinks.Dfk[1 - 1].LinkHref,
+                              className: Data.params.Vlinks.Dfk[1 - 1].LinkClass,
                               onClick: this.handleClick
                             },
                             _owner: null
@@ -730,12 +730,12 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  className: Data.Params.Vlinks.Dfk[2 - 1].CaretClass
+                                  className: Data.params.Vlinks.Dfk[2 - 1].CaretClass
                                 },
                                 _owner: null
                               }],
-                              href: Data.Params.Vlinks.Dfk[2 - 1].LinkHref,
-                              className: Data.Params.Vlinks.Dfk[2 - 1].LinkClass,
+                              href: Data.params.Vlinks.Dfk[2 - 1].LinkHref,
+                              className: Data.params.Vlinks.Dfk[2 - 1].LinkClass,
                               onClick: this.handleClick
                             },
                             _owner: null
@@ -761,12 +761,12 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  className: Data.Params.Vlinks.Dfk[3 - 1].CaretClass
+                                  className: Data.params.Vlinks.Dfk[3 - 1].CaretClass
                                 },
                                 _owner: null
                               }],
-                              href: Data.Params.Vlinks.Dfk[3 - 1].LinkHref,
-                              className: Data.Params.Vlinks.Dfk[3 - 1].LinkClass,
+                              href: Data.params.Vlinks.Dfk[3 - 1].LinkHref,
+                              className: Data.params.Vlinks.Dfk[3 - 1].LinkClass,
                               onClick: this.handleClick
                             },
                             _owner: null
@@ -792,12 +792,12 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  className: Data.Params.Vlinks.Dfk[4 - 1].CaretClass
+                                  className: Data.params.Vlinks.Dfk[4 - 1].CaretClass
                                 },
                                 _owner: null
                               }],
-                              href: Data.Params.Vlinks.Dfk[4 - 1].LinkHref,
-                              className: Data.Params.Vlinks.Dfk[4 - 1].LinkClass,
+                              href: Data.params.Vlinks.Dfk[4 - 1].LinkHref,
+                              className: Data.params.Vlinks.Dfk[4 - 1].LinkClass,
                               onClick: this.handleClick
                             },
                             _owner: null
@@ -823,12 +823,12 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  className: Data.Params.Vlinks.Dfk[5 - 1].CaretClass
+                                  className: Data.params.Vlinks.Dfk[5 - 1].CaretClass
                                 },
                                 _owner: null
                               }],
-                              href: Data.Params.Vlinks.Dfk[5 - 1].LinkHref,
-                              className: Data.Params.Vlinks.Dfk[5 - 1].LinkClass,
+                              href: Data.params.Vlinks.Dfk[5 - 1].LinkHref,
+                              className: Data.params.Vlinks.Dfk[5 - 1].LinkClass,
                               onClick: this.handleClick
                             },
                             _owner: null
@@ -854,12 +854,12 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  className: Data.Params.Vlinks.Dfk[6 - 1].CaretClass
+                                  className: Data.params.Vlinks.Dfk[6 - 1].CaretClass
                                 },
                                 _owner: null
                               }],
-                              href: Data.Params.Vlinks.Dfk[6 - 1].LinkHref,
-                              className: Data.Params.Vlinks.Dfk[6 - 1].LinkClass,
+                              href: Data.params.Vlinks.Dfk[6 - 1].LinkHref,
+                              className: Data.params.Vlinks.Dfk[6 - 1].LinkClass,
                               onClick: this.handleClick
                             },
                             _owner: null
@@ -1002,11 +1002,11 @@ define(function (require) {
                 },
                 _owner: null
               }],
-              className: Data.Params.Dfn.Absolute != 0 ? "table table-hover" : "hidden"
+              className: Data.params.Dfn.Absolute != 0 ? "table table-hover" : "hidden"
             },
             _owner: null
           }],
-          className: !Data.Params.Dfn.Negative ? "" : "panel panel-default"
+          className: !Data.params.Dfn.Negative ? "" : "panel panel-default"
         },
         _owner: null
       };
@@ -1019,15 +1019,15 @@ define(function (require) {
     mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     List: function List(data) {
       var list = undefined;
-      if (data != null && data["IF"] != null && (list = data["IF"].List) != null) {
+      if (data != null && data["ifaddrs"] != null && (list = data["ifaddrs"].List) != null) {
         return list;
       }
       return [];
     },
     Reduce: function Reduce(data) {
       return {
-        Params: data.Params,
-        IF: data.IF
+        params: data.params,
+        ifaddrs: data.ifaddrs
       };
     },
     render: function render() {
@@ -1051,7 +1051,7 @@ define(function (require) {
                 ref: null,
                 props: {
                   children: 'Interfaces',
-                  href: Data.Params.Tlinks.Ifn,
+                  href: Data.params.Tlinks.Ifn,
                   onClick: this.handleClick
                 },
                 _owner: null
@@ -1104,7 +1104,7 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: Data.Params.Ifd,
+                                  children: Data.params.Ifd,
                                   className: 'badge'
                                 },
                                 _owner: null
@@ -1123,9 +1123,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: ['- ', Data.Params.Dlinks.Ifd.Less.Text],
-                                  href: Data.Params.Dlinks.Ifd.Less.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.Less.ExtraClass != null ? Data.Params.Dlinks.Ifd.Less.ExtraClass : ""),
+                                  children: ['- ', Data.params.Dlinks.Ifd.Less.Text],
+                                  href: Data.params.Dlinks.Ifd.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -1135,9 +1135,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: [Data.Params.Dlinks.Ifd.More.Text, ' +'],
-                                  href: Data.Params.Dlinks.Ifd.More.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.Ifd.More.ExtraClass != null ? Data.Params.Dlinks.Ifd.More.ExtraClass : ""),
+                                  children: [Data.params.Dlinks.Ifd.More.Text, ' +'],
+                                  href: Data.params.Dlinks.Ifd.More.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -1175,7 +1175,7 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: Data.Params.Ifn.Absolute,
+                                  children: Data.params.Ifn.Absolute,
                                   className: 'badge'
                                 },
                                 _owner: null
@@ -1194,9 +1194,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: ['- ', Data.Params.Nlinks.Ifn.Less.Text],
-                                  href: Data.Params.Nlinks.Ifn.Less.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.Less.ExtraClass != null ? Data.Params.Nlinks.Ifn.Less.ExtraClass : ""),
+                                  children: ['- ', Data.params.Nlinks.Ifn.Less.Text],
+                                  href: Data.params.Nlinks.Ifn.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -1206,9 +1206,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: [Data.Params.Nlinks.Ifn.More.Text, ' +'],
-                                  href: Data.Params.Nlinks.Ifn.More.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.Ifn.More.ExtraClass != null ? Data.Params.Nlinks.Ifn.More.ExtraClass : ""),
+                                  children: [Data.params.Nlinks.Ifn.More.Text, ' +'],
+                                  href: Data.params.Nlinks.Ifn.More.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -1228,7 +1228,7 @@ define(function (require) {
                 },
                 _owner: null
               },
-              className: !Data.Params.Ifn.Negative ? "hidden" : "list-group"
+              className: !Data.params.Ifn.Negative ? "hidden" : "list-group"
             },
             _owner: null
           }, {
@@ -1611,11 +1611,11 @@ define(function (require) {
                 },
                 _owner: null
               }],
-              className: Data.Params.Ifn.Absolute != 0 ? "table table-hover" : "hidden"
+              className: Data.params.Ifn.Absolute != 0 ? "table table-hover" : "hidden"
             },
             _owner: null
           }],
-          className: !Data.Params.Ifn.Negative ? "" : "panel panel-default"
+          className: !Data.params.Ifn.Negative ? "" : "panel panel-default"
         },
         _owner: null
       };
@@ -1628,15 +1628,15 @@ define(function (require) {
     mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     List: function List(data) {
       var list = undefined;
-      if (data != null && data["MEM"] != null && (list = data["MEM"].List) != null) {
+      if (data != null && data["memory"] != null && (list = data["memory"].List) != null) {
         return list;
       }
       return [];
     },
     Reduce: function Reduce(data) {
       return {
-        Params: data.Params,
-        MEM: data.MEM
+        params: data.params,
+        memory: data.memory
       };
     },
     render: function render() {
@@ -1660,7 +1660,7 @@ define(function (require) {
                 ref: null,
                 props: {
                   children: 'Memory',
-                  href: Data.Params.Tlinks.Memn,
+                  href: Data.params.Tlinks.Memn,
                   onClick: this.handleClick
                 },
                 _owner: null
@@ -1713,7 +1713,7 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: Data.Params.Memd,
+                                  children: Data.params.Memd,
                                   className: 'badge'
                                 },
                                 _owner: null
@@ -1732,9 +1732,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: ['- ', Data.Params.Dlinks.Memd.Less.Text],
-                                  href: Data.Params.Dlinks.Memd.Less.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.Memd.Less.ExtraClass != null ? Data.Params.Dlinks.Memd.Less.ExtraClass : ""),
+                                  children: ['- ', Data.params.Dlinks.Memd.Less.Text],
+                                  href: Data.params.Dlinks.Memd.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -1744,9 +1744,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: [Data.Params.Dlinks.Memd.More.Text, ' +'],
-                                  href: Data.Params.Dlinks.Memd.More.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.Memd.More.ExtraClass != null ? Data.Params.Dlinks.Memd.More.ExtraClass : ""),
+                                  children: [Data.params.Dlinks.Memd.More.Text, ' +'],
+                                  href: Data.params.Dlinks.Memd.More.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -1784,7 +1784,7 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: Data.Params.Memn.Absolute,
+                                  children: Data.params.Memn.Absolute,
                                   className: 'badge'
                                 },
                                 _owner: null
@@ -1803,9 +1803,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: ['- ', Data.Params.Nlinks.Memn.Less.Text],
-                                  href: Data.Params.Nlinks.Memn.Less.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.Memn.Less.ExtraClass != null ? Data.Params.Nlinks.Memn.Less.ExtraClass : ""),
+                                  children: ['- ', Data.params.Nlinks.Memn.Less.Text],
+                                  href: Data.params.Nlinks.Memn.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -1815,9 +1815,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: [Data.Params.Nlinks.Memn.More.Text, ' +'],
-                                  href: Data.Params.Nlinks.Memn.More.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.Memn.More.ExtraClass != null ? Data.Params.Nlinks.Memn.More.ExtraClass : ""),
+                                  children: [Data.params.Nlinks.Memn.More.Text, ' +'],
+                                  href: Data.params.Nlinks.Memn.More.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -1837,7 +1837,7 @@ define(function (require) {
                 },
                 _owner: null
               },
-              className: !Data.Params.Memn.Negative ? "hidden" : "list-group"
+              className: !Data.params.Memn.Negative ? "hidden" : "list-group"
             },
             _owner: null
           }, {
@@ -1982,11 +1982,11 @@ define(function (require) {
                 },
                 _owner: null
               }],
-              className: Data.Params.Memn.Absolute != 0 ? "table table-hover" : "hidden"
+              className: Data.params.Memn.Absolute != 0 ? "table table-hover" : "hidden"
             },
             _owner: null
           }],
-          className: !Data.Params.Memn.Negative ? "" : "panel panel-default"
+          className: !Data.params.Memn.Negative ? "" : "panel panel-default"
         },
         _owner: null
       };
@@ -1999,15 +1999,15 @@ define(function (require) {
     mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     List: function List(data) {
       var list = undefined;
-      if (data != null && data["PS"] != null && (list = data["PS"].List) != null) {
+      if (data != null && data["procs"] != null && (list = data["procs"].List) != null) {
         return list;
       }
       return [];
     },
     Reduce: function Reduce(data) {
       return {
-        Params: data.Params,
-        PS: data.PS
+        params: data.params,
+        procs: data.procs
       };
     },
     render: function render() {
@@ -2031,7 +2031,7 @@ define(function (require) {
                 ref: null,
                 props: {
                   children: 'Processes',
-                  href: Data.Params.Tlinks.Psn,
+                  href: Data.params.Tlinks.Psn,
                   onClick: this.handleClick
                 },
                 _owner: null
@@ -2084,7 +2084,7 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: Data.Params.Psd,
+                                  children: Data.params.Psd,
                                   className: 'badge'
                                 },
                                 _owner: null
@@ -2103,9 +2103,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: ['- ', Data.Params.Dlinks.Psd.Less.Text],
-                                  href: Data.Params.Dlinks.Psd.Less.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.Psd.Less.ExtraClass != null ? Data.Params.Dlinks.Psd.Less.ExtraClass : ""),
+                                  children: ['- ', Data.params.Dlinks.Psd.Less.Text],
+                                  href: Data.params.Dlinks.Psd.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -2115,9 +2115,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: [Data.Params.Dlinks.Psd.More.Text, ' +'],
-                                  href: Data.Params.Dlinks.Psd.More.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Dlinks.Psd.More.ExtraClass != null ? Data.Params.Dlinks.Psd.More.ExtraClass : ""),
+                                  children: [Data.params.Dlinks.Psd.More.Text, ' +'],
+                                  href: Data.params.Dlinks.Psd.More.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -2155,7 +2155,7 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: Data.Params.Psn.Absolute,
+                                  children: Data.params.Psn.Absolute,
                                   className: 'badge'
                                 },
                                 _owner: null
@@ -2174,9 +2174,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: ['- ', Data.Params.Nlinks.Psn.Less.Text],
-                                  href: Data.Params.Nlinks.Psn.Less.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.Psn.Less.ExtraClass != null ? Data.Params.Nlinks.Psn.Less.ExtraClass : ""),
+                                  children: ['- ', Data.params.Nlinks.Psn.Less.Text],
+                                  href: Data.params.Nlinks.Psn.Less.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -2186,9 +2186,9 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  children: [Data.Params.Nlinks.Psn.More.Text, ' +'],
-                                  href: Data.Params.Nlinks.Psn.More.Href,
-                                  className: "btn btn-default" + " " + (Data.Params.Nlinks.Psn.More.ExtraClass != null ? Data.Params.Nlinks.Psn.More.ExtraClass : ""),
+                                  children: [Data.params.Nlinks.Psn.More.Text, ' +'],
+                                  href: Data.params.Nlinks.Psn.More.Href,
+                                  className: "btn btn-default" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : ""),
                                   onClick: this.handleClick
                                 },
                                 _owner: null
@@ -2208,7 +2208,7 @@ define(function (require) {
                 },
                 _owner: null
               },
-              className: !Data.Params.Psn.Negative ? "hidden" : "list-group"
+              className: !Data.params.Psn.Negative ? "hidden" : "list-group"
             },
             _owner: null
           }, {
@@ -2247,12 +2247,12 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  className: Data.Params.Vlinks.Psk[1 - 1].CaretClass
+                                  className: Data.params.Vlinks.Psk[1 - 1].CaretClass
                                 },
                                 _owner: null
                               }],
-                              href: Data.Params.Vlinks.Psk[1 - 1].LinkHref,
-                              className: Data.Params.Vlinks.Psk[1 - 1].LinkClass,
+                              href: Data.params.Vlinks.Psk[1 - 1].LinkHref,
+                              className: Data.params.Vlinks.Psk[1 - 1].LinkClass,
                               onClick: this.handleClick
                             },
                             _owner: null
@@ -2278,12 +2278,12 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  className: Data.Params.Vlinks.Psk[2 - 1].CaretClass
+                                  className: Data.params.Vlinks.Psk[2 - 1].CaretClass
                                 },
                                 _owner: null
                               }],
-                              href: Data.Params.Vlinks.Psk[2 - 1].LinkHref,
-                              className: Data.Params.Vlinks.Psk[2 - 1].LinkClass,
+                              href: Data.params.Vlinks.Psk[2 - 1].LinkHref,
+                              className: Data.params.Vlinks.Psk[2 - 1].LinkClass,
                               onClick: this.handleClick
                             },
                             _owner: null
@@ -2309,12 +2309,12 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  className: Data.Params.Vlinks.Psk[3 - 1].CaretClass
+                                  className: Data.params.Vlinks.Psk[3 - 1].CaretClass
                                 },
                                 _owner: null
                               }],
-                              href: Data.Params.Vlinks.Psk[3 - 1].LinkHref,
-                              className: Data.Params.Vlinks.Psk[3 - 1].LinkClass,
+                              href: Data.params.Vlinks.Psk[3 - 1].LinkHref,
+                              className: Data.params.Vlinks.Psk[3 - 1].LinkClass,
                               onClick: this.handleClick
                             },
                             _owner: null
@@ -2340,12 +2340,12 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  className: Data.Params.Vlinks.Psk[4 - 1].CaretClass
+                                  className: Data.params.Vlinks.Psk[4 - 1].CaretClass
                                 },
                                 _owner: null
                               }],
-                              href: Data.Params.Vlinks.Psk[4 - 1].LinkHref,
-                              className: Data.Params.Vlinks.Psk[4 - 1].LinkClass,
+                              href: Data.params.Vlinks.Psk[4 - 1].LinkHref,
+                              className: Data.params.Vlinks.Psk[4 - 1].LinkClass,
                               onClick: this.handleClick
                             },
                             _owner: null
@@ -2371,12 +2371,12 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  className: Data.Params.Vlinks.Psk[5 - 1].CaretClass
+                                  className: Data.params.Vlinks.Psk[5 - 1].CaretClass
                                 },
                                 _owner: null
                               }],
-                              href: Data.Params.Vlinks.Psk[5 - 1].LinkHref,
-                              className: Data.Params.Vlinks.Psk[5 - 1].LinkClass,
+                              href: Data.params.Vlinks.Psk[5 - 1].LinkHref,
+                              className: Data.params.Vlinks.Psk[5 - 1].LinkClass,
                               onClick: this.handleClick
                             },
                             _owner: null
@@ -2402,12 +2402,12 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  className: Data.Params.Vlinks.Psk[6 - 1].CaretClass
+                                  className: Data.params.Vlinks.Psk[6 - 1].CaretClass
                                 },
                                 _owner: null
                               }],
-                              href: Data.Params.Vlinks.Psk[6 - 1].LinkHref,
-                              className: Data.Params.Vlinks.Psk[6 - 1].LinkClass,
+                              href: Data.params.Vlinks.Psk[6 - 1].LinkHref,
+                              className: Data.params.Vlinks.Psk[6 - 1].LinkClass,
                               onClick: this.handleClick
                             },
                             _owner: null
@@ -2433,12 +2433,12 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  className: Data.Params.Vlinks.Psk[7 - 1].CaretClass
+                                  className: Data.params.Vlinks.Psk[7 - 1].CaretClass
                                 },
                                 _owner: null
                               }],
-                              href: Data.Params.Vlinks.Psk[7 - 1].LinkHref,
-                              className: Data.Params.Vlinks.Psk[7 - 1].LinkClass,
+                              href: Data.params.Vlinks.Psk[7 - 1].LinkHref,
+                              className: Data.params.Vlinks.Psk[7 - 1].LinkClass,
                               onClick: this.handleClick
                             },
                             _owner: null
@@ -2464,12 +2464,12 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  className: Data.Params.Vlinks.Psk[8 - 1].CaretClass
+                                  className: Data.params.Vlinks.Psk[8 - 1].CaretClass
                                 },
                                 _owner: null
                               }],
-                              href: Data.Params.Vlinks.Psk[8 - 1].LinkHref,
-                              className: Data.Params.Vlinks.Psk[8 - 1].LinkClass,
+                              href: Data.params.Vlinks.Psk[8 - 1].LinkHref,
+                              className: Data.params.Vlinks.Psk[8 - 1].LinkClass,
                               onClick: this.handleClick
                             },
                             _owner: null
@@ -2495,12 +2495,12 @@ define(function (require) {
                                 key: null,
                                 ref: null,
                                 props: {
-                                  className: Data.Params.Vlinks.Psk[9 - 1].CaretClass
+                                  className: Data.params.Vlinks.Psk[9 - 1].CaretClass
                                 },
                                 _owner: null
                               }],
-                              href: Data.Params.Vlinks.Psk[9 - 1].LinkHref,
-                              className: Data.Params.Vlinks.Psk[9 - 1].LinkClass,
+                              href: Data.params.Vlinks.Psk[9 - 1].LinkHref,
+                              className: Data.params.Vlinks.Psk[9 - 1].LinkClass,
                               onClick: this.handleClick
                             },
                             _owner: null
@@ -2624,24 +2624,24 @@ define(function (require) {
                 },
                 _owner: null
               }],
-              className: Data.Params.Psn.Absolute != 0 ? "table table-hover" : "hidden"
+              className: Data.params.Psn.Absolute != 0 ? "table table-hover" : "hidden"
             },
             _owner: null
           }],
-          className: !Data.Params.Psn.Negative ? "" : "panel panel-default"
+          className: !Data.params.Psn.Negative ? "" : "panel panel-default"
         },
         _owner: null
       };
     }
   });
 
-  jsdefines.define_spanla = React.createClass({
-    displayName: 'define_spanla',
+  jsdefines.define_loadavg = React.createClass({
+    displayName: 'define_loadavg',
 
     mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     Reduce: function Reduce(data) {
       return {
-        LA: data.LA
+        loadavg: data.loadavg
       };
     },
     render: function render() {
@@ -2652,20 +2652,20 @@ define(function (require) {
         key: null,
         ref: null,
         props: {
-          children: Data.LA
+          children: Data.loadavg
         },
         _owner: null
       };
     }
   });
 
-  jsdefines.define_spanup = React.createClass({
-    displayName: 'define_spanup',
+  jsdefines.define_uptime = React.createClass({
+    displayName: 'define_uptime',
 
     mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
     Reduce: function Reduce(data) {
       return {
-        UP: data.UP
+        uptime: data.uptime
       };
     },
     render: function render() {
@@ -2676,7 +2676,7 @@ define(function (require) {
         key: null,
         ref: null,
         props: {
-          children: Data.UP
+          children: Data.uptime
         },
         _owner: null
       };

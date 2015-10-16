@@ -3,7 +3,7 @@
   ><head
     ><meta charset="utf-8"
     ><title
-      >{{.Data.HN}} ostent</title
+      >{{.Data.hostname}} ostent</title
     ><meta http-equiv="X-UA-Compatible" content="IE=edge"
     ><meta name="viewport" content="width=device-width, initial-scale=1"
     >{{HTML "<!"}}--[if IE]><link rel="shortcut icon" href="/favicon.ico"
@@ -30,8 +30,8 @@
             ><span class="icon-bar"
               ></span
             ></button
-          ><span class="updates" data-define="define_linkbrand"
-            >{{template "defines::define_linkbrand" .}}</span
+          ><span class="updates" data-define="define_hostname"
+            >{{template "defines::define_hostname" .}}</span
           ></div
         ><div id="navbar-collapse" class="collapse navbar-collapse"
           ><ul class="nav navbar-nav"
@@ -45,14 +45,14 @@
               ></li
             ><li class="navbar-text navbar-text-marginless"
               ><code class="navbar-codeline"
-                >up&nbsp;<span class="updates" data-define="define_spanup"
-                  >{{template "defines::define_spanup" .}}</span
+                >up&nbsp;<span class="updates" data-define="define_uptime"
+                  >{{template "defines::define_uptime" .}}</span
                 ></code
               ></li
             ><li class="navbar-text navbar-text-marginless"
               ><code class="navbar-codeline"
-                >la&nbsp;<span class="updates" data-define="define_spanla"
-                  >{{template "defines::define_spanla" .}}</span
+                >la&nbsp;<span class="updates" data-define="define_loadavg"
+                  >{{template "defines::define_loadavg" .}}</span
                 ></code
               ></li
             ></ul
@@ -88,10 +88,13 @@
 */}}{{define "defines::alink_badgeright"}}<a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}  
   >{{.Text}} {{.Badge}}</a
 >{{end}}{{/*
-*/}}{{define "defines::define_linkbrand"}}<a {{class}}="navbar-brand clip12" href="/"   {{TitlePrefixed "hostname " .Data.HN}}
-  >{{.Data.HN}}</a
+*/}}{{define "defines::define_hostname"}}<a {{class}}="navbar-brand clip12" href="/"   {{TitlePrefixed "hostname " .Data.hostname}}
+  >{{.Data.hostname}}</a
 >{{end}}{{/*
-*/}}{{define "defines::define_panelcpu"}}{{$p := .Data.Params}}<div {{ClassPositive $p.CPUn "" "panel panel-default"}}
+*/}}{{define "defines::define_loadavg"}}<span
+  >{{.Data.loadavg}}</span
+>{{end}}{{/*
+*/}}{{define "defines::define_panelcpu"}}{{$p := .Data.params}}<div {{ClassPositive $p.CPUn "" "panel panel-default"}}
   ><div class="h4 padding-left-like-panel-heading"
     ><a {{HrefT $p $p.CPUn}}
       >CPU</a
@@ -138,7 +141,7 @@
         ></tr
       ></thead
     ><tbody
-      >{{if .Data.CPU}}{{range $cpu := .Data.CPU.List}}{{jsx `{this.List(Data).map(function($cpu) { return`}}<tr {{Key "cpu-rowby-N" $cpu.N}}
+      >{{if .Data.cpu}}{{range $cpu := .Data.cpu.List}}{{jsx `{this.List(Data).map(function($cpu) { return`}}<tr {{Key "cpu-rowby-N" $cpu.N}}
         ><td class="text-right text-nowrap"
           >{{$cpu.N}}</td
         ><td {{class}}="text-right bg-usepct"
@@ -158,7 +161,7 @@
     ></table
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_paneldf"}}{{$p := .Data.Params}}<div {{ClassPositive $p.Dfn "" "panel panel-default"}}
+*/}}{{define "defines::define_paneldf"}}{{$p := .Data.params}}<div {{ClassPositive $p.Dfn "" "panel panel-default"}}
   ><div class="h4 padding-left-like-panel-heading"
     ><a {{HrefT $p $p.Dfn}}
       >Disk usage</a
@@ -195,7 +198,7 @@
         >{{$r := "text-right"}}{{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total" $r}}</tr
       ></thead
     ><tbody
-      >{{if .Data.DF}}{{range $df := .Data.DF.List}}{{jsx `{this.List(Data).map(function($df) { return`}}<tr {{Key "df-rowby-dirname" $df.DirName}}
+      >{{if .Data.diskUsage}}{{range $df := .Data.diskUsage.List}}{{jsx `{this.List(Data).map(function($df) { return`}}<tr {{Key "df-rowby-dirname" $df.DirName}}
         >  <td {{class}}="text-nowrap clip12" title={{$df.DevName}}
           >{{$df.DevName}}</td
         >  <td {{class}}="text-nowrap clip12" title={{$df.DirName}}
@@ -221,7 +224,7 @@
     ></table
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelif"}}{{$p := .Data.Params}}<div {{ClassPositive $p.Ifn "" "panel panel-default"}}
+*/}}{{define "defines::define_panelif"}}{{$p := .Data.params}}<div {{ClassPositive $p.Ifn "" "panel panel-default"}}
   ><div class="h4 padding-left-like-panel-heading"
     ><a {{HrefT $p $p.Ifn}}
       >Interfaces</a
@@ -270,7 +273,7 @@
         ></tr
       ></thead
     ><tbody
-      >{{if .Data.IF}}{{range $if := .Data.IF.List}}{{jsx `{this.List(Data).map(function($if) { return`}}<tr {{Key "if-rowby-name" $if.Name}}
+      >{{if .Data.ifaddrs}}{{range $if := .Data.ifaddrs.List}}{{jsx `{this.List(Data).map(function($if) { return`}}<tr {{Key "if-rowby-name" $if.Name}}
         ><td {{class}}="text-nowrap clip12" title={{$if.Name}}
           >{{$if.Name}}</td
         ><td class="text-right"
@@ -330,7 +333,7 @@
     ></table
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelmem"}}{{$p := .Data.Params}}<div {{ClassPositive $p.Memn "" "panel panel-default"}}
+*/}}{{define "defines::define_panelmem"}}{{$p := .Data.params}}<div {{ClassPositive $p.Memn "" "panel panel-default"}}
   ><div class="h4 padding-left-like-panel-heading"
     ><a {{HrefT $p $p.Memn}}
       >Memory</a
@@ -377,7 +380,7 @@
         ></tr
       ></thead
     ><tbody
-      >{{if .Data.MEM}}{{range $mem := .Data.MEM.List}}{{jsx `{this.List(Data).map(function($mem) { return`}}<tr {{Key "mem-rowby-kind" $mem.Kind}}
+      >{{if .Data.memory}}{{range $mem := .Data.memory.List}}{{jsx `{this.List(Data).map(function($mem) { return`}}<tr {{Key "mem-rowby-kind" $mem.Kind}}
         ><td
           >{{$mem.Kind}}</td
         ><td class="text-right"
@@ -393,7 +396,7 @@
     ></table
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_panelps"}}{{$p := .Data.Params}}<div {{ClassPositive $p.Psn "" "panel panel-default"}}
+*/}}{{define "defines::define_panelps"}}{{$p := .Data.params}}<div {{ClassPositive $p.Psn "" "panel panel-default"}}
   ><div class="h4 padding-left-like-panel-heading"
     ><a {{HrefT $p $p.Psn}}
       >Processes</a
@@ -430,7 +433,7 @@
         >{{$r := "text-right"}}{{$c := "text-center"}}{{template "defines::thvlink" Vlink $p $p.Psk 1 "PID" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 2 "UID" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 3 "USER" ""}}{{template "defines::thvlink" Vlink $p $p.Psk 4 "PR" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 5 "NI" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 6 "VIRT" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 7 "RES" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 8 "TIME" $c}}{{template "defines::thvlink" Vlink $p $p.Psk 9 "COMMAND" ""}}</tr
       ></thead
     ><tbody
-      >{{if .Data.PS}}{{range $ps := .Data.PS.List}}{{jsx `{this.List(Data).map(function($ps) { return`}}<tr {{Key "ps-rowby-pid" $ps.PID}}
+      >{{if .Data.procs}}{{range $ps := .Data.procs.List}}{{jsx `{this.List(Data).map(function($ps) { return`}}<tr {{Key "ps-rowby-pid" $ps.PID}}
         ><td class="text-right"
           > {{$ps.PID}}</td
         ><td class="text-right"
@@ -454,11 +457,8 @@
     ></table
   ></div
 >{{end}}{{/*
-*/}}{{define "defines::define_spanla"}}<span
-  >{{.Data.LA}}</span
->{{end}}{{/*
-*/}}{{define "defines::define_spanup"}}<span
-  >{{.Data.UP}}</span
+*/}}{{define "defines::define_uptime"}}<span
+  >{{.Data.uptime}}</span
 >{{end}}{{/*
 */}}{{define "defines::thvlink"}}<th {{class}}="header {{.AlignClass}}"
   ><a href={{.LinkHref}} {{class}}={{.LinkClass}} onClick={this.handleClick}  

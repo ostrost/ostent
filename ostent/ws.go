@@ -352,12 +352,12 @@ func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	stop := func() {
 		w.WriteHeader(http.StatusBadRequest) // well, not a bad request but a write failure
 	}
-	update, updated, err := getUpdates(r, sd.conn.para)
+	data, updated, err := Updates(r, sd.conn.para)
 	if err != nil || !updated { // nothing scheduled for the moment, no update
 		return
 	}
 
-	if sd.conn.writeJSON(update) != nil {
+	if sd.conn.writeJSON(data) != nil {
 		stop()
 		return
 	}

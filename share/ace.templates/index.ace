@@ -3,7 +3,7 @@
 html
   head
     meta charset=utf-8
-    title {{.Data.HN}} ostent
+    title {{.Data.hostname}} ostent
     meta http-equiv=X-UA-Compatible content=IE=edge
     meta name=viewport content="width=device-width, initial-scale=1"
 
@@ -28,8 +28,8 @@ html
             span.icon-bar
             span.icon-bar
             span.icon-bar
-          span.updates data-define=define_linkbrand
-            {{template "defines::define_linkbrand" .}}
+          span.updates data-define=define_hostname
+            {{template "defines::define_hostname" .}}
 
         div.collapse.navbar-collapse#navbar-collapse
           ul.nav.navbar-nav
@@ -41,13 +41,13 @@ html
             li.navbar-text.navbar-text-marginless
               code.navbar-codeline
                 | up&nbsp;
-                span.updates data-define=define_spanup
-                  {{template "defines::define_spanup" .}}
+                span.updates data-define=define_uptime
+                  {{template "defines::define_uptime" .}}
             li.navbar-text.navbar-text-marginless
               code.navbar-codeline
                 | la&nbsp;
-                span.updates data-define=define_spanla
-                  {{template "defines::define_spanla" .}}
+                span.updates data-define=define_loadavg
+                  {{template "defines::define_loadavg" .}}
 
     div.container-fluid
       div.row

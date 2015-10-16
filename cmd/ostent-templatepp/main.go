@@ -168,7 +168,7 @@ func MakeDefine(definesonly *templatetext.Template, shortname, fullname string) 
 	data := templatepipe.Data(Curly, t)
 	if nota, ok := data.(templatepipe.Nota); ok {
 		for k, v := range nota["Data"].(templatepipe.Nota) {
-			if k == "Params" {
+			if k == "params" {
 				define.UsesParams = true
 			} else if k != "." {
 				if define.Iterable != "" {

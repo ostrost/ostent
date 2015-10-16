@@ -52,7 +52,7 @@ define(function(require) {
     {{end}}{{/*
 */}}Reduce: function(data) {
       return {
-        {{if .UsesParams}}Params: data.Params,
+        {{if .UsesParams}}params: data.params,
         {{end}}{{/*
 */}}{{$d.Iterable}}: data.{{$d.Iterable}}
       };
