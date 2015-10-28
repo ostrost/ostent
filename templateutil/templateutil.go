@@ -58,6 +58,7 @@ func (lt *LazyTemplate) Init() {
 		return
 	}
 	t := template.New(lt.Filename)
+	t = t.Option("missingkey=error")
 	if lt.Funcmap != nil {
 		t.Funcs(lt.Funcmap)
 	}
@@ -79,7 +80,10 @@ func (lt *LazyTemplate) Apply(w http.ResponseWriter, data interface{}) {
 		return
 	}
 	buf := new(bytes.Buffer)
-	err = clone.Execute(buf, data)
+	if err := clone.Execute(buf, data); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Set("Content-Length", strconv.Itoa(buf.Len()))
 	io.Copy(w, buf) // or w.Write(buf.Bytes())
