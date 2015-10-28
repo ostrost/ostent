@@ -3,7 +3,7 @@
 # This repo clone location (final subdirectories) defines package name thus
 # it should be */github.com/[ostrost]/ostent to make package=github.com/[ostrost]/ostent
 package=$(shell echo $$PWD | awk -F/ '{ OFS="/"; print $$(NF-2), $$(NF-1), $$NF }')
-otemplateppackage=$(package)/cmd/ostent-templatepp
+templateppackage=$(package)/cmd/ostent-templatepp
 
 testpackage?=./...
 singletestpackage=$(testpackage)
@@ -49,10 +49,10 @@ go list -tags   bin  -f '$(golistfiles)' | sed -n "s,^ *,,g; s,$(PWD)/,,p" | sor
 devpackagefiles=$(shell \
 go list -tags '!bin' -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(package) | $(xargs) \
 go list -tags '!bin' -f '$(golistfiles)' | sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort)
-otemplateppfiles=$(shell \
-go list -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(otemplateppackage) | $(xargs) \
+templateppfiles=$(shell \
+go list -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(templateppackage) | $(xargs) \
 go list -f '$(golistfiles)' | sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort)
-otemplatepp=$(destbin)/$(notdir $(otemplateppackage))
+templatepp=$(destbin)/$(notdir $(templateppackage))
 
 all: $(destbin)/$(cmdname)
 all32: $(destbin)/$(cmdname).32
@@ -84,8 +84,8 @@ commands/extpoints/extpoints.go: commands/extpoints/interface.go ; cd $(dir $@) 
 al: $(packagefiles) $(devpackagefiles)
 # al: like `all' but without final go build $(package). For when rerun does the build
 
-$(otemplatepp): $(otemplateppfiles)
-	go build -o $@ $(otemplateppackage)
+$(templatepp): $(templateppfiles)
+	go build -o $@ $(templateppackage)
 $(destbin)/$(cmdname): $(packagefiles)
 	go build -ldflags '-s -w' -a -tags bin -o $@ $(package)
 $(destbin)/$(cmdname).32:
@@ -105,10 +105,10 @@ share/assets/js/src/index.js: share/coffee/index.coffee
 share/assets/js/min/index.min.js: $(shell find share/assets/js/src/ -type f)
 	type r.js   >/dev/null || exit 0; cd share/assets/js/src && r.js -o build.js
 
-share/templates/index.html: share/ace.templates/index.ace share/ace.templates/defines.ace $(otemplatepp)
-	$(otemplatepp) -defines share/ace.templates/defines.ace -output $@ $<
-share/tmp/jsdefines.jsx: share/ace.templates/jsdefines.jstmpl share/ace.templates/defines.ace $(otemplatepp)
-	$(otemplatepp) -defines share/ace.templates/defines.ace -output $@ -javascript $<
+share/templates/index.html: share/ace.templates/index.ace share/ace.templates/defines.ace $(templatepp)
+	$(templatepp) -defines share/ace.templates/defines.ace -output $@ $<
+share/tmp/jsdefines.jsx: share/ace.templates/jsdefines.jstmpl share/ace.templates/defines.ace $(templatepp)
+	$(templatepp) -defines share/ace.templates/defines.ace -output $@ -javascript $<
 
 $(templates_bingo) $(templates_devgo): $(shell find share/templates/ -type f \! -name \*.go)
 

@@ -6,24 +6,17 @@ import (
 	"strings"
 
 	"github.com/ostrost/ostent/params"
+	"github.com/ostrost/ostent/templateutil"
 )
 
-func (f JSXFuncs) Class() string    { return "className" }
-func (f HTMLFuncs) Class() string   { return "class" }
-func (f JSXFuncs) Colspan() string  { return "colSpan" }
-func (f HTMLFuncs) Colspan() string { return "colspan" }
-
-func (f JSXFuncs) JSX(s string) template.HTML        { return template.HTML(s) }
-func (f HTMLFuncs) JSX(string) (empty template.HTML) { return }
-
-func (f JSXFuncs) TitlePrefixed(prefix string, v interface{}) template.HTMLAttr {
+func (f JSXLFuncs) TitlePrefixed(prefix string, v interface{}) template.HTMLAttr {
 	return SprintfAttr(` title={%q + %s}`, prefix, v.(Uncurler).Uncurl())
 }
 func (f HTMLFuncs) TitlePrefixed(prefix string, v interface{}) template.HTMLAttr {
 	return SprintfAttr(` title="%s %s"`, prefix, v.(string))
 }
 
-func (f JSXFuncs) ClassAllZero(x1, x2, y1, y2 interface{}, class string) template.HTMLAttr {
+func (f JSXLFuncs) ClassAllZero(x1, x2, y1, y2 interface{}, class string) template.HTMLAttr {
 	return SprintfAttr(" className={(%s && %s && %s && %s) ? %q : \"\"}",
 		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", x1.(Uncurler).Uncurl()),
 		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", x2.(Uncurler).Uncurl()),
@@ -52,7 +45,7 @@ func (f HTMLFuncs) IsStringZero(x interface{}) bool {
 	return false
 }
 
-func (f JSXFuncs) ClassNonNil(x interface{}, class, sndclass string) template.HTMLAttr {
+func (f JSXLFuncs) ClassNonNil(x interface{}, class, sndclass string) template.HTMLAttr {
 	return SprintfAttr(" className={%s != null ? %q : %q}",
 		x.(Uncurler).Uncurl(), class, sndclass)
 }
@@ -64,7 +57,7 @@ func (f HTMLFuncs) ClassNonNil(x interface{}, class, sndclass string) template.H
 	return SprintfAttr(" class=%q", class)
 }
 
-func (f JSXFuncs) ClassNonZero(x interface{}, class, sndclass string) template.HTMLAttr {
+func (f JSXLFuncs) ClassNonZero(x interface{}, class, sndclass string) template.HTMLAttr {
 	return SprintfAttr(` className={%s.Absolute != 0 ? %q : %q}`,
 		x.(Uncurler).Uncurl(), class, sndclass)
 }
@@ -76,7 +69,7 @@ func (f HTMLFuncs) ClassNonZero(x interface{}, class, sndclass string) template.
 	return SprintfAttr(" class=%q", class)
 }
 
-func (f JSXFuncs) ClassPositive(x interface{}, class, sndclass string) template.HTMLAttr {
+func (f JSXLFuncs) ClassPositive(x interface{}, class, sndclass string) template.HTMLAttr {
 	return SprintfAttr(` className={!%s.Negative ? %q : %q}`,
 		x.(Uncurler).Uncurl(), class, sndclass)
 }
@@ -89,14 +82,14 @@ func (f HTMLFuncs) ClassPositive(x interface{}, class, sndclass string) template
 }
 
 // Key returns key attribute: prefix + uncurled x being an Uncurler.
-func (f JSXFuncs) Key(prefix string, x interface{}) template.HTMLAttr {
+func (f JSXLFuncs) Key(prefix string, x interface{}) template.HTMLAttr {
 	return SprintfAttr(" key={%q+%s}", prefix+"-", x.(Uncurler).Uncurl())
 }
 
 // Key returns empty attribute.
 func (f HTMLFuncs) Key(_ string, x interface{}) (empty template.HTMLAttr) { return }
 
-func (f JSXFuncs) FuncHrefT() interface{} {
+func (f JSXLFuncs) FuncHrefT() interface{} {
 	return func(_, n Uncurler) (template.HTMLAttr, error) {
 		base, last := f.Split(n)
 		return SprintfAttr(" href={%s.Tlinks.%s} onClick={this.handleClick}",
@@ -106,13 +99,13 @@ func (f JSXFuncs) FuncHrefT() interface{} {
 
 func (f HTMLFuncs) FuncHrefT() interface{} { return f.ParamsFuncs.HrefT }
 
-func (f JSXFuncs) FuncLessD() interface{} {
+func (f JSXLFuncs) FuncLessD() interface{} {
 	return func(_, dur Uncurler, bclass string) (params.ALink, error) {
 		return f.Dlink(dur, bclass, "Less", "-")
 	}
 }
 
-func (f JSXFuncs) FuncMoreD() interface{} {
+func (f JSXLFuncs) FuncMoreD() interface{} {
 	return func(_, dur Uncurler, bclass string) (params.ALink, error) {
 		return f.Dlink(dur, bclass, "More", "+")
 	}
@@ -121,13 +114,13 @@ func (f JSXFuncs) FuncMoreD() interface{} {
 func (f HTMLFuncs) FuncLessD() interface{} { return f.ParamsFuncs.LessD }
 func (f HTMLFuncs) FuncMoreD() interface{} { return f.ParamsFuncs.MoreD }
 
-func (f JSXFuncs) FuncLessN() interface{} {
+func (f JSXLFuncs) FuncLessN() interface{} {
 	return func(_, num Uncurler, bclass string) (params.ALink, error) {
 		return f.Nlink(num, bclass, "Less", "-")
 	}
 }
 
-func (f JSXFuncs) FuncMoreN() interface{} {
+func (f JSXLFuncs) FuncMoreN() interface{} {
 	return func(_, num Uncurler, bclass string) (params.ALink, error) {
 		return f.Nlink(num, bclass, "More", "+")
 	}
@@ -136,7 +129,7 @@ func (f JSXFuncs) FuncMoreN() interface{} {
 func (f HTMLFuncs) FuncLessN() interface{} { return f.ParamsFuncs.LessN }
 func (f HTMLFuncs) FuncMoreN() interface{} { return f.ParamsFuncs.MoreN }
 
-func (f JSXFuncs) FuncVlink() interface{} {
+func (f JSXLFuncs) FuncVlink() interface{} {
 	return func(_, this Uncurler, cmp int, text, alignClass string) params.VLink {
 		base, last := f.Split(this)
 		return params.VLink{
@@ -151,7 +144,7 @@ func (f JSXFuncs) FuncVlink() interface{} {
 
 func (f HTMLFuncs) FuncVlink() interface{} { return f.ParamsFuncs.Vlink }
 
-func (f JSXFuncs) Dlink(v Uncurler, bclass, which, badge string) (params.ALink, error) {
+func (f JSXLFuncs) Dlink(v Uncurler, bclass, which, badge string) (params.ALink, error) {
 	base, last := f.Split(v)
 	var (
 		href   = fmt.Sprintf( /**/ "{%s.Dlinks.%s.%s.Href}", base, last, which)
@@ -167,12 +160,12 @@ func (f JSXFuncs) Dlink(v Uncurler, bclass, which, badge string) (params.ALink, 
 }
 
 // ConcatClass is internal (not required for interface)
-func (f JSXFuncs) ConcatClass(bclass, eclass string) string {
+func (f JSXLFuncs) ConcatClass(bclass, eclass string) string {
 	return fmt.Sprintf("{%q + \" \" + (%s != null ? %s : \"\")}", bclass, eclass, eclass)
 }
 
 // Nlink is internal (not required for interface)
-func (f JSXFuncs) Nlink(v Uncurler, bclass, which, badge string) (params.ALink, error) {
+func (f JSXLFuncs) Nlink(v Uncurler, bclass, which, badge string) (params.ALink, error) {
 	base, last := f.Split(v)
 	var (
 		href   = fmt.Sprintf( /**/ "{%s.Nlinks.%s.%s.Href}", base, last, which)
@@ -188,32 +181,24 @@ func (f JSXFuncs) Nlink(v Uncurler, bclass, which, badge string) (params.ALink, 
 }
 
 // Split is internal (not required for interface)
-func (f JSXFuncs) Split(v Uncurler) (string, string) {
+func (f JSXLFuncs) Split(v Uncurler) (string, string) {
 	split := strings.Split(v.Uncurl(), ".")
 	return strings.Join(split[:len(split)-1], "."), split[len(split)-1]
 }
 
-// JSXFuncs has methods implementing Functor.
-type JSXFuncs struct{}
+// JSXLFuncs has methods implementing Functor.
+type JSXLFuncs struct{ templateutil.JSXLFuncs }
 
 // HTMLFuncs has methods implementing Functor.
-type HTMLFuncs struct{ params.ParamsFuncs }
+type HTMLFuncs struct {
+	// templateutil.Functor
+	templateutil.HTMLFuncs
+	params.ParamsFuncs
+}
 
-// MakeMap is dull but required.
-func (f JSXFuncs) MakeMap() template.FuncMap { return MakeMap(f) }
-
-// MakeMap is dull but required.
-func (f HTMLFuncs) MakeMap() template.FuncMap { return MakeMap(f) }
-
-// MakeMap constructs template.FuncMap off f implementation.
-func MakeMap(f Functor) template.FuncMap {
-	return template.FuncMap{
-		"HTML": func(s string) template.HTML { return template.HTML(s) },
-
-		"class":   f.Class,
-		"colspan": f.Colspan,
-		"jsx":     f.JSX,
-
+// ConstructMaps constructs template.FuncMap off f implementation.
+func ConstructMap(f Functor) template.FuncMap {
+	return templateutil.CombineMaps(f, template.FuncMap{
 		"TitlePrefixed": f.TitlePrefixed,
 		"ClassAllZero":  f.ClassAllZero,
 		"ClassNonNil":   f.ClassNonNil,
@@ -227,18 +212,23 @@ func MakeMap(f Functor) template.FuncMap {
 		"LessN": f.FuncLessN(),
 		"MoreN": f.FuncMoreN(),
 		"Vlink": f.FuncVlink(),
-	}
+	})
 }
 
-// Funcs features functions for templates. In use in acepp and templates.
-var Funcs = HTMLFuncs{}.MakeMap()
+func FuncMapJSXL() template.FuncMap {
+	return ConstructMap(JSXLFuncs{templateutil.NewJSXLFuncs()})
+}
+
+func FuncMapHTML() template.FuncMap {
+	return ConstructMap(HTMLFuncs{
+		HTMLFuncs:   templateutil.NewHTMLFuncs(),
+		ParamsFuncs: params.ParamsFuncs{},
+	})
+}
 
 type Functor interface {
-	MakeMap() template.FuncMap
+	templateutil.Functor
 
-	Class() string
-	Colspan() string
-	JSX(string) template.HTML
 	TitlePrefixed(string, interface{}) template.HTMLAttr
 	ClassAllZero(interface{}, interface{}, interface{}, interface{}, string) template.HTMLAttr
 	ClassNonNil(interface{}, string, string) template.HTMLAttr
