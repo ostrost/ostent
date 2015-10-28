@@ -27,9 +27,9 @@ package assets
 import (
 	"fmt"
 	"io/ioutil"
-	"strings"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // bindataRead reads the given file from disk. It returns an error on failure.
@@ -389,7 +389,7 @@ func Asset(name string) ([]byte, error) {
 // It simplifies safe initialization of global variables.
 func MustAsset(name string) []byte {
 	a, err := Asset(name)
-	if (err != nil) {
+	if err != nil {
 		panic("asset: Asset(" + name + "): " + err.Error())
 	}
 
@@ -478,124 +478,106 @@ func AssetDir(name string) ([]string, error) {
 }
 
 type bintree struct {
-	Func func() (*asset, error)
+	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
 var _bintree = &bintree{nil, map[string]*bintree{
 	"css": &bintree{nil, map[string]*bintree{
-		"index.css": &bintree{cssIndexCss, map[string]*bintree{
-		}},
-		"index.css.map": &bintree{cssIndexCssMap, map[string]*bintree{
-		}},
+		"index.css": &bintree{cssIndexCss, map[string]*bintree{}},
+		"index.css.map": &bintree{cssIndexCssMap, map[string]*bintree{}},
 	}},
-	"favicon.ico": &bintree{faviconIco, map[string]*bintree{
-	}},
+	"favicon.ico": &bintree{faviconIco, map[string]*bintree{}},
 	"favicons": &bintree{nil, map[string]*bintree{
-		"favicon-120.png": &bintree{faviconsFavicon120Png, map[string]*bintree{
-		}},
-		"favicon-144.png": &bintree{faviconsFavicon144Png, map[string]*bintree{
-		}},
-		"favicon-152.png": &bintree{faviconsFavicon152Png, map[string]*bintree{
-		}},
-		"favicon-180.png": &bintree{faviconsFavicon180Png, map[string]*bintree{
-		}},
-		"favicon-32.png": &bintree{faviconsFavicon32Png, map[string]*bintree{
-		}},
+		"favicon-120.png": &bintree{faviconsFavicon120Png, map[string]*bintree{}},
+		"favicon-144.png": &bintree{faviconsFavicon144Png, map[string]*bintree{}},
+		"favicon-152.png": &bintree{faviconsFavicon152Png, map[string]*bintree{}},
+		"favicon-180.png": &bintree{faviconsFavicon180Png, map[string]*bintree{}},
+		"favicon-32.png": &bintree{faviconsFavicon32Png, map[string]*bintree{}},
 	}},
 	"js": &bintree{nil, map[string]*bintree{
 		"requirejs": &bintree{nil, map[string]*bintree{
 			"2.1.20": &bintree{nil, map[string]*bintree{
-				"require.min.js": &bintree{jsRequirejs2120RequireMinJs, map[string]*bintree{
-				}},
+				"require.min.js": &bintree{jsRequirejs2120RequireMinJs, map[string]*bintree{}},
 			}},
 		}},
 		"src": &bintree{nil, map[string]*bintree{
-			"build.js": &bintree{jsSrcBuildJs, map[string]*bintree{
-			}},
-			"index.js": &bintree{jsSrcIndexJs, map[string]*bintree{
-			}},
+			"build.js": &bintree{jsSrcBuildJs, map[string]*bintree{}},
+			"index.js": &bintree{jsSrcIndexJs, map[string]*bintree{}},
 			"lib": &bintree{nil, map[string]*bintree{
-				"jsdefines.js": &bintree{jsSrcLibJsdefinesJs, map[string]*bintree{
-				}},
+				"jsdefines.js": &bintree{jsSrcLibJsdefinesJs, map[string]*bintree{}},
 			}},
 			"vendor": &bintree{nil, map[string]*bintree{
 				"bootstrap": &bintree{nil, map[string]*bintree{
 					"3.3.5-collapse": &bintree{nil, map[string]*bintree{
-						"bootstrap.min.js": &bintree{jsSrcVendorBootstrap335CollapseBootstrapMinJs, map[string]*bintree{
-						}},
+						"bootstrap.min.js": &bintree{jsSrcVendorBootstrap335CollapseBootstrapMinJs, map[string]*bintree{}},
 					}},
 				}},
 				"jquery": &bintree{nil, map[string]*bintree{
 					"2.1.4": &bintree{nil, map[string]*bintree{
-						"jquery.min.js": &bintree{jsSrcVendorJquery214JqueryMinJs, map[string]*bintree{
-						}},
+						"jquery.min.js": &bintree{jsSrcVendorJquery214JqueryMinJs, map[string]*bintree{}},
 					}},
 				}},
 				"react": &bintree{nil, map[string]*bintree{
 					"0.14.0": &bintree{nil, map[string]*bintree{
-						"react-dom.min.js": &bintree{jsSrcVendorReact0140ReactDomMinJs, map[string]*bintree{
-						}},
-						"react-with-addons.min.js": &bintree{jsSrcVendorReact0140ReactWithAddonsMinJs, map[string]*bintree{
-						}},
+						"react-dom.min.js": &bintree{jsSrcVendorReact0140ReactDomMinJs, map[string]*bintree{}},
+						"react-with-addons.min.js": &bintree{jsSrcVendorReact0140ReactWithAddonsMinJs, map[string]*bintree{}},
 					}},
 				}},
 				"requirejs-domready": &bintree{nil, map[string]*bintree{
 					"2.0.1": &bintree{nil, map[string]*bintree{
-						"domReady.js": &bintree{jsSrcVendorRequirejsDomready201DomreadyJs, map[string]*bintree{
-						}},
+						"domReady.js": &bintree{jsSrcVendorRequirejsDomready201DomreadyJs, map[string]*bintree{}},
 					}},
 				}},
 			}},
 		}},
 	}},
-	"robots.txt": &bintree{robotsTxt, map[string]*bintree{
-	}},
+	"robots.txt": &bintree{robotsTxt, map[string]*bintree{}},
 }}
 
 // RestoreAsset restores an asset under the given directory
 func RestoreAsset(dir, name string) error {
-        data, err := Asset(name)
-        if err != nil {
-                return err
-        }
-        info, err := AssetInfo(name)
-        if err != nil {
-                return err
-        }
-        err = os.MkdirAll(_filePath(dir, filepath.Dir(name)), os.FileMode(0755))
-        if err != nil {
-                return err
-        }
-        err = ioutil.WriteFile(_filePath(dir, name), data, info.Mode())
-        if err != nil {
-                return err
-        }
-        err = os.Chtimes(_filePath(dir, name), info.ModTime(), info.ModTime())
-        if err != nil {
-                return err
-        }
-        return nil
+	data, err := Asset(name)
+	if err != nil {
+		return err
+	}
+	info, err := AssetInfo(name)
+	if err != nil {
+		return err
+	}
+	err = os.MkdirAll(_filePath(dir, filepath.Dir(name)), os.FileMode(0755))
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(_filePath(dir, name), data, info.Mode())
+	if err != nil {
+		return err
+	}
+	err = os.Chtimes(_filePath(dir, name), info.ModTime(), info.ModTime())
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // RestoreAssets restores an asset under the given directory recursively
 func RestoreAssets(dir, name string) error {
-        children, err := AssetDir(name)
-        // File
-        if err != nil {
-                return RestoreAsset(dir, name)
-        }
-        // Dir
-        for _, child := range children {
-                err = RestoreAssets(dir, filepath.Join(name, child))
-                if err != nil {
-                        return err
-                }
-        }
-        return nil
+	children, err := AssetDir(name)
+	// File
+	if err != nil {
+		return RestoreAsset(dir, name)
+	}
+	// Dir
+	for _, child := range children {
+		err = RestoreAssets(dir, filepath.Join(name, child))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func _filePath(dir, name string) string {
-        cannonicalName := strings.Replace(name, "\\", "/", -1)
-        return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
+	cannonicalName := strings.Replace(name, "\\", "/", -1)
+	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
 

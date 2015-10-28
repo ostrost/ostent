@@ -22,11 +22,11 @@ import (
 	"compress/gzip"
 	"fmt"
 	"io"
-	"strings"
-	"os"
-	"time"
 	"io/ioutil"
+	"os"
 	"path/filepath"
+	"strings"
+	"time"
 )
 
 func bindataRead(data, name string) ([]byte, error) {
@@ -55,9 +55,9 @@ type asset struct {
 }
 
 type bindataFileInfo struct {
-	name string
-	size int64
-	mode os.FileMode
+	name    string
+	size    int64
+	mode    os.FileMode
 	modTime time.Time
 }
 
@@ -96,7 +96,7 @@ func cssIndexCss() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "css/index.css", size: 171596, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -116,7 +116,7 @@ func cssIndexCssMap() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "css/index.css.map", size: 84009, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -136,7 +136,7 @@ func faviconIco() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "favicon.ico", size: 5430, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -156,7 +156,7 @@ func faviconsFavicon120Png() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "favicons/favicon-120.png", size: 3991, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -176,7 +176,7 @@ func faviconsFavicon144Png() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "favicons/favicon-144.png", size: 4969, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -196,7 +196,7 @@ func faviconsFavicon152Png() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "favicons/favicon-152.png", size: 5262, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -216,7 +216,7 @@ func faviconsFavicon180Png() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "favicons/favicon-180.png", size: 6473, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -236,7 +236,7 @@ func faviconsFavicon32Png() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "favicons/favicon-32.png", size: 844, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -256,7 +256,7 @@ func jsMinIndexMinJs() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "js/min/index.min.js", size: 278272, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -276,7 +276,7 @@ func jsRequirejs2120RequireMinJs() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "js/requirejs/2.1.20/require.min.js", size: 15524, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -296,7 +296,7 @@ func robotsTxt() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "robots.txt", size: 26, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
-	a := &asset{bytes: bytes, info:  info}
+	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
 
@@ -319,7 +319,7 @@ func Asset(name string) ([]byte, error) {
 // It simplifies safe initialization of global variables.
 func MustAsset(name string) []byte {
 	a, err := Asset(name)
-	if (err != nil) {
+	if err != nil {
 		panic("asset: Asset(" + name + "): " + err.Error())
 	}
 
@@ -401,90 +401,79 @@ func AssetDir(name string) ([]string, error) {
 }
 
 type bintree struct {
-	Func func() (*asset, error)
+	Func     func() (*asset, error)
 	Children map[string]*bintree
 }
 var _bintree = &bintree{nil, map[string]*bintree{
 	"css": &bintree{nil, map[string]*bintree{
-		"index.css": &bintree{cssIndexCss, map[string]*bintree{
-		}},
-		"index.css.map": &bintree{cssIndexCssMap, map[string]*bintree{
-		}},
+		"index.css": &bintree{cssIndexCss, map[string]*bintree{}},
+		"index.css.map": &bintree{cssIndexCssMap, map[string]*bintree{}},
 	}},
-	"favicon.ico": &bintree{faviconIco, map[string]*bintree{
-	}},
+	"favicon.ico": &bintree{faviconIco, map[string]*bintree{}},
 	"favicons": &bintree{nil, map[string]*bintree{
-		"favicon-120.png": &bintree{faviconsFavicon120Png, map[string]*bintree{
-		}},
-		"favicon-144.png": &bintree{faviconsFavicon144Png, map[string]*bintree{
-		}},
-		"favicon-152.png": &bintree{faviconsFavicon152Png, map[string]*bintree{
-		}},
-		"favicon-180.png": &bintree{faviconsFavicon180Png, map[string]*bintree{
-		}},
-		"favicon-32.png": &bintree{faviconsFavicon32Png, map[string]*bintree{
-		}},
+		"favicon-120.png": &bintree{faviconsFavicon120Png, map[string]*bintree{}},
+		"favicon-144.png": &bintree{faviconsFavicon144Png, map[string]*bintree{}},
+		"favicon-152.png": &bintree{faviconsFavicon152Png, map[string]*bintree{}},
+		"favicon-180.png": &bintree{faviconsFavicon180Png, map[string]*bintree{}},
+		"favicon-32.png": &bintree{faviconsFavicon32Png, map[string]*bintree{}},
 	}},
 	"js": &bintree{nil, map[string]*bintree{
 		"min": &bintree{nil, map[string]*bintree{
-			"index.min.js": &bintree{jsMinIndexMinJs, map[string]*bintree{
-			}},
+			"index.min.js": &bintree{jsMinIndexMinJs, map[string]*bintree{}},
 		}},
 		"requirejs": &bintree{nil, map[string]*bintree{
 			"2.1.20": &bintree{nil, map[string]*bintree{
-				"require.min.js": &bintree{jsRequirejs2120RequireMinJs, map[string]*bintree{
-				}},
+				"require.min.js": &bintree{jsRequirejs2120RequireMinJs, map[string]*bintree{}},
 			}},
 		}},
 	}},
-	"robots.txt": &bintree{robotsTxt, map[string]*bintree{
-	}},
+	"robots.txt": &bintree{robotsTxt, map[string]*bintree{}},
 }}
 
 // RestoreAsset restores an asset under the given directory
 func RestoreAsset(dir, name string) error {
-        data, err := Asset(name)
-        if err != nil {
-                return err
-        }
-        info, err := AssetInfo(name)
-        if err != nil {
-                return err
-        }
-        err = os.MkdirAll(_filePath(dir, filepath.Dir(name)), os.FileMode(0755))
-        if err != nil {
-                return err
-        }
-        err = ioutil.WriteFile(_filePath(dir, name), data, info.Mode())
-        if err != nil {
-                return err
-        }
-        err = os.Chtimes(_filePath(dir, name), info.ModTime(), info.ModTime())
-        if err != nil {
-                return err
-        }
-        return nil
+	data, err := Asset(name)
+	if err != nil {
+		return err
+	}
+	info, err := AssetInfo(name)
+	if err != nil {
+		return err
+	}
+	err = os.MkdirAll(_filePath(dir, filepath.Dir(name)), os.FileMode(0755))
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(_filePath(dir, name), data, info.Mode())
+	if err != nil {
+		return err
+	}
+	err = os.Chtimes(_filePath(dir, name), info.ModTime(), info.ModTime())
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // RestoreAssets restores an asset under the given directory recursively
 func RestoreAssets(dir, name string) error {
-        children, err := AssetDir(name)
-        // File
-        if err != nil {
-                return RestoreAsset(dir, name)
-        }
-        // Dir
-        for _, child := range children {
-                err = RestoreAssets(dir, filepath.Join(name, child))
-                if err != nil {
-                        return err
-                }
-        }
-        return nil
+	children, err := AssetDir(name)
+	// File
+	if err != nil {
+		return RestoreAsset(dir, name)
+	}
+	// Dir
+	for _, child := range children {
+		err = RestoreAssets(dir, filepath.Join(name, child))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func _filePath(dir, name string) string {
-        cannonicalName := strings.Replace(name, "\\", "/", -1)
-        return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
+	cannonicalName := strings.Replace(name, "\\", "/", -1)
+	return filepath.Join(append([]string{dir}, strings.Split(cannonicalName, "/")...)...)
 }
 
