@@ -33,59 +33,67 @@ func init() {
 }
 
 func Serve(listener net.Listener, taggedbin bool, extra func(*httprouter.Router, alice.Chain)) error {
-	mux, chain, access := ostent.NewServery(taggedbin)
-	errlog, errclose := ostent.NewErrorLog()
-	defer errclose()
-
+	// post-flag.Parse() really
 	if DelayFlags.Max.Duration < DelayFlags.Min.Duration {
 		DelayFlags.Max.Duration = DelayFlags.Min.Duration
 	}
 
-	ss := ostent.NewServeSSE(access, DelayFlags)
-	mux.Handler("GET", "/index.sse", http.HandlerFunc(ss.IndexSSE))
-	sw := ostent.NewServeWS(ss, errlog)
-	mux.Handler("GET", "/index.ws", http.HandlerFunc(sw.IndexWS))
+	r, achain, access := ostent.NewServery(taggedbin)
 
-	si := ostent.NewServeIndex(sw, taggedbin, templates.IndexTemplate)
-	if p, h := "/", chain.ThenFunc(si.Index); true {
-		mux.Handler("GET", p, h)
-		mux.Handler("HEAD", p, h)
-	}
+	ostentLog := log.New(os.Stderr, "[ostent] ", 0)
+	errlog, errclose := ostent.NewErrorLog()
+	defer errclose()
 
-	if !taggedbin { // dev-only
-		if p, h := "/panic", chain.ThenFunc(
-			func(w http.ResponseWriter, r *http.Request) {
-				panic("/panic")
-			}); true {
-			mux.Handler("GET", p, h)
-			mux.Handler("HEAD", p, h)
+	var (
+		serve1 = ostent.NewServeSSE(access, DelayFlags)
+		serve2 = ostent.NewServeWS(serve1, errlog)
+		serve3 = ostent.NewServeIndex(serve2, taggedbin, templates.IndexTemplate)
+		serve4 = ostent.ServeAssets{
+			Log:                 ostentLog,
+			AssetFunc:           assets.Asset,
+			AssetInfoFunc:       assets.AssetInfo,
+			AssetAltModTimeFunc: AssetAltModTimeFunc, // from main.*.go
 		}
-	}
+	)
 
-	sa := ostent.ServeAssets{
-		Log:                 log.New(os.Stderr, "[ostent] ", 0),
-		AssetFunc:           assets.Asset,
-		AssetInfoFunc:       assets.AssetInfo,
-		AssetAltModTimeFunc: AssetAltModTimeFunc, // from main.*.go
+	m, chain0 := ostent.NewRP, alice.New()
+
+	var (
+		panicp = "/panic"
+		panics = func(http.ResponseWriter, *http.Request) { panic(panicp) }
+		panicr = m(panicp, r.GET, r.HEAD)
+	)
+
+	routes := map[ostent.RouterPath]ostent.Handle{
+		m("/index.sse", r.GET): {chain0, serve1.IndexSSE},
+		m("/index.ws", r.GET):  {chain0, serve2.IndexWS},
+		m("/", r.GET, r.HEAD):  {achain, serve3.Index},
+		panicr:                 {achain, panics},
 	}
 	for _, path := range assets.AssetNames() {
 		p := "/" + path
 		if path != "favicon.ico" && path != "robots.txt" {
 			p = "/" + ostent.VERSION + "/" + path // the Version prefix
 		}
-		cchain := chain.Append(context.ClearHandler, ostent.AddAssetPathContextFunc(path))
-		h := cchain.ThenFunc(sa.Serve)
-		mux.Handler("GET", p, h)
-		mux.Handler("HEAD", p, h)
+		routes[m(p, r.GET, r.HEAD)] = ostent.Handle{
+			Chain: achain.Append(context.ClearHandler, ostent.AddAssetPathContextFunc(path)),
+			HFunc: serve4.Serve,
+		}
 	}
-	if extra != nil {
-		extra(mux, chain)
+	if taggedbin { // no panicp in bin
+		delete(routes, panicr)
 	}
 
-	ostent.Banner(listener.Addr().String(), "ostent", sa.Log)
+	// now bind
+	ostent.Route(routes, nil)
+	if extra != nil {
+		extra(r, achain)
+	}
+
+	ostent.Banner(listener.Addr().String(), "ostent", ostentLog)
 	s := &http.Server{
 		ErrorLog: errlog,
-		Handler:  mux,
+		Handler:  r,
 	}
 	return s.Serve(listener)
 }

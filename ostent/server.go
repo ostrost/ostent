@@ -31,18 +31,49 @@ func AddAssetPathContextFunc(path string) func(http.Handler) http.Handler {
 	}
 }
 
+type Handle struct {
+	Chain alice.Chain
+	HFunc http.HandlerFunc
+}
+
+type RouterPath struct {
+	Path        string
+	RouterFuncs *[]func(string, httprouter.Handle)
+}
+
+func NewRP(path string, rfs ...func(string, httprouter.Handle)) RouterPath {
+	return RouterPath{Path: path, RouterFuncs: &rfs}
+}
+
+func Route(routes map[RouterPath]Handle, conv func(http.Handler) httprouter.Handle) {
+	if conv == nil {
+		// blank converter: does nothing with httprouter.Params
+		conv = func(handler http.Handler) httprouter.Handle {
+			return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+				handler.ServeHTTP(w, r)
+			}
+		}
+	}
+	// .Handles bind the path with the router
+	for rpath, handle := range routes {
+		for _, rfunc := range *rpath.RouterFuncs {
+			rfunc(rpath.Path, conv(handle.Chain.ThenFunc(handle.HFunc)))
+		}
+	}
+}
+
 func NewServery(taggedbin bool) (*httprouter.Router, alice.Chain, *Access) {
 	access := NewAccess(taggedbin)
-	chain := alice.New(access.Constructor)
-	mux := httprouter.New()
-	mux.NotFound = chain.ThenFunc(http.NotFound)
-	phandler := chain.Append(context.ClearHandler).
+	achain := alice.New(access.Constructor)
+	r := httprouter.New()
+	r.NotFound = achain.ThenFunc(http.NotFound)
+	phandler := achain.Append(context.ClearHandler).
 		ThenFunc(NewServePanic(taggedbin).PanicHandler)
-	mux.PanicHandler = func(w http.ResponseWriter, r *http.Request, recd interface{}) {
+	r.PanicHandler = func(w http.ResponseWriter, r *http.Request, recd interface{}) {
 		context.Set(r, CPanicError, recd)
 		phandler.ServeHTTP(w, r)
 	}
-	return mux, chain, access
+	return r, achain, access
 }
 
 // TimeInfo is for AssetInfoFunc: a reduced os.FileInfo.

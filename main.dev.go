@@ -86,9 +86,9 @@ func (ps PprofServe) Serve(w http.ResponseWriter, r *http.Request, params httpro
 
 type PprofServe struct{ Chain alice.Chain }
 
-func PprofExtra(mux *httprouter.Router, chain alice.Chain) {
+func PprofExtra(r *httprouter.Router, chain alice.Chain) {
 	handle := PprofServe{chain}.Serve
-	mux.Handle("GET", "/debug/pprof/:name", handle)
-	mux.Handle("HEAD", "/debug/pprof/:name", handle)
-	mux.Handle("POST", "/debug/pprof/:name", handle)
+	r.GET("/debug/pprof/:name", handle)
+	r.HEAD("/debug/pprof/:name", handle)
+	r.POST("/debug/pprof/:name", handle)
 }
