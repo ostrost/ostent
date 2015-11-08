@@ -9,7 +9,7 @@ env:
   global:
     - GVMINSTALLER_URL=https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer
     - DPL_GO=go1.5.1 # Deploy only when this matches GVM_GO in the matrix.
-    - GO_BOOTSTRAP=go1.4.2
+    - GO_BOOTSTRAP=go1.4.3
   matrix:
     - GVM_GO=go1.5.1
   # - GVM_GO=tip
@@ -70,9 +70,9 @@ deploy:
   skip_clean: true
   on:
     tags: true
-    prerelease: true
-    # condition may not work with prerelease:
     condition: $GVM_GO = $DPL_GO
+    # condition may not work with prerelease:
+  prerelease: true # https://github.com/travis-ci/dpl/issues/234
   provider: releases # https://github.com/travis-ci/dpl#github-releases
   api_key:
     secure: >
