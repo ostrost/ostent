@@ -56,7 +56,7 @@ func Serve(listener net.Listener, taggedbin bool, extra func(*httprouter.Router,
 		}
 	)
 
-	m, chain0 := ostent.NewRP, alice.New()
+	m, n, chain0 := ostent.NewRoute, ostent.NewHandle, alice.New()
 
 	var (
 		panicp = "/panic"
@@ -64,28 +64,28 @@ func Serve(listener net.Listener, taggedbin bool, extra func(*httprouter.Router,
 		panicr = m(panicp, r.GET, r.HEAD)
 	)
 
-	routes := map[ostent.RouterPath]ostent.Handle{
-		m("/index.sse", r.GET): {chain0, serve1.IndexSSE},
-		m("/index.ws", r.GET):  {chain0, serve2.IndexWS},
-		m("/", r.GET, r.HEAD):  {achain, serve3.Index},
-		panicr:                 {achain, panics},
+	routes := map[*ostent.Route]ostent.Handle{
+		m("/index.sse", r.GET): n(chain0, serve1.IndexSSE),
+		m("/index.ws", r.GET):  n(chain0, serve2.IndexWS),
+		m("/", r.GET, r.HEAD):  n(achain, serve3.Index),
+		panicr:                 n(achain, panics),
 	}
 	for _, path := range assets.AssetNames() {
 		p := "/" + path
 		if path != "favicon.ico" && path != "robots.txt" {
 			p = "/" + ostent.VERSION + "/" + path // the Version prefix
 		}
-		routes[m(p, r.GET, r.HEAD)] = ostent.Handle{
-			Chain: achain.Append(context.ClearHandler, ostent.AddAssetPathContextFunc(path)),
-			HFunc: serve4.Serve,
-		}
+		rr := m(p, r.GET, r.HEAD)
+		rr.Asset = true
+		routes[rr] = n(achain.Append(context.ClearHandler,
+			ostent.AddAssetPathContextFunc(path)), serve4.Serve)
 	}
 	if taggedbin { // no panicp in bin
 		delete(routes, panicr)
 	}
 
 	// now bind
-	ostent.Route(routes, nil)
+	ostent.ApplyRoutes(r, routes, nil)
 	if extra != nil {
 		extra(r, achain)
 	}

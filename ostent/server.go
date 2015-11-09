@@ -36,16 +36,27 @@ type Handle struct {
 	HFunc http.HandlerFunc
 }
 
-type RouterPath struct {
-	Path        string
+func NewHandle(chain alice.Chain, hfunc http.HandlerFunc) Handle {
+	return Handle{Chain: chain, HFunc: hfunc}
+}
+
+type RouteInfo struct {
+	Path   string
+	Asset  bool
+	Post   bool // filled after ApplyRoutes
+	Params bool // filled after ApplyRoutes
+}
+
+type Route struct {
+	*RouteInfo
 	RouterFuncs *[]func(string, httprouter.Handle)
 }
 
-func NewRP(path string, rfs ...func(string, httprouter.Handle)) RouterPath {
-	return RouterPath{Path: path, RouterFuncs: &rfs}
+func NewRoute(path string, rfs ...func(string, httprouter.Handle)) *Route {
+	return &Route{&RouteInfo{Path: path}, &rfs}
 }
 
-func Route(routes map[RouterPath]Handle, conv func(http.Handler) httprouter.Handle) {
+func ApplyRoutes(r *httprouter.Router, routes map[*Route]Handle, conv func(http.Handler) httprouter.Handle) {
 	if conv == nil {
 		// blank converter: does nothing with httprouter.Params
 		conv = func(handler http.Handler) httprouter.Handle {
@@ -54,10 +65,24 @@ func Route(routes map[RouterPath]Handle, conv func(http.Handler) httprouter.Hand
 			}
 		}
 	}
-	// .Handles bind the path with the router
-	for rpath, handle := range routes {
-		for _, rfunc := range *rpath.RouterFuncs {
-			rfunc(rpath.Path, conv(handle.Chain.ThenFunc(handle.HFunc)))
+	// .RouterFuncs bind the path with the router
+	for route, handle := range routes {
+		for _, rfunc := range *route.RouterFuncs {
+			rfunc(route.Path, conv(handle.Chain.ThenFunc(handle.HFunc)))
+		}
+	}
+	// fill .RouteInfo.{Post,Params}
+	for route := range routes {
+		// tsr stands for trailing slash redirect
+		if handle, params, tsr := r.Lookup("POST", route.Path); handle != nil && !tsr {
+			route.Post = true
+			route.Params = params != nil
+		}
+		// there should not be a params-less POST and params-featured GET
+		if !route.Params {
+			if handle, params, tsr := r.Lookup("GET", route.Path); handle != nil && !tsr {
+				route.Params = params != nil
+			}
 		}
 	}
 }
