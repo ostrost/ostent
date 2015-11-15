@@ -7,8 +7,8 @@ require.config
     domReady:   'vendor/requirejs-domready/2.0.1/domReady'
     jquery:     'vendor/jquery/2.1.4/jquery.min'
     bscollapse: 'vendor/bootstrap/3.3.5-collapse/bootstrap.min'
-    react:      'vendor/react/0.14.0/react-with-addons.min'
-    reactDOM:   'vendor/react/0.14.0/react-dom.min'
+    react:      'vendor/react/0.14.2/react-with-addons.min'
+    reactDOM:   'vendor/react/0.14.2/react-dom.min'
     jsdefines:  'lib/jsdefines'
 
 # main require
