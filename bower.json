@@ -1,0 +1,15 @@
+{
+  "name": "ostent",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "react": "~0.14.2",
+    "jquery": "~2.1.4"
+  }
+}

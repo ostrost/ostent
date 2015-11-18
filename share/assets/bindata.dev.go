@@ -8,15 +8,7 @@
 // favicons/favicon-152.png
 // favicons/favicon-180.png
 // favicons/favicon-32.png
-// js/requirejs/2.1.20/require.min.js
-// js/src/build.js
-// js/src/index.js
-// js/src/lib/jsdefines.js
-// js/src/vendor/bootstrap/3.3.5-collapse/bootstrap.min.js
-// js/src/vendor/jquery/2.1.4/jquery.min.js
-// js/src/vendor/react/0.14.2/react-dom.min.js
-// js/src/vendor/react/0.14.2/react-with-addons.min.js
-// js/src/vendor/requirejs-domready/2.0.1/domReady.js
+// js/src/bundle.js
 // robots.txt
 // DO NOT EDIT!
 
@@ -190,154 +182,10 @@ func faviconsFavicon32Png() (*asset, error) {
 	return a, err
 }
 
-// jsRequirejs2120RequireMinJs reads file data from disk. It returns an error on failure.
-func jsRequirejs2120RequireMinJs() (*asset, error) {
-	path := filepath.Join(rootDir, "js/requirejs/2.1.20/require.min.js")
-	name := "js/requirejs/2.1.20/require.min.js"
-	bytes, err := bindataRead(path, name)
-	if err != nil {
-		return nil, err
-	}
-
-	fi, err := os.Stat(path)
-	if err != nil {
-		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
-	}
-
-	a := &asset{bytes: bytes, info: fi}
-	return a, err
-}
-
-// jsSrcBuildJs reads file data from disk. It returns an error on failure.
-func jsSrcBuildJs() (*asset, error) {
-	path := filepath.Join(rootDir, "js/src/build.js")
-	name := "js/src/build.js"
-	bytes, err := bindataRead(path, name)
-	if err != nil {
-		return nil, err
-	}
-
-	fi, err := os.Stat(path)
-	if err != nil {
-		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
-	}
-
-	a := &asset{bytes: bytes, info: fi}
-	return a, err
-}
-
-// jsSrcIndexJs reads file data from disk. It returns an error on failure.
-func jsSrcIndexJs() (*asset, error) {
-	path := filepath.Join(rootDir, "js/src/index.js")
-	name := "js/src/index.js"
-	bytes, err := bindataRead(path, name)
-	if err != nil {
-		return nil, err
-	}
-
-	fi, err := os.Stat(path)
-	if err != nil {
-		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
-	}
-
-	a := &asset{bytes: bytes, info: fi}
-	return a, err
-}
-
-// jsSrcLibJsdefinesJs reads file data from disk. It returns an error on failure.
-func jsSrcLibJsdefinesJs() (*asset, error) {
-	path := filepath.Join(rootDir, "js/src/lib/jsdefines.js")
-	name := "js/src/lib/jsdefines.js"
-	bytes, err := bindataRead(path, name)
-	if err != nil {
-		return nil, err
-	}
-
-	fi, err := os.Stat(path)
-	if err != nil {
-		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
-	}
-
-	a := &asset{bytes: bytes, info: fi}
-	return a, err
-}
-
-// jsSrcVendorBootstrap335CollapseBootstrapMinJs reads file data from disk. It returns an error on failure.
-func jsSrcVendorBootstrap335CollapseBootstrapMinJs() (*asset, error) {
-	path := filepath.Join(rootDir, "js/src/vendor/bootstrap/3.3.5-collapse/bootstrap.min.js")
-	name := "js/src/vendor/bootstrap/3.3.5-collapse/bootstrap.min.js"
-	bytes, err := bindataRead(path, name)
-	if err != nil {
-		return nil, err
-	}
-
-	fi, err := os.Stat(path)
-	if err != nil {
-		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
-	}
-
-	a := &asset{bytes: bytes, info: fi}
-	return a, err
-}
-
-// jsSrcVendorJquery214JqueryMinJs reads file data from disk. It returns an error on failure.
-func jsSrcVendorJquery214JqueryMinJs() (*asset, error) {
-	path := filepath.Join(rootDir, "js/src/vendor/jquery/2.1.4/jquery.min.js")
-	name := "js/src/vendor/jquery/2.1.4/jquery.min.js"
-	bytes, err := bindataRead(path, name)
-	if err != nil {
-		return nil, err
-	}
-
-	fi, err := os.Stat(path)
-	if err != nil {
-		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
-	}
-
-	a := &asset{bytes: bytes, info: fi}
-	return a, err
-}
-
-// jsSrcVendorReact0142ReactDomMinJs reads file data from disk. It returns an error on failure.
-func jsSrcVendorReact0142ReactDomMinJs() (*asset, error) {
-	path := filepath.Join(rootDir, "js/src/vendor/react/0.14.2/react-dom.min.js")
-	name := "js/src/vendor/react/0.14.2/react-dom.min.js"
-	bytes, err := bindataRead(path, name)
-	if err != nil {
-		return nil, err
-	}
-
-	fi, err := os.Stat(path)
-	if err != nil {
-		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
-	}
-
-	a := &asset{bytes: bytes, info: fi}
-	return a, err
-}
-
-// jsSrcVendorReact0142ReactWithAddonsMinJs reads file data from disk. It returns an error on failure.
-func jsSrcVendorReact0142ReactWithAddonsMinJs() (*asset, error) {
-	path := filepath.Join(rootDir, "js/src/vendor/react/0.14.2/react-with-addons.min.js")
-	name := "js/src/vendor/react/0.14.2/react-with-addons.min.js"
-	bytes, err := bindataRead(path, name)
-	if err != nil {
-		return nil, err
-	}
-
-	fi, err := os.Stat(path)
-	if err != nil {
-		err = fmt.Errorf("Error reading asset info %s at %s: %v", name, path, err)
-	}
-
-	a := &asset{bytes: bytes, info: fi}
-	return a, err
-}
-
-// jsSrcVendorRequirejsDomready201DomreadyJs reads file data from disk. It returns an error on failure.
-func jsSrcVendorRequirejsDomready201DomreadyJs() (*asset, error) {
-	path := filepath.Join(rootDir, "js/src/vendor/requirejs-domready/2.0.1/domReady.js")
-	name := "js/src/vendor/requirejs-domready/2.0.1/domReady.js"
+// jsSrcBundleJs reads file data from disk. It returns an error on failure.
+func jsSrcBundleJs() (*asset, error) {
+	path := filepath.Join(rootDir, "js/src/bundle.js")
+	name := "js/src/bundle.js"
 	bytes, err := bindataRead(path, name)
 	if err != nil {
 		return nil, err
@@ -430,15 +278,7 @@ var _bindata = map[string]func() (*asset, error){
 	"favicons/favicon-152.png": faviconsFavicon152Png,
 	"favicons/favicon-180.png": faviconsFavicon180Png,
 	"favicons/favicon-32.png": faviconsFavicon32Png,
-	"js/requirejs/2.1.20/require.min.js": jsRequirejs2120RequireMinJs,
-	"js/src/build.js": jsSrcBuildJs,
-	"js/src/index.js": jsSrcIndexJs,
-	"js/src/lib/jsdefines.js": jsSrcLibJsdefinesJs,
-	"js/src/vendor/bootstrap/3.3.5-collapse/bootstrap.min.js": jsSrcVendorBootstrap335CollapseBootstrapMinJs,
-	"js/src/vendor/jquery/2.1.4/jquery.min.js": jsSrcVendorJquery214JqueryMinJs,
-	"js/src/vendor/react/0.14.2/react-dom.min.js": jsSrcVendorReact0142ReactDomMinJs,
-	"js/src/vendor/react/0.14.2/react-with-addons.min.js": jsSrcVendorReact0142ReactWithAddonsMinJs,
-	"js/src/vendor/requirejs-domready/2.0.1/domReady.js": jsSrcVendorRequirejsDomready201DomreadyJs,
+	"js/src/bundle.js": jsSrcBundleJs,
 	"robots.txt": robotsTxt,
 }
 
@@ -495,40 +335,8 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"favicon-32.png": &bintree{faviconsFavicon32Png, map[string]*bintree{}},
 	}},
 	"js": &bintree{nil, map[string]*bintree{
-		"requirejs": &bintree{nil, map[string]*bintree{
-			"2.1.20": &bintree{nil, map[string]*bintree{
-				"require.min.js": &bintree{jsRequirejs2120RequireMinJs, map[string]*bintree{}},
-			}},
-		}},
 		"src": &bintree{nil, map[string]*bintree{
-			"build.js": &bintree{jsSrcBuildJs, map[string]*bintree{}},
-			"index.js": &bintree{jsSrcIndexJs, map[string]*bintree{}},
-			"lib": &bintree{nil, map[string]*bintree{
-				"jsdefines.js": &bintree{jsSrcLibJsdefinesJs, map[string]*bintree{}},
-			}},
-			"vendor": &bintree{nil, map[string]*bintree{
-				"bootstrap": &bintree{nil, map[string]*bintree{
-					"3.3.5-collapse": &bintree{nil, map[string]*bintree{
-						"bootstrap.min.js": &bintree{jsSrcVendorBootstrap335CollapseBootstrapMinJs, map[string]*bintree{}},
-					}},
-				}},
-				"jquery": &bintree{nil, map[string]*bintree{
-					"2.1.4": &bintree{nil, map[string]*bintree{
-						"jquery.min.js": &bintree{jsSrcVendorJquery214JqueryMinJs, map[string]*bintree{}},
-					}},
-				}},
-				"react": &bintree{nil, map[string]*bintree{
-					"0.14.2": &bintree{nil, map[string]*bintree{
-						"react-dom.min.js": &bintree{jsSrcVendorReact0142ReactDomMinJs, map[string]*bintree{}},
-						"react-with-addons.min.js": &bintree{jsSrcVendorReact0142ReactWithAddonsMinJs, map[string]*bintree{}},
-					}},
-				}},
-				"requirejs-domready": &bintree{nil, map[string]*bintree{
-					"2.0.1": &bintree{nil, map[string]*bintree{
-						"domReady.js": &bintree{jsSrcVendorRequirejsDomready201DomreadyJs, map[string]*bintree{}},
-					}},
-				}},
-			}},
+			"bundle.js": &bintree{jsSrcBundleJs, map[string]*bintree{}},
 		}},
 	}},
 	"robots.txt": &bintree{robotsTxt, map[string]*bintree{}},

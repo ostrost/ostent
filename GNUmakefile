@@ -98,12 +98,14 @@ boot32:
 
 share/assets/css/index.css: share/style/index.less
 	type lessc  >/dev/null || exit 0; lessc --source-map $< $@
-share/assets/js/src/lib/jsdefines.js: share/tmp/jsdefines.jsx
+share/js/jsdefines.js: share/tmp/jsdefines.jsx
 	type babel  >/dev/null || exit 0; babel --optional optimisation.react.constantElements --optional optimisation.react.inlineElements $^ -o $@
-share/assets/js/src/index.js: share/coffee/index.coffee
+share/js/index.js: share/coffee/index.coffee
 	type coffee >/dev/null || exit 0; coffee -p $^ >/dev/null && coffee -o $(@D)/ $^
-share/assets/js/min/index.min.js: $(shell find share/assets/js/src/ -type f)
-	type r.js   >/dev/null || exit 0; cd share/assets/js/src && r.js -o build.js
+
+# "jsdefines.js" not passed to ./script.sh
+share/assets/js/src/bundle.js:     share/js/index.js share/js/jsdefines.js ; input=$< output=$@ ./script.sh SCRIPT_webpack
+share/assets/js/min/bundle.min.js: share/js/index.js share/js/jsdefines.js ; input=$< output=$@ ./script.sh SCRIPT_webpack_ugly
 
 share/templates/index.html: share/ace.templates/index.ace share/ace.templates/defines.ace $(templatepp)
 	$(templatepp) -defines share/ace.templates/defines.ace -output $@ $<
@@ -126,13 +128,13 @@ $(assets_bingo): $(shell find \
                            share/assets/ -type f \! -name '*.go' \! -path \
                           'share/assets/js/src/*')
 $(assets_bingo): share/assets/css/index.css
-$(assets_bingo): share/assets/js/min/index.min.js
+$(assets_bingo): share/assets/js/min/bundle.min.js
 
 $(assets_devgo): $(shell find \
                       share/assets/ -type f \! -name '*.go' \! -path \
                      'share/assets/js/min/*')
 $(assets_devgo): share/assets/css/index.css
-$(assets_devgo): share/assets/js/src/lib/jsdefines.js
+$(assets_devgo): share/assets/js/src/bundle.js
 
 # spare shortcuts
 bindata-bin: $(assets_bingo) $(templates_bingo)

@@ -17,8 +17,6 @@ html
 
     link rel=stylesheet type=text/css href=/{{$v}}/css/index.css
 
-    script type=text/javascript charset=utf-8 src=/{{$v}}/js/requirejs/2.1.20/require.min.js data-main=/{{$v}}/js/{{if .TAGGEDbin}}min/index.min.js{{else}}src/index.js{{end}}
-
   body
     nav.navbar.navbar-default.navbar-static-top role=navigation
       div.container-fluid
@@ -66,3 +64,4 @@ html
 
     = javascript
       var Data = {{.Data}};
+    script type=text/javascript charset=utf-8 src=/{{$v}}/js/{{if .TAGGEDbin}}min/bundle.min.js{{else}}src/bundle.js{{end}}

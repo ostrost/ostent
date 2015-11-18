@@ -1,5 +1,6 @@
 define(function(require) {
   let React = require('react');
+  let $     = require('jquery');
   let jsdefines = {};
   jsdefines.StateHandlingMixin = { // requires .Reduce method
     getInitialState: function() {
