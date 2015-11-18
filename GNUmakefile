@@ -1,8 +1,10 @@
 #!/usr/bin/env make -f
 
+PATH:=$(shell echo -n $$PATH:; echo $$GOPATH | sed 's,:\|$$,/bin:,g')
+
 # This repo clone location (final subdirectories) defines package name thus
 # it should be */github.com/[ostrost]/ostent to make package=github.com/[ostrost]/ostent
-package=$(shell echo $$PWD | awk -F/ '{ OFS="/"; print $$(NF-2), $$(NF-1), $$NF }')
+package:=$(shell echo $$PWD | awk -F/ '{ OFS="/"; print $$(NF-2), $$(NF-1), $$NF }')
 templateppackage=$(package)/cmd/ostent-templatepp
 
 testpackage?=./...
@@ -16,8 +18,6 @@ assets_devgo    = $(shareprefix)/assets/bindata.dev.go
 assets_bingo    = $(shareprefix)/assets/bindata.bin.go
 templates_devgo = $(shareprefix)/templates/bindata.dev.go
 templates_bingo = $(shareprefix)/templates/bindata.bin.go
-
-PATH=$(shell printf %s: $$PATH; echo $$GOPATH | awk -F: 'BEGIN { OFS="/bin:"; } { print $$1,$$2,$$3,$$4,$$5,$$6,$$7,$$8,$$9 "/bin"}')
 
 xargs=xargs
 ifeq (Linux, $(shell uname -s))
@@ -34,7 +34,7 @@ ifneq (init, $(MAKECMDGOALS))
 # - go-bindata is not installed yet
 
 cmdname=$(notdir $(PWD))
-destbin=$(shell echo $(GOPATH) | awk -F: '{ print $$1 "/bin" }')
+destbin:=$(shell echo $(GOPATH) | awk -F: '{ print $$1 "/bin" }')
 # destbin=$(shell go list -f '{{.Target}}' $(package) | $(xargs) dirname)
 
 define golistfiles =
@@ -43,13 +43,13 @@ define golistfiles =
 {{range .GoFiles }}{{$$dir}}/{{.}}{{"\n"}}{{end}}\
 {{range .CgoFiles}}{{$$dir}}/{{.}}{{"\n"}}{{end}}{{end}}
 endef
-packagefiles=$(shell \
+packagefiles:=$(shell \
 go list -tags   bin  -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(package) | $(xargs) \
 go list -tags   bin  -f '$(golistfiles)' | sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort)
-devpackagefiles=$(shell \
+devpackagefiles:=$(shell \
 go list -tags '!bin' -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(package) | $(xargs) \
 go list -tags '!bin' -f '$(golistfiles)' | sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort)
-templateppfiles=$(shell \
+templateppfiles:=$(shell \
 go list -f '{{.ImportPath}}{{"\n"}}{{join .Deps "\n"}}' $(templateppackage) | $(xargs) \
 go list -f '$(golistfiles)' | sed -n "s,^ *,,g; s,$(PWD)/,,p" | sort)
 templatepp=$(destbin)/$(notdir $(templateppackage))
