@@ -116,8 +116,7 @@ clone your fork as if it was `github.com/ostrost/ostent` package for Go:
 `make` rebuilds these **commited to the repo** files:
 - `share/assets/bindata.*.go`
 - `share/assets/css/*.css`
-- `share/assets/js/src/lib/*.js`
-- `share/assets/js/src/milk/*.js`
+- `share/assets/js/*.js`
 - `share/templates/*.html`
 - `share/templates/bindata.*.go`
 - `share/tmp/*.jsx`
@@ -127,11 +126,8 @@ should not differ from the commited. Whenever
 share/{ace.templates,style,coffee} modified,
 you have to re-make.
 
-Additional tools required for assets rebuilding:
-- [Babel](https://www.npmjs.com/package/babel)
-- [CoffeeScript](https://www.npmjs.com/package/coffee-script)
-- [Less](https://www.npmjs.com/package/less)
-- [RequireJS](https://www.npmjs.org/package/requirejs)
+Additional tools required for assets rebuilding.
+Install with `npm install`: the package list comes from `package.json`.
 
 ## The main package
 

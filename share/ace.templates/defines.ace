@@ -2,29 +2,30 @@
 [[$N := (index . 0)]]
 [[$D := (index . 1)]]
 [[$t := (index . 2)]]
-  | <div {{ClassPositive [[$N]] "" "panel panel-default"}}>
-  div.h4.padding-left-like-panel-heading <a {{HrefT $p [[$N]]}}>[[$t]]</a>
-  | <ul  {{ClassPositive [[$N]] "hidden" "list-group"}}>
-  li.list-group-item.text-nowrap.th
-    ul.list-inline
-      li
-        span
-          b Delay
-          |  
-          span.badge {{[[$D]]}}
-        |  
-        div.btn-group
-          {{template "defines::alink_badgeleft"  LessD $p [[$D]] "btn btn-default"}}
-          {{template "defines::alink_badgeright" MoreD $p [[$D]] "btn btn-default"}}
-      li
-        span
-          b Rows
-          |  
-          span.badge {{[[$N]].Absolute}}
-        |  
-        div.btn-group
-          {{template "defines::alink_badgeleft"  LessN $p [[$N]] "btn btn-default"}}
-          {{template "defines::alink_badgeright" MoreN $p [[$N]] "btn btn-default"}}
+  | <div><ul {{ClassPositive [[$N]] "no-bullet" "tabs"}} data-tabs>
+  li.tabs-title.small-tabs-title
+    | <a {{HrefT $p [[$N]]}}>
+    h5.margin-bottom-0 [[$t]]
+    | </a>
+  | </ul>
+  | <div {{ClassPositive [[$N]] "" "tabs-content"}}>
+  | <ul {{ClassPositive [[$N]] "hide" "menu padding-top-056"}}>
+  li
+    label.middle.margin-left-1rem
+      b Delay&nbsp;
+      span.badge.secondary {{[[$D]]}}
+  li
+    div.button-group
+      {{template "defines::alink_badgeleft"  LessD $p [[$D]] "button secondary hollow"}}
+      {{template "defines::alink_badgeright" MoreD $p [[$D]] "button secondary hollow"}}
+  li
+    label.middle.margin-left-1rem
+      b Rows&nbsp;
+      span.badge.secondary {{[[$N]].Absolute}}
+  li
+    div.button-group
+      {{template "defines::alink_badgeleft"  LessN $p [[$N]] "button secondary hollow"}}
+      {{template "defines::alink_badgeright" MoreN $p [[$N]] "button secondary hollow"}}
   | </ul>
 [[end]]
 
@@ -41,8 +42,7 @@
     |   >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>
 
 = content define_hostname
-  / this is expected to be a part of navbar.
-  | <a {{class}}="navbar-brand clip12" href="/"
+  | <a {{class}}="clip12" href="/"
   |    {{TitlePrefixed "hostname " .Data.hostname}}>{{.Data.hostname}}</a>
 
 {{define "defines::define_loadavg"}}<span>{{.Data.loadavg}}</span>{{end}}
@@ -51,7 +51,7 @@
 = content define_panelmem
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Memn` `$p.Memd` "Memory"]]
-  | <table {{ClassNonZero $p.Memn "table table-hover" "hidden"}}>
+  | <table {{ClassNonZero $p.Memn "hover full margin-bottom-0" "hide"}}>
   thead
     tr
       th
@@ -67,19 +67,19 @@
         td {{$mem.Kind}}
         td.text-right {{$mem.Free}}
         | <td {{class}}="text-right bg-usepct"
-        | data-usepct={{$mem.UsePct}}>{{$mem.UsePct}}%</td>
+        |  data-usepct={{$mem.UsePct}}>{{$mem.UsePct}}%</td>
         td.text-right {{$mem.Used}}
         td.text-right {{$mem.Total}}
         | </tr>
         {{jsx `})}`}}
       {{end}}
     {{end}}
-  | </table></div>
+  | </table></div></div>
 
 = content define_paneldf
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Dfn` `$p.Dfd` "Disk usage"]]
-  | <table {{ClassNonZero $p.Dfn "table table-hover" "hidden"}}>
+  | <table {{ClassNonZero $p.Dfn "hover full margin-bottom-0" "hide"}}>
   thead
     tr.text-nowrap
       {{$r := "text-right"}}
@@ -102,7 +102,7 @@
           |  {{$df.Avail}}
 
         | <td {{class}}="text-right bg-usepct text-nowrap"
-        | data-usepct={{$df.UsePct}}>
+        |  data-usepct={{$df.UsePct}}>
         span.mutext title="Inodes use%" {{$df.IusePct}}%
         |  {{$df.UsePct}}%</td>
 
@@ -116,12 +116,12 @@
         {{jsx `})}`}}
       {{end}}
     {{end}}
-  | </table></div>
+  | </table></div></div>
 
 = content define_panelcpu
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.CPUn` `$p.CPUd` "CPU"]]
-  | <table {{ClassNonZero $p.CPUn "table table-hover" "hidden"}}>
+  | <table {{ClassNonZero $p.CPUn "hover full margin-bottom-0" "hide"}}>
   thead
     tr
       th
@@ -148,12 +148,12 @@
         {{jsx `})}`}}
       {{end}}
     {{end}}
-  | </table></div>
+  | </table></div></div>
 
 = content define_panelif
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Ifn` `$p.Ifd` "Interfaces"]]
-  | <table {{ClassNonZero $p.Ifn "table table-hover" "hidden"}}>
+  | <table {{ClassNonZero $p.Ifn "hover full margin-bottom-0" "hide"}}>
   thead
     tr
       th Interface
@@ -192,8 +192,8 @@
         td.text-right.text-nowrap
           span.mutext title="Total drops,errors modulo 4G"
             span title="Total drops In modulo 4G" {{$if.DropsIn}}
-            | <span {{ClassNonNil $if.DropsOut "" "hidden"}}>/</span>
-            | <span {{ClassNonNil $if.DropsOut "" "hidden"}} title="Total drops Out modulo 4G">{{$if.DropsOut}}</span>
+            | <span {{ClassNonNil $if.DropsOut "" "hide"}}>/</span>
+            | <span {{ClassNonNil $if.DropsOut "" "hide"}} title="Total drops Out modulo 4G">{{$if.DropsOut}}</span>
             | ,
             span title="Total errors In modulo 4G" {{$if.ErrorsIn}}
             | /
@@ -201,8 +201,8 @@
           |  
           | <span {{ClassAllZero $if.DeltaDropsIn $if.DeltaDropsOut $if.DeltaErrorsIn $if.DeltaErrorsOut "mutext"}}>
           span title="Drops In per second" {{$if.DeltaDropsIn}}
-          | <span {{ClassNonNil $if.DeltaDropsOut "" "hidden"}}>/</span>
-          | <span {{ClassNonNil $if.DeltaDropsOut "" "hidden"}} title="Drops Out per second">{{$if.DeltaDropsOut}}</span>
+          | <span {{ClassNonNil $if.DeltaDropsOut "" "hide"}}>/</span>
+          | <span {{ClassNonNil $if.DeltaDropsOut "" "hide"}} title="Drops Out per second">{{$if.DeltaDropsOut}}</span>
           | ,
           span title="Errors In per second" {{$if.DeltaErrorsIn}}
           | /
@@ -212,12 +212,12 @@
         {{jsx `})}`}}
       {{end}}
     {{end}}
-  | </table></div>
+  | </table></div></div>
 
 = content define_panelps
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Psn` `$p.Psd` "Processes"]]
-  | <table {{ClassNonZero $p.Psn "table table-hover" "hidden"}}>
+  | <table {{ClassNonZero $p.Psn "hover full margin-bottom-0" "hide"}}>
   thead
     tr.text-nowrap
       {{$r := "text-right"}}
@@ -249,4 +249,4 @@
         {{jsx `})}`}}
       {{end}}
     {{end}}
-  | </table></div>
+  | </table></div></div>

@@ -1,0 +1,168 @@
+@charset 'utf-8';
+
+@import 'settings'; // foundation settings
+
+// foundation imports and includes sans:
+// - @import 'motion-ui';
+// - @include motion-ui-transitions;
+// - @include motion-ui-animations;
+@import 'foundation';
+
+@include foundation-global-styles;
+@include foundation-grid;
+@include foundation-typography;
+@include foundation-button;
+@include foundation-forms;
+@include foundation-visibility-classes;
+@include foundation-float-classes;
+@include foundation-accordion;
+@include foundation-badge;
+@include foundation-breadcrumbs;
+@include foundation-button-group;
+@include foundation-callout;
+@include foundation-close-button;
+@include foundation-drilldown-menu;
+@include foundation-dropdown;
+@include foundation-dropdown-menu;
+@include foundation-flex-video;
+@include foundation-label;
+@include foundation-media-object;
+@include foundation-menu;
+@include foundation-off-canvas;
+@include foundation-orbit;
+@include foundation-pagination;
+@include foundation-progress-bar;
+@include foundation-slider;
+@include foundation-sticky;
+@include foundation-reveal;
+@include foundation-switch;
+@include foundation-table;
+@include foundation-tabs;
+@include foundation-thumbnail;
+@include foundation-title-bar;
+@include foundation-tooltip;
+@include foundation-top-bar;
+// END OF foundation imports and includes
+
+// $tab-item-padding is 1.25rem 1.5rem
+$small-tab-item-padding: 0.5rem 1rem;
+.small-tabs-title > a { padding: $small-tab-item-padding; }
+
+// like .menu > li > a
+.menu > li > .button-group { padding-left: 1rem; padding-right: 1rem; }
+
+// explicit {margin,padding}
+.margin-bottom-0 { margin-bottom: 0; }
+.padding-top-056 { padding-top: 0.5625rem; }
+label.margin-left-1rem { margin-left: 1rem; }
+
+// full-width kind of a table
+table.full { width: 100%; }
+
+// cutting long texts
+.clip12 {
+  max-width: 12ch;
+  // cursor: pointer;
+  // margin-bottom: 0px;
+  // font-weight: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+/*
+.collapse-checkbox:checked + .clip12 {
+  text-decoration: overline;
+  word-wrap: break-word;
+  word-break: break-all;
+  white-space: normal;
+  overflow-x: visible;
+}
+*/
+
+// after bootstrap .text-muted
+table.hover .mutext { color: #ddd; } // there was @gray-lighter
+table.hover tr:hover .mutext { color: #777; } // text-muted color
+
+.text-nowrap { white-space: nowrap; } // from bootstrap as is
+
+/* from bootstrap: caret, drop{down,up} */
+.caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  vertical-align: middle;
+  border-top: 4px dashed;
+  border-top: 4px solid \9;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+.dropup,
+.dropdown {
+  position: relative;
+}
+.dropdown-toggle:focus {
+  outline: 0;
+}
+.dropup .caret {
+  content: "";
+  border-top: 0;
+  border-bottom: 4px dashed;
+  border-bottom: 4px solid \9;
+}
+.dropup .dropdown-menu {
+  top: auto;
+  bottom: 100%;
+  margin-bottom: 2px;
+}
+/* end of caret, drop{down,up} */
+
+.bg-primary { background-color: smart-scale($primary-color, -80%); } // #D3EBFA
+.bg-success { background-color: smart-scale($success-color, -80%); } // #D8F8E4
+.bg-warning { background-color: smart-scale($warning-color, -80%); } // #FFEFCC
+.bg-alert   { background-color: smart-scale($alert-color,   -80%); } // #FBDED9
+
+.bg-usepct[data-usepct="0"],
+.bg-usepct[data-usepct="1"],
+.bg-usepct[data-usepct="2"],
+.bg-usepct[data-usepct="3"],
+.bg-usepct[data-usepct="4"],
+.bg-usepct[data-usepct="5"],
+.bg-usepct[data-usepct="6"],
+.bg-usepct[data-usepct="7"],
+.bg-usepct[data-usepct="8"],
+.bg-usepct[data-usepct="9"],
+.bg-usepct[data-usepct^="1"]:not([data-usepct="100"]) { @extend .bg-success; }
+
+.bg-usepct[data-usepct^="2"]:not([data-usepct="2"]),
+.bg-usepct[data-usepct^="3"]:not([data-usepct="3"]),
+.bg-usepct[data-usepct^="4"]:not([data-usepct="4"]),
+.bg-usepct[data-usepct^="5"]:not([data-usepct="5"]),
+.bg-usepct[data-usepct^="6"]:not([data-usepct="6"]),
+.bg-usepct[data-usepct^="7"]:not([data-usepct="7"]) { @extend .bg-primary; }
+
+.bg-usepct[data-usepct^="8"]:not([data-usepct="8"]) { @extend .bg-warning; }
+.bg-usepct[data-usepct^="9"]:not([data-usepct="9"]),
+.bg-usepct[data-usepct="100"] { @extend .bg-alert; }
+
+.bg-usepct-inverse[data-usepct="0"],
+.bg-usepct-inverse[data-usepct="1"],
+.bg-usepct-inverse[data-usepct="2"],
+.bg-usepct-inverse[data-usepct="3"],
+.bg-usepct-inverse[data-usepct="4"],
+.bg-usepct-inverse[data-usepct="5"],
+.bg-usepct-inverse[data-usepct="6"],
+.bg-usepct-inverse[data-usepct="7"],
+.bg-usepct-inverse[data-usepct="8"],
+.bg-usepct-inverse[data-usepct="9"] { @extend .bg-alert; }
+.bg-usepct-inverse[data-usepct^="1"]:not([data-usepct="1"]):not([data-usepct="100"]) { @extend .bg-warning; }
+
+.bg-usepct-inverse[data-usepct^="2"]:not([data-usepct="2"]),
+.bg-usepct-inverse[data-usepct^="3"]:not([data-usepct="3"]),
+.bg-usepct-inverse[data-usepct^="4"]:not([data-usepct="4"]),
+.bg-usepct-inverse[data-usepct^="5"]:not([data-usepct="5"]),
+.bg-usepct-inverse[data-usepct^="6"]:not([data-usepct="6"]),
+.bg-usepct-inverse[data-usepct^="7"]:not([data-usepct="7"]),
+.bg-usepct-inverse[data-usepct^="8"]:not([data-usepct="8"]) { @extend .bg-primary; }
+.bg-usepct-inverse[data-usepct^="9"]:not([data-usepct="9"]),
+.bg-usepct-inverse[data-usepct="100"] { @extend .bg-success; }

@@ -5,7 +5,7 @@ html
     meta charset=utf-8
     title {{.Data.hostname}} ostent
     meta http-equiv=X-UA-Compatible content=IE=edge
-    meta name=viewport content="width=device-width, initial-scale=1"
+    meta name=viewport content="width=device-width, initial-scale=1.0"
 
     = conditionalComment hidden IE
       <link rel="shortcut icon" href="/favicon.ico">
@@ -18,48 +18,44 @@ html
     link rel=stylesheet type=text/css href=/{{$v}}/css/index.css
 
   body
-    nav.navbar.navbar-default.navbar-static-top role=navigation
-      div.container-fluid
-        div.navbar-header.col-md-1.padding-leftless
-          button.navbar-toggle.collapsed type=button data-toggle=collapse data-target=#navbar-collapse
-            span.sr-only Toggle navigation
-            span.icon-bar
-            span.icon-bar
-            span.icon-bar
-          span.updates data-define=define_hostname
-            {{template "defines::define_hostname" .}}
-
-        div.collapse.navbar-collapse#navbar-collapse
-          ul.nav.navbar-nav
-            li.active
-              a href=https://www.ostrost.com/ostent/releases/latest?cmp={{$v}} ostent
-            li.navbar-text.navbar-text-marginless.first-text
-              code.navbar-codeline
-                | os {{.Distrib}}
-            li.navbar-text.navbar-text-marginless
-              code.navbar-codeline
-                | up&nbsp;
-                span.updates data-define=define_uptime
-                  {{template "defines::define_uptime" .}}
-            li.navbar-text.navbar-text-marginless
-              code.navbar-codeline
-                | la&nbsp;
-                span.updates data-define=define_loadavg
-                  {{template "defines::define_loadavg" .}}
-
-    div.container-fluid
+    div.top-bar
       div.row
-        div.col-md-4.col-md-offset-1.updates data-define=define_panelmem
+        div.top-bar-left
+          ul.menu
+            li.large-1.updates data-define=define_hostname
+              {{template "defines::define_hostname" .}}
+            li
+              a.button.secondary.hollow href=https://www.ostrost.com/ostent/releases/latest?cmp={{$v}} ostent
+            li
+              ul.menu.simple
+                li
+                  code os {{.Distrib}}
+                li
+                  code
+                    | up&nbsp;
+                    span.updates data-define=define_uptime
+                      {{template "defines::define_uptime" .}}
+                li
+                  code
+                    | la&nbsp;
+                    span.updates data-define=define_loadavg
+                      {{template "defines::define_loadavg" .}}
+
+    p
+      div.row
+        div.columns.large-5.updates data-define=define_panelmem
           {{template "defines::define_panelmem" .}}
-        div.col-md-6.updates data-define=define_paneldf
+        div.columns.large-7.end.updates data-define=define_paneldf
           {{template "defines::define_paneldf" .}}
+    p
       div.row
-        div.col-md-4.col-md-offset-1.updates data-define=define_panelcpu
+        div.columns.large-5.updates data-define=define_panelcpu
           {{template "defines::define_panelcpu" .}}
-        div.col-md-6.updates data-define=define_panelif
+        div.columns.large-7.end.updates data-define=define_panelif
           {{template "defines::define_panelif" .}}
+    p
       div.row
-        div.col-md-10.col-md-offset-1.updates data-define=define_panelps
+        div.columns.large-12.end.updates data-define=define_panelps
           {{template "defines::define_panelps" .}}
 
     = javascript

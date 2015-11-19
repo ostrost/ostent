@@ -10,6 +10,7 @@
   ],
   "dependencies": {
     "react": "~0.14.2",
-    "jquery": "~2.1.4"
+    "jquery": "~2.1.4",
+    "foundation-sites": "~6.0.0"
   }
 }

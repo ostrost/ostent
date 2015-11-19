@@ -1,6 +1,6 @@
 #!/usr/bin/env make -f
 
-PATH:=$(shell echo -n $$PATH:; echo $$GOPATH | sed 's,:\|$$,/bin:,g')
+PATH:=$(shell echo -n $$PATH:; echo $$GOPATH | sed 's,:\|$$,/bin:,g'):$$PWD/node_modules/.bin
 
 # This repo clone location (final subdirectories) defines package name thus
 # it should be */github.com/[ostrost]/ostent to make package=github.com/[ostrost]/ostent
@@ -96,8 +96,7 @@ boot32:
 	CGO_ENABLED=1 GOARCH=386 \
   ./make.bash --no-clean
 
-share/assets/css/index.css: share/style/index.less
-	type lessc  >/dev/null || exit 0; lessc --source-map $< $@
+share/assets/css/index.css: share/style/index.scss ; input=$< output=$@ ./script.sh SCRIPT_webpack
 share/js/jsdefines.js: share/tmp/jsdefines.jsx
 	type babel  >/dev/null || exit 0; babel --optional optimisation.react.constantElements --optional optimisation.react.inlineElements $^ -o $@
 share/js/index.js: share/coffee/index.coffee

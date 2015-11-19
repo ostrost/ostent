@@ -49,7 +49,7 @@ define(function(require) {
     },
     render: function() {
       let Data = this.state; // shadow global Data
-      return <a className="navbar-brand clip12" href="/"    title={"hostname " + Data.hostname}
+      return <a className="clip12" href="/"    title={"hostname " + Data.hostname}
   >{Data.hostname}</a
 >;
     }
@@ -72,79 +72,85 @@ define(function(require) {
     },
     render: function() {
       let Data = this.state; // shadow global Data
-      return <div  className={!Data.params.CPUn.Negative ? "" : "panel panel-default"}
-  ><div className="h4 padding-left-like-panel-heading"
-    ><a  href={Data.params.Tlinks.CPUn} onClick={this.handleClick}
-      >CPU</a
-    ></div
-  ><ul   className={!Data.params.CPUn.Negative ? "hidden" : "list-group"}
-    ><li className="list-group-item text-nowrap th"
-      ><ul className="list-inline"
-        ><li
-          ><span
-            ><b
-              >Delay</b
-            > <span className="badge"
-              >{Data.params.CPUd}</span
-            ></span
-          > <div className="btn-group"
-            ><a href={Data.params.Dlinks.CPUd.Less.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Dlinks.CPUd.Less.Text}</a
-><a href={Data.params.Dlinks.CPUd.More.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Dlinks.CPUd.More.Text} +</a
-></div
-          ></li
-        ><li
-          ><span
-            ><b
-              >Rows</b
-            > <span className="badge"
-              >{Data.params.CPUn.Absolute}</span
-            ></span
-          > <div className="btn-group"
-            ><a href={Data.params.Nlinks.CPUn.Less.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Nlinks.CPUn.Less.Text}</a
-><a href={Data.params.Nlinks.CPUn.More.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Nlinks.CPUn.More.Text} +</a
-></div
-          ></li
-        ></ul
+      return <div
+  ><ul  className={!Data.params.CPUn.Negative ? "no-bullet" : "tabs"} data-tabs
+    ><li className="tabs-title small-tabs-title"
+      ><a  href={Data.params.Tlinks.CPUn} onClick={this.handleClick}
+        ><h5 className="margin-bottom-0"
+          >CPU</h5
+        ></a
       ></li
     ></ul
-  ><table  className={Data.params.CPUn.Absolute != 0 ? "table table-hover" : "hidden"}
-    ><thead
-      ><tr
-        ><th
-          ></th
-        ><th className="text-right"
-          >User</th
-        ><th className="text-right"
-          >Sys</th
-        ><th className="text-right"
-          >Wait</th
-        ><th className="text-right"
-          >Idle</th
-        ></tr
-      ></thead
-    ><tbody
-      >{this.List(Data).map(function($cpu) { return<tr  key={"cpu-rowby-N-"+$cpu.N}
-        ><td className="text-right text-nowrap"
-          >{$cpu.N}</td
-        ><td className="text-right bg-usepct"
+  ><div  className={!Data.params.CPUn.Negative ? "" : "tabs-content"}
+    ><ul  className={!Data.params.CPUn.Negative ? "hide" : "menu padding-top-056"}
+      ><li
+        ><label className="middle margin-left-1rem"
+          ><b
+            >Delay&nbsp;</b
+          ><span className="badge secondary"
+            >{Data.params.CPUd}</span
+          ></label
+        ></li
+      ><li
+        ><div className="button-group"
+          ><a href={Data.params.Dlinks.CPUd.Less.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Dlinks.CPUd.Less.Text}</a
+><a href={Data.params.Dlinks.CPUd.More.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Dlinks.CPUd.More.Text} +</a
+></div
+        ></li
+      ><li
+        ><label className="middle margin-left-1rem"
+          ><b
+            >Rows&nbsp;</b
+          ><span className="badge secondary"
+            >{Data.params.CPUn.Absolute}</span
+          ></label
+        ></li
+      ><li
+        ><div className="button-group"
+          ><a href={Data.params.Nlinks.CPUn.Less.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Nlinks.CPUn.Less.Text}</a
+><a href={Data.params.Nlinks.CPUn.More.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Nlinks.CPUn.More.Text} +</a
+></div
+        ></li
+      ></ul
+    ><table  className={Data.params.CPUn.Absolute != 0 ? "hover full margin-bottom-0" : "hide"}
+      ><thead
+        ><tr
+          ><th
+            ></th
+          ><th className="text-right"
+            >User</th
+          ><th className="text-right"
+            >Sys</th
+          ><th className="text-right"
+            >Wait</th
+          ><th className="text-right"
+            >Idle</th
+          ></tr
+        ></thead
+      ><tbody
+        >{this.List(Data).map(function($cpu) { return<tr  key={"cpu-rowby-N-"+$cpu.N}
+          ><td className="text-right text-nowrap"
+            >{$cpu.N}</td
+          ><td className="text-right bg-usepct"
   data-usepct={$cpu.UserPct}
-          >{$cpu.UserPct}%</td
-        ><td className="text-right bg-usepct"
+            >{$cpu.UserPct}%</td
+          ><td className="text-right bg-usepct"
   data-usepct={$cpu.SysPct}
-          >{$cpu.SysPct}%</td
-        ><td className="text-right bg-usepct"
+            >{$cpu.SysPct}%</td
+          ><td className="text-right bg-usepct"
   data-usepct={$cpu.WaitPct}
-          >{$cpu.WaitPct}%</td
-        ><td className="text-right bg-usepct-inverse"
+            >{$cpu.WaitPct}%</td
+          ><td className="text-right bg-usepct-inverse"
   data-usepct={$cpu.IdlePct}
-          >{$cpu.IdlePct}%</td
-        ></tr
-      >})}</tbody
-    ></table
+            >{$cpu.IdlePct}%</td
+          ></tr
+        >})}</tbody
+      ></table
+    ></div
   ></div
 >;
     }
@@ -167,49 +173,54 @@ define(function(require) {
     },
     render: function() {
       let Data = this.state; // shadow global Data
-      return <div  className={!Data.params.Dfn.Negative ? "" : "panel panel-default"}
-  ><div className="h4 padding-left-like-panel-heading"
-    ><a  href={Data.params.Tlinks.Dfn} onClick={this.handleClick}
-      >Disk usage</a
-    ></div
-  ><ul   className={!Data.params.Dfn.Negative ? "hidden" : "list-group"}
-    ><li className="list-group-item text-nowrap th"
-      ><ul className="list-inline"
-        ><li
-          ><span
-            ><b
-              >Delay</b
-            > <span className="badge"
-              >{Data.params.Dfd}</span
-            ></span
-          > <div className="btn-group"
-            ><a href={Data.params.Dlinks.Dfd.Less.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Dlinks.Dfd.Less.Text}</a
-><a href={Data.params.Dlinks.Dfd.More.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Dlinks.Dfd.More.Text} +</a
-></div
-          ></li
-        ><li
-          ><span
-            ><b
-              >Rows</b
-            > <span className="badge"
-              >{Data.params.Dfn.Absolute}</span
-            ></span
-          > <div className="btn-group"
-            ><a href={Data.params.Nlinks.Dfn.Less.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Nlinks.Dfn.Less.Text}</a
-><a href={Data.params.Nlinks.Dfn.More.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Nlinks.Dfn.More.Text} +</a
-></div
-          ></li
-        ></ul
+      return <div
+  ><ul  className={!Data.params.Dfn.Negative ? "no-bullet" : "tabs"} data-tabs
+    ><li className="tabs-title small-tabs-title"
+      ><a  href={Data.params.Tlinks.Dfn} onClick={this.handleClick}
+        ><h5 className="margin-bottom-0"
+          >Disk usage</h5
+        ></a
       ></li
     ></ul
-  ><table  className={Data.params.Dfn.Absolute != 0 ? "table table-hover" : "hidden"}
-    ><thead
-      ><tr className="text-nowrap"
-        ><th className="header "
+  ><div  className={!Data.params.Dfn.Negative ? "" : "tabs-content"}
+    ><ul  className={!Data.params.Dfn.Negative ? "hide" : "menu padding-top-056"}
+      ><li
+        ><label className="middle margin-left-1rem"
+          ><b
+            >Delay&nbsp;</b
+          ><span className="badge secondary"
+            >{Data.params.Dfd}</span
+          ></label
+        ></li
+      ><li
+        ><div className="button-group"
+          ><a href={Data.params.Dlinks.Dfd.Less.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Dlinks.Dfd.Less.Text}</a
+><a href={Data.params.Dlinks.Dfd.More.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Dlinks.Dfd.More.Text} +</a
+></div
+        ></li
+      ><li
+        ><label className="middle margin-left-1rem"
+          ><b
+            >Rows&nbsp;</b
+          ><span className="badge secondary"
+            >{Data.params.Dfn.Absolute}</span
+          ></label
+        ></li
+      ><li
+        ><div className="button-group"
+          ><a href={Data.params.Nlinks.Dfn.Less.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Nlinks.Dfn.Less.Text}</a
+><a href={Data.params.Nlinks.Dfn.More.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Nlinks.Dfn.More.Text} +</a
+></div
+        ></li
+      ></ul
+    ><table  className={Data.params.Dfn.Absolute != 0 ? "hover full margin-bottom-0" : "hide"}
+      ><thead
+        ><tr className="text-nowrap"
+          ><th className="header "
   ><a href={Data.params.Vlinks.Dfk[1-1].LinkHref} className={Data.params.Vlinks.Dfk[1-1].LinkClass} onClick={this.handleClick}  
     >Device<span className={Data.params.Vlinks.Dfk[1-1].CaretClass}
       ></span
@@ -246,32 +257,33 @@ define(function(require) {
     ></a
   ></th
 ></tr
-      ></thead
-    ><tbody
-      >{this.List(Data).map(function($df) { return<tr  key={"df-rowby-dirname-"+$df.DirName}
-        >  <td className="text-nowrap clip12" title={$df.DevName}
-          >{$df.DevName}</td
-        >  <td className="text-nowrap clip12" title={$df.DirName}
-          >{$df.DirName}</td
-        ><td className="text-right text-nowrap"
-          ><span className="mutext" title="Inodes free"
-            >{$df.Ifree}</span
-          > {$df.Avail}</td
-        ><td className="text-right bg-usepct text-nowrap"data-usepct={$df.UsePct}
-          ><span className="mutext" title="Inodes use%"
-            >{$df.IusePct}%</span
-          > {$df.UsePct}%</td
-        ><td className="text-right text-nowrap"
-          ><span className="mutext" title="Inodes used"
-            >{$df.Iused}</span
-          > {$df.Used}</td
-        ><td className="text-right text-nowrap"
-          ><span className="mutext" title="Inodes total"
-            >{$df.Inodes}</span
-          > {$df.Total}</td
-        ></tr
-      >})}</tbody
-    ></table
+        ></thead
+      ><tbody
+        >{this.List(Data).map(function($df) { return<tr  key={"df-rowby-dirname-"+$df.DirName}
+          >  <td className="text-nowrap clip12" title={$df.DevName}
+            >{$df.DevName}</td
+          >  <td className="text-nowrap clip12" title={$df.DirName}
+            >{$df.DirName}</td
+          ><td className="text-right text-nowrap"
+            ><span className="mutext" title="Inodes free"
+              >{$df.Ifree}</span
+            > {$df.Avail}</td
+          ><td className="text-right bg-usepct text-nowrap" data-usepct={$df.UsePct}
+            ><span className="mutext" title="Inodes use%"
+              >{$df.IusePct}%</span
+            > {$df.UsePct}%</td
+          ><td className="text-right text-nowrap"
+            ><span className="mutext" title="Inodes used"
+              >{$df.Iused}</span
+            > {$df.Used}</td
+          ><td className="text-right text-nowrap"
+            ><span className="mutext" title="Inodes total"
+              >{$df.Inodes}</span
+            > {$df.Total}</td
+          ></tr
+        >})}</tbody
+      ></table
+    ></div
   ></div
 >;
     }
@@ -294,121 +306,127 @@ define(function(require) {
     },
     render: function() {
       let Data = this.state; // shadow global Data
-      return <div  className={!Data.params.Ifn.Negative ? "" : "panel panel-default"}
-  ><div className="h4 padding-left-like-panel-heading"
-    ><a  href={Data.params.Tlinks.Ifn} onClick={this.handleClick}
-      >Interfaces</a
-    ></div
-  ><ul   className={!Data.params.Ifn.Negative ? "hidden" : "list-group"}
-    ><li className="list-group-item text-nowrap th"
-      ><ul className="list-inline"
-        ><li
-          ><span
-            ><b
-              >Delay</b
-            > <span className="badge"
-              >{Data.params.Ifd}</span
-            ></span
-          > <div className="btn-group"
-            ><a href={Data.params.Dlinks.Ifd.Less.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Dlinks.Ifd.Less.Text}</a
-><a href={Data.params.Dlinks.Ifd.More.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Dlinks.Ifd.More.Text} +</a
-></div
-          ></li
-        ><li
-          ><span
-            ><b
-              >Rows</b
-            > <span className="badge"
-              >{Data.params.Ifn.Absolute}</span
-            ></span
-          > <div className="btn-group"
-            ><a href={Data.params.Nlinks.Ifn.Less.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Nlinks.Ifn.Less.Text}</a
-><a href={Data.params.Nlinks.Ifn.More.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Nlinks.Ifn.More.Text} +</a
-></div
-          ></li
-        ></ul
+      return <div
+  ><ul  className={!Data.params.Ifn.Negative ? "no-bullet" : "tabs"} data-tabs
+    ><li className="tabs-title small-tabs-title"
+      ><a  href={Data.params.Tlinks.Ifn} onClick={this.handleClick}
+        ><h5 className="margin-bottom-0"
+          >Interfaces</h5
+        ></a
       ></li
     ></ul
-  ><table  className={Data.params.Ifn.Absolute != 0 ? "table table-hover" : "hidden"}
-    ><thead
-      ><tr
-        ><th
-          >Interface</th
-        ><th className="text-right"
-          >IP</th
-        ><th className="text-right text-nowrap col-md-3" title="Bits In/Out per second"
-          >IO <i
-            >b</i
-          >ps</th
-        ><th className="text-right text-nowrap col-md-3" title="Packets In/Out per second"
-          >Packets IO ps</th
-        ><th className="text-right text-nowrap col-md-3" title="Drops,Errors In/Out per second"
-          >Loss IO ps</th
-        ></tr
-      ></thead
-    ><tbody
-      >{this.List(Data).map(function($if) { return<tr  key={"if-rowby-name-"+$if.Name}
-        ><td className="text-nowrap clip12" title={$if.Name}
-          >{$if.Name}</td
-        ><td className="text-right"
-          >{$if.IP}</td
-        ><td className="text-right text-nowrap"
-          ><span className="mutext"
-            ><span title="Total BYTES In modulo 4G"
-              >{$if.BytesIn}</span
-            >/<span title="Total BYTES Out modulo 4G"
-              >{$if.BytesOut}</span
-            ></span
-          > <span title="BITS In per second"
-            >{$if.DeltaBitsIn}</span
-          >/<span title="BITS Out per second"
-            >{$if.DeltaBitsOut}</span
-          ></td
-        ><td className="text-right text-nowrap"
-          ><span className="mutext"
-            ><span title="Total packets In modulo 4G"
-              >{$if.PacketsIn}</span
-            >/<span title="Total packets Out modulo 4G"
-              >{$if.PacketsOut}</span
-            ></span
-          > <span title="Packets In per second"
-            >{$if.DeltaPacketsIn}</span
-          >/<span title="Packets Out per second"
-            >{$if.DeltaPacketsOut}</span
-          ></td
-        ><td className="text-right text-nowrap"
-          ><span className="mutext" title="Total drops,errors modulo 4G"
-            ><span title="Total drops In modulo 4G"
-              >{$if.DropsIn}</span
-            ><span  className={$if.DropsOut != null ? "" : "hidden"}
-              >/</span
-            ><span  className={$if.DropsOut != null ? "" : "hidden"} title="Total drops Out modulo 4G"
-              >{$if.DropsOut}</span
-            >,<span title="Total errors In modulo 4G"
-              >{$if.ErrorsIn}</span
-            >/<span title="Total errors Out modulo 4G"
-              >{$if.ErrorsOut}</span
-            ></span
-          > <span  className={(($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0")) ? "mutext" : ""}
-            ><span title="Drops In per second"
-              >{$if.DeltaDropsIn}</span
-            ><span  className={$if.DeltaDropsOut != null ? "" : "hidden"}
-              >/</span
-            ><span  className={$if.DeltaDropsOut != null ? "" : "hidden"} title="Drops Out per second"
-              >{$if.DeltaDropsOut}</span
-            >,<span title="Errors In per second"
-              >{$if.DeltaErrorsIn}</span
-            >/<span title="Errors Out per second"
-              >{$if.DeltaErrorsOut}</span
-            ></span
-          ></td
-        ></tr
-      >})}</tbody
-    ></table
+  ><div  className={!Data.params.Ifn.Negative ? "" : "tabs-content"}
+    ><ul  className={!Data.params.Ifn.Negative ? "hide" : "menu padding-top-056"}
+      ><li
+        ><label className="middle margin-left-1rem"
+          ><b
+            >Delay&nbsp;</b
+          ><span className="badge secondary"
+            >{Data.params.Ifd}</span
+          ></label
+        ></li
+      ><li
+        ><div className="button-group"
+          ><a href={Data.params.Dlinks.Ifd.Less.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Dlinks.Ifd.Less.Text}</a
+><a href={Data.params.Dlinks.Ifd.More.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Dlinks.Ifd.More.Text} +</a
+></div
+        ></li
+      ><li
+        ><label className="middle margin-left-1rem"
+          ><b
+            >Rows&nbsp;</b
+          ><span className="badge secondary"
+            >{Data.params.Ifn.Absolute}</span
+          ></label
+        ></li
+      ><li
+        ><div className="button-group"
+          ><a href={Data.params.Nlinks.Ifn.Less.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Nlinks.Ifn.Less.Text}</a
+><a href={Data.params.Nlinks.Ifn.More.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Nlinks.Ifn.More.Text} +</a
+></div
+        ></li
+      ></ul
+    ><table  className={Data.params.Ifn.Absolute != 0 ? "hover full margin-bottom-0" : "hide"}
+      ><thead
+        ><tr
+          ><th
+            >Interface</th
+          ><th className="text-right"
+            >IP</th
+          ><th className="text-right text-nowrap col-md-3" title="Bits In/Out per second"
+            >IO <i
+              >b</i
+            >ps</th
+          ><th className="text-right text-nowrap col-md-3" title="Packets In/Out per second"
+            >Packets IO ps</th
+          ><th className="text-right text-nowrap col-md-3" title="Drops,Errors In/Out per second"
+            >Loss IO ps</th
+          ></tr
+        ></thead
+      ><tbody
+        >{this.List(Data).map(function($if) { return<tr  key={"if-rowby-name-"+$if.Name}
+          ><td className="text-nowrap clip12" title={$if.Name}
+            >{$if.Name}</td
+          ><td className="text-right"
+            >{$if.IP}</td
+          ><td className="text-right text-nowrap"
+            ><span className="mutext"
+              ><span title="Total BYTES In modulo 4G"
+                >{$if.BytesIn}</span
+              >/<span title="Total BYTES Out modulo 4G"
+                >{$if.BytesOut}</span
+              ></span
+            > <span title="BITS In per second"
+              >{$if.DeltaBitsIn}</span
+            >/<span title="BITS Out per second"
+              >{$if.DeltaBitsOut}</span
+            ></td
+          ><td className="text-right text-nowrap"
+            ><span className="mutext"
+              ><span title="Total packets In modulo 4G"
+                >{$if.PacketsIn}</span
+              >/<span title="Total packets Out modulo 4G"
+                >{$if.PacketsOut}</span
+              ></span
+            > <span title="Packets In per second"
+              >{$if.DeltaPacketsIn}</span
+            >/<span title="Packets Out per second"
+              >{$if.DeltaPacketsOut}</span
+            ></td
+          ><td className="text-right text-nowrap"
+            ><span className="mutext" title="Total drops,errors modulo 4G"
+              ><span title="Total drops In modulo 4G"
+                >{$if.DropsIn}</span
+              ><span  className={$if.DropsOut != null ? "" : "hide"}
+                >/</span
+              ><span  className={$if.DropsOut != null ? "" : "hide"} title="Total drops Out modulo 4G"
+                >{$if.DropsOut}</span
+              >,<span title="Total errors In modulo 4G"
+                >{$if.ErrorsIn}</span
+              >/<span title="Total errors Out modulo 4G"
+                >{$if.ErrorsOut}</span
+              ></span
+            > <span  className={(($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0")) ? "mutext" : ""}
+              ><span title="Drops In per second"
+                >{$if.DeltaDropsIn}</span
+              ><span  className={$if.DeltaDropsOut != null ? "" : "hide"}
+                >/</span
+              ><span  className={$if.DeltaDropsOut != null ? "" : "hide"} title="Drops Out per second"
+                >{$if.DeltaDropsOut}</span
+              >,<span title="Errors In per second"
+                >{$if.DeltaErrorsIn}</span
+              >/<span title="Errors Out per second"
+                >{$if.DeltaErrorsOut}</span
+              ></span
+            ></td
+          ></tr
+        >})}</tbody
+      ></table
+    ></div
   ></div
 >;
     }
@@ -431,75 +449,81 @@ define(function(require) {
     },
     render: function() {
       let Data = this.state; // shadow global Data
-      return <div  className={!Data.params.Memn.Negative ? "" : "panel panel-default"}
-  ><div className="h4 padding-left-like-panel-heading"
-    ><a  href={Data.params.Tlinks.Memn} onClick={this.handleClick}
-      >Memory</a
-    ></div
-  ><ul   className={!Data.params.Memn.Negative ? "hidden" : "list-group"}
-    ><li className="list-group-item text-nowrap th"
-      ><ul className="list-inline"
-        ><li
-          ><span
-            ><b
-              >Delay</b
-            > <span className="badge"
-              >{Data.params.Memd}</span
-            ></span
-          > <div className="btn-group"
-            ><a href={Data.params.Dlinks.Memd.Less.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Dlinks.Memd.Less.Text}</a
-><a href={Data.params.Dlinks.Memd.More.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Dlinks.Memd.More.Text} +</a
-></div
-          ></li
-        ><li
-          ><span
-            ><b
-              >Rows</b
-            > <span className="badge"
-              >{Data.params.Memn.Absolute}</span
-            ></span
-          > <div className="btn-group"
-            ><a href={Data.params.Nlinks.Memn.Less.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Nlinks.Memn.Less.Text}</a
-><a href={Data.params.Nlinks.Memn.More.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Nlinks.Memn.More.Text} +</a
-></div
-          ></li
-        ></ul
+      return <div
+  ><ul  className={!Data.params.Memn.Negative ? "no-bullet" : "tabs"} data-tabs
+    ><li className="tabs-title small-tabs-title"
+      ><a  href={Data.params.Tlinks.Memn} onClick={this.handleClick}
+        ><h5 className="margin-bottom-0"
+          >Memory</h5
+        ></a
       ></li
     ></ul
-  ><table  className={Data.params.Memn.Absolute != 0 ? "table table-hover" : "hidden"}
-    ><thead
-      ><tr
-        ><th
-          ></th
-        ><th className="text-right"
-          >Free</th
-        ><th className="text-right"
-          >Use%</th
-        ><th className="text-right"
-          >Used</th
-        ><th className="text-right"
-          >Total</th
-        ></tr
-      ></thead
-    ><tbody
-      >{this.List(Data).map(function($mem) { return<tr  key={"mem-rowby-kind-"+$mem.Kind}
-        ><td
-          >{$mem.Kind}</td
-        ><td className="text-right"
-          >{$mem.Free}</td
-        ><td className="text-right bg-usepct"data-usepct={$mem.UsePct}
-          >{$mem.UsePct}%</td
-        ><td className="text-right"
-          >{$mem.Used}</td
-        ><td className="text-right"
-          >{$mem.Total}</td
-        ></tr
-      >})}</tbody
-    ></table
+  ><div  className={!Data.params.Memn.Negative ? "" : "tabs-content"}
+    ><ul  className={!Data.params.Memn.Negative ? "hide" : "menu padding-top-056"}
+      ><li
+        ><label className="middle margin-left-1rem"
+          ><b
+            >Delay&nbsp;</b
+          ><span className="badge secondary"
+            >{Data.params.Memd}</span
+          ></label
+        ></li
+      ><li
+        ><div className="button-group"
+          ><a href={Data.params.Dlinks.Memd.Less.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Dlinks.Memd.Less.Text}</a
+><a href={Data.params.Dlinks.Memd.More.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Dlinks.Memd.More.Text} +</a
+></div
+        ></li
+      ><li
+        ><label className="middle margin-left-1rem"
+          ><b
+            >Rows&nbsp;</b
+          ><span className="badge secondary"
+            >{Data.params.Memn.Absolute}</span
+          ></label
+        ></li
+      ><li
+        ><div className="button-group"
+          ><a href={Data.params.Nlinks.Memn.Less.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Nlinks.Memn.Less.Text}</a
+><a href={Data.params.Nlinks.Memn.More.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Nlinks.Memn.More.Text} +</a
+></div
+        ></li
+      ></ul
+    ><table  className={Data.params.Memn.Absolute != 0 ? "hover full margin-bottom-0" : "hide"}
+      ><thead
+        ><tr
+          ><th
+            ></th
+          ><th className="text-right"
+            >Free</th
+          ><th className="text-right"
+            >Use%</th
+          ><th className="text-right"
+            >Used</th
+          ><th className="text-right"
+            >Total</th
+          ></tr
+        ></thead
+      ><tbody
+        >{this.List(Data).map(function($mem) { return<tr  key={"mem-rowby-kind-"+$mem.Kind}
+          ><td
+            >{$mem.Kind}</td
+          ><td className="text-right"
+            >{$mem.Free}</td
+          ><td className="text-right bg-usepct" data-usepct={$mem.UsePct}
+            >{$mem.UsePct}%</td
+          ><td className="text-right"
+            >{$mem.Used}</td
+          ><td className="text-right"
+            >{$mem.Total}</td
+          ></tr
+        >})}</tbody
+      ></table
+    ></div
   ></div
 >;
     }
@@ -522,49 +546,54 @@ define(function(require) {
     },
     render: function() {
       let Data = this.state; // shadow global Data
-      return <div  className={!Data.params.Psn.Negative ? "" : "panel panel-default"}
-  ><div className="h4 padding-left-like-panel-heading"
-    ><a  href={Data.params.Tlinks.Psn} onClick={this.handleClick}
-      >Processes</a
-    ></div
-  ><ul   className={!Data.params.Psn.Negative ? "hidden" : "list-group"}
-    ><li className="list-group-item text-nowrap th"
-      ><ul className="list-inline"
-        ><li
-          ><span
-            ><b
-              >Delay</b
-            > <span className="badge"
-              >{Data.params.Psd}</span
-            ></span
-          > <div className="btn-group"
-            ><a href={Data.params.Dlinks.Psd.Less.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Dlinks.Psd.Less.Text}</a
-><a href={Data.params.Dlinks.Psd.More.Href} className={"btn btn-default" + " " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Dlinks.Psd.More.Text} +</a
-></div
-          ></li
-        ><li
-          ><span
-            ><b
-              >Rows</b
-            > <span className="badge"
-              >{Data.params.Psn.Absolute}</span
-            ></span
-          > <div className="btn-group"
-            ><a href={Data.params.Nlinks.Psn.Less.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Nlinks.Psn.Less.Text}</a
-><a href={Data.params.Nlinks.Psn.More.Href} className={"btn btn-default" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Nlinks.Psn.More.Text} +</a
-></div
-          ></li
-        ></ul
+      return <div
+  ><ul  className={!Data.params.Psn.Negative ? "no-bullet" : "tabs"} data-tabs
+    ><li className="tabs-title small-tabs-title"
+      ><a  href={Data.params.Tlinks.Psn} onClick={this.handleClick}
+        ><h5 className="margin-bottom-0"
+          >Processes</h5
+        ></a
       ></li
     ></ul
-  ><table  className={Data.params.Psn.Absolute != 0 ? "table table-hover" : "hidden"}
-    ><thead
-      ><tr className="text-nowrap"
-        ><th className="header text-right"
+  ><div  className={!Data.params.Psn.Negative ? "" : "tabs-content"}
+    ><ul  className={!Data.params.Psn.Negative ? "hide" : "menu padding-top-056"}
+      ><li
+        ><label className="middle margin-left-1rem"
+          ><b
+            >Delay&nbsp;</b
+          ><span className="badge secondary"
+            >{Data.params.Psd}</span
+          ></label
+        ></li
+      ><li
+        ><div className="button-group"
+          ><a href={Data.params.Dlinks.Psd.Less.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Dlinks.Psd.Less.Text}</a
+><a href={Data.params.Dlinks.Psd.More.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Dlinks.Psd.More.Text} +</a
+></div
+        ></li
+      ><li
+        ><label className="middle margin-left-1rem"
+          ><b
+            >Rows&nbsp;</b
+          ><span className="badge secondary"
+            >{Data.params.Psn.Absolute}</span
+          ></label
+        ></li
+      ><li
+        ><div className="button-group"
+          ><a href={Data.params.Nlinks.Psn.Less.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Nlinks.Psn.Less.Text}</a
+><a href={Data.params.Nlinks.Psn.More.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Nlinks.Psn.More.Text} +</a
+></div
+        ></li
+      ></ul
+    ><table  className={Data.params.Psn.Absolute != 0 ? "hover full margin-bottom-0" : "hide"}
+      ><thead
+        ><tr className="text-nowrap"
+          ><th className="header text-right"
   ><a href={Data.params.Vlinks.Psk[1-1].LinkHref} className={Data.params.Vlinks.Psk[1-1].LinkClass} onClick={this.handleClick}  
     >PID<span className={Data.params.Vlinks.Psk[1-1].CaretClass}
       ></span
@@ -619,30 +648,31 @@ define(function(require) {
     ></a
   ></th
 ></tr
-      ></thead
-    ><tbody
-      >{this.List(Data).map(function($ps) { return<tr  key={"ps-rowby-pid-"+$ps.PID}
-        ><td className="text-right"
-          > {$ps.PID}</td
-        ><td className="text-right"
-          > {$ps.UID}</td
-        ><td
-          >{$ps.User}</td
-        ><td className="text-right"
-          > {$ps.Priority}</td
-        ><td className="text-right"
-          > {$ps.Nice}</td
-        ><td className="text-right"
-          > {$ps.Size}</td
-        ><td className="text-right"
-          > {$ps.Resident}</td
-        ><td className="text-center"
-          >{$ps.Time}</td
-        ><td
-          >{$ps.Name}</td
-        ></tr
-      >})}</tbody
-    ></table
+        ></thead
+      ><tbody
+        >{this.List(Data).map(function($ps) { return<tr  key={"ps-rowby-pid-"+$ps.PID}
+          ><td className="text-right"
+            > {$ps.PID}</td
+          ><td className="text-right"
+            > {$ps.UID}</td
+          ><td
+            >{$ps.User}</td
+          ><td className="text-right"
+            > {$ps.Priority}</td
+          ><td className="text-right"
+            > {$ps.Nice}</td
+          ><td className="text-right"
+            > {$ps.Size}</td
+          ><td className="text-right"
+            > {$ps.Resident}</td
+          ><td className="text-center"
+            >{$ps.Time}</td
+          ><td
+            >{$ps.Name}</td
+          ></tr
+        >})}</tbody
+      ></table
+    ></div
   ></div
 >;
     }
