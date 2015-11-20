@@ -49,28 +49,22 @@
           ></div
         ></div
       ></div
-    ><p
-      ><div class="row"
-        ><div class="columns large-5 updates" data-define="define_panelmem"
-          >{{template "defines::define_panelmem" .}}</div
-        ><div class="columns large-7 end updates" data-define="define_paneldf"
-          >{{template "defines::define_paneldf" .}}</div
+    ><div class="row"
+      ><div class="columns large-11 large-offset-1"
+        ><div class="row small-stackup"
+          ><div class="columns shrink padding-top-056 updates" data-define="define_panelmem"
+            >{{template "defines::define_panelmem" .}}</div
+          ><div class="columns shrink padding-top-056 updates" data-define="define_paneldf"
+            >{{template "defines::define_paneldf" .}}</div
+          ><div class="columns shrink padding-top-056 updates" data-define="define_panelcpu"
+            >{{template "defines::define_panelcpu" .}}</div
+          ><div class="columns shrink padding-top-056 updates" data-define="define_panelif"
+            >{{template "defines::define_panelif" .}}</div
+          ><div class="columns shrink padding-top-056 updates" data-define="define_panelps"
+            >{{template "defines::define_panelps" .}}</div
+          ></div
         ></div
-      ></p
-    ><p
-      ><div class="row"
-        ><div class="columns large-5 updates" data-define="define_panelcpu"
-          >{{template "defines::define_panelcpu" .}}</div
-        ><div class="columns large-7 end updates" data-define="define_panelif"
-          >{{template "defines::define_panelif" .}}</div
-        ></div
-      ></p
-    ><p
-      ><div class="row"
-        ><div class="columns large-12 end updates" data-define="define_panelps"
-          >{{template "defines::define_panelps" .}}</div
-        ></div
-      ></p
+      ></div
     ><script type="text/javascript"
       >var Data = {{.Data}};</script
     ><script type="text/javascript" charset="utf-8" src="/{{$v}}/js/{{if .TAGGEDbin}}min/bundle.min.js{{else}}src/bundle.js{{end}}"
@@ -100,29 +94,25 @@
       ></li
     ></ul
   ><div {{ClassPositive $p.CPUn "" "tabs-content"}}
-    ><ul {{ClassPositive $p.CPUn "hide" "menu padding-top-056"}}
+    ><ul {{ClassPositive $p.CPUn "hide" "pagination padding-top-056"}}
+      ><li class="vertical-align-top margin-left-1rem"
+        ><b
+          >Delay&nbsp;</b
+        ><span class="badge secondary"
+          >{{$p.CPUd}}</span
+        >&nbsp;</li
       ><li
-        ><label class="middle margin-left-1rem"
-          ><b
-            >Delay&nbsp;</b
-          ><span class="badge secondary"
-            >{{$p.CPUd}}</span
-          ></label
-        ></li
-      ><li
-        ><div class="button-group"
+        ><div class="button-group margin-bottom-0"
           >{{template "defines::alink_badgeleft" LessD $p $p.CPUd "button secondary hollow"}}{{template "defines::alink_badgeright" MoreD $p $p.CPUd "button secondary hollow"}}</div
         ></li
+      ><li class="vertical-align-top"
+        ><b
+          >&nbsp;Rows&nbsp;</b
+        ><span class="badge secondary"
+          >{{$p.CPUn.Absolute}}</span
+        >&nbsp;</li
       ><li
-        ><label class="middle margin-left-1rem"
-          ><b
-            >Rows&nbsp;</b
-          ><span class="badge secondary"
-            >{{$p.CPUn.Absolute}}</span
-          ></label
-        ></li
-      ><li
-        ><div class="button-group"
+        ><div class="button-group margin-bottom-0"
           >{{template "defines::alink_badgeleft" LessN $p $p.CPUn "button secondary hollow"}}{{template "defines::alink_badgeright" MoreN $p $p.CPUn "button secondary hollow"}}</div
         ></li
       ></ul
@@ -173,29 +163,25 @@
       ></li
     ></ul
   ><div {{ClassPositive $p.Dfn "" "tabs-content"}}
-    ><ul {{ClassPositive $p.Dfn "hide" "menu padding-top-056"}}
+    ><ul {{ClassPositive $p.Dfn "hide" "pagination padding-top-056"}}
+      ><li class="vertical-align-top margin-left-1rem"
+        ><b
+          >Delay&nbsp;</b
+        ><span class="badge secondary"
+          >{{$p.Dfd}}</span
+        >&nbsp;</li
       ><li
-        ><label class="middle margin-left-1rem"
-          ><b
-            >Delay&nbsp;</b
-          ><span class="badge secondary"
-            >{{$p.Dfd}}</span
-          ></label
-        ></li
-      ><li
-        ><div class="button-group"
+        ><div class="button-group margin-bottom-0"
           >{{template "defines::alink_badgeleft" LessD $p $p.Dfd "button secondary hollow"}}{{template "defines::alink_badgeright" MoreD $p $p.Dfd "button secondary hollow"}}</div
         ></li
+      ><li class="vertical-align-top"
+        ><b
+          >&nbsp;Rows&nbsp;</b
+        ><span class="badge secondary"
+          >{{$p.Dfn.Absolute}}</span
+        >&nbsp;</li
       ><li
-        ><label class="middle margin-left-1rem"
-          ><b
-            >Rows&nbsp;</b
-          ><span class="badge secondary"
-            >{{$p.Dfn.Absolute}}</span
-          ></label
-        ></li
-      ><li
-        ><div class="button-group"
+        ><div class="button-group margin-bottom-0"
           >{{template "defines::alink_badgeleft" LessN $p $p.Dfn "button secondary hollow"}}{{template "defines::alink_badgeright" MoreN $p $p.Dfn "button secondary hollow"}}</div
         ></li
       ></ul
@@ -242,29 +228,25 @@
       ></li
     ></ul
   ><div {{ClassPositive $p.Ifn "" "tabs-content"}}
-    ><ul {{ClassPositive $p.Ifn "hide" "menu padding-top-056"}}
+    ><ul {{ClassPositive $p.Ifn "hide" "pagination padding-top-056"}}
+      ><li class="vertical-align-top margin-left-1rem"
+        ><b
+          >Delay&nbsp;</b
+        ><span class="badge secondary"
+          >{{$p.Ifd}}</span
+        >&nbsp;</li
       ><li
-        ><label class="middle margin-left-1rem"
-          ><b
-            >Delay&nbsp;</b
-          ><span class="badge secondary"
-            >{{$p.Ifd}}</span
-          ></label
-        ></li
-      ><li
-        ><div class="button-group"
+        ><div class="button-group margin-bottom-0"
           >{{template "defines::alink_badgeleft" LessD $p $p.Ifd "button secondary hollow"}}{{template "defines::alink_badgeright" MoreD $p $p.Ifd "button secondary hollow"}}</div
         ></li
+      ><li class="vertical-align-top"
+        ><b
+          >&nbsp;Rows&nbsp;</b
+        ><span class="badge secondary"
+          >{{$p.Ifn.Absolute}}</span
+        >&nbsp;</li
       ><li
-        ><label class="middle margin-left-1rem"
-          ><b
-            >Rows&nbsp;</b
-          ><span class="badge secondary"
-            >{{$p.Ifn.Absolute}}</span
-          ></label
-        ></li
-      ><li
-        ><div class="button-group"
+        ><div class="button-group margin-bottom-0"
           >{{template "defines::alink_badgeleft" LessN $p $p.Ifn "button secondary hollow"}}{{template "defines::alink_badgeright" MoreN $p $p.Ifn "button secondary hollow"}}</div
         ></li
       ></ul
@@ -357,29 +339,25 @@
       ></li
     ></ul
   ><div {{ClassPositive $p.Memn "" "tabs-content"}}
-    ><ul {{ClassPositive $p.Memn "hide" "menu padding-top-056"}}
+    ><ul {{ClassPositive $p.Memn "hide" "pagination padding-top-056"}}
+      ><li class="vertical-align-top margin-left-1rem"
+        ><b
+          >Delay&nbsp;</b
+        ><span class="badge secondary"
+          >{{$p.Memd}}</span
+        >&nbsp;</li
       ><li
-        ><label class="middle margin-left-1rem"
-          ><b
-            >Delay&nbsp;</b
-          ><span class="badge secondary"
-            >{{$p.Memd}}</span
-          ></label
-        ></li
-      ><li
-        ><div class="button-group"
+        ><div class="button-group margin-bottom-0"
           >{{template "defines::alink_badgeleft" LessD $p $p.Memd "button secondary hollow"}}{{template "defines::alink_badgeright" MoreD $p $p.Memd "button secondary hollow"}}</div
         ></li
+      ><li class="vertical-align-top"
+        ><b
+          >&nbsp;Rows&nbsp;</b
+        ><span class="badge secondary"
+          >{{$p.Memn.Absolute}}</span
+        >&nbsp;</li
       ><li
-        ><label class="middle margin-left-1rem"
-          ><b
-            >Rows&nbsp;</b
-          ><span class="badge secondary"
-            >{{$p.Memn.Absolute}}</span
-          ></label
-        ></li
-      ><li
-        ><div class="button-group"
+        ><div class="button-group margin-bottom-0"
           >{{template "defines::alink_badgeleft" LessN $p $p.Memn "button secondary hollow"}}{{template "defines::alink_badgeright" MoreN $p $p.Memn "button secondary hollow"}}</div
         ></li
       ></ul
@@ -426,29 +404,25 @@
       ></li
     ></ul
   ><div {{ClassPositive $p.Psn "" "tabs-content"}}
-    ><ul {{ClassPositive $p.Psn "hide" "menu padding-top-056"}}
+    ><ul {{ClassPositive $p.Psn "hide" "pagination padding-top-056"}}
+      ><li class="vertical-align-top margin-left-1rem"
+        ><b
+          >Delay&nbsp;</b
+        ><span class="badge secondary"
+          >{{$p.Psd}}</span
+        >&nbsp;</li
       ><li
-        ><label class="middle margin-left-1rem"
-          ><b
-            >Delay&nbsp;</b
-          ><span class="badge secondary"
-            >{{$p.Psd}}</span
-          ></label
-        ></li
-      ><li
-        ><div class="button-group"
+        ><div class="button-group margin-bottom-0"
           >{{template "defines::alink_badgeleft" LessD $p $p.Psd "button secondary hollow"}}{{template "defines::alink_badgeright" MoreD $p $p.Psd "button secondary hollow"}}</div
         ></li
+      ><li class="vertical-align-top"
+        ><b
+          >&nbsp;Rows&nbsp;</b
+        ><span class="badge secondary"
+          >{{$p.Psn.Absolute}}</span
+        >&nbsp;</li
       ><li
-        ><label class="middle margin-left-1rem"
-          ><b
-            >Rows&nbsp;</b
-          ><span class="badge secondary"
-            >{{$p.Psn.Absolute}}</span
-          ></label
-        ></li
-      ><li
-        ><div class="button-group"
+        ><div class="button-group margin-bottom-0"
           >{{template "defines::alink_badgeleft" LessN $p $p.Psn "button secondary hollow"}}{{template "defines::alink_badgeright" MoreN $p $p.Psn "button secondary hollow"}}</div
         ></li
       ></ul

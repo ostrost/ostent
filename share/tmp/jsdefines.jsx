@@ -82,33 +82,29 @@ define(function(require) {
       ></li
     ></ul
   ><div  className={!Data.params.CPUn.Negative ? "" : "tabs-content"}
-    ><ul  className={!Data.params.CPUn.Negative ? "hide" : "menu padding-top-056"}
+    ><ul  className={!Data.params.CPUn.Negative ? "hide" : "pagination padding-top-056"}
+      ><li className="vertical-align-top margin-left-1rem"
+        ><b
+          >Delay&nbsp;</b
+        ><span className="badge secondary"
+          >{Data.params.CPUd}</span
+        >&nbsp;</li
       ><li
-        ><label className="middle margin-left-1rem"
-          ><b
-            >Delay&nbsp;</b
-          ><span className="badge secondary"
-            >{Data.params.CPUd}</span
-          ></label
-        ></li
-      ><li
-        ><div className="button-group"
+        ><div className="button-group margin-bottom-0"
           ><a href={Data.params.Dlinks.CPUd.Less.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Dlinks.CPUd.Less.Text}</a
 ><a href={Data.params.Dlinks.CPUd.More.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : "")} onClick={this.handleClick}  
   >{Data.params.Dlinks.CPUd.More.Text} +</a
 ></div
         ></li
+      ><li className="vertical-align-top"
+        ><b
+          >&nbsp;Rows&nbsp;</b
+        ><span className="badge secondary"
+          >{Data.params.CPUn.Absolute}</span
+        >&nbsp;</li
       ><li
-        ><label className="middle margin-left-1rem"
-          ><b
-            >Rows&nbsp;</b
-          ><span className="badge secondary"
-            >{Data.params.CPUn.Absolute}</span
-          ></label
-        ></li
-      ><li
-        ><div className="button-group"
+        ><div className="button-group margin-bottom-0"
           ><a href={Data.params.Nlinks.CPUn.Less.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Nlinks.CPUn.Less.Text}</a
 ><a href={Data.params.Nlinks.CPUn.More.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : "")} onClick={this.handleClick}  
@@ -183,33 +179,29 @@ define(function(require) {
       ></li
     ></ul
   ><div  className={!Data.params.Dfn.Negative ? "" : "tabs-content"}
-    ><ul  className={!Data.params.Dfn.Negative ? "hide" : "menu padding-top-056"}
+    ><ul  className={!Data.params.Dfn.Negative ? "hide" : "pagination padding-top-056"}
+      ><li className="vertical-align-top margin-left-1rem"
+        ><b
+          >Delay&nbsp;</b
+        ><span className="badge secondary"
+          >{Data.params.Dfd}</span
+        >&nbsp;</li
       ><li
-        ><label className="middle margin-left-1rem"
-          ><b
-            >Delay&nbsp;</b
-          ><span className="badge secondary"
-            >{Data.params.Dfd}</span
-          ></label
-        ></li
-      ><li
-        ><div className="button-group"
+        ><div className="button-group margin-bottom-0"
           ><a href={Data.params.Dlinks.Dfd.Less.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Dlinks.Dfd.Less.Text}</a
 ><a href={Data.params.Dlinks.Dfd.More.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : "")} onClick={this.handleClick}  
   >{Data.params.Dlinks.Dfd.More.Text} +</a
 ></div
         ></li
+      ><li className="vertical-align-top"
+        ><b
+          >&nbsp;Rows&nbsp;</b
+        ><span className="badge secondary"
+          >{Data.params.Dfn.Absolute}</span
+        >&nbsp;</li
       ><li
-        ><label className="middle margin-left-1rem"
-          ><b
-            >Rows&nbsp;</b
-          ><span className="badge secondary"
-            >{Data.params.Dfn.Absolute}</span
-          ></label
-        ></li
-      ><li
-        ><div className="button-group"
+        ><div className="button-group margin-bottom-0"
           ><a href={Data.params.Nlinks.Dfn.Less.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Nlinks.Dfn.Less.Text}</a
 ><a href={Data.params.Nlinks.Dfn.More.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : "")} onClick={this.handleClick}  
@@ -316,33 +308,29 @@ define(function(require) {
       ></li
     ></ul
   ><div  className={!Data.params.Ifn.Negative ? "" : "tabs-content"}
-    ><ul  className={!Data.params.Ifn.Negative ? "hide" : "menu padding-top-056"}
+    ><ul  className={!Data.params.Ifn.Negative ? "hide" : "pagination padding-top-056"}
+      ><li className="vertical-align-top margin-left-1rem"
+        ><b
+          >Delay&nbsp;</b
+        ><span className="badge secondary"
+          >{Data.params.Ifd}</span
+        >&nbsp;</li
       ><li
-        ><label className="middle margin-left-1rem"
-          ><b
-            >Delay&nbsp;</b
-          ><span className="badge secondary"
-            >{Data.params.Ifd}</span
-          ></label
-        ></li
-      ><li
-        ><div className="button-group"
+        ><div className="button-group margin-bottom-0"
           ><a href={Data.params.Dlinks.Ifd.Less.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Dlinks.Ifd.Less.Text}</a
 ><a href={Data.params.Dlinks.Ifd.More.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : "")} onClick={this.handleClick}  
   >{Data.params.Dlinks.Ifd.More.Text} +</a
 ></div
         ></li
+      ><li className="vertical-align-top"
+        ><b
+          >&nbsp;Rows&nbsp;</b
+        ><span className="badge secondary"
+          >{Data.params.Ifn.Absolute}</span
+        >&nbsp;</li
       ><li
-        ><label className="middle margin-left-1rem"
-          ><b
-            >Rows&nbsp;</b
-          ><span className="badge secondary"
-            >{Data.params.Ifn.Absolute}</span
-          ></label
-        ></li
-      ><li
-        ><div className="button-group"
+        ><div className="button-group margin-bottom-0"
           ><a href={Data.params.Nlinks.Ifn.Less.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Nlinks.Ifn.Less.Text}</a
 ><a href={Data.params.Nlinks.Ifn.More.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : "")} onClick={this.handleClick}  
@@ -459,33 +447,29 @@ define(function(require) {
       ></li
     ></ul
   ><div  className={!Data.params.Memn.Negative ? "" : "tabs-content"}
-    ><ul  className={!Data.params.Memn.Negative ? "hide" : "menu padding-top-056"}
+    ><ul  className={!Data.params.Memn.Negative ? "hide" : "pagination padding-top-056"}
+      ><li className="vertical-align-top margin-left-1rem"
+        ><b
+          >Delay&nbsp;</b
+        ><span className="badge secondary"
+          >{Data.params.Memd}</span
+        >&nbsp;</li
       ><li
-        ><label className="middle margin-left-1rem"
-          ><b
-            >Delay&nbsp;</b
-          ><span className="badge secondary"
-            >{Data.params.Memd}</span
-          ></label
-        ></li
-      ><li
-        ><div className="button-group"
+        ><div className="button-group margin-bottom-0"
           ><a href={Data.params.Dlinks.Memd.Less.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Dlinks.Memd.Less.Text}</a
 ><a href={Data.params.Dlinks.Memd.More.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : "")} onClick={this.handleClick}  
   >{Data.params.Dlinks.Memd.More.Text} +</a
 ></div
         ></li
+      ><li className="vertical-align-top"
+        ><b
+          >&nbsp;Rows&nbsp;</b
+        ><span className="badge secondary"
+          >{Data.params.Memn.Absolute}</span
+        >&nbsp;</li
       ><li
-        ><label className="middle margin-left-1rem"
-          ><b
-            >Rows&nbsp;</b
-          ><span className="badge secondary"
-            >{Data.params.Memn.Absolute}</span
-          ></label
-        ></li
-      ><li
-        ><div className="button-group"
+        ><div className="button-group margin-bottom-0"
           ><a href={Data.params.Nlinks.Memn.Less.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Nlinks.Memn.Less.Text}</a
 ><a href={Data.params.Nlinks.Memn.More.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : "")} onClick={this.handleClick}  
@@ -556,33 +540,29 @@ define(function(require) {
       ></li
     ></ul
   ><div  className={!Data.params.Psn.Negative ? "" : "tabs-content"}
-    ><ul  className={!Data.params.Psn.Negative ? "hide" : "menu padding-top-056"}
+    ><ul  className={!Data.params.Psn.Negative ? "hide" : "pagination padding-top-056"}
+      ><li className="vertical-align-top margin-left-1rem"
+        ><b
+          >Delay&nbsp;</b
+        ><span className="badge secondary"
+          >{Data.params.Psd}</span
+        >&nbsp;</li
       ><li
-        ><label className="middle margin-left-1rem"
-          ><b
-            >Delay&nbsp;</b
-          ><span className="badge secondary"
-            >{Data.params.Psd}</span
-          ></label
-        ></li
-      ><li
-        ><div className="button-group"
+        ><div className="button-group margin-bottom-0"
           ><a href={Data.params.Dlinks.Psd.Less.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Dlinks.Psd.Less.Text}</a
 ><a href={Data.params.Dlinks.Psd.More.Href} className={"button secondary hollow" + " " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : "")} onClick={this.handleClick}  
   >{Data.params.Dlinks.Psd.More.Text} +</a
 ></div
         ></li
+      ><li className="vertical-align-top"
+        ><b
+          >&nbsp;Rows&nbsp;</b
+        ><span className="badge secondary"
+          >{Data.params.Psn.Absolute}</span
+        >&nbsp;</li
       ><li
-        ><label className="middle margin-left-1rem"
-          ><b
-            >Rows&nbsp;</b
-          ><span className="badge secondary"
-            >{Data.params.Psn.Absolute}</span
-          ></label
-        ></li
-      ><li
-        ><div className="button-group"
+        ><div className="button-group margin-bottom-0"
           ><a href={Data.params.Nlinks.Psn.Less.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Nlinks.Psn.Less.Text}</a
 ><a href={Data.params.Nlinks.Psn.More.Href} className={"button secondary hollow" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : "")} onClick={this.handleClick}  

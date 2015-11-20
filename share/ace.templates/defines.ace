@@ -9,21 +9,21 @@
     | </a>
   | </ul>
   | <div {{ClassPositive [[$N]] "" "tabs-content"}}>
-  | <ul {{ClassPositive [[$N]] "hide" "menu padding-top-056"}}>
+  | <ul {{ClassPositive [[$N]] "hide" "pagination padding-top-056"}}>
+  li.vertical-align-top.margin-left-1rem
+    b Delay&nbsp;
+    span.badge.secondary {{[[$D]]}}
+    | &nbsp;
   li
-    label.middle.margin-left-1rem
-      b Delay&nbsp;
-      span.badge.secondary {{[[$D]]}}
-  li
-    div.button-group
+    div.button-group.margin-bottom-0
       {{template "defines::alink_badgeleft"  LessD $p [[$D]] "button secondary hollow"}}
       {{template "defines::alink_badgeright" MoreD $p [[$D]] "button secondary hollow"}}
+  li.vertical-align-top
+    b &nbsp;Rows&nbsp;
+    span.badge.secondary {{[[$N]].Absolute}}
+    | &nbsp;
   li
-    label.middle.margin-left-1rem
-      b Rows&nbsp;
-      span.badge.secondary {{[[$N]].Absolute}}
-  li
-    div.button-group
+    div.button-group.margin-bottom-0
       {{template "defines::alink_badgeleft"  LessN $p [[$N]] "button secondary hollow"}}
       {{template "defines::alink_badgeright" MoreN $p [[$N]] "button secondary hollow"}}
   | </ul>

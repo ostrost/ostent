@@ -156,36 +156,27 @@ define(function (require) {
                     key: null,
                     ref: null,
                     props: {
-                      children: {
+                      children: [{
                         $$typeof: _typeofReactElement,
-                        type: 'label',
+                        type: 'b',
                         key: null,
                         ref: null,
                         props: {
-                          children: [{
-                            $$typeof: _typeofReactElement,
-                            type: 'b',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: 'Delay '
-                            },
-                            _owner: null
-                          }, {
-                            $$typeof: _typeofReactElement,
-                            type: 'span',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: Data.params.CPUd,
-                              className: 'badge secondary'
-                            },
-                            _owner: null
-                          }],
-                          className: 'middle margin-left-1rem'
+                          children: 'Delay '
                         },
                         _owner: null
-                      }
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: 'span',
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: Data.params.CPUd,
+                          className: 'badge secondary'
+                        },
+                        _owner: null
+                      }, ' '],
+                      className: 'vertical-align-top margin-left-1rem'
                     },
                     _owner: null
                   }, {
@@ -225,7 +216,7 @@ define(function (require) {
                             },
                             _owner: null
                           }],
-                          className: 'button-group'
+                          className: 'button-group margin-bottom-0'
                         },
                         _owner: null
                       }
@@ -237,36 +228,27 @@ define(function (require) {
                     key: null,
                     ref: null,
                     props: {
-                      children: {
+                      children: [{
                         $$typeof: _typeofReactElement,
-                        type: 'label',
+                        type: 'b',
                         key: null,
                         ref: null,
                         props: {
-                          children: [{
-                            $$typeof: _typeofReactElement,
-                            type: 'b',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: 'Rows '
-                            },
-                            _owner: null
-                          }, {
-                            $$typeof: _typeofReactElement,
-                            type: 'span',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: Data.params.CPUn.Absolute,
-                              className: 'badge secondary'
-                            },
-                            _owner: null
-                          }],
-                          className: 'middle margin-left-1rem'
+                          children: ' Rows '
                         },
                         _owner: null
-                      }
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: 'span',
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: Data.params.CPUn.Absolute,
+                          className: 'badge secondary'
+                        },
+                        _owner: null
+                      }, ' '],
+                      className: 'vertical-align-top'
                     },
                     _owner: null
                   }, {
@@ -306,14 +288,14 @@ define(function (require) {
                             },
                             _owner: null
                           }],
-                          className: 'button-group'
+                          className: 'button-group margin-bottom-0'
                         },
                         _owner: null
                       }
                     },
                     _owner: null
                   }],
-                  className: !Data.params.CPUn.Negative ? "hide" : "menu padding-top-056"
+                  className: !Data.params.CPUn.Negative ? "hide" : "pagination padding-top-056"
                 },
                 _owner: null
               }, {
@@ -561,36 +543,27 @@ define(function (require) {
                     key: null,
                     ref: null,
                     props: {
-                      children: {
+                      children: [{
                         $$typeof: _typeofReactElement,
-                        type: 'label',
+                        type: 'b',
                         key: null,
                         ref: null,
                         props: {
-                          children: [{
-                            $$typeof: _typeofReactElement,
-                            type: 'b',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: 'Delay '
-                            },
-                            _owner: null
-                          }, {
-                            $$typeof: _typeofReactElement,
-                            type: 'span',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: Data.params.Dfd,
-                              className: 'badge secondary'
-                            },
-                            _owner: null
-                          }],
-                          className: 'middle margin-left-1rem'
+                          children: 'Delay '
                         },
                         _owner: null
-                      }
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: 'span',
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: Data.params.Dfd,
+                          className: 'badge secondary'
+                        },
+                        _owner: null
+                      }, ' '],
+                      className: 'vertical-align-top margin-left-1rem'
                     },
                     _owner: null
                   }, {
@@ -630,7 +603,7 @@ define(function (require) {
                             },
                             _owner: null
                           }],
-                          className: 'button-group'
+                          className: 'button-group margin-bottom-0'
                         },
                         _owner: null
                       }
@@ -642,36 +615,27 @@ define(function (require) {
                     key: null,
                     ref: null,
                     props: {
-                      children: {
+                      children: [{
                         $$typeof: _typeofReactElement,
-                        type: 'label',
+                        type: 'b',
                         key: null,
                         ref: null,
                         props: {
-                          children: [{
-                            $$typeof: _typeofReactElement,
-                            type: 'b',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: 'Rows '
-                            },
-                            _owner: null
-                          }, {
-                            $$typeof: _typeofReactElement,
-                            type: 'span',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: Data.params.Dfn.Absolute,
-                              className: 'badge secondary'
-                            },
-                            _owner: null
-                          }],
-                          className: 'middle margin-left-1rem'
+                          children: ' Rows '
                         },
                         _owner: null
-                      }
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: 'span',
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: Data.params.Dfn.Absolute,
+                          className: 'badge secondary'
+                        },
+                        _owner: null
+                      }, ' '],
+                      className: 'vertical-align-top'
                     },
                     _owner: null
                   }, {
@@ -711,14 +675,14 @@ define(function (require) {
                             },
                             _owner: null
                           }],
-                          className: 'button-group'
+                          className: 'button-group margin-bottom-0'
                         },
                         _owner: null
                       }
                     },
                     _owner: null
                   }],
-                  className: !Data.params.Dfn.Negative ? "hide" : "menu padding-top-056"
+                  className: !Data.params.Dfn.Negative ? "hide" : "pagination padding-top-056"
                 },
                 _owner: null
               }, {
@@ -1159,36 +1123,27 @@ define(function (require) {
                     key: null,
                     ref: null,
                     props: {
-                      children: {
+                      children: [{
                         $$typeof: _typeofReactElement,
-                        type: 'label',
+                        type: 'b',
                         key: null,
                         ref: null,
                         props: {
-                          children: [{
-                            $$typeof: _typeofReactElement,
-                            type: 'b',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: 'Delay '
-                            },
-                            _owner: null
-                          }, {
-                            $$typeof: _typeofReactElement,
-                            type: 'span',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: Data.params.Ifd,
-                              className: 'badge secondary'
-                            },
-                            _owner: null
-                          }],
-                          className: 'middle margin-left-1rem'
+                          children: 'Delay '
                         },
                         _owner: null
-                      }
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: 'span',
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: Data.params.Ifd,
+                          className: 'badge secondary'
+                        },
+                        _owner: null
+                      }, ' '],
+                      className: 'vertical-align-top margin-left-1rem'
                     },
                     _owner: null
                   }, {
@@ -1228,7 +1183,7 @@ define(function (require) {
                             },
                             _owner: null
                           }],
-                          className: 'button-group'
+                          className: 'button-group margin-bottom-0'
                         },
                         _owner: null
                       }
@@ -1240,36 +1195,27 @@ define(function (require) {
                     key: null,
                     ref: null,
                     props: {
-                      children: {
+                      children: [{
                         $$typeof: _typeofReactElement,
-                        type: 'label',
+                        type: 'b',
                         key: null,
                         ref: null,
                         props: {
-                          children: [{
-                            $$typeof: _typeofReactElement,
-                            type: 'b',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: 'Rows '
-                            },
-                            _owner: null
-                          }, {
-                            $$typeof: _typeofReactElement,
-                            type: 'span',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: Data.params.Ifn.Absolute,
-                              className: 'badge secondary'
-                            },
-                            _owner: null
-                          }],
-                          className: 'middle margin-left-1rem'
+                          children: ' Rows '
                         },
                         _owner: null
-                      }
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: 'span',
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: Data.params.Ifn.Absolute,
+                          className: 'badge secondary'
+                        },
+                        _owner: null
+                      }, ' '],
+                      className: 'vertical-align-top'
                     },
                     _owner: null
                   }, {
@@ -1309,14 +1255,14 @@ define(function (require) {
                             },
                             _owner: null
                           }],
-                          className: 'button-group'
+                          className: 'button-group margin-bottom-0'
                         },
                         _owner: null
                       }
                     },
                     _owner: null
                   }],
-                  className: !Data.params.Ifn.Negative ? "hide" : "menu padding-top-056"
+                  className: !Data.params.Ifn.Negative ? "hide" : "pagination padding-top-056"
                 },
                 _owner: null
               }, {
@@ -1798,36 +1744,27 @@ define(function (require) {
                     key: null,
                     ref: null,
                     props: {
-                      children: {
+                      children: [{
                         $$typeof: _typeofReactElement,
-                        type: 'label',
+                        type: 'b',
                         key: null,
                         ref: null,
                         props: {
-                          children: [{
-                            $$typeof: _typeofReactElement,
-                            type: 'b',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: 'Delay '
-                            },
-                            _owner: null
-                          }, {
-                            $$typeof: _typeofReactElement,
-                            type: 'span',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: Data.params.Memd,
-                              className: 'badge secondary'
-                            },
-                            _owner: null
-                          }],
-                          className: 'middle margin-left-1rem'
+                          children: 'Delay '
                         },
                         _owner: null
-                      }
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: 'span',
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: Data.params.Memd,
+                          className: 'badge secondary'
+                        },
+                        _owner: null
+                      }, ' '],
+                      className: 'vertical-align-top margin-left-1rem'
                     },
                     _owner: null
                   }, {
@@ -1867,7 +1804,7 @@ define(function (require) {
                             },
                             _owner: null
                           }],
-                          className: 'button-group'
+                          className: 'button-group margin-bottom-0'
                         },
                         _owner: null
                       }
@@ -1879,36 +1816,27 @@ define(function (require) {
                     key: null,
                     ref: null,
                     props: {
-                      children: {
+                      children: [{
                         $$typeof: _typeofReactElement,
-                        type: 'label',
+                        type: 'b',
                         key: null,
                         ref: null,
                         props: {
-                          children: [{
-                            $$typeof: _typeofReactElement,
-                            type: 'b',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: 'Rows '
-                            },
-                            _owner: null
-                          }, {
-                            $$typeof: _typeofReactElement,
-                            type: 'span',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: Data.params.Memn.Absolute,
-                              className: 'badge secondary'
-                            },
-                            _owner: null
-                          }],
-                          className: 'middle margin-left-1rem'
+                          children: ' Rows '
                         },
                         _owner: null
-                      }
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: 'span',
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: Data.params.Memn.Absolute,
+                          className: 'badge secondary'
+                        },
+                        _owner: null
+                      }, ' '],
+                      className: 'vertical-align-top'
                     },
                     _owner: null
                   }, {
@@ -1948,14 +1876,14 @@ define(function (require) {
                             },
                             _owner: null
                           }],
-                          className: 'button-group'
+                          className: 'button-group margin-bottom-0'
                         },
                         _owner: null
                       }
                     },
                     _owner: null
                   }],
-                  className: !Data.params.Memn.Negative ? "hide" : "menu padding-top-056"
+                  className: !Data.params.Memn.Negative ? "hide" : "pagination padding-top-056"
                 },
                 _owner: null
               }, {
@@ -2199,36 +2127,27 @@ define(function (require) {
                     key: null,
                     ref: null,
                     props: {
-                      children: {
+                      children: [{
                         $$typeof: _typeofReactElement,
-                        type: 'label',
+                        type: 'b',
                         key: null,
                         ref: null,
                         props: {
-                          children: [{
-                            $$typeof: _typeofReactElement,
-                            type: 'b',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: 'Delay '
-                            },
-                            _owner: null
-                          }, {
-                            $$typeof: _typeofReactElement,
-                            type: 'span',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: Data.params.Psd,
-                              className: 'badge secondary'
-                            },
-                            _owner: null
-                          }],
-                          className: 'middle margin-left-1rem'
+                          children: 'Delay '
                         },
                         _owner: null
-                      }
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: 'span',
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: Data.params.Psd,
+                          className: 'badge secondary'
+                        },
+                        _owner: null
+                      }, ' '],
+                      className: 'vertical-align-top margin-left-1rem'
                     },
                     _owner: null
                   }, {
@@ -2268,7 +2187,7 @@ define(function (require) {
                             },
                             _owner: null
                           }],
-                          className: 'button-group'
+                          className: 'button-group margin-bottom-0'
                         },
                         _owner: null
                       }
@@ -2280,36 +2199,27 @@ define(function (require) {
                     key: null,
                     ref: null,
                     props: {
-                      children: {
+                      children: [{
                         $$typeof: _typeofReactElement,
-                        type: 'label',
+                        type: 'b',
                         key: null,
                         ref: null,
                         props: {
-                          children: [{
-                            $$typeof: _typeofReactElement,
-                            type: 'b',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: 'Rows '
-                            },
-                            _owner: null
-                          }, {
-                            $$typeof: _typeofReactElement,
-                            type: 'span',
-                            key: null,
-                            ref: null,
-                            props: {
-                              children: Data.params.Psn.Absolute,
-                              className: 'badge secondary'
-                            },
-                            _owner: null
-                          }],
-                          className: 'middle margin-left-1rem'
+                          children: ' Rows '
                         },
                         _owner: null
-                      }
+                      }, {
+                        $$typeof: _typeofReactElement,
+                        type: 'span',
+                        key: null,
+                        ref: null,
+                        props: {
+                          children: Data.params.Psn.Absolute,
+                          className: 'badge secondary'
+                        },
+                        _owner: null
+                      }, ' '],
+                      className: 'vertical-align-top'
                     },
                     _owner: null
                   }, {
@@ -2349,14 +2259,14 @@ define(function (require) {
                             },
                             _owner: null
                           }],
-                          className: 'button-group'
+                          className: 'button-group margin-bottom-0'
                         },
                         _owner: null
                       }
                     },
                     _owner: null
                   }],
-                  className: !Data.params.Psn.Negative ? "hide" : "menu padding-top-056"
+                  className: !Data.params.Psn.Negative ? "hide" : "pagination padding-top-056"
                 },
                 _owner: null
               }, {

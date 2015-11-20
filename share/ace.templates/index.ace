@@ -41,22 +41,19 @@ html
                     span.updates data-define=define_loadavg
                       {{template "defines::define_loadavg" .}}
 
-    p
-      div.row
-        div.columns.large-5.updates data-define=define_panelmem
-          {{template "defines::define_panelmem" .}}
-        div.columns.large-7.end.updates data-define=define_paneldf
-          {{template "defines::define_paneldf" .}}
-    p
-      div.row
-        div.columns.large-5.updates data-define=define_panelcpu
-          {{template "defines::define_panelcpu" .}}
-        div.columns.large-7.end.updates data-define=define_panelif
-          {{template "defines::define_panelif" .}}
-    p
-      div.row
-        div.columns.large-12.end.updates data-define=define_panelps
-          {{template "defines::define_panelps" .}}
+    div.row
+      div.columns.large-11.large-offset-1
+        div.row.small-stackup
+          div.columns.shrink.padding-top-056.updates data-define=define_panelmem
+            {{template "defines::define_panelmem" .}}
+          div.columns.shrink.padding-top-056.updates data-define=define_paneldf
+            {{template "defines::define_paneldf" .}}
+          div.columns.shrink.padding-top-056.updates data-define=define_panelcpu
+            {{template "defines::define_panelcpu" .}}
+          div.columns.shrink.padding-top-056.updates data-define=define_panelif
+            {{template "defines::define_panelif" .}}
+          div.columns.shrink.padding-top-056.updates data-define=define_panelps
+            {{template "defines::define_panelps" .}}
 
     = javascript
       var Data = {{.Data}};

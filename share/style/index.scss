@@ -8,8 +8,10 @@
 // - @include motion-ui-animations;
 @import 'foundation';
 
+// NOT foundation-grid
+@include foundation-flex-grid;
+
 @include foundation-global-styles;
-@include foundation-grid;
 @include foundation-typography;
 @include foundation-button;
 @include foundation-forms;
@@ -48,13 +50,12 @@
 $small-tab-item-padding: 0.5rem 1rem;
 .small-tabs-title > a { padding: $small-tab-item-padding; }
 
-// like .menu > li > a
-.menu > li > .button-group { padding-left: 1rem; padding-right: 1rem; }
-
 // explicit {margin,padding}
-.margin-bottom-0 { margin-bottom: 0; }
-.padding-top-056 { padding-top: 0.5625rem; }
-label.margin-left-1rem { margin-left: 1rem; }
+.margin-bottom-0  { margin-bottom: 0; }
+.margin-left-1rem { margin-left: 1rem; }
+.padding-top-056  { padding-top: 0.5625rem; }
+
+.vertical-align-top { vertical-align: top; }
 
 // full-width kind of a table
 table.full { width: 100%; }
