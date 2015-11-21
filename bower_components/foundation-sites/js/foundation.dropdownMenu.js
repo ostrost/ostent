@@ -142,7 +142,7 @@
       $tab.attr({
         'role': 'menuitem',
         'tabindex': 0,
-        'title': $tab.children('a:first-child').text()/*.match(/\w/ig).join('')*/
+        'aria-label': $tab.children('a:first-child').text()/*.match(/\w/ig).join('')*/
       }).children('a').attr('tabindex', -1);//maybe add a more specific regex to match alphanumeric characters and join them appropriately
       if($tab.children('[data-submenu]')){
         $tab.attr('aria-haspopup', true);
@@ -174,17 +174,19 @@
    * @function
    */
   DropdownMenu.prototype._events = function($elem){
-    var _this = this;
+    var _this = this,
+        isTouch = window.ontouchstart !== undefined;
 
-    if(this.options.clickOpen){
+    if(this.options.clickOpen || isTouch){
       $elem.off('click.zf.dropdownmenu')
           .on('click.zf.dropdownmenu', function(e){
             if(!$(this).hasClass('is-dropdown-submenu-parent')){ return; }
-
+            var hasClicked = $elem.data('isClick');
+            if(isTouch && hasClicked) return;
             e.preventDefault();
             e.stopPropagation();
 
-            if($elem.data('isClick')){
+            if(hasClicked){
               _this._hide($elem);
             }else{
               _this._hideOthers($elem);
@@ -208,14 +210,15 @@
         }
       });
       //elements with submenus
-      $elem.on('mouseenter.zf.dropdownmenu', function(e){
-        clearTimeout($elem.closeTimer);
-        if(!$elem.hasClass('is-active')){
-          $elem.openTimer = setTimeout(function(){
-              // _this._hideOthers($elem);
-              _this._show($elem);
-          }, _this.options.hoverDelay);
-        }
+      $elem.off('mouseenter.zf.dropdownmenu')
+        .on('mouseenter.zf.dropdownmenu', function(e){
+          clearTimeout($elem.closeTimer);
+          if(!$elem.hasClass('is-active')){
+            $elem.openTimer = setTimeout(function(){
+                // _this._hideOthers($elem);
+                _this._show($elem);
+            }, _this.options.hoverDelay);
+          }
       }).on('mouseleave.zf.dropdownmenu', function(e){
         if(!$elem.data('isClick') && _this.options.autoclose){
         clearTimeout($elem.openTimer);
