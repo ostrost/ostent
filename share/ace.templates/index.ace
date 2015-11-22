@@ -19,41 +19,70 @@ html
 
   body
     div.top-bar
-      div.row
-        div.top-bar-left
+      div.row.large-12
+        div.large-1.updates data-define=define_hostname
+          {{template "defines::define_hostname" .}}
+        div.large-10
           ul.menu
-            li.large-1.updates data-define=define_hostname
-              {{template "defines::define_hostname" .}}
+            li.menu-text
+              code os {{.Distrib}}
+            li.menu-text
+              code
+                | up&nbsp;
+                span.updates data-define=define_uptime
+                  {{template "defines::define_uptime" .}}
+            li.menu-text
+              code
+                | la&nbsp;
+                span.updates data-define=define_loadavg
+                  {{template "defines::define_loadavg" .}}
+        div.large-1
+          / the last element of the top-bar: float: right
+          ul.menu.float-right
             li
               a.button.secondary.hollow href=https://www.ostrost.com/ostent/releases/latest?cmp={{$v}} ostent
-            li
-              ul.menu.simple
-                li
-                  code os {{.Distrib}}
-                li
-                  code
-                    | up&nbsp;
-                    span.updates data-define=define_uptime
-                      {{template "defines::define_uptime" .}}
-                li
-                  code
-                    | la&nbsp;
-                    span.updates data-define=define_loadavg
-                      {{template "defines::define_loadavg" .}}
 
-    div.row
-      div.columns.large-11.large-offset-1
-        div.row.small-stackup
-          div.columns.shrink.padding-top-056.updates data-define=define_panelmem
+    div.row.large-12
+      div.column.large-10
+        {{$p := .Data.params}}
+
+        div.row.padding-top-056
+          div.large-1.hr-border-top
+          div.column.large-11.updates#mem data-define=define_panelmem
             {{template "defines::define_panelmem" .}}
-          div.columns.shrink.padding-top-056.updates data-define=define_paneldf
+
+        div.row.padding-top-056
+          div.large-1.hr-border-top
+          div.column.large-11.updates#df data-define=define_paneldf
             {{template "defines::define_paneldf" .}}
-          div.columns.shrink.padding-top-056.updates data-define=define_panelcpu
+
+        div.row.padding-top-056
+          div.large-1.hr-border-top
+          div.column.large-11.updates#cpu data-define=define_panelcpu
             {{template "defines::define_panelcpu" .}}
-          div.columns.shrink.padding-top-056.updates data-define=define_panelif
+
+        div.row.padding-top-056
+          div.large-1.hr-border-top
+          div.column.large-11.updates#if data-define=define_panelif
             {{template "defines::define_panelif" .}}
-          div.columns.shrink.padding-top-056.updates data-define=define_panelps
+
+        div.row.padding-top-056
+          div.large-1.hr-border-top
+          div.column.large-11.updates#ps data-define=define_panelps
             {{template "defines::define_panelps" .}}
+
+      div.large-2
+        ul.menu.vertical.bg-secondary
+          li
+            a href=#mem Memory
+          li
+            a href=#df Disk usage
+          li
+            a href=#cpu CPU
+          li
+            a href=#if Interfaces
+          li
+            a href=#ps Processes
 
     = javascript
       var Data = {{.Data}};

@@ -2,31 +2,25 @@
 [[$N := (index . 0)]]
 [[$D := (index . 1)]]
 [[$t := (index . 2)]]
-  | <div><ul {{ClassPositive [[$N]] "no-bullet" "tabs"}} data-tabs>
-  li.tabs-title.small-tabs-title
+  | <div><div {{ClassPositive [[$N]] "tabs tabs-border bar-less" "tabs tabs-border"}} data-tabs>
+  div.tabs-title.menu-tab-padding
     | <a {{HrefT $p [[$N]]}}>
     h5.margin-bottom-0 [[$t]]
     | </a>
-  | </ul>
-  | <div {{ClassPositive [[$N]] "" "tabs-content"}}>
-  | <ul {{ClassPositive [[$N]] "hide" "pagination padding-top-056"}}>
-  li.vertical-align-top.margin-left-1rem
-    b Delay&nbsp;
-    span.badge.secondary {{[[$D]]}}
-    | &nbsp;
-  li
-    div.button-group.margin-bottom-0
-      {{template "defines::alink_badgeleft"  LessD $p [[$D]] "button secondary hollow"}}
-      {{template "defines::alink_badgeright" MoreD $p [[$D]] "button secondary hollow"}}
-  li.vertical-align-top
-    b &nbsp;Rows&nbsp;
-    span.badge.secondary {{[[$N]].Absolute}}
-    | &nbsp;
-  li
-    div.button-group.margin-bottom-0
-      {{template "defines::alink_badgeleft"  LessN $p [[$N]] "button secondary hollow"}}
-      {{template "defines::alink_badgeright" MoreN $p [[$N]] "button secondary hollow"}}
-  | </ul>
+  ul.float-left.bar.menu
+    li.menu-text
+      div.input-group.margin-bottom-0
+        span.input-group-label delay
+        span.input-group-label.label.secondary {{[[$D]]}}
+        {{template "defines::alink_badgeleft"  LessD $p [[$D]] "button secondary hollow text-nowrap input-group-button"}}
+        {{template "defines::alink_badgeright" MoreD $p [[$D]] "button secondary hollow text-nowrap input-group-button"}}
+    li.menu-text
+      div.input-group.margin-bottom-0
+        span.input-group-label rows
+        span.input-group-label.label.secondary {{[[$N]].Absolute}}
+        {{template "defines::alink_badgeleft"  LessN $p [[$N]] "button secondary hollow text-nowrap input-group-button"}}
+        {{template "defines::alink_badgeright" MoreN $p [[$N]] "button secondary hollow text-nowrap input-group-button"}}
+  | </div>
 [[end]]
 
 = content alink_badgeleft
@@ -42,8 +36,8 @@
     |   >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>
 
 = content define_hostname
-  | <a {{class}}="clip12" href="/"
-  |    {{TitlePrefixed "hostname " .Data.hostname}}>{{.Data.hostname}}</a>
+  | <a {{TitlePrefixed "hostname " .Data.hostname}} href="/"
+  | ><h4 {{class}}="clip12 margin-bottom-0">{{.Data.hostname}}</h4></a>
 
 {{define "defines::define_loadavg"}}<span>{{.Data.loadavg}}</span>{{end}}
 {{define "defines::define_uptime"}}<span>{{.Data.uptime}}</span>{{end}}
@@ -51,7 +45,7 @@
 = content define_panelmem
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Memn` `$p.Memd` "Memory"]]
-  | <table {{ClassNonZero $p.Memn "hover full margin-bottom-0" "hide"}}>
+  | <table {{ClassNonZero $p.Memn "hover scroll-x margin-bottom-0" "hide"}}>
   thead
     tr
       th
@@ -74,12 +68,12 @@
         {{jsx `})}`}}
       {{end}}
     {{end}}
-  | </table></div></div>
+  | </table></div>
 
 = content define_paneldf
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Dfn` `$p.Dfd` "Disk usage"]]
-  | <table {{ClassNonZero $p.Dfn "hover full margin-bottom-0" "hide"}}>
+  | <table {{ClassNonZero $p.Dfn "hover scroll-x margin-bottom-0" "hide"}}>
   thead
     tr.text-nowrap
       {{$r := "text-right"}}
@@ -95,8 +89,8 @@
         {{jsx `{this.List(Data).map(function($df) { return`}}
         |
           <tr {{Key "df-rowby-dirname" $df.DirName}}>
-            <td {{class}}="text-nowrap clip12" title={{$df.DevName}}>{{$df.DevName}}</td>
-            <td {{class}}="text-nowrap clip12" title={{$df.DirName}}>{{$df.DirName}}</td>
+            <td {{class}}="text-nowrap">{{$df.DevName}}</td>
+            <td {{class}}="text-nowrap">{{$df.DirName}}</td>
         td.text-right.text-nowrap
           span.mutext title="Inodes free" {{$df.Ifree}}
           |  {{$df.Avail}}
@@ -116,19 +110,19 @@
         {{jsx `})}`}}
       {{end}}
     {{end}}
-  | </table></div></div>
+  | </table></div>
 
 = content define_panelcpu
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.CPUn` `$p.CPUd` "CPU"]]
-  | <table {{ClassNonZero $p.CPUn "hover full margin-bottom-0" "hide"}}>
+  | <table {{ClassNonZero $p.CPUn "hover scroll-x margin-bottom-0" "hide"}}>
   thead
     tr
       th
-      th.text-right User
-      th.text-right Sys
-      th.text-right Wait
-      th.text-right Idle
+      th.text-right User%
+      th.text-right Sys%
+      th.text-right Wait%
+      th.text-right Idle%
   tbody
     {{if .Data.cpu}}
       {{range $cpu := .Data.cpu.List}}
@@ -148,12 +142,12 @@
         {{jsx `})}`}}
       {{end}}
     {{end}}
-  | </table></div></div>
+  | </table></div>
 
 = content define_panelif
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Ifn` `$p.Ifd` "Interfaces"]]
-  | <table {{ClassNonZero $p.Ifn "hover full margin-bottom-0" "hide"}}>
+  | <table {{ClassNonZero $p.Ifn "hover scroll-x margin-bottom-0" "hide"}}>
   thead
     tr
       th Interface
@@ -169,7 +163,7 @@
       {{range $if := .Data.ifaddrs.List}}
         {{jsx `{this.List(Data).map(function($if) { return`}}
         | <tr {{Key "if-rowby-name" $if.Name}}>
-        | <td {{class}}="text-nowrap clip12" title={{$if.Name}}>{{$if.Name}}</td>
+        | <td {{class}}="text-nowrap">{{$if.Name}}</td>
         td.text-right {{$if.IP}}
         td.text-right.text-nowrap
           span.mutext
@@ -212,12 +206,12 @@
         {{jsx `})}`}}
       {{end}}
     {{end}}
-  | </table></div></div>
+  | </table></div>
 
 = content define_panelps
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Psn` `$p.Psd` "Processes"]]
-  | <table {{ClassNonZero $p.Psn "hover full margin-bottom-0" "hide"}}>
+  | <table {{ClassNonZero $p.Psn "hover scroll-x margin-bottom-0" "hide"}}>
   thead
     tr.text-nowrap
       {{$r := "text-right"}}
@@ -249,4 +243,4 @@
         {{jsx `})}`}}
       {{end}}
     {{end}}
-  | </table></div></div>
+  | </table></div>
