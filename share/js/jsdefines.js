@@ -63,15 +63,15 @@ define(function (require) {
         props: {
           children: {
             $$typeof: _typeofReactElement,
-            type: 'h4',
+            type: 'pre',
             key: null,
             ref: null,
             props: {
-              children: Data.hostname,
-              className: 'clip12 margin-bottom-0'
+              children: Data.hostname
             },
             _owner: null
           },
+          className: 'h5',
           title: "hostname " + Data.hostname,
           href: '/'
         },

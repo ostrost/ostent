@@ -36,8 +36,8 @@
     |   >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>
 
 = content define_hostname
-  | <a {{TitlePrefixed "hostname " .Data.hostname}} href="/"
-  | ><h4 {{class}}="clip12 margin-bottom-0">{{.Data.hostname}}</h4></a>
+  | <a {{class}}="h5" {{TitlePrefixed "hostname " .Data.hostname}} href="/"
+  | ><pre>{{.Data.hostname}}</pre></a>
 
 {{define "defines::define_loadavg"}}<span>{{.Data.loadavg}}</span>{{end}}
 {{define "defines::define_uptime"}}<span>{{.Data.uptime}}</span>{{end}}

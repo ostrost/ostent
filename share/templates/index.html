@@ -16,37 +16,43 @@
     ></head
   ><body
     ><div class="top-bar"
-      ><div class="row large-12"
-        ><div class="large-1 updates" data-define="define_hostname"
-          >{{template "defines::define_hostname" .}}</div
-        ><div class="large-10"
-          ><ul class="menu"
-            ><li class="menu-text"
-              ><code
-                >os {{.Distrib}}</code
-              ></li
-            ><li class="menu-text"
-              ><code
+      ><div class="top-bar-left"
+        ><ul class="menu"
+          ><li
+            ><div class="updates" data-define="define_hostname"
+              >{{template "defines::define_hostname" .}}</div
+            ></li
+          ><li
+            ><div
+              ><pre
+                >os {{.Distrib}}</pre
+              ></div
+            ></li
+          ><li
+            ><div
+              ><pre
                 >up&nbsp;<span class="updates" data-define="define_uptime"
                   >{{template "defines::define_uptime" .}}</span
-                ></code
-              ></li
-            ><li class="menu-text"
-              ><code
+                ></pre
+              ></div
+            ></li
+          ><li
+            ><div
+              ><pre
                 >la&nbsp;<span class="updates" data-define="define_loadavg"
                   >{{template "defines::define_loadavg" .}}</span
-                ></code
-              ></li
-            ></ul
-          ></div
-        ><div class="large-1"
-          ><ul class="menu float-right"
-            ><li
-              ><a class="button secondary hollow" href="https://www.ostrost.com/ostent/releases/latest?cmp={{$v}}"
-                >ostent</a
-              ></li
-            ></ul
-          ></div
+                ></pre
+              ></div
+            ></li
+          ></ul
+        ></div
+      ><div class="top-bar-right"
+        ><ul class="menu"
+          ><li
+            ><a class="margin-0 button secondary hollow" href="https://www.ostrost.com/ostent/releases/latest?cmp={{$v}}"
+              >ostent</a
+            ></li
+          ></ul
         ></div
       ></div
     ><div class="row large-12"
@@ -83,7 +89,7 @@
           ></div
         ></div
       ><div class="large-2"
-        ><ul class="menu vertical bg-secondary"
+        ><ul class="menu vertical bg-light-gray"
           ><li
             ><a href="#mem"
               >Memory</a
@@ -120,9 +126,9 @@
 */}}{{define "defines::alink_badgeright"}}<a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}  
   >{{.Text}} {{.Badge}}</a
 >{{end}}{{/*
-*/}}{{define "defines::define_hostname"}}<a {{TitlePrefixed "hostname " .Data.hostname}} href="/"
-  ><h4 {{class}}="clip12 margin-bottom-0"
-    >{{.Data.hostname}}</h4
+*/}}{{define "defines::define_hostname"}}<a {{class}}="h5" {{TitlePrefixed "hostname " .Data.hostname}} href="/"
+  ><pre
+    >{{.Data.hostname}}</pre
   ></a
 >{{end}}{{/*
 */}}{{define "defines::define_loadavg"}}<span

@@ -1,3 +1,5 @@
+// -*- eval: (rainbow-mode) -*-
+
 @charset 'utf-8';
 
 @import 'settings'; // foundation settings
@@ -46,20 +48,19 @@
 @include foundation-top-bar;
 // END OF foundation imports and includes
 
-// $tab-item-padding is 1.25rem 1.5rem
-$menu-tab-item-padding: $menu-item-padding; // 0.7rem 1rem;
-.menu-tab-padding > a { padding: $menu-tab-item-padding; }
+.menu-tab-padding > a { padding: $menu-item-padding; }
+// $tab-item-padding is 1.25rem 1.5rem, $menu-item-padding is 0.7rem 1rem
 
 // explicit {margin,padding}
-.margin-bottom-0  { margin-bottom: 0; }
-.margin-left-1rem { margin-left: 1rem; }
-.padding-top-056  { padding-top: 0.5625rem; }
+.margin-0        { margin: 0; }
+.margin-bottom-0 { margin-bottom: 0; }
+.padding-top-056 { padding-top: 0.5625rem; }
 
-.menu > li > div { padding-left: 0.2rem; padding-right: 0.2rem; }
-.menu.float-right > li > a.button { margin-right: 0; }
+$menu-hpadding: 0.7rem; // $menu-item-padding is 0.7rem 1rem;
+.menu > li > div { padding-left: $menu-hpadding; padding-right: $menu-hpadding; }
+.h5 { @extend h5; }
 
 .input-group-label.label { display: table-cell; }
-
 .menu-text .button { font-weight: normal; }
 
 .tabs-border { border: 0; }
@@ -72,29 +73,8 @@ table.scroll-x {
   overflow-x: auto;
 }
 
-// cutting long texts
-.clip12 {
-  max-width: 12ch;
-  // cursor: pointer;
-  // margin-bottom: 0px;
-  // font-weight: normal;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
-/*
-.collapse-checkbox:checked + .clip12 {
-  text-decoration: overline;
-  word-wrap: break-word;
-  word-break: break-all;
-  white-space: normal;
-  overflow-x: visible;
-}
-*/
-
-// after bootstrap .text-muted
-table.hover .mutext { color: #ddd; } // there was @gray-lighter
-table.hover tr:hover .mutext { color: #777; } // text-muted color
+table.hover .mutext { color: $medium-gray; }
+table.hover tr:hover .mutext { color: $dark-gray; }
 
 .text-nowrap { white-space: nowrap; } // from bootstrap as is
 
@@ -130,11 +110,12 @@ table.hover tr:hover .mutext { color: #777; } // text-muted color
 }
 /* end of caret, drop{down,up} */
 
-.bg-secondary { background-color: smart-scale($secondary-color, -80%); } // #E4E4E4
-.bg-primary   { background-color: smart-scale($primary-color,   -80%); } // #D3EBFA
-.bg-success   { background-color: smart-scale($success-color,   -80%); } // #D8F8E4
-.bg-warning   { background-color: smart-scale($warning-color,   -80%); } // #FFEFCC
-.bg-alert     { background-color: smart-scale($alert-color,     -80%); } // #FBDED9
+.bg-light-gray { background-color: $light-gray; }
+// .bg-secondary { background-color: smart-scale($secondary-color, -80%); } // #E4E4E4
+.bg-primary    { background-color: smart-scale($primary-color,   -80%); } // #D3EBFA
+.bg-success    { background-color: smart-scale($success-color,   -80%); } // #D8F8E4
+.bg-warning    { background-color: smart-scale($warning-color,   -80%); } // #FFEFCC
+.bg-alert      { background-color: smart-scale($alert-color,     -80%); } // #FBDED9
 
 .bg-usepct[data-usepct="0"],
 .bg-usepct[data-usepct="1"],

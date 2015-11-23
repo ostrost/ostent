@@ -19,28 +19,30 @@ html
 
   body
     div.top-bar
-      div.row.large-12
-        div.large-1.updates data-define=define_hostname
-          {{template "defines::define_hostname" .}}
-        div.large-10
-          ul.menu
-            li.menu-text
-              code os {{.Distrib}}
-            li.menu-text
-              code
+      div.top-bar-left
+        ul.menu
+          li
+            div.updates data-define=define_hostname
+              {{template "defines::define_hostname" .}}
+          li
+            div
+              pre os {{.Distrib}}
+          li
+            div
+              pre
                 | up&nbsp;
                 span.updates data-define=define_uptime
                   {{template "defines::define_uptime" .}}
-            li.menu-text
-              code
+          li
+            div
+              pre
                 | la&nbsp;
                 span.updates data-define=define_loadavg
                   {{template "defines::define_loadavg" .}}
-        div.large-1
-          / the last element of the top-bar: float: right
-          ul.menu.float-right
-            li
-              a.button.secondary.hollow href=https://www.ostrost.com/ostent/releases/latest?cmp={{$v}} ostent
+      div.top-bar-right
+        ul.menu
+          li
+            a.margin-0.button.secondary.hollow href=https://www.ostrost.com/ostent/releases/latest?cmp={{$v}} ostent
 
     div.row.large-12
       div.column.large-10
@@ -72,7 +74,7 @@ html
             {{template "defines::define_panelps" .}}
 
       div.large-2
-        ul.menu.vertical.bg-secondary
+        ul.menu.vertical.bg-light-gray
           li
             a href=#mem Memory
           li

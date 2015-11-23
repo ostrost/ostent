@@ -49,9 +49,9 @@ define(function(require) {
     },
     render: function() {
       let Data = this.state; // shadow global Data
-      return <a  title={"hostname " + Data.hostname} href="/"
-  ><h4 className="clip12 margin-bottom-0"
-    >{Data.hostname}</h4
+      return <a className="h5"  title={"hostname " + Data.hostname} href="/"
+  ><pre
+    >{Data.hostname}</pre
   ></a
 >;
     }

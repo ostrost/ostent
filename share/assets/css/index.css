@@ -675,6 +675,7 @@ h2,
 h3,
 h4,
 h5,
+.h5,
 h6,
 pre,
 form,
@@ -710,6 +711,7 @@ h2,
 h3,
 h4,
 h5,
+.h5,
 h6 {
   font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
   font-weight: normal;
@@ -723,7 +725,7 @@ h6 {
   h2 small,
   h3 small,
   h4 small,
-  h5 small,
+  h5 small, .h5 small,
   h6 small {
     color: #cacaca;
     line-height: 0; }
@@ -740,7 +742,7 @@ h3 {
 h4 {
   font-size: 1.125rem; }
 
-h5 {
+h5, .h5 {
   font-size: 1.0625rem; }
 
 h6 {
@@ -755,7 +757,7 @@ h6 {
     font-size: 1.9375rem; }
   h4 {
     font-size: 1.5625rem; }
-  h5 {
+  h5, .h5 {
     font-size: 1.25rem; }
   h6 {
     font-size: 1rem; } }
@@ -2643,21 +2645,18 @@ table.hover tr:nth-of-type(even):hover {
 .menu-tab-padding > a {
   padding: 0.7rem 1rem; }
 
+.margin-0 {
+  margin: 0; }
+
 .margin-bottom-0 {
   margin-bottom: 0; }
-
-.margin-left-1rem {
-  margin-left: 1rem; }
 
 .padding-top-056 {
   padding-top: 0.5625rem; }
 
 .menu > li > div {
-  padding-left: 0.2rem;
-  padding-right: 0.2rem; }
-
-.menu.float-right > li > a.button {
-  margin-right: 0; }
+  padding-left: 0.7rem;
+  padding-right: 0.7rem; }
 
 .input-group-label.label {
   display: table-cell; }
@@ -2678,26 +2677,11 @@ table.scroll-x {
   display: block;
   overflow-x: auto; }
 
-.clip12 {
-  max-width: 12ch;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden; }
-
-/*
-.collapse-checkbox:checked + .clip12 {
-  text-decoration: overline;
-  word-wrap: break-word;
-  word-break: break-all;
-  white-space: normal;
-  overflow-x: visible;
-}
-*/
 table.hover .mutext {
-  color: #ddd; }
+  color: #cacaca; }
 
 table.hover tr:hover .mutext {
-  color: #777; }
+  color: #8a8a8a; }
 
 .text-nowrap {
   white-space: nowrap; }
@@ -2733,8 +2717,8 @@ table.hover tr:hover .mutext {
   margin-bottom: 2px; }
 
 /* end of caret, drop{down,up} */
-.bg-secondary {
-  background-color: #e4e4e4; }
+.bg-light-gray {
+  background-color: #e6e6e6; }
 
 .bg-primary, .bg-usepct[data-usepct^="2"]:not([data-usepct="2"]),
 .bg-usepct[data-usepct^="3"]:not([data-usepct="3"]),
