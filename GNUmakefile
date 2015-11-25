@@ -101,13 +101,11 @@ share/assets/js/src/bundle.js \
 share/assets/js/min/bundle.min.js \
 :
 # the first prerequisite only is passed to gulp
-	if type gulp >/dev/null ; then gulp wp --output=$@ --input=./$< --silent ; fi
+	type gulp  >/dev/null || exit 0; gulp wp --silent --input=./$< --output=$@
 
 share/assets/css/index.css: share/style/index.scss # the above rule
 share/js/jsdefines.js: share/tmp/jsdefines.jsx
-	type babel  >/dev/null || exit 0; babel --optional optimisation.react.constantElements --optional optimisation.react.inlineElements $^ -o $@
-share/js/index.js: share/coffee/index.coffee
-	type coffee >/dev/null || exit 0; coffee -p $^ >/dev/null && coffee -o $(@D)/ $^
+	type babel >/dev/null || exit 0; babel --optional optimisation.react.constantElements --optional optimisation.react.inlineElements $^ -o $@
 
 # "jsdefines.js" not passed to gulp/gulpfile.ls
 share/assets/js/src/bundle.js:     share/js/index.js share/js/jsdefines.js # the above rule
