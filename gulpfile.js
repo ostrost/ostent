@@ -2,11 +2,15 @@
 require('es6-promise').polyfill();
 
 var path              = require('path'),
-    // webpack        = require('webpack'),
+    webpack           = require('webpack'),
+    _                 = require('lodash'),
+    gulp              = require('gulp'),
+    gutil             = require('gulp-util'),
+    argv              = require('yargs').argv,
     ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var rr;
-module.exports = {
+var wpconf = {
     resolve: {
         root: (rr = path.join(__dirname, './bower_components')),
         //? extensions: ['', '.js', '.css', '.scss'],
@@ -29,3 +33,21 @@ module.exports = {
         new ExtractTextPlugin('index.css', {allChunks: true})
     ]
 };
+
+gulp.task('wp', [], function(callback) {
+    var wparg = wpconf;
+    wparg = _.merge(wparg, {entry: argv.input});
+    wparg = _.merge(wparg, {output: {}});
+    wparg.output.filename = path.basename(argv.output);
+    wparg.output.path     = path.join(__dirname, path.dirname(argv.output));
+    if (argv.output.match(/\.min\.js($|\?)/i) !== null) {
+        wparg.plugins.push(new webpack.optimize.UglifyJsPlugin({mangle: true}));
+    }
+    webpack(wparg).run(function(err, stats) {
+        if(err) {
+            throw new gutil.PluginError('webpack', err);
+        }
+        gutil.log('[webpack]', stats.toString({/* output options */}));
+        callback();
+    });
+});
