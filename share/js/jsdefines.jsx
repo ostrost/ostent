@@ -1,80 +1,82 @@
-define(function(require) {
-  let React = require('react');
-  let $     = require('jquery');
-  let jsdefines = {};
-  jsdefines.StateHandlingMixin = { // requires .Reduce method
-    getInitialState: function() {
-      return this.StateFrom(Data); // global Data
-    },
-    NewState: function(data) {
-      let state = this.StateFrom(data);
-      if (state != null) {
-        this.setState(state);
-      }
-    },
-    StateFrom: function(data) {
-      let state = this.Reduce(data);
-      if (state != null) {
-        for (let key in state) {
-          if (state[key] == null) {
-            delete state[key];
-          }
+let $        = require('jquery'),
+    React    = require('react'),
+    ReactPRM = require('react-prm');
+let ReactPureRenderMixin = ReactPRM;
+
+let jsdefines = {};
+jsdefines.StateHandlingMixin = { // requires .Reduce method
+  getInitialState: function() {
+    return this.StateFrom(Data); // global Data
+  },
+  NewState: function(data) {
+    let state = this.StateFrom(data);
+    if (state != null) {
+      this.setState(state);
+    }
+  },
+  StateFrom: function(data) {
+    let state = this.Reduce(data);
+    if (state != null) {
+      for (let key in state) {
+        if (state[key] == null) {
+          delete state[key];
         }
       }
-      return state;
     }
-  };
-  jsdefines.HandlerMixin = {
-    handleClick: function(e) {
-      let href = e.target.getAttribute('href');
-      if (href == null) {
-        href = $(e.target).parent().get(0).getAttribute('href');
-      }
-      history.pushState({}, '', href);
-      window.updates.sendSearch(href);
-      e.stopPropagation();
-      e.preventDefault();
-      return void 0;
+    return state;
+  }
+};
+jsdefines.HandlerMixin = {
+  handleClick: function(e) {
+    let href = e.target.getAttribute('href');
+    if (href == null) {
+      href = $(e.target).parent().get(0).getAttribute('href');
     }
-  };
+    history.pushState({}, '', href);
+    window.updates.sendSearch(href);
+    e.stopPropagation();
+    e.preventDefault();
+    return void 0;
+  }
+};
 
-  // transformed from define_* templates:
+// transformed from define_* templates:
 
-  jsdefines.define_hostname = React.createClass({
-    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
-    Reduce: function(data) {
-      return {
-        hostname: data.hostname
-      };
-    },
-    render: function() {
-      let Data = this.state; // shadow global Data
-      return <a className="h5"  title={"hostname " + Data.hostname} href="/"
+jsdefines.define_hostname = React.createClass({
+  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+  Reduce: function(data) {
+    return {
+      hostname: data.hostname
+    };
+  },
+  render: function() {
+    let Data = this.state; // shadow global Data
+    return <a className="h5"  title={"hostname " + Data.hostname} href="/"
   ><pre
     >{Data.hostname}</pre
   ></a
 >;
-    }
-  });
+  }
+});
 
-  jsdefines.define_panelcpu = React.createClass({
-    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
-    List: function(data) {
-      let list;
-      if (data != null && data["cpu"] != null && (list = data["cpu"].List) != null) {
-        return list;
-      }
-      return [];
-    },
-    Reduce: function(data) {
-      return {
-        params: data.params,
-        cpu: data.cpu
-      };
-    },
-    render: function() {
-      let Data = this.state; // shadow global Data
-      return <div
+jsdefines.define_panelcpu = React.createClass({
+  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+  List: function(data) {
+    let list;
+    if (data != null && data["cpu"] != null && (list = data["cpu"].List) != null) {
+      return list;
+    }
+    return [];
+  },
+  Reduce: function(data) {
+    return {
+      params: data.params,
+      cpu: data.cpu
+    };
+  },
+  render: function() {
+    let Data = this.state; // shadow global Data
+    return <div
   ><div  className={!Data.params.CPUn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border"} data-tabs
     ><div className="tabs-title menu-tab-padding"
       ><a  href={Data.params.Tlinks.CPUn} onClick={this.handleClick}
@@ -145,27 +147,27 @@ define(function(require) {
     ></table
   ></div
 >;
-    }
-  });
+  }
+});
 
-  jsdefines.define_paneldf = React.createClass({
-    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
-    List: function(data) {
-      let list;
-      if (data != null && data["diskUsage"] != null && (list = data["diskUsage"].List) != null) {
-        return list;
-      }
-      return [];
-    },
-    Reduce: function(data) {
-      return {
-        params: data.params,
-        diskUsage: data.diskUsage
-      };
-    },
-    render: function() {
-      let Data = this.state; // shadow global Data
-      return <div
+jsdefines.define_paneldf = React.createClass({
+  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+  List: function(data) {
+    let list;
+    if (data != null && data["diskUsage"] != null && (list = data["diskUsage"].List) != null) {
+      return list;
+    }
+    return [];
+  },
+  Reduce: function(data) {
+    return {
+      params: data.params,
+      diskUsage: data.diskUsage
+    };
+  },
+  render: function() {
+    let Data = this.state; // shadow global Data
+    return <div
   ><div  className={!Data.params.Dfn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border"} data-tabs
     ><div className="tabs-title menu-tab-padding"
       ><a  href={Data.params.Tlinks.Dfn} onClick={this.handleClick}
@@ -268,27 +270,27 @@ define(function(require) {
     ></table
   ></div
 >;
-    }
-  });
+  }
+});
 
-  jsdefines.define_panelif = React.createClass({
-    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
-    List: function(data) {
-      let list;
-      if (data != null && data["ifaddrs"] != null && (list = data["ifaddrs"].List) != null) {
-        return list;
-      }
-      return [];
-    },
-    Reduce: function(data) {
-      return {
-        params: data.params,
-        ifaddrs: data.ifaddrs
-      };
-    },
-    render: function() {
-      let Data = this.state; // shadow global Data
-      return <div
+jsdefines.define_panelif = React.createClass({
+  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+  List: function(data) {
+    let list;
+    if (data != null && data["ifaddrs"] != null && (list = data["ifaddrs"].List) != null) {
+      return list;
+    }
+    return [];
+  },
+  Reduce: function(data) {
+    return {
+      params: data.params,
+      ifaddrs: data.ifaddrs
+    };
+  },
+  render: function() {
+    let Data = this.state; // shadow global Data
+    return <div
   ><div  className={!Data.params.Ifn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border"} data-tabs
     ><div className="tabs-title menu-tab-padding"
       ><a  href={Data.params.Tlinks.Ifn} onClick={this.handleClick}
@@ -401,27 +403,27 @@ define(function(require) {
     ></table
   ></div
 >;
-    }
-  });
+  }
+});
 
-  jsdefines.define_panelmem = React.createClass({
-    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
-    List: function(data) {
-      let list;
-      if (data != null && data["memory"] != null && (list = data["memory"].List) != null) {
-        return list;
-      }
-      return [];
-    },
-    Reduce: function(data) {
-      return {
-        params: data.params,
-        memory: data.memory
-      };
-    },
-    render: function() {
-      let Data = this.state; // shadow global Data
-      return <div
+jsdefines.define_panelmem = React.createClass({
+  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+  List: function(data) {
+    let list;
+    if (data != null && data["memory"] != null && (list = data["memory"].List) != null) {
+      return list;
+    }
+    return [];
+  },
+  Reduce: function(data) {
+    return {
+      params: data.params,
+      memory: data.memory
+    };
+  },
+  render: function() {
+    let Data = this.state; // shadow global Data
+    return <div
   ><div  className={!Data.params.Memn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border"} data-tabs
     ><div className="tabs-title menu-tab-padding"
       ><a  href={Data.params.Tlinks.Memn} onClick={this.handleClick}
@@ -488,27 +490,27 @@ define(function(require) {
     ></table
   ></div
 >;
-    }
-  });
+  }
+});
 
-  jsdefines.define_panelps = React.createClass({
-    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
-    List: function(data) {
-      let list;
-      if (data != null && data["procs"] != null && (list = data["procs"].List) != null) {
-        return list;
-      }
-      return [];
-    },
-    Reduce: function(data) {
-      return {
-        params: data.params,
-        procs: data.procs
-      };
-    },
-    render: function() {
-      let Data = this.state; // shadow global Data
-      return <div
+jsdefines.define_panelps = React.createClass({
+  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+  List: function(data) {
+    let list;
+    if (data != null && data["procs"] != null && (list = data["procs"].List) != null) {
+      return list;
+    }
+    return [];
+  },
+  Reduce: function(data) {
+    return {
+      params: data.params,
+      procs: data.procs
+    };
+  },
+  render: function() {
+    let Data = this.state; // shadow global Data
+    return <div
   ><div  className={!Data.params.Psn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border"} data-tabs
     ><div className="tabs-title menu-tab-padding"
       ><a  href={Data.params.Tlinks.Psn} onClick={this.handleClick}
@@ -627,38 +629,43 @@ define(function(require) {
     ></table
   ></div
 >;
-    }
-  });
+  }
+});
 
-  jsdefines.define_loadavg = React.createClass({
-    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
-    Reduce: function(data) {
-      return {
-        loadavg: data.loadavg
-      };
-    },
-    render: function() {
-      let Data = this.state; // shadow global Data
-      return <span
+jsdefines.define_loadavg = React.createClass({
+  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+  Reduce: function(data) {
+    return {
+      loadavg: data.loadavg
+    };
+  },
+  render: function() {
+    let Data = this.state; // shadow global Data
+    return <span
   >{Data.loadavg}</span
 >;
-    }
-  });
+  }
+});
 
-  jsdefines.define_uptime = React.createClass({
-    mixins: [React.addons.PureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
-    Reduce: function(data) {
-      return {
-        uptime: data.uptime
-      };
-    },
-    render: function() {
-      let Data = this.state; // shadow global Data
-      return <span
+jsdefines.define_uptime = React.createClass({
+  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+  Reduce: function(data) {
+    return {
+      uptime: data.uptime
+    };
+  },
+  render: function() {
+    let Data = this.state; // shadow global Data
+    return <span
   >{Data.uptime}</span
 >;
-    }
-  });
-
-  return jsdefines;
+  }
 });
+
+
+module.exports = jsdefines;
+
+// Local variables:
+// js-indent-level: 2
+// js2-basic-offset: 2
+// End:

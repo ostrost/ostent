@@ -1,7 +1,7 @@
 var $         = require('jquery'),
     React     = require('react'),
     ReactDOM  = require('react-dom'),
-    jsdefines = require('./jsdefines.js');
+    jsdefines = require('./jsdefines.jsx');
 
 function neweventsource(onmessage) {
   var conn = null;

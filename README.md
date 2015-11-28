@@ -116,14 +116,14 @@ clone your fork as if it was `github.com/ostrost/ostent` package for Go:
 `make` rebuilds these **commited to the repo** files:
 - `share/assets/bindata.*.go`
 - `share/assets/css/*.css`
-- `share/assets/js/*.js`
+- `share/assets/js/*/*.js`
 - `share/templates/*.html`
 - `share/templates/bindata.*.go`
-- `share/tmp/*.jsx`
+- `share/js/*.jsx`
 
 If you don't change source files, content re-generated
 should not differ from the commited. Whenever
-share/{ace.templates,style,coffee} modified,
+share/{ace.templates,style} modified,
 you have to re-make.
 
 Additional tools required for assets rebuilding.

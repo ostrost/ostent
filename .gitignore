@@ -1,3 +1,4 @@
 /.srclib-cache/
 /node_modules/
+/share/cache/
 coverage.out

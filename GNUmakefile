@@ -25,7 +25,7 @@ xargs=xargs --no-run-if-empty
 endif
 go-bindata=go-bindata -ignore '.*\.go'# Go regexp syntax for -ignore
 
-.PHONY: all al init test covertest coverfunc coverhtml bindata bindata-dev bindata-bin
+.PHONY: all al init test covertest coverfunc coverhtml bindata bindata-dev bindata-bin check-update
 .PHONY: all32 boot32
 ifneq (init, $(MAKECMDGOALS))
 # before init:
@@ -67,6 +67,13 @@ golang.org/x/net/html
 	go get -v $(package)
 	go get -v -a -tags bin $(package)
 
+check-update:
+	npm outdated # upgrade with npm update --save-dev
+	bower list # | grep latest\ is
+	# update with bower update --save-dev
+	# update with bower update [] --save-dev
+	# update with bower install [] --save-dev
+
 %: %.sh # clear the implicit *.sh rule
 # print-* rule for debugging. http://blog.jgc.org/2015/04/the-one-line-you-should-add-to-every.html :
 print-%: ; @echo $*=$($*)
@@ -101,19 +108,16 @@ share/assets/js/src/bundle.js \
 share/assets/js/min/bundle.min.js \
 :
 # the first prerequisite only is passed to gulp
-	type gulp  >/dev/null || exit 0; gulp wp --silent --input=./$< --output=$@
-
-share/assets/css/index.css: share/style/index.scss # the above rule
-share/js/jsdefines.js: share/tmp/jsdefines.jsx
-	type babel >/dev/null || exit 0; babel --optional optimisation.react.constantElements --optional optimisation.react.inlineElements $^ -o $@
-
-# "jsdefines.js" not passed to gulp/gulpfile.ls
-share/assets/js/src/bundle.js:     share/js/index.js share/js/jsdefines.js # the above rule
-share/assets/js/min/bundle.min.js: share/js/index.js share/js/jsdefines.js # the above rule
+	type gulp >/dev/null || exit 0; mkdir -p share/cache
+	type gulp >/dev/null || exit 0; gulp wp --silent --input=./$< --output=$@
+# the rule above
+share/assets/css/index.css:        share/style/index.scss
+share/assets/js/src/bundle.js:     share/js/index.js share/js/jsdefines.jsx
+share/assets/js/min/bundle.min.js: share/js/index.js share/js/jsdefines.jsx
 
 share/templates/index.html: share/ace.templates/index.ace share/ace.templates/defines.ace $(templatepp)
 	$(templatepp) -defines share/ace.templates/defines.ace -output $@ $<
-share/tmp/jsdefines.jsx: share/ace.templates/jsdefines.jstmpl share/ace.templates/defines.ace $(templatepp)
+share/js/jsdefines.jsx: share/ace.templates/jsdefines.jstmpl share/ace.templates/defines.ace $(templatepp)
 	$(templatepp) -defines share/ace.templates/defines.ace -output $@ -javascript $<
 
 $(templates_bingo) $(templates_devgo): $(shell find share/templates/ -type f \! -name \*.go)
