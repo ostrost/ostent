@@ -49,21 +49,25 @@
   thead
     tr
       th
+      th.text-right Total
+      th.text-right Used
       th.text-right Free
       th.text-right Use%
-      th.text-right Used
-      th.text-right Total
+      th.full
   tbody
     {{if .Data.memory}}
       {{range $mem := .Data.memory.List}}
-        {{jsx  `{this.List(Data).map(function($mem) { return`}}
+        {{jsx  `{this.List(Data).map(function($mem, i) { return`}}
         | <tr {{Key "mem-rowby-kind" $mem.Kind}}>
         td {{$mem.Kind}}
+        td.text-right {{$mem.Total}}
+        td.text-right {{$mem.Used}}
         td.text-right {{$mem.Free}}
         | <td {{class}}="text-right bg-usepct"
         |  data-usepct={{$mem.UsePct}}>{{$mem.UsePct}}%</td>
-        td.text-right {{$mem.Used}}
-        td.text-right {{$mem.Total}}
+        td.full
+          div.height-1rem
+            {{jsx `{sl(i)}`}}
         | </tr>
         {{jsx `})}`}}
       {{end}}

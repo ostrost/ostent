@@ -1,7 +1,30 @@
-let $        = require('jquery'),
-    React    = require('react'),
-    ReactPRM = require('react-prm');
-let ReactPureRenderMixin = ReactPRM;
+let $          = require('jquery'),
+    React      = require('react'),
+    ReactPRM   = require('react-prm'),
+    SparkLines = require('react-sparklines');
+let ReactPureRenderMixin = ReactPRM,
+    Sparklines      = SparkLines.Sparklines,
+    SparklinesLine  = SparkLines.SparklinesLine,
+    SparklinesSpots = SparkLines.SparklinesSpots;
+
+var sparklines = React.createClass({
+  getInitialState: function() {return {data:[]};},
+  render: function() {
+    // margin={0}
+    // ref={this.props.ref}
+    return <Sparklines
+               data={this.state.data}
+               limit={20}
+               height={24}
+               width={240}
+      >
+        <SparklinesLine />
+        <SparklinesSpots spotColors={ {'-1': 'green', '1': 'red'} } />
+      </Sparklines>;
+  }
+});
+
+function sl(i) { return React.createElement(sparklines, {ref: i}); }
 
 let jsdefines = {};
 jsdefines.StateHandlingMixin = { // requires .Reduce method
@@ -13,6 +36,31 @@ jsdefines.StateHandlingMixin = { // requires .Reduce method
     if (state != null) {
       this.setState(state);
     }
+    if (this.props.SparkSubkey == null || this.List == null) {
+      return;
+    }
+    var rkeys = Object.keys(this.refs);
+    if (rkeys.length == 0) {
+      return;
+    }
+    var list = this.List(state);
+    rkeys.forEach(function(rk) {
+      var ref = this.refs[rk];
+      if (ref == undefined) {
+        return;
+      }
+      var newValue = +list[+rk][this.props.SparkSubkey];
+      var rstate = {};
+      if (ref.state != null) {
+        rstate.data = ref.state.data.slice(); // NB
+      }
+      if (rstate.data == null) {
+        rstate.data = [];
+      }
+      rstate.data.push(newValue);
+      rstate.data = rstate.data.slice(-60); // last 60 values
+      this.refs[rk].setState(rstate);
+    }, this);
   },
   StateFrom: function(data) {
     let state = this.Reduce(data);
@@ -47,10 +95,10 @@ jsdefines.{{$d.ShortName}} = React.createClass({
   {{if .NeedList}}{{/*
 */}}List: function(data) {
     let list;
-    if (data != null && data[{{$q}}] != null && (list = data[{{$q}}].List) != null) {
-      return list;
+    if (data == null || data[{{$q}}] == null || (list = data[{{$q}}].List) == null) {
+      return [];
     }
-    return [];
+    return list;
   },
   {{end}}{{/*
 */}}Reduce: function(data) {

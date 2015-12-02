@@ -81,8 +81,9 @@ function newwebsocket(onmessage) {
 };
 
 function render_define(el) {
+  var skey = $(el).attr('data-spark-subkey');
   var cl = jsdefines[$(el).attr('data-define')];
-  return ReactDOM.render(React.createElement(cl), el);
+  return ReactDOM.render(React.createElement(cl, {SparkSubkey: skey}), el);
 }
 
 function main() {

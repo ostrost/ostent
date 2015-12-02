@@ -60,7 +60,7 @@
         >{{$p := .Data.params}}<div class="row padding-top-056"
           ><div class="large-1 hr-border-top"
             ></div
-          ><div id="mem" class="column large-11 updates" data-define="define_panelmem"
+          ><div id="mem" class="column large-11 updates" data-define="define_panelmem" data-spark-subkey="UsePct"
             >{{template "defines::define_panelmem" .}}</div
           ></div
         ><div class="row padding-top-056"
@@ -394,27 +394,33 @@
         ><th
           ></th
         ><th class="text-right"
-          >Free</th
-        ><th class="text-right"
-          >Use%</th
+          >Total</th
         ><th class="text-right"
           >Used</th
         ><th class="text-right"
-          >Total</th
+          >Free</th
+        ><th class="text-right"
+          >Use%</th
+        ><th class="full"
+          ></th
         ></tr
       ></thead
     ><tbody
-      >{{if .Data.memory}}{{range $mem := .Data.memory.List}}{{jsx `{this.List(Data).map(function($mem) { return`}}<tr {{Key "mem-rowby-kind" $mem.Kind}}
+      >{{if .Data.memory}}{{range $mem := .Data.memory.List}}{{jsx `{this.List(Data).map(function($mem, i) { return`}}<tr {{Key "mem-rowby-kind" $mem.Kind}}
         ><td
           >{{$mem.Kind}}</td
+        ><td class="text-right"
+          >{{$mem.Total}}</td
+        ><td class="text-right"
+          >{{$mem.Used}}</td
         ><td class="text-right"
           >{{$mem.Free}}</td
         ><td {{class}}="text-right bg-usepct" data-usepct={{$mem.UsePct}}
           >{{$mem.UsePct}}%</td
-        ><td class="text-right"
-          >{{$mem.Used}}</td
-        ><td class="text-right"
-          >{{$mem.Total}}</td
+        ><td class="full"
+          ><div class="height-1rem"
+            >{{jsx `{sl(i)}`}}</div
+          ></td
         ></tr
       >{{jsx `})}`}}{{end}}{{end}}</tbody
     ></table

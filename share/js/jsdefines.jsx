@@ -1,7 +1,30 @@
-let $        = require('jquery'),
-    React    = require('react'),
-    ReactPRM = require('react-prm');
-let ReactPureRenderMixin = ReactPRM;
+let $          = require('jquery'),
+    React      = require('react'),
+    ReactPRM   = require('react-prm'),
+    SparkLines = require('react-sparklines');
+let ReactPureRenderMixin = ReactPRM,
+    Sparklines      = SparkLines.Sparklines,
+    SparklinesLine  = SparkLines.SparklinesLine,
+    SparklinesSpots = SparkLines.SparklinesSpots;
+
+var sparklines = React.createClass({
+  getInitialState: function() {return {data:[]};},
+  render: function() {
+    // margin={0}
+    // ref={this.props.ref}
+    return <Sparklines
+               data={this.state.data}
+               limit={20}
+               height={24}
+               width={240}
+      >
+        <SparklinesLine />
+        <SparklinesSpots spotColors={ {'-1': 'green', '1': 'red'} } />
+      </Sparklines>;
+  }
+});
+
+function sl(i) { return React.createElement(sparklines, {ref: i}); }
 
 let jsdefines = {};
 jsdefines.StateHandlingMixin = { // requires .Reduce method
@@ -13,6 +36,31 @@ jsdefines.StateHandlingMixin = { // requires .Reduce method
     if (state != null) {
       this.setState(state);
     }
+    if (this.props.SparkSubkey == null || this.List == null) {
+      return;
+    }
+    var rkeys = Object.keys(this.refs);
+    if (rkeys.length == 0) {
+      return;
+    }
+    var list = this.List(state);
+    rkeys.forEach(function(rk) {
+      var ref = this.refs[rk];
+      if (ref == undefined) {
+        return;
+      }
+      var newValue = +list[+rk][this.props.SparkSubkey];
+      var rstate = {};
+      if (ref.state != null) {
+        rstate.data = ref.state.data.slice(); // NB
+      }
+      if (rstate.data == null) {
+        rstate.data = [];
+      }
+      rstate.data.push(newValue);
+      rstate.data = rstate.data.slice(-60); // last 60 values
+      this.refs[rk].setState(rstate);
+    }, this);
   },
   StateFrom: function(data) {
     let state = this.Reduce(data);
@@ -63,10 +111,10 @@ jsdefines.define_panelcpu = React.createClass({
   mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
   List: function(data) {
     let list;
-    if (data != null && data["cpu"] != null && (list = data["cpu"].List) != null) {
-      return list;
+    if (data == null || data["cpu"] == null || (list = data["cpu"].List) == null) {
+      return [];
     }
-    return [];
+    return list;
   },
   Reduce: function(data) {
     return {
@@ -154,10 +202,10 @@ jsdefines.define_paneldf = React.createClass({
   mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
   List: function(data) {
     let list;
-    if (data != null && data["diskUsage"] != null && (list = data["diskUsage"].List) != null) {
-      return list;
+    if (data == null || data["diskUsage"] == null || (list = data["diskUsage"].List) == null) {
+      return [];
     }
-    return [];
+    return list;
   },
   Reduce: function(data) {
     return {
@@ -277,10 +325,10 @@ jsdefines.define_panelif = React.createClass({
   mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
   List: function(data) {
     let list;
-    if (data != null && data["ifaddrs"] != null && (list = data["ifaddrs"].List) != null) {
-      return list;
+    if (data == null || data["ifaddrs"] == null || (list = data["ifaddrs"].List) == null) {
+      return [];
     }
-    return [];
+    return list;
   },
   Reduce: function(data) {
     return {
@@ -410,10 +458,10 @@ jsdefines.define_panelmem = React.createClass({
   mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
   List: function(data) {
     let list;
-    if (data != null && data["memory"] != null && (list = data["memory"].List) != null) {
-      return list;
+    if (data == null || data["memory"] == null || (list = data["memory"].List) == null) {
+      return [];
     }
-    return [];
+    return list;
   },
   Reduce: function(data) {
     return {
@@ -464,27 +512,33 @@ jsdefines.define_panelmem = React.createClass({
         ><th
           ></th
         ><th className="text-right"
-          >Free</th
-        ><th className="text-right"
-          >Use%</th
+          >Total</th
         ><th className="text-right"
           >Used</th
         ><th className="text-right"
-          >Total</th
+          >Free</th
+        ><th className="text-right"
+          >Use%</th
+        ><th className="full"
+          ></th
         ></tr
       ></thead
     ><tbody
-      >{this.List(Data).map(function($mem) { return<tr  key={"mem-rowby-kind-"+$mem.Kind}
+      >{this.List(Data).map(function($mem, i) { return<tr  key={"mem-rowby-kind-"+$mem.Kind}
         ><td
           >{$mem.Kind}</td
+        ><td className="text-right"
+          >{$mem.Total}</td
+        ><td className="text-right"
+          >{$mem.Used}</td
         ><td className="text-right"
           >{$mem.Free}</td
         ><td className="text-right bg-usepct" data-usepct={$mem.UsePct}
           >{$mem.UsePct}%</td
-        ><td className="text-right"
-          >{$mem.Used}</td
-        ><td className="text-right"
-          >{$mem.Total}</td
+        ><td className="full"
+          ><div className="height-1rem"
+            >{sl(i)}</div
+          ></td
         ></tr
       >})}</tbody
     ></table
@@ -497,10 +551,10 @@ jsdefines.define_panelps = React.createClass({
   mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
   List: function(data) {
     let list;
-    if (data != null && data["procs"] != null && (list = data["procs"].List) != null) {
-      return list;
+    if (data == null || data["procs"] == null || (list = data["procs"].List) == null) {
+      return [];
     }
-    return [];
+    return list;
   },
   Reduce: function(data) {
     return {
