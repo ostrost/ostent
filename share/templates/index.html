@@ -161,7 +161,7 @@
         ></li
       ></ul
     ></div
-  ><table {{ClassNonZero $p.CPUn "hover scroll-x margin-bottom-0" "hide"}}
+  ><table {{ClassNonZero $p.CPUn "hover margin-bottom-0" "hide"}}
     ><thead
       ><tr
         ><th
@@ -224,7 +224,7 @@
         ></li
       ></ul
     ></div
-  ><table {{ClassNonZero $p.Dfn "hover scroll-x margin-bottom-0" "hide"}}
+  ><table {{ClassNonZero $p.Dfn "hover margin-bottom-0" "hide"}}
     ><thead
       ><tr class="text-nowrap"
         >{{$r := "text-right"}}{{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total" $r}}</tr
@@ -283,7 +283,7 @@
         ></li
       ></ul
     ></div
-  ><table {{ClassNonZero $p.Ifn "hover scroll-x margin-bottom-0" "hide"}}
+  ><table {{ClassNonZero $p.Ifn "hover margin-bottom-0" "hide"}}
     ><thead
       ><tr
         ><th
@@ -388,7 +388,7 @@
         ></li
       ></ul
     ></div
-  ><table {{ClassNonZero $p.Memn "hover scroll-x margin-bottom-0" "hide"}}
+  ><table {{ClassNonZero $p.Memn "hover margin-bottom-0" "hide"}}
     ><thead
       ><tr
         ><th
@@ -401,7 +401,7 @@
           >Free</th
         ><th class="text-right"
           >Use%</th
-        ><th class="full"
+        ><th
           ></th
         ></tr
       ></thead
@@ -418,9 +418,7 @@
         ><td {{class}}="text-right bg-usepct" data-usepct={{$mem.UsePct}}
           >{{$mem.UsePct}}%</td
         ><td class="full"
-          ><div class="height-1rem"
-            >{{jsx `{sl(i)}`}}</div
-          ></td
+          >{{jsx `{sl(i)}`}}</td
         ></tr
       >{{jsx `})}`}}{{end}}{{end}}</tbody
     ></table
@@ -453,7 +451,7 @@
         ></li
       ></ul
     ></div
-  ><table {{ClassNonZero $p.Psn "hover scroll-x margin-bottom-0" "hide"}}
+  ><table {{ClassNonZero $p.Psn "hover margin-bottom-0" "hide"}}
     ><thead
       ><tr class="text-nowrap"
         >{{$r := "text-right"}}{{$c := "text-center"}}{{template "defines::thvlink" Vlink $p $p.Psk 1 "PID" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 2 "UID" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 3 "USER" ""}}{{template "defines::thvlink" Vlink $p $p.Psk 4 "PR" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 5 "NI" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 6 "VIRT" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 7 "RES" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 8 "TIME" $c}}{{template "defines::thvlink" Vlink $p $p.Psk 9 "COMMAND" ""}}</tr

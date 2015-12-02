@@ -2683,10 +2683,6 @@ table.hover tr:nth-of-type(even):hover {
 .tabs-border, .hr-border-top {
   border-top: 1px solid #cacaca; }
 
-table.scroll-x {
-  display: block;
-  overflow-x: auto; }
-
 .full {
   width: 100%; }
 

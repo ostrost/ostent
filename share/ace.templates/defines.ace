@@ -45,7 +45,7 @@
 = content define_panelmem
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Memn` `$p.Memd` "Memory"]]
-  | <table {{ClassNonZero $p.Memn "hover scroll-x margin-bottom-0" "hide"}}>
+  | <table {{ClassNonZero $p.Memn "hover margin-bottom-0" "hide"}}>
   thead
     tr
       th
@@ -53,7 +53,7 @@
       th.text-right Used
       th.text-right Free
       th.text-right Use%
-      th.full
+      th
   tbody
     {{if .Data.memory}}
       {{range $mem := .Data.memory.List}}
@@ -66,8 +66,7 @@
         | <td {{class}}="text-right bg-usepct"
         |  data-usepct={{$mem.UsePct}}>{{$mem.UsePct}}%</td>
         td.full
-          div.height-1rem
-            {{jsx `{sl(i)}`}}
+          {{jsx `{sl(i)}`}}
         | </tr>
         {{jsx `})}`}}
       {{end}}
@@ -77,7 +76,7 @@
 = content define_paneldf
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Dfn` `$p.Dfd` "Disk usage"]]
-  | <table {{ClassNonZero $p.Dfn "hover scroll-x margin-bottom-0" "hide"}}>
+  | <table {{ClassNonZero $p.Dfn "hover margin-bottom-0" "hide"}}>
   thead
     tr.text-nowrap
       {{$r := "text-right"}}
@@ -119,7 +118,7 @@
 = content define_panelcpu
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.CPUn` `$p.CPUd` "CPU"]]
-  | <table {{ClassNonZero $p.CPUn "hover scroll-x margin-bottom-0" "hide"}}>
+  | <table {{ClassNonZero $p.CPUn "hover margin-bottom-0" "hide"}}>
   thead
     tr
       th
@@ -151,7 +150,7 @@
 = content define_panelif
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Ifn` `$p.Ifd` "Interfaces"]]
-  | <table {{ClassNonZero $p.Ifn "hover scroll-x margin-bottom-0" "hide"}}>
+  | <table {{ClassNonZero $p.Ifn "hover margin-bottom-0" "hide"}}>
   thead
     tr
       th Interface
@@ -215,7 +214,7 @@
 = content define_panelps
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Psn` `$p.Psd` "Processes"]]
-  | <table {{ClassNonZero $p.Psn "hover scroll-x margin-bottom-0" "hide"}}>
+  | <table {{ClassNonZero $p.Psn "hover margin-bottom-0" "hide"}}>
   thead
     tr.text-nowrap
       {{$r := "text-right"}}

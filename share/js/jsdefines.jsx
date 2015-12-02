@@ -1,5 +1,6 @@
 let $          = require('jquery'),
     React      = require('react'),
+    ReactDOM   = require('react-dom'),
     ReactPRM   = require('react-prm'),
     SparkLines = require('react-sparklines');
 let ReactPureRenderMixin = ReactPRM,
@@ -8,19 +9,26 @@ let ReactPureRenderMixin = ReactPRM,
     SparklinesSpots = SparkLines.SparklinesSpots;
 
 var sparklines = React.createClass({
-  getInitialState: function() {return {data:[]};},
+  mixins: [ReactPureRenderMixin],
+  getInitialState: function() {return {data:[], limit: 120, width: 240};},
+  componentDidUpdate: function (_, prevState) {
+    var root = ReactDOM.findDOMNode(this.refs.root);
+    if (root != null && prevState.width != root.offsetWidth) {
+      this.setState({width: root.offsetWidth, limit: Math.round(root.offsetWidth/2)});
+    }
+  },
   render: function() {
-    // margin={0}
-    // ref={this.props.ref}
-    return <Sparklines
+    return <div className="height-1rem" ref="root"
+      ><Sparklines
                data={this.state.data}
-               limit={20}
+               limit={this.state.limit}
+               width={this.state.width}
                height={24}
-               width={240}
+               // margin={0} will make spots overlap boundaries
       >
         <SparklinesLine />
         <SparklinesSpots spotColors={ {'-1': 'green', '1': 'red'} } />
-      </Sparklines>;
+      </Sparklines></div>;
   }
 });
 
@@ -45,20 +53,23 @@ jsdefines.StateHandlingMixin = { // requires .Reduce method
     }
     var list = this.List(state);
     rkeys.forEach(function(rk) {
-      var ref = this.refs[rk];
-      if (ref == undefined) {
+      var ref = this.refs[rk], lrow = list[+rk];
+      if (ref == null || lrow == null) {
         return;
       }
-      var newValue = +list[+rk][this.props.SparkSubkey];
-      var rstate = {};
+      var newValue = +lrow[this.props.SparkSubkey];
+      var rstate = {}, limit;
       if (ref.state != null) {
         rstate.data = ref.state.data.slice(); // NB
+        limit = ref.state.limit;
       }
       if (rstate.data == null) {
         rstate.data = [];
       }
       rstate.data.push(newValue);
-      rstate.data = rstate.data.slice(-60); // last 60 values
+      if (limit != null && rstate.data.length > limit) {
+        rstate.data = rstate.data.slice(-limit);
+      }
       this.refs[rk].setState(rstate);
     }, this);
   },
@@ -159,7 +170,7 @@ jsdefines.define_panelcpu = React.createClass({
         ></li
       ></ul
     ></div
-  ><table  className={Data.params.CPUn.Absolute != 0 ? "hover scroll-x margin-bottom-0" : "hide"}
+  ><table  className={Data.params.CPUn.Absolute != 0 ? "hover margin-bottom-0" : "hide"}
     ><thead
       ><tr
         ><th
@@ -250,7 +261,7 @@ jsdefines.define_paneldf = React.createClass({
         ></li
       ></ul
     ></div
-  ><table  className={Data.params.Dfn.Absolute != 0 ? "hover scroll-x margin-bottom-0" : "hide"}
+  ><table  className={Data.params.Dfn.Absolute != 0 ? "hover margin-bottom-0" : "hide"}
     ><thead
       ><tr className="text-nowrap"
         ><th className="header "
@@ -373,7 +384,7 @@ jsdefines.define_panelif = React.createClass({
         ></li
       ></ul
     ></div
-  ><table  className={Data.params.Ifn.Absolute != 0 ? "hover scroll-x margin-bottom-0" : "hide"}
+  ><table  className={Data.params.Ifn.Absolute != 0 ? "hover margin-bottom-0" : "hide"}
     ><thead
       ><tr
         ><th
@@ -506,7 +517,7 @@ jsdefines.define_panelmem = React.createClass({
         ></li
       ></ul
     ></div
-  ><table  className={Data.params.Memn.Absolute != 0 ? "hover scroll-x margin-bottom-0" : "hide"}
+  ><table  className={Data.params.Memn.Absolute != 0 ? "hover margin-bottom-0" : "hide"}
     ><thead
       ><tr
         ><th
@@ -519,7 +530,7 @@ jsdefines.define_panelmem = React.createClass({
           >Free</th
         ><th className="text-right"
           >Use%</th
-        ><th className="full"
+        ><th
           ></th
         ></tr
       ></thead
@@ -536,9 +547,7 @@ jsdefines.define_panelmem = React.createClass({
         ><td className="text-right bg-usepct" data-usepct={$mem.UsePct}
           >{$mem.UsePct}%</td
         ><td className="full"
-          ><div className="height-1rem"
-            >{sl(i)}</div
-          ></td
+          >{sl(i)}</td
         ></tr
       >})}</tbody
     ></table
@@ -599,7 +608,7 @@ jsdefines.define_panelps = React.createClass({
         ></li
       ></ul
     ></div
-  ><table  className={Data.params.Psn.Absolute != 0 ? "hover scroll-x margin-bottom-0" : "hide"}
+  ><table  className={Data.params.Psn.Absolute != 0 ? "hover margin-bottom-0" : "hide"}
     ><thead
       ><tr className="text-nowrap"
         ><th className="header text-right"

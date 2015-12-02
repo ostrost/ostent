@@ -28993,6 +28993,7 @@
 
 	var $ = __webpack_require__(1),
 	    React = __webpack_require__(2),
+	    ReactDOM = __webpack_require__(4),
 	    ReactPRM = __webpack_require__(160),
 	    SparkLines = __webpack_require__(162);
 	var ReactPureRenderMixin = ReactPRM,
@@ -29005,20 +29006,30 @@
 	var sparklines = React.createClass({
 	  displayName: 'sparklines',
 
+	  mixins: [ReactPureRenderMixin],
 	  getInitialState: function getInitialState() {
-	    return { data: [] };
+	    return { data: [], limit: 120, width: 240 };
+	  },
+	  componentDidUpdate: function componentDidUpdate(_, prevState) {
+	    var root = ReactDOM.findDOMNode(this.refs.root);
+	    if (root != null && prevState.width != root.offsetWidth) {
+	      this.setState({ width: root.offsetWidth, limit: Math.round(root.offsetWidth / 2) });
+	    }
 	  },
 	  render: function render() {
-	    // margin={0}
-	    // ref={this.props.ref}
-	    return _jsx(Sparklines, {
-	      data: this.state.data,
-	      limit: 20,
-	      height: 24,
-	      width: 240
-	    }, void 0, _ref, _jsx(SparklinesSpots, {
-	      spotColors: { '-1': 'green', '1': 'red' }
-	    }));
+	    return React.createElement(
+	      'div',
+	      { className: 'height-1rem', ref: 'root'
+	      },
+	      _jsx(Sparklines, {
+	        data: this.state.data,
+	        limit: this.state.limit,
+	        width: this.state.width,
+	        height: 24
+	      }, void 0, _ref, _jsx(SparklinesSpots, {
+	        spotColors: { '-1': 'green', '1': 'red' }
+	      }))
+	    );
 	  }
 	});
 
@@ -29045,20 +29056,25 @@
 	    }
 	    var list = this.List(state);
 	    rkeys.forEach(function (rk) {
-	      var ref = this.refs[rk];
-	      if (ref == undefined) {
+	      var ref = this.refs[rk],
+	          lrow = list[+rk];
+	      if (ref == null || lrow == null) {
 	        return;
 	      }
-	      var newValue = +list[+rk][this.props.SparkSubkey];
-	      var rstate = {};
+	      var newValue = +lrow[this.props.SparkSubkey];
+	      var rstate = {},
+	          limit;
 	      if (ref.state != null) {
 	        rstate.data = ref.state.data.slice(); // NB
+	        limit = ref.state.limit;
 	      }
 	      if (rstate.data == null) {
 	        rstate.data = [];
 	      }
 	      rstate.data.push(newValue);
-	      rstate.data = rstate.data.slice(-60); // last 60 values
+	      if (limit != null && rstate.data.length > limit) {
+	        rstate.data = rstate.data.slice(-limit);
+	      }
 	      this.refs[rk].setState(rstate);
 	    }, this);
 	  },
@@ -29175,7 +29191,7 @@
 	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : ""),
 	      onClick: this.handleClick
 	    }, void 0, Data.params.Nlinks.CPUn.More.Text, ' +'))))), _jsx('table', {
-	      className: Data.params.CPUn.Absolute != 0 ? "hover scroll-x margin-bottom-0" : "hide"
+	      className: Data.params.CPUn.Absolute != 0 ? "hover margin-bottom-0" : "hide"
 	    }, void 0, _jsx('thead', {}, void 0, _jsx('tr', {}, void 0, _ref2, _jsx('th', {
 	      className: 'text-right'
 	    }, void 0, 'User%'), _jsx('th', {
@@ -29268,7 +29284,7 @@
 	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : ""),
 	      onClick: this.handleClick
 	    }, void 0, Data.params.Nlinks.Dfn.More.Text, ' +'))))), _jsx('table', {
-	      className: Data.params.Dfn.Absolute != 0 ? "hover scroll-x margin-bottom-0" : "hide"
+	      className: Data.params.Dfn.Absolute != 0 ? "hover margin-bottom-0" : "hide"
 	    }, void 0, _jsx('thead', {}, void 0, _jsx('tr', {
 	      className: 'text-nowrap'
 	    }, void 0, _jsx('th', {
@@ -29414,7 +29430,7 @@
 	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : ""),
 	      onClick: this.handleClick
 	    }, void 0, Data.params.Nlinks.Ifn.More.Text, ' +'))))), _jsx('table', {
-	      className: Data.params.Ifn.Absolute != 0 ? "hover scroll-x margin-bottom-0" : "hide"
+	      className: Data.params.Ifn.Absolute != 0 ? "hover margin-bottom-0" : "hide"
 	    }, void 0, _jsx('thead', {}, void 0, _jsx('tr', {}, void 0, _jsx('th', {}, void 0, 'Interface'), _jsx('th', {
 	      className: 'text-right'
 	    }, void 0, 'IP'), _jsx('th', {
@@ -29491,9 +29507,7 @@
 
 	var _ref3 = _jsx('th', {});
 
-	var _ref4 = _jsx('th', {
-	  className: 'full'
-	});
+	var _ref4 = _jsx('th', {});
 
 	jsdefines.define_panelmem = React.createClass({
 	  displayName: 'define_panelmem',
@@ -29559,7 +29573,7 @@
 	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : ""),
 	      onClick: this.handleClick
 	    }, void 0, Data.params.Nlinks.Memn.More.Text, ' +'))))), _jsx('table', {
-	      className: Data.params.Memn.Absolute != 0 ? "hover scroll-x margin-bottom-0" : "hide"
+	      className: Data.params.Memn.Absolute != 0 ? "hover margin-bottom-0" : "hide"
 	    }, void 0, _jsx('thead', {}, void 0, _jsx('tr', {}, void 0, _ref3, _jsx('th', {
 	      className: 'text-right'
 	    }, void 0, 'Total'), _jsx('th', {
@@ -29580,9 +29594,7 @@
 	        'data-usepct': $mem.UsePct
 	      }, void 0, $mem.UsePct, '%'), _jsx('td', {
 	        className: 'full'
-	      }, void 0, _jsx('div', {
-	        className: 'height-1rem'
-	      }, void 0, sl(i))));
+	      }, void 0, sl(i)));
 	    }))));
 	  }
 	});
@@ -29651,7 +29663,7 @@
 	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : ""),
 	      onClick: this.handleClick
 	    }, void 0, Data.params.Nlinks.Psn.More.Text, ' +'))))), _jsx('table', {
-	      className: Data.params.Psn.Absolute != 0 ? "hover scroll-x margin-bottom-0" : "hide"
+	      className: Data.params.Psn.Absolute != 0 ? "hover margin-bottom-0" : "hide"
 	    }, void 0, _jsx('thead', {}, void 0, _jsx('tr', {
 	      className: 'text-nowrap'
 	    }, void 0, _jsx('th', {
