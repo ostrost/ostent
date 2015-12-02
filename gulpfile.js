@@ -1,13 +1,13 @@
 // required Promises https://github.com/postcss/postcss-nested/issues/30
 require('es6-promise').polyfill();
 
-var path              = require('path'),
-    webpack           = require('webpack'),
-    _                 = require('lodash'),
+var ExtractTextPlugin = require('extract-text-webpack-plugin'),
     gulp              = require('gulp'),
     gutil             = require('gulp-util'),
-    argv              = require('yargs').argv,
-    ExtractTextPlugin = require('extract-text-webpack-plugin');
+    _                 = require('lodash'),
+    path              = require('path'),
+    webpack           = require('webpack'),
+    argv              = require('yargs').argv;
 
 var bower_components = path.join(__dirname, './bower_components'),
     node_modules     = path.join(__dirname, './node_modules');
@@ -59,10 +59,14 @@ gulp.task('wp', [], function(callback) {
         process.env.NODE_ENV = 'production';
     }
     webpack(wparg).run(function(err, stats) {
-        if(err) {
+        if (err != null) {
             throw new gutil.PluginError('webpack', err);
         }
-        gutil.log('[webpack]', stats.toString({/* output options */}));
+        var statsString = stats.toString({chunks: false});
+        if (stats.hasErrors() == true) {
+            throw new gutil.PluginError('webpack', statsString);
+        }
+        gutil.log('[webpack]', statsString);
         callback();
     });
 });
