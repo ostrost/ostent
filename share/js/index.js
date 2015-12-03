@@ -1,5 +1,4 @@
-var $         = require('jquery'),
-    React     = require('react'),
+var React     = require('react'),
     ReactDOM  = require('react-dom'),
     jsdefines = require('./jsdefines.jsx');
 
@@ -18,7 +17,7 @@ function neweventsource(onmessage) {
   init = function() {
     conn = new EventSource('/index.sse' + location.search);
     conn.onopen = function() {
-      $(window).bind('popstate', (function() { sendSearch(location.search); }));
+      window.addEventListener('popstate', function() { sendSearch(location.search); });
     };
     var again = function(e) {
       if (!e.wasClean) {
@@ -62,7 +61,7 @@ function newwebsocket(onmessage) {
     conn = new WebSocket('ws://' + hostport + '/index.ws');
     conn.onopen = function() {
       sendSearch(location.search);
-      $(window).bind('popstate', (function() { sendSearch(location.search); }));
+      window.addEventListener('popstate', function() { sendSearch(location.search); });
     };
     var again = function(e) {
       if (!e.wasClean) {
@@ -81,9 +80,8 @@ function newwebsocket(onmessage) {
 };
 
 function render_define(el) {
-  var skey = $(el).attr('data-spark-subkey');
-  var cl = jsdefines[$(el).attr('data-define')];
-  return ReactDOM.render(React.createElement(cl, {SparkSubkey: skey}), el);
+  var cl = jsdefines[el.getAttribute('data-define')];
+  return ReactDOM.render(React.createElement(cl), el);
 }
 
 function main() {
@@ -94,7 +92,7 @@ function main() {
   }
 
   var els = [];
-  for (var i = 0, sel = $('.updates'); i < sel.length; i++) {
+  for (var i = 0, sel = document.querySelectorAll('.updates'); i < sel.length; i++) {
     els.push(render_define(sel[i]));
   }
 

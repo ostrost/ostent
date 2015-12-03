@@ -60,7 +60,7 @@
         >{{$p := .Data.params}}<div class="row padding-top-056"
           ><div class="large-1 hr-border-top"
             ></div
-          ><div id="mem" class="column large-11 updates" data-define="define_panelmem" data-spark-subkey="UsePct"
+          ><div id="mem" class="column large-11 updates" data-define="define_panelmem"
             >{{template "defines::define_panelmem" .}}</div
           ></div
         ><div class="row padding-top-056"
@@ -174,10 +174,12 @@
           >Wait%</th
         ><th class="text-right"
           >Idle%</th
+        ><th
+          ></th
         ></tr
       ></thead
     ><tbody
-      >{{if .Data.cpu}}{{range $cpu := .Data.cpu.List}}{{jsx `{this.List(Data).map(function($cpu) { return`}}<tr {{Key "cpu-rowby-N" $cpu.N}}
+      >{{if .Data.cpu}}{{range $cpu := .Data.cpu.List}}{{jsx `{this.List(Data).map(function($cpu, i) { return`}}<tr {{Key "cpu-rowby-N" $cpu.N}}
         ><td class="text-right text-nowrap"
           >{{$cpu.N}}</td
         ><td {{class}}="text-right bg-usepct"
@@ -192,6 +194,8 @@
         ><td {{class}}="text-right bg-usepct-inverse"
   data-usepct={{$cpu.IdlePct}}
           >{{$cpu.IdlePct}}%</td
+        ><td class="full"
+          >{{jsx `{jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}`}}</td
         ></tr
       >{{jsx `})}`}}{{end}}{{end}}</tbody
     ></table
@@ -227,14 +231,24 @@
   ><table {{ClassNonZero $p.Dfn "hover margin-bottom-0" "hide"}}
     ><thead
       ><tr class="text-nowrap"
-        >{{$r := "text-right"}}{{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total" $r}}</tr
+        >{{$r := "text-right"}}{{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%" $r}}<th
+          ></th
+        ></tr
       ></thead
     ><tbody
-      >{{if .Data.diskUsage}}{{range $df := .Data.diskUsage.List}}{{jsx `{this.List(Data).map(function($df) { return`}}<tr {{Key "df-rowby-dirname" $df.DirName}}
+      >{{if .Data.diskUsage}}{{range $df := .Data.diskUsage.List}}{{jsx `{this.List(Data).map(function($df, i) { return`}}<tr {{Key "df-rowby-dirname" $df.DirName}}
         >  <td {{class}}="text-nowrap"
           >{{$df.DevName}}</td
         >  <td {{class}}="text-nowrap"
           >{{$df.DirName}}</td
+        ><td class="text-right text-nowrap"
+          ><span class="mutext" title="Inodes total"
+            >{{$df.Inodes}}</span
+          > {{$df.Total}}</td
+        ><td class="text-right text-nowrap"
+          ><span class="mutext" title="Inodes used"
+            >{{$df.Iused}}</span
+          > {{$df.Used}}</td
         ><td class="text-right text-nowrap"
           ><span class="mutext" title="Inodes free"
             >{{$df.Ifree}}</span
@@ -243,14 +257,8 @@
           ><span class="mutext" title="Inodes use%"
             >{{$df.IusePct}}%</span
           > {{$df.UsePct}}%</td
-        ><td class="text-right text-nowrap"
-          ><span class="mutext" title="Inodes used"
-            >{{$df.Iused}}</span
-          > {{$df.Used}}</td
-        ><td class="text-right text-nowrap"
-          ><span class="mutext" title="Inodes total"
-            >{{$df.Inodes}}</span
-          > {{$df.Total}}</td
+        ><td class="full"
+          >{{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}</td
         ></tr
       >{{jsx `})}`}}{{end}}{{end}}</tbody
     ></table
@@ -418,7 +426,7 @@
         ><td {{class}}="text-right bg-usepct" data-usepct={{$mem.UsePct}}
           >{{$mem.UsePct}}%</td
         ><td class="full"
-          >{{jsx `{sl(i)}`}}</td
+          >{{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}</td
         ></tr
       >{{jsx `})}`}}{{end}}{{end}}</tbody
     ></table

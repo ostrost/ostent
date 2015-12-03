@@ -50,7 +50,7 @@ html
 
         div.row.padding-top-056
           div.large-1.hr-border-top
-          div.column.large-11.updates#mem data-define=define_panelmem data-spark-subkey=UsePct
+          div.column.large-11.updates#mem data-define=define_panelmem
             {{template "defines::define_panelmem" .}}
 
         div.row.padding-top-056

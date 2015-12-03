@@ -1,40 +1,49 @@
-let $          = require('jquery'),
-    React      = require('react'),
+let React      = require('react'),
     ReactDOM   = require('react-dom'),
     ReactPRM   = require('react-prm'),
     SparkLines = require('react-sparklines');
-let ReactPureRenderMixin = ReactPRM,
-    Sparklines      = SparkLines.Sparklines,
-    SparklinesLine  = SparkLines.SparklinesLine,
-    SparklinesSpots = SparkLines.SparklinesSpots;
+let ReactPureRenderMixin = ReactPRM;
 
-var sparklines = React.createClass({
+var Sparkline = React.createClass({
   mixins: [ReactPureRenderMixin],
-  getInitialState: function() {return {data:[], limit: 120, width: 240};},
-  componentDidUpdate: function (_, prevState) {
+  getInitialState: function() { return {data: [], limit: 90, width: 180}; },
+  componentDidUpdate: function(_, prevState) {
     var root = ReactDOM.findDOMNode(this.refs.root);
     if (root != null && prevState.width != root.offsetWidth) {
       this.setState({width: root.offsetWidth, limit: Math.round(root.offsetWidth/2)});
     }
   },
+  NewStateFromRow: function(row) {
+    var limit, data = [];
+    if (this.state != null) {
+      limit = this.state.limit;
+      data  = this.state.data.slice(); // NB .slice https://github.com/borisyankov/react-sparklines/issues/27
+    }
+    data.push(+row[this.props.col]);
+    if (limit != null && data.length > limit) {
+      data = data.slice(-limit);
+    }
+    this.setState({data: data});
+  },
   render: function() {
-    return <div className="height-1rem" ref="root"
-      ><Sparklines
+    var spotsProps = {spotColors: {'-1': 'green', '1': 'red'}}; // reverse default
+    if (this.props.defaultSpots) { delete spotsProps.spotColors; } // back to default
+    return <div className="height-1rem" ref="root">
+      <SparkLines.Sparklines
                data={this.state.data}
                limit={this.state.limit}
                width={this.state.width}
-               height={24}
-               // margin={0} will make spots overlap boundaries
-      >
-        <SparklinesLine />
-        <SparklinesSpots spotColors={ {'-1': 'green', '1': 'red'} } />
-      </Sparklines></div>;
+               height={24}>
+        <SparkLines.SparklinesLine />
+        <SparkLines.SparklinesSpots {...spotsProps} />
+      </SparkLines.Sparklines>
+    </div>;
   }
 });
 
-function sl(i) { return React.createElement(sparklines, {ref: i}); }
-
 let jsdefines = {};
+jsdefines.Sparkline = function(props) { return <Sparkline {...props} />; }
+
 jsdefines.StateHandlingMixin = { // requires .Reduce method
   getInitialState: function() {
     return this.StateFrom(Data); // global Data
@@ -44,7 +53,7 @@ jsdefines.StateHandlingMixin = { // requires .Reduce method
     if (state != null) {
       this.setState(state);
     }
-    if (this.props.SparkSubkey == null || this.List == null) {
+    if (this.List == null) {
       return;
     }
     var rkeys = Object.keys(this.refs);
@@ -53,24 +62,11 @@ jsdefines.StateHandlingMixin = { // requires .Reduce method
     }
     var list = this.List(state);
     rkeys.forEach(function(rk) {
-      var ref = this.refs[rk], lrow = list[+rk];
-      if (ref == null || lrow == null) {
+      var ref = this.refs[rk], row = list[+rk];
+      if (ref == null || row == null) {
         return;
       }
-      var newValue = +lrow[this.props.SparkSubkey];
-      var rstate = {}, limit;
-      if (ref.state != null) {
-        rstate.data = ref.state.data.slice(); // NB
-        limit = ref.state.limit;
-      }
-      if (rstate.data == null) {
-        rstate.data = [];
-      }
-      rstate.data.push(newValue);
-      if (limit != null && rstate.data.length > limit) {
-        rstate.data = rstate.data.slice(-limit);
-      }
-      this.refs[rk].setState(rstate);
+      this.refs[rk].NewStateFromRow(row);
     }, this);
   },
   StateFrom: function(data) {
@@ -89,7 +85,7 @@ jsdefines.HandlerMixin = {
   handleClick: function(e) {
     let href = e.target.getAttribute('href');
     if (href == null) {
-      href = $(e.target).parent().get(0).getAttribute('href');
+      href = e.target.parentNode.getAttribute('href');
     }
     history.pushState({}, '', href);
     window.updates.sendSearch(href);
@@ -183,10 +179,12 @@ jsdefines.define_panelcpu = React.createClass({
           >Wait%</th
         ><th className="text-right"
           >Idle%</th
+        ><th
+          ></th
         ></tr
       ></thead
     ><tbody
-      >{this.List(Data).map(function($cpu) { return<tr  key={"cpu-rowby-N-"+$cpu.N}
+      >{this.List(Data).map(function($cpu, i) { return<tr  key={"cpu-rowby-N-"+$cpu.N}
         ><td className="text-right text-nowrap"
           >{$cpu.N}</td
         ><td className="text-right bg-usepct"
@@ -201,6 +199,8 @@ jsdefines.define_panelcpu = React.createClass({
         ><td className="text-right bg-usepct-inverse"
   data-usepct={$cpu.IdlePct}
           >{$cpu.IdlePct}%</td
+        ><td className="full"
+          >{jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}</td
         ></tr
       >})}</tbody
     ></table
@@ -277,6 +277,18 @@ jsdefines.define_paneldf = React.createClass({
     ></a
   ></th
 ><th className="header text-right"
+  ><a href={Data.params.Vlinks.Dfk[6-1].LinkHref} className={Data.params.Vlinks.Dfk[6-1].LinkClass} onClick={this.handleClick}  
+    >Total<span className={Data.params.Vlinks.Dfk[6-1].CaretClass}
+      ></span
+    ></a
+  ></th
+><th className="header text-right"
+  ><a href={Data.params.Vlinks.Dfk[5-1].LinkHref} className={Data.params.Vlinks.Dfk[5-1].LinkClass} onClick={this.handleClick}  
+    >Used<span className={Data.params.Vlinks.Dfk[5-1].CaretClass}
+      ></span
+    ></a
+  ></th
+><th className="header text-right"
   ><a href={Data.params.Vlinks.Dfk[3-1].LinkHref} className={Data.params.Vlinks.Dfk[3-1].LinkClass} onClick={this.handleClick}  
     >Avail<span className={Data.params.Vlinks.Dfk[3-1].CaretClass}
       ></span
@@ -288,26 +300,24 @@ jsdefines.define_paneldf = React.createClass({
       ></span
     ></a
   ></th
-><th className="header text-right"
-  ><a href={Data.params.Vlinks.Dfk[5-1].LinkHref} className={Data.params.Vlinks.Dfk[5-1].LinkClass} onClick={this.handleClick}  
-    >Used<span className={Data.params.Vlinks.Dfk[5-1].CaretClass}
-      ></span
-    ></a
-  ></th
-><th className="header text-right"
-  ><a href={Data.params.Vlinks.Dfk[6-1].LinkHref} className={Data.params.Vlinks.Dfk[6-1].LinkClass} onClick={this.handleClick}  
-    >Total<span className={Data.params.Vlinks.Dfk[6-1].CaretClass}
-      ></span
-    ></a
-  ></th
-></tr
+><th
+          ></th
+        ></tr
       ></thead
     ><tbody
-      >{this.List(Data).map(function($df) { return<tr  key={"df-rowby-dirname-"+$df.DirName}
+      >{this.List(Data).map(function($df, i) { return<tr  key={"df-rowby-dirname-"+$df.DirName}
         >  <td className="text-nowrap"
           >{$df.DevName}</td
         >  <td className="text-nowrap"
           >{$df.DirName}</td
+        ><td className="text-right text-nowrap"
+          ><span className="mutext" title="Inodes total"
+            >{$df.Inodes}</span
+          > {$df.Total}</td
+        ><td className="text-right text-nowrap"
+          ><span className="mutext" title="Inodes used"
+            >{$df.Iused}</span
+          > {$df.Used}</td
         ><td className="text-right text-nowrap"
           ><span className="mutext" title="Inodes free"
             >{$df.Ifree}</span
@@ -316,14 +326,8 @@ jsdefines.define_paneldf = React.createClass({
           ><span className="mutext" title="Inodes use%"
             >{$df.IusePct}%</span
           > {$df.UsePct}%</td
-        ><td className="text-right text-nowrap"
-          ><span className="mutext" title="Inodes used"
-            >{$df.Iused}</span
-          > {$df.Used}</td
-        ><td className="text-right text-nowrap"
-          ><span className="mutext" title="Inodes total"
-            >{$df.Inodes}</span
-          > {$df.Total}</td
+        ><td className="full"
+          >{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</td
         ></tr
       >})}</tbody
     ></table
@@ -547,7 +551,7 @@ jsdefines.define_panelmem = React.createClass({
         ><td className="text-right bg-usepct" data-usepct={$mem.UsePct}
           >{$mem.UsePct}%</td
         ><td className="full"
-          >{sl(i)}</td
+          >{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</td
         ></tr
       >})}</tbody
     ></table

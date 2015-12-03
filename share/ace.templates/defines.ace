@@ -66,7 +66,7 @@
         | <td {{class}}="text-right bg-usepct"
         |  data-usepct={{$mem.UsePct}}>{{$mem.UsePct}}%</td>
         td.full
-          {{jsx `{sl(i)}`}}
+          {{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}
         | </tr>
         {{jsx `})}`}}
       {{end}}
@@ -82,33 +82,34 @@
       {{$r := "text-right"}}
       {{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device"  ""}}{{/* FS     */}}
       {{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{/* MP     */}}
+      {{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total"   $r}}{{/* TOTAL  */}}
+      {{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used"    $r}}{{/* USED   */}}
       {{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail"   $r}}{{/* AVAIL  */}}
       {{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%"    $r}}{{/* USEPCT */}}
-      {{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used"    $r}}{{/* USED   */}}
-      {{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total"   $r}}{{/* TOTAL  */}}
+      th
   tbody
     {{if .Data.diskUsage}}
       {{range $df := .Data.diskUsage.List}}
-        {{jsx `{this.List(Data).map(function($df) { return`}}
+        {{jsx `{this.List(Data).map(function($df, i) { return`}}
         |
           <tr {{Key "df-rowby-dirname" $df.DirName}}>
             <td {{class}}="text-nowrap">{{$df.DevName}}</td>
             <td {{class}}="text-nowrap">{{$df.DirName}}</td>
         td.text-right.text-nowrap
-          span.mutext title="Inodes free" {{$df.Ifree}}
-          |  {{$df.Avail}}
-
-        | <td {{class}}="text-right bg-usepct text-nowrap"
-        |  data-usepct={{$df.UsePct}}>
-        span.mutext title="Inodes use%" {{$df.IusePct}}%
-        |  {{$df.UsePct}}%</td>
-
+          span.mutext title="Inodes total" {{$df.Inodes}}
+          |  {{$df.Total}}
         td.text-right.text-nowrap
           span.mutext title="Inodes used" {{$df.Iused}}
           |  {{$df.Used}}
         td.text-right.text-nowrap
-          span.mutext title="Inodes total" {{$df.Inodes}}
-          |  {{$df.Total}}
+          span.mutext title="Inodes free" {{$df.Ifree}}
+          |  {{$df.Avail}}
+        | <td {{class}}="text-right bg-usepct text-nowrap"
+        |  data-usepct={{$df.UsePct}}>
+        span.mutext title="Inodes use%" {{$df.IusePct}}%
+        |  {{$df.UsePct}}%</td>
+        td.full
+          {{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}
         | </tr>
         {{jsx `})}`}}
       {{end}}
@@ -126,10 +127,11 @@
       th.text-right Sys%
       th.text-right Wait%
       th.text-right Idle%
+      th
   tbody
     {{if .Data.cpu}}
       {{range $cpu := .Data.cpu.List}}
-        {{jsx  `{this.List(Data).map(function($cpu) { return`}}
+        {{jsx  `{this.List(Data).map(function($cpu, i) { return`}}
         | <tr {{Key "cpu-rowby-N" $cpu.N}}>
         td.text-right.text-nowrap {{$cpu.N}}
         |
@@ -141,7 +143,9 @@
             data-usepct={{$cpu.WaitPct}}>{{$cpu.WaitPct}}%</td>
           <td {{class}}="text-right bg-usepct-inverse"
             data-usepct={{$cpu.IdlePct}}>{{$cpu.IdlePct}}%</td>
-          </tr>
+        td.full
+          {{jsx `{jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}`}}
+        | </tr>
         {{jsx `})}`}}
       {{end}}
     {{end}}

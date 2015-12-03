@@ -9,7 +9,6 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": "~2.1.4",
     "foundation-sites": "~6.0.4"
   }
 }
