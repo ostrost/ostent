@@ -9,6 +9,6 @@
     "tests"
   ],
   "dependencies": {
-    "foundation-sites": "~6.0.4"
+    "foundation-sites": "~6.0.5"
   }
 }
