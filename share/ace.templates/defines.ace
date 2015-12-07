@@ -37,10 +37,9 @@
   | <a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}
   |   >{{.Text}} {{.Badge}}</a>
 
-= content thvlink
-  th {{class}}="header {{.AlignClass}}"
-    | <a href={{.LinkHref}} {{class}}={{.LinkClass}} onClick={this.handleClick}
-    |   >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>
+= content avlink
+  | <a href={{.LinkHref}} {{class}}={{.LinkClass}} onClick={this.handleClick}
+  |   >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>
 
 = content define_hostname
   | <a {{class}}="h5" {{TitlePrefixed "hostname " .Data.hostname}} href="/"
@@ -54,7 +53,7 @@
   [[template "startpanel" Chain `$p.Memn` `$p.Memd` "Memory"]]
   | <div {{ClassNonZero $p.Memn "stripe" "hide"}}>
   div.grid-block.thead
-    span.col.small-1 Kind
+    span.col.small-1
     div.grid-block.wrap.noscroll
       span.col.small-1.text-right  Total
       span.col.small-1.text-right  Used
@@ -80,47 +79,19 @@
     {{end}}
   {{end}}
   | </div></div>
-/ | <table {{ClassNonZero $p.Memn "hover margin-bottom-0" "hide"}}>
-  thead
-    tr
-      th
-      th.text-right Total
-      th.text-right Used
-      th.text-right Free
-      th.text-right Use%
-      th
-  tbody
-    {{if .Data.memory}}
-      {{range $mem := .Data.memory.List}}
-        {{jsx  `{this.List(Data).map(function($mem, i) { return`}}
-        | <tr {{Key "mem-rowby-kind" $mem.Kind}}>
-        td {{$mem.Kind}}
-        td.text-right {{$mem.Total}}
-        td.text-right {{$mem.Used}}
-        td.text-right {{$mem.Free}}
-        | <td {{class}}="text-right bg-usepct"
-        |  data-usepct={{$mem.UsePct}}>{{$mem.UsePct}}%</td>
-        td.full
-          {{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}
-        | </tr>
-        {{jsx `})}`}}
-      {{end}}
-    {{end}}
-  | </table>
 
 = content define_paneldf
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Dfn` `$p.Dfd` "Disk usage"]]
   | <div {{ClassNonZero $p.Dfn "stripe" "hide"}}>
   div.grid-block.thead
-    span.col.small-1... {{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device"  ""}}{{/* FS     */}}
+    span.col.small-1.............. {{template "defines::avlink" Vlink $p $p.Dfk 1 "Device" }}{{/* FS     */}}
     div.grid-block.wrap.noscroll
-      {{$r := "text-right"}}
-      span.col.small-1  {{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{/* MP     */}}
-      span.col.small-1.text-right  {{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total"   $r}}{{/* TOTAL  */}}
-      span.col.small-1.text-right  {{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used"    $r}}{{/* USED   */}}
-      span.col.small-1.text-right  {{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail"   $r}}{{/* AVAIL  */}}
-      span.col.small-1.text-right  {{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%"    $r}}{{/* USEPCT */}}
+      span.col.small-1...........  {{template "defines::avlink" Vlink $p $p.Dfk 2 "Mounted"}}{{/* MP     */}}
+      span.col.small-1.text-right  {{template "defines::avlink" Vlink $p $p.Dfk 6 "Total"  }}{{/* TOTAL  */}}
+      span.col.small-1.text-right  {{template "defines::avlink" Vlink $p $p.Dfk 5 "Used"   }}{{/* USED   */}}
+      span.col.small-1.text-right  {{template "defines::avlink" Vlink $p $p.Dfk 3 "Avail"  }}{{/* AVAIL  */}}
+      span.col.small-1.text-right  {{template "defines::avlink" Vlink $p $p.Dfk 4 "Use%"   }}{{/* USEPCT */}}
       span.col
   {{if .Data.diskUsage}}
     {{range $df := .Data.diskUsage.List}}
@@ -150,103 +121,71 @@
     {{end}}
   {{end}}
   | </div></div>
-/ | <table {{ClassNonZero $p.Dfn "hover margin-bottom-0" "hide"}}>
-  thead
-    tr.text-nowrap
-      {{$r := "text-right"}}
-      {{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device"  ""}}{{/* FS     */}}
-      {{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{/* MP     */}}
-      {{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total"   $r}}{{/* TOTAL  */}}
-      {{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used"    $r}}{{/* USED   */}}
-      {{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail"   $r}}{{/* AVAIL  */}}
-      {{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%"    $r}}{{/* USEPCT */}}
-      th
-  tbody
-    {{if .Data.diskUsage}}
-      {{range $df := .Data.diskUsage.List}}
-        {{jsx `{this.List(Data).map(function($df, i) { return`}}
-        |
-          <tr {{Key "df-rowby-dirname" $df.DirName}}>
-            <td {{class}}="text-nowrap">{{$df.DevName}}</td>
-            <td {{class}}="text-nowrap">{{$df.DirName}}</td>
-        td.text-right.text-nowrap
-          span.mutext title="Inodes total" {{$df.Inodes}}
-          |  {{$df.Total}}
-        td.text-right.text-nowrap
-          span.mutext title="Inodes used" {{$df.Iused}}
-          |  {{$df.Used}}
-        td.text-right.text-nowrap
-          span.mutext title="Inodes free" {{$df.Ifree}}
-          |  {{$df.Avail}}
-        | <td {{class}}="text-right bg-usepct text-nowrap"
-        |  data-usepct={{$df.UsePct}}>
-        span.mutext title="Inodes use%" {{$df.IusePct}}%
-        |  {{$df.UsePct}}%</td>
-        td.full
-          {{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}
-        | </tr>
-        {{jsx `})}`}}
-      {{end}}
-    {{end}}
-  | </table>
 
 = content define_panelcpu
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.CPUn` `$p.CPUd` "CPU"]]
-  | <table {{ClassNonZero $p.CPUn "hover margin-bottom-0" "hide"}}>
-  thead
-    tr
-      th
-      th.text-right User%
-      th.text-right Sys%
-      th.text-right Wait%
-      th.text-right Idle%
-      th
-  tbody
-    {{if .Data.cpu}}
-      {{range $cpu := .Data.cpu.List}}
-        {{jsx  `{this.List(Data).map(function($cpu, i) { return`}}
-        | <tr {{Key "cpu-rowby-N" $cpu.N}}>
-        td.text-right.text-nowrap {{$cpu.N}}
-        |
-          <td {{class}}="text-right bg-usepct"
-            data-usepct={{$cpu.UserPct}}>{{$cpu.UserPct}}%</td>
-          <td {{class}}="text-right bg-usepct"
-            data-usepct={{$cpu.SysPct}}>{{$cpu.SysPct}}%</td>
-          <td {{class}}="text-right bg-usepct"
-            data-usepct={{$cpu.WaitPct}}>{{$cpu.WaitPct}}%</td>
-          <td {{class}}="text-right bg-usepct-inverse"
-            data-usepct={{$cpu.IdlePct}}>{{$cpu.IdlePct}}%</td>
-        td.full
-          {{jsx `{jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}`}}
-        | </tr>
-        {{jsx `})}`}}
-      {{end}}
+  | <div {{ClassNonZero $p.CPUn "stripe" "hide"}}>
+  div.grid-block.thead
+    span.col.small-1
+    div.grid-block.wrap.noscroll
+      span.col.small-1.text-right  User%
+      span.col.small-1.text-right  Sys%
+      span.col.small-1.text-right  Wait%
+      span.col.small-1.text-right  Idle%
+      span.col.small-1.text-right
+  {{if .Data.cpu}}
+    {{range $cpu := .Data.cpu.List}}
+      {{jsx  `{this.List(Data).map(function($cpu, i) { return`}}
+      div.grid-block
+        / first col could be .shrink but it would skew the grid
+        span.col.small-1.text-right.text-nowrap {{$cpu.N}}
+        | <div {{Key "cpu-rowby-N" $cpu.N}} {{class}}="grid-block wrap noscroll">
+        span.small-1.text-right
+          | <span {{class}}="col display-block bg-usepct"
+            data-usepct={{$cpu.UserPct}}> {{$cpu.UserPct}}%</span>
+        span.small-1.text-right
+          | <span {{class}}="col display-block bg-usepct"
+            data-usepct={{$cpu.SysPct}}> {{$cpu.SysPct}}%</span>
+        span.small-1.text-right
+          | <span {{class}}="col display-block bg-usepct"
+            data-usepct={{$cpu.WaitPct}}> {{$cpu.WaitPct}}%</span>
+        span.small-1.text-right
+          | <span {{class}}="col display-block bg-usepct-inverse"
+            data-usepct={{$cpu.IdlePct}}> {{$cpu.IdlePct}}%</span>
+        span.col.sparkline.expand
+          {{jsx `{jsdefines.Sparkline({ref: i, col: 'IdlePct', height: 35, defaultSpots: true})}`}}
+        | </div>
+      {{jsx `})}`}}
     {{end}}
-  | </table></div>
+  {{end}}
+  | </div></div>
 
 = content define_panelif
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Ifn` `$p.Ifd` "Interfaces"]]
-  | <table {{ClassNonZero $p.Ifn "hover margin-bottom-0" "hide"}}>
-  thead
-    tr
-      th Interface
-      th.text-right IP
-      th.text-right.text-nowrap.col-md-3 title="Bits In/Out per second"
-        | IO 
+  | <div {{ClassNonZero $p.Ifn "stripe" "hide"}}>
+  div.grid-block.thead
+    span.col.small-1 Interface
+    div.grid-block.wrap.noscroll
+      span.col.small-1.text-right  IP
+      span.col.small-2.text-right.text-nowrap title="Bits In/Out per second"
+        |  IO 
         i b
         | ps
-      th.text-right.text-nowrap.col-md-3 title="Packets In/Out per second" Packets IO ps
-      th.text-right.text-nowrap.col-md-3 title="Drops,Errors In/Out per second" Loss IO ps
-  tbody
-    {{if .Data.ifaddrs}}
-      {{range $if := .Data.ifaddrs.List}}
-        {{jsx `{this.List(Data).map(function($if) { return`}}
-        | <tr {{Key "if-rowby-name" $if.Name}}>
-        | <td {{class}}="text-nowrap">{{$if.Name}}</td>
-        td.text-right {{$if.IP}}
-        td.text-right.text-nowrap
+      span.col.small-2.text-right.text-nowrap title="Packets In/Out per second"  Packets IO ps
+      span.col.small-2.text-right.text-nowrap title="Drops,Errors In/Out per second"  Loss IO ps
+
+  {{if .Data.ifaddrs}}
+    {{range $if := .Data.ifaddrs.List}}
+      {{jsx `{this.List(Data).map(function($if) { return`}}
+      div.grid-block
+        / first col could be .shrink but it would skew the grid
+        span.col.small-1.text-overflow {{$if.Name}}
+        | <div {{Key "if-rowby-name" $if.Name}} {{class}}="grid-block wrap noscroll">
+        span.col.small-1.text-right.text-overflow {{$if.IP}}
+        span.col.small-2.text-right.text-nowrap
+          |  
           span.mutext
             span title="Total BYTES In modulo 4G" {{$if.BytesIn}}
             | /
@@ -255,7 +194,8 @@
           span title="BITS In per second" {{$if.DeltaBitsIn}}
           | /
           span title="BITS Out per second" {{$if.DeltaBitsOut}}
-        td.text-right.text-nowrap
+        span.col.small-2.text-right.text-nowrap
+          |  
           span.mutext
             span title="Total packets In modulo 4G" {{$if.PacketsIn}}
             | /
@@ -264,7 +204,8 @@
           span title="Packets In per second" {{$if.DeltaPacketsIn}}
           | /
           span title="Packets Out per second" {{$if.DeltaPacketsOut}}
-        td.text-right.text-nowrap
+        span.col.small-2.text-right.text-nowrap
+          |  
           span.mutext title="Total drops,errors modulo 4G"
             span title="Total drops In modulo 4G" {{$if.DropsIn}}
             | <span {{ClassNonNil $if.DropsOut "" "hide"}}>/</span>
@@ -283,45 +224,44 @@
           | /
           span title="Errors Out per second" {{$if.DeltaErrorsOut}}
           | </span>
-        | </tr>
-        {{jsx `})}`}}
-      {{end}}
+        | </div>
+      {{jsx `})}`}}
     {{end}}
-  | </table></div>
+  {{end}}
+  | </div></div>
 
 = content define_panelps
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Psn` `$p.Psd` "Processes"]]
-  | <table {{ClassNonZero $p.Psn "hover margin-bottom-0" "hide"}}>
-  thead
-    tr.text-nowrap
-      {{$r := "text-right"}}
-      {{$c := "text-center"}}
-      {{template "defines::thvlink" Vlink $p $p.Psk 1 "PID"     $r}}
-      {{template "defines::thvlink" Vlink $p $p.Psk 2 "UID"     $r}}
-      {{template "defines::thvlink" Vlink $p $p.Psk 3 "USER"    ""}}
-      {{template "defines::thvlink" Vlink $p $p.Psk 4 "PR"      $r}}{{/* PRI  */}}
-      {{template "defines::thvlink" Vlink $p $p.Psk 5 "NI"      $r}}{{/* NICE */}}
-      {{template "defines::thvlink" Vlink $p $p.Psk 6 "VIRT"    $r}}
-      {{template "defines::thvlink" Vlink $p $p.Psk 7 "RES"     $r}}
-      {{template "defines::thvlink" Vlink $p $p.Psk 8 "TIME"    $c}}
-      {{template "defines::thvlink" Vlink $p $p.Psk 9 "COMMAND" ""}}{{/* NAME */}}
-  tbody
-    {{if .Data.procs}}
-      {{range $ps := .Data.procs.List}}
-        {{jsx `{this.List(Data).map(function($ps) { return`}}
-        | <tr {{Key "ps-rowby-pid" $ps.PID}}>
-        td.text-right  {{$ps.PID}}
-        td.text-right  {{$ps.UID}}
-        td {{$ps.User}}
-        td.text-right  {{$ps.Priority}}
-        td.text-right  {{$ps.Nice}}
-        td.text-right  {{$ps.Size}}
-        td.text-right  {{$ps.Resident}}
-        td.text-center {{$ps.Time}}
-        td {{$ps.Name}}
-        | </tr>
-        {{jsx `})}`}}
-      {{end}}
+  | <div {{ClassNonZero $p.Psn "stripe" "hide"}}>
+  div.grid-block.thead
+    span.col.small-1.text-right.... {{template "defines::avlink" Vlink $p $p.Psk 1 "PID"    }}
+    div.grid-block.wrap.noscroll.text-nowrap
+      span.col.small-1.text-right.  {{template "defines::avlink" Vlink $p $p.Psk 2 "UID"    }}
+      span.col.small-1............  {{template "defines::avlink" Vlink $p $p.Psk 3 "USER"   }}
+      span.col.small-1.text-right.  {{template "defines::avlink" Vlink $p $p.Psk 4 "PR"     }}{{/* PRI  */}}
+      span.col.small-1.text-right.  {{template "defines::avlink" Vlink $p $p.Psk 5 "NI"     }}{{/* NICE */}}
+      span.col.small-1.text-right.  {{template "defines::avlink" Vlink $p $p.Psk 6 "VIRT"   }}
+      span.col.small-1.text-right.  {{template "defines::avlink" Vlink $p $p.Psk 7 "RES"    }}
+      span.col.small-1.text-center  {{template "defines::avlink" Vlink $p $p.Psk 8 "TIME"   }}
+      span.col.small-1............  {{template "defines::avlink" Vlink $p $p.Psk 9 "COMMAND"}}{{/* NAME */}}
+  {{if .Data.procs}}
+    {{range $ps := .Data.procs.List}}
+      {{jsx `{this.List(Data).map(function($ps) { return`}}
+      div.grid-block
+        / first col could be .shrink but it would skew the grid
+        span.col.small-1.text-right {{$ps.PID}}
+        | <div {{Key "ps-rowby-pid" $ps.PID}} {{class}}="grid-block wrap noscroll">
+        span.col.small-1.text-right.  {{$ps.UID}}
+        span.col.small-1............  {{$ps.User}}
+        span.col.small-1.text-right.  {{$ps.Priority}}
+        span.col.small-1.text-right.  {{$ps.Nice}}
+        span.col.small-1.text-right.  {{$ps.Size}}
+        span.col.small-1.text-right.  {{$ps.Resident}}
+        span.col.small-1.text-center  {{$ps.Time}}
+        span.col.expand.............  {{$ps.Name}}
+        | </div>
+      {{jsx `})}`}}
     {{end}}
-  | </table></div>
+  {{end}}
+  | </div></div>

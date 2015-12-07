@@ -19911,9 +19911,13 @@
 	  }
 	});
 
-	var _ref2 = _jsx('th', {});
+	var _ref2 = _jsx('span', {
+	  className: 'col small-1'
+	});
 
-	var _ref3 = _jsx('th', {});
+	var _ref3 = _jsx('span', {
+	  className: 'col small-1 text-right'
+	});
 
 	jsdefines.define_panelcpu = React.createClass({
 	  displayName: 'define_panelcpu',
@@ -19982,35 +19986,51 @@
 	      href: Data.params.Nlinks.CPUn.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.CPUn.More.Text, ' +')))))))), _jsx('table', {
-	      className: Data.params.CPUn.Absolute != 0 ? "hover margin-bottom-0" : "hide"
-	    }, void 0, _jsx('thead', {}, void 0, _jsx('tr', {}, void 0, _ref2, _jsx('th', {
-	      className: 'text-right'
-	    }, void 0, 'User%'), _jsx('th', {
-	      className: 'text-right'
-	    }, void 0, 'Sys%'), _jsx('th', {
-	      className: 'text-right'
-	    }, void 0, 'Wait%'), _jsx('th', {
-	      className: 'text-right'
-	    }, void 0, 'Idle%'), _ref3)), _jsx('tbody', {}, void 0, this.List(Data).map(function ($cpu, i) {
-	      return _jsx('tr', {}, "cpu-rowby-N-" + $cpu.N, _jsx('td', {
-	        className: 'text-right text-nowrap'
-	      }, void 0, $cpu.N), _jsx('td', {
-	        className: 'text-right bg-usepct',
+	    }, void 0, Data.params.Nlinks.CPUn.More.Text, ' +')))))))), _jsx('div', {
+	      className: Data.params.CPUn.Absolute != 0 ? "stripe" : "hide"
+	    }, void 0, _jsx('div', {
+	      className: 'grid-block thead'
+	    }, void 0, _ref2, _jsx('div', {
+	      className: 'grid-block wrap noscroll'
+	    }, void 0, _jsx('span', {
+	      className: 'col small-1 text-right'
+	    }, void 0, ' User%'), _jsx('span', {
+	      className: 'col small-1 text-right'
+	    }, void 0, ' Sys%'), _jsx('span', {
+	      className: 'col small-1 text-right'
+	    }, void 0, ' Wait%'), _jsx('span', {
+	      className: 'col small-1 text-right'
+	    }, void 0, ' Idle%'), _ref3)), this.List(Data).map(function ($cpu, i) {
+	      return _jsx('div', {
+	        className: 'grid-block'
+	      }, void 0, _jsx('span', {
+	        className: 'col small-1 text-right text-nowrap'
+	      }, void 0, $cpu.N), _jsx('div', {
+	        className: 'grid-block wrap noscroll'
+	      }, "cpu-rowby-N-" + $cpu.N, _jsx('span', {
+	        className: 'small-1 text-right'
+	      }, void 0, _jsx('span', {
+	        className: 'col display-block bg-usepct',
 	        'data-usepct': $cpu.UserPct
-	      }, void 0, $cpu.UserPct, '%'), _jsx('td', {
-	        className: 'text-right bg-usepct',
+	      }, void 0, ' ', $cpu.UserPct, '%')), _jsx('span', {
+	        className: 'small-1 text-right'
+	      }, void 0, _jsx('span', {
+	        className: 'col display-block bg-usepct',
 	        'data-usepct': $cpu.SysPct
-	      }, void 0, $cpu.SysPct, '%'), _jsx('td', {
-	        className: 'text-right bg-usepct',
+	      }, void 0, ' ', $cpu.SysPct, '%')), _jsx('span', {
+	        className: 'small-1 text-right'
+	      }, void 0, _jsx('span', {
+	        className: 'col display-block bg-usepct',
 	        'data-usepct': $cpu.WaitPct
-	      }, void 0, $cpu.WaitPct, '%'), _jsx('td', {
-	        className: 'text-right bg-usepct-inverse',
+	      }, void 0, ' ', $cpu.WaitPct, '%')), _jsx('span', {
+	        className: 'small-1 text-right'
+	      }, void 0, _jsx('span', {
+	        className: 'col display-block bg-usepct-inverse',
 	        'data-usepct': $cpu.IdlePct
-	      }, void 0, $cpu.IdlePct, '%'), _jsx('td', {
-	        className: 'full'
-	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'IdlePct', defaultSpots: true })));
-	    }))));
+	      }, void 0, ' ', $cpu.IdlePct, '%')), _jsx('span', {
+	        className: 'col sparkline expand'
+	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'IdlePct', height: 35, defaultSpots: true }))));
+	    })));
 	  }
 	});
 
@@ -20091,67 +20111,55 @@
 	      className: 'grid-block thead'
 	    }, void 0, _jsx('span', {
 	      className: 'col small-1'
-	    }, void 0, _jsx('th', {
-	      className: 'header '
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Dfk[1 - 1].LinkHref,
 	      className: Data.params.Vlinks.Dfk[1 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'Device', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[1 - 1].CaretClass
-	    })))), _jsx('div', {
+	    }))), _jsx('div', {
 	      className: 'grid-block wrap noscroll'
 	    }, void 0, _jsx('span', {
 	      className: 'col small-1'
-	    }, void 0, ' ', _jsx('th', {
-	      className: 'header '
-	    }, void 0, _jsx('a', {
+	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Dfk[2 - 1].LinkHref,
 	      className: Data.params.Vlinks.Dfk[2 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'Mounted', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[2 - 1].CaretClass
-	    })))), _jsx('span', {
+	    }))), _jsx('span', {
 	      className: 'col small-1 text-right'
-	    }, void 0, ' ', _jsx('th', {
-	      className: 'header text-right'
-	    }, void 0, _jsx('a', {
+	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Dfk[6 - 1].LinkHref,
 	      className: Data.params.Vlinks.Dfk[6 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'Total', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[6 - 1].CaretClass
-	    })))), _jsx('span', {
+	    }))), _jsx('span', {
 	      className: 'col small-1 text-right'
-	    }, void 0, ' ', _jsx('th', {
-	      className: 'header text-right'
-	    }, void 0, _jsx('a', {
+	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Dfk[5 - 1].LinkHref,
 	      className: Data.params.Vlinks.Dfk[5 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'Used', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[5 - 1].CaretClass
-	    })))), _jsx('span', {
+	    }))), _jsx('span', {
 	      className: 'col small-1 text-right'
-	    }, void 0, ' ', _jsx('th', {
-	      className: 'header text-right'
-	    }, void 0, _jsx('a', {
+	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Dfk[3 - 1].LinkHref,
 	      className: Data.params.Vlinks.Dfk[3 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'Avail', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[3 - 1].CaretClass
-	    })))), _jsx('span', {
+	    }))), _jsx('span', {
 	      className: 'col small-1 text-right'
-	    }, void 0, ' ', _jsx('th', {
-	      className: 'header text-right'
-	    }, void 0, _jsx('a', {
+	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Dfk[4 - 1].LinkHref,
 	      className: Data.params.Vlinks.Dfk[4 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'Use%', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[4 - 1].CaretClass
-	    })))), _ref4)), this.List(Data).map(function ($df, i) {
+	    }))), _ref4)), this.List(Data).map(function ($df, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
 	      }, void 0, _jsx('span', {
@@ -20257,27 +20265,37 @@
 	      href: Data.params.Nlinks.Ifn.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.Ifn.More.Text, ' +')))))))), _jsx('table', {
-	      className: Data.params.Ifn.Absolute != 0 ? "hover margin-bottom-0" : "hide"
-	    }, void 0, _jsx('thead', {}, void 0, _jsx('tr', {}, void 0, _jsx('th', {}, void 0, 'Interface'), _jsx('th', {
-	      className: 'text-right'
-	    }, void 0, 'IP'), _jsx('th', {
-	      className: 'text-right text-nowrap col-md-3',
+	    }, void 0, Data.params.Nlinks.Ifn.More.Text, ' +')))))))), _jsx('div', {
+	      className: Data.params.Ifn.Absolute != 0 ? "stripe" : "hide"
+	    }, void 0, _jsx('div', {
+	      className: 'grid-block thead'
+	    }, void 0, _jsx('span', {
+	      className: 'col small-1'
+	    }, void 0, 'Interface'), _jsx('div', {
+	      className: 'grid-block wrap noscroll'
+	    }, void 0, _jsx('span', {
+	      className: 'col small-1 text-right'
+	    }, void 0, ' IP'), _jsx('span', {
+	      className: 'col small-2 text-right text-nowrap',
 	      title: 'Bits In/Out per second'
-	    }, void 0, 'IO ', _jsx('i', {}, void 0, 'b'), 'ps'), _jsx('th', {
-	      className: 'text-right text-nowrap col-md-3',
+	    }, void 0, ' IO ', _jsx('i', {}, void 0, 'b'), 'ps'), _jsx('span', {
+	      className: 'col small-2 text-right text-nowrap',
 	      title: 'Packets In/Out per second'
-	    }, void 0, 'Packets IO ps'), _jsx('th', {
-	      className: 'text-right text-nowrap col-md-3',
+	    }, void 0, ' Packets IO ps'), _jsx('span', {
+	      className: 'col small-2 text-right text-nowrap',
 	      title: 'Drops,Errors In/Out per second'
-	    }, void 0, 'Loss IO ps'))), _jsx('tbody', {}, void 0, this.List(Data).map(function ($if) {
-	      return _jsx('tr', {}, "if-rowby-name-" + $if.Name, _jsx('td', {
-	        className: 'text-nowrap'
-	      }, void 0, $if.Name), _jsx('td', {
-	        className: 'text-right'
-	      }, void 0, $if.IP), _jsx('td', {
-	        className: 'text-right text-nowrap'
+	    }, void 0, ' Loss IO ps'))), this.List(Data).map(function ($if) {
+	      return _jsx('div', {
+	        className: 'grid-block'
 	      }, void 0, _jsx('span', {
+	        className: 'col small-1 text-overflow'
+	      }, void 0, $if.Name), _jsx('div', {
+	        className: 'grid-block wrap noscroll'
+	      }, "if-rowby-name-" + $if.Name, _jsx('span', {
+	        className: 'col small-1 text-right text-overflow'
+	      }, void 0, $if.IP), _jsx('span', {
+	        className: 'col small-2 text-right text-nowrap'
+	      }, void 0, ' ', _jsx('span', {
 	        className: 'mutext'
 	      }, void 0, _jsx('span', {
 	        title: 'Total BYTES In modulo 4G'
@@ -20287,9 +20305,9 @@
 	        title: 'BITS In per second'
 	      }, void 0, $if.DeltaBitsIn), '/', _jsx('span', {
 	        title: 'BITS Out per second'
-	      }, void 0, $if.DeltaBitsOut)), _jsx('td', {
-	        className: 'text-right text-nowrap'
-	      }, void 0, _jsx('span', {
+	      }, void 0, $if.DeltaBitsOut)), _jsx('span', {
+	        className: 'col small-2 text-right text-nowrap'
+	      }, void 0, ' ', _jsx('span', {
 	        className: 'mutext'
 	      }, void 0, _jsx('span', {
 	        title: 'Total packets In modulo 4G'
@@ -20299,9 +20317,9 @@
 	        title: 'Packets In per second'
 	      }, void 0, $if.DeltaPacketsIn), '/', _jsx('span', {
 	        title: 'Packets Out per second'
-	      }, void 0, $if.DeltaPacketsOut)), _jsx('td', {
-	        className: 'text-right text-nowrap'
-	      }, void 0, _jsx('span', {
+	      }, void 0, $if.DeltaPacketsOut)), _jsx('span', {
+	        className: 'col small-2 text-right text-nowrap'
+	      }, void 0, ' ', _jsx('span', {
 	        className: 'mutext',
 	        title: 'Total drops,errors modulo 4G'
 	      }, void 0, _jsx('span', {
@@ -20328,12 +20346,16 @@
 	        title: 'Errors In per second'
 	      }, void 0, $if.DeltaErrorsIn), '/', _jsx('span', {
 	        title: 'Errors Out per second'
-	      }, void 0, $if.DeltaErrorsOut))));
-	    }))));
+	      }, void 0, $if.DeltaErrorsOut)))));
+	    })));
 	  }
 	});
 
 	var _ref5 = _jsx('span', {
+	  className: 'col small-1'
+	});
+
+	var _ref6 = _jsx('span', {
 	  className: 'col'
 	});
 
@@ -20408,9 +20430,7 @@
 	      className: Data.params.Memn.Absolute != 0 ? "stripe" : "hide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block thead'
-	    }, void 0, _jsx('span', {
-	      className: 'col small-1'
-	    }, void 0, 'Kind'), _jsx('div', {
+	    }, void 0, _ref5, _jsx('div', {
 	      className: 'grid-block wrap noscroll'
 	    }, void 0, _jsx('span', {
 	      className: 'col small-1 text-right'
@@ -20420,7 +20440,7 @@
 	      className: 'col small-1 text-right'
 	    }, void 0, ' Free'), _jsx('span', {
 	      className: 'col small-1 text-right'
-	    }, void 0, ' Use%'), _ref5)), this.List(Data).map(function ($mem, i) {
+	    }, void 0, ' Use%'), _ref6)), this.List(Data).map(function ($mem, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
 	      }, void 0, _jsx('span', {
@@ -20512,99 +20532,109 @@
 	      href: Data.params.Nlinks.Psn.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.Psn.More.Text, ' +')))))))), _jsx('table', {
-	      className: Data.params.Psn.Absolute != 0 ? "hover margin-bottom-0" : "hide"
-	    }, void 0, _jsx('thead', {}, void 0, _jsx('tr', {
-	      className: 'text-nowrap'
-	    }, void 0, _jsx('th', {
-	      className: 'header text-right'
+	    }, void 0, Data.params.Nlinks.Psn.More.Text, ' +')))))))), _jsx('div', {
+	      className: Data.params.Psn.Absolute != 0 ? "stripe" : "hide"
+	    }, void 0, _jsx('div', {
+	      className: 'grid-block thead'
+	    }, void 0, _jsx('span', {
+	      className: 'col small-1 text-right'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Psk[1 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[1 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'PID', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[1 - 1].CaretClass
-	    }))), _jsx('th', {
-	      className: 'header text-right'
-	    }, void 0, _jsx('a', {
+	    }))), _jsx('div', {
+	      className: 'grid-block wrap noscroll text-nowrap'
+	    }, void 0, _jsx('span', {
+	      className: 'col small-1 text-right'
+	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Psk[2 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[2 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'UID', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[2 - 1].CaretClass
-	    }))), _jsx('th', {
-	      className: 'header '
-	    }, void 0, _jsx('a', {
+	    }))), _jsx('span', {
+	      className: 'col small-1'
+	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Psk[3 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[3 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'USER', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[3 - 1].CaretClass
-	    }))), _jsx('th', {
-	      className: 'header text-right'
-	    }, void 0, _jsx('a', {
+	    }))), _jsx('span', {
+	      className: 'col small-1 text-right'
+	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Psk[4 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[4 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'PR', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[4 - 1].CaretClass
-	    }))), _jsx('th', {
-	      className: 'header text-right'
-	    }, void 0, _jsx('a', {
+	    }))), _jsx('span', {
+	      className: 'col small-1 text-right'
+	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Psk[5 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[5 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'NI', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[5 - 1].CaretClass
-	    }))), _jsx('th', {
-	      className: 'header text-right'
-	    }, void 0, _jsx('a', {
+	    }))), _jsx('span', {
+	      className: 'col small-1 text-right'
+	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Psk[6 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[6 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'VIRT', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[6 - 1].CaretClass
-	    }))), _jsx('th', {
-	      className: 'header text-right'
-	    }, void 0, _jsx('a', {
+	    }))), _jsx('span', {
+	      className: 'col small-1 text-right'
+	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Psk[7 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[7 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'RES', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[7 - 1].CaretClass
-	    }))), _jsx('th', {
-	      className: 'header text-center'
-	    }, void 0, _jsx('a', {
+	    }))), _jsx('span', {
+	      className: 'col small-1 text-center'
+	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Psk[8 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[8 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'TIME', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[8 - 1].CaretClass
-	    }))), _jsx('th', {
-	      className: 'header '
-	    }, void 0, _jsx('a', {
+	    }))), _jsx('span', {
+	      className: 'col small-1'
+	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Psk[9 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[9 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'COMMAND', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[9 - 1].CaretClass
-	    }))))), _jsx('tbody', {}, void 0, this.List(Data).map(function ($ps) {
-	      return _jsx('tr', {}, "ps-rowby-pid-" + $ps.PID, _jsx('td', {
-	        className: 'text-right'
-	      }, void 0, ' ', $ps.PID), _jsx('td', {
-	        className: 'text-right'
-	      }, void 0, ' ', $ps.UID), _jsx('td', {}, void 0, $ps.User), _jsx('td', {
-	        className: 'text-right'
-	      }, void 0, ' ', $ps.Priority), _jsx('td', {
-	        className: 'text-right'
-	      }, void 0, ' ', $ps.Nice), _jsx('td', {
-	        className: 'text-right'
-	      }, void 0, ' ', $ps.Size), _jsx('td', {
-	        className: 'text-right'
-	      }, void 0, ' ', $ps.Resident), _jsx('td', {
-	        className: 'text-center'
-	      }, void 0, $ps.Time), _jsx('td', {}, void 0, $ps.Name));
-	    }))));
+	    }))))), this.List(Data).map(function ($ps) {
+	      return _jsx('div', {
+	        className: 'grid-block'
+	      }, void 0, _jsx('span', {
+	        className: 'col small-1 text-right'
+	      }, void 0, $ps.PID), _jsx('div', {
+	        className: 'grid-block wrap noscroll'
+	      }, "ps-rowby-pid-" + $ps.PID, _jsx('span', {
+	        className: 'col small-1 text-right'
+	      }, void 0, ' ', $ps.UID), _jsx('span', {
+	        className: 'col small-1'
+	      }, void 0, ' ', $ps.User), _jsx('span', {
+	        className: 'col small-1 text-right'
+	      }, void 0, ' ', $ps.Priority), _jsx('span', {
+	        className: 'col small-1 text-right'
+	      }, void 0, ' ', $ps.Nice), _jsx('span', {
+	        className: 'col small-1 text-right'
+	      }, void 0, ' ', $ps.Size), _jsx('span', {
+	        className: 'col small-1 text-right'
+	      }, void 0, ' ', $ps.Resident), _jsx('span', {
+	        className: 'col small-1 text-center'
+	      }, void 0, ' ', $ps.Time), _jsx('span', {
+	        className: 'col expand'
+	      }, void 0, ' ', $ps.Name)));
+	    })));
 	  }
 	});
 

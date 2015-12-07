@@ -130,10 +130,9 @@ func (f HTMLFuncs) FuncLessN() interface{} { return f.ParamsFuncs.LessN }
 func (f HTMLFuncs) FuncMoreN() interface{} { return f.ParamsFuncs.MoreN }
 
 func (f JSXLFuncs) FuncVlink() interface{} {
-	return func(_, this Uncurler, cmp int, text, alignClass string) params.VLink {
+	return func(_, this Uncurler, cmp int, text string) params.VLink {
 		base, last := f.Split(this)
 		return params.VLink{
-			AlignClass: alignClass,
 			CaretClass: fmt.Sprintf("{%s.Vlinks.%s[%d-1].%s}", base, last, cmp, "CaretClass"),
 			LinkClass:  fmt.Sprintf("{%s.Vlinks.%s[%d-1].%s}", base, last, cmp, "LinkClass"),
 			LinkHref:   fmt.Sprintf("{%s.Vlinks.%s[%d-1].%s}", base, last, cmp, "LinkHref"),

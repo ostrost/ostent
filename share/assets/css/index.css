@@ -3632,12 +3632,6 @@ table.hover tr:nth-of-type(even):hover {
 .height-1rem {
   height: 1rem; }
 
-table.hover .mutext {
-  color: #cacaca; }
-
-table.hover tr:hover .mutext {
-  color: #8a8a8a; }
-
 .text-nowrap, .text-overflow {
   white-space: nowrap; }
 

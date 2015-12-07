@@ -98,6 +98,11 @@
 */}}{{define "defines::alink_badgeright"}}<a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}  
   >{{.Text}} {{.Badge}}</a
 >{{end}}{{/*
+*/}}{{define "defines::avlink"}}<a href={{.LinkHref}} {{class}}={{.LinkClass}} onClick={this.handleClick}  
+  >{{.LinkText}}<span {{class}}={{.CaretClass}}
+    ></span
+  ></a
+>{{end}}{{/*
 */}}{{define "defines::define_hostname"}}<a {{class}}="h5" {{TitlePrefixed "hostname " .Data.hostname}} href="/"
   ><pre
     >{{.Data.hostname}}</pre
@@ -141,44 +146,52 @@
         ></div
       ></div
     ></div
-  ><table {{ClassNonZero $p.CPUn "hover margin-bottom-0" "hide"}}
-    ><thead
-      ><tr
-        ><th
-          ></th
-        ><th class="text-right"
-          >User%</th
-        ><th class="text-right"
-          >Sys%</th
-        ><th class="text-right"
-          >Wait%</th
-        ><th class="text-right"
-          >Idle%</th
-        ><th
-          ></th
-        ></tr
-      ></thead
-    ><tbody
-      >{{if .Data.cpu}}{{range $cpu := .Data.cpu.List}}{{jsx `{this.List(Data).map(function($cpu, i) { return`}}<tr {{Key "cpu-rowby-N" $cpu.N}}
-        ><td class="text-right text-nowrap"
-          >{{$cpu.N}}</td
-        ><td {{class}}="text-right bg-usepct"
-  data-usepct={{$cpu.UserPct}}
-          >{{$cpu.UserPct}}%</td
-        ><td {{class}}="text-right bg-usepct"
-  data-usepct={{$cpu.SysPct}}
-          >{{$cpu.SysPct}}%</td
-        ><td {{class}}="text-right bg-usepct"
-  data-usepct={{$cpu.WaitPct}}
-          >{{$cpu.WaitPct}}%</td
-        ><td {{class}}="text-right bg-usepct-inverse"
-  data-usepct={{$cpu.IdlePct}}
-          >{{$cpu.IdlePct}}%</td
-        ><td class="full"
-          >{{jsx `{jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}`}}</td
-        ></tr
-      >{{jsx `})}`}}{{end}}{{end}}</tbody
-    ></table
+  ><div {{ClassNonZero $p.CPUn "stripe" "hide"}}
+    ><div class="grid-block thead"
+      ><span class="col small-1"
+        ></span
+      ><div class="grid-block wrap noscroll"
+        ><span class="col small-1 text-right"
+          > User%</span
+        ><span class="col small-1 text-right"
+          > Sys%</span
+        ><span class="col small-1 text-right"
+          > Wait%</span
+        ><span class="col small-1 text-right"
+          > Idle%</span
+        ><span class="col small-1 text-right"
+          ></span
+        ></div
+      ></div
+    >{{if .Data.cpu}}{{range $cpu := .Data.cpu.List}}{{jsx `{this.List(Data).map(function($cpu, i) { return`}}<div class="grid-block"
+      ><span class="col small-1 text-right text-nowrap"
+        >{{$cpu.N}}</span
+      ><div {{Key "cpu-rowby-N" $cpu.N}} {{class}}="grid-block wrap noscroll"
+        ><span class="small-1 text-right"
+          ><span {{class}}="col display-block bg-usepct"
+data-usepct={{$cpu.UserPct}}
+            > {{$cpu.UserPct}}%</span
+          ></span
+        ><span class="small-1 text-right"
+          ><span {{class}}="col display-block bg-usepct"
+data-usepct={{$cpu.SysPct}}
+            > {{$cpu.SysPct}}%</span
+          ></span
+        ><span class="small-1 text-right"
+          ><span {{class}}="col display-block bg-usepct"
+data-usepct={{$cpu.WaitPct}}
+            > {{$cpu.WaitPct}}%</span
+          ></span
+        ><span class="small-1 text-right"
+          ><span {{class}}="col display-block bg-usepct-inverse"
+data-usepct={{$cpu.IdlePct}}
+            > {{$cpu.IdlePct}}%</span
+          ></span
+        ><span class="col sparkline expand"
+          >{{jsx `{jsdefines.Sparkline({ref: i, col: 'IdlePct', height: 35, defaultSpots: true})}`}}</span
+        ></div
+      ></div
+    >{{jsx `})}`}}{{end}}{{end}}</div
   ></div
 >{{end}}{{/*
 */}}{{define "defines::define_paneldf"}}{{$p := .Data.params}}<div
@@ -219,18 +232,18 @@
   ><div {{ClassNonZero $p.Dfn "stripe" "hide"}}
     ><div class="grid-block thead"
       ><span class="col small-1"
-        >{{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device" ""}}</span
+        >{{template "defines::avlink" Vlink $p $p.Dfk 1 "Device"}}</span
       ><div class="grid-block wrap noscroll"
-        >{{$r := "text-right"}}<span class="col small-1"
-          > {{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""}}</span
+        ><span class="col small-1"
+          > {{template "defines::avlink" Vlink $p $p.Dfk 2 "Mounted"}}</span
         ><span class="col small-1 text-right"
-          > {{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total" $r}}</span
+          > {{template "defines::avlink" Vlink $p $p.Dfk 6 "Total"}}</span
         ><span class="col small-1 text-right"
-          > {{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used" $r}}</span
+          > {{template "defines::avlink" Vlink $p $p.Dfk 5 "Used"}}</span
         ><span class="col small-1 text-right"
-          > {{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail" $r}}</span
+          > {{template "defines::avlink" Vlink $p $p.Dfk 3 "Avail"}}</span
         ><span class="col small-1 text-right"
-          > {{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%" $r}}</span
+          > {{template "defines::avlink" Vlink $p $p.Dfk 4 "Use%"}}</span
         ><span class="col"
           ></span
         ></div
@@ -301,31 +314,31 @@
         ></div
       ></div
     ></div
-  ><table {{ClassNonZero $p.Ifn "hover margin-bottom-0" "hide"}}
-    ><thead
-      ><tr
-        ><th
-          >Interface</th
-        ><th class="text-right"
-          >IP</th
-        ><th class="text-right text-nowrap col-md-3" title="Bits In/Out per second"
-          >IO <i
+  ><div {{ClassNonZero $p.Ifn "stripe" "hide"}}
+    ><div class="grid-block thead"
+      ><span class="col small-1"
+        >Interface</span
+      ><div class="grid-block wrap noscroll"
+        ><span class="col small-1 text-right"
+          > IP</span
+        ><span class="col small-2 text-right text-nowrap" title="Bits In/Out per second"
+          > IO <i
             >b</i
-          >ps</th
-        ><th class="text-right text-nowrap col-md-3" title="Packets In/Out per second"
-          >Packets IO ps</th
-        ><th class="text-right text-nowrap col-md-3" title="Drops,Errors In/Out per second"
-          >Loss IO ps</th
-        ></tr
-      ></thead
-    ><tbody
-      >{{if .Data.ifaddrs}}{{range $if := .Data.ifaddrs.List}}{{jsx `{this.List(Data).map(function($if) { return`}}<tr {{Key "if-rowby-name" $if.Name}}
-        ><td {{class}}="text-nowrap"
-          >{{$if.Name}}</td
-        ><td class="text-right"
-          >{{$if.IP}}</td
-        ><td class="text-right text-nowrap"
-          ><span class="mutext"
+          >ps</span
+        ><span class="col small-2 text-right text-nowrap" title="Packets In/Out per second"
+          > Packets IO ps</span
+        ><span class="col small-2 text-right text-nowrap" title="Drops,Errors In/Out per second"
+          > Loss IO ps</span
+        ></div
+      ></div
+    >{{if .Data.ifaddrs}}{{range $if := .Data.ifaddrs.List}}{{jsx `{this.List(Data).map(function($if) { return`}}<div class="grid-block"
+      ><span class="col small-1 text-overflow"
+        >{{$if.Name}}</span
+      ><div {{Key "if-rowby-name" $if.Name}} {{class}}="grid-block wrap noscroll"
+        ><span class="col small-1 text-right text-overflow"
+          >{{$if.IP}}</span
+        ><span class="col small-2 text-right text-nowrap"
+          > <span class="mutext"
             ><span title="Total BYTES In modulo 4G"
               >{{$if.BytesIn}}</span
             >/<span title="Total BYTES Out modulo 4G"
@@ -335,9 +348,9 @@
             >{{$if.DeltaBitsIn}}</span
           >/<span title="BITS Out per second"
             >{{$if.DeltaBitsOut}}</span
-          ></td
-        ><td class="text-right text-nowrap"
-          ><span class="mutext"
+          ></span
+        ><span class="col small-2 text-right text-nowrap"
+          > <span class="mutext"
             ><span title="Total packets In modulo 4G"
               >{{$if.PacketsIn}}</span
             >/<span title="Total packets Out modulo 4G"
@@ -347,9 +360,9 @@
             >{{$if.DeltaPacketsIn}}</span
           >/<span title="Packets Out per second"
             >{{$if.DeltaPacketsOut}}</span
-          ></td
-        ><td class="text-right text-nowrap"
-          ><span class="mutext" title="Total drops,errors modulo 4G"
+          ></span
+        ><span class="col small-2 text-right text-nowrap"
+          > <span class="mutext" title="Total drops,errors modulo 4G"
             ><span title="Total drops In modulo 4G"
               >{{$if.DropsIn}}</span
             ><span {{ClassNonNil $if.DropsOut "" "hide"}}
@@ -373,10 +386,10 @@
             >/<span title="Errors Out per second"
               >{{$if.DeltaErrorsOut}}</span
             ></span
-          ></td
-        ></tr
-      >{{jsx `})}`}}{{end}}{{end}}</tbody
-    ></table
+          ></span
+        ></div
+      ></div
+    >{{jsx `})}`}}{{end}}{{end}}</div
   ></div
 >{{end}}{{/*
 */}}{{define "defines::define_panelmem"}}{{$p := .Data.params}}<div
@@ -417,7 +430,7 @@
   ><div {{ClassNonZero $p.Memn "stripe" "hide"}}
     ><div class="grid-block thead"
       ><span class="col small-1"
-        >Kind</span
+        ></span
       ><div class="grid-block wrap noscroll"
         ><span class="col small-1 text-right"
           > Total</span
@@ -487,43 +500,54 @@
         ></div
       ></div
     ></div
-  ><table {{ClassNonZero $p.Psn "hover margin-bottom-0" "hide"}}
-    ><thead
-      ><tr class="text-nowrap"
-        >{{$r := "text-right"}}{{$c := "text-center"}}{{template "defines::thvlink" Vlink $p $p.Psk 1 "PID" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 2 "UID" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 3 "USER" ""}}{{template "defines::thvlink" Vlink $p $p.Psk 4 "PR" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 5 "NI" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 6 "VIRT" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 7 "RES" $r}}{{template "defines::thvlink" Vlink $p $p.Psk 8 "TIME" $c}}{{template "defines::thvlink" Vlink $p $p.Psk 9 "COMMAND" ""}}</tr
-      ></thead
-    ><tbody
-      >{{if .Data.procs}}{{range $ps := .Data.procs.List}}{{jsx `{this.List(Data).map(function($ps) { return`}}<tr {{Key "ps-rowby-pid" $ps.PID}}
-        ><td class="text-right"
-          > {{$ps.PID}}</td
-        ><td class="text-right"
-          > {{$ps.UID}}</td
-        ><td
-          >{{$ps.User}}</td
-        ><td class="text-right"
-          > {{$ps.Priority}}</td
-        ><td class="text-right"
-          > {{$ps.Nice}}</td
-        ><td class="text-right"
-          > {{$ps.Size}}</td
-        ><td class="text-right"
-          > {{$ps.Resident}}</td
-        ><td class="text-center"
-          >{{$ps.Time}}</td
-        ><td
-          >{{$ps.Name}}</td
-        ></tr
-      >{{jsx `})}`}}{{end}}{{end}}</tbody
-    ></table
+  ><div {{ClassNonZero $p.Psn "stripe" "hide"}}
+    ><div class="grid-block thead"
+      ><span class="col small-1 text-right"
+        >{{template "defines::avlink" Vlink $p $p.Psk 1 "PID"}}</span
+      ><div class="grid-block wrap noscroll text-nowrap"
+        ><span class="col small-1 text-right"
+          > {{template "defines::avlink" Vlink $p $p.Psk 2 "UID"}}</span
+        ><span class="col small-1"
+          > {{template "defines::avlink" Vlink $p $p.Psk 3 "USER"}}</span
+        ><span class="col small-1 text-right"
+          > {{template "defines::avlink" Vlink $p $p.Psk 4 "PR"}}</span
+        ><span class="col small-1 text-right"
+          > {{template "defines::avlink" Vlink $p $p.Psk 5 "NI"}}</span
+        ><span class="col small-1 text-right"
+          > {{template "defines::avlink" Vlink $p $p.Psk 6 "VIRT"}}</span
+        ><span class="col small-1 text-right"
+          > {{template "defines::avlink" Vlink $p $p.Psk 7 "RES"}}</span
+        ><span class="col small-1 text-center"
+          > {{template "defines::avlink" Vlink $p $p.Psk 8 "TIME"}}</span
+        ><span class="col small-1"
+          > {{template "defines::avlink" Vlink $p $p.Psk 9 "COMMAND"}}</span
+        ></div
+      ></div
+    >{{if .Data.procs}}{{range $ps := .Data.procs.List}}{{jsx `{this.List(Data).map(function($ps) { return`}}<div class="grid-block"
+      ><span class="col small-1 text-right"
+        >{{$ps.PID}}</span
+      ><div {{Key "ps-rowby-pid" $ps.PID}} {{class}}="grid-block wrap noscroll"
+        ><span class="col small-1 text-right"
+          > {{$ps.UID}}</span
+        ><span class="col small-1"
+          > {{$ps.User}}</span
+        ><span class="col small-1 text-right"
+          > {{$ps.Priority}}</span
+        ><span class="col small-1 text-right"
+          > {{$ps.Nice}}</span
+        ><span class="col small-1 text-right"
+          > {{$ps.Size}}</span
+        ><span class="col small-1 text-right"
+          > {{$ps.Resident}}</span
+        ><span class="col small-1 text-center"
+          > {{$ps.Time}}</span
+        ><span class="col expand"
+          > {{$ps.Name}}</span
+        ></div
+      ></div
+    >{{jsx `})}`}}{{end}}{{end}}</div
   ></div
 >{{end}}{{/*
 */}}{{define "defines::define_uptime"}}<span
   >{{.Data.uptime}}</span
->{{end}}{{/*
-*/}}{{define "defines::thvlink"}}<th {{class}}="header {{.AlignClass}}"
-  ><a href={{.LinkHref}} {{class}}={{.LinkClass}} onClick={this.handleClick}  
-    >{{.LinkText}}<span {{class}}={{.CaretClass}}
-      ></span
-    ></a
-  ></th
 >{{end}}

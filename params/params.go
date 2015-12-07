@@ -160,7 +160,6 @@ type ALink struct {
 }
 
 type VLink struct {
-	AlignClass string
 	CaretClass string
 	LinkClass  string
 	LinkHref   string
@@ -247,7 +246,7 @@ func (p *Params) Vlinks() map[string][]VLink {
 			continue
 		}
 		for j := 1; j < maxn.Absolute+1; j++ { // indexed from 1
-			if v, err := p.Vlink(p, v, j, "", ""); err == nil { // err is gone
+			if v, err := p.Vlink(p, v, j, ""); err == nil { // err is gone
 				vl = append(vl, v)
 			}
 		}

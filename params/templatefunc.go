@@ -30,7 +30,7 @@ func (f ParamsFuncs) MoreN(p *Params, num *Num, bclass string) (ALink, error) {
 	return f.LinkN(p, num, bclass, f.Pow2More(num.Absolute), "+")
 }
 
-func (f ParamsFuncs) Vlink(p *Params, num *Num, absolute int, text, alignClass string) (VLink, error) {
+func (f ParamsFuncs) Vlink(p *Params, num *Num, absolute int, text string) (VLink, error) {
 	// f is unused
 	vl := VLink{LinkText: text, LinkClass: "state"}
 	negative := new(bool) // EncodeN will use .Negative being false by default
@@ -47,7 +47,6 @@ func (f ParamsFuncs) Vlink(p *Params, num *Num, absolute int, text, alignClass s
 		return VLink{}, err
 	}
 	vl.LinkHref = qs
-	vl.AlignClass = alignClass
 	return vl, nil
 }
 
