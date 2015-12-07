@@ -216,40 +216,54 @@
         ></div
       ></div
     ></div
-  ><table {{ClassNonZero $p.Dfn "hover margin-bottom-0" "hide"}}
-    ><thead
-      ><tr class="text-nowrap"
-        >{{$r := "text-right"}}{{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail" $r}}{{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%" $r}}<th
-          ></th
-        ></tr
-      ></thead
-    ><tbody
-      >{{if .Data.diskUsage}}{{range $df := .Data.diskUsage.List}}{{jsx `{this.List(Data).map(function($df, i) { return`}}<tr {{Key "df-rowby-dirname" $df.DirName}}
-        >  <td {{class}}="text-nowrap"
-          >{{$df.DevName}}</td
-        >  <td {{class}}="text-nowrap"
-          >{{$df.DirName}}</td
-        ><td class="text-right text-nowrap"
+  ><div {{ClassNonZero $p.Dfn "stripe" "hide"}}
+    ><div class="grid-block thead"
+      ><span class="col small-1"
+        >{{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device" ""}}</span
+      ><div class="grid-block wrap noscroll"
+        >{{$r := "text-right"}}<span class="col small-1"
+          > {{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""}}</span
+        ><span class="col small-1 text-right"
+          > {{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total" $r}}</span
+        ><span class="col small-1 text-right"
+          > {{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used" $r}}</span
+        ><span class="col small-1 text-right"
+          > {{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail" $r}}</span
+        ><span class="col small-1 text-right"
+          > {{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%" $r}}</span
+        ><span class="col"
+          ></span
+        ></div
+      ></div
+    >{{if .Data.diskUsage}}{{range $df := .Data.diskUsage.List}}{{jsx `{this.List(Data).map(function($df, i) { return`}}<div class="grid-block"
+      ><span class="col small-1 text-overflow"
+        >{{$df.DevName}}</span
+      ><div {{Key "df-rowby-dirname" $df.DirName}} {{class}}="grid-block wrap noscroll"
+        ><span class="col small-1 text-overflow"
+          > {{$df.DirName}}</span
+        ><span class="col small-1 text-nowrap text-right"
           ><span class="mutext" title="Inodes total"
-            >{{$df.Inodes}}</span
-          > {{$df.Total}}</td
-        ><td class="text-right text-nowrap"
+            > {{$df.Inodes}}</span
+          > {{$df.Total}}</span
+        ><span class="col small-1 text-nowrap text-right"
           ><span class="mutext" title="Inodes used"
-            >{{$df.Iused}}</span
-          > {{$df.Used}}</td
-        ><td class="text-right text-nowrap"
+            > {{$df.Iused}}</span
+          > {{$df.Used}}</span
+        ><span class="col small-1 text-nowrap text-right"
           ><span class="mutext" title="Inodes free"
-            >{{$df.Ifree}}</span
-          > {{$df.Avail}}</td
-        ><td {{class}}="text-right bg-usepct text-nowrap" data-usepct={{$df.UsePct}}
-          ><span class="mutext" title="Inodes use%"
-            >{{$df.IusePct}}%</span
-          > {{$df.UsePct}}%</td
-        ><td class="full"
-          >{{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}</td
-        ></tr
-      >{{jsx `})}`}}{{end}}{{end}}</tbody
-    ></table
+            > {{$df.Ifree}}</span
+          > {{$df.Avail}}</span
+        ><span class="small-1 text-right text-nowrap"
+          ><span {{class}}="col display-block bg-usepct" data-usepct={{$df.UsePct}}
+            ><span class="mutext" title="Inodes use%"
+              > {{$df.IusePct}}%</span
+            > {{$df.UsePct}}%</span
+          ></span
+        ><span class="col sparkline expand"
+          >{{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct', height: 35})}`}}</span
+        ></div
+      ></div
+    >{{jsx `})}`}}{{end}}{{end}}</div
   ></div
 >{{end}}{{/*
 */}}{{define "defines::define_panelif"}}{{$p := .Data.params}}<div
@@ -400,7 +414,7 @@
         ></div
       ></div
     ></div
-  ><div class="stripe"
+  ><div {{ClassNonZero $p.Memn "stripe" "hide"}}
     ><div class="grid-block thead"
       ><span class="col small-1"
         >Kind</span
@@ -417,7 +431,7 @@
           ></span
         ></div
       ></div
-    >{{range $mem := .Data.memory.List}}{{jsx `{this.List(Data).map(function($mem, i) { return`}}<div class="grid-block"
+    >{{if .Data.memory}}{{range $mem := .Data.memory.List}}{{jsx `{this.List(Data).map(function($mem, i) { return`}}<div class="grid-block"
       ><span class="col small-1"
         >{{$mem.Kind}}</span
       ><div {{Key "mem-rowby-kind" $mem.Kind}} {{class}}="grid-block wrap noscroll"
@@ -427,7 +441,7 @@
           > {{$mem.Used}}</span
         ><span class="col small-1 text-right"
           > {{$mem.Free}}</span
-        ><span {{class}}="small-1 text-right"
+        ><span class="small-1 text-right"
           ><span {{class}}="col display-block bg-usepct" data-usepct={{$mem.UsePct}}
             > {{$mem.UsePct}}%</span
           ></span
@@ -435,7 +449,7 @@
           >{{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct', height: 35})}`}}</span
         ></div
       ></div
-    >{{jsx `})}`}}{{end}}</div
+    >{{jsx `})}`}}{{end}}{{end}}</div
   ></div
 >{{end}}{{/*
 */}}{{define "defines::define_panelps"}}{{$p := .Data.params}}<div

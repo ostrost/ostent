@@ -91,6 +91,9 @@ $menu-hpadding: 0.7rem; // $menu-item-padding is 0.7rem 1rem;
     padding-left:   0.625rem;
     padding-right:  0.625rem;
   }
+
+  &:hover .mutext { color: $dark-gray; }
+  .mutext         { color: $medium-gray; }
 }
 
 .align-self-center { align-self: center; }
@@ -115,6 +118,11 @@ table.hover .mutext { color: $medium-gray; }
 table.hover tr:hover .mutext { color: $dark-gray; }
 
 .text-nowrap { white-space: nowrap; } // from bootstrap as is
+.text-overflow {
+  @extend .text-nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
 
 /* from bootstrap: caret, drop{down,up} */
 .caret {

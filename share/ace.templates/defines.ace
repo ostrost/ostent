@@ -52,32 +52,34 @@
 = content define_panelmem
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Memn` `$p.Memd` "Memory"]]
-  div.stripe
-    div.grid-block.thead
-      span.col.small-1 Kind
-      div.grid-block.wrap.noscroll
-        span.col.small-1.text-right  Total
-        span.col.small-1.text-right  Used
-        span.col.small-1.text-right  Free
-        span.col.small-1.text-right  Use%
-        span.col
+  | <div {{ClassNonZero $p.Memn "stripe" "hide"}}>
+  div.grid-block.thead
+    span.col.small-1 Kind
+    div.grid-block.wrap.noscroll
+      span.col.small-1.text-right  Total
+      span.col.small-1.text-right  Used
+      span.col.small-1.text-right  Free
+      span.col.small-1.text-right  Use%
+      span.col
+  {{if .Data.memory}}
     {{range $mem := .Data.memory.List}}
-    {{jsx  `{this.List(Data).map(function($mem, i) { return`}}
-    div.grid-block
-      / first col could be .shrink but it would skew the grid
-      span.col.small-1 {{$mem.Kind}}
-      | <div {{Key "mem-rowby-kind" $mem.Kind}} {{class}}="grid-block wrap noscroll">
-      span.col.small-1.text-right  {{$mem.Total}}
-      span.col.small-1.text-right  {{$mem.Used}}
-      span.col.small-1.text-right  {{$mem.Free}}
-      | <span {{class}}="small-1 text-right"
-      | ><span {{class}}="col display-block bg-usepct" data-usepct={{$mem.UsePct}}> {{$mem.UsePct}}%</span></span>
-      span.col.sparkline.expand
-        {{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct', height: 35})}`}}
-      | </div>
-    {{jsx `})}`}}
+      {{jsx  `{this.List(Data).map(function($mem, i) { return`}}
+      div.grid-block
+        / first col could be .shrink but it would skew the grid
+        span.col.small-1 {{$mem.Kind}}
+        | <div {{Key "mem-rowby-kind" $mem.Kind}} {{class}}="grid-block wrap noscroll">
+        span.col.small-1.text-right  {{$mem.Total}}
+        span.col.small-1.text-right  {{$mem.Used}}
+        span.col.small-1.text-right  {{$mem.Free}}
+        span.small-1.text-right
+          | <span {{class}}="col display-block bg-usepct" data-usepct={{$mem.UsePct}}> {{$mem.UsePct}}%</span>
+        span.col.sparkline.expand
+          {{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct', height: 35})}`}}
+        | </div>
+      {{jsx `})}`}}
     {{end}}
-  | </div>
+  {{end}}
+  | </div></div>
 / | <table {{ClassNonZero $p.Memn "hover margin-bottom-0" "hide"}}>
   thead
     tr
@@ -109,7 +111,46 @@
 = content define_paneldf
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Dfn` `$p.Dfd` "Disk usage"]]
-  | <table {{ClassNonZero $p.Dfn "hover margin-bottom-0" "hide"}}>
+  | <div {{ClassNonZero $p.Dfn "stripe" "hide"}}>
+  div.grid-block.thead
+    span.col.small-1... {{template "defines::thvlink" Vlink $p $p.Dfk 1 "Device"  ""}}{{/* FS     */}}
+    div.grid-block.wrap.noscroll
+      {{$r := "text-right"}}
+      span.col.small-1  {{template "defines::thvlink" Vlink $p $p.Dfk 2 "Mounted" ""}}{{/* MP     */}}
+      span.col.small-1.text-right  {{template "defines::thvlink" Vlink $p $p.Dfk 6 "Total"   $r}}{{/* TOTAL  */}}
+      span.col.small-1.text-right  {{template "defines::thvlink" Vlink $p $p.Dfk 5 "Used"    $r}}{{/* USED   */}}
+      span.col.small-1.text-right  {{template "defines::thvlink" Vlink $p $p.Dfk 3 "Avail"   $r}}{{/* AVAIL  */}}
+      span.col.small-1.text-right  {{template "defines::thvlink" Vlink $p $p.Dfk 4 "Use%"    $r}}{{/* USEPCT */}}
+      span.col
+  {{if .Data.diskUsage}}
+    {{range $df := .Data.diskUsage.List}}
+      {{jsx `{this.List(Data).map(function($df, i) { return`}}
+      div.grid-block
+        / first col could be .shrink but it would skew the grid
+        span.col.small-1.text-overflow {{$df.DevName}}
+        | <div {{Key "df-rowby-dirname" $df.DirName}} {{class}}="grid-block wrap noscroll">
+        span.col.small-1.text-overflow  {{$df.DirName}}
+        span.col.small-1.text-nowrap.text-right
+          span.mutext title="Inodes total"  {{$df.Inodes}}
+          |  {{$df.Total}}
+        span.col.small-1.text-nowrap.text-right
+          span.mutext title="Inodes used"  {{$df.Iused}}
+          |  {{$df.Used}}
+        span.col.small-1.text-nowrap.text-right
+          span.mutext title="Inodes free"  {{$df.Ifree}}
+          |  {{$df.Avail}}
+        span.small-1.text-right.text-nowrap
+          | <span {{class}}="col display-block bg-usepct" data-usepct={{$df.UsePct}}>
+          span.mutext title="Inodes use%"  {{$df.IusePct}}%
+          |  {{$df.UsePct}}%</span>
+        span.col.sparkline.expand
+          {{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct', height: 35})}`}}
+        | </div>
+      {{jsx `})}`}}
+    {{end}}
+  {{end}}
+  | </div></div>
+/ | <table {{ClassNonZero $p.Dfn "hover margin-bottom-0" "hide"}}>
   thead
     tr.text-nowrap
       {{$r := "text-right"}}
@@ -147,7 +188,7 @@
         {{jsx `})}`}}
       {{end}}
     {{end}}
-  | </table></div>
+  | </table>
 
 = content define_panelcpu
   {{$p := .Data.params}}

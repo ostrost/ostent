@@ -20014,7 +20014,9 @@
 	  }
 	});
 
-	var _ref4 = _jsx('th', {});
+	var _ref4 = _jsx('span', {
+	  className: 'col'
+	});
 
 	jsdefines.define_paneldf = React.createClass({
 	  displayName: 'define_paneldf',
@@ -20083,10 +20085,12 @@
 	      href: Data.params.Nlinks.Dfn.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.Dfn.More.Text, ' +')))))))), _jsx('table', {
-	      className: Data.params.Dfn.Absolute != 0 ? "hover margin-bottom-0" : "hide"
-	    }, void 0, _jsx('thead', {}, void 0, _jsx('tr', {
-	      className: 'text-nowrap'
+	    }, void 0, Data.params.Nlinks.Dfn.More.Text, ' +')))))))), _jsx('div', {
+	      className: Data.params.Dfn.Absolute != 0 ? "stripe" : "hide"
+	    }, void 0, _jsx('div', {
+	      className: 'grid-block thead'
+	    }, void 0, _jsx('span', {
+	      className: 'col small-1'
 	    }, void 0, _jsx('th', {
 	      className: 'header '
 	    }, void 0, _jsx('a', {
@@ -20095,7 +20099,11 @@
 	      onClick: this.handleClick
 	    }, void 0, 'Device', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[1 - 1].CaretClass
-	    }))), _jsx('th', {
+	    })))), _jsx('div', {
+	      className: 'grid-block wrap noscroll'
+	    }, void 0, _jsx('span', {
+	      className: 'col small-1'
+	    }, void 0, ' ', _jsx('th', {
 	      className: 'header '
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Dfk[2 - 1].LinkHref,
@@ -20103,7 +20111,9 @@
 	      onClick: this.handleClick
 	    }, void 0, 'Mounted', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[2 - 1].CaretClass
-	    }))), _jsx('th', {
+	    })))), _jsx('span', {
+	      className: 'col small-1 text-right'
+	    }, void 0, ' ', _jsx('th', {
 	      className: 'header text-right'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Dfk[6 - 1].LinkHref,
@@ -20111,7 +20121,9 @@
 	      onClick: this.handleClick
 	    }, void 0, 'Total', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[6 - 1].CaretClass
-	    }))), _jsx('th', {
+	    })))), _jsx('span', {
+	      className: 'col small-1 text-right'
+	    }, void 0, ' ', _jsx('th', {
 	      className: 'header text-right'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Dfk[5 - 1].LinkHref,
@@ -20119,7 +20131,9 @@
 	      onClick: this.handleClick
 	    }, void 0, 'Used', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[5 - 1].CaretClass
-	    }))), _jsx('th', {
+	    })))), _jsx('span', {
+	      className: 'col small-1 text-right'
+	    }, void 0, ' ', _jsx('th', {
 	      className: 'header text-right'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Dfk[3 - 1].LinkHref,
@@ -20127,7 +20141,9 @@
 	      onClick: this.handleClick
 	    }, void 0, 'Avail', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[3 - 1].CaretClass
-	    }))), _jsx('th', {
+	    })))), _jsx('span', {
+	      className: 'col small-1 text-right'
+	    }, void 0, ' ', _jsx('th', {
 	      className: 'header text-right'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Dfk[4 - 1].LinkHref,
@@ -20135,36 +20151,42 @@
 	      onClick: this.handleClick
 	    }, void 0, 'Use%', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[4 - 1].CaretClass
-	    }))), _ref4)), _jsx('tbody', {}, void 0, this.List(Data).map(function ($df, i) {
-	      return _jsx('tr', {}, "df-rowby-dirname-" + $df.DirName, '  ', _jsx('td', {
-	        className: 'text-nowrap'
-	      }, void 0, $df.DevName), '  ', _jsx('td', {
-	        className: 'text-nowrap'
-	      }, void 0, $df.DirName), _jsx('td', {
-	        className: 'text-right text-nowrap'
+	    })))), _ref4)), this.List(Data).map(function ($df, i) {
+	      return _jsx('div', {
+	        className: 'grid-block'
+	      }, void 0, _jsx('span', {
+	        className: 'col small-1 text-overflow'
+	      }, void 0, $df.DevName), _jsx('div', {
+	        className: 'grid-block wrap noscroll'
+	      }, "df-rowby-dirname-" + $df.DirName, _jsx('span', {
+	        className: 'col small-1 text-overflow'
+	      }, void 0, ' ', $df.DirName), _jsx('span', {
+	        className: 'col small-1 text-nowrap text-right'
 	      }, void 0, _jsx('span', {
 	        className: 'mutext',
 	        title: 'Inodes total'
-	      }, void 0, $df.Inodes), ' ', $df.Total), _jsx('td', {
-	        className: 'text-right text-nowrap'
+	      }, void 0, ' ', $df.Inodes), ' ', $df.Total), _jsx('span', {
+	        className: 'col small-1 text-nowrap text-right'
 	      }, void 0, _jsx('span', {
 	        className: 'mutext',
 	        title: 'Inodes used'
-	      }, void 0, $df.Iused), ' ', $df.Used), _jsx('td', {
-	        className: 'text-right text-nowrap'
+	      }, void 0, ' ', $df.Iused), ' ', $df.Used), _jsx('span', {
+	        className: 'col small-1 text-nowrap text-right'
 	      }, void 0, _jsx('span', {
 	        className: 'mutext',
 	        title: 'Inodes free'
-	      }, void 0, $df.Ifree), ' ', $df.Avail), _jsx('td', {
-	        className: 'text-right bg-usepct text-nowrap',
+	      }, void 0, ' ', $df.Ifree), ' ', $df.Avail), _jsx('span', {
+	        className: 'small-1 text-right text-nowrap'
+	      }, void 0, _jsx('span', {
+	        className: 'col display-block bg-usepct',
 	        'data-usepct': $df.UsePct
 	      }, void 0, _jsx('span', {
 	        className: 'mutext',
 	        title: 'Inodes use%'
-	      }, void 0, $df.IusePct, '%'), ' ', $df.UsePct, '%'), _jsx('td', {
-	        className: 'full'
-	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct' })));
-	    }))));
+	      }, void 0, ' ', $df.IusePct, '%'), ' ', $df.UsePct, '%')), _jsx('span', {
+	        className: 'col sparkline expand'
+	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct', height: 35 }))));
+	    })));
 	  }
 	});
 
@@ -20383,7 +20405,7 @@
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : ""),
 	      onClick: this.handleClick
 	    }, void 0, Data.params.Nlinks.Memn.More.Text, ' +')))))))), _jsx('div', {
-	      className: 'stripe'
+	      className: Data.params.Memn.Absolute != 0 ? "stripe" : "hide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block thead'
 	    }, void 0, _jsx('span', {

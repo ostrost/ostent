@@ -283,76 +283,90 @@ jsdefines.define_paneldf = React.createClass({
         ></div
       ></div
     ></div
-  ><table  className={Data.params.Dfn.Absolute != 0 ? "hover margin-bottom-0" : "hide"}
-    ><thead
-      ><tr className="text-nowrap"
+  ><div  className={Data.params.Dfn.Absolute != 0 ? "stripe" : "hide"}
+    ><div className="grid-block thead"
+      ><span className="col small-1"
         ><th className="header "
   ><a href={Data.params.Vlinks.Dfk[1-1].LinkHref} className={Data.params.Vlinks.Dfk[1-1].LinkClass} onClick={this.handleClick}  
     >Device<span className={Data.params.Vlinks.Dfk[1-1].CaretClass}
       ></span
     ></a
   ></th
-><th className="header "
+></span
+      ><div className="grid-block wrap noscroll"
+        ><span className="col small-1"
+          > <th className="header "
   ><a href={Data.params.Vlinks.Dfk[2-1].LinkHref} className={Data.params.Vlinks.Dfk[2-1].LinkClass} onClick={this.handleClick}  
     >Mounted<span className={Data.params.Vlinks.Dfk[2-1].CaretClass}
       ></span
     ></a
   ></th
-><th className="header text-right"
+></span
+        ><span className="col small-1 text-right"
+          > <th className="header text-right"
   ><a href={Data.params.Vlinks.Dfk[6-1].LinkHref} className={Data.params.Vlinks.Dfk[6-1].LinkClass} onClick={this.handleClick}  
     >Total<span className={Data.params.Vlinks.Dfk[6-1].CaretClass}
       ></span
     ></a
   ></th
-><th className="header text-right"
+></span
+        ><span className="col small-1 text-right"
+          > <th className="header text-right"
   ><a href={Data.params.Vlinks.Dfk[5-1].LinkHref} className={Data.params.Vlinks.Dfk[5-1].LinkClass} onClick={this.handleClick}  
     >Used<span className={Data.params.Vlinks.Dfk[5-1].CaretClass}
       ></span
     ></a
   ></th
-><th className="header text-right"
+></span
+        ><span className="col small-1 text-right"
+          > <th className="header text-right"
   ><a href={Data.params.Vlinks.Dfk[3-1].LinkHref} className={Data.params.Vlinks.Dfk[3-1].LinkClass} onClick={this.handleClick}  
     >Avail<span className={Data.params.Vlinks.Dfk[3-1].CaretClass}
       ></span
     ></a
   ></th
-><th className="header text-right"
+></span
+        ><span className="col small-1 text-right"
+          > <th className="header text-right"
   ><a href={Data.params.Vlinks.Dfk[4-1].LinkHref} className={Data.params.Vlinks.Dfk[4-1].LinkClass} onClick={this.handleClick}  
     >Use%<span className={Data.params.Vlinks.Dfk[4-1].CaretClass}
       ></span
     ></a
   ></th
-><th
-          ></th
-        ></tr
-      ></thead
-    ><tbody
-      >{this.List(Data).map(function($df, i) { return<tr  key={"df-rowby-dirname-"+$df.DirName}
-        >  <td className="text-nowrap"
-          >{$df.DevName}</td
-        >  <td className="text-nowrap"
-          >{$df.DirName}</td
-        ><td className="text-right text-nowrap"
+></span
+        ><span className="col"
+          ></span
+        ></div
+      ></div
+    >{this.List(Data).map(function($df, i) { return<div className="grid-block"
+      ><span className="col small-1 text-overflow"
+        >{$df.DevName}</span
+      ><div  key={"df-rowby-dirname-"+$df.DirName} className="grid-block wrap noscroll"
+        ><span className="col small-1 text-overflow"
+          > {$df.DirName}</span
+        ><span className="col small-1 text-nowrap text-right"
           ><span className="mutext" title="Inodes total"
-            >{$df.Inodes}</span
-          > {$df.Total}</td
-        ><td className="text-right text-nowrap"
+            > {$df.Inodes}</span
+          > {$df.Total}</span
+        ><span className="col small-1 text-nowrap text-right"
           ><span className="mutext" title="Inodes used"
-            >{$df.Iused}</span
-          > {$df.Used}</td
-        ><td className="text-right text-nowrap"
+            > {$df.Iused}</span
+          > {$df.Used}</span
+        ><span className="col small-1 text-nowrap text-right"
           ><span className="mutext" title="Inodes free"
-            >{$df.Ifree}</span
-          > {$df.Avail}</td
-        ><td className="text-right bg-usepct text-nowrap" data-usepct={$df.UsePct}
-          ><span className="mutext" title="Inodes use%"
-            >{$df.IusePct}%</span
-          > {$df.UsePct}%</td
-        ><td className="full"
-          >{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</td
-        ></tr
-      >})}</tbody
-    ></table
+            > {$df.Ifree}</span
+          > {$df.Avail}</span
+        ><span className="small-1 text-right text-nowrap"
+          ><span className="col display-block bg-usepct" data-usepct={$df.UsePct}
+            ><span className="mutext" title="Inodes use%"
+              > {$df.IusePct}%</span
+            > {$df.UsePct}%</span
+          ></span
+        ><span className="col sparkline expand"
+          >{jsdefines.Sparkline({ref: i, col: 'UsePct', height: 35})}</span
+        ></div
+      ></div
+    >})}</div
   ></div
 >;
   }
@@ -559,7 +573,7 @@ jsdefines.define_panelmem = React.createClass({
         ></div
       ></div
     ></div
-  ><div className="stripe"
+  ><div  className={Data.params.Memn.Absolute != 0 ? "stripe" : "hide"}
     ><div className="grid-block thead"
       ><span className="col small-1"
         >Kind</span

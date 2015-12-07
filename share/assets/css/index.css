@@ -3596,6 +3596,12 @@ table.hover tr:nth-of-type(even):hover {
   padding-left: 0.625rem;
   padding-right: 0.625rem; }
 
+.stripe > .grid-block:hover .mutext {
+  color: #8a8a8a; }
+
+.stripe > .grid-block .mutext {
+  color: #cacaca; }
+
 .align-self-center {
   align-self: center; }
 
@@ -3632,8 +3638,12 @@ table.hover .mutext {
 table.hover tr:hover .mutext {
   color: #8a8a8a; }
 
-.text-nowrap {
+.text-nowrap, .text-overflow {
   white-space: nowrap; }
+
+.text-overflow {
+  overflow-x: hidden;
+  text-overflow: ellipsis; }
 
 /* from bootstrap: caret, drop{down,up} */
 .caret {
