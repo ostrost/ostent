@@ -9,8 +9,12 @@ var Sparkline = React.createClass({
   getInitialState: function() { return {data: [], limit: 90, width: 180}; },
   componentDidUpdate: function(_, prevState) {
     var root = ReactDOM.findDOMNode(this.refs.root);
-    if (root != null && prevState.width != root.offsetWidth) {
-      this.setState({width: root.offsetWidth, limit: Math.round(root.offsetWidth/2)});
+    if (root == null) {
+      return;
+    }
+    var rootWidth = Math.floor(root.offsetWidth) - 10;
+    if (prevState.width != rootWidth) {
+      this.setState({width: rootWidth, limit: Math.round(rootWidth/2)});
     }
   },
   NewStateFromRow: function(row) {
@@ -587,7 +591,7 @@ jsdefines.define_panelmem = React.createClass({
             > {$mem.UsePct}%</span
           ></span
         ><span className="col sparkline expand"
-          >{jsdefines.Sparkline({ref: i, col: 'UsePct', height: 42})}</span
+          >{jsdefines.Sparkline({ref: i, col: 'UsePct', height: 35})}</span
         ></div
       ></div
     >})}</div

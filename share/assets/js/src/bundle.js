@@ -19790,8 +19790,12 @@
 	  },
 	  componentDidUpdate: function componentDidUpdate(_, prevState) {
 	    var root = ReactDOM.findDOMNode(this.refs.root);
-	    if (root != null && prevState.width != root.offsetWidth) {
-	      this.setState({ width: root.offsetWidth, limit: Math.round(root.offsetWidth / 2) });
+	    if (root == null) {
+	      return;
+	    }
+	    var rootWidth = Math.floor(root.offsetWidth) - 10;
+	    if (prevState.width != rootWidth) {
+	      this.setState({ width: rootWidth, limit: Math.round(rootWidth / 2) });
 	    }
 	  },
 	  NewStateFromRow: function NewStateFromRow(row) {
@@ -20414,7 +20418,7 @@
 	        'data-usepct': $mem.UsePct
 	      }, void 0, ' ', $mem.UsePct, '%')), _jsx('span', {
 	        className: 'col sparkline expand'
-	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct', height: 42 }))));
+	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct', height: 35 }))));
 	    })));
 	  }
 	});

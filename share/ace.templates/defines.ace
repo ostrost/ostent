@@ -73,7 +73,7 @@
       | <span {{class}}="small-1 text-right"
       | ><span {{class}}="col display-block bg-usepct" data-usepct={{$mem.UsePct}}> {{$mem.UsePct}}%</span></span>
       span.col.sparkline.expand
-        {{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct', height: 42})}`}}
+        {{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct', height: 35})}`}}
       | </div>
     {{jsx `})}`}}
     {{end}}
