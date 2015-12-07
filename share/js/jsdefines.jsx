@@ -28,12 +28,14 @@ var Sparkline = React.createClass({
   render: function() {
     var spotsProps = {spotColors: {'-1': 'green', '1': 'red'}}; // reverse default
     if (this.props.defaultSpots) { delete spotsProps.spotColors; } // back to default
+    var height = this.props.height;
+    if (height == null) { height = 24; }
     return <div className="height-1rem" ref="root">
       <SparkLines.Sparklines
                data={this.state.data}
                limit={this.state.limit}
                width={this.state.width}
-               height={24}>
+               height={height}>
         <SparkLines.SparklinesLine />
         <SparkLines.SparklinesSpots {...spotsProps} />
       </SparkLines.Sparklines>
@@ -133,38 +135,46 @@ jsdefines.define_panelcpu = React.createClass({
     let Data = this.state; // shadow global Data
     return <div
   ><div  className={!Data.params.CPUn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border"} data-tabs
-    ><div className="tabs-title menu-tab-padding"
-      ><a  href={Data.params.Tlinks.CPUn} onClick={this.handleClick}
-        ><h5 className="margin-bottom-0"
-          >CPU</h5
-        ></a
-      ></div
-    ><ul className="float-left bar menu"
-      ><li className="menu-text"
-        ><div className="input-group margin-bottom-0"
-          ><span className="input-group-label"
-            >delay</span
-          ><span className="input-group-label label secondary"
-            >{Data.params.CPUd}</span
-          ><a href={Data.params.Dlinks.CPUd.Less.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : "")} onClick={this.handleClick}  
+    ><div className="grid-block"
+      ><div className="tabs-title menu-tab-padding"
+        ><a  href={Data.params.Tlinks.CPUn} onClick={this.handleClick}
+          ><h5 className="margin-bottom-0"
+            >CPU</h5
+          ></a
+        ></div
+      ><div className="align-self-center"
+        ><ul className="bar menu"
+          ><li
+            ><div className="input-group margin-bottom-0"
+              ><div className="input-group-label small text-nowrap"
+                >delay: {Data.params.CPUd}</div
+              ><div className="input-group-button"
+                ><a href={Data.params.Dlinks.CPUd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Dlinks.CPUd.Less.Text}</a
-><a href={Data.params.Dlinks.CPUd.More.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : "")} onClick={this.handleClick}  
+></div
+              ><div className="input-group-button"
+                ><a href={Data.params.Dlinks.CPUd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : "")} onClick={this.handleClick}  
   >{Data.params.Dlinks.CPUd.More.Text} +</a
 ></div
-        ></li
-      ><li className="menu-text"
-        ><div className="input-group margin-bottom-0"
-          ><span className="input-group-label"
-            >rows</span
-          ><span className="input-group-label label secondary"
-            >{Data.params.CPUn.Absolute}</span
-          ><a href={Data.params.Nlinks.CPUn.Less.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : "")} onClick={this.handleClick}  
+              ></div
+            ></li
+          ><li
+            ><div className="input-group margin-bottom-0"
+              ><div className="input-group-label small text-nowrap"
+                >rows: {Data.params.CPUn.Absolute}</div
+              ><div className="input-group-button"
+                ><a href={Data.params.Nlinks.CPUn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Nlinks.CPUn.Less.Text}</a
-><a href={Data.params.Nlinks.CPUn.More.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : "")} onClick={this.handleClick}  
+></div
+              ><div className="input-group-button"
+                ><a href={Data.params.Nlinks.CPUn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : "")} onClick={this.handleClick}  
   >{Data.params.Nlinks.CPUn.More.Text} +</a
 ></div
-        ></li
-      ></ul
+              ></div
+            ></li
+          ></ul
+        ></div
+      ></div
     ></div
   ><table  className={Data.params.CPUn.Absolute != 0 ? "hover margin-bottom-0" : "hide"}
     ><thead
@@ -228,38 +238,46 @@ jsdefines.define_paneldf = React.createClass({
     let Data = this.state; // shadow global Data
     return <div
   ><div  className={!Data.params.Dfn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border"} data-tabs
-    ><div className="tabs-title menu-tab-padding"
-      ><a  href={Data.params.Tlinks.Dfn} onClick={this.handleClick}
-        ><h5 className="margin-bottom-0"
-          >Disk usage</h5
-        ></a
-      ></div
-    ><ul className="float-left bar menu"
-      ><li className="menu-text"
-        ><div className="input-group margin-bottom-0"
-          ><span className="input-group-label"
-            >delay</span
-          ><span className="input-group-label label secondary"
-            >{Data.params.Dfd}</span
-          ><a href={Data.params.Dlinks.Dfd.Less.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : "")} onClick={this.handleClick}  
+    ><div className="grid-block"
+      ><div className="tabs-title menu-tab-padding"
+        ><a  href={Data.params.Tlinks.Dfn} onClick={this.handleClick}
+          ><h5 className="margin-bottom-0"
+            >Disk usage</h5
+          ></a
+        ></div
+      ><div className="align-self-center"
+        ><ul className="bar menu"
+          ><li
+            ><div className="input-group margin-bottom-0"
+              ><div className="input-group-label small text-nowrap"
+                >delay: {Data.params.Dfd}</div
+              ><div className="input-group-button"
+                ><a href={Data.params.Dlinks.Dfd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Dlinks.Dfd.Less.Text}</a
-><a href={Data.params.Dlinks.Dfd.More.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : "")} onClick={this.handleClick}  
+></div
+              ><div className="input-group-button"
+                ><a href={Data.params.Dlinks.Dfd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : "")} onClick={this.handleClick}  
   >{Data.params.Dlinks.Dfd.More.Text} +</a
 ></div
-        ></li
-      ><li className="menu-text"
-        ><div className="input-group margin-bottom-0"
-          ><span className="input-group-label"
-            >rows</span
-          ><span className="input-group-label label secondary"
-            >{Data.params.Dfn.Absolute}</span
-          ><a href={Data.params.Nlinks.Dfn.Less.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : "")} onClick={this.handleClick}  
+              ></div
+            ></li
+          ><li
+            ><div className="input-group margin-bottom-0"
+              ><div className="input-group-label small text-nowrap"
+                >rows: {Data.params.Dfn.Absolute}</div
+              ><div className="input-group-button"
+                ><a href={Data.params.Nlinks.Dfn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Nlinks.Dfn.Less.Text}</a
-><a href={Data.params.Nlinks.Dfn.More.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : "")} onClick={this.handleClick}  
+></div
+              ><div className="input-group-button"
+                ><a href={Data.params.Nlinks.Dfn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : "")} onClick={this.handleClick}  
   >{Data.params.Nlinks.Dfn.More.Text} +</a
 ></div
-        ></li
-      ></ul
+              ></div
+            ></li
+          ></ul
+        ></div
+      ></div
     ></div
   ><table  className={Data.params.Dfn.Absolute != 0 ? "hover margin-bottom-0" : "hide"}
     ><thead
@@ -355,38 +373,46 @@ jsdefines.define_panelif = React.createClass({
     let Data = this.state; // shadow global Data
     return <div
   ><div  className={!Data.params.Ifn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border"} data-tabs
-    ><div className="tabs-title menu-tab-padding"
-      ><a  href={Data.params.Tlinks.Ifn} onClick={this.handleClick}
-        ><h5 className="margin-bottom-0"
-          >Interfaces</h5
-        ></a
-      ></div
-    ><ul className="float-left bar menu"
-      ><li className="menu-text"
-        ><div className="input-group margin-bottom-0"
-          ><span className="input-group-label"
-            >delay</span
-          ><span className="input-group-label label secondary"
-            >{Data.params.Ifd}</span
-          ><a href={Data.params.Dlinks.Ifd.Less.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : "")} onClick={this.handleClick}  
+    ><div className="grid-block"
+      ><div className="tabs-title menu-tab-padding"
+        ><a  href={Data.params.Tlinks.Ifn} onClick={this.handleClick}
+          ><h5 className="margin-bottom-0"
+            >Interfaces</h5
+          ></a
+        ></div
+      ><div className="align-self-center"
+        ><ul className="bar menu"
+          ><li
+            ><div className="input-group margin-bottom-0"
+              ><div className="input-group-label small text-nowrap"
+                >delay: {Data.params.Ifd}</div
+              ><div className="input-group-button"
+                ><a href={Data.params.Dlinks.Ifd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Dlinks.Ifd.Less.Text}</a
-><a href={Data.params.Dlinks.Ifd.More.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : "")} onClick={this.handleClick}  
+></div
+              ><div className="input-group-button"
+                ><a href={Data.params.Dlinks.Ifd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : "")} onClick={this.handleClick}  
   >{Data.params.Dlinks.Ifd.More.Text} +</a
 ></div
-        ></li
-      ><li className="menu-text"
-        ><div className="input-group margin-bottom-0"
-          ><span className="input-group-label"
-            >rows</span
-          ><span className="input-group-label label secondary"
-            >{Data.params.Ifn.Absolute}</span
-          ><a href={Data.params.Nlinks.Ifn.Less.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : "")} onClick={this.handleClick}  
+              ></div
+            ></li
+          ><li
+            ><div className="input-group margin-bottom-0"
+              ><div className="input-group-label small text-nowrap"
+                >rows: {Data.params.Ifn.Absolute}</div
+              ><div className="input-group-button"
+                ><a href={Data.params.Nlinks.Ifn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Nlinks.Ifn.Less.Text}</a
-><a href={Data.params.Nlinks.Ifn.More.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : "")} onClick={this.handleClick}  
+></div
+              ><div className="input-group-button"
+                ><a href={Data.params.Nlinks.Ifn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : "")} onClick={this.handleClick}  
   >{Data.params.Nlinks.Ifn.More.Text} +</a
 ></div
-        ></li
-      ></ul
+              ></div
+            ></li
+          ></ul
+        ></div
+      ></div
     ></div
   ><table  className={Data.params.Ifn.Absolute != 0 ? "hover margin-bottom-0" : "hide"}
     ><thead
@@ -488,73 +514,83 @@ jsdefines.define_panelmem = React.createClass({
     let Data = this.state; // shadow global Data
     return <div
   ><div  className={!Data.params.Memn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border"} data-tabs
-    ><div className="tabs-title menu-tab-padding"
-      ><a  href={Data.params.Tlinks.Memn} onClick={this.handleClick}
-        ><h5 className="margin-bottom-0"
-          >Memory</h5
-        ></a
-      ></div
-    ><ul className="float-left bar menu"
-      ><li className="menu-text"
-        ><div className="input-group margin-bottom-0"
-          ><span className="input-group-label"
-            >delay</span
-          ><span className="input-group-label label secondary"
-            >{Data.params.Memd}</span
-          ><a href={Data.params.Dlinks.Memd.Less.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : "")} onClick={this.handleClick}  
+    ><div className="grid-block"
+      ><div className="tabs-title menu-tab-padding"
+        ><a  href={Data.params.Tlinks.Memn} onClick={this.handleClick}
+          ><h5 className="margin-bottom-0"
+            >Memory</h5
+          ></a
+        ></div
+      ><div className="align-self-center"
+        ><ul className="bar menu"
+          ><li
+            ><div className="input-group margin-bottom-0"
+              ><div className="input-group-label small text-nowrap"
+                >delay: {Data.params.Memd}</div
+              ><div className="input-group-button"
+                ><a href={Data.params.Dlinks.Memd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Dlinks.Memd.Less.Text}</a
-><a href={Data.params.Dlinks.Memd.More.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : "")} onClick={this.handleClick}  
+></div
+              ><div className="input-group-button"
+                ><a href={Data.params.Dlinks.Memd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : "")} onClick={this.handleClick}  
   >{Data.params.Dlinks.Memd.More.Text} +</a
 ></div
-        ></li
-      ><li className="menu-text"
-        ><div className="input-group margin-bottom-0"
-          ><span className="input-group-label"
-            >rows</span
-          ><span className="input-group-label label secondary"
-            >{Data.params.Memn.Absolute}</span
-          ><a href={Data.params.Nlinks.Memn.Less.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : "")} onClick={this.handleClick}  
+              ></div
+            ></li
+          ><li
+            ><div className="input-group margin-bottom-0"
+              ><div className="input-group-label small text-nowrap"
+                >rows: {Data.params.Memn.Absolute}</div
+              ><div className="input-group-button"
+                ><a href={Data.params.Nlinks.Memn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Nlinks.Memn.Less.Text}</a
-><a href={Data.params.Nlinks.Memn.More.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : "")} onClick={this.handleClick}  
+></div
+              ><div className="input-group-button"
+                ><a href={Data.params.Nlinks.Memn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : "")} onClick={this.handleClick}  
   >{Data.params.Nlinks.Memn.More.Text} +</a
 ></div
-        ></li
-      ></ul
+              ></div
+            ></li
+          ></ul
+        ></div
+      ></div
     ></div
-  ><table  className={Data.params.Memn.Absolute != 0 ? "hover margin-bottom-0" : "hide"}
-    ><thead
-      ><tr
-        ><th
-          ></th
-        ><th className="text-right"
-          >Total</th
-        ><th className="text-right"
-          >Used</th
-        ><th className="text-right"
-          >Free</th
-        ><th className="text-right"
-          >Use%</th
-        ><th
-          ></th
-        ></tr
-      ></thead
-    ><tbody
-      >{this.List(Data).map(function($mem, i) { return<tr  key={"mem-rowby-kind-"+$mem.Kind}
-        ><td
-          >{$mem.Kind}</td
-        ><td className="text-right"
-          >{$mem.Total}</td
-        ><td className="text-right"
-          >{$mem.Used}</td
-        ><td className="text-right"
-          >{$mem.Free}</td
-        ><td className="text-right bg-usepct" data-usepct={$mem.UsePct}
-          >{$mem.UsePct}%</td
-        ><td className="full"
-          >{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</td
-        ></tr
-      >})}</tbody
-    ></table
+  ><div className="stripe"
+    ><div className="grid-block thead"
+      ><span className="col small-1"
+        >Kind</span
+      ><div className="grid-block wrap noscroll"
+        ><span className="col small-1 text-right"
+          > Total</span
+        ><span className="col small-1 text-right"
+          > Used</span
+        ><span className="col small-1 text-right"
+          > Free</span
+        ><span className="col small-1 text-right"
+          > Use%</span
+        ><span className="col"
+          ></span
+        ></div
+      ></div
+    >{this.List(Data).map(function($mem, i) { return<div className="grid-block"
+      ><span className="col small-1"
+        >{$mem.Kind}</span
+      ><div  key={"mem-rowby-kind-"+$mem.Kind} className="grid-block wrap noscroll"
+        ><span className="col small-1 text-right"
+          > {$mem.Total}</span
+        ><span className="col small-1 text-right"
+          > {$mem.Used}</span
+        ><span className="col small-1 text-right"
+          > {$mem.Free}</span
+        ><span className="small-1 text-right"
+          ><span className="col display-block bg-usepct" data-usepct={$mem.UsePct}
+            > {$mem.UsePct}%</span
+          ></span
+        ><span className="col sparkline expand"
+          >{jsdefines.Sparkline({ref: i, col: 'UsePct', height: 42})}</span
+        ></div
+      ></div
+    >})}</div
   ></div
 >;
   }
@@ -579,38 +615,46 @@ jsdefines.define_panelps = React.createClass({
     let Data = this.state; // shadow global Data
     return <div
   ><div  className={!Data.params.Psn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border"} data-tabs
-    ><div className="tabs-title menu-tab-padding"
-      ><a  href={Data.params.Tlinks.Psn} onClick={this.handleClick}
-        ><h5 className="margin-bottom-0"
-          >Processes</h5
-        ></a
-      ></div
-    ><ul className="float-left bar menu"
-      ><li className="menu-text"
-        ><div className="input-group margin-bottom-0"
-          ><span className="input-group-label"
-            >delay</span
-          ><span className="input-group-label label secondary"
-            >{Data.params.Psd}</span
-          ><a href={Data.params.Dlinks.Psd.Less.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : "")} onClick={this.handleClick}  
+    ><div className="grid-block"
+      ><div className="tabs-title menu-tab-padding"
+        ><a  href={Data.params.Tlinks.Psn} onClick={this.handleClick}
+          ><h5 className="margin-bottom-0"
+            >Processes</h5
+          ></a
+        ></div
+      ><div className="align-self-center"
+        ><ul className="bar menu"
+          ><li
+            ><div className="input-group margin-bottom-0"
+              ><div className="input-group-label small text-nowrap"
+                >delay: {Data.params.Psd}</div
+              ><div className="input-group-button"
+                ><a href={Data.params.Dlinks.Psd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Dlinks.Psd.Less.Text}</a
-><a href={Data.params.Dlinks.Psd.More.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : "")} onClick={this.handleClick}  
+></div
+              ><div className="input-group-button"
+                ><a href={Data.params.Dlinks.Psd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : "")} onClick={this.handleClick}  
   >{Data.params.Dlinks.Psd.More.Text} +</a
 ></div
-        ></li
-      ><li className="menu-text"
-        ><div className="input-group margin-bottom-0"
-          ><span className="input-group-label"
-            >rows</span
-          ><span className="input-group-label label secondary"
-            >{Data.params.Psn.Absolute}</span
-          ><a href={Data.params.Nlinks.Psn.Less.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : "")} onClick={this.handleClick}  
+              ></div
+            ></li
+          ><li
+            ><div className="input-group margin-bottom-0"
+              ><div className="input-group-label small text-nowrap"
+                >rows: {Data.params.Psn.Absolute}</div
+              ><div className="input-group-button"
+                ><a href={Data.params.Nlinks.Psn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Nlinks.Psn.Less.Text}</a
-><a href={Data.params.Nlinks.Psn.More.Href} className={"button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : "")} onClick={this.handleClick}  
+></div
+              ><div className="input-group-button"
+                ><a href={Data.params.Nlinks.Psn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : "")} onClick={this.handleClick}  
   >{Data.params.Nlinks.Psn.More.Text} +</a
 ></div
-        ></li
-      ></ul
+              ></div
+            ></li
+          ></ul
+        ></div
+      ></div
     ></div
   ><table  className={Data.params.Psn.Absolute != 0 ? "hover margin-bottom-0" : "hide"}
     ><thead

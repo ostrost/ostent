@@ -3,23 +3,30 @@
 [[$D := (index . 1)]]
 [[$t := (index . 2)]]
   | <div><div {{ClassPositive [[$N]] "tabs tabs-border bar-less" "tabs tabs-border"}} data-tabs>
-  div.tabs-title.menu-tab-padding
-    | <a {{HrefT $p [[$N]]}}>
-    h5.margin-bottom-0 [[$t]]
-    | </a>
-  ul.float-left.bar.menu
-    li.menu-text
-      div.input-group.margin-bottom-0
-        span.input-group-label delay
-        span.input-group-label.label.secondary {{[[$D]]}}
-        {{template "defines::alink_badgeleft"  LessD $p [[$D]] "button secondary hollow text-nowrap input-group-button"}}
-        {{template "defines::alink_badgeright" MoreD $p [[$D]] "button secondary hollow text-nowrap input-group-button"}}
-    li.menu-text
-      div.input-group.margin-bottom-0
-        span.input-group-label rows
-        span.input-group-label.label.secondary {{[[$N]].Absolute}}
-        {{template "defines::alink_badgeleft"  LessN $p [[$N]] "button secondary hollow text-nowrap input-group-button"}}
-        {{template "defines::alink_badgeright" MoreN $p [[$N]] "button secondary hollow text-nowrap input-group-button"}}
+  / TODO after all the define grids are full width
+  / - remove nested blocks: .{tabs-title,aligh-self-center}
+  / - MAYBE .grid-block.align-justify
+  div.grid-block
+    div.tabs-title.menu-tab-padding
+      | <a {{HrefT $p [[$N]]}}>
+      h5.margin-bottom-0 [[$t]]
+      | </a>
+    div.align-self-center
+      ul.bar.menu
+        li
+          div.input-group.margin-bottom-0
+            div.input-group-label.small.text-nowrap delay: {{[[$D]]}}
+            div.input-group-button
+              {{template "defines::alink_badgeleft"  LessD $p [[$D]] "button small text-nowrap"}}
+            div.input-group-button
+              {{template "defines::alink_badgeright" MoreD $p [[$D]] "button small text-nowrap"}}
+        li
+          div.input-group.margin-bottom-0
+            div.input-group-label.small.text-nowrap rows: {{[[$N]].Absolute}}
+            div.input-group-button
+              {{template "defines::alink_badgeleft"  LessN $p [[$N]] "button small success text-nowrap"}}
+            div.input-group-button
+              {{template "defines::alink_badgeright" MoreN $p [[$N]] "button small success text-nowrap"}}
   | </div>
 [[end]]
 
@@ -45,7 +52,33 @@
 = content define_panelmem
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.Memn` `$p.Memd` "Memory"]]
-  | <table {{ClassNonZero $p.Memn "hover margin-bottom-0" "hide"}}>
+  div.stripe
+    div.grid-block.thead
+      span.col.small-1 Kind
+      div.grid-block.wrap.noscroll
+        span.col.small-1.text-right  Total
+        span.col.small-1.text-right  Used
+        span.col.small-1.text-right  Free
+        span.col.small-1.text-right  Use%
+        span.col
+    {{range $mem := .Data.memory.List}}
+    {{jsx  `{this.List(Data).map(function($mem, i) { return`}}
+    div.grid-block
+      / first col could be .shrink but it would skew the grid
+      span.col.small-1 {{$mem.Kind}}
+      | <div {{Key "mem-rowby-kind" $mem.Kind}} {{class}}="grid-block wrap noscroll">
+      span.col.small-1.text-right  {{$mem.Total}}
+      span.col.small-1.text-right  {{$mem.Used}}
+      span.col.small-1.text-right  {{$mem.Free}}
+      | <span {{class}}="small-1 text-right"
+      | ><span {{class}}="col display-block bg-usepct" data-usepct={{$mem.UsePct}}> {{$mem.UsePct}}%</span></span>
+      span.col.sparkline.expand
+        {{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct', height: 42})}`}}
+      | </div>
+    {{jsx `})}`}}
+    {{end}}
+  | </div>
+/ | <table {{ClassNonZero $p.Memn "hover margin-bottom-0" "hide"}}>
   thead
     tr
       th
@@ -71,7 +104,7 @@
         {{jsx `})}`}}
       {{end}}
     {{end}}
-  | </table></div>
+  | </table>
 
 = content define_paneldf
   {{$p := .Data.params}}

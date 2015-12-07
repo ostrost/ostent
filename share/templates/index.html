@@ -55,63 +55,35 @@
           ></ul
         ></div
       ></div
-    ><div class="row large-12"
-      ><div class="column large-10"
-        >{{$p := .Data.params}}<div class="row padding-top-056"
-          ><div class="large-1 hr-border-top"
-            ></div
-          ><div id="mem" class="column large-11 updates" data-define="define_panelmem"
-            >{{template "defines::define_panelmem" .}}</div
-          ></div
-        ><div class="row padding-top-056"
-          ><div class="large-1 hr-border-top"
-            ></div
-          ><div id="df" class="column large-11 updates" data-define="define_paneldf"
-            >{{template "defines::define_paneldf" .}}</div
-          ></div
-        ><div class="row padding-top-056"
-          ><div class="large-1 hr-border-top"
-            ></div
-          ><div id="cpu" class="column large-11 updates" data-define="define_panelcpu"
-            >{{template "defines::define_panelcpu" .}}</div
-          ></div
-        ><div class="row padding-top-056"
-          ><div class="large-1 hr-border-top"
-            ></div
-          ><div id="if" class="column large-11 updates" data-define="define_panelif"
-            >{{template "defines::define_panelif" .}}</div
-          ></div
-        ><div class="row padding-top-056"
-          ><div class="large-1 hr-border-top"
-            ></div
-          ><div id="ps" class="column large-11 updates" data-define="define_panelps"
-            >{{template "defines::define_panelps" .}}</div
-          ></div
+    >{{$p := .Data.params}}<div class="grid-block padding-top-056"
+      ><div class="large-1 hr-border-top"
         ></div
-      ><div class="large-2"
-        ><ul class="menu vertical bg-light-gray"
-          ><li
-            ><a href="#mem"
-              >Memory</a
-            ></li
-          ><li
-            ><a href="#df"
-              >Disk usage</a
-            ></li
-          ><li
-            ><a href="#cpu"
-              >CPU</a
-            ></li
-          ><li
-            ><a href="#if"
-              >Interfaces</a
-            ></li
-          ><li
-            ><a href="#ps"
-              >Processes</a
-            ></li
-          ></ul
+      ><div class="column large-11 updates" data-define="define_panelmem"
+        >{{template "defines::define_panelmem" .}}</div
+      ></div
+    ><div class="grid-block padding-top-056"
+      ><div class="large-1 hr-border-top"
         ></div
+      ><div class="column large-11 updates" data-define="define_paneldf"
+        >{{template "defines::define_paneldf" .}}</div
+      ></div
+    ><div class="grid-block padding-top-056"
+      ><div class="large-1 hr-border-top"
+        ></div
+      ><div class="column large-11 updates" data-define="define_panelcpu"
+        >{{template "defines::define_panelcpu" .}}</div
+      ></div
+    ><div class="grid-block padding-top-056"
+      ><div class="large-1 hr-border-top"
+        ></div
+      ><div class="column large-11 updates" data-define="define_panelif"
+        >{{template "defines::define_panelif" .}}</div
+      ></div
+    ><div class="grid-block padding-top-056"
+      ><div class="large-1 hr-border-top"
+        ></div
+      ><div class="column large-11 updates" data-define="define_panelps"
+        >{{template "defines::define_panelps" .}}</div
       ></div
     ><script type="text/javascript"
       >var Data = {{.Data}};</script
@@ -136,30 +108,38 @@
 >{{end}}{{/*
 */}}{{define "defines::define_panelcpu"}}{{$p := .Data.params}}<div
   ><div {{ClassPositive $p.CPUn "tabs tabs-border bar-less" "tabs tabs-border"}} data-tabs
-    ><div class="tabs-title menu-tab-padding"
-      ><a {{HrefT $p $p.CPUn}}
-        ><h5 class="margin-bottom-0"
-          >CPU</h5
-        ></a
+    ><div class="grid-block"
+      ><div class="tabs-title menu-tab-padding"
+        ><a {{HrefT $p $p.CPUn}}
+          ><h5 class="margin-bottom-0"
+            >CPU</h5
+          ></a
+        ></div
+      ><div class="align-self-center"
+        ><ul class="bar menu"
+          ><li
+            ><div class="input-group margin-bottom-0"
+              ><div class="input-group-label small text-nowrap"
+                >delay: {{$p.CPUd}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeleft" LessD $p $p.CPUd "button small text-nowrap"}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeright" MoreD $p $p.CPUd "button small text-nowrap"}}</div
+              ></div
+            ></li
+          ><li
+            ><div class="input-group margin-bottom-0"
+              ><div class="input-group-label small text-nowrap"
+                >rows: {{$p.CPUn.Absolute}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeleft" LessN $p $p.CPUn "button small success text-nowrap"}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeright" MoreN $p $p.CPUn "button small success text-nowrap"}}</div
+              ></div
+            ></li
+          ></ul
+        ></div
       ></div
-    ><ul class="float-left bar menu"
-      ><li class="menu-text"
-        ><div class="input-group margin-bottom-0"
-          ><span class="input-group-label"
-            >delay</span
-          ><span class="input-group-label label secondary"
-            >{{$p.CPUd}}</span
-          >{{template "defines::alink_badgeleft" LessD $p $p.CPUd "button secondary hollow text-nowrap input-group-button"}}{{template "defines::alink_badgeright" MoreD $p $p.CPUd "button secondary hollow text-nowrap input-group-button"}}</div
-        ></li
-      ><li class="menu-text"
-        ><div class="input-group margin-bottom-0"
-          ><span class="input-group-label"
-            >rows</span
-          ><span class="input-group-label label secondary"
-            >{{$p.CPUn.Absolute}}</span
-          >{{template "defines::alink_badgeleft" LessN $p $p.CPUn "button secondary hollow text-nowrap input-group-button"}}{{template "defines::alink_badgeright" MoreN $p $p.CPUn "button secondary hollow text-nowrap input-group-button"}}</div
-        ></li
-      ></ul
     ></div
   ><table {{ClassNonZero $p.CPUn "hover margin-bottom-0" "hide"}}
     ><thead
@@ -203,30 +183,38 @@
 >{{end}}{{/*
 */}}{{define "defines::define_paneldf"}}{{$p := .Data.params}}<div
   ><div {{ClassPositive $p.Dfn "tabs tabs-border bar-less" "tabs tabs-border"}} data-tabs
-    ><div class="tabs-title menu-tab-padding"
-      ><a {{HrefT $p $p.Dfn}}
-        ><h5 class="margin-bottom-0"
-          >Disk usage</h5
-        ></a
+    ><div class="grid-block"
+      ><div class="tabs-title menu-tab-padding"
+        ><a {{HrefT $p $p.Dfn}}
+          ><h5 class="margin-bottom-0"
+            >Disk usage</h5
+          ></a
+        ></div
+      ><div class="align-self-center"
+        ><ul class="bar menu"
+          ><li
+            ><div class="input-group margin-bottom-0"
+              ><div class="input-group-label small text-nowrap"
+                >delay: {{$p.Dfd}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeleft" LessD $p $p.Dfd "button small text-nowrap"}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeright" MoreD $p $p.Dfd "button small text-nowrap"}}</div
+              ></div
+            ></li
+          ><li
+            ><div class="input-group margin-bottom-0"
+              ><div class="input-group-label small text-nowrap"
+                >rows: {{$p.Dfn.Absolute}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeleft" LessN $p $p.Dfn "button small success text-nowrap"}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeright" MoreN $p $p.Dfn "button small success text-nowrap"}}</div
+              ></div
+            ></li
+          ></ul
+        ></div
       ></div
-    ><ul class="float-left bar menu"
-      ><li class="menu-text"
-        ><div class="input-group margin-bottom-0"
-          ><span class="input-group-label"
-            >delay</span
-          ><span class="input-group-label label secondary"
-            >{{$p.Dfd}}</span
-          >{{template "defines::alink_badgeleft" LessD $p $p.Dfd "button secondary hollow text-nowrap input-group-button"}}{{template "defines::alink_badgeright" MoreD $p $p.Dfd "button secondary hollow text-nowrap input-group-button"}}</div
-        ></li
-      ><li class="menu-text"
-        ><div class="input-group margin-bottom-0"
-          ><span class="input-group-label"
-            >rows</span
-          ><span class="input-group-label label secondary"
-            >{{$p.Dfn.Absolute}}</span
-          >{{template "defines::alink_badgeleft" LessN $p $p.Dfn "button secondary hollow text-nowrap input-group-button"}}{{template "defines::alink_badgeright" MoreN $p $p.Dfn "button secondary hollow text-nowrap input-group-button"}}</div
-        ></li
-      ></ul
     ></div
   ><table {{ClassNonZero $p.Dfn "hover margin-bottom-0" "hide"}}
     ><thead
@@ -266,30 +254,38 @@
 >{{end}}{{/*
 */}}{{define "defines::define_panelif"}}{{$p := .Data.params}}<div
   ><div {{ClassPositive $p.Ifn "tabs tabs-border bar-less" "tabs tabs-border"}} data-tabs
-    ><div class="tabs-title menu-tab-padding"
-      ><a {{HrefT $p $p.Ifn}}
-        ><h5 class="margin-bottom-0"
-          >Interfaces</h5
-        ></a
+    ><div class="grid-block"
+      ><div class="tabs-title menu-tab-padding"
+        ><a {{HrefT $p $p.Ifn}}
+          ><h5 class="margin-bottom-0"
+            >Interfaces</h5
+          ></a
+        ></div
+      ><div class="align-self-center"
+        ><ul class="bar menu"
+          ><li
+            ><div class="input-group margin-bottom-0"
+              ><div class="input-group-label small text-nowrap"
+                >delay: {{$p.Ifd}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeleft" LessD $p $p.Ifd "button small text-nowrap"}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeright" MoreD $p $p.Ifd "button small text-nowrap"}}</div
+              ></div
+            ></li
+          ><li
+            ><div class="input-group margin-bottom-0"
+              ><div class="input-group-label small text-nowrap"
+                >rows: {{$p.Ifn.Absolute}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeleft" LessN $p $p.Ifn "button small success text-nowrap"}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeright" MoreN $p $p.Ifn "button small success text-nowrap"}}</div
+              ></div
+            ></li
+          ></ul
+        ></div
       ></div
-    ><ul class="float-left bar menu"
-      ><li class="menu-text"
-        ><div class="input-group margin-bottom-0"
-          ><span class="input-group-label"
-            >delay</span
-          ><span class="input-group-label label secondary"
-            >{{$p.Ifd}}</span
-          >{{template "defines::alink_badgeleft" LessD $p $p.Ifd "button secondary hollow text-nowrap input-group-button"}}{{template "defines::alink_badgeright" MoreD $p $p.Ifd "button secondary hollow text-nowrap input-group-button"}}</div
-        ></li
-      ><li class="menu-text"
-        ><div class="input-group margin-bottom-0"
-          ><span class="input-group-label"
-            >rows</span
-          ><span class="input-group-label label secondary"
-            >{{$p.Ifn.Absolute}}</span
-          >{{template "defines::alink_badgeleft" LessN $p $p.Ifn "button secondary hollow text-nowrap input-group-button"}}{{template "defines::alink_badgeright" MoreN $p $p.Ifn "button secondary hollow text-nowrap input-group-button"}}</div
-        ></li
-      ></ul
     ></div
   ><table {{ClassNonZero $p.Ifn "hover margin-bottom-0" "hide"}}
     ><thead
@@ -371,93 +367,111 @@
 >{{end}}{{/*
 */}}{{define "defines::define_panelmem"}}{{$p := .Data.params}}<div
   ><div {{ClassPositive $p.Memn "tabs tabs-border bar-less" "tabs tabs-border"}} data-tabs
-    ><div class="tabs-title menu-tab-padding"
-      ><a {{HrefT $p $p.Memn}}
-        ><h5 class="margin-bottom-0"
-          >Memory</h5
-        ></a
+    ><div class="grid-block"
+      ><div class="tabs-title menu-tab-padding"
+        ><a {{HrefT $p $p.Memn}}
+          ><h5 class="margin-bottom-0"
+            >Memory</h5
+          ></a
+        ></div
+      ><div class="align-self-center"
+        ><ul class="bar menu"
+          ><li
+            ><div class="input-group margin-bottom-0"
+              ><div class="input-group-label small text-nowrap"
+                >delay: {{$p.Memd}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeleft" LessD $p $p.Memd "button small text-nowrap"}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeright" MoreD $p $p.Memd "button small text-nowrap"}}</div
+              ></div
+            ></li
+          ><li
+            ><div class="input-group margin-bottom-0"
+              ><div class="input-group-label small text-nowrap"
+                >rows: {{$p.Memn.Absolute}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeleft" LessN $p $p.Memn "button small success text-nowrap"}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeright" MoreN $p $p.Memn "button small success text-nowrap"}}</div
+              ></div
+            ></li
+          ></ul
+        ></div
       ></div
-    ><ul class="float-left bar menu"
-      ><li class="menu-text"
-        ><div class="input-group margin-bottom-0"
-          ><span class="input-group-label"
-            >delay</span
-          ><span class="input-group-label label secondary"
-            >{{$p.Memd}}</span
-          >{{template "defines::alink_badgeleft" LessD $p $p.Memd "button secondary hollow text-nowrap input-group-button"}}{{template "defines::alink_badgeright" MoreD $p $p.Memd "button secondary hollow text-nowrap input-group-button"}}</div
-        ></li
-      ><li class="menu-text"
-        ><div class="input-group margin-bottom-0"
-          ><span class="input-group-label"
-            >rows</span
-          ><span class="input-group-label label secondary"
-            >{{$p.Memn.Absolute}}</span
-          >{{template "defines::alink_badgeleft" LessN $p $p.Memn "button secondary hollow text-nowrap input-group-button"}}{{template "defines::alink_badgeright" MoreN $p $p.Memn "button secondary hollow text-nowrap input-group-button"}}</div
-        ></li
-      ></ul
     ></div
-  ><table {{ClassNonZero $p.Memn "hover margin-bottom-0" "hide"}}
-    ><thead
-      ><tr
-        ><th
-          ></th
-        ><th class="text-right"
-          >Total</th
-        ><th class="text-right"
-          >Used</th
-        ><th class="text-right"
-          >Free</th
-        ><th class="text-right"
-          >Use%</th
-        ><th
-          ></th
-        ></tr
-      ></thead
-    ><tbody
-      >{{if .Data.memory}}{{range $mem := .Data.memory.List}}{{jsx `{this.List(Data).map(function($mem, i) { return`}}<tr {{Key "mem-rowby-kind" $mem.Kind}}
-        ><td
-          >{{$mem.Kind}}</td
-        ><td class="text-right"
-          >{{$mem.Total}}</td
-        ><td class="text-right"
-          >{{$mem.Used}}</td
-        ><td class="text-right"
-          >{{$mem.Free}}</td
-        ><td {{class}}="text-right bg-usepct" data-usepct={{$mem.UsePct}}
-          >{{$mem.UsePct}}%</td
-        ><td class="full"
-          >{{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}</td
-        ></tr
-      >{{jsx `})}`}}{{end}}{{end}}</tbody
-    ></table
+  ><div class="stripe"
+    ><div class="grid-block thead"
+      ><span class="col small-1"
+        >Kind</span
+      ><div class="grid-block wrap noscroll"
+        ><span class="col small-1 text-right"
+          > Total</span
+        ><span class="col small-1 text-right"
+          > Used</span
+        ><span class="col small-1 text-right"
+          > Free</span
+        ><span class="col small-1 text-right"
+          > Use%</span
+        ><span class="col"
+          ></span
+        ></div
+      ></div
+    >{{range $mem := .Data.memory.List}}{{jsx `{this.List(Data).map(function($mem, i) { return`}}<div class="grid-block"
+      ><span class="col small-1"
+        >{{$mem.Kind}}</span
+      ><div {{Key "mem-rowby-kind" $mem.Kind}} {{class}}="grid-block wrap noscroll"
+        ><span class="col small-1 text-right"
+          > {{$mem.Total}}</span
+        ><span class="col small-1 text-right"
+          > {{$mem.Used}}</span
+        ><span class="col small-1 text-right"
+          > {{$mem.Free}}</span
+        ><span {{class}}="small-1 text-right"
+          ><span {{class}}="col display-block bg-usepct" data-usepct={{$mem.UsePct}}
+            > {{$mem.UsePct}}%</span
+          ></span
+        ><span class="col sparkline expand"
+          >{{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct', height: 42})}`}}</span
+        ></div
+      ></div
+    >{{jsx `})}`}}{{end}}</div
   ></div
 >{{end}}{{/*
 */}}{{define "defines::define_panelps"}}{{$p := .Data.params}}<div
   ><div {{ClassPositive $p.Psn "tabs tabs-border bar-less" "tabs tabs-border"}} data-tabs
-    ><div class="tabs-title menu-tab-padding"
-      ><a {{HrefT $p $p.Psn}}
-        ><h5 class="margin-bottom-0"
-          >Processes</h5
-        ></a
+    ><div class="grid-block"
+      ><div class="tabs-title menu-tab-padding"
+        ><a {{HrefT $p $p.Psn}}
+          ><h5 class="margin-bottom-0"
+            >Processes</h5
+          ></a
+        ></div
+      ><div class="align-self-center"
+        ><ul class="bar menu"
+          ><li
+            ><div class="input-group margin-bottom-0"
+              ><div class="input-group-label small text-nowrap"
+                >delay: {{$p.Psd}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeleft" LessD $p $p.Psd "button small text-nowrap"}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeright" MoreD $p $p.Psd "button small text-nowrap"}}</div
+              ></div
+            ></li
+          ><li
+            ><div class="input-group margin-bottom-0"
+              ><div class="input-group-label small text-nowrap"
+                >rows: {{$p.Psn.Absolute}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeleft" LessN $p $p.Psn "button small success text-nowrap"}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeright" MoreN $p $p.Psn "button small success text-nowrap"}}</div
+              ></div
+            ></li
+          ></ul
+        ></div
       ></div
-    ><ul class="float-left bar menu"
-      ><li class="menu-text"
-        ><div class="input-group margin-bottom-0"
-          ><span class="input-group-label"
-            >delay</span
-          ><span class="input-group-label label secondary"
-            >{{$p.Psd}}</span
-          >{{template "defines::alink_badgeleft" LessD $p $p.Psd "button secondary hollow text-nowrap input-group-button"}}{{template "defines::alink_badgeright" MoreD $p $p.Psd "button secondary hollow text-nowrap input-group-button"}}</div
-        ></li
-      ><li class="menu-text"
-        ><div class="input-group margin-bottom-0"
-          ><span class="input-group-label"
-            >rows</span
-          ><span class="input-group-label label secondary"
-            >{{$p.Psn.Absolute}}</span
-          >{{template "defines::alink_badgeleft" LessN $p $p.Psn "button secondary hollow text-nowrap input-group-button"}}{{template "defines::alink_badgeright" MoreN $p $p.Psn "button secondary hollow text-nowrap input-group-button"}}</div
-        ></li
-      ></ul
     ></div
   ><table {{ClassNonZero $p.Psn "hover margin-bottom-0" "hide"}}
     ><thead

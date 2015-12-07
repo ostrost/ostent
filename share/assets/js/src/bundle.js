@@ -19812,6 +19812,10 @@
 	    if (this.props.defaultSpots) {
 	      delete spotsProps.spotColors;
 	    } // back to default
+	    var height = this.props.height;
+	    if (height == null) {
+	      height = 24;
+	    }
 	    return React.createElement(
 	      'div',
 	      { className: 'height-1rem', ref: 'root' },
@@ -19819,7 +19823,7 @@
 	        data: this.state.data,
 	        limit: this.state.limit,
 	        width: this.state.width,
-	        height: 24
+	        height: height
 	      }, void 0, _ref, React.createElement(SparkLines.SparklinesSpots, spotsProps))
 	    );
 	  }
@@ -19930,47 +19934,51 @@
 	      className: !Data.params.CPUn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border",
 	      'data-tabs': true
 	    }, void 0, _jsx('div', {
+	      className: 'grid-block'
+	    }, void 0, _jsx('div', {
 	      className: 'tabs-title menu-tab-padding'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Tlinks.CPUn,
 	      onClick: this.handleClick
 	    }, void 0, _jsx('h5', {
 	      className: 'margin-bottom-0'
-	    }, void 0, 'CPU'))), _jsx('ul', {
-	      className: 'float-left bar menu'
-	    }, void 0, _jsx('li', {
-	      className: 'menu-text'
-	    }, void 0, _jsx('div', {
+	    }, void 0, 'CPU'))), _jsx('div', {
+	      className: 'align-self-center'
+	    }, void 0, _jsx('ul', {
+	      className: 'bar menu'
+	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group margin-bottom-0'
-	    }, void 0, _jsx('span', {
-	      className: 'input-group-label'
-	    }, void 0, 'delay'), _jsx('span', {
-	      className: 'input-group-label label secondary'
-	    }, void 0, Data.params.CPUd), _jsx('a', {
+	    }, void 0, _jsx('div', {
+	      className: 'input-group-label small text-nowrap'
+	    }, void 0, 'delay: ', Data.params.CPUd), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Dlinks.CPUd.Less.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : ""),
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, '- ', Data.params.Dlinks.CPUd.Less.Text), _jsx('a', {
+	    }, void 0, '- ', Data.params.Dlinks.CPUd.Less.Text)), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Dlinks.CPUd.More.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : ""),
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Dlinks.CPUd.More.Text, ' +'))), _jsx('li', {
-	      className: 'menu-text'
-	    }, void 0, _jsx('div', {
+	    }, void 0, Data.params.Dlinks.CPUd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group margin-bottom-0'
-	    }, void 0, _jsx('span', {
-	      className: 'input-group-label'
-	    }, void 0, 'rows'), _jsx('span', {
-	      className: 'input-group-label label secondary'
-	    }, void 0, Data.params.CPUn.Absolute), _jsx('a', {
+	    }, void 0, _jsx('div', {
+	      className: 'input-group-label small text-nowrap'
+	    }, void 0, 'rows: ', Data.params.CPUn.Absolute), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Nlinks.CPUn.Less.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : ""),
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, '- ', Data.params.Nlinks.CPUn.Less.Text), _jsx('a', {
+	    }, void 0, '- ', Data.params.Nlinks.CPUn.Less.Text)), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Nlinks.CPUn.More.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : ""),
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.CPUn.More.Text, ' +'))))), _jsx('table', {
+	    }, void 0, Data.params.Nlinks.CPUn.More.Text, ' +')))))))), _jsx('table', {
 	      className: Data.params.CPUn.Absolute != 0 ? "hover margin-bottom-0" : "hide"
 	    }, void 0, _jsx('thead', {}, void 0, _jsx('tr', {}, void 0, _ref2, _jsx('th', {
 	      className: 'text-right'
@@ -20027,47 +20035,51 @@
 	      className: !Data.params.Dfn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border",
 	      'data-tabs': true
 	    }, void 0, _jsx('div', {
+	      className: 'grid-block'
+	    }, void 0, _jsx('div', {
 	      className: 'tabs-title menu-tab-padding'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Tlinks.Dfn,
 	      onClick: this.handleClick
 	    }, void 0, _jsx('h5', {
 	      className: 'margin-bottom-0'
-	    }, void 0, 'Disk usage'))), _jsx('ul', {
-	      className: 'float-left bar menu'
-	    }, void 0, _jsx('li', {
-	      className: 'menu-text'
-	    }, void 0, _jsx('div', {
+	    }, void 0, 'Disk usage'))), _jsx('div', {
+	      className: 'align-self-center'
+	    }, void 0, _jsx('ul', {
+	      className: 'bar menu'
+	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group margin-bottom-0'
-	    }, void 0, _jsx('span', {
-	      className: 'input-group-label'
-	    }, void 0, 'delay'), _jsx('span', {
-	      className: 'input-group-label label secondary'
-	    }, void 0, Data.params.Dfd), _jsx('a', {
+	    }, void 0, _jsx('div', {
+	      className: 'input-group-label small text-nowrap'
+	    }, void 0, 'delay: ', Data.params.Dfd), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Dlinks.Dfd.Less.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : ""),
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, '- ', Data.params.Dlinks.Dfd.Less.Text), _jsx('a', {
+	    }, void 0, '- ', Data.params.Dlinks.Dfd.Less.Text)), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Dlinks.Dfd.More.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : ""),
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Dlinks.Dfd.More.Text, ' +'))), _jsx('li', {
-	      className: 'menu-text'
-	    }, void 0, _jsx('div', {
+	    }, void 0, Data.params.Dlinks.Dfd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group margin-bottom-0'
-	    }, void 0, _jsx('span', {
-	      className: 'input-group-label'
-	    }, void 0, 'rows'), _jsx('span', {
-	      className: 'input-group-label label secondary'
-	    }, void 0, Data.params.Dfn.Absolute), _jsx('a', {
+	    }, void 0, _jsx('div', {
+	      className: 'input-group-label small text-nowrap'
+	    }, void 0, 'rows: ', Data.params.Dfn.Absolute), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Nlinks.Dfn.Less.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : ""),
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, '- ', Data.params.Nlinks.Dfn.Less.Text), _jsx('a', {
+	    }, void 0, '- ', Data.params.Nlinks.Dfn.Less.Text)), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Nlinks.Dfn.More.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : ""),
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.Dfn.More.Text, ' +'))))), _jsx('table', {
+	    }, void 0, Data.params.Nlinks.Dfn.More.Text, ' +')))))))), _jsx('table', {
 	      className: Data.params.Dfn.Absolute != 0 ? "hover margin-bottom-0" : "hide"
 	    }, void 0, _jsx('thead', {}, void 0, _jsx('tr', {
 	      className: 'text-nowrap'
@@ -20175,47 +20187,51 @@
 	      className: !Data.params.Ifn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border",
 	      'data-tabs': true
 	    }, void 0, _jsx('div', {
+	      className: 'grid-block'
+	    }, void 0, _jsx('div', {
 	      className: 'tabs-title menu-tab-padding'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Tlinks.Ifn,
 	      onClick: this.handleClick
 	    }, void 0, _jsx('h5', {
 	      className: 'margin-bottom-0'
-	    }, void 0, 'Interfaces'))), _jsx('ul', {
-	      className: 'float-left bar menu'
-	    }, void 0, _jsx('li', {
-	      className: 'menu-text'
-	    }, void 0, _jsx('div', {
+	    }, void 0, 'Interfaces'))), _jsx('div', {
+	      className: 'align-self-center'
+	    }, void 0, _jsx('ul', {
+	      className: 'bar menu'
+	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group margin-bottom-0'
-	    }, void 0, _jsx('span', {
-	      className: 'input-group-label'
-	    }, void 0, 'delay'), _jsx('span', {
-	      className: 'input-group-label label secondary'
-	    }, void 0, Data.params.Ifd), _jsx('a', {
+	    }, void 0, _jsx('div', {
+	      className: 'input-group-label small text-nowrap'
+	    }, void 0, 'delay: ', Data.params.Ifd), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Dlinks.Ifd.Less.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : ""),
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, '- ', Data.params.Dlinks.Ifd.Less.Text), _jsx('a', {
+	    }, void 0, '- ', Data.params.Dlinks.Ifd.Less.Text)), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Dlinks.Ifd.More.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : ""),
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Dlinks.Ifd.More.Text, ' +'))), _jsx('li', {
-	      className: 'menu-text'
-	    }, void 0, _jsx('div', {
+	    }, void 0, Data.params.Dlinks.Ifd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group margin-bottom-0'
-	    }, void 0, _jsx('span', {
-	      className: 'input-group-label'
-	    }, void 0, 'rows'), _jsx('span', {
-	      className: 'input-group-label label secondary'
-	    }, void 0, Data.params.Ifn.Absolute), _jsx('a', {
+	    }, void 0, _jsx('div', {
+	      className: 'input-group-label small text-nowrap'
+	    }, void 0, 'rows: ', Data.params.Ifn.Absolute), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Nlinks.Ifn.Less.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : ""),
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, '- ', Data.params.Nlinks.Ifn.Less.Text), _jsx('a', {
+	    }, void 0, '- ', Data.params.Nlinks.Ifn.Less.Text)), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Nlinks.Ifn.More.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : ""),
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.Ifn.More.Text, ' +'))))), _jsx('table', {
+	    }, void 0, Data.params.Nlinks.Ifn.More.Text, ' +')))))))), _jsx('table', {
 	      className: Data.params.Ifn.Absolute != 0 ? "hover margin-bottom-0" : "hide"
 	    }, void 0, _jsx('thead', {}, void 0, _jsx('tr', {}, void 0, _jsx('th', {}, void 0, 'Interface'), _jsx('th', {
 	      className: 'text-right'
@@ -20291,9 +20307,9 @@
 	  }
 	});
 
-	var _ref5 = _jsx('th', {});
-
-	var _ref6 = _jsx('th', {});
+	var _ref5 = _jsx('span', {
+	  className: 'col'
+	});
 
 	jsdefines.define_panelmem = React.createClass({
 	  displayName: 'define_panelmem',
@@ -20318,70 +20334,88 @@
 	      className: !Data.params.Memn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border",
 	      'data-tabs': true
 	    }, void 0, _jsx('div', {
+	      className: 'grid-block'
+	    }, void 0, _jsx('div', {
 	      className: 'tabs-title menu-tab-padding'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Tlinks.Memn,
 	      onClick: this.handleClick
 	    }, void 0, _jsx('h5', {
 	      className: 'margin-bottom-0'
-	    }, void 0, 'Memory'))), _jsx('ul', {
-	      className: 'float-left bar menu'
-	    }, void 0, _jsx('li', {
-	      className: 'menu-text'
-	    }, void 0, _jsx('div', {
+	    }, void 0, 'Memory'))), _jsx('div', {
+	      className: 'align-self-center'
+	    }, void 0, _jsx('ul', {
+	      className: 'bar menu'
+	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group margin-bottom-0'
-	    }, void 0, _jsx('span', {
-	      className: 'input-group-label'
-	    }, void 0, 'delay'), _jsx('span', {
-	      className: 'input-group-label label secondary'
-	    }, void 0, Data.params.Memd), _jsx('a', {
+	    }, void 0, _jsx('div', {
+	      className: 'input-group-label small text-nowrap'
+	    }, void 0, 'delay: ', Data.params.Memd), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Dlinks.Memd.Less.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : ""),
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, '- ', Data.params.Dlinks.Memd.Less.Text), _jsx('a', {
+	    }, void 0, '- ', Data.params.Dlinks.Memd.Less.Text)), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Dlinks.Memd.More.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : ""),
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Dlinks.Memd.More.Text, ' +'))), _jsx('li', {
-	      className: 'menu-text'
-	    }, void 0, _jsx('div', {
+	    }, void 0, Data.params.Dlinks.Memd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group margin-bottom-0'
-	    }, void 0, _jsx('span', {
-	      className: 'input-group-label'
-	    }, void 0, 'rows'), _jsx('span', {
-	      className: 'input-group-label label secondary'
-	    }, void 0, Data.params.Memn.Absolute), _jsx('a', {
+	    }, void 0, _jsx('div', {
+	      className: 'input-group-label small text-nowrap'
+	    }, void 0, 'rows: ', Data.params.Memn.Absolute), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Nlinks.Memn.Less.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : ""),
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, '- ', Data.params.Nlinks.Memn.Less.Text), _jsx('a', {
+	    }, void 0, '- ', Data.params.Nlinks.Memn.Less.Text)), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Nlinks.Memn.More.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : ""),
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.Memn.More.Text, ' +'))))), _jsx('table', {
-	      className: Data.params.Memn.Absolute != 0 ? "hover margin-bottom-0" : "hide"
-	    }, void 0, _jsx('thead', {}, void 0, _jsx('tr', {}, void 0, _ref5, _jsx('th', {
-	      className: 'text-right'
-	    }, void 0, 'Total'), _jsx('th', {
-	      className: 'text-right'
-	    }, void 0, 'Used'), _jsx('th', {
-	      className: 'text-right'
-	    }, void 0, 'Free'), _jsx('th', {
-	      className: 'text-right'
-	    }, void 0, 'Use%'), _ref6)), _jsx('tbody', {}, void 0, this.List(Data).map(function ($mem, i) {
-	      return _jsx('tr', {}, "mem-rowby-kind-" + $mem.Kind, _jsx('td', {}, void 0, $mem.Kind), _jsx('td', {
-	        className: 'text-right'
-	      }, void 0, $mem.Total), _jsx('td', {
-	        className: 'text-right'
-	      }, void 0, $mem.Used), _jsx('td', {
-	        className: 'text-right'
-	      }, void 0, $mem.Free), _jsx('td', {
-	        className: 'text-right bg-usepct',
+	    }, void 0, Data.params.Nlinks.Memn.More.Text, ' +')))))))), _jsx('div', {
+	      className: 'stripe'
+	    }, void 0, _jsx('div', {
+	      className: 'grid-block thead'
+	    }, void 0, _jsx('span', {
+	      className: 'col small-1'
+	    }, void 0, 'Kind'), _jsx('div', {
+	      className: 'grid-block wrap noscroll'
+	    }, void 0, _jsx('span', {
+	      className: 'col small-1 text-right'
+	    }, void 0, ' Total'), _jsx('span', {
+	      className: 'col small-1 text-right'
+	    }, void 0, ' Used'), _jsx('span', {
+	      className: 'col small-1 text-right'
+	    }, void 0, ' Free'), _jsx('span', {
+	      className: 'col small-1 text-right'
+	    }, void 0, ' Use%'), _ref5)), this.List(Data).map(function ($mem, i) {
+	      return _jsx('div', {
+	        className: 'grid-block'
+	      }, void 0, _jsx('span', {
+	        className: 'col small-1'
+	      }, void 0, $mem.Kind), _jsx('div', {
+	        className: 'grid-block wrap noscroll'
+	      }, "mem-rowby-kind-" + $mem.Kind, _jsx('span', {
+	        className: 'col small-1 text-right'
+	      }, void 0, ' ', $mem.Total), _jsx('span', {
+	        className: 'col small-1 text-right'
+	      }, void 0, ' ', $mem.Used), _jsx('span', {
+	        className: 'col small-1 text-right'
+	      }, void 0, ' ', $mem.Free), _jsx('span', {
+	        className: 'small-1 text-right'
+	      }, void 0, _jsx('span', {
+	        className: 'col display-block bg-usepct',
 	        'data-usepct': $mem.UsePct
-	      }, void 0, $mem.UsePct, '%'), _jsx('td', {
-	        className: 'full'
-	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct' })));
-	    }))));
+	      }, void 0, ' ', $mem.UsePct, '%')), _jsx('span', {
+	        className: 'col sparkline expand'
+	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct', height: 42 }))));
+	    })));
 	  }
 	});
 
@@ -20408,47 +20442,51 @@
 	      className: !Data.params.Psn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border",
 	      'data-tabs': true
 	    }, void 0, _jsx('div', {
+	      className: 'grid-block'
+	    }, void 0, _jsx('div', {
 	      className: 'tabs-title menu-tab-padding'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Tlinks.Psn,
 	      onClick: this.handleClick
 	    }, void 0, _jsx('h5', {
 	      className: 'margin-bottom-0'
-	    }, void 0, 'Processes'))), _jsx('ul', {
-	      className: 'float-left bar menu'
-	    }, void 0, _jsx('li', {
-	      className: 'menu-text'
-	    }, void 0, _jsx('div', {
+	    }, void 0, 'Processes'))), _jsx('div', {
+	      className: 'align-self-center'
+	    }, void 0, _jsx('ul', {
+	      className: 'bar menu'
+	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group margin-bottom-0'
-	    }, void 0, _jsx('span', {
-	      className: 'input-group-label'
-	    }, void 0, 'delay'), _jsx('span', {
-	      className: 'input-group-label label secondary'
-	    }, void 0, Data.params.Psd), _jsx('a', {
+	    }, void 0, _jsx('div', {
+	      className: 'input-group-label small text-nowrap'
+	    }, void 0, 'delay: ', Data.params.Psd), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Dlinks.Psd.Less.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : ""),
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, '- ', Data.params.Dlinks.Psd.Less.Text), _jsx('a', {
+	    }, void 0, '- ', Data.params.Dlinks.Psd.Less.Text)), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Dlinks.Psd.More.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : ""),
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Dlinks.Psd.More.Text, ' +'))), _jsx('li', {
-	      className: 'menu-text'
-	    }, void 0, _jsx('div', {
+	    }, void 0, Data.params.Dlinks.Psd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group margin-bottom-0'
-	    }, void 0, _jsx('span', {
-	      className: 'input-group-label'
-	    }, void 0, 'rows'), _jsx('span', {
-	      className: 'input-group-label label secondary'
-	    }, void 0, Data.params.Psn.Absolute), _jsx('a', {
+	    }, void 0, _jsx('div', {
+	      className: 'input-group-label small text-nowrap'
+	    }, void 0, 'rows: ', Data.params.Psn.Absolute), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Nlinks.Psn.Less.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : ""),
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, '- ', Data.params.Nlinks.Psn.Less.Text), _jsx('a', {
+	    }, void 0, '- ', Data.params.Nlinks.Psn.Less.Text)), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Nlinks.Psn.More.Href,
-	      className: "button secondary hollow text-nowrap input-group-button" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : ""),
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.Psn.More.Text, ' +'))))), _jsx('table', {
+	    }, void 0, Data.params.Nlinks.Psn.More.Text, ' +')))))))), _jsx('table', {
 	      className: Data.params.Psn.Absolute != 0 ? "hover margin-bottom-0" : "hide"
 	    }, void 0, _jsx('thead', {}, void 0, _jsx('tr', {
 	      className: 'text-nowrap'

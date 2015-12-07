@@ -14,7 +14,7 @@ var bower_components = path.join(__dirname, './bower_components'),
 var wpconf = {
     resolve: {
         root: [bower_components, node_modules],
-        //? extensions: ['', '.js', '.css', '.scss'],
+        //? extensions: ['', '.js', '.jsx', '.css', '.scss'],
         alias: {
             jquery:     'jquery/dist/jquery'  +'.js',
            'react-dom': 'react/lib/ReactDOM'  +'.js',
@@ -40,7 +40,10 @@ var wpconf = {
         ],
         postLoaders: [{loader: 'transform?envify'}]
     },
-    sassLoader: {includePaths: [bower_components+'/foundation-sites/scss/']},
+    sassLoader: {includePaths: [
+      bower_components+'/foundation-sites/scss/',
+      bower_components+'/foundation-apps/scss/'
+    ]},
     plugins: [
         // new webpack.ResolverPlugin(new webpack.ResolverPlugin.DirectoryDescriptionFilePlugin(
         //     'bower.json', ['main'])), // this will resolve with bower.json:"main"

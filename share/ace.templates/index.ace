@@ -44,47 +44,31 @@ html
           li
             a.margin-0.button.secondary.hollow href=https://www.ostrost.com/ostent/releases/latest?cmp={{$v}} ostent
 
-    div.row.large-12
-      div.column.large-10
-        {{$p := .Data.params}}
+    {{$p := .Data.params}}
+    div.grid-block.padding-top-056
+      div.large-1.hr-border-top
+      div.column.large-11.updates data-define=define_panelmem
+        {{template "defines::define_panelmem" .}}
 
-        div.row.padding-top-056
-          div.large-1.hr-border-top
-          div.column.large-11.updates#mem data-define=define_panelmem
-            {{template "defines::define_panelmem" .}}
+    div.grid-block.padding-top-056
+      div.large-1.hr-border-top
+      div.column.large-11.updates data-define=define_paneldf
+        {{template "defines::define_paneldf" .}}
 
-        div.row.padding-top-056
-          div.large-1.hr-border-top
-          div.column.large-11.updates#df data-define=define_paneldf
-            {{template "defines::define_paneldf" .}}
+    div.grid-block.padding-top-056
+      div.large-1.hr-border-top
+      div.column.large-11.updates data-define=define_panelcpu
+        {{template "defines::define_panelcpu" .}}
 
-        div.row.padding-top-056
-          div.large-1.hr-border-top
-          div.column.large-11.updates#cpu data-define=define_panelcpu
-            {{template "defines::define_panelcpu" .}}
+    div.grid-block.padding-top-056
+      div.large-1.hr-border-top
+      div.column.large-11.updates data-define=define_panelif
+        {{template "defines::define_panelif" .}}
 
-        div.row.padding-top-056
-          div.large-1.hr-border-top
-          div.column.large-11.updates#if data-define=define_panelif
-            {{template "defines::define_panelif" .}}
-
-        div.row.padding-top-056
-          div.large-1.hr-border-top
-          div.column.large-11.updates#ps data-define=define_panelps
-            {{template "defines::define_panelps" .}}
-
-      div.large-2
-        ul.menu.vertical.bg-light-gray
-          li
-            a href=#mem Memory
-          li
-            a href=#df Disk usage
-          li
-            a href=#cpu CPU
-          li
-            a href=#if Interfaces
-          li
-            a href=#ps Processes
+    div.grid-block.padding-top-056
+      div.large-1.hr-border-top
+      div.column.large-11.updates data-define=define_panelps
+        {{template "defines::define_panelps" .}}
 
     = javascript
       var Data = {{.Data}};
