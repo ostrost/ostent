@@ -2,17 +2,13 @@
 [[$N := (index . 0)]]
 [[$D := (index . 1)]]
 [[$t := (index . 2)]]
-  | <div><div {{ClassPositive [[$N]] "tabs tabs-border bar-less" "tabs tabs-border"}} data-tabs>
-  / TODO after all the define grids are full width
-  / - remove nested blocks: .{tabs-title,aligh-self-center}
-  / - MAYBE .grid-block.align-justify
-  div.grid-block
-    div.tabs-title.menu-tab-padding
-      | <a {{HrefT $p [[$N]]}}>
-      h5.margin-bottom-0 [[$t]]
-      | </a>
-    div.align-self-center
-      ul.bar.menu
+  | <div><div {{ClassPositive [[$N]] "hide-showhide" "show-showhide"}}>
+  div.grid-block.align-justify
+    h1.h3.margin-bottom-0
+      | <a {{class}}="inherit-color" {{HrefT $p [[$N]]}}
+      |   >[[$t]]<span {{class}}="showhide-hide">...</span></a>
+    div.showhide-show.hx-bottom.align-self-flex-end.expand
+      ul.menu.float-right
         li
           div.input-group.margin-bottom-0
             div.input-group-label.small.text-nowrap delay: {{[[$D]]}}
@@ -42,8 +38,8 @@
   |   >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>
 
 = content define_hostname
-  | <a {{class}}="h5" {{TitlePrefixed "hostname " .Data.hostname}} href="/"
-  | ><pre>{{.Data.hostname}}</pre></a>
+  | <a href="/" {{class}}="inherit-color"
+  |   {{TitlePrefixed "hostname " .Data.hostname}}>{{.Data.hostname}}</a>
 
 {{define "defines::define_loadavg"}}<span>{{.Data.loadavg}}</span>{{end}}
 {{define "defines::define_uptime"}}<span>{{.Data.uptime}}</span>{{end}}

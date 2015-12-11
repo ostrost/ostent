@@ -19904,10 +19904,10 @@
 	  render: function render() {
 	    var Data = this.state; // shadow global Data
 	    return _jsx('a', {
-	      className: 'h5',
-	      title: "hostname " + Data.hostname,
-	      href: '/'
-	    }, void 0, _jsx('pre', {}, void 0, Data.hostname));
+	      href: '/',
+	      className: 'inherit-color',
+	      title: "hostname " + Data.hostname
+	    }, void 0, Data.hostname);
 	  }
 	});
 
@@ -19939,21 +19939,21 @@
 	  render: function render() {
 	    var Data = this.state; // shadow global Data
 	    return _jsx('div', {}, void 0, _jsx('div', {
-	      className: !Data.params.CPUn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border",
-	      'data-tabs': true
+	      className: !Data.params.CPUn.Negative ? "hide-showhide" : "show-showhide"
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block'
-	    }, void 0, _jsx('div', {
-	      className: 'tabs-title menu-tab-padding'
+	      className: 'grid-block align-justify'
+	    }, void 0, _jsx('h1', {
+	      className: 'h3 margin-bottom-0'
 	    }, void 0, _jsx('a', {
+	      className: 'inherit-color',
 	      href: Data.params.Tlinks.CPUn,
 	      onClick: this.handleClick
-	    }, void 0, _jsx('h5', {
-	      className: 'margin-bottom-0'
-	    }, void 0, 'CPU'))), _jsx('div', {
-	      className: 'align-self-center'
+	    }, void 0, 'CPU', _jsx('span', {
+	      className: 'showhide-hide'
+	    }, void 0, '...'))), _jsx('div', {
+	      className: 'showhide-show hx-bottom align-self-flex-end expand'
 	    }, void 0, _jsx('ul', {
-	      className: 'bar menu'
+	      className: 'menu float-right'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group margin-bottom-0'
 	    }, void 0, _jsx('div', {
@@ -20058,21 +20058,21 @@
 	  render: function render() {
 	    var Data = this.state; // shadow global Data
 	    return _jsx('div', {}, void 0, _jsx('div', {
-	      className: !Data.params.Dfn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border",
-	      'data-tabs': true
+	      className: !Data.params.Dfn.Negative ? "hide-showhide" : "show-showhide"
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block'
-	    }, void 0, _jsx('div', {
-	      className: 'tabs-title menu-tab-padding'
+	      className: 'grid-block align-justify'
+	    }, void 0, _jsx('h1', {
+	      className: 'h3 margin-bottom-0'
 	    }, void 0, _jsx('a', {
+	      className: 'inherit-color',
 	      href: Data.params.Tlinks.Dfn,
 	      onClick: this.handleClick
-	    }, void 0, _jsx('h5', {
-	      className: 'margin-bottom-0'
-	    }, void 0, 'Disk usage'))), _jsx('div', {
-	      className: 'align-self-center'
+	    }, void 0, 'Disk usage', _jsx('span', {
+	      className: 'showhide-hide'
+	    }, void 0, '...'))), _jsx('div', {
+	      className: 'showhide-show hx-bottom align-self-flex-end expand'
 	    }, void 0, _jsx('ul', {
-	      className: 'bar menu'
+	      className: 'menu float-right'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group margin-bottom-0'
 	    }, void 0, _jsx('div', {
@@ -20218,21 +20218,21 @@
 	  render: function render() {
 	    var Data = this.state; // shadow global Data
 	    return _jsx('div', {}, void 0, _jsx('div', {
-	      className: !Data.params.Ifn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border",
-	      'data-tabs': true
+	      className: !Data.params.Ifn.Negative ? "hide-showhide" : "show-showhide"
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block'
-	    }, void 0, _jsx('div', {
-	      className: 'tabs-title menu-tab-padding'
+	      className: 'grid-block align-justify'
+	    }, void 0, _jsx('h1', {
+	      className: 'h3 margin-bottom-0'
 	    }, void 0, _jsx('a', {
+	      className: 'inherit-color',
 	      href: Data.params.Tlinks.Ifn,
 	      onClick: this.handleClick
-	    }, void 0, _jsx('h5', {
-	      className: 'margin-bottom-0'
-	    }, void 0, 'Interfaces'))), _jsx('div', {
-	      className: 'align-self-center'
+	    }, void 0, 'Interfaces', _jsx('span', {
+	      className: 'showhide-hide'
+	    }, void 0, '...'))), _jsx('div', {
+	      className: 'showhide-show hx-bottom align-self-flex-end expand'
 	    }, void 0, _jsx('ul', {
-	      className: 'bar menu'
+	      className: 'menu float-right'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group margin-bottom-0'
 	    }, void 0, _jsx('div', {
@@ -20379,21 +20379,21 @@
 	  render: function render() {
 	    var Data = this.state; // shadow global Data
 	    return _jsx('div', {}, void 0, _jsx('div', {
-	      className: !Data.params.Memn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border",
-	      'data-tabs': true
+	      className: !Data.params.Memn.Negative ? "hide-showhide" : "show-showhide"
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block'
-	    }, void 0, _jsx('div', {
-	      className: 'tabs-title menu-tab-padding'
+	      className: 'grid-block align-justify'
+	    }, void 0, _jsx('h1', {
+	      className: 'h3 margin-bottom-0'
 	    }, void 0, _jsx('a', {
+	      className: 'inherit-color',
 	      href: Data.params.Tlinks.Memn,
 	      onClick: this.handleClick
-	    }, void 0, _jsx('h5', {
-	      className: 'margin-bottom-0'
-	    }, void 0, 'Memory'))), _jsx('div', {
-	      className: 'align-self-center'
+	    }, void 0, 'Memory', _jsx('span', {
+	      className: 'showhide-hide'
+	    }, void 0, '...'))), _jsx('div', {
+	      className: 'showhide-show hx-bottom align-self-flex-end expand'
 	    }, void 0, _jsx('ul', {
-	      className: 'bar menu'
+	      className: 'menu float-right'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group margin-bottom-0'
 	    }, void 0, _jsx('div', {
@@ -20485,21 +20485,21 @@
 	  render: function render() {
 	    var Data = this.state; // shadow global Data
 	    return _jsx('div', {}, void 0, _jsx('div', {
-	      className: !Data.params.Psn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border",
-	      'data-tabs': true
+	      className: !Data.params.Psn.Negative ? "hide-showhide" : "show-showhide"
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block'
-	    }, void 0, _jsx('div', {
-	      className: 'tabs-title menu-tab-padding'
+	      className: 'grid-block align-justify'
+	    }, void 0, _jsx('h1', {
+	      className: 'h3 margin-bottom-0'
 	    }, void 0, _jsx('a', {
+	      className: 'inherit-color',
 	      href: Data.params.Tlinks.Psn,
 	      onClick: this.handleClick
-	    }, void 0, _jsx('h5', {
-	      className: 'margin-bottom-0'
-	    }, void 0, 'Processes'))), _jsx('div', {
-	      className: 'align-self-center'
+	    }, void 0, 'Processes', _jsx('span', {
+	      className: 'showhide-hide'
+	    }, void 0, '...'))), _jsx('div', {
+	      className: 'showhide-show hx-bottom align-self-flex-end expand'
 	    }, void 0, _jsx('ul', {
-	      className: 'bar menu'
+	      className: 'menu float-right'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group margin-bottom-0'
 	    }, void 0, _jsx('div', {

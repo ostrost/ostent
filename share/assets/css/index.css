@@ -429,7 +429,6 @@ h2,
 h3,
 h4,
 h5,
-.h5,
 h6,
 pre,
 form,
@@ -465,7 +464,6 @@ h2,
 h3,
 h4,
 h5,
-.h5,
 h6 {
   font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
   font-weight: normal;
@@ -479,7 +477,7 @@ h6 {
   h2 small,
   h3 small,
   h4 small,
-  h5 small, .h5 small,
+  h5 small,
   h6 small {
     color: #cacaca;
     line-height: 0; }
@@ -496,7 +494,7 @@ h3 {
 h4 {
   font-size: 1.125rem; }
 
-h5, .h5 {
+h5 {
   font-size: 1.0625rem; }
 
 h6 {
@@ -511,7 +509,7 @@ h6 {
     font-size: 1.9375rem; }
   h4 {
     font-size: 1.5625rem; }
-  h5, .h5 {
+  h5 {
     font-size: 1.25rem; }
   h6 {
     font-size: 1rem; } }
@@ -1012,7 +1010,7 @@ select {
   .form-error.is-visible {
     display: block; }
 
-.hide, .tabs.bar-less .bar {
+.hide, .hide-showhide .showhide-show, .show-showhide .showhide-hide {
   display: none !important; }
 
 .invisible {
@@ -3553,9 +3551,6 @@ table.hover tr:nth-of-type(even):hover {
 .grid-content .modal .grid-block {
   flex-wrap: nowrap; }
 
-.menu-tab-padding > a {
-  padding: 0.7rem 1rem; }
-
 .margin-0 {
   margin: 0; }
 
@@ -3569,8 +3564,29 @@ table.hover tr:nth-of-type(even):hover {
   padding-left: 0.7rem;
   padding-right: 0.7rem; }
 
+h1.h3 {
+  font-size: 1.9375rem; }
+
+@media screen and (min-width: 40em) {
+  h2.h4 {
+    font-size: 1.5625rem; } }
+
+@media screen and (min-width: 40em) {
+  h1.h3 {
+    font-size: 1.9375rem; } }
+
+@media screen and (min-width: 40em) {
+  h2.h4 {
+    font-size: 1.5625rem; } }
+
+.h3, h4, .hx-bottom {
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #e6e6e6; }
+
+.inherit-color {
+  color: inherit; }
+
 .stripe > .grid-block.thead {
-  background-color: #f8f8f8;
   font-weight: bold; }
 
 .stripe > .grid-block:not(.thead) {
@@ -3580,21 +3596,10 @@ table.hover tr:nth-of-type(even):hover {
       // &:hover { background-color: #88f; }
     }
     */ }
-  .stripe > .grid-block:not(.thead):nth-of-type(odd) {
-    background-color: #f1f1f1; }
   .stripe > .grid-block:not(.thead):hover {
     background-color: #f9f9f9; }
   .stripe > .grid-block:not(.thead):nth-of-type(odd):hover {
     background-color: #ececec; }
-
-.stripe > .grid-block .col {
-  padding: 0.5rem 0.625rem 0.625rem; }
-
-.stripe > .grid-block .col.sparkline {
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 0.625rem;
-  padding-right: 0.625rem; }
 
 .stripe > .grid-block:hover .mutext {
   color: #8a8a8a; }
@@ -3602,8 +3607,25 @@ table.hover tr:nth-of-type(even):hover {
 .stripe > .grid-block .mutext {
   color: #cacaca; }
 
-.align-self-center {
-  align-self: center; }
+.grid-block .col {
+  padding: 0.5rem 0.625rem 0.625rem; }
+
+.grid-block .col-tb {
+  padding-top: 0.5rem;
+  padding-bottom: 0.625rem; }
+
+.grid-block .col-lr {
+  padding-left: 0.625rem;
+  padding-right: 0.625rem; }
+
+.grid-block .col.sparkline {
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 0.625rem;
+  padding-right: 0.625rem; }
+
+.align-self-flex-end {
+  align-self: flex-end; }
 
 .display-block {
   display: block; }
@@ -3613,15 +3635,6 @@ table.hover tr:nth-of-type(even):hover {
 
 .menu-text .button {
   font-weight: normal; }
-
-.tabs-border {
-  border: 0; }
-
-.tabs-border.bar-less {
-  border-top: 1px solid transparent; }
-
-.tabs-border, .hr-border-top {
-  border-top: 1px solid #cacaca; }
 
 .expand {
   flex: 1 1 0px; }

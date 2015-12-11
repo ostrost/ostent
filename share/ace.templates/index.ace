@@ -22,27 +22,39 @@ html
       div.top-bar-left
         ul.menu
           li
-            div.updates data-define=define_hostname
-              {{template "defines::define_hostname" .}}
-          li
-            div
-              pre os {{.Distrib}}
-          li
-            div
-              pre
-                | up&nbsp;
-                span.updates data-define=define_uptime
-                  {{template "defines::define_uptime" .}}
-          li
-            div
-              pre
-                | la&nbsp;
-                span.updates data-define=define_loadavg
-                  {{template "defines::define_loadavg" .}}
+            h2.h4.margin-bottom-0
+              span.updates data-define=define_hostname
+                {{template "defines::define_hostname" .}}
+              |  
+              small {{.Distrib}}
       div.top-bar-right
         ul.menu
           li
             a.margin-0.button.secondary.hollow href=https://www.ostrost.com/ostent/releases/latest?cmp={{$v}} ostent
+
+    div.grid-block
+      div.grid-block.shrink
+        span.col up
+        span.col.updates data-define=define_uptime style="white-space: pre"
+          {{template "defines::define_uptime" .}}
+        span.col la
+        span.col.updates data-define=define_loadavg
+          {{template "defines::define_loadavg" .}}
+      / div.col-tb.grid-block.vertical
+        div.grid-block
+          span.small-1.col-lr.text-right
+            span.float-left la&nbsp;
+            | 1m
+          span.small-1.col-lr.text-right 0.79
+          div.expand 11111111111111
+        div.grid-block
+          span.small-1.col-lr.text-right 5m
+          span.small-1.col-lr.text-right 10.42
+          div.expand 55555555555555
+        div.grid-block
+          span.small-1.col-lr.text-right 15m
+          span.small-1.col-lr.text-right 110.35
+          div.expand 15151515151515
 
     {{$p := .Data.params}}
     div.grid-block.padding-top-056

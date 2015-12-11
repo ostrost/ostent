@@ -53,9 +53,6 @@
 @import "helpers/functions"; // dependency for grid
 @import "components/grid"; // foundation-apps-grid (flex)
 
-.menu-tab-padding > a { padding: $menu-item-padding; }
-// $tab-item-padding is 1.25rem 1.5rem, $menu-item-padding is 0.7rem 1rem
-
 // explicit {margin,padding}
 .margin-0        { margin: 0; }
 .margin-bottom-0 { margin-bottom: 0; }
@@ -63,14 +60,29 @@
 
 $menu-hpadding: 0.7rem; // $menu-item-padding is 0.7rem 1rem;
 .menu > li > div { padding-left: $menu-hpadding; padding-right: $menu-hpadding; }
-.h5 { @extend h5; }
+
+@each $size in ('small', 'medium') {
+  @include breakpoint($size) { // the h3 size (31)
+    h1.h3 { font-size: rem-calc(map-get(map-get($header-sizes, 'medium'), 'h3')); }
+  }
+  @include breakpoint('medium') { // the h4 size (25) // 1.5625rem
+    h2.h4 { font-size: rem-calc(map-get(map-get($header-sizes, 'medium'), 'h4')); }
+  }
+}
+
+.h3, h4, .hx-bottom {
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid $light-gray;
+}
+
+.inherit-color { color: inherit; }
 
 .stripe >.grid-block {
   &.thead  {
-    & { background-color: $table-head-background; font-weight: bold; }
+    & { font-weight: bold; } // background-color: $table-head-background;
   }
   &:not(.thead) {
-    &:nth-of-type(odd)       { background-color: $table-striped-background; }
+ // &:nth-of-type(odd)       { background-color: $table-striped-background; }
     &:hover                  { background-color: $table-row-hover;          }
     &:nth-of-type(odd):hover { background-color: $table-row-stripe-hover;   }
     /*
@@ -80,10 +92,18 @@ $menu-hpadding: 0.7rem; // $menu-item-padding is 0.7rem 1rem;
     }
     */
   }
+
+  &:hover .mutext { color: $dark-gray; }
+  .mutext         { color: $medium-gray; }
+}
+
+.grid-block {
   .col {
     padding: $table-padding;
     // &:hover { background-color: #88f; }
   }
+  .col-tb { padding-top:  0.5rem;   padding-bottom: 0.625rem; }
+  .col-lr { padding-left: 0.625rem; padding-right: 0.625rem; }
   .col.sparkline {
     // $table-padding but not for top or bottom
     padding-top:    0;
@@ -91,22 +111,17 @@ $menu-hpadding: 0.7rem; // $menu-item-padding is 0.7rem 1rem;
     padding-left:   0.625rem;
     padding-right:  0.625rem;
   }
-
-  &:hover .mutext { color: $dark-gray; }
-  .mutext         { color: $medium-gray; }
 }
 
-.align-self-center { align-self: center; }
+.align-self-flex-end { align-self: flex-end; } // e.g. bottom
 
 .display-block { display: block; }
 
 .input-group-label.small { font-size: 0.9rem; }
 .menu-text .button { font-weight: normal; }
 
-.tabs-border { border: 0; }
-.tabs-border.bar-less { border-top: 1px solid transparent; }
-.tabs-border, .hr-border-top { border-top: $hr-border; }
-.tabs.bar-less .bar { @extend .hide; }
+.hide-showhide .showhide-show { @extend .hide; }
+.show-showhide .showhide-hide { @extend .hide; }
 
 // e.g. span.col.sparkline.expand
 .expand { flex: 1 1 0px; }

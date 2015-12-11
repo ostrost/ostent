@@ -19,30 +19,12 @@
       ><div class="top-bar-left"
         ><ul class="menu"
           ><li
-            ><div class="updates" data-define="define_hostname"
-              >{{template "defines::define_hostname" .}}</div
-            ></li
-          ><li
-            ><div
-              ><pre
-                >os {{.Distrib}}</pre
-              ></div
-            ></li
-          ><li
-            ><div
-              ><pre
-                >up&nbsp;<span class="updates" data-define="define_uptime"
-                  >{{template "defines::define_uptime" .}}</span
-                ></pre
-              ></div
-            ></li
-          ><li
-            ><div
-              ><pre
-                >la&nbsp;<span class="updates" data-define="define_loadavg"
-                  >{{template "defines::define_loadavg" .}}</span
-                ></pre
-              ></div
+            ><h2 class="h4 margin-bottom-0"
+              ><span class="updates" data-define="define_hostname"
+                >{{template "defines::define_hostname" .}}</span
+              > <small
+                >{{.Distrib}}</small
+              ></h2
             ></li
           ></ul
         ></div
@@ -53,6 +35,18 @@
               >ostent</a
             ></li
           ></ul
+        ></div
+      ></div
+    ><div class="grid-block"
+      ><div class="grid-block shrink"
+        ><span class="col"
+          >up</span
+        ><span class="col updates" data-define="define_uptime" style="white-space: pre"
+          >{{template "defines::define_uptime" .}}</span
+        ><span class="col"
+          >la</span
+        ><span class="col updates" data-define="define_loadavg"
+          >{{template "defines::define_loadavg" .}}</span
         ></div
       ></div
     >{{$p := .Data.params}}<div class="grid-block padding-top-056"
@@ -103,25 +97,23 @@
     ></span
   ></a
 >{{end}}{{/*
-*/}}{{define "defines::define_hostname"}}<a {{class}}="h5" {{TitlePrefixed "hostname " .Data.hostname}} href="/"
-  ><pre
-    >{{.Data.hostname}}</pre
-  ></a
+*/}}{{define "defines::define_hostname"}}<a href="/" {{class}}="inherit-color"  {{TitlePrefixed "hostname " .Data.hostname}}
+  >{{.Data.hostname}}</a
 >{{end}}{{/*
 */}}{{define "defines::define_loadavg"}}<span
   >{{.Data.loadavg}}</span
 >{{end}}{{/*
 */}}{{define "defines::define_panelcpu"}}{{$p := .Data.params}}<div
-  ><div {{ClassPositive $p.CPUn "tabs tabs-border bar-less" "tabs tabs-border"}} data-tabs
-    ><div class="grid-block"
-      ><div class="tabs-title menu-tab-padding"
-        ><a {{HrefT $p $p.CPUn}}
-          ><h5 class="margin-bottom-0"
-            >CPU</h5
+  ><div {{ClassPositive $p.CPUn "hide-showhide" "show-showhide"}}
+    ><div class="grid-block align-justify"
+      ><h1 class="h3 margin-bottom-0"
+        ><a {{class}}="inherit-color" {{HrefT $p $p.CPUn}}  
+          >CPU<span {{class}}="showhide-hide"
+            >...</span
           ></a
-        ></div
-      ><div class="align-self-center"
-        ><ul class="bar menu"
+        ></h1
+      ><div class="showhide-show hx-bottom align-self-flex-end expand"
+        ><ul class="menu float-right"
           ><li
             ><div class="input-group margin-bottom-0"
               ><div class="input-group-label small text-nowrap"
@@ -195,16 +187,16 @@ data-usepct={{$cpu.IdlePct}}
   ></div
 >{{end}}{{/*
 */}}{{define "defines::define_paneldf"}}{{$p := .Data.params}}<div
-  ><div {{ClassPositive $p.Dfn "tabs tabs-border bar-less" "tabs tabs-border"}} data-tabs
-    ><div class="grid-block"
-      ><div class="tabs-title menu-tab-padding"
-        ><a {{HrefT $p $p.Dfn}}
-          ><h5 class="margin-bottom-0"
-            >Disk usage</h5
+  ><div {{ClassPositive $p.Dfn "hide-showhide" "show-showhide"}}
+    ><div class="grid-block align-justify"
+      ><h1 class="h3 margin-bottom-0"
+        ><a {{class}}="inherit-color" {{HrefT $p $p.Dfn}}  
+          >Disk usage<span {{class}}="showhide-hide"
+            >...</span
           ></a
-        ></div
-      ><div class="align-self-center"
-        ><ul class="bar menu"
+        ></h1
+      ><div class="showhide-show hx-bottom align-self-flex-end expand"
+        ><ul class="menu float-right"
           ><li
             ><div class="input-group margin-bottom-0"
               ><div class="input-group-label small text-nowrap"
@@ -280,16 +272,16 @@ data-usepct={{$cpu.IdlePct}}
   ></div
 >{{end}}{{/*
 */}}{{define "defines::define_panelif"}}{{$p := .Data.params}}<div
-  ><div {{ClassPositive $p.Ifn "tabs tabs-border bar-less" "tabs tabs-border"}} data-tabs
-    ><div class="grid-block"
-      ><div class="tabs-title menu-tab-padding"
-        ><a {{HrefT $p $p.Ifn}}
-          ><h5 class="margin-bottom-0"
-            >Interfaces</h5
+  ><div {{ClassPositive $p.Ifn "hide-showhide" "show-showhide"}}
+    ><div class="grid-block align-justify"
+      ><h1 class="h3 margin-bottom-0"
+        ><a {{class}}="inherit-color" {{HrefT $p $p.Ifn}}  
+          >Interfaces<span {{class}}="showhide-hide"
+            >...</span
           ></a
-        ></div
-      ><div class="align-self-center"
-        ><ul class="bar menu"
+        ></h1
+      ><div class="showhide-show hx-bottom align-self-flex-end expand"
+        ><ul class="menu float-right"
           ><li
             ><div class="input-group margin-bottom-0"
               ><div class="input-group-label small text-nowrap"
@@ -393,16 +385,16 @@ data-usepct={{$cpu.IdlePct}}
   ></div
 >{{end}}{{/*
 */}}{{define "defines::define_panelmem"}}{{$p := .Data.params}}<div
-  ><div {{ClassPositive $p.Memn "tabs tabs-border bar-less" "tabs tabs-border"}} data-tabs
-    ><div class="grid-block"
-      ><div class="tabs-title menu-tab-padding"
-        ><a {{HrefT $p $p.Memn}}
-          ><h5 class="margin-bottom-0"
-            >Memory</h5
+  ><div {{ClassPositive $p.Memn "hide-showhide" "show-showhide"}}
+    ><div class="grid-block align-justify"
+      ><h1 class="h3 margin-bottom-0"
+        ><a {{class}}="inherit-color" {{HrefT $p $p.Memn}}  
+          >Memory<span {{class}}="showhide-hide"
+            >...</span
           ></a
-        ></div
-      ><div class="align-self-center"
-        ><ul class="bar menu"
+        ></h1
+      ><div class="showhide-show hx-bottom align-self-flex-end expand"
+        ><ul class="menu float-right"
           ><li
             ><div class="input-group margin-bottom-0"
               ><div class="input-group-label small text-nowrap"
@@ -466,16 +458,16 @@ data-usepct={{$cpu.IdlePct}}
   ></div
 >{{end}}{{/*
 */}}{{define "defines::define_panelps"}}{{$p := .Data.params}}<div
-  ><div {{ClassPositive $p.Psn "tabs tabs-border bar-less" "tabs tabs-border"}} data-tabs
-    ><div class="grid-block"
-      ><div class="tabs-title menu-tab-padding"
-        ><a {{HrefT $p $p.Psn}}
-          ><h5 class="margin-bottom-0"
-            >Processes</h5
+  ><div {{ClassPositive $p.Psn "hide-showhide" "show-showhide"}}
+    ><div class="grid-block align-justify"
+      ><h1 class="h3 margin-bottom-0"
+        ><a {{class}}="inherit-color" {{HrefT $p $p.Psn}}  
+          >Processes<span {{class}}="showhide-hide"
+            >...</span
           ></a
-        ></div
-      ><div class="align-self-center"
-        ><ul class="bar menu"
+        ></h1
+      ><div class="showhide-show hx-bottom align-self-flex-end expand"
+        ><ul class="menu float-right"
           ><li
             ><div class="input-group margin-bottom-0"
               ><div class="input-group-label small text-nowrap"

@@ -112,10 +112,8 @@ jsdefines.define_hostname = React.createClass({
   },
   render: function() {
     let Data = this.state; // shadow global Data
-    return <a className="h5"  title={"hostname " + Data.hostname} href="/"
-  ><pre
-    >{Data.hostname}</pre
-  ></a
+    return <a href="/" className="inherit-color"   title={"hostname " + Data.hostname}
+  >{Data.hostname}</a
 >;
   }
 });
@@ -138,16 +136,16 @@ jsdefines.define_panelcpu = React.createClass({
   render: function() {
     let Data = this.state; // shadow global Data
     return <div
-  ><div  className={!Data.params.CPUn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border"} data-tabs
-    ><div className="grid-block"
-      ><div className="tabs-title menu-tab-padding"
-        ><a  href={Data.params.Tlinks.CPUn} onClick={this.handleClick}
-          ><h5 className="margin-bottom-0"
-            >CPU</h5
+  ><div  className={!Data.params.CPUn.Negative ? "hide-showhide" : "show-showhide"}
+    ><div className="grid-block align-justify"
+      ><h1 className="h3 margin-bottom-0"
+        ><a className="inherit-color"  href={Data.params.Tlinks.CPUn} onClick={this.handleClick}  
+          >CPU<span className="showhide-hide"
+            >...</span
           ></a
-        ></div
-      ><div className="align-self-center"
-        ><ul className="bar menu"
+        ></h1
+      ><div className="showhide-show hx-bottom align-self-flex-end expand"
+        ><ul className="menu float-right"
           ><li
             ><div className="input-group margin-bottom-0"
               ><div className="input-group-label small text-nowrap"
@@ -249,16 +247,16 @@ jsdefines.define_paneldf = React.createClass({
   render: function() {
     let Data = this.state; // shadow global Data
     return <div
-  ><div  className={!Data.params.Dfn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border"} data-tabs
-    ><div className="grid-block"
-      ><div className="tabs-title menu-tab-padding"
-        ><a  href={Data.params.Tlinks.Dfn} onClick={this.handleClick}
-          ><h5 className="margin-bottom-0"
-            >Disk usage</h5
+  ><div  className={!Data.params.Dfn.Negative ? "hide-showhide" : "show-showhide"}
+    ><div className="grid-block align-justify"
+      ><h1 className="h3 margin-bottom-0"
+        ><a className="inherit-color"  href={Data.params.Tlinks.Dfn} onClick={this.handleClick}  
+          >Disk usage<span className="showhide-hide"
+            >...</span
           ></a
-        ></div
-      ><div className="align-self-center"
-        ><ul className="bar menu"
+        ></h1
+      ><div className="showhide-show hx-bottom align-self-flex-end expand"
+        ><ul className="menu float-right"
           ><li
             ><div className="input-group margin-bottom-0"
               ><div className="input-group-label small text-nowrap"
@@ -386,16 +384,16 @@ jsdefines.define_panelif = React.createClass({
   render: function() {
     let Data = this.state; // shadow global Data
     return <div
-  ><div  className={!Data.params.Ifn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border"} data-tabs
-    ><div className="grid-block"
-      ><div className="tabs-title menu-tab-padding"
-        ><a  href={Data.params.Tlinks.Ifn} onClick={this.handleClick}
-          ><h5 className="margin-bottom-0"
-            >Interfaces</h5
+  ><div  className={!Data.params.Ifn.Negative ? "hide-showhide" : "show-showhide"}
+    ><div className="grid-block align-justify"
+      ><h1 className="h3 margin-bottom-0"
+        ><a className="inherit-color"  href={Data.params.Tlinks.Ifn} onClick={this.handleClick}  
+          >Interfaces<span className="showhide-hide"
+            >...</span
           ></a
-        ></div
-      ><div className="align-self-center"
-        ><ul className="bar menu"
+        ></h1
+      ><div className="showhide-show hx-bottom align-self-flex-end expand"
+        ><ul className="menu float-right"
           ><li
             ><div className="input-group margin-bottom-0"
               ><div className="input-group-label small text-nowrap"
@@ -527,16 +525,16 @@ jsdefines.define_panelmem = React.createClass({
   render: function() {
     let Data = this.state; // shadow global Data
     return <div
-  ><div  className={!Data.params.Memn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border"} data-tabs
-    ><div className="grid-block"
-      ><div className="tabs-title menu-tab-padding"
-        ><a  href={Data.params.Tlinks.Memn} onClick={this.handleClick}
-          ><h5 className="margin-bottom-0"
-            >Memory</h5
+  ><div  className={!Data.params.Memn.Negative ? "hide-showhide" : "show-showhide"}
+    ><div className="grid-block align-justify"
+      ><h1 className="h3 margin-bottom-0"
+        ><a className="inherit-color"  href={Data.params.Tlinks.Memn} onClick={this.handleClick}  
+          >Memory<span className="showhide-hide"
+            >...</span
           ></a
-        ></div
-      ><div className="align-self-center"
-        ><ul className="bar menu"
+        ></h1
+      ><div className="showhide-show hx-bottom align-self-flex-end expand"
+        ><ul className="menu float-right"
           ><li
             ><div className="input-group margin-bottom-0"
               ><div className="input-group-label small text-nowrap"
@@ -628,16 +626,16 @@ jsdefines.define_panelps = React.createClass({
   render: function() {
     let Data = this.state; // shadow global Data
     return <div
-  ><div  className={!Data.params.Psn.Negative ? "tabs tabs-border bar-less" : "tabs tabs-border"} data-tabs
-    ><div className="grid-block"
-      ><div className="tabs-title menu-tab-padding"
-        ><a  href={Data.params.Tlinks.Psn} onClick={this.handleClick}
-          ><h5 className="margin-bottom-0"
-            >Processes</h5
+  ><div  className={!Data.params.Psn.Negative ? "hide-showhide" : "show-showhide"}
+    ><div className="grid-block align-justify"
+      ><h1 className="h3 margin-bottom-0"
+        ><a className="inherit-color"  href={Data.params.Tlinks.Psn} onClick={this.handleClick}  
+          >Processes<span className="showhide-hide"
+            >...</span
           ></a
-        ></div
-      ><div className="align-self-center"
-        ><ul className="bar menu"
+        ></h1
+      ><div className="showhide-show hx-bottom align-self-flex-end expand"
+        ><ul className="menu float-right"
           ><li
             ><div className="input-group margin-bottom-0"
               ><div className="input-group-label small text-nowrap"
