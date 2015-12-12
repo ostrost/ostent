@@ -80,21 +80,6 @@ type PS struct {
 
 // IndexData is a data map for templates and marshalling.
 // Keys (even abbrevs eg CPU) intentionally start with lowercase.
-// Observed keys with types (in a struct formatting):
-/*
-var _ = struct {
-	params    *params.Params `json:",omitempty"` // nil omitted
-	hostname  string         `json:",omitempty"` // empty omitted
-	loadavg   string         `json:",omitempty"` // empty omitted
-	uptime    string         `json:",omitempty"` // empty omitted
-	memory    *operating.MEM `json:",omitempty"` // nil omitted
-	diskUsage *operating.DF  `json:",omitempty"` // nil omitted
-	cpu       *operating.CPU `json:",omitempty"` // nil omitted
-	ifaddrs   *operating.IF  `json:",omitempty"` // nil omitted
-	procs     *PS            `json:",omitempty"` // nil omitted
-}{}
-
-// */
 type IndexData map[string]interface{}
 
 func (data IndexData) SetString(k, v string) {
@@ -342,11 +327,11 @@ func FormatDF(md *operating.MetricDF) operating.DFData {
 		Inodes:  itotal,
 		Iused:   iused,
 		Ifree:   format.HumanB(uint64(vifree)),
-		IusePct: format.FormatPercent(approxiused, approxitotal),
+		IusePct: format.Percent(approxiused, approxitotal),
 		Total:   total,
 		Used:    used,
 		Avail:   format.HumanB(uint64(vavail)),
-		UsePct:  format.FormatPercent(approxused, approxtotal),
+		UsePct:  format.Percent(approxused, approxtotal),
 	}
 }
 

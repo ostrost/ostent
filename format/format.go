@@ -91,10 +91,6 @@ func Percent(used, total uint64) uint {
 	return uint(pct)
 }
 
-func FormatPercent(used, total uint64) string {
-	return strconv.Itoa(int(Percent(used, total))) // without "%"
-}
-
 func FormatTime(T uint64) string {
 	// 	ms := T % 60
 	t := T / 1000

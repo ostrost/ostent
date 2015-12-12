@@ -120,7 +120,7 @@ func _getmem(kind string, in sigar.Swap) operating.Memory {
 		Total:  total,
 		Used:   used,
 		Free:   format.HumanB(in.Free),
-		UsePct: format.FormatPercent(approxused, approxtotal),
+		UsePct: format.Percent(approxused, approxtotal),
 	}
 }
 

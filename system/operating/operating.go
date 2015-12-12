@@ -14,7 +14,7 @@ type Memory struct {
 	Total  string
 	Used   string
 	Free   string
-	UsePct string
+	UsePct uint
 }
 
 // MEM type has a list of Memory.
@@ -39,13 +39,13 @@ type DFData struct {
 	Inodes  string
 	Iused   string
 	Ifree   string
-	IusePct string // without %
+	IusePct uint
 
 	// bytes
 	Total  string
 	Used   string
 	Avail  string
-	UsePct string // without %
+	UsePct uint
 }
 
 // DF type has a list of DFData.
