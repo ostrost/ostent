@@ -36,7 +36,7 @@ var Sparkline = React.createClass({
     var spotsProps = {spotColors: {'-1': 'green', '1': 'red'}}; // reverse default
     if (this.props.defaultSpots) { delete spotsProps.spotColors; } // back to default
     var height = this.props.height;
-    if (height == null) { height = 24; }
+    if (height == null) { height = 35; }
     return <div className="height-1rem" ref="root">
       <SparkLines.Sparklines
                data={this.state.data}
@@ -241,7 +241,7 @@ jsdefines.define_panelcpu = React.createClass({
           > Wait%</span
         ><span className="col small-1 text-right"
           > Idle%</span
-        ><span className="col small-1 text-right"
+        ><span className="col"
           ></span
         ></div
       ></div
@@ -270,7 +270,7 @@ data-usepct={$cpu.IdlePct}
             > {$cpu.IdlePct}%</span
           ></span
         ><span className="col sparkline expand"
-          >{jsdefines.Sparkline({ref: i, col: 'IdlePct', height: 35, defaultSpots: true})}</span
+          >{jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}</span
         ></div
       ></div
     >})}</div
@@ -407,7 +407,7 @@ jsdefines.define_paneldf = React.createClass({
             > {$df.UsePct}%</span
           ></span
         ><span className="col sparkline expand"
-          >{jsdefines.Sparkline({ref: i, col: 'UsePct', height: 35})}</span
+          >{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</span
         ></div
       ></div
     >})}</div
@@ -483,46 +483,24 @@ jsdefines.define_panelif = React.createClass({
       ><div className="grid-block wrap noscroll"
         ><span className="col small-1 text-right"
           > IP</span
+        ><span className="col small-2 text-right text-nowrap" title="Drops,Errors In/Out per second"
+          > Loss IO ps</span
+        ><span className="col small-2 text-right text-nowrap" title="Packets In/Out per second"
+          > Packets IO ps</span
         ><span className="col small-2 text-right text-nowrap" title="Bits In/Out per second"
           > IO <i
             >b</i
           >ps</span
-        ><span className="col small-2 text-right text-nowrap" title="Packets In/Out per second"
-          > Packets IO ps</span
-        ><span className="col small-2 text-right text-nowrap" title="Drops,Errors In/Out per second"
-          > Loss IO ps</span
+        ><span className="col"
+          ></span
         ></div
       ></div
-    >{this.List(Data).map(function($if) { return<div className="grid-block"
+    >{this.List(Data).map(function($if, i) { return<div className="grid-block"
       ><span className="col small-1 text-overflow"
         >{$if.Name}</span
       ><div  key={"if-rowby-name-"+$if.Name} className="grid-block wrap noscroll"
         ><span className="col small-1 text-right text-overflow"
           >{$if.IP}</span
-        ><span className="col small-2 text-right text-nowrap"
-          > <span className="mutext"
-            ><span title="Total BYTES In modulo 4G"
-              >{$if.BytesIn}</span
-            >/<span title="Total BYTES Out modulo 4G"
-              >{$if.BytesOut}</span
-            ></span
-          > <span title="BITS In per second"
-            >{$if.DeltaBitsIn}</span
-          >/<span title="BITS Out per second"
-            >{$if.DeltaBitsOut}</span
-          ></span
-        ><span className="col small-2 text-right text-nowrap"
-          > <span className="mutext"
-            ><span title="Total packets In modulo 4G"
-              >{$if.PacketsIn}</span
-            >/<span title="Total packets Out modulo 4G"
-              >{$if.PacketsOut}</span
-            ></span
-          > <span title="Packets In per second"
-            >{$if.DeltaPacketsIn}</span
-          >/<span title="Packets Out per second"
-            >{$if.DeltaPacketsOut}</span
-          ></span
         ><span className="col small-2 text-right text-nowrap"
           > <span className="mutext" title="Total drops,errors modulo 4G"
             ><span title="Total drops In modulo 4G"
@@ -549,6 +527,32 @@ jsdefines.define_panelif = React.createClass({
               >{$if.DeltaErrorsOut}</span
             ></span
           ></span
+        ><span className="col small-2 text-right text-nowrap"
+          > <span className="mutext"
+            ><span title="Total packets In modulo 4G"
+              >{$if.PacketsIn}</span
+            >/<span title="Total packets Out modulo 4G"
+              >{$if.PacketsOut}</span
+            ></span
+          > <span title="Packets In per second"
+            >{$if.DeltaPacketsIn}</span
+          >/<span title="Packets Out per second"
+            >{$if.DeltaPacketsOut}</span
+          ></span
+        ><span className="col small-2 text-right text-nowrap"
+          > <span className="mutext"
+            ><span title="Total BYTES In modulo 4G"
+              >{$if.BytesIn}</span
+            >/<span title="Total BYTES Out modulo 4G"
+              >{$if.BytesOut}</span
+            ></span
+          > <span title="BITS In per second"
+            >{$if.DeltaBitsIn}</span
+          >/<span title="BITS Out per second"
+            >{$if.DeltaBitsOut}</span
+          ></span
+        ><span className="col sparkline expand"
+          >{jsdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}</span
         ></div
       ></div
     >})}</div
@@ -649,7 +653,7 @@ jsdefines.define_panelmem = React.createClass({
             > {$mem.UsePct}%</span
           ></span
         ><span className="col sparkline expand"
-          >{jsdefines.Sparkline({ref: i, col: 'UsePct', height: 35})}</span
+          >{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</span
         ></div
       ></div
     >})}</div

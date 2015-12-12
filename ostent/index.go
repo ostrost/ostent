@@ -181,8 +181,9 @@ func (is IFSlice) Less(i, j int) bool {
 
 func FormatIF(mi *operating.MetricIF) operating.IFData {
 	ii := operating.IFData{
-		Name: mi.Name,
-		IP:   mi.IP.Snapshot().Value(),
+		Name:             mi.Name,
+		IP:               mi.IP.Snapshot().Value(),
+		DeltaBytesOutNum: mi.BytesOut.DeltaValue(),
 	}
 	FormatIF1024(mi.BytesIn, &ii.BytesIn, &ii.DeltaBitsIn)
 	FormatIF1024(mi.BytesOut, &ii.BytesOut, &ii.DeltaBitsOut)

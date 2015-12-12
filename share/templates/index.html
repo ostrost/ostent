@@ -175,7 +175,7 @@
           > Wait%</span
         ><span class="col small-1 text-right"
           > Idle%</span
-        ><span class="col small-1 text-right"
+        ><span class="col"
           ></span
         ></div
       ></div
@@ -204,7 +204,7 @@ data-usepct={{$cpu.IdlePct}}
             > {{$cpu.IdlePct}}%</span
           ></span
         ><span class="col sparkline expand"
-          >{{jsx `{jsdefines.Sparkline({ref: i, col: 'IdlePct', height: 35, defaultSpots: true})}`}}</span
+          >{{jsx `{jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}`}}</span
         ></div
       ></div
     >{{jsx `})}`}}{{end}}{{end}}</div
@@ -289,7 +289,7 @@ data-usepct={{$cpu.IdlePct}}
             > {{$df.UsePct}}%</span
           ></span
         ><span class="col sparkline expand"
-          >{{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct', height: 35})}`}}</span
+          >{{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}</span
         ></div
       ></div
     >{{jsx `})}`}}{{end}}{{end}}</div
@@ -337,46 +337,24 @@ data-usepct={{$cpu.IdlePct}}
       ><div class="grid-block wrap noscroll"
         ><span class="col small-1 text-right"
           > IP</span
+        ><span class="col small-2 text-right text-nowrap" title="Drops,Errors In/Out per second"
+          > Loss IO ps</span
+        ><span class="col small-2 text-right text-nowrap" title="Packets In/Out per second"
+          > Packets IO ps</span
         ><span class="col small-2 text-right text-nowrap" title="Bits In/Out per second"
           > IO <i
             >b</i
           >ps</span
-        ><span class="col small-2 text-right text-nowrap" title="Packets In/Out per second"
-          > Packets IO ps</span
-        ><span class="col small-2 text-right text-nowrap" title="Drops,Errors In/Out per second"
-          > Loss IO ps</span
+        ><span class="col"
+          ></span
         ></div
       ></div
-    >{{if .Data.ifaddrs}}{{range $if := .Data.ifaddrs.List}}{{jsx `{this.List(Data).map(function($if) { return`}}<div class="grid-block"
+    >{{if .Data.ifaddrs}}{{range $if := .Data.ifaddrs.List}}{{jsx `{this.List(Data).map(function($if, i) { return`}}<div class="grid-block"
       ><span class="col small-1 text-overflow"
         >{{$if.Name}}</span
       ><div {{Key "if-rowby-name" $if.Name}} {{class}}="grid-block wrap noscroll"
         ><span class="col small-1 text-right text-overflow"
           >{{$if.IP}}</span
-        ><span class="col small-2 text-right text-nowrap"
-          > <span class="mutext"
-            ><span title="Total BYTES In modulo 4G"
-              >{{$if.BytesIn}}</span
-            >/<span title="Total BYTES Out modulo 4G"
-              >{{$if.BytesOut}}</span
-            ></span
-          > <span title="BITS In per second"
-            >{{$if.DeltaBitsIn}}</span
-          >/<span title="BITS Out per second"
-            >{{$if.DeltaBitsOut}}</span
-          ></span
-        ><span class="col small-2 text-right text-nowrap"
-          > <span class="mutext"
-            ><span title="Total packets In modulo 4G"
-              >{{$if.PacketsIn}}</span
-            >/<span title="Total packets Out modulo 4G"
-              >{{$if.PacketsOut}}</span
-            ></span
-          > <span title="Packets In per second"
-            >{{$if.DeltaPacketsIn}}</span
-          >/<span title="Packets Out per second"
-            >{{$if.DeltaPacketsOut}}</span
-          ></span
         ><span class="col small-2 text-right text-nowrap"
           > <span class="mutext" title="Total drops,errors modulo 4G"
             ><span title="Total drops In modulo 4G"
@@ -403,6 +381,32 @@ data-usepct={{$cpu.IdlePct}}
               >{{$if.DeltaErrorsOut}}</span
             ></span
           ></span
+        ><span class="col small-2 text-right text-nowrap"
+          > <span class="mutext"
+            ><span title="Total packets In modulo 4G"
+              >{{$if.PacketsIn}}</span
+            >/<span title="Total packets Out modulo 4G"
+              >{{$if.PacketsOut}}</span
+            ></span
+          > <span title="Packets In per second"
+            >{{$if.DeltaPacketsIn}}</span
+          >/<span title="Packets Out per second"
+            >{{$if.DeltaPacketsOut}}</span
+          ></span
+        ><span class="col small-2 text-right text-nowrap"
+          > <span class="mutext"
+            ><span title="Total BYTES In modulo 4G"
+              >{{$if.BytesIn}}</span
+            >/<span title="Total BYTES Out modulo 4G"
+              >{{$if.BytesOut}}</span
+            ></span
+          > <span title="BITS In per second"
+            >{{$if.DeltaBitsIn}}</span
+          >/<span title="BITS Out per second"
+            >{{$if.DeltaBitsOut}}</span
+          ></span
+        ><span class="col sparkline expand"
+          >{{jsx `{jsdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}`}}</span
         ></div
       ></div
     >{{jsx `})}`}}{{end}}{{end}}</div
@@ -475,7 +479,7 @@ data-usepct={{$cpu.IdlePct}}
             > {{$mem.UsePct}}%</span
           ></span
         ><span class="col sparkline expand"
-          >{{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct', height: 35})}`}}</span
+          >{{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}</span
         ></div
       ></div
     >{{jsx `})}`}}{{end}}{{end}}</div

@@ -19821,7 +19821,7 @@
 	    } // back to default
 	    var height = this.props.height;
 	    if (height == null) {
-	      height = 24;
+	      height = 35;
 	    }
 	    return React.createElement(
 	      'div',
@@ -19967,7 +19967,7 @@
 	});
 
 	var _ref3 = _jsx('span', {
-	  className: 'col small-1 text-right'
+	  className: 'col'
 	});
 
 	jsdefines.define_panelcpu = React.createClass({
@@ -20080,7 +20080,7 @@
 	        'data-usepct': $cpu.IdlePct
 	      }, void 0, ' ', $cpu.IdlePct, '%')), _jsx('span', {
 	        className: 'col sparkline expand'
-	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'IdlePct', height: 35, defaultSpots: true }))));
+	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'IdlePct', defaultSpots: true }))));
 	    })));
 	  }
 	});
@@ -20244,9 +20244,13 @@
 	        title: 'Inodes use%'
 	      }, void 0, ' ', $df.IusePct, '%'), ' ', $df.UsePct, '%')), _jsx('span', {
 	        className: 'col sparkline expand'
-	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct', height: 35 }))));
+	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct' }))));
 	    })));
 	  }
+	});
+
+	var _ref5 = _jsx('span', {
+	  className: 'col'
 	});
 
 	jsdefines.define_panelif = React.createClass({
@@ -20328,14 +20332,14 @@
 	      className: 'col small-1 text-right'
 	    }, void 0, ' IP'), _jsx('span', {
 	      className: 'col small-2 text-right text-nowrap',
-	      title: 'Bits In/Out per second'
-	    }, void 0, ' IO ', _jsx('i', {}, void 0, 'b'), 'ps'), _jsx('span', {
+	      title: 'Drops,Errors In/Out per second'
+	    }, void 0, ' Loss IO ps'), _jsx('span', {
 	      className: 'col small-2 text-right text-nowrap',
 	      title: 'Packets In/Out per second'
 	    }, void 0, ' Packets IO ps'), _jsx('span', {
 	      className: 'col small-2 text-right text-nowrap',
-	      title: 'Drops,Errors In/Out per second'
-	    }, void 0, ' Loss IO ps'))), this.List(Data).map(function ($if) {
+	      title: 'Bits In/Out per second'
+	    }, void 0, ' IO ', _jsx('i', {}, void 0, 'b'), 'ps'), _ref5)), this.List(Data).map(function ($if, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
 	      }, void 0, _jsx('span', {
@@ -20345,30 +20349,6 @@
 	      }, "if-rowby-name-" + $if.Name, _jsx('span', {
 	        className: 'col small-1 text-right text-overflow'
 	      }, void 0, $if.IP), _jsx('span', {
-	        className: 'col small-2 text-right text-nowrap'
-	      }, void 0, ' ', _jsx('span', {
-	        className: 'mutext'
-	      }, void 0, _jsx('span', {
-	        title: 'Total BYTES In modulo 4G'
-	      }, void 0, $if.BytesIn), '/', _jsx('span', {
-	        title: 'Total BYTES Out modulo 4G'
-	      }, void 0, $if.BytesOut)), ' ', _jsx('span', {
-	        title: 'BITS In per second'
-	      }, void 0, $if.DeltaBitsIn), '/', _jsx('span', {
-	        title: 'BITS Out per second'
-	      }, void 0, $if.DeltaBitsOut)), _jsx('span', {
-	        className: 'col small-2 text-right text-nowrap'
-	      }, void 0, ' ', _jsx('span', {
-	        className: 'mutext'
-	      }, void 0, _jsx('span', {
-	        title: 'Total packets In modulo 4G'
-	      }, void 0, $if.PacketsIn), '/', _jsx('span', {
-	        title: 'Total packets Out modulo 4G'
-	      }, void 0, $if.PacketsOut)), ' ', _jsx('span', {
-	        title: 'Packets In per second'
-	      }, void 0, $if.DeltaPacketsIn), '/', _jsx('span', {
-	        title: 'Packets Out per second'
-	      }, void 0, $if.DeltaPacketsOut)), _jsx('span', {
 	        className: 'col small-2 text-right text-nowrap'
 	      }, void 0, ' ', _jsx('span', {
 	        className: 'mutext',
@@ -20397,16 +20377,42 @@
 	        title: 'Errors In per second'
 	      }, void 0, $if.DeltaErrorsIn), '/', _jsx('span', {
 	        title: 'Errors Out per second'
-	      }, void 0, $if.DeltaErrorsOut)))));
+	      }, void 0, $if.DeltaErrorsOut))), _jsx('span', {
+	        className: 'col small-2 text-right text-nowrap'
+	      }, void 0, ' ', _jsx('span', {
+	        className: 'mutext'
+	      }, void 0, _jsx('span', {
+	        title: 'Total packets In modulo 4G'
+	      }, void 0, $if.PacketsIn), '/', _jsx('span', {
+	        title: 'Total packets Out modulo 4G'
+	      }, void 0, $if.PacketsOut)), ' ', _jsx('span', {
+	        title: 'Packets In per second'
+	      }, void 0, $if.DeltaPacketsIn), '/', _jsx('span', {
+	        title: 'Packets Out per second'
+	      }, void 0, $if.DeltaPacketsOut)), _jsx('span', {
+	        className: 'col small-2 text-right text-nowrap'
+	      }, void 0, ' ', _jsx('span', {
+	        className: 'mutext'
+	      }, void 0, _jsx('span', {
+	        title: 'Total BYTES In modulo 4G'
+	      }, void 0, $if.BytesIn), '/', _jsx('span', {
+	        title: 'Total BYTES Out modulo 4G'
+	      }, void 0, $if.BytesOut)), ' ', _jsx('span', {
+	        title: 'BITS In per second'
+	      }, void 0, $if.DeltaBitsIn), '/', _jsx('span', {
+	        title: 'BITS Out per second'
+	      }, void 0, $if.DeltaBitsOut)), _jsx('span', {
+	        className: 'col sparkline expand'
+	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'DeltaBytesOutNum' }))));
 	    })));
 	  }
 	});
 
-	var _ref5 = _jsx('span', {
+	var _ref6 = _jsx('span', {
 	  className: 'col small-1'
 	});
 
-	var _ref6 = _jsx('span', {
+	var _ref7 = _jsx('span', {
 	  className: 'col'
 	});
 
@@ -20481,7 +20487,7 @@
 	      className: Data.params.Memn.Absolute != 0 ? "stripe" : "hide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block thead'
-	    }, void 0, _ref5, _jsx('div', {
+	    }, void 0, _ref6, _jsx('div', {
 	      className: 'grid-block wrap noscroll'
 	    }, void 0, _jsx('span', {
 	      className: 'col small-1 text-right'
@@ -20491,7 +20497,7 @@
 	      className: 'col small-1 text-right'
 	    }, void 0, ' Free'), _jsx('span', {
 	      className: 'col small-1 text-right'
-	    }, void 0, ' Use%'), _ref6)), this.List(Data).map(function ($mem, i) {
+	    }, void 0, ' Use%'), _ref7)), this.List(Data).map(function ($mem, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
 	      }, void 0, _jsx('span', {
@@ -20511,7 +20517,7 @@
 	        'data-usepct': $mem.UsePct
 	      }, void 0, ' ', $mem.UsePct, '%')), _jsx('span', {
 	        className: 'col sparkline expand'
-	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct', height: 35 }))));
+	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct' }))));
 	    })));
 	  }
 	});

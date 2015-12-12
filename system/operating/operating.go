@@ -60,10 +60,11 @@ type IFData struct {
 
 	// strings with units
 
-	BytesIn      string
-	BytesOut     string
-	DeltaBitsIn  string
-	DeltaBitsOut string
+	BytesIn          string
+	BytesOut         string
+	DeltaBitsIn      string
+	DeltaBitsOut     string
+	DeltaBytesOutNum uint64
 
 	DropsIn       string
 	DropsOut      *string `json:",omitempty"`
@@ -192,6 +193,12 @@ func NewGaugeDiff(name string, r metrics.Registry) *GaugeDiff {
 		Absolute: metrics.NewRegisteredGauge(name+"-absolute", dummyr),
 		Previous: metrics.NewRegisteredGauge(name+"-previous", dummyr),
 	}
+}
+
+func (gd *GaugeDiff) DeltaValue() uint64 {
+	gd.Mutex.Lock()
+	defer gd.Mutex.Unlock()
+	return uint64(gd.Delta.Snapshot().Value())
 }
 
 func (gd *GaugeDiff) Values() (int64, int64) {
