@@ -480,10 +480,11 @@ func (ir *IndexRegistry) MEM(para *params.Params, data IndexData) bool {
 
 func (ir *IndexRegistry) LA(para *params.Params, data IndexData) bool {
 	// LA has no delay, always updates data
-	data["loadavg"] = fmt.Sprintf("%.2f %.2f %.2f",
-		ir.Load.Short.Snapshot().Value(),
-		ir.Load.Mid.Snapshot().Value(),
-		ir.Load.Long.Snapshot().Value())
+	data["loadavg"] = map[string]string{
+		"la1":  fmt.Sprintf("%.2f", ir.Load.Short.Snapshot().Value()),
+		"la5":  fmt.Sprintf("%.2f", ir.Load.Mid.Snapshot().Value()),
+		"la15": fmt.Sprintf("%.2f", ir.Load.Long.Snapshot().Value()),
+	}
 	return true
 }
 

@@ -19798,14 +19798,17 @@
 	      this.setState({ width: rootWidth, limit: Math.round(rootWidth / 2) });
 	    }
 	  },
-	  NewStateFromRow: function NewStateFromRow(row) {
+	  NewStateFrom: function NewStateFrom(statentry) {
 	    var limit,
 	        data = [];
 	    if (this.state != null) {
 	      limit = this.state.limit;
 	      data = this.state.data.slice(); // NB .slice https://github.com/borisyankov/react-sparklines/issues/27
 	    }
-	    data.push(+row[this.props.col]);
+	    if (this.props.col != null) {
+	      statentry = statentry[this.props.col];
+	    }
+	    data.push(+statentry);
 	    if (limit != null && data.length > limit) {
 	      data = data.slice(-limit);
 	    }
@@ -19847,21 +19850,26 @@
 	    if (state != null) {
 	      this.setState(state);
 	    }
-	    if (this.List == null) {
-	      return;
-	    }
 	    var rkeys = Object.keys(this.refs);
 	    if (rkeys.length == 0) {
 	      return;
 	    }
-	    var list = this.List(state);
-	    rkeys.forEach(function (rk) {
-	      var ref = this.refs[rk],
-	          row = list[+rk];
-	      if (ref == null || row == null) {
+	    var statefrom;
+	    if (this.List != null) {
+	      statefrom = this.List(state);
+	    } else {
+	      var skeys = Object.keys(state);
+	      if (skeys.length != 1) {
 	        return;
 	      }
-	      this.refs[rk].NewStateFromRow(row);
+	      statefrom = state[skeys[0]];
+	    }
+	    rkeys.forEach(function (rk) {
+	      var statentry;
+	      if (this.refs[rk] == null || (statentry = statefrom[rk]) == null) {
+	        return;
+	      }
+	      this.refs[rk].NewStateFrom(statentry);
 	    }, this);
 	  },
 	  StateFrom: function StateFrom(data) {
@@ -19908,6 +19916,49 @@
 	      className: 'inherit-color',
 	      title: "hostname " + Data.hostname
 	    }, void 0, Data.hostname);
+	  }
+	});
+
+	jsdefines.define_loadavg = React.createClass({
+	  displayName: 'define_loadavg',
+
+	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+	  Reduce: function Reduce(data) {
+	    return {
+	      loadavg: data.loadavg
+	    };
+	  },
+	  render: function render() {
+	    var Data = this.state; // shadow global Data
+	    return _jsx('div', {
+	      className: 'col-tb grid-block vertical'
+	    }, void 0, _jsx('div', {
+	      className: 'grid-block wrap noscroll'
+	    }, void 0, _jsx('span', {
+	      className: 'small-1 col-lr text-right'
+	    }, void 0, _jsx('span', {
+	      className: 'float-left'
+	    }, void 0, 'la '), '1m'), _jsx('span', {
+	      className: 'small-1 col-lr text-right'
+	    }, void 0, Data.loadavg.la1), _jsx('div', {
+	      className: 'expand'
+	    }, void 0, jsdefines.Sparkline({ ref: 'la1', height: 20 }))), _jsx('div', {
+	      className: 'grid-block wrap noscroll'
+	    }, void 0, _jsx('span', {
+	      className: 'small-1 col-lr text-right'
+	    }, void 0, '5m'), _jsx('span', {
+	      className: 'small-1 col-lr text-right'
+	    }, void 0, Data.loadavg.la5), _jsx('div', {
+	      className: 'expand'
+	    }, void 0, jsdefines.Sparkline({ ref: 'la5', height: 20 }))), _jsx('div', {
+	      className: 'grid-block wrap noscroll'
+	    }, void 0, _jsx('span', {
+	      className: 'small-1 col-lr text-right'
+	    }, void 0, '15m'), _jsx('span', {
+	      className: 'small-1 col-lr text-right'
+	    }, void 0, Data.loadavg.la15), _jsx('div', {
+	      className: 'expand'
+	    }, void 0, jsdefines.Sparkline({ ref: 'la15', height: 20 }))));
 	  }
 	});
 
@@ -20635,21 +20686,6 @@
 	        className: 'col expand'
 	      }, void 0, ' ', $ps.Name)));
 	    })));
-	  }
-	});
-
-	jsdefines.define_loadavg = React.createClass({
-	  displayName: 'define_loadavg',
-
-	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
-	  Reduce: function Reduce(data) {
-	    return {
-	      loadavg: data.loadavg
-	    };
-	  },
-	  render: function render() {
-	    var Data = this.state; // shadow global Data
-	    return _jsx('span', {}, void 0, Data.loadavg);
 	  }
 	});
 

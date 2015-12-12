@@ -43,11 +43,9 @@
           >up</span
         ><span class="col updates" data-define="define_uptime" style="white-space: pre"
           >{{template "defines::define_uptime" .}}</span
-        ><span class="col"
-          >la</span
-        ><span class="col updates" data-define="define_loadavg"
-          >{{template "defines::define_loadavg" .}}</span
         ></div
+      ><span class="updates expand" data-define="define_loadavg"
+        >{{template "defines::define_loadavg" .}}</span
       ></div
     >{{$p := .Data.params}}<div class="grid-block padding-top-056"
       ><div class="large-1 hr-border-top"
@@ -100,8 +98,34 @@
 */}}{{define "defines::define_hostname"}}<a href="/" {{class}}="inherit-color"  {{TitlePrefixed "hostname " .Data.hostname}}
   >{{.Data.hostname}}</a
 >{{end}}{{/*
-*/}}{{define "defines::define_loadavg"}}<span
-  >{{.Data.loadavg}}</span
+*/}}{{define "defines::define_loadavg"}}<div class="col-tb grid-block vertical"
+  ><div class="grid-block wrap noscroll"
+    ><span class="small-1 col-lr text-right"
+      ><span class="float-left"
+        >la&nbsp;</span
+      >1m</span
+    ><span class="small-1 col-lr text-right"
+      >{{.Data.loadavg.la1}}</span
+    ><div class="expand"
+      >{{jsx `{jsdefines.Sparkline({ref: 'la1', height: 20})}`}}</div
+    ></div
+  ><div class="grid-block wrap noscroll"
+    ><span class="small-1 col-lr text-right"
+      >5m</span
+    ><span class="small-1 col-lr text-right"
+      >{{.Data.loadavg.la5}}</span
+    ><div class="expand"
+      >{{jsx `{jsdefines.Sparkline({ref: 'la5', height: 20})}`}}</div
+    ></div
+  ><div class="grid-block wrap noscroll"
+    ><span class="small-1 col-lr text-right"
+      >15m</span
+    ><span class="small-1 col-lr text-right"
+      >{{.Data.loadavg.la15}}</span
+    ><div class="expand"
+      >{{jsx `{jsdefines.Sparkline({ref: 'la15', height: 20})}`}}</div
+    ></div
+  ></div
 >{{end}}{{/*
 */}}{{define "defines::define_panelcpu"}}{{$p := .Data.params}}<div
   ><div {{ClassPositive $p.CPUn "hide-showhide" "show-showhide"}}

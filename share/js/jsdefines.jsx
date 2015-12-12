@@ -17,13 +17,16 @@ var Sparkline = React.createClass({
       this.setState({width: rootWidth, limit: Math.round(rootWidth/2)});
     }
   },
-  NewStateFromRow: function(row) {
+  NewStateFrom: function(statentry) {
     var limit, data = [];
     if (this.state != null) {
       limit = this.state.limit;
       data  = this.state.data.slice(); // NB .slice https://github.com/borisyankov/react-sparklines/issues/27
     }
-    data.push(+row[this.props.col]);
+    if (this.props.col != null) {
+      statentry = statentry[this.props.col];
+    }
+    data.push(+statentry);
     if (limit != null && data.length > limit) {
       data = data.slice(-limit);
     }
@@ -59,20 +62,26 @@ jsdefines.StateHandlingMixin = { // requires .Reduce method
     if (state != null) {
       this.setState(state);
     }
-    if (this.List == null) {
-      return;
-    }
     var rkeys = Object.keys(this.refs);
     if (rkeys.length == 0) {
       return;
     }
-    var list = this.List(state);
-    rkeys.forEach(function(rk) {
-      var ref = this.refs[rk], row = list[+rk];
-      if (ref == null || row == null) {
+    var statefrom;
+    if (this.List != null) {
+      statefrom = this.List(state);
+    } else {
+      var skeys = Object.keys(state);
+      if (skeys.length != 1) {
         return;
       }
-      this.refs[rk].NewStateFromRow(row);
+      statefrom = state[skeys[0]];
+    }
+    rkeys.forEach(function(rk) {
+      var statentry;
+      if (this.refs[rk] == null || (statentry = statefrom[rk]) == null) {
+        return;
+      }
+      this.refs[rk].NewStateFrom(statentry);
     }, this);
   },
   StateFrom: function(data) {
@@ -114,6 +123,47 @@ jsdefines.define_hostname = React.createClass({
     let Data = this.state; // shadow global Data
     return <a href="/" className="inherit-color"   title={"hostname " + Data.hostname}
   >{Data.hostname}</a
+>;
+  }
+});
+
+jsdefines.define_loadavg = React.createClass({
+  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+  Reduce: function(data) {
+    return {
+      loadavg: data.loadavg
+    };
+  },
+  render: function() {
+    let Data = this.state; // shadow global Data
+    return <div className="col-tb grid-block vertical"
+  ><div className="grid-block wrap noscroll"
+    ><span className="small-1 col-lr text-right"
+      ><span className="float-left"
+        >la&nbsp;</span
+      >1m</span
+    ><span className="small-1 col-lr text-right"
+      >{Data.loadavg.la1}</span
+    ><div className="expand"
+      >{jsdefines.Sparkline({ref: 'la1', height: 20})}</div
+    ></div
+  ><div className="grid-block wrap noscroll"
+    ><span className="small-1 col-lr text-right"
+      >5m</span
+    ><span className="small-1 col-lr text-right"
+      >{Data.loadavg.la5}</span
+    ><div className="expand"
+      >{jsdefines.Sparkline({ref: 'la5', height: 20})}</div
+    ></div
+  ><div className="grid-block wrap noscroll"
+    ><span className="small-1 col-lr text-right"
+      >15m</span
+    ><span className="small-1 col-lr text-right"
+      >{Data.loadavg.la15}</span
+    ><div className="expand"
+      >{jsdefines.Sparkline({ref: 'la15', height: 20})}</div
+    ></div
+  ></div
 >;
   }
 });
@@ -751,21 +801,6 @@ jsdefines.define_panelps = React.createClass({
       ></div
     >})}</div
   ></div
->;
-  }
-});
-
-jsdefines.define_loadavg = React.createClass({
-  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
-  Reduce: function(data) {
-    return {
-      loadavg: data.loadavg
-    };
-  },
-  render: function() {
-    let Data = this.state; // shadow global Data
-    return <span
-  >{Data.loadavg}</span
 >;
   }
 });

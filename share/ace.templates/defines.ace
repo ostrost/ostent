@@ -37,12 +37,31 @@
   | <a href={{.LinkHref}} {{class}}={{.LinkClass}} onClick={this.handleClick}
   |   >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>
 
+{{define "defines::define_uptime"}}<span>{{.Data.uptime}}</span>{{end}}
+
 = content define_hostname
   | <a href="/" {{class}}="inherit-color"
   |   {{TitlePrefixed "hostname " .Data.hostname}}>{{.Data.hostname}}</a>
 
-{{define "defines::define_loadavg"}}<span>{{.Data.loadavg}}</span>{{end}}
-{{define "defines::define_uptime"}}<span>{{.Data.uptime}}</span>{{end}}
+= content define_loadavg
+  div.col-tb.grid-block.vertical
+    div.grid-block.wrap.noscroll
+      span.small-1.col-lr.text-right
+        span.float-left la&nbsp;
+        | 1m
+      span.small-1.col-lr.text-right {{.Data.loadavg.la1}}
+      div.expand
+        {{jsx `{jsdefines.Sparkline({ref: 'la1', height: 20})}`}}
+    div.grid-block.wrap.noscroll
+      span.small-1.col-lr.text-right 5m
+      span.small-1.col-lr.text-right {{.Data.loadavg.la5}}
+      div.expand
+        {{jsx `{jsdefines.Sparkline({ref: 'la5', height: 20})}`}}
+    div.grid-block.wrap.noscroll
+      span.small-1.col-lr.text-right 15m
+      span.small-1.col-lr.text-right {{.Data.loadavg.la15}}
+      div.expand
+        {{jsx `{jsdefines.Sparkline({ref: 'la15', height: 20})}`}}
 
 = content define_panelmem
   {{$p := .Data.params}}

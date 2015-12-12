@@ -37,24 +37,8 @@ html
         span.col up
         span.col.updates data-define=define_uptime style="white-space: pre"
           {{template "defines::define_uptime" .}}
-        span.col la
-        span.col.updates data-define=define_loadavg
-          {{template "defines::define_loadavg" .}}
-      / div.col-tb.grid-block.vertical
-        div.grid-block
-          span.small-1.col-lr.text-right
-            span.float-left la&nbsp;
-            | 1m
-          span.small-1.col-lr.text-right 0.79
-          div.expand 11111111111111
-        div.grid-block
-          span.small-1.col-lr.text-right 5m
-          span.small-1.col-lr.text-right 10.42
-          div.expand 55555555555555
-        div.grid-block
-          span.small-1.col-lr.text-right 15m
-          span.small-1.col-lr.text-right 110.35
-          div.expand 15151515151515
+      span.updates.expand data-define=define_loadavg
+        {{template "defines::define_loadavg" .}}
 
     {{$p := .Data.params}}
     div.grid-block.padding-top-056
