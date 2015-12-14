@@ -376,8 +376,8 @@ func (ir *IndexRegistry) GetCPU(para *params.Params) []operating.CPUData {
 	para.CPUn.Limit = private.Len() + 1
 	sort.Sort(private)
 
-	allabel := fmt.Sprintf("all %d", private.Len())
-	public := []operating.CPUData{FormatCPU(allabel, ir.PrivateCPUAll)} // first: "all N"
+	allabel := fmt.Sprintf("%d cores", private.Len())
+	public := []operating.CPUData{FormatCPU(allabel, ir.PrivateCPUAll)} // first: "N cores"
 
 	for i, mc := range private {
 		if i >= para.CPUn.Absolute-1 {
@@ -389,8 +389,8 @@ func (ir *IndexRegistry) GetCPU(para *params.Params) []operating.CPUData {
 }
 
 func FormatCPU(label string, mc *operating.MetricCPU) operating.CPUData {
-	if label == "" {
-		label = "#" + strings.TrimPrefix(mc.N, "cpu-") // A non-"all" mc.
+	if label == "" { // A non-"N cores" mc.
+		label = "#" + strings.TrimPrefix(mc.N, "cpu-")
 	}
 	return operating.CPUData{
 		N:       label,

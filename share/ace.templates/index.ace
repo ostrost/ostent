@@ -22,49 +22,38 @@ html
       div.top-bar-left
         ul.menu
           li
-            h2.h4.margin-bottom-0
+            h2.h4 style="margin-bottom: 0"
               span.updates data-define=define_hostname
                 {{template "defines::define_hostname" .}}
               |  
               small {{.Distrib}}
+          li
+            span.col up
+            span.col.updates.whitespace-pre data-define=define_uptime
+              {{template "defines::define_uptime" .}}
       div.top-bar-right
         ul.menu
           li
-            a.margin-0.button.secondary.hollow href=https://www.ostrost.com/ostent/releases/latest?cmp={{$v}} ostent
+            a.button.secondary.hollow style="margin: 0" href=https://www.ostrost.com/ostent/releases/latest?cmp={{$v}} ostent
 
     div.grid-block
-      div.grid-block.shrink
-        span.col up
-        span.col.updates data-define=define_uptime style="white-space: pre"
-          {{template "defines::define_uptime" .}}
       span.updates.expand data-define=define_loadavg
         {{template "defines::define_loadavg" .}}
 
-    {{$p := .Data.params}}
-    div.grid-block.padding-top-056
-      div.large-1.hr-border-top
-      div.column.large-11.updates data-define=define_panelmem
-        {{template "defines::define_panelmem" .}}
+    div.updates data-define=define_panelmem
+      {{template "defines::define_panelmem" .}}
 
-    div.grid-block.padding-top-056
-      div.large-1.hr-border-top
-      div.column.large-11.updates data-define=define_paneldf
-        {{template "defines::define_paneldf" .}}
+    div.updates data-define=define_paneldf
+      {{template "defines::define_paneldf" .}}
 
-    div.grid-block.padding-top-056
-      div.large-1.hr-border-top
-      div.column.large-11.updates data-define=define_panelcpu
-        {{template "defines::define_panelcpu" .}}
+    div.updates data-define=define_panelcpu
+      {{template "defines::define_panelcpu" .}}
 
-    div.grid-block.padding-top-056
-      div.large-1.hr-border-top
-      div.column.large-11.updates data-define=define_panelif
-        {{template "defines::define_panelif" .}}
+    div.updates data-define=define_panelif
+      {{template "defines::define_panelif" .}}
 
-    div.grid-block.padding-top-056
-      div.large-1.hr-border-top
-      div.column.large-11.updates data-define=define_panelps
-        {{template "defines::define_panelps" .}}
+    div.updates data-define=define_panelps
+      {{template "defines::define_panelps" .}}
 
     = javascript
       var Data = {{.Data}};

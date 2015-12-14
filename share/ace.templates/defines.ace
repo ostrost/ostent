@@ -1,29 +1,37 @@
+[[define "endpanel"]]| </div></div></div>[[end]]
 [[define "startpanel"]]
 [[$N := (index . 0)]]
 [[$D := (index . 1)]]
 [[$t := (index . 2)]]
-  | <div><div {{ClassPositive [[$N]] "hide-showhide" "show-showhide"}}>
-  div.grid-block.align-justify
-    h1.h3.margin-bottom-0
-      | <a {{class}}="inherit-color" {{HrefT $p [[$N]]}}
-      |   >[[$t]]<span {{class}}="showhide-hide">...</span></a>
-    div.showhide-show.hx-bottom.align-self-flex-end.expand
-      ul.menu.float-right
+  | <div {{class}}="grid-block hr-top">
+  div.col-lr.large-1.text-right
+    | <div {{ClassPositive [[$N]] "hide-showhide" "show-showhide"}}>
+    h1.h4.text-overflow
+      | <a {{class}}="inherit-color" {{HrefT $p [[$N]]}} title="[[$t]] display options">
+      | <span {{class}}="showhide-hide whitespace-pre float-left">... </span>[[$t]]</a>
+    | </div>
+  div.col-lr.large-11
+    | <div {{ClassPositive [[$N]] "hide-showhide" "show-showhide"}}>
+    div.grid-block
+      ul.menu.showhide-show
         li
-          div.input-group.margin-bottom-0
-            div.input-group-label.small.text-nowrap delay: {{[[$D]]}}
+          div.input-group
+            div.input-group-label.small.text-nowrap delay
+            div.input-group-button
+              a.button.small.secondary.disabled {{[[$D]]}}
             div.input-group-button
               {{template "defines::alink_badgeleft"  LessD $p [[$D]] "button small text-nowrap"}}
             div.input-group-button
               {{template "defines::alink_badgeright" MoreD $p [[$D]] "button small text-nowrap"}}
         li
-          div.input-group.margin-bottom-0
-            div.input-group-label.small.text-nowrap rows: {{[[$N]].Absolute}}
+          div.input-group
+            div.input-group-label.small.text-nowrap rows
+            div.input-group-button
+              a.button.small.secondary.disabled {{[[$N]].Absolute}}
             div.input-group-button
               {{template "defines::alink_badgeleft"  LessN $p [[$N]] "button small success text-nowrap"}}
             div.input-group-button
               {{template "defines::alink_badgeright" MoreN $p [[$N]] "button small success text-nowrap"}}
-  | </div>
 [[end]]
 
 = content alink_badgeleft
@@ -46,7 +54,7 @@
 = content define_loadavg
   div.col-tb.grid-block.vertical
     div.grid-block.wrap.noscroll
-      span.small-1.col-lr.text-right
+      span.small-1.col-lr.text-right.text-nowrap
         span.float-left la&nbsp;
         | 1m
       span.small-1.col-lr.text-right {{.Data.loadavg.la1}}
@@ -68,7 +76,7 @@
   [[template "startpanel" Chain `$p.Memn` `$p.Memd` "Memory"]]
   | <div {{ClassNonZero $p.Memn "stripe" "hide"}}>
   div.grid-block.thead
-    span.col.small-1
+    span.col.small-1 Memory
     div.grid-block.wrap.noscroll
       span.col.small-1.text-right  Total
       span.col.small-1.text-right  Used
@@ -87,13 +95,13 @@
         span.col.small-1.text-right  {{$mem.Free}}
         span.small-1.text-right
           | <span {{class}}="col display-block bg-usepct" data-usepct={{$mem.UsePct}}> {{$mem.UsePct}}%</span>
-        span.col.sparkline.expand
+        span.col-lr.expand
           {{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}
         | </div>
       {{jsx `})}`}}
     {{end}}
   {{end}}
-  | </div></div>
+  [[template "endpanel"]]
 
 = content define_paneldf
   {{$p := .Data.params}}
@@ -129,32 +137,32 @@
           | <span {{class}}="col display-block bg-usepct" data-usepct={{$df.UsePct}}>
           span.mutext title="Inodes use%"  {{$df.IusePct}}%
           |  {{$df.UsePct}}%</span>
-        span.col.sparkline.expand
+        span.col-lr.expand
           {{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}
         | </div>
       {{jsx `})}`}}
     {{end}}
   {{end}}
-  | </div></div>
+  [[template "endpanel"]]
 
 = content define_panelcpu
   {{$p := .Data.params}}
   [[template "startpanel" Chain `$p.CPUn` `$p.CPUd` "CPU"]]
   | <div {{ClassNonZero $p.CPUn "stripe" "hide"}}>
   div.grid-block.thead
-    span.col.small-1
+    span.col.small-1 Core
     div.grid-block.wrap.noscroll
-      span.col.small-1.text-right  User%
-      span.col.small-1.text-right  Sys%
-      span.col.small-1.text-right  Wait%
-      span.col.small-1.text-right  Idle%
+      span.col.small-1.text-right  User
+      span.col.small-1.text-right  Sys
+      span.col.small-1.text-right  Wait
+      span.col.small-1.text-right  Idle
       span.col
   {{if .Data.cpu}}
     {{range $cpu := .Data.cpu.List}}
       {{jsx  `{this.List(Data).map(function($cpu, i) { return`}}
       div.grid-block
         / first col could be .shrink but it would skew the grid
-        span.col.small-1.text-right.text-nowrap {{$cpu.N}}
+        span.col.small-1.text-nowrap {{$cpu.N}}
         | <div {{Key "cpu-rowby-N" $cpu.N}} {{class}}="grid-block wrap noscroll">
         span.small-1.text-right
           | <span {{class}}="col display-block bg-usepct"
@@ -168,13 +176,13 @@
         span.small-1.text-right
           | <span {{class}}="col display-block bg-usepct-inverse"
             data-usepct={{$cpu.IdlePct}}> {{$cpu.IdlePct}}%</span>
-        span.col.sparkline.expand
+        span.col-lr.expand
           {{jsx `{jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}`}}
         | </div>
       {{jsx `})}`}}
     {{end}}
   {{end}}
-  | </div></div>
+  [[template "endpanel"]]
 
 = content define_panelif
   {{$p := .Data.params}}
@@ -240,13 +248,13 @@
           span title="BITS In per second" {{$if.DeltaBitsIn}}
           | /
           span title="BITS Out per second" {{$if.DeltaBitsOut}}
-        span.col.sparkline.expand
+        span.col-lr.expand
           {{jsx `{jsdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}`}}
         | </div>
       {{jsx `})}`}}
     {{end}}
   {{end}}
-  | </div></div>
+  [[template "endpanel"]]
 
 = content define_panelps
   {{$p := .Data.params}}
@@ -282,4 +290,4 @@
       {{jsx `})}`}}
     {{end}}
   {{end}}
-  | </div></div>
+  [[template "endpanel"]]

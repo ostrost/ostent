@@ -138,7 +138,7 @@ jsdefines.define_loadavg = React.createClass({
     let Data = this.state; // shadow global Data
     return <div className="col-tb grid-block vertical"
   ><div className="grid-block wrap noscroll"
-    ><span className="small-1 col-lr text-right"
+    ><span className="small-1 col-lr text-right text-nowrap"
       ><span className="float-left"
         >la&nbsp;</span
       >1m</span
@@ -185,21 +185,29 @@ jsdefines.define_panelcpu = React.createClass({
   },
   render: function() {
     let Data = this.state; // shadow global Data
-    return <div
-  ><div  className={!Data.params.CPUn.Negative ? "hide-showhide" : "show-showhide"}
-    ><div className="grid-block align-justify"
-      ><h1 className="h3 margin-bottom-0"
-        ><a className="inherit-color"  href={Data.params.Tlinks.CPUn} onClick={this.handleClick}  
-          >CPU<span className="showhide-hide"
-            >...</span
-          ></a
+    return <div className="grid-block hr-top"
+  ><div className="col-lr large-1 text-right"
+    ><div  className={!Data.params.CPUn.Negative ? "hide-showhide" : "show-showhide"}
+      ><h1 className="h4 text-overflow"
+        ><a className="inherit-color"  href={Data.params.Tlinks.CPUn} onClick={this.handleClick} title="CPU display options"
+          ><span className="showhide-hide whitespace-pre float-left"
+            >... </span
+          >CPU</a
         ></h1
-      ><div className="showhide-show hx-bottom align-self-flex-end expand"
-        ><ul className="menu float-right"
+      ></div
+    ></div
+  ><div className="col-lr large-11"
+    ><div  className={!Data.params.CPUn.Negative ? "hide-showhide" : "show-showhide"}
+      ><div className="grid-block"
+        ><ul className="menu showhide-show"
           ><li
-            ><div className="input-group margin-bottom-0"
+            ><div className="input-group"
               ><div className="input-group-label small text-nowrap"
-                >delay: {Data.params.CPUd}</div
+                >delay</div
+              ><div className="input-group-button"
+                ><a className="button small secondary disabled"
+                  >{Data.params.CPUd}</a
+                ></div
               ><div className="input-group-button"
                 ><a href={Data.params.Dlinks.CPUd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Dlinks.CPUd.Less.Text}</a
@@ -211,9 +219,13 @@ jsdefines.define_panelcpu = React.createClass({
               ></div
             ></li
           ><li
-            ><div className="input-group margin-bottom-0"
+            ><div className="input-group"
               ><div className="input-group-label small text-nowrap"
-                >rows: {Data.params.CPUn.Absolute}</div
+                >rows</div
+              ><div className="input-group-button"
+                ><a className="button small secondary disabled"
+                  >{Data.params.CPUn.Absolute}</a
+                ></div
               ><div className="input-group-button"
                 ><a href={Data.params.Nlinks.CPUn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Nlinks.CPUn.Less.Text}</a
@@ -227,53 +239,53 @@ jsdefines.define_panelcpu = React.createClass({
           ></ul
         ></div
       ></div
-    ></div
-  ><div  className={Data.params.CPUn.Absolute != 0 ? "stripe" : "hide"}
-    ><div className="grid-block thead"
-      ><span className="col small-1"
-        ></span
-      ><div className="grid-block wrap noscroll"
-        ><span className="col small-1 text-right"
-          > User%</span
-        ><span className="col small-1 text-right"
-          > Sys%</span
-        ><span className="col small-1 text-right"
-          > Wait%</span
-        ><span className="col small-1 text-right"
-          > Idle%</span
-        ><span className="col"
-          ></span
+    ><div  className={Data.params.CPUn.Absolute != 0 ? "stripe" : "hide"}
+      ><div className="grid-block thead"
+        ><span className="col small-1"
+          >Core</span
+        ><div className="grid-block wrap noscroll"
+          ><span className="col small-1 text-right"
+            > User</span
+          ><span className="col small-1 text-right"
+            > Sys</span
+          ><span className="col small-1 text-right"
+            > Wait</span
+          ><span className="col small-1 text-right"
+            > Idle</span
+          ><span className="col"
+            ></span
+          ></div
         ></div
-      ></div
-    >{this.List(Data).map(function($cpu, i) { return<div className="grid-block"
-      ><span className="col small-1 text-right text-nowrap"
-        >{$cpu.N}</span
-      ><div  key={"cpu-rowby-N-"+$cpu.N} className="grid-block wrap noscroll"
-        ><span className="small-1 text-right"
-          ><span className="col display-block bg-usepct"
+      >{this.List(Data).map(function($cpu, i) { return<div className="grid-block"
+        ><span className="col small-1 text-nowrap"
+          >{$cpu.N}</span
+        ><div  key={"cpu-rowby-N-"+$cpu.N} className="grid-block wrap noscroll"
+          ><span className="small-1 text-right"
+            ><span className="col display-block bg-usepct"
 data-usepct={$cpu.UserPct}
-            > {$cpu.UserPct}%</span
-          ></span
-        ><span className="small-1 text-right"
-          ><span className="col display-block bg-usepct"
+              > {$cpu.UserPct}%</span
+            ></span
+          ><span className="small-1 text-right"
+            ><span className="col display-block bg-usepct"
 data-usepct={$cpu.SysPct}
-            > {$cpu.SysPct}%</span
-          ></span
-        ><span className="small-1 text-right"
-          ><span className="col display-block bg-usepct"
+              > {$cpu.SysPct}%</span
+            ></span
+          ><span className="small-1 text-right"
+            ><span className="col display-block bg-usepct"
 data-usepct={$cpu.WaitPct}
-            > {$cpu.WaitPct}%</span
-          ></span
-        ><span className="small-1 text-right"
-          ><span className="col display-block bg-usepct-inverse"
+              > {$cpu.WaitPct}%</span
+            ></span
+          ><span className="small-1 text-right"
+            ><span className="col display-block bg-usepct-inverse"
 data-usepct={$cpu.IdlePct}
-            > {$cpu.IdlePct}%</span
-          ></span
-        ><span className="col sparkline expand"
-          >{jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}</span
+              > {$cpu.IdlePct}%</span
+            ></span
+          ><span className="col-lr expand"
+            >{jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}</span
+          ></div
         ></div
-      ></div
-    >})}</div
+      >})}</div
+    ></div
   ></div
 >;
   }
@@ -296,21 +308,29 @@ jsdefines.define_paneldf = React.createClass({
   },
   render: function() {
     let Data = this.state; // shadow global Data
-    return <div
-  ><div  className={!Data.params.Dfn.Negative ? "hide-showhide" : "show-showhide"}
-    ><div className="grid-block align-justify"
-      ><h1 className="h3 margin-bottom-0"
-        ><a className="inherit-color"  href={Data.params.Tlinks.Dfn} onClick={this.handleClick}  
-          >Disk usage<span className="showhide-hide"
-            >...</span
-          ></a
+    return <div className="grid-block hr-top"
+  ><div className="col-lr large-1 text-right"
+    ><div  className={!Data.params.Dfn.Negative ? "hide-showhide" : "show-showhide"}
+      ><h1 className="h4 text-overflow"
+        ><a className="inherit-color"  href={Data.params.Tlinks.Dfn} onClick={this.handleClick} title="Disk usage display options"
+          ><span className="showhide-hide whitespace-pre float-left"
+            >... </span
+          >Disk usage</a
         ></h1
-      ><div className="showhide-show hx-bottom align-self-flex-end expand"
-        ><ul className="menu float-right"
+      ></div
+    ></div
+  ><div className="col-lr large-11"
+    ><div  className={!Data.params.Dfn.Negative ? "hide-showhide" : "show-showhide"}
+      ><div className="grid-block"
+        ><ul className="menu showhide-show"
           ><li
-            ><div className="input-group margin-bottom-0"
+            ><div className="input-group"
               ><div className="input-group-label small text-nowrap"
-                >delay: {Data.params.Dfd}</div
+                >delay</div
+              ><div className="input-group-button"
+                ><a className="button small secondary disabled"
+                  >{Data.params.Dfd}</a
+                ></div
               ><div className="input-group-button"
                 ><a href={Data.params.Dlinks.Dfd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Dlinks.Dfd.Less.Text}</a
@@ -322,9 +342,13 @@ jsdefines.define_paneldf = React.createClass({
               ></div
             ></li
           ><li
-            ><div className="input-group margin-bottom-0"
+            ><div className="input-group"
               ><div className="input-group-label small text-nowrap"
-                >rows: {Data.params.Dfn.Absolute}</div
+                >rows</div
+              ><div className="input-group-button"
+                ><a className="button small secondary disabled"
+                  >{Data.params.Dfn.Absolute}</a
+                ></div
               ><div className="input-group-button"
                 ><a href={Data.params.Nlinks.Dfn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Nlinks.Dfn.Less.Text}</a
@@ -338,79 +362,79 @@ jsdefines.define_paneldf = React.createClass({
           ></ul
         ></div
       ></div
-    ></div
-  ><div  className={Data.params.Dfn.Absolute != 0 ? "stripe" : "hide"}
-    ><div className="grid-block thead"
-      ><span className="col small-1"
-        ><a href={Data.params.Vlinks.Dfk[1-1].LinkHref} className={Data.params.Vlinks.Dfk[1-1].LinkClass} onClick={this.handleClick}  
+    ><div  className={Data.params.Dfn.Absolute != 0 ? "stripe" : "hide"}
+      ><div className="grid-block thead"
+        ><span className="col small-1"
+          ><a href={Data.params.Vlinks.Dfk[1-1].LinkHref} className={Data.params.Vlinks.Dfk[1-1].LinkClass} onClick={this.handleClick}  
   >Device<span className={Data.params.Vlinks.Dfk[1-1].CaretClass}
     ></span
   ></a
 ></span
-      ><div className="grid-block wrap noscroll"
-        ><span className="col small-1"
-          > <a href={Data.params.Vlinks.Dfk[2-1].LinkHref} className={Data.params.Vlinks.Dfk[2-1].LinkClass} onClick={this.handleClick}  
+        ><div className="grid-block wrap noscroll"
+          ><span className="col small-1"
+            > <a href={Data.params.Vlinks.Dfk[2-1].LinkHref} className={Data.params.Vlinks.Dfk[2-1].LinkClass} onClick={this.handleClick}  
   >Mounted<span className={Data.params.Vlinks.Dfk[2-1].CaretClass}
     ></span
   ></a
 ></span
-        ><span className="col small-1 text-right"
-          > <a href={Data.params.Vlinks.Dfk[6-1].LinkHref} className={Data.params.Vlinks.Dfk[6-1].LinkClass} onClick={this.handleClick}  
+          ><span className="col small-1 text-right"
+            > <a href={Data.params.Vlinks.Dfk[6-1].LinkHref} className={Data.params.Vlinks.Dfk[6-1].LinkClass} onClick={this.handleClick}  
   >Total<span className={Data.params.Vlinks.Dfk[6-1].CaretClass}
     ></span
   ></a
 ></span
-        ><span className="col small-1 text-right"
-          > <a href={Data.params.Vlinks.Dfk[5-1].LinkHref} className={Data.params.Vlinks.Dfk[5-1].LinkClass} onClick={this.handleClick}  
+          ><span className="col small-1 text-right"
+            > <a href={Data.params.Vlinks.Dfk[5-1].LinkHref} className={Data.params.Vlinks.Dfk[5-1].LinkClass} onClick={this.handleClick}  
   >Used<span className={Data.params.Vlinks.Dfk[5-1].CaretClass}
     ></span
   ></a
 ></span
-        ><span className="col small-1 text-right"
-          > <a href={Data.params.Vlinks.Dfk[3-1].LinkHref} className={Data.params.Vlinks.Dfk[3-1].LinkClass} onClick={this.handleClick}  
+          ><span className="col small-1 text-right"
+            > <a href={Data.params.Vlinks.Dfk[3-1].LinkHref} className={Data.params.Vlinks.Dfk[3-1].LinkClass} onClick={this.handleClick}  
   >Avail<span className={Data.params.Vlinks.Dfk[3-1].CaretClass}
     ></span
   ></a
 ></span
-        ><span className="col small-1 text-right"
-          > <a href={Data.params.Vlinks.Dfk[4-1].LinkHref} className={Data.params.Vlinks.Dfk[4-1].LinkClass} onClick={this.handleClick}  
+          ><span className="col small-1 text-right"
+            > <a href={Data.params.Vlinks.Dfk[4-1].LinkHref} className={Data.params.Vlinks.Dfk[4-1].LinkClass} onClick={this.handleClick}  
   >Use%<span className={Data.params.Vlinks.Dfk[4-1].CaretClass}
     ></span
   ></a
 ></span
-        ><span className="col"
-          ></span
+          ><span className="col"
+            ></span
+          ></div
         ></div
-      ></div
-    >{this.List(Data).map(function($df, i) { return<div className="grid-block"
-      ><span className="col small-1 text-overflow"
-        >{$df.DevName}</span
-      ><div  key={"df-rowby-dirname-"+$df.DirName} className="grid-block wrap noscroll"
+      >{this.List(Data).map(function($df, i) { return<div className="grid-block"
         ><span className="col small-1 text-overflow"
-          > {$df.DirName}</span
-        ><span className="col small-1 text-nowrap text-right"
-          ><span className="mutext" title="Inodes total"
-            > {$df.Inodes}</span
-          > {$df.Total}</span
-        ><span className="col small-1 text-nowrap text-right"
-          ><span className="mutext" title="Inodes used"
-            > {$df.Iused}</span
-          > {$df.Used}</span
-        ><span className="col small-1 text-nowrap text-right"
-          ><span className="mutext" title="Inodes free"
-            > {$df.Ifree}</span
-          > {$df.Avail}</span
-        ><span className="small-1 text-right text-nowrap"
-          ><span className="col display-block bg-usepct" data-usepct={$df.UsePct}
-            ><span className="mutext" title="Inodes use%"
-              > {$df.IusePct}%</span
-            > {$df.UsePct}%</span
-          ></span
-        ><span className="col sparkline expand"
-          >{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</span
+          >{$df.DevName}</span
+        ><div  key={"df-rowby-dirname-"+$df.DirName} className="grid-block wrap noscroll"
+          ><span className="col small-1 text-overflow"
+            > {$df.DirName}</span
+          ><span className="col small-1 text-nowrap text-right"
+            ><span className="mutext" title="Inodes total"
+              > {$df.Inodes}</span
+            > {$df.Total}</span
+          ><span className="col small-1 text-nowrap text-right"
+            ><span className="mutext" title="Inodes used"
+              > {$df.Iused}</span
+            > {$df.Used}</span
+          ><span className="col small-1 text-nowrap text-right"
+            ><span className="mutext" title="Inodes free"
+              > {$df.Ifree}</span
+            > {$df.Avail}</span
+          ><span className="small-1 text-right text-nowrap"
+            ><span className="col display-block bg-usepct" data-usepct={$df.UsePct}
+              ><span className="mutext" title="Inodes use%"
+                > {$df.IusePct}%</span
+              > {$df.UsePct}%</span
+            ></span
+          ><span className="col-lr expand"
+            >{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</span
+          ></div
         ></div
-      ></div
-    >})}</div
+      >})}</div
+    ></div
   ></div
 >;
   }
@@ -433,21 +457,29 @@ jsdefines.define_panelif = React.createClass({
   },
   render: function() {
     let Data = this.state; // shadow global Data
-    return <div
-  ><div  className={!Data.params.Ifn.Negative ? "hide-showhide" : "show-showhide"}
-    ><div className="grid-block align-justify"
-      ><h1 className="h3 margin-bottom-0"
-        ><a className="inherit-color"  href={Data.params.Tlinks.Ifn} onClick={this.handleClick}  
-          >Interfaces<span className="showhide-hide"
-            >...</span
-          ></a
+    return <div className="grid-block hr-top"
+  ><div className="col-lr large-1 text-right"
+    ><div  className={!Data.params.Ifn.Negative ? "hide-showhide" : "show-showhide"}
+      ><h1 className="h4 text-overflow"
+        ><a className="inherit-color"  href={Data.params.Tlinks.Ifn} onClick={this.handleClick} title="Interfaces display options"
+          ><span className="showhide-hide whitespace-pre float-left"
+            >... </span
+          >Interfaces</a
         ></h1
-      ><div className="showhide-show hx-bottom align-self-flex-end expand"
-        ><ul className="menu float-right"
+      ></div
+    ></div
+  ><div className="col-lr large-11"
+    ><div  className={!Data.params.Ifn.Negative ? "hide-showhide" : "show-showhide"}
+      ><div className="grid-block"
+        ><ul className="menu showhide-show"
           ><li
-            ><div className="input-group margin-bottom-0"
+            ><div className="input-group"
               ><div className="input-group-label small text-nowrap"
-                >delay: {Data.params.Ifd}</div
+                >delay</div
+              ><div className="input-group-button"
+                ><a className="button small secondary disabled"
+                  >{Data.params.Ifd}</a
+                ></div
               ><div className="input-group-button"
                 ><a href={Data.params.Dlinks.Ifd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Dlinks.Ifd.Less.Text}</a
@@ -459,9 +491,13 @@ jsdefines.define_panelif = React.createClass({
               ></div
             ></li
           ><li
-            ><div className="input-group margin-bottom-0"
+            ><div className="input-group"
               ><div className="input-group-label small text-nowrap"
-                >rows: {Data.params.Ifn.Absolute}</div
+                >rows</div
+              ><div className="input-group-button"
+                ><a className="button small secondary disabled"
+                  >{Data.params.Ifn.Absolute}</a
+                ></div
               ><div className="input-group-button"
                 ><a href={Data.params.Nlinks.Ifn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Nlinks.Ifn.Less.Text}</a
@@ -475,87 +511,87 @@ jsdefines.define_panelif = React.createClass({
           ></ul
         ></div
       ></div
+    ><div  className={Data.params.Ifn.Absolute != 0 ? "stripe" : "hide"}
+      ><div className="grid-block thead"
+        ><span className="col small-1"
+          >Interface</span
+        ><div className="grid-block wrap noscroll"
+          ><span className="col small-1 text-right"
+            > IP</span
+          ><span className="col small-2 text-right text-nowrap" title="Drops,Errors In/Out per second"
+            > Loss IO ps</span
+          ><span className="col small-2 text-right text-nowrap" title="Packets In/Out per second"
+            > Packets IO ps</span
+          ><span className="col small-2 text-right text-nowrap" title="Bits In/Out per second"
+            > IO <i
+              >b</i
+            >ps</span
+          ><span className="col"
+            ></span
+          ></div
+        ></div
+      >{this.List(Data).map(function($if, i) { return<div className="grid-block"
+        ><span className="col small-1 text-overflow"
+          >{$if.Name}</span
+        ><div  key={"if-rowby-name-"+$if.Name} className="grid-block wrap noscroll"
+          ><span className="col small-1 text-right text-overflow"
+            >{$if.IP}</span
+          ><span className="col small-2 text-right text-nowrap"
+            > <span className="mutext" title="Total drops,errors modulo 4G"
+              ><span title="Total drops In modulo 4G"
+                >{$if.DropsIn}</span
+              ><span  className={$if.DropsOut != null ? "" : "hide"}
+                >/</span
+              ><span  className={$if.DropsOut != null ? "" : "hide"} title="Total drops Out modulo 4G"
+                >{$if.DropsOut}</span
+              >,<span title="Total errors In modulo 4G"
+                >{$if.ErrorsIn}</span
+              >/<span title="Total errors Out modulo 4G"
+                >{$if.ErrorsOut}</span
+              ></span
+            > <span  className={(($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0")) ? "mutext" : ""}
+              ><span title="Drops In per second"
+                >{$if.DeltaDropsIn}</span
+              ><span  className={$if.DeltaDropsOut != null ? "" : "hide"}
+                >/</span
+              ><span  className={$if.DeltaDropsOut != null ? "" : "hide"} title="Drops Out per second"
+                >{$if.DeltaDropsOut}</span
+              >,<span title="Errors In per second"
+                >{$if.DeltaErrorsIn}</span
+              >/<span title="Errors Out per second"
+                >{$if.DeltaErrorsOut}</span
+              ></span
+            ></span
+          ><span className="col small-2 text-right text-nowrap"
+            > <span className="mutext"
+              ><span title="Total packets In modulo 4G"
+                >{$if.PacketsIn}</span
+              >/<span title="Total packets Out modulo 4G"
+                >{$if.PacketsOut}</span
+              ></span
+            > <span title="Packets In per second"
+              >{$if.DeltaPacketsIn}</span
+            >/<span title="Packets Out per second"
+              >{$if.DeltaPacketsOut}</span
+            ></span
+          ><span className="col small-2 text-right text-nowrap"
+            > <span className="mutext"
+              ><span title="Total BYTES In modulo 4G"
+                >{$if.BytesIn}</span
+              >/<span title="Total BYTES Out modulo 4G"
+                >{$if.BytesOut}</span
+              ></span
+            > <span title="BITS In per second"
+              >{$if.DeltaBitsIn}</span
+            >/<span title="BITS Out per second"
+              >{$if.DeltaBitsOut}</span
+            ></span
+          ><span className="col-lr expand"
+            >{jsdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}</span
+          ></div
+        ></div
+      >})}</div
     ></div
-  ><div  className={Data.params.Ifn.Absolute != 0 ? "stripe" : "hide"}
-    ><div className="grid-block thead"
-      ><span className="col small-1"
-        >Interface</span
-      ><div className="grid-block wrap noscroll"
-        ><span className="col small-1 text-right"
-          > IP</span
-        ><span className="col small-2 text-right text-nowrap" title="Drops,Errors In/Out per second"
-          > Loss IO ps</span
-        ><span className="col small-2 text-right text-nowrap" title="Packets In/Out per second"
-          > Packets IO ps</span
-        ><span className="col small-2 text-right text-nowrap" title="Bits In/Out per second"
-          > IO <i
-            >b</i
-          >ps</span
-        ><span className="col"
-          ></span
-        ></div
-      ></div
-    >{this.List(Data).map(function($if, i) { return<div className="grid-block"
-      ><span className="col small-1 text-overflow"
-        >{$if.Name}</span
-      ><div  key={"if-rowby-name-"+$if.Name} className="grid-block wrap noscroll"
-        ><span className="col small-1 text-right text-overflow"
-          >{$if.IP}</span
-        ><span className="col small-2 text-right text-nowrap"
-          > <span className="mutext" title="Total drops,errors modulo 4G"
-            ><span title="Total drops In modulo 4G"
-              >{$if.DropsIn}</span
-            ><span  className={$if.DropsOut != null ? "" : "hide"}
-              >/</span
-            ><span  className={$if.DropsOut != null ? "" : "hide"} title="Total drops Out modulo 4G"
-              >{$if.DropsOut}</span
-            >,<span title="Total errors In modulo 4G"
-              >{$if.ErrorsIn}</span
-            >/<span title="Total errors Out modulo 4G"
-              >{$if.ErrorsOut}</span
-            ></span
-          > <span  className={(($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0")) ? "mutext" : ""}
-            ><span title="Drops In per second"
-              >{$if.DeltaDropsIn}</span
-            ><span  className={$if.DeltaDropsOut != null ? "" : "hide"}
-              >/</span
-            ><span  className={$if.DeltaDropsOut != null ? "" : "hide"} title="Drops Out per second"
-              >{$if.DeltaDropsOut}</span
-            >,<span title="Errors In per second"
-              >{$if.DeltaErrorsIn}</span
-            >/<span title="Errors Out per second"
-              >{$if.DeltaErrorsOut}</span
-            ></span
-          ></span
-        ><span className="col small-2 text-right text-nowrap"
-          > <span className="mutext"
-            ><span title="Total packets In modulo 4G"
-              >{$if.PacketsIn}</span
-            >/<span title="Total packets Out modulo 4G"
-              >{$if.PacketsOut}</span
-            ></span
-          > <span title="Packets In per second"
-            >{$if.DeltaPacketsIn}</span
-          >/<span title="Packets Out per second"
-            >{$if.DeltaPacketsOut}</span
-          ></span
-        ><span className="col small-2 text-right text-nowrap"
-          > <span className="mutext"
-            ><span title="Total BYTES In modulo 4G"
-              >{$if.BytesIn}</span
-            >/<span title="Total BYTES Out modulo 4G"
-              >{$if.BytesOut}</span
-            ></span
-          > <span title="BITS In per second"
-            >{$if.DeltaBitsIn}</span
-          >/<span title="BITS Out per second"
-            >{$if.DeltaBitsOut}</span
-          ></span
-        ><span className="col sparkline expand"
-          >{jsdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}</span
-        ></div
-      ></div
-    >})}</div
   ></div
 >;
   }
@@ -578,21 +614,29 @@ jsdefines.define_panelmem = React.createClass({
   },
   render: function() {
     let Data = this.state; // shadow global Data
-    return <div
-  ><div  className={!Data.params.Memn.Negative ? "hide-showhide" : "show-showhide"}
-    ><div className="grid-block align-justify"
-      ><h1 className="h3 margin-bottom-0"
-        ><a className="inherit-color"  href={Data.params.Tlinks.Memn} onClick={this.handleClick}  
-          >Memory<span className="showhide-hide"
-            >...</span
-          ></a
+    return <div className="grid-block hr-top"
+  ><div className="col-lr large-1 text-right"
+    ><div  className={!Data.params.Memn.Negative ? "hide-showhide" : "show-showhide"}
+      ><h1 className="h4 text-overflow"
+        ><a className="inherit-color"  href={Data.params.Tlinks.Memn} onClick={this.handleClick} title="Memory display options"
+          ><span className="showhide-hide whitespace-pre float-left"
+            >... </span
+          >Memory</a
         ></h1
-      ><div className="showhide-show hx-bottom align-self-flex-end expand"
-        ><ul className="menu float-right"
+      ></div
+    ></div
+  ><div className="col-lr large-11"
+    ><div  className={!Data.params.Memn.Negative ? "hide-showhide" : "show-showhide"}
+      ><div className="grid-block"
+        ><ul className="menu showhide-show"
           ><li
-            ><div className="input-group margin-bottom-0"
+            ><div className="input-group"
               ><div className="input-group-label small text-nowrap"
-                >delay: {Data.params.Memd}</div
+                >delay</div
+              ><div className="input-group-button"
+                ><a className="button small secondary disabled"
+                  >{Data.params.Memd}</a
+                ></div
               ><div className="input-group-button"
                 ><a href={Data.params.Dlinks.Memd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Dlinks.Memd.Less.Text}</a
@@ -604,9 +648,13 @@ jsdefines.define_panelmem = React.createClass({
               ></div
             ></li
           ><li
-            ><div className="input-group margin-bottom-0"
+            ><div className="input-group"
               ><div className="input-group-label small text-nowrap"
-                >rows: {Data.params.Memn.Absolute}</div
+                >rows</div
+              ><div className="input-group-button"
+                ><a className="button small secondary disabled"
+                  >{Data.params.Memn.Absolute}</a
+                ></div
               ><div className="input-group-button"
                 ><a href={Data.params.Nlinks.Memn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Nlinks.Memn.Less.Text}</a
@@ -620,43 +668,43 @@ jsdefines.define_panelmem = React.createClass({
           ></ul
         ></div
       ></div
+    ><div  className={Data.params.Memn.Absolute != 0 ? "stripe" : "hide"}
+      ><div className="grid-block thead"
+        ><span className="col small-1"
+          >Memory</span
+        ><div className="grid-block wrap noscroll"
+          ><span className="col small-1 text-right"
+            > Total</span
+          ><span className="col small-1 text-right"
+            > Used</span
+          ><span className="col small-1 text-right"
+            > Free</span
+          ><span className="col small-1 text-right"
+            > Use%</span
+          ><span className="col"
+            ></span
+          ></div
+        ></div
+      >{this.List(Data).map(function($mem, i) { return<div className="grid-block"
+        ><span className="col small-1"
+          >{$mem.Kind}</span
+        ><div  key={"mem-rowby-kind-"+$mem.Kind} className="grid-block wrap noscroll"
+          ><span className="col small-1 text-right"
+            > {$mem.Total}</span
+          ><span className="col small-1 text-right"
+            > {$mem.Used}</span
+          ><span className="col small-1 text-right"
+            > {$mem.Free}</span
+          ><span className="small-1 text-right"
+            ><span className="col display-block bg-usepct" data-usepct={$mem.UsePct}
+              > {$mem.UsePct}%</span
+            ></span
+          ><span className="col-lr expand"
+            >{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</span
+          ></div
+        ></div
+      >})}</div
     ></div
-  ><div  className={Data.params.Memn.Absolute != 0 ? "stripe" : "hide"}
-    ><div className="grid-block thead"
-      ><span className="col small-1"
-        ></span
-      ><div className="grid-block wrap noscroll"
-        ><span className="col small-1 text-right"
-          > Total</span
-        ><span className="col small-1 text-right"
-          > Used</span
-        ><span className="col small-1 text-right"
-          > Free</span
-        ><span className="col small-1 text-right"
-          > Use%</span
-        ><span className="col"
-          ></span
-        ></div
-      ></div
-    >{this.List(Data).map(function($mem, i) { return<div className="grid-block"
-      ><span className="col small-1"
-        >{$mem.Kind}</span
-      ><div  key={"mem-rowby-kind-"+$mem.Kind} className="grid-block wrap noscroll"
-        ><span className="col small-1 text-right"
-          > {$mem.Total}</span
-        ><span className="col small-1 text-right"
-          > {$mem.Used}</span
-        ><span className="col small-1 text-right"
-          > {$mem.Free}</span
-        ><span className="small-1 text-right"
-          ><span className="col display-block bg-usepct" data-usepct={$mem.UsePct}
-            > {$mem.UsePct}%</span
-          ></span
-        ><span className="col sparkline expand"
-          >{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</span
-        ></div
-      ></div
-    >})}</div
   ></div
 >;
   }
@@ -679,21 +727,29 @@ jsdefines.define_panelps = React.createClass({
   },
   render: function() {
     let Data = this.state; // shadow global Data
-    return <div
-  ><div  className={!Data.params.Psn.Negative ? "hide-showhide" : "show-showhide"}
-    ><div className="grid-block align-justify"
-      ><h1 className="h3 margin-bottom-0"
-        ><a className="inherit-color"  href={Data.params.Tlinks.Psn} onClick={this.handleClick}  
-          >Processes<span className="showhide-hide"
-            >...</span
-          ></a
+    return <div className="grid-block hr-top"
+  ><div className="col-lr large-1 text-right"
+    ><div  className={!Data.params.Psn.Negative ? "hide-showhide" : "show-showhide"}
+      ><h1 className="h4 text-overflow"
+        ><a className="inherit-color"  href={Data.params.Tlinks.Psn} onClick={this.handleClick} title="Processes display options"
+          ><span className="showhide-hide whitespace-pre float-left"
+            >... </span
+          >Processes</a
         ></h1
-      ><div className="showhide-show hx-bottom align-self-flex-end expand"
-        ><ul className="menu float-right"
+      ></div
+    ></div
+  ><div className="col-lr large-11"
+    ><div  className={!Data.params.Psn.Negative ? "hide-showhide" : "show-showhide"}
+      ><div className="grid-block"
+        ><ul className="menu showhide-show"
           ><li
-            ><div className="input-group margin-bottom-0"
+            ><div className="input-group"
               ><div className="input-group-label small text-nowrap"
-                >delay: {Data.params.Psd}</div
+                >delay</div
+              ><div className="input-group-button"
+                ><a className="button small secondary disabled"
+                  >{Data.params.Psd}</a
+                ></div
               ><div className="input-group-button"
                 ><a href={Data.params.Dlinks.Psd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Dlinks.Psd.Less.Text}</a
@@ -705,9 +761,13 @@ jsdefines.define_panelps = React.createClass({
               ></div
             ></li
           ><li
-            ><div className="input-group margin-bottom-0"
+            ><div className="input-group"
               ><div className="input-group-label small text-nowrap"
-                >rows: {Data.params.Psn.Absolute}</div
+                >rows</div
+              ><div className="input-group-button"
+                ><a className="button small secondary disabled"
+                  >{Data.params.Psn.Absolute}</a
+                ></div
               ><div className="input-group-button"
                 ><a href={Data.params.Nlinks.Psn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : "")} onClick={this.handleClick}  
   >- {Data.params.Nlinks.Psn.Less.Text}</a
@@ -721,89 +781,89 @@ jsdefines.define_panelps = React.createClass({
           ></ul
         ></div
       ></div
-    ></div
-  ><div  className={Data.params.Psn.Absolute != 0 ? "stripe" : "hide"}
-    ><div className="grid-block thead"
-      ><span className="col small-1 text-right"
-        ><a href={Data.params.Vlinks.Psk[1-1].LinkHref} className={Data.params.Vlinks.Psk[1-1].LinkClass} onClick={this.handleClick}  
+    ><div  className={Data.params.Psn.Absolute != 0 ? "stripe" : "hide"}
+      ><div className="grid-block thead"
+        ><span className="col small-1 text-right"
+          ><a href={Data.params.Vlinks.Psk[1-1].LinkHref} className={Data.params.Vlinks.Psk[1-1].LinkClass} onClick={this.handleClick}  
   >PID<span className={Data.params.Vlinks.Psk[1-1].CaretClass}
     ></span
   ></a
 ></span
-      ><div className="grid-block wrap noscroll text-nowrap"
-        ><span className="col small-1 text-right"
-          > <a href={Data.params.Vlinks.Psk[2-1].LinkHref} className={Data.params.Vlinks.Psk[2-1].LinkClass} onClick={this.handleClick}  
+        ><div className="grid-block wrap noscroll text-nowrap"
+          ><span className="col small-1 text-right"
+            > <a href={Data.params.Vlinks.Psk[2-1].LinkHref} className={Data.params.Vlinks.Psk[2-1].LinkClass} onClick={this.handleClick}  
   >UID<span className={Data.params.Vlinks.Psk[2-1].CaretClass}
     ></span
   ></a
 ></span
-        ><span className="col small-1"
-          > <a href={Data.params.Vlinks.Psk[3-1].LinkHref} className={Data.params.Vlinks.Psk[3-1].LinkClass} onClick={this.handleClick}  
+          ><span className="col small-1"
+            > <a href={Data.params.Vlinks.Psk[3-1].LinkHref} className={Data.params.Vlinks.Psk[3-1].LinkClass} onClick={this.handleClick}  
   >USER<span className={Data.params.Vlinks.Psk[3-1].CaretClass}
     ></span
   ></a
 ></span
-        ><span className="col small-1 text-right"
-          > <a href={Data.params.Vlinks.Psk[4-1].LinkHref} className={Data.params.Vlinks.Psk[4-1].LinkClass} onClick={this.handleClick}  
+          ><span className="col small-1 text-right"
+            > <a href={Data.params.Vlinks.Psk[4-1].LinkHref} className={Data.params.Vlinks.Psk[4-1].LinkClass} onClick={this.handleClick}  
   >PR<span className={Data.params.Vlinks.Psk[4-1].CaretClass}
     ></span
   ></a
 ></span
-        ><span className="col small-1 text-right"
-          > <a href={Data.params.Vlinks.Psk[5-1].LinkHref} className={Data.params.Vlinks.Psk[5-1].LinkClass} onClick={this.handleClick}  
+          ><span className="col small-1 text-right"
+            > <a href={Data.params.Vlinks.Psk[5-1].LinkHref} className={Data.params.Vlinks.Psk[5-1].LinkClass} onClick={this.handleClick}  
   >NI<span className={Data.params.Vlinks.Psk[5-1].CaretClass}
     ></span
   ></a
 ></span
-        ><span className="col small-1 text-right"
-          > <a href={Data.params.Vlinks.Psk[6-1].LinkHref} className={Data.params.Vlinks.Psk[6-1].LinkClass} onClick={this.handleClick}  
+          ><span className="col small-1 text-right"
+            > <a href={Data.params.Vlinks.Psk[6-1].LinkHref} className={Data.params.Vlinks.Psk[6-1].LinkClass} onClick={this.handleClick}  
   >VIRT<span className={Data.params.Vlinks.Psk[6-1].CaretClass}
     ></span
   ></a
 ></span
-        ><span className="col small-1 text-right"
-          > <a href={Data.params.Vlinks.Psk[7-1].LinkHref} className={Data.params.Vlinks.Psk[7-1].LinkClass} onClick={this.handleClick}  
+          ><span className="col small-1 text-right"
+            > <a href={Data.params.Vlinks.Psk[7-1].LinkHref} className={Data.params.Vlinks.Psk[7-1].LinkClass} onClick={this.handleClick}  
   >RES<span className={Data.params.Vlinks.Psk[7-1].CaretClass}
     ></span
   ></a
 ></span
-        ><span className="col small-1 text-center"
-          > <a href={Data.params.Vlinks.Psk[8-1].LinkHref} className={Data.params.Vlinks.Psk[8-1].LinkClass} onClick={this.handleClick}  
+          ><span className="col small-1 text-center"
+            > <a href={Data.params.Vlinks.Psk[8-1].LinkHref} className={Data.params.Vlinks.Psk[8-1].LinkClass} onClick={this.handleClick}  
   >TIME<span className={Data.params.Vlinks.Psk[8-1].CaretClass}
     ></span
   ></a
 ></span
-        ><span className="col small-1"
-          > <a href={Data.params.Vlinks.Psk[9-1].LinkHref} className={Data.params.Vlinks.Psk[9-1].LinkClass} onClick={this.handleClick}  
+          ><span className="col small-1"
+            > <a href={Data.params.Vlinks.Psk[9-1].LinkHref} className={Data.params.Vlinks.Psk[9-1].LinkClass} onClick={this.handleClick}  
   >COMMAND<span className={Data.params.Vlinks.Psk[9-1].CaretClass}
     ></span
   ></a
 ></span
+          ></div
         ></div
-      ></div
-    >{this.List(Data).map(function($ps) { return<div className="grid-block"
-      ><span className="col small-1 text-right"
-        >{$ps.PID}</span
-      ><div  key={"ps-rowby-pid-"+$ps.PID} className="grid-block wrap noscroll"
+      >{this.List(Data).map(function($ps) { return<div className="grid-block"
         ><span className="col small-1 text-right"
-          > {$ps.UID}</span
-        ><span className="col small-1"
-          > {$ps.User}</span
-        ><span className="col small-1 text-right"
-          > {$ps.Priority}</span
-        ><span className="col small-1 text-right"
-          > {$ps.Nice}</span
-        ><span className="col small-1 text-right"
-          > {$ps.Size}</span
-        ><span className="col small-1 text-right"
-          > {$ps.Resident}</span
-        ><span className="col small-1 text-center"
-          > {$ps.Time}</span
-        ><span className="col expand"
-          > {$ps.Name}</span
+          >{$ps.PID}</span
+        ><div  key={"ps-rowby-pid-"+$ps.PID} className="grid-block wrap noscroll"
+          ><span className="col small-1 text-right"
+            > {$ps.UID}</span
+          ><span className="col small-1"
+            > {$ps.User}</span
+          ><span className="col small-1 text-right"
+            > {$ps.Priority}</span
+          ><span className="col small-1 text-right"
+            > {$ps.Nice}</span
+          ><span className="col small-1 text-right"
+            > {$ps.Size}</span
+          ><span className="col small-1 text-right"
+            > {$ps.Resident}</span
+          ><span className="col small-1 text-center"
+            > {$ps.Time}</span
+          ><span className="col expand"
+            > {$ps.Name}</span
+          ></div
         ></div
-      ></div
-    >})}</div
+      >})}</div
+    ></div
   ></div
 >;
   }

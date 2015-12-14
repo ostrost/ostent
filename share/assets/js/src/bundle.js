@@ -19935,7 +19935,7 @@
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block wrap noscroll'
 	    }, void 0, _jsx('span', {
-	      className: 'small-1 col-lr text-right'
+	      className: 'small-1 col-lr text-right text-nowrap'
 	    }, void 0, _jsx('span', {
 	      className: 'float-left'
 	    }, void 0, 'la '), '1m'), _jsx('span', {
@@ -19963,10 +19963,6 @@
 	});
 
 	var _ref2 = _jsx('span', {
-	  className: 'col small-1'
-	});
-
-	var _ref3 = _jsx('span', {
 	  className: 'col'
 	});
 
@@ -19989,27 +19985,38 @@
 	  },
 	  render: function render() {
 	    var Data = this.state; // shadow global Data
-	    return _jsx('div', {}, void 0, _jsx('div', {
-	      className: !Data.params.CPUn.Negative ? "hide-showhide" : "show-showhide"
+	    return _jsx('div', {
+	      className: 'grid-block hr-top'
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block align-justify'
+	      className: 'col-lr large-1 text-right'
+	    }, void 0, _jsx('div', {
+	      className: !Data.params.CPUn.Negative ? "hide-showhide" : "show-showhide"
 	    }, void 0, _jsx('h1', {
-	      className: 'h3 margin-bottom-0'
+	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
 	      className: 'inherit-color',
 	      href: Data.params.Tlinks.CPUn,
-	      onClick: this.handleClick
-	    }, void 0, 'CPU', _jsx('span', {
-	      className: 'showhide-hide'
-	    }, void 0, '...'))), _jsx('div', {
-	      className: 'showhide-show hx-bottom align-self-flex-end expand'
+	      onClick: this.handleClick,
+	      title: 'CPU display options'
+	    }, void 0, _jsx('span', {
+	      className: 'showhide-hide whitespace-pre float-left'
+	    }, void 0, '... '), 'CPU')))), _jsx('div', {
+	      className: 'col-lr large-11'
+	    }, void 0, _jsx('div', {
+	      className: !Data.params.CPUn.Negative ? "hide-showhide" : "show-showhide"
+	    }, void 0, _jsx('div', {
+	      className: 'grid-block'
 	    }, void 0, _jsx('ul', {
-	      className: 'menu float-right'
+	      className: 'menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
-	      className: 'input-group margin-bottom-0'
+	      className: 'input-group'
 	    }, void 0, _jsx('div', {
 	      className: 'input-group-label small text-nowrap'
-	    }, void 0, 'delay: ', Data.params.CPUd), _jsx('div', {
+	    }, void 0, 'delay'), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
+	      className: 'button small secondary disabled'
+	    }, void 0, Data.params.CPUd)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Dlinks.CPUd.Less.Href,
@@ -20022,10 +20029,14 @@
 	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : ""),
 	      onClick: this.handleClick
 	    }, void 0, Data.params.Dlinks.CPUd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
-	      className: 'input-group margin-bottom-0'
+	      className: 'input-group'
 	    }, void 0, _jsx('div', {
 	      className: 'input-group-label small text-nowrap'
-	    }, void 0, 'rows: ', Data.params.CPUn.Absolute), _jsx('div', {
+	    }, void 0, 'rows'), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
+	      className: 'button small secondary disabled'
+	    }, void 0, Data.params.CPUn.Absolute)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Nlinks.CPUn.Less.Href,
@@ -20037,25 +20048,27 @@
 	      href: Data.params.Nlinks.CPUn.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.CPUn.More.Text, ' +')))))))), _jsx('div', {
+	    }, void 0, Data.params.Nlinks.CPUn.More.Text, ' +'))))))), _jsx('div', {
 	      className: Data.params.CPUn.Absolute != 0 ? "stripe" : "hide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block thead'
-	    }, void 0, _ref2, _jsx('div', {
+	    }, void 0, _jsx('span', {
+	      className: 'col small-1'
+	    }, void 0, 'Core'), _jsx('div', {
 	      className: 'grid-block wrap noscroll'
 	    }, void 0, _jsx('span', {
 	      className: 'col small-1 text-right'
-	    }, void 0, ' User%'), _jsx('span', {
+	    }, void 0, ' User'), _jsx('span', {
 	      className: 'col small-1 text-right'
-	    }, void 0, ' Sys%'), _jsx('span', {
+	    }, void 0, ' Sys'), _jsx('span', {
 	      className: 'col small-1 text-right'
-	    }, void 0, ' Wait%'), _jsx('span', {
+	    }, void 0, ' Wait'), _jsx('span', {
 	      className: 'col small-1 text-right'
-	    }, void 0, ' Idle%'), _ref3)), this.List(Data).map(function ($cpu, i) {
+	    }, void 0, ' Idle'), _ref2)), this.List(Data).map(function ($cpu, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
 	      }, void 0, _jsx('span', {
-	        className: 'col small-1 text-right text-nowrap'
+	        className: 'col small-1 text-nowrap'
 	      }, void 0, $cpu.N), _jsx('div', {
 	        className: 'grid-block wrap noscroll'
 	      }, "cpu-rowby-N-" + $cpu.N, _jsx('span', {
@@ -20079,13 +20092,13 @@
 	        className: 'col display-block bg-usepct-inverse',
 	        'data-usepct': $cpu.IdlePct
 	      }, void 0, ' ', $cpu.IdlePct, '%')), _jsx('span', {
-	        className: 'col sparkline expand'
+	        className: 'col-lr expand'
 	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'IdlePct', defaultSpots: true }))));
-	    })));
+	    }))));
 	  }
 	});
 
-	var _ref4 = _jsx('span', {
+	var _ref3 = _jsx('span', {
 	  className: 'col'
 	});
 
@@ -20108,27 +20121,38 @@
 	  },
 	  render: function render() {
 	    var Data = this.state; // shadow global Data
-	    return _jsx('div', {}, void 0, _jsx('div', {
-	      className: !Data.params.Dfn.Negative ? "hide-showhide" : "show-showhide"
+	    return _jsx('div', {
+	      className: 'grid-block hr-top'
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block align-justify'
+	      className: 'col-lr large-1 text-right'
+	    }, void 0, _jsx('div', {
+	      className: !Data.params.Dfn.Negative ? "hide-showhide" : "show-showhide"
 	    }, void 0, _jsx('h1', {
-	      className: 'h3 margin-bottom-0'
+	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
 	      className: 'inherit-color',
 	      href: Data.params.Tlinks.Dfn,
-	      onClick: this.handleClick
-	    }, void 0, 'Disk usage', _jsx('span', {
-	      className: 'showhide-hide'
-	    }, void 0, '...'))), _jsx('div', {
-	      className: 'showhide-show hx-bottom align-self-flex-end expand'
+	      onClick: this.handleClick,
+	      title: 'Disk usage display options'
+	    }, void 0, _jsx('span', {
+	      className: 'showhide-hide whitespace-pre float-left'
+	    }, void 0, '... '), 'Disk usage')))), _jsx('div', {
+	      className: 'col-lr large-11'
+	    }, void 0, _jsx('div', {
+	      className: !Data.params.Dfn.Negative ? "hide-showhide" : "show-showhide"
+	    }, void 0, _jsx('div', {
+	      className: 'grid-block'
 	    }, void 0, _jsx('ul', {
-	      className: 'menu float-right'
+	      className: 'menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
-	      className: 'input-group margin-bottom-0'
+	      className: 'input-group'
 	    }, void 0, _jsx('div', {
 	      className: 'input-group-label small text-nowrap'
-	    }, void 0, 'delay: ', Data.params.Dfd), _jsx('div', {
+	    }, void 0, 'delay'), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
+	      className: 'button small secondary disabled'
+	    }, void 0, Data.params.Dfd)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Dlinks.Dfd.Less.Href,
@@ -20141,10 +20165,14 @@
 	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : ""),
 	      onClick: this.handleClick
 	    }, void 0, Data.params.Dlinks.Dfd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
-	      className: 'input-group margin-bottom-0'
+	      className: 'input-group'
 	    }, void 0, _jsx('div', {
 	      className: 'input-group-label small text-nowrap'
-	    }, void 0, 'rows: ', Data.params.Dfn.Absolute), _jsx('div', {
+	    }, void 0, 'rows'), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
+	      className: 'button small secondary disabled'
+	    }, void 0, Data.params.Dfn.Absolute)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Nlinks.Dfn.Less.Href,
@@ -20156,7 +20184,7 @@
 	      href: Data.params.Nlinks.Dfn.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.Dfn.More.Text, ' +')))))))), _jsx('div', {
+	    }, void 0, Data.params.Nlinks.Dfn.More.Text, ' +'))))))), _jsx('div', {
 	      className: Data.params.Dfn.Absolute != 0 ? "stripe" : "hide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block thead'
@@ -20210,7 +20238,7 @@
 	      onClick: this.handleClick
 	    }, void 0, 'Use%', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[4 - 1].CaretClass
-	    }))), _ref4)), this.List(Data).map(function ($df, i) {
+	    }))), _ref3)), this.List(Data).map(function ($df, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
 	      }, void 0, _jsx('span', {
@@ -20243,13 +20271,13 @@
 	        className: 'mutext',
 	        title: 'Inodes use%'
 	      }, void 0, ' ', $df.IusePct, '%'), ' ', $df.UsePct, '%')), _jsx('span', {
-	        className: 'col sparkline expand'
+	        className: 'col-lr expand'
 	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct' }))));
-	    })));
+	    }))));
 	  }
 	});
 
-	var _ref5 = _jsx('span', {
+	var _ref4 = _jsx('span', {
 	  className: 'col'
 	});
 
@@ -20272,27 +20300,38 @@
 	  },
 	  render: function render() {
 	    var Data = this.state; // shadow global Data
-	    return _jsx('div', {}, void 0, _jsx('div', {
-	      className: !Data.params.Ifn.Negative ? "hide-showhide" : "show-showhide"
+	    return _jsx('div', {
+	      className: 'grid-block hr-top'
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block align-justify'
+	      className: 'col-lr large-1 text-right'
+	    }, void 0, _jsx('div', {
+	      className: !Data.params.Ifn.Negative ? "hide-showhide" : "show-showhide"
 	    }, void 0, _jsx('h1', {
-	      className: 'h3 margin-bottom-0'
+	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
 	      className: 'inherit-color',
 	      href: Data.params.Tlinks.Ifn,
-	      onClick: this.handleClick
-	    }, void 0, 'Interfaces', _jsx('span', {
-	      className: 'showhide-hide'
-	    }, void 0, '...'))), _jsx('div', {
-	      className: 'showhide-show hx-bottom align-self-flex-end expand'
+	      onClick: this.handleClick,
+	      title: 'Interfaces display options'
+	    }, void 0, _jsx('span', {
+	      className: 'showhide-hide whitespace-pre float-left'
+	    }, void 0, '... '), 'Interfaces')))), _jsx('div', {
+	      className: 'col-lr large-11'
+	    }, void 0, _jsx('div', {
+	      className: !Data.params.Ifn.Negative ? "hide-showhide" : "show-showhide"
+	    }, void 0, _jsx('div', {
+	      className: 'grid-block'
 	    }, void 0, _jsx('ul', {
-	      className: 'menu float-right'
+	      className: 'menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
-	      className: 'input-group margin-bottom-0'
+	      className: 'input-group'
 	    }, void 0, _jsx('div', {
 	      className: 'input-group-label small text-nowrap'
-	    }, void 0, 'delay: ', Data.params.Ifd), _jsx('div', {
+	    }, void 0, 'delay'), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
+	      className: 'button small secondary disabled'
+	    }, void 0, Data.params.Ifd)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Dlinks.Ifd.Less.Href,
@@ -20305,10 +20344,14 @@
 	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : ""),
 	      onClick: this.handleClick
 	    }, void 0, Data.params.Dlinks.Ifd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
-	      className: 'input-group margin-bottom-0'
+	      className: 'input-group'
 	    }, void 0, _jsx('div', {
 	      className: 'input-group-label small text-nowrap'
-	    }, void 0, 'rows: ', Data.params.Ifn.Absolute), _jsx('div', {
+	    }, void 0, 'rows'), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
+	      className: 'button small secondary disabled'
+	    }, void 0, Data.params.Ifn.Absolute)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Nlinks.Ifn.Less.Href,
@@ -20320,7 +20363,7 @@
 	      href: Data.params.Nlinks.Ifn.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.Ifn.More.Text, ' +')))))))), _jsx('div', {
+	    }, void 0, Data.params.Nlinks.Ifn.More.Text, ' +'))))))), _jsx('div', {
 	      className: Data.params.Ifn.Absolute != 0 ? "stripe" : "hide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block thead'
@@ -20339,7 +20382,7 @@
 	    }, void 0, ' Packets IO ps'), _jsx('span', {
 	      className: 'col small-2 text-right text-nowrap',
 	      title: 'Bits In/Out per second'
-	    }, void 0, ' IO ', _jsx('i', {}, void 0, 'b'), 'ps'), _ref5)), this.List(Data).map(function ($if, i) {
+	    }, void 0, ' IO ', _jsx('i', {}, void 0, 'b'), 'ps'), _ref4)), this.List(Data).map(function ($if, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
 	      }, void 0, _jsx('span', {
@@ -20402,17 +20445,13 @@
 	      }, void 0, $if.DeltaBitsIn), '/', _jsx('span', {
 	        title: 'BITS Out per second'
 	      }, void 0, $if.DeltaBitsOut)), _jsx('span', {
-	        className: 'col sparkline expand'
+	        className: 'col-lr expand'
 	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'DeltaBytesOutNum' }))));
-	    })));
+	    }))));
 	  }
 	});
 
-	var _ref6 = _jsx('span', {
-	  className: 'col small-1'
-	});
-
-	var _ref7 = _jsx('span', {
+	var _ref5 = _jsx('span', {
 	  className: 'col'
 	});
 
@@ -20435,27 +20474,38 @@
 	  },
 	  render: function render() {
 	    var Data = this.state; // shadow global Data
-	    return _jsx('div', {}, void 0, _jsx('div', {
-	      className: !Data.params.Memn.Negative ? "hide-showhide" : "show-showhide"
+	    return _jsx('div', {
+	      className: 'grid-block hr-top'
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block align-justify'
+	      className: 'col-lr large-1 text-right'
+	    }, void 0, _jsx('div', {
+	      className: !Data.params.Memn.Negative ? "hide-showhide" : "show-showhide"
 	    }, void 0, _jsx('h1', {
-	      className: 'h3 margin-bottom-0'
+	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
 	      className: 'inherit-color',
 	      href: Data.params.Tlinks.Memn,
-	      onClick: this.handleClick
-	    }, void 0, 'Memory', _jsx('span', {
-	      className: 'showhide-hide'
-	    }, void 0, '...'))), _jsx('div', {
-	      className: 'showhide-show hx-bottom align-self-flex-end expand'
+	      onClick: this.handleClick,
+	      title: 'Memory display options'
+	    }, void 0, _jsx('span', {
+	      className: 'showhide-hide whitespace-pre float-left'
+	    }, void 0, '... '), 'Memory')))), _jsx('div', {
+	      className: 'col-lr large-11'
+	    }, void 0, _jsx('div', {
+	      className: !Data.params.Memn.Negative ? "hide-showhide" : "show-showhide"
+	    }, void 0, _jsx('div', {
+	      className: 'grid-block'
 	    }, void 0, _jsx('ul', {
-	      className: 'menu float-right'
+	      className: 'menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
-	      className: 'input-group margin-bottom-0'
+	      className: 'input-group'
 	    }, void 0, _jsx('div', {
 	      className: 'input-group-label small text-nowrap'
-	    }, void 0, 'delay: ', Data.params.Memd), _jsx('div', {
+	    }, void 0, 'delay'), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
+	      className: 'button small secondary disabled'
+	    }, void 0, Data.params.Memd)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Dlinks.Memd.Less.Href,
@@ -20468,10 +20518,14 @@
 	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : ""),
 	      onClick: this.handleClick
 	    }, void 0, Data.params.Dlinks.Memd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
-	      className: 'input-group margin-bottom-0'
+	      className: 'input-group'
 	    }, void 0, _jsx('div', {
 	      className: 'input-group-label small text-nowrap'
-	    }, void 0, 'rows: ', Data.params.Memn.Absolute), _jsx('div', {
+	    }, void 0, 'rows'), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
+	      className: 'button small secondary disabled'
+	    }, void 0, Data.params.Memn.Absolute)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Nlinks.Memn.Less.Href,
@@ -20483,11 +20537,13 @@
 	      href: Data.params.Nlinks.Memn.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.Memn.More.Text, ' +')))))))), _jsx('div', {
+	    }, void 0, Data.params.Nlinks.Memn.More.Text, ' +'))))))), _jsx('div', {
 	      className: Data.params.Memn.Absolute != 0 ? "stripe" : "hide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block thead'
-	    }, void 0, _ref6, _jsx('div', {
+	    }, void 0, _jsx('span', {
+	      className: 'col small-1'
+	    }, void 0, 'Memory'), _jsx('div', {
 	      className: 'grid-block wrap noscroll'
 	    }, void 0, _jsx('span', {
 	      className: 'col small-1 text-right'
@@ -20497,7 +20553,7 @@
 	      className: 'col small-1 text-right'
 	    }, void 0, ' Free'), _jsx('span', {
 	      className: 'col small-1 text-right'
-	    }, void 0, ' Use%'), _ref7)), this.List(Data).map(function ($mem, i) {
+	    }, void 0, ' Use%'), _ref5)), this.List(Data).map(function ($mem, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
 	      }, void 0, _jsx('span', {
@@ -20516,9 +20572,9 @@
 	        className: 'col display-block bg-usepct',
 	        'data-usepct': $mem.UsePct
 	      }, void 0, ' ', $mem.UsePct, '%')), _jsx('span', {
-	        className: 'col sparkline expand'
+	        className: 'col-lr expand'
 	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct' }))));
-	    })));
+	    }))));
 	  }
 	});
 
@@ -20541,27 +20597,38 @@
 	  },
 	  render: function render() {
 	    var Data = this.state; // shadow global Data
-	    return _jsx('div', {}, void 0, _jsx('div', {
-	      className: !Data.params.Psn.Negative ? "hide-showhide" : "show-showhide"
+	    return _jsx('div', {
+	      className: 'grid-block hr-top'
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block align-justify'
+	      className: 'col-lr large-1 text-right'
+	    }, void 0, _jsx('div', {
+	      className: !Data.params.Psn.Negative ? "hide-showhide" : "show-showhide"
 	    }, void 0, _jsx('h1', {
-	      className: 'h3 margin-bottom-0'
+	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
 	      className: 'inherit-color',
 	      href: Data.params.Tlinks.Psn,
-	      onClick: this.handleClick
-	    }, void 0, 'Processes', _jsx('span', {
-	      className: 'showhide-hide'
-	    }, void 0, '...'))), _jsx('div', {
-	      className: 'showhide-show hx-bottom align-self-flex-end expand'
+	      onClick: this.handleClick,
+	      title: 'Processes display options'
+	    }, void 0, _jsx('span', {
+	      className: 'showhide-hide whitespace-pre float-left'
+	    }, void 0, '... '), 'Processes')))), _jsx('div', {
+	      className: 'col-lr large-11'
+	    }, void 0, _jsx('div', {
+	      className: !Data.params.Psn.Negative ? "hide-showhide" : "show-showhide"
+	    }, void 0, _jsx('div', {
+	      className: 'grid-block'
 	    }, void 0, _jsx('ul', {
-	      className: 'menu float-right'
+	      className: 'menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
-	      className: 'input-group margin-bottom-0'
+	      className: 'input-group'
 	    }, void 0, _jsx('div', {
 	      className: 'input-group-label small text-nowrap'
-	    }, void 0, 'delay: ', Data.params.Psd), _jsx('div', {
+	    }, void 0, 'delay'), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
+	      className: 'button small secondary disabled'
+	    }, void 0, Data.params.Psd)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Dlinks.Psd.Less.Href,
@@ -20574,10 +20641,14 @@
 	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : ""),
 	      onClick: this.handleClick
 	    }, void 0, Data.params.Dlinks.Psd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
-	      className: 'input-group margin-bottom-0'
+	      className: 'input-group'
 	    }, void 0, _jsx('div', {
 	      className: 'input-group-label small text-nowrap'
-	    }, void 0, 'rows: ', Data.params.Psn.Absolute), _jsx('div', {
+	    }, void 0, 'rows'), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
+	      className: 'button small secondary disabled'
+	    }, void 0, Data.params.Psn.Absolute)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Nlinks.Psn.Less.Href,
@@ -20589,7 +20660,7 @@
 	      href: Data.params.Nlinks.Psn.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.Psn.More.Text, ' +')))))))), _jsx('div', {
+	    }, void 0, Data.params.Nlinks.Psn.More.Text, ' +'))))))), _jsx('div', {
 	      className: Data.params.Psn.Absolute != 0 ? "stripe" : "hide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block thead'
@@ -20691,7 +20762,7 @@
 	      }, void 0, ' ', $ps.Time), _jsx('span', {
 	        className: 'col expand'
 	      }, void 0, ' ', $ps.Name)));
-	    })));
+	    }))));
 	  }
 	});
 
