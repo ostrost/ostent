@@ -35,14 +35,12 @@ var Sparkline = React.createClass({
   render: function() {
     var spotsProps = {spotColors: {'-1': 'green', '1': 'red'}}; // reverse default
     if (this.props.defaultSpots) { delete spotsProps.spotColors; } // back to default
-    var height = this.props.height;
-    if (height == null) { height = 35; }
     return <div className="height-1rem" ref="root">
       <SparkLines.Sparklines
                data={this.state.data}
                limit={this.state.limit}
                width={this.state.width}
-               height={height}>
+               height={35}>
         <SparkLines.SparklinesLine />
         <SparkLines.SparklinesSpots {...spotsProps} />
       </SparkLines.Sparklines>
@@ -123,47 +121,6 @@ jsdefines.define_hostname = React.createClass({
     let Data = this.state; // shadow global Data
     return <a href="/" className="inherit-color"   title={"hostname " + Data.hostname}
   >{Data.hostname}</a
->;
-  }
-});
-
-jsdefines.define_loadavg = React.createClass({
-  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
-  Reduce: function(data) {
-    return {
-      loadavg: data.loadavg
-    };
-  },
-  render: function() {
-    let Data = this.state; // shadow global Data
-    return <div className="col-tb grid-block vertical"
-  ><div className="grid-block wrap noscroll"
-    ><span className="small-1 col-lr text-right text-nowrap"
-      ><span className="float-left"
-        >la&nbsp;</span
-      >1m</span
-    ><span className="small-1 col-lr text-right"
-      >{Data.loadavg.la1}</span
-    ><div className="expand"
-      >{jsdefines.Sparkline({ref: 'la1', height: 20})}</div
-    ></div
-  ><div className="grid-block wrap noscroll"
-    ><span className="small-1 col-lr text-right"
-      >5m</span
-    ><span className="small-1 col-lr text-right"
-      >{Data.loadavg.la5}</span
-    ><div className="expand"
-      >{jsdefines.Sparkline({ref: 'la5', height: 20})}</div
-    ></div
-  ><div className="grid-block wrap noscroll"
-    ><span className="small-1 col-lr text-right"
-      >15m</span
-    ><span className="small-1 col-lr text-right"
-      >{Data.loadavg.la15}</span
-    ><div className="expand"
-      >{jsdefines.Sparkline({ref: 'la15', height: 20})}</div
-    ></div
-  ></div
 >;
   }
 });
@@ -588,6 +545,105 @@ jsdefines.define_panelif = React.createClass({
             ></span
           ><span className="col-lr expand"
             >{jsdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}</span
+          ></div
+        ></div
+      >})}</div
+    ></div
+  ></div
+>;
+  }
+});
+
+jsdefines.define_panella = React.createClass({
+  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+  List: function(data) {
+    let list;
+    if (data == null || data["loadavg"] == null || (list = data["loadavg"].List) == null) {
+      return [];
+    }
+    return list;
+  },
+  Reduce: function(data) {
+    return {
+      params: data.params,
+      loadavg: data.loadavg
+    };
+  },
+  render: function() {
+    let Data = this.state; // shadow global Data
+    return <div className="grid-block hr-top"
+  ><div className="col-lr large-1 text-right"
+    ><div  className={!Data.params.Lan.Negative ? "hide-showhide" : "show-showhide"}
+      ><h1 className="h4 text-overflow"
+        ><a className="inherit-color"  href={Data.params.Tlinks.Lan} onClick={this.handleClick} title="Load avg display options"
+          ><span className="showhide-hide whitespace-pre float-left"
+            >... </span
+          >Load avg</a
+        ></h1
+      ></div
+    ></div
+  ><div className="col-lr large-11"
+    ><div  className={!Data.params.Lan.Negative ? "hide-showhide" : "show-showhide"}
+      ><div className="grid-block"
+        ><ul className="menu showhide-show"
+          ><li
+            ><div className="input-group"
+              ><div className="input-group-label small text-nowrap"
+                >delay</div
+              ><div className="input-group-button"
+                ><a className="button small secondary disabled"
+                  >{Data.params.Lad}</a
+                ></div
+              ><div className="input-group-button"
+                ><a href={Data.params.Dlinks.Lad.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Lad.Less.ExtraClass != null ? Data.params.Dlinks.Lad.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Dlinks.Lad.Less.Text}</a
+></div
+              ><div className="input-group-button"
+                ><a href={Data.params.Dlinks.Lad.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Lad.More.ExtraClass != null ? Data.params.Dlinks.Lad.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Dlinks.Lad.More.Text} +</a
+></div
+              ></div
+            ></li
+          ><li
+            ><div className="input-group"
+              ><div className="input-group-label small text-nowrap"
+                >rows</div
+              ><div className="input-group-button"
+                ><a className="button small secondary disabled"
+                  >{Data.params.Lan.Absolute}</a
+                ></div
+              ><div className="input-group-button"
+                ><a href={Data.params.Nlinks.Lan.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.Less.ExtraClass != null ? Data.params.Nlinks.Lan.Less.ExtraClass : "")} onClick={this.handleClick}  
+  >- {Data.params.Nlinks.Lan.Less.Text}</a
+></div
+              ><div className="input-group-button"
+                ><a href={Data.params.Nlinks.Lan.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.More.ExtraClass != null ? Data.params.Nlinks.Lan.More.ExtraClass : "")} onClick={this.handleClick}  
+  >{Data.params.Nlinks.Lan.More.Text} +</a
+></div
+              ></div
+            ></li
+          ></ul
+        ></div
+      ></div
+    ><div  className={Data.params.Lan.Absolute != 0 ? "stripe" : "hide"}
+      ><div className="grid-block thead"
+        ><span className="col small-1"
+          >Period</span
+        ><div className="grid-block wrap noscroll"
+          ><span className="col small-1 text-right"
+            > Value</span
+          ><span className="col"
+            ></span
+          ></div
+        ></div
+      >{this.List(Data).map(function($la, i) { return<div className="grid-block"
+        ><span className="col small-1"
+          >{$la.Period}m</span
+        ><div  key={"la-rowby-period-"+$la.Period} className="grid-block wrap noscroll"
+          ><span className="col small-1 text-right"
+            > {$la.Value}</span
+          ><span className="col-lr expand"
+            >{jsdefines.Sparkline({ref: i, col: 'Value'})}</span
           ></div
         ></div
       >})}</div

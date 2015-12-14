@@ -43,10 +43,8 @@
           ></ul
         ></div
       ></div
-    ><div class="grid-block"
-      ><span class="updates expand" data-define="define_loadavg"
-        >{{template "defines::define_loadavg" .}}</span
-      ></div
+    ><div class="updates" data-define="define_panella"
+      >{{template "defines::define_panella" .}}</div
     ><div class="updates" data-define="define_panelmem"
       >{{template "defines::define_panelmem" .}}</div
     ><div class="updates" data-define="define_paneldf"
@@ -77,35 +75,6 @@
 >{{end}}{{/*
 */}}{{define "defines::define_hostname"}}<a href="/" {{class}}="inherit-color"  {{TitlePrefixed "hostname " .Data.hostname}}
   >{{.Data.hostname}}</a
->{{end}}{{/*
-*/}}{{define "defines::define_loadavg"}}<div class="col-tb grid-block vertical"
-  ><div class="grid-block wrap noscroll"
-    ><span class="small-1 col-lr text-right text-nowrap"
-      ><span class="float-left"
-        >la&nbsp;</span
-      >1m</span
-    ><span class="small-1 col-lr text-right"
-      >{{.Data.loadavg.la1}}</span
-    ><div class="expand"
-      >{{jsx `{jsdefines.Sparkline({ref: 'la1', height: 20})}`}}</div
-    ></div
-  ><div class="grid-block wrap noscroll"
-    ><span class="small-1 col-lr text-right"
-      >5m</span
-    ><span class="small-1 col-lr text-right"
-      >{{.Data.loadavg.la5}}</span
-    ><div class="expand"
-      >{{jsx `{jsdefines.Sparkline({ref: 'la5', height: 20})}`}}</div
-    ></div
-  ><div class="grid-block wrap noscroll"
-    ><span class="small-1 col-lr text-right"
-      >15m</span
-    ><span class="small-1 col-lr text-right"
-      >{{.Data.loadavg.la15}}</span
-    ><div class="expand"
-      >{{jsx `{jsdefines.Sparkline({ref: 'la15', height: 20})}`}}</div
-    ></div
-  ></div
 >{{end}}{{/*
 */}}{{define "defines::define_panelcpu"}}{{$p := .Data.params}}<div {{class}}="grid-block hr-top"
   ><div class="col-lr large-1 text-right"
@@ -422,6 +391,77 @@ data-usepct={{$cpu.IdlePct}}
             ></span
           ><span class="col-lr expand"
             >{{jsx `{jsdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}`}}</span
+          ></div
+        ></div
+      >{{jsx `})}`}}{{end}}{{end}}</div
+    ></div
+  ></div
+>{{end}}{{/*
+*/}}{{define "defines::define_panella"}}{{$p := .Data.params}}<div {{class}}="grid-block hr-top"
+  ><div class="col-lr large-1 text-right"
+    ><div {{ClassPositive $p.Lan "hide-showhide" "show-showhide"}}
+      ><h1 class="h4 text-overflow"
+        ><a {{class}}="inherit-color" {{HrefT $p $p.Lan}} title="Load avg display options"
+          ><span {{class}}="showhide-hide whitespace-pre float-left"
+            >... </span
+          >Load avg</a
+        ></h1
+      ></div
+    ></div
+  ><div class="col-lr large-11"
+    ><div {{ClassPositive $p.Lan "hide-showhide" "show-showhide"}}
+      ><div class="grid-block"
+        ><ul class="menu showhide-show"
+          ><li
+            ><div class="input-group"
+              ><div class="input-group-label small text-nowrap"
+                >delay</div
+              ><div class="input-group-button"
+                ><a class="button small secondary disabled"
+                  >{{$p.Lad}}</a
+                ></div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeleft" LessD $p $p.Lad "button small text-nowrap"}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeright" MoreD $p $p.Lad "button small text-nowrap"}}</div
+              ></div
+            ></li
+          ><li
+            ><div class="input-group"
+              ><div class="input-group-label small text-nowrap"
+                >rows</div
+              ><div class="input-group-button"
+                ><a class="button small secondary disabled"
+                  >{{$p.Lan.Absolute}}</a
+                ></div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeleft" LessN $p $p.Lan "button small success text-nowrap"}}</div
+              ><div class="input-group-button"
+                >{{template "defines::alink_badgeright" MoreN $p $p.Lan "button small success text-nowrap"}}</div
+              ></div
+            ></li
+          ></ul
+        ></div
+      ></div
+    ><div {{ClassNonZero $p.Lan "stripe" "hide"}}
+      ><div class="grid-block thead"
+        ><span class="col small-1"
+          >Period</span
+        ><div class="grid-block wrap noscroll"
+          ><span class="col small-1 text-right"
+            > Value</span
+          ><span class="col"
+            ></span
+          ></div
+        ></div
+      >{{if .Data.loadavg}}{{range $la := .Data.loadavg.List}}{{jsx `{this.List(Data).map(function($la, i) { return`}}<div class="grid-block"
+        ><span class="col small-1"
+          >{{$la.Period}}m</span
+        ><div {{Key "la-rowby-period" $la.Period}} {{class}}="grid-block wrap noscroll"
+          ><span class="col small-1 text-right"
+            > {{$la.Value}}</span
+          ><span class="col-lr expand"
+            >{{jsx `{jsdefines.Sparkline({ref: i, col: 'Value'})}`}}</span
           ></div
         ></div
       >{{jsx `})}`}}{{end}}{{end}}</div

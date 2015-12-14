@@ -125,6 +125,7 @@ type Schema struct {
 	CPUd Delay `url:"cpud,omitempty"`
 	Dfd  Delay `url:"dfd,omitempty"`
 	Ifd  Delay `url:"ifd,omitempty"`
+	Lad  Delay `url:"lad,omitempty"`
 	Memd Delay `url:"memd,omitempty"`
 	Psd  Delay `url:"psd,omitempty"`
 
@@ -135,6 +136,7 @@ type Schema struct {
 	CPUn Num `url:"cpun,default-2"`
 	Dfn  Num `url:"dfn,default-2"`
 	Ifn  Num `url:"ifn,default-2"`
+	Lan  Num `url:"lan,default-3"`
 	Memn Num `url:"memn,default-2"`
 	Psn  Num `url:"psn,default0"`
 

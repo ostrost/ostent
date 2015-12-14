@@ -465,12 +465,24 @@ func (ir *IndexRegistry) MEM(para *params.Params, data IndexData) bool {
 }
 
 func (ir *IndexRegistry) LA(para *params.Params, data IndexData) bool {
-	// LA has no delay, always updates data
-	data["loadavg"] = map[string]string{
-		"la1":  fmt.Sprintf("%.2f", ir.Load.Short.Snapshot().Value()),
-		"la5":  fmt.Sprintf("%.2f", ir.Load.Mid.Snapshot().Value()),
-		"la15": fmt.Sprintf("%.2f", ir.Load.Long.Snapshot().Value()),
+	if !para.Lad.Expired() {
+		return false
 	}
+	if para.Lan.Absolute < 1 {
+		return false
+	}
+	para.Lan.Limit = 3
+	if para.Lan.Absolute > para.Lan.Limit {
+		para.Lan.Absolute = para.Lan.Limit
+	}
+	type LA struct {
+		Period, Value string
+	}
+	data["loadavg"] = &struct{ List []LA }{[]LA{
+		{"1", fmt.Sprintf("%.2f", ir.Load.Short.Snapshot().Value())},
+		{"5", fmt.Sprintf("%.2f", ir.Load.Mid.Snapshot().Value())},
+		{"15", fmt.Sprintf("%.2f", ir.Load.Long.Snapshot().Value())},
+	}[:para.Lan.Absolute]}
 	return true
 }
 

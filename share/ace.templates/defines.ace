@@ -51,25 +51,30 @@
   | <a href="/" {{class}}="inherit-color"
   |   {{TitlePrefixed "hostname " .Data.hostname}}>{{.Data.hostname}}</a>
 
-= content define_loadavg
-  div.col-tb.grid-block.vertical
+= content define_panella
+  {{$p := .Data.params}}
+  [[template "startpanel" Chain `$p.Lan` `$p.Lad` "Load avg"]]
+  | <div {{ClassNonZero $p.Lan "stripe" "hide"}}>
+  div.grid-block.thead
+    span.col.small-1 Period
     div.grid-block.wrap.noscroll
-      span.small-1.col-lr.text-right.text-nowrap
-        span.float-left la&nbsp;
-        | 1m
-      span.small-1.col-lr.text-right {{.Data.loadavg.la1}}
-      div.expand
-        {{jsx `{jsdefines.Sparkline({ref: 'la1', height: 20})}`}}
-    div.grid-block.wrap.noscroll
-      span.small-1.col-lr.text-right 5m
-      span.small-1.col-lr.text-right {{.Data.loadavg.la5}}
-      div.expand
-        {{jsx `{jsdefines.Sparkline({ref: 'la5', height: 20})}`}}
-    div.grid-block.wrap.noscroll
-      span.small-1.col-lr.text-right 15m
-      span.small-1.col-lr.text-right {{.Data.loadavg.la15}}
-      div.expand
-        {{jsx `{jsdefines.Sparkline({ref: 'la15', height: 20})}`}}
+      span.col.small-1.text-right  Value
+      span.col
+  {{if .Data.loadavg}}
+    {{range $la := .Data.loadavg.List}}
+      {{jsx  `{this.List(Data).map(function($la, i) { return`}}
+      div.grid-block
+        / first col could be .shrink but it would skew the grid
+        span.col.small-1 {{$la.Period}}m
+        | <div {{Key "la-rowby-period" $la.Period}} {{class}}="grid-block wrap noscroll">
+        span.col.small-1.text-right  {{$la.Value}}
+        span.col-lr.expand
+          {{jsx `{jsdefines.Sparkline({ref: i, col: 'Value'})}`}}
+        | </div>
+      {{jsx `})}`}}
+    {{end}}
+  {{end}}
+  [[template "endpanel"]]
 
 = content define_panelmem
   {{$p := .Data.params}}

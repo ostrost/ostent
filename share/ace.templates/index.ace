@@ -36,9 +36,8 @@ html
           li
             a.button.secondary.hollow style="margin: 0" href=https://www.ostrost.com/ostent/releases/latest?cmp={{$v}} ostent
 
-    div.grid-block
-      span.updates.expand data-define=define_loadavg
-        {{template "defines::define_loadavg" .}}
+    div.updates data-define=define_panella
+      {{template "defines::define_panella" .}}
 
     div.updates data-define=define_panelmem
       {{template "defines::define_panelmem" .}}

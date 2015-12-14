@@ -19819,10 +19819,6 @@
 	    if (this.props.defaultSpots) {
 	      delete spotsProps.spotColors;
 	    } // back to default
-	    var height = this.props.height;
-	    if (height == null) {
-	      height = 35;
-	    }
 	    return React.createElement(
 	      'div',
 	      { className: 'height-1rem', ref: 'root' },
@@ -19830,7 +19826,7 @@
 	        data: this.state.data,
 	        limit: this.state.limit,
 	        width: this.state.width,
-	        height: height
+	        height: 35
 	      }, void 0, _ref, React.createElement(SparkLines.SparklinesSpots, spotsProps))
 	    );
 	  }
@@ -19916,49 +19912,6 @@
 	      className: 'inherit-color',
 	      title: "hostname " + Data.hostname
 	    }, void 0, Data.hostname);
-	  }
-	});
-
-	jsdefines.define_loadavg = React.createClass({
-	  displayName: 'define_loadavg',
-
-	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
-	  Reduce: function Reduce(data) {
-	    return {
-	      loadavg: data.loadavg
-	    };
-	  },
-	  render: function render() {
-	    var Data = this.state; // shadow global Data
-	    return _jsx('div', {
-	      className: 'col-tb grid-block vertical'
-	    }, void 0, _jsx('div', {
-	      className: 'grid-block wrap noscroll'
-	    }, void 0, _jsx('span', {
-	      className: 'small-1 col-lr text-right text-nowrap'
-	    }, void 0, _jsx('span', {
-	      className: 'float-left'
-	    }, void 0, 'la '), '1m'), _jsx('span', {
-	      className: 'small-1 col-lr text-right'
-	    }, void 0, Data.loadavg.la1), _jsx('div', {
-	      className: 'expand'
-	    }, void 0, jsdefines.Sparkline({ ref: 'la1', height: 20 }))), _jsx('div', {
-	      className: 'grid-block wrap noscroll'
-	    }, void 0, _jsx('span', {
-	      className: 'small-1 col-lr text-right'
-	    }, void 0, '5m'), _jsx('span', {
-	      className: 'small-1 col-lr text-right'
-	    }, void 0, Data.loadavg.la5), _jsx('div', {
-	      className: 'expand'
-	    }, void 0, jsdefines.Sparkline({ ref: 'la5', height: 20 }))), _jsx('div', {
-	      className: 'grid-block wrap noscroll'
-	    }, void 0, _jsx('span', {
-	      className: 'small-1 col-lr text-right'
-	    }, void 0, '15m'), _jsx('span', {
-	      className: 'small-1 col-lr text-right'
-	    }, void 0, Data.loadavg.la15), _jsx('div', {
-	      className: 'expand'
-	    }, void 0, jsdefines.Sparkline({ ref: 'la15', height: 20 }))));
 	  }
 	});
 
@@ -20455,6 +20408,118 @@
 	  className: 'col'
 	});
 
+	jsdefines.define_panella = React.createClass({
+	  displayName: 'define_panella',
+
+	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+	  List: function List(data) {
+	    var list = undefined;
+	    if (data == null || data["loadavg"] == null || (list = data["loadavg"].List) == null) {
+	      return [];
+	    }
+	    return list;
+	  },
+	  Reduce: function Reduce(data) {
+	    return {
+	      params: data.params,
+	      loadavg: data.loadavg
+	    };
+	  },
+	  render: function render() {
+	    var Data = this.state; // shadow global Data
+	    return _jsx('div', {
+	      className: 'grid-block hr-top'
+	    }, void 0, _jsx('div', {
+	      className: 'col-lr large-1 text-right'
+	    }, void 0, _jsx('div', {
+	      className: !Data.params.Lan.Negative ? "hide-showhide" : "show-showhide"
+	    }, void 0, _jsx('h1', {
+	      className: 'h4 text-overflow'
+	    }, void 0, _jsx('a', {
+	      className: 'inherit-color',
+	      href: Data.params.Tlinks.Lan,
+	      onClick: this.handleClick,
+	      title: 'Load avg display options'
+	    }, void 0, _jsx('span', {
+	      className: 'showhide-hide whitespace-pre float-left'
+	    }, void 0, '... '), 'Load avg')))), _jsx('div', {
+	      className: 'col-lr large-11'
+	    }, void 0, _jsx('div', {
+	      className: !Data.params.Lan.Negative ? "hide-showhide" : "show-showhide"
+	    }, void 0, _jsx('div', {
+	      className: 'grid-block'
+	    }, void 0, _jsx('ul', {
+	      className: 'menu showhide-show'
+	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
+	      className: 'input-group'
+	    }, void 0, _jsx('div', {
+	      className: 'input-group-label small text-nowrap'
+	    }, void 0, 'delay'), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
+	      className: 'button small secondary disabled'
+	    }, void 0, Data.params.Lad)), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
+	      href: Data.params.Dlinks.Lad.Less.Href,
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Lad.Less.ExtraClass != null ? Data.params.Dlinks.Lad.Less.ExtraClass : ""),
+	      onClick: this.handleClick
+	    }, void 0, '- ', Data.params.Dlinks.Lad.Less.Text)), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
+	      href: Data.params.Dlinks.Lad.More.Href,
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Lad.More.ExtraClass != null ? Data.params.Dlinks.Lad.More.ExtraClass : ""),
+	      onClick: this.handleClick
+	    }, void 0, Data.params.Dlinks.Lad.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
+	      className: 'input-group'
+	    }, void 0, _jsx('div', {
+	      className: 'input-group-label small text-nowrap'
+	    }, void 0, 'rows'), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
+	      className: 'button small secondary disabled'
+	    }, void 0, Data.params.Lan.Absolute)), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
+	      href: Data.params.Nlinks.Lan.Less.Href,
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.Less.ExtraClass != null ? Data.params.Nlinks.Lan.Less.ExtraClass : ""),
+	      onClick: this.handleClick
+	    }, void 0, '- ', Data.params.Nlinks.Lan.Less.Text)), _jsx('div', {
+	      className: 'input-group-button'
+	    }, void 0, _jsx('a', {
+	      href: Data.params.Nlinks.Lan.More.Href,
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.More.ExtraClass != null ? Data.params.Nlinks.Lan.More.ExtraClass : ""),
+	      onClick: this.handleClick
+	    }, void 0, Data.params.Nlinks.Lan.More.Text, ' +'))))))), _jsx('div', {
+	      className: Data.params.Lan.Absolute != 0 ? "stripe" : "hide"
+	    }, void 0, _jsx('div', {
+	      className: 'grid-block thead'
+	    }, void 0, _jsx('span', {
+	      className: 'col small-1'
+	    }, void 0, 'Period'), _jsx('div', {
+	      className: 'grid-block wrap noscroll'
+	    }, void 0, _jsx('span', {
+	      className: 'col small-1 text-right'
+	    }, void 0, ' Value'), _ref5)), this.List(Data).map(function ($la, i) {
+	      return _jsx('div', {
+	        className: 'grid-block'
+	      }, void 0, _jsx('span', {
+	        className: 'col small-1'
+	      }, void 0, $la.Period, 'm'), _jsx('div', {
+	        className: 'grid-block wrap noscroll'
+	      }, "la-rowby-period-" + $la.Period, _jsx('span', {
+	        className: 'col small-1 text-right'
+	      }, void 0, ' ', $la.Value), _jsx('span', {
+	        className: 'col-lr expand'
+	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'Value' }))));
+	    }))));
+	  }
+	});
+
+	var _ref6 = _jsx('span', {
+	  className: 'col'
+	});
+
 	jsdefines.define_panelmem = React.createClass({
 	  displayName: 'define_panelmem',
 
@@ -20553,7 +20618,7 @@
 	      className: 'col small-1 text-right'
 	    }, void 0, ' Free'), _jsx('span', {
 	      className: 'col small-1 text-right'
-	    }, void 0, ' Use%'), _ref5)), this.List(Data).map(function ($mem, i) {
+	    }, void 0, ' Use%'), _ref6)), this.List(Data).map(function ($mem, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
 	      }, void 0, _jsx('span', {

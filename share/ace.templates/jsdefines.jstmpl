@@ -35,14 +35,12 @@ var Sparkline = React.createClass({
   render: function() {
     var spotsProps = {spotColors: {'-1': 'green', '1': 'red'}}; // reverse default
     if (this.props.defaultSpots) { delete spotsProps.spotColors; } // back to default
-    var height = this.props.height;
-    if (height == null) { height = 35; }
     return <div className="height-1rem" ref="root">
       <SparkLines.Sparklines
                data={this.state.data}
                limit={this.state.limit}
                width={this.state.width}
-               height={height}>
+               height={35}>
         <SparkLines.SparklinesLine />
         <SparkLines.SparklinesSpots {...spotsProps} />
       </SparkLines.Sparklines>
