@@ -73,14 +73,14 @@
     ></span
   ></a
 >{{end}}{{/*
-*/}}{{define "defines::define_hostname"}}<a href="/" {{class}}="inherit-color"  {{TitlePrefixed "hostname " .Data.hostname}}
+*/}}{{define "defines::define_hostname"}}<a href="/" {{TitlePrefixed "hostname " .Data.hostname}}
   >{{.Data.hostname}}</a
 >{{end}}{{/*
 */}}{{define "defines::define_panelcpu"}}{{$p := .Data.params}}<div {{class}}="grid-block hr-top"
   ><div class="col-lr large-1 text-right"
     ><div {{ClassPositive $p.CPUn "hide-showhide" "show-showhide"}}
       ><h1 class="h4 text-overflow"
-        ><a {{class}}="inherit-color" {{HrefT $p $p.CPUn}} title="CPU display options"
+        ><a {{HrefT $p $p.CPUn}} title="CPU display options"
           ><span {{class}}="showhide-hide whitespace-pre float-left"
             >... </span
           >CPU</a
@@ -175,7 +175,7 @@ data-usepct={{$cpu.IdlePct}}
   ><div class="col-lr large-1 text-right"
     ><div {{ClassPositive $p.Dfn "hide-showhide" "show-showhide"}}
       ><h1 class="h4 text-overflow"
-        ><a {{class}}="inherit-color" {{HrefT $p $p.Dfn}} title="Disk usage display options"
+        ><a {{HrefT $p $p.Dfn}} title="Disk usage display options"
           ><span {{class}}="showhide-hide whitespace-pre float-left"
             >... </span
           >Disk usage</a
@@ -272,7 +272,7 @@ data-usepct={{$cpu.IdlePct}}
   ><div class="col-lr large-1 text-right"
     ><div {{ClassPositive $p.Ifn "hide-showhide" "show-showhide"}}
       ><h1 class="h4 text-overflow"
-        ><a {{class}}="inherit-color" {{HrefT $p $p.Ifn}} title="Interfaces display options"
+        ><a {{HrefT $p $p.Ifn}} title="Interfaces display options"
           ><span {{class}}="showhide-hide whitespace-pre float-left"
             >... </span
           >Interfaces</a
@@ -401,7 +401,7 @@ data-usepct={{$cpu.IdlePct}}
   ><div class="col-lr large-1 text-right"
     ><div {{ClassPositive $p.Lan "hide-showhide" "show-showhide"}}
       ><h1 class="h4 text-overflow"
-        ><a {{class}}="inherit-color" {{HrefT $p $p.Lan}} title="Load avg display options"
+        ><a {{HrefT $p $p.Lan}} title="Load avg display options"
           ><span {{class}}="showhide-hide whitespace-pre float-left"
             >... </span
           >Load avg</a
@@ -472,7 +472,7 @@ data-usepct={{$cpu.IdlePct}}
   ><div class="col-lr large-1 text-right"
     ><div {{ClassPositive $p.Memn "hide-showhide" "show-showhide"}}
       ><h1 class="h4 text-overflow"
-        ><a {{class}}="inherit-color" {{HrefT $p $p.Memn}} title="Memory display options"
+        ><a {{HrefT $p $p.Memn}} title="Memory display options"
           ><span {{class}}="showhide-hide whitespace-pre float-left"
             >... </span
           >Memory</a
@@ -557,7 +557,7 @@ data-usepct={{$cpu.IdlePct}}
   ><div class="col-lr large-1 text-right"
     ><div {{ClassPositive $p.Psn "hide-showhide" "show-showhide"}}
       ><h1 class="h4 text-overflow"
-        ><a {{class}}="inherit-color" {{HrefT $p $p.Psn}} title="Processes display options"
+        ><a {{HrefT $p $p.Psn}} title="Processes display options"
           ><span {{class}}="showhide-hide whitespace-pre float-left"
             >... </span
           >Processes</a

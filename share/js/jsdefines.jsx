@@ -119,7 +119,7 @@ jsdefines.define_hostname = React.createClass({
   },
   render: function() {
     let Data = this.state; // shadow global Data
-    return <a href="/" className="inherit-color"   title={"hostname " + Data.hostname}
+    return <a href="/"  title={"hostname " + Data.hostname}
   >{Data.hostname}</a
 >;
   }
@@ -146,7 +146,7 @@ jsdefines.define_panelcpu = React.createClass({
   ><div className="col-lr large-1 text-right"
     ><div  className={!Data.params.CPUn.Negative ? "hide-showhide" : "show-showhide"}
       ><h1 className="h4 text-overflow"
-        ><a className="inherit-color"  href={Data.params.Tlinks.CPUn} onClick={this.handleClick} title="CPU display options"
+        ><a  href={Data.params.Tlinks.CPUn} onClick={this.handleClick} title="CPU display options"
           ><span className="showhide-hide whitespace-pre float-left"
             >... </span
           >CPU</a
@@ -269,7 +269,7 @@ jsdefines.define_paneldf = React.createClass({
   ><div className="col-lr large-1 text-right"
     ><div  className={!Data.params.Dfn.Negative ? "hide-showhide" : "show-showhide"}
       ><h1 className="h4 text-overflow"
-        ><a className="inherit-color"  href={Data.params.Tlinks.Dfn} onClick={this.handleClick} title="Disk usage display options"
+        ><a  href={Data.params.Tlinks.Dfn} onClick={this.handleClick} title="Disk usage display options"
           ><span className="showhide-hide whitespace-pre float-left"
             >... </span
           >Disk usage</a
@@ -418,7 +418,7 @@ jsdefines.define_panelif = React.createClass({
   ><div className="col-lr large-1 text-right"
     ><div  className={!Data.params.Ifn.Negative ? "hide-showhide" : "show-showhide"}
       ><h1 className="h4 text-overflow"
-        ><a className="inherit-color"  href={Data.params.Tlinks.Ifn} onClick={this.handleClick} title="Interfaces display options"
+        ><a  href={Data.params.Tlinks.Ifn} onClick={this.handleClick} title="Interfaces display options"
           ><span className="showhide-hide whitespace-pre float-left"
             >... </span
           >Interfaces</a
@@ -575,7 +575,7 @@ jsdefines.define_panella = React.createClass({
   ><div className="col-lr large-1 text-right"
     ><div  className={!Data.params.Lan.Negative ? "hide-showhide" : "show-showhide"}
       ><h1 className="h4 text-overflow"
-        ><a className="inherit-color"  href={Data.params.Tlinks.Lan} onClick={this.handleClick} title="Load avg display options"
+        ><a  href={Data.params.Tlinks.Lan} onClick={this.handleClick} title="Load avg display options"
           ><span className="showhide-hide whitespace-pre float-left"
             >... </span
           >Load avg</a
@@ -674,7 +674,7 @@ jsdefines.define_panelmem = React.createClass({
   ><div className="col-lr large-1 text-right"
     ><div  className={!Data.params.Memn.Negative ? "hide-showhide" : "show-showhide"}
       ><h1 className="h4 text-overflow"
-        ><a className="inherit-color"  href={Data.params.Tlinks.Memn} onClick={this.handleClick} title="Memory display options"
+        ><a  href={Data.params.Tlinks.Memn} onClick={this.handleClick} title="Memory display options"
           ><span className="showhide-hide whitespace-pre float-left"
             >... </span
           >Memory</a
@@ -787,7 +787,7 @@ jsdefines.define_panelps = React.createClass({
   ><div className="col-lr large-1 text-right"
     ><div  className={!Data.params.Psn.Negative ? "hide-showhide" : "show-showhide"}
       ><h1 className="h4 text-overflow"
-        ><a className="inherit-color"  href={Data.params.Tlinks.Psn} onClick={this.handleClick} title="Processes display options"
+        ><a  href={Data.params.Tlinks.Psn} onClick={this.handleClick} title="Processes display options"
           ><span className="showhide-hide whitespace-pre float-left"
             >... </span
           >Processes</a

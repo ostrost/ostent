@@ -7,7 +7,7 @@
   div.col-lr.large-1.text-right
     | <div {{ClassPositive [[$N]] "hide-showhide" "show-showhide"}}>
     h1.h4.text-overflow
-      | <a {{class}}="inherit-color" {{HrefT $p [[$N]]}} title="[[$t]] display options">
+      | <a {{HrefT $p [[$N]]}} title="[[$t]] display options">
       | <span {{class}}="showhide-hide whitespace-pre float-left">... </span>[[$t]]</a>
     | </div>
   div.col-lr.large-11
@@ -48,8 +48,7 @@
 {{define "defines::define_uptime"}}<span>{{.Data.uptime}}</span>{{end}}
 
 = content define_hostname
-  | <a href="/" {{class}}="inherit-color"
-  |   {{TitlePrefixed "hostname " .Data.hostname}}>{{.Data.hostname}}</a>
+  | <a href="/" {{TitlePrefixed "hostname " .Data.hostname}}>{{.Data.hostname}}</a>
 
 = content define_panella
   {{$p := .Data.params}}

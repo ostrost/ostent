@@ -9,7 +9,7 @@
     "tests"
   ],
   "dependencies": {
-    "foundation-sites": "~6.0.5",
+    "foundation-sites": "~6.0.6",
     "foundation-apps": "~1.2.0"
   }
 }

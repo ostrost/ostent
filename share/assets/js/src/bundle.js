@@ -19909,7 +19909,6 @@
 	    var Data = this.state; // shadow global Data
 	    return _jsx('a', {
 	      href: '/',
-	      className: 'inherit-color',
 	      title: "hostname " + Data.hostname
 	    }, void 0, Data.hostname);
 	  }
@@ -19947,7 +19946,6 @@
 	    }, void 0, _jsx('h1', {
 	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
-	      className: 'inherit-color',
 	      href: Data.params.Tlinks.CPUn,
 	      onClick: this.handleClick,
 	      title: 'CPU display options'
@@ -20083,7 +20081,6 @@
 	    }, void 0, _jsx('h1', {
 	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
-	      className: 'inherit-color',
 	      href: Data.params.Tlinks.Dfn,
 	      onClick: this.handleClick,
 	      title: 'Disk usage display options'
@@ -20262,7 +20259,6 @@
 	    }, void 0, _jsx('h1', {
 	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
-	      className: 'inherit-color',
 	      href: Data.params.Tlinks.Ifn,
 	      onClick: this.handleClick,
 	      title: 'Interfaces display options'
@@ -20436,7 +20432,6 @@
 	    }, void 0, _jsx('h1', {
 	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
-	      className: 'inherit-color',
 	      href: Data.params.Tlinks.Lan,
 	      onClick: this.handleClick,
 	      title: 'Load avg display options'
@@ -20548,7 +20543,6 @@
 	    }, void 0, _jsx('h1', {
 	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
-	      className: 'inherit-color',
 	      href: Data.params.Tlinks.Memn,
 	      onClick: this.handleClick,
 	      title: 'Memory display options'
@@ -20671,7 +20665,6 @@
 	    }, void 0, _jsx('h1', {
 	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
-	      className: 'inherit-color',
 	      href: Data.params.Tlinks.Psn,
 	      onClick: this.handleClick,
 	      title: 'Processes display options'

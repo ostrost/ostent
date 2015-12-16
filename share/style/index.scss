@@ -62,10 +62,7 @@
   }
 }
 
-.hr-top { border-top: 1px solid $light-gray; }
-
-.inherit-color { color: inherit; }
-.state { @extend .inherit-color; }
+.hr-top { border-top: 1px solid $medium-gray; }
 
 // .grid-block { .col:hover { background-color: #88f; } }
 .stripe >.grid-block {
