@@ -3,33 +3,50 @@ package templateutil
 
 import (
 	"bytes"
-	"fmt"
 	"html/template"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"sync"
+	"time"
 )
 
 // NewLT constructs LazyTemplate.
-func NewLT(readfunc Readfunc, filename string, funcmap template.FuncMap) *LazyTemplate {
-	return &LazyTemplate{Readfunc: readfunc, Filename: filename, Funcmap: funcmap}
+func NewLT(readfunc ReadFunc, infofunc InfoFunc, filename string, funcmap template.FuncMap) *LazyTemplate {
+	return &LazyTemplate{
+		ReadFunc: readfunc,
+		InfoFunc: infofunc,
+		Filename: filename,
+		Funcmap:  funcmap,
+	}
 }
 
-// Readfunc type is shortcut for Asset-type func.
-type Readfunc func(string) ([]byte, error)
+// ReadFunc type is shortcut for Asset-type func.
+type ReadFunc func(string) ([]byte, error)
 
-// LazyTemplate has a template.Template. Lazy parse, always clone.
+// InfoFunc type is shortcut for AssetInfo-type func.
+type InfoFunc func(string) (os.FileInfo, error)
+
+// LazyTemplate has a template.Template.
+// Lazy parse
+// , always clone for bin templates
+// , sometimes re-parse for dev-bins
+// . NewLT is the constructor.
 type LazyTemplate struct {
 	MU sync.Mutex // protects everything
 
 	// arguments to NewLT (all required)
-	Readfunc Readfunc
+	ReadFunc ReadFunc
+	InfoFunc InfoFunc
 	Filename string
 	Funcmap  template.FuncMap
 
-	Template *template.Template
-	Err      error
+	// operationals
+	NonDev     bool
+	DevModTime time.Time
+	Template   *template.Template
+	Err        error
 }
 
 // MustInit is a Must func for LazyTemplate.
@@ -45,17 +62,26 @@ func (lt *LazyTemplate) Init() {
 	if lt.Err != nil {
 		return
 	}
-	if lt.Template != nil {
+	if lt.NonDev && lt.Template != nil {
+		// allgood#1: non-dev mode & have .Template
 		return
 	}
-	if lt.Readfunc == nil {
-		lt.Err = fmt.Errorf("templateutil: readfunc is nil for %q reading", lt.Filename)
-		return
-	}
-	text, err := lt.Readfunc(lt.Filename)
+	text, err := lt.ReadFunc(lt.Filename)
 	if err != nil {
 		lt.Err = err
 		return
+	}
+	if info, err := lt.InfoFunc(lt.Filename); err != nil {
+		lt.Err = err
+		return
+	} else if modtime := info.ModTime(); modtime == time.Unix(1400000000, 0) {
+		lt.NonDev = true
+	} else {
+		if lt.Template != nil && modtime == lt.DevModTime {
+			// allgood#2: dev mode + modtime did not change
+			return
+		}
+		lt.DevModTime = modtime
 	}
 	t := template.New(lt.Filename)
 	t = t.Option("missingkey=error")
