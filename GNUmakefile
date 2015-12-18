@@ -24,8 +24,10 @@ ifeq (Linux, $(shell uname -s))
 xargs=xargs --no-run-if-empty
 endif
 go-bindata=go-bindata -ignore '.*\.go'# Go regexp syntax for -ignore
+bingo_modtime=1400000000 # const mod time for bin bindata fileinfo
+# Non-dev bindata mode templates identified by this value in templateutil.
 
-.PHONY: all al init test covertest coverfunc coverhtml bindata bindata-dev bindata-bin check-update
+.PHONY: all al init test covertest coverfunc coverhtml bindata bindata-dev bindata-bin check-update dev
 .PHONY: all32 boot32
 ifneq (init, $(MAKECMDGOALS))
 # before init:
@@ -103,6 +105,12 @@ boot32:
 	CGO_ENABLED=1 GOARCH=386 \
   ./make.bash --no-clean
 
+dev: \
+share/templates/index.html \
+share/assets/js/src/bundle.js \
+share/assets/css/index.css \
+share/js/jsdefines.jsx
+
 share/assets/css/index.css \
 share/assets/js/src/bundle.js \
 share/assets/js/min/bundle.min.js \
@@ -123,12 +131,12 @@ share/js/jsdefines.jsx: share/ace.templates/jsdefines.jstmpl share/ace.templates
 $(templates_bingo) $(templates_devgo): $(shell find share/templates/ -type f \! -name \*.go)
 
 $(templates_bingo):
-	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags bin -mode 0644 -modtime 1400000000 -nomemcopy ./...
+	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags bin -mode 0644 -modtime $(bingo_modtime) -nomemcopy ./...
 $(templates_devgo):
 	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags '!bin' -dev ./...
 
 $(assets_bingo):
-	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags bin -mode 0644 -modtime 1400000000 -ignore js/src/ -nomemcopy ./...
+	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags bin -mode 0644 -modtime $(bingo_modtime) -ignore js/src/ -nomemcopy ./...
 $(assets_devgo):
 	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags '!bin' -dev -ignore js/min/ ./...
 
