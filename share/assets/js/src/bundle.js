@@ -19821,12 +19821,12 @@
 	    } // back to default
 	    return React.createElement(
 	      'div',
-	      { className: 'height-1rem', ref: 'root' },
+	      { ref: 'root' },
 	      _jsx(SparkLines.Sparklines, {
 	        data: this.state.data,
 	        limit: this.state.limit,
 	        width: this.state.width,
-	        height: 35
+	        height: 33
 	      }, void 0, _ref, React.createElement(SparkLines.SparklinesSpots, spotsProps))
 	    );
 	  }
@@ -19915,7 +19915,7 @@
 	});
 
 	var _ref2 = _jsx('span', {
-	  className: 'col'
+	  className: 'expand col'
 	});
 
 	jsdefines.define_panelcpu = React.createClass({
@@ -20000,57 +20000,47 @@
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : ""),
 	      onClick: this.handleClick
 	    }, void 0, Data.params.Nlinks.CPUn.More.Text, ' +'))))))), _jsx('div', {
-	      className: Data.params.CPUn.Absolute != 0 ? "stripe" : "hide"
+	      className: Data.params.CPUn.Absolute != 0 ? "" : "hide"
+	    }, void 0, _jsx('div', {
+	      className: 'grid-block vertical stripe'
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block thead'
 	    }, void 0, _jsx('span', {
-	      className: 'col small-1'
-	    }, void 0, 'Core'), _jsx('div', {
-	      className: 'grid-block wrap noscroll'
-	    }, void 0, _jsx('span', {
-	      className: 'col small-1 text-right'
-	    }, void 0, ' User'), _jsx('span', {
-	      className: 'col small-1 text-right'
-	    }, void 0, ' Sys'), _jsx('span', {
-	      className: 'col small-1 text-right'
-	    }, void 0, ' Wait'), _jsx('span', {
-	      className: 'col small-1 text-right'
-	    }, void 0, ' Idle'), _ref2)), this.List(Data).map(function ($cpu, i) {
+	      className: 'expand col small-1'
+	    }, void 0, 'Core'), _jsx('span', {
+	      className: 'expand col small-1 text-right'
+	    }, void 0, ' User%'), _jsx('span', {
+	      className: 'expand col small-1 text-right'
+	    }, void 0, ' Sys%'), _jsx('span', {
+	      className: 'expand col small-1 text-right'
+	    }, void 0, ' Wait%'), _jsx('span', {
+	      className: 'expand col small-1 text-right'
+	    }, void 0, ' Idle%'), _ref2), this.List(Data).map(function ($cpu, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
-	      }, void 0, _jsx('span', {
-	        className: 'col small-1 text-nowrap'
-	      }, void 0, $cpu.N), _jsx('div', {
-	        className: 'grid-block wrap noscroll'
 	      }, "cpu-rowby-N-" + $cpu.N, _jsx('span', {
-	        className: 'small-1 text-right'
-	      }, void 0, _jsx('span', {
-	        className: 'col display-block bg-usepct',
+	        className: 'expand col small-1 text-nowrap'
+	      }, void 0, $cpu.N), _jsx('span', {
+	        className: 'expand col small-1 text-right bg-usepct',
 	        'data-usepct': $cpu.UserPct
-	      }, void 0, ' ', $cpu.UserPct, '%')), _jsx('span', {
-	        className: 'small-1 text-right'
-	      }, void 0, _jsx('span', {
-	        className: 'col display-block bg-usepct',
+	      }, void 0, ' ', $cpu.UserPct, '%'), _jsx('span', {
+	        className: 'expand col small-1 text-right bg-usepct',
 	        'data-usepct': $cpu.SysPct
-	      }, void 0, ' ', $cpu.SysPct, '%')), _jsx('span', {
-	        className: 'small-1 text-right'
-	      }, void 0, _jsx('span', {
-	        className: 'col display-block bg-usepct',
+	      }, void 0, ' ', $cpu.SysPct, '%'), _jsx('span', {
+	        className: 'expand col small-1 text-right bg-usepct',
 	        'data-usepct': $cpu.WaitPct
-	      }, void 0, ' ', $cpu.WaitPct, '%')), _jsx('span', {
-	        className: 'small-1 text-right'
-	      }, void 0, _jsx('span', {
-	        className: 'col display-block bg-usepct-inverse',
+	      }, void 0, ' ', $cpu.WaitPct, '%'), _jsx('span', {
+	        className: 'expand col small-1 text-right bg-usepct-inverse',
 	        'data-usepct': $cpu.IdlePct
-	      }, void 0, ' ', $cpu.IdlePct, '%')), _jsx('span', {
-	        className: 'col-lr expand'
-	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'IdlePct', defaultSpots: true }))));
-	    }))));
+	      }, void 0, ' ', $cpu.IdlePct, '%'), _jsx('span', {
+	        className: 'expand col-lr'
+	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'IdlePct', defaultSpots: true })));
+	    })))));
 	  }
 	});
 
 	var _ref3 = _jsx('span', {
-	  className: 'col'
+	  className: 'expand col'
 	});
 
 	jsdefines.define_paneldf = React.createClass({
@@ -20135,100 +20125,100 @@
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : ""),
 	      onClick: this.handleClick
 	    }, void 0, Data.params.Nlinks.Dfn.More.Text, ' +'))))))), _jsx('div', {
-	      className: Data.params.Dfn.Absolute != 0 ? "stripe" : "hide"
+	      className: Data.params.Dfn.Absolute != 0 ? "" : "hide"
+	    }, void 0, _jsx('div', {
+	      className: 'grid-block vertical stripe'
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block thead'
 	    }, void 0, _jsx('span', {
-	      className: 'col small-1'
+	      className: 'expand col small-1 text-nowrap'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Dfk[1 - 1].LinkHref,
 	      className: Data.params.Vlinks.Dfk[1 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'Device', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[1 - 1].CaretClass
-	    }))), _jsx('div', {
-	      className: 'grid-block wrap noscroll'
-	    }, void 0, _jsx('span', {
-	      className: 'col small-1'
-	    }, void 0, ' ', _jsx('a', {
+	    }))), _jsx('span', {
+	      className: 'expand col small-1 text-nowrap'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Dfk[2 - 1].LinkHref,
 	      className: Data.params.Vlinks.Dfk[2 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'Mounted', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[2 - 1].CaretClass
 	    }))), _jsx('span', {
-	      className: 'col small-1 text-right'
-	    }, void 0, ' ', _jsx('a', {
+	      className: 'expand col small-1 text-nowrap text-right'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Dfk[6 - 1].LinkHref,
 	      className: Data.params.Vlinks.Dfk[6 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'Total', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[6 - 1].CaretClass
 	    }))), _jsx('span', {
-	      className: 'col small-1 text-right'
-	    }, void 0, ' ', _jsx('a', {
+	      className: 'expand col small-1 text-nowrap text-right'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Dfk[5 - 1].LinkHref,
 	      className: Data.params.Vlinks.Dfk[5 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'Used', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[5 - 1].CaretClass
 	    }))), _jsx('span', {
-	      className: 'col small-1 text-right'
-	    }, void 0, ' ', _jsx('a', {
+	      className: 'expand col small-1 text-nowrap text-right'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Dfk[3 - 1].LinkHref,
 	      className: Data.params.Vlinks.Dfk[3 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'Avail', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[3 - 1].CaretClass
 	    }))), _jsx('span', {
-	      className: 'col small-1 text-right'
-	    }, void 0, ' ', _jsx('a', {
+	      className: 'expand col small-1 text-nowrap text-right'
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Dfk[4 - 1].LinkHref,
 	      className: Data.params.Vlinks.Dfk[4 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'Use%', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[4 - 1].CaretClass
-	    }))), _ref3)), this.List(Data).map(function ($df, i) {
+	    }))), _ref3), this.List(Data).map(function ($df, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
-	      }, void 0, _jsx('span', {
-	        className: 'col small-1 text-overflow'
-	      }, void 0, $df.DevName), _jsx('div', {
-	        className: 'grid-block wrap noscroll'
 	      }, "df-rowby-dirname-" + $df.DirName, _jsx('span', {
-	        className: 'col small-1 text-overflow'
+	        className: 'expand col small-1 text-overflow'
+	      }, void 0, $df.DevName), _jsx('span', {
+	        className: 'expand col small-1 text-overflow'
 	      }, void 0, ' ', $df.DirName), _jsx('span', {
-	        className: 'col small-1 text-nowrap text-right'
+	        className: 'expand col small-1 text-overflow text-right gray'
 	      }, void 0, _jsx('span', {
-	        className: 'mutext',
+	        className: 'float-right'
+	      }, void 0, ' ', $df.Total), _jsx('span', {
 	        title: 'Inodes total'
-	      }, void 0, ' ', $df.Inodes), ' ', $df.Total), _jsx('span', {
-	        className: 'col small-1 text-nowrap text-right'
+	      }, void 0, ' ', $df.Inodes)), _jsx('span', {
+	        className: 'expand col small-1 text-overflow text-right gray'
 	      }, void 0, _jsx('span', {
-	        className: 'mutext',
+	        className: 'float-right'
+	      }, void 0, ' ', $df.Used), _jsx('span', {
 	        title: 'Inodes used'
-	      }, void 0, ' ', $df.Iused), ' ', $df.Used), _jsx('span', {
-	        className: 'col small-1 text-nowrap text-right'
+	      }, void 0, ' ', $df.Iused)), _jsx('span', {
+	        className: 'expand col small-1 text-overflow text-right gray'
 	      }, void 0, _jsx('span', {
-	        className: 'mutext',
+	        className: 'float-right'
+	      }, void 0, ' ', $df.Avail), _jsx('span', {
 	        title: 'Inodes free'
-	      }, void 0, ' ', $df.Ifree), ' ', $df.Avail), _jsx('span', {
-	        className: 'small-1 text-right text-nowrap'
-	      }, void 0, _jsx('span', {
-	        className: 'col display-block bg-usepct',
+	      }, void 0, ' ', $df.Ifree)), _jsx('span', {
+	        className: 'expand col small-1 text-overflow text-right gray bg-usepct',
 	        'data-usepct': $df.UsePct
 	      }, void 0, _jsx('span', {
-	        className: 'mutext',
+	        className: 'float-right'
+	      }, void 0, ' ', $df.UsePct, '%'), _jsx('span', {
 	        title: 'Inodes use%'
-	      }, void 0, ' ', $df.IusePct, '%'), ' ', $df.UsePct, '%')), _jsx('span', {
-	        className: 'col-lr expand'
-	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct' }))));
-	    }))));
+	      }, void 0, ' ', $df.IusePct, '%')), _jsx('span', {
+	        className: 'expand col-lr'
+	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct' })));
+	    })))));
 	  }
 	});
 
 	var _ref4 = _jsx('span', {
-	  className: 'col'
+	  className: 'expand col'
 	});
 
 	jsdefines.define_panelif = React.createClass({
@@ -20313,37 +20303,35 @@
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : ""),
 	      onClick: this.handleClick
 	    }, void 0, Data.params.Nlinks.Ifn.More.Text, ' +'))))))), _jsx('div', {
-	      className: Data.params.Ifn.Absolute != 0 ? "stripe" : "hide"
+	      className: Data.params.Ifn.Absolute != 0 ? "" : "hide"
+	    }, void 0, _jsx('div', {
+	      className: 'grid-block vertical stripe'
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block thead'
 	    }, void 0, _jsx('span', {
-	      className: 'col small-1'
-	    }, void 0, 'Interface'), _jsx('div', {
-	      className: 'grid-block wrap noscroll'
-	    }, void 0, _jsx('span', {
-	      className: 'col small-1 text-right'
+	      className: 'expand col small-1'
+	    }, void 0, 'Interface'), _jsx('span', {
+	      className: 'expand col small-1 text-right'
 	    }, void 0, ' IP'), _jsx('span', {
-	      className: 'col small-2 text-right text-nowrap',
+	      className: 'expand col small-2 text-right text-nowrap',
 	      title: 'Drops,Errors In/Out per second'
 	    }, void 0, ' Loss IO ps'), _jsx('span', {
-	      className: 'col small-2 text-right text-nowrap',
+	      className: 'expand col small-2 text-right text-nowrap',
 	      title: 'Packets In/Out per second'
 	    }, void 0, ' Packets IO ps'), _jsx('span', {
-	      className: 'col small-2 text-right text-nowrap',
+	      className: 'expand col small-2 text-right text-nowrap',
 	      title: 'Bits In/Out per second'
-	    }, void 0, ' IO ', _jsx('i', {}, void 0, 'b'), 'ps'), _ref4)), this.List(Data).map(function ($if, i) {
+	    }, void 0, ' IO ', _jsx('i', {}, void 0, 'b'), 'ps'), _ref4), this.List(Data).map(function ($if, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
-	      }, void 0, _jsx('span', {
-	        className: 'col small-1 text-overflow'
-	      }, void 0, $if.Name), _jsx('div', {
-	        className: 'grid-block wrap noscroll'
 	      }, "if-rowby-name-" + $if.Name, _jsx('span', {
-	        className: 'col small-1 text-right text-overflow'
+	        className: 'expand col small-1 text-overflow'
+	      }, void 0, $if.Name), _jsx('span', {
+	        className: 'expand col small-1 text-overflow text-right'
 	      }, void 0, $if.IP), _jsx('span', {
-	        className: 'col small-2 text-right text-nowrap'
+	        className: 'expand col small-2 text-right text-nowrap'
 	      }, void 0, ' ', _jsx('span', {
-	        className: 'mutext',
+	        className: 'gray',
 	        title: 'Total drops,errors modulo 4G'
 	      }, void 0, _jsx('span', {
 	        title: 'Total drops In modulo 4G'
@@ -20357,7 +20345,7 @@
 	      }, void 0, $if.ErrorsIn), '/', _jsx('span', {
 	        title: 'Total errors Out modulo 4G'
 	      }, void 0, $if.ErrorsOut)), ' ', _jsx('span', {
-	        className: ($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0") ? "mutext" : ""
+	        className: ($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0") ? "gray" : ""
 	      }, void 0, _jsx('span', {
 	        title: 'Drops In per second'
 	      }, void 0, $if.DeltaDropsIn), _jsx('span', {
@@ -20370,9 +20358,9 @@
 	      }, void 0, $if.DeltaErrorsIn), '/', _jsx('span', {
 	        title: 'Errors Out per second'
 	      }, void 0, $if.DeltaErrorsOut))), _jsx('span', {
-	        className: 'col small-2 text-right text-nowrap'
+	        className: 'expand col small-2 text-right text-nowrap'
 	      }, void 0, ' ', _jsx('span', {
-	        className: 'mutext'
+	        className: 'gray'
 	      }, void 0, _jsx('span', {
 	        title: 'Total packets In modulo 4G'
 	      }, void 0, $if.PacketsIn), '/', _jsx('span', {
@@ -20382,9 +20370,9 @@
 	      }, void 0, $if.DeltaPacketsIn), '/', _jsx('span', {
 	        title: 'Packets Out per second'
 	      }, void 0, $if.DeltaPacketsOut)), _jsx('span', {
-	        className: 'col small-2 text-right text-nowrap'
+	        className: 'expand col small-2 text-right text-nowrap'
 	      }, void 0, ' ', _jsx('span', {
-	        className: 'mutext'
+	        className: 'gray'
 	      }, void 0, _jsx('span', {
 	        title: 'Total BYTES In modulo 4G'
 	      }, void 0, $if.BytesIn), '/', _jsx('span', {
@@ -20394,14 +20382,14 @@
 	      }, void 0, $if.DeltaBitsIn), '/', _jsx('span', {
 	        title: 'BITS Out per second'
 	      }, void 0, $if.DeltaBitsOut)), _jsx('span', {
-	        className: 'col-lr expand'
-	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'DeltaBytesOutNum' }))));
-	    }))));
+	        className: 'expand col-lr'
+	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'DeltaBytesOutNum' })));
+	    })))));
 	  }
 	});
 
 	var _ref5 = _jsx('span', {
-	  className: 'col'
+	  className: 'expand col'
 	});
 
 	jsdefines.define_panella = React.createClass({
@@ -20486,33 +20474,31 @@
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.More.ExtraClass != null ? Data.params.Nlinks.Lan.More.ExtraClass : ""),
 	      onClick: this.handleClick
 	    }, void 0, Data.params.Nlinks.Lan.More.Text, ' +'))))))), _jsx('div', {
-	      className: Data.params.Lan.Absolute != 0 ? "stripe" : "hide"
+	      className: Data.params.Lan.Absolute != 0 ? "" : "hide"
+	    }, void 0, _jsx('div', {
+	      className: 'grid-block vertical stripe'
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block thead'
 	    }, void 0, _jsx('span', {
-	      className: 'col small-1'
-	    }, void 0, 'Period'), _jsx('div', {
-	      className: 'grid-block wrap noscroll'
-	    }, void 0, _jsx('span', {
-	      className: 'col small-1 text-right'
-	    }, void 0, ' Value'), _ref5)), this.List(Data).map(function ($la, i) {
+	      className: 'expand col small-1'
+	    }, void 0, 'Period'), _jsx('span', {
+	      className: 'expand col small-1 text-right'
+	    }, void 0, ' Value'), _ref5), this.List(Data).map(function ($la, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
-	      }, void 0, _jsx('span', {
-	        className: 'col small-1'
-	      }, void 0, $la.Period, 'm'), _jsx('div', {
-	        className: 'grid-block wrap noscroll'
 	      }, "la-rowby-period-" + $la.Period, _jsx('span', {
-	        className: 'col small-1 text-right'
+	        className: 'expand col small-1'
+	      }, void 0, $la.Period, 'm'), _jsx('span', {
+	        className: 'expand col small-1 text-right'
 	      }, void 0, ' ', $la.Value), _jsx('span', {
-	        className: 'col-lr expand'
-	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'Value' }))));
-	    }))));
+	        className: 'expand col-lr'
+	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'Value' })));
+	    })))));
 	  }
 	});
 
 	var _ref6 = _jsx('span', {
-	  className: 'col'
+	  className: 'expand col'
 	});
 
 	jsdefines.define_panelmem = React.createClass({
@@ -20597,43 +20583,39 @@
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : ""),
 	      onClick: this.handleClick
 	    }, void 0, Data.params.Nlinks.Memn.More.Text, ' +'))))))), _jsx('div', {
-	      className: Data.params.Memn.Absolute != 0 ? "stripe" : "hide"
+	      className: Data.params.Memn.Absolute != 0 ? "" : "hide"
+	    }, void 0, _jsx('div', {
+	      className: 'grid-block vertical stripe'
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block thead'
 	    }, void 0, _jsx('span', {
-	      className: 'col small-1'
-	    }, void 0, 'Memory'), _jsx('div', {
-	      className: 'grid-block wrap noscroll'
-	    }, void 0, _jsx('span', {
-	      className: 'col small-1 text-right'
+	      className: 'expand col small-1'
+	    }, void 0, 'Memory'), _jsx('span', {
+	      className: 'expand col small-1 text-right'
 	    }, void 0, ' Total'), _jsx('span', {
-	      className: 'col small-1 text-right'
+	      className: 'expand col small-1 text-right'
 	    }, void 0, ' Used'), _jsx('span', {
-	      className: 'col small-1 text-right'
+	      className: 'expand col small-1 text-right'
 	    }, void 0, ' Free'), _jsx('span', {
-	      className: 'col small-1 text-right'
-	    }, void 0, ' Use%'), _ref6)), this.List(Data).map(function ($mem, i) {
+	      className: 'expand col small-1 text-right'
+	    }, void 0, ' Use%'), _ref6), this.List(Data).map(function ($mem, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
-	      }, void 0, _jsx('span', {
-	        className: 'col small-1'
-	      }, void 0, $mem.Kind), _jsx('div', {
-	        className: 'grid-block wrap noscroll'
 	      }, "mem-rowby-kind-" + $mem.Kind, _jsx('span', {
-	        className: 'col small-1 text-right'
+	        className: 'expand col small-1'
+	      }, void 0, $mem.Kind), _jsx('span', {
+	        className: 'expand col small-1 text-right'
 	      }, void 0, ' ', $mem.Total), _jsx('span', {
-	        className: 'col small-1 text-right'
+	        className: 'expand col small-1 text-right'
 	      }, void 0, ' ', $mem.Used), _jsx('span', {
-	        className: 'col small-1 text-right'
+	        className: 'expand col small-1 text-right'
 	      }, void 0, ' ', $mem.Free), _jsx('span', {
-	        className: 'small-1 text-right'
-	      }, void 0, _jsx('span', {
-	        className: 'col display-block bg-usepct',
+	        className: 'expand col small-1 text-right bg-usepct',
 	        'data-usepct': $mem.UsePct
-	      }, void 0, ' ', $mem.UsePct, '%')), _jsx('span', {
-	        className: 'col-lr expand'
-	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct' }))));
-	    }))));
+	      }, void 0, ' ', $mem.UsePct, '%'), _jsx('span', {
+	        className: 'expand col-lr'
+	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct' })));
+	    })))));
 	  }
 	});
 
@@ -20719,21 +20701,21 @@
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : ""),
 	      onClick: this.handleClick
 	    }, void 0, Data.params.Nlinks.Psn.More.Text, ' +'))))))), _jsx('div', {
-	      className: Data.params.Psn.Absolute != 0 ? "stripe" : "hide"
+	      className: Data.params.Psn.Absolute != 0 ? "" : "hide"
+	    }, void 0, _jsx('div', {
+	      className: 'grid-block vertical stripe'
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block thead'
 	    }, void 0, _jsx('span', {
-	      className: 'col small-1 text-right'
+	      className: 'expand col small-1 text-nowrap text-right'
 	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Psk[1 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[1 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'PID', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[1 - 1].CaretClass
-	    }))), _jsx('div', {
-	      className: 'grid-block wrap noscroll text-nowrap'
-	    }, void 0, _jsx('span', {
-	      className: 'col small-1 text-right'
+	    }))), _jsx('span', {
+	      className: 'expand col small-1 text-nowrap text-right'
 	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Psk[2 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[2 - 1].LinkClass,
@@ -20741,7 +20723,7 @@
 	    }, void 0, 'UID', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[2 - 1].CaretClass
 	    }))), _jsx('span', {
-	      className: 'col small-1'
+	      className: 'expand col small-1 text-nowrap'
 	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Psk[3 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[3 - 1].LinkClass,
@@ -20749,7 +20731,7 @@
 	    }, void 0, 'USER', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[3 - 1].CaretClass
 	    }))), _jsx('span', {
-	      className: 'col small-1 text-right'
+	      className: 'expand col small-1 text-nowrap text-right'
 	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Psk[4 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[4 - 1].LinkClass,
@@ -20757,7 +20739,7 @@
 	    }, void 0, 'PR', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[4 - 1].CaretClass
 	    }))), _jsx('span', {
-	      className: 'col small-1 text-right'
+	      className: 'expand col small-1 text-nowrap text-right'
 	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Psk[5 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[5 - 1].LinkClass,
@@ -20765,7 +20747,7 @@
 	    }, void 0, 'NI', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[5 - 1].CaretClass
 	    }))), _jsx('span', {
-	      className: 'col small-1 text-right'
+	      className: 'expand col small-1 text-nowrap text-right'
 	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Psk[6 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[6 - 1].LinkClass,
@@ -20773,7 +20755,7 @@
 	    }, void 0, 'VIRT', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[6 - 1].CaretClass
 	    }))), _jsx('span', {
-	      className: 'col small-1 text-right'
+	      className: 'expand col small-1 text-nowrap text-right'
 	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Psk[7 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[7 - 1].LinkClass,
@@ -20781,7 +20763,7 @@
 	    }, void 0, 'RES', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[7 - 1].CaretClass
 	    }))), _jsx('span', {
-	      className: 'col small-1 text-center'
+	      className: 'expand col small-1 text-nowrap text-center'
 	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Psk[8 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[8 - 1].LinkClass,
@@ -20789,38 +20771,36 @@
 	    }, void 0, 'TIME', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[8 - 1].CaretClass
 	    }))), _jsx('span', {
-	      className: 'col small-1'
+	      className: 'expand col small-1 text-nowrap'
 	    }, void 0, ' ', _jsx('a', {
 	      href: Data.params.Vlinks.Psk[9 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[9 - 1].LinkClass,
 	      onClick: this.handleClick
 	    }, void 0, 'COMMAND', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[9 - 1].CaretClass
-	    }))))), this.List(Data).map(function ($ps) {
+	    })))), this.List(Data).map(function ($ps) {
 	      return _jsx('div', {
 	        className: 'grid-block'
-	      }, void 0, _jsx('span', {
-	        className: 'col small-1 text-right'
-	      }, void 0, $ps.PID), _jsx('div', {
-	        className: 'grid-block wrap noscroll'
 	      }, "ps-rowby-pid-" + $ps.PID, _jsx('span', {
-	        className: 'col small-1 text-right'
+	        className: 'expand col small-1 text-right'
+	      }, void 0, $ps.PID), _jsx('span', {
+	        className: 'expand col small-1 text-right'
 	      }, void 0, ' ', $ps.UID), _jsx('span', {
-	        className: 'col small-1'
+	        className: 'expand col small-1'
 	      }, void 0, ' ', $ps.User), _jsx('span', {
-	        className: 'col small-1 text-right'
+	        className: 'expand col small-1 text-right'
 	      }, void 0, ' ', $ps.Priority), _jsx('span', {
-	        className: 'col small-1 text-right'
+	        className: 'expand col small-1 text-right'
 	      }, void 0, ' ', $ps.Nice), _jsx('span', {
-	        className: 'col small-1 text-right'
+	        className: 'expand col small-1 text-right'
 	      }, void 0, ' ', $ps.Size), _jsx('span', {
-	        className: 'col small-1 text-right'
+	        className: 'expand col small-1 text-right'
 	      }, void 0, ' ', $ps.Resident), _jsx('span', {
-	        className: 'col small-1 text-center'
+	        className: 'expand col small-1 text-center'
 	      }, void 0, ' ', $ps.Time), _jsx('span', {
-	        className: 'col expand'
-	      }, void 0, ' ', $ps.Name)));
-	    }))));
+	        className: 'expand col'
+	      }, void 0, ' ', $ps.Name));
+	    })))));
 	  }
 	});
 

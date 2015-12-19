@@ -35,12 +35,12 @@ var Sparkline = React.createClass({
   render: function() {
     var spotsProps = {spotColors: {'-1': 'green', '1': 'red'}}; // reverse default
     if (this.props.defaultSpots) { delete spotsProps.spotColors; } // back to default
-    return <div className="height-1rem" ref="root">
+    return <div ref="root">
       <SparkLines.Sparklines
                data={this.state.data}
                limit={this.state.limit}
                width={this.state.width}
-               height={35}>
+               height={33}>
         <SparkLines.SparklinesLine />
         <SparkLines.SparklinesSpots {...spotsProps} />
       </SparkLines.Sparklines>
@@ -196,52 +196,42 @@ jsdefines.define_panelcpu = React.createClass({
           ></ul
         ></div
       ></div
-    ><div  className={Data.params.CPUn.Absolute != 0 ? "stripe" : "hide"}
-      ><div className="grid-block thead"
-        ><span className="col small-1"
-          >Core</span
-        ><div className="grid-block wrap noscroll"
-          ><span className="col small-1 text-right"
-            > User</span
-          ><span className="col small-1 text-right"
-            > Sys</span
-          ><span className="col small-1 text-right"
-            > Wait</span
-          ><span className="col small-1 text-right"
-            > Idle</span
-          ><span className="col"
+    ><div  className={Data.params.CPUn.Absolute != 0 ? "" : "hide"}
+      ><div className="grid-block vertical stripe"
+        ><div className="grid-block thead"
+          ><span className="expand col small-1"
+            >Core</span
+          ><span className="expand col small-1 text-right"
+            > User%</span
+          ><span className="expand col small-1 text-right"
+            > Sys%</span
+          ><span className="expand col small-1 text-right"
+            > Wait%</span
+          ><span className="expand col small-1 text-right"
+            > Idle%</span
+          ><span className="expand col"
             ></span
           ></div
-        ></div
-      >{this.List(Data).map(function($cpu, i) { return<div className="grid-block"
-        ><span className="col small-1 text-nowrap"
-          >{$cpu.N}</span
-        ><div  key={"cpu-rowby-N-"+$cpu.N} className="grid-block wrap noscroll"
-          ><span className="small-1 text-right"
-            ><span className="col display-block bg-usepct"
+        >{this.List(Data).map(function($cpu, i) { return<div  key={"cpu-rowby-N-"+$cpu.N} className="grid-block"
+          ><span className="expand col small-1 text-nowrap"
+            >{$cpu.N}</span
+          ><span className="expand col small-1 text-right bg-usepct"
 data-usepct={$cpu.UserPct}
-              > {$cpu.UserPct}%</span
-            ></span
-          ><span className="small-1 text-right"
-            ><span className="col display-block bg-usepct"
+            > {$cpu.UserPct}%</span
+          ><span className="expand col small-1 text-right bg-usepct"
 data-usepct={$cpu.SysPct}
-              > {$cpu.SysPct}%</span
-            ></span
-          ><span className="small-1 text-right"
-            ><span className="col display-block bg-usepct"
+            > {$cpu.SysPct}%</span
+          ><span className="expand col small-1 text-right bg-usepct"
 data-usepct={$cpu.WaitPct}
-              > {$cpu.WaitPct}%</span
-            ></span
-          ><span className="small-1 text-right"
-            ><span className="col display-block bg-usepct-inverse"
+            > {$cpu.WaitPct}%</span
+          ><span className="expand col small-1 text-right bg-usepct-inverse"
 data-usepct={$cpu.IdlePct}
-              > {$cpu.IdlePct}%</span
-            ></span
-          ><span className="col-lr expand"
+            > {$cpu.IdlePct}%</span
+          ><span className="expand col-lr"
             >{jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}</span
           ></div
-        ></div
-      >})}</div
+        >})}</div
+      ></div
     ></div
   ></div
 >;
@@ -319,78 +309,82 @@ jsdefines.define_paneldf = React.createClass({
           ></ul
         ></div
       ></div
-    ><div  className={Data.params.Dfn.Absolute != 0 ? "stripe" : "hide"}
-      ><div className="grid-block thead"
-        ><span className="col small-1"
-          ><a href={Data.params.Vlinks.Dfk[1-1].LinkHref} className={Data.params.Vlinks.Dfk[1-1].LinkClass} onClick={this.handleClick}  
+    ><div  className={Data.params.Dfn.Absolute != 0 ? "" : "hide"}
+      ><div className="grid-block vertical stripe"
+        ><div className="grid-block thead"
+          ><span className="expand col small-1 text-nowrap"
+            ><a href={Data.params.Vlinks.Dfk[1-1].LinkHref} className={Data.params.Vlinks.Dfk[1-1].LinkClass} onClick={this.handleClick}  
   >Device<span className={Data.params.Vlinks.Dfk[1-1].CaretClass}
     ></span
   ></a
 ></span
-        ><div className="grid-block wrap noscroll"
-          ><span className="col small-1"
-            > <a href={Data.params.Vlinks.Dfk[2-1].LinkHref} className={Data.params.Vlinks.Dfk[2-1].LinkClass} onClick={this.handleClick}  
+          ><span className="expand col small-1 text-nowrap"
+            ><a href={Data.params.Vlinks.Dfk[2-1].LinkHref} className={Data.params.Vlinks.Dfk[2-1].LinkClass} onClick={this.handleClick}  
   >Mounted<span className={Data.params.Vlinks.Dfk[2-1].CaretClass}
     ></span
   ></a
 ></span
-          ><span className="col small-1 text-right"
-            > <a href={Data.params.Vlinks.Dfk[6-1].LinkHref} className={Data.params.Vlinks.Dfk[6-1].LinkClass} onClick={this.handleClick}  
+          ><span className="expand col small-1 text-nowrap text-right"
+            ><a href={Data.params.Vlinks.Dfk[6-1].LinkHref} className={Data.params.Vlinks.Dfk[6-1].LinkClass} onClick={this.handleClick}  
   >Total<span className={Data.params.Vlinks.Dfk[6-1].CaretClass}
     ></span
   ></a
 ></span
-          ><span className="col small-1 text-right"
-            > <a href={Data.params.Vlinks.Dfk[5-1].LinkHref} className={Data.params.Vlinks.Dfk[5-1].LinkClass} onClick={this.handleClick}  
+          ><span className="expand col small-1 text-nowrap text-right"
+            ><a href={Data.params.Vlinks.Dfk[5-1].LinkHref} className={Data.params.Vlinks.Dfk[5-1].LinkClass} onClick={this.handleClick}  
   >Used<span className={Data.params.Vlinks.Dfk[5-1].CaretClass}
     ></span
   ></a
 ></span
-          ><span className="col small-1 text-right"
-            > <a href={Data.params.Vlinks.Dfk[3-1].LinkHref} className={Data.params.Vlinks.Dfk[3-1].LinkClass} onClick={this.handleClick}  
+          ><span className="expand col small-1 text-nowrap text-right"
+            ><a href={Data.params.Vlinks.Dfk[3-1].LinkHref} className={Data.params.Vlinks.Dfk[3-1].LinkClass} onClick={this.handleClick}  
   >Avail<span className={Data.params.Vlinks.Dfk[3-1].CaretClass}
     ></span
   ></a
 ></span
-          ><span className="col small-1 text-right"
-            > <a href={Data.params.Vlinks.Dfk[4-1].LinkHref} className={Data.params.Vlinks.Dfk[4-1].LinkClass} onClick={this.handleClick}  
+          ><span className="expand col small-1 text-nowrap text-right"
+            ><a href={Data.params.Vlinks.Dfk[4-1].LinkHref} className={Data.params.Vlinks.Dfk[4-1].LinkClass} onClick={this.handleClick}  
   >Use%<span className={Data.params.Vlinks.Dfk[4-1].CaretClass}
     ></span
   ></a
 ></span
-          ><span className="col"
+          ><span className="expand col"
             ></span
           ></div
-        ></div
-      >{this.List(Data).map(function($df, i) { return<div className="grid-block"
-        ><span className="col small-1 text-overflow"
-          >{$df.DevName}</span
-        ><div  key={"df-rowby-dirname-"+$df.DirName} className="grid-block wrap noscroll"
-          ><span className="col small-1 text-overflow"
+        >{this.List(Data).map(function($df, i) { return<div  key={"df-rowby-dirname-"+$df.DirName} className="grid-block"
+          ><span className="expand col small-1 text-overflow"
+            >{$df.DevName}</span
+          ><span className="expand col small-1 text-overflow"
             > {$df.DirName}</span
-          ><span className="col small-1 text-nowrap text-right"
-            ><span className="mutext" title="Inodes total"
+          ><span className="expand col small-1 text-overflow text-right gray"
+            ><span className="float-right"
+              > {$df.Total}</span
+            ><span title="Inodes total"
               > {$df.Inodes}</span
-            > {$df.Total}</span
-          ><span className="col small-1 text-nowrap text-right"
-            ><span className="mutext" title="Inodes used"
-              > {$df.Iused}</span
-            > {$df.Used}</span
-          ><span className="col small-1 text-nowrap text-right"
-            ><span className="mutext" title="Inodes free"
-              > {$df.Ifree}</span
-            > {$df.Avail}</span
-          ><span className="small-1 text-right text-nowrap"
-            ><span className="col display-block bg-usepct" data-usepct={$df.UsePct}
-              ><span className="mutext" title="Inodes use%"
-                > {$df.IusePct}%</span
-              > {$df.UsePct}%</span
             ></span
-          ><span className="col-lr expand"
+          ><span className="expand col small-1 text-overflow text-right gray"
+            ><span className="float-right"
+              > {$df.Used}</span
+            ><span title="Inodes used"
+              > {$df.Iused}</span
+            ></span
+          ><span className="expand col small-1 text-overflow text-right gray"
+            ><span className="float-right"
+              > {$df.Avail}</span
+            ><span title="Inodes free"
+              > {$df.Ifree}</span
+            ></span
+          ><span className="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct={$df.UsePct}
+            ><span className="float-right"
+              > {$df.UsePct}%</span
+            ><span title="Inodes use%"
+              > {$df.IusePct}%</span
+            ></span
+          ><span className="expand col-lr"
             >{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</span
           ></div
-        ></div
-      >})}</div
+        >})}</div
+      ></div
     ></div
   ></div
 >;
@@ -468,33 +462,31 @@ jsdefines.define_panelif = React.createClass({
           ></ul
         ></div
       ></div
-    ><div  className={Data.params.Ifn.Absolute != 0 ? "stripe" : "hide"}
-      ><div className="grid-block thead"
-        ><span className="col small-1"
-          >Interface</span
-        ><div className="grid-block wrap noscroll"
-          ><span className="col small-1 text-right"
+    ><div  className={Data.params.Ifn.Absolute != 0 ? "" : "hide"}
+      ><div className="grid-block vertical stripe"
+        ><div className="grid-block thead"
+          ><span className="expand col small-1"
+            >Interface</span
+          ><span className="expand col small-1 text-right"
             > IP</span
-          ><span className="col small-2 text-right text-nowrap" title="Drops,Errors In/Out per second"
+          ><span className="expand col small-2 text-right text-nowrap" title="Drops,Errors In/Out per second"
             > Loss IO ps</span
-          ><span className="col small-2 text-right text-nowrap" title="Packets In/Out per second"
+          ><span className="expand col small-2 text-right text-nowrap" title="Packets In/Out per second"
             > Packets IO ps</span
-          ><span className="col small-2 text-right text-nowrap" title="Bits In/Out per second"
+          ><span className="expand col small-2 text-right text-nowrap" title="Bits In/Out per second"
             > IO <i
               >b</i
             >ps</span
-          ><span className="col"
+          ><span className="expand col"
             ></span
           ></div
-        ></div
-      >{this.List(Data).map(function($if, i) { return<div className="grid-block"
-        ><span className="col small-1 text-overflow"
-          >{$if.Name}</span
-        ><div  key={"if-rowby-name-"+$if.Name} className="grid-block wrap noscroll"
-          ><span className="col small-1 text-right text-overflow"
+        >{this.List(Data).map(function($if, i) { return<div  key={"if-rowby-name-"+$if.Name} className="grid-block"
+          ><span className="expand col small-1 text-overflow"
+            >{$if.Name}</span
+          ><span className="expand col small-1 text-overflow text-right"
             >{$if.IP}</span
-          ><span className="col small-2 text-right text-nowrap"
-            > <span className="mutext" title="Total drops,errors modulo 4G"
+          ><span className="expand col small-2 text-right text-nowrap"
+            > <span className="gray" title="Total drops,errors modulo 4G"
               ><span title="Total drops In modulo 4G"
                 >{$if.DropsIn}</span
               ><span  className={$if.DropsOut != null ? "" : "hide"}
@@ -506,7 +498,7 @@ jsdefines.define_panelif = React.createClass({
               >/<span title="Total errors Out modulo 4G"
                 >{$if.ErrorsOut}</span
               ></span
-            > <span  className={(($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0")) ? "mutext" : ""}
+            > <span  className={(($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0")) ? "gray" : ""}
               ><span title="Drops In per second"
                 >{$if.DeltaDropsIn}</span
               ><span  className={$if.DeltaDropsOut != null ? "" : "hide"}
@@ -519,8 +511,8 @@ jsdefines.define_panelif = React.createClass({
                 >{$if.DeltaErrorsOut}</span
               ></span
             ></span
-          ><span className="col small-2 text-right text-nowrap"
-            > <span className="mutext"
+          ><span className="expand col small-2 text-right text-nowrap"
+            > <span className="gray"
               ><span title="Total packets In modulo 4G"
                 >{$if.PacketsIn}</span
               >/<span title="Total packets Out modulo 4G"
@@ -531,8 +523,8 @@ jsdefines.define_panelif = React.createClass({
             >/<span title="Packets Out per second"
               >{$if.DeltaPacketsOut}</span
             ></span
-          ><span className="col small-2 text-right text-nowrap"
-            > <span className="mutext"
+          ><span className="expand col small-2 text-right text-nowrap"
+            > <span className="gray"
               ><span title="Total BYTES In modulo 4G"
                 >{$if.BytesIn}</span
               >/<span title="Total BYTES Out modulo 4G"
@@ -543,11 +535,11 @@ jsdefines.define_panelif = React.createClass({
             >/<span title="BITS Out per second"
               >{$if.DeltaBitsOut}</span
             ></span
-          ><span className="col-lr expand"
+          ><span className="expand col-lr"
             >{jsdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}</span
           ></div
-        ></div
-      >})}</div
+        >})}</div
+      ></div
     ></div
   ></div
 >;
@@ -625,28 +617,26 @@ jsdefines.define_panella = React.createClass({
           ></ul
         ></div
       ></div
-    ><div  className={Data.params.Lan.Absolute != 0 ? "stripe" : "hide"}
-      ><div className="grid-block thead"
-        ><span className="col small-1"
-          >Period</span
-        ><div className="grid-block wrap noscroll"
-          ><span className="col small-1 text-right"
+    ><div  className={Data.params.Lan.Absolute != 0 ? "" : "hide"}
+      ><div className="grid-block vertical stripe"
+        ><div className="grid-block thead"
+          ><span className="expand col small-1"
+            >Period</span
+          ><span className="expand col small-1 text-right"
             > Value</span
-          ><span className="col"
+          ><span className="expand col"
             ></span
           ></div
-        ></div
-      >{this.List(Data).map(function($la, i) { return<div className="grid-block"
-        ><span className="col small-1"
-          >{$la.Period}m</span
-        ><div  key={"la-rowby-period-"+$la.Period} className="grid-block wrap noscroll"
-          ><span className="col small-1 text-right"
+        >{this.List(Data).map(function($la, i) { return<div  key={"la-rowby-period-"+$la.Period} className="grid-block"
+          ><span className="expand col small-1"
+            >{$la.Period}m</span
+          ><span className="expand col small-1 text-right"
             > {$la.Value}</span
-          ><span className="col-lr expand"
+          ><span className="expand col-lr"
             >{jsdefines.Sparkline({ref: i, col: 'Value'})}</span
           ></div
-        ></div
-      >})}</div
+        >})}</div
+      ></div
     ></div
   ></div
 >;
@@ -724,42 +714,38 @@ jsdefines.define_panelmem = React.createClass({
           ></ul
         ></div
       ></div
-    ><div  className={Data.params.Memn.Absolute != 0 ? "stripe" : "hide"}
-      ><div className="grid-block thead"
-        ><span className="col small-1"
-          >Memory</span
-        ><div className="grid-block wrap noscroll"
-          ><span className="col small-1 text-right"
+    ><div  className={Data.params.Memn.Absolute != 0 ? "" : "hide"}
+      ><div className="grid-block vertical stripe"
+        ><div className="grid-block thead"
+          ><span className="expand col small-1"
+            >Memory</span
+          ><span className="expand col small-1 text-right"
             > Total</span
-          ><span className="col small-1 text-right"
+          ><span className="expand col small-1 text-right"
             > Used</span
-          ><span className="col small-1 text-right"
+          ><span className="expand col small-1 text-right"
             > Free</span
-          ><span className="col small-1 text-right"
+          ><span className="expand col small-1 text-right"
             > Use%</span
-          ><span className="col"
+          ><span className="expand col"
             ></span
           ></div
-        ></div
-      >{this.List(Data).map(function($mem, i) { return<div className="grid-block"
-        ><span className="col small-1"
-          >{$mem.Kind}</span
-        ><div  key={"mem-rowby-kind-"+$mem.Kind} className="grid-block wrap noscroll"
-          ><span className="col small-1 text-right"
+        >{this.List(Data).map(function($mem, i) { return<div  key={"mem-rowby-kind-"+$mem.Kind} className="grid-block"
+          ><span className="expand col small-1"
+            >{$mem.Kind}</span
+          ><span className="expand col small-1 text-right"
             > {$mem.Total}</span
-          ><span className="col small-1 text-right"
+          ><span className="expand col small-1 text-right"
             > {$mem.Used}</span
-          ><span className="col small-1 text-right"
+          ><span className="expand col small-1 text-right"
             > {$mem.Free}</span
-          ><span className="small-1 text-right"
-            ><span className="col display-block bg-usepct" data-usepct={$mem.UsePct}
-              > {$mem.UsePct}%</span
-            ></span
-          ><span className="col-lr expand"
+          ><span className="expand col small-1 text-right bg-usepct" data-usepct={$mem.UsePct}
+            > {$mem.UsePct}%</span
+          ><span className="expand col-lr"
             >{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</span
           ></div
-        ></div
-      >})}</div
+        >})}</div
+      ></div
     ></div
   ></div
 >;
@@ -837,88 +823,86 @@ jsdefines.define_panelps = React.createClass({
           ></ul
         ></div
       ></div
-    ><div  className={Data.params.Psn.Absolute != 0 ? "stripe" : "hide"}
-      ><div className="grid-block thead"
-        ><span className="col small-1 text-right"
-          ><a href={Data.params.Vlinks.Psk[1-1].LinkHref} className={Data.params.Vlinks.Psk[1-1].LinkClass} onClick={this.handleClick}  
+    ><div  className={Data.params.Psn.Absolute != 0 ? "" : "hide"}
+      ><div className="grid-block vertical stripe"
+        ><div className="grid-block thead"
+          ><span className="expand col small-1 text-nowrap text-right"
+            ><a href={Data.params.Vlinks.Psk[1-1].LinkHref} className={Data.params.Vlinks.Psk[1-1].LinkClass} onClick={this.handleClick}  
   >PID<span className={Data.params.Vlinks.Psk[1-1].CaretClass}
     ></span
   ></a
 ></span
-        ><div className="grid-block wrap noscroll text-nowrap"
-          ><span className="col small-1 text-right"
+          ><span className="expand col small-1 text-nowrap text-right"
             > <a href={Data.params.Vlinks.Psk[2-1].LinkHref} className={Data.params.Vlinks.Psk[2-1].LinkClass} onClick={this.handleClick}  
   >UID<span className={Data.params.Vlinks.Psk[2-1].CaretClass}
     ></span
   ></a
 ></span
-          ><span className="col small-1"
+          ><span className="expand col small-1 text-nowrap"
             > <a href={Data.params.Vlinks.Psk[3-1].LinkHref} className={Data.params.Vlinks.Psk[3-1].LinkClass} onClick={this.handleClick}  
   >USER<span className={Data.params.Vlinks.Psk[3-1].CaretClass}
     ></span
   ></a
 ></span
-          ><span className="col small-1 text-right"
+          ><span className="expand col small-1 text-nowrap text-right"
             > <a href={Data.params.Vlinks.Psk[4-1].LinkHref} className={Data.params.Vlinks.Psk[4-1].LinkClass} onClick={this.handleClick}  
   >PR<span className={Data.params.Vlinks.Psk[4-1].CaretClass}
     ></span
   ></a
 ></span
-          ><span className="col small-1 text-right"
+          ><span className="expand col small-1 text-nowrap text-right"
             > <a href={Data.params.Vlinks.Psk[5-1].LinkHref} className={Data.params.Vlinks.Psk[5-1].LinkClass} onClick={this.handleClick}  
   >NI<span className={Data.params.Vlinks.Psk[5-1].CaretClass}
     ></span
   ></a
 ></span
-          ><span className="col small-1 text-right"
+          ><span className="expand col small-1 text-nowrap text-right"
             > <a href={Data.params.Vlinks.Psk[6-1].LinkHref} className={Data.params.Vlinks.Psk[6-1].LinkClass} onClick={this.handleClick}  
   >VIRT<span className={Data.params.Vlinks.Psk[6-1].CaretClass}
     ></span
   ></a
 ></span
-          ><span className="col small-1 text-right"
+          ><span className="expand col small-1 text-nowrap text-right"
             > <a href={Data.params.Vlinks.Psk[7-1].LinkHref} className={Data.params.Vlinks.Psk[7-1].LinkClass} onClick={this.handleClick}  
   >RES<span className={Data.params.Vlinks.Psk[7-1].CaretClass}
     ></span
   ></a
 ></span
-          ><span className="col small-1 text-center"
+          ><span className="expand col small-1 text-nowrap text-center"
             > <a href={Data.params.Vlinks.Psk[8-1].LinkHref} className={Data.params.Vlinks.Psk[8-1].LinkClass} onClick={this.handleClick}  
   >TIME<span className={Data.params.Vlinks.Psk[8-1].CaretClass}
     ></span
   ></a
 ></span
-          ><span className="col small-1"
+          ><span className="expand col small-1 text-nowrap"
             > <a href={Data.params.Vlinks.Psk[9-1].LinkHref} className={Data.params.Vlinks.Psk[9-1].LinkClass} onClick={this.handleClick}  
   >COMMAND<span className={Data.params.Vlinks.Psk[9-1].CaretClass}
     ></span
   ></a
 ></span
           ></div
-        ></div
-      >{this.List(Data).map(function($ps) { return<div className="grid-block"
-        ><span className="col small-1 text-right"
-          >{$ps.PID}</span
-        ><div  key={"ps-rowby-pid-"+$ps.PID} className="grid-block wrap noscroll"
-          ><span className="col small-1 text-right"
+        >{this.List(Data).map(function($ps) { return<div  key={"ps-rowby-pid-"+$ps.PID} className="grid-block"
+          ><span className="expand col small-1 text-right"
+            >{$ps.PID}</span
+          ><span className="expand col small-1 text-right"
             > {$ps.UID}</span
-          ><span className="col small-1"
+          ><span className="expand col small-1"
             > {$ps.User}</span
-          ><span className="col small-1 text-right"
+          ><span className="expand col small-1 text-right"
             > {$ps.Priority}</span
-          ><span className="col small-1 text-right"
+          ><span className="expand col small-1 text-right"
             > {$ps.Nice}</span
-          ><span className="col small-1 text-right"
+          ><span className="expand col small-1 text-right"
             > {$ps.Size}</span
-          ><span className="col small-1 text-right"
+          ><span className="expand col small-1 text-right"
             > {$ps.Resident}</span
-          ><span className="col small-1 text-center"
+          ><span className="expand col small-1 text-center"
             > {$ps.Time}</span
-          ><span className="col expand"
+          ><span className="expand col"
             > {$ps.Name}</span
           ></div
-        ></div
-      >})}</div
+        >})}</div
+      ></div
     ></div
   ></div
 >;
