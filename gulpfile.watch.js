@@ -1,5 +1,6 @@
 var child             = require('child_process'),
-    gulp              = require('gulp');
+    gulp              = require('gulp'),
+    argv              = require('yargs').argv;
 //  reload            = require('gulp-livereload');
 
 var makevars = {}, server;
@@ -40,9 +41,17 @@ gulp.task('server build', function(cb) {
 
 gulp.task('server run', ['server build'], function() {
   var run = function() {
-    // console.log('makevars (run)', makevars);
-    server = child.spawn(makevars.package[0].replace(/.*\//, ''),
-                         '-b 127.0.0.1'.split(' '));
+    var args = [];
+    for (var i in argv) {
+      if (i == '_' || i == '$0') {
+        continue;
+      }
+      args.push('-'+i);
+      if (typeof(argv[i]) != 'boolean') {
+        args.push(argv[i]);
+      }
+    }
+    server = child.spawn(makevars.package[0].replace(/.*\//, ''), args);
     dup('stdout', server);
     dup('stderr', server);
     // server.stdout.once('data', function() { reload.reload('/'); });
