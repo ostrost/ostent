@@ -1,31 +1,32 @@
-var React     = require('react'),
-    ReactDOM  = require('react-dom'),
-    jsdefines = require('./jsdefines.jsx');
+var React       = require('react'),
+    ReactDOM    = require('react-dom'),
+    ReconnectWS = require('reconnectingWebsocket'),
+    jsdefines   = require('./jsdefines.jsx');
 
+/*
 function neweventsource(onmessage) {
-  var conn = null;
-  var init;
+  var init, conn = null;
   var sendSearch = function(search) {
-    // conn = new EventSource('/index.sse' + search)
-    // location.search = search
-    console.log('SEARCH', search);
-    if (true) { // conn !== null
-      conn.close();
-    }
-    return window.setTimeout(init, 1000);
+    location.search = search;
+    console.log('new search', search);
+    conn.close();
+    window.setTimeout(init, 100);
   };
+  var sendLocationSearch = function() { sendSearch(location.search); };
   init = function() {
     conn = new EventSource('/index.sse' + location.search);
     conn.onopen = function() {
-      window.addEventListener('popstate', function() { sendSearch(location.search); });
+      console.log('sse opened');
+      window.addEventListener('popstate', sendLocationSearch);
     };
-    var again = function(e) {
-      if (!e.wasClean) {
-        window.setTimeout(init, 5000);
-      }
+    conn.onclose = function() {
+      console.log('sse closed');
+      window.removeEventListener('popstate', sendLocationSearch);
     };
-    conn.onclose = function() { console.log('sse closed (should recover)'); }; // again;
-    conn.onerror = function() { console.log('sse errord (should recover)'); }; // again;
+    conn.onerror = function() {
+      console.log('sse errord');
+      window.removeEventListener('popstate', sendLocationSearch);
+    };
     conn.onmessage = onmessage;
   };
   init();
@@ -33,81 +34,48 @@ function neweventsource(onmessage) {
     sendSearch: sendSearch,
     close: function() { return conn.close(); }
   };
-};
+}; // */
 
-function newwebsocket(onmessage) {
-  var conn = null;
-  var init;
-  var sendSearch = function(search) {
-    console.log('Search', search);
-    // 0 conn.CONNECTING
-    // 1 conn.OPEN
-    // 2 conn.CLOSING
-    // 3 conn.CLOSED
-    if (conn == null ||
-        conn.readyState === conn.CLOSING ||
-        conn.readyState === conn.CLOSED) {
-      init();
-    }
-    if (conn == null ||
-        conn.readyState !== conn.OPEN) {
-      console.log('Not connected, cannot send search', search);
-      return;
-    }
-    conn.send(JSON.stringify({Search: search}));
-  };
-  init = function() {
-    var hostport = window.location.hostname + (location.port ? ':' + location.port : '');
-    conn = new WebSocket('ws://' + hostport + '/index.ws');
-    conn.onopen = function() {
-      sendSearch(location.search);
-      window.addEventListener('popstate', function() { sendSearch(location.search); });
-    };
-    var again = function(e) {
-      if (!e.wasClean) {
-        window.setTimeout(init, 5000);
-      }
-    };
-    conn.onclose = again;
-    conn.onerror = again;
-    conn.onmessage = onmessage;
-  };
-  init();
-  return {
-    sendSearch: sendSearch,
-    close: function() { return conn.close(); }
-  };
-};
-
-function render_define(el) {
-  var cl = jsdefines[el.getAttribute('data-define')];
-  return ReactDOM.render(React.createElement(cl), el);
-}
-
-function main() {
-  for (var i = 0, loc = location.search.substr(1).split('&'); i < loc.length; i++) {
-    if (loc[i].split('=')[0] === 'still') {
-      return;
-    }
+function main(data) {
+  if (data.params.Still.Absolute != 0) {
+    return;
   }
 
   var els = [];
   for (var i = 0, sel = document.querySelectorAll('.updates'); i < sel.length; i++) {
-    els.push(render_define(sel[i]));
+    var cl = jsdefines[sel[i].getAttribute('data-define')];
+    els.push(ReactDOM.render(React.createElement(cl), sel[i]));
   }
 
-  var onmessage = function(event) {
+  var hostport = location.hostname + (location.port ? ':' + location.port : '');
+  var ws = new ReconnectWS('ws://' + hostport + '/index.ws');
+
+  // sendSearch is also referenced as window.updates.sendSearch
+  ws.sendSearch = function(search) {
+    console.log('ws send', search);
+    ws.send(JSON.stringify({Search: search}));
+  };
+  ws.sendLocationSearch = function() { ws.sendSearch(location.search); };
+
+  ws.onclose = function() {
+    console.log('ws closed');
+    window.removeEventListener('popstate', ws.sendLocationSearch);
+  };
+  ws.onopen = function() {
+    console.log('ws opened');
+    ws.sendLocationSearch();
+    window.addEventListener('popstate', ws.sendLocationSearch);
+  };
+  ws.onmessage = function(event) { // the onmessage
     var data = JSON.parse(event.data);
     if (data == null) {
       return;
     }
     if ((data.Reload != null) && data.Reload) {
-      window.setTimeout((function() {
-        location.reload(true);
-      }), 5000);
-      window.setTimeout(window.updates.close, 2000);
+      window.setTimeout((function() { location.reload(true); }), 5000);
+      window.setTimeout(ws.close, 2000);
       console.log('in 5s: location.reload(true)');
-      console.log('in 2s: window.updates.close()');
+      console.log('in 2s: ws.close()');
       return;
     }
     if (data.Error != null) {
@@ -119,10 +87,10 @@ function main() {
     }
   };
 
-  window.updates = newwebsocket(onmessage); // neweventsource(onmessage);
+  window.updates = ws; // neweventsource(onmessage);
 }
 
-main();
+main(Data); // global Data
 
 // Local variables:
 // js-indent-level: 2
