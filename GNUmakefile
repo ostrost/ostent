@@ -1,4 +1,4 @@
-#!/usr/bin/env make -f
+#!/usr/bin/env gmake -f
 
 PATH:=$(shell echo -n $$PATH:; echo $$GOPATH | sed 's,:\|$$,/bin:,g'):$$PWD/node_modules/.bin
 
@@ -16,6 +16,7 @@ endif
 shareprefix=share
 assets_devgo    = $(shareprefix)/assets/bindata.dev.go
 assets_bingo    = $(shareprefix)/assets/bindata.bin.go
+assets_nonego   = $(shareprefix)/assets/bindata.none.go
 templates_devgo = $(shareprefix)/templates/bindata.dev.go
 templates_bingo = $(shareprefix)/templates/bindata.bin.go
 
@@ -91,6 +92,7 @@ coverhtml: covertest ; go tool  cover  -html=coverage.out
 commands/extpoints/extpoints.go: commands/extpoints/interface.go ; cd $(dir $@) && go generate
 
 al: $(packagefiles) $(devpackagefiles)
+al: $(assets_nonego)
 # al: like `all' but without final go build $(package). For when rerun does the build
 
 $(templatepp): $(templateppfiles)
@@ -130,31 +132,20 @@ share/js/jsdefines.jsx: share/ace.templates/jsdefines.jstmpl share/ace.templates
 
 $(templates_bingo) $(templates_devgo): $(shell find share/templates/ -type f \! -name \*.go)
 
-$(templates_bingo):
-	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags bin -mode 0644 -modtime $(bingo_modtime) -nomemcopy ./...
-$(templates_devgo):
-	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags '!bin' -dev ./...
+$(templates_bingo): ; cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags bin    -nomemcopy -mode 0644 -modtime $(bingo_modtime) ./...
+$(templates_devgo): ; cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags '!bin' -dev ./...
 
-$(assets_bingo):
-	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags bin -mode 0644 -modtime $(bingo_modtime) -ignore js/src/ -nomemcopy ./...
-$(assets_devgo):
-	cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags '!bin' -dev -ignore js/min/ ./...
+$(assets_nonego):   ; cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags none   -ignore js/min/ -nocompress -mode 0644 -modtime $(bingo_modtime) ./...
+$(assets_bingo):    ; cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags bin    -ignore js/src/ -nomemcopy  -mode 0644 -modtime $(bingo_modtime) ./...
+$(assets_devgo):    ; cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags '!bin' -ignore js/min/ -dev ./...
 
-$(assets_bingo): $(shell find \
-                           share/assets/ -type f \! -name '*.go' \! -path \
-                          'share/assets/js/src/*')
-$(assets_bingo): share/assets/css/index.css
-$(assets_bingo): share/assets/js/min/bundle.min.js
-
-$(assets_devgo): $(shell find \
-                      share/assets/ -type f \! -name '*.go' \! -path \
-                     'share/assets/js/min/*')
-$(assets_devgo): share/assets/css/index.css
-$(assets_devgo): share/assets/js/src/bundle.js
+$(assets_bingo):  $(shell find share/assets/ -type f \! -name '*.go' \! -path 'share/assets/js/src/*')
+$(assets_devgo):  $(shell find share/assets/ -type f \! -name '*.go' \! -path 'share/assets/js/min/*')
+$(assets_nonego): $(shell find share/assets/ -type f \! -name '*.go' \! -path 'share/assets/js/min/*')
 
 # spare shortcuts
 bindata-bin: $(assets_bingo) $(templates_bingo)
 bindata-dev: $(assets_devgo) $(templates_devgo)
-bindata: bindata-dev bindata-bin
+bindata: bindata-dev bindata-bin $(assets_nonego)
 
 endif # END OF ifneq (init, $(MAKECMDGOALS))
