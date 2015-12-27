@@ -1,4 +1,3 @@
-[![Sourcegraph](https://sourcegraph.com/api/repos/github.com/ostrost/ostent/.badges/status.svg)](https://sourcegraph.com/github.com/ostrost/ostent)
 [![GoDoc](https://godoc.org/github.com/ostrost/ostent?status.svg)](https://godoc.org/github.com/ostrost/ostent)
 [![Travis CI](https://travis-ci.org/ostrost/ostent.svg?branch=master)](https://travis-ci.org/ostrost/ostent)
 
