@@ -16,14 +16,14 @@ function dup(std, proc) {
   });
 }
 
-gulp.task('make dev', function() {
-  var make = child.spawn('make', '-C . dev'.split(' '));
+gulp.task('gmake dev', function() {
+  var make = child.spawn('gmake', '-C . dev'.split(' '));
   dup('stdout', make);
   dup('stderr', make);
 });
 
-gulp.task('make print', function(cb) {
-  var make = child.spawn('make', 'print-package print-devpackagefiles'.split(' '));
+gulp.task('gmake print', function(cb) {
+  var make = child.spawn('gmake', 'print-package print-devpackagefiles'.split(' '));
   make.stdout.on('end', cb);
   make.stdout.on('data', function(d) {
     var words = d.toString().split('=');
@@ -33,7 +33,7 @@ gulp.task('make print', function(cb) {
 });
 
 gulp.task('server build', function(cb) {
-  var build = child.spawn('go', 'install -race'.split(' '));
+  var build = child.spawn('go', ('get -v -race '+makevars.package[0]).split(' '));
   build.stdout.on('end', cb);
   dup('stdout', build);
   dup('stderr', build);
@@ -69,14 +69,14 @@ gulp.task('server watch', function() {
              ['server run']);
 });
 
-gulp.task('watch', ['make print'], function() {
+gulp.task('watch', ['gmake print'], function() {
   // reload.listen();
   gulp.start(['server watch', 'server run']);
   gulp.watch([
     __dirname+'/share/ace.templates/*',
     __dirname+'/share/js/*',
     __dirname+'/share/style/*'
-  ], ['make dev']);
+  ], ['gmake dev']);
 });
 
 // Local variables:
