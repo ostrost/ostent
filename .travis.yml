@@ -36,8 +36,8 @@ install:
   - cd; mkdir -p gopath/src; mv build gopath/src/github.com; cd gopath/src/github.com/$TRAVIS_REPO_SLUG
   - export GOPATH=~/gopath:$GOPATH PATH=~/gopath/bin:$PATH
   - go version; go env
-  - gmake init
-script: gmake --always-make test all
+  - make init # gmake
+script: make --always-make test all # gmake
 before_deploy:
   - |
     os=$(uname -s)
@@ -49,8 +49,8 @@ before_deploy:
     if test x$TRAVIS_OS_NAME \!= xosx ; then # 32bit build on non-osx
       x32=.i686
       gvm install $GO_BOOTSTRAP --binary || true
-      gmake boot32 GOROOT_BOOTSTRAP=~/.gvm/gos/$GO_BOOTSTRAP
-      gmake all32
+      make boot32 GOROOT_BOOTSTRAP=~/.gvm/gos/$GO_BOOTSTRAP # gmake
+      make all32 # gmake
       : ; mv $HOME/gopath/bin/ostent.32 $HOME/gopath/bin/$os$x32
     fi
     : : ; mv $HOME/gopath/bin/ostent    $HOME/gopath/bin/$os$x64
