@@ -119,9 +119,7 @@ jsdefines.define_hostname = React.createClass({
   },
   render: function() {
     let Data = this.state; // shadow global Data
-    return <a href="/"  title={"hostname " + Data.hostname}
-  >{Data.hostname}</a
->;
+    return (<a href="/"  title={"hostname " + Data.hostname}>{Data.hostname}</a>);
   }
 });
 
@@ -142,99 +140,61 @@ jsdefines.define_panelcpu = React.createClass({
   },
   render: function() {
     let Data = this.state; // shadow global Data
-    return <div className="grid-block hr-top"
-  ><div className="col-lr large-1 text-right"
-    ><div  className={!Data.params.CPUn.Negative ? "hide-showhide" : "show-showhide"}
-      ><h1 className="h4 text-overflow"
-        ><a  href={Data.params.Tlinks.CPUn} onClick={this.handleClick} title="CPU display options"
-          ><span className="showhide-hide whitespace-pre float-left"
-            >... </span
-          >CPU</a
-        ></h1
-      ></div
-    ></div
-  ><div className="col-lr large-11"
-    ><div  className={!Data.params.CPUn.Negative ? "hide-showhide" : "show-showhide"}
-      ><div className="grid-block"
-        ><ul className="menu showhide-show"
-          ><li
-            ><div className="input-group"
-              ><div className="input-group-label small text-nowrap"
-                >delay</div
-              ><div className="input-group-button"
-                ><a className="button small secondary disabled"
-                  >{Data.params.CPUd}</a
-                ></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Dlinks.CPUd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Dlinks.CPUd.Less.Text}</a
-></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Dlinks.CPUd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Dlinks.CPUd.More.Text} +</a
-></div
-              ></div
-            ></li
-          ><li
-            ><div className="input-group"
-              ><div className="input-group-label small text-nowrap"
-                >rows</div
-              ><div className="input-group-button"
-                ><a className="button small secondary disabled"
-                  >{Data.params.CPUn.Absolute}</a
-                ></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Nlinks.CPUn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Nlinks.CPUn.Less.Text}</a
-></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Nlinks.CPUn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Nlinks.CPUn.More.Text} +</a
-></div
-              ></div
-            ></li
-          ></ul
-        ></div
-      ></div
-    ><div  className={Data.params.CPUn.Absolute != 0 ? "" : "hide"}
-      ><div className="grid-block vertical stripe"
-        ><div className="grid-block thead"
-          ><span className="expand col small-1"
-            >Core</span
-          ><span className="expand col small-1 text-right"
-            > User%</span
-          ><span className="expand col small-1 text-right"
-            > Sys%</span
-          ><span className="expand col small-1 text-right"
-            > Wait%</span
-          ><span className="expand col small-1 text-right"
-            > Idle%</span
-          ><span className="expand col"
-            ></span
-          ></div
-        >{this.List(Data).map(function($cpu, i) { return<div  key={"cpu-rowby-N-"+$cpu.N} className="grid-block"
-          ><span className="expand col small-1 text-nowrap"
-            >{$cpu.N}</span
-          ><span className="expand col small-1 text-right bg-usepct"
-data-usepct={$cpu.UserPct}
-            > {$cpu.UserPct}%</span
-          ><span className="expand col small-1 text-right bg-usepct"
-data-usepct={$cpu.SysPct}
-            > {$cpu.SysPct}%</span
-          ><span className="expand col small-1 text-right bg-usepct"
-data-usepct={$cpu.WaitPct}
-            > {$cpu.WaitPct}%</span
-          ><span className="expand col small-1 text-right bg-usepct-inverse"
-data-usepct={$cpu.IdlePct}
-            > {$cpu.IdlePct}%</span
-          ><span className="expand col-lr"
-            >{jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}</span
-          ></div
-        >})}</div
-      ></div
-    ></div
-  ></div
->;
+    return (
+<div className="grid-block hr-top">
+  <div className="col-lr large-1 text-right"><div  className={!Data.params.CPUn.Negative ? "hide-showhide" : "show-showhide"}>
+    <h1 className="h4 text-overflow">
+      <a  href={Data.params.Tlinks.CPUn} onClick={this.handleClick} title="CPU display options">
+      <span className="showhide-hide whitespace-pre float-left">... </span>CPU</a>
+    </h1></div>
+  </div>
+  <div className="col-lr large-11"><div  className={!Data.params.CPUn.Negative ? "hide-showhide" : "show-showhide"}>
+    <div className="grid-block">
+      <ul className="menu showhide-show">
+        <li>
+          <div className="input-group">
+            <div className="input-group-label small text-nowrap">delay</div>
+            <div className="input-group-button"><a className="button small secondary disabled">{Data.params.CPUd}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Dlinks.CPUd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : "")} onClick={this.handleClick}
+  >- {Data.params.Dlinks.CPUd.Less.Text}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Dlinks.CPUd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : "")} onClick={this.handleClick}
+  >{Data.params.Dlinks.CPUd.More.Text} +</a></div>
+          </div>
+        </li>
+        <li>
+          <div className="input-group">
+            <div className="input-group-label small text-nowrap">rows</div>
+            <div className="input-group-button"><a className="button small secondary disabled">{Data.params.CPUn.Absolute}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Nlinks.CPUn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : "")} onClick={this.handleClick}
+  >- {Data.params.Nlinks.CPUn.Less.Text}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Nlinks.CPUn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : "")} onClick={this.handleClick}
+  >{Data.params.Nlinks.CPUn.More.Text} +</a></div>
+          </div>
+        </li>
+      </ul>
+    </div><div  className={Data.params.CPUn.Absolute != 0 ? "" : "hide"}>
+    <div className="grid-block vertical stripe">
+      <div className="grid-block thead"><span className="expand col small-1">Core</span><span className="expand col small-1 text-right"> User%</span><span className="expand col small-1 text-right"> Sys%</span><span className="expand col small-1 text-right"> Wait%</span><span className="expand col small-1 text-right"> Idle%</span><span className="expand col"></span></div>
+      
+      {this.List(Data).map(function($cpu, i) { return (
+      <div  key={"cpu-rowby-N-"+$cpu.N} className="grid-block"><span className="expand col small-1 text-nowrap">{$cpu.N}</span><span className="expand col small-1 text-right bg-usepct"
+       data-usepct={$cpu.UserPct}> {$cpu.UserPct}%</span>
+      <span className="expand col small-1 text-right bg-usepct"
+       data-usepct={$cpu.SysPct}> {$cpu.SysPct}%</span>
+      <span className="expand col small-1 text-right bg-usepct"
+       data-usepct={$cpu.WaitPct}> {$cpu.WaitPct}%</span>
+      <span className="expand col small-1 text-right bg-usepct-inverse"
+       data-usepct={$cpu.IdlePct}> {$cpu.IdlePct}%</span><span className="expand col-lr">{jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}</span></div>
+      );})}
+      
+      
+    </div></div></div>
+  </div>
+</div>);
   }
 });
 
@@ -255,139 +215,66 @@ jsdefines.define_paneldf = React.createClass({
   },
   render: function() {
     let Data = this.state; // shadow global Data
-    return <div className="grid-block hr-top"
-  ><div className="col-lr large-1 text-right"
-    ><div  className={!Data.params.Dfn.Negative ? "hide-showhide" : "show-showhide"}
-      ><h1 className="h4 text-overflow"
-        ><a  href={Data.params.Tlinks.Dfn} onClick={this.handleClick} title="Disk usage display options"
-          ><span className="showhide-hide whitespace-pre float-left"
-            >... </span
-          >Disk usage</a
-        ></h1
-      ></div
-    ></div
-  ><div className="col-lr large-11"
-    ><div  className={!Data.params.Dfn.Negative ? "hide-showhide" : "show-showhide"}
-      ><div className="grid-block"
-        ><ul className="menu showhide-show"
-          ><li
-            ><div className="input-group"
-              ><div className="input-group-label small text-nowrap"
-                >delay</div
-              ><div className="input-group-button"
-                ><a className="button small secondary disabled"
-                  >{Data.params.Dfd}</a
-                ></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Dlinks.Dfd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Dlinks.Dfd.Less.Text}</a
-></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Dlinks.Dfd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Dlinks.Dfd.More.Text} +</a
-></div
-              ></div
-            ></li
-          ><li
-            ><div className="input-group"
-              ><div className="input-group-label small text-nowrap"
-                >rows</div
-              ><div className="input-group-button"
-                ><a className="button small secondary disabled"
-                  >{Data.params.Dfn.Absolute}</a
-                ></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Nlinks.Dfn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Nlinks.Dfn.Less.Text}</a
-></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Nlinks.Dfn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Nlinks.Dfn.More.Text} +</a
-></div
-              ></div
-            ></li
-          ></ul
-        ></div
-      ></div
-    ><div  className={Data.params.Dfn.Absolute != 0 ? "" : "hide"}
-      ><div className="grid-block vertical stripe"
-        ><div className="grid-block thead"
-          ><span className="expand col small-1 text-nowrap"
-            ><a href={Data.params.Vlinks.Dfk[1-1].LinkHref} className={Data.params.Vlinks.Dfk[1-1].LinkClass} onClick={this.handleClick}  
-  >Device<span className={Data.params.Vlinks.Dfk[1-1].CaretClass}
-    ></span
-  ></a
-></span
-          ><span className="expand col small-1 text-nowrap"
-            ><a href={Data.params.Vlinks.Dfk[2-1].LinkHref} className={Data.params.Vlinks.Dfk[2-1].LinkClass} onClick={this.handleClick}  
-  >Mounted<span className={Data.params.Vlinks.Dfk[2-1].CaretClass}
-    ></span
-  ></a
-></span
-          ><span className="expand col small-1 text-nowrap text-right"
-            ><a href={Data.params.Vlinks.Dfk[6-1].LinkHref} className={Data.params.Vlinks.Dfk[6-1].LinkClass} onClick={this.handleClick}  
-  >Total<span className={Data.params.Vlinks.Dfk[6-1].CaretClass}
-    ></span
-  ></a
-></span
-          ><span className="expand col small-1 text-nowrap text-right"
-            ><a href={Data.params.Vlinks.Dfk[5-1].LinkHref} className={Data.params.Vlinks.Dfk[5-1].LinkClass} onClick={this.handleClick}  
-  >Used<span className={Data.params.Vlinks.Dfk[5-1].CaretClass}
-    ></span
-  ></a
-></span
-          ><span className="expand col small-1 text-nowrap text-right"
-            ><a href={Data.params.Vlinks.Dfk[3-1].LinkHref} className={Data.params.Vlinks.Dfk[3-1].LinkClass} onClick={this.handleClick}  
-  >Avail<span className={Data.params.Vlinks.Dfk[3-1].CaretClass}
-    ></span
-  ></a
-></span
-          ><span className="expand col small-1 text-nowrap text-right"
-            ><a href={Data.params.Vlinks.Dfk[4-1].LinkHref} className={Data.params.Vlinks.Dfk[4-1].LinkClass} onClick={this.handleClick}  
-  >Use%<span className={Data.params.Vlinks.Dfk[4-1].CaretClass}
-    ></span
-  ></a
-></span
-          ><span className="expand col"
-            ></span
-          ></div
-        >{this.List(Data).map(function($df, i) { return<div  key={"df-rowby-dirname-"+$df.DirName} className="grid-block"
-          ><span className="expand col small-1 text-overflow"
-            >{$df.DevName}</span
-          ><span className="expand col small-1 text-overflow"
-            > {$df.DirName}</span
-          ><span className="expand col small-1 text-overflow text-right gray"
-            ><span className="float-right"
-              > {$df.Total}</span
-            ><span title="Inodes total"
-              > {$df.Inodes}</span
-            ></span
-          ><span className="expand col small-1 text-overflow text-right gray"
-            ><span className="float-right"
-              > {$df.Used}</span
-            ><span title="Inodes used"
-              > {$df.Iused}</span
-            ></span
-          ><span className="expand col small-1 text-overflow text-right gray"
-            ><span className="float-right"
-              > {$df.Avail}</span
-            ><span title="Inodes free"
-              > {$df.Ifree}</span
-            ></span
-          ><span className="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct={$df.UsePct}
-            ><span className="float-right"
-              > {$df.UsePct}%</span
-            ><span title="Inodes use%"
-              > {$df.IusePct}%</span
-            ></span
-          ><span className="expand col-lr"
-            >{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</span
-          ></div
-        >})}</div
-      ></div
-    ></div
-  ></div
->;
+    return (
+<div className="grid-block hr-top">
+  <div className="col-lr large-1 text-right"><div  className={!Data.params.Dfn.Negative ? "hide-showhide" : "show-showhide"}>
+    <h1 className="h4 text-overflow">
+      <a  href={Data.params.Tlinks.Dfn} onClick={this.handleClick} title="Disk usage display options">
+      <span className="showhide-hide whitespace-pre float-left">... </span>Disk usage</a>
+    </h1></div>
+  </div>
+  <div className="col-lr large-11"><div  className={!Data.params.Dfn.Negative ? "hide-showhide" : "show-showhide"}>
+    <div className="grid-block">
+      <ul className="menu showhide-show">
+        <li>
+          <div className="input-group">
+            <div className="input-group-label small text-nowrap">delay</div>
+            <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Dfd}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Dlinks.Dfd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : "")} onClick={this.handleClick}
+  >- {Data.params.Dlinks.Dfd.Less.Text}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Dlinks.Dfd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : "")} onClick={this.handleClick}
+  >{Data.params.Dlinks.Dfd.More.Text} +</a></div>
+          </div>
+        </li>
+        <li>
+          <div className="input-group">
+            <div className="input-group-label small text-nowrap">rows</div>
+            <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Dfn.Absolute}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Nlinks.Dfn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : "")} onClick={this.handleClick}
+  >- {Data.params.Nlinks.Dfn.Less.Text}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Nlinks.Dfn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : "")} onClick={this.handleClick}
+  >{Data.params.Nlinks.Dfn.More.Text} +</a></div>
+          </div>
+        </li>
+      </ul>
+    </div><div  className={Data.params.Dfn.Absolute != 0 ? "" : "hide"}>
+    <div className="grid-block vertical stripe">
+      <div className="grid-block thead"><span className="expand col small-1 text-nowrap">
+<a href={Data.params.Vlinks.Dfk[1-1].LinkHref} className={Data.params.Vlinks.Dfk[1-1].LinkClass} onClick={this.handleClick}
+  >Device<span className={Data.params.Vlinks.Dfk[1-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap">
+<a href={Data.params.Vlinks.Dfk[2-1].LinkHref} className={Data.params.Vlinks.Dfk[2-1].LinkClass} onClick={this.handleClick}
+  >Mounted<span className={Data.params.Vlinks.Dfk[2-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right">
+<a href={Data.params.Vlinks.Dfk[6-1].LinkHref} className={Data.params.Vlinks.Dfk[6-1].LinkClass} onClick={this.handleClick}
+  >Total<span className={Data.params.Vlinks.Dfk[6-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right">
+<a href={Data.params.Vlinks.Dfk[5-1].LinkHref} className={Data.params.Vlinks.Dfk[5-1].LinkClass} onClick={this.handleClick}
+  >Used<span className={Data.params.Vlinks.Dfk[5-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right">
+<a href={Data.params.Vlinks.Dfk[3-1].LinkHref} className={Data.params.Vlinks.Dfk[3-1].LinkClass} onClick={this.handleClick}
+  >Avail<span className={Data.params.Vlinks.Dfk[3-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right">
+<a href={Data.params.Vlinks.Dfk[4-1].LinkHref} className={Data.params.Vlinks.Dfk[4-1].LinkClass} onClick={this.handleClick}
+  >Use%<span className={Data.params.Vlinks.Dfk[4-1].CaretClass}></span></a></span><span className="expand col"></span></div>
+      
+      {this.List(Data).map(function($df, i) { return (
+      <div  key={"df-rowby-dirname-"+$df.DirName} className="grid-block"><span className="expand col small-1 text-overflow">{$df.DevName}</span><span className="expand col small-1 text-overflow"> {$df.DirName}</span><span className="expand col small-1 text-overflow text-right gray"><span className="float-right"> {$df.Total}</span><span title="Inodes total"> {$df.Inodes}</span></span><span className="expand col small-1 text-overflow text-right gray"><span className="float-right"> {$df.Used}</span><span title="Inodes used"> {$df.Iused}</span></span><span className="expand col small-1 text-overflow text-right gray"><span className="float-right"> {$df.Avail}</span><span title="Inodes free"> {$df.Ifree}</span></span><span className="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct={$df.UsePct}><span className="float-right"> {$df.UsePct}%</span><span title="Inodes use%"> {$df.IusePct}%</span></span><span className="expand col-lr">{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</span></div>
+      );})}
+      
+      
+    </div></div></div>
+  </div>
+</div>);
   }
 });
 
@@ -408,141 +295,59 @@ jsdefines.define_panelif = React.createClass({
   },
   render: function() {
     let Data = this.state; // shadow global Data
-    return <div className="grid-block hr-top"
-  ><div className="col-lr large-1 text-right"
-    ><div  className={!Data.params.Ifn.Negative ? "hide-showhide" : "show-showhide"}
-      ><h1 className="h4 text-overflow"
-        ><a  href={Data.params.Tlinks.Ifn} onClick={this.handleClick} title="Interfaces display options"
-          ><span className="showhide-hide whitespace-pre float-left"
-            >... </span
-          >Interfaces</a
-        ></h1
-      ></div
-    ></div
-  ><div className="col-lr large-11"
-    ><div  className={!Data.params.Ifn.Negative ? "hide-showhide" : "show-showhide"}
-      ><div className="grid-block"
-        ><ul className="menu showhide-show"
-          ><li
-            ><div className="input-group"
-              ><div className="input-group-label small text-nowrap"
-                >delay</div
-              ><div className="input-group-button"
-                ><a className="button small secondary disabled"
-                  >{Data.params.Ifd}</a
-                ></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Dlinks.Ifd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Dlinks.Ifd.Less.Text}</a
-></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Dlinks.Ifd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Dlinks.Ifd.More.Text} +</a
-></div
-              ></div
-            ></li
-          ><li
-            ><div className="input-group"
-              ><div className="input-group-label small text-nowrap"
-                >rows</div
-              ><div className="input-group-button"
-                ><a className="button small secondary disabled"
-                  >{Data.params.Ifn.Absolute}</a
-                ></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Nlinks.Ifn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Nlinks.Ifn.Less.Text}</a
-></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Nlinks.Ifn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Nlinks.Ifn.More.Text} +</a
-></div
-              ></div
-            ></li
-          ></ul
-        ></div
-      ></div
-    ><div  className={Data.params.Ifn.Absolute != 0 ? "" : "hide"}
-      ><div className="grid-block vertical stripe"
-        ><div className="grid-block thead"
-          ><span className="expand col small-1"
-            >Interface</span
-          ><span className="expand col small-1 text-right"
-            > IP</span
-          ><span className="expand col small-2 text-right text-nowrap" title="Drops,Errors In/Out per second"
-            > Loss IO ps</span
-          ><span className="expand col small-2 text-right text-nowrap" title="Packets In/Out per second"
-            > Packets IO ps</span
-          ><span className="expand col small-2 text-right text-nowrap" title="Bits In/Out per second"
-            > IO <i
-              >b</i
-            >ps</span
-          ><span className="expand col"
-            ></span
-          ></div
-        >{this.List(Data).map(function($if, i) { return<div  key={"if-rowby-name-"+$if.Name} className="grid-block"
-          ><span className="expand col small-1 text-overflow"
-            >{$if.Name}</span
-          ><span className="expand col small-1 text-overflow text-right"
-            >{$if.IP}</span
-          ><span className="expand col small-2 text-right text-nowrap"
-            > <span className="gray" title="Total drops,errors modulo 4G"
-              ><span title="Total drops In modulo 4G"
-                >{$if.DropsIn}</span
-              ><span  className={$if.DropsOut != null ? "" : "hide"}
-                >/</span
-              ><span  className={$if.DropsOut != null ? "" : "hide"} title="Total drops Out modulo 4G"
-                >{$if.DropsOut}</span
-              >,<span title="Total errors In modulo 4G"
-                >{$if.ErrorsIn}</span
-              >/<span title="Total errors Out modulo 4G"
-                >{$if.ErrorsOut}</span
-              ></span
-            > <span  className={(($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0")) ? "gray" : ""}
-              ><span title="Drops In per second"
-                >{$if.DeltaDropsIn}</span
-              ><span  className={$if.DeltaDropsOut != null ? "" : "hide"}
-                >/</span
-              ><span  className={$if.DeltaDropsOut != null ? "" : "hide"} title="Drops Out per second"
-                >{$if.DeltaDropsOut}</span
-              >,<span title="Errors In per second"
-                >{$if.DeltaErrorsIn}</span
-              >/<span title="Errors Out per second"
-                >{$if.DeltaErrorsOut}</span
-              ></span
-            ></span
-          ><span className="expand col small-2 text-right text-nowrap"
-            > <span className="gray"
-              ><span title="Total packets In modulo 4G"
-                >{$if.PacketsIn}</span
-              >/<span title="Total packets Out modulo 4G"
-                >{$if.PacketsOut}</span
-              ></span
-            > <span title="Packets In per second"
-              >{$if.DeltaPacketsIn}</span
-            >/<span title="Packets Out per second"
-              >{$if.DeltaPacketsOut}</span
-            ></span
-          ><span className="expand col small-2 text-right text-nowrap"
-            > <span className="gray"
-              ><span title="Total BYTES In modulo 4G"
-                >{$if.BytesIn}</span
-              >/<span title="Total BYTES Out modulo 4G"
-                >{$if.BytesOut}</span
-              ></span
-            > <span title="BITS In per second"
-              >{$if.DeltaBitsIn}</span
-            >/<span title="BITS Out per second"
-              >{$if.DeltaBitsOut}</span
-            ></span
-          ><span className="expand col-lr"
-            >{jsdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}</span
-          ></div
-        >})}</div
-      ></div
-    ></div
-  ></div
->;
+    return (
+<div className="grid-block hr-top">
+  <div className="col-lr large-1 text-right"><div  className={!Data.params.Ifn.Negative ? "hide-showhide" : "show-showhide"}>
+    <h1 className="h4 text-overflow">
+      <a  href={Data.params.Tlinks.Ifn} onClick={this.handleClick} title="Interfaces display options">
+      <span className="showhide-hide whitespace-pre float-left">... </span>Interfaces</a>
+    </h1></div>
+  </div>
+  <div className="col-lr large-11"><div  className={!Data.params.Ifn.Negative ? "hide-showhide" : "show-showhide"}>
+    <div className="grid-block">
+      <ul className="menu showhide-show">
+        <li>
+          <div className="input-group">
+            <div className="input-group-label small text-nowrap">delay</div>
+            <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Ifd}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Dlinks.Ifd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : "")} onClick={this.handleClick}
+  >- {Data.params.Dlinks.Ifd.Less.Text}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Dlinks.Ifd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : "")} onClick={this.handleClick}
+  >{Data.params.Dlinks.Ifd.More.Text} +</a></div>
+          </div>
+        </li>
+        <li>
+          <div className="input-group">
+            <div className="input-group-label small text-nowrap">rows</div>
+            <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Ifn.Absolute}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Nlinks.Ifn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : "")} onClick={this.handleClick}
+  >- {Data.params.Nlinks.Ifn.Less.Text}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Nlinks.Ifn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : "")} onClick={this.handleClick}
+  >{Data.params.Nlinks.Ifn.More.Text} +</a></div>
+          </div>
+        </li>
+      </ul>
+    </div><div  className={Data.params.Ifn.Absolute != 0 ? "" : "hide"}>
+    <div className="grid-block vertical stripe">
+      <div className="grid-block thead"><span className="expand col small-1">Interface</span><span className="expand col small-1 text-right"> IP</span><span title="Drops,Errors In/Out per second" className="expand col small-2 text-right text-nowrap"> Loss IO ps</span><span title="Packets In/Out per second" className="expand col small-2 text-right text-nowrap"> Packets IO ps</span><span title="Bits In/Out per second" className="expand col small-2 text-right text-nowrap"> IO <i>b</i>ps</span><span className="expand col"></span></div>
+      
+      {this.List(Data).map(function($if, i) { return (
+      <div  key={"if-rowby-name-"+$if.Name} className="grid-block"><span className="expand col small-1 text-overflow">{$if.Name}</span><span className="expand col small-1 text-overflow text-right">{$if.IP}</span><span className="expand col small-2 text-right text-nowrap">&nbsp;<span title="Total drops,errors modulo 4G" className="gray"><span title="Total drops In modulo 4G">{$if.DropsIn}</span><span  className={$if.DropsOut != null ? "" : "hide"}>/</span>
+          <span  className={$if.DropsOut != null ? "" : "hide"} title="Total drops Out modulo 4G">{$if.DropsOut}</span>
+          ,<span title="Total errors In modulo 4G">{$if.ErrorsIn}</span>/<span title="Total errors Out modulo 4G">{$if.ErrorsOut}</span></span>&nbsp;
+        <span  className={(($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0")) ? "gray" : ""}><span title="Drops In per second">{$if.DeltaDropsIn}</span><span  className={$if.DeltaDropsOut != null ? "" : "hide"}>/</span>
+        <span  className={$if.DeltaDropsOut != null ? "" : "hide"} title="Drops Out per second">{$if.DeltaDropsOut}</span>
+        ,<span title="Errors In per second">{$if.DeltaErrorsIn}</span>/<span title="Errors Out per second">{$if.DeltaErrorsOut}</span></span></span><span className="expand col small-2 text-right text-nowrap">&nbsp;<span className="gray"><span title="Total packets In modulo 4G">{$if.PacketsIn}</span>/<span title="Total packets Out modulo 4G">{$if.PacketsOut}</span></span>&nbsp;<span title="Packets In per second">{$if.DeltaPacketsIn}</span>/<span title="Packets Out per second">{$if.DeltaPacketsOut}</span></span><span className="expand col small-2 text-right text-nowrap">&nbsp;<span className="gray"><span title="Total BYTES In modulo 4G">{$if.BytesIn}</span>/<span title="Total BYTES Out modulo 4G">{$if.BytesOut}</span></span>&nbsp;<span title="BITS In per second">{$if.DeltaBitsIn}</span>/<span title="BITS Out per second">{$if.DeltaBitsOut}</span></span><span className="expand col-lr">{jsdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}</span></div>
+      );})}
+      
+      
+    </div></div></div>
+  </div>
+</div>);
   }
 });
 
@@ -563,83 +368,54 @@ jsdefines.define_panella = React.createClass({
   },
   render: function() {
     let Data = this.state; // shadow global Data
-    return <div className="grid-block hr-top"
-  ><div className="col-lr large-1 text-right"
-    ><div  className={!Data.params.Lan.Negative ? "hide-showhide" : "show-showhide"}
-      ><h1 className="h4 text-overflow"
-        ><a  href={Data.params.Tlinks.Lan} onClick={this.handleClick} title="Load avg display options"
-          ><span className="showhide-hide whitespace-pre float-left"
-            >... </span
-          >Load avg</a
-        ></h1
-      ></div
-    ></div
-  ><div className="col-lr large-11"
-    ><div  className={!Data.params.Lan.Negative ? "hide-showhide" : "show-showhide"}
-      ><div className="grid-block"
-        ><ul className="menu showhide-show"
-          ><li
-            ><div className="input-group"
-              ><div className="input-group-label small text-nowrap"
-                >delay</div
-              ><div className="input-group-button"
-                ><a className="button small secondary disabled"
-                  >{Data.params.Lad}</a
-                ></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Dlinks.Lad.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Lad.Less.ExtraClass != null ? Data.params.Dlinks.Lad.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Dlinks.Lad.Less.Text}</a
-></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Dlinks.Lad.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Lad.More.ExtraClass != null ? Data.params.Dlinks.Lad.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Dlinks.Lad.More.Text} +</a
-></div
-              ></div
-            ></li
-          ><li
-            ><div className="input-group"
-              ><div className="input-group-label small text-nowrap"
-                >rows</div
-              ><div className="input-group-button"
-                ><a className="button small secondary disabled"
-                  >{Data.params.Lan.Absolute}</a
-                ></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Nlinks.Lan.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.Less.ExtraClass != null ? Data.params.Nlinks.Lan.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Nlinks.Lan.Less.Text}</a
-></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Nlinks.Lan.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.More.ExtraClass != null ? Data.params.Nlinks.Lan.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Nlinks.Lan.More.Text} +</a
-></div
-              ></div
-            ></li
-          ></ul
-        ></div
-      ></div
-    ><div  className={Data.params.Lan.Absolute != 0 ? "" : "hide"}
-      ><div className="grid-block vertical stripe"
-        ><div className="grid-block thead"
-          ><span className="expand col small-1"
-            >Period</span
-          ><span className="expand col small-1 text-right"
-            > Value</span
-          ><span className="expand col"
-            ></span
-          ></div
-        >{this.List(Data).map(function($la, i) { return<div  key={"la-rowby-period-"+$la.Period} className="grid-block"
-          ><span className="expand col small-1"
-            >{$la.Period}m</span
-          ><span className="expand col small-1 text-right"
-            > {$la.Value}</span
-          ><span className="expand col-lr"
-            >{jsdefines.Sparkline({ref: i, col: 'Value'})}</span
-          ></div
-        >})}</div
-      ></div
-    ></div
-  ></div
->;
+    return (
+<div className="grid-block hr-top">
+  <div className="col-lr large-1 text-right"><div  className={!Data.params.Lan.Negative ? "hide-showhide" : "show-showhide"}>
+    <h1 className="h4 text-overflow">
+      <a  href={Data.params.Tlinks.Lan} onClick={this.handleClick} title="Load avg display options">
+      <span className="showhide-hide whitespace-pre float-left">... </span>Load avg</a>
+    </h1></div>
+  </div>
+  <div className="col-lr large-11"><div  className={!Data.params.Lan.Negative ? "hide-showhide" : "show-showhide"}>
+    <div className="grid-block">
+      <ul className="menu showhide-show">
+        <li>
+          <div className="input-group">
+            <div className="input-group-label small text-nowrap">delay</div>
+            <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Lad}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Dlinks.Lad.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Lad.Less.ExtraClass != null ? Data.params.Dlinks.Lad.Less.ExtraClass : "")} onClick={this.handleClick}
+  >- {Data.params.Dlinks.Lad.Less.Text}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Dlinks.Lad.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Lad.More.ExtraClass != null ? Data.params.Dlinks.Lad.More.ExtraClass : "")} onClick={this.handleClick}
+  >{Data.params.Dlinks.Lad.More.Text} +</a></div>
+          </div>
+        </li>
+        <li>
+          <div className="input-group">
+            <div className="input-group-label small text-nowrap">rows</div>
+            <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Lan.Absolute}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Nlinks.Lan.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.Less.ExtraClass != null ? Data.params.Nlinks.Lan.Less.ExtraClass : "")} onClick={this.handleClick}
+  >- {Data.params.Nlinks.Lan.Less.Text}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Nlinks.Lan.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.More.ExtraClass != null ? Data.params.Nlinks.Lan.More.ExtraClass : "")} onClick={this.handleClick}
+  >{Data.params.Nlinks.Lan.More.Text} +</a></div>
+          </div>
+        </li>
+      </ul>
+    </div><div  className={Data.params.Lan.Absolute != 0 ? "" : "hide"}>
+    <div className="grid-block vertical stripe">
+      <div className="grid-block thead"><span className="expand col small-1">Period</span><span className="expand col small-1 text-right"> Value</span><span className="expand col"></span></div>
+      
+      {this.List(Data).map(function($la, i) { return (
+      <div  key={"la-rowby-period-"+$la.Period} className="grid-block"><span className="expand col small-1">{$la.Period}m</span><span className="expand col small-1 text-right"> {$la.Value}</span><span className="expand col-lr">{jsdefines.Sparkline({ref: i, col: 'Value'})}</span></div>
+      );})}
+      
+      
+    </div></div></div>
+  </div>
+</div>);
   }
 });
 
@@ -660,95 +436,54 @@ jsdefines.define_panelmem = React.createClass({
   },
   render: function() {
     let Data = this.state; // shadow global Data
-    return <div className="grid-block hr-top"
-  ><div className="col-lr large-1 text-right"
-    ><div  className={!Data.params.Memn.Negative ? "hide-showhide" : "show-showhide"}
-      ><h1 className="h4 text-overflow"
-        ><a  href={Data.params.Tlinks.Memn} onClick={this.handleClick} title="Memory display options"
-          ><span className="showhide-hide whitespace-pre float-left"
-            >... </span
-          >Memory</a
-        ></h1
-      ></div
-    ></div
-  ><div className="col-lr large-11"
-    ><div  className={!Data.params.Memn.Negative ? "hide-showhide" : "show-showhide"}
-      ><div className="grid-block"
-        ><ul className="menu showhide-show"
-          ><li
-            ><div className="input-group"
-              ><div className="input-group-label small text-nowrap"
-                >delay</div
-              ><div className="input-group-button"
-                ><a className="button small secondary disabled"
-                  >{Data.params.Memd}</a
-                ></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Dlinks.Memd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Dlinks.Memd.Less.Text}</a
-></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Dlinks.Memd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Dlinks.Memd.More.Text} +</a
-></div
-              ></div
-            ></li
-          ><li
-            ><div className="input-group"
-              ><div className="input-group-label small text-nowrap"
-                >rows</div
-              ><div className="input-group-button"
-                ><a className="button small secondary disabled"
-                  >{Data.params.Memn.Absolute}</a
-                ></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Nlinks.Memn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Nlinks.Memn.Less.Text}</a
-></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Nlinks.Memn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Nlinks.Memn.More.Text} +</a
-></div
-              ></div
-            ></li
-          ></ul
-        ></div
-      ></div
-    ><div  className={Data.params.Memn.Absolute != 0 ? "" : "hide"}
-      ><div className="grid-block vertical stripe"
-        ><div className="grid-block thead"
-          ><span className="expand col small-1"
-            >Memory</span
-          ><span className="expand col small-1 text-right"
-            > Total</span
-          ><span className="expand col small-1 text-right"
-            > Used</span
-          ><span className="expand col small-1 text-right"
-            > Free</span
-          ><span className="expand col small-1 text-right"
-            > Use%</span
-          ><span className="expand col"
-            ></span
-          ></div
-        >{this.List(Data).map(function($mem, i) { return<div  key={"mem-rowby-kind-"+$mem.Kind} className="grid-block"
-          ><span className="expand col small-1"
-            >{$mem.Kind}</span
-          ><span className="expand col small-1 text-right"
-            > {$mem.Total}</span
-          ><span className="expand col small-1 text-right"
-            > {$mem.Used}</span
-          ><span className="expand col small-1 text-right"
-            > {$mem.Free}</span
-          ><span className="expand col small-1 text-right bg-usepct" data-usepct={$mem.UsePct}
-            > {$mem.UsePct}%</span
-          ><span className="expand col-lr"
-            >{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</span
-          ></div
-        >})}</div
-      ></div
-    ></div
-  ></div
->;
+    return (
+<div className="grid-block hr-top">
+  <div className="col-lr large-1 text-right"><div  className={!Data.params.Memn.Negative ? "hide-showhide" : "show-showhide"}>
+    <h1 className="h4 text-overflow">
+      <a  href={Data.params.Tlinks.Memn} onClick={this.handleClick} title="Memory display options">
+      <span className="showhide-hide whitespace-pre float-left">... </span>Memory</a>
+    </h1></div>
+  </div>
+  <div className="col-lr large-11"><div  className={!Data.params.Memn.Negative ? "hide-showhide" : "show-showhide"}>
+    <div className="grid-block">
+      <ul className="menu showhide-show">
+        <li>
+          <div className="input-group">
+            <div className="input-group-label small text-nowrap">delay</div>
+            <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Memd}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Dlinks.Memd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : "")} onClick={this.handleClick}
+  >- {Data.params.Dlinks.Memd.Less.Text}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Dlinks.Memd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : "")} onClick={this.handleClick}
+  >{Data.params.Dlinks.Memd.More.Text} +</a></div>
+          </div>
+        </li>
+        <li>
+          <div className="input-group">
+            <div className="input-group-label small text-nowrap">rows</div>
+            <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Memn.Absolute}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Nlinks.Memn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : "")} onClick={this.handleClick}
+  >- {Data.params.Nlinks.Memn.Less.Text}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Nlinks.Memn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : "")} onClick={this.handleClick}
+  >{Data.params.Nlinks.Memn.More.Text} +</a></div>
+          </div>
+        </li>
+      </ul>
+    </div><div  className={Data.params.Memn.Absolute != 0 ? "" : "hide"}>
+    <div className="grid-block vertical stripe">
+      <div className="grid-block thead"><span className="expand col small-1">Memory</span><span className="expand col small-1 text-right"> Total</span><span className="expand col small-1 text-right"> Used</span><span className="expand col small-1 text-right"> Free</span><span className="expand col small-1 text-right"> Use%</span><span className="expand col"></span></div>
+      
+      {this.List(Data).map(function($mem, i) { return (
+      <div  key={"mem-rowby-kind-"+$mem.Kind} className="grid-block"><span className="expand col small-1">{$mem.Kind}</span><span className="expand col small-1 text-right"> {$mem.Total}</span><span className="expand col small-1 text-right"> {$mem.Used}</span><span className="expand col small-1 text-right"> {$mem.Free}</span><span className="expand col small-1 text-right bg-usepct" data-usepct={$mem.UsePct}> {$mem.UsePct}%</span><span className="expand col-lr">{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</span></div>
+      );})}
+      
+      
+    </div></div></div>
+  </div>
+</div>);
   }
 });
 
@@ -769,143 +504,72 @@ jsdefines.define_panelps = React.createClass({
   },
   render: function() {
     let Data = this.state; // shadow global Data
-    return <div className="grid-block hr-top"
-  ><div className="col-lr large-1 text-right"
-    ><div  className={!Data.params.Psn.Negative ? "hide-showhide" : "show-showhide"}
-      ><h1 className="h4 text-overflow"
-        ><a  href={Data.params.Tlinks.Psn} onClick={this.handleClick} title="Processes display options"
-          ><span className="showhide-hide whitespace-pre float-left"
-            >... </span
-          >Processes</a
-        ></h1
-      ></div
-    ></div
-  ><div className="col-lr large-11"
-    ><div  className={!Data.params.Psn.Negative ? "hide-showhide" : "show-showhide"}
-      ><div className="grid-block"
-        ><ul className="menu showhide-show"
-          ><li
-            ><div className="input-group"
-              ><div className="input-group-label small text-nowrap"
-                >delay</div
-              ><div className="input-group-button"
-                ><a className="button small secondary disabled"
-                  >{Data.params.Psd}</a
-                ></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Dlinks.Psd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Dlinks.Psd.Less.Text}</a
-></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Dlinks.Psd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Dlinks.Psd.More.Text} +</a
-></div
-              ></div
-            ></li
-          ><li
-            ><div className="input-group"
-              ><div className="input-group-label small text-nowrap"
-                >rows</div
-              ><div className="input-group-button"
-                ><a className="button small secondary disabled"
-                  >{Data.params.Psn.Absolute}</a
-                ></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Nlinks.Psn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : "")} onClick={this.handleClick}  
-  >- {Data.params.Nlinks.Psn.Less.Text}</a
-></div
-              ><div className="input-group-button"
-                ><a href={Data.params.Nlinks.Psn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : "")} onClick={this.handleClick}  
-  >{Data.params.Nlinks.Psn.More.Text} +</a
-></div
-              ></div
-            ></li
-          ></ul
-        ></div
-      ></div
-    ><div  className={Data.params.Psn.Absolute != 0 ? "" : "hide"}
-      ><div className="grid-block vertical stripe"
-        ><div className="grid-block thead"
-          ><span className="expand col small-1 text-nowrap text-right"
-            ><a href={Data.params.Vlinks.Psk[1-1].LinkHref} className={Data.params.Vlinks.Psk[1-1].LinkClass} onClick={this.handleClick}  
-  >PID<span className={Data.params.Vlinks.Psk[1-1].CaretClass}
-    ></span
-  ></a
-></span
-          ><span className="expand col small-1 text-nowrap text-right"
-            > <a href={Data.params.Vlinks.Psk[2-1].LinkHref} className={Data.params.Vlinks.Psk[2-1].LinkClass} onClick={this.handleClick}  
-  >UID<span className={Data.params.Vlinks.Psk[2-1].CaretClass}
-    ></span
-  ></a
-></span
-          ><span className="expand col small-1 text-nowrap"
-            > <a href={Data.params.Vlinks.Psk[3-1].LinkHref} className={Data.params.Vlinks.Psk[3-1].LinkClass} onClick={this.handleClick}  
-  >USER<span className={Data.params.Vlinks.Psk[3-1].CaretClass}
-    ></span
-  ></a
-></span
-          ><span className="expand col small-1 text-nowrap text-right"
-            > <a href={Data.params.Vlinks.Psk[4-1].LinkHref} className={Data.params.Vlinks.Psk[4-1].LinkClass} onClick={this.handleClick}  
-  >PR<span className={Data.params.Vlinks.Psk[4-1].CaretClass}
-    ></span
-  ></a
-></span
-          ><span className="expand col small-1 text-nowrap text-right"
-            > <a href={Data.params.Vlinks.Psk[5-1].LinkHref} className={Data.params.Vlinks.Psk[5-1].LinkClass} onClick={this.handleClick}  
-  >NI<span className={Data.params.Vlinks.Psk[5-1].CaretClass}
-    ></span
-  ></a
-></span
-          ><span className="expand col small-1 text-nowrap text-right"
-            > <a href={Data.params.Vlinks.Psk[6-1].LinkHref} className={Data.params.Vlinks.Psk[6-1].LinkClass} onClick={this.handleClick}  
-  >VIRT<span className={Data.params.Vlinks.Psk[6-1].CaretClass}
-    ></span
-  ></a
-></span
-          ><span className="expand col small-1 text-nowrap text-right"
-            > <a href={Data.params.Vlinks.Psk[7-1].LinkHref} className={Data.params.Vlinks.Psk[7-1].LinkClass} onClick={this.handleClick}  
-  >RES<span className={Data.params.Vlinks.Psk[7-1].CaretClass}
-    ></span
-  ></a
-></span
-          ><span className="expand col small-1 text-nowrap text-center"
-            > <a href={Data.params.Vlinks.Psk[8-1].LinkHref} className={Data.params.Vlinks.Psk[8-1].LinkClass} onClick={this.handleClick}  
-  >TIME<span className={Data.params.Vlinks.Psk[8-1].CaretClass}
-    ></span
-  ></a
-></span
-          ><span className="expand col small-1 text-nowrap"
-            > <a href={Data.params.Vlinks.Psk[9-1].LinkHref} className={Data.params.Vlinks.Psk[9-1].LinkClass} onClick={this.handleClick}  
-  >COMMAND<span className={Data.params.Vlinks.Psk[9-1].CaretClass}
-    ></span
-  ></a
-></span
-          ></div
-        >{this.List(Data).map(function($ps) { return<div  key={"ps-rowby-pid-"+$ps.PID} className="grid-block"
-          ><span className="expand col small-1 text-right"
-            >{$ps.PID}</span
-          ><span className="expand col small-1 text-right"
-            > {$ps.UID}</span
-          ><span className="expand col small-1"
-            > {$ps.User}</span
-          ><span className="expand col small-1 text-right"
-            > {$ps.Priority}</span
-          ><span className="expand col small-1 text-right"
-            > {$ps.Nice}</span
-          ><span className="expand col small-1 text-right"
-            > {$ps.Size}</span
-          ><span className="expand col small-1 text-right"
-            > {$ps.Resident}</span
-          ><span className="expand col small-1 text-center"
-            > {$ps.Time}</span
-          ><span className="expand col"
-            > {$ps.Name}</span
-          ></div
-        >})}</div
-      ></div
-    ></div
-  ></div
->;
+    return (
+<div className="grid-block hr-top">
+  <div className="col-lr large-1 text-right"><div  className={!Data.params.Psn.Negative ? "hide-showhide" : "show-showhide"}>
+    <h1 className="h4 text-overflow">
+      <a  href={Data.params.Tlinks.Psn} onClick={this.handleClick} title="Processes display options">
+      <span className="showhide-hide whitespace-pre float-left">... </span>Processes</a>
+    </h1></div>
+  </div>
+  <div className="col-lr large-11"><div  className={!Data.params.Psn.Negative ? "hide-showhide" : "show-showhide"}>
+    <div className="grid-block">
+      <ul className="menu showhide-show">
+        <li>
+          <div className="input-group">
+            <div className="input-group-label small text-nowrap">delay</div>
+            <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Psd}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Dlinks.Psd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : "")} onClick={this.handleClick}
+  >- {Data.params.Dlinks.Psd.Less.Text}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Dlinks.Psd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : "")} onClick={this.handleClick}
+  >{Data.params.Dlinks.Psd.More.Text} +</a></div>
+          </div>
+        </li>
+        <li>
+          <div className="input-group">
+            <div className="input-group-label small text-nowrap">rows</div>
+            <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Psn.Absolute}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Nlinks.Psn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : "")} onClick={this.handleClick}
+  >- {Data.params.Nlinks.Psn.Less.Text}</a></div>
+            <div className="input-group-button">
+<a href={Data.params.Nlinks.Psn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : "")} onClick={this.handleClick}
+  >{Data.params.Nlinks.Psn.More.Text} +</a></div>
+          </div>
+        </li>
+      </ul>
+    </div><div  className={Data.params.Psn.Absolute != 0 ? "" : "hide"}>
+    <div className="grid-block vertical stripe">
+      <div className="grid-block thead"><span className="expand col small-1 text-nowrap text-right">
+<a href={Data.params.Vlinks.Psk[1-1].LinkHref} className={Data.params.Vlinks.Psk[1-1].LinkClass} onClick={this.handleClick}
+  >PID<span className={Data.params.Vlinks.Psk[1-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right"> 
+<a href={Data.params.Vlinks.Psk[2-1].LinkHref} className={Data.params.Vlinks.Psk[2-1].LinkClass} onClick={this.handleClick}
+  >UID<span className={Data.params.Vlinks.Psk[2-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap"> 
+<a href={Data.params.Vlinks.Psk[3-1].LinkHref} className={Data.params.Vlinks.Psk[3-1].LinkClass} onClick={this.handleClick}
+  >USER<span className={Data.params.Vlinks.Psk[3-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right"> 
+<a href={Data.params.Vlinks.Psk[4-1].LinkHref} className={Data.params.Vlinks.Psk[4-1].LinkClass} onClick={this.handleClick}
+  >PR<span className={Data.params.Vlinks.Psk[4-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right"> 
+<a href={Data.params.Vlinks.Psk[5-1].LinkHref} className={Data.params.Vlinks.Psk[5-1].LinkClass} onClick={this.handleClick}
+  >NI<span className={Data.params.Vlinks.Psk[5-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right"> 
+<a href={Data.params.Vlinks.Psk[6-1].LinkHref} className={Data.params.Vlinks.Psk[6-1].LinkClass} onClick={this.handleClick}
+  >VIRT<span className={Data.params.Vlinks.Psk[6-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right"> 
+<a href={Data.params.Vlinks.Psk[7-1].LinkHref} className={Data.params.Vlinks.Psk[7-1].LinkClass} onClick={this.handleClick}
+  >RES<span className={Data.params.Vlinks.Psk[7-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-center"> 
+<a href={Data.params.Vlinks.Psk[8-1].LinkHref} className={Data.params.Vlinks.Psk[8-1].LinkClass} onClick={this.handleClick}
+  >TIME<span className={Data.params.Vlinks.Psk[8-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap"> 
+<a href={Data.params.Vlinks.Psk[9-1].LinkHref} className={Data.params.Vlinks.Psk[9-1].LinkClass} onClick={this.handleClick}
+  >COMMAND<span className={Data.params.Vlinks.Psk[9-1].CaretClass}></span></a></span></div>
+      
+      {this.List(Data).map(function($ps) { return (
+      <div  key={"ps-rowby-pid-"+$ps.PID} className="grid-block"><span className="expand col small-1 text-right">{$ps.PID}</span><span className="expand col small-1 text-right"> {$ps.UID}</span><span className="expand col small-1"> {$ps.User}</span><span className="expand col small-1 text-right"> {$ps.Priority}</span><span className="expand col small-1 text-right"> {$ps.Nice}</span><span className="expand col small-1 text-right"> {$ps.Size}</span><span className="expand col small-1 text-right"> {$ps.Resident}</span><span className="expand col small-1 text-center"> {$ps.Time}</span><span className="expand col"> {$ps.Name}</span></div>
+      );})}
+      
+      
+    </div></div></div>
+  </div>
+</div>);
   }
 });
 
@@ -918,9 +582,7 @@ jsdefines.define_uptime = React.createClass({
   },
   render: function() {
     let Data = this.state; // shadow global Data
-    return <span
-  >{Data.uptime}</span
->;
+    return (<span>{Data.uptime}</span>);
   }
 });
 

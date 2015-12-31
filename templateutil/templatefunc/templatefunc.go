@@ -17,7 +17,8 @@ func (f HTMLFuncs) TitlePrefixed(prefix string, v interface{}) template.HTMLAttr
 }
 
 func (f JSXLFuncs) ClassAllZero(x1, x2, y1, y2 interface{}, class string) template.HTMLAttr {
-	return SprintfAttr(" className={(%s && %s && %s && %s) ? %q : \"\"}",
+	return SprintfAttr(" %s={(%s && %s && %s && %s) ? %q : \"\"}",
+		f.Class(),
 		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", x1.(Uncurler).Uncurl()),
 		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", x2.(Uncurler).Uncurl()),
 		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", y1.(Uncurler).Uncurl()),
@@ -46,7 +47,8 @@ func (f HTMLFuncs) IsStringZero(x interface{}) bool {
 }
 
 func (f JSXLFuncs) ClassNonNil(x interface{}, class, sndclass string) template.HTMLAttr {
-	return SprintfAttr(" className={%s != null ? %q : %q}",
+	return SprintfAttr(" %s={%s != null ? %q : %q}",
+		f.Class(),
 		x.(Uncurler).Uncurl(), class, sndclass)
 }
 
@@ -58,7 +60,8 @@ func (f HTMLFuncs) ClassNonNil(x interface{}, class, sndclass string) template.H
 }
 
 func (f JSXLFuncs) ClassNonZero(x interface{}, class, sndclass string) template.HTMLAttr {
-	return SprintfAttr(` className={%s.Absolute != 0 ? %q : %q}`,
+	return SprintfAttr(` %s={%s.Absolute != 0 ? %q : %q}`,
+		f.Class(),
 		x.(Uncurler).Uncurl(), class, sndclass)
 }
 
@@ -70,7 +73,8 @@ func (f HTMLFuncs) ClassNonZero(x interface{}, class, sndclass string) template.
 }
 
 func (f JSXLFuncs) ClassPositive(x interface{}, class, sndclass string) template.HTMLAttr {
-	return SprintfAttr(` className={!%s.Negative ? %q : %q}`,
+	return SprintfAttr(` %s={!%s.Negative ? %q : %q}`,
+		f.Class(),
 		x.(Uncurler).Uncurl(), class, sndclass)
 }
 

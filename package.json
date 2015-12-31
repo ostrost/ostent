@@ -20,6 +20,8 @@
     "es6-promise": "^3.0.2",
     "extract-text-webpack-plugin": "^0.9.1",
     "gulp": "^3.9.0",
+    "gulp-jade": "^1.1.0",
+    "gulp-rename": "^1.2.2",
     "node-sass": "^3.4.2",
     "react": "^0.14.5",
     "react-sparklines": "^1.4.2",

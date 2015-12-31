@@ -1,0 +1,60 @@
+include ./defines.jade
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    title {{.Data.hostname}} ostent
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+
+    <!--[if IE]>
+    link(rel='shortcut icon', href='/favicon.ico')
+    <![endif]-->
+    link(rel='icon', sizes='32x32', href='/{{.OstentVersion}}/favicons/favicon-32.png type=image/png')
+    link(rel='apple-touch-icon', sizes='120x120', href='/{{.OstentVersion}}/favicons/favicon-120.png')
+    link(rel='apple-touch-icon', sizes='144x144', href='/{{.OstentVersion}}/favicons/favicon-144.png')
+    link(rel='apple-touch-icon', sizes='152x152', href='/{{.OstentVersion}}/favicons/favicon-152.png')
+    link(rel='apple-touch-icon', sizes='180x180', href='/{{.OstentVersion}}/favicons/favicon-180.png')
+
+    link(rel='stylesheet', type='text/css', href='/{{.OstentVersion}}/css/index.css')
+
+  body
+    .top-bar
+      .top-bar-left
+        ul.menu
+          li
+            h2.h4(style='margin-bottom: 0')
+              span.updates(data-define='define_hostname')
+                | {{template "defines::define_hostname" .}}
+              |  
+              small {{.Distrib}}
+          li
+            span.col up
+            span.col.updates.whitespace-pre(data-define='define_uptime')
+              | {{template "defines::define_uptime" .}}
+      .top-bar-right
+        ul.menu
+          li
+            a.button.secondary.hollow(style='margin: 0', href='https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}') ostent
+
+    .updates(data-define='define_panella')
+      | {{template "defines::define_panella" .}}
+
+    .updates(data-define='define_panelmem')
+      | {{template "defines::define_panelmem" .}}
+
+    .updates(data-define='define_paneldf')
+      | {{template "defines::define_paneldf" .}}
+
+    .updates(data-define='define_panelcpu')
+      | {{template "defines::define_panelcpu" .}}
+
+    .updates(data-define='define_panelif')
+      | {{template "defines::define_panelif" .}}
+
+    .updates(data-define='define_panelps')
+      | {{template "defines::define_panelps" .}}
+
+    script(type='text/javascript').
+      var Data = {{.Data}};
+    script(type='text/javascript', charset='utf-8', src='/{{.OstentVersion}}/js/{{if .TAGGEDbin}}min/bundle.min.js{{else}}src/bundle.js{{end}}')

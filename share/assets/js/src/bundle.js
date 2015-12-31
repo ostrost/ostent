@@ -20331,7 +20331,7 @@
 	      href: Data.params.Nlinks.CPUn.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.CPUn.More.Text, ' +'))))))), _jsx('div', {
+	    }, void 0, Data.params.Nlinks.CPUn.More.Text, ' +')))))), _jsx('div', {
 	      className: Data.params.CPUn.Absolute != 0 ? "" : "hide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block vertical stripe'
@@ -20367,7 +20367,7 @@
 	      }, void 0, ' ', $cpu.IdlePct, '%'), _jsx('span', {
 	        className: 'expand col-lr'
 	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'IdlePct', defaultSpots: true })));
-	    })))));
+	    }))))));
 	  }
 	});
 
@@ -20456,7 +20456,7 @@
 	      href: Data.params.Nlinks.Dfn.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.Dfn.More.Text, ' +'))))))), _jsx('div', {
+	    }, void 0, Data.params.Nlinks.Dfn.More.Text, ' +')))))), _jsx('div', {
 	      className: Data.params.Dfn.Absolute != 0 ? "" : "hide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block vertical stripe'
@@ -20545,7 +20545,7 @@
 	      }, void 0, ' ', $df.IusePct, '%')), _jsx('span', {
 	        className: 'expand col-lr'
 	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct' })));
-	    })))));
+	    }))))));
 	  }
 	});
 
@@ -20634,7 +20634,7 @@
 	      href: Data.params.Nlinks.Ifn.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.Ifn.More.Text, ' +'))))))), _jsx('div', {
+	    }, void 0, Data.params.Nlinks.Ifn.More.Text, ' +')))))), _jsx('div', {
 	      className: Data.params.Ifn.Absolute != 0 ? "" : "hide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block vertical stripe'
@@ -20645,14 +20645,14 @@
 	    }, void 0, 'Interface'), _jsx('span', {
 	      className: 'expand col small-1 text-right'
 	    }, void 0, ' IP'), _jsx('span', {
-	      className: 'expand col small-2 text-right text-nowrap',
-	      title: 'Drops,Errors In/Out per second'
+	      title: 'Drops,Errors In/Out per second',
+	      className: 'expand col small-2 text-right text-nowrap'
 	    }, void 0, ' Loss IO ps'), _jsx('span', {
-	      className: 'expand col small-2 text-right text-nowrap',
-	      title: 'Packets In/Out per second'
+	      title: 'Packets In/Out per second',
+	      className: 'expand col small-2 text-right text-nowrap'
 	    }, void 0, ' Packets IO ps'), _jsx('span', {
-	      className: 'expand col small-2 text-right text-nowrap',
-	      title: 'Bits In/Out per second'
+	      title: 'Bits In/Out per second',
+	      className: 'expand col small-2 text-right text-nowrap'
 	    }, void 0, ' IO ', _jsx('i', {}, void 0, 'b'), 'ps'), _ref4), this.List(Data).map(function ($if, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
@@ -20662,9 +20662,9 @@
 	        className: 'expand col small-1 text-overflow text-right'
 	      }, void 0, $if.IP), _jsx('span', {
 	        className: 'expand col small-2 text-right text-nowrap'
-	      }, void 0, ' ', _jsx('span', {
-	        className: 'gray',
-	        title: 'Total drops,errors modulo 4G'
+	      }, void 0, ' ', _jsx('span', {
+	        title: 'Total drops,errors modulo 4G',
+	        className: 'gray'
 	      }, void 0, _jsx('span', {
 	        title: 'Total drops In modulo 4G'
 	      }, void 0, $if.DropsIn), _jsx('span', {
@@ -20676,7 +20676,7 @@
 	        title: 'Total errors In modulo 4G'
 	      }, void 0, $if.ErrorsIn), '/', _jsx('span', {
 	        title: 'Total errors Out modulo 4G'
-	      }, void 0, $if.ErrorsOut)), ' ', _jsx('span', {
+	      }, void 0, $if.ErrorsOut)), ' ', _jsx('span', {
 	        className: ($if.DeltaDropsIn == null || $if.DeltaDropsIn == "0") && ($if.DeltaDropsOut == null || $if.DeltaDropsOut == "0") && ($if.DeltaErrorsIn == null || $if.DeltaErrorsIn == "0") && ($if.DeltaErrorsOut == null || $if.DeltaErrorsOut == "0") ? "gray" : ""
 	      }, void 0, _jsx('span', {
 	        title: 'Drops In per second'
@@ -20691,32 +20691,32 @@
 	        title: 'Errors Out per second'
 	      }, void 0, $if.DeltaErrorsOut))), _jsx('span', {
 	        className: 'expand col small-2 text-right text-nowrap'
-	      }, void 0, ' ', _jsx('span', {
+	      }, void 0, ' ', _jsx('span', {
 	        className: 'gray'
 	      }, void 0, _jsx('span', {
 	        title: 'Total packets In modulo 4G'
 	      }, void 0, $if.PacketsIn), '/', _jsx('span', {
 	        title: 'Total packets Out modulo 4G'
-	      }, void 0, $if.PacketsOut)), ' ', _jsx('span', {
+	      }, void 0, $if.PacketsOut)), ' ', _jsx('span', {
 	        title: 'Packets In per second'
 	      }, void 0, $if.DeltaPacketsIn), '/', _jsx('span', {
 	        title: 'Packets Out per second'
 	      }, void 0, $if.DeltaPacketsOut)), _jsx('span', {
 	        className: 'expand col small-2 text-right text-nowrap'
-	      }, void 0, ' ', _jsx('span', {
+	      }, void 0, ' ', _jsx('span', {
 	        className: 'gray'
 	      }, void 0, _jsx('span', {
 	        title: 'Total BYTES In modulo 4G'
 	      }, void 0, $if.BytesIn), '/', _jsx('span', {
 	        title: 'Total BYTES Out modulo 4G'
-	      }, void 0, $if.BytesOut)), ' ', _jsx('span', {
+	      }, void 0, $if.BytesOut)), ' ', _jsx('span', {
 	        title: 'BITS In per second'
 	      }, void 0, $if.DeltaBitsIn), '/', _jsx('span', {
 	        title: 'BITS Out per second'
 	      }, void 0, $if.DeltaBitsOut)), _jsx('span', {
 	        className: 'expand col-lr'
 	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'DeltaBytesOutNum' })));
-	    })))));
+	    }))))));
 	  }
 	});
 
@@ -20805,7 +20805,7 @@
 	      href: Data.params.Nlinks.Lan.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.More.ExtraClass != null ? Data.params.Nlinks.Lan.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.Lan.More.Text, ' +'))))))), _jsx('div', {
+	    }, void 0, Data.params.Nlinks.Lan.More.Text, ' +')))))), _jsx('div', {
 	      className: Data.params.Lan.Absolute != 0 ? "" : "hide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block vertical stripe'
@@ -20825,7 +20825,7 @@
 	      }, void 0, ' ', $la.Value), _jsx('span', {
 	        className: 'expand col-lr'
 	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'Value' })));
-	    })))));
+	    }))))));
 	  }
 	});
 
@@ -20914,7 +20914,7 @@
 	      href: Data.params.Nlinks.Memn.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.Memn.More.Text, ' +'))))))), _jsx('div', {
+	    }, void 0, Data.params.Nlinks.Memn.More.Text, ' +')))))), _jsx('div', {
 	      className: Data.params.Memn.Absolute != 0 ? "" : "hide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block vertical stripe'
@@ -20947,7 +20947,7 @@
 	      }, void 0, ' ', $mem.UsePct, '%'), _jsx('span', {
 	        className: 'expand col-lr'
 	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct' })));
-	    })))));
+	    }))))));
 	  }
 	});
 
@@ -21032,7 +21032,7 @@
 	      href: Data.params.Nlinks.Psn.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : ""),
 	      onClick: this.handleClick
-	    }, void 0, Data.params.Nlinks.Psn.More.Text, ' +'))))))), _jsx('div', {
+	    }, void 0, Data.params.Nlinks.Psn.More.Text, ' +')))))), _jsx('div', {
 	      className: Data.params.Psn.Absolute != 0 ? "" : "hide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block vertical stripe'
@@ -21048,7 +21048,7 @@
 	      className: Data.params.Vlinks.Psk[1 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap text-right'
-	    }, void 0, ' ', _jsx('a', {
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Psk[2 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[2 - 1].LinkClass,
 	      onClick: this.handleClick
@@ -21056,7 +21056,7 @@
 	      className: Data.params.Vlinks.Psk[2 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap'
-	    }, void 0, ' ', _jsx('a', {
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Psk[3 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[3 - 1].LinkClass,
 	      onClick: this.handleClick
@@ -21064,7 +21064,7 @@
 	      className: Data.params.Vlinks.Psk[3 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap text-right'
-	    }, void 0, ' ', _jsx('a', {
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Psk[4 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[4 - 1].LinkClass,
 	      onClick: this.handleClick
@@ -21072,7 +21072,7 @@
 	      className: Data.params.Vlinks.Psk[4 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap text-right'
-	    }, void 0, ' ', _jsx('a', {
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Psk[5 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[5 - 1].LinkClass,
 	      onClick: this.handleClick
@@ -21080,7 +21080,7 @@
 	      className: Data.params.Vlinks.Psk[5 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap text-right'
-	    }, void 0, ' ', _jsx('a', {
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Psk[6 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[6 - 1].LinkClass,
 	      onClick: this.handleClick
@@ -21088,7 +21088,7 @@
 	      className: Data.params.Vlinks.Psk[6 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap text-right'
-	    }, void 0, ' ', _jsx('a', {
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Psk[7 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[7 - 1].LinkClass,
 	      onClick: this.handleClick
@@ -21096,7 +21096,7 @@
 	      className: Data.params.Vlinks.Psk[7 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap text-center'
-	    }, void 0, ' ', _jsx('a', {
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Psk[8 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[8 - 1].LinkClass,
 	      onClick: this.handleClick
@@ -21104,7 +21104,7 @@
 	      className: Data.params.Vlinks.Psk[8 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap'
-	    }, void 0, ' ', _jsx('a', {
+	    }, void 0, _jsx('a', {
 	      href: Data.params.Vlinks.Psk[9 - 1].LinkHref,
 	      className: Data.params.Vlinks.Psk[9 - 1].LinkClass,
 	      onClick: this.handleClick
@@ -21132,7 +21132,7 @@
 	      }, void 0, ' ', $ps.Time), _jsx('span', {
 	        className: 'expand col'
 	      }, void 0, ' ', $ps.Name));
-	    })))));
+	    }))))));
 	  }
 	});
 

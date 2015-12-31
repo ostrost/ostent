@@ -1,637 +1,293 @@
-<!DOCTYPE html
->{{$v := .OstentVersion}}<html
-  ><head
-    ><meta charset="utf-8"
-    ><title
-      >{{.Data.hostname}} ostent</title
-    ><meta http-equiv="X-UA-Compatible" content="IE=edge"
-    ><meta name="viewport" content="width=device-width, initial-scale=1.0"
-    >{{HTML "<!"}}--[if IE]><link rel="shortcut icon" href="/favicon.ico"
-    >{{HTML "<!"}}[endif]--><link rel="icon" sizes="32x32" href="/{{$v}}/favicons/favicon-32.png" type="image/png"
-    ><link rel="apple-touch-icon" sizes="120x120" href="/{{$v}}/favicons/favicon-120.png"
-    ><link rel="apple-touch-icon" sizes="144x144" href="/{{$v}}/favicons/favicon-144.png"
-    ><link rel="apple-touch-icon" sizes="152x152" href="/{{$v}}/favicons/favicon-152.png"
-    ><link rel="apple-touch-icon" sizes="180x180" href="/{{$v}}/favicons/favicon-180.png"
-    ><link rel="stylesheet" type="text/css" href="/{{$v}}/css/index.css"
-    ></head
-  ><body
-    ><div class="top-bar"
-      ><div class="top-bar-left"
-        ><ul class="menu"
-          ><li
-            ><h2 class="h4" style="margin-bottom: 0"
-              ><span class="updates" data-define="define_hostname"
-                >{{template "defines::define_hostname" .}}</span
-              > <small
-                >{{.Distrib}}</small
-              ></h2
-            ></li
-          ><li
-            ><span class="col"
-              >up</span
-            ><span class="col updates whitespace-pre" data-define="define_uptime"
-              >{{template "defines::define_uptime" .}}</span
-            ></li
-          ></ul
-        ></div
-      ><div class="top-bar-right"
-        ><ul class="menu"
-          ><li
-            ><a class="button secondary hollow" style="margin: 0" href="https://www.ostrost.com/ostent/releases/latest?cmp={{$v}}"
-              >ostent</a
-            ></li
-          ></ul
-        ></div
-      ></div
-    ><div class="updates" data-define="define_panella"
-      >{{template "defines::define_panella" .}}</div
-    ><div class="updates" data-define="define_panelmem"
-      >{{template "defines::define_panelmem" .}}</div
-    ><div class="updates" data-define="define_paneldf"
-      >{{template "defines::define_paneldf" .}}</div
-    ><div class="updates" data-define="define_panelcpu"
-      >{{template "defines::define_panelcpu" .}}</div
-    ><div class="updates" data-define="define_panelif"
-      >{{template "defines::define_panelif" .}}</div
-    ><div class="updates" data-define="define_panelps"
-      >{{template "defines::define_panelps" .}}</div
-    ><script type="text/javascript"
-      >var Data = {{.Data}};</script
-    ><script type="text/javascript" charset="utf-8" src="/{{$v}}/js/{{if .TAGGEDbin}}min/bundle.min.js{{else}}src/bundle.js{{end}}"
-      ></script
-    ></body
-  ></html
->{{/*
-*/}}{{define "defines::alink_badgeleft"}}<a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}  
-  >{{.Badge}} {{.Text}}</a
->{{end}}{{/*
-*/}}{{define "defines::alink_badgeright"}}<a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}  
-  >{{.Text}} {{.Badge}}</a
->{{end}}{{/*
-*/}}{{define "defines::avlink"}}<a href={{.LinkHref}} {{class}}={{.LinkClass}} onClick={this.handleClick}  
-  >{{.LinkText}}<span {{class}}={{.CaretClass}}
-    ></span
-  ></a
->{{end}}{{/*
-*/}}{{define "defines::define_hostname"}}<a href="/" {{TitlePrefixed "hostname " .Data.hostname}}
-  >{{.Data.hostname}}</a
->{{end}}{{/*
-*/}}{{define "defines::define_panelcpu"}}{{$p := .Data.params}}<div {{class}}="grid-block hr-top"
-  ><div class="col-lr large-1 text-right"
-    ><div {{ClassPositive $p.CPUn "hide-showhide" "show-showhide"}}
-      ><h1 class="h4 text-overflow"
-        ><a {{HrefT $p $p.CPUn}} title="CPU display options"
-          ><span {{class}}="showhide-hide whitespace-pre float-left"
-            >... </span
-          >CPU</a
-        ></h1
-      ></div
-    ></div
-  ><div class="col-lr large-11"
-    ><div {{ClassPositive $p.CPUn "hide-showhide" "show-showhide"}}
-      ><div class="grid-block"
-        ><ul class="menu showhide-show"
-          ><li
-            ><div class="input-group"
-              ><div class="input-group-label small text-nowrap"
-                >delay</div
-              ><div class="input-group-button"
-                ><a class="button small secondary disabled"
-                  >{{$p.CPUd}}</a
-                ></div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeleft" LessD $p $p.CPUd "button small text-nowrap"}}</div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeright" MoreD $p $p.CPUd "button small text-nowrap"}}</div
-              ></div
-            ></li
-          ><li
-            ><div class="input-group"
-              ><div class="input-group-label small text-nowrap"
-                >rows</div
-              ><div class="input-group-button"
-                ><a class="button small secondary disabled"
-                  >{{$p.CPUn.Absolute}}</a
-                ></div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeleft" LessN $p $p.CPUn "button small success text-nowrap"}}</div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeright" MoreN $p $p.CPUn "button small success text-nowrap"}}</div
-              ></div
-            ></li
-          ></ul
-        ></div
-      ></div
-    ><div {{ClassNonZero $p.CPUn "" "hide"}}
-      ><div class="grid-block vertical stripe"
-        ><div class="grid-block thead"
-          ><span class="expand col small-1"
-            >Core</span
-          ><span class="expand col small-1 text-right"
-            > User%</span
-          ><span class="expand col small-1 text-right"
-            > Sys%</span
-          ><span class="expand col small-1 text-right"
-            > Wait%</span
-          ><span class="expand col small-1 text-right"
-            > Idle%</span
-          ><span class="expand col"
-            ></span
-          ></div
-        >{{if .Data.cpu}}{{range $cpu := .Data.cpu.List}}{{jsx `{this.List(Data).map(function($cpu, i) { return`}}<div {{Key "cpu-rowby-N" $cpu.N}} {{class}}="grid-block"
-          ><span class="expand col small-1 text-nowrap"
-            >{{$cpu.N}}</span
-          ><span {{class}}="expand col small-1 text-right bg-usepct"
-data-usepct={{$cpu.UserPct}}
-            > {{$cpu.UserPct}}%</span
-          ><span {{class}}="expand col small-1 text-right bg-usepct"
-data-usepct={{$cpu.SysPct}}
-            > {{$cpu.SysPct}}%</span
-          ><span {{class}}="expand col small-1 text-right bg-usepct"
-data-usepct={{$cpu.WaitPct}}
-            > {{$cpu.WaitPct}}%</span
-          ><span {{class}}="expand col small-1 text-right bg-usepct-inverse"
-data-usepct={{$cpu.IdlePct}}
-            > {{$cpu.IdlePct}}%</span
-          ><span class="expand col-lr"
-            >{{jsx `{jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}`}}</span
-          ></div
-        >{{jsx `})}`}}{{end}}{{end}}</div
-      ></div
-    ></div
-  ></div
->{{end}}{{/*
-*/}}{{define "defines::define_paneldf"}}{{$p := .Data.params}}<div {{class}}="grid-block hr-top"
-  ><div class="col-lr large-1 text-right"
-    ><div {{ClassPositive $p.Dfn "hide-showhide" "show-showhide"}}
-      ><h1 class="h4 text-overflow"
-        ><a {{HrefT $p $p.Dfn}} title="Disk usage display options"
-          ><span {{class}}="showhide-hide whitespace-pre float-left"
-            >... </span
-          >Disk usage</a
-        ></h1
-      ></div
-    ></div
-  ><div class="col-lr large-11"
-    ><div {{ClassPositive $p.Dfn "hide-showhide" "show-showhide"}}
-      ><div class="grid-block"
-        ><ul class="menu showhide-show"
-          ><li
-            ><div class="input-group"
-              ><div class="input-group-label small text-nowrap"
-                >delay</div
-              ><div class="input-group-button"
-                ><a class="button small secondary disabled"
-                  >{{$p.Dfd}}</a
-                ></div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeleft" LessD $p $p.Dfd "button small text-nowrap"}}</div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeright" MoreD $p $p.Dfd "button small text-nowrap"}}</div
-              ></div
-            ></li
-          ><li
-            ><div class="input-group"
-              ><div class="input-group-label small text-nowrap"
-                >rows</div
-              ><div class="input-group-button"
-                ><a class="button small secondary disabled"
-                  >{{$p.Dfn.Absolute}}</a
-                ></div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeleft" LessN $p $p.Dfn "button small success text-nowrap"}}</div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeright" MoreN $p $p.Dfn "button small success text-nowrap"}}</div
-              ></div
-            ></li
-          ></ul
-        ></div
-      ></div
-    ><div {{ClassNonZero $p.Dfn "" "hide"}}
-      ><div class="grid-block vertical stripe"
-        ><div class="grid-block thead"
-          ><span class="expand col small-1 text-nowrap"
-            >{{template "defines::avlink" Vlink $p $p.Dfk 1 "Device"}}</span
-          ><span class="expand col small-1 text-nowrap"
-            >{{template "defines::avlink" Vlink $p $p.Dfk 2 "Mounted"}}</span
-          ><span class="expand col small-1 text-nowrap text-right"
-            >{{template "defines::avlink" Vlink $p $p.Dfk 6 "Total"}}</span
-          ><span class="expand col small-1 text-nowrap text-right"
-            >{{template "defines::avlink" Vlink $p $p.Dfk 5 "Used"}}</span
-          ><span class="expand col small-1 text-nowrap text-right"
-            >{{template "defines::avlink" Vlink $p $p.Dfk 3 "Avail"}}</span
-          ><span class="expand col small-1 text-nowrap text-right"
-            >{{template "defines::avlink" Vlink $p $p.Dfk 4 "Use%"}}</span
-          ><span class="expand col"
-            ></span
-          ></div
-        >{{if .Data.diskUsage}}{{range $df := .Data.diskUsage.List}}{{jsx `{this.List(Data).map(function($df, i) { return`}}<div {{Key "df-rowby-dirname" $df.DirName}} {{class}}="grid-block"
-          ><span class="expand col small-1 text-overflow"
-            >{{$df.DevName}}</span
-          ><span class="expand col small-1 text-overflow"
-            > {{$df.DirName}}</span
-          ><span class="expand col small-1 text-overflow text-right gray"
-            ><span class="float-right"
-              > {{$df.Total}}</span
-            ><span title="Inodes total"
-              > {{$df.Inodes}}</span
-            ></span
-          ><span class="expand col small-1 text-overflow text-right gray"
-            ><span class="float-right"
-              > {{$df.Used}}</span
-            ><span title="Inodes used"
-              > {{$df.Iused}}</span
-            ></span
-          ><span class="expand col small-1 text-overflow text-right gray"
-            ><span class="float-right"
-              > {{$df.Avail}}</span
-            ><span title="Inodes free"
-              > {{$df.Ifree}}</span
-            ></span
-          ><span {{class}}="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct={{$df.UsePct}}
-            ><span class="float-right"
-              > {{$df.UsePct}}%</span
-            ><span title="Inodes use%"
-              > {{$df.IusePct}}%</span
-            ></span
-          ><span class="expand col-lr"
-            >{{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}</span
-          ></div
-        >{{jsx `})}`}}{{end}}{{end}}</div
-      ></div
-    ></div
-  ></div
->{{end}}{{/*
-*/}}{{define "defines::define_panelif"}}{{$p := .Data.params}}<div {{class}}="grid-block hr-top"
-  ><div class="col-lr large-1 text-right"
-    ><div {{ClassPositive $p.Ifn "hide-showhide" "show-showhide"}}
-      ><h1 class="h4 text-overflow"
-        ><a {{HrefT $p $p.Ifn}} title="Interfaces display options"
-          ><span {{class}}="showhide-hide whitespace-pre float-left"
-            >... </span
-          >Interfaces</a
-        ></h1
-      ></div
-    ></div
-  ><div class="col-lr large-11"
-    ><div {{ClassPositive $p.Ifn "hide-showhide" "show-showhide"}}
-      ><div class="grid-block"
-        ><ul class="menu showhide-show"
-          ><li
-            ><div class="input-group"
-              ><div class="input-group-label small text-nowrap"
-                >delay</div
-              ><div class="input-group-button"
-                ><a class="button small secondary disabled"
-                  >{{$p.Ifd}}</a
-                ></div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeleft" LessD $p $p.Ifd "button small text-nowrap"}}</div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeright" MoreD $p $p.Ifd "button small text-nowrap"}}</div
-              ></div
-            ></li
-          ><li
-            ><div class="input-group"
-              ><div class="input-group-label small text-nowrap"
-                >rows</div
-              ><div class="input-group-button"
-                ><a class="button small secondary disabled"
-                  >{{$p.Ifn.Absolute}}</a
-                ></div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeleft" LessN $p $p.Ifn "button small success text-nowrap"}}</div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeright" MoreN $p $p.Ifn "button small success text-nowrap"}}</div
-              ></div
-            ></li
-          ></ul
-        ></div
-      ></div
-    ><div {{ClassNonZero $p.Ifn "" "hide"}}
-      ><div class="grid-block vertical stripe"
-        ><div class="grid-block thead"
-          ><span class="expand col small-1"
-            >Interface</span
-          ><span class="expand col small-1 text-right"
-            > IP</span
-          ><span class="expand col small-2 text-right text-nowrap" title="Drops,Errors In/Out per second"
-            > Loss IO ps</span
-          ><span class="expand col small-2 text-right text-nowrap" title="Packets In/Out per second"
-            > Packets IO ps</span
-          ><span class="expand col small-2 text-right text-nowrap" title="Bits In/Out per second"
-            > IO <i
-              >b</i
-            >ps</span
-          ><span class="expand col"
-            ></span
-          ></div
-        >{{if .Data.ifaddrs}}{{range $if := .Data.ifaddrs.List}}{{jsx `{this.List(Data).map(function($if, i) { return`}}<div {{Key "if-rowby-name" $if.Name}} {{class}}="grid-block"
-          ><span class="expand col small-1 text-overflow"
-            >{{$if.Name}}</span
-          ><span class="expand col small-1 text-overflow text-right"
-            >{{$if.IP}}</span
-          ><span class="expand col small-2 text-right text-nowrap"
-            > <span class="gray" title="Total drops,errors modulo 4G"
-              ><span title="Total drops In modulo 4G"
-                >{{$if.DropsIn}}</span
-              ><span {{ClassNonNil $if.DropsOut "" "hide"}}
-                >/</span
-              ><span {{ClassNonNil $if.DropsOut "" "hide"}} title="Total drops Out modulo 4G"
-                >{{$if.DropsOut}}</span
-              >,<span title="Total errors In modulo 4G"
-                >{{$if.ErrorsIn}}</span
-              >/<span title="Total errors Out modulo 4G"
-                >{{$if.ErrorsOut}}</span
-              ></span
-            > <span {{ClassAllZero $if.DeltaDropsIn $if.DeltaDropsOut $if.DeltaErrorsIn $if.DeltaErrorsOut "gray"}}
-              ><span title="Drops In per second"
-                >{{$if.DeltaDropsIn}}</span
-              ><span {{ClassNonNil $if.DeltaDropsOut "" "hide"}}
-                >/</span
-              ><span {{ClassNonNil $if.DeltaDropsOut "" "hide"}} title="Drops Out per second"
-                >{{$if.DeltaDropsOut}}</span
-              >,<span title="Errors In per second"
-                >{{$if.DeltaErrorsIn}}</span
-              >/<span title="Errors Out per second"
-                >{{$if.DeltaErrorsOut}}</span
-              ></span
-            ></span
-          ><span class="expand col small-2 text-right text-nowrap"
-            > <span class="gray"
-              ><span title="Total packets In modulo 4G"
-                >{{$if.PacketsIn}}</span
-              >/<span title="Total packets Out modulo 4G"
-                >{{$if.PacketsOut}}</span
-              ></span
-            > <span title="Packets In per second"
-              >{{$if.DeltaPacketsIn}}</span
-            >/<span title="Packets Out per second"
-              >{{$if.DeltaPacketsOut}}</span
-            ></span
-          ><span class="expand col small-2 text-right text-nowrap"
-            > <span class="gray"
-              ><span title="Total BYTES In modulo 4G"
-                >{{$if.BytesIn}}</span
-              >/<span title="Total BYTES Out modulo 4G"
-                >{{$if.BytesOut}}</span
-              ></span
-            > <span title="BITS In per second"
-              >{{$if.DeltaBitsIn}}</span
-            >/<span title="BITS Out per second"
-              >{{$if.DeltaBitsOut}}</span
-            ></span
-          ><span class="expand col-lr"
-            >{{jsx `{jsdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}`}}</span
-          ></div
-        >{{jsx `})}`}}{{end}}{{end}}</div
-      ></div
-    ></div
-  ></div
->{{end}}{{/*
-*/}}{{define "defines::define_panella"}}{{$p := .Data.params}}<div {{class}}="grid-block hr-top"
-  ><div class="col-lr large-1 text-right"
-    ><div {{ClassPositive $p.Lan "hide-showhide" "show-showhide"}}
-      ><h1 class="h4 text-overflow"
-        ><a {{HrefT $p $p.Lan}} title="Load avg display options"
-          ><span {{class}}="showhide-hide whitespace-pre float-left"
-            >... </span
-          >Load avg</a
-        ></h1
-      ></div
-    ></div
-  ><div class="col-lr large-11"
-    ><div {{ClassPositive $p.Lan "hide-showhide" "show-showhide"}}
-      ><div class="grid-block"
-        ><ul class="menu showhide-show"
-          ><li
-            ><div class="input-group"
-              ><div class="input-group-label small text-nowrap"
-                >delay</div
-              ><div class="input-group-button"
-                ><a class="button small secondary disabled"
-                  >{{$p.Lad}}</a
-                ></div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeleft" LessD $p $p.Lad "button small text-nowrap"}}</div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeright" MoreD $p $p.Lad "button small text-nowrap"}}</div
-              ></div
-            ></li
-          ><li
-            ><div class="input-group"
-              ><div class="input-group-label small text-nowrap"
-                >rows</div
-              ><div class="input-group-button"
-                ><a class="button small secondary disabled"
-                  >{{$p.Lan.Absolute}}</a
-                ></div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeleft" LessN $p $p.Lan "button small success text-nowrap"}}</div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeright" MoreN $p $p.Lan "button small success text-nowrap"}}</div
-              ></div
-            ></li
-          ></ul
-        ></div
-      ></div
-    ><div {{ClassNonZero $p.Lan "" "hide"}}
-      ><div class="grid-block vertical stripe"
-        ><div class="grid-block thead"
-          ><span class="expand col small-1"
-            >Period</span
-          ><span class="expand col small-1 text-right"
-            > Value</span
-          ><span class="expand col"
-            ></span
-          ></div
-        >{{if .Data.loadavg}}{{range $la := .Data.loadavg.List}}{{jsx `{this.List(Data).map(function($la, i) { return`}}<div {{Key "la-rowby-period" $la.Period}} {{class}}="grid-block"
-          ><span class="expand col small-1"
-            >{{$la.Period}}m</span
-          ><span class="expand col small-1 text-right"
-            > {{$la.Value}}</span
-          ><span class="expand col-lr"
-            >{{jsx `{jsdefines.Sparkline({ref: i, col: 'Value'})}`}}</span
-          ></div
-        >{{jsx `})}`}}{{end}}{{end}}</div
-      ></div
-    ></div
-  ></div
->{{end}}{{/*
-*/}}{{define "defines::define_panelmem"}}{{$p := .Data.params}}<div {{class}}="grid-block hr-top"
-  ><div class="col-lr large-1 text-right"
-    ><div {{ClassPositive $p.Memn "hide-showhide" "show-showhide"}}
-      ><h1 class="h4 text-overflow"
-        ><a {{HrefT $p $p.Memn}} title="Memory display options"
-          ><span {{class}}="showhide-hide whitespace-pre float-left"
-            >... </span
-          >Memory</a
-        ></h1
-      ></div
-    ></div
-  ><div class="col-lr large-11"
-    ><div {{ClassPositive $p.Memn "hide-showhide" "show-showhide"}}
-      ><div class="grid-block"
-        ><ul class="menu showhide-show"
-          ><li
-            ><div class="input-group"
-              ><div class="input-group-label small text-nowrap"
-                >delay</div
-              ><div class="input-group-button"
-                ><a class="button small secondary disabled"
-                  >{{$p.Memd}}</a
-                ></div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeleft" LessD $p $p.Memd "button small text-nowrap"}}</div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeright" MoreD $p $p.Memd "button small text-nowrap"}}</div
-              ></div
-            ></li
-          ><li
-            ><div class="input-group"
-              ><div class="input-group-label small text-nowrap"
-                >rows</div
-              ><div class="input-group-button"
-                ><a class="button small secondary disabled"
-                  >{{$p.Memn.Absolute}}</a
-                ></div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeleft" LessN $p $p.Memn "button small success text-nowrap"}}</div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeright" MoreN $p $p.Memn "button small success text-nowrap"}}</div
-              ></div
-            ></li
-          ></ul
-        ></div
-      ></div
-    ><div {{ClassNonZero $p.Memn "" "hide"}}
-      ><div class="grid-block vertical stripe"
-        ><div class="grid-block thead"
-          ><span class="expand col small-1"
-            >Memory</span
-          ><span class="expand col small-1 text-right"
-            > Total</span
-          ><span class="expand col small-1 text-right"
-            > Used</span
-          ><span class="expand col small-1 text-right"
-            > Free</span
-          ><span class="expand col small-1 text-right"
-            > Use%</span
-          ><span class="expand col"
-            ></span
-          ></div
-        >{{if .Data.memory}}{{range $mem := .Data.memory.List}}{{jsx `{this.List(Data).map(function($mem, i) { return`}}<div {{Key "mem-rowby-kind" $mem.Kind}} {{class}}="grid-block"
-          ><span class="expand col small-1"
-            >{{$mem.Kind}}</span
-          ><span class="expand col small-1 text-right"
-            > {{$mem.Total}}</span
-          ><span class="expand col small-1 text-right"
-            > {{$mem.Used}}</span
-          ><span class="expand col small-1 text-right"
-            > {{$mem.Free}}</span
-          ><span {{class}}="expand col small-1 text-right bg-usepct" data-usepct={{$mem.UsePct}}
-            > {{$mem.UsePct}}%</span
-          ><span class="expand col-lr"
-            >{{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}</span
-          ></div
-        >{{jsx `})}`}}{{end}}{{end}}</div
-      ></div
-    ></div
-  ></div
->{{end}}{{/*
-*/}}{{define "defines::define_panelps"}}{{$p := .Data.params}}<div {{class}}="grid-block hr-top"
-  ><div class="col-lr large-1 text-right"
-    ><div {{ClassPositive $p.Psn "hide-showhide" "show-showhide"}}
-      ><h1 class="h4 text-overflow"
-        ><a {{HrefT $p $p.Psn}} title="Processes display options"
-          ><span {{class}}="showhide-hide whitespace-pre float-left"
-            >... </span
-          >Processes</a
-        ></h1
-      ></div
-    ></div
-  ><div class="col-lr large-11"
-    ><div {{ClassPositive $p.Psn "hide-showhide" "show-showhide"}}
-      ><div class="grid-block"
-        ><ul class="menu showhide-show"
-          ><li
-            ><div class="input-group"
-              ><div class="input-group-label small text-nowrap"
-                >delay</div
-              ><div class="input-group-button"
-                ><a class="button small secondary disabled"
-                  >{{$p.Psd}}</a
-                ></div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeleft" LessD $p $p.Psd "button small text-nowrap"}}</div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeright" MoreD $p $p.Psd "button small text-nowrap"}}</div
-              ></div
-            ></li
-          ><li
-            ><div class="input-group"
-              ><div class="input-group-label small text-nowrap"
-                >rows</div
-              ><div class="input-group-button"
-                ><a class="button small secondary disabled"
-                  >{{$p.Psn.Absolute}}</a
-                ></div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeleft" LessN $p $p.Psn "button small success text-nowrap"}}</div
-              ><div class="input-group-button"
-                >{{template "defines::alink_badgeright" MoreN $p $p.Psn "button small success text-nowrap"}}</div
-              ></div
-            ></li
-          ></ul
-        ></div
-      ></div
-    ><div {{ClassNonZero $p.Psn "" "hide"}}
-      ><div class="grid-block vertical stripe"
-        ><div class="grid-block thead"
-          ><span class="expand col small-1 text-nowrap text-right"
-            >{{template "defines::avlink" Vlink $p $p.Psk 1 "PID"}}</span
-          ><span class="expand col small-1 text-nowrap text-right"
-            > {{template "defines::avlink" Vlink $p $p.Psk 2 "UID"}}</span
-          ><span class="expand col small-1 text-nowrap"
-            > {{template "defines::avlink" Vlink $p $p.Psk 3 "USER"}}</span
-          ><span class="expand col small-1 text-nowrap text-right"
-            > {{template "defines::avlink" Vlink $p $p.Psk 4 "PR"}}</span
-          ><span class="expand col small-1 text-nowrap text-right"
-            > {{template "defines::avlink" Vlink $p $p.Psk 5 "NI"}}</span
-          ><span class="expand col small-1 text-nowrap text-right"
-            > {{template "defines::avlink" Vlink $p $p.Psk 6 "VIRT"}}</span
-          ><span class="expand col small-1 text-nowrap text-right"
-            > {{template "defines::avlink" Vlink $p $p.Psk 7 "RES"}}</span
-          ><span class="expand col small-1 text-nowrap text-center"
-            > {{template "defines::avlink" Vlink $p $p.Psk 8 "TIME"}}</span
-          ><span class="expand col small-1 text-nowrap"
-            > {{template "defines::avlink" Vlink $p $p.Psk 9 "COMMAND"}}</span
-          ></div
-        >{{if .Data.procs}}{{range $ps := .Data.procs.List}}{{jsx `{this.List(Data).map(function($ps) { return`}}<div {{Key "ps-rowby-pid" $ps.PID}} {{class}}="grid-block"
-          ><span class="expand col small-1 text-right"
-            >{{$ps.PID}}</span
-          ><span class="expand col small-1 text-right"
-            > {{$ps.UID}}</span
-          ><span class="expand col small-1"
-            > {{$ps.User}}</span
-          ><span class="expand col small-1 text-right"
-            > {{$ps.Priority}}</span
-          ><span class="expand col small-1 text-right"
-            > {{$ps.Nice}}</span
-          ><span class="expand col small-1 text-right"
-            > {{$ps.Size}}</span
-          ><span class="expand col small-1 text-right"
-            > {{$ps.Resident}}</span
-          ><span class="expand col small-1 text-center"
-            > {{$ps.Time}}</span
-          ><span class="expand col"
-            > {{$ps.Name}}</span
-          ></div
-        >{{jsx `})}`}}{{end}}{{end}}</div
-      ></div
-    ></div
-  ></div
->{{end}}{{/*
-*/}}{{define "defines::define_uptime"}}<span
-  >{{.Data.uptime}}</span
->{{end}}
+{{define "defines::alink_badgeleft"}}
+<a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}
+  >{{.Badge}} {{.Text}}</a>{{end}}{{define "defines::alink_badgeright"}}
+<a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}
+  >{{.Text}} {{.Badge}}</a>{{end}}{{define "defines::avlink"}}
+<a href={{.LinkHref}} {{class}}={{.LinkClass}} onClick={this.handleClick}
+  >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}{{define "defines::define_uptime"}}<span>{{.Data.uptime}}</span>{{end}}{{/* define "defines::define_uptime"}}<span>{{.Data.uptime}}</span>{{end */}}{{define "defines::define_hostname"}}<a href="/" {{TitlePrefixed "hostname " .Data.hostname}}>{{.Data.hostname}}</a>{{end}}{{define "defines::define_panella"}}{{$p := .Data.params}}
+<div class="grid-block hr-top">
+  <div class="col-lr large-1 text-right"><div {{ClassPositive $p.Lan "hide-showhide" "show-showhide"}}>
+    <h1 class="h4 text-overflow">
+      <a {{HrefT $p $p.Lan}} title="Load avg display options">
+      <span {{class}}="showhide-hide whitespace-pre float-left">... </span>Load avg</a>
+    </h1></div>
+  </div>
+  <div class="col-lr large-11"><div {{ClassPositive $p.Lan "hide-showhide" "show-showhide"}}>
+    <div class="grid-block">
+      <ul class="menu showhide-show">
+        <li>
+          <div class="input-group">
+            <div class="input-group-label small text-nowrap">delay</div>
+            <div class="input-group-button"><a class="button small secondary disabled">{{$p.Lad}}</a></div>
+            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessD $p $p.Lad "button small text-nowrap"}}</div>
+            <div class="input-group-button">{{template "defines::alink_badgeright" MoreD $p $p.Lad "button small text-nowrap"}}</div>
+          </div>
+        </li>
+        <li>
+          <div class="input-group">
+            <div class="input-group-label small text-nowrap">rows</div>
+            <div class="input-group-button"><a class="button small secondary disabled">{{$p.Lan.Absolute}}</a></div>
+            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessN $p $p.Lan "button small success text-nowrap"}}</div>
+            <div class="input-group-button">{{template "defines::alink_badgeright" MoreN $p $p.Lan "button small success text-nowrap"}}</div>
+          </div>
+        </li>
+      </ul>
+    </div><div {{ClassNonZero $p.Lan "" "hide"}}>
+    <div class="grid-block vertical stripe">
+      <div class="grid-block thead"><span class="expand col small-1">Period</span><span class="expand col small-1 text-right"> Value</span><span class="expand col"></span></div>{{if .Data.loadavg}}
+      {{range $la := .Data.loadavg.List}}
+      {{jsx  `{this.List(Data).map(function($la, i) { return (`}}
+      <div {{Key "la-rowby-period" $la.Period}} {{class}}="grid-block"><span class="expand col small-1">{{$la.Period}}m</span><span class="expand col small-1 text-right"> {{$la.Value}}</span><span class="expand col-lr">{{jsx `{jsdefines.Sparkline({ref: i, col: 'Value'})}`}}</span></div>
+      {{jsx `);})}`}}
+      {{end}}
+      {{end}}
+    </div></div></div>
+  </div>
+</div>{{end}}{{define "defines::define_panelmem"}}{{$p := .Data.params}}
+<div class="grid-block hr-top">
+  <div class="col-lr large-1 text-right"><div {{ClassPositive $p.Memn "hide-showhide" "show-showhide"}}>
+    <h1 class="h4 text-overflow">
+      <a {{HrefT $p $p.Memn}} title="Memory display options">
+      <span {{class}}="showhide-hide whitespace-pre float-left">... </span>Memory</a>
+    </h1></div>
+  </div>
+  <div class="col-lr large-11"><div {{ClassPositive $p.Memn "hide-showhide" "show-showhide"}}>
+    <div class="grid-block">
+      <ul class="menu showhide-show">
+        <li>
+          <div class="input-group">
+            <div class="input-group-label small text-nowrap">delay</div>
+            <div class="input-group-button"><a class="button small secondary disabled">{{$p.Memd}}</a></div>
+            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessD $p $p.Memd "button small text-nowrap"}}</div>
+            <div class="input-group-button">{{template "defines::alink_badgeright" MoreD $p $p.Memd "button small text-nowrap"}}</div>
+          </div>
+        </li>
+        <li>
+          <div class="input-group">
+            <div class="input-group-label small text-nowrap">rows</div>
+            <div class="input-group-button"><a class="button small secondary disabled">{{$p.Memn.Absolute}}</a></div>
+            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessN $p $p.Memn "button small success text-nowrap"}}</div>
+            <div class="input-group-button">{{template "defines::alink_badgeright" MoreN $p $p.Memn "button small success text-nowrap"}}</div>
+          </div>
+        </li>
+      </ul>
+    </div><div {{ClassNonZero $p.Memn "" "hide"}}>
+    <div class="grid-block vertical stripe">
+      <div class="grid-block thead"><span class="expand col small-1">Memory</span><span class="expand col small-1 text-right"> Total</span><span class="expand col small-1 text-right"> Used</span><span class="expand col small-1 text-right"> Free</span><span class="expand col small-1 text-right"> Use%</span><span class="expand col"></span></div>{{if .Data.memory}}
+      {{range $mem := .Data.memory.List}}
+      {{jsx  `{this.List(Data).map(function($mem, i) { return (`}}
+      <div {{Key "mem-rowby-kind" $mem.Kind}} {{class}}="grid-block"><span class="expand col small-1">{{$mem.Kind}}</span><span class="expand col small-1 text-right"> {{$mem.Total}}</span><span class="expand col small-1 text-right"> {{$mem.Used}}</span><span class="expand col small-1 text-right"> {{$mem.Free}}</span><span {{class}}="expand col small-1 text-right bg-usepct" data-usepct={{$mem.UsePct}}> {{$mem.UsePct}}%</span><span class="expand col-lr">{{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}</span></div>
+      {{jsx `);})}`}}
+      {{end}}
+      {{end}}
+    </div></div></div>
+  </div>
+</div>{{end}}{{define "defines::define_paneldf"}}{{$p := .Data.params}}
+<div class="grid-block hr-top">
+  <div class="col-lr large-1 text-right"><div {{ClassPositive $p.Dfn "hide-showhide" "show-showhide"}}>
+    <h1 class="h4 text-overflow">
+      <a {{HrefT $p $p.Dfn}} title="Disk usage display options">
+      <span {{class}}="showhide-hide whitespace-pre float-left">... </span>Disk usage</a>
+    </h1></div>
+  </div>
+  <div class="col-lr large-11"><div {{ClassPositive $p.Dfn "hide-showhide" "show-showhide"}}>
+    <div class="grid-block">
+      <ul class="menu showhide-show">
+        <li>
+          <div class="input-group">
+            <div class="input-group-label small text-nowrap">delay</div>
+            <div class="input-group-button"><a class="button small secondary disabled">{{$p.Dfd}}</a></div>
+            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessD $p $p.Dfd "button small text-nowrap"}}</div>
+            <div class="input-group-button">{{template "defines::alink_badgeright" MoreD $p $p.Dfd "button small text-nowrap"}}</div>
+          </div>
+        </li>
+        <li>
+          <div class="input-group">
+            <div class="input-group-label small text-nowrap">rows</div>
+            <div class="input-group-button"><a class="button small secondary disabled">{{$p.Dfn.Absolute}}</a></div>
+            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessN $p $p.Dfn "button small success text-nowrap"}}</div>
+            <div class="input-group-button">{{template "defines::alink_badgeright" MoreN $p $p.Dfn "button small success text-nowrap"}}</div>
+          </div>
+        </li>
+      </ul>
+    </div><div {{ClassNonZero $p.Dfn "" "hide"}}>
+    <div class="grid-block vertical stripe">
+      <div class="grid-block thead"><span class="expand col small-1 text-nowrap">{{template "defines::avlink" Vlink $p $p.Dfk 1 "Device" }}{{/* FS     */}}</span><span class="expand col small-1 text-nowrap">{{template "defines::avlink" Vlink $p $p.Dfk 2 "Mounted"}}{{/* MP     */}}</span><span class="expand col small-1 text-nowrap text-right">{{template "defines::avlink" Vlink $p $p.Dfk 6 "Total"  }}{{/* TOTAL  */}}</span><span class="expand col small-1 text-nowrap text-right">{{template "defines::avlink" Vlink $p $p.Dfk 5 "Used"   }}{{/* USED   */}}</span><span class="expand col small-1 text-nowrap text-right">{{template "defines::avlink" Vlink $p $p.Dfk 3 "Avail"  }}{{/* AVAIL  */}}</span><span class="expand col small-1 text-nowrap text-right">{{template "defines::avlink" Vlink $p $p.Dfk 4 "Use%"   }}{{/* USEPCT */}}</span><span class="expand col"></span></div>{{if .Data.diskUsage}}
+      {{range $df := .Data.diskUsage.List}}
+      {{jsx `{this.List(Data).map(function($df, i) { return (`}}
+      <div {{Key "df-rowby-dirname" $df.DirName}} {{class}}="grid-block"><span class="expand col small-1 text-overflow">{{$df.DevName}}</span><span class="expand col small-1 text-overflow"> {{$df.DirName}}</span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Total}}</span><span title="Inodes total"> {{$df.Inodes}}</span></span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Used}}</span><span title="Inodes used"> {{$df.Iused}}</span></span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Avail}}</span><span title="Inodes free"> {{$df.Ifree}}</span></span><span {{class}}="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct={{$df.UsePct}}><span class="float-right"> {{$df.UsePct}}%</span><span title="Inodes use%"> {{$df.IusePct}}%</span></span><span class="expand col-lr">{{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}</span></div>
+      {{jsx `);})}`}}
+      {{end}}
+      {{end}}
+    </div></div></div>
+  </div>
+</div>{{end}}{{define "defines::define_panelcpu"}}{{$p := .Data.params}}
+<div class="grid-block hr-top">
+  <div class="col-lr large-1 text-right"><div {{ClassPositive $p.CPUn "hide-showhide" "show-showhide"}}>
+    <h1 class="h4 text-overflow">
+      <a {{HrefT $p $p.CPUn}} title="CPU display options">
+      <span {{class}}="showhide-hide whitespace-pre float-left">... </span>CPU</a>
+    </h1></div>
+  </div>
+  <div class="col-lr large-11"><div {{ClassPositive $p.CPUn "hide-showhide" "show-showhide"}}>
+    <div class="grid-block">
+      <ul class="menu showhide-show">
+        <li>
+          <div class="input-group">
+            <div class="input-group-label small text-nowrap">delay</div>
+            <div class="input-group-button"><a class="button small secondary disabled">{{$p.CPUd}}</a></div>
+            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessD $p $p.CPUd "button small text-nowrap"}}</div>
+            <div class="input-group-button">{{template "defines::alink_badgeright" MoreD $p $p.CPUd "button small text-nowrap"}}</div>
+          </div>
+        </li>
+        <li>
+          <div class="input-group">
+            <div class="input-group-label small text-nowrap">rows</div>
+            <div class="input-group-button"><a class="button small secondary disabled">{{$p.CPUn.Absolute}}</a></div>
+            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessN $p $p.CPUn "button small success text-nowrap"}}</div>
+            <div class="input-group-button">{{template "defines::alink_badgeright" MoreN $p $p.CPUn "button small success text-nowrap"}}</div>
+          </div>
+        </li>
+      </ul>
+    </div><div {{ClassNonZero $p.CPUn "" "hide"}}>
+    <div class="grid-block vertical stripe">
+      <div class="grid-block thead"><span class="expand col small-1">Core</span><span class="expand col small-1 text-right"> User%</span><span class="expand col small-1 text-right"> Sys%</span><span class="expand col small-1 text-right"> Wait%</span><span class="expand col small-1 text-right"> Idle%</span><span class="expand col"></span></div>{{if .Data.cpu}}
+      {{range $cpu := .Data.cpu.List}}
+      {{jsx  `{this.List(Data).map(function($cpu, i) { return (`}}
+      <div {{Key "cpu-rowby-N" $cpu.N}} {{class}}="grid-block"><span class="expand col small-1 text-nowrap">{{$cpu.N}}</span><span {{class}}="expand col small-1 text-right bg-usepct"
+       data-usepct={{$cpu.UserPct}}> {{$cpu.UserPct}}%</span>
+      <span {{class}}="expand col small-1 text-right bg-usepct"
+       data-usepct={{$cpu.SysPct}}> {{$cpu.SysPct}}%</span>
+      <span {{class}}="expand col small-1 text-right bg-usepct"
+       data-usepct={{$cpu.WaitPct}}> {{$cpu.WaitPct}}%</span>
+      <span {{class}}="expand col small-1 text-right bg-usepct-inverse"
+       data-usepct={{$cpu.IdlePct}}> {{$cpu.IdlePct}}%</span><span class="expand col-lr">{{jsx `{jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}`}}</span></div>
+      {{jsx `);})}`}}
+      {{end}}
+      {{end}}
+    </div></div></div>
+  </div>
+</div>{{end}}{{define "defines::define_panelif"}}{{$p := .Data.params}}
+<div class="grid-block hr-top">
+  <div class="col-lr large-1 text-right"><div {{ClassPositive $p.Ifn "hide-showhide" "show-showhide"}}>
+    <h1 class="h4 text-overflow">
+      <a {{HrefT $p $p.Ifn}} title="Interfaces display options">
+      <span {{class}}="showhide-hide whitespace-pre float-left">... </span>Interfaces</a>
+    </h1></div>
+  </div>
+  <div class="col-lr large-11"><div {{ClassPositive $p.Ifn "hide-showhide" "show-showhide"}}>
+    <div class="grid-block">
+      <ul class="menu showhide-show">
+        <li>
+          <div class="input-group">
+            <div class="input-group-label small text-nowrap">delay</div>
+            <div class="input-group-button"><a class="button small secondary disabled">{{$p.Ifd}}</a></div>
+            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessD $p $p.Ifd "button small text-nowrap"}}</div>
+            <div class="input-group-button">{{template "defines::alink_badgeright" MoreD $p $p.Ifd "button small text-nowrap"}}</div>
+          </div>
+        </li>
+        <li>
+          <div class="input-group">
+            <div class="input-group-label small text-nowrap">rows</div>
+            <div class="input-group-button"><a class="button small secondary disabled">{{$p.Ifn.Absolute}}</a></div>
+            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessN $p $p.Ifn "button small success text-nowrap"}}</div>
+            <div class="input-group-button">{{template "defines::alink_badgeright" MoreN $p $p.Ifn "button small success text-nowrap"}}</div>
+          </div>
+        </li>
+      </ul>
+    </div><div {{ClassNonZero $p.Ifn "" "hide"}}>
+    <div class="grid-block vertical stripe">
+      <div class="grid-block thead"><span class="expand col small-1">Interface</span><span class="expand col small-1 text-right"> IP</span><span title="Drops,Errors In/Out per second" class="expand col small-2 text-right text-nowrap"> Loss IO ps</span><span title="Packets In/Out per second" class="expand col small-2 text-right text-nowrap"> Packets IO ps</span><span title="Bits In/Out per second" class="expand col small-2 text-right text-nowrap"> IO <i>b</i>ps</span><span class="expand col"></span></div>{{if .Data.ifaddrs}}
+      {{range $if := .Data.ifaddrs.List}}
+      {{jsx `{this.List(Data).map(function($if, i) { return (`}}
+      <div {{Key "if-rowby-name" $if.Name}} {{class}}="grid-block"><span class="expand col small-1 text-overflow">{{$if.Name}}</span><span class="expand col small-1 text-overflow text-right">{{$if.IP}}</span><span class="expand col small-2 text-right text-nowrap">&nbsp;<span title="Total drops,errors modulo 4G" class="gray"><span title="Total drops In modulo 4G">{{$if.DropsIn}}</span><span {{ClassNonNil $if.DropsOut "" "hide"}}>/</span>
+          <span {{ClassNonNil $if.DropsOut "" "hide"}} title="Total drops Out modulo 4G">{{$if.DropsOut}}</span>
+          ,<span title="Total errors In modulo 4G">{{$if.ErrorsIn}}</span>/<span title="Total errors Out modulo 4G">{{$if.ErrorsOut}}</span></span>&nbsp;
+        <span {{ClassAllZero $if.DeltaDropsIn $if.DeltaDropsOut $if.DeltaErrorsIn $if.DeltaErrorsOut "gray"}}><span title="Drops In per second">{{$if.DeltaDropsIn}}</span><span {{ClassNonNil $if.DeltaDropsOut "" "hide"}}>/</span>
+        <span {{ClassNonNil $if.DeltaDropsOut "" "hide"}} title="Drops Out per second">{{$if.DeltaDropsOut}}</span>
+        ,<span title="Errors In per second">{{$if.DeltaErrorsIn}}</span>/<span title="Errors Out per second">{{$if.DeltaErrorsOut}}</span></span></span><span class="expand col small-2 text-right text-nowrap">&nbsp;<span class="gray"><span title="Total packets In modulo 4G">{{$if.PacketsIn}}</span>/<span title="Total packets Out modulo 4G">{{$if.PacketsOut}}</span></span>&nbsp;<span title="Packets In per second">{{$if.DeltaPacketsIn}}</span>/<span title="Packets Out per second">{{$if.DeltaPacketsOut}}</span></span><span class="expand col small-2 text-right text-nowrap">&nbsp;<span class="gray"><span title="Total BYTES In modulo 4G">{{$if.BytesIn}}</span>/<span title="Total BYTES Out modulo 4G">{{$if.BytesOut}}</span></span>&nbsp;<span title="BITS In per second">{{$if.DeltaBitsIn}}</span>/<span title="BITS Out per second">{{$if.DeltaBitsOut}}</span></span><span class="expand col-lr">{{jsx `{jsdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}`}}</span></div>
+      {{jsx `);})}`}}
+      {{end}}
+      {{end}}
+    </div></div></div>
+  </div>
+</div>{{end}}{{define "defines::define_panelps"}}{{$p := .Data.params}}
+<div class="grid-block hr-top">
+  <div class="col-lr large-1 text-right"><div {{ClassPositive $p.Psn "hide-showhide" "show-showhide"}}>
+    <h1 class="h4 text-overflow">
+      <a {{HrefT $p $p.Psn}} title="Processes display options">
+      <span {{class}}="showhide-hide whitespace-pre float-left">... </span>Processes</a>
+    </h1></div>
+  </div>
+  <div class="col-lr large-11"><div {{ClassPositive $p.Psn "hide-showhide" "show-showhide"}}>
+    <div class="grid-block">
+      <ul class="menu showhide-show">
+        <li>
+          <div class="input-group">
+            <div class="input-group-label small text-nowrap">delay</div>
+            <div class="input-group-button"><a class="button small secondary disabled">{{$p.Psd}}</a></div>
+            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessD $p $p.Psd "button small text-nowrap"}}</div>
+            <div class="input-group-button">{{template "defines::alink_badgeright" MoreD $p $p.Psd "button small text-nowrap"}}</div>
+          </div>
+        </li>
+        <li>
+          <div class="input-group">
+            <div class="input-group-label small text-nowrap">rows</div>
+            <div class="input-group-button"><a class="button small secondary disabled">{{$p.Psn.Absolute}}</a></div>
+            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessN $p $p.Psn "button small success text-nowrap"}}</div>
+            <div class="input-group-button">{{template "defines::alink_badgeright" MoreN $p $p.Psn "button small success text-nowrap"}}</div>
+          </div>
+        </li>
+      </ul>
+    </div><div {{ClassNonZero $p.Psn "" "hide"}}>
+    <div class="grid-block vertical stripe">
+      <div class="grid-block thead"><span class="expand col small-1 text-nowrap text-right">{{template "defines::avlink" Vlink $p $p.Psk 1 "PID"    }}</span><span class="expand col small-1 text-nowrap text-right"> {{template "defines::avlink" Vlink $p $p.Psk 2 "UID"    }}</span><span class="expand col small-1 text-nowrap"> {{template "defines::avlink" Vlink $p $p.Psk 3 "USER"   }}</span><span class="expand col small-1 text-nowrap text-right"> {{template "defines::avlink" Vlink $p $p.Psk 4 "PR"     }}{{/* PRI  */}}</span><span class="expand col small-1 text-nowrap text-right"> {{template "defines::avlink" Vlink $p $p.Psk 5 "NI"     }}{{/* NICE */}}</span><span class="expand col small-1 text-nowrap text-right"> {{template "defines::avlink" Vlink $p $p.Psk 6 "VIRT"   }}</span><span class="expand col small-1 text-nowrap text-right"> {{template "defines::avlink" Vlink $p $p.Psk 7 "RES"    }}</span><span class="expand col small-1 text-nowrap text-center"> {{template "defines::avlink" Vlink $p $p.Psk 8 "TIME"   }}</span><span class="expand col small-1 text-nowrap"> {{template "defines::avlink" Vlink $p $p.Psk 9 "COMMAND"}}{{/* NAME */}}</span></div>{{if .Data.procs}}
+      {{range $ps := .Data.procs.List}}
+      {{jsx `{this.List(Data).map(function($ps) { return (`}}
+      <div {{Key "ps-rowby-pid" $ps.PID}} {{class}}="grid-block"><span class="expand col small-1 text-right">{{$ps.PID}}</span><span class="expand col small-1 text-right"> {{$ps.UID}}</span><span class="expand col small-1"> {{$ps.User}}</span><span class="expand col small-1 text-right"> {{$ps.Priority}}</span><span class="expand col small-1 text-right"> {{$ps.Nice}}</span><span class="expand col small-1 text-right"> {{$ps.Size}}</span><span class="expand col small-1 text-right"> {{$ps.Resident}}</span><span class="expand col small-1 text-center"> {{$ps.Time}}</span><span class="expand col"> {{$ps.Name}}</span></div>
+      {{jsx `);})}`}}
+      {{end}}
+      {{end}}
+    </div></div></div>
+  </div>
+</div>{{end}}<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{{.Data.hostname}} ostent</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><!--[if IE]>
+    <link rel="shortcut icon" href="/favicon.ico"><![endif]-->
+    <link rel="icon" sizes="32x32" href="/{{.OstentVersion}}/favicons/favicon-32.png type=image/png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/{{.OstentVersion}}/favicons/favicon-120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/{{.OstentVersion}}/favicons/favicon-144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/{{.OstentVersion}}/favicons/favicon-152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/{{.OstentVersion}}/favicons/favicon-180.png">
+    <link rel="stylesheet" type="text/css" href="/{{.OstentVersion}}/css/index.css">
+  </head>
+  <body>
+    <div class="top-bar">
+      <div class="top-bar-left">
+        <ul class="menu">
+          <li>
+            <h2 style="margin-bottom: 0" class="h4"><span data-define="define_hostname" class="updates">{{template "defines::define_hostname" .}}</span> <small>{{.Distrib}}</small></h2>
+          </li>
+          <li><span class="col">up</span><span data-define="define_uptime" class="col updates whitespace-pre">{{template "defines::define_uptime" .}}</span></li>
+        </ul>
+      </div>
+      <div class="top-bar-right">
+        <ul class="menu">
+          <li><a style="margin: 0" href="https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}" class="button secondary hollow">ostent</a></li>
+        </ul>
+      </div>
+    </div>
+    <div data-define="define_panella" class="updates">{{template "defines::define_panella" .}}</div>
+    <div data-define="define_panelmem" class="updates">{{template "defines::define_panelmem" .}}</div>
+    <div data-define="define_paneldf" class="updates">{{template "defines::define_paneldf" .}}</div>
+    <div data-define="define_panelcpu" class="updates">{{template "defines::define_panelcpu" .}}</div>
+    <div data-define="define_panelif" class="updates">{{template "defines::define_panelif" .}}</div>
+    <div data-define="define_panelps" class="updates">{{template "defines::define_panelps" .}}</div>
+    <script type="text/javascript">var Data = {{.Data}};</script>
+    <script type="text/javascript" charset="utf-8" src="/{{.OstentVersion}}/js/{{if .TAGGEDbin}}min/bundle.min.js{{else}}src/bundle.js{{end}}"></script>
+  </body>
+</html>

@@ -3,6 +3,8 @@ require('es6-promise').polyfill();
 
 var ExtractTextPlugin = require('extract-text-webpack-plugin'),
     gulp              = require('gulp'),
+    jade              = require('gulp-jade'),
+    rename            = require('gulp-rename'),
     gutil             = require('gulp-util'),
     _                 = require('lodash'),
     path              = require('path'),
@@ -52,7 +54,17 @@ var wpconf = {
   ]
 };
 
-gulp.task('wp', [], function(callback) {
+gulp.task('jade', function() {
+  gulp.src(argv.input)
+    .pipe(jade({
+      pretty: true,
+      locals: {}
+    }))
+    .pipe(rename(argv.output))
+    .pipe(gulp.dest('.'));
+});
+
+gulp.task('webpack', [], function(callback) {
   var wparg = wpconf;
   wparg = _.merge(wparg, {entry: argv.input});
   wparg = _.merge(wparg, {output: {}});

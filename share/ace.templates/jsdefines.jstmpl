@@ -130,7 +130,7 @@ jsdefines.{{$d.ShortName}} = React.createClass({
   },
   render: function() {
     let Data = this.state; // shadow global Data
-    return {{$d.JSX}};
+    return ({{$d.JSX}});
   }
 });
 {{end}}

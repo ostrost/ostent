@@ -38,7 +38,7 @@ ifneq (init, $(MAKECMDGOALS))
 
 cmdname=$(notdir $(PWD))
 destbin:=$(shell echo $(GOPATH) | awk -F: '{ print $$1 "/bin" }')
-# destbin=$(shell go list -f '{{.Target}}' $(package) | $(xargs) dirname)
+# destbin:=$(shell go list -f '{{.Target}}' $(package) | $(xargs) dirname)
 
 define golistfiles =
 {{if and (not .Standard) (not .Goroot)}}\
@@ -65,17 +65,15 @@ init:
 github.com/jteeuwen/go-bindata/go-bindata \
 github.com/progrium/go-extpoints \
 github.com/skelterjohn/rerun \
-github.com/yosssi/ace \
 golang.org/x/net/html
+# golang.org/x/net/html not in use yet
 	go get -v $(package)
 	go get -v -a -tags bin $(package)
 
 check-update:
 	npm outdated # upgrade with npm update --save-dev
 	bower list # | grep latest\ is
-	# update with bower update --save-dev
-	# update with bower update [] --save-dev
-	# update with bower install [] --save-dev
+	# update with bower install [] --save
 
 %: %.sh # clear the implicit *.sh rule
 # print-* rule for debugging. http://blog.jgc.org/2015/04/the-one-line-you-should-add-to-every.html :
@@ -113,22 +111,25 @@ share/assets/js/src/bundle.js \
 share/assets/css/index.css \
 share/js/jsdefines.jsx
 
+share/templates/index.html:
+	type gulp >/dev/null || exit 0; gulp jade    --silent --input=./$< --output=$@
+
 share/assets/css/index.css \
 share/assets/js/src/bundle.js \
 share/assets/js/min/bundle.min.js \
 :
 # the first prerequisite only is passed to gulp
 	type gulp >/dev/null || exit 0; mkdir -p share/cache
-	type gulp >/dev/null || exit 0; gulp wp --silent --input=./$< --output=$@
+	type gulp >/dev/null || exit 0; gulp webpack --silent --input=./$< --output=$@
 # the rule above
 share/assets/css/index.css:        share/style/index.scss
 share/assets/js/src/bundle.js:     share/js/index.js share/js/jsdefines.jsx
 share/assets/js/min/bundle.min.js: share/js/index.js share/js/jsdefines.jsx
 
-share/templates/index.html: share/ace.templates/index.ace share/ace.templates/defines.ace $(templatepp)
-	$(templatepp) -defines share/ace.templates/defines.ace -output $@ $<
-share/js/jsdefines.jsx: share/ace.templates/jsdefines.jstmpl share/ace.templates/defines.ace $(templatepp)
-	$(templatepp) -defines share/ace.templates/defines.ace -output $@ -javascript $<
+share/templates/index.html: share/ace.templates/index.jade share/ace.templates/defines.jade
+share/js/jsdefines.jsx: share/templates/index.html share/ace.templates/jsdefines.jstmpl $(templatepp)
+	$(templatepp) -output $@ -htmltemplate share/templates/index.html share/ace.templates/jsdefines.jstmpl
+# $^ would include $(templatepp)
 
 $(templates_bingo) $(templates_devgo): $(shell find share/templates/ -type f \! -name \*.go)
 

@@ -3,7 +3,7 @@ package templateutil
 import "html/template"
 
 func (f HTMLFuncs) Class() string                { return "class" }
-func (f JSXLFuncs) Class() string                { return "className" }
+func (f JSXLFuncs) Class() string                { return "lcassName" }
 func (f HTMLFuncs) Colspan() string              { return "colspan" }
 func (f JSXLFuncs) Colspan() string              { return "colSpan" }
 func (f HTMLFuncs) JSX(string) (_ template.HTML) { return }
