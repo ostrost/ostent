@@ -82,9 +82,9 @@ gulp.task('watch', ['gmake print'], function() {
   // reload.listen();
   gulp.start(['server watch', 'server run']);
   gulp.watch([
-    __dirname+'/share/ace.templates/*',
     __dirname+'/share/js/*',
-    __dirname+'/share/style/*'
+    __dirname+'/share/style/*',
+    __dirname+'/share/templatesorigin/*'
   ], ['gmake dev']);
 });
 
