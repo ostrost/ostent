@@ -69,7 +69,9 @@ func (c *Context) Node(node parse.Node, na NodeArgs) {
 		}
 	case parse.NodeIf:
 		fi := node.(*parse.IfNode)
-		c.Node(fi.List, na)
+		if fi.List != nil {
+			c.Node(fi.List, na)
+		}
 		if fi.ElseList != nil {
 			c.Node(fi.ElseList, na)
 		}
@@ -84,8 +86,12 @@ func (c *Context) Node(node parse.Node, na NodeArgs) {
 	case parse.NodeWith:
 		with := node.(*parse.WithNode)
 		c.Node(with.Pipe, na)
-		c.Node(with.List, na)
-		c.Node(with.ElseList, na)
+		if with.List != nil {
+			c.Node(with.List, na)
+		}
+		if with.ElseList != nil {
+			c.Node(with.ElseList, na)
+		}
 
 	// other recursives:
 	case parse.NodeAction:

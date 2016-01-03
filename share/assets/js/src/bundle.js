@@ -20228,30 +20228,12 @@
 
 	// transformed from define_* templates:
 
-	jsdefines.define_hostname = React.createClass({
-	  displayName: 'define_hostname',
-
-	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
-	  Reduce: function Reduce(data) {
-	    return {
-	      hostname: data.hostname
-	    };
-	  },
-	  render: function render() {
-	    var Data = this.state; // shadow global Data
-	    return _jsx('a', {
-	      href: '/',
-	      title: "hostname " + Data.hostname
-	    }, void 0, Data.hostname);
-	  }
-	});
-
 	var _ref2 = _jsx('span', {
 	  className: 'expand col'
 	});
 
-	jsdefines.define_panelcpu = React.createClass({
-	  displayName: 'define_panelcpu',
+	jsdefines.define_cpu = React.createClass({
+	  displayName: 'define_cpu',
 
 	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
 	  List: function List(data) {
@@ -20302,15 +20284,15 @@
 	    }, void 0, Data.params.CPUd)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Dlinks.CPUd.Less.Href,
-	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : "")
 	    }, void 0, '- ', Data.params.Dlinks.CPUd.Less.Text)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Dlinks.CPUd.More.Href,
-	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : "")
 	    }, void 0, Data.params.Dlinks.CPUd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
@@ -20322,15 +20304,15 @@
 	    }, void 0, Data.params.CPUn.Absolute)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Nlinks.CPUn.Less.Href,
-	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : "")
 	    }, void 0, '- ', Data.params.Nlinks.CPUn.Less.Text)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Nlinks.CPUn.More.Href,
-	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : "")
 	    }, void 0, Data.params.Nlinks.CPUn.More.Text, ' +')))))), _jsx('div', {
 	      className: Data.params.CPUn.Absolute != 0 ? "" : "hide"
 	    }, void 0, _jsx('div', {
@@ -20375,8 +20357,8 @@
 	  className: 'expand col'
 	});
 
-	jsdefines.define_paneldf = React.createClass({
-	  displayName: 'define_paneldf',
+	jsdefines.define_df = React.createClass({
+	  displayName: 'define_df',
 
 	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
 	  List: function List(data) {
@@ -20427,15 +20409,15 @@
 	    }, void 0, Data.params.Dfd)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Dlinks.Dfd.Less.Href,
-	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : "")
 	    }, void 0, '- ', Data.params.Dlinks.Dfd.Less.Text)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Dlinks.Dfd.More.Href,
-	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : "")
 	    }, void 0, Data.params.Dlinks.Dfd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
@@ -20447,15 +20429,15 @@
 	    }, void 0, Data.params.Dfn.Absolute)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Nlinks.Dfn.Less.Href,
-	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : "")
 	    }, void 0, '- ', Data.params.Nlinks.Dfn.Less.Text)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Nlinks.Dfn.More.Href,
-	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : "")
 	    }, void 0, Data.params.Nlinks.Dfn.More.Text, ' +')))))), _jsx('div', {
 	      className: Data.params.Dfn.Absolute != 0 ? "" : "hide"
 	    }, void 0, _jsx('div', {
@@ -20465,49 +20447,49 @@
 	    }, void 0, _jsx('span', {
 	      className: 'expand col small-1 text-nowrap'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Vlinks.Dfk[1 - 1].LinkHref,
-	      className: Data.params.Vlinks.Dfk[1 - 1].LinkClass,
-	      onClick: this.handleClick
+	      className: Data.params.Vlinks.Dfk[1 - 1].LinkClass
 	    }, void 0, 'Device', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[1 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Vlinks.Dfk[2 - 1].LinkHref,
-	      className: Data.params.Vlinks.Dfk[2 - 1].LinkClass,
-	      onClick: this.handleClick
+	      className: Data.params.Vlinks.Dfk[2 - 1].LinkClass
 	    }, void 0, 'Mounted', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[2 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap text-right'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Vlinks.Dfk[6 - 1].LinkHref,
-	      className: Data.params.Vlinks.Dfk[6 - 1].LinkClass,
-	      onClick: this.handleClick
+	      className: Data.params.Vlinks.Dfk[6 - 1].LinkClass
 	    }, void 0, 'Total', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[6 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap text-right'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Vlinks.Dfk[5 - 1].LinkHref,
-	      className: Data.params.Vlinks.Dfk[5 - 1].LinkClass,
-	      onClick: this.handleClick
+	      className: Data.params.Vlinks.Dfk[5 - 1].LinkClass
 	    }, void 0, 'Used', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[5 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap text-right'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Vlinks.Dfk[3 - 1].LinkHref,
-	      className: Data.params.Vlinks.Dfk[3 - 1].LinkClass,
-	      onClick: this.handleClick
+	      className: Data.params.Vlinks.Dfk[3 - 1].LinkClass
 	    }, void 0, 'Avail', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[3 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap text-right'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Vlinks.Dfk[4 - 1].LinkHref,
-	      className: Data.params.Vlinks.Dfk[4 - 1].LinkClass,
-	      onClick: this.handleClick
+	      className: Data.params.Vlinks.Dfk[4 - 1].LinkClass
 	    }, void 0, 'Use%', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[4 - 1].CaretClass
 	    }))), _ref3), this.List(Data).map(function ($df, i) {
@@ -20549,12 +20531,30 @@
 	  }
 	});
 
+	jsdefines.define_hostname = React.createClass({
+	  displayName: 'define_hostname',
+
+	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+	  Reduce: function Reduce(data) {
+	    return {
+	      hostname: data.hostname
+	    };
+	  },
+	  render: function render() {
+	    var Data = this.state; // shadow global Data
+	    return _jsx('a', {
+	      href: '/',
+	      title: "hostname " + Data.hostname
+	    }, void 0, Data.hostname);
+	  }
+	});
+
 	var _ref4 = _jsx('span', {
 	  className: 'expand col'
 	});
 
-	jsdefines.define_panelif = React.createClass({
-	  displayName: 'define_panelif',
+	jsdefines.define_if = React.createClass({
+	  displayName: 'define_if',
 
 	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
 	  List: function List(data) {
@@ -20605,15 +20605,15 @@
 	    }, void 0, Data.params.Ifd)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Dlinks.Ifd.Less.Href,
-	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : "")
 	    }, void 0, '- ', Data.params.Dlinks.Ifd.Less.Text)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Dlinks.Ifd.More.Href,
-	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : "")
 	    }, void 0, Data.params.Dlinks.Ifd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
@@ -20625,15 +20625,15 @@
 	    }, void 0, Data.params.Ifn.Absolute)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Nlinks.Ifn.Less.Href,
-	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : "")
 	    }, void 0, '- ', Data.params.Nlinks.Ifn.Less.Text)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Nlinks.Ifn.More.Href,
-	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : "")
 	    }, void 0, Data.params.Nlinks.Ifn.More.Text, ' +')))))), _jsx('div', {
 	      className: Data.params.Ifn.Absolute != 0 ? "" : "hide"
 	    }, void 0, _jsx('div', {
@@ -20724,8 +20724,8 @@
 	  className: 'expand col'
 	});
 
-	jsdefines.define_panella = React.createClass({
-	  displayName: 'define_panella',
+	jsdefines.define_la = React.createClass({
+	  displayName: 'define_la',
 
 	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
 	  List: function List(data) {
@@ -20776,15 +20776,15 @@
 	    }, void 0, Data.params.Lad)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Dlinks.Lad.Less.Href,
-	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Lad.Less.ExtraClass != null ? Data.params.Dlinks.Lad.Less.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Lad.Less.ExtraClass != null ? Data.params.Dlinks.Lad.Less.ExtraClass : "")
 	    }, void 0, '- ', Data.params.Dlinks.Lad.Less.Text)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Dlinks.Lad.More.Href,
-	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Lad.More.ExtraClass != null ? Data.params.Dlinks.Lad.More.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Lad.More.ExtraClass != null ? Data.params.Dlinks.Lad.More.ExtraClass : "")
 	    }, void 0, Data.params.Dlinks.Lad.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
@@ -20796,15 +20796,15 @@
 	    }, void 0, Data.params.Lan.Absolute)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Nlinks.Lan.Less.Href,
-	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.Less.ExtraClass != null ? Data.params.Nlinks.Lan.Less.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.Less.ExtraClass != null ? Data.params.Nlinks.Lan.Less.ExtraClass : "")
 	    }, void 0, '- ', Data.params.Nlinks.Lan.Less.Text)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Nlinks.Lan.More.Href,
-	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.More.ExtraClass != null ? Data.params.Nlinks.Lan.More.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.More.ExtraClass != null ? Data.params.Nlinks.Lan.More.ExtraClass : "")
 	    }, void 0, Data.params.Nlinks.Lan.More.Text, ' +')))))), _jsx('div', {
 	      className: Data.params.Lan.Absolute != 0 ? "" : "hide"
 	    }, void 0, _jsx('div', {
@@ -20833,8 +20833,8 @@
 	  className: 'expand col'
 	});
 
-	jsdefines.define_panelmem = React.createClass({
-	  displayName: 'define_panelmem',
+	jsdefines.define_mem = React.createClass({
+	  displayName: 'define_mem',
 
 	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
 	  List: function List(data) {
@@ -20885,15 +20885,15 @@
 	    }, void 0, Data.params.Memd)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Dlinks.Memd.Less.Href,
-	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : "")
 	    }, void 0, '- ', Data.params.Dlinks.Memd.Less.Text)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Dlinks.Memd.More.Href,
-	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : "")
 	    }, void 0, Data.params.Dlinks.Memd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
@@ -20905,15 +20905,15 @@
 	    }, void 0, Data.params.Memn.Absolute)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Nlinks.Memn.Less.Href,
-	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : "")
 	    }, void 0, '- ', Data.params.Nlinks.Memn.Less.Text)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Nlinks.Memn.More.Href,
-	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : "")
 	    }, void 0, Data.params.Nlinks.Memn.More.Text, ' +')))))), _jsx('div', {
 	      className: Data.params.Memn.Absolute != 0 ? "" : "hide"
 	    }, void 0, _jsx('div', {
@@ -20951,8 +20951,8 @@
 	  }
 	});
 
-	jsdefines.define_panelps = React.createClass({
-	  displayName: 'define_panelps',
+	jsdefines.define_ps = React.createClass({
+	  displayName: 'define_ps',
 
 	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
 	  List: function List(data) {
@@ -21003,15 +21003,15 @@
 	    }, void 0, Data.params.Psd)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Dlinks.Psd.Less.Href,
-	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : "")
 	    }, void 0, '- ', Data.params.Dlinks.Psd.Less.Text)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Dlinks.Psd.More.Href,
-	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small text-nowrap" + " " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : "")
 	    }, void 0, Data.params.Dlinks.Psd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
@@ -21023,15 +21023,15 @@
 	    }, void 0, Data.params.Psn.Absolute)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Nlinks.Psn.Less.Href,
-	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : "")
 	    }, void 0, '- ', Data.params.Nlinks.Psn.Less.Text)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Nlinks.Psn.More.Href,
-	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : ""),
-	      onClick: this.handleClick
+	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : "")
 	    }, void 0, Data.params.Nlinks.Psn.More.Text, ' +')))))), _jsx('div', {
 	      className: Data.params.Psn.Absolute != 0 ? "" : "hide"
 	    }, void 0, _jsx('div', {
@@ -21041,73 +21041,73 @@
 	    }, void 0, _jsx('span', {
 	      className: 'expand col small-1 text-nowrap text-right'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Vlinks.Psk[1 - 1].LinkHref,
-	      className: Data.params.Vlinks.Psk[1 - 1].LinkClass,
-	      onClick: this.handleClick
+	      className: Data.params.Vlinks.Psk[1 - 1].LinkClass
 	    }, void 0, 'PID', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[1 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap text-right'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Vlinks.Psk[2 - 1].LinkHref,
-	      className: Data.params.Vlinks.Psk[2 - 1].LinkClass,
-	      onClick: this.handleClick
+	      className: Data.params.Vlinks.Psk[2 - 1].LinkClass
 	    }, void 0, 'UID', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[2 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Vlinks.Psk[3 - 1].LinkHref,
-	      className: Data.params.Vlinks.Psk[3 - 1].LinkClass,
-	      onClick: this.handleClick
+	      className: Data.params.Vlinks.Psk[3 - 1].LinkClass
 	    }, void 0, 'USER', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[3 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap text-right'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Vlinks.Psk[4 - 1].LinkHref,
-	      className: Data.params.Vlinks.Psk[4 - 1].LinkClass,
-	      onClick: this.handleClick
+	      className: Data.params.Vlinks.Psk[4 - 1].LinkClass
 	    }, void 0, 'PR', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[4 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap text-right'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Vlinks.Psk[5 - 1].LinkHref,
-	      className: Data.params.Vlinks.Psk[5 - 1].LinkClass,
-	      onClick: this.handleClick
+	      className: Data.params.Vlinks.Psk[5 - 1].LinkClass
 	    }, void 0, 'NI', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[5 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap text-right'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Vlinks.Psk[6 - 1].LinkHref,
-	      className: Data.params.Vlinks.Psk[6 - 1].LinkClass,
-	      onClick: this.handleClick
+	      className: Data.params.Vlinks.Psk[6 - 1].LinkClass
 	    }, void 0, 'VIRT', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[6 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap text-right'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Vlinks.Psk[7 - 1].LinkHref,
-	      className: Data.params.Vlinks.Psk[7 - 1].LinkClass,
-	      onClick: this.handleClick
+	      className: Data.params.Vlinks.Psk[7 - 1].LinkClass
 	    }, void 0, 'RES', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[7 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap text-center'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Vlinks.Psk[8 - 1].LinkHref,
-	      className: Data.params.Vlinks.Psk[8 - 1].LinkClass,
-	      onClick: this.handleClick
+	      className: Data.params.Vlinks.Psk[8 - 1].LinkClass
 	    }, void 0, 'TIME', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[8 - 1].CaretClass
 	    }))), _jsx('span', {
 	      className: 'expand col small-1 text-nowrap'
 	    }, void 0, _jsx('a', {
+	      onClick: this.handleClick,
 	      href: Data.params.Vlinks.Psk[9 - 1].LinkHref,
-	      className: Data.params.Vlinks.Psk[9 - 1].LinkClass,
-	      onClick: this.handleClick
+	      className: Data.params.Vlinks.Psk[9 - 1].LinkClass
 	    }, void 0, 'COMMAND', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[9 - 1].CaretClass
 	    })))), this.List(Data).map(function ($ps) {

@@ -110,20 +110,7 @@ jsdefines.HandlerMixin = {
 
 // transformed from define_* templates:
 
-jsdefines.define_hostname = React.createClass({
-  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
-  Reduce: function(data) {
-    return {
-      hostname: data.hostname
-    };
-  },
-  render: function() {
-    let Data = this.state; // shadow global Data
-    return (<a href="/"  title={"hostname " + Data.hostname}>{Data.hostname}</a>);
-  }
-});
-
-jsdefines.define_panelcpu = React.createClass({
+jsdefines.define_cpu = React.createClass({
   mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
   List: function(data) {
     let list;
@@ -156,11 +143,13 @@ jsdefines.define_panelcpu = React.createClass({
             <div className="input-group-label small text-nowrap">delay</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.CPUd}</a></div>
             <div className="input-group-button">
-<a href={Data.params.Dlinks.CPUd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : "")} onClick={this.handleClick}
-  >- {Data.params.Dlinks.CPUd.Less.Text}</a></div>
+              <a onClick={this.handleClick} href={Data.params.Dlinks.CPUd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : "")}
+                >- {Data.params.Dlinks.CPUd.Less.Text}</a>
+            </div>
             <div className="input-group-button">
-<a href={Data.params.Dlinks.CPUd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : "")} onClick={this.handleClick}
-  >{Data.params.Dlinks.CPUd.More.Text} +</a></div>
+              <a onClick={this.handleClick} href={Data.params.Dlinks.CPUd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : "")}
+                >{Data.params.Dlinks.CPUd.More.Text} +</a>
+            </div>
           </div>
         </li>
         <li>
@@ -168,11 +157,13 @@ jsdefines.define_panelcpu = React.createClass({
             <div className="input-group-label small text-nowrap">rows</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.CPUn.Absolute}</a></div>
             <div className="input-group-button">
-<a href={Data.params.Nlinks.CPUn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : "")} onClick={this.handleClick}
-  >- {Data.params.Nlinks.CPUn.Less.Text}</a></div>
+              <a onClick={this.handleClick} href={Data.params.Nlinks.CPUn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : "")}
+                >- {Data.params.Nlinks.CPUn.Less.Text}</a>
+            </div>
             <div className="input-group-button">
-<a href={Data.params.Nlinks.CPUn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : "")} onClick={this.handleClick}
-  >{Data.params.Nlinks.CPUn.More.Text} +</a></div>
+              <a onClick={this.handleClick} href={Data.params.Nlinks.CPUn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : "")}
+                >{Data.params.Nlinks.CPUn.More.Text} +</a>
+            </div>
           </div>
         </li>
       </ul>
@@ -198,7 +189,7 @@ jsdefines.define_panelcpu = React.createClass({
   }
 });
 
-jsdefines.define_paneldf = React.createClass({
+jsdefines.define_df = React.createClass({
   mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
   List: function(data) {
     let list;
@@ -231,11 +222,13 @@ jsdefines.define_paneldf = React.createClass({
             <div className="input-group-label small text-nowrap">delay</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Dfd}</a></div>
             <div className="input-group-button">
-<a href={Data.params.Dlinks.Dfd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : "")} onClick={this.handleClick}
-  >- {Data.params.Dlinks.Dfd.Less.Text}</a></div>
+              <a onClick={this.handleClick} href={Data.params.Dlinks.Dfd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : "")}
+                >- {Data.params.Dlinks.Dfd.Less.Text}</a>
+            </div>
             <div className="input-group-button">
-<a href={Data.params.Dlinks.Dfd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : "")} onClick={this.handleClick}
-  >{Data.params.Dlinks.Dfd.More.Text} +</a></div>
+              <a onClick={this.handleClick} href={Data.params.Dlinks.Dfd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : "")}
+                >{Data.params.Dlinks.Dfd.More.Text} +</a>
+            </div>
           </div>
         </li>
         <li>
@@ -243,29 +236,31 @@ jsdefines.define_paneldf = React.createClass({
             <div className="input-group-label small text-nowrap">rows</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Dfn.Absolute}</a></div>
             <div className="input-group-button">
-<a href={Data.params.Nlinks.Dfn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : "")} onClick={this.handleClick}
-  >- {Data.params.Nlinks.Dfn.Less.Text}</a></div>
+              <a onClick={this.handleClick} href={Data.params.Nlinks.Dfn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : "")}
+                >- {Data.params.Nlinks.Dfn.Less.Text}</a>
+            </div>
             <div className="input-group-button">
-<a href={Data.params.Nlinks.Dfn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : "")} onClick={this.handleClick}
-  >{Data.params.Nlinks.Dfn.More.Text} +</a></div>
+              <a onClick={this.handleClick} href={Data.params.Nlinks.Dfn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : "")}
+                >{Data.params.Nlinks.Dfn.More.Text} +</a>
+            </div>
           </div>
         </li>
       </ul>
     </div><div  className={Data.params.Dfn.Absolute != 0 ? "" : "hide"}>
     <div className="grid-block vertical stripe">
       <div className="grid-block thead"><span className="expand col small-1 text-nowrap">
-<a href={Data.params.Vlinks.Dfk[1-1].LinkHref} className={Data.params.Vlinks.Dfk[1-1].LinkClass} onClick={this.handleClick}
-  >Device<span className={Data.params.Vlinks.Dfk[1-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap">
-<a href={Data.params.Vlinks.Dfk[2-1].LinkHref} className={Data.params.Vlinks.Dfk[2-1].LinkClass} onClick={this.handleClick}
-  >Mounted<span className={Data.params.Vlinks.Dfk[2-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right">
-<a href={Data.params.Vlinks.Dfk[6-1].LinkHref} className={Data.params.Vlinks.Dfk[6-1].LinkClass} onClick={this.handleClick}
-  >Total<span className={Data.params.Vlinks.Dfk[6-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right">
-<a href={Data.params.Vlinks.Dfk[5-1].LinkHref} className={Data.params.Vlinks.Dfk[5-1].LinkClass} onClick={this.handleClick}
-  >Used<span className={Data.params.Vlinks.Dfk[5-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right">
-<a href={Data.params.Vlinks.Dfk[3-1].LinkHref} className={Data.params.Vlinks.Dfk[3-1].LinkClass} onClick={this.handleClick}
-  >Avail<span className={Data.params.Vlinks.Dfk[3-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right">
-<a href={Data.params.Vlinks.Dfk[4-1].LinkHref} className={Data.params.Vlinks.Dfk[4-1].LinkClass} onClick={this.handleClick}
-  >Use%<span className={Data.params.Vlinks.Dfk[4-1].CaretClass}></span></a></span><span className="expand col"></span></div>
+          <a onClick={this.handleClick} href={Data.params.Vlinks.Dfk[1-1].LinkHref} className={Data.params.Vlinks.Dfk[1-1].LinkClass}
+            >Device<span className={Data.params.Vlinks.Dfk[1-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap">
+          <a onClick={this.handleClick} href={Data.params.Vlinks.Dfk[2-1].LinkHref} className={Data.params.Vlinks.Dfk[2-1].LinkClass}
+            >Mounted<span className={Data.params.Vlinks.Dfk[2-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right">
+          <a onClick={this.handleClick} href={Data.params.Vlinks.Dfk[6-1].LinkHref} className={Data.params.Vlinks.Dfk[6-1].LinkClass}
+            >Total<span className={Data.params.Vlinks.Dfk[6-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right">
+          <a onClick={this.handleClick} href={Data.params.Vlinks.Dfk[5-1].LinkHref} className={Data.params.Vlinks.Dfk[5-1].LinkClass}
+            >Used<span className={Data.params.Vlinks.Dfk[5-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right">
+          <a onClick={this.handleClick} href={Data.params.Vlinks.Dfk[3-1].LinkHref} className={Data.params.Vlinks.Dfk[3-1].LinkClass}
+            >Avail<span className={Data.params.Vlinks.Dfk[3-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right">
+          <a onClick={this.handleClick} href={Data.params.Vlinks.Dfk[4-1].LinkHref} className={Data.params.Vlinks.Dfk[4-1].LinkClass}
+            >Use%<span className={Data.params.Vlinks.Dfk[4-1].CaretClass}></span></a></span><span className="expand col"></span></div>
       
       {this.List(Data).map(function($df, i) { return (
       <div  key={"df-rowby-dirname-"+$df.DirName} className="grid-block"><span className="expand col small-1 text-overflow">{$df.DevName}</span><span className="expand col small-1 text-overflow"> {$df.DirName}</span><span className="expand col small-1 text-overflow text-right gray"><span className="float-right"> {$df.Total}</span><span title="Inodes total"> {$df.Inodes}</span></span><span className="expand col small-1 text-overflow text-right gray"><span className="float-right"> {$df.Used}</span><span title="Inodes used"> {$df.Iused}</span></span><span className="expand col small-1 text-overflow text-right gray"><span className="float-right"> {$df.Avail}</span><span title="Inodes free"> {$df.Ifree}</span></span><span className="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct={$df.UsePct}><span className="float-right"> {$df.UsePct}%</span><span title="Inodes use%"> {$df.IusePct}%</span></span><span className="expand col-lr">{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</span></div>
@@ -278,7 +273,20 @@ jsdefines.define_paneldf = React.createClass({
   }
 });
 
-jsdefines.define_panelif = React.createClass({
+jsdefines.define_hostname = React.createClass({
+  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+  Reduce: function(data) {
+    return {
+      hostname: data.hostname
+    };
+  },
+  render: function() {
+    let Data = this.state; // shadow global Data
+    return (<a href="/"  title={"hostname " + Data.hostname}>{Data.hostname}</a>);
+  }
+});
+
+jsdefines.define_if = React.createClass({
   mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
   List: function(data) {
     let list;
@@ -311,11 +319,13 @@ jsdefines.define_panelif = React.createClass({
             <div className="input-group-label small text-nowrap">delay</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Ifd}</a></div>
             <div className="input-group-button">
-<a href={Data.params.Dlinks.Ifd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : "")} onClick={this.handleClick}
-  >- {Data.params.Dlinks.Ifd.Less.Text}</a></div>
+              <a onClick={this.handleClick} href={Data.params.Dlinks.Ifd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : "")}
+                >- {Data.params.Dlinks.Ifd.Less.Text}</a>
+            </div>
             <div className="input-group-button">
-<a href={Data.params.Dlinks.Ifd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : "")} onClick={this.handleClick}
-  >{Data.params.Dlinks.Ifd.More.Text} +</a></div>
+              <a onClick={this.handleClick} href={Data.params.Dlinks.Ifd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : "")}
+                >{Data.params.Dlinks.Ifd.More.Text} +</a>
+            </div>
           </div>
         </li>
         <li>
@@ -323,11 +333,13 @@ jsdefines.define_panelif = React.createClass({
             <div className="input-group-label small text-nowrap">rows</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Ifn.Absolute}</a></div>
             <div className="input-group-button">
-<a href={Data.params.Nlinks.Ifn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : "")} onClick={this.handleClick}
-  >- {Data.params.Nlinks.Ifn.Less.Text}</a></div>
+              <a onClick={this.handleClick} href={Data.params.Nlinks.Ifn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : "")}
+                >- {Data.params.Nlinks.Ifn.Less.Text}</a>
+            </div>
             <div className="input-group-button">
-<a href={Data.params.Nlinks.Ifn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : "")} onClick={this.handleClick}
-  >{Data.params.Nlinks.Ifn.More.Text} +</a></div>
+              <a onClick={this.handleClick} href={Data.params.Nlinks.Ifn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : "")}
+                >{Data.params.Nlinks.Ifn.More.Text} +</a>
+            </div>
           </div>
         </li>
       </ul>
@@ -351,7 +363,7 @@ jsdefines.define_panelif = React.createClass({
   }
 });
 
-jsdefines.define_panella = React.createClass({
+jsdefines.define_la = React.createClass({
   mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
   List: function(data) {
     let list;
@@ -384,11 +396,13 @@ jsdefines.define_panella = React.createClass({
             <div className="input-group-label small text-nowrap">delay</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Lad}</a></div>
             <div className="input-group-button">
-<a href={Data.params.Dlinks.Lad.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Lad.Less.ExtraClass != null ? Data.params.Dlinks.Lad.Less.ExtraClass : "")} onClick={this.handleClick}
-  >- {Data.params.Dlinks.Lad.Less.Text}</a></div>
+              <a onClick={this.handleClick} href={Data.params.Dlinks.Lad.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Lad.Less.ExtraClass != null ? Data.params.Dlinks.Lad.Less.ExtraClass : "")}
+                >- {Data.params.Dlinks.Lad.Less.Text}</a>
+            </div>
             <div className="input-group-button">
-<a href={Data.params.Dlinks.Lad.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Lad.More.ExtraClass != null ? Data.params.Dlinks.Lad.More.ExtraClass : "")} onClick={this.handleClick}
-  >{Data.params.Dlinks.Lad.More.Text} +</a></div>
+              <a onClick={this.handleClick} href={Data.params.Dlinks.Lad.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Lad.More.ExtraClass != null ? Data.params.Dlinks.Lad.More.ExtraClass : "")}
+                >{Data.params.Dlinks.Lad.More.Text} +</a>
+            </div>
           </div>
         </li>
         <li>
@@ -396,11 +410,13 @@ jsdefines.define_panella = React.createClass({
             <div className="input-group-label small text-nowrap">rows</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Lan.Absolute}</a></div>
             <div className="input-group-button">
-<a href={Data.params.Nlinks.Lan.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.Less.ExtraClass != null ? Data.params.Nlinks.Lan.Less.ExtraClass : "")} onClick={this.handleClick}
-  >- {Data.params.Nlinks.Lan.Less.Text}</a></div>
+              <a onClick={this.handleClick} href={Data.params.Nlinks.Lan.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.Less.ExtraClass != null ? Data.params.Nlinks.Lan.Less.ExtraClass : "")}
+                >- {Data.params.Nlinks.Lan.Less.Text}</a>
+            </div>
             <div className="input-group-button">
-<a href={Data.params.Nlinks.Lan.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.More.ExtraClass != null ? Data.params.Nlinks.Lan.More.ExtraClass : "")} onClick={this.handleClick}
-  >{Data.params.Nlinks.Lan.More.Text} +</a></div>
+              <a onClick={this.handleClick} href={Data.params.Nlinks.Lan.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.More.ExtraClass != null ? Data.params.Nlinks.Lan.More.ExtraClass : "")}
+                >{Data.params.Nlinks.Lan.More.Text} +</a>
+            </div>
           </div>
         </li>
       </ul>
@@ -419,7 +435,7 @@ jsdefines.define_panella = React.createClass({
   }
 });
 
-jsdefines.define_panelmem = React.createClass({
+jsdefines.define_mem = React.createClass({
   mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
   List: function(data) {
     let list;
@@ -452,11 +468,13 @@ jsdefines.define_panelmem = React.createClass({
             <div className="input-group-label small text-nowrap">delay</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Memd}</a></div>
             <div className="input-group-button">
-<a href={Data.params.Dlinks.Memd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : "")} onClick={this.handleClick}
-  >- {Data.params.Dlinks.Memd.Less.Text}</a></div>
+              <a onClick={this.handleClick} href={Data.params.Dlinks.Memd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : "")}
+                >- {Data.params.Dlinks.Memd.Less.Text}</a>
+            </div>
             <div className="input-group-button">
-<a href={Data.params.Dlinks.Memd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : "")} onClick={this.handleClick}
-  >{Data.params.Dlinks.Memd.More.Text} +</a></div>
+              <a onClick={this.handleClick} href={Data.params.Dlinks.Memd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : "")}
+                >{Data.params.Dlinks.Memd.More.Text} +</a>
+            </div>
           </div>
         </li>
         <li>
@@ -464,11 +482,13 @@ jsdefines.define_panelmem = React.createClass({
             <div className="input-group-label small text-nowrap">rows</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Memn.Absolute}</a></div>
             <div className="input-group-button">
-<a href={Data.params.Nlinks.Memn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : "")} onClick={this.handleClick}
-  >- {Data.params.Nlinks.Memn.Less.Text}</a></div>
+              <a onClick={this.handleClick} href={Data.params.Nlinks.Memn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : "")}
+                >- {Data.params.Nlinks.Memn.Less.Text}</a>
+            </div>
             <div className="input-group-button">
-<a href={Data.params.Nlinks.Memn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : "")} onClick={this.handleClick}
-  >{Data.params.Nlinks.Memn.More.Text} +</a></div>
+              <a onClick={this.handleClick} href={Data.params.Nlinks.Memn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : "")}
+                >{Data.params.Nlinks.Memn.More.Text} +</a>
+            </div>
           </div>
         </li>
       </ul>
@@ -487,7 +507,7 @@ jsdefines.define_panelmem = React.createClass({
   }
 });
 
-jsdefines.define_panelps = React.createClass({
+jsdefines.define_ps = React.createClass({
   mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
   List: function(data) {
     let list;
@@ -520,11 +540,13 @@ jsdefines.define_panelps = React.createClass({
             <div className="input-group-label small text-nowrap">delay</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Psd}</a></div>
             <div className="input-group-button">
-<a href={Data.params.Dlinks.Psd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : "")} onClick={this.handleClick}
-  >- {Data.params.Dlinks.Psd.Less.Text}</a></div>
+              <a onClick={this.handleClick} href={Data.params.Dlinks.Psd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : "")}
+                >- {Data.params.Dlinks.Psd.Less.Text}</a>
+            </div>
             <div className="input-group-button">
-<a href={Data.params.Dlinks.Psd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : "")} onClick={this.handleClick}
-  >{Data.params.Dlinks.Psd.More.Text} +</a></div>
+              <a onClick={this.handleClick} href={Data.params.Dlinks.Psd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : "")}
+                >{Data.params.Dlinks.Psd.More.Text} +</a>
+            </div>
           </div>
         </li>
         <li>
@@ -532,35 +554,37 @@ jsdefines.define_panelps = React.createClass({
             <div className="input-group-label small text-nowrap">rows</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Psn.Absolute}</a></div>
             <div className="input-group-button">
-<a href={Data.params.Nlinks.Psn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : "")} onClick={this.handleClick}
-  >- {Data.params.Nlinks.Psn.Less.Text}</a></div>
+              <a onClick={this.handleClick} href={Data.params.Nlinks.Psn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : "")}
+                >- {Data.params.Nlinks.Psn.Less.Text}</a>
+            </div>
             <div className="input-group-button">
-<a href={Data.params.Nlinks.Psn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : "")} onClick={this.handleClick}
-  >{Data.params.Nlinks.Psn.More.Text} +</a></div>
+              <a onClick={this.handleClick} href={Data.params.Nlinks.Psn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : "")}
+                >{Data.params.Nlinks.Psn.More.Text} +</a>
+            </div>
           </div>
         </li>
       </ul>
     </div><div  className={Data.params.Psn.Absolute != 0 ? "" : "hide"}>
     <div className="grid-block vertical stripe">
       <div className="grid-block thead"><span className="expand col small-1 text-nowrap text-right">
-<a href={Data.params.Vlinks.Psk[1-1].LinkHref} className={Data.params.Vlinks.Psk[1-1].LinkClass} onClick={this.handleClick}
-  >PID<span className={Data.params.Vlinks.Psk[1-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right"> 
-<a href={Data.params.Vlinks.Psk[2-1].LinkHref} className={Data.params.Vlinks.Psk[2-1].LinkClass} onClick={this.handleClick}
-  >UID<span className={Data.params.Vlinks.Psk[2-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap"> 
-<a href={Data.params.Vlinks.Psk[3-1].LinkHref} className={Data.params.Vlinks.Psk[3-1].LinkClass} onClick={this.handleClick}
-  >USER<span className={Data.params.Vlinks.Psk[3-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right"> 
-<a href={Data.params.Vlinks.Psk[4-1].LinkHref} className={Data.params.Vlinks.Psk[4-1].LinkClass} onClick={this.handleClick}
-  >PR<span className={Data.params.Vlinks.Psk[4-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right"> 
-<a href={Data.params.Vlinks.Psk[5-1].LinkHref} className={Data.params.Vlinks.Psk[5-1].LinkClass} onClick={this.handleClick}
-  >NI<span className={Data.params.Vlinks.Psk[5-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right"> 
-<a href={Data.params.Vlinks.Psk[6-1].LinkHref} className={Data.params.Vlinks.Psk[6-1].LinkClass} onClick={this.handleClick}
-  >VIRT<span className={Data.params.Vlinks.Psk[6-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right"> 
-<a href={Data.params.Vlinks.Psk[7-1].LinkHref} className={Data.params.Vlinks.Psk[7-1].LinkClass} onClick={this.handleClick}
-  >RES<span className={Data.params.Vlinks.Psk[7-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-center"> 
-<a href={Data.params.Vlinks.Psk[8-1].LinkHref} className={Data.params.Vlinks.Psk[8-1].LinkClass} onClick={this.handleClick}
-  >TIME<span className={Data.params.Vlinks.Psk[8-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap"> 
-<a href={Data.params.Vlinks.Psk[9-1].LinkHref} className={Data.params.Vlinks.Psk[9-1].LinkClass} onClick={this.handleClick}
-  >COMMAND<span className={Data.params.Vlinks.Psk[9-1].CaretClass}></span></a></span></div>
+          <a onClick={this.handleClick} href={Data.params.Vlinks.Psk[1-1].LinkHref} className={Data.params.Vlinks.Psk[1-1].LinkClass}
+            >PID<span className={Data.params.Vlinks.Psk[1-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right">
+          <a onClick={this.handleClick} href={Data.params.Vlinks.Psk[2-1].LinkHref} className={Data.params.Vlinks.Psk[2-1].LinkClass}
+            >UID<span className={Data.params.Vlinks.Psk[2-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap">
+          <a onClick={this.handleClick} href={Data.params.Vlinks.Psk[3-1].LinkHref} className={Data.params.Vlinks.Psk[3-1].LinkClass}
+            >USER<span className={Data.params.Vlinks.Psk[3-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right">
+          <a onClick={this.handleClick} href={Data.params.Vlinks.Psk[4-1].LinkHref} className={Data.params.Vlinks.Psk[4-1].LinkClass}
+            >PR<span className={Data.params.Vlinks.Psk[4-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right">
+          <a onClick={this.handleClick} href={Data.params.Vlinks.Psk[5-1].LinkHref} className={Data.params.Vlinks.Psk[5-1].LinkClass}
+            >NI<span className={Data.params.Vlinks.Psk[5-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right">
+          <a onClick={this.handleClick} href={Data.params.Vlinks.Psk[6-1].LinkHref} className={Data.params.Vlinks.Psk[6-1].LinkClass}
+            >VIRT<span className={Data.params.Vlinks.Psk[6-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right">
+          <a onClick={this.handleClick} href={Data.params.Vlinks.Psk[7-1].LinkHref} className={Data.params.Vlinks.Psk[7-1].LinkClass}
+            >RES<span className={Data.params.Vlinks.Psk[7-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-center">
+          <a onClick={this.handleClick} href={Data.params.Vlinks.Psk[8-1].LinkHref} className={Data.params.Vlinks.Psk[8-1].LinkClass}
+            >TIME<span className={Data.params.Vlinks.Psk[8-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap">
+          <a onClick={this.handleClick} href={Data.params.Vlinks.Psk[9-1].LinkHref} className={Data.params.Vlinks.Psk[9-1].LinkClass}
+            >COMMAND<span className={Data.params.Vlinks.Psk[9-1].CaretClass}></span></a></span></div>
       
       {this.List(Data).map(function($ps) { return (
       <div  key={"ps-rowby-pid-"+$ps.PID} className="grid-block"><span className="expand col small-1 text-right">{$ps.PID}</span><span className="expand col small-1 text-right"> {$ps.UID}</span><span className="expand col small-1"> {$ps.User}</span><span className="expand col small-1 text-right"> {$ps.Priority}</span><span className="expand col small-1 text-right"> {$ps.Nice}</span><span className="expand col small-1 text-right"> {$ps.Size}</span><span className="expand col small-1 text-right"> {$ps.Resident}</span><span className="expand col small-1 text-center"> {$ps.Time}</span><span className="expand col"> {$ps.Name}</span></div>

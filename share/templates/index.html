@@ -1,10 +1,4 @@
-{{define "defines::alink_badgeleft"}}
-<a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}
-  >{{.Badge}} {{.Text}}</a>{{end}}{{define "defines::alink_badgeright"}}
-<a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}
-  >{{.Text}} {{.Badge}}</a>{{end}}{{define "defines::avlink"}}
-<a href={{.LinkHref}} {{class}}={{.LinkClass}} onClick={this.handleClick}
-  >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}{{define "defines::define_uptime"}}<span>{{.Data.uptime}}</span>{{end}}{{/* define "defines::define_uptime"}}<span>{{.Data.uptime}}</span>{{end */}}{{define "defines::define_hostname"}}<a href="/" {{TitlePrefixed "hostname " .Data.hostname}}>{{.Data.hostname}}</a>{{end}}{{define "defines::define_panella"}}{{$p := .Data.params}}
+{{define "define_uptime"}}<span>{{.Data.uptime}}</span>{{end}}{{define "define_hostname"}}<a href="/" {{TitlePrefixed "hostname " .Data.hostname}}>{{.Data.hostname}}</a>{{end}}{{define "define_la"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
   <div class="col-lr large-1 text-right"><div {{ClassPositive $p.Lan "hide-showhide" "show-showhide"}}>
     <h1 class="h4 text-overflow">
@@ -19,16 +13,28 @@
           <div class="input-group">
             <div class="input-group-label small text-nowrap">delay</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Lad}}</a></div>
-            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessD $p $p.Lad "button small text-nowrap"}}</div>
-            <div class="input-group-button">{{template "defines::alink_badgeright" MoreD $p $p.Lad "button small text-nowrap"}}</div>
+            <div class="input-group-button">{{with LessD $p $p.Lad "button small text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Badge}} {{.Text}}</a>{{end}}
+            </div>
+            <div class="input-group-button">{{with MoreD $p $p.Lad "button small text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Text}} {{.Badge}}</a>{{end}}
+            </div>
           </div>
         </li>
         <li>
           <div class="input-group">
             <div class="input-group-label small text-nowrap">rows</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Lan.Absolute}}</a></div>
-            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessN $p $p.Lan "button small success text-nowrap"}}</div>
-            <div class="input-group-button">{{template "defines::alink_badgeright" MoreN $p $p.Lan "button small success text-nowrap"}}</div>
+            <div class="input-group-button">{{with LessN $p $p.Lan "button small success text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Badge}} {{.Text}}</a>{{end}}
+            </div>
+            <div class="input-group-button">{{with MoreN $p $p.Lan "button small success text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Text}} {{.Badge}}</a>{{end}}
+            </div>
           </div>
         </li>
       </ul>
@@ -43,7 +49,7 @@
       {{end}}
     </div></div></div>
   </div>
-</div>{{end}}{{define "defines::define_panelmem"}}{{$p := .Data.params}}
+</div>{{end}}{{define "define_mem"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
   <div class="col-lr large-1 text-right"><div {{ClassPositive $p.Memn "hide-showhide" "show-showhide"}}>
     <h1 class="h4 text-overflow">
@@ -58,16 +64,28 @@
           <div class="input-group">
             <div class="input-group-label small text-nowrap">delay</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Memd}}</a></div>
-            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessD $p $p.Memd "button small text-nowrap"}}</div>
-            <div class="input-group-button">{{template "defines::alink_badgeright" MoreD $p $p.Memd "button small text-nowrap"}}</div>
+            <div class="input-group-button">{{with LessD $p $p.Memd "button small text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Badge}} {{.Text}}</a>{{end}}
+            </div>
+            <div class="input-group-button">{{with MoreD $p $p.Memd "button small text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Text}} {{.Badge}}</a>{{end}}
+            </div>
           </div>
         </li>
         <li>
           <div class="input-group">
             <div class="input-group-label small text-nowrap">rows</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Memn.Absolute}}</a></div>
-            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessN $p $p.Memn "button small success text-nowrap"}}</div>
-            <div class="input-group-button">{{template "defines::alink_badgeright" MoreN $p $p.Memn "button small success text-nowrap"}}</div>
+            <div class="input-group-button">{{with LessN $p $p.Memn "button small success text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Badge}} {{.Text}}</a>{{end}}
+            </div>
+            <div class="input-group-button">{{with MoreN $p $p.Memn "button small success text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Text}} {{.Badge}}</a>{{end}}
+            </div>
           </div>
         </li>
       </ul>
@@ -82,7 +100,7 @@
       {{end}}
     </div></div></div>
   </div>
-</div>{{end}}{{define "defines::define_paneldf"}}{{$p := .Data.params}}
+</div>{{end}}{{define "define_df"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
   <div class="col-lr large-1 text-right"><div {{ClassPositive $p.Dfn "hide-showhide" "show-showhide"}}>
     <h1 class="h4 text-overflow">
@@ -97,22 +115,46 @@
           <div class="input-group">
             <div class="input-group-label small text-nowrap">delay</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Dfd}}</a></div>
-            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessD $p $p.Dfd "button small text-nowrap"}}</div>
-            <div class="input-group-button">{{template "defines::alink_badgeright" MoreD $p $p.Dfd "button small text-nowrap"}}</div>
+            <div class="input-group-button">{{with LessD $p $p.Dfd "button small text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Badge}} {{.Text}}</a>{{end}}
+            </div>
+            <div class="input-group-button">{{with MoreD $p $p.Dfd "button small text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Text}} {{.Badge}}</a>{{end}}
+            </div>
           </div>
         </li>
         <li>
           <div class="input-group">
             <div class="input-group-label small text-nowrap">rows</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Dfn.Absolute}}</a></div>
-            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessN $p $p.Dfn "button small success text-nowrap"}}</div>
-            <div class="input-group-button">{{template "defines::alink_badgeright" MoreN $p $p.Dfn "button small success text-nowrap"}}</div>
+            <div class="input-group-button">{{with LessN $p $p.Dfn "button small success text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Badge}} {{.Text}}</a>{{end}}
+            </div>
+            <div class="input-group-button">{{with MoreN $p $p.Dfn "button small success text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Text}} {{.Badge}}</a>{{end}}
+            </div>
           </div>
         </li>
       </ul>
     </div><div {{ClassNonZero $p.Dfn "" "hide"}}>
     <div class="grid-block vertical stripe">
-      <div class="grid-block thead"><span class="expand col small-1 text-nowrap">{{template "defines::avlink" Vlink $p $p.Dfk 1 "Device" }}{{/* FS     */}}</span><span class="expand col small-1 text-nowrap">{{template "defines::avlink" Vlink $p $p.Dfk 2 "Mounted"}}{{/* MP     */}}</span><span class="expand col small-1 text-nowrap text-right">{{template "defines::avlink" Vlink $p $p.Dfk 6 "Total"  }}{{/* TOTAL  */}}</span><span class="expand col small-1 text-nowrap text-right">{{template "defines::avlink" Vlink $p $p.Dfk 5 "Used"   }}{{/* USED   */}}</span><span class="expand col small-1 text-nowrap text-right">{{template "defines::avlink" Vlink $p $p.Dfk 3 "Avail"  }}{{/* AVAIL  */}}</span><span class="expand col small-1 text-nowrap text-right">{{template "defines::avlink" Vlink $p $p.Dfk 4 "Use%"   }}{{/* USEPCT */}}</span><span class="expand col"></span></div>{{if .Data.diskUsage}}
+      <div class="grid-block thead"><span class="expand col small-1 text-nowrap">{{with Vlink $p $p.Dfk 1 "Device"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
+            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap">{{with Vlink $p $p.Dfk 2 "Mounted"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
+            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Dfk 6 "Total"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
+            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Dfk 5 "Used"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
+            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Dfk 3 "Avail"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
+            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Dfk 4 "Use%"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
+            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col"></span></div>{{if .Data.diskUsage}}
       {{range $df := .Data.diskUsage.List}}
       {{jsx `{this.List(Data).map(function($df, i) { return (`}}
       <div {{Key "df-rowby-dirname" $df.DirName}} {{class}}="grid-block"><span class="expand col small-1 text-overflow">{{$df.DevName}}</span><span class="expand col small-1 text-overflow"> {{$df.DirName}}</span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Total}}</span><span title="Inodes total"> {{$df.Inodes}}</span></span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Used}}</span><span title="Inodes used"> {{$df.Iused}}</span></span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Avail}}</span><span title="Inodes free"> {{$df.Ifree}}</span></span><span {{class}}="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct={{$df.UsePct}}><span class="float-right"> {{$df.UsePct}}%</span><span title="Inodes use%"> {{$df.IusePct}}%</span></span><span class="expand col-lr">{{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}</span></div>
@@ -121,7 +163,7 @@
       {{end}}
     </div></div></div>
   </div>
-</div>{{end}}{{define "defines::define_panelcpu"}}{{$p := .Data.params}}
+</div>{{end}}{{define "define_cpu"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
   <div class="col-lr large-1 text-right"><div {{ClassPositive $p.CPUn "hide-showhide" "show-showhide"}}>
     <h1 class="h4 text-overflow">
@@ -136,16 +178,28 @@
           <div class="input-group">
             <div class="input-group-label small text-nowrap">delay</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.CPUd}}</a></div>
-            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessD $p $p.CPUd "button small text-nowrap"}}</div>
-            <div class="input-group-button">{{template "defines::alink_badgeright" MoreD $p $p.CPUd "button small text-nowrap"}}</div>
+            <div class="input-group-button">{{with LessD $p $p.CPUd "button small text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Badge}} {{.Text}}</a>{{end}}
+            </div>
+            <div class="input-group-button">{{with MoreD $p $p.CPUd "button small text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Text}} {{.Badge}}</a>{{end}}
+            </div>
           </div>
         </li>
         <li>
           <div class="input-group">
             <div class="input-group-label small text-nowrap">rows</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.CPUn.Absolute}}</a></div>
-            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessN $p $p.CPUn "button small success text-nowrap"}}</div>
-            <div class="input-group-button">{{template "defines::alink_badgeright" MoreN $p $p.CPUn "button small success text-nowrap"}}</div>
+            <div class="input-group-button">{{with LessN $p $p.CPUn "button small success text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Badge}} {{.Text}}</a>{{end}}
+            </div>
+            <div class="input-group-button">{{with MoreN $p $p.CPUn "button small success text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Text}} {{.Badge}}</a>{{end}}
+            </div>
           </div>
         </li>
       </ul>
@@ -167,7 +221,7 @@
       {{end}}
     </div></div></div>
   </div>
-</div>{{end}}{{define "defines::define_panelif"}}{{$p := .Data.params}}
+</div>{{end}}{{define "define_if"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
   <div class="col-lr large-1 text-right"><div {{ClassPositive $p.Ifn "hide-showhide" "show-showhide"}}>
     <h1 class="h4 text-overflow">
@@ -182,16 +236,28 @@
           <div class="input-group">
             <div class="input-group-label small text-nowrap">delay</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Ifd}}</a></div>
-            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessD $p $p.Ifd "button small text-nowrap"}}</div>
-            <div class="input-group-button">{{template "defines::alink_badgeright" MoreD $p $p.Ifd "button small text-nowrap"}}</div>
+            <div class="input-group-button">{{with LessD $p $p.Ifd "button small text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Badge}} {{.Text}}</a>{{end}}
+            </div>
+            <div class="input-group-button">{{with MoreD $p $p.Ifd "button small text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Text}} {{.Badge}}</a>{{end}}
+            </div>
           </div>
         </li>
         <li>
           <div class="input-group">
             <div class="input-group-label small text-nowrap">rows</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Ifn.Absolute}}</a></div>
-            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessN $p $p.Ifn "button small success text-nowrap"}}</div>
-            <div class="input-group-button">{{template "defines::alink_badgeright" MoreN $p $p.Ifn "button small success text-nowrap"}}</div>
+            <div class="input-group-button">{{with LessN $p $p.Ifn "button small success text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Badge}} {{.Text}}</a>{{end}}
+            </div>
+            <div class="input-group-button">{{with MoreN $p $p.Ifn "button small success text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Text}} {{.Badge}}</a>{{end}}
+            </div>
           </div>
         </li>
       </ul>
@@ -211,7 +277,7 @@
       {{end}}
     </div></div></div>
   </div>
-</div>{{end}}{{define "defines::define_panelps"}}{{$p := .Data.params}}
+</div>{{end}}{{define "define_ps"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
   <div class="col-lr large-1 text-right"><div {{ClassPositive $p.Psn "hide-showhide" "show-showhide"}}>
     <h1 class="h4 text-overflow">
@@ -226,22 +292,52 @@
           <div class="input-group">
             <div class="input-group-label small text-nowrap">delay</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Psd}}</a></div>
-            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessD $p $p.Psd "button small text-nowrap"}}</div>
-            <div class="input-group-button">{{template "defines::alink_badgeright" MoreD $p $p.Psd "button small text-nowrap"}}</div>
+            <div class="input-group-button">{{with LessD $p $p.Psd "button small text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Badge}} {{.Text}}</a>{{end}}
+            </div>
+            <div class="input-group-button">{{with MoreD $p $p.Psd "button small text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Text}} {{.Badge}}</a>{{end}}
+            </div>
           </div>
         </li>
         <li>
           <div class="input-group">
             <div class="input-group-label small text-nowrap">rows</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Psn.Absolute}}</a></div>
-            <div class="input-group-button">{{template "defines::alink_badgeleft"  LessN $p $p.Psn "button small success text-nowrap"}}</div>
-            <div class="input-group-button">{{template "defines::alink_badgeright" MoreN $p $p.Psn "button small success text-nowrap"}}</div>
+            <div class="input-group-button">{{with LessN $p $p.Psn "button small success text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Badge}} {{.Text}}</a>{{end}}
+            </div>
+            <div class="input-group-button">{{with MoreN $p $p.Psn "button small success text-nowrap"}}
+              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+                >{{.Text}} {{.Badge}}</a>{{end}}
+            </div>
           </div>
         </li>
       </ul>
     </div><div {{ClassNonZero $p.Psn "" "hide"}}>
     <div class="grid-block vertical stripe">
-      <div class="grid-block thead"><span class="expand col small-1 text-nowrap text-right">{{template "defines::avlink" Vlink $p $p.Psk 1 "PID"    }}</span><span class="expand col small-1 text-nowrap text-right"> {{template "defines::avlink" Vlink $p $p.Psk 2 "UID"    }}</span><span class="expand col small-1 text-nowrap"> {{template "defines::avlink" Vlink $p $p.Psk 3 "USER"   }}</span><span class="expand col small-1 text-nowrap text-right"> {{template "defines::avlink" Vlink $p $p.Psk 4 "PR"     }}{{/* PRI  */}}</span><span class="expand col small-1 text-nowrap text-right"> {{template "defines::avlink" Vlink $p $p.Psk 5 "NI"     }}{{/* NICE */}}</span><span class="expand col small-1 text-nowrap text-right"> {{template "defines::avlink" Vlink $p $p.Psk 6 "VIRT"   }}</span><span class="expand col small-1 text-nowrap text-right"> {{template "defines::avlink" Vlink $p $p.Psk 7 "RES"    }}</span><span class="expand col small-1 text-nowrap text-center"> {{template "defines::avlink" Vlink $p $p.Psk 8 "TIME"   }}</span><span class="expand col small-1 text-nowrap"> {{template "defines::avlink" Vlink $p $p.Psk 9 "COMMAND"}}{{/* NAME */}}</span></div>{{if .Data.procs}}
+      <div class="grid-block thead"><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 1 "PID"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
+            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 2 "UID"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
+            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap">{{with Vlink $p $p.Psk 3 "USER"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
+            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 4 "PR"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
+            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 5 "NI"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
+            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 6 "VIRT"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
+            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 7 "RES"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
+            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-center">{{with Vlink $p $p.Psk 8 "TIME"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
+            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap">{{with Vlink $p $p.Psk 9 "COMMAND"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
+            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span></div>{{if .Data.procs}}
       {{range $ps := .Data.procs.List}}
       {{jsx `{this.List(Data).map(function($ps) { return (`}}
       <div {{Key "ps-rowby-pid" $ps.PID}} {{class}}="grid-block"><span class="expand col small-1 text-right">{{$ps.PID}}</span><span class="expand col small-1 text-right"> {{$ps.UID}}</span><span class="expand col small-1"> {{$ps.User}}</span><span class="expand col small-1 text-right"> {{$ps.Priority}}</span><span class="expand col small-1 text-right"> {{$ps.Nice}}</span><span class="expand col small-1 text-right"> {{$ps.Size}}</span><span class="expand col small-1 text-right"> {{$ps.Resident}}</span><span class="expand col small-1 text-center"> {{$ps.Time}}</span><span class="expand col"> {{$ps.Name}}</span></div>
@@ -270,9 +366,9 @@
       <div class="top-bar-left">
         <ul class="menu">
           <li>
-            <h2 style="margin-bottom: 0" class="h4"><span data-define="define_hostname" class="updates">{{template "defines::define_hostname" .}}</span> <small>{{.Distrib}}</small></h2>
+            <h2 style="margin-bottom: 0" class="h4"><span data-define="define_hostname" class="updates">{{template "define_hostname" .}}</span> <small>{{.Distrib}}</small></h2>
           </li>
-          <li><span class="col">up</span><span data-define="define_uptime" class="col updates whitespace-pre">{{template "defines::define_uptime" .}}</span></li>
+          <li><span class="col">up</span><span data-define="define_uptime" class="col updates whitespace-pre">{{template "define_uptime" .}}</span></li>
         </ul>
       </div>
       <div class="top-bar-right">
@@ -281,12 +377,12 @@
         </ul>
       </div>
     </div>
-    <div data-define="define_panella" class="updates">{{template "defines::define_panella" .}}</div>
-    <div data-define="define_panelmem" class="updates">{{template "defines::define_panelmem" .}}</div>
-    <div data-define="define_paneldf" class="updates">{{template "defines::define_paneldf" .}}</div>
-    <div data-define="define_panelcpu" class="updates">{{template "defines::define_panelcpu" .}}</div>
-    <div data-define="define_panelif" class="updates">{{template "defines::define_panelif" .}}</div>
-    <div data-define="define_panelps" class="updates">{{template "defines::define_panelps" .}}</div>
+    <div data-define="define_la" class="updates"> {{template "define_la"  .}}</div>
+    <div data-define="define_mem" class="updates">{{template "define_mem" .}}</div>
+    <div data-define="define_df" class="updates"> {{template "define_df"  .}}</div>
+    <div data-define="define_cpu" class="updates">{{template "define_cpu" .}}</div>
+    <div data-define="define_if" class="updates"> {{template "define_if"  .}}</div>
+    <div data-define="define_ps" class="updates"> {{template "define_ps"  .}}</div>
     <script type="text/javascript">var Data = {{.Data}};</script>
     <script type="text/javascript" charset="utf-8" src="/{{.OstentVersion}}/js/{{if .TAGGEDbin}}min/bundle.min.js{{else}}src/bundle.js{{end}}"></script>
   </body>

@@ -1,9 +1,15 @@
 mixin define(name)
-  | {{define "defines::#{name}"}}
+  | {{define "#{name}"}}
   block
   | {{end}}
 
-mixin panel(nparam, dparam, title)
+mixin with(...rest)
+  | {{with !{rest.join(' ')}}}
+  block
+  | {{end}}
+  
+mixin table(nparam, dparam, title)
+  | {{$p := .Data.params}}
   .grid-block.hr-top
     .col-lr.large-1.text-right
       | <div {{ClassPositive #{nparam} "hide-showhide" "show-showhide"}}>
@@ -21,42 +27,41 @@ mixin panel(nparam, dparam, title)
               .input-group-button
                 a.button.small.secondary.disabled {{#{dparam}}}
               .input-group-button
-                | {{template "defines::alink_badgeleft"  LessD $p #{dparam} "button small text-nowrap"}}
+                +with('LessD $p', dparam, '"button small text-nowrap"')
+                  +alink_badgeleft
               .input-group-button
-                | {{template "defines::alink_badgeright" MoreD $p #{dparam} "button small text-nowrap"}}
+                +with('MoreD $p', dparam, '"button small text-nowrap"')
+                  +alink_badgeright
           li
             .input-group
               .input-group-label.small.text-nowrap rows
               .input-group-button
                 a.button.small.secondary.disabled {{#{nparam}.Absolute}}
               .input-group-button
-                | {{template "defines::alink_badgeleft"  LessN $p #{nparam} "button small success text-nowrap"}}
+                +with('LessN $p', nparam, '"button small success text-nowrap"')
+                  +alink_badgeleft
               .input-group-button
-                | {{template "defines::alink_badgeright" MoreN $p #{nparam} "button small success text-nowrap"}}
+                +with('MoreN $p', nparam, '"button small success text-nowrap"')
+                  +alink_badgeright
       block
       | </div>
 
-+define('alink_badgeleft')
-  | <a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}
+mixin alink_badgeleft
+  | <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
   |   >{{.Badge}} {{.Text}}</a>
-+define('alink_badgeright')
-  | <a href={{.Href}} {{class}}={{.Class}} onClick={this.handleClick}
+mixin alink_badgeright
+  | <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
   |   >{{.Text}} {{.Badge}}</a>
-
-+define('avlink')
-  | <a href={{.LinkHref}} {{class}}={{.LinkClass}} onClick={this.handleClick}
+mixin avlink
+  | <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
   |   >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>
-
-+define('define_uptime')
-  span {{.Data.uptime}}
-| {{/* define "defines::define_uptime"}}<span>{{.Data.uptime}}</span>{{end */}}
-
+  
++define('define_uptime'): span {{.Data.uptime}}
 +define('define_hostname')
   | <a href="/" {{TitlePrefixed "hostname " .Data.hostname}}>{{.Data.hostname}}</a>
 
-+define('define_panella')
-  | {{$p := .Data.params}}
-  +panel('$p.Lan', '$p.Lad', 'Load avg')
++define('define_la')
+  +table('$p.Lan', '$p.Lad', 'Load avg')
     | <div {{ClassNonZero $p.Lan "" "hide"}}>
     .grid-block.vertical.stripe
       .grid-block.thead
@@ -77,9 +82,8 @@ mixin panel(nparam, dparam, title)
       | {{end}}
     | </div>
 
-+define('define_panelmem')
-  | {{$p := .Data.params}}
-  +panel('$p.Memn', '$p.Memd', 'Memory')
++define('define_mem')
+  +table('$p.Memn', '$p.Memd', 'Memory')
     | <div {{ClassNonZero $p.Memn "" "hide"}}>
     .grid-block.vertical.stripe
       .grid-block.thead
@@ -106,18 +110,17 @@ mixin panel(nparam, dparam, title)
       | {{end}}
     | </div>
 
-+define('define_paneldf')
-  | {{$p := .Data.params}}
-  +panel('$p.Dfn', '$p.Dfd', 'Disk usage')
++define('define_df')
+  +table('$p.Dfn', '$p.Dfd', 'Disk usage')
     | <div {{ClassNonZero $p.Dfn "" "hide"}}>
     .grid-block.vertical.stripe
       .grid-block.thead
-        span.expand.col.small-1.text-nowrap {{template "defines::avlink" Vlink $p $p.Dfk 1 "Device" }}{{/* FS     */}}
-        span.expand.col.small-1.text-nowrap {{template "defines::avlink" Vlink $p $p.Dfk 2 "Mounted"}}{{/* MP     */}}
-        span.expand.col.small-1.text-nowrap.text-right {{template "defines::avlink" Vlink $p $p.Dfk 6 "Total"  }}{{/* TOTAL  */}}
-        span.expand.col.small-1.text-nowrap.text-right {{template "defines::avlink" Vlink $p $p.Dfk 5 "Used"   }}{{/* USED   */}}
-        span.expand.col.small-1.text-nowrap.text-right {{template "defines::avlink" Vlink $p $p.Dfk 3 "Avail"  }}{{/* AVAIL  */}}
-        span.expand.col.small-1.text-nowrap.text-right {{template "defines::avlink" Vlink $p $p.Dfk 4 "Use%"   }}{{/* USEPCT */}}
+        span.expand.col.small-1.text-nowrap:            +with('Vlink $p $p.Dfk 1 "Device"'):  +avlink {{/* FS     */}}
+        span.expand.col.small-1.text-nowrap:            +with('Vlink $p $p.Dfk 2 "Mounted"'): +avlink {{/* MP     */}}
+        span.expand.col.small-1.text-nowrap.text-right: +with('Vlink $p $p.Dfk 6 "Total"'):   +avlink {{/* TOTAL  */}}
+        span.expand.col.small-1.text-nowrap.text-right: +with('Vlink $p $p.Dfk 5 "Used"'):    +avlink {{/* USED   */}}
+        span.expand.col.small-1.text-nowrap.text-right: +with('Vlink $p $p.Dfk 3 "Avail"'):   +avlink {{/* AVAIL  */}}
+        span.expand.col.small-1.text-nowrap.text-right: +with('Vlink $p $p.Dfk 4 "Use%"'):    +avlink {{/* USEPCT */}}
         span.expand.col
       | {{if .Data.diskUsage}}
       | {{range $df := .Data.diskUsage.List}}
@@ -146,9 +149,8 @@ mixin panel(nparam, dparam, title)
       | {{end}}
     | </div>
 
-+define('define_panelcpu')
-  | {{$p := .Data.params}}
-  +panel('$p.CPUn', '$p.CPUd', 'CPU')
++define('define_cpu')
+  +table('$p.CPUn', '$p.CPUd', 'CPU')
     | <div {{ClassNonZero $p.CPUn "" "hide"}}>
     .grid-block.vertical.stripe
       .grid-block.thead
@@ -179,9 +181,8 @@ mixin panel(nparam, dparam, title)
       | {{end}}
     | </div>
 
-+define('define_panelif')
-  | {{$p := .Data.params}}
-  +panel('$p.Ifn', '$p.Ifd', 'Interfaces')
++define('define_if')
+  +table('$p.Ifn', '$p.Ifd', 'Interfaces')
     | <div {{ClassNonZero $p.Ifn "" "hide"}}>
     .grid-block.vertical.stripe
       .grid-block.thead
@@ -248,21 +249,20 @@ mixin panel(nparam, dparam, title)
       | {{end}}
     | </div>
 
-+define('define_panelps')
-  | {{$p := .Data.params}}
-  +panel('$p.Psn', '$p.Psd', 'Processes')
++define('define_ps')
+  +table('$p.Psn', '$p.Psd', 'Processes')
     | <div {{ClassNonZero $p.Psn "" "hide"}}>
     .grid-block.vertical.stripe
       .grid-block.thead
-        span.expand.col.small-1.text-nowrap.text-right {{template "defines::avlink" Vlink $p $p.Psk 1 "PID"    }}
-        span.expand.col.small-1.text-nowrap.text-right  {{template "defines::avlink" Vlink $p $p.Psk 2 "UID"    }}
-        span.expand.col.small-1.text-nowrap  {{template "defines::avlink" Vlink $p $p.Psk 3 "USER"   }}
-        span.expand.col.small-1.text-nowrap.text-right  {{template "defines::avlink" Vlink $p $p.Psk 4 "PR"     }}{{/* PRI  */}}
-        span.expand.col.small-1.text-nowrap.text-right  {{template "defines::avlink" Vlink $p $p.Psk 5 "NI"     }}{{/* NICE */}}
-        span.expand.col.small-1.text-nowrap.text-right  {{template "defines::avlink" Vlink $p $p.Psk 6 "VIRT"   }}
-        span.expand.col.small-1.text-nowrap.text-right  {{template "defines::avlink" Vlink $p $p.Psk 7 "RES"    }}
-        span.expand.col.small-1.text-nowrap.text-center  {{template "defines::avlink" Vlink $p $p.Psk 8 "TIME"   }}
-        span.expand.col.small-1.text-nowrap  {{template "defines::avlink" Vlink $p $p.Psk 9 "COMMAND"}}{{/* NAME */}}
+        span.expand.col.small-1.text-nowrap.text-right:  +with('Vlink $p $p.Psk 1 "PID"'):     +avlink
+        span.expand.col.small-1.text-nowrap.text-right:  +with('Vlink $p $p.Psk 2 "UID"'):     +avlink
+        span.expand.col.small-1.text-nowrap:             +with('Vlink $p $p.Psk 3 "USER"'):    +avlink
+        span.expand.col.small-1.text-nowrap.text-right:  +with('Vlink $p $p.Psk 4 "PR"'):      +avlink {{/* PRI  */}}
+        span.expand.col.small-1.text-nowrap.text-right:  +with('Vlink $p $p.Psk 5 "NI"'):      +avlink {{/* NICE */}}
+        span.expand.col.small-1.text-nowrap.text-right:  +with('Vlink $p $p.Psk 6 "VIRT"'):    +avlink
+        span.expand.col.small-1.text-nowrap.text-right:  +with('Vlink $p $p.Psk 7 "RES"'):     +avlink
+        span.expand.col.small-1.text-nowrap.text-center: +with('Vlink $p $p.Psk 8 "TIME"'):    +avlink
+        span.expand.col.small-1.text-nowrap:             +with('Vlink $p $p.Psk 9 "COMMAND"'): +avlink {{/* NAME */}}
       | {{if .Data.procs}}
       | {{range $ps := .Data.procs.List}}
       | {{jsx `{this.List(Data).map(function($ps) { return (`}}
@@ -309,35 +309,24 @@ html
           li
             h2.h4(style='margin-bottom: 0')
               span.updates(data-define='define_hostname')
-                | {{template "defines::define_hostname" .}}
+                | {{template "define_hostname" .}}
               |  
               small {{.Distrib}}
           li
             span.col up
             span.col.updates.whitespace-pre(data-define='define_uptime')
-              | {{template "defines::define_uptime" .}}
+              | {{template "define_uptime" .}}
       .top-bar-right
         ul.menu
           li
             a.button.secondary.hollow(style='margin: 0', href='https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}') ostent
 
-    .updates(data-define='define_panella')
-      | {{template "defines::define_panella" .}}
-
-    .updates(data-define='define_panelmem')
-      | {{template "defines::define_panelmem" .}}
-
-    .updates(data-define='define_paneldf')
-      | {{template "defines::define_paneldf" .}}
-
-    .updates(data-define='define_panelcpu')
-      | {{template "defines::define_panelcpu" .}}
-
-    .updates(data-define='define_panelif')
-      | {{template "defines::define_panelif" .}}
-
-    .updates(data-define='define_panelps')
-      | {{template "defines::define_panelps" .}}
+    .updates(data-define='define_la')  {{template "define_la"  .}}
+    .updates(data-define='define_mem') {{template "define_mem" .}}
+    .updates(data-define='define_df')  {{template "define_df"  .}}
+    .updates(data-define='define_cpu') {{template "define_cpu" .}}
+    .updates(data-define='define_if')  {{template "define_if"  .}}
+    .updates(data-define='define_ps')  {{template "define_ps"  .}}
 
     script(type='text/javascript').
       var Data = {{.Data}};
