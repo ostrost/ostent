@@ -10,6 +10,9 @@ import (
 	"github.com/ostrost/ostent/commands/extpoints"
 )
 
+// CLIHandlers may be non-empty only after Parse.
+var CLIHandlers []extpoints.CommandLineHandler
+
 func setupFlagset(name string, cmd extpoints.Command, loggerSetups []extpoints.SetupLog) (*flag.FlagSet, extpoints.CommandHandler, io.Writer) {
 	fs := flag.NewFlagSet(name, flag.ContinueOnError)
 	run, output := cmd.SetupCommand(fs, loggerSetups...)
@@ -32,7 +35,7 @@ func ParseCommand(handlers []extpoints.CommandHandler, args []string, loggerOpti
 	name := args[0]
 	cmd := extpoints.Commands.Lookup(name)
 	if cmd == nil {
-		return handlers, fmt.Errorf("%s: No such command\n", name)
+		return handlers, fmt.Errorf("%s: No such command", name)
 	}
 	handler, err, nextargs := setup(name, args[1:], cmd, loggerOptions)
 	if err != nil {
@@ -41,13 +44,12 @@ func ParseCommand(handlers []extpoints.CommandHandler, args []string, loggerOpti
 	return ParseCommand(append(handlers, handler), nextargs)
 }
 
-func parseCommands() ([]extpoints.CommandHandler, error) {
-	return ParseCommand([]extpoints.CommandHandler{}, flag.Args() /* no SetupLog passed */)
-}
-
-// true is when to abort
+// ArgCommands returned true is when to abort.
 func ArgCommands() (bool, extpoints.AtexitHandler) {
-	handlers, err := parseCommands()
+	handlers, err := ParseCommand(
+		[]extpoints.CommandHandler{},
+		flag.Args(), // NB
+		/* no SetupLog passed */)
 	if err != nil {
 		log.Fatal(err)
 		return true, func() {} // useless return
@@ -94,8 +96,6 @@ func ArgCommands() (bool, extpoints.AtexitHandler) {
 	}
 	return true, atexit
 }
-
-var CLIHandlers []extpoints.CommandLineHandler
 
 func Parse(fs *flag.FlagSet, arguments []string) {
 	for _, cli := range extpoints.CommandLines.All() {

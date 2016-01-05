@@ -3,12 +3,21 @@
 package commands
 
 import (
+	"fmt"
+	"log"
 	"os"
 	"syscall"
 	"time"
 
 	"github.com/rcrowley/goagain"
 )
+
+// InitStdLog sets up global log.
+func InitStdLog() {
+	log.SetPrefix(fmt.Sprintf("[%d][ostent] ", os.Getpid()))
+	// goagain logging is useless without pid prefix
+	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
+}
 
 func (_ webserver) GoneAgain() bool {
 	return os.Getenv("GOAGAIN_PPID") != ""

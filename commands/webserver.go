@@ -27,13 +27,6 @@ func (wr webserver) NetListen() net.Listener {
 	return listen
 }
 
-// LogInit sets up global log
-func InitStdLog() {
-	log.SetPrefix(fmt.Sprintf("[%d][ostent] ", os.Getpid()))
-	// goagain logging is useless without pid prefix
-	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
-}
-
 func NewWebserver(defport int) *webserver {
 	return &webserver{
 		Log: NewLog(fmt.Sprintf("[%d][ostent webserver] ", os.Getpid()), func(l *extpoints.Log) {
