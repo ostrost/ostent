@@ -65,6 +65,8 @@ init:
 github.com/jteeuwen/go-bindata/go-bindata \
 github.com/progrium/go-extpoints \
 github.com/skelterjohn/rerun \
+github.com/hashicorp/go-multierror \
+github.com/spf13/cobra \
 golang.org/x/net/html
 # golang.org/x/net/html not in use yet
 	go get -v $(package)
