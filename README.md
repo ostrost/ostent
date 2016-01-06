@@ -86,31 +86,16 @@ $ ostent                                     ________________
 
 ## Running the code
 
-Have your GOPATH environment set,
-[gvm](https://github.com/moovweb/gvm) is a must.
-
 1. **`go get github.com/ostrost/ostent`**
 2. `ostent` to run.
 
-For rebuilding the code and assets:
+### Rebuilding
 
-1. Find `src/github.com/ostrost/ostent` directory in GOPATH.
-2. Run `make init` once and later for packages update (think `go get -u`)
-3. `make` or `make al` when `rerun` does rebuilding.
-
-Repeat 3. every time sources (esp. assets) change.
-[rerun](https://github.com/skelterjohn/rerun) does live-reloading run:
-`rerun github.com/ostrost/ostent`
-
-**For a fork**, to preserve import paths and packages namespace,
-clone your fork as if it was `github.com/ostrost/ostent` package for Go:
-
-1. `go get github.com/ostrost/ostent`
-2. Find `src/github.com/ostrost/ostent` directory in GOPATH.
-3. Replace it with you fork clone.
-4. Continue with rebuilding steps above.
-
-## Make
+1. Find `src/github.com/ostrost/ostent` directory in `$GOPATH`.
+2. Run `make init` once.
+3. Optionally `npm install` once (the package list comes from `package.json`).
+   This is required for asset and templates rebuilding only.
+4. `gulp watch` or `make` after changes.
 
 `make` rebuilds these **commited to the repo** files:
 - `share/assets/bindata.*.go`
@@ -121,26 +106,28 @@ clone your fork as if it was `github.com/ostrost/ostent` package for Go:
 - `share/js/*.jsx`
 
 If you don't change source files, content re-generated
-should not differ from the commited. Whenever
-share/{ace.templates,style} modified,
-you have to re-make.
+should not differ from the commited.
 
-Additional tools required for assets rebuilding.
-Install with `npm install`: the package list comes from `package.json`.
+`gulp watch`
 
-## The main package
+- watches share/{js,style,templatesorigin} and rebuilds dependants on changes
+- does live-reloading `ostent` code run
+- acceps all ostent flags e.g. `gulp watch -b 127.0.0.1:8080`
 
-`github.com/ostrost/ostent` has two main.go files:
-rerun will find `main.dev.go`; the other `main.bin.go`
-(used when building with `-tags bin`) is the init code for
-the distributed binaries: also includes
-[goagain](https://github.com/rcrowley/goagain) recovering and
-self-upgrading via [go-update](https://github.com/inconshreveable/go-update).
+### Two kinds of builds
 
-## The assets
+Standalone and release binaries produced by `make` are built with `bin` tag.
+The binaries include
 
-The binaries, to be stand-alone, have the assets and templates embeded.
-Unless you specifically build with `-tags bin` (e.g. with make),
-the content is not embeded for the ease of development:
-with `rerun`, asset requests are served from the actual files.
-Bin-built `ostent extractassets` can be used to copy assets on disk.
+- embeded template and assets files
+- [goagain](https://github.com/rcrowley/goagain) recovering
+- self-upgrading via [go-update](https://github.com/inconshreveable/go-update)
+
+This builds also contain `extractassets` subcommand to copy assets on disk.
+
+Non-bin builds have
+- `main.dev.go` as entry point in main package
+- different set of flags: facilitating debugging etc.
+- serving from actual template and asset files as is
+
+This kind (`!bin`) is produced by `go get` and `gulp watch`.

@@ -64,7 +64,6 @@ init:
 	go get -u -v \
 github.com/jteeuwen/go-bindata/go-bindata \
 github.com/progrium/go-extpoints \
-github.com/skelterjohn/rerun \
 github.com/hashicorp/go-multierror \
 github.com/spf13/cobra \
 golang.org/x/net/html
@@ -93,7 +92,7 @@ commands/extpoints/extpoints.go: commands/extpoints/interface.go ; cd $(dir $@) 
 
 al: $(packagefiles) $(devpackagefiles)
 al: $(assets_nonego)
-# al: like `all' but without final go build $(package). For when rerun does the build
+# al: like `all' but without final go build $(package). For when `gulp watch` does the build
 
 $(templatepp): $(templateppfiles)
 	go build -o $@ $(templateppackage)
