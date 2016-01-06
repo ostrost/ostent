@@ -117,9 +117,9 @@ should not differ from the commited.
 ### Two kinds of builds
 
 Standalone and release binaries produced by `make` are built with `bin` tag.
-The binaries include
+These binaries include
 
-- embeded template and assets files
+- embeded template and assets
 - [goagain](https://github.com/rcrowley/goagain) recovering
 - self-upgrading via [go-update](https://github.com/inconshreveable/go-update)
 
