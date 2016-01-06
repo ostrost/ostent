@@ -93,8 +93,9 @@ $ ostent                                     ________________
 
 1. Find `src/github.com/ostrost/ostent` directory in `$GOPATH`.
 2. Run `make init` once.
-3. Optionally `npm install` once (the package list comes from `package.json`).
-   This is required for asset and templates rebuilding only.
+3. Optionally, for asset and template rebuilding only (once):
+   - `npm install`: the package list comes from package.json
+   - `node_modules/.bin/bower install`: the list from bower.json
 4. `gulp watch` or `make` after changes.
 
 `make` rebuilds these **commited to the repo** files:
