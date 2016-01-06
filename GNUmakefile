@@ -128,8 +128,7 @@ share/assets/js/min/bundle.min.js: share/js/index.js share/js/jsdefines.jsx
 
 share/templates/index.html: share/templatesorigin/index.jade
 share/js/jsdefines.jsx: share/templates/index.html share/templatesorigin/jsdefines.jstmpl $(templatepp)
-	$(templatepp) -output $@ -htmltemplate share/templates/index.html share/templatesorigin/jsdefines.jstmpl
-# $^ would include $(templatepp)
+	$(templatepp) --output $@ --definesfrom share/templates/index.html --template share/templatesorigin/jsdefines.jstmpl
 
 $(templates_bingo) $(templates_devgo): $(shell find share/templates/ -type f \! -name \*.go)
 

@@ -2,79 +2,55 @@ package templatepipe
 
 import (
 	"bytes"
-	"flag"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"reflect"
 	"sort"
 	"strings"
-	templatetext "text/template"
-
-	// "golang.org/x/net/html"
+	"text/template"
 )
 
-func Main(htmlFuncs, jsxlFuncs map[string]interface{}) {
-	var (
-		outputFile       string
-		htmltemplateFile string
-	)
-	flag.StringVar(&outputFile, "o", "", "Output file")
-	flag.StringVar(&outputFile, "output", "", "Output file")
-	flag.StringVar(&htmltemplateFile, "html", "", "The html template file to parse")
-	flag.StringVar(&htmltemplateFile, "htmltemplate", "", "The html template file to parse")
-	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage:\n  %s [options] [filename.ace]\n\nOptions:\n", os.Args[0])
-		flag.PrintDefaults()
-		os.Exit(64)
-	}
-	flag.Parse()
-
-	inputFile := flag.Arg(0)
-	if inputFile == "" {
-		fmt.Fprintf(os.Stderr, "No template specified.\n")
-		flag.Usage() // exits 64
-		return
+func Convert(inputTemplateFile, definesFromFile string,
+	htmlFuncs, jsxlFuncs map[string]interface{}, outputFile string) error {
+	input, err := template.ParseFiles(inputTemplateFile)
+	if err != nil {
+		return err
 	}
 
-	check := func(err error) {
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
+	// definesFrom, err := template.ParseFiles(definesFromFile)
+	definesFrom, err := template.New(definesFromFile).Funcs(htmlFuncs).
+		ParseFiles(definesFromFile)
+	if err != nil {
+		return err
 	}
-	jstemplate, err := templatetext.ParseFiles(inputFile)
-	check(err)
 
-	// defines, err := templatetext.ParseFiles(htmltemplateFile)
-	defines, err := templatetext.New(htmltemplateFile).Funcs(htmlFuncs).
-		ParseFiles(htmltemplateFile)
-	check(err)
+	// definesOnly will have just "define_" templates added in the tree.
+	definesOnly := template.New("jsdefines").Funcs(template.FuncMap(jsxlFuncs))
 
-	definesonly := templatetext.New("jsdefines").
-		Funcs(templatetext.FuncMap(jsxlFuncs))
-
-	definesTemplates := SortableTemplates(defines.Templates())
+	definesTemplates := SortableTemplates(definesFrom.Templates())
 	sort.Stable(definesTemplates)
 
 	for _, t := range definesTemplates {
-		_, err := definesonly.AddParseTree(t.Name(), t.Tree)
-		check(err)
+		if _, err := definesOnly.AddParseTree(t.Name(), t.Tree); err != nil {
+			return err
+		}
 	}
 
 	jdata := struct{ Defines []Define }{}
 	for _, t := range definesTemplates {
-		names := strings.Split(t.Name(), "::")
-		tname := names[len(names)-1]
-		if strings.HasPrefix(tname, "define_") {
-			define, err := MakeDefine(definesonly, tname, t.Name())
-			check(err)
+		if tname := t.Name(); strings.HasPrefix(tname, "define_") {
+			define, err := MakeDefine(definesOnly, tname, tname)
+			if err != nil {
+				return err
+			}
 			jdata.Defines = append(jdata.Defines, define)
 		}
 	}
 	buf := new(bytes.Buffer)
-	check(jstemplate.Execute(buf, jdata))
-	check(WriteFile(outputFile, buf.String()))
+	if err := input.Execute(buf, jdata); err != nil {
+		return err
+	}
+	return ioutil.WriteFile(outputFile, buf.Bytes(), 0644)
 }
 
 func JSX2HTML(buf *bytes.Buffer) (string, error) {
@@ -90,16 +66,6 @@ func JSX2HTML(buf *bytes.Buffer) (string, error) {
 		s = strings.Replace(s, k, JSXAttributeRewrites[k], -1)
 	}
 	return s, nil
-	/*
-		node, err := html.Parse(buf)
-		if err != nil {
-			return "", err
-		}
-		JSXAttributes(node)
-		buf := new(bytes.Buffer)
-		html.Render(buf, node)
-		return buf.String(), nil
-	// */
 }
 
 // JSXAttributeRewrites is a map to jsx-compat attibute names.
@@ -131,15 +97,15 @@ type Define struct {
 }
 
 // SortableTemplates is for just sorting.
-type SortableTemplates []*templatetext.Template
+type SortableTemplates []*template.Template
 
 func (st SortableTemplates) Len() int           { return len(st) }
 func (st SortableTemplates) Less(i, j int) bool { return st[i].Name() < st[j].Name() }
 func (st SortableTemplates) Swap(i, j int)      { st[i], st[j] = st[j], st[i] }
 
-func MakeDefine(definesonly *templatetext.Template, shortname, fullname string) (Define, error) {
+func MakeDefine(definesOnly *template.Template, shortname, fullname string) (Define, error) {
 	define := Define{ShortName: shortname}
-	t, err := definesonly.Clone()
+	t, err := definesOnly.Clone()
 	if err != nil {
 		return define, err
 	}
@@ -180,15 +146,4 @@ func CurlyNotMethod(parent, key, full string) interface{} {
 		return nil
 	}
 	return CurlyX(parent, key, full)
-}
-
-// WriteFile is ioutil.WriteFile if filename is not "",
-// otherwise it's as if filename was /dev/stdout.
-func WriteFile(filename, data string) error {
-	bytedata := []byte(data)
-	if filename != "" {
-		return ioutil.WriteFile(filename, bytedata, 0644)
-	}
-	_, err := os.Stdout.Write(bytedata)
-	return err
 }
