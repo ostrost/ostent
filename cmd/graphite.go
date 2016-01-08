@@ -1,51 +1,35 @@
-package commands
+package cmd
 
 import (
-	"flag"
 	"net"
 	"time"
 
 	graphite "github.com/cyberdelia/go-metrics-graphite"
 
-	"github.com/ostrost/ostent/commands/extpoints"
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/params"
 )
 
 type Graphite struct {
-	Log        *extpoints.Log
 	DelayFlag  flags.Delay
 	ServerAddr flags.Bind
 }
 
-func (_ Graphites) SetupFlagSet(cli *flag.FlagSet) extpoints.CommandLineHandler {
-	gr := &Graphite{
-		Log:        NewLog("[ostent graphite] "),
-		DelayFlag:  flags.Delay{Duration: 10 * time.Second}, // 10s default
-		ServerAddr: flags.NewBind(2003),
-	}
-	cli.Var(&gr.DelayFlag, "graphite-delay", "Graphite `delay`")
-	cli.Var(&gr.ServerAddr, "graphite-host", "Graphite `host`")
-	return func() (extpoints.AtexitHandler, bool, error) {
-		if gr.ServerAddr.Host == "" {
-			return nil, false, nil
-		}
+func (gr *Graphite) Run() error {
+	if gr.ServerAddr.Host != "" {
 		ostent.AddBackground(func() {
-			gc := &Carbond{
-				Log:        gr.Log,
+			ostent.AllExporters.AddExporter("graphite")
+			ostent.Register <- &Carbond{
 				ServerAddr: gr.ServerAddr.String(),
 				Delay:      &params.Delay{D: gr.DelayFlag.Duration},
 			}
-			ostent.AllExporters.AddExporter("graphite")
-			ostent.Register <- gc
 		})
-		return nil, false, nil
 	}
+	return nil
 }
 
 type Carbond struct {
-	Log           *extpoints.Log
 	ServerAddr    string
 	Conn          net.Conn
 	*params.Delay // Expired, Tick methods
@@ -59,7 +43,7 @@ func (cd Carbond) WantProcs() bool { return false }
 func (cd *Carbond) Tack() {
 	addr, err := net.ResolveTCPAddr("tcp", cd.ServerAddr)
 	if err != nil {
-		cd.Log.Printf("Resolve Addr %s: %s\n", cd.ServerAddr, err)
+		grLog.Printf("Resolve Addr %s: %s\n", cd.ServerAddr, err)
 		return
 	}
 	// go graphite.Graphite(ostent.Reg1s.Registry, 1*time.Second, "ostent", addr)
@@ -72,16 +56,12 @@ func (cd *Carbond) Tack() {
 	if err != nil {
 		if !cd.Failing {
 			cd.Failing = true
-			cd.Log.Printf("Sending: %s\n", err)
+			grLog.Printf("Sending: %s\n", err)
 		}
 	} else if cd.Failing {
 		cd.Failing = false
-		cd.Log.Printf("Recovered\n")
+		grLog.Printf("Recovered\n")
 	}
 }
 
-type Graphites struct{}
-
-func init() {
-	extpoints.CommandLines.Register(Graphites{}, "graphite")
-}
+var grLog = NewLog(nil, "[ostent graphite] ")

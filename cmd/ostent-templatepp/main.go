@@ -29,7 +29,7 @@ var (
 )
 
 // TemplateppPreRunE is to become TemplateppCmd.PreRunE.
-func TemplateppPreRunE(cmd *cobra.Command, args []string) error {
+func TemplateppPreRunE(*cobra.Command, []string) error {
 	var merr *multierror.Error
 	if definesFromFile == "" {
 		merr = multierror.Append(merr, fmt.Errorf("--definesfrom wasn't provided"))
@@ -45,7 +45,7 @@ func TemplateppPreRunE(cmd *cobra.Command, args []string) error {
 
 // TemplateppRunE is to become TemplateppCmd.RunE.
 // Calls templatepipe.Convert.
-func TemplateppRunE(cmd *cobra.Command, args []string) error {
+func TemplateppRunE(*cobra.Command, []string) error {
 	return templatepipe.Convert(
 		inputTemplateFile,
 		definesFromFile,

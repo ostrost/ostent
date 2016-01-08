@@ -1,43 +1,27 @@
 package main
 
 import (
-	"flag"
 	"log"
 	"net"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/gorilla/context"
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
 
-	"github.com/ostrost/ostent/flags"
+	"github.com/ostrost/ostent/cmd"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/share/assets"
 	"github.com/ostrost/ostent/share/templates"
 )
 
-var DelayFlags = flags.DelayBounds{
-	Max: flags.Delay{Duration: 10 * time.Minute},
-	Min: flags.Delay{Duration: time.Second},
-	// 10m and 1s are corresponding defaults
-}
-
 func init() {
-	flag.Var(&DelayFlags.Max, "max-delay", "Maximum for UI `delay`")
-	flag.Var(&DelayFlags.Min, "min-delay", "Collect and minimum for UI `delay`")
-	flag.Var(&DelayFlags.Min, "d", "Short for min-delay")
 	ostent.AddBackground(ostent.ConnectionsLoop)
 	ostent.AddBackground(ostent.CollectLoop)
 }
 
 func Serve(listener net.Listener, taggedbin bool, extra func(*httprouter.Router, alice.Chain)) error {
-	// post-flag.Parse() really
-	if DelayFlags.Max.Duration < DelayFlags.Min.Duration {
-		DelayFlags.Max.Duration = DelayFlags.Min.Duration
-	}
-
 	r, achain, access := ostent.NewServery(taggedbin)
 
 	ostentLog := log.New(os.Stderr, "[ostent] ", 0)
@@ -45,7 +29,7 @@ func Serve(listener net.Listener, taggedbin bool, extra func(*httprouter.Router,
 	defer errclose()
 
 	var (
-		serve1 = ostent.NewServeSSE(access, DelayFlags)
+		serve1 = ostent.NewServeSSE(access, cmd.DelayFlags)
 		serve2 = ostent.NewServeWS(serve1, errlog)
 		serve3 = ostent.NewServeIndex(serve2, taggedbin, templates.IndexTemplate)
 		serve4 = ostent.ServeAssets{

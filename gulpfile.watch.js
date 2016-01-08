@@ -55,11 +55,16 @@ gulp.task('server run', ['server build'], function() {
       if (i == '_' || i == '$0') {
         continue;
       }
-      args.push('-'+i);
+      if (i.length == 1) {
+        args.push('-'+i);
+      } else {
+        args.push('--'+i);
+      }
       if (typeof(argv[i]) != 'boolean') {
         args.push(argv[i]);
       }
     }
+    // console.log('gulp: run args:', args);
     server = child.spawn(makep.package[0].replace(/.*\//, ''), args);
     dup('stdout', server);
     dup('stderr', server);

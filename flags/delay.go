@@ -53,3 +53,6 @@ func (d *Delay) Set(input string) error {
 	d.Duration = v
 	return nil
 }
+
+// Type of pflag.Value interface
+func (d Delay) Type() string { return "delay" }

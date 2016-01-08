@@ -8,7 +8,7 @@ DEST="${DEST:-$HOME/bin/ostent}" # change if you wish. the directory must be wri
 
 runflags=
 if ! test -e "$DEST" ; then
-    runflags=-upgradelater
+    runflags=--upgradelater
 
     LATEST=https://github.com/ostrost/ostent/releases/latest # Location header -> basename of it == version
     VERSION=$(curl -sSI $LATEST | awk -F:\  '$1 == "Location" { L=$2 } END { sub(/\r$/, "", L); sub(/^.*\//, "", L); print L }')
@@ -20,7 +20,7 @@ if ! test -e "$DEST" ; then
 fi
 
 for arg in "$@" ; do
-    test "x$arg" == x-norun &&
+    test "x$arg" == x--norun &&
     exit # Ok, just install, no run
 done
 

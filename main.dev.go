@@ -3,8 +3,7 @@
 package main
 
 import (
-	"flag"
-	"log"
+	"net"
 	"net/http"
 	"net/http/pprof"
 	"os"
@@ -14,9 +13,9 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
+	"github.com/spf13/cobra"
 
-	"github.com/ostrost/ostent/commands"
-	_ "github.com/ostrost/ostent/commands/ostent"
+	"github.com/ostrost/ostent/cmd"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/share/templates"
 )
@@ -24,15 +23,10 @@ import (
 // AssetAltModTimeFunc is nil.
 var AssetAltModTimeFunc func() time.Time
 
-func main() {
-	webserver := commands.NewWebserver(8050).AddCommandLine()
-	commands.Parse(flag.CommandLine, os.Args[1:])
-
-	errd, atexit := commands.ArgCommands()
-	defer atexit()
-
-	if errd {
-		return
+func OstentRunE(*cobra.Command, []string) error {
+	listen, err := net.Listen("tcp", cmd.OstentBind.String())
+	if err != nil {
+		return err
 	}
 
 	ostent.RunBackground()
@@ -40,7 +34,6 @@ func main() {
 	templatesLoaded := make(chan struct{}, 1)
 	go templates.InitTemplates(templatesLoaded)
 
-	listen := webserver.NetListen()
 	errch := make(chan error, 2)
 	go func(ch chan<- error) {
 		<-templatesLoaded
@@ -58,9 +51,15 @@ wait:
 		case _ = <-sigch:
 			break wait
 		case err := <-errch:
-			log.Fatal(err)
+			return err
 		}
 	}
+	return nil
+}
+
+func main() {
+	cmd.OstentCmd.RunE = OstentRunE
+	cmd.Execute()
 }
 
 func (ps PprofServe) Serve(w http.ResponseWriter, r *http.Request, params httprouter.Params) {

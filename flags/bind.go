@@ -39,3 +39,6 @@ func (b *Bind) Set(input string) error {
 	b.string = b.Host + ":" + b.Port
 	return nil
 }
+
+// Type of pflag.Value interface
+func (b Bind) Type() string { return "bind" }

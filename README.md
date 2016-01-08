@@ -41,35 +41,32 @@ Platforms:
 ## Usage
 
 ```
-Usage of ostent:
-  -bind address (default *:8050)
-  -min-delay duration (default 1s)
-        Collection and minimum for UI delay
-  -max-delay duration (default 10m)
-        Maximum for UI delay
+Specify --influxdb-url  to enable exporting to InfluxDB.
+Specify --graphite-host to enable exporting to Graphite.
+Specify --librato-email and --librato-token  to enable exporting to Librato.
 
-  -graphite-host address
-        Specify Graphite addess to enable exporting to
-  -graphite-delay duration (default 10s)
-
-  -influxdb-url URL
-        Specify InfluxDB server URL to enable exporting to
-  -influxdb-database database (default "ostent")
-  -influxdb-delay duration (default 10s)
-  -influxdb-username username
-  -influxdb-password password
-        Optional, if server requires the pair
-
-  -librato-email token
-  -librato-token token
-        Specify email and token to enable exporting to Librato
-  -librato-source source (default hostname value)
-  -librato-delay duration (default 10s)
+Usage:
+  ostent [flags]
+  
+Flags:
+  -b, --bind address                 Bind address (default :8050)
+      --graphite-delay delay         Graphite delay (default 10s)
+      --graphite-host host           Graphite host
+      --influxdb-database database   InfluxDB database (default "ostent")
+      --influxdb-delay delay         InfluxDB delay (default 10s)
+      --influxdb-password password   InfluxDB password
+      --influxdb-url URL             InfluxDB server URL
+      --influxdb-username username   InfluxDB username
+      --librato-delay delay          Librato delay (default 10s)
+      --librato-email email          Librato email
+      --librato-source source        Librato source (default "thinkpad")
+      --librato-token token          Librato token
+      --max-delay delay              Collect and display maximum delay (default 10m)
+  -d, --min-delay delay              Collect and display minimum delay (default 1s)
+      --profile-cpu filename         Profiling CPU output filename
+      --profile-heap filename        Profiling heap output filename
+  -v, --version                      Display version and exit
 ```
-
-Addresses are specified like `host[:port]`.
-InfluxDB server must be 0.9.0 or above, URL specified as `http://host[:post]`.
-Any duration (delay) is a number and a unit: `s` for seconds, `m` for minutes etc.
 
 Here's how it goes:
 
@@ -131,4 +128,4 @@ Non-bin builds have
 - different set of flags: facilitating debugging etc.
 - serving from actual template and asset files as is
 
-This kind (`!bin`) is produced by `go get` and `gulp watch`.
+This kind (`!bin`) is produced by `gulp watch` and `go get`.
