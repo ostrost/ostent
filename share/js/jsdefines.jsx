@@ -171,8 +171,9 @@ jsdefines.define_cpu = React.createClass({
     <div className="grid-block vertical stripe">
       <div className="grid-block thead"><span className="expand col small-1">Core</span><span className="expand col small-1 text-right"> User%</span><span className="expand col small-1 text-right"> Sys%</span><span className="expand col small-1 text-right"> Wait%</span><span className="expand col small-1 text-right"> Idle%</span><span className="expand col"></span></div>
       
+      
       {this.List(Data).map(function($cpu, i) { return (
-      <div  key={"cpu-rowby-N-"+$cpu.N} className="grid-block"><span className="expand col small-1 text-nowrap">{$cpu.N}</span><span className="expand col small-1 text-right bg-usepct"
+      <div  key={"cpu-rowby-n-"+$cpu.N} className="grid-block"><span className="expand col small-1 text-nowrap">{$cpu.N}</span><span className="expand col small-1 text-right bg-usepct"
        data-usepct={$cpu.UserPct}> {$cpu.UserPct}%</span>
       <span className="expand col small-1 text-right bg-usepct"
        data-usepct={$cpu.SysPct}> {$cpu.SysPct}%</span>
@@ -262,6 +263,7 @@ jsdefines.define_df = React.createClass({
           <a onClick={this.handleClick} href={Data.params.Vlinks.Dfk[4-1].LinkHref} className={Data.params.Vlinks.Dfk[4-1].LinkClass}
             >Use%<span className={Data.params.Vlinks.Dfk[4-1].CaretClass}></span></a></span><span className="expand col"></span></div>
       
+      
       {this.List(Data).map(function($df, i) { return (
       <div  key={"df-rowby-dirname-"+$df.DirName} className="grid-block"><span className="expand col small-1 text-overflow">{$df.DevName}</span><span className="expand col small-1 text-overflow"> {$df.DirName}</span><span className="expand col small-1 text-overflow text-right gray"><span className="float-right"> {$df.Total}</span><span title="Inodes total"> {$df.Inodes}</span></span><span className="expand col small-1 text-overflow text-right gray"><span className="float-right"> {$df.Used}</span><span title="Inodes used"> {$df.Iused}</span></span><span className="expand col small-1 text-overflow text-right gray"><span className="float-right"> {$df.Avail}</span><span title="Inodes free"> {$df.Ifree}</span></span><span className="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct={$df.UsePct}><span className="float-right"> {$df.UsePct}%</span><span title="Inodes use%"> {$df.IusePct}%</span></span><span className="expand col-lr">{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</span></div>
       );})}
@@ -347,6 +349,7 @@ jsdefines.define_if = React.createClass({
     <div className="grid-block vertical stripe">
       <div className="grid-block thead"><span className="expand col small-1">Interface</span><span className="expand col small-1 text-right"> IP</span><span title="Drops,Errors In/Out per second" className="expand col small-2 text-right text-nowrap"> Loss IO ps</span><span title="Packets In/Out per second" className="expand col small-2 text-right text-nowrap"> Packets IO ps</span><span title="Bits In/Out per second" className="expand col small-2 text-right text-nowrap"> IO <i>b</i>ps</span><span className="expand col"></span></div>
       
+      
       {this.List(Data).map(function($if, i) { return (
       <div  key={"if-rowby-name-"+$if.Name} className="grid-block"><span className="expand col small-1 text-overflow">{$if.Name}</span><span className="expand col small-1 text-overflow text-right">{$if.IP}</span><span className="expand col small-2 text-right text-nowrap">&nbsp;<span title="Total drops,errors modulo 4G" className="gray"><span title="Total drops In modulo 4G">{$if.DropsIn}</span><span  className={$if.DropsOut != null ? "" : "hide"}>/</span>
           <span  className={$if.DropsOut != null ? "" : "hide"} title="Total drops Out modulo 4G">{$if.DropsOut}</span>
@@ -422,10 +425,11 @@ jsdefines.define_la = React.createClass({
       </ul>
     </div><div  className={Data.params.Lan.Absolute != 0 ? "" : "hide"}>
     <div className="grid-block vertical stripe">
-      <div className="grid-block thead"><span className="expand col small-1">Period</span><span className="expand col small-1 text-right"> Value</span><span className="expand col"></span></div>
+      <div className="grid-block thead"><span className="expand col small-1 text-right">Period</span><span className="expand col small-1 text-right"> Value</span><span className="expand col"></span></div>
+      
       
       {this.List(Data).map(function($la, i) { return (
-      <div  key={"la-rowby-period-"+$la.Period} className="grid-block"><span className="expand col small-1">{$la.Period}m</span><span className="expand col small-1 text-right"> {$la.Value}</span><span className="expand col-lr">{jsdefines.Sparkline({ref: i, col: 'Value'})}</span></div>
+      <div  key={"la-rowby-period-"+$la.Period} className="grid-block"><span className="expand col small-1 text-right">{$la.Period}m</span><span className="expand col small-1 text-right"> {$la.Value}</span><span className="expand col-lr">{jsdefines.Sparkline({ref: i, col: 'Value'})}</span></div>
       );})}
       
       
@@ -495,6 +499,7 @@ jsdefines.define_mem = React.createClass({
     </div><div  className={Data.params.Memn.Absolute != 0 ? "" : "hide"}>
     <div className="grid-block vertical stripe">
       <div className="grid-block thead"><span className="expand col small-1">Memory</span><span className="expand col small-1 text-right"> Total</span><span className="expand col small-1 text-right"> Used</span><span className="expand col small-1 text-right"> Free</span><span className="expand col small-1 text-right"> Use%</span><span className="expand col"></span></div>
+      
       
       {this.List(Data).map(function($mem, i) { return (
       <div  key={"mem-rowby-kind-"+$mem.Kind} className="grid-block"><span className="expand col small-1">{$mem.Kind}</span><span className="expand col small-1 text-right"> {$mem.Total}</span><span className="expand col small-1 text-right"> {$mem.Used}</span><span className="expand col small-1 text-right"> {$mem.Free}</span><span className="expand col small-1 text-right bg-usepct" data-usepct={$mem.UsePct}> {$mem.UsePct}%</span><span className="expand col-lr">{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</span></div>
@@ -586,7 +591,8 @@ jsdefines.define_ps = React.createClass({
           <a onClick={this.handleClick} href={Data.params.Vlinks.Psk[9-1].LinkHref} className={Data.params.Vlinks.Psk[9-1].LinkClass}
             >COMMAND<span className={Data.params.Vlinks.Psk[9-1].CaretClass}></span></a></span></div>
       
-      {this.List(Data).map(function($ps) { return (
+      
+      {this.List(Data).map(function($ps, i) { return (
       <div  key={"ps-rowby-pid-"+$ps.PID} className="grid-block"><span className="expand col small-1 text-right">{$ps.PID}</span><span className="expand col small-1 text-right"> {$ps.UID}</span><span className="expand col small-1"> {$ps.User}</span><span className="expand col small-1 text-right"> {$ps.Priority}</span><span className="expand col small-1 text-right"> {$ps.Nice}</span><span className="expand col small-1 text-right"> {$ps.Size}</span><span className="expand col small-1 text-right"> {$ps.Resident}</span><span className="expand col small-1 text-center"> {$ps.Time}</span><span className="expand col"> {$ps.Name}</span></div>
       );})}
       

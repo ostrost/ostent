@@ -20332,7 +20332,7 @@
 	    }, void 0, ' Idle%'), _ref2), this.List(Data).map(function ($cpu, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
-	      }, "cpu-rowby-N-" + $cpu.N, _jsx('span', {
+	      }, "cpu-rowby-n-" + $cpu.N, _jsx('span', {
 	        className: 'expand col small-1 text-nowrap'
 	      }, void 0, $cpu.N), _jsx('span', {
 	        className: 'expand col small-1 text-right bg-usepct',
@@ -20812,14 +20812,14 @@
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block thead'
 	    }, void 0, _jsx('span', {
-	      className: 'expand col small-1'
+	      className: 'expand col small-1 text-right'
 	    }, void 0, 'Period'), _jsx('span', {
 	      className: 'expand col small-1 text-right'
 	    }, void 0, ' Value'), _ref5), this.List(Data).map(function ($la, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
 	      }, "la-rowby-period-" + $la.Period, _jsx('span', {
-	        className: 'expand col small-1'
+	        className: 'expand col small-1 text-right'
 	      }, void 0, $la.Period, 'm'), _jsx('span', {
 	        className: 'expand col small-1 text-right'
 	      }, void 0, ' ', $la.Value), _jsx('span', {
@@ -21110,7 +21110,7 @@
 	      className: Data.params.Vlinks.Psk[9 - 1].LinkClass
 	    }, void 0, 'COMMAND', _jsx('span', {
 	      className: Data.params.Vlinks.Psk[9 - 1].CaretClass
-	    })))), this.List(Data).map(function ($ps) {
+	    })))), this.List(Data).map(function ($ps, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
 	      }, "ps-rowby-pid-" + $ps.PID, _jsx('span', {

@@ -40,10 +40,11 @@
       </ul>
     </div><div {{ClassNonZero $p.Lan "" "hide"}}>
     <div class="grid-block vertical stripe">
-      <div class="grid-block thead"><span class="expand col small-1">Period</span><span class="expand col small-1 text-right"> Value</span><span class="expand col"></span></div>{{if .Data.loadavg}}
+      <div class="grid-block thead"><span class="expand col small-1 text-right">Period</span><span class="expand col small-1 text-right"> Value</span><span class="expand col"></span></div>
+      {{if .Data.loadavg}}
       {{range $la := .Data.loadavg.List}}
-      {{jsx  `{this.List(Data).map(function($la, i) { return (`}}
-      <div {{Key "la-rowby-period" $la.Period}} {{class}}="grid-block"><span class="expand col small-1">{{$la.Period}}m</span><span class="expand col small-1 text-right"> {{$la.Value}}</span><span class="expand col-lr">{{jsx `{jsdefines.Sparkline({ref: i, col: 'Value'})}`}}</span></div>
+      {{jsx `{this.List(Data).map(function($la, i) { return (`}}
+      <div {{Key "la-rowby-period" $la.Period}} {{class}}="grid-block"><span class="expand col small-1 text-right">{{$la.Period}}m</span><span class="expand col small-1 text-right"> {{$la.Value}}</span><span class="expand col-lr">{{jsx `{jsdefines.Sparkline({ref: i, col: 'Value'})}`}}</span></div>
       {{jsx `);})}`}}
       {{end}}
       {{end}}
@@ -91,9 +92,10 @@
       </ul>
     </div><div {{ClassNonZero $p.Memn "" "hide"}}>
     <div class="grid-block vertical stripe">
-      <div class="grid-block thead"><span class="expand col small-1">Memory</span><span class="expand col small-1 text-right"> Total</span><span class="expand col small-1 text-right"> Used</span><span class="expand col small-1 text-right"> Free</span><span class="expand col small-1 text-right"> Use%</span><span class="expand col"></span></div>{{if .Data.memory}}
+      <div class="grid-block thead"><span class="expand col small-1">Memory</span><span class="expand col small-1 text-right"> Total</span><span class="expand col small-1 text-right"> Used</span><span class="expand col small-1 text-right"> Free</span><span class="expand col small-1 text-right"> Use%</span><span class="expand col"></span></div>
+      {{if .Data.memory}}
       {{range $mem := .Data.memory.List}}
-      {{jsx  `{this.List(Data).map(function($mem, i) { return (`}}
+      {{jsx `{this.List(Data).map(function($mem, i) { return (`}}
       <div {{Key "mem-rowby-kind" $mem.Kind}} {{class}}="grid-block"><span class="expand col small-1">{{$mem.Kind}}</span><span class="expand col small-1 text-right"> {{$mem.Total}}</span><span class="expand col small-1 text-right"> {{$mem.Used}}</span><span class="expand col small-1 text-right"> {{$mem.Free}}</span><span {{class}}="expand col small-1 text-right bg-usepct" data-usepct={{$mem.UsePct}}> {{$mem.UsePct}}%</span><span class="expand col-lr">{{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}</span></div>
       {{jsx `);})}`}}
       {{end}}
@@ -154,7 +156,8 @@
           <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
             >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Dfk 4 "Use%"}}
           <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
-            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col"></span></div>{{if .Data.diskUsage}}
+            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col"></span></div>
+      {{if .Data.diskUsage}}
       {{range $df := .Data.diskUsage.List}}
       {{jsx `{this.List(Data).map(function($df, i) { return (`}}
       <div {{Key "df-rowby-dirname" $df.DirName}} {{class}}="grid-block"><span class="expand col small-1 text-overflow">{{$df.DevName}}</span><span class="expand col small-1 text-overflow"> {{$df.DirName}}</span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Total}}</span><span title="Inodes total"> {{$df.Inodes}}</span></span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Used}}</span><span title="Inodes used"> {{$df.Iused}}</span></span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Avail}}</span><span title="Inodes free"> {{$df.Ifree}}</span></span><span {{class}}="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct={{$df.UsePct}}><span class="float-right"> {{$df.UsePct}}%</span><span title="Inodes use%"> {{$df.IusePct}}%</span></span><span class="expand col-lr">{{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}</span></div>
@@ -205,10 +208,11 @@
       </ul>
     </div><div {{ClassNonZero $p.CPUn "" "hide"}}>
     <div class="grid-block vertical stripe">
-      <div class="grid-block thead"><span class="expand col small-1">Core</span><span class="expand col small-1 text-right"> User%</span><span class="expand col small-1 text-right"> Sys%</span><span class="expand col small-1 text-right"> Wait%</span><span class="expand col small-1 text-right"> Idle%</span><span class="expand col"></span></div>{{if .Data.cpu}}
+      <div class="grid-block thead"><span class="expand col small-1">Core</span><span class="expand col small-1 text-right"> User%</span><span class="expand col small-1 text-right"> Sys%</span><span class="expand col small-1 text-right"> Wait%</span><span class="expand col small-1 text-right"> Idle%</span><span class="expand col"></span></div>
+      {{if .Data.cpu}}
       {{range $cpu := .Data.cpu.List}}
-      {{jsx  `{this.List(Data).map(function($cpu, i) { return (`}}
-      <div {{Key "cpu-rowby-N" $cpu.N}} {{class}}="grid-block"><span class="expand col small-1 text-nowrap">{{$cpu.N}}</span><span {{class}}="expand col small-1 text-right bg-usepct"
+      {{jsx `{this.List(Data).map(function($cpu, i) { return (`}}
+      <div {{Key "cpu-rowby-n" $cpu.N}} {{class}}="grid-block"><span class="expand col small-1 text-nowrap">{{$cpu.N}}</span><span {{class}}="expand col small-1 text-right bg-usepct"
        data-usepct={{$cpu.UserPct}}> {{$cpu.UserPct}}%</span>
       <span {{class}}="expand col small-1 text-right bg-usepct"
        data-usepct={{$cpu.SysPct}}> {{$cpu.SysPct}}%</span>
@@ -263,7 +267,8 @@
       </ul>
     </div><div {{ClassNonZero $p.Ifn "" "hide"}}>
     <div class="grid-block vertical stripe">
-      <div class="grid-block thead"><span class="expand col small-1">Interface</span><span class="expand col small-1 text-right"> IP</span><span title="Drops,Errors In/Out per second" class="expand col small-2 text-right text-nowrap"> Loss IO ps</span><span title="Packets In/Out per second" class="expand col small-2 text-right text-nowrap"> Packets IO ps</span><span title="Bits In/Out per second" class="expand col small-2 text-right text-nowrap"> IO <i>b</i>ps</span><span class="expand col"></span></div>{{if .Data.ifaddrs}}
+      <div class="grid-block thead"><span class="expand col small-1">Interface</span><span class="expand col small-1 text-right"> IP</span><span title="Drops,Errors In/Out per second" class="expand col small-2 text-right text-nowrap"> Loss IO ps</span><span title="Packets In/Out per second" class="expand col small-2 text-right text-nowrap"> Packets IO ps</span><span title="Bits In/Out per second" class="expand col small-2 text-right text-nowrap"> IO <i>b</i>ps</span><span class="expand col"></span></div>
+      {{if .Data.ifaddrs}}
       {{range $if := .Data.ifaddrs.List}}
       {{jsx `{this.List(Data).map(function($if, i) { return (`}}
       <div {{Key "if-rowby-name" $if.Name}} {{class}}="grid-block"><span class="expand col small-1 text-overflow">{{$if.Name}}</span><span class="expand col small-1 text-overflow text-right">{{$if.IP}}</span><span class="expand col small-2 text-right text-nowrap">&nbsp;<span title="Total drops,errors modulo 4G" class="gray"><span title="Total drops In modulo 4G">{{$if.DropsIn}}</span><span {{ClassNonNil $if.DropsOut "" "hide"}}>/</span>
@@ -337,9 +342,10 @@
           <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
             >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap">{{with Vlink $p $p.Psk 9 "COMMAND"}}
           <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
-            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span></div>{{if .Data.procs}}
+            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span></div>
+      {{if .Data.procs}}
       {{range $ps := .Data.procs.List}}
-      {{jsx `{this.List(Data).map(function($ps) { return (`}}
+      {{jsx `{this.List(Data).map(function($ps, i) { return (`}}
       <div {{Key "ps-rowby-pid" $ps.PID}} {{class}}="grid-block"><span class="expand col small-1 text-right">{{$ps.PID}}</span><span class="expand col small-1 text-right"> {{$ps.UID}}</span><span class="expand col small-1"> {{$ps.User}}</span><span class="expand col small-1 text-right"> {{$ps.Priority}}</span><span class="expand col small-1 text-right"> {{$ps.Nice}}</span><span class="expand col small-1 text-right"> {{$ps.Size}}</span><span class="expand col small-1 text-right"> {{$ps.Resident}}</span><span class="expand col small-1 text-center"> {{$ps.Time}}</span><span class="expand col"> {{$ps.Name}}</span></div>
       {{jsx `);})}`}}
       {{end}}
