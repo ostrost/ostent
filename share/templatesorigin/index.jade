@@ -76,11 +76,12 @@ mixin range_list(datak, ranger, kvalue, keyid)
   +table('$p.Lan', '$p.Lad', 'Load avg')
     .grid-block.vertical.stripe
       .grid-block.thead
-        span.expand.col.small-1.text-right Period
+        span.expand.col.small-1 Period
         span.expand.col.small-1.text-right  Value
         span.expand.col
       +range_list('loadavg', '$la', '$la.Period', 'la-rowby-period')
-        span.expand.col.small-1.text-right {{$la.Period}}m
+        span.expand.col.small-1
+          .text-right.width-3rem {{$la.Period}}m
         span.expand.col.small-1.text-right  {{$la.Value}}
         span.expand.col-lr
           | {{jsx `{jsdefines.Sparkline({ref: i, col: 'Value'})}`}}
@@ -252,7 +253,7 @@ html
     <!--[if IE]>
     link(rel='shortcut icon', href='/favicon.ico')
     <![endif]-->
-    link(rel='icon', sizes='32x32', href='/{{.OstentVersion}}/favicons/favicon-32.png type=image/png')
+    link(rel='icon', sizes='32x32', href='/{{.OstentVersion}}/favicons/favicon-32.png', 'type=image/png')
     link(rel='apple-touch-icon', sizes='120x120', href='/{{.OstentVersion}}/favicons/favicon-120.png')
     link(rel='apple-touch-icon', sizes='144x144', href='/{{.OstentVersion}}/favicons/favicon-144.png')
     link(rel='apple-touch-icon', sizes='152x152', href='/{{.OstentVersion}}/favicons/favicon-152.png')

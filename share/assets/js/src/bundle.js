@@ -20812,15 +20812,17 @@
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block thead'
 	    }, void 0, _jsx('span', {
-	      className: 'expand col small-1 text-right'
+	      className: 'expand col small-1'
 	    }, void 0, 'Period'), _jsx('span', {
 	      className: 'expand col small-1 text-right'
 	    }, void 0, ' Value'), _ref5), this.List(Data).map(function ($la, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
 	      }, "la-rowby-period-" + $la.Period, _jsx('span', {
-	        className: 'expand col small-1 text-right'
-	      }, void 0, $la.Period, 'm'), _jsx('span', {
+	        className: 'expand col small-1'
+	      }, void 0, _jsx('div', {
+	        className: 'text-right width-3rem'
+	      }, void 0, $la.Period, 'm')), _jsx('span', {
 	        className: 'expand col small-1 text-right'
 	      }, void 0, ' ', $la.Value), _jsx('span', {
 	        className: 'expand col-lr'

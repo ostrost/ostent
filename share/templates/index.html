@@ -40,11 +40,12 @@
       </ul>
     </div><div {{ClassNonZero $p.Lan "" "hide"}}>
     <div class="grid-block vertical stripe">
-      <div class="grid-block thead"><span class="expand col small-1 text-right">Period</span><span class="expand col small-1 text-right"> Value</span><span class="expand col"></span></div>
+      <div class="grid-block thead"><span class="expand col small-1">Period</span><span class="expand col small-1 text-right"> Value</span><span class="expand col"></span></div>
       {{if .Data.loadavg}}
       {{range $la := .Data.loadavg.List}}
       {{jsx `{this.List(Data).map(function($la, i) { return (`}}
-      <div {{Key "la-rowby-period" $la.Period}} {{class}}="grid-block"><span class="expand col small-1 text-right">{{$la.Period}}m</span><span class="expand col small-1 text-right"> {{$la.Value}}</span><span class="expand col-lr">{{jsx `{jsdefines.Sparkline({ref: i, col: 'Value'})}`}}</span></div>
+      <div {{Key "la-rowby-period" $la.Period}} {{class}}="grid-block"><span class="expand col small-1">
+        <div class="text-right width-3rem">{{$la.Period}}m</div></span><span class="expand col small-1 text-right"> {{$la.Value}}</span><span class="expand col-lr">{{jsx `{jsdefines.Sparkline({ref: i, col: 'Value'})}`}}</span></div>
       {{jsx `);})}`}}
       {{end}}
       {{end}}
@@ -360,7 +361,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"><!--[if IE]>
     <link rel="shortcut icon" href="/favicon.ico"><![endif]-->
-    <link rel="icon" sizes="32x32" href="/{{.OstentVersion}}/favicons/favicon-32.png type=image/png">
+    <link rel="icon" sizes="32x32" href="/{{.OstentVersion}}/favicons/favicon-32.png" type="NaN">
     <link rel="apple-touch-icon" sizes="120x120" href="/{{.OstentVersion}}/favicons/favicon-120.png">
     <link rel="apple-touch-icon" sizes="144x144" href="/{{.OstentVersion}}/favicons/favicon-144.png">
     <link rel="apple-touch-icon" sizes="152x152" href="/{{.OstentVersion}}/favicons/favicon-152.png">

@@ -3624,6 +3624,9 @@ h1.h4 {
   padding-left: 0.625rem;
   padding-right: 0.625rem; }
 
+.width-3rem {
+  width: 3rem; }
+
 .input-group-label.small {
   font-size: 0.9rem; }
 

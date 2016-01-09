@@ -3680,6 +3680,9 @@ h1.h4 {
   padding-left: 0.625rem;
   padding-right: 0.625rem; }
 
+.width-3rem {
+  width: 3rem; }
+
 .input-group-label.small {
   font-size: 0.9rem; }
 
@@ -3785,7 +3788,7 @@ func cssIndexCss() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "css/index.css", size: 86873, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
+	info := bindataFileInfo{name: "css/index.css", size: 86905, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -24706,15 +24709,17 @@ var _jsSrcBundleJs = []byte(`/******/ (function(modules) { // webpackBootstrap
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block thead'
 	    }, void 0, _jsx('span', {
-	      className: 'expand col small-1 text-right'
+	      className: 'expand col small-1'
 	    }, void 0, 'Period'), _jsx('span', {
 	      className: 'expand col small-1 text-right'
 	    }, void 0, ' Value'), _ref5), this.List(Data).map(function ($la, i) {
 	      return _jsx('div', {
 	        className: 'grid-block'
 	      }, "la-rowby-period-" + $la.Period, _jsx('span', {
-	        className: 'expand col small-1 text-right'
-	      }, void 0, $la.Period, 'm'), _jsx('span', {
+	        className: 'expand col small-1'
+	      }, void 0, _jsx('div', {
+	        className: 'text-right width-3rem'
+	      }, void 0, $la.Period, 'm')), _jsx('span', {
 	        className: 'expand col small-1 text-right'
 	      }, void 0, ' ', $la.Value), _jsx('span', {
 	        className: 'expand col-lr'
@@ -25837,7 +25842,7 @@ func jsSrcBundleJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "js/src/bundle.js", size: 768396, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
+	info := bindataFileInfo{name: "js/src/bundle.js", size: 768451, mode: os.FileMode(420), modTime: time.Unix(1400000000, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

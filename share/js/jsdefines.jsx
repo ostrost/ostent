@@ -425,11 +425,12 @@ jsdefines.define_la = React.createClass({
       </ul>
     </div><div  className={Data.params.Lan.Absolute != 0 ? "" : "hide"}>
     <div className="grid-block vertical stripe">
-      <div className="grid-block thead"><span className="expand col small-1 text-right">Period</span><span className="expand col small-1 text-right"> Value</span><span className="expand col"></span></div>
+      <div className="grid-block thead"><span className="expand col small-1">Period</span><span className="expand col small-1 text-right"> Value</span><span className="expand col"></span></div>
       
       
       {this.List(Data).map(function($la, i) { return (
-      <div  key={"la-rowby-period-"+$la.Period} className="grid-block"><span className="expand col small-1 text-right">{$la.Period}m</span><span className="expand col small-1 text-right"> {$la.Value}</span><span className="expand col-lr">{jsdefines.Sparkline({ref: i, col: 'Value'})}</span></div>
+      <div  key={"la-rowby-period-"+$la.Period} className="grid-block"><span className="expand col small-1">
+        <div className="text-right width-3rem">{$la.Period}m</div></span><span className="expand col small-1 text-right"> {$la.Value}</span><span className="expand col-lr">{jsdefines.Sparkline({ref: i, col: 'Value'})}</span></div>
       );})}
       
       
