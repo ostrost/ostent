@@ -1,9 +1,10 @@
 // +build !bin
 // http://blog.golang.org/profiling-go-programs
 
-package cmd
+package cmdcobra
 
 import (
+	"log"
 	"os"
 	"runtime/pprof"
 )
@@ -25,7 +26,7 @@ func ProfileHeapRun() error {
 		return err
 	}
 	PostRuns.Add(func() error {
-		logger := NewLog(nil, "[ostent profile-heap] ")
+		logger := log.New(os.Stderr, "[ostent profile-heap] ", log.LstdFlags)
 		if err := pprof.Lookup("heap").WriteTo(file, 1); err != nil {
 			logger.Print(err) // just print
 		}
@@ -50,7 +51,7 @@ func ProfileCPURun() error {
 		return err
 	}
 	PostRuns.Add(func() error {
-		logger := NewLog(nil, "[ostent profile-cpu] ")
+		logger := log.New(os.Stderr, "[ostent profile-cpu] ", log.LstdFlags)
 		logger.Print("Writing CPU profile")
 		pprof.StopCPUProfile()
 		if err := file.Close(); err != nil {
@@ -59,10 +60,4 @@ func ProfileCPURun() error {
 		return nil
 	})
 	return nil
-}
-
-func init() {
-	OstentCmd.PersistentFlags().StringVar(&ProfileHeapOutput, "profile-heap", "", "Profiling heap output `filename`")
-	OstentCmd.PersistentFlags().StringVar(&ProfileCPUOutput, "profile-cpu", "", "Profiling CPU output `filename`")
-	PreRuns.Adds(ProfileHeapRun, ProfileCPURun)
 }

@@ -5,6 +5,7 @@ package cmd
 import (
 	"compress/gzip"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -20,7 +21,7 @@ var (
 	ExtractDestDir string
 
 	// EaLog is a logger to log this subcommand's messages with.
-	EaLog = NewLog(nil, "[ostent extract-assets] ")
+	EaLog = log.New(os.Stderr, "[ostent extract-assets] ", log.LstdFlags)
 )
 
 // ExtractAssetsCmd represents the extractassets subcommand

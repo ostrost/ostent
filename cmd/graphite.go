@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"log"
 	"net"
+	"os"
 	"time"
 
 	graphite "github.com/cyberdelia/go-metrics-graphite"
@@ -64,4 +66,4 @@ func (cd *Carbond) Tack() {
 	}
 }
 
-var grLog = NewLog(nil, "[ostent graphite] ")
+var grLog = log.New(os.Stderr, "[ostent graphite] ", log.LstdFlags)

@@ -1,15 +1,13 @@
 package cmd
 
 import (
-	"io"
-	"log"
 	"os"
-	"sync"
 	"time"
 
 	"github.com/spf13/cobra"
 	// "github.com/spf13/viper"
 
+	"github.com/ostrost/ostent/cmd/cmdcobra"
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
 )
@@ -27,8 +25,8 @@ Specify --graphite-host to enable exporting to Graphite.
 Specify --librato-email and --librato-token  to enable exporting to Librato.
 `,
 
-	PostRunE: ApplyRuns(&PostRuns),
-	PreRunE:  ApplyRuns(&PreRuns),
+	PostRunE: cmdcobra.PostRuns.RunE,
+	PreRunE:  cmdcobra.PreRuns.RunE,
 	// RunE in main.{bin,dev}.go
 }
 
@@ -87,7 +85,7 @@ func init() {
 	OstentCmd.PersistentFlags().StringVar(&lr.Token, "librato-token", "", "Librato `token`")
 	OstentCmd.PersistentFlags().StringVar(&lr.Source, "librato-source", hostname, "Librato `source`")
 
-	PreRuns.Adds(FixDelayFlags,
+	cmdcobra.PreRuns.Adds(FixDelayFlags,
 		OstentVersionRun, // version goes into PreRuns first
 		gr.Run,
 		ix.Run,
@@ -119,55 +117,4 @@ func initConfig() {
 }
 */
 
-var (
-	OstentBind = flags.NewBind(8050)
-	PostRuns   Runs
-	PreRuns    Runs
-)
-
-type Runs struct {
-	Mutex sync.Mutex
-	List  []func() error
-}
-
-func (rs *Runs) Add(f func() error) {
-	rs.Mutex.Lock()
-	defer rs.Mutex.Unlock()
-	rs.List = append(rs.List, f)
-}
-
-func (rs *Runs) Adds(fs ...func() error) {
-	rs.Mutex.Lock()
-	defer rs.Mutex.Unlock()
-	rs.List = append(rs.List, fs...)
-}
-
-// ApplyRuns runs rs.List entries.
-func ApplyRuns(rs *Runs) func(*cobra.Command, []string) error {
-	return func(*cobra.Command, []string) error {
-		rs.Mutex.Lock()
-		defer rs.Mutex.Unlock()
-		for _, run := range rs.List {
-			if err := run(); err != nil {
-				return err
-			}
-		}
-		return nil
-	}
-}
-
-// NewLog constructs a new *log.Logger with flag modifiers.
-func NewLog(out io.Writer, prefix string, flagmods ...int) *log.Logger {
-	if out == nil {
-		out = os.Stderr
-	}
-	flags := log.LstdFlags // this is default
-	for _, mod := range flagmods {
-		flags |= mod
-	}
-	return log.New(
-		out,
-		prefix,
-		flags,
-	)
-}
+var OstentBind = flags.NewBind(8050)

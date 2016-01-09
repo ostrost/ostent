@@ -35,9 +35,9 @@ var (
 	// HadUpgrade is true after an upgrade.
 	HadUpgrade = new(bool)
 
-	upLog = cmd.NewLog(nil, "[ostent upgrade] ")
-	wrLog = cmd.NewLog(nil, fmt.Sprintf("[%d][ostent webserver] ", os.Getpid()),
-		log.Lmicroseconds)
+	upLog = log.New(os.Stderr, "[ostent upgrade] ", log.LstdFlags)
+	wrLog = log.New(os.Stderr, fmt.Sprintf("[%d][ostent webserver] ", os.Getpid()),
+		log.LstdFlags|log.Lmicroseconds)
 )
 
 func init() {
