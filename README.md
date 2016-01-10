@@ -86,8 +86,8 @@ $ ostent                                     ________________
 
 ### Rebuilding
 
-1. Find `src/github.com/ostrost/ostent` directory in `$GOPATH`.
-2. Run `make init` once.
+1. `cd $(go list -f {{.Dir}} github.com/ostrost/ostent)`
+2. `make init` once.
 3. Optionally, for asset and template rebuilding only (once):
    - `npm install`: the package list comes from package.json
    - `node_modules/.bin/bower install`: the list from bower.json
