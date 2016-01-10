@@ -16,7 +16,6 @@ endif
 shareprefix=share
 assets_devgo    = $(shareprefix)/assets/bindata.dev.go
 assets_bingo    = $(shareprefix)/assets/bindata.bin.go
-assets_nonego   = $(shareprefix)/assets/bindata.none.go
 templates_devgo = $(shareprefix)/templates/bindata.dev.go
 templates_bingo = $(shareprefix)/templates/bindata.bin.go
 
@@ -88,7 +87,6 @@ coverfunc: covertest ; go tool  cover  -func=coverage.out
 coverhtml: covertest ; go tool  cover  -html=coverage.out
 
 al: $(packagefiles) $(devpackagefiles)
-al: $(assets_nonego)
 # al: like `all' but without final go build $(package). For when `gulp watch` does the build
 
 $(templatepp): $(templateppfiles)
@@ -133,17 +131,15 @@ $(templates_bingo) $(templates_devgo): $(shell find share/templates/ -type f \! 
 $(templates_bingo): ; cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags bin    -nomemcopy -mode 0644 -modtime $(bingo_modtime) ./...
 $(templates_devgo): ; cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags '!bin' -dev ./...
 
-$(assets_nonego):   ; cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags none   -ignore js/min/ -nocompress -mode 0644 -modtime $(bingo_modtime) ./...
-$(assets_bingo):    ; cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags bin    -ignore js/src/ -nomemcopy  -mode 0644 -modtime $(bingo_modtime) ./...
+$(assets_bingo):    ; cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags bin    -ignore js/src/ -nomemcopy -mode 0644 -modtime $(bingo_modtime) ./...
 $(assets_devgo):    ; cd $(@D) && $(go-bindata) -pkg $(notdir $(@D)) -o $(@F) -tags '!bin' -ignore js/min/ -dev ./...
 
 $(assets_bingo):  $(shell find share/assets/ -type f \! -name '*.go' \! -path 'share/assets/js/src/*')
 $(assets_devgo):  $(shell find share/assets/ -type f \! -name '*.go' \! -path 'share/assets/js/min/*')
-$(assets_nonego): $(shell find share/assets/ -type f \! -name '*.go' \! -path 'share/assets/js/min/*')
 
 # spare shortcuts
 bindata-bin: $(assets_bingo) $(templates_bingo)
 bindata-dev: $(assets_devgo) $(templates_devgo)
-bindata: bindata-dev bindata-bin $(assets_nonego)
+bindata: bindata-dev bindata-bin
 
 endif # END OF ifneq (init, $(MAKECMDGOALS))
