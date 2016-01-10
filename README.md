@@ -41,9 +41,9 @@ Platforms:
 ## Usage
 
 ```
-Specify --influxdb-url  to enable exporting to InfluxDB.
 Specify --graphite-host to enable exporting to Graphite.
-Specify --librato-email and --librato-token  to enable exporting to Librato.
+Specify --influxdb-url  to enable exporting to InfluxDB.
+Specify --librato-email and --librato-token to enable exporting to Librato.
 
 Usage:
   ostent [flags]
@@ -51,7 +51,7 @@ Usage:
 Flags:
   -b, --bind address                 Bind address (default :8050)
       --graphite-delay delay         Graphite delay (default 10s)
-      --graphite-host host           Graphite host
+      --graphite-host host           Graphite host[:port]
       --influxdb-database database   InfluxDB database (default "ostent")
       --influxdb-delay delay         InfluxDB delay (default 10s)
       --influxdb-password password   InfluxDB password
@@ -59,12 +59,10 @@ Flags:
       --influxdb-username username   InfluxDB username
       --librato-delay delay          Librato delay (default 10s)
       --librato-email email          Librato email
-      --librato-source source        Librato source (default "thinkpad")
+      --librato-source source        Librato source (default hostname)
       --librato-token token          Librato token
-      --max-delay delay              Collect and display maximum delay (default 10m)
-  -d, --min-delay delay              Collect and display minimum delay (default 1s)
-      --profile-cpu filename         Profiling CPU output filename
-      --profile-heap filename        Profiling heap output filename
+      --max-delay delay              Collection and display maximum delay (default 10m)
+  -d, --min-delay delay              Collection and display minimum delay (default 1s)
   -v, --version                      Display version and exit
 ```
 

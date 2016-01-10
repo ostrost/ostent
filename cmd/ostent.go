@@ -20,9 +20,9 @@ var OstentCmd = &cobra.Command{
 	Long: `Ostent collects system metrics and put them on display.
 Optionally exports them to metrics servers.
 
-Specify --influxdb-url  to enable exporting to InfluxDB.
 Specify --graphite-host to enable exporting to Graphite.
-Specify --librato-email and --librato-token  to enable exporting to Librato.
+Specify --influxdb-url  to enable exporting to InfluxDB.
+Specify --librato-email and --librato-token to enable exporting to Librato.
 `,
 
 	PostRunE: cmdcobra.PostRuns.RunE,
@@ -37,7 +37,7 @@ var DelayFlags = flags.DelayBounds{
 }
 
 // Execute adds all child commands to the ostent command sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the ostentCmd.
+// This is called by main.main(). It only needs to happen once to the OstentCmd.
 func Execute() {
 	if err := OstentCmd.Execute(); err != nil {
 		os.Exit(-1)
@@ -56,8 +56,8 @@ func init() {
 	// when this action is called directly.
 
 	OstentCmd.PersistentFlags().VarP(&OstentBind, "bind", "b", "Bind `address`")
-	OstentCmd.PersistentFlags().Var(&DelayFlags.Max, "max-delay", "Collect and display maximum `delay`")
-	OstentCmd.PersistentFlags().VarP(&DelayFlags.Min, "min-delay", "d", "Collect and display minimum `delay`")
+	OstentCmd.PersistentFlags().Var(&DelayFlags.Max, "max-delay", "Collection and display maximum `delay`")
+	OstentCmd.PersistentFlags().VarP(&DelayFlags.Min, "min-delay", "d", "Collection and display minimum `delay`")
 	OstentCmd.PersistentFlags().BoolVarP(&Vflag, "version", "v", false, "Display version and exit")
 
 	gr := &Graphite{
@@ -65,7 +65,7 @@ func init() {
 		ServerAddr: flags.NewBind(2003),
 	}
 	OstentCmd.PersistentFlags().Var(&gr.DelayFlag, "graphite-delay", "Graphite `delay`")
-	OstentCmd.PersistentFlags().Var(&gr.ServerAddr, "graphite-host", "Graphite `host`")
+	OstentCmd.PersistentFlags().Var(&gr.ServerAddr, "graphite-host", "Graphite `host`[:port]")
 
 	ix := &Influx{
 		DelayFlag: flags.Delay{Duration: 10 * time.Second}, // 10s default
