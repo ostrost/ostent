@@ -8,23 +8,17 @@ import (
 
 	graphite "github.com/cyberdelia/go-metrics-graphite"
 
-	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/params"
 )
 
-type Graphite struct {
-	DelayFlag  flags.Delay
-	ServerAddr flags.Bind
-}
-
-func (gr *Graphite) Run() error {
+func GraphiteRun(gr params.GraphiteParams) error {
 	if gr.ServerAddr.Host != "" {
 		ostent.AddBackground(func() {
 			ostent.AllExporters.AddExporter("graphite")
 			ostent.Register <- &Carbond{
 				ServerAddr: gr.ServerAddr.String(),
-				Delay:      &params.Delay{D: gr.DelayFlag.Duration},
+				Delay:      &gr.Delay,
 			}
 		})
 	}

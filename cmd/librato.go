@@ -5,21 +5,16 @@ import (
 
 	librato "github.com/mihasya/go-metrics-librato"
 
-	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
+	"github.com/ostrost/ostent/params"
 )
 
-type Librato struct {
-	DelayFlag            flags.Delay
-	Email, Token, Source string
-}
-
-func (lr *Librato) Run() error {
+func LibratoRun(lr params.LibratoParams) error {
 	if lr.Email != "" {
 		ostent.AddBackground(func() {
 			ostent.AllExporters.AddExporter("librato")
 			go librato.Librato(ostent.Reg1s.Registry,
-				lr.DelayFlag.Duration,
+				lr.Delay.D,
 				lr.Email,
 				lr.Token,
 				lr.Source,

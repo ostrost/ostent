@@ -380,6 +380,10 @@ func (d Delay) EncodeValues(key string, values *url.Values) error {
 	return nil
 }
 
+func (d Delay) Type() string { return "delay" }
+
+func (d *Delay) Set(input string) error { return d.UnmarshalText([]byte(input)) }
+
 func (d *Delay) UnmarshalText(text []byte) error {
 	f := flags.Delay{Above: d.Above, Below: d.Below}
 	if err := f.Set(string(text)); err != nil {
@@ -545,3 +549,124 @@ func (p *Params) EncodeN(num *Num, absolute int, setNegative *bool) (string, err
 type RenamedConstError string
 
 func (rc RenamedConstError) Error() string { return string(rc) }
+
+// ServerURL is a shallow type for *Params and Params* types:
+// their fields are initialized based on url parsing.
+type ServerURL struct {
+	URL url.URL // this is canonical (for String etc.)
+}
+
+// SetURL sets the .URL.
+func (su *ServerURL) SetURL(u url.URL) { su.URL = u }
+
+// String returns string representation.
+func (su ServerURL) String() string { return su.URL.String() }
+
+// ParamsServer has two fields for params.
+type ParamsServer struct {
+	// ServerURL is base for decoding, no values decoding into.
+	// Explicitly omitted from schema.
+	ServerURL `schema:"-"`
+	// ServerAddr is base field off url parsing because of UseURL.
+	// Explicitly omitted from schema.
+	ServerAddr flags.Bind `schema:"-"`
+	// The schema fields:
+	// Delay is common to ParamsServer's derived types.
+	Delay Delay `schema:"delay,omitempty"`
+}
+
+// UseURL sets ps.ServerAddr based on u.
+func (ps *ParamsServer) UseURL(u url.URL) error {
+	u.RawQuery = "" // won't use query string in ServerAddr
+	return ps.ServerAddr.Set(u.Host)
+}
+
+// NewGraphiteParams constructs new GraphiteParams with defaults.
+func NewGraphiteParams() (gp GraphiteParams) {
+	gp.ServerAddr = flags.NewBind(2003 /* graphite default port is 2003 */)
+	gp.Delay.D = 10 * time.Second // DelayFlag = flags.Delay{Duration: 10 * time.Second} // 10s default
+	return gp
+}
+
+// GraphiteParams is a distinct ParamsServer for graphite params.
+type GraphiteParams struct {
+	ParamsServer
+}
+
+// Type is a pflag.Value method.
+func (gp GraphiteParams) Type() string { return "graphiteParams" }
+
+// Set is a flag.Value method.
+func (gp *GraphiteParams) Set(input string) error {
+	return Decode(input, gp, gp)
+}
+
+// NewInfluxParams constructs new InfluxParams with defaults.
+func NewInfluxParams() (ip InfluxParams) {
+	ip.Delay.D = 10 * time.Second // DelayFlag = flags.Delay{Duration: 10 * time.Second} // 10s default
+	ip.Database = "ostent"
+	return ip
+}
+
+// InfluxParams has a ParamsServer and other infuxdb params.
+type InfluxParams struct {
+	ParamsServer
+	Database string `schema:"database,omitempty"`
+	Username string `schema:"username,omitempty"`
+	Password string `schema:"password,omitempty"`
+}
+
+// Type is a pflag.Value method.
+func (ip InfluxParams) Type() string { return "infuxParams" }
+
+// Set is a flag.Value method.
+func (ip *InfluxParams) Set(input string) error {
+	return Decode(input, ip, ip)
+}
+
+// NewLibratoParams constructs new LibratoParams with defaults and source.
+func NewLibratoParams(source string) (lr LibratoParams) {
+	lr.Delay.D = 10 * time.Second // DelayFlag = flags.Delay{Duration: 10 * time.Second} // 10s default
+	lr.Source = source
+	return lr
+}
+
+// LibratoParams has a ParamsServer (for .Delay) and other Librato params.
+type LibratoParams struct {
+	ParamsServer
+	Email, Token, Source string
+}
+
+// Type is a pflag.Value method.
+func (lr LibratoParams) Type() string { return "libratoParams" }
+
+// Set is a flag.Value method.
+func (lr *LibratoParams) Set(input string) error {
+	return Decode(input, lr, nil)
+}
+
+// Decode does url parsing and schema decoding.
+func Decode(input string, into interface {
+	SetURL(url.URL)
+}, urluser interface {
+	UseURL(url.URL) error
+}) error {
+	u, err := url.Parse(input)
+	if err != nil {
+		return err
+	}
+	if u.Host == "" { // && u.Scheme != ""
+		if u, err = url.Parse("http://" + input); err != nil {
+			return err
+		}
+	}
+	into.SetURL(*u)
+	if urluser != nil {
+		if err := urluser.UseURL(*u); err != nil {
+			return err
+		}
+	}
+	dec := schema.NewDecoder()
+	dec.ZeroEmpty(true)
+	return dec.Decode(into, u.Query())
+}
