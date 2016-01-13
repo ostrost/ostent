@@ -26,7 +26,7 @@ func init() {
 }
 
 func OstentVersionRunE(*cobra.Command, []string) error {
-	log.New(os.Stdout, "", 0).Println(ostent.VERSION)
+	log.New(os.Stdout, "", 0).Printf("ostent version %+v", ostent.VERSION)
 	return nil
 }
 

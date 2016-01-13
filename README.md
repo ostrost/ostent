@@ -41,29 +41,18 @@ Platforms:
 ## Usage
 
 ```
-Specify --graphite-host to enable exporting to Graphite.
-Specify --influxdb-url  to enable exporting to InfluxDB.
-Specify --librato-email and --librato-token to enable exporting to Librato.
+To continuously export collected metrics to --graphite, --influxdb and/or --librato
+specify it like an URL with host part pointing at the server and query being parameters.
+E.g. --graphite localhost\?delay=30s
 
-Usage:
-  ostent [flags]
-  
 Flags:
-  -b, --bind address                 Bind address (default :8050)
-      --graphite-delay delay         Graphite delay (default 10s)
-      --graphite-host host           Graphite host[:port]
-      --influxdb-database database   InfluxDB database (default "ostent")
-      --influxdb-delay delay         InfluxDB delay (default 10s)
-      --influxdb-password password   InfluxDB password
-      --influxdb-url URL             InfluxDB server URL
-      --influxdb-username username   InfluxDB username
-      --librato-delay delay          Librato delay (default 10s)
-      --librato-email email          Librato email
-      --librato-source source        Librato source (default hostname)
-      --librato-token token          Librato token
-      --max-delay delay              Collection and display maximum delay (default 10m)
-  -d, --min-delay delay              Collection and display minimum delay (default 1s)
-  -v, --version                      Display version and exit
+  -b, --bind address            Bind address (default :8050)
+      --graphite URL            Graphite exporting URL
+      --influxdb URL            InfluxDB exporting URL
+      --librato URL             Librato exporting URL
+      --max-delay delay         Collection and display maximum delay (default 10m)
+  -d, --min-delay delay         Collection and display minimum delay (default 1s)
+      --version                 Print version and exit
 ```
 
 Here's how it goes:

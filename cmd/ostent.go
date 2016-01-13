@@ -69,7 +69,7 @@ func init() {
 	OstentCmd.PersistentFlags().VarP(&OstentBind, "bind", "b", "Bind `address`")
 	OstentCmd.PersistentFlags().Var(&DelayFlags.Max, "max-delay", "Collection and display maximum `delay`")
 	OstentCmd.PersistentFlags().VarP(&DelayFlags.Min, "min-delay", "d", "Collection and display minimum `delay`")
-	OstentCmd.PersistentFlags().BoolVarP(&Vflag, "version", "v", false, "Display version and exit")
+	OstentCmd.PersistentFlags().BoolVar(&Vflag, "version", false, "Print version and exit")
 
 	cmdcobra.PreRuns.Adds(OstentVersionRun, func() error {
 		if DelayFlags.Max.Duration < DelayFlags.Min.Duration {
