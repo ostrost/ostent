@@ -8,10 +8,10 @@ addons:
 env:
   global:
     - GVMINSTALLER_URL=https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer
-    - DPL_GO=go1.5.2 # Deploy only when this matches GVM_GO in the matrix.
+    - DPL_GO=go1.5.3 # Deploy only when this matches GVM_GO in the matrix.
     - GO_BOOTSTRAP=go1.4.3
   matrix:
-    - GVM_GO=go1.5.2
+    - GVM_GO=go1.5.3
   # - GVM_GO=tip
 install:
   - set -e # errors are fatal
@@ -23,7 +23,7 @@ install:
     fi
   - if type -t gvm; then gvm get; else curl -sSL $GVMINSTALLER_URL | bash; fi
   - |
-    if test x$TRAVIS_OS_NAME == xosx -a xx$GVM_GO == xxgo1.5.2 ; then
+    if test x$TRAVIS_OS_NAME == xosx -a xx$GVM_GO == xxgo1.5.3 ; then
       GO_BINARY_PATH=~/.gvm/archive///////$GVM_GO.darwin-amd64-osx10.8.tar.gz
       GO_BINARY_URL=https://golang.org/dl/$GVM_GO.darwin-amd64.tar.gz
       test -f $GO_BINARY_PATH ||
