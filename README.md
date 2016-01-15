@@ -41,16 +41,19 @@ Platforms:
 ## Usage
 
 ```
-To continuously export collected metrics to --graphite, --influxdb and/or --librato
-specify it like an URL with host part pointing at the server and query being parameters.
-E.g. --graphite localhost\?delay=30s
+To continuously export collected metrics, use --graphite, --influxdb and/or --librato.
+Use multiple flags and/or use comma separated endpoints for the same kind. E.g.:
+      --graphite 10.0.0.1,10.0.0.2:2004\?delay=30s
+      --influxdb http://10.0.0.3\?delay=60s
+      --librato \?email=EMAIL\&token=TOKEN
+ostent -h lists supported parameters and defaults.
 
 Flags:
   -b, --bind address            Bind address (default :8050)
-      --graphite URL            Graphite exporting URL
-      --influxdb URL            InfluxDB exporting URL
-      --librato URL             Librato exporting URL
-      --max-delay delay         Collection and display maximum delay (default 10m)
+      --graphite endpoints      Graphite exporting endpoints
+      --influxdb endpoints      InfluxDB exporting endpoints
+      --librato parameters      Librato exporting parameters
+      --max-delay delay         Maximum for display delay (default 10m)
   -d, --min-delay delay         Collection and display minimum delay (default 1s)
       --version                 Print version and exit
 ```

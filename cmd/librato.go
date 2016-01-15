@@ -9,19 +9,25 @@ import (
 	"github.com/ostrost/ostent/params"
 )
 
-func LibratoRun(lr params.LibratoParams) error {
-	if lr.Email != "" {
-		ostent.AddBackground(func() {
-			ostent.AllExporters.AddExporter("librato")
-			go librato.Librato(ostent.Reg1s.Registry,
-				lr.Delay.D,
-				lr.Email,
-				lr.Token,
-				lr.Source,
-				[]float64{0.95},
-				time.Millisecond,
-			)
-		})
+func LibratoRun(lends params.LibratoEndpoints) error {
+	for _, value := range lends.Values {
+		if value.Email != "" {
+			ostent.AddBackground(LibratoRunFunc(value))
+		}
 	}
 	return nil
+}
+
+func LibratoRunFunc(value params.LibratoEndpoint) func() {
+	return func() {
+		ostent.AllExporters.AddExporter("librato")
+		go librato.Librato(ostent.Reg1s.Registry,
+			value.Delay.D,
+			value.Email,
+			value.Token,
+			value.Source,
+			[]float64{0.95},
+			time.Millisecond,
+		)
+	}
 }

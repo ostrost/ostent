@@ -12,6 +12,7 @@ import (
 
 	"github.com/google/go-querystring/query"
 	"github.com/gorilla/schema"
+	// "github.com/spf13/pflag"
 
 	"github.com/ostrost/ostent/flags"
 )
@@ -550,115 +551,190 @@ type RenamedConstError string
 
 func (rc RenamedConstError) Error() string { return string(rc) }
 
-// ServerURL is a shallow type for *Params and Params* types:
-// their fields are initialized based on url parsing.
-type ServerURL struct {
-	URL url.URL // this is canonical (for String etc.)
-}
-
 // SetURL sets the .URL.
-func (su *ServerURL) SetURL(u url.URL) { su.URL = u }
+func (ep *Endpoint) SetURL(u url.URL) { ep.URL = u }
 
-// String returns string representation.
-func (su ServerURL) String() string { return su.URL.String() }
+// String return string repr.
+func (ep Endpoint) String() string { return ep.URL.String() }
 
-// ParamsServer has two fields for params.
-type ParamsServer struct {
-	// ServerURL is base for decoding, no values decoding into.
-	// Explicitly omitted from schema.
-	ServerURL `schema:"-"`
-	// ServerAddr is base field off url parsing because of UseURL.
-	// Explicitly omitted from schema.
+// Endpoint has an URL and other fields decoded from it.
+type Endpoint struct {
+	// URL is canonical (for String etc.)
+	url.URL `schema:"-"`
+
+	// ServerAddr is server part (host[:port]) of URL.
 	ServerAddr flags.Bind `schema:"-"`
+
 	// The schema fields:
-	// Delay is common to ParamsServer's derived types.
+	// Delay is the delay param.
 	Delay Delay `schema:"delay,omitempty"`
 }
 
-// UseURL sets ps.ServerAddr based on u.
-func (ps *ParamsServer) UseURL(u url.URL) error {
+// UseURL sets ep.ServerAddr based on u.
+func (ep *Endpoint) UseURL(u url.URL) error {
 	u.RawQuery = "" // won't use query string in ServerAddr
-	return ps.ServerAddr.Set(u.Host)
+	return ep.ServerAddr.Set(u.Host)
 }
 
-// NewGraphiteParams constructs new GraphiteParams with defaults.
-func NewGraphiteParams() (gp GraphiteParams) {
-	gp.ServerAddr = flags.NewBind(2003 /* graphite default port is 2003 */)
-	gp.Delay.D = 10 * time.Second // DelayFlag = flags.Delay{Duration: 10 * time.Second} // 10s default
-	return gp
+func NewGraphiteEndpoints(delay time.Duration, bind flags.Bind) GraphiteEndpoints {
+	return GraphiteEndpoints{Default: Endpoint{ServerAddr: bind, Delay: Delay{D: delay}}}
 }
 
-// GraphiteParams is a distinct ParamsServer for graphite params.
-type GraphiteParams struct {
-	ParamsServer
+// GraphiteEndpoints holds graphite endpoints list.
+type GraphiteEndpoints struct {
+	Values  []Endpoint
+	Default Endpoint
+}
+
+// Set is a flag.Value method.
+func (gends *GraphiteEndpoints) Set(input string) error {
+	values := strings.Split(input, ",")
+	gends.Values = make([]Endpoint, len(values))
+	for i, value := range values {
+		gends.Values[i] = gends.Default // copy
+		if err := Decode(AddScheme(value), &gends.Values[i], &gends.Values[i]); err != nil {
+			return err
+		}
+		if gends.Values[i].ServerAddr.Host == "" {
+			return fmt.Errorf("server address required for Graphite exporting")
+		}
+	}
+	return nil
+}
+
+// String is a flag.Value method.
+func (gends GraphiteEndpoints) String() string {
+	values := gends.Values // shortcut
+	ss := make([]string, len(values))
+	for i, v := range values {
+		ss[i] = strings.TrimPrefix(v.String(), "http://")
+	}
+	return strings.Join(ss, ",")
 }
 
 // Type is a pflag.Value method.
-func (gp GraphiteParams) Type() string { return "graphiteParams" }
+func (gends GraphiteEndpoints) Type() string { return "graphiteEndpoints" }
 
-// Set is a flag.Value method.
-func (gp *GraphiteParams) Set(input string) error {
-	return Decode(input, gp, gp)
-}
-
-// NewInfluxParams constructs new InfluxParams with defaults.
-func NewInfluxParams() (ip InfluxParams) {
-	ip.Delay.D = 10 * time.Second // DelayFlag = flags.Delay{Duration: 10 * time.Second} // 10s default
-	ip.Database = "ostent"
-	return ip
-}
-
-// InfluxParams has a ParamsServer and other infuxdb params.
-type InfluxParams struct {
-	ParamsServer
+// InfluxEndpoint holds influxdb params.
+type InfluxEndpoint struct {
+	Endpoint
 	Database string `schema:"database,omitempty"`
 	Username string `schema:"username,omitempty"`
 	Password string `schema:"password,omitempty"`
 }
 
-// Type is a pflag.Value method.
-func (ip InfluxParams) Type() string { return "infuxParams" }
+func NewInfluxEndpoints(delay time.Duration, database string) InfluxEndpoints {
+	return InfluxEndpoints{Default: InfluxEndpoint{
+		Endpoint: Endpoint{Delay: Delay{D: delay}},
+		Database: database,
+	}}
+}
+
+// InfluxEndpoints holds infuxdb endpoints list.
+type InfluxEndpoints struct {
+	Values  []InfluxEndpoint
+	Default InfluxEndpoint
+}
 
 // Set is a flag.Value method.
-func (ip *InfluxParams) Set(input string) error {
-	return Decode(input, ip, ip)
+func (iends *InfluxEndpoints) Set(input string) error {
+	values := strings.Split(input, ",")
+	iends.Values = make([]InfluxEndpoint, len(values))
+	for i, value := range values {
+		iends.Values[i] = iends.Default // copy
+		if err := Decode(value, &iends.Values[i], &iends.Values[i]); err != nil {
+			return err
+		}
+		if iends.Values[i].ServerAddr.Host == "" {
+			return fmt.Errorf("server address required for InfluxDB exporting")
+		}
+	}
+	return nil
 }
 
-// NewLibratoParams constructs new LibratoParams with defaults and source.
-func NewLibratoParams(source string) (lr LibratoParams) {
-	lr.Delay.D = 10 * time.Second // DelayFlag = flags.Delay{Duration: 10 * time.Second} // 10s default
-	lr.Source = source
-	return lr
+// String is a flag.Value method.
+func (iends InfluxEndpoints) String() string {
+	values := iends.Values // shortcuts
+	ss := make([]string, len(values))
+	for i, v := range values {
+		ss[i] = v.String() // Not trimming here.
+	}
+	return strings.Join(ss, ",")
 }
 
-// LibratoParams has a ParamsServer (for .Delay) and other Librato params.
-type LibratoParams struct {
-	ParamsServer
+// Type is a pflag.Value method.
+func (iends InfluxEndpoints) Type() string { return "infuxEndpoints" }
+
+// LibratoEndpoint holds librato params.
+type LibratoEndpoint struct {
+	Endpoint
 	Email, Token, Source string
 }
 
-// Type is a pflag.Value method.
-func (lr LibratoParams) Type() string { return "libratoParams" }
-
-// Set is a flag.Value method.
-func (lr *LibratoParams) Set(input string) error {
-	return Decode(input, lr, nil)
+func NewLibratoEndpoints(delay time.Duration, source string) LibratoEndpoints {
+	return LibratoEndpoints{Default: LibratoEndpoint{
+		Endpoint: Endpoint{Delay: Delay{D: delay}},
+		Source:   source,
+	}}
 }
 
+// LibratoEndpoints holds librato endpoints list.
+type LibratoEndpoints struct {
+	Values  []LibratoEndpoint
+	Default LibratoEndpoint
+}
+
+// Set is a flag.Value method.
+func (lends *LibratoEndpoints) Set(input string) error {
+	values := strings.Split(input, ",")
+	lends.Values = make([]LibratoEndpoint, len(values))
+	for i, value := range values {
+		lends.Values[i] = lends.Default // copy
+		if err := Decode(AddScheme(value), &lends.Values[i], nil); err != nil {
+			return err
+		}
+		l := &lends.Values[i] // shortcut
+		if l.Email == "" {
+			return fmt.Errorf("email param required for Librato exporting")
+		}
+		if l.Token == "" {
+			return fmt.Errorf("token param required for Librato exporting")
+		}
+		if l.Source == "" {
+			return fmt.Errorf("source param required for Librato exporting")
+		}
+	}
+	return nil
+}
+
+// String is a flag.Value method.
+func (lends LibratoEndpoints) String() string {
+	values := lends.Values // shortcut
+	ss := make([]string, len(values))
+	for i, v := range values {
+		ss[i] = strings.TrimPrefix(v.String(), "http://")
+	}
+	return strings.Join(ss, ",")
+}
+
+// Type is a pflag.Value method.
+func (lends LibratoEndpoints) Type() string { return "libratoEndpoints" }
+
+func AddScheme(input string) string { return "http://" + input }
+
 // Decode does url parsing and schema decoding.
-func Decode(input string, into interface {
-	SetURL(url.URL)
-}, urluser interface {
-	UseURL(url.URL) error
-}) error {
+func Decode(input string,
+	into interface {
+		// pflag.Value
+		SetURL(url.URL)
+	},
+	urluser interface {
+		UseURL(url.URL) error
+	}) error {
+
 	u, err := url.Parse(input)
 	if err != nil {
 		return err
-	}
-	if u.Host == "" { // && u.Scheme != ""
-		if u, err = url.Parse("http://" + input); err != nil {
-			return err
-		}
 	}
 	into.SetURL(*u)
 	if urluser != nil {

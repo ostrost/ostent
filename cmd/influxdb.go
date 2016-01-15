@@ -7,20 +7,26 @@ import (
 	"github.com/ostrost/ostent/params"
 )
 
-func InfluxRun(ix params.InfluxParams) error {
-	if ix.ServerAddr.String() != "" {
-		u := ix.URL     // copy
-		u.RawQuery = "" // reset query string
-		ostent.AddBackground(func() {
-			ostent.AllExporters.AddExporter("influxdb")
-			go influxdb.InfluxDB(ostent.Reg1s.Registry,
-				ix.Delay.D,
-				u.String(),
-				ix.Database,
-				ix.Username,
-				ix.Password,
-			)
-		})
+func InfluxRun(iends params.InfluxEndpoints) error {
+	for _, value := range iends.Values {
+		if value.ServerAddr.String() != "" {
+			ostent.AddBackground(InfluxRunFunc(value))
+		}
 	}
 	return nil
+}
+
+func InfluxRunFunc(value params.InfluxEndpoint) func() {
+	return func() {
+		u := value.URL  // copy
+		u.RawQuery = "" // reset query string
+		ostent.AllExporters.AddExporter("influxdb")
+		go influxdb.InfluxDB(ostent.Reg1s.Registry,
+			value.Delay.D,
+			u.String(),
+			value.Database,
+			value.Username,
+			value.Password,
+		)
+	}
 }

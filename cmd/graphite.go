@@ -12,17 +12,23 @@ import (
 	"github.com/ostrost/ostent/params"
 )
 
-func GraphiteRun(gr params.GraphiteParams) error {
-	if gr.ServerAddr.Host != "" {
-		ostent.AddBackground(func() {
-			ostent.AllExporters.AddExporter("graphite")
-			ostent.Register <- &Carbond{
-				ServerAddr: gr.ServerAddr.String(),
-				Delay:      &gr.Delay,
-			}
-		})
+func GraphiteRun(gends params.GraphiteEndpoints) error {
+	for _, value := range gends.Values {
+		if value.ServerAddr.Host != "" {
+			ostent.AddBackground(GraphiteRunFunc(value))
+		}
 	}
 	return nil
+}
+
+func GraphiteRunFunc(value params.Endpoint) func() {
+	return func() {
+		ostent.AllExporters.AddExporter("graphite")
+		ostent.Register <- &Carbond{
+			ServerAddr: value.ServerAddr.String(),
+			Delay:      &value.Delay,
+		}
+	}
 }
 
 type Carbond struct {
@@ -52,11 +58,11 @@ func (cd *Carbond) Tack() {
 	if err != nil {
 		if !cd.Failing {
 			cd.Failing = true
-			grLog.Printf("Sending: %s\n", err)
+			grLog.Printf("Sending to %s: %s\n", addr, err)
 		}
 	} else if cd.Failing {
 		cd.Failing = false
-		grLog.Printf("Recovered\n")
+		grLog.Printf("%s: Recovered\n", addr)
 	}
 }
 

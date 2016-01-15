@@ -35,6 +35,11 @@ var (
 	// HadUpgrade is true after an upgrade.
 	HadUpgrade = new(bool)
 
+	// UpgradeNot is the flag value.
+	UpgradeNot bool
+	// UpgradeLater is the flag value.
+	UpgradeLater bool
+
 	upLog = log.New(os.Stderr, "[ostent upgrade] ", log.LstdFlags)
 	wrLog = log.New(os.Stderr, fmt.Sprintf("[%d][ostent webserver] ", os.Getpid()),
 		log.LstdFlags|log.Lmicroseconds)
@@ -44,6 +49,11 @@ func init() {
 	log.SetPrefix(fmt.Sprintf("[%d][ostent] ", os.Getpid()))
 	// goagain logging is useless without pid prefix
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
+
+	cmd.OstentCmd.PersistentFlags().BoolVar(&UpgradeNot, "noupgrade", false,
+		"Just log about available upgrades")
+	cmd.OstentCmd.PersistentFlags().BoolVar(&UpgradeLater, "upgradelater", false,
+		"Delay startup upgrade check")
 }
 
 func OstentRunE(cmd *cobra.Command, args []string) error {
@@ -169,7 +179,7 @@ func OstentUpgradeUpgrade() bool {
 		return false
 	}
 	upLog.Printf("Upgrade available: release %s\n", newVersion[1:])
-	if cmd.DonotUpgrade {
+	if UpgradeNot {
 		upLog.Print("Upgrade not applied, as requested")
 		return false
 	}
@@ -224,7 +234,7 @@ func UntilUpgrade() {
 }
 
 func OstentUpgradeRun(isCommand bool) {
-	if cmd.UpgradeLater {
+	if UpgradeLater {
 		return
 	}
 	if GoneAgain() {
