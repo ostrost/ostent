@@ -20,8 +20,8 @@ var wpconf = {
     root: [bower_components, node_modules],
     //? extensions: ['', '.js', '.jsx', '.css', '.scss'],
     alias: {
-     'react-dom': 'react/lib/ReactDOM.js',
-     'react-prm': 'react/lib/ReactComponentWithPureRenderMixin.js'
+      'react-dom': 'react/lib/ReactDOM.js',
+      'react-prm': 'react/lib/ReactComponentWithPureRenderMixin.js'
     }
   },
   module: {
