@@ -28,7 +28,7 @@ var wpconf = {
   module: {
     loaders: [
       {test: /\.css$/,  loader: ExtractTextPlugin.extract('style-loader', 'css-loader')},
-      {test: /\.scss$/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader!sass-loader')},
+      {test: /\.scss$/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader?minimize&core=false!sass-loader')},
       {
         test: /\.jsx?$/,
         loader: 'babel',
