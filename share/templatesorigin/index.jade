@@ -109,6 +109,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
   +table('$p.Dfn', '$p.Dfd', 'Disk usage')
     .grid-block.vertical.stripe
       .grid-block.thead
+        {{/* dynamic classes stated for purifycss: <div class="dropup"><div class="caret" /></div> */}}
         span.expand.col.small-1.text-nowrap:            +with('Vlink $p $p.Dfk 1 "Device"'):  +avlink {{/* FS     */}}
         span.expand.col.small-1.text-nowrap:            +with('Vlink $p $p.Dfk 2 "Mounted"'): +avlink {{/* MP     */}}
         span.expand.col.small-1.text-nowrap.text-right: +with('Vlink $p $p.Dfk 6 "Total"'):   +avlink {{/* TOTAL  */}}
@@ -221,6 +222,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
   +table('$p.Psn', '$p.Psd', 'Processes')
     .grid-block.vertical.stripe
       .grid-block.thead
+        {{/* dynamic classes stated for purifycss: <div class="dropup"><div class="caret" /></div> */}}
         span.expand.col.small-1.text-nowrap.text-right:  +with('Vlink $p $p.Psk 1 "PID"'):     +avlink
         span.expand.col.small-1.text-nowrap.text-right:  +with('Vlink $p $p.Psk 2 "UID"'):     +avlink
         span.expand.col.small-1.text-nowrap:             +with('Vlink $p $p.Psk 3 "USER"'):    +avlink

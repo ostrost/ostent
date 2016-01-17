@@ -8,6 +8,7 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin'),
     gutil             = require('gulp-util'),
     _                 = require('lodash'),
     path              = require('path'),
+    purify            = require('purifycss-webpack-plugin'),
     webpack           = require('webpack'),
     argv              = require('yargs').argv;
 require('./gulpfile.watch.js');
@@ -50,7 +51,11 @@ var wpconf = {
   plugins: [
     // new webpack.ResolverPlugin(new webpack.ResolverPlugin.DirectoryDescriptionFilePlugin(
     //     'bower.json', ['main'])), // this will resolve with bower.json:"main"
-    new ExtractTextPlugin('index.css', {allChunks: true})
+    new ExtractTextPlugin('index.css', {allChunks: true}),
+    new purify({paths: [
+      'share/templates/*.html',
+      'share/js/*.js*'
+    ]})
   ]
 };
 

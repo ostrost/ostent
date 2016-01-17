@@ -93,8 +93,8 @@
 
 // mind $menu-item-padding which is 0.7rem 1rem;
 .col    { padding: $table-padding; }
-.col-tb { padding-top:  0.5rem;   padding-bottom: 0.625rem; }
 .col-lr { padding-left: 0.625rem; padding-right: 0.625rem; }
+// .col-tb { padding-top: 0.5rem; padding-bottom: 0.625rem; } // unused
 
 .width-3rem { width: 3rem; }
 
@@ -124,24 +124,24 @@
   border-right: 4px solid transparent;
   border-left: 4px solid transparent;
 }
-.dropup,
-.dropdown {
+.dropup { // ,
+// .dropdown {
   position: relative;
 }
-.dropdown-toggle:focus {
-  outline: 0;
-}
+// .dropdown-toggle:focus {
+//   outline: 0;
+// }
 .dropup .caret {
   content: "";
   border-top: 0;
   border-bottom: 4px dashed;
   border-bottom: 4px solid \9;
 }
-.dropup .dropdown-menu {
-  top: auto;
-  bottom: 100%;
-  margin-bottom: 2px;
-}
+// .dropup .dropdown-menu {
+//   top: auto;
+//   bottom: 100%;
+//   margin-bottom: 2px;
+// }
 /* end of caret, drop{down,up} */
 
 .bg-light-gray { background-color: $light-gray; }

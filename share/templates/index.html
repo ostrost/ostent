@@ -145,7 +145,7 @@
       </ul>
     </div><div {{ClassNonZero $p.Dfn "" "hide"}}>
     <div class="grid-block vertical stripe">
-      <div class="grid-block thead"><span class="expand col small-1 text-nowrap">{{with Vlink $p $p.Dfk 1 "Device"}}
+      <div class="grid-block thead">{{/* dynamic classes stated for purifycss: <div class="dropup"><div class="caret" /></div> */}}<span class="expand col small-1 text-nowrap">{{with Vlink $p $p.Dfk 1 "Device"}}
           <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
             >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap">{{with Vlink $p $p.Dfk 2 "Mounted"}}
           <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
@@ -325,7 +325,7 @@
       </ul>
     </div><div {{ClassNonZero $p.Psn "" "hide"}}>
     <div class="grid-block vertical stripe">
-      <div class="grid-block thead"><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 1 "PID"}}
+      <div class="grid-block thead">{{/* dynamic classes stated for purifycss: <div class="dropup"><div class="caret" /></div> */}}<span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 1 "PID"}}
           <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
             >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 2 "UID"}}
           <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}

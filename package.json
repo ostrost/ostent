@@ -23,6 +23,7 @@
     "gulp-jade": "^1.1.0",
     "gulp-rename": "^1.2.2",
     "node-sass": "^3.4.2",
+    "purifycss-webpack-plugin": "^2.0.1",
     "react": "^0.14.6",
     "react-sparklines": "^1.4.2",
     "sass-loader": "^3.1.2",
