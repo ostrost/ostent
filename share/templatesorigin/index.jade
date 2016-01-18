@@ -60,15 +60,21 @@ mixin avlink
 +define('define_uptime'): span {{.Data.uptime}}
 +define('define_hostname')
   | <a href="/" {{TitlePrefixed "hostname " .Data.hostname}}>{{.Data.hostname}}</a>
+  
+mixin jsx_wrap(start, end)
+  if JSX
+    | #{start}
+  block
+  if JSX
+    | #{end}
 
 mixin range_list(datak, ranger, kvalue, keyid)
   | {{if .Data.#{datak}}}
   | {{range #{ranger} := .Data.#{datak}.List}}
-  | {{jsx `{this.List(Data).map(function(#{ranger}, i) { return (`}}
-  | <div {{Key "#{keyid}" #{kvalue}}} {{class}}="grid-block">
-  block
-  | </div>
-  | {{jsx `);})}`}}
+  +jsx_wrap('{this.List(Data).map(function('+ranger+', i) { return (', ');})}')
+    | <div {{Key "#{keyid}" #{kvalue}}} {{class}}="grid-block">
+    block
+    | </div>
   | {{end}}
   | {{end}}
 
@@ -84,7 +90,8 @@ mixin range_list(datak, ranger, kvalue, keyid)
           .text-right.width-3rem {{$la.Period}}m
         span.expand.col.small-1.text-right  {{$la.Value}}
         span.expand.col-lr
-          | {{jsx `{jsdefines.Sparkline({ref: i, col: 'Value'})}`}}
+          if JSX
+            | {jsdefines.Sparkline({ref: i, col: 'Value'})}
 
 +define('define_mem')
   +table('$p.Memn', '$p.Memd', 'Memory')
@@ -103,13 +110,14 @@ mixin range_list(datak, ranger, kvalue, keyid)
         span.expand.col.small-1.text-right  {{$mem.Free}}
         | <span {{class}}="expand col small-1 text-right bg-usepct" data-usepct={{$mem.UsePct}}> {{$mem.UsePct}}%</span>
         span.expand.col-lr
-          | {{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}
+          if JSX
+            | {jsdefines.Sparkline({ref: i, col: 'UsePct'})}
 
 +define('define_df')
   +table('$p.Dfn', '$p.Dfd', 'Disk usage')
     .grid-block.vertical.stripe
       .grid-block.thead
-        {{/* dynamic classes stated for purifycss: <div class="dropup"><div class="caret" /></div> */}}
+        | {{/* poke purifycss: <div class="dropup"><div class="caret" /></div> */}}
         span.expand.col.small-1.text-nowrap:            +with('Vlink $p $p.Dfk 1 "Device"'):  +avlink {{/* FS     */}}
         span.expand.col.small-1.text-nowrap:            +with('Vlink $p $p.Dfk 2 "Mounted"'): +avlink {{/* MP     */}}
         span.expand.col.small-1.text-nowrap.text-right: +with('Vlink $p $p.Dfk 6 "Total"'):   +avlink {{/* TOTAL  */}}
@@ -134,7 +142,8 @@ mixin range_list(datak, ranger, kvalue, keyid)
         span(title='Inodes use%')  {{$df.IusePct}}%
         | </span>
         span.expand.col-lr
-          | {{jsx `{jsdefines.Sparkline({ref: i, col: 'UsePct'})}`}}
+          if JSX
+            | {jsdefines.Sparkline({ref: i, col: 'UsePct'})}
 
 +define('define_cpu')
   +table('$p.CPUn', '$p.CPUd', 'CPU')
@@ -157,7 +166,8 @@ mixin range_list(datak, ranger, kvalue, keyid)
         | <span {{class}}="expand col small-1 text-right bg-usepct-inverse"
         |  data-usepct={{$cpu.IdlePct}}> {{$cpu.IdlePct}}%</span>
         span.expand.col-lr
-          | {{jsx `{jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}`}}
+          if JSX
+            | {jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}
 
 +define('define_if')
   +table('$p.Ifn', '$p.Ifd', 'Interfaces')
@@ -216,13 +226,14 @@ mixin range_list(datak, ranger, kvalue, keyid)
           | /
           span(title='BITS Out per second') {{$if.DeltaBitsOut}}
         span.expand.col-lr
-          | {{jsx `{jsdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}`}}
+          if JSX
+            | {jsdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}
 
 +define('define_ps')
   +table('$p.Psn', '$p.Psd', 'Processes')
     .grid-block.vertical.stripe
       .grid-block.thead
-        {{/* dynamic classes stated for purifycss: <div class="dropup"><div class="caret" /></div> */}}
+        | {{/* poke purifycss: <div class="dropup"><div class="caret" /></div> */}}
         span.expand.col.small-1.text-nowrap.text-right:  +with('Vlink $p $p.Psk 1 "PID"'):     +avlink
         span.expand.col.small-1.text-nowrap.text-right:  +with('Vlink $p $p.Psk 2 "UID"'):     +avlink
         span.expand.col.small-1.text-nowrap:             +with('Vlink $p $p.Psk 3 "USER"'):    +avlink

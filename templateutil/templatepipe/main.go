@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"reflect"
 	"sort"
 	"strings"
@@ -17,9 +18,16 @@ func Convert(inputTemplateFile, definesFromFile string,
 		return err
 	}
 
-	// definesFrom, err := template.ParseFiles(definesFromFile)
-	definesFrom, err := template.New(definesFromFile).Funcs(htmlFuncs).
-		ParseFiles(definesFromFile)
+	definesFrom := template.New(definesFromFile).Funcs(htmlFuncs)
+	if definesFromFile == "-" {
+		text, err2 := ioutil.ReadAll(os.Stdin)
+		if err2 != nil {
+			return err2
+		}
+		definesFrom, err = definesFrom.Parse(string(text))
+	} else {
+		definesFrom, err = definesFrom.ParseFiles(definesFromFile)
+	}
 	if err != nil {
 		return err
 	}
@@ -48,6 +56,10 @@ func Convert(inputTemplateFile, definesFromFile string,
 	}
 	buf := new(bytes.Buffer)
 	if err := input.Execute(buf, jdata); err != nil {
+		return err
+	}
+	if outputFile == "" || outputFile == "-" {
+		_, err := os.Stdout.Write(buf.Bytes())
 		return err
 	}
 	return ioutil.WriteFile(outputFile, buf.Bytes(), 0644)

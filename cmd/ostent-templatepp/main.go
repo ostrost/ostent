@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	multierror "github.com/hashicorp/go-multierror"
 	"github.com/spf13/cobra"
 
 	"github.com/ostrost/ostent/templateutil/templatefunc"
@@ -30,17 +29,16 @@ var (
 
 // TemplateppPreRunE is to become TemplateppCmd.PreRunE.
 func TemplateppPreRunE(*cobra.Command, []string) error {
-	var merr *multierror.Error
 	if definesFromFile == "" {
-		merr = multierror.Append(merr, fmt.Errorf("--definesfrom wasn't provided"))
-	}
-	if outputFile == "" {
-		merr = multierror.Append(merr, fmt.Errorf("--output wasn't provided"))
+		if inputTemplateFile == "" {
+			return fmt.Errorf("--definesfrom and --template were not provided")
+		}
+		return fmt.Errorf("--definesfrom was not provided")
 	}
 	if inputTemplateFile == "" {
-		merr = multierror.Append(merr, fmt.Errorf("--template wasn't provided"))
+		return fmt.Errorf("--template was not provided")
 	}
-	return merr.ErrorOrNil()
+	return nil
 }
 
 // TemplateppRunE is to become TemplateppCmd.RunE.

@@ -5,6 +5,7 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin'),
     gulp              = require('gulp'),
     jade              = require('gulp-jade'),
     rename            = require('gulp-rename'),
+    spawn             = require('gulp-spawn'),
     gutil             = require('gulp-util'),
     _                 = require('lodash'),
     path              = require('path'),
@@ -12,6 +13,22 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin'),
     webpack           = require('webpack'),
     argv              = require('yargs').argv;
 require('./gulpfile.watch.js');
+
+gulp.task('jade2html', function() {
+  gulp.src(argv.input)
+    .pipe(jade({locals: argv, pretty: true}))
+    .pipe(rename(argv.output))
+    .pipe(gulp.dest('.'));
+});
+
+gulp.task('jade2jsx', function() {
+  gulp.src(argv.input)
+    .pipe(jade({locals: argv, pretty: true}))
+    .pipe(spawn({cmd: 'ostent-templatepp',
+                 args: '--definesfrom - --template'.split(' ').concat(argv.template)}))
+    .pipe(rename(argv.output))
+    .pipe(gulp.dest('.'));
+});
 
 var bower_components = path.join(__dirname, './bower_components'),
     node_modules     = path.join(__dirname, './node_modules');
@@ -55,19 +72,9 @@ var wpconf = {
     new purify({paths: [
       'share/templates/*.html',
       'share/js/*.js*'
-    ]})
+    ]}) // */
   ]
 };
-
-gulp.task('jade', function() {
-  gulp.src(argv.input)
-    .pipe(jade({
-      pretty: true,
-      locals: {}
-    }))
-    .pipe(rename(argv.output))
-    .pipe(gulp.dest('.'));
-});
 
 gulp.task('webpack', [], function(callback) {
   var wparg = wpconf;

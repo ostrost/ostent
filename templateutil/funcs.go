@@ -2,12 +2,10 @@ package templateutil
 
 import "html/template"
 
-func (f HTMLFuncs) Class() string                { return "class" }
-func (f JSXLFuncs) Class() string                { return "lcassName" }
-func (f HTMLFuncs) Colspan() string              { return "colspan" }
-func (f JSXLFuncs) Colspan() string              { return "colSpan" }
-func (f HTMLFuncs) JSX(string) (_ template.HTML) { return }
-func (f JSXLFuncs) JSX(s string) template.HTML   { return template.HTML(s) }
+func (f HTMLFuncs) Class() string   { return "class" }
+func (f JSXLFuncs) Class() string   { return "lcassName" }
+func (f HTMLFuncs) Colspan() string { return "colspan" }
+func (f JSXLFuncs) Colspan() string { return "colSpan" }
 
 // HTMLFuncs has methods implementing Functor.
 type HTMLFuncs struct{}
@@ -18,7 +16,6 @@ type JSXLFuncs struct{}
 type Functor interface {
 	Class() string
 	Colspan() string
-	JSX(string) template.HTML
 }
 
 // CombineMaps makes new template.FuncMap off f implementation and extra.
@@ -28,7 +25,6 @@ func CombineMaps(f Functor, extra template.FuncMap) template.FuncMap {
 
 		"class":   f.Class,
 		"colspan": f.Colspan,
-		"jsx":     f.JSX,
 	}
 	for k, f := range extra {
 		combined[k] = f

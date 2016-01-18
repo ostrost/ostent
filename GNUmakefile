@@ -62,10 +62,7 @@ endif
 init:
 	go get -u -v \
 github.com/jteeuwen/go-bindata/go-bindata \
-github.com/hashicorp/go-multierror \
-github.com/spf13/cobra \
-golang.org/x/net/html
-# golang.org/x/net/html not in use yet
+github.com/spf13/cobra
 	go get -v $(package)
 	go get -v -a -tags bin $(package)
 
@@ -102,13 +99,10 @@ boot32:
   ./make.bash --no-clean
 
 dev: \
-share/templates/index.html \
-share/assets/js/src/bundle.js \
 share/assets/css/index.css \
+share/assets/js/src/bundle.js \
+share/templates/index.html \
 share/js/jsdefines.jsx
-
-share/templates/index.html:
-	type gulp >/dev/null || exit 0; gulp jade    --silent --input=./$< --output=$@
 
 share/assets/css/index.css \
 share/assets/js/src/bundle.js \
@@ -116,17 +110,20 @@ share/assets/js/min/bundle.min.js \
 :
 # the first prerequisite only is passed to gulp
 	type gulp >/dev/null || exit 0; mkdir -p share/cache
-	type gulp >/dev/null || exit 0; gulp webpack --silent --input=./$< --output=$@
-# the rule above
+	type gulp >/dev/null || exit 0; gulp webpack   --silent --output=$@ --input=./$<
+share/templates/index.html:
+	type gulp >/dev/null || exit 0; gulp jade2html --silent --output=$@ --input=./$<
+share/js/jsdefines.jsx:
+	type gulp >/dev/null || exit 0; gulp jade2jsx  --silent --output=$@ --input=./$< --template $(word 2,$^) --JSX
+
+
 share/assets/css/index.css:        share/style/index.scss
 share/assets/css/index.css:        share/templates/index.html
 share/assets/css/index.css:        share/js/index.js share/js/jsdefines.jsx
 share/assets/js/src/bundle.js:     share/js/index.js share/js/jsdefines.jsx
 share/assets/js/min/bundle.min.js: share/js/index.js share/js/jsdefines.jsx
-
-share/templates/index.html: share/templatesorigin/index.jade
-share/js/jsdefines.jsx: share/templates/index.html share/templatesorigin/jsdefines.jstmpl $(templatepp)
-	$(templatepp) --output $@ --definesfrom share/templates/index.html --template share/templatesorigin/jsdefines.jstmpl
+share/templates/index.html:        share/templatesorigin/index.jade
+share/js/jsdefines.jsx:            share/templatesorigin/index.jade share/templatesorigin/jsdefines.jstmpl $(templatepp)
 
 $(templates_bingo) $(templates_devgo): $(shell find share/templates/ -type f \! -name \*.go)
 
