@@ -59,7 +59,10 @@ mixin avlink
   
 +define('define_uptime'): span {{.Data.uptime}}
 +define('define_hostname')
-  | <a href="/" {{TitlePrefixed "hostname " .Data.hostname}}>{{.Data.hostname}}</a>
+  if JSX
+    | <a href="/" title={"hostname "+Data.hostname}>{{.Data.hostname}}</a>
+  else
+    | <a href="/" title="hostname {{.Data.hostname}}">{{.Data.hostname}}</a>
   
 mixin jsx_wrap(start, end)
   if JSX
@@ -68,13 +71,20 @@ mixin jsx_wrap(start, end)
   if JSX
     | #{end}
 
+mixin row(kvalue, keyid)
+  if JSX
+    | <div {{class}}="grid-block" key={"#{keyid}-"+#{kvalue}}>
+  else
+    | <div {{class}}="grid-block">
+  block
+  | </div>
+
 mixin range_list(datak, ranger, kvalue, keyid)
   | {{if .Data.#{datak}}}
   | {{range #{ranger} := .Data.#{datak}.List}}
   +jsx_wrap('{this.List(Data).map(function('+ranger+', i) { return (', ');})}')
-    | <div {{Key "#{keyid}" #{kvalue}}} {{class}}="grid-block">
-    block
-    | </div>
+    +row(kvalue, keyid)
+      block
   | {{end}}
   | {{end}}
 

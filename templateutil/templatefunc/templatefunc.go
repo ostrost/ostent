@@ -9,13 +9,6 @@ import (
 	"github.com/ostrost/ostent/templateutil"
 )
 
-func (f JSXLFuncs) TitlePrefixed(prefix string, v interface{}) template.HTMLAttr {
-	return SprintfAttr(` title={%q + %s}`, prefix, v.(Uncurler).Uncurl())
-}
-func (f HTMLFuncs) TitlePrefixed(prefix string, v interface{}) template.HTMLAttr {
-	return SprintfAttr(` title="%s %s"`, prefix, v.(string))
-}
-
 func (f JSXLFuncs) ClassAllZero(x1, x2, y1, y2 interface{}, class string) template.HTMLAttr {
 	return SprintfAttr(" %s={(%s && %s && %s && %s) ? %q : \"\"}",
 		f.Class(),
@@ -84,14 +77,6 @@ func (f HTMLFuncs) ClassPositive(x interface{}, class, sndclass string) template
 	}
 	return SprintfAttr(" class=%q", class)
 }
-
-// Key returns key attribute: prefix + uncurled x being an Uncurler.
-func (f JSXLFuncs) Key(prefix string, x interface{}) template.HTMLAttr {
-	return SprintfAttr(" key={%q+%s}", prefix+"-", x.(Uncurler).Uncurl())
-}
-
-// Key returns empty attribute.
-func (f HTMLFuncs) Key(_ string, x interface{}) (empty template.HTMLAttr) { return }
 
 func (f JSXLFuncs) FuncHrefT() interface{} {
 	return func(_, n Uncurler) (template.HTMLAttr, error) {
@@ -202,12 +187,10 @@ type HTMLFuncs struct {
 // ConstructMaps constructs template.FuncMap off f implementation.
 func ConstructMap(f Functor) template.FuncMap {
 	return templateutil.CombineMaps(f, template.FuncMap{
-		"TitlePrefixed": f.TitlePrefixed,
 		"ClassAllZero":  f.ClassAllZero,
 		"ClassNonNil":   f.ClassNonNil,
 		"ClassNonZero":  f.ClassNonZero,
 		"ClassPositive": f.ClassPositive,
-		"Key":           f.Key,
 
 		"HrefT": f.FuncHrefT(),
 		"LessD": f.FuncLessD(),
@@ -232,12 +215,10 @@ func FuncMapHTML() template.FuncMap {
 type Functor interface {
 	templateutil.Functor
 
-	TitlePrefixed(string, interface{}) template.HTMLAttr
 	ClassAllZero(interface{}, interface{}, interface{}, interface{}, string) template.HTMLAttr
 	ClassNonNil(interface{}, string, string) template.HTMLAttr
 	ClassNonZero(interface{}, string, string) template.HTMLAttr
 	ClassPositive(interface{}, string, string) template.HTMLAttr
-	Key(string, interface{}) template.HTMLAttr
 
 	FuncHrefT() interface{}
 	FuncLessD() interface{}
