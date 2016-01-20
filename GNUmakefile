@@ -62,10 +62,9 @@ all32: $(destbin)/$(cmdname).32
 endif
 init:
 	set -e; \
-	if type glide && test -f glide.yaml ; then \
-		glide install; \
-	else \
-		go get -v -u github.com/jteeuwen/go-bindata/go-bindata; \
+	if type glide ; then glide install; fi; \
+	go get -v github.com/jteeuwen/go-bindata/go-bindata; \
+	if \! type glide ; then \
 		go get -v $(package); \
 		go get -v -a -tags bin $(package); \
 	fi
