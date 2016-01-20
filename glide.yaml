@@ -1,0 +1,23 @@
+package: github.com/ostrost/ostent
+import:
+- package: github.com/Sirupsen/logrus
+- package: github.com/cyberdelia/go-metrics-graphite
+- package: github.com/google/go-querystring
+  subpackages:
+  - /query
+- package: github.com/gorilla/context
+- package: github.com/gorilla/schema
+- package: github.com/gorilla/websocket
+- package: github.com/inconshreveable/go-update
+- package: github.com/jteeuwen/go-bindata
+  subpackages:
+  - /go-bindata
+- package: github.com/julienschmidt/httprouter
+- package: github.com/justinas/alice
+- package: github.com/mihasya/go-metrics-librato
+- package: github.com/ostrost/gosigar
+- package: github.com/rcrowley/go-metrics
+- package: github.com/rcrowley/goagain
+- package: github.com/spf13/cobra
+- package: github.com/spf13/pflag
+- package: github.com/vrischmann/go-metrics-influxdb

@@ -1,5 +1,6 @@
 #!/usr/bin/env gmake -f
 
+GO15VENDOREXPERIMENT=1
 PATH:=$(shell echo -n $$PATH:; echo $$GOPATH | sed 's,:\|$$,/bin:,g'):$$PWD/node_modules/.bin
 
 # This repo clone location (final subdirectories) defines package name thus
@@ -60,11 +61,14 @@ all: $(destbin)/$(cmdname)
 all32: $(destbin)/$(cmdname).32
 endif
 init:
-	go get -u -v \
-github.com/jteeuwen/go-bindata/go-bindata \
-github.com/spf13/cobra
-	go get -v $(package)
-	go get -v -a -tags bin $(package)
+	set -e; \
+	if type glide && test -f glide.yaml ; then \
+		glide install; \
+	else \
+		go get -v -u github.com/jteeuwen/go-bindata/go-bindata; \
+		go get -v $(package); \
+		go get -v -a -tags bin $(package); \
+	fi
 
 check-update:
 	npm outdated # upgrade with npm update --save-dev
@@ -115,7 +119,6 @@ share/templates/index.html:
 	type gulp >/dev/null || exit 0; gulp jade2html --silent --output=$@ --input=./$<
 share/js/jsdefines.jsx:
 	type gulp >/dev/null || exit 0; gulp jade2jsx  --silent --output=$@ --input=./$< --template $(word 2,$^) --JSX
-
 
 share/assets/css/index.css:        share/style/index.scss
 share/assets/css/index.css:        share/templates/index.html
