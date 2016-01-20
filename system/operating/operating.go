@@ -67,9 +67,9 @@ type IFData struct {
 	DeltaBytesOutNum uint64
 
 	DropsIn       string
-	DropsOut      *string `json:",omitempty"`
+	DropsOut      string `json:",omitempty"`
 	DeltaDropsIn  string
-	DeltaDropsOut *string `json:",omitempty"`
+	DeltaDropsOut string `json:",omitempty"`
 
 	ErrorsIn       string
 	ErrorsOut      string

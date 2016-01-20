@@ -9,49 +9,6 @@ import (
 	"github.com/ostrost/ostent/templateutil"
 )
 
-func (f JSXLFuncs) ClassAllZero(x1, x2, y1, y2 interface{}, class string) template.HTMLAttr {
-	return SprintfAttr(" %s={(%s && %s && %s && %s) ? %q : \"\"}",
-		f.Class(),
-		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", x1.(Uncurler).Uncurl()),
-		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", x2.(Uncurler).Uncurl()),
-		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", y1.(Uncurler).Uncurl()),
-		fmt.Sprintf("(%[1]s == null || %[1]s == \"0\")", y2.(Uncurler).Uncurl()),
-		class)
-}
-
-func (f HTMLFuncs) ClassAllZero(x1, x2, y1, y2 interface{}, class string) template.HTMLAttr {
-	if f.IsStringZero(x1) && f.IsStringZero(x2) &&
-		f.IsStringZero(y1) && f.IsStringZero(y2) {
-		return SprintfAttr(" class=%q", class)
-	}
-	return SprintfAttr("")
-}
-
-// IsStringZero is internal (not required for interface)
-func (f HTMLFuncs) IsStringZero(x interface{}) bool {
-	if s, ok := x.(string); ok {
-		if s == "0" {
-			return true
-		}
-	} else if s, ok := x.(*string); ok && (s == nil || *s == "0") {
-		return true
-	}
-	return false
-}
-
-func (f JSXLFuncs) ClassNonNil(x interface{}, class, sndclass string) template.HTMLAttr {
-	return SprintfAttr(" %s={%s != null ? %q : %q}",
-		f.Class(),
-		x.(Uncurler).Uncurl(), class, sndclass)
-}
-
-func (f HTMLFuncs) ClassNonNil(x interface{}, class, sndclass string) template.HTMLAttr {
-	if s := x.(*string); s == nil {
-		class = sndclass
-	}
-	return SprintfAttr(" class=%q", class)
-}
-
 func (f JSXLFuncs) ClassNonZero(x interface{}, class, sndclass string) template.HTMLAttr {
 	return SprintfAttr(` %s={%s.Absolute != 0 ? %q : %q}`,
 		f.Class(),
@@ -187,8 +144,6 @@ type HTMLFuncs struct {
 // ConstructMaps constructs template.FuncMap off f implementation.
 func ConstructMap(f Functor) template.FuncMap {
 	return templateutil.CombineMaps(f, template.FuncMap{
-		"ClassAllZero":  f.ClassAllZero,
-		"ClassNonNil":   f.ClassNonNil,
 		"ClassNonZero":  f.ClassNonZero,
 		"ClassPositive": f.ClassPositive,
 
@@ -215,8 +170,6 @@ func FuncMapHTML() template.FuncMap {
 type Functor interface {
 	templateutil.Functor
 
-	ClassAllZero(interface{}, interface{}, interface{}, interface{}, string) template.HTMLAttr
-	ClassNonNil(interface{}, string, string) template.HTMLAttr
 	ClassNonZero(interface{}, string, string) template.HTMLAttr
 	ClassPositive(interface{}, string, string) template.HTMLAttr
 

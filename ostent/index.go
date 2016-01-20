@@ -178,8 +178,9 @@ func FormatIF(mi *operating.MetricIF) operating.IFData {
 	FormatIF1000(mi.PacketsIn, &ii.PacketsIn, &ii.DeltaPacketsIn)
 	FormatIF1000(mi.PacketsOut, &ii.PacketsOut, &ii.DeltaPacketsOut)
 	if mi.DropsOut != nil {
-		ii.DropsOut, ii.DeltaDropsOut = new(string), new(string)
-		FormatIF1000(mi.DropsOut, ii.DropsOut, ii.DeltaDropsOut)
+		FormatIF1000(mi.DropsOut, &ii.DropsOut, &ii.DeltaDropsOut)
+	} else {
+		ii.DropsOut, ii.DeltaDropsOut = "-1", "-1"
 	}
 	return ii
 }
