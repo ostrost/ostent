@@ -12,13 +12,19 @@ mixin table(nparam, dparam, title)
   | {{$p := .Data.params}}
   .grid-block.hr-top
     .col-lr.large-1.text-right
-      | <div {{ClassPositive #{nparam} "hide-showhide" "show-showhide"}}>
+      if JSX
+        | <div {{class}}={#{nparam.replace('$p', 'Data.params')}.Negative ? "show-showhide" : "hide-showhide"}>
+      else
+        | <div {{class}}="{{if #{nparam}.Negative}}show-showhide{{else}}hide-showhide{{end}}">
       h1.h4.text-overflow
         | <a {{HrefT $p #{nparam}}} title="#{title} display options">
         | <span {{class}}="showhide-hide whitespace-pre float-left">... </span>#{title}</a>
       | </div>
     .col-lr.large-11
-      | <div {{ClassPositive #{nparam} "hide-showhide" "show-showhide"}}>
+      if JSX
+        | <div {{class}}={#{nparam.replace('$p', 'Data.params')}.Negative ? "show-showhide" : "hide-showhide"}>
+      else
+        | <div {{class}}="{{if #{nparam}.Negative}}show-showhide{{else}}hide-showhide{{end}}">
       .grid-block
         ul.menu.showhide-show
           li
@@ -43,7 +49,10 @@ mixin table(nparam, dparam, title)
               .input-group-button
                 +with('MoreN $p', nparam, '"button small success text-nowrap"')
                   +alink_badgeright
-      | <div {{ClassNonZero #{nparam} "" "hide"}}>
+      if JSX
+        | <div {{class}}={#{nparam.replace('$p', 'Data.params')}.Absolute == 0 ? "hide":""}>
+      else
+        | <div {{class}}="{{if eq #{nparam}.Absolute 0}}hide{{end}}">
       block
       | </div></div>
 

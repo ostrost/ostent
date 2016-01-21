@@ -9,32 +9,6 @@ import (
 	"github.com/ostrost/ostent/templateutil"
 )
 
-func (f JSXLFuncs) ClassNonZero(x interface{}, class, sndclass string) template.HTMLAttr {
-	return SprintfAttr(` %s={%s.Absolute != 0 ? %q : %q}`,
-		f.Class(),
-		x.(Uncurler).Uncurl(), class, sndclass)
-}
-
-func (f HTMLFuncs) ClassNonZero(x interface{}, class, sndclass string) template.HTMLAttr {
-	if x.(params.Num).Absolute == 0 {
-		class = sndclass
-	}
-	return SprintfAttr(" class=%q", class)
-}
-
-func (f JSXLFuncs) ClassPositive(x interface{}, class, sndclass string) template.HTMLAttr {
-	return SprintfAttr(` %s={!%s.Negative ? %q : %q}`,
-		f.Class(),
-		x.(Uncurler).Uncurl(), class, sndclass)
-}
-
-func (f HTMLFuncs) ClassPositive(x interface{}, class, sndclass string) template.HTMLAttr {
-	if x.(params.Num).Negative {
-		class = sndclass
-	}
-	return SprintfAttr(" class=%q", class)
-}
-
 func (f JSXLFuncs) FuncHrefT() interface{} {
 	return func(_, n Uncurler) (template.HTMLAttr, error) {
 		base, last := f.Split(n)
@@ -144,9 +118,6 @@ type HTMLFuncs struct {
 // ConstructMaps constructs template.FuncMap off f implementation.
 func ConstructMap(f Functor) template.FuncMap {
 	return templateutil.CombineMaps(f, template.FuncMap{
-		"ClassNonZero":  f.ClassNonZero,
-		"ClassPositive": f.ClassPositive,
-
 		"HrefT": f.FuncHrefT(),
 		"LessD": f.FuncLessD(),
 		"MoreD": f.FuncMoreD(),
@@ -169,9 +140,6 @@ func FuncMapHTML() template.FuncMap {
 
 type Functor interface {
 	templateutil.Functor
-
-	ClassNonZero(interface{}, string, string) template.HTMLAttr
-	ClassPositive(interface{}, string, string) template.HTMLAttr
 
 	FuncHrefT() interface{}
 	FuncLessD() interface{}

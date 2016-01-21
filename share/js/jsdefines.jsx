@@ -129,13 +129,13 @@ jsdefines.define_cpu = React.createClass({
     let Data = this.state; // shadow global Data
     return (
 <div className="grid-block hr-top">
-  <div className="col-lr large-1 text-right"><div  className={!Data.params.CPUn.Negative ? "hide-showhide" : "show-showhide"}>
+  <div className="col-lr large-1 text-right"><div className={Data.params.CPUn.Negative ? "show-showhide" : "hide-showhide"}>
     <h1 className="h4 text-overflow">
       <a  href={Data.params.Tlinks.CPUn} onClick={this.handleClick} title="CPU display options">
       <span className="showhide-hide whitespace-pre float-left">... </span>CPU</a>
     </h1></div>
   </div>
-  <div className="col-lr large-11"><div  className={!Data.params.CPUn.Negative ? "hide-showhide" : "show-showhide"}>
+  <div className="col-lr large-11"><div className={Data.params.CPUn.Negative ? "show-showhide" : "hide-showhide"}>
     <div className="grid-block">
       <ul className="menu showhide-show">
         <li>
@@ -167,7 +167,7 @@ jsdefines.define_cpu = React.createClass({
           </div>
         </li>
       </ul>
-    </div><div  className={Data.params.CPUn.Absolute != 0 ? "" : "hide"}>
+    </div><div className={Data.params.CPUn.Absolute == 0 ? "hide":""}>
     <div className="grid-block vertical stripe">
       <div className="grid-block thead"><span className="expand col small-1">Core</span><span className="expand col small-1 text-right"> User%</span><span className="expand col small-1 text-right"> Sys%</span><span className="expand col small-1 text-right"> Wait%</span><span className="expand col small-1 text-right"> Idle%</span><span className="expand col"></span></div>
       
@@ -205,13 +205,13 @@ jsdefines.define_df = React.createClass({
     let Data = this.state; // shadow global Data
     return (
 <div className="grid-block hr-top">
-  <div className="col-lr large-1 text-right"><div  className={!Data.params.Dfn.Negative ? "hide-showhide" : "show-showhide"}>
+  <div className="col-lr large-1 text-right"><div className={Data.params.Dfn.Negative ? "show-showhide" : "hide-showhide"}>
     <h1 className="h4 text-overflow">
       <a  href={Data.params.Tlinks.Dfn} onClick={this.handleClick} title="Disk usage display options">
       <span className="showhide-hide whitespace-pre float-left">... </span>Disk usage</a>
     </h1></div>
   </div>
-  <div className="col-lr large-11"><div  className={!Data.params.Dfn.Negative ? "hide-showhide" : "show-showhide"}>
+  <div className="col-lr large-11"><div className={Data.params.Dfn.Negative ? "show-showhide" : "hide-showhide"}>
     <div className="grid-block">
       <ul className="menu showhide-show">
         <li>
@@ -243,7 +243,7 @@ jsdefines.define_df = React.createClass({
           </div>
         </li>
       </ul>
-    </div><div  className={Data.params.Dfn.Absolute != 0 ? "" : "hide"}>
+    </div><div className={Data.params.Dfn.Absolute == 0 ? "hide":""}>
     <div className="grid-block vertical stripe">
       <div className="grid-block thead"><span className="expand col small-1 text-nowrap">
           <a onClick={this.handleClick} href={Data.params.Vlinks.Dfk[1-1].LinkHref} className={Data.params.Vlinks.Dfk[1-1].LinkClass}
@@ -299,13 +299,13 @@ jsdefines.define_if = React.createClass({
     let Data = this.state; // shadow global Data
     return (
 <div className="grid-block hr-top">
-  <div className="col-lr large-1 text-right"><div  className={!Data.params.Ifn.Negative ? "hide-showhide" : "show-showhide"}>
+  <div className="col-lr large-1 text-right"><div className={Data.params.Ifn.Negative ? "show-showhide" : "hide-showhide"}>
     <h1 className="h4 text-overflow">
       <a  href={Data.params.Tlinks.Ifn} onClick={this.handleClick} title="Interfaces display options">
       <span className="showhide-hide whitespace-pre float-left">... </span>Interfaces</a>
     </h1></div>
   </div>
-  <div className="col-lr large-11"><div  className={!Data.params.Ifn.Negative ? "hide-showhide" : "show-showhide"}>
+  <div className="col-lr large-11"><div className={Data.params.Ifn.Negative ? "show-showhide" : "hide-showhide"}>
     <div className="grid-block">
       <ul className="menu showhide-show">
         <li>
@@ -337,7 +337,7 @@ jsdefines.define_if = React.createClass({
           </div>
         </li>
       </ul>
-    </div><div  className={Data.params.Ifn.Absolute != 0 ? "" : "hide"}>
+    </div><div className={Data.params.Ifn.Absolute == 0 ? "hide":""}>
     <div className="grid-block vertical stripe">
       <div className="grid-block thead"><span className="expand col small-1">Interface</span><span className="expand col small-1 text-right"> IP</span><span title="Drops,Errors In/Out per second" className="expand col small-2 text-right text-nowrap"> Loss IO ps</span><span title="Packets In/Out per second" className="expand col small-2 text-right text-nowrap"> Packets IO ps</span><span title="Bits In/Out per second" className="expand col small-2 text-right text-nowrap"> IO <i>b</i>ps</span><span className="expand col"></span></div>
       
@@ -368,13 +368,13 @@ jsdefines.define_la = React.createClass({
     let Data = this.state; // shadow global Data
     return (
 <div className="grid-block hr-top">
-  <div className="col-lr large-1 text-right"><div  className={!Data.params.Lan.Negative ? "hide-showhide" : "show-showhide"}>
+  <div className="col-lr large-1 text-right"><div className={Data.params.Lan.Negative ? "show-showhide" : "hide-showhide"}>
     <h1 className="h4 text-overflow">
       <a  href={Data.params.Tlinks.Lan} onClick={this.handleClick} title="Load avg display options">
       <span className="showhide-hide whitespace-pre float-left">... </span>Load avg</a>
     </h1></div>
   </div>
-  <div className="col-lr large-11"><div  className={!Data.params.Lan.Negative ? "hide-showhide" : "show-showhide"}>
+  <div className="col-lr large-11"><div className={Data.params.Lan.Negative ? "show-showhide" : "hide-showhide"}>
     <div className="grid-block">
       <ul className="menu showhide-show">
         <li>
@@ -406,7 +406,7 @@ jsdefines.define_la = React.createClass({
           </div>
         </li>
       </ul>
-    </div><div  className={Data.params.Lan.Absolute != 0 ? "" : "hide"}>
+    </div><div className={Data.params.Lan.Absolute == 0 ? "hide":""}>
     <div className="grid-block vertical stripe">
       <div className="grid-block thead"><span className="expand col small-1">Period</span><span className="expand col small-1 text-right"> Value</span><span className="expand col"></span></div>
       
@@ -438,13 +438,13 @@ jsdefines.define_mem = React.createClass({
     let Data = this.state; // shadow global Data
     return (
 <div className="grid-block hr-top">
-  <div className="col-lr large-1 text-right"><div  className={!Data.params.Memn.Negative ? "hide-showhide" : "show-showhide"}>
+  <div className="col-lr large-1 text-right"><div className={Data.params.Memn.Negative ? "show-showhide" : "hide-showhide"}>
     <h1 className="h4 text-overflow">
       <a  href={Data.params.Tlinks.Memn} onClick={this.handleClick} title="Memory display options">
       <span className="showhide-hide whitespace-pre float-left">... </span>Memory</a>
     </h1></div>
   </div>
-  <div className="col-lr large-11"><div  className={!Data.params.Memn.Negative ? "hide-showhide" : "show-showhide"}>
+  <div className="col-lr large-11"><div className={Data.params.Memn.Negative ? "show-showhide" : "hide-showhide"}>
     <div className="grid-block">
       <ul className="menu showhide-show">
         <li>
@@ -476,7 +476,7 @@ jsdefines.define_mem = React.createClass({
           </div>
         </li>
       </ul>
-    </div><div  className={Data.params.Memn.Absolute != 0 ? "" : "hide"}>
+    </div><div className={Data.params.Memn.Absolute == 0 ? "hide":""}>
     <div className="grid-block vertical stripe">
       <div className="grid-block thead"><span className="expand col small-1">Memory</span><span className="expand col small-1 text-right"> Total</span><span className="expand col small-1 text-right"> Used</span><span className="expand col small-1 text-right"> Free</span><span className="expand col small-1 text-right"> Use%</span><span className="expand col"></span></div>
       
@@ -507,13 +507,13 @@ jsdefines.define_ps = React.createClass({
     let Data = this.state; // shadow global Data
     return (
 <div className="grid-block hr-top">
-  <div className="col-lr large-1 text-right"><div  className={!Data.params.Psn.Negative ? "hide-showhide" : "show-showhide"}>
+  <div className="col-lr large-1 text-right"><div className={Data.params.Psn.Negative ? "show-showhide" : "hide-showhide"}>
     <h1 className="h4 text-overflow">
       <a  href={Data.params.Tlinks.Psn} onClick={this.handleClick} title="Processes display options">
       <span className="showhide-hide whitespace-pre float-left">... </span>Processes</a>
     </h1></div>
   </div>
-  <div className="col-lr large-11"><div  className={!Data.params.Psn.Negative ? "hide-showhide" : "show-showhide"}>
+  <div className="col-lr large-11"><div className={Data.params.Psn.Negative ? "show-showhide" : "hide-showhide"}>
     <div className="grid-block">
       <ul className="menu showhide-show">
         <li>
@@ -545,7 +545,7 @@ jsdefines.define_ps = React.createClass({
           </div>
         </li>
       </ul>
-    </div><div  className={Data.params.Psn.Absolute != 0 ? "" : "hide"}>
+    </div><div className={Data.params.Psn.Absolute == 0 ? "hide":""}>
     <div className="grid-block vertical stripe">
       <div className="grid-block thead"><span className="expand col small-1 text-nowrap text-right">
           <a onClick={this.handleClick} href={Data.params.Vlinks.Psk[1-1].LinkHref} className={Data.params.Vlinks.Psk[1-1].LinkClass}

@@ -20263,7 +20263,7 @@
 	    }, void 0, _jsx('div', {
 	      className: 'col-lr large-1 text-right'
 	    }, void 0, _jsx('div', {
-	      className: !Data.params.CPUn.Negative ? "hide-showhide" : "show-showhide"
+	      className: Data.params.CPUn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('h1', {
 	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
@@ -20275,7 +20275,7 @@
 	    }, void 0, '... '), 'CPU')))), _jsx('div', {
 	      className: 'col-lr large-11'
 	    }, void 0, _jsx('div', {
-	      className: !Data.params.CPUn.Negative ? "hide-showhide" : "show-showhide"
+	      className: Data.params.CPUn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block'
 	    }, void 0, _jsx('ul', {
@@ -20321,7 +20321,7 @@
 	      href: Data.params.Nlinks.CPUn.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : "")
 	    }, void 0, Data.params.Nlinks.CPUn.More.Text, ' +')))))), _jsx('div', {
-	      className: Data.params.CPUn.Absolute != 0 ? "" : "hide"
+	      className: Data.params.CPUn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block vertical stripe'
 	    }, void 0, _jsx('div', {
@@ -20388,7 +20388,7 @@
 	    }, void 0, _jsx('div', {
 	      className: 'col-lr large-1 text-right'
 	    }, void 0, _jsx('div', {
-	      className: !Data.params.Dfn.Negative ? "hide-showhide" : "show-showhide"
+	      className: Data.params.Dfn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('h1', {
 	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
@@ -20400,7 +20400,7 @@
 	    }, void 0, '... '), 'Disk usage')))), _jsx('div', {
 	      className: 'col-lr large-11'
 	    }, void 0, _jsx('div', {
-	      className: !Data.params.Dfn.Negative ? "hide-showhide" : "show-showhide"
+	      className: Data.params.Dfn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block'
 	    }, void 0, _jsx('ul', {
@@ -20446,7 +20446,7 @@
 	      href: Data.params.Nlinks.Dfn.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : "")
 	    }, void 0, Data.params.Nlinks.Dfn.More.Text, ' +')))))), _jsx('div', {
-	      className: Data.params.Dfn.Absolute != 0 ? "" : "hide"
+	      className: Data.params.Dfn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block vertical stripe'
 	    }, void 0, _jsx('div', {
@@ -20584,7 +20584,7 @@
 	    }, void 0, _jsx('div', {
 	      className: 'col-lr large-1 text-right'
 	    }, void 0, _jsx('div', {
-	      className: !Data.params.Ifn.Negative ? "hide-showhide" : "show-showhide"
+	      className: Data.params.Ifn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('h1', {
 	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
@@ -20596,7 +20596,7 @@
 	    }, void 0, '... '), 'Interfaces')))), _jsx('div', {
 	      className: 'col-lr large-11'
 	    }, void 0, _jsx('div', {
-	      className: !Data.params.Ifn.Negative ? "hide-showhide" : "show-showhide"
+	      className: Data.params.Ifn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block'
 	    }, void 0, _jsx('ul', {
@@ -20642,7 +20642,7 @@
 	      href: Data.params.Nlinks.Ifn.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : "")
 	    }, void 0, Data.params.Nlinks.Ifn.More.Text, ' +')))))), _jsx('div', {
-	      className: Data.params.Ifn.Absolute != 0 ? "" : "hide"
+	      className: Data.params.Ifn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block vertical stripe'
 	    }, void 0, _jsx('div', {
@@ -20755,7 +20755,7 @@
 	    }, void 0, _jsx('div', {
 	      className: 'col-lr large-1 text-right'
 	    }, void 0, _jsx('div', {
-	      className: !Data.params.Lan.Negative ? "hide-showhide" : "show-showhide"
+	      className: Data.params.Lan.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('h1', {
 	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
@@ -20767,7 +20767,7 @@
 	    }, void 0, '... '), 'Load avg')))), _jsx('div', {
 	      className: 'col-lr large-11'
 	    }, void 0, _jsx('div', {
-	      className: !Data.params.Lan.Negative ? "hide-showhide" : "show-showhide"
+	      className: Data.params.Lan.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block'
 	    }, void 0, _jsx('ul', {
@@ -20813,7 +20813,7 @@
 	      href: Data.params.Nlinks.Lan.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.More.ExtraClass != null ? Data.params.Nlinks.Lan.More.ExtraClass : "")
 	    }, void 0, Data.params.Nlinks.Lan.More.Text, ' +')))))), _jsx('div', {
-	      className: Data.params.Lan.Absolute != 0 ? "" : "hide"
+	      className: Data.params.Lan.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block vertical stripe'
 	    }, void 0, _jsx('div', {
@@ -20866,7 +20866,7 @@
 	    }, void 0, _jsx('div', {
 	      className: 'col-lr large-1 text-right'
 	    }, void 0, _jsx('div', {
-	      className: !Data.params.Memn.Negative ? "hide-showhide" : "show-showhide"
+	      className: Data.params.Memn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('h1', {
 	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
@@ -20878,7 +20878,7 @@
 	    }, void 0, '... '), 'Memory')))), _jsx('div', {
 	      className: 'col-lr large-11'
 	    }, void 0, _jsx('div', {
-	      className: !Data.params.Memn.Negative ? "hide-showhide" : "show-showhide"
+	      className: Data.params.Memn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block'
 	    }, void 0, _jsx('ul', {
@@ -20924,7 +20924,7 @@
 	      href: Data.params.Nlinks.Memn.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : "")
 	    }, void 0, Data.params.Nlinks.Memn.More.Text, ' +')))))), _jsx('div', {
-	      className: Data.params.Memn.Absolute != 0 ? "" : "hide"
+	      className: Data.params.Memn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block vertical stripe'
 	    }, void 0, _jsx('div', {
@@ -20984,7 +20984,7 @@
 	    }, void 0, _jsx('div', {
 	      className: 'col-lr large-1 text-right'
 	    }, void 0, _jsx('div', {
-	      className: !Data.params.Psn.Negative ? "hide-showhide" : "show-showhide"
+	      className: Data.params.Psn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('h1', {
 	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
@@ -20996,7 +20996,7 @@
 	    }, void 0, '... '), 'Processes')))), _jsx('div', {
 	      className: 'col-lr large-11'
 	    }, void 0, _jsx('div', {
-	      className: !Data.params.Psn.Negative ? "hide-showhide" : "show-showhide"
+	      className: Data.params.Psn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block'
 	    }, void 0, _jsx('ul', {
@@ -21042,7 +21042,7 @@
 	      href: Data.params.Nlinks.Psn.More.Href,
 	      className: "button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : "")
 	    }, void 0, Data.params.Nlinks.Psn.More.Text, ' +')))))), _jsx('div', {
-	      className: Data.params.Psn.Absolute != 0 ? "" : "hide"
+	      className: Data.params.Psn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
 	      className: 'grid-block vertical stripe'
 	    }, void 0, _jsx('div', {

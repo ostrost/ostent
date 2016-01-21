@@ -1,12 +1,12 @@
 {{define "define_uptime"}}<span>{{.Data.uptime}}</span>{{end}}{{define "define_hostname"}}<a href="/" title="hostname {{.Data.hostname}}">{{.Data.hostname}}</a>{{end}}{{define "define_la"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
-  <div class="col-lr large-1 text-right"><div {{ClassPositive $p.Lan "hide-showhide" "show-showhide"}}>
+  <div class="col-lr large-1 text-right"><div {{class}}="{{if $p.Lan.Negative}}show-showhide{{else}}hide-showhide{{end}}">
     <h1 class="h4 text-overflow">
       <a {{HrefT $p $p.Lan}} title="Load avg display options">
       <span {{class}}="showhide-hide whitespace-pre float-left">... </span>Load avg</a>
     </h1></div>
   </div>
-  <div class="col-lr large-11"><div {{ClassPositive $p.Lan "hide-showhide" "show-showhide"}}>
+  <div class="col-lr large-11"><div {{class}}="{{if $p.Lan.Negative}}show-showhide{{else}}hide-showhide{{end}}">
     <div class="grid-block">
       <ul class="menu showhide-show">
         <li>
@@ -38,7 +38,7 @@
           </div>
         </li>
       </ul>
-    </div><div {{ClassNonZero $p.Lan "" "hide"}}>
+    </div><div {{class}}="{{if eq $p.Lan.Absolute 0}}hide{{end}}">
     <div class="grid-block vertical stripe">
       <div class="grid-block thead"><span class="expand col small-1">Period</span><span class="expand col small-1 text-right"> Value</span><span class="expand col"></span></div>
       {{if .Data.loadavg}}
@@ -49,13 +49,13 @@
   </div>
 </div>{{end}}{{define "define_mem"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
-  <div class="col-lr large-1 text-right"><div {{ClassPositive $p.Memn "hide-showhide" "show-showhide"}}>
+  <div class="col-lr large-1 text-right"><div {{class}}="{{if $p.Memn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
     <h1 class="h4 text-overflow">
       <a {{HrefT $p $p.Memn}} title="Memory display options">
       <span {{class}}="showhide-hide whitespace-pre float-left">... </span>Memory</a>
     </h1></div>
   </div>
-  <div class="col-lr large-11"><div {{ClassPositive $p.Memn "hide-showhide" "show-showhide"}}>
+  <div class="col-lr large-11"><div {{class}}="{{if $p.Memn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
     <div class="grid-block">
       <ul class="menu showhide-show">
         <li>
@@ -87,7 +87,7 @@
           </div>
         </li>
       </ul>
-    </div><div {{ClassNonZero $p.Memn "" "hide"}}>
+    </div><div {{class}}="{{if eq $p.Memn.Absolute 0}}hide{{end}}">
     <div class="grid-block vertical stripe">
       <div class="grid-block thead"><span class="expand col small-1">Memory</span><span class="expand col small-1 text-right"> Total</span><span class="expand col small-1 text-right"> Used</span><span class="expand col small-1 text-right"> Free</span><span class="expand col small-1 text-right"> Use%</span><span class="expand col"></span></div>
       {{if .Data.memory}}
@@ -97,13 +97,13 @@
   </div>
 </div>{{end}}{{define "define_df"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
-  <div class="col-lr large-1 text-right"><div {{ClassPositive $p.Dfn "hide-showhide" "show-showhide"}}>
+  <div class="col-lr large-1 text-right"><div {{class}}="{{if $p.Dfn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
     <h1 class="h4 text-overflow">
       <a {{HrefT $p $p.Dfn}} title="Disk usage display options">
       <span {{class}}="showhide-hide whitespace-pre float-left">... </span>Disk usage</a>
     </h1></div>
   </div>
-  <div class="col-lr large-11"><div {{ClassPositive $p.Dfn "hide-showhide" "show-showhide"}}>
+  <div class="col-lr large-11"><div {{class}}="{{if $p.Dfn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
     <div class="grid-block">
       <ul class="menu showhide-show">
         <li>
@@ -135,7 +135,7 @@
           </div>
         </li>
       </ul>
-    </div><div {{ClassNonZero $p.Dfn "" "hide"}}>
+    </div><div {{class}}="{{if eq $p.Dfn.Absolute 0}}hide{{end}}">
     <div class="grid-block vertical stripe">
       <div class="grid-block thead">{{/* poke purifycss: <div class="dropup"><div class="caret" /></div> */}}<span class="expand col small-1 text-nowrap">{{with Vlink $p $p.Dfk 1 "Device"}}
           <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
@@ -157,13 +157,13 @@
   </div>
 </div>{{end}}{{define "define_cpu"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
-  <div class="col-lr large-1 text-right"><div {{ClassPositive $p.CPUn "hide-showhide" "show-showhide"}}>
+  <div class="col-lr large-1 text-right"><div {{class}}="{{if $p.CPUn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
     <h1 class="h4 text-overflow">
       <a {{HrefT $p $p.CPUn}} title="CPU display options">
       <span {{class}}="showhide-hide whitespace-pre float-left">... </span>CPU</a>
     </h1></div>
   </div>
-  <div class="col-lr large-11"><div {{ClassPositive $p.CPUn "hide-showhide" "show-showhide"}}>
+  <div class="col-lr large-11"><div {{class}}="{{if $p.CPUn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
     <div class="grid-block">
       <ul class="menu showhide-show">
         <li>
@@ -195,7 +195,7 @@
           </div>
         </li>
       </ul>
-    </div><div {{ClassNonZero $p.CPUn "" "hide"}}>
+    </div><div {{class}}="{{if eq $p.CPUn.Absolute 0}}hide{{end}}">
     <div class="grid-block vertical stripe">
       <div class="grid-block thead"><span class="expand col small-1">Core</span><span class="expand col small-1 text-right"> User%</span><span class="expand col small-1 text-right"> Sys%</span><span class="expand col small-1 text-right"> Wait%</span><span class="expand col small-1 text-right"> Idle%</span><span class="expand col"></span></div>
       {{if .Data.cpu}}
@@ -212,13 +212,13 @@
   </div>
 </div>{{end}}{{define "define_if"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
-  <div class="col-lr large-1 text-right"><div {{ClassPositive $p.Ifn "hide-showhide" "show-showhide"}}>
+  <div class="col-lr large-1 text-right"><div {{class}}="{{if $p.Ifn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
     <h1 class="h4 text-overflow">
       <a {{HrefT $p $p.Ifn}} title="Interfaces display options">
       <span {{class}}="showhide-hide whitespace-pre float-left">... </span>Interfaces</a>
     </h1></div>
   </div>
-  <div class="col-lr large-11"><div {{ClassPositive $p.Ifn "hide-showhide" "show-showhide"}}>
+  <div class="col-lr large-11"><div {{class}}="{{if $p.Ifn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
     <div class="grid-block">
       <ul class="menu showhide-show">
         <li>
@@ -250,7 +250,7 @@
           </div>
         </li>
       </ul>
-    </div><div {{ClassNonZero $p.Ifn "" "hide"}}>
+    </div><div {{class}}="{{if eq $p.Ifn.Absolute 0}}hide{{end}}">
     <div class="grid-block vertical stripe">
       <div class="grid-block thead"><span class="expand col small-1">Interface</span><span class="expand col small-1 text-right"> IP</span><span title="Drops,Errors In/Out per second" class="expand col small-2 text-right text-nowrap"> Loss IO ps</span><span title="Packets In/Out per second" class="expand col small-2 text-right text-nowrap"> Packets IO ps</span><span title="Bits In/Out per second" class="expand col small-2 text-right text-nowrap"> IO <i>b</i>ps</span><span class="expand col"></span></div>
       {{if .Data.ifaddrs}}
@@ -260,13 +260,13 @@
   </div>
 </div>{{end}}{{define "define_ps"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
-  <div class="col-lr large-1 text-right"><div {{ClassPositive $p.Psn "hide-showhide" "show-showhide"}}>
+  <div class="col-lr large-1 text-right"><div {{class}}="{{if $p.Psn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
     <h1 class="h4 text-overflow">
       <a {{HrefT $p $p.Psn}} title="Processes display options">
       <span {{class}}="showhide-hide whitespace-pre float-left">... </span>Processes</a>
     </h1></div>
   </div>
-  <div class="col-lr large-11"><div {{ClassPositive $p.Psn "hide-showhide" "show-showhide"}}>
+  <div class="col-lr large-11"><div {{class}}="{{if $p.Psn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
     <div class="grid-block">
       <ul class="menu showhide-show">
         <li>
@@ -298,7 +298,7 @@
           </div>
         </li>
       </ul>
-    </div><div {{ClassNonZero $p.Psn "" "hide"}}>
+    </div><div {{class}}="{{if eq $p.Psn.Absolute 0}}hide{{end}}">
     <div class="grid-block vertical stripe">
       <div class="grid-block thead">{{/* poke purifycss: <div class="dropup"><div class="caret" /></div> */}}<span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 1 "PID"}}
           <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
