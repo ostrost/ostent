@@ -26,13 +26,6 @@ func (rs *Runs) Add(f func() error) {
 	rs.List = append(rs.List, f)
 }
 
-// Adds appends fs... to rs.List.
-func (rs *Runs) Adds(fs ...func() error) {
-	rs.Mutex.Lock()
-	defer rs.Mutex.Unlock()
-	rs.List = append(rs.List, fs...)
-}
-
 // RunE runs rs.List entries.
 func (rs *Runs) RunE(*cobra.Command, []string) error {
 	rs.Mutex.Lock()

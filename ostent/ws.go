@@ -21,6 +21,9 @@ var (
 		mutex sync.Mutex
 		added []backgroundHandler
 	}{}
+
+	// Exporting has "exporting to" list (after init)
+	Exporting ExportingList
 )
 
 func AddBackground(j backgroundHandler) {
@@ -54,7 +57,7 @@ func CollectLoop() {
 	for {
 		when, sleep := NextSecondDelta()
 		time.Sleep(sleep)
-		if AllExporters.NonZero() || Connections.NonZero() {
+		if len(Exporting) != 0 || Connections.NonZero() {
 			lastInfo.collect(when, Connections.NonZeroWantProcs())
 		}
 		Connections.tick()
@@ -203,30 +206,32 @@ func (cs *conns) tick() {
 	}
 }
 
-// Exporters keeps exporters list.
-type Exporters struct {
-	MU        sync.Mutex
-	Exporters map[string]struct{}
+// ExportingListing keeps "exporting to" list.
+type ExportingListing struct {
+	RWMutex sync.RWMutex
+	ExportingList
 }
 
-func (es *Exporters) NonZero() bool {
-	es.MU.Lock()
-	defer es.MU.Unlock()
-	return len(es.Exporters) != 0
+func (el *ExportingListing) AddExporter(name string, stringer fmt.Stringer) {
+	el.RWMutex.Lock()
+	el.ExportingList = append(el.ExportingList,
+		struct{ Name, Endpoint string }{name, stringer.String()})
+	el.RWMutex.Unlock()
 }
 
-func (es *Exporters) AddExporter(name string) {
-	es.MU.Lock()
-	defer es.MU.Unlock()
-	es.Exporters[name] = struct{}{}
-}
+// ExportingList is a list to be sorted by .Name:
+// - Entries come from CLI flags which may be specified in any order
+// - That order not preserved since parsing anyway
+type ExportingList []struct{ Name, Endpoint string }
+
+func (el ExportingList) Len() int           { return len(el) }
+func (el ExportingList) Less(i, j int) bool { return el[i].Name < el[j].Name }
+func (el ExportingList) Swap(i, j int)      { el[i], el[j] = el[j], el[i] }
 
 var (
 	// Connections is an instance of unexported conns type to hold
 	// active websocket connections. The only method is Reload.
 	Connections = conns{connmap: make(map[receiver]struct{})}
-
-	AllExporters = Exporters{Exporters: make(map[string]struct{})}
 
 	Unregister = make(chan receiver)
 	Register   = make(chan receiver, 1)

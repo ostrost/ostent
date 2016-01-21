@@ -9,9 +9,10 @@ import (
 	"github.com/ostrost/ostent/params"
 )
 
-func LibratoRun(lends params.LibratoEndpoints) error {
+func LibratoRun(elisting *ostent.ExportingListing, lends params.LibratoEndpoints) error {
 	for _, value := range lends.Values {
 		if value.Email != "" {
+			elisting.AddExporter("Librato", value)
 			ostent.AddBackground(LibratoRunFunc(value))
 		}
 	}
@@ -20,7 +21,6 @@ func LibratoRun(lends params.LibratoEndpoints) error {
 
 func LibratoRunFunc(value params.LibratoEndpoint) func() {
 	return func() {
-		ostent.AllExporters.AddExporter("librato")
 		go librato.Librato(ostent.Reg1s.Registry,
 			value.Delay.D,
 			value.Email,

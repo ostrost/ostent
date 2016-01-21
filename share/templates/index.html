@@ -354,7 +354,16 @@
           <li><a style="margin: 0" href="https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}" class="button secondary hollow">ostent</a></li>
         </ul>
       </div>
-    </div>
+    </div>{{if ne (len .Data.exporting) 0}}
+    <div class="grid-block hr-top">
+      <div class="large-1"></div>
+      <div class="large-11 col-lr">
+        <div class="grid-block vertical stripe">
+          <div class="grid-block thead"><span class="expand col small-2">Exporting to &nbsp;<span class="badge">{{len .Data.exporting}}</span></span><span class="expand col small-10">Endpoint</span></div>{{range $expo := .Data.exporting}}
+          <div class="grid-block"><span class="expand col small-2">{{$expo.Name}}</span><span class="expand col small-10">{{$expo.Endpoint}}</span></div>{{end}}
+        </div>
+      </div>
+    </div>{{end}}
     <div data-define="define_la" class="updates"> {{template "define_la"  .}}</div>
     <div data-define="define_mem" class="updates">{{template "define_mem" .}}</div>
     <div data-define="define_df" class="updates"> {{template "define_df"  .}}</div>

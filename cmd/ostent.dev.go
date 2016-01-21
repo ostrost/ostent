@@ -11,5 +11,6 @@ func init() {
 		"Profiling heap output `filename`")
 	OstentCmd.PersistentFlags().StringVar(&cmdcobra.ProfileCPUOutput, "profile-cpu", "",
 		"Profiling CPU output `filename`")
-	cmdcobra.PreRuns.Adds(cmdcobra.ProfileHeapRun, cmdcobra.ProfileCPURun)
+	cmdcobra.PreRuns.Add(cmdcobra.ProfileHeapRun)
+	cmdcobra.PreRuns.Add(cmdcobra.ProfileCPURun)
 }

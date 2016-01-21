@@ -555,12 +555,12 @@ func (rc RenamedConstError) Error() string { return string(rc) }
 func (ep *Endpoint) SetURL(u url.URL) { ep.URL = u }
 
 // String return string repr.
-func (ep Endpoint) String() string { return ep.URL.String() }
+func (ep Endpoint) String() string { return strings.TrimPrefix(ep.URL.String(), "http://") }
 
 // Endpoint has an URL and other fields decoded from it.
 type Endpoint struct {
-	// URL is canonical (for String etc.)
-	url.URL `schema:"-"`
+	// URL is the base.
+	URL url.URL `schema:"-"`
 
 	// ServerAddr is server part (host[:port]) of URL.
 	ServerAddr flags.Bind `schema:"-"`
@@ -607,7 +607,7 @@ func (gends GraphiteEndpoints) String() string {
 	values := gends.Values // shortcut
 	ss := make([]string, len(values))
 	for i, v := range values {
-		ss[i] = strings.TrimPrefix(v.String(), "http://")
+		ss[i] = v.String()
 	}
 	return strings.Join(ss, ",")
 }
@@ -622,6 +622,9 @@ type InfluxEndpoint struct {
 	Username string `schema:"username,omitempty"`
 	Password string `schema:"password,omitempty"`
 }
+
+// String is a fmt.Stringer method.
+func (iend InfluxEndpoint) String() string { return iend.Endpoint.URL.String() }
 
 func NewInfluxEndpoints(delay time.Duration, database string) InfluxEndpoints {
 	return InfluxEndpoints{Default: InfluxEndpoint{
@@ -646,7 +649,7 @@ func (iends *InfluxEndpoints) Set(input string) error {
 			return err
 		}
 		if iends.Values[i].ServerAddr.Host == "" {
-			return fmt.Errorf("server address required for InfluxDB exporting")
+			return fmt.Errorf("server address required (prefixed with explicit scheme e.g. http://) for InfluxDB exporting")
 		}
 	}
 	return nil
@@ -657,7 +660,7 @@ func (iends InfluxEndpoints) String() string {
 	values := iends.Values // shortcuts
 	ss := make([]string, len(values))
 	for i, v := range values {
-		ss[i] = v.String() // Not trimming here.
+		ss[i] = v.String()
 	}
 	return strings.Join(ss, ",")
 }
@@ -712,7 +715,7 @@ func (lends LibratoEndpoints) String() string {
 	values := lends.Values // shortcut
 	ss := make([]string, len(values))
 	for i, v := range values {
-		ss[i] = strings.TrimPrefix(v.String(), "http://")
+		ss[i] = v.String()
 	}
 	return strings.Join(ss, ",")
 }

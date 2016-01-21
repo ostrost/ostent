@@ -325,6 +325,24 @@ html
           li
             a.button.secondary.hollow(style='margin: 0', href='https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}') ostent
 
+    | {{if ne (len .Data.exporting) 0}}
+    .grid-block.hr-top
+      .large-1
+      .large-11.col-lr
+        //- h4 Exporting to
+        .grid-block.vertical.stripe
+          .grid-block.thead
+            span.expand.col.small-2
+              | Exporting to &nbsp;
+              span.badge {{len .Data.exporting}}
+            span.expand.col.small-10 Endpoint
+          | {{range $expo := .Data.exporting}}
+          .grid-block
+            span.expand.col.small-2 {{$expo.Name}}
+            span.expand.col.small-10 {{$expo.Endpoint}}
+          | {{end}}
+    | {{end}}
+
     .updates(data-define='define_la')  {{template "define_la"  .}}
     .updates(data-define='define_mem') {{template "define_mem" .}}
     .updates(data-define='define_df')  {{template "define_df"  .}}

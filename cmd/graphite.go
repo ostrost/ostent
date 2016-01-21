@@ -12,9 +12,10 @@ import (
 	"github.com/ostrost/ostent/params"
 )
 
-func GraphiteRun(gends params.GraphiteEndpoints) error {
+func GraphiteRun(elisting *ostent.ExportingListing, gends params.GraphiteEndpoints) error {
 	for _, value := range gends.Values {
 		if value.ServerAddr.Host != "" {
+			elisting.AddExporter("Graphite", value)
 			ostent.AddBackground(GraphiteRunFunc(value))
 		}
 	}
@@ -23,7 +24,6 @@ func GraphiteRun(gends params.GraphiteEndpoints) error {
 
 func GraphiteRunFunc(value params.Endpoint) func() {
 	return func() {
-		ostent.AllExporters.AddExporter("graphite")
 		ostent.Register <- &Carbond{
 			ServerAddr: value.ServerAddr.String(),
 			Delay:      &value.Delay,

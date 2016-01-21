@@ -599,7 +599,10 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 		// data features "params" only when req is not nil (new request).
 		// So updaters do not read data for it, but expect non-nil para as an argument.
 		data["params"] = para
+
+		data["exporting"] = Exporting // global from ./ws.go
 	}
+
 	lastInfo.collect(NextSecond(), para.NonZeroPsn())
 	psCopy := lastInfo.CopyPS()
 

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"os"
+	"sort"
 	"strings"
 	"time"
 	"unicode"
@@ -73,15 +74,18 @@ func init() {
 	OstentCmd.PersistentFlags().VarP(&DelayFlags.Min, "min-delay", "d", "Collection and display minimum `delay`")
 	OstentCmd.PersistentFlags().BoolVar(&Vflag, "version", false, "Print version and exit")
 
-	cmdcobra.PreRuns.Adds(OstentVersionRun, func() error {
+	cmdcobra.PreRuns.Add(OstentVersionRun)
+	cmdcobra.PreRuns.Add(func() error {
 		if DelayFlags.Max.Duration < DelayFlags.Min.Duration {
 			DelayFlags.Max.Duration = DelayFlags.Min.Duration
 		}
 		return nil
 	})
 
+	var elisting ostent.ExportingListing
+
 	if gends := params.NewGraphiteEndpoints(10*time.Second, flags.NewBind(2003)); true {
-		cmdcobra.PreRuns.Adds(func() error { return GraphiteRun(gends) })
+		cmdcobra.PreRuns.Add(func() error { return GraphiteRun(&elisting, gends) })
 		OstentCmd.PersistentFlags().Var(&gends, "graphite", "Graphite exporting `endpoints`")
 		OstentCmd.Long += "Graphite params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &gends.Default // shortcut, f does not alter it
@@ -91,7 +95,7 @@ func init() {
 	}
 
 	if iends := params.NewInfluxEndpoints(10*time.Second, "ostent"); true {
-		cmdcobra.PreRuns.Adds(func() error { return InfluxRun(iends) })
+		cmdcobra.PreRuns.Add(func() error { return InfluxRun(&elisting, iends) })
 		OstentCmd.PersistentFlags().Var(&iends, "influxdb", "InfluxDB exporting `endpoints`")
 		OstentCmd.Long += "InfluxDB params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &iends.Default // shortcut, f does not alter it
@@ -105,7 +109,7 @@ func init() {
 
 	hostname, _ := ostent.GetHN()
 	if lends := params.NewLibratoEndpoints(10*time.Second, hostname); true {
-		cmdcobra.PreRuns.Adds(func() error { return LibratoRun(lends) })
+		cmdcobra.PreRuns.Add(func() error { return LibratoRun(&elisting, lends) })
 		OstentCmd.PersistentFlags().Var(&lends, "librato", "Librato exporting `parameters`")
 		OstentCmd.Long += "Librato params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &lends.Default // shortcut, f does not alter it
@@ -115,6 +119,11 @@ func init() {
 			f.StringVar(&param.Token, "4", param.Token, "Librato `token`")
 		})
 	}
+	cmdcobra.PreRuns.Add(func() error {
+		ostent.Exporting = elisting.ExportingList
+		sort.Stable(ostent.Exporting)
+		return nil
+	})
 }
 
 /*
