@@ -1,4 +1,4 @@
-- if (format === undefined) { format = console.error; }
+- if (format === undefined) { format = function() { console.error('check locals'); }; }
 //- This is a stub: real jade invocation must have it in locals.
 
 mixin define(name)
@@ -10,6 +10,17 @@ mixin with(...rest)
   | {{with !{rest.join(' ')}}}
   block
   | {{end}}
+
+mixin withv(prefix, kparam, number, text)
+  if JSX
+    - var link = format('Data.params.Vlinks.%s[%s-1]', kparam.replace(/.*\./, ''), number);
+    | #{''}
+    | <a onClick={this.handleClick} href={#{link}.LinkHref} {{class}}={#{link}.LinkClass}
+    |   >#{text}<span {{class}}={#{link}.CaretClass}></span></a>
+  else
+    +with(prefix, kparam, number, format('"%s"', text))
+      | <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
+      |   >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>
   
 mixin table(nparam, dparam, title)
   | {{$p := .Data.params}}
@@ -98,9 +109,6 @@ mixin alink_badgeleft
 mixin alink_badgeright
   | <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
   |   >{{.Text}} {{.Badge}}</a>
-mixin avlink
-  | <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
-  |   >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>
   
 +define('define_uptime'): span {{.Data.uptime}}
 +define('define_hostname')
@@ -173,12 +181,12 @@ mixin range_list(datak, ranger, kvalue, keyid)
     .grid-block.vertical.stripe
       .grid-block.thead
         | {{/* poke purifycss: <div class="dropup"><div class="caret" /></div> */}}
-        span.expand.col.small-1.text-nowrap:            +with('Vlink $p $p.Dfk 1 "Device"'):  +avlink {{/* FS     */}}
-        span.expand.col.small-1.text-nowrap:            +with('Vlink $p $p.Dfk 2 "Mounted"'): +avlink {{/* MP     */}}
-        span.expand.col.small-1.text-nowrap.text-right: +with('Vlink $p $p.Dfk 6 "Total"'):   +avlink {{/* TOTAL  */}}
-        span.expand.col.small-1.text-nowrap.text-right: +with('Vlink $p $p.Dfk 5 "Used"'):    +avlink {{/* USED   */}}
-        span.expand.col.small-1.text-nowrap.text-right: +with('Vlink $p $p.Dfk 3 "Avail"'):   +avlink {{/* AVAIL  */}}
-        span.expand.col.small-1.text-nowrap.text-right: +with('Vlink $p $p.Dfk 4 "Use%"'):    +avlink {{/* USEPCT */}}
+        span.expand.col.small-1.text-nowrap:            +withv('Vlink $p', '$p.Dfk', 1, 'Device')  {{/* FS     */}}
+        span.expand.col.small-1.text-nowrap:            +withv('Vlink $p', '$p.Dfk', 2, 'Mounted') {{/* MP     */}}
+        span.expand.col.small-1.text-nowrap.text-right: +withv('Vlink $p', '$p.Dfk', 6, 'Total')   {{/* TOTAL  */}}
+        span.expand.col.small-1.text-nowrap.text-right: +withv('Vlink $p', '$p.Dfk', 5, 'Used')    {{/* USED   */}}
+        span.expand.col.small-1.text-nowrap.text-right: +withv('Vlink $p', '$p.Dfk', 3, 'Avail')   {{/* AVAIL  */}}
+        span.expand.col.small-1.text-nowrap.text-right: +withv('Vlink $p', '$p.Dfk', 4, 'Use%')    {{/* USEPCT */}}
         span.expand.col
       +range_list('diskUsage', '$df', '$df.DirName', 'df-rowby-dirname')
         span.expand.col.small-1.text-overflow {{$df.DevName}}
@@ -302,15 +310,15 @@ mixin range_list(datak, ranger, kvalue, keyid)
     .grid-block.vertical.stripe
       .grid-block.thead
         | {{/* poke purifycss: <div class="dropup"><div class="caret" /></div> */}}
-        span.expand.col.small-1.text-nowrap.text-right:  +with('Vlink $p $p.Psk 1 "PID"'):     +avlink
-        span.expand.col.small-1.text-nowrap.text-right:  +with('Vlink $p $p.Psk 2 "UID"'):     +avlink
-        span.expand.col.small-1.text-nowrap:             +with('Vlink $p $p.Psk 3 "USER"'):    +avlink
-        span.expand.col.small-1.text-nowrap.text-right:  +with('Vlink $p $p.Psk 4 "PR"'):      +avlink {{/* PRI  */}}
-        span.expand.col.small-1.text-nowrap.text-right:  +with('Vlink $p $p.Psk 5 "NI"'):      +avlink {{/* NICE */}}
-        span.expand.col.small-1.text-nowrap.text-right:  +with('Vlink $p $p.Psk 6 "VIRT"'):    +avlink
-        span.expand.col.small-1.text-nowrap.text-right:  +with('Vlink $p $p.Psk 7 "RES"'):     +avlink
-        span.expand.col.small-1.text-nowrap.text-center: +with('Vlink $p $p.Psk 8 "TIME"'):    +avlink
-        span.expand.col.small-1.text-nowrap:             +with('Vlink $p $p.Psk 9 "COMMAND"'): +avlink {{/* NAME */}}
+        span.expand.col.small-1.text-nowrap.text-right:  +withv('Vlink $p', '$p.Psk', 1, 'PID')
+        span.expand.col.small-1.text-nowrap.text-right:  +withv('Vlink $p', '$p.Psk', 2, 'UID')
+        span.expand.col.small-1.text-nowrap:             +withv('Vlink $p', '$p.Psk', 3, 'USER')
+        span.expand.col.small-1.text-nowrap.text-right:  +withv('Vlink $p', '$p.Psk', 4, 'PR')      {{/* PRI  */}}
+        span.expand.col.small-1.text-nowrap.text-right:  +withv('Vlink $p', '$p.Psk', 5, 'NI')      {{/* NICE */}}
+        span.expand.col.small-1.text-nowrap.text-right:  +withv('Vlink $p', '$p.Psk', 6, 'VIRT')
+        span.expand.col.small-1.text-nowrap.text-right:  +withv('Vlink $p', '$p.Psk', 7, 'RES')
+        span.expand.col.small-1.text-nowrap.text-center: +withv('Vlink $p', '$p.Psk', 8, 'TIME')
+        span.expand.col.small-1.text-nowrap:             +withv('Vlink $p', '$p.Psk', 9, 'COMMAND') {{/* NAME */}}
       +range_list('procs', '$ps', '$ps.PID', 'ps-rowby-pid')
         span.expand.col.small-1.text-right {{$ps.PID}}
         span.expand.col.small-1.text-right  {{$ps.UID}}
