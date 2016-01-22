@@ -11,19 +11,20 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin'),
     path              = require('path'),
     purify            = require('purifycss-webpack-plugin'),
     webpack           = require('webpack'),
+    util              = require('util'),
     argv              = require('yargs').argv;
 require('./gulpfile.watch.js');
 
 gulp.task('jade2html', function() {
   gulp.src(argv.input)
-    .pipe(jade({locals: argv, pretty: true}))
+    .pipe(jade({locals: _.merge(argv, {format: util.format}), pretty: true}))
     .pipe(rename(argv.output))
     .pipe(gulp.dest('.'));
 });
 
 gulp.task('jade2jsx', function() {
   gulp.src(argv.input)
-    .pipe(jade({locals: argv, pretty: true}))
+    .pipe(jade({locals: _.merge(argv, {format: util.format}), pretty: true}))
     .pipe(spawn({cmd: 'ostent-templatepp',
                  args: '--definesfrom - --template'.split(' ').concat(argv.template)}))
     .pipe(rename(argv.output))

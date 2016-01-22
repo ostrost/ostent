@@ -20267,9 +20267,9 @@
 	    }, void 0, _jsx('h1', {
 	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
+	      title: 'CPU display options',
 	      href: Data.params.Tlinks.CPUn,
-	      onClick: this.handleClick,
-	      title: 'CPU display options'
+	      onClick: this.handleClick
 	    }, void 0, _jsx('span', {
 	      className: 'showhide-hide whitespace-pre float-left'
 	    }, void 0, '... '), 'CPU')))), _jsx('div', {
@@ -20392,9 +20392,9 @@
 	    }, void 0, _jsx('h1', {
 	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
+	      title: 'Disk usage display options',
 	      href: Data.params.Tlinks.Dfn,
-	      onClick: this.handleClick,
-	      title: 'Disk usage display options'
+	      onClick: this.handleClick
 	    }, void 0, _jsx('span', {
 	      className: 'showhide-hide whitespace-pre float-left'
 	    }, void 0, '... '), 'Disk usage')))), _jsx('div', {
@@ -20588,9 +20588,9 @@
 	    }, void 0, _jsx('h1', {
 	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
+	      title: 'Interfaces display options',
 	      href: Data.params.Tlinks.Ifn,
-	      onClick: this.handleClick,
-	      title: 'Interfaces display options'
+	      onClick: this.handleClick
 	    }, void 0, _jsx('span', {
 	      className: 'showhide-hide whitespace-pre float-left'
 	    }, void 0, '... '), 'Interfaces')))), _jsx('div', {
@@ -20759,9 +20759,9 @@
 	    }, void 0, _jsx('h1', {
 	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
+	      title: 'Load avg display options',
 	      href: Data.params.Tlinks.Lan,
-	      onClick: this.handleClick,
-	      title: 'Load avg display options'
+	      onClick: this.handleClick
 	    }, void 0, _jsx('span', {
 	      className: 'showhide-hide whitespace-pre float-left'
 	    }, void 0, '... '), 'Load avg')))), _jsx('div', {
@@ -20870,9 +20870,9 @@
 	    }, void 0, _jsx('h1', {
 	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
+	      title: 'Memory display options',
 	      href: Data.params.Tlinks.Memn,
-	      onClick: this.handleClick,
-	      title: 'Memory display options'
+	      onClick: this.handleClick
 	    }, void 0, _jsx('span', {
 	      className: 'showhide-hide whitespace-pre float-left'
 	    }, void 0, '... '), 'Memory')))), _jsx('div', {
@@ -20988,9 +20988,9 @@
 	    }, void 0, _jsx('h1', {
 	      className: 'h4 text-overflow'
 	    }, void 0, _jsx('a', {
+	      title: 'Processes display options',
 	      href: Data.params.Tlinks.Psn,
-	      onClick: this.handleClick,
-	      title: 'Processes display options'
+	      onClick: this.handleClick
 	    }, void 0, _jsx('span', {
 	      className: 'showhide-hide whitespace-pre float-left'
 	    }, void 0, '... '), 'Processes')))), _jsx('div', {

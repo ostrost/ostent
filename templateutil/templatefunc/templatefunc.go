@@ -9,49 +9,26 @@ import (
 	"github.com/ostrost/ostent/templateutil"
 )
 
-func (f JSXLFuncs) FuncHrefT() interface{} {
-	return func(_, n Uncurler) (template.HTMLAttr, error) {
-		base, last := f.Split(n)
-		return SprintfAttr(" href={%s.Tlinks.%s} onClick={this.handleClick}",
-			base, last), nil
-	}
-}
+func (f JSXLFuncs) FuncHrefT() interface{} { return func() int { panic(fmt.Errorf("Do not use 1")) } }
+func (f JSXLFuncs) FuncLessD() interface{} { return func() int { panic(fmt.Errorf("Do not use 2")) } }
+func (f JSXLFuncs) FuncMoreD() interface{} { return func() int { panic(fmt.Errorf("Do not use 3")) } }
+func (f JSXLFuncs) FuncLessN() interface{} { return func() int { panic(fmt.Errorf("Do not use 4")) } }
+func (f JSXLFuncs) FuncMoreN() interface{} { return func() int { panic(fmt.Errorf("Do not use 5")) } }
 
 func (f HTMLFuncs) FuncHrefT() interface{} { return f.ParamsFuncs.HrefT }
-
-func (f JSXLFuncs) FuncLessD() interface{} {
-	return func(_, dur Uncurler, bclass string) (params.ALink, error) {
-		return f.Dlink(dur, bclass, "Less", "-")
-	}
-}
-
-func (f JSXLFuncs) FuncMoreD() interface{} {
-	return func(_, dur Uncurler, bclass string) (params.ALink, error) {
-		return f.Dlink(dur, bclass, "More", "+")
-	}
-}
-
 func (f HTMLFuncs) FuncLessD() interface{} { return f.ParamsFuncs.LessD }
 func (f HTMLFuncs) FuncMoreD() interface{} { return f.ParamsFuncs.MoreD }
-
-func (f JSXLFuncs) FuncLessN() interface{} {
-	return func(_, num Uncurler, bclass string) (params.ALink, error) {
-		return f.Nlink(num, bclass, "Less", "-")
-	}
-}
-
-func (f JSXLFuncs) FuncMoreN() interface{} {
-	return func(_, num Uncurler, bclass string) (params.ALink, error) {
-		return f.Nlink(num, bclass, "More", "+")
-	}
-}
-
 func (f HTMLFuncs) FuncLessN() interface{} { return f.ParamsFuncs.LessN }
 func (f HTMLFuncs) FuncMoreN() interface{} { return f.ParamsFuncs.MoreN }
+func (f HTMLFuncs) FuncVlink() interface{} { return f.ParamsFuncs.Vlink }
 
 func (f JSXLFuncs) FuncVlink() interface{} {
+	type Uncurler interface {
+		Uncurl() string
+	}
 	return func(_, this Uncurler, cmp int, text string) params.VLink {
-		base, last := f.Split(this)
+		split := strings.Split(this.Uncurl(), ".")
+		base, last := strings.Join(split[:len(split)-1], "."), split[len(split)-1]
 		return params.VLink{
 			CaretClass: fmt.Sprintf("{%s.Vlinks.%s[%d-1].%s}", base, last, cmp, "CaretClass"),
 			LinkClass:  fmt.Sprintf("{%s.Vlinks.%s[%d-1].%s}", base, last, cmp, "LinkClass"),
@@ -59,50 +36,6 @@ func (f JSXLFuncs) FuncVlink() interface{} {
 			LinkText:   text, // always static
 		}
 	}
-}
-
-func (f HTMLFuncs) FuncVlink() interface{} { return f.ParamsFuncs.Vlink }
-
-func (f JSXLFuncs) Dlink(v Uncurler, bclass, which, badge string) (params.ALink, error) {
-	base, last := f.Split(v)
-	var (
-		href   = fmt.Sprintf( /**/ "{%s.Dlinks.%s.%s.Href}", base, last, which)
-		text   = fmt.Sprintf( /**/ "{%s.Dlinks.%s.%s.Text}", base, last, which)
-		eclass = fmt.Sprintf( /* */ "%s.Dlinks.%s.%s.ExtraClass", base, last, which) // not curled
-	)
-	return params.ALink{
-		Href:  href,
-		Text:  text,
-		Badge: badge,
-		Class: f.ConcatClass(bclass, eclass),
-	}, nil
-}
-
-// ConcatClass is internal (not required for interface)
-func (f JSXLFuncs) ConcatClass(bclass, eclass string) string {
-	return fmt.Sprintf("{%q + \" \" + (%s != null ? %s : \"\")}", bclass, eclass, eclass)
-}
-
-// Nlink is internal (not required for interface)
-func (f JSXLFuncs) Nlink(v Uncurler, bclass, which, badge string) (params.ALink, error) {
-	base, last := f.Split(v)
-	var (
-		href   = fmt.Sprintf( /**/ "{%s.Nlinks.%s.%s.Href}", base, last, which)
-		text   = fmt.Sprintf( /**/ "{%s.Nlinks.%s.%s.Text}", base, last, which)
-		eclass = fmt.Sprintf( /* */ "%s.Nlinks.%s.%s.ExtraClass", base, last, which) // not curled
-	)
-	return params.ALink{
-		Href:  href,
-		Text:  text,
-		Badge: badge,
-		Class: f.ConcatClass(bclass, eclass),
-	}, nil
-}
-
-// Split is internal (not required for interface)
-func (f JSXLFuncs) Split(v Uncurler) (string, string) {
-	split := strings.Split(v.Uncurl(), ".")
-	return strings.Join(split[:len(split)-1], "."), split[len(split)-1]
 }
 
 // JSXLFuncs has methods implementing Functor.
@@ -147,12 +80,4 @@ type Functor interface {
 	FuncLessN() interface{}
 	FuncMoreN() interface{}
 	FuncVlink() interface{}
-}
-
-func SprintfAttr(format string, args ...interface{}) template.HTMLAttr {
-	return template.HTMLAttr(fmt.Sprintf(format, args...))
-}
-
-type Uncurler interface {
-	Uncurl() string
 }

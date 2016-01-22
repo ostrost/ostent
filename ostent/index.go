@@ -599,8 +599,6 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 		// data features "params" only when req is not nil (new request).
 		// So updaters do not read data for it, but expect non-nil para as an argument.
 		data["params"] = para
-
-		data["exporting"] = Exporting // global from ./ws.go
 	}
 
 	lastInfo.collect(NextSecond(), para.NonZeroPsn())
@@ -685,11 +683,13 @@ func (si ServeIndex) Index(w http.ResponseWriter, r *http.Request) {
 		TAGGEDbin     bool
 		Distrib       string
 		OstentVersion string
+		Exporting     ExportingList
 		Data          IndexData
 	}{
 		TAGGEDbin:     si.TaggedBin,
-		Distrib:       DISTRIB, // value set in init()
-		OstentVersion: VERSION, // value from server.go
+		Distrib:       DISTRIB,   // value set in init()
+		OstentVersion: VERSION,   // from ./server.go
+		Exporting:     Exporting, // from ./ws.go
 		Data:          data,
 	})
 }

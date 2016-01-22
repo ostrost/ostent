@@ -1,9 +1,7 @@
 {{define "define_uptime"}}<span>{{.Data.uptime}}</span>{{end}}{{define "define_hostname"}}<a href="/" title="hostname {{.Data.hostname}}">{{.Data.hostname}}</a>{{end}}{{define "define_la"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
   <div class="col-lr large-1 text-right"><div {{class}}="{{if $p.Lan.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-    <h1 class="h4 text-overflow">
-      <a {{HrefT $p $p.Lan}} title="Load avg display options">
-      <span {{class}}="showhide-hide whitespace-pre float-left">... </span>Load avg</a>
+    <h1 class="h4 text-overflow"><a title="Load avg display options" {{HrefT $p $p.Lan}}><span {{class}}="showhide-hide whitespace-pre float-left">... </span>Load avg</a>
     </h1></div>
   </div>
   <div class="col-lr large-11"><div {{class}}="{{if $p.Lan.Negative}}show-showhide{{else}}hide-showhide{{end}}">
@@ -50,9 +48,7 @@
 </div>{{end}}{{define "define_mem"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
   <div class="col-lr large-1 text-right"><div {{class}}="{{if $p.Memn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-    <h1 class="h4 text-overflow">
-      <a {{HrefT $p $p.Memn}} title="Memory display options">
-      <span {{class}}="showhide-hide whitespace-pre float-left">... </span>Memory</a>
+    <h1 class="h4 text-overflow"><a title="Memory display options" {{HrefT $p $p.Memn}}><span {{class}}="showhide-hide whitespace-pre float-left">... </span>Memory</a>
     </h1></div>
   </div>
   <div class="col-lr large-11"><div {{class}}="{{if $p.Memn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
@@ -98,9 +94,7 @@
 </div>{{end}}{{define "define_df"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
   <div class="col-lr large-1 text-right"><div {{class}}="{{if $p.Dfn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-    <h1 class="h4 text-overflow">
-      <a {{HrefT $p $p.Dfn}} title="Disk usage display options">
-      <span {{class}}="showhide-hide whitespace-pre float-left">... </span>Disk usage</a>
+    <h1 class="h4 text-overflow"><a title="Disk usage display options" {{HrefT $p $p.Dfn}}><span {{class}}="showhide-hide whitespace-pre float-left">... </span>Disk usage</a>
     </h1></div>
   </div>
   <div class="col-lr large-11"><div {{class}}="{{if $p.Dfn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
@@ -158,9 +152,7 @@
 </div>{{end}}{{define "define_cpu"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
   <div class="col-lr large-1 text-right"><div {{class}}="{{if $p.CPUn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-    <h1 class="h4 text-overflow">
-      <a {{HrefT $p $p.CPUn}} title="CPU display options">
-      <span {{class}}="showhide-hide whitespace-pre float-left">... </span>CPU</a>
+    <h1 class="h4 text-overflow"><a title="CPU display options" {{HrefT $p $p.CPUn}}><span {{class}}="showhide-hide whitespace-pre float-left">... </span>CPU</a>
     </h1></div>
   </div>
   <div class="col-lr large-11"><div {{class}}="{{if $p.CPUn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
@@ -213,9 +205,7 @@
 </div>{{end}}{{define "define_if"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
   <div class="col-lr large-1 text-right"><div {{class}}="{{if $p.Ifn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-    <h1 class="h4 text-overflow">
-      <a {{HrefT $p $p.Ifn}} title="Interfaces display options">
-      <span {{class}}="showhide-hide whitespace-pre float-left">... </span>Interfaces</a>
+    <h1 class="h4 text-overflow"><a title="Interfaces display options" {{HrefT $p $p.Ifn}}><span {{class}}="showhide-hide whitespace-pre float-left">... </span>Interfaces</a>
     </h1></div>
   </div>
   <div class="col-lr large-11"><div {{class}}="{{if $p.Ifn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
@@ -261,9 +251,7 @@
 </div>{{end}}{{define "define_ps"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
   <div class="col-lr large-1 text-right"><div {{class}}="{{if $p.Psn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-    <h1 class="h4 text-overflow">
-      <a {{HrefT $p $p.Psn}} title="Processes display options">
-      <span {{class}}="showhide-hide whitespace-pre float-left">... </span>Processes</a>
+    <h1 class="h4 text-overflow"><a title="Processes display options" {{HrefT $p $p.Psn}}><span {{class}}="showhide-hide whitespace-pre float-left">... </span>Processes</a>
     </h1></div>
   </div>
   <div class="col-lr large-11"><div {{class}}="{{if $p.Psn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
@@ -354,12 +342,12 @@
           <li><a style="margin: 0" href="https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}" class="button secondary hollow">ostent</a></li>
         </ul>
       </div>
-    </div>{{if ne (len .Data.exporting) 0}}
+    </div>{{if ne (len .Exporting) 0}}
     <div class="grid-block hr-top">
       <div class="large-1"></div>
       <div class="large-11 col-lr">
         <div class="grid-block vertical stripe">
-          <div class="grid-block thead"><span class="expand col small-2">Exporting to &nbsp;<span class="badge">{{len .Data.exporting}}</span></span><span class="expand col small-10">Endpoint</span></div>{{range $expo := .Data.exporting}}
+          <div class="grid-block thead"><span class="expand col small-2">Exporting to&nbsp;<span class="badge secondary">{{len .Exporting}}</span></span><span class="expand col small-10">Endpoint</span></div>{{range $expo := .Exporting}}
           <div class="grid-block"><span class="expand col small-2">{{$expo.Name}}</span><span class="expand col small-10">{{$expo.Endpoint}}</span></div>{{end}}
         </div>
       </div>

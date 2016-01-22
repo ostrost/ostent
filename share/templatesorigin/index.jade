@@ -1,3 +1,6 @@
+- if (format === undefined) { format = console.error; }
+//- This is a stub: real jade invocation must have it in locals.
+
 mixin define(name)
   | {{define "#{name}"}}
   block
@@ -11,18 +14,30 @@ mixin with(...rest)
 mixin table(nparam, dparam, title)
   | {{$p := .Data.params}}
   .grid-block.hr-top
+    - var nparamFull = nparam.replace('$p', 'Data.params');
+    -
+      var nparamShort = nparam.replace(/.*\./, ''),
+          dparamShort = dparam.replace(/.*\./, ''),
+          dlinkLess = format('Data.params.Dlinks.%s.Less', dparamShort),
+          dlinkMore = format('Data.params.Dlinks.%s.More', dparamShort),
+          nlinkLess = format('Data.params.Nlinks.%s.Less', nparamShort),
+          nlinkMore = format('Data.params.Nlinks.%s.More', nparamShort),
+          tlink     = format('Data.params.Tlinks.%s',      nparamShort);
     .col-lr.large-1.text-right
       if JSX
-        | <div {{class}}={#{nparam.replace('$p', 'Data.params')}.Negative ? "show-showhide" : "hide-showhide"}>
+        | <div {{class}}={#{nparamFull}.Negative ? "show-showhide" : "hide-showhide"}>
       else
         | <div {{class}}="{{if #{nparam}.Negative}}show-showhide{{else}}hide-showhide{{end}}">
       h1.h4.text-overflow
-        | <a {{HrefT $p #{nparam}}} title="#{title} display options">
+        if JSX
+          | <a title="#{title} display options" href={#{tlink}} onClick={this.handleClick}>
+        else
+          | <a title="#{title} display options" {{HrefT $p #{nparam}}}>
         | <span {{class}}="showhide-hide whitespace-pre float-left">... </span>#{title}</a>
       | </div>
     .col-lr.large-11
       if JSX
-        | <div {{class}}={#{nparam.replace('$p', 'Data.params')}.Negative ? "show-showhide" : "hide-showhide"}>
+        | <div {{class}}={#{nparamFull}.Negative ? "show-showhide" : "hide-showhide"}>
       else
         | <div {{class}}="{{if #{nparam}.Negative}}show-showhide{{else}}hide-showhide{{end}}">
       .grid-block
@@ -32,29 +47,50 @@ mixin table(nparam, dparam, title)
               .input-group-label.small.text-nowrap delay
               .input-group-button
                 a.button.small.secondary.disabled {{#{dparam}}}
+              - var buttonBase = 'text-nowrap button small';
+              - var buttonBase = 'button small text-nowrap';
               .input-group-button
-                +with('LessD $p', dparam, '"button small text-nowrap"')
-                  +alink_badgeleft
+                if JSX
+                  +alink_badge_jsx('- {%s}', dlinkLess, buttonBase)
+                else
+                  +with('LessD $p', dparam, '"button small text-nowrap"')
+                    +alink_badgeleft
               .input-group-button
-                +with('MoreD $p', dparam, '"button small text-nowrap"')
-                  +alink_badgeright
+                if JSX
+                  +alink_badge_jsx('{%s} +', dlinkMore, buttonBase)
+                else
+                  +with('MoreD $p', dparam, '"button small text-nowrap"')
+                    +alink_badgeright
           li
             .input-group
               .input-group-label.small.text-nowrap rows
               .input-group-button
                 a.button.small.secondary.disabled {{#{nparam}.Absolute}}
+              - var buttonBase = 'text-nowrap button small success';
+              - var buttonBase = 'button small success text-nowrap';
               .input-group-button
-                +with('LessN $p', nparam, '"button small success text-nowrap"')
-                  +alink_badgeleft
+                if JSX
+                  +alink_badge_jsx('- {%s}', nlinkLess, buttonBase)
+                else
+                  +with('LessN $p', nparam, '"button small success text-nowrap"')
+                    +alink_badgeleft
               .input-group-button
-                +with('MoreN $p', nparam, '"button small success text-nowrap"')
-                  +alink_badgeright
+                if JSX
+                  +alink_badge_jsx('{%s} +', nlinkMore, buttonBase)
+                    +alink_badgeright
+                else
+                  +with('MoreN $p', nparam, '"button small success text-nowrap"')
+                    +alink_badgeright
       if JSX
         | <div {{class}}={#{nparam.replace('$p', 'Data.params')}.Absolute == 0 ? "hide":""}>
       else
         | <div {{class}}="{{if eq #{nparam}.Absolute 0}}hide{{end}}">
       block
       | </div></div>
+
+mixin alink_badge_jsx(fmt, link, buttonBase)
+  | <a onClick={this.handleClick} href={#{link}.Href} {{class}}={"#{buttonBase}" + " " + (#{link}.ExtraClass != null ? #{link}.ExtraClass : "")}
+  |   >#{format(fmt, link+'.Text')}</a>
 
 mixin alink_badgeleft
   | <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
@@ -325,7 +361,7 @@ html
           li
             a.button.secondary.hollow(style='margin: 0', href='https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}') ostent
 
-    | {{if ne (len .Data.exporting) 0}}
+    | {{if ne (len .Exporting) 0}}
     .grid-block.hr-top
       .large-1
       .large-11.col-lr
@@ -333,10 +369,10 @@ html
         .grid-block.vertical.stripe
           .grid-block.thead
             span.expand.col.small-2
-              | Exporting to &nbsp;
-              span.badge {{len .Data.exporting}}
+              | Exporting to&nbsp;
+              span.badge.secondary {{len .Exporting}}
             span.expand.col.small-10 Endpoint
-          | {{range $expo := .Data.exporting}}
+          | {{range $expo := .Exporting}}
           .grid-block
             span.expand.col.small-2 {{$expo.Name}}
             span.expand.col.small-10 {{$expo.Endpoint}}
