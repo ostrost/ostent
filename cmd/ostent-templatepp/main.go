@@ -6,8 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/ostrost/ostent/templateutil"
-	"github.com/ostrost/ostent/templateutil/templatefunc"
+	"github.com/ostrost/ostent/params"
 	"github.com/ostrost/ostent/templateutil/templatepipe"
 )
 
@@ -48,8 +47,7 @@ func TemplateppRunE(*cobra.Command, []string) error {
 	return templatepipe.Convert(
 		inputTemplateFile,
 		definesFromFile,
-		templatefunc.FuncMapHTML(),
-		templateutil.FuncMapJSXL(),
+		params.FuncMapHTML,
 		outputFile,
 	)
 }

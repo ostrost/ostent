@@ -9,29 +9,44 @@ import (
 	"github.com/ostrost/ostent/flags"
 )
 
-func (f ParamsFuncs) HrefT(p *Params, num *Num) (template.HTMLAttr, error) {
+// FuncMapHTML is a FuncMap with param functions.
+var FuncMapHTML = template.FuncMap{
+	"HrefT": HrefT, // HrefT not used in params package
+	"LessD": LessD,
+	"MoreD": MoreD,
+	"LessN": LessN,
+	"MoreN": MoreN,
+	"Vlink": Vlink,
+}
+
+// HrefT is in the func map.
+func HrefT(p *Params, num *Num) (template.HTMLAttr, error) {
 	href, err := p.EncodeT(num)
-	return SprintfAttr(" href=%q", href), err
+	return template.HTMLAttr(fmt.Sprintf(" href=%q", href)), err
 }
 
-func (f ParamsFuncs) LessD(p *Params, d *Delay, bclass string) (ALink, error) {
-	return f.LinkD(p, d, bclass, f.DelayLess(*d, p.DelayBounds.Min.Duration), "-")
+// LessD is in the func map.
+func LessD(p *Params, d *Delay, bclass string) (ALink, error) {
+	return LinkD(p, d, bclass, DelayLess(*d, p.DelayBounds.Min.Duration), "-")
 }
 
-func (f ParamsFuncs) MoreD(p *Params, d *Delay, bclass string) (ALink, error) {
-	return f.LinkD(p, d, bclass, f.DelayMore(*d, p.DelayBounds.Min.Duration), "+")
+// MoreD is in the func map.
+func MoreD(p *Params, d *Delay, bclass string) (ALink, error) {
+	return LinkD(p, d, bclass, DelayMore(*d, p.DelayBounds.Min.Duration), "+")
 }
 
-func (f ParamsFuncs) LessN(p *Params, num *Num, bclass string) (ALink, error) {
-	return f.LinkN(p, num, bclass, f.Pow2Less(num.Absolute), "-")
+// LessN is in the func map.
+func LessN(p *Params, num *Num, bclass string) (ALink, error) {
+	return LinkN(p, num, bclass, Pow2Less(num.Absolute), "-")
 }
 
-func (f ParamsFuncs) MoreN(p *Params, num *Num, bclass string) (ALink, error) {
-	return f.LinkN(p, num, bclass, f.Pow2More(num.Absolute), "+")
+// MoreN is in the func map.
+func MoreN(p *Params, num *Num, bclass string) (ALink, error) {
+	return LinkN(p, num, bclass, Pow2More(num.Absolute), "+")
 }
 
-func (f ParamsFuncs) Vlink(p *Params, num *Num, absolute int, text string) (VLink, error) {
-	// f is unused
+// Vlink is in the func map.
+func Vlink(p *Params, num *Num, absolute int, text string) (VLink, error) {
 	vl := VLink{LinkText: text, LinkClass: "state"}
 	negative := new(bool) // EncodeN will use .Negative being false by default
 	if num.Absolute == absolute {
@@ -50,8 +65,8 @@ func (f ParamsFuncs) Vlink(p *Params, num *Num, absolute int, text string) (VLin
 	return vl, nil
 }
 
-func (f ParamsFuncs) DelayMore(d Delay, step time.Duration) time.Duration {
-	// f is unused
+// DelayMore is internal.
+func DelayMore(d Delay, step time.Duration) time.Duration {
 	const s = time.Second
 	const m = time.Second * 60
 	var table = map[time.Duration]time.Duration{
@@ -72,8 +87,8 @@ func (f ParamsFuncs) DelayMore(d Delay, step time.Duration) time.Duration {
 	return d.D + step
 }
 
-func (f ParamsFuncs) DelayLess(d Delay, step time.Duration) time.Duration {
-	// f is unused
+// DelayLess is internal.
+func DelayLess(d Delay, step time.Duration) time.Duration {
 	const s = time.Second
 	const m = time.Second * 60
 	var table = map[time.Duration]time.Duration{
@@ -95,8 +110,8 @@ func (f ParamsFuncs) DelayLess(d Delay, step time.Duration) time.Duration {
 	return d.D - step
 }
 
-func (f ParamsFuncs) LinkD(p *Params, d *Delay, bclass string, set time.Duration, badge string) (ALink, error) {
-	// f is unused
+// LinkD is internal.
+func LinkD(p *Params, d *Delay, bclass string, set time.Duration, badge string) (ALink, error) {
 	al := ALink{
 		Href:       "?",                   // Default
 		ExtraClass: " disabled ",          //         Disabled
@@ -123,8 +138,8 @@ func (f ParamsFuncs) LinkD(p *Params, d *Delay, bclass string, set time.Duration
 	return al, nil
 }
 
-func (f ParamsFuncs) Pow2Less(v int) int {
-	// f is unused
+// Pow2Less is internal.
+func Pow2Less(v int) int {
 	switch v {
 	case 0:
 		return 0
@@ -141,8 +156,8 @@ func (f ParamsFuncs) Pow2Less(v int) int {
 	return int(math.Pow(2, n))
 }
 
-func (f ParamsFuncs) Pow2More(v int) int {
-	// f is unused
+// Pow2More is internal.
+func Pow2More(v int) int {
 	switch v {
 	case 0:
 		return 1
@@ -157,8 +172,8 @@ func (f ParamsFuncs) Pow2More(v int) int {
 	return v
 }
 
-func (f ParamsFuncs) LinkN(p *Params, num *Num, bclass string, absolute int, badge string) (ALink, error) {
-	// f is unused
+// LinkN is internal.
+func LinkN(p *Params, num *Num, bclass string, absolute int, badge string) (ALink, error) {
 	al := ALink{ // defaults
 		Href:       "?",                   // Default
 		ExtraClass: " disabled ",          //         Disabled
@@ -184,10 +199,4 @@ func (f ParamsFuncs) LinkN(p *Params, num *Num, bclass string, absolute int, bad
 	}
 	al.Class = al.ExtraClass + " " + bclass // Eventually
 	return al, nil
-}
-
-type ParamsFuncs struct{}
-
-func SprintfAttr(format string, args ...interface{}) template.HTMLAttr {
-	return template.HTMLAttr(fmt.Sprintf(format, args...))
 }

@@ -1,10 +1,10 @@
 {{define "define_uptime"}}<span>{{.Data.uptime}}</span>{{end}}{{define "define_hostname"}}<a href="/" title="hostname {{.Data.hostname}}">{{.Data.hostname}}</a>{{end}}{{define "define_la"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
-  <div class="col-lr large-1 text-right"><div {{class}}="{{if $p.Lan.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-    <h1 class="h4 text-overflow"><a title="Load avg display options" {{HrefT $p $p.Lan}}><span {{class}}="showhide-hide whitespace-pre float-left">... </span>Load avg</a>
+  <div class="col-lr large-1 text-right"><div class="{{if $p.Lan.Negative}}show-showhide{{else}}hide-showhide{{end}}">
+    <h1 class="h4 text-overflow"><a title="Load avg display options" {{HrefT $p $p.Lan}}><span class="showhide-hide whitespace-pre float-left">... </span>Load avg</a>
     </h1></div>
   </div>
-  <div class="col-lr large-11"><div {{class}}="{{if $p.Lan.Negative}}show-showhide{{else}}hide-showhide{{end}}">
+  <div class="col-lr large-11"><div class="{{if $p.Lan.Negative}}show-showhide{{else}}hide-showhide{{end}}">
     <div class="grid-block">
       <ul class="menu showhide-show">
         <li>
@@ -12,11 +12,11 @@
             <div class="input-group-label small text-nowrap">delay</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Lad}}</a></div>
             <div class="input-group-button">{{with LessD $p $p.Lad "button small text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Badge}} {{.Text}}</a>{{end}}
             </div>
             <div class="input-group-button">{{with MoreD $p $p.Lad "button small text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Text}} {{.Badge}}</a>{{end}}
             </div>
           </div>
@@ -26,32 +26,32 @@
             <div class="input-group-label small text-nowrap">rows</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Lan.Absolute}}</a></div>
             <div class="input-group-button">{{with LessN $p $p.Lan "button small success text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Badge}} {{.Text}}</a>{{end}}
             </div>
             <div class="input-group-button">{{with MoreN $p $p.Lan "button small success text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Text}} {{.Badge}}</a>{{end}}
             </div>
           </div>
         </li>
       </ul>
-    </div><div {{class}}="{{if eq $p.Lan.Absolute 0}}hide{{end}}">
+    </div><div class="{{if eq $p.Lan.Absolute 0}}hide{{end}}">
     <div class="grid-block vertical stripe">
       <div class="grid-block thead"><span class="expand col small-1">Period</span><span class="expand col small-1 text-right"> Value</span><span class="expand col"></span></div>
       {{if .Data.loadavg}}
-      {{range $la := .Data.loadavg.List}}<div {{class}}="grid-block"><span class="expand col small-1">
+      {{range $la := .Data.loadavg.List}}<div class="grid-block"><span class="expand col small-1">
         <div class="text-right width-3rem">{{$la.Period}}m</div></span><span class="expand col small-1 text-right"> {{$la.Value}}</span><span class="expand col-lr"></span></div>{{end}}
       {{end}}
     </div></div></div>
   </div>
 </div>{{end}}{{define "define_mem"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
-  <div class="col-lr large-1 text-right"><div {{class}}="{{if $p.Memn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-    <h1 class="h4 text-overflow"><a title="Memory display options" {{HrefT $p $p.Memn}}><span {{class}}="showhide-hide whitespace-pre float-left">... </span>Memory</a>
+  <div class="col-lr large-1 text-right"><div class="{{if $p.Memn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
+    <h1 class="h4 text-overflow"><a title="Memory display options" {{HrefT $p $p.Memn}}><span class="showhide-hide whitespace-pre float-left">... </span>Memory</a>
     </h1></div>
   </div>
-  <div class="col-lr large-11"><div {{class}}="{{if $p.Memn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
+  <div class="col-lr large-11"><div class="{{if $p.Memn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
     <div class="grid-block">
       <ul class="menu showhide-show">
         <li>
@@ -59,11 +59,11 @@
             <div class="input-group-label small text-nowrap">delay</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Memd}}</a></div>
             <div class="input-group-button">{{with LessD $p $p.Memd "button small text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Badge}} {{.Text}}</a>{{end}}
             </div>
             <div class="input-group-button">{{with MoreD $p $p.Memd "button small text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Text}} {{.Badge}}</a>{{end}}
             </div>
           </div>
@@ -73,31 +73,31 @@
             <div class="input-group-label small text-nowrap">rows</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Memn.Absolute}}</a></div>
             <div class="input-group-button">{{with LessN $p $p.Memn "button small success text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Badge}} {{.Text}}</a>{{end}}
             </div>
             <div class="input-group-button">{{with MoreN $p $p.Memn "button small success text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Text}} {{.Badge}}</a>{{end}}
             </div>
           </div>
         </li>
       </ul>
-    </div><div {{class}}="{{if eq $p.Memn.Absolute 0}}hide{{end}}">
+    </div><div class="{{if eq $p.Memn.Absolute 0}}hide{{end}}">
     <div class="grid-block vertical stripe">
       <div class="grid-block thead"><span class="expand col small-1">Memory</span><span class="expand col small-1 text-right"> Total</span><span class="expand col small-1 text-right"> Used</span><span class="expand col small-1 text-right"> Free</span><span class="expand col small-1 text-right"> Use%</span><span class="expand col"></span></div>
       {{if .Data.memory}}
-      {{range $mem := .Data.memory.List}}<div {{class}}="grid-block"><span class="expand col small-1">{{$mem.Kind}}</span><span class="expand col small-1 text-right"> {{$mem.Total}}</span><span class="expand col small-1 text-right"> {{$mem.Used}}</span><span class="expand col small-1 text-right"> {{$mem.Free}}</span><span {{class}}="expand col small-1 text-right bg-usepct" data-usepct={{$mem.UsePct}}> {{$mem.UsePct}}%</span><span class="expand col-lr"></span></div>{{end}}
+      {{range $mem := .Data.memory.List}}<div class="grid-block"><span class="expand col small-1">{{$mem.Kind}}</span><span class="expand col small-1 text-right"> {{$mem.Total}}</span><span class="expand col small-1 text-right"> {{$mem.Used}}</span><span class="expand col small-1 text-right"> {{$mem.Free}}</span><span class="expand col small-1 text-right bg-usepct" data-usepct={{$mem.UsePct}}> {{$mem.UsePct}}%</span><span class="expand col-lr"></span></div>{{end}}
       {{end}}
     </div></div></div>
   </div>
 </div>{{end}}{{define "define_df"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
-  <div class="col-lr large-1 text-right"><div {{class}}="{{if $p.Dfn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-    <h1 class="h4 text-overflow"><a title="Disk usage display options" {{HrefT $p $p.Dfn}}><span {{class}}="showhide-hide whitespace-pre float-left">... </span>Disk usage</a>
+  <div class="col-lr large-1 text-right"><div class="{{if $p.Dfn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
+    <h1 class="h4 text-overflow"><a title="Disk usage display options" {{HrefT $p $p.Dfn}}><span class="showhide-hide whitespace-pre float-left">... </span>Disk usage</a>
     </h1></div>
   </div>
-  <div class="col-lr large-11"><div {{class}}="{{if $p.Dfn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
+  <div class="col-lr large-11"><div class="{{if $p.Dfn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
     <div class="grid-block">
       <ul class="menu showhide-show">
         <li>
@@ -105,11 +105,11 @@
             <div class="input-group-label small text-nowrap">delay</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Dfd}}</a></div>
             <div class="input-group-button">{{with LessD $p $p.Dfd "button small text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Badge}} {{.Text}}</a>{{end}}
             </div>
             <div class="input-group-button">{{with MoreD $p $p.Dfd "button small text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Text}} {{.Badge}}</a>{{end}}
             </div>
           </div>
@@ -119,43 +119,43 @@
             <div class="input-group-label small text-nowrap">rows</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Dfn.Absolute}}</a></div>
             <div class="input-group-button">{{with LessN $p $p.Dfn "button small success text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Badge}} {{.Text}}</a>{{end}}
             </div>
             <div class="input-group-button">{{with MoreN $p $p.Dfn "button small success text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Text}} {{.Badge}}</a>{{end}}
             </div>
           </div>
         </li>
       </ul>
-    </div><div {{class}}="{{if eq $p.Dfn.Absolute 0}}hide{{end}}">
+    </div><div class="{{if eq $p.Dfn.Absolute 0}}hide{{end}}">
     <div class="grid-block vertical stripe">
       <div class="grid-block thead">{{/* poke purifycss: <div class="dropup"><div class="caret" /></div> */}}<span class="expand col small-1 text-nowrap">{{with Vlink $p $p.Dfk 1 "Device"}}
-          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
-            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap">{{with Vlink $p $p.Dfk 2 "Mounted"}}
-          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
-            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Dfk 6 "Total"}}
-          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
-            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Dfk 5 "Used"}}
-          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
-            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Dfk 3 "Avail"}}
-          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
-            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Dfk 4 "Use%"}}
-          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
-            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col"></span></div>
+          <a onClick={this.handleClick} href={{.LinkHref}} class={{.LinkClass}}
+            >{{.LinkText}}<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap">{{with Vlink $p $p.Dfk 2 "Mounted"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} class={{.LinkClass}}
+            >{{.LinkText}}<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Dfk 6 "Total"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} class={{.LinkClass}}
+            >{{.LinkText}}<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Dfk 5 "Used"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} class={{.LinkClass}}
+            >{{.LinkText}}<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Dfk 3 "Avail"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} class={{.LinkClass}}
+            >{{.LinkText}}<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Dfk 4 "Use%"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} class={{.LinkClass}}
+            >{{.LinkText}}<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col"></span></div>
       {{if .Data.diskUsage}}
-      {{range $df := .Data.diskUsage.List}}<div {{class}}="grid-block"><span class="expand col small-1 text-overflow">{{$df.DevName}}</span><span class="expand col small-1 text-overflow"> {{$df.DirName}}</span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Total}}</span><span title="Inodes total"> {{$df.Inodes}}</span></span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Used}}</span><span title="Inodes used"> {{$df.Iused}}</span></span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Avail}}</span><span title="Inodes free"> {{$df.Ifree}}</span></span><span {{class}}="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct={{$df.UsePct}}><span class="float-right"> {{$df.UsePct}}%</span><span title="Inodes use%"> {{$df.IusePct}}%</span></span><span class="expand col-lr"></span></div>{{end}}
+      {{range $df := .Data.diskUsage.List}}<div class="grid-block"><span class="expand col small-1 text-overflow">{{$df.DevName}}</span><span class="expand col small-1 text-overflow"> {{$df.DirName}}</span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Total}}</span><span title="Inodes total"> {{$df.Inodes}}</span></span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Used}}</span><span title="Inodes used"> {{$df.Iused}}</span></span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Avail}}</span><span title="Inodes free"> {{$df.Ifree}}</span></span><span class="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct={{$df.UsePct}}><span class="float-right"> {{$df.UsePct}}%</span><span title="Inodes use%"> {{$df.IusePct}}%</span></span><span class="expand col-lr"></span></div>{{end}}
       {{end}}
     </div></div></div>
   </div>
 </div>{{end}}{{define "define_cpu"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
-  <div class="col-lr large-1 text-right"><div {{class}}="{{if $p.CPUn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-    <h1 class="h4 text-overflow"><a title="CPU display options" {{HrefT $p $p.CPUn}}><span {{class}}="showhide-hide whitespace-pre float-left">... </span>CPU</a>
+  <div class="col-lr large-1 text-right"><div class="{{if $p.CPUn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
+    <h1 class="h4 text-overflow"><a title="CPU display options" {{HrefT $p $p.CPUn}}><span class="showhide-hide whitespace-pre float-left">... </span>CPU</a>
     </h1></div>
   </div>
-  <div class="col-lr large-11"><div {{class}}="{{if $p.CPUn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
+  <div class="col-lr large-11"><div class="{{if $p.CPUn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
     <div class="grid-block">
       <ul class="menu showhide-show">
         <li>
@@ -163,11 +163,11 @@
             <div class="input-group-label small text-nowrap">delay</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.CPUd}}</a></div>
             <div class="input-group-button">{{with LessD $p $p.CPUd "button small text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Badge}} {{.Text}}</a>{{end}}
             </div>
             <div class="input-group-button">{{with MoreD $p $p.CPUd "button small text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Text}} {{.Badge}}</a>{{end}}
             </div>
           </div>
@@ -177,38 +177,38 @@
             <div class="input-group-label small text-nowrap">rows</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.CPUn.Absolute}}</a></div>
             <div class="input-group-button">{{with LessN $p $p.CPUn "button small success text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Badge}} {{.Text}}</a>{{end}}
             </div>
             <div class="input-group-button">{{with MoreN $p $p.CPUn "button small success text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Text}} {{.Badge}}</a>{{end}}
             </div>
           </div>
         </li>
       </ul>
-    </div><div {{class}}="{{if eq $p.CPUn.Absolute 0}}hide{{end}}">
+    </div><div class="{{if eq $p.CPUn.Absolute 0}}hide{{end}}">
     <div class="grid-block vertical stripe">
       <div class="grid-block thead"><span class="expand col small-1">Core</span><span class="expand col small-1 text-right"> User%</span><span class="expand col small-1 text-right"> Sys%</span><span class="expand col small-1 text-right"> Wait%</span><span class="expand col small-1 text-right"> Idle%</span><span class="expand col"></span></div>
       {{if .Data.cpu}}
-      {{range $cpu := .Data.cpu.List}}<div {{class}}="grid-block"><span class="expand col small-1 text-nowrap">{{$cpu.N}}</span><span {{class}}="expand col small-1 text-right bg-usepct"
+      {{range $cpu := .Data.cpu.List}}<div class="grid-block"><span class="expand col small-1 text-nowrap">{{$cpu.N}}</span><span class="expand col small-1 text-right bg-usepct"
        data-usepct={{$cpu.UserPct}}> {{$cpu.UserPct}}%</span>
-      <span {{class}}="expand col small-1 text-right bg-usepct"
+      <span class="expand col small-1 text-right bg-usepct"
        data-usepct={{$cpu.SysPct}}> {{$cpu.SysPct}}%</span>
-      <span {{class}}="expand col small-1 text-right bg-usepct"
+      <span class="expand col small-1 text-right bg-usepct"
        data-usepct={{$cpu.WaitPct}}> {{$cpu.WaitPct}}%</span>
-      <span {{class}}="expand col small-1 text-right bg-usepct-inverse"
+      <span class="expand col small-1 text-right bg-usepct-inverse"
        data-usepct={{$cpu.IdlePct}}> {{$cpu.IdlePct}}%</span><span class="expand col-lr"></span></div>{{end}}
       {{end}}
     </div></div></div>
   </div>
 </div>{{end}}{{define "define_if"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
-  <div class="col-lr large-1 text-right"><div {{class}}="{{if $p.Ifn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-    <h1 class="h4 text-overflow"><a title="Interfaces display options" {{HrefT $p $p.Ifn}}><span {{class}}="showhide-hide whitespace-pre float-left">... </span>Interfaces</a>
+  <div class="col-lr large-1 text-right"><div class="{{if $p.Ifn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
+    <h1 class="h4 text-overflow"><a title="Interfaces display options" {{HrefT $p $p.Ifn}}><span class="showhide-hide whitespace-pre float-left">... </span>Interfaces</a>
     </h1></div>
   </div>
-  <div class="col-lr large-11"><div {{class}}="{{if $p.Ifn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
+  <div class="col-lr large-11"><div class="{{if $p.Ifn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
     <div class="grid-block">
       <ul class="menu showhide-show">
         <li>
@@ -216,11 +216,11 @@
             <div class="input-group-label small text-nowrap">delay</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Ifd}}</a></div>
             <div class="input-group-button">{{with LessD $p $p.Ifd "button small text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Badge}} {{.Text}}</a>{{end}}
             </div>
             <div class="input-group-button">{{with MoreD $p $p.Ifd "button small text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Text}} {{.Badge}}</a>{{end}}
             </div>
           </div>
@@ -230,31 +230,31 @@
             <div class="input-group-label small text-nowrap">rows</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Ifn.Absolute}}</a></div>
             <div class="input-group-button">{{with LessN $p $p.Ifn "button small success text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Badge}} {{.Text}}</a>{{end}}
             </div>
             <div class="input-group-button">{{with MoreN $p $p.Ifn "button small success text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Text}} {{.Badge}}</a>{{end}}
             </div>
           </div>
         </li>
       </ul>
-    </div><div {{class}}="{{if eq $p.Ifn.Absolute 0}}hide{{end}}">
+    </div><div class="{{if eq $p.Ifn.Absolute 0}}hide{{end}}">
     <div class="grid-block vertical stripe">
       <div class="grid-block thead"><span class="expand col small-1">Interface</span><span class="expand col small-1 text-right"> IP</span><span title="Drops,Errors In/Out per second" class="expand col small-2 text-right text-nowrap"> Loss IO ps</span><span title="Packets In/Out per second" class="expand col small-2 text-right text-nowrap"> Packets IO ps</span><span title="Bits In/Out per second" class="expand col small-2 text-right text-nowrap"> IO <i>b</i>ps</span><span class="expand col"></span></div>
       {{if .Data.ifaddrs}}
-      {{range $if := .Data.ifaddrs.List}}<div {{class}}="grid-block"><span class="expand col small-1 text-overflow">{{$if.Name}}</span><span class="expand col small-1 text-overflow text-right">{{$if.IP}}</span><span class="expand col small-2 text-right text-nowrap">&nbsp;<span title="Total drops,errors modulo 4G" class="gray"><span title="Total drops In modulo 4G">{{$if.DropsIn}}</span><span {{class}}="{{if eq $if.DropsOut "-1"}}hide{{end}}">/</span><span {{class}}="{{if eq $if.DropsOut "-1"}}hide{{end}}" title="Total drops Out modulo 4G">{{$if.DropsOut}}</span>,<span title="Total errors In modulo 4G">{{$if.ErrorsIn}}</span>/<span title="Total errors Out modulo 4G">{{$if.ErrorsOut}}</span></span>&nbsp;<span {{class}}="{{if and (eq $if.DeltaDropsIn "0") (or (eq $if.DeltaDropsOut "-1") (eq $if.DeltaDropsOut "0")) (eq $if.DeltaErrorsIn "0") (eq $if.DeltaErrorsOut "0")}}gray{{end}}"><span title="Drops In per second">{{$if.DeltaDropsIn}}</span><span {{class}}="{{if eq $if.DeltaDropsOut "-1"}}hide{{end}}">/</span><span {{class}}="{{if eq $if.DeltaDropsOut "-1"}}hide{{end}}" title="Drops Out per second">{{$if.DeltaDropsOut}}</span>,<span title="Errors In per second">{{$if.DeltaErrorsIn}}</span>/<span title="Errors Out per second">{{$if.DeltaErrorsOut}}</span></span></span><span class="expand col small-2 text-right text-nowrap">&nbsp;<span class="gray"><span title="Total packets In modulo 4G">{{$if.PacketsIn}}</span>/<span title="Total packets Out modulo 4G">{{$if.PacketsOut}}</span></span>&nbsp;<span title="Packets In per second">{{$if.DeltaPacketsIn}}</span>/<span title="Packets Out per second">{{$if.DeltaPacketsOut}}</span></span><span class="expand col small-2 text-right text-nowrap">&nbsp;<span class="gray"><span title="Total BYTES In modulo 4G">{{$if.BytesIn}}</span>/<span title="Total BYTES Out modulo 4G">{{$if.BytesOut}}</span></span>&nbsp;<span title="BITS In per second">{{$if.DeltaBitsIn}}</span>/<span title="BITS Out per second">{{$if.DeltaBitsOut}}</span></span><span class="expand col-lr"></span></div>{{end}}
+      {{range $if := .Data.ifaddrs.List}}<div class="grid-block"><span class="expand col small-1 text-overflow">{{$if.Name}}</span><span class="expand col small-1 text-overflow text-right">{{$if.IP}}</span><span class="expand col small-2 text-right text-nowrap">&nbsp;<span title="Total drops,errors modulo 4G" class="gray"><span title="Total drops In modulo 4G">{{$if.DropsIn}}</span><span class="{{if eq $if.DropsOut "-1"}}hide{{end}}">/</span><span class="{{if eq $if.DropsOut "-1"}}hide{{end}}" title="Total drops Out modulo 4G">{{$if.DropsOut}}</span>,<span title="Total errors In modulo 4G">{{$if.ErrorsIn}}</span>/<span title="Total errors Out modulo 4G">{{$if.ErrorsOut}}</span></span>&nbsp;<span class="{{if and (eq $if.DeltaDropsIn "0") (or (eq $if.DeltaDropsOut "-1") (eq $if.DeltaDropsOut "0")) (eq $if.DeltaErrorsIn "0") (eq $if.DeltaErrorsOut "0")}}gray{{end}}"><span title="Drops In per second">{{$if.DeltaDropsIn}}</span><span class="{{if eq $if.DeltaDropsOut "-1"}}hide{{end}}">/</span><span class="{{if eq $if.DeltaDropsOut "-1"}}hide{{end}}" title="Drops Out per second">{{$if.DeltaDropsOut}}</span>,<span title="Errors In per second">{{$if.DeltaErrorsIn}}</span>/<span title="Errors Out per second">{{$if.DeltaErrorsOut}}</span></span></span><span class="expand col small-2 text-right text-nowrap">&nbsp;<span class="gray"><span title="Total packets In modulo 4G">{{$if.PacketsIn}}</span>/<span title="Total packets Out modulo 4G">{{$if.PacketsOut}}</span></span>&nbsp;<span title="Packets In per second">{{$if.DeltaPacketsIn}}</span>/<span title="Packets Out per second">{{$if.DeltaPacketsOut}}</span></span><span class="expand col small-2 text-right text-nowrap">&nbsp;<span class="gray"><span title="Total BYTES In modulo 4G">{{$if.BytesIn}}</span>/<span title="Total BYTES Out modulo 4G">{{$if.BytesOut}}</span></span>&nbsp;<span title="BITS In per second">{{$if.DeltaBitsIn}}</span>/<span title="BITS Out per second">{{$if.DeltaBitsOut}}</span></span><span class="expand col-lr"></span></div>{{end}}
       {{end}}
     </div></div></div>
   </div>
 </div>{{end}}{{define "define_ps"}}{{$p := .Data.params}}
 <div class="grid-block hr-top">
-  <div class="col-lr large-1 text-right"><div {{class}}="{{if $p.Psn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-    <h1 class="h4 text-overflow"><a title="Processes display options" {{HrefT $p $p.Psn}}><span {{class}}="showhide-hide whitespace-pre float-left">... </span>Processes</a>
+  <div class="col-lr large-1 text-right"><div class="{{if $p.Psn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
+    <h1 class="h4 text-overflow"><a title="Processes display options" {{HrefT $p $p.Psn}}><span class="showhide-hide whitespace-pre float-left">... </span>Processes</a>
     </h1></div>
   </div>
-  <div class="col-lr large-11"><div {{class}}="{{if $p.Psn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
+  <div class="col-lr large-11"><div class="{{if $p.Psn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
     <div class="grid-block">
       <ul class="menu showhide-show">
         <li>
@@ -262,11 +262,11 @@
             <div class="input-group-label small text-nowrap">delay</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Psd}}</a></div>
             <div class="input-group-button">{{with LessD $p $p.Psd "button small text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Badge}} {{.Text}}</a>{{end}}
             </div>
             <div class="input-group-button">{{with MoreD $p $p.Psd "button small text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Text}} {{.Badge}}</a>{{end}}
             </div>
           </div>
@@ -276,39 +276,39 @@
             <div class="input-group-label small text-nowrap">rows</div>
             <div class="input-group-button"><a class="button small secondary disabled">{{$p.Psn.Absolute}}</a></div>
             <div class="input-group-button">{{with LessN $p $p.Psn "button small success text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Badge}} {{.Text}}</a>{{end}}
             </div>
             <div class="input-group-button">{{with MoreN $p $p.Psn "button small success text-nowrap"}}
-              <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+              <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
                 >{{.Text}} {{.Badge}}</a>{{end}}
             </div>
           </div>
         </li>
       </ul>
-    </div><div {{class}}="{{if eq $p.Psn.Absolute 0}}hide{{end}}">
+    </div><div class="{{if eq $p.Psn.Absolute 0}}hide{{end}}">
     <div class="grid-block vertical stripe">
       <div class="grid-block thead">{{/* poke purifycss: <div class="dropup"><div class="caret" /></div> */}}<span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 1 "PID"}}
-          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
-            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 2 "UID"}}
-          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
-            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap">{{with Vlink $p $p.Psk 3 "USER"}}
-          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
-            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 4 "PR"}}
-          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
-            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 5 "NI"}}
-          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
-            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 6 "VIRT"}}
-          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
-            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 7 "RES"}}
-          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
-            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-center">{{with Vlink $p $p.Psk 8 "TIME"}}
-          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
-            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap">{{with Vlink $p $p.Psk 9 "COMMAND"}}
-          <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
-            >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>{{end}}</span></div>
+          <a onClick={this.handleClick} href={{.LinkHref}} class={{.LinkClass}}
+            >{{.LinkText}}<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 2 "UID"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} class={{.LinkClass}}
+            >{{.LinkText}}<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap">{{with Vlink $p $p.Psk 3 "USER"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} class={{.LinkClass}}
+            >{{.LinkText}}<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 4 "PR"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} class={{.LinkClass}}
+            >{{.LinkText}}<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 5 "NI"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} class={{.LinkClass}}
+            >{{.LinkText}}<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 6 "VIRT"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} class={{.LinkClass}}
+            >{{.LinkText}}<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with Vlink $p $p.Psk 7 "RES"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} class={{.LinkClass}}
+            >{{.LinkText}}<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-center">{{with Vlink $p $p.Psk 8 "TIME"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} class={{.LinkClass}}
+            >{{.LinkText}}<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap">{{with Vlink $p $p.Psk 9 "COMMAND"}}
+          <a onClick={this.handleClick} href={{.LinkHref}} class={{.LinkClass}}
+            >{{.LinkText}}<span class={{.CaretClass}}></span></a>{{end}}</span></div>
       {{if .Data.procs}}
-      {{range $ps := .Data.procs.List}}<div {{class}}="grid-block"><span class="expand col small-1 text-right">{{$ps.PID}}</span><span class="expand col small-1 text-right"> {{$ps.UID}}</span><span class="expand col small-1"> {{$ps.User}}</span><span class="expand col small-1 text-right"> {{$ps.Priority}}</span><span class="expand col small-1 text-right"> {{$ps.Nice}}</span><span class="expand col small-1 text-right"> {{$ps.Size}}</span><span class="expand col small-1 text-right"> {{$ps.Resident}}</span><span class="expand col small-1 text-center"> {{$ps.Time}}</span><span class="expand col"> {{$ps.Name}}</span></div>{{end}}
+      {{range $ps := .Data.procs.List}}<div class="grid-block"><span class="expand col small-1 text-right">{{$ps.PID}}</span><span class="expand col small-1 text-right"> {{$ps.UID}}</span><span class="expand col small-1"> {{$ps.User}}</span><span class="expand col small-1 text-right"> {{$ps.Priority}}</span><span class="expand col small-1 text-right"> {{$ps.Nice}}</span><span class="expand col small-1 text-right"> {{$ps.Size}}</span><span class="expand col small-1 text-right"> {{$ps.Resident}}</span><span class="expand col small-1 text-center"> {{$ps.Time}}</span><span class="expand col"> {{$ps.Name}}</span></div>{{end}}
       {{end}}
     </div></div></div>
   </div>

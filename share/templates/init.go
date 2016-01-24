@@ -1,14 +1,14 @@
 package templates
 
 import (
+	"github.com/ostrost/ostent/params"
 	"github.com/ostrost/ostent/templateutil"
-	"github.com/ostrost/ostent/templateutil/templatefunc"
 )
 
 var (
 	// IndexTemplate is a templateutil.LazyTemplate of "index.html" asset.
 	IndexTemplate = templateutil.NewLT(Asset, AssetInfo,
-		"index.html", templatefunc.FuncMapHTML())
+		"index.html", params.FuncMapHTML)
 )
 
 // InitTemplates inits must-have templates and signals done when finished.

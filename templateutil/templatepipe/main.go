@@ -12,7 +12,7 @@ import (
 )
 
 func Convert(inputTemplateFile, definesFromFile string,
-	htmlFuncs, jsxlFuncs map[string]interface{}, outputFile string) error {
+	htmlFuncs /*, jsxlFuncs */ map[string]interface{}, outputFile string) error {
 	input, err := template.ParseFiles(inputTemplateFile)
 	if err != nil {
 		return err
@@ -33,7 +33,7 @@ func Convert(inputTemplateFile, definesFromFile string,
 	}
 
 	// definesOnly will have just "define_" templates added in the tree.
-	definesOnly := template.New("jsdefines").Funcs(template.FuncMap(jsxlFuncs))
+	definesOnly := template.New("jsdefines") // .Funcs(template.FuncMap(jsxlFuncs))
 
 	definesTemplates := SortableTemplates(definesFrom.Templates())
 	sort.Stable(definesTemplates)
@@ -64,41 +64,6 @@ func Convert(inputTemplateFile, definesFromFile string,
 	}
 	return ioutil.WriteFile(outputFile, buf.Bytes(), 0644)
 }
-
-func JSX2HTML(buf *bytes.Buffer) (string, error) {
-	i, keys := 0, make([]string, len(JSXAttributeRewrites))
-	for k := range JSXAttributeRewrites {
-		keys[i] = k
-		i++
-	}
-	sort.Strings(keys)
-
-	s := buf.String()
-	for _, k := range keys {
-		s = strings.Replace(s, k, JSXAttributeRewrites[k], -1)
-	}
-	return s, nil
-}
-
-// JSXAttributeRewrites is a map to jsx-compat attibute names.
-var JSXAttributeRewrites = map[string]string{
-	"colspan":   "colSpan",
-	"class":     "lcassName",
-	"lcassName": "className",
-}
-
-/*
-// JSXAttributes replaces node and it's children attributes with rewrites from JSXAttributeRewrites.
-func JSXAttributes(node *html.Node) {
-	for i := range node.Attr {
-		if nv, ok := JSXAttributeRewrites[node.Attr[i].Key]; ok {
-			node.Attr[i].Key = nv
-		}
-	}
-	for c := node.FirstChild; c != nil; c = c.NextSibling {
-		JSXAttributes(c)
-	}
-} // */
 
 type Define struct {
 	ShortName  string
@@ -147,8 +112,8 @@ func MakeDefine(definesOnly *template.Template, shortname, fullname string) (Def
 	if err := t.Execute(buf, data); err != nil {
 		return define, err
 	}
-	define.JSX, err = JSX2HTML(buf)
-	return define, err
+	define.JSX = strings.Replace(buf.String(), "class=", "className=", -1)
+	return define, nil
 }
 
 var vtype = reflect.TypeOf(Nota(nil))

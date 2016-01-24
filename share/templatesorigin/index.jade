@@ -15,12 +15,12 @@ mixin withv(prefix, kparam, number, text)
   if JSX
     - var link = format('Data.params.Vlinks.%s[%s-1]', kparam.replace(/.*\./, ''), number);
     | #{''}
-    | <a onClick={this.handleClick} href={#{link}.LinkHref} {{class}}={#{link}.LinkClass}
-    |   >#{text}<span {{class}}={#{link}.CaretClass}></span></a>
+    | <a onClick={this.handleClick} href={#{link}.LinkHref} class={#{link}.LinkClass}
+    |   >#{text}<span class={#{link}.CaretClass}></span></a>
   else
     +with(prefix, kparam, number, format('"%s"', text))
-      | <a onClick={this.handleClick} href={{.LinkHref}} {{class}}={{.LinkClass}}
-      |   >{{.LinkText}}<span {{class}}={{.CaretClass}}></span></a>
+      | <a onClick={this.handleClick} href={{.LinkHref}} class={{.LinkClass}}
+      |   >{{.LinkText}}<span class={{.CaretClass}}></span></a>
   
 mixin table(nparam, dparam, title)
   | {{$p := .Data.params}}
@@ -36,21 +36,21 @@ mixin table(nparam, dparam, title)
           tlink     = format('Data.params.Tlinks.%s',      nparamShort);
     .col-lr.large-1.text-right
       if JSX
-        | <div {{class}}={#{nparamFull}.Negative ? "show-showhide" : "hide-showhide"}>
+        | <div class={#{nparamFull}.Negative ? "show-showhide" : "hide-showhide"}>
       else
-        | <div {{class}}="{{if #{nparam}.Negative}}show-showhide{{else}}hide-showhide{{end}}">
+        | <div class="{{if #{nparam}.Negative}}show-showhide{{else}}hide-showhide{{end}}">
       h1.h4.text-overflow
         if JSX
           | <a title="#{title} display options" href={#{tlink}} onClick={this.handleClick}>
         else
           | <a title="#{title} display options" {{HrefT $p #{nparam}}}>
-        | <span {{class}}="showhide-hide whitespace-pre float-left">... </span>#{title}</a>
+        | <span class="showhide-hide whitespace-pre float-left">... </span>#{title}</a>
       | </div>
     .col-lr.large-11
       if JSX
-        | <div {{class}}={#{nparamFull}.Negative ? "show-showhide" : "hide-showhide"}>
+        | <div class={#{nparamFull}.Negative ? "show-showhide" : "hide-showhide"}>
       else
-        | <div {{class}}="{{if #{nparam}.Negative}}show-showhide{{else}}hide-showhide{{end}}">
+        | <div class="{{if #{nparam}.Negative}}show-showhide{{else}}hide-showhide{{end}}">
       .grid-block
         ul.menu.showhide-show
           li
@@ -93,21 +93,21 @@ mixin table(nparam, dparam, title)
                   +with('MoreN $p', nparam, '"button small success text-nowrap"')
                     +alink_badgeright
       if JSX
-        | <div {{class}}={#{nparam.replace('$p', 'Data.params')}.Absolute == 0 ? "hide":""}>
+        | <div class={#{nparam.replace('$p', 'Data.params')}.Absolute == 0 ? "hide":""}>
       else
-        | <div {{class}}="{{if eq #{nparam}.Absolute 0}}hide{{end}}">
+        | <div class="{{if eq #{nparam}.Absolute 0}}hide{{end}}">
       block
       | </div></div>
 
 mixin alink_badge_jsx(fmt, link, buttonBase)
-  | <a onClick={this.handleClick} href={#{link}.Href} {{class}}={"#{buttonBase}" + " " + (#{link}.ExtraClass != null ? #{link}.ExtraClass : "")}
+  | <a onClick={this.handleClick} href={#{link}.Href} class={"#{buttonBase}" + " " + (#{link}.ExtraClass != null ? #{link}.ExtraClass : "")}
   |   >#{format(fmt, link+'.Text')}</a>
 
 mixin alink_badgeleft
-  | <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+  | <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
   |   >{{.Badge}} {{.Text}}</a>
 mixin alink_badgeright
-  | <a onClick={this.handleClick} href={{.Href}} {{class}}={{.Class}}
+  | <a onClick={this.handleClick} href={{.Href}} class={{.Class}}
   |   >{{.Text}} {{.Badge}}</a>
   
 +define('define_uptime'): span {{.Data.uptime}}
@@ -126,9 +126,9 @@ mixin jsx_wrap(start, end)
 
 mixin row(kvalue, keyid)
   if JSX
-    | <div {{class}}="grid-block" key={"#{keyid}-"+#{kvalue}}>
+    | <div class="grid-block" key={"#{keyid}-"+#{kvalue}}>
   else
-    | <div {{class}}="grid-block">
+    | <div class="grid-block">
   block
   | </div>
 
@@ -171,7 +171,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
         span.expand.col.small-1.text-right  {{$mem.Total}}
         span.expand.col.small-1.text-right  {{$mem.Used}}
         span.expand.col.small-1.text-right  {{$mem.Free}}
-        | <span {{class}}="expand col small-1 text-right bg-usepct" data-usepct={{$mem.UsePct}}> {{$mem.UsePct}}%</span>
+        | <span class="expand col small-1 text-right bg-usepct" data-usepct={{$mem.UsePct}}> {{$mem.UsePct}}%</span>
         span.expand.col-lr
           if JSX
             | {jsdefines.Sparkline({ref: i, col: 'UsePct'})}
@@ -200,7 +200,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
         span.expand.col.small-1.text-overflow.text-right.gray
           span.float-right  {{$df.Avail}}
           span(title='Inodes free')  {{$df.Ifree}}
-        | <span {{class}}="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct={{$df.UsePct}}>
+        | <span class="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct={{$df.UsePct}}>
         span.float-right  {{$df.UsePct}}%
         span(title='Inodes use%')  {{$df.IusePct}}%
         | </span>
@@ -220,13 +220,13 @@ mixin range_list(datak, ranger, kvalue, keyid)
         span.expand.col
       +range_list('cpu', '$cpu', '$cpu.N', 'cpu-rowby-n')
         span.expand.col.small-1.text-nowrap {{$cpu.N}}
-        | <span {{class}}="expand col small-1 text-right bg-usepct"
+        | <span class="expand col small-1 text-right bg-usepct"
         |  data-usepct={{$cpu.UserPct}}> {{$cpu.UserPct}}%</span>
-        | <span {{class}}="expand col small-1 text-right bg-usepct"
+        | <span class="expand col small-1 text-right bg-usepct"
         |  data-usepct={{$cpu.SysPct}}> {{$cpu.SysPct}}%</span>
-        | <span {{class}}="expand col small-1 text-right bg-usepct"
+        | <span class="expand col small-1 text-right bg-usepct"
         |  data-usepct={{$cpu.WaitPct}}> {{$cpu.WaitPct}}%</span>
-        | <span {{class}}="expand col small-1 text-right bg-usepct-inverse"
+        | <span class="expand col small-1 text-right bg-usepct-inverse"
         |  data-usepct={{$cpu.IdlePct}}> {{$cpu.IdlePct}}%</span>
         span.expand.col-lr
           if JSX
@@ -253,30 +253,30 @@ mixin range_list(datak, ranger, kvalue, keyid)
           span.gray(title='Total drops,errors modulo 4G')
             span(title='Total drops In modulo 4G') {{$if.DropsIn}}
             if JSX
-              | <span {{class}}={$if.DropsOut == "-1" ? "hide":""}>/</span>
+              | <span class={$if.DropsOut == "-1" ? "hide":""}>/</span>
             else
-              | <span {{class}}="{{if eq $if.DropsOut "-1"}}hide{{end}}">/</span>
+              | <span class="{{if eq $if.DropsOut "-1"}}hide{{end}}">/</span>
             if JSX
-              | <span {{class}}={$if.DropsOut == "-1" ? "hide":""} title="Total drops Out modulo 4G">{{$if.DropsOut}}</span>,
+              | <span class={$if.DropsOut == "-1" ? "hide":""} title="Total drops Out modulo 4G">{{$if.DropsOut}}</span>,
             else
-              | <span {{class}}="{{if eq $if.DropsOut "-1"}}hide{{end}}" title="Total drops Out modulo 4G">{{$if.DropsOut}}</span>,
+              | <span class="{{if eq $if.DropsOut "-1"}}hide{{end}}" title="Total drops Out modulo 4G">{{$if.DropsOut}}</span>,
             span(title='Total errors In modulo 4G') {{$if.ErrorsIn}}
             | /
             span(title='Total errors Out modulo 4G') {{$if.ErrorsOut}}
           | &nbsp;
           if JSX
-            | <span {{class}}={($if.DeltaDropsIn == "0" && ($if.DeltaDropsOut == "-1" || $if.DeltaDropsOut == "0") && $if.DeltaErrorsIn == "0" && $if.DeltaErrorsOut == "0") ? "gray":""}>
+            | <span class={($if.DeltaDropsIn == "0" && ($if.DeltaDropsOut == "-1" || $if.DeltaDropsOut == "0") && $if.DeltaErrorsIn == "0" && $if.DeltaErrorsOut == "0") ? "gray":""}>
           else
-            | <span {{class}}="{{if and (eq $if.DeltaDropsIn "0") (or (eq $if.DeltaDropsOut "-1") (eq $if.DeltaDropsOut "0")) (eq $if.DeltaErrorsIn "0") (eq $if.DeltaErrorsOut "0")}}gray{{end}}">
+            | <span class="{{if and (eq $if.DeltaDropsIn "0") (or (eq $if.DeltaDropsOut "-1") (eq $if.DeltaDropsOut "0")) (eq $if.DeltaErrorsIn "0") (eq $if.DeltaErrorsOut "0")}}gray{{end}}">
           span(title='Drops In per second') {{$if.DeltaDropsIn}}
           if JSX
-            | <span {{class}}={$if.DeltaDropsOut == "-1" ? "hide":""}>/</span>
+            | <span class={$if.DeltaDropsOut == "-1" ? "hide":""}>/</span>
           else
-            | <span {{class}}="{{if eq $if.DeltaDropsOut "-1"}}hide{{end}}">/</span>
+            | <span class="{{if eq $if.DeltaDropsOut "-1"}}hide{{end}}">/</span>
           if JSX
-            | <span {{class}}={$if.DeltaDropsOut == "-1" ? "hide":""} title="Drops Out per second">{{$if.DeltaDropsOut}}</span>,
+            | <span class={$if.DeltaDropsOut == "-1" ? "hide":""} title="Drops Out per second">{{$if.DeltaDropsOut}}</span>,
           else
-            | <span {{class}}="{{if eq $if.DeltaDropsOut "-1"}}hide{{end}}" title="Drops Out per second">{{$if.DeltaDropsOut}}</span>,
+            | <span class="{{if eq $if.DeltaDropsOut "-1"}}hide{{end}}" title="Drops Out per second">{{$if.DeltaDropsOut}}</span>,
           span(title='Errors In per second') {{$if.DeltaErrorsIn}}
           | /
           span(title='Errors Out per second') {{$if.DeltaErrorsOut}}

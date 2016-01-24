@@ -110,7 +110,6 @@ func (d *Delay) Tick() {
 
 type Params struct {
 	Schema
-	ParamsFuncs
 	Defaults    map[interface{}]Num `json:"-"`
 	Delays      map[string]*Delay   `json:"-"`
 	DelayBounds flags.DelayBounds   `json:"-"`
@@ -201,8 +200,8 @@ func (p Params) Nlinks() map[string]Nlinks {
 		num := val.Field(i).Addr().Interface().(*Num)
 		nl := Nlinks{}
 		// errors are ignored
-		nl.More, _ = p.MoreN(&p, num, "")
-		nl.Less, _ = p.LessN(&p, num, "")
+		nl.More, _ = MoreN(&p, num, "")
+		nl.Less, _ = LessN(&p, num, "")
 		m[sf.Name] = nl
 	}
 	return m
@@ -223,8 +222,8 @@ func (p Params) Dlinks() map[string]Dlinks {
 		d := val.Field(i).Addr().Interface().(*Delay)
 		dl := Dlinks{}
 		// errors are ignored
-		dl.More, _ = p.MoreD(&p, d, "")
-		dl.Less, _ = p.LessD(&p, d, "")
+		dl.More, _ = MoreD(&p, d, "")
+		dl.Less, _ = LessD(&p, d, "")
 		m[sf.Name] = dl
 	}
 	return m
@@ -249,7 +248,7 @@ func (p *Params) Vlinks() map[string][]VLink {
 			continue
 		}
 		for j := 1; j < maxn.Absolute+1; j++ { // indexed from 1
-			if v, err := p.Vlink(p, v, j, ""); err == nil { // err is gone
+			if v, err := Vlink(p, v, j, ""); err == nil { // err is gone
 				vl = append(vl, v)
 			}
 		}
