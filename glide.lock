@@ -1,5 +1,5 @@
-hash: 78331ab5c8f1847bd4ecf348af13122f70faaa59ccfb309c625ab5551dbb7767
-updated: 2016-01-20T09:41:35.142589486Z
+hash: 3d73d80432e5ef4afb0e84fe3a6073fd3f5e0469d2088a9ecc6575b963f8b700
+updated: 2016-01-24T15:07:12.957133817Z
 imports:
 - name: collectd.org
   version: 9fc824c70f713ea0f058a07b49a4c563ef2a3b98
@@ -32,7 +32,7 @@ imports:
 - name: github.com/gogo/protobuf
   version: c57e439bad574c2e0877ff18d514badcfced004d
 - name: github.com/golang/protobuf
-  version: 2402d76f3d41f928c7902a765dfc872356dd3aad
+  version: 5fc2294e655b78ed8a02082d37808d46c17d7e64
 - name: github.com/golang/snappy
   version: 723cc1e459b8eea2dea4583200fd60757d40097a
 - name: github.com/google/go-querystring
@@ -50,21 +50,22 @@ imports:
 - name: github.com/hashicorp/hcl
   version: 578dd9746824a54637686b51a41bad457a56bcef
 - name: github.com/hashicorp/raft
-  version: 8237aa61783236b104587045b0f9fdcec25df564
+  version: 057b893fd996696719e98b6c44649ea14968c811
 - name: github.com/hashicorp/raft-boltdb
   version: d1e82c1ec3f15ee991f7cc7ffd5b67ff6f5bbaee
 - name: github.com/inconshreveable/go-update
   version: 8152e7eb6ccf8679a64582a66b78519688d156ad
 - name: github.com/influxdb/influxdb
-  version: c1d6c14c47dfb4d60878a979fbdd8b526281d3d6
+  version: 58e0eed9cb166e0b004e6b41a4d64c39d24b40f4
 - name: github.com/influxdb/usage-client
   version: 475977e68d79883d9c8d67131c84e4241523f452
 - name: github.com/jteeuwen/go-bindata
   version: a0ff2567cfb70903282db057e799fd826784d41d
   subpackages:
+  - .
   - /go-bindata
 - name: github.com/julienschmidt/httprouter
-  version: 21439ef4d70ba4f3e2a5ed9249e7b03af4019b40
+  version: abb0dc9f755ff0a9d818db28d9d8b9810066e2b5
 - name: github.com/justinas/alice
   version: 82db91fe6d1db4c070fed544cb5d0b5cc08fe276
 - name: github.com/jwilder/encoding
@@ -90,13 +91,13 @@ imports:
 - name: github.com/paulbellamy/ratecounter
   version: 5a11f585a31379765c190c033b6ad39956584447
 - name: github.com/peterh/liner
-  version: d5e5aeeb67ca5aeeddeb0b6c3af05421ff63a0b6
+  version: 72909af234e0e355af10d0ace679446a6c5d7ec3
 - name: github.com/prometheus/client_golang
   version: 67994f177195311c3ea3d4407ed0175e34a4256f
 - name: github.com/prometheus/client_model
   version: fa8ad6fec33561be4280a8f0514318c79d7f6cb6
 - name: github.com/prometheus/common
-  version: 0a3005bb37bc411040083a55372e77c405f6464c
+  version: b0d797186bfbaf6d785031c6c2d32f75c720007d
 - name: github.com/prometheus/procfs
   version: 406e5b7bfd8201a36e2bb5f7bdae0b03380c2ce8
 - name: github.com/rakyll/statik
@@ -106,7 +107,7 @@ imports:
 - name: github.com/rcrowley/goagain
   version: f2f192b5d1a96e21dd4026ce67cda85e49659a48
 - name: github.com/russross/blackfriday
-  version: c8875c0ed47e07b063c3628e2e4d4c9826721795
+  version: 006144af03eeeff1037240a71865a9fd61f1c25f
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 - name: github.com/Sirupsen/logrus
@@ -132,7 +133,7 @@ imports:
 - name: golang.org/x/crypto
   version: 3760e016850398b85094c4c99e955b8c3dea5711
 - name: golang.org/x/net
-  version: 78e1654ef40b8b993e3355307740b1cac8f1db20
+  version: 2e9cee70ee697e0a2ef894b560dda50dec7dff58
 - name: golang.org/x/text
   version: cf4986612c83df6c55578ba198316d1684a9a287
 - name: gopkg.in/airbrake/gobrake.v2
