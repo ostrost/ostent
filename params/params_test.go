@@ -39,14 +39,14 @@ func TestLinks(t *testing.T) {
 	if para.Dfk.Negative || para.Dfk.Absolute != 2 {
 		t.Errorf("Decode failed: %+v\n", para.Dfk)
 	}
-	total, err := para.Vlink(para, &para.Dfk, TOTAL, "")
+	total, err := Vlink(para, &para.Dfk, TOTAL, "")
 	if err != nil {
 		t.Fatal(err)
 	}
 	if total.LinkHref != "?dfk=6" || total.LinkClass != "state" || total.CaretClass != "" {
 		t.Fatalf("Encode failed: total: %+v", total)
 	}
-	mp, err := para.Vlink(para, &para.Dfk, MP, "")
+	mp, err := Vlink(para, &para.Dfk, MP, "")
 	if err != nil {
 		t.Fatal(err)
 	}
