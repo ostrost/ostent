@@ -5,8 +5,6 @@ import (
 	"html/template"
 	"reflect"
 	"testing"
-
-	"github.com/ostrost/ostent/templateutil/templatefunc"
 )
 
 // Traverses the type, fails on any pointer field.
@@ -33,9 +31,7 @@ func TestIndexDatatype(t *testing.T) {
 
 func executeTemplate(text string, data interface{}) (string, error) {
 	buf := new(bytes.Buffer)
-	err := template.Must(template.New("tpl").
-		Funcs(templatefunc.FuncMapHTML()).Parse(text),
-	).Execute(buf, data)
+	err := template.Must(template.New("tpl").Parse(text)).Execute(buf, data)
 	return buf.String(), err
 }
 
