@@ -831,18 +831,7 @@ background:#e6e6e6;}
  padding:0 1rem 1rem;
  flex:0 0 12.5%;
  max-width:12.5%;}
-.small-9{
-  flex:0 0 75%;
-  max-width:75%;}
-.small-up-9{
-  flex-flow:row wrap;
-  overflow:visible;
-  list-style-type:none;}
-  .small-up-9>div,.small-up-9>li,.small-up-9>section{
- padding:0 1rem 1rem;
- flex:0 0 11.11111%;
- max-width:11.11111%;}
-.small-10{
+  .small-10{
   flex:0 0 83.33333%;
   max-width:83.33333%;}
 .small-up-10{

@@ -2,52 +2,35 @@ package params
 
 import (
 	"fmt"
-	"html/template"
 	"math"
 	"time"
 
 	"github.com/ostrost/ostent/flags"
 )
 
-// FuncMapHTML is a FuncMap with param functions.
-var FuncMapHTML = template.FuncMap{
-	"HrefT": HrefT, // HrefT not used in params package
-	"LessD": LessD,
-	"MoreD": MoreD,
-	"LessN": LessN,
-	"MoreN": MoreN,
-	"Vlink": Vlink,
-}
-
-// HrefT is in the func map.
-func HrefT(p *Params, num *Num) (template.HTMLAttr, error) {
-	href, err := p.EncodeT(num)
-	return template.HTMLAttr(fmt.Sprintf(" href=%q", href)), err
-}
-
 // LessD is in the func map.
-func LessD(p *Params, d *Delay, bclass string) (ALink, error) {
-	return LinkD(p, d, bclass, DelayLess(*d, p.DelayBounds.Min.Duration), "-")
+func LessD(p *Params, d *Delay) (ALink, error) {
+	return LinkD(p, d, DelayLess(*d, p.DelayBounds.Min.Duration), false)
 }
 
 // MoreD is in the func map.
-func MoreD(p *Params, d *Delay, bclass string) (ALink, error) {
-	return LinkD(p, d, bclass, DelayMore(*d, p.DelayBounds.Min.Duration), "+")
+func MoreD(p *Params, d *Delay) (ALink, error) {
+	return LinkD(p, d, DelayMore(*d, p.DelayBounds.Min.Duration), true)
 }
 
 // LessN is in the func map.
-func LessN(p *Params, num *Num, bclass string) (ALink, error) {
-	return LinkN(p, num, bclass, Pow2Less(num.Absolute), "-")
+func LessN(p *Params, num *Num) (ALink, error) {
+	return LinkN(p, num, Pow2Less(num.Absolute), false)
 }
 
 // MoreN is in the func map.
-func MoreN(p *Params, num *Num, bclass string) (ALink, error) {
-	return LinkN(p, num, bclass, Pow2More(num.Absolute), "+")
+func MoreN(p *Params, num *Num) (ALink, error) {
+	return LinkN(p, num, Pow2More(num.Absolute), true)
 }
 
 // Vlink is in the func map.
 func Vlink(p *Params, num *Num, absolute int, text string) (VLink, error) {
-	vl := VLink{LinkText: text, LinkClass: "state"}
+	vl := VLink{LinkClass: "state"}
 	negative := new(bool) // EncodeN will use .Negative being false by default
 	if num.Absolute == absolute {
 		vl.CaretClass = "caret"
@@ -111,30 +94,26 @@ func DelayLess(d Delay, step time.Duration) time.Duration {
 }
 
 // LinkD is internal.
-func LinkD(p *Params, d *Delay, bclass string, set time.Duration, badge string) (ALink, error) {
+func LinkD(p *Params, d *Delay, set time.Duration, more bool) (ALink, error) {
 	al := ALink{
-		Href:       "?",                   // Default
-		ExtraClass: " disabled ",          //         Disabled
-		Class:      " disabled " + bclass, //                  Values
+		Href:       "?",          // Default
+		ExtraClass: " disabled ", //         Disabled
 
-		Text:  flags.DurationString(set), // Final
-		Badge: badge,                     //       Values
+		Text: flags.DurationString(set), // Final
 	}
 	href, err := p.EncodeD(d, set)
 	if err != nil {
 		return al, err
 	}
-	switch badge {
-	case "-":
-		if d.D > p.DelayBounds.Min.Duration {
-			al.Href, al.ExtraClass = href, ""
-		}
-	case "+":
+	if more {
 		if d.D < p.DelayBounds.Max.Duration {
 			al.Href, al.ExtraClass = href, ""
 		}
+	} else {
+		if d.D > p.DelayBounds.Min.Duration {
+			al.Href, al.ExtraClass = href, ""
+		}
 	}
-	al.Class = al.ExtraClass + " " + bclass // Eventually
 	return al, nil
 }
 
@@ -173,30 +152,26 @@ func Pow2More(v int) int {
 }
 
 // LinkN is internal.
-func LinkN(p *Params, num *Num, bclass string, absolute int, badge string) (ALink, error) {
+func LinkN(p *Params, num *Num, absolute int, more bool) (ALink, error) {
 	al := ALink{ // defaults
-		Href:       "?",                   // Default
-		ExtraClass: " disabled ",          //         Disabled
-		Class:      " disabled " + bclass, //                  Values
+		Href:       "?",          // Default
+		ExtraClass: " disabled ", //         Disabled
 
-		Text:  fmt.Sprintf("%d", absolute), // Final
-		Badge: badge,                       //       Values
+		Text: fmt.Sprintf("%d", absolute), // Final
 	}
 	href, err := p.EncodeN(num, absolute, nil)
 	if err != nil {
 		return al, err
 	}
-	switch badge {
-	case "+":
+	if more {
 		// when num.Limit is 0, it's unknown, so enable the button
 		if num.Limit == 0 || num.Absolute < num.Limit || absolute <= num.Limit {
 			al.Href, al.ExtraClass = href, ""
 		}
-	case "-":
+	} else {
 		if absolute > 0 || num.Absolute > 0 {
 			al.Href, al.ExtraClass = href, ""
 		}
 	}
-	al.Class = al.ExtraClass + " " + bclass // Eventually
 	return al, nil
 }

@@ -156,8 +156,6 @@ type Dlinks struct {
 type ALink struct {
 	Href       string
 	Text       string
-	Badge      string `json:"-"`
-	Class      string `json:"-"`
 	ExtraClass string `json:",omitempty"`
 }
 
@@ -165,7 +163,6 @@ type VLink struct {
 	CaretClass string
 	LinkClass  string
 	LinkHref   string
-	LinkText   string `json:"-"` // static
 }
 
 func (p *Params) MarshalJSON() ([]byte, error) {
@@ -200,8 +197,8 @@ func (p Params) Nlinks() map[string]Nlinks {
 		num := val.Field(i).Addr().Interface().(*Num)
 		nl := Nlinks{}
 		// errors are ignored
-		nl.More, _ = MoreN(&p, num, "")
-		nl.Less, _ = LessN(&p, num, "")
+		nl.More, _ = MoreN(&p, num)
+		nl.Less, _ = LessN(&p, num)
 		m[sf.Name] = nl
 	}
 	return m
@@ -222,8 +219,8 @@ func (p Params) Dlinks() map[string]Dlinks {
 		d := val.Field(i).Addr().Interface().(*Delay)
 		dl := Dlinks{}
 		// errors are ignored
-		dl.More, _ = MoreD(&p, d, "")
-		dl.Less, _ = LessD(&p, d, "")
+		dl.More, _ = MoreD(&p, d)
+		dl.Less, _ = LessD(&p, d)
 		m[sf.Name] = dl
 	}
 	return m

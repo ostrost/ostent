@@ -141,11 +141,13 @@ jsdefines.define_cpu = React.createClass({
             <div className="input-group-label small text-nowrap">delay</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.CPUd}</a></div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Dlinks.CPUd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : "")}
+              <a href={Data.params.Dlinks.CPUd.Less.Href} className={"text-nowrap button small" + " " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >- {Data.params.Dlinks.CPUd.Less.Text}</a>
             </div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Dlinks.CPUd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : "")}
+              <a href={Data.params.Dlinks.CPUd.More.Href} className={"text-nowrap button small" + " " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >{Data.params.Dlinks.CPUd.More.Text} +</a>
             </div>
           </div>
@@ -155,11 +157,13 @@ jsdefines.define_cpu = React.createClass({
             <div className="input-group-label small text-nowrap">rows</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.CPUn.Absolute}</a></div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Nlinks.CPUn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : "")}
+              <a href={Data.params.Nlinks.CPUn.Less.Href} className={"text-nowrap button small success" + " " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >- {Data.params.Nlinks.CPUn.Less.Text}</a>
             </div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Nlinks.CPUn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : "")}
+              <a href={Data.params.Nlinks.CPUn.More.Href} className={"text-nowrap button small success" + " " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >{Data.params.Nlinks.CPUn.More.Text} +</a>
             </div>
           </div>
@@ -215,11 +219,13 @@ jsdefines.define_df = React.createClass({
             <div className="input-group-label small text-nowrap">delay</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Dfd}</a></div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Dlinks.Dfd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : "")}
+              <a href={Data.params.Dlinks.Dfd.Less.Href} className={"text-nowrap button small" + " " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >- {Data.params.Dlinks.Dfd.Less.Text}</a>
             </div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Dlinks.Dfd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : "")}
+              <a href={Data.params.Dlinks.Dfd.More.Href} className={"text-nowrap button small" + " " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >{Data.params.Dlinks.Dfd.More.Text} +</a>
             </div>
           </div>
@@ -229,11 +235,13 @@ jsdefines.define_df = React.createClass({
             <div className="input-group-label small text-nowrap">rows</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Dfn.Absolute}</a></div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Nlinks.Dfn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : "")}
+              <a href={Data.params.Nlinks.Dfn.Less.Href} className={"text-nowrap button small success" + " " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >- {Data.params.Nlinks.Dfn.Less.Text}</a>
             </div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Nlinks.Dfn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : "")}
+              <a href={Data.params.Nlinks.Dfn.More.Href} className={"text-nowrap button small success" + " " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >{Data.params.Nlinks.Dfn.More.Text} +</a>
             </div>
           </div>
@@ -307,11 +315,13 @@ jsdefines.define_if = React.createClass({
             <div className="input-group-label small text-nowrap">delay</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Ifd}</a></div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Dlinks.Ifd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : "")}
+              <a href={Data.params.Dlinks.Ifd.Less.Href} className={"text-nowrap button small" + " " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >- {Data.params.Dlinks.Ifd.Less.Text}</a>
             </div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Dlinks.Ifd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : "")}
+              <a href={Data.params.Dlinks.Ifd.More.Href} className={"text-nowrap button small" + " " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >{Data.params.Dlinks.Ifd.More.Text} +</a>
             </div>
           </div>
@@ -321,11 +331,13 @@ jsdefines.define_if = React.createClass({
             <div className="input-group-label small text-nowrap">rows</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Ifn.Absolute}</a></div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Nlinks.Ifn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : "")}
+              <a href={Data.params.Nlinks.Ifn.Less.Href} className={"text-nowrap button small success" + " " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >- {Data.params.Nlinks.Ifn.Less.Text}</a>
             </div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Nlinks.Ifn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : "")}
+              <a href={Data.params.Nlinks.Ifn.More.Href} className={"text-nowrap button small success" + " " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >{Data.params.Nlinks.Ifn.More.Text} +</a>
             </div>
           </div>
@@ -374,11 +386,13 @@ jsdefines.define_la = React.createClass({
             <div className="input-group-label small text-nowrap">delay</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Lad}</a></div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Dlinks.Lad.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Lad.Less.ExtraClass != null ? Data.params.Dlinks.Lad.Less.ExtraClass : "")}
+              <a href={Data.params.Dlinks.Lad.Less.Href} className={"text-nowrap button small" + " " + (Data.params.Dlinks.Lad.Less.ExtraClass != null ? Data.params.Dlinks.Lad.Less.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >- {Data.params.Dlinks.Lad.Less.Text}</a>
             </div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Dlinks.Lad.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Lad.More.ExtraClass != null ? Data.params.Dlinks.Lad.More.ExtraClass : "")}
+              <a href={Data.params.Dlinks.Lad.More.Href} className={"text-nowrap button small" + " " + (Data.params.Dlinks.Lad.More.ExtraClass != null ? Data.params.Dlinks.Lad.More.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >{Data.params.Dlinks.Lad.More.Text} +</a>
             </div>
           </div>
@@ -388,11 +402,13 @@ jsdefines.define_la = React.createClass({
             <div className="input-group-label small text-nowrap">rows</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Lan.Absolute}</a></div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Nlinks.Lan.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.Less.ExtraClass != null ? Data.params.Nlinks.Lan.Less.ExtraClass : "")}
+              <a href={Data.params.Nlinks.Lan.Less.Href} className={"text-nowrap button small success" + " " + (Data.params.Nlinks.Lan.Less.ExtraClass != null ? Data.params.Nlinks.Lan.Less.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >- {Data.params.Nlinks.Lan.Less.Text}</a>
             </div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Nlinks.Lan.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Lan.More.ExtraClass != null ? Data.params.Nlinks.Lan.More.ExtraClass : "")}
+              <a href={Data.params.Nlinks.Lan.More.Href} className={"text-nowrap button small success" + " " + (Data.params.Nlinks.Lan.More.ExtraClass != null ? Data.params.Nlinks.Lan.More.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >{Data.params.Nlinks.Lan.More.Text} +</a>
             </div>
           </div>
@@ -442,11 +458,13 @@ jsdefines.define_mem = React.createClass({
             <div className="input-group-label small text-nowrap">delay</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Memd}</a></div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Dlinks.Memd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : "")}
+              <a href={Data.params.Dlinks.Memd.Less.Href} className={"text-nowrap button small" + " " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >- {Data.params.Dlinks.Memd.Less.Text}</a>
             </div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Dlinks.Memd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : "")}
+              <a href={Data.params.Dlinks.Memd.More.Href} className={"text-nowrap button small" + " " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >{Data.params.Dlinks.Memd.More.Text} +</a>
             </div>
           </div>
@@ -456,11 +474,13 @@ jsdefines.define_mem = React.createClass({
             <div className="input-group-label small text-nowrap">rows</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Memn.Absolute}</a></div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Nlinks.Memn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : "")}
+              <a href={Data.params.Nlinks.Memn.Less.Href} className={"text-nowrap button small success" + " " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >- {Data.params.Nlinks.Memn.Less.Text}</a>
             </div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Nlinks.Memn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : "")}
+              <a href={Data.params.Nlinks.Memn.More.Href} className={"text-nowrap button small success" + " " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >{Data.params.Nlinks.Memn.More.Text} +</a>
             </div>
           </div>
@@ -509,11 +529,13 @@ jsdefines.define_ps = React.createClass({
             <div className="input-group-label small text-nowrap">delay</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Psd}</a></div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Dlinks.Psd.Less.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : "")}
+              <a href={Data.params.Dlinks.Psd.Less.Href} className={"text-nowrap button small" + " " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >- {Data.params.Dlinks.Psd.Less.Text}</a>
             </div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Dlinks.Psd.More.Href} className={"button small text-nowrap" + " " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : "")}
+              <a href={Data.params.Dlinks.Psd.More.Href} className={"text-nowrap button small" + " " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >{Data.params.Dlinks.Psd.More.Text} +</a>
             </div>
           </div>
@@ -523,11 +545,13 @@ jsdefines.define_ps = React.createClass({
             <div className="input-group-label small text-nowrap">rows</div>
             <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Psn.Absolute}</a></div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Nlinks.Psn.Less.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : "")}
+              <a href={Data.params.Nlinks.Psn.Less.Href} className={"text-nowrap button small success" + " " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >- {Data.params.Nlinks.Psn.Less.Text}</a>
             </div>
             <div className="input-group-button">
-              <a onClick={this.handleClick} href={Data.params.Nlinks.Psn.More.Href} className={"button small success text-nowrap" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : "")}
+              <a href={Data.params.Nlinks.Psn.More.Href} className={"text-nowrap button small success" + " " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : "")}
+                 onClick={this.handleClick}
                 >{Data.params.Nlinks.Psn.More.Text} +</a>
             </div>
           </div>
