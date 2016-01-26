@@ -78,14 +78,9 @@ button{
   border:0;
   border-radius:0;
   line-height:1;}
-div,h1,h2,h4,li,p,ul{
+div,h1,h2,h4,li,ul{
   margin:0;
   padding:0;}
-p{
-  font-size:inherit;
-  line-height:1.6;
-  margin-bottom:1rem;
-  text-rendering:optimizeLegibility;}
 i{
   font-style:italic;}
 b,i{
@@ -135,10 +130,7 @@ ul{
 ol ul,ul ol,ul ul{
   margin-left:1.25rem;
   margin-bottom:0;}
-blockquote p{
- line-height:1.6;
- color:#8a8a8a;}
-  cite:before{
+ cite:before{
  content:'\2014 ';}
 code{
   font-weight:400;
@@ -934,7 +926,7 @@ thead{
  display:table-header-group;}
  @page{
  margin:.5cm;}
-  h2,p{
+  h2{
  orphans:3;
  widows:3;}
   h2{

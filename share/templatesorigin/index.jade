@@ -6,103 +6,94 @@ mixin define(name)
   block
   | {{end}}
 
-mixin with(...rest)
-  | {{with !{rest.join(' ')}}}
-  block
-  | {{end}}
-
 mixin vlink(kparam, number, text)
-  - var vlinks = format('Data.params.Vlinks.%s', kparam.replace(/.*\./, ''));
+  - var vlinks = format('Data.params.Vlinks%s', kparam);
   if JSX
     - var link = format('%s[%s-1]', vlinks, number);
-    | #{''}
-    | <a onClick={this.handleClick} href={#{link}.LinkHref} class={#{link}.LinkClass}
+    | <a href={#{link}.LinkHref} class={#{link}.LinkClass} onClick={this.handleClick}
     |   >#{text}<span class={#{link}.CaretClass}></span></a>
   else
-    +with('index', '.'+vlinks, number-1)
-      //- | {{with !{['index', '.'+vlinks, number-1].join(' ')}}}
-      | #{''}
-      | <a onClick={this.handleClick} href={{.LinkHref}} class={{.LinkClass}}
-      |   >#{text}<span class={{.CaretClass}}></span></a>
-      //- | {{end}}
+    | {{with !{['index', '.'+vlinks, number-1].join(' ')}}}
+    | <a href={{.LinkHref}} class={{.LinkClass}}
+    |   >#{text}<span class={{.CaretClass}}></span></a>
+    | {{end}}
   
 mixin table(nparam, dparam, title)
-  | {{$p := .Data.params}}
   .grid-block.hr-top
-    - var nparamFull = nparam.replace('$p', 'Data.params');
     -
-      var nparamShort = nparam.replace(/.*\./, ''),
-          dparamShort = dparam.replace(/.*\./, ''),
-          dlinkLess = format('Data.params.Dlinks.%s.Less', dparamShort),
-          dlinkMore = format('Data.params.Dlinks.%s.More', dparamShort),
-          nlinkLess = format('Data.params.Nlinks.%s.Less', nparamShort),
-          nlinkMore = format('Data.params.Nlinks.%s.More', nparamShort),
-          tlink     = format('Data.params.Tlinks.%s',      nparamShort);
+      var dlinkLess = format('Data.params.Dlinks%s.Less', dparam),
+          dlinkMore = format('Data.params.Dlinks%s.More', dparam),
+          nlinkLess = format('Data.params.Nlinks%s.Less', nparam),
+          nlinkMore = format('Data.params.Nlinks%s.More', nparam),
+          ntlink    = format('Data.params.Tlinks%s', nparam),
+          ndata     = format('Data.params%s', nparam),
+          ddata     = format('Data.params%s', dparam);
     .col-lr.large-1.text-right
       if JSX
-        | <div class={#{nparamFull}.Negative ? "show-showhide" : "hide-showhide"}>
+        | <div class={#{ndata}.Negative ? "show-showhide" : "hide-showhide"}>
       else
-        | <div class="{{if #{nparam}.Negative}}show-showhide{{else}}hide-showhide{{end}}">
+        | <div class="{{if .#{ndata}.Negative}}show-showhide{{else}}hide-showhide{{end}}">
       h1.h4.text-overflow
         if JSX
-          | <a title="#{title} display options" href={#{tlink}} onClick={this.handleClick}>
+          | <a title="#{title} display options" href={#{ntlink}} onClick={this.handleClick}>
         else
-          | <a title="#{title} display options" href={{.#{tlink}}}>
+          | <a title="#{title} display options" href={{.#{ntlink}}}>
         | <span class="showhide-hide whitespace-pre float-left">... </span>#{title}</a>
       | </div>
     .col-lr.large-11
       if JSX
-        | <div class={#{nparamFull}.Negative ? "show-showhide" : "hide-showhide"}>
+        | <div class={#{ndata}.Negative ? "show-showhide" : "hide-showhide"}>
       else
-        | <div class="{{if #{nparam}.Negative}}show-showhide{{else}}hide-showhide{{end}}">
+        | <div class="{{if .#{ndata}.Negative}}show-showhide{{else}}hide-showhide{{end}}">
       .grid-block
         ul.menu.showhide-show
           li
             .input-group
               .input-group-label.small.text-nowrap delay
               .input-group-button
-                a.button.small.secondary.disabled {{#{dparam}}}
-              - var buttonBase = 'text-nowrap button small';
+                a.button.small.secondary.disabled {{.#{ddata}}}
+              - var cls = 'text-nowrap button small';
               .input-group-button
                 if JSX
-                  +alink_jsxl(buttonBase, '- %s', dlinkLess)
+                  +alink_jsxl(cls, '- %s', dlinkLess)
                 else
-                  +alink_html(buttonBase, '- %s', dlinkLess)
+                  +alink_html(cls, '- %s', dlinkLess)
               .input-group-button
                 if JSX
-                  +alink_jsxl(buttonBase, '%s +', dlinkMore)
+                  +alink_jsxl(cls, '%s +', dlinkMore)
                 else
-                  +alink_html(buttonBase, '%s +', dlinkMore)
+                  +alink_html(cls, '%s +', dlinkMore)
           li
             .input-group
               .input-group-label.small.text-nowrap rows
               .input-group-button
-                a.button.small.secondary.disabled {{#{nparam}.Absolute}}
-              - var buttonBase = 'text-nowrap button small success';
+                a.button.small.secondary.disabled {{.#{ndata}.Absolute}}
+              - var cls = 'text-nowrap button small success';
               .input-group-button
                 if JSX
-                  +alink_jsxl(buttonBase, '- %s', nlinkLess)
+                  +alink_jsxl(cls, '- %s', nlinkLess)
                 else
-                  +alink_html(buttonBase, '- %s', nlinkLess)
+                  +alink_html(cls, '- %s', nlinkLess)
               .input-group-button
                 if JSX
-                  +alink_jsxl(buttonBase, '%s +', nlinkMore)
+                  +alink_jsxl(cls, '%s +', nlinkMore)
                 else
-                  +alink_html(buttonBase, '%s +', nlinkMore)
+                  +alink_html(cls, '%s +', nlinkMore)
       if JSX
-        | <div class={#{nparam.replace('$p', 'Data.params')}.Absolute == 0 ? "hide":""}>
+        | <div class={#{ndata}.Absolute == 0 ? "hide":""}>
       else
-        | <div class="{{if eq #{nparam}.Absolute 0}}hide{{end}}">
+        | <div class="{{if eq .#{ndata}.Absolute 0}}hide{{end}}">
       block
       | </div></div>
 
-mixin alink_jsxl(buttonBase, fmt, link)
-  | <a href={#{link}.Href} class={"#{buttonBase}" + " " + (#{link}.ExtraClass != null ? #{link}.ExtraClass : "")}
-  |    onClick={this.handleClick}
+mixin alink_jsxl(cls, fmt, link)
+  | <a href={#{link}.Href} onClick={this.handleClick}
+  |    class={"#{cls} " + (#{link}.ExtraClass != null ? #{link}.ExtraClass : "")}
   |   >#{format(fmt, format('{%s.Text}', link))}</a>
 
-mixin alink_html(buttonBase, fmt, link)
-  | <a href={{.#{link}.Href}} class="#{buttonBase} {{.#{link}.ExtraClass}}"
+mixin alink_html(cls, fmt, link)
+  | <a href={{.#{link}.Href}}
+  |    class="#{cls} {{.#{link}.ExtraClass}}"
   |   >#{format(fmt, format('{{.%s.Text}}', link))}</a>
   
 +define('define_uptime'): span {{.Data.uptime}}
@@ -112,32 +103,23 @@ mixin alink_html(buttonBase, fmt, link)
   else
     | <a href="/" title="hostname {{.Data.hostname}}">{{.Data.hostname}}</a>
   
-mixin jsx_wrap(start, end)
+mixin range_list(datak, ranger, kvalue, keyid)
+  | {{if .Data.#{datak}}}
+  | {{range #{ranger} := .Data.#{datak}.List}}
   if JSX
-    | #{start}
-  block
-  if JSX
-    | #{end}
-
-mixin row(kvalue, keyid)
-  if JSX
+    | {this.List(Data).map(function(#{ranger}, i) { return (
     | <div class="grid-block" key={"#{keyid}-"+#{kvalue}}>
   else
     | <div class="grid-block">
   block
   | </div>
-
-mixin range_list(datak, ranger, kvalue, keyid)
-  | {{if .Data.#{datak}}}
-  | {{range #{ranger} := .Data.#{datak}.List}}
-  +jsx_wrap('{this.List(Data).map(function('+ranger+', i) { return (', ');})}')
-    +row(kvalue, keyid)
-      block
+  if JSX
+    | );})}
   | {{end}}
   | {{end}}
 
 +define('define_la')
-  +table('$p.Lan', '$p.Lad', 'Load avg')
+  +table('.Lan', '.Lad', 'Load avg')
     .grid-block.vertical.stripe
       .grid-block.thead
         span.expand.col.small-1 Period
@@ -152,7 +134,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
             | {jsdefines.Sparkline({ref: i, col: 'Value'})}
 
 +define('define_mem')
-  +table('$p.Memn', '$p.Memd', 'Memory')
+  +table('.Memn', '.Memd', 'Memory')
     .grid-block.vertical.stripe
       .grid-block.thead
         span.expand.col.small-1 Memory
@@ -172,16 +154,16 @@ mixin range_list(datak, ranger, kvalue, keyid)
             | {jsdefines.Sparkline({ref: i, col: 'UsePct'})}
 
 +define('define_df')
-  +table('$p.Dfn', '$p.Dfd', 'Disk usage')
+  +table('.Dfn', '.Dfd', 'Disk usage')
     .grid-block.vertical.stripe
       .grid-block.thead
         | {{/* poke purifycss: <div class="dropup"><div class="caret" /></div> */}}
-        span.expand.col.small-1.text-nowrap:            +vlink('$p.Dfk', 1, 'Device')  {{/* FS     */}}
-        span.expand.col.small-1.text-nowrap:            +vlink('$p.Dfk', 2, 'Mounted') {{/* MP     */}}
-        span.expand.col.small-1.text-nowrap.text-right: +vlink('$p.Dfk', 6, 'Total')   {{/* TOTAL  */}}
-        span.expand.col.small-1.text-nowrap.text-right: +vlink('$p.Dfk', 5, 'Used')    {{/* USED   */}}
-        span.expand.col.small-1.text-nowrap.text-right: +vlink('$p.Dfk', 3, 'Avail')   {{/* AVAIL  */}}
-        span.expand.col.small-1.text-nowrap.text-right: +vlink('$p.Dfk', 4, 'Use%')    {{/* USEPCT */}}
+        span.expand.col.small-1.text-nowrap:            +vlink('.Dfk', 1, 'Device')  {{/* FS     */}}
+        span.expand.col.small-1.text-nowrap:            +vlink('.Dfk', 2, 'Mounted') {{/* MP     */}}
+        span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 6, 'Total')   {{/* TOTAL  */}}
+        span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 5, 'Used')    {{/* USED   */}}
+        span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 3, 'Avail')   {{/* AVAIL  */}}
+        span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 4, 'Use%')    {{/* USEPCT */}}
         span.expand.col
       +range_list('diskUsage', '$df', '$df.DirName', 'df-rowby-dirname')
         span.expand.col.small-1.text-overflow {{$df.DevName}}
@@ -204,7 +186,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
             | {jsdefines.Sparkline({ref: i, col: 'UsePct'})}
 
 +define('define_cpu')
-  +table('$p.CPUn', '$p.CPUd', 'CPU')
+  +table('.CPUn', '.CPUd', 'CPU')
     .grid-block.vertical.stripe
       .grid-block.thead
         span.expand.col.small-1 Core
@@ -228,7 +210,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
             | {jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}
 
 +define('define_if')
-  +table('$p.Ifn', '$p.Ifd', 'Interfaces')
+  +table('.Ifn', '.Ifd', 'Interfaces')
     .grid-block.vertical.stripe
       .grid-block.thead
         span.expand.col.small-1 Interface
@@ -301,19 +283,19 @@ mixin range_list(datak, ranger, kvalue, keyid)
             | {jsdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}
 
 +define('define_ps')
-  +table('$p.Psn', '$p.Psd', 'Processes')
+  +table('.Psn', '.Psd', 'Processes')
     .grid-block.vertical.stripe
       .grid-block.thead
         | {{/* poke purifycss: <div class="dropup"><div class="caret" /></div> */}}
-        span.expand.col.small-1.text-nowrap.text-right:  +vlink('$p.Psk', 1, 'PID')
-        span.expand.col.small-1.text-nowrap.text-right:  +vlink('$p.Psk', 2, 'UID')
-        span.expand.col.small-1.text-nowrap:             +vlink('$p.Psk', 3, 'USER')
-        span.expand.col.small-1.text-nowrap.text-right:  +vlink('$p.Psk', 4, 'PR')      {{/* PRI  */}}
-        span.expand.col.small-1.text-nowrap.text-right:  +vlink('$p.Psk', 5, 'NI')      {{/* NICE */}}
-        span.expand.col.small-1.text-nowrap.text-right:  +vlink('$p.Psk', 6, 'VIRT')
-        span.expand.col.small-1.text-nowrap.text-right:  +vlink('$p.Psk', 7, 'RES')
-        span.expand.col.small-1.text-nowrap.text-center: +vlink('$p.Psk', 8, 'TIME')
-        span.expand.col.small-1.text-nowrap:             +vlink('$p.Psk', 9, 'COMMAND') {{/* NAME */}}
+        span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 1, 'PID')
+        span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 2, 'UID')
+        span.expand.col.small-1.text-nowrap:             +vlink('.Psk', 3, 'USER')
+        span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 4, 'PR')      {{/* PRI  */}}
+        span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 5, 'NI')      {{/* NICE */}}
+        span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 6, 'VIRT')
+        span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 7, 'RES')
+        span.expand.col.small-1.text-nowrap.text-center: +vlink('.Psk', 8, 'TIME')
+        span.expand.col.small-1.text-nowrap:             +vlink('.Psk', 9, 'COMMAND') {{/* NAME */}}
       +range_list('procs', '$ps', '$ps.PID', 'ps-rowby-pid')
         span.expand.col.small-1.text-right {{$ps.PID}}
         span.expand.col.small-1.text-right  {{$ps.UID}}
