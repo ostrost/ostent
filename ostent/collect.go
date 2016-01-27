@@ -11,12 +11,11 @@ import (
 
 	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/system"
-	"github.com/ostrost/ostent/system/operating"
 )
 
 // Registry has updates with sigar values.
 type Registry interface {
-	UpdateIF(operating.IfAddress)
+	UpdateIF(system.IfAddress)
 	UpdateCPU(sigar.Cpu, []sigar.Cpu)
 	UpdateLA(sigar.LoadAverage)
 	UpdateSwap(sigar.Swap)
@@ -111,11 +110,11 @@ func (m Machine) LA(reg Registry, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func _getmem(kind string, in sigar.Swap) operating.Memory {
+func _getmem(kind string, in sigar.Swap) system.Memory {
 	total, approxtotal, _ := format.HumanBandback(in.Total)
 	used, approxused, _ := format.HumanBandback(in.Used)
 
-	return operating.Memory{
+	return system.Memory{
 		Kind:   kind,
 		Total:  total,
 		Used:   used,
@@ -202,7 +201,7 @@ func (m Machine) PS(CH chan<- PSSlice) {
 			continue
 		}
 
-		pss = append(pss, &operating.PSInfo{
+		pss = append(pss, &system.PSInfo{
 			PID:      uint(pid),
 			Priority: state.Priority,
 			Nice:     state.Nice,

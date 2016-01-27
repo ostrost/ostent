@@ -19,7 +19,6 @@ import (
 	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/params"
 	"github.com/ostrost/ostent/system"
-	"github.com/ostrost/ostent/system/operating"
 	"github.com/ostrost/ostent/templateutil"
 )
 
@@ -58,7 +57,7 @@ func (pss PSSlice) Ordered(para *params.Params) *PS {
 	})
 
 	for _, p := range pss[:limitPS] {
-		ps.List = append(ps.List, operating.PSData{
+		ps.List = append(ps.List, system.PSData{
 			PID:      p.PID,
 			UID:      p.UID,
 			Priority: p.Priority,
@@ -74,8 +73,8 @@ func (pss PSSlice) Ordered(para *params.Params) *PS {
 }
 
 type PS struct {
-	List []operating.PSData `json:",omitempty"`
-	N    *int               `json:",omitempty"`
+	List []system.PSData `json:",omitempty"`
+	N    *int            `json:",omitempty"`
 }
 
 // IndexData is a data map for templates and marshalling.
@@ -145,7 +144,7 @@ func (mss *MSS) UP(para *params.Params, data IndexData) bool {
 }
 
 // IFSlice is a list of MetricIF.
-type IFSlice []*operating.MetricIF
+type IFSlice []*system.MetricIF
 
 // Len, Swap and Less satisfy sorting interface.
 func (is IFSlice) Len() int      { return len(is) }
@@ -164,8 +163,8 @@ func (is IFSlice) Less(i, j int) bool {
 	return a.Name < b.Name
 }
 
-func FormatIF(mi *operating.MetricIF) operating.IFData {
-	ii := operating.IFData{
+func FormatIF(mi *system.MetricIF) system.IFData {
+	ii := system.IFData{
 		Name:             mi.Name,
 		IP:               mi.IP.Snapshot().Value(),
 		DeltaBytesOutNum: mi.BytesOut.DeltaValue(),
@@ -185,25 +184,25 @@ func FormatIF(mi *operating.MetricIF) operating.IFData {
 	return ii
 }
 
-func FormatIF1024(diff *operating.GaugeDiff, info1, info2 *string) {
+func FormatIF1024(diff *system.GaugeDiff, info1, info2 *string) {
 	delta, abs := diff.Values()
 	*info1 = format.HumanB(uint64(abs))
 	*info2 = format.HumanBits(uint64(8 * delta))
 }
 
-func FormatIF1000(diff *operating.GaugeDiff, info1, info2 *string) {
+func FormatIF1000(diff *system.GaugeDiff, info1, info2 *string) {
 	delta, abs := diff.Values()
 	*info1 = format.HumanUnitless(uint64(abs))
 	*info2 = format.HumanUnitless(uint64(delta))
 }
 
-func (ir *IndexRegistry) GetIF(para *params.Params) []operating.IFData {
+func (ir *IndexRegistry) GetIF(para *params.Params) []system.IFData {
 	private := ir.ListPrivateIF()
 	para.Ifn.Limit = private.Len()
 
 	sort.Sort(private) // not .Stable
 
-	var public []operating.IFData
+	var public []system.IFData
 	for i, mi := range private {
 		if i >= para.Ifn.Absolute {
 			break
@@ -216,25 +215,25 @@ func (ir *IndexRegistry) GetIF(para *params.Params) []operating.IFData {
 // ListPrivateIF returns list of MetricIF's by traversing the PrivateIFRegistry.
 func (ir *IndexRegistry) ListPrivateIF() (is IFSlice) {
 	ir.PrivateIFRegistry.Each(func(name string, i interface{}) {
-		is = append(is, i.(*operating.MetricIF))
+		is = append(is, i.(*system.MetricIF))
 	})
 	return is
 }
 
-// GetOrRegisterPrivateIF produces a registered in PrivateIFRegistry operating.MetricIF.
-func (ir *IndexRegistry) GetOrRegisterPrivateIF(name string) *operating.MetricIF {
+// GetOrRegisterPrivateIF produces a registered in PrivateIFRegistry system.MetricIF.
+func (ir *IndexRegistry) GetOrRegisterPrivateIF(name string) *system.MetricIF {
 	ir.PrivateMutex.Lock()
 	defer ir.PrivateMutex.Unlock()
 	if metric := ir.PrivateIFRegistry.Get(name); metric != nil {
-		return metric.(*operating.MetricIF)
+		return metric.(*system.MetricIF)
 	}
-	i := operating.NewMetricIF(ir.Registry, name)
+	i := system.NewMetricIF(ir.Registry, name)
 	ir.PrivateIFRegistry.Register(name, i) // error is ignored
 	// errs when the type is not derived from (go-)metrics types
 	return i
 }
 
-func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) *operating.MetricDF {
+func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) *system.MetricDF {
 	ir.PrivateMutex.Lock()
 	defer ir.PrivateMutex.Unlock()
 	if fs.DirName == "/" {
@@ -243,15 +242,15 @@ func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) *operating.
 		fs.DevName = strings.Replace(strings.TrimPrefix(fs.DevName, "/dev/"), "/", "-", -1)
 	}
 	if metric := ir.PrivateDFRegistry.Get(fs.DevName); metric != nil {
-		return metric.(*operating.MetricDF)
+		return metric.(*system.MetricDF)
 	}
 	label := func(tail string) string {
 		return fmt.Sprintf("df-%s.df_complex-%s", fs.DevName, tail)
 	}
 	r, unusedr := ir.Registry, metrics.NewRegistry()
-	i := &operating.MetricDF{
-		DevName:  &operating.StandardMetricString{}, // unregistered
-		DirName:  &operating.StandardMetricString{}, // unregistered
+	i := &system.MetricDF{
+		DevName:  &system.StandardMetricString{}, // unregistered
+		DirName:  &system.StandardMetricString{}, // unregistered
 		Free:     metrics.NewRegisteredGaugeFloat64(label("free"), r),
 		Reserved: metrics.NewRegisteredGaugeFloat64(label("reserved"), r),
 		Total:    metrics.NewRegisteredGauge(label("total"), unusedr),
@@ -269,7 +268,7 @@ func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) *operating.
 }
 
 // CPUSlice is a list of MetricCPU.
-type CPUSlice []*operating.MetricCPU
+type CPUSlice []*system.MetricCPU
 
 // Len, Swap and Less satisfy sorting interface.
 func (cs CPUSlice) Len() int      { return len(cs) }
@@ -284,11 +283,11 @@ func (ir *IndexRegistry) DF(para *params.Params, data IndexData) bool {
 	if !para.Dfd.Expired() {
 		return false
 	}
-	data["diskUsage"] = &operating.DF{List: ir.GetDF(para)}
+	data["diskUsage"] = &system.DF{List: ir.GetDF(para)}
 	return true
 }
 
-func (ir *IndexRegistry) GetDF(para *params.Params) []operating.DFData {
+func (ir *IndexRegistry) GetDF(para *params.Params) []system.DFData {
 	private := ir.ListPrivateDF()
 	para.Dfn.Limit = len(private)
 
@@ -297,7 +296,7 @@ func (ir *IndexRegistry) GetDF(para *params.Params) []operating.DFData {
 		DFSlice: private,
 	})
 
-	var public []operating.DFData
+	var public []system.DFData
 	for i, df := range private {
 		if i >= para.Dfn.Absolute {
 			break
@@ -307,7 +306,7 @@ func (ir *IndexRegistry) GetDF(para *params.Params) []operating.DFData {
 	return public
 }
 
-func FormatDF(md *operating.MetricDF) operating.DFData {
+func FormatDF(md *system.MetricDF) system.DFData {
 	var (
 		vdevname = md.DevName.Snapshot().Value()
 		vdirname = md.DirName.Snapshot().Value()
@@ -322,7 +321,7 @@ func FormatDF(md *operating.MetricDF) operating.DFData {
 	iused, approxiused, _ := format.HumanBandback(uint64(viused))
 	total, approxtotal, _ := format.HumanBandback(uint64(vtotal))
 	used, approxused, _ := format.HumanBandback(uint64(vused))
-	return operating.DFData{
+	return system.DFData{
 		DevName: vdevname,
 		DirName: vdirname,
 		Inodes:  itotal,
@@ -337,7 +336,7 @@ func FormatDF(md *operating.MetricDF) operating.DFData {
 }
 
 // PSSlice is a list of PSInfo.
-type PSSlice []*operating.PSInfo
+type PSSlice []*system.PSInfo
 
 func (pss PSSlice) IU(para *params.Params, data IndexData) bool {
 	if !para.Psd.Expired() {
@@ -351,7 +350,7 @@ func (ir *IndexRegistry) IF(para *params.Params, data IndexData) bool {
 	if !para.Ifd.Expired() {
 		return false
 	}
-	data["ifaddrs"] = &operating.IF{List: ir.GetIF(para)}
+	data["ifaddrs"] = &system.IF{List: ir.GetIF(para)}
 	return true
 }
 
@@ -363,22 +362,22 @@ func (ir *IndexRegistry) CPU(para *params.Params, data IndexData) bool {
 		para.CPUn.Limit = 1
 		return false
 	}
-	data["cpu"] = &operating.CPU{List: ir.GetCPU(para)}
+	data["cpu"] = &system.CPU{List: ir.GetCPU(para)}
 	return true
 }
 
-func (ir *IndexRegistry) GetCPU(para *params.Params) []operating.CPUData {
+func (ir *IndexRegistry) GetCPU(para *params.Params) []system.CPUData {
 	private := ir.ListPrivateCPU()
 
 	if private.Len() == 1 {
 		para.CPUn.Limit = 1
-		return []operating.CPUData{FormatCPU("", private[0])}
+		return []system.CPUData{FormatCPU("", private[0])}
 	}
 	para.CPUn.Limit = private.Len() + 1
 	sort.Sort(private)
 
 	allabel := fmt.Sprintf("%d cores", private.Len())
-	public := []operating.CPUData{FormatCPU(allabel, ir.PrivateCPUAll)} // first: "N cores"
+	public := []system.CPUData{FormatCPU(allabel, ir.PrivateCPUAll)} // first: "N cores"
 
 	for i, mc := range private {
 		if i >= para.CPUn.Absolute-1 {
@@ -389,11 +388,11 @@ func (ir *IndexRegistry) GetCPU(para *params.Params) []operating.CPUData {
 	return public
 }
 
-func FormatCPU(label string, mc *operating.MetricCPU) operating.CPUData {
+func FormatCPU(label string, mc *system.MetricCPU) system.CPUData {
 	if label == "" { // A non-"N cores" mc.
 		label = "#" + strings.TrimPrefix(mc.N, "cpu-")
 	}
-	return operating.CPUData{
+	return system.CPUData{
 		N:       label,
 		UserPct: mc.UserPct.SnapshotValueUint(),
 		SysPct:  mc.SysPct.SnapshotValueUint(),
@@ -402,34 +401,34 @@ func FormatCPU(label string, mc *operating.MetricCPU) operating.CPUData {
 	}
 }
 
-// ListPrivateCPU returns list of operating.MetricCPU's by traversing the PrivateCPURegistry.
+// ListPrivateCPU returns list of system.MetricCPU's by traversing the PrivateCPURegistry.
 func (ir *IndexRegistry) ListPrivateCPU() (cs CPUSlice) {
 	ir.PrivateCPURegistry.Each(func(name string, i interface{}) {
-		cs = append(cs, i.(*operating.MetricCPU))
+		cs = append(cs, i.(*system.MetricCPU))
 	})
 	return cs
 }
 
 // DFSlice is a list of MetricDF.
-type DFSlice []*operating.MetricDF
+type DFSlice []*system.MetricDF
 
-// ListPrivateDF returns list of operating.MetricDF's by traversing the PrivateDFRegistry.
+// ListPrivateDF returns list of system.MetricDF's by traversing the PrivateDFRegistry.
 func (ir *IndexRegistry) ListPrivateDF() (dfs DFSlice) {
 	ir.PrivateDFRegistry.Each(func(name string, i interface{}) {
-		dfs = append(dfs, i.(*operating.MetricDF))
+		dfs = append(dfs, i.(*system.MetricDF))
 	})
 	return dfs
 }
 
 // GetOrRegisterPrivateCPU produces a registered in PrivateCPURegistry MetricCPU.
-func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) *operating.MetricCPU {
+func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) *system.MetricCPU {
 	ir.PrivateMutex.Lock()
 	defer ir.PrivateMutex.Unlock()
 	name := fmt.Sprintf("cpu-%d", coreno)
 	if metric := ir.PrivateCPURegistry.Get(name); metric != nil {
-		return metric.(*operating.MetricCPU)
+		return metric.(*system.MetricCPU)
 	}
-	i := system.NewMetricCPU(ir.Registry, name) // of type *operating.MetricCPU
+	i := system.NewMetricCPU(ir.Registry, name) // of type *system.MetricCPU
 	ir.PrivateCPURegistry.Register(name, i)     // error is ignored
 	// errs when the type is not derived from (go-)metrics types
 	return i
@@ -443,8 +442,8 @@ func (ir *IndexRegistry) MEM(para *params.Params, data IndexData) bool {
 	if para.Memn.Absolute < 1 {
 		return false
 	}
-	mem := new(operating.MEM)
-	mem.List = []operating.Memory{}
+	mem := new(system.MEM)
+	mem.List = []system.Memory{}
 	mem.List = append(mem.List,
 		_getmem("RAM", sigar.Swap{
 			Total: uint64(ir.RAM.Total.Snapshot().Value()),
@@ -523,7 +522,7 @@ func (ir *IndexRegistry) UpdateCPU(all sigar.Cpu, list []sigar.Cpu) {
 	}
 }
 
-func (ir *IndexRegistry) UpdateIF(ifaddr operating.IfAddress) {
+func (ir *IndexRegistry) UpdateIF(ifaddr system.IfAddress) {
 	ir.Mutex.Lock()
 	defer ir.Mutex.Unlock()
 	ir.GetOrRegisterPrivateIF(ifaddr.Name()).Update(ifaddr)
@@ -555,15 +554,15 @@ func (mss *MSS) GetString(k string) string {
 
 type IndexRegistry struct {
 	Registry           metrics.Registry
-	PrivateCPUAll      *operating.MetricCPU /// metrics.Registry
-	PrivateCPURegistry metrics.Registry     // set of MetricCPUs is handled as a metric in this registry
-	PrivateIFRegistry  metrics.Registry     // set of operating.MetricIFs is handled as a metric in this registry
-	PrivateDFRegistry  metrics.Registry     // set of operating.MetricDFs is handled as a metric in this registry
+	PrivateCPUAll      *system.MetricCPU /// metrics.Registry
+	PrivateCPURegistry metrics.Registry  // set of MetricCPUs is handled as a metric in this registry
+	PrivateIFRegistry  metrics.Registry  // set of system.MetricIFs is handled as a metric in this registry
+	PrivateDFRegistry  metrics.Registry  // set of system.MetricDFs is handled as a metric in this registry
 	PrivateMutex       sync.Mutex
 
-	RAM  *operating.MetricRAM
-	Swap operating.MetricSwap
-	Load *operating.MetricLoad
+	RAM  *system.MetricRAM
+	Swap system.MetricSwap
+	Load *system.MetricLoad
 
 	Mutex sync.Mutex
 }
@@ -582,8 +581,8 @@ func init() {
 		PrivateCPURegistry: metrics.NewRegistry(),
 		PrivateDFRegistry:  metrics.NewRegistry(),
 		PrivateIFRegistry:  metrics.NewRegistry(),
-		Load:               operating.NewMetricLoad(reg),
-		Swap:               operating.NewMetricSwap(reg),
+		Load:               system.NewMetricLoad(reg),
+		Swap:               system.NewMetricSwap(reg),
 		RAM:                system.NewMetricRAM(reg),
 	}
 }

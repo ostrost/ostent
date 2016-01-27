@@ -1,5 +1,5 @@
-// Package operating (as oppose to system) holds platform-independant code.
-package operating
+// Package system operates with system metrics data.
+package system
 
 import (
 	"sync"
