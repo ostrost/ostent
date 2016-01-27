@@ -315,18 +315,6 @@ func ExtraNewMetricCPU(r metrics.Registry, name string, extra CPUUpdater) *Metri
 	}
 }
 
-// AddSCPU adds other to dst field by field.
-func AddSCPU(dst *sigar.Cpu, other sigar.Cpu) {
-	dst.User += other.User
-	dst.Nice += other.Nice
-	dst.Sys += other.Sys
-	dst.Wait += other.Wait
-	dst.Idle += other.Idle
-	dst.Irq += other.Irq
-	dst.SoftIrq += other.SoftIrq
-	dst.Stolen += other.Stolen
-}
-
 type MetricString interface {
 	Snapshot() MetricString
 	Value() string

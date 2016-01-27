@@ -514,15 +514,13 @@ func (ir *IndexRegistry) UpdateLA(la sigar.LoadAverage) {
 	ir.Load.Long.Update(la.Fifteen)
 }
 
-func (ir *IndexRegistry) UpdateCPU(cpuslice []sigar.Cpu) {
+func (ir *IndexRegistry) UpdateCPU(all sigar.Cpu, list []sigar.Cpu) {
 	ir.Mutex.Lock()
 	defer ir.Mutex.Unlock()
-	all := sigar.Cpu{}
-	for coreno, cpu := range cpuslice {
-		ir.GetOrRegisterPrivateCPU(coreno).Update(cpu)
-		operating.AddSCPU(&all, cpu)
-	}
 	ir.PrivateCPUAll.Update(all)
+	for coreno, cpu := range list {
+		ir.GetOrRegisterPrivateCPU(coreno).Update(cpu)
+	}
 }
 
 func (ir *IndexRegistry) UpdateIF(ifaddr operating.IfAddress) {
@@ -557,10 +555,10 @@ func (mss *MSS) GetString(k string) string {
 
 type IndexRegistry struct {
 	Registry           metrics.Registry
-	PrivateCPUAll      *operating.MetricCPU
-	PrivateCPURegistry metrics.Registry // set of MetricCPUs is handled as a metric in this registry
-	PrivateIFRegistry  metrics.Registry // set of operating.MetricIFs is handled as a metric in this registry
-	PrivateDFRegistry  metrics.Registry // set of operating.MetricDFs is handled as a metric in this registry
+	PrivateCPUAll      *operating.MetricCPU /// metrics.Registry
+	PrivateCPURegistry metrics.Registry     // set of MetricCPUs is handled as a metric in this registry
+	PrivateIFRegistry  metrics.Registry     // set of operating.MetricIFs is handled as a metric in this registry
+	PrivateDFRegistry  metrics.Registry     // set of operating.MetricDFs is handled as a metric in this registry
 	PrivateMutex       sync.Mutex
 
 	RAM  *operating.MetricRAM
@@ -579,8 +577,8 @@ func init() {
 	reg := metrics.NewRegistry()
 	Reg1s = IndexRegistry{
 		Registry: reg,
-		PrivateCPUAll: system.NewMetricCPU(metrics.NewRegistry(),
-			"all" /* This "all" never used or referenced by */),
+		PrivateCPUAll: system.NewMetricCPU(reg, // metrics.NewRegistry(),
+			"cpu"),
 		PrivateCPURegistry: metrics.NewRegistry(),
 		PrivateDFRegistry:  metrics.NewRegistry(),
 		PrivateIFRegistry:  metrics.NewRegistry(),

@@ -17,7 +17,7 @@ import (
 // Registry has updates with sigar values.
 type Registry interface {
 	UpdateIF(operating.IfAddress)
-	UpdateCPU([]sigar.Cpu)
+	UpdateCPU(sigar.Cpu, []sigar.Cpu)
 	UpdateLA(sigar.LoadAverage)
 	UpdateSwap(sigar.Swap)
 	UpdateRAM(sigar.Mem, uint64, uint64)
@@ -219,8 +219,9 @@ func (m Machine) PS(CH chan<- PSSlice) {
 
 func (m Machine) CPU(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
-	cl := sigar.CpuList{}
-	cl.Get()
-	reg.UpdateCPU(cl.List)
+	all, list := sigar.Cpu{}, sigar.CpuList{}
+	all.Get()
+	list.Get()
+	reg.UpdateCPU(all, list.List)
 	wg.Done()
 }
