@@ -125,7 +125,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
         span.expand.col.small-1 Period
         span.expand.col.small-1.text-right  Value
         span.expand.col
-      +range_list('loadavg', '$la', '$la.Period', 'la-rowby-period')
+      +range_list('la', '$la', '$la.Period', 'la-rowby-period')
         span.expand.col.small-1
           .text-right.width-3rem {{$la.Period}}m
         span.expand.col.small-1.text-right  {{$la.Value}}
@@ -143,7 +143,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
         span.expand.col.small-1.text-right  Free
         span.expand.col.small-1.text-right  Use%
         span.expand.col
-      +range_list('memory', '$mem', '$mem.Kind', 'mem-rowby-kind')
+      +range_list('mem', '$mem', '$mem.Kind', 'mem-rowby-kind')
         span.expand.col.small-1 {{$mem.Kind}}
         span.expand.col.small-1.text-right  {{$mem.Total}}
         span.expand.col.small-1.text-right  {{$mem.Used}}
@@ -165,7 +165,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
         span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 3, 'Avail')   {{/* AVAIL  */}}
         span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 4, 'Use%')    {{/* USEPCT */}}
         span.expand.col
-      +range_list('diskUsage', '$df', '$df.DirName', 'df-rowby-dirname')
+      +range_list('df', '$df', '$df.DirName', 'df-rowby-dirname')
         span.expand.col.small-1.text-overflow {{$df.DevName}}
         span.expand.col.small-1.text-overflow  {{$df.DirName}}
         span.expand.col.small-1.text-overflow.text-right.gray
@@ -222,7 +222,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
           i b
           | ps
         span.expand.col
-      +range_list('ifaddrs', '$if', '$if.Name', 'if-rowby-name')
+      +range_list('netio', '$if', '$if.Name', 'if-rowby-name')
         span.expand.col.small-1.text-overflow {{$if.Name}}
         span.expand.col.small-1.text-overflow.text-right {{$if.IP}}
         span.expand.col.small-2.text-right.text-nowrap

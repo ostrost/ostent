@@ -283,7 +283,7 @@ func (ir *IndexRegistry) DF(para *params.Params, data IndexData) bool {
 	if !para.Dfd.Expired() {
 		return false
 	}
-	data["diskUsage"] = &system.DF{List: ir.GetDF(para)}
+	data["df"] = &system.DF{List: ir.GetDF(para)}
 	return true
 }
 
@@ -350,7 +350,7 @@ func (ir *IndexRegistry) IF(para *params.Params, data IndexData) bool {
 	if !para.Ifd.Expired() {
 		return false
 	}
-	data["ifaddrs"] = &system.IF{List: ir.GetIF(para)}
+	data["netio"] = &system.IF{List: ir.GetIF(para)}
 	return true
 }
 
@@ -450,7 +450,7 @@ func (ir *IndexRegistry) MEM(para *params.Params, data IndexData) bool {
 			Free:  uint64(ir.RAM.Free.Snapshot().Value()),
 			Used:  ir.RAM.UsedValue(), // == .Total - .Free
 		}))
-	data["memory"] = mem
+	data["mem"] = mem
 
 	if para.Memn.Absolute < 2 {
 		return true
@@ -478,7 +478,7 @@ func (ir *IndexRegistry) LA(para *params.Params, data IndexData) bool {
 	type LA struct {
 		Period, Value string
 	}
-	data["loadavg"] = &struct{ List []LA }{[]LA{
+	data["la"] = &struct{ List []LA }{[]LA{
 		{"1", fmt.Sprintf("%.2f", ir.Load.Short.Snapshot().Value())},
 		{"5", fmt.Sprintf("%.2f", ir.Load.Mid.Snapshot().Value())},
 		{"15", fmt.Sprintf("%.2f", ir.Load.Long.Snapshot().Value())},

@@ -438,6 +438,7 @@ func Fetch(hostport, key string) ([]byte, error) {
 		return nil, err
 	}
 	headers := http.Header{}
+	headers.Set("User-Agent", "ostent/Go-http-client")
 	/*
 		host, _, err := net.SplitHostPort(hostport)
 		if err != nil {

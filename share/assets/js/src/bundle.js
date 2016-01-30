@@ -20370,7 +20370,7 @@
 	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
 	  List: function List(data) {
 	    var list = undefined;
-	    if (data == null || data["diskUsage"] == null || (list = data["diskUsage"].List) == null) {
+	    if (data == null || data["df"] == null || (list = data["df"].List) == null) {
 	      return [];
 	    }
 	    return list;
@@ -20378,7 +20378,7 @@
 	  Reduce: function Reduce(data) {
 	    return {
 	      params: data.params,
-	      diskUsage: data.diskUsage
+	      df: data.df
 	    };
 	  },
 	  render: function render() {
@@ -20566,7 +20566,7 @@
 	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
 	  List: function List(data) {
 	    var list = undefined;
-	    if (data == null || data["ifaddrs"] == null || (list = data["ifaddrs"].List) == null) {
+	    if (data == null || data["netio"] == null || (list = data["netio"].List) == null) {
 	      return [];
 	    }
 	    return list;
@@ -20574,7 +20574,7 @@
 	  Reduce: function Reduce(data) {
 	    return {
 	      params: data.params,
-	      ifaddrs: data.ifaddrs
+	      netio: data.netio
 	    };
 	  },
 	  render: function render() {
@@ -20737,7 +20737,7 @@
 	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
 	  List: function List(data) {
 	    var list = undefined;
-	    if (data == null || data["loadavg"] == null || (list = data["loadavg"].List) == null) {
+	    if (data == null || data["la"] == null || (list = data["la"].List) == null) {
 	      return [];
 	    }
 	    return list;
@@ -20745,7 +20745,7 @@
 	  Reduce: function Reduce(data) {
 	    return {
 	      params: data.params,
-	      loadavg: data.loadavg
+	      la: data.la
 	    };
 	  },
 	  render: function render() {
@@ -20848,7 +20848,7 @@
 	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
 	  List: function List(data) {
 	    var list = undefined;
-	    if (data == null || data["memory"] == null || (list = data["memory"].List) == null) {
+	    if (data == null || data["mem"] == null || (list = data["mem"].List) == null) {
 	      return [];
 	    }
 	    return list;
@@ -20856,7 +20856,7 @@
 	  Reduce: function Reduce(data) {
 	    return {
 	      params: data.params,
-	      memory: data.memory
+	      mem: data.mem
 	    };
 	  },
 	  render: function render() {

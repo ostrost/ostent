@@ -194,7 +194,7 @@ jsdefines.define_df = React.createClass({
   mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
   List: function(data) {
     let list;
-    if (data == null || data["diskUsage"] == null || (list = data["diskUsage"].List) == null) {
+    if (data == null || data["df"] == null || (list = data["df"].List) == null) {
       return [];
     }
     return list;
@@ -202,7 +202,7 @@ jsdefines.define_df = React.createClass({
   Reduce: function(data) {
     return {
       params: data.params,
-      diskUsage: data.diskUsage
+      df: data.df
     };
   },
   render: function() {
@@ -286,7 +286,7 @@ jsdefines.define_if = React.createClass({
   mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
   List: function(data) {
     let list;
-    if (data == null || data["ifaddrs"] == null || (list = data["ifaddrs"].List) == null) {
+    if (data == null || data["netio"] == null || (list = data["netio"].List) == null) {
       return [];
     }
     return list;
@@ -294,7 +294,7 @@ jsdefines.define_if = React.createClass({
   Reduce: function(data) {
     return {
       params: data.params,
-      ifaddrs: data.ifaddrs
+      netio: data.netio
     };
   },
   render: function() {
@@ -359,7 +359,7 @@ jsdefines.define_la = React.createClass({
   mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
   List: function(data) {
     let list;
-    if (data == null || data["loadavg"] == null || (list = data["loadavg"].List) == null) {
+    if (data == null || data["la"] == null || (list = data["la"].List) == null) {
       return [];
     }
     return list;
@@ -367,7 +367,7 @@ jsdefines.define_la = React.createClass({
   Reduce: function(data) {
     return {
       params: data.params,
-      loadavg: data.loadavg
+      la: data.la
     };
   },
   render: function() {
@@ -433,7 +433,7 @@ jsdefines.define_mem = React.createClass({
   mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
   List: function(data) {
     let list;
-    if (data == null || data["memory"] == null || (list = data["memory"].List) == null) {
+    if (data == null || data["mem"] == null || (list = data["mem"].List) == null) {
       return [];
     }
     return list;
@@ -441,7 +441,7 @@ jsdefines.define_mem = React.createClass({
   Reduce: function(data) {
     return {
       params: data.params,
-      memory: data.memory
+      mem: data.mem
     };
   },
   render: function() {
