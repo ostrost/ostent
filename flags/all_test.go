@@ -108,8 +108,8 @@ func TestBindSet(t *testing.T) {
 			}
 			t.Errorf("Error: %q\nExpected errors: %+v\n", err, v.errs)
 		}
-		if b.string != v.cmp {
-			t.Errorf("Mismatch: Bind %v == %v != %v\n", v.a, v.cmp, b.string)
+		if s := b.String(); s != v.cmp {
+			t.Errorf("Mismatch: Bind %v == %v != %v\n", v.a, v.cmp, s)
 		}
 	}
 }

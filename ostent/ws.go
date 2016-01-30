@@ -1,8 +1,10 @@
 package ostent
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
@@ -319,8 +321,10 @@ func (c *conn) Process(rd *received) *bool {
 
 	var req *http.Request
 	if form, err := rd.form(); err != nil {
-		// if !c.writeError(err) { return newfalse() } // should I write an error?
-		return newtrue() // continue receiving
+		// if !c.writeError(err) { return new(bool) } // should I write an error?
+		b := new(bool)
+		*b = true // true is to continue receiving
+		return b
 	} else if form != nil {
 		// compile an actual Request
 		r := *c.requestOrigin
@@ -340,7 +344,7 @@ func (c *conn) Process(rd *received) *bool {
 	serve(w, req)
 
 	if w.status == http.StatusBadRequest {
-		return newfalse() // write failure, stop receiving
+		return new(bool) // write failure, stop receiving
 	}
 	return nil
 }
@@ -423,6 +427,47 @@ func (sw ServeWS) IndexWS(w http.ResponseWriter, req *http.Request) {
 	c.updateLoop(stop)     // write to the client
 }
 
-func newfalse() *bool      { return new(bool) }
-func newtrue() *bool       { return newbool(true) }
-func newbool(v bool) *bool { b := new(bool); *b = v; return b }
+func Fetch(hostport, key string) ([]byte, error) {
+	conn, err := net.Dial("tcp", hostport)
+	if err != nil {
+		return nil, err
+	}
+	// conn.SetDeadline(time.Now().Add(time.Second))
+	wsurl, err := url.Parse(fmt.Sprintf("ws://%s/index.ws", hostport))
+	if err != nil {
+		return nil, err
+	}
+	headers := http.Header{}
+	/*
+		host, _, err := net.SplitHostPort(hostport)
+		if err != nil {
+			return nil, err
+		}
+		headers.Set("Host", host) // */
+	// headers.Set("Origin", "http://"+hostport+"/")
+	wsconn, _, err := websocket.NewClient(conn, wsurl, headers, 10, 10) // 4096, 4096)
+	if err != nil {
+		return nil, err
+	}
+	err = wsconn.WriteMessage(websocket.TextMessage, []byte(`{"Search": ""}`))
+	if err != nil {
+		return nil, err
+	}
+
+	_, message, err := wsconn.ReadMessage()
+	if err != nil {
+		return nil, err
+	}
+	id := IndexData{}
+	if err := json.Unmarshal(message, &id); err != nil {
+		return nil, err
+	}
+	var value interface{}
+	if key == "" {
+		delete(id, "params")
+		value = id
+	} else {
+		value = id[key]
+	}
+	return json.MarshalIndent(value, "", "  ")
+}

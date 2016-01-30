@@ -7,7 +7,6 @@ import (
 )
 
 type Bind struct {
-	string
 	defport string // const
 	Host    string // available after flag.Parse()
 	Port    string // available after flag.Parse()
@@ -19,8 +18,18 @@ func NewBind(defport int) Bind {
 	return b
 }
 
-// satisfying flag.Value interface
-func (b Bind) String() string { return string(b.string) }
+// String is to conform interfaces (flag.Value, fmt.Stringer).
+func (b Bind) String() string { return string(b.Host + ":" + b.Port) }
+
+// ClientString returns b string suitable for client.
+// If the host part of b is empty, 127.0.0.1 is assumed.
+func (b Bind) ClientString() string {
+	if b.Host == "" {
+		b.Host = "127.0.0.1" // b is a copy (not a pointer)
+	}
+	return b.String()
+}
+
 func (b *Bind) Set(input string) error {
 	if input == "" {
 		input = ":" + b.defport
@@ -36,7 +45,6 @@ func (b *Bind) Set(input string) error {
 	if _, err = net.LookupPort("tcp", b.Port); err != nil {
 		return err
 	}
-	b.string = b.Host + ":" + b.Port
 	return nil
 }
 
