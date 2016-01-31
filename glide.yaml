@@ -9,6 +9,7 @@ import:
 - package: github.com/gorilla/schema
 - package: github.com/gorilla/websocket
 - package: github.com/inconshreveable/go-update
+- package: github.com/jeffail/gabs
 - package: github.com/jteeuwen/go-bindata
   subpackages:
   - .

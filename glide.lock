@@ -1,5 +1,5 @@
-hash: 3d73d80432e5ef4afb0e84fe3a6073fd3f5e0469d2088a9ecc6575b963f8b700
-updated: 2016-01-24T15:07:12.957133817Z
+hash: fdb63a69afcdf3cdecd585fa624f648118f50b8d7bd39bc2ae14d397a7dd71ba
+updated: 2016-01-31T18:17:17.011462273Z
 imports:
 - name: collectd.org
   version: 9fc824c70f713ea0f058a07b49a4c563ef2a3b98
@@ -30,11 +30,11 @@ imports:
 - name: github.com/dgryski/go-bitstream
   version: 27cd5973303fde7d914860be1ea4b927a6be0c92
 - name: github.com/gogo/protobuf
-  version: c57e439bad574c2e0877ff18d514badcfced004d
+  version: e8904f58e872a473a5b91bc9bf3377d223555263
 - name: github.com/golang/protobuf
-  version: 5fc2294e655b78ed8a02082d37808d46c17d7e64
+  version: 45bba206dd5270d96bac4942dcfe515726613249
 - name: github.com/golang/snappy
-  version: 723cc1e459b8eea2dea4583200fd60757d40097a
+  version: 1963d058044b19e16595f80d5050fa54e2070438
 - name: github.com/google/go-querystring
   version: 2a60fc2ba6c19de80291203597d752e9ba58e4c0
   subpackages:
@@ -44,11 +44,11 @@ imports:
 - name: github.com/gorilla/schema
   version: 14c555599c2a4f493c1e13fd1ea6fdf721739028
 - name: github.com/gorilla/websocket
-  version: 5434f8b69b7f4f4ef0120e04c046cd6ce54ef0dd
+  version: 234959944d9cf05229b02e8b386e5cffe1e4e04a
 - name: github.com/hashicorp/go-msgpack
   version: fa3f63826f7c23912c15263591e65d54d080b458
 - name: github.com/hashicorp/hcl
-  version: 578dd9746824a54637686b51a41bad457a56bcef
+  version: e96d23138c76470c808bf6586bdaf981bbd25cae
 - name: github.com/hashicorp/raft
   version: 057b893fd996696719e98b6c44649ea14968c811
 - name: github.com/hashicorp/raft-boltdb
@@ -56,9 +56,11 @@ imports:
 - name: github.com/inconshreveable/go-update
   version: 8152e7eb6ccf8679a64582a66b78519688d156ad
 - name: github.com/influxdb/influxdb
-  version: 58e0eed9cb166e0b004e6b41a4d64c39d24b40f4
+  version: 60df13fb566d07ff2cdd07aa23a4796a02b0df3c
 - name: github.com/influxdb/usage-client
   version: 475977e68d79883d9c8d67131c84e4241523f452
+- name: github.com/jeffail/gabs
+  version: 785f0ec81781dbad8dfda8e4283fbba0ea3f0b88
 - name: github.com/jteeuwen/go-bindata
   version: a0ff2567cfb70903282db057e799fd826784d41d
   subpackages:
@@ -91,13 +93,13 @@ imports:
 - name: github.com/paulbellamy/ratecounter
   version: 5a11f585a31379765c190c033b6ad39956584447
 - name: github.com/peterh/liner
-  version: 72909af234e0e355af10d0ace679446a6c5d7ec3
+  version: ad1edfd30321d8f006ccf05f1e0524adeb943060
 - name: github.com/prometheus/client_golang
   version: 67994f177195311c3ea3d4407ed0175e34a4256f
 - name: github.com/prometheus/client_model
   version: fa8ad6fec33561be4280a8f0514318c79d7f6cb6
 - name: github.com/prometheus/common
-  version: b0d797186bfbaf6d785031c6c2d32f75c720007d
+  version: dba5e39d4516169e840def50e507ef5f21b985f9
 - name: github.com/prometheus/procfs
   version: 406e5b7bfd8201a36e2bb5f7bdae0b03380c2ce8
 - name: github.com/rakyll/statik
@@ -123,7 +125,7 @@ imports:
 - name: github.com/spf13/viper
   version: a212099cbe6fbe8d07476bfda8d2d39b6ff8f325
 - name: github.com/stathat/go
-  version: 01d012b9ee2ecc107cb28b6dd32d9019ed5c1d77
+  version: cf69b0bcb80478755dc0ea1120b36000e35dcbbb
 - name: github.com/ugorji/go
   version: 646ae4a518c1c3be0739df898118d9bccf993858
 - name: github.com/vrischmann/go-metrics-influxdb
@@ -131,11 +133,11 @@ imports:
 - name: github.com/xordataexchange/crypt
   version: 749e360c8f236773f28fc6d3ddfce4a470795227
 - name: golang.org/x/crypto
-  version: 3760e016850398b85094c4c99e955b8c3dea5711
+  version: 1f22c0103821b9390939b6776727195525381532
 - name: golang.org/x/net
-  version: 2e9cee70ee697e0a2ef894b560dda50dec7dff58
+  version: 04b9de9b512f58addf28c9853d50ebef61c3953e
 - name: golang.org/x/text
-  version: cf4986612c83df6c55578ba198316d1684a9a287
+  version: 6fc2e00a0d64b1f7fc1212dae5b0c939cf6d9ac4
 - name: gopkg.in/airbrake/gobrake.v2
   version: c9d51adc624b5cc4c1bf8de730a09af4878ffe2d
 - name: gopkg.in/fatih/pool.v2

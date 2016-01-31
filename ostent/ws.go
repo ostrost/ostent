@@ -1,7 +1,6 @@
 package ostent
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net"
@@ -12,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/jeffail/gabs"
 
 	"github.com/ostrost/ostent/params"
 )
@@ -460,22 +460,16 @@ func Fetch(hostport, key string, cont bool) error {
 		if err != nil {
 			return err
 		}
-		id := IndexData{}
-		if err := json.Unmarshal(message, &id); err != nil {
-			return err
-		}
-		var value interface{}
-		if key == "" {
-			delete(id, "params")
-			value = id
-		} else {
-			value = id[key]
-		}
-		text, err := json.MarshalIndent(value, "", "  ")
+		jdata, err := gabs.ParseJSON(message)
 		if err != nil {
 			return err
 		}
-		fmt.Printf("%s\n", text)
+		if key == "" {
+			jdata.Delete("params")
+		} else {
+			jdata = jdata.Path(key)
+		}
+		fmt.Println(jdata.StringIndent("", "  "))
 		if !cont {
 			break
 		}
