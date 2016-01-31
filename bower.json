@@ -10,7 +10,6 @@
   ],
   "dependencies": {
     "foundation-sites": "^6.1.2",
-    "foundation-apps": "~1.2.0",
     "reconnectingWebsocket": "~1.0.0"
   }
 }

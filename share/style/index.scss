@@ -11,8 +11,7 @@
 @import 'foundation';
 
 // NOT foundation-grid
-// NOT foundation-flex-grid either
-// @include foundation-flex-grid;
+@include foundation-flex-grid;
 
 @include foundation-global-styles;
 @include foundation-typography;
@@ -49,10 +48,6 @@
 @include foundation-top-bar;
 // END OF foundation imports and includes
 
-// foundation-apps imports:
-@import "helpers/functions"; // dependency for grid
-@import "components/grid"; // foundation-apps-grid (flex)
-
 .expand { flex: 1 1 0px; } // this is essential
 
 @each $size in ('small', 'medium') {
@@ -64,10 +59,9 @@
   }
 }
 
-.hr-top { border-top: 1px solid $medium-gray; }
+.top-bar, .hr-bottom { border-bottom: 1px solid $medium-gray; }
 
-// .grid-block { .col:hover { background-color: #88f; } }
-.stripe >.grid-block {
+.stripe > .row {
   &.thead  {
     & { font-weight: bold; background-color: $table-head-background; }
   }
@@ -75,12 +69,6 @@
  // &:nth-of-type(odd)       { background-color: $table-striped-background; }
     &:hover                  { background-color: $table-row-hover;          }
     &:nth-of-type(odd):hover { background-color: $table-row-stripe-hover;   }
-    /*
-    .col {
-      padding: $table-padding;
-      // &:hover { background-color: #88f; }
-    }
-    */
   }
 
   &:hover .gray { color: $dark-gray; }

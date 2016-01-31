@@ -19,7 +19,7 @@ mixin vlink(kparam, number, text)
     | {{end}}
   
 mixin table(nparam, dparam, title)
-  .grid-block.hr-top
+  .row.expanded.hr-bottom
     -
       var dlinkLess = format('Data.params.Dlinks%s.Less', dparam),
           dlinkMore = format('Data.params.Dlinks%s.More', dparam),
@@ -28,7 +28,7 @@ mixin table(nparam, dparam, title)
           ntlink    = format('Data.params.Tlinks%s', nparam),
           ndata     = format('Data.params%s', nparam),
           ddata     = format('Data.params%s', dparam);
-    .col-lr.large-1.text-right
+    .column.small-1.text-right
       if JSX
         | <div class={#{ndata}.Negative ? "show-showhide" : "hide-showhide"}>
       else
@@ -40,45 +40,44 @@ mixin table(nparam, dparam, title)
           | <a title="#{title} display options" href={{.#{ntlink}}}>
         | <span class="showhide-hide whitespace-pre float-left">... </span>#{title}</a>
       | </div>
-    .col-lr.large-11
+    .column.large-11
       if JSX
         | <div class={#{ndata}.Negative ? "show-showhide" : "hide-showhide"}>
       else
         | <div class="{{if .#{ndata}.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-      .grid-block
-        ul.menu.showhide-show
-          li
-            .input-group
-              .input-group-label.small.text-nowrap delay
-              .input-group-button
-                a.button.small.secondary.disabled {{.#{ddata}}}
-              - var cls = 'text-nowrap button small';
-              .input-group-button
-                if JSX
-                  +alink_jsxl(cls, '- %s', dlinkLess)
-                else
-                  +alink_html(cls, '- %s', dlinkLess)
-              .input-group-button
-                if JSX
-                  +alink_jsxl(cls, '%s +', dlinkMore)
-                else
-                  +alink_html(cls, '%s +', dlinkMore)
-          li
-            .input-group
-              .input-group-label.small.text-nowrap rows
-              .input-group-button
-                a.button.small.secondary.disabled {{.#{ndata}.Absolute}}
-              - var cls = 'text-nowrap button small success';
-              .input-group-button
-                if JSX
-                  +alink_jsxl(cls, '- %s', nlinkLess)
-                else
-                  +alink_html(cls, '- %s', nlinkLess)
-              .input-group-button
-                if JSX
-                  +alink_jsxl(cls, '%s +', nlinkMore)
-                else
-                  +alink_html(cls, '%s +', nlinkMore)
+      ul.row.menu.showhide-show
+        li
+          .input-group
+            .input-group-label.small.text-nowrap delay
+            .input-group-button
+              a.button.small.secondary.disabled {{.#{ddata}}}
+            - var cls = 'text-nowrap button small';
+            .input-group-button
+              if JSX
+                +alink_jsxl(cls, '- %s', dlinkLess)
+              else
+                +alink_html(cls, '- %s', dlinkLess)
+            .input-group-button
+              if JSX
+                +alink_jsxl(cls, '%s +', dlinkMore)
+              else
+                +alink_html(cls, '%s +', dlinkMore)
+        li
+          .input-group
+            .input-group-label.small.text-nowrap rows
+            .input-group-button
+              a.button.small.secondary.disabled {{.#{ndata}.Absolute}}
+            - var cls = 'text-nowrap button small success';
+            .input-group-button
+              if JSX
+                +alink_jsxl(cls, '- %s', nlinkLess)
+              else
+                +alink_html(cls, '- %s', nlinkLess)
+            .input-group-button
+              if JSX
+                +alink_jsxl(cls, '%s +', nlinkMore)
+              else
+                +alink_html(cls, '%s +', nlinkMore)
       if JSX
         | <div class={#{ndata}.Absolute == 0 ? "hide":""}>
       else
@@ -108,9 +107,9 @@ mixin range_list(datak, ranger, kvalue, keyid)
   | {{range #{ranger} := .Data.#{datak}.List}}
   if JSX
     | {this.List(Data).map(function(#{ranger}, i) { return (
-    | <div class="grid-block" key={"#{keyid}-"+#{kvalue}}>
+    | <div class="row" key={"#{keyid}-"+#{kvalue}}>
   else
-    | <div class="grid-block">
+    | <div class="row">
   block
   | </div>
   if JSX
@@ -120,8 +119,8 @@ mixin range_list(datak, ranger, kvalue, keyid)
 
 +define('define_la')
   +table('.Lan', '.Lad', 'Load avg')
-    .grid-block.vertical.stripe
-      .grid-block.thead
+    .stripe
+      .row.thead
         span.expand.col.small-1 Period
         span.expand.col.small-1.text-right  Value
         span.expand.col
@@ -135,8 +134,8 @@ mixin range_list(datak, ranger, kvalue, keyid)
 
 +define('define_mem')
   +table('.Memn', '.Memd', 'Memory')
-    .grid-block.vertical.stripe
-      .grid-block.thead
+    .stripe
+      .row.thead
         span.expand.col.small-1 Memory
         span.expand.col.small-1.text-right  Total
         span.expand.col.small-1.text-right  Used
@@ -155,8 +154,8 @@ mixin range_list(datak, ranger, kvalue, keyid)
 
 +define('define_df')
   +table('.Dfn', '.Dfd', 'Disk usage')
-    .grid-block.vertical.stripe
-      .grid-block.thead
+    .stripe
+      .row.thead
         | {{/* poke purifycss: <div class="dropup"><div class="caret" /></div> */}}
         span.expand.col.small-1.text-nowrap:            +vlink('.Dfk', 1, 'Device')  {{/* FS     */}}
         span.expand.col.small-1.text-nowrap:            +vlink('.Dfk', 2, 'Mounted') {{/* MP     */}}
@@ -187,8 +186,8 @@ mixin range_list(datak, ranger, kvalue, keyid)
 
 +define('define_cpu')
   +table('.CPUn', '.CPUd', 'CPU')
-    .grid-block.vertical.stripe
-      .grid-block.thead
+    .stripe
+      .row.thead
         span.expand.col.small-1 Core
         span.expand.col.small-1.text-right  User%
         span.expand.col.small-1.text-right  Sys%
@@ -211,8 +210,8 @@ mixin range_list(datak, ranger, kvalue, keyid)
 
 +define('define_if')
   +table('.Ifn', '.Ifd', 'Interfaces')
-    .grid-block.vertical.stripe
-      .grid-block.thead
+    .stripe
+      .row.thead
         span.expand.col.small-1 Interface
         span.expand.col.small-1.text-right  IP
         span.expand.col.small-2.text-right.text-nowrap(title='Drops,Errors In/Out per second')  Loss IO ps
@@ -284,8 +283,8 @@ mixin range_list(datak, ranger, kvalue, keyid)
 
 +define('define_ps')
   +table('.Psn', '.Psd', 'Processes')
-    .grid-block.vertical.stripe
-      .grid-block.thead
+    .stripe
+      .row.thead
         | {{/* poke purifycss: <div class="dropup"><div class="caret" /></div> */}}
         span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 1, 'PID')
         span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 2, 'UID')
@@ -347,18 +346,17 @@ html
             a.button.secondary.hollow.margin-0(href='https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}') ostent
 
     | {{if ne (len .Exporting) 0}}
-    .grid-block.hr-top
-      .large-1
-      .large-11.col-lr
+    .row.expanded.hr-bottom
+      .column.large-11.small-offset-1
         //- h4 Exporting to
-        .grid-block.vertical.stripe
-          .grid-block.thead
+        .stripe
+          .row.thead
             span.expand.col.small-2
               | Exporting to&nbsp;
               span.badge.secondary {{len .Exporting}}
             span.expand.col.small-10 Endpoint
           | {{range $expo := .Exporting}}
-          .grid-block
+          .row
             span.expand.col.small-2 {{$expo.Name}}
             span.expand.col.small-10 {{$expo.Endpoint}}
           | {{end}}

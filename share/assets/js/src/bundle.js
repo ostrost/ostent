@@ -20259,9 +20259,9 @@
 	  render: function render() {
 	    var Data = this.state; // shadow global Data
 	    return _jsx('div', {
-	      className: 'grid-block hr-top'
+	      className: 'row expanded hr-bottom'
 	    }, void 0, _jsx('div', {
-	      className: 'col-lr large-1 text-right'
+	      className: 'column small-1 text-right'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.CPUn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('h1', {
@@ -20273,13 +20273,11 @@
 	    }, void 0, _jsx('span', {
 	      className: 'showhide-hide whitespace-pre float-left'
 	    }, void 0, '... '), 'CPU')))), _jsx('div', {
-	      className: 'col-lr large-11'
+	      className: 'column large-11'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.CPUn.Negative ? "show-showhide" : "hide-showhide"
-	    }, void 0, _jsx('div', {
-	      className: 'grid-block'
 	    }, void 0, _jsx('ul', {
-	      className: 'menu showhide-show'
+	      className: 'row menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
@@ -20320,12 +20318,12 @@
 	      href: Data.params.Nlinks.CPUn.More.Href,
 	      onClick: this.handleClick,
 	      className: "text-nowrap button small success " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : "")
-	    }, void 0, Data.params.Nlinks.CPUn.More.Text, ' +')))))), _jsx('div', {
+	    }, void 0, Data.params.Nlinks.CPUn.More.Text, ' +'))))), _jsx('div', {
 	      className: Data.params.CPUn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block vertical stripe'
+	      className: 'stripe'
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block thead'
+	      className: 'row thead'
 	    }, void 0, _jsx('span', {
 	      className: 'expand col small-1'
 	    }, void 0, 'Core'), _jsx('span', {
@@ -20338,7 +20336,7 @@
 	      className: 'expand col small-1 text-right'
 	    }, void 0, ' Idle%'), _ref2), this.List(Data).map(function ($cpu, i) {
 	      return _jsx('div', {
-	        className: 'grid-block'
+	        className: 'row'
 	      }, "cpu-rowby-n-" + $cpu.N, _jsx('span', {
 	        className: 'expand col small-1 text-nowrap'
 	      }, void 0, $cpu.N), _jsx('span', {
@@ -20384,9 +20382,9 @@
 	  render: function render() {
 	    var Data = this.state; // shadow global Data
 	    return _jsx('div', {
-	      className: 'grid-block hr-top'
+	      className: 'row expanded hr-bottom'
 	    }, void 0, _jsx('div', {
-	      className: 'col-lr large-1 text-right'
+	      className: 'column small-1 text-right'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Dfn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('h1', {
@@ -20398,13 +20396,11 @@
 	    }, void 0, _jsx('span', {
 	      className: 'showhide-hide whitespace-pre float-left'
 	    }, void 0, '... '), 'Disk usage')))), _jsx('div', {
-	      className: 'col-lr large-11'
+	      className: 'column large-11'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Dfn.Negative ? "show-showhide" : "hide-showhide"
-	    }, void 0, _jsx('div', {
-	      className: 'grid-block'
 	    }, void 0, _jsx('ul', {
-	      className: 'menu showhide-show'
+	      className: 'row menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
@@ -20445,12 +20441,12 @@
 	      href: Data.params.Nlinks.Dfn.More.Href,
 	      onClick: this.handleClick,
 	      className: "text-nowrap button small success " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : "")
-	    }, void 0, Data.params.Nlinks.Dfn.More.Text, ' +')))))), _jsx('div', {
+	    }, void 0, Data.params.Nlinks.Dfn.More.Text, ' +'))))), _jsx('div', {
 	      className: Data.params.Dfn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block vertical stripe'
+	      className: 'stripe'
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block thead'
+	      className: 'row thead'
 	    }, void 0, _jsx('span', {
 	      className: 'expand col small-1 text-nowrap'
 	    }, void 0, _jsx('a', {
@@ -20501,7 +20497,7 @@
 	      className: Data.params.Vlinks.Dfk[4 - 1].CaretClass
 	    }))), _ref3), this.List(Data).map(function ($df, i) {
 	      return _jsx('div', {
-	        className: 'grid-block'
+	        className: 'row'
 	      }, "df-rowby-dirname-" + $df.DirName, _jsx('span', {
 	        className: 'expand col small-1 text-overflow'
 	      }, void 0, $df.DevName), _jsx('span', {
@@ -20580,9 +20576,9 @@
 	  render: function render() {
 	    var Data = this.state; // shadow global Data
 	    return _jsx('div', {
-	      className: 'grid-block hr-top'
+	      className: 'row expanded hr-bottom'
 	    }, void 0, _jsx('div', {
-	      className: 'col-lr large-1 text-right'
+	      className: 'column small-1 text-right'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Ifn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('h1', {
@@ -20594,13 +20590,11 @@
 	    }, void 0, _jsx('span', {
 	      className: 'showhide-hide whitespace-pre float-left'
 	    }, void 0, '... '), 'Interfaces')))), _jsx('div', {
-	      className: 'col-lr large-11'
+	      className: 'column large-11'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Ifn.Negative ? "show-showhide" : "hide-showhide"
-	    }, void 0, _jsx('div', {
-	      className: 'grid-block'
 	    }, void 0, _jsx('ul', {
-	      className: 'menu showhide-show'
+	      className: 'row menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
@@ -20641,12 +20635,12 @@
 	      href: Data.params.Nlinks.Ifn.More.Href,
 	      onClick: this.handleClick,
 	      className: "text-nowrap button small success " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : "")
-	    }, void 0, Data.params.Nlinks.Ifn.More.Text, ' +')))))), _jsx('div', {
+	    }, void 0, Data.params.Nlinks.Ifn.More.Text, ' +'))))), _jsx('div', {
 	      className: Data.params.Ifn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block vertical stripe'
+	      className: 'stripe'
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block thead'
+	      className: 'row thead'
 	    }, void 0, _jsx('span', {
 	      className: 'expand col small-1'
 	    }, void 0, 'Interface'), _jsx('span', {
@@ -20662,7 +20656,7 @@
 	      className: 'expand col small-2 text-right text-nowrap'
 	    }, void 0, ' IO ', _jsx('i', {}, void 0, 'b'), 'ps'), _ref4), this.List(Data).map(function ($if, i) {
 	      return _jsx('div', {
-	        className: 'grid-block'
+	        className: 'row'
 	      }, "if-rowby-name-" + $if.Name, _jsx('span', {
 	        className: 'expand col small-1 text-overflow'
 	      }, void 0, $if.Name), _jsx('span', {
@@ -20751,9 +20745,9 @@
 	  render: function render() {
 	    var Data = this.state; // shadow global Data
 	    return _jsx('div', {
-	      className: 'grid-block hr-top'
+	      className: 'row expanded hr-bottom'
 	    }, void 0, _jsx('div', {
-	      className: 'col-lr large-1 text-right'
+	      className: 'column small-1 text-right'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Lan.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('h1', {
@@ -20765,13 +20759,11 @@
 	    }, void 0, _jsx('span', {
 	      className: 'showhide-hide whitespace-pre float-left'
 	    }, void 0, '... '), 'Load avg')))), _jsx('div', {
-	      className: 'col-lr large-11'
+	      className: 'column large-11'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Lan.Negative ? "show-showhide" : "hide-showhide"
-	    }, void 0, _jsx('div', {
-	      className: 'grid-block'
 	    }, void 0, _jsx('ul', {
-	      className: 'menu showhide-show'
+	      className: 'row menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
@@ -20812,19 +20804,19 @@
 	      href: Data.params.Nlinks.Lan.More.Href,
 	      onClick: this.handleClick,
 	      className: "text-nowrap button small success " + (Data.params.Nlinks.Lan.More.ExtraClass != null ? Data.params.Nlinks.Lan.More.ExtraClass : "")
-	    }, void 0, Data.params.Nlinks.Lan.More.Text, ' +')))))), _jsx('div', {
+	    }, void 0, Data.params.Nlinks.Lan.More.Text, ' +'))))), _jsx('div', {
 	      className: Data.params.Lan.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block vertical stripe'
+	      className: 'stripe'
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block thead'
+	      className: 'row thead'
 	    }, void 0, _jsx('span', {
 	      className: 'expand col small-1'
 	    }, void 0, 'Period'), _jsx('span', {
 	      className: 'expand col small-1 text-right'
 	    }, void 0, ' Value'), _ref5), this.List(Data).map(function ($la, i) {
 	      return _jsx('div', {
-	        className: 'grid-block'
+	        className: 'row'
 	      }, "la-rowby-period-" + $la.Period, _jsx('span', {
 	        className: 'expand col small-1'
 	      }, void 0, _jsx('div', {
@@ -20862,9 +20854,9 @@
 	  render: function render() {
 	    var Data = this.state; // shadow global Data
 	    return _jsx('div', {
-	      className: 'grid-block hr-top'
+	      className: 'row expanded hr-bottom'
 	    }, void 0, _jsx('div', {
-	      className: 'col-lr large-1 text-right'
+	      className: 'column small-1 text-right'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Memn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('h1', {
@@ -20876,13 +20868,11 @@
 	    }, void 0, _jsx('span', {
 	      className: 'showhide-hide whitespace-pre float-left'
 	    }, void 0, '... '), 'Memory')))), _jsx('div', {
-	      className: 'col-lr large-11'
+	      className: 'column large-11'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Memn.Negative ? "show-showhide" : "hide-showhide"
-	    }, void 0, _jsx('div', {
-	      className: 'grid-block'
 	    }, void 0, _jsx('ul', {
-	      className: 'menu showhide-show'
+	      className: 'row menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
@@ -20923,12 +20913,12 @@
 	      href: Data.params.Nlinks.Memn.More.Href,
 	      onClick: this.handleClick,
 	      className: "text-nowrap button small success " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : "")
-	    }, void 0, Data.params.Nlinks.Memn.More.Text, ' +')))))), _jsx('div', {
+	    }, void 0, Data.params.Nlinks.Memn.More.Text, ' +'))))), _jsx('div', {
 	      className: Data.params.Memn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block vertical stripe'
+	      className: 'stripe'
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block thead'
+	      className: 'row thead'
 	    }, void 0, _jsx('span', {
 	      className: 'expand col small-1'
 	    }, void 0, 'Memory'), _jsx('span', {
@@ -20941,7 +20931,7 @@
 	      className: 'expand col small-1 text-right'
 	    }, void 0, ' Use%'), _ref6), this.List(Data).map(function ($mem, i) {
 	      return _jsx('div', {
-	        className: 'grid-block'
+	        className: 'row'
 	      }, "mem-rowby-kind-" + $mem.Kind, _jsx('span', {
 	        className: 'expand col small-1'
 	      }, void 0, $mem.Kind), _jsx('span', {
@@ -20980,9 +20970,9 @@
 	  render: function render() {
 	    var Data = this.state; // shadow global Data
 	    return _jsx('div', {
-	      className: 'grid-block hr-top'
+	      className: 'row expanded hr-bottom'
 	    }, void 0, _jsx('div', {
-	      className: 'col-lr large-1 text-right'
+	      className: 'column small-1 text-right'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Psn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('h1', {
@@ -20994,13 +20984,11 @@
 	    }, void 0, _jsx('span', {
 	      className: 'showhide-hide whitespace-pre float-left'
 	    }, void 0, '... '), 'Processes')))), _jsx('div', {
-	      className: 'col-lr large-11'
+	      className: 'column large-11'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Psn.Negative ? "show-showhide" : "hide-showhide"
-	    }, void 0, _jsx('div', {
-	      className: 'grid-block'
 	    }, void 0, _jsx('ul', {
-	      className: 'menu showhide-show'
+	      className: 'row menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
@@ -21041,12 +21029,12 @@
 	      href: Data.params.Nlinks.Psn.More.Href,
 	      onClick: this.handleClick,
 	      className: "text-nowrap button small success " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : "")
-	    }, void 0, Data.params.Nlinks.Psn.More.Text, ' +')))))), _jsx('div', {
+	    }, void 0, Data.params.Nlinks.Psn.More.Text, ' +'))))), _jsx('div', {
 	      className: Data.params.Psn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block vertical stripe'
+	      className: 'stripe'
 	    }, void 0, _jsx('div', {
-	      className: 'grid-block thead'
+	      className: 'row thead'
 	    }, void 0, _jsx('span', {
 	      className: 'expand col small-1 text-nowrap text-right'
 	    }, void 0, _jsx('a', {
@@ -21121,7 +21109,7 @@
 	      className: Data.params.Vlinks.Psk[9 - 1].CaretClass
 	    })))), this.List(Data).map(function ($ps, i) {
 	      return _jsx('div', {
-	        className: 'grid-block'
+	        className: 'row'
 	      }, "ps-rowby-pid-" + $ps.PID, _jsx('span', {
 	        className: 'expand col small-1 text-right'
 	      }, void 0, $ps.PID), _jsx('span', {
