@@ -113,11 +113,11 @@ share/assets/js/min/bundle.min.js \
 :
 # the first prerequisite only is passed to gulp
 	type gulp >/dev/null || exit 0; mkdir -p share/cache
-	type gulp >/dev/null || exit 0; gulp webpack   --silent --output=$@ --input=./$<
+	type gulp >/dev/null || exit 0; gulp webpack --silent --output=$@ --input=./$<
 share/templates/index.html:
-	type gulp >/dev/null || exit 0; gulp jade2html --silent --output=$@ --input=./$<
+	type gulp >/dev/null || exit 0; gulp jade    --silent --output=$@ --input=./$<
 share/js/jsdefines.jsx:
-	type gulp >/dev/null || exit 0; gulp jade2jsx  --silent --output=$@ --input=./$< --template $(word 2,$^) --JSX
+	type gulp >/dev/null || exit 0; gulp jade    --silent --output=$@ --input=./$< --template $(word 2,$^) --JSX
 
 share/assets/css/index.css:        share/style/index.scss
 share/assets/css/index.css:        share/templates/index.html

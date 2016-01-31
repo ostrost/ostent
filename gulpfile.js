@@ -15,18 +15,13 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin'),
     argv              = require('yargs').argv;
 require('./gulpfile.watch.js');
 
-gulp.task('jade2html', function() {
+gulp.task('jade', function() {
   gulp.src(argv.input)
     .pipe(jade({locals: _.merge(argv, {format: util.format}), pretty: true}))
-    .pipe(rename(argv.output))
-    .pipe(gulp.dest('.'));
-});
-
-gulp.task('jade2jsx', function() {
-  gulp.src(argv.input)
-    .pipe(jade({locals: _.merge(argv, {format: util.format}), pretty: true}))
-    .pipe(spawn({cmd: 'ostent-templatepp',
-                 args: '--definesfrom - --template'.split(' ').concat(argv.template)}))
+    .pipe('JSX' in argv ?
+          spawn({cmd: 'ostent-templatepp',
+                 args: '--definesfrom - --template'.split(' ').concat(argv.template)}) :
+          gutil.noop())
     .pipe(rename(argv.output))
     .pipe(gulp.dest('.'));
 });
@@ -91,11 +86,11 @@ gulp.task('webpack', [], function(callback) {
     // The comment makes linguist detect generated code: https://github.com/github/linguist/blob/master/lib/linguist/generated.rb#L130
   }
   webpack(wparg).run(function(err, stats) {
-    if (err != null) {
+    if (err !== null) {
       throw new gutil.PluginError('webpack', err);
     }
     var statsString = stats.toString({chunks: false});
-    if (stats.hasErrors() == true) {
+    if (stats.hasErrors() === true) {
       throw new gutil.PluginError('webpack', statsString);
     }
     gutil.log('[webpack]', statsString);
