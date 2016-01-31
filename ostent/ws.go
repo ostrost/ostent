@@ -427,48 +427,58 @@ func (sw ServeWS) IndexWS(w http.ResponseWriter, req *http.Request) {
 	c.updateLoop(stop)     // write to the client
 }
 
-func Fetch(hostport, key string) ([]byte, error) {
+func Fetch(hostport, key string, cont bool) error {
 	conn, err := net.Dial("tcp", hostport)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	// conn.SetDeadline(time.Now().Add(time.Second))
 	wsurl, err := url.Parse(fmt.Sprintf("ws://%s/index.ws", hostport))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	headers := http.Header{}
 	headers.Set("User-Agent", "ostent/Go-http-client")
 	/*
 		host, _, err := net.SplitHostPort(hostport)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		headers.Set("Host", host) // */
 	// headers.Set("Origin", "http://"+hostport+"/")
 	wsconn, _, err := websocket.NewClient(conn, wsurl, headers, 10, 10) // 4096, 4096)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	err = wsconn.WriteMessage(websocket.TextMessage, []byte(`{"Search": ""}`))
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	_, message, err := wsconn.ReadMessage()
-	if err != nil {
-		return nil, err
+	for {
+		_, message, err := wsconn.ReadMessage()
+		if err != nil {
+			return err
+		}
+		id := IndexData{}
+		if err := json.Unmarshal(message, &id); err != nil {
+			return err
+		}
+		var value interface{}
+		if key == "" {
+			delete(id, "params")
+			value = id
+		} else {
+			value = id[key]
+		}
+		text, err := json.MarshalIndent(value, "", "  ")
+		if err != nil {
+			return err
+		}
+		fmt.Printf("%s\n", text)
+		if !cont {
+			break
+		}
 	}
-	id := IndexData{}
-	if err := json.Unmarshal(message, &id); err != nil {
-		return nil, err
-	}
-	var value interface{}
-	if key == "" {
-		delete(id, "params")
-		value = id
-	} else {
-		value = id[key]
-	}
-	return json.MarshalIndent(value, "", "  ")
+	return nil
 }
