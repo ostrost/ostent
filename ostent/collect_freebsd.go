@@ -1,6 +1,6 @@
 // +build freebsd
 
-package system
+package ostent
 
 import (
 	"strings"
@@ -8,6 +8,9 @@ import (
 
 	// "golang.org/x/sys/unix"
 )
+
+// ProcName returns procName back.
+func ProcName(_ int, procName string) string { return procName }
 
 // Distrib returns system distribution and version string.
 func Distrib() (string, error) {
@@ -20,10 +23,4 @@ func Distrib() (string, error) {
 		return strings.Join(split[:2], " "), nil
 	}
 	return "FreeBSD", nil
-}
-
-// ProcName returns argv[0].
-// Actually, unless it's darwin, the procName itself is returned.
-func ProcName(_ int, procName string) string {
-	return procName
 }
