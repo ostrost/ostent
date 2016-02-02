@@ -622,14 +622,12 @@ func statusLine(status int) string {
 
 func init() {
 	var err error
-	DISTRIB, err = system.Distrib()
-	if err != nil {
-		log.Printf("WARN %s\n", err)
+	if DISTRIB, err = Distrib(); err != nil {
+		log.Printf("WARN: detecting distribution: %s\n", err)
 	}
 }
 
-// DISTRIB is distribution string and it's version.
-// Set at init, result of system.Distrib.
+// DISTRIB is distribution string and it's version. Set once at init.
 var DISTRIB string
 
 type ServeSSE struct {
