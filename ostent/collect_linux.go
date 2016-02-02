@@ -1,4 +1,4 @@
-// +build !sigar
+// +build linux
 
 package ostent
 

@@ -1,6 +1,6 @@
 // +build darwin
 
-package getifaddrs
+package ostent
 
 import "unsafe"
 

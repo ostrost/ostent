@@ -1,7 +1,6 @@
-// +build linux freebsd darwin
+// +build !linux
 
-// Package getifaddrs does getifaddrs(3) for Go.
-package getifaddrs
+package ostent
 
 /*
 #include <sys/socket.h>
@@ -43,7 +42,25 @@ u_int32_t Idrops(void *data) { return ((struct if_data *)data)->ifi_iqdrops; }
 char ADDR[INET_ADDRSTRLEN];
 */
 import "C"
-import "unsafe"
+import (
+	"sync"
+	"unsafe"
+)
+
+// IF registers the interfaces with the reg.
+func (m Machine) IF(reg Registry, wg *sync.WaitGroup) {
+	// m is unused
+	if ifaddrs, err := Getifaddrs(); err == nil {
+		// err is gone
+		for _, ifaddr := range ifaddrs {
+			if !HardwareIF(ifaddr.GetName()) {
+				continue
+			}
+			reg.UpdateIF(&ifaddr) // pointer not to copy everywhere
+		}
+	}
+	wg.Done()
+}
 
 // IfAddr is a struct with interface info.
 type IfAddr struct {

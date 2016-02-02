@@ -1,6 +1,6 @@
-// +build !darwin
+// +build !linux,!darwin
 
-package getifaddrs
+package ostent
 
 /*
 #include <stdio.h>
