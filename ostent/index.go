@@ -172,15 +172,11 @@ func FormatIF(mi *system.MetricIF) system.IFData {
 	FormatIF1024(mi.BytesIn, &ii.BytesIn, &ii.DeltaBitsIn)
 	FormatIF1024(mi.BytesOut, &ii.BytesOut, &ii.DeltaBitsOut)
 	FormatIF1000(mi.DropsIn, &ii.DropsIn, &ii.DeltaDropsIn)
+	FormatIF1000(mi.DropsOut, &ii.DropsOut, &ii.DeltaDropsOut)
 	FormatIF1000(mi.ErrorsIn, &ii.ErrorsIn, &ii.DeltaErrorsIn)
 	FormatIF1000(mi.ErrorsOut, &ii.ErrorsOut, &ii.DeltaErrorsOut)
 	FormatIF1000(mi.PacketsIn, &ii.PacketsIn, &ii.DeltaPacketsIn)
 	FormatIF1000(mi.PacketsOut, &ii.PacketsOut, &ii.DeltaPacketsOut)
-	if mi.DropsOut != nil {
-		FormatIF1000(mi.DropsOut, &ii.DropsOut, &ii.DeltaDropsOut)
-	} else {
-		ii.DropsOut, ii.DeltaDropsOut = "-1", "-1"
-	}
 	return ii
 }
 

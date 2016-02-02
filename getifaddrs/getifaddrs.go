@@ -54,7 +54,7 @@ type IfAddr struct {
 	IfaPacketsIn  uint
 	IfaPacketsOut uint
 	IfaDropsIn    uint
-	IfaDropsOut   *uint // nil in darwin
+	IfaDropsOut   uint
 	IfaErrorsIn   uint
 	IfaErrorsOut  uint
 }
@@ -65,7 +65,7 @@ func (ia IfAddr) GetName() string  { return ia.IfaName }
 func (ia IfAddr) BytesIn() uint    { return ia.IfaBytesIn }
 func (ia IfAddr) BytesOut() uint   { return ia.IfaBytesOut }
 func (ia IfAddr) DropsIn() uint    { return ia.IfaDropsIn }
-func (ia IfAddr) DropsOut() *uint  { return ia.IfaDropsOut }
+func (ia IfAddr) DropsOut() uint   { return ia.IfaDropsOut }
 func (ia IfAddr) ErrorsIn() uint   { return ia.IfaErrorsIn }
 func (ia IfAddr) ErrorsOut() uint  { return ia.IfaErrorsOut }
 func (ia IfAddr) PacketsIn() uint  { return ia.IfaPacketsIn }
@@ -124,7 +124,7 @@ func Getifaddrs() ([]IfAddr, error) {
 			IfaPacketsIn:  uint(C.Ipackets(data)),
 			IfaPacketsOut: uint(C.Opackets(data)),
 			IfaDropsIn:    uint(C.Idrops(data)),
-			IfaDropsOut:   IfaDropsOut(data), // may return nil
+			IfaDropsOut:   IfaDropsOut(data),
 			IfaErrorsIn:   uint(C.Ierrors(data)),
 			IfaErrorsOut:  uint(C.Oerrors(data)),
 		}

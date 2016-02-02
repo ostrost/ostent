@@ -4,4 +4,4 @@ package getifaddrs
 
 import "unsafe"
 
-func IfaDropsOut(unsafe.Pointer) *uint { return nil }
+func IfaDropsOut(unsafe.Pointer) uint { return 0 }

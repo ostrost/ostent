@@ -46,15 +46,12 @@ type NetIO struct {
 	IP string
 }
 
-func (io NetIO) GetName() string { return io.Name }
-func (io NetIO) GetIP() string   { return io.IP }
-func (io NetIO) BytesIn() uint   { return uint(io.BytesRecv) }
-func (io NetIO) BytesOut() uint  { return uint(io.BytesSent) }
-func (io NetIO) DropsIn() uint   { return uint(io.Dropin) }
-func (io NetIO) DropsOut() *uint {
-	u := uint(io.Dropout)
-	return &u
-}
+func (io NetIO) GetName() string  { return io.Name }
+func (io NetIO) GetIP() string    { return io.IP }
+func (io NetIO) BytesIn() uint    { return uint(io.BytesRecv) }
+func (io NetIO) BytesOut() uint   { return uint(io.BytesSent) }
+func (io NetIO) DropsIn() uint    { return uint(io.Dropin) }
+func (io NetIO) DropsOut() uint   { return uint(io.Dropout) }
 func (io NetIO) ErrorsIn() uint   { return uint(io.Errin) }
 func (io NetIO) ErrorsOut() uint  { return uint(io.Errout) }
 func (io NetIO) PacketsIn() uint  { return uint(io.PacketsRecv) }

@@ -20674,23 +20674,17 @@
 	        className: 'gray'
 	      }, void 0, _jsx('span', {
 	        title: 'Total drops In modulo 4G'
-	      }, void 0, $if.DropsIn), _jsx('span', {
-	        className: $if.DropsOut == "-1" ? "hide" : ""
-	      }, void 0, '/'), _jsx('span', {
-	        className: $if.DropsOut == "-1" ? "hide" : "",
+	      }, void 0, $if.DropsIn), '/', _jsx('span', {
 	        title: 'Total drops Out modulo 4G'
 	      }, void 0, $if.DropsOut), ',', _jsx('span', {
 	        title: 'Total errors In modulo 4G'
 	      }, void 0, $if.ErrorsIn), '/', _jsx('span', {
 	        title: 'Total errors Out modulo 4G'
 	      }, void 0, $if.ErrorsOut)), ' ', _jsx('span', {
-	        className: $if.DeltaDropsIn == "0" && ($if.DeltaDropsOut == "-1" || $if.DeltaDropsOut == "0") && $if.DeltaErrorsIn == "0" && $if.DeltaErrorsOut == "0" ? "gray" : ""
+	        className: $if.DeltaDropsIn == "0" && $if.DeltaDropsOut == "0" && $if.DeltaErrorsIn == "0" && $if.DeltaErrorsOut == "0" ? "gray" : ""
 	      }, void 0, _jsx('span', {
 	        title: 'Drops In per second'
-	      }, void 0, $if.DeltaDropsIn), _jsx('span', {
-	        className: $if.DeltaDropsOut == "-1" ? "hide" : ""
-	      }, void 0, '/'), _jsx('span', {
-	        className: $if.DeltaDropsOut == "-1" ? "hide" : "",
+	      }, void 0, $if.DeltaDropsIn), '/', _jsx('span', {
 	        title: 'Drops Out per second'
 	      }, void 0, $if.DeltaDropsOut), ',', _jsx('span', {
 	        title: 'Errors In per second'

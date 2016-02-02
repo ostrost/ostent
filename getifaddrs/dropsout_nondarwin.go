@@ -22,7 +22,4 @@ u_int32_t Odrops(void *data) { return ((struct if_data *)data)->ifi_oqdrops; }
 import "C"
 import "unsafe"
 
-func IfaDropsOut(ifadata unsafe.Pointer) *uint {
-	do := uint(C.Odrops(ifadata))
-	return &do
-}
+func IfaDropsOut(ifadata unsafe.Pointer) uint { return uint(C.Odrops(ifadata)) }

@@ -228,31 +228,21 @@ mixin range_list(datak, ranger, kvalue, keyid)
           | &nbsp;
           span.gray(title='Total drops,errors modulo 4G')
             span(title='Total drops In modulo 4G') {{$if.DropsIn}}
-            if JSX
-              | <span class={$if.DropsOut == "-1" ? "hide":""}>/</span>
-            else
-              | <span class="{{if eq $if.DropsOut "-1"}}hide{{end}}">/</span>
-            if JSX
-              | <span class={$if.DropsOut == "-1" ? "hide":""} title="Total drops Out modulo 4G">{{$if.DropsOut}}</span>,
-            else
-              | <span class="{{if eq $if.DropsOut "-1"}}hide{{end}}" title="Total drops Out modulo 4G">{{$if.DropsOut}}</span>,
+            | /
+            span(title='Total drops Out modulo 4G') {{$if.DropsOut}}
+            | ,
             span(title='Total errors In modulo 4G') {{$if.ErrorsIn}}
             | /
             span(title='Total errors Out modulo 4G') {{$if.ErrorsOut}}
           | &nbsp;
           if JSX
-            | <span class={($if.DeltaDropsIn == "0" && ($if.DeltaDropsOut == "-1" || $if.DeltaDropsOut == "0") && $if.DeltaErrorsIn == "0" && $if.DeltaErrorsOut == "0") ? "gray":""}>
+            | <span class={($if.DeltaDropsIn == "0" && $if.DeltaDropsOut == "0" && $if.DeltaErrorsIn == "0" && $if.DeltaErrorsOut == "0") ? "gray":""}>
           else
-            | <span class="{{if and (eq $if.DeltaDropsIn "0") (or (eq $if.DeltaDropsOut "-1") (eq $if.DeltaDropsOut "0")) (eq $if.DeltaErrorsIn "0") (eq $if.DeltaErrorsOut "0")}}gray{{end}}">
+            | <span class="{{if and (eq $if.DeltaDropsIn "0") (eq $if.DeltaDropsOut "0") (eq $if.DeltaErrorsIn "0") (eq $if.DeltaErrorsOut "0")}}gray{{end}}">
           span(title='Drops In per second') {{$if.DeltaDropsIn}}
-          if JSX
-            | <span class={$if.DeltaDropsOut == "-1" ? "hide":""}>/</span>
-          else
-            | <span class="{{if eq $if.DeltaDropsOut "-1"}}hide{{end}}">/</span>
-          if JSX
-            | <span class={$if.DeltaDropsOut == "-1" ? "hide":""} title="Drops Out per second">{{$if.DeltaDropsOut}}</span>,
-          else
-            | <span class="{{if eq $if.DeltaDropsOut "-1"}}hide{{end}}" title="Drops Out per second">{{$if.DeltaDropsOut}}</span>,
+          | /
+          span(title='Drops Out per second') {{$if.DeltaDropsOut}}
+          | ,
           span(title='Errors In per second') {{$if.DeltaErrorsIn}}
           | /
           span(title='Errors Out per second') {{$if.DeltaErrorsOut}}

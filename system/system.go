@@ -408,13 +408,13 @@ func NewMetricIF(reg metrics.Registry, name string) *MetricIF {
 		return NewGaugeDiff("interface-"+name+"."+word, reg)
 	}
 	return &MetricIF{
-		NewGD:    ngd,
-		Name:     name,
-		IP:       &StandardMetricString{},
-		BytesIn:  ngd("if_octets.rx"),
-		BytesOut: ngd("if_octets.tx"),
-		DropsIn:  ngd("if_drops.rx"),
-		// DropsOut stays nil
+		NewGD:      ngd,
+		Name:       name,
+		IP:         &StandardMetricString{},
+		BytesIn:    ngd("if_octets.rx"),
+		BytesOut:   ngd("if_octets.tx"),
+		DropsIn:    ngd("if_drops.rx"),
+		DropsOut:   ngd("if_drops.tx"),
 		ErrorsIn:   ngd("if_errors.rx"),
 		ErrorsOut:  ngd("if_errors.tx"),
 		PacketsIn:  ngd("if_packets.rx"),
@@ -428,17 +428,11 @@ func (mi *MetricIF) Update(ifaddr IfAddress) {
 	mi.BytesIn.UpdateAbsolute(int64(ifaddr.BytesIn()))
 	mi.BytesOut.UpdateAbsolute(int64(ifaddr.BytesOut()))
 	mi.DropsIn.UpdateAbsolute(int64(ifaddr.DropsIn()))
-	// mi.DropsOut dealt below
+	mi.DropsOut.UpdateAbsolute(int64(ifaddr.DropsOut()))
 	mi.ErrorsIn.UpdateAbsolute(int64(ifaddr.ErrorsIn()))
 	mi.ErrorsOut.UpdateAbsolute(int64(ifaddr.ErrorsOut()))
 	mi.PacketsIn.UpdateAbsolute(int64(ifaddr.PacketsIn()))
 	mi.PacketsOut.UpdateAbsolute(int64(ifaddr.PacketsOut()))
-	if do := ifaddr.DropsOut(); do != nil {
-		if mi.DropsOut == nil {
-			mi.DropsOut = mi.NewGD("if_drops.tx")
-		}
-		mi.DropsOut.UpdateAbsolute(int64(*do))
-	}
 }
 
 type IfAddress interface {
@@ -447,7 +441,7 @@ type IfAddress interface {
 	BytesIn() uint
 	BytesOut() uint
 	DropsIn() uint
-	DropsOut() *uint
+	DropsOut() uint
 	ErrorsIn() uint
 	ErrorsOut() uint
 	PacketsIn() uint
