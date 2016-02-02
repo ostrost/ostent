@@ -5,9 +5,9 @@ package ostent
 /*
 #include <sys/param.h> // for MAXCOMLEN
 */
+import "C"
 
 import (
-	"C"
 	"os/exec"
 	"path/filepath"
 	"strings"
