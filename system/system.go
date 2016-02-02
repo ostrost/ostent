@@ -424,7 +424,7 @@ func NewMetricIF(reg metrics.Registry, name string) *MetricIF {
 
 // Update reads ifaddr and updates the corresponding fields in MetricIF.
 func (mi *MetricIF) Update(ifaddr IfAddress) {
-	mi.IP.Update(ifaddr.IP())
+	mi.IP.Update(ifaddr.GetIP())
 	mi.BytesIn.UpdateAbsolute(int64(ifaddr.BytesIn()))
 	mi.BytesOut.UpdateAbsolute(int64(ifaddr.BytesOut()))
 	mi.DropsIn.UpdateAbsolute(int64(ifaddr.DropsIn()))
@@ -442,8 +442,8 @@ func (mi *MetricIF) Update(ifaddr IfAddress) {
 }
 
 type IfAddress interface {
-	Name() string
-	IP() string
+	GetName() string
+	GetIP() string
 	BytesIn() uint
 	BytesOut() uint
 	DropsIn() uint

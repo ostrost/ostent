@@ -1,5 +1,6 @@
 #!/usr/bin/env gmake -f
 
+CGO_ENABLED=0
 GO15VENDOREXPERIMENT=1
 PATH:=$(shell echo -n $$PATH:; echo $$GOPATH | sed 's,:\|$$,/bin:,g'):$$PWD/node_modules/.bin
 

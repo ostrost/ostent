@@ -525,7 +525,7 @@ func (ir *IndexRegistry) UpdateCPU(all sigar.Cpu, list []sigar.Cpu) {
 func (ir *IndexRegistry) UpdateIF(ifaddr system.IfAddress) {
 	ir.Mutex.Lock()
 	defer ir.Mutex.Unlock()
-	ir.GetOrRegisterPrivateIF(ifaddr.Name()).Update(ifaddr)
+	ir.GetOrRegisterPrivateIF(ifaddr.GetName()).Update(ifaddr)
 }
 
 // S2SRegistry is for string kv storage.

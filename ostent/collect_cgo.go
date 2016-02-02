@@ -1,4 +1,4 @@
-// +build cgo
+// +build sigar,cgo
 
 package ostent
 
@@ -14,7 +14,7 @@ func (m Machine) IF(reg Registry, wg *sync.WaitGroup) {
 	if ifaddrs, err := getifaddrs.Getifaddrs(); err == nil {
 		// err is gone
 		for _, ifaddr := range ifaddrs {
-			if !HardwareIF(ifaddr.Name()) {
+			if !HardwareIF(ifaddr.GetName()) {
 				continue
 			}
 			reg.UpdateIF(&ifaddr) // pointer not to copy everywhere

@@ -60,8 +60,8 @@ type IfAddr struct {
 }
 
 // GetName and other methods may be combined into an interface.
-func (ia IfAddr) IP() string       { return ia.IfaIP }
-func (ia IfAddr) Name() string     { return ia.IfaName }
+func (ia IfAddr) GetIP() string    { return ia.IfaIP }
+func (ia IfAddr) GetName() string  { return ia.IfaName }
 func (ia IfAddr) BytesIn() uint    { return ia.IfaBytesIn }
 func (ia IfAddr) BytesOut() uint   { return ia.IfaBytesOut }
 func (ia IfAddr) DropsIn() uint    { return ia.IfaDropsIn }

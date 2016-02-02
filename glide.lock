@@ -1,5 +1,5 @@
-hash: fdb63a69afcdf3cdecd585fa624f648118f50b8d7bd39bc2ae14d397a7dd71ba
-updated: 2016-01-31T18:17:17.011462273Z
+hash: c31b16289e1a4f23a423a46757f2b6a937cf1b44615e8490391a783a4b5d6387
+updated: 2016-01-31T21:19:59.048792088Z
 imports:
 - name: collectd.org
   version: 9fc824c70f713ea0f058a07b49a4c563ef2a3b98
@@ -110,6 +110,10 @@ imports:
   version: f2f192b5d1a96e21dd4026ce67cda85e49659a48
 - name: github.com/russross/blackfriday
   version: 006144af03eeeff1037240a71865a9fd61f1c25f
+- name: github.com/shirou/gopsutil
+  version: 9d8191d6a6e17dcf43b10a20084a11e8c1aa92e6
+  subpackages:
+  - /net
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 - name: github.com/Sirupsen/logrus
