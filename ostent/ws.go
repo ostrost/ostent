@@ -1,6 +1,7 @@
 package ostent
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net"
@@ -427,7 +428,7 @@ func (sw ServeWS) IndexWS(w http.ResponseWriter, req *http.Request) {
 	c.updateLoop(stop)     // write to the client
 }
 
-func Fetch(hostport, key string, cont bool) error {
+func Fetch(hostport string, keys []string, once bool) error {
 	conn, err := net.Dial("tcp", hostport)
 	if err != nil {
 		return err
@@ -464,15 +465,35 @@ func Fetch(hostport, key string, cont bool) error {
 		if err != nil {
 			return err
 		}
-		if key == "" {
-			jdata.Delete("params")
+		one, many := FetchExtract(jdata, keys)
+		jdata.Delete("params")
+		if one != nil {
+			fmt.Println(one.StringIndent("", "  "))
 		} else {
-			jdata = jdata.Path(key)
+			text, err := json.MarshalIndent(many, "", "  ")
+			if err != nil {
+				return err
+			}
+			fmt.Printf("%s\n", text)
 		}
-		fmt.Println(jdata.StringIndent("", "  "))
-		if !cont {
+		if once {
 			break
 		}
 	}
 	return nil
+}
+
+func FetchExtract(jdata *gabs.Container, keys []string) (*gabs.Container, interface{}) {
+	if len(keys) == 0 || (len(keys) == 1 && keys[0] == "") {
+		return jdata, nil
+	}
+	if len(keys) == 1 {
+		return jdata.Path(keys[0]), nil
+	}
+	list := make([]interface{}, len(keys))
+	for i, key := range keys {
+		one, _ := FetchExtract(jdata, []string{key})
+		list[i] = one.Data()
+	}
+	return nil, list
 }
