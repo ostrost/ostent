@@ -8,41 +8,20 @@ import (
 
 func init() {
 	var fetchCmdFlags FetchFlags
-	fetchCmd := &cobra.Command{SilenceUsage: true,
-		Use: "fetch", Short: "Print collected/partial data"}
+	fetchCmd := &cobra.Command{
+		SilenceUsage: true,
+		Use:          "fetch",
+		Short:        "Print collected data",
+		Run:          fetchCmdFlags.Run,
+	}
 	fetchCmd.PersistentFlags().StringVarP(&fetchCmdFlags.K, "key", "k", "",
 		"Reduce data with `key`")
-	AddFetchCommand(&fetchCmdFlags, fetchCmd)
-
-	AddFetchCommand(&FetchFlags{K: "cpu"}, &cobra.Command{SilenceUsage: true,
-		Use: "cpu", Short: "Print collected cpu data"})
-	AddFetchCommand(&FetchFlags{K: "df"}, &cobra.Command{SilenceUsage: true,
-		Use: "df", Short: "Print collected df data"})
-	AddFetchCommand(&FetchFlags{K: "mem"}, &cobra.Command{SilenceUsage: true,
-		Use: "mem", Short: "Print collected mem data"})
-	AddFetchCommand(&FetchFlags{K: "netio"}, &cobra.Command{SilenceUsage: true,
-		Use: "netio", Short: "Print collected netio data"})
-	/*
-		AddFetchCommand(&FetchFlags{K: "la"}, &cobra.Command{SilenceUsage: true,
-			Use: "la", Short: "Print collected la (loadavg) data"})
-		AddFetchCommand(&FetchFlags{K: "proc"}, &cobra.Command{SilenceUsage: true,
-			Use: "proc", Short: "Print collected proc data"})
-		AddFetchCommand(&FetchFlags{K: "uptime"}, &cobra.Command{SilenceUsage: true,
-			Use: "uptime", Short: "Print collected uptime"})
-		AddFetchCommand(&FetchFlags{K: "hostname"}, &cobra.Command{SilenceUsage: true,
-			Use: "hostname", Short: "Print collected hostname"})
-		// */
-}
-
-// AddFetchCommand sets up cmd and adds it to OstentCmd.
-func AddFetchCommand(flags *FetchFlags, cmd *cobra.Command) {
-	cmd.PersistentFlags().BoolVarP(&flags.Cont, "continue", "c", false,
+	fetchCmd.PersistentFlags().BoolVarP(&fetchCmdFlags.Cont, "continue", "c", false,
 		"Continuous printing")
-	cmd.RunE = flags.Run
-	OstentCmd.AddCommand(cmd)
+	OstentCmd.AddCommand(fetchCmd)
 }
 
-// FetchFlags is the flags for any fetch command.
+// FetchFlags is the flags for fetch command.
 type FetchFlags struct {
 	K    string
 	Cont bool
