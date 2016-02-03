@@ -1,5 +1,5 @@
 hash: c31b16289e1a4f23a423a46757f2b6a937cf1b44615e8490391a783a4b5d6387
-updated: 2016-01-31T21:19:59.048792088Z
+updated: 2016-02-03T11:40:53.308324776Z
 imports:
 - name: collectd.org
   version: 9fc824c70f713ea0f058a07b49a4c563ef2a3b98
@@ -30,7 +30,7 @@ imports:
 - name: github.com/dgryski/go-bitstream
   version: 27cd5973303fde7d914860be1ea4b927a6be0c92
 - name: github.com/gogo/protobuf
-  version: e8904f58e872a473a5b91bc9bf3377d223555263
+  version: 82d16f734d6d871204a3feb1a73cb220cc92574c
 - name: github.com/golang/protobuf
   version: 45bba206dd5270d96bac4942dcfe515726613249
 - name: github.com/golang/snappy
@@ -56,7 +56,7 @@ imports:
 - name: github.com/inconshreveable/go-update
   version: 8152e7eb6ccf8679a64582a66b78519688d156ad
 - name: github.com/influxdb/influxdb
-  version: 60df13fb566d07ff2cdd07aa23a4796a02b0df3c
+  version: 0fd8392853886375616f2b26596d4d07cea4c500
 - name: github.com/influxdb/usage-client
   version: 475977e68d79883d9c8d67131c84e4241523f452
 - name: github.com/jeffail/gabs
@@ -111,13 +111,14 @@ imports:
 - name: github.com/russross/blackfriday
   version: 006144af03eeeff1037240a71865a9fd61f1c25f
 - name: github.com/shirou/gopsutil
-  version: 9d8191d6a6e17dcf43b10a20084a11e8c1aa92e6
+  version: cc040ddf7245fcba710209be380a18677383c04f
   subpackages:
+  - /host
   - /net
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 - name: github.com/Sirupsen/logrus
-  version: f7f79f729e0fbe2fcc061db48a9ba0263f588252
+  version: be52937128b38f1d99787bb476c789e2af1147f1
 - name: github.com/spf13/cast
   version: ee7b3e0353166ab1f3a605294ac8cd2b77953778
 - name: github.com/spf13/cobra
@@ -139,9 +140,9 @@ imports:
 - name: golang.org/x/crypto
   version: 1f22c0103821b9390939b6776727195525381532
 - name: golang.org/x/net
-  version: 04b9de9b512f58addf28c9853d50ebef61c3953e
+  version: 74d798388a60469ca4db467af4ff70242c2d9ead
 - name: golang.org/x/text
-  version: 6fc2e00a0d64b1f7fc1212dae5b0c939cf6d9ac4
+  version: 5aaa1a807bf8a2f763540b140e7805973476eb88
 - name: gopkg.in/airbrake/gobrake.v2
   version: c9d51adc624b5cc4c1bf8de730a09af4878ffe2d
 - name: gopkg.in/fatih/pool.v2

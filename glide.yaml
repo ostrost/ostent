@@ -25,4 +25,5 @@ import:
 - package: github.com/vrischmann/go-metrics-influxdb
 - package: github.com/shirou/gopsutil
   subpackages:
+  - /host
   - /net
