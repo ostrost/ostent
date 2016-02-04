@@ -94,7 +94,7 @@ func TestBindSet(t *testing.T) {
 		{"127.1:8001", "127.1:8001", nil},
 		{"127.0.0.1:8001", "127.0.0.1:8001", nil},
 	} {
-		b := NewBind(9050)
+		b := NewBind("", 9050)
 		if err := b.Set(v.a); err != nil {
 			unknownerr := true
 			for _, x := range v.errs {

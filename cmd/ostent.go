@@ -26,7 +26,7 @@ var (
 	}
 
 	// OstentBind is the flag value.
-	OstentBind = flags.NewBind(8050)
+	OstentBind = flags.NewBind("", 8050)
 
 	// OstentCmd represents the base command when called without any subcommands
 	OstentCmd = &cobra.Command{
@@ -71,7 +71,8 @@ func init() {
 
 	cmdcobra.PersistentPreRuns.Add(OstentVersionRun)
 	OstentCmd.PersistentFlags().BoolVar(&VersionFlag, "version", false, "Print version and exit")
-	OstentCmd.PersistentFlags().VarP(&OstentBind, "bind", "b", "Bind `address`")
+
+	OstentCmd.Flags().VarP(&OstentBind, "bind", "b", "Bind `address`")
 	OstentCmd.Flags().Var(&DelayFlags.Max, "max-delay", "Maximum for display `delay`")
 	OstentCmd.Flags().VarP(&DelayFlags.Min, "min-delay", "d", "Collection and display minimum `delay`")
 
@@ -84,7 +85,7 @@ func init() {
 
 	var elisting ostent.ExportingListing
 
-	if gends := params.NewGraphiteEndpoints(10*time.Second, flags.NewBind(2003)); true {
+	if gends := params.NewGraphiteEndpoints(10*time.Second, flags.NewBind("127.0.0.1", 2003)); true {
 		cmdcobra.PreRuns.Add(func() error { return GraphiteRun(&elisting, gends) })
 		OstentCmd.Flags().Var(&gends, "graphite", "Graphite exporting `endpoint(s)`")
 		OstentCmd.Example += "Graphite params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
