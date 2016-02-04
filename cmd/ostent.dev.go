@@ -4,8 +4,10 @@ package cmd
 
 import (
 	"go/build"
+	"io/ioutil"
 	"log"
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
@@ -53,5 +55,20 @@ func GenDocRunE(*cobra.Command, []string) error {
 	if err := doc.GenMarkdownTree(OstentCmd, GenDocDir); err != nil {
 		return err
 	}
-	return nil
+	mdfile := filepath.Join(GenDocDir,
+		strings.Replace(OstentCmd.CommandPath(), " ", "_", -1)+".md")
+	text, err := ioutil.ReadFile(mdfile)
+	if err != nil {
+		return err
+	}
+	var lines []string
+	for _, line := range strings.Split(string(text), "\n") {
+		if strings.HasSuffix(line, "# SEE ALSO") {
+			break
+		}
+		if !strings.Contains(line, "--profile-") { // skip dev-only flags
+			lines = append(lines, line)
+		}
+	}
+	return ioutil.WriteFile(mdfile, []byte(strings.Join(lines, "\n")), 0600)
 }

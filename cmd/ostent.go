@@ -37,12 +37,12 @@ var (
 Optionally exports them to metrics servers.
 
 To continuously export collected metrics, use --graphite, --influxdb and/or --librato.
-Use multiple flags and/or use comma separated endpoints for the same kind.
-
-`,
+Use multiple flags and/or use comma separated endpoints for the same kind.`,
 		Example: `ostent --graphite 10.0.0.1,10.0.0.2:2004\?delay=30s
 ostent --influxdb http://10.0.0.3\?delay=60s
-ostent --librato \?email=EMAIL\&token=TOKEN`,
+ostent --librato \?email=EMAIL\&token=TOKEN
+
+`,
 
 		PersistentPostRunE: cmdcobra.PersistentPostRuns.RunE,
 		PersistentPreRunE:  cmdcobra.PersistentPreRuns.RunE,
@@ -87,7 +87,7 @@ func init() {
 	if gends := params.NewGraphiteEndpoints(10*time.Second, flags.NewBind(2003)); true {
 		cmdcobra.PreRuns.Add(func() error { return GraphiteRun(&elisting, gends) })
 		OstentCmd.Flags().Var(&gends, "graphite", "Graphite exporting `endpoint(s)`")
-		OstentCmd.Long += "Graphite params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
+		OstentCmd.Example += "Graphite params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &gends.Default // shortcut, f does not alter it
 			// f.Var(&param.ServerAddr, "0", "Graphite server `host[:port]`")
 			f.Var(&param.Delay, "1", "Graphite exporting `delay`")
@@ -97,7 +97,7 @@ func init() {
 	if iends := params.NewInfluxEndpoints(10*time.Second, "ostent"); true {
 		cmdcobra.PreRuns.Add(func() error { return InfluxRun(&elisting, iends) })
 		OstentCmd.Flags().Var(&iends, "influxdb", "InfluxDB exporting `endpoint(s)`")
-		OstentCmd.Long += "InfluxDB params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
+		OstentCmd.Example += "InfluxDB params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &iends.Default // shortcut, f does not alter it
 			// f.Var(&param.ServerAddr, "0", "InfluxDB server `address`")
 			f.Var(&param.Delay, "1", "InfluxDB exporting `delay`")
@@ -111,7 +111,7 @@ func init() {
 	if lends := params.NewLibratoEndpoints(10*time.Second, hostname); true {
 		cmdcobra.PreRuns.Add(func() error { return LibratoRun(&elisting, lends) })
 		OstentCmd.Flags().Var(&lends, "librato", "Librato exporting `parameter(s)`")
-		OstentCmd.Long += "Librato params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
+		OstentCmd.Example += "Librato params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &lends.Default // shortcut, f does not alter it
 			f.Var(&param.Delay, "1", "Librato exporting `delay`")
 			f.StringVar(&param.Source, "2", param.Source, "Librato `source`")
@@ -119,7 +119,7 @@ func init() {
 			f.StringVar(&param.Token, "4", param.Token, "Librato `token`")
 		})
 	}
-	OstentCmd.Long = strings.TrimRight(OstentCmd.Long, "\n")
+	OstentCmd.Example = strings.TrimRight(OstentCmd.Example, "\n")
 	cmdcobra.PreRuns.Add(func() error {
 		ostent.Exporting = elisting.ExportingList
 		sort.Stable(ostent.Exporting)
