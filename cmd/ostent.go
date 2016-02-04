@@ -37,16 +37,16 @@ var (
 Optionally exports them to metrics servers.
 
 To continuously export collected metrics, use --graphite, --influxdb and/or --librato.
-Use multiple flags and/or use comma separated endpoints for the same kind. E.g.:
-      --graphite 10.0.0.1,10.0.0.2:2004\?delay=30s
-      --influxdb http://10.0.0.3\?delay=60s
-      --librato \?email=EMAIL\&token=TOKEN
+Use multiple flags and/or use comma separated endpoints for the same kind.
 
 `,
+		Example: `ostent --graphite 10.0.0.1,10.0.0.2:2004\?delay=30s
+ostent --influxdb http://10.0.0.3\?delay=60s
+ostent --librato \?email=EMAIL\&token=TOKEN`,
 
-		PostRunE: cmdcobra.PostRuns.RunE,
-		PreRunE:  cmdcobra.PreRuns.RunE,
-		// RunE in main.{bin,dev}.go
+		PersistentPostRunE: cmdcobra.PersistentPostRuns.RunE,
+		PersistentPreRunE:  cmdcobra.PersistentPreRuns.RunE,
+		PreRunE:            cmdcobra.PreRuns.RunE,
 	}
 )
 
@@ -69,12 +69,12 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 
+	cmdcobra.PersistentPreRuns.Add(OstentVersionRun)
+	OstentCmd.PersistentFlags().BoolVar(&VersionFlag, "version", false, "Print version and exit")
 	OstentCmd.PersistentFlags().VarP(&OstentBind, "bind", "b", "Bind `address`")
-	OstentCmd.PersistentFlags().Var(&DelayFlags.Max, "max-delay", "Maximum for display `delay`")
-	OstentCmd.PersistentFlags().VarP(&DelayFlags.Min, "min-delay", "d", "Collection and display minimum `delay`")
-	OstentCmd.PersistentFlags().BoolVar(&Vflag, "version", false, "Print version and exit")
+	OstentCmd.Flags().Var(&DelayFlags.Max, "max-delay", "Maximum for display `delay`")
+	OstentCmd.Flags().VarP(&DelayFlags.Min, "min-delay", "d", "Collection and display minimum `delay`")
 
-	cmdcobra.PreRuns.Add(OstentVersionRun)
 	cmdcobra.PreRuns.Add(func() error {
 		if DelayFlags.Max.Duration < DelayFlags.Min.Duration {
 			DelayFlags.Max.Duration = DelayFlags.Min.Duration
@@ -86,7 +86,7 @@ func init() {
 
 	if gends := params.NewGraphiteEndpoints(10*time.Second, flags.NewBind(2003)); true {
 		cmdcobra.PreRuns.Add(func() error { return GraphiteRun(&elisting, gends) })
-		OstentCmd.PersistentFlags().Var(&gends, "graphite", "Graphite exporting `endpoints`")
+		OstentCmd.Flags().Var(&gends, "graphite", "Graphite exporting `endpoint(s)`")
 		OstentCmd.Long += "Graphite params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &gends.Default // shortcut, f does not alter it
 			// f.Var(&param.ServerAddr, "0", "Graphite server `host[:port]`")
@@ -96,7 +96,7 @@ func init() {
 
 	if iends := params.NewInfluxEndpoints(10*time.Second, "ostent"); true {
 		cmdcobra.PreRuns.Add(func() error { return InfluxRun(&elisting, iends) })
-		OstentCmd.PersistentFlags().Var(&iends, "influxdb", "InfluxDB exporting `endpoints`")
+		OstentCmd.Flags().Var(&iends, "influxdb", "InfluxDB exporting `endpoint(s)`")
 		OstentCmd.Long += "InfluxDB params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &iends.Default // shortcut, f does not alter it
 			// f.Var(&param.ServerAddr, "0", "InfluxDB server `address`")
@@ -110,7 +110,7 @@ func init() {
 	hostname, _ := ostent.GetHN()
 	if lends := params.NewLibratoEndpoints(10*time.Second, hostname); true {
 		cmdcobra.PreRuns.Add(func() error { return LibratoRun(&elisting, lends) })
-		OstentCmd.PersistentFlags().Var(&lends, "librato", "Librato exporting `parameters`")
+		OstentCmd.Flags().Var(&lends, "librato", "Librato exporting `parameter(s)`")
 		OstentCmd.Long += "Librato params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &lends.Default // shortcut, f does not alter it
 			f.Var(&param.Delay, "1", "Librato exporting `delay`")
@@ -119,6 +119,7 @@ func init() {
 			f.StringVar(&param.Token, "4", param.Token, "Librato `token`")
 		})
 	}
+	OstentCmd.Long = strings.TrimRight(OstentCmd.Long, "\n")
 	cmdcobra.PreRuns.Add(func() error {
 		ostent.Exporting = elisting.ExportingList
 		sort.Stable(ostent.Exporting)
@@ -149,7 +150,7 @@ func initConfig() {
 // The flag names supposed to be digits so it strips them likewise.
 func ParamsUsage(setf func(*pflag.FlagSet)) string {
 	cmd := cobra.Command{}
-	setf(cmd.PersistentFlags())
+	setf(cmd.Flags())
 	lines := strings.Split(cmd.NonInheritedFlags().FlagUsages(), "\n")
 	for i := range lines {
 		lines[i] = strings.TrimPrefix(lines[i], "      --")

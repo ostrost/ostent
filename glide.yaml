@@ -21,6 +21,9 @@ import:
 - package: github.com/rcrowley/go-metrics
 - package: github.com/rcrowley/goagain
 - package: github.com/spf13/cobra
+  subpackages:
+  - .
+  - /doc
 - package: github.com/spf13/pflag
 - package: github.com/vrischmann/go-metrics-influxdb
 - package: github.com/shirou/gopsutil

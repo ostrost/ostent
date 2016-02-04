@@ -25,7 +25,7 @@ func ProfileHeapRun() error {
 	if err != nil {
 		return err
 	}
-	PostRuns.Add(func() error {
+	PersistentPostRuns.Add(func() error {
 		logger := log.New(os.Stderr, "[ostent profile-heap] ", log.LstdFlags)
 		if err := pprof.Lookup("heap").WriteTo(file, 1); err != nil {
 			logger.Print(err) // just print
@@ -50,7 +50,7 @@ func ProfileCPURun() error {
 	if err := pprof.StartCPUProfile(file); err != nil {
 		return err
 	}
-	PostRuns.Add(func() error {
+	PersistentPostRuns.Add(func() error {
 		logger := log.New(os.Stderr, "[ostent profile-cpu] ", log.LstdFlags)
 		logger.Print("Writing CPU profile")
 		pprof.StopCPUProfile()

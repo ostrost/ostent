@@ -19,9 +19,7 @@ func init() {
 			},
 		}
 	)
-	fetchCmd.PersistentFlags().StringSliceVarP(&fetchKeys, "key", "k", nil,
-		"Reduce data with `key`")
-	fetchCmd.PersistentFlags().BoolVarP(&fetchCont, "continue", "c", false,
-		"Continuous printing")
+	fetchCmd.Flags().StringSliceVarP(&fetchKeys, "key", "k", nil, "Reduce data with `key(s)`")
+	fetchCmd.Flags().BoolVarP(&fetchCont, "continue", "c", false, "Continuous printing")
 	OstentCmd.AddCommand(fetchCmd)
 }

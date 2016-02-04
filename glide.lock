@@ -1,5 +1,5 @@
-hash: c31b16289e1a4f23a423a46757f2b6a937cf1b44615e8490391a783a4b5d6387
-updated: 2016-02-03T11:40:53.308324776Z
+hash: a4b9a4e5d07b33b2c1399c9c2436ed2901f2d9ceb5ce9ba9eb4025754aac777f
+updated: 2016-02-04T08:36:20.722264032Z
 imports:
 - name: collectd.org
   version: 9fc824c70f713ea0f058a07b49a4c563ef2a3b98
@@ -32,7 +32,7 @@ imports:
 - name: github.com/gogo/protobuf
   version: 82d16f734d6d871204a3feb1a73cb220cc92574c
 - name: github.com/golang/protobuf
-  version: 45bba206dd5270d96bac4942dcfe515726613249
+  version: b982704f8bb716bb608144408cff30e15fbde841
 - name: github.com/golang/snappy
   version: 1963d058044b19e16595f80d5050fa54e2070438
 - name: github.com/google/go-querystring
@@ -123,6 +123,9 @@ imports:
   version: ee7b3e0353166ab1f3a605294ac8cd2b77953778
 - name: github.com/spf13/cobra
   version: 8e91712f174ced10270cf66615e0a9127e7c4de5
+  subpackages:
+  - .
+  - /doc
 - name: github.com/spf13/jwalterweatherman
   version: d00654080cddbd2b082acaa74007cb94a2b40866
 - name: github.com/spf13/pflag
@@ -140,9 +143,9 @@ imports:
 - name: golang.org/x/crypto
   version: 1f22c0103821b9390939b6776727195525381532
 - name: golang.org/x/net
-  version: 74d798388a60469ca4db467af4ff70242c2d9ead
+  version: 6ccd6698c634f5d835c40c1c31848729e0cecda1
 - name: golang.org/x/text
-  version: 5aaa1a807bf8a2f763540b140e7805973476eb88
+  version: de304c27a75f7b10cc2530c503d4526a2fd37070
 - name: gopkg.in/airbrake/gobrake.v2
   version: c9d51adc624b5cc4c1bf8de730a09af4878ffe2d
 - name: gopkg.in/fatih/pool.v2

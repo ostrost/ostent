@@ -9,8 +9,8 @@ import (
 	"github.com/ostrost/ostent/ostent"
 )
 
-// Vflag is true when displaying version.
-var Vflag bool
+// VersionFlag is true when displaying version.
+var VersionFlag bool
 
 // OstentVersionCmd represents the version command
 var OstentVersionCmd = &cobra.Command{
@@ -22,16 +22,15 @@ var OstentVersionCmd = &cobra.Command{
 
 func init() {
 	OstentCmd.AddCommand(OstentVersionCmd)
-	// OstentCmd.PersistentFlags().BoolVarP(&Vflag, "version", "v", false, "Display version and exit")
 }
 
 func OstentVersionRunE(*cobra.Command, []string) error {
-	log.New(os.Stdout, "", 0).Printf("ostent version %+v", ostent.VERSION)
+	log.New(os.Stdout, "", 0).Printf("Ostent version %+v", ostent.VERSION)
 	return nil
 }
 
 func OstentVersionRun() error {
-	if !Vflag {
+	if !VersionFlag {
 		return nil
 	}
 	if err := OstentVersionRunE(nil, nil); err != nil {

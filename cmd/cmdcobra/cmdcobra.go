@@ -7,9 +7,11 @@ import (
 )
 
 var (
-	// PostRuns keeps a list of funcs to be RunE with cobra.Command's PostRunE.
-	PostRuns Runs
-	// PreRuns keeps a list of funcs to be RunE with cobra.Command's PreRunE.
+	// PersistentPostRuns keeps a list of funcs to be cobra.Command's PersistentPostRunE.
+	PersistentPostRuns Runs
+	// PersistentPreRuns keeps a list of funcs to be cobra.Command's PersistentPreRunEE.
+	PersistentPreRuns Runs
+	// PreRuns keeps a list of funcs to be cobra.Command's PreRunE.
 	PreRuns Runs
 )
 
