@@ -1,5 +1,5 @@
-hash: a4b9a4e5d07b33b2c1399c9c2436ed2901f2d9ceb5ce9ba9eb4025754aac777f
-updated: 2016-02-04T08:36:20.722264032Z
+hash: 1823028d1b1072e45760e3cf98f8d22fcc316883a6760b65a300535cd4ff1be7
+updated: 2016-02-07T19:14:08.446428093Z
 imports:
 - name: collectd.org
   version: 9fc824c70f713ea0f058a07b49a4c563ef2a3b98
@@ -12,7 +12,7 @@ imports:
 - name: github.com/bmizerany/pat
   version: b8a35001b773c267eb260a691f4e5499a3531600
 - name: github.com/boltdb/bolt
-  version: ee4a0888a9abe7eefe5a0992ca4cb06864839873
+  version: 2f846c3551b76d7710f159be840d66c3d064abbe
 - name: github.com/BurntSushi/toml
   version: 5c4df71dfe9ac89ef6287afc05e4c1b16ae65a1e
 - name: github.com/cloudfoundry/gosigar
@@ -34,7 +34,7 @@ imports:
 - name: github.com/golang/protobuf
   version: b982704f8bb716bb608144408cff30e15fbde841
 - name: github.com/golang/snappy
-  version: 1963d058044b19e16595f80d5050fa54e2070438
+  version: 894fd4616c897c201d223c3c0c128e8c648c96a2
 - name: github.com/google/go-querystring
   version: 2a60fc2ba6c19de80291203597d752e9ba58e4c0
   subpackages:
@@ -48,7 +48,7 @@ imports:
 - name: github.com/hashicorp/go-msgpack
   version: fa3f63826f7c23912c15263591e65d54d080b458
 - name: github.com/hashicorp/hcl
-  version: e96d23138c76470c808bf6586bdaf981bbd25cae
+  version: a01f759c89c1f9ebc2bc643fbc8d593fd2aba77a
 - name: github.com/hashicorp/raft
   version: 057b893fd996696719e98b6c44649ea14968c811
 - name: github.com/hashicorp/raft-boltdb
@@ -56,7 +56,7 @@ imports:
 - name: github.com/inconshreveable/go-update
   version: 8152e7eb6ccf8679a64582a66b78519688d156ad
 - name: github.com/influxdb/influxdb
-  version: 0fd8392853886375616f2b26596d4d07cea4c500
+  version: af1a22da763414b6cc2f8c12f25b107521c19a30
 - name: github.com/influxdb/usage-client
   version: 475977e68d79883d9c8d67131c84e4241523f452
 - name: github.com/jeffail/gabs
@@ -67,7 +67,7 @@ imports:
   - .
   - /go-bindata
 - name: github.com/julienschmidt/httprouter
-  version: abb0dc9f755ff0a9d818db28d9d8b9810066e2b5
+  version: fd848ba9ca16e86a98b18e1a0e31358534101d34
 - name: github.com/justinas/alice
   version: 82db91fe6d1db4c070fed544cb5d0b5cc08fe276
 - name: github.com/jwilder/encoding
@@ -111,7 +111,7 @@ imports:
 - name: github.com/russross/blackfriday
   version: 006144af03eeeff1037240a71865a9fd61f1c25f
 - name: github.com/shirou/gopsutil
-  version: cc040ddf7245fcba710209be380a18677383c04f
+  version: 59b63dedef23deb98fc82b4d2acfd881cdf1d3a2
   subpackages:
   - /host
   - /net
@@ -122,7 +122,7 @@ imports:
 - name: github.com/spf13/cast
   version: ee7b3e0353166ab1f3a605294ac8cd2b77953778
 - name: github.com/spf13/cobra
-  version: 8e91712f174ced10270cf66615e0a9127e7c4de5
+  version: 04d02e318480593f48e66ff338c7b8027e5b7660
   subpackages:
   - .
   - /doc
@@ -143,9 +143,9 @@ imports:
 - name: golang.org/x/crypto
   version: 1f22c0103821b9390939b6776727195525381532
 - name: golang.org/x/net
-  version: 6ccd6698c634f5d835c40c1c31848729e0cecda1
+  version: 7f88271ea9913b72aca44fa7fc8af919eacc17ce
 - name: golang.org/x/text
-  version: de304c27a75f7b10cc2530c503d4526a2fd37070
+  version: 2ea5e055772cf5daa0b1478d6e88c8d0c3d4cb79
 - name: gopkg.in/airbrake/gobrake.v2
   version: c9d51adc624b5cc4c1bf8de730a09af4878ffe2d
 - name: gopkg.in/fatih/pool.v2
