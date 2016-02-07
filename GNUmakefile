@@ -1,7 +1,8 @@
 #!/usr/bin/env gmake -f
 
-CGO_ENABLED=0
-GO15VENDOREXPERIMENT=1
+export CGO_ENABLED=0
+export GO15VENDOREXPERIMENT=1
+
 PATH:=$(shell echo -n $$PATH:; echo $$GOPATH | sed 's,:\|$$,/bin:,g'):$$PWD/node_modules/.bin
 
 # This repo clone location (final subdirectories) defines package name thus
@@ -30,7 +31,9 @@ bingo_modtime=1400000000 # const mod time for bin bindata fileinfo
 # Non-dev bindata mode templates identified by this value in templateutil.
 
 .PHONY: all al init test covertest coverfunc coverhtml bindata bindata-dev bindata-bin check-update dev
-.PHONY: all32 boot32
+.PHONY: all32 boot32 x
+x:
+	printenv|grep GO
 ifneq (init, $(MAKECMDGOALS))
 # before init:
 # - go list would fail (for *packagefiles)
@@ -94,13 +97,9 @@ $(templatepp): $(templateppfiles)
 	go build -o $@ $(templateppackage)
 $(destbin)/$(cmdname): $(packagefiles)
 	go build -ldflags '-s -w' -a -tags bin -o $@ $(package)
-$(destbin)/$(cmdname).32:
-	CGO_ENABLED=1 GOARCH=386 \
+$(destbin)/$(cmdname).32: $(packagefiles) ; GOARCH=386 \
 	go build -ldflags '-s -w' -a -tags bin -o $@ $(package)
-boot32:
-	cd $(GOROOT)/src && \
-	CGO_ENABLED=1 GOARCH=386 \
-  ./make.bash --no-clean
+boot32: ; cd $(GOROOT)/src && GOARCH=386 ./make.bash --no-clean
 
 dev: \
 share/assets/css/index.css \
