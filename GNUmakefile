@@ -1,7 +1,9 @@
 #!/usr/bin/env gmake -f
 
-export CGO_ENABLED=0
 export GO15VENDOREXPERIMENT=1
+ifeq (Linux, $(shell uname -s))
+export CGO_ENABLED=0
+endif
 
 PATH:=$(shell echo -n $$PATH:; echo $$GOPATH | sed 's,:\|$$,/bin:,g'):$$PWD/node_modules/.bin
 
