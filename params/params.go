@@ -588,7 +588,7 @@ func (gends *GraphiteEndpoints) Set(input string) error {
 	gends.Values = make([]Endpoint, len(values))
 	for i, value := range values {
 		gends.Values[i] = gends.Default // copy
-		if err := Decode(AddScheme(value), &gends.Values[i], &gends.Values[i]); err != nil {
+		if err := Decode(nil, AddScheme(value), &gends.Values[i], &gends.Values[i]); err != nil {
 			return err
 		}
 		if gends.Values[i].ServerAddr.Host == "" {
@@ -641,7 +641,7 @@ func (iends *InfluxEndpoints) Set(input string) error {
 	iends.Values = make([]InfluxEndpoint, len(values))
 	for i, value := range values {
 		iends.Values[i] = iends.Default // copy
-		if err := Decode(value, &iends.Values[i], &iends.Values[i]); err != nil {
+		if err := Decode(nil, value, &iends.Values[i], &iends.Values[i]); err != nil {
 			return err
 		}
 		if iends.Values[i].ServerAddr.Host == "" {
@@ -689,7 +689,7 @@ func (lends *LibratoEndpoints) Set(input string) error {
 	lends.Values = make([]LibratoEndpoint, len(values))
 	for i, value := range values {
 		lends.Values[i] = lends.Default // copy
-		if err := Decode(AddScheme(value), &lends.Values[i], nil); err != nil {
+		if err := Decode(nil, AddScheme(value), &lends.Values[i], nil); err != nil {
 			return err
 		}
 		l := &lends.Values[i] // shortcut
@@ -719,10 +719,63 @@ func (lends LibratoEndpoints) String() string {
 // Type is a pflag.Value method.
 func (lends LibratoEndpoints) Type() string { return "libratoEndpoints" }
 
+// FetchKey encloses an Endpoint and has extra params.
+type FetchKey struct {
+	Endpoint
+	Schema
+	Times int `schema:"times"`
+}
+
+func NewFetchKeys(bind flags.Bind) *FetchKeys {
+	def := FetchKey{} // Endpoint: Endpoint{URL: url.URL{Host: bind.String()}}}
+	def.URL.Scheme = "http"
+	def.URL.Host = bind.String()
+	def.URL.Path = "/index.ws"
+	return &FetchKeys{Default: def}
+}
+
+type FetchKeys struct {
+	Values    []FetchKey
+	Fragments [][]string
+	Default   FetchKey
+}
+
+// Set is a flag.Value method.
+func (fkeys *FetchKeys) Set(input string) error {
+	values := strings.Split(input, ",")
+	fkeys.Values = make([]FetchKey, len(values))
+	fkeys.Fragments = make([][]string, len(values))
+	for i, value := range values {
+		newkey := fkeys.Default // copy
+		if err := Decode(&fkeys.Default.URL, value, &newkey, nil); err != nil {
+			return err
+		}
+		if newkey.URL.Path == "" {
+			newkey.URL.Path = fkeys.Default.URL.Path
+		}
+		fkeys.Values[i] = newkey
+		fkeys.Fragments[i] = strings.Split(newkey.URL.Fragment, "#")
+	}
+	return nil
+}
+
+// String is a flag.Value method.
+func (fkeys FetchKeys) String() string {
+	values := fkeys.Values // shortcut
+	ss := make([]string, len(values))
+	for i, v := range values {
+		ss[i] = v.String()
+	}
+	return strings.Join(ss, ",")
+}
+
+// Type is a pflag.Value method.
+func (fkeys FetchKeys) Type() string { return "fetchKeys" }
+
 func AddScheme(input string) string { return "http://" + input }
 
 // Decode does url parsing and schema decoding.
-func Decode(input string,
+func Decode(base *url.URL, input string,
 	into interface {
 		// pflag.Value
 		SetURL(url.URL)
@@ -734,6 +787,9 @@ func Decode(input string,
 	u, err := url.Parse(input)
 	if err != nil {
 		return err
+	}
+	if base != nil {
+		u = base.ResolveReference(u)
 	}
 	into.SetURL(*u)
 	if urluser != nil {

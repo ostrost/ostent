@@ -428,35 +428,71 @@ func (sw ServeWS) IndexWS(w http.ResponseWriter, req *http.Request) {
 	c.updateLoop(stop)     // write to the client
 }
 
-func Fetch(hostport string, keys []string, once bool) error {
-	conn, err := net.Dial("tcp", hostport)
+func Fetch(keys *params.FetchKeys) error {
+	if len(keys.Values) == 0 {
+		if err := keys.Set(""); err != nil {
+			return err
+		}
+	}
+	for i := range keys.Values {
+		if err := FetchOne(keys.Values[i], keys.Fragments[i]); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func FetchOne(k params.FetchKey, keys []string) error {
+	switch k.URL.Scheme {
+	case "https":
+		k.URL.Scheme = "wss"
+	case "http":
+		k.URL.Scheme = "ws"
+	default:
+		return fmt.Errorf("Unknown scheme for WebSocket connection: %s", k.URL.Scheme)
+	}
+	search, err := json.Marshal(struct{ Search string }{k.URL.RawQuery})
+	if err != nil {
+		return err
+	}
+	host, port, err := net.SplitHostPort(k.URL.Host)
+	if err != nil {
+		if !strings.HasPrefix(err.Error(), "missing port in address ") {
+			return err
+		}
+		if host == "" {
+			host = k.URL.Host
+		}
+	}
+	if port == "" {
+		switch k.URL.Scheme {
+		case "wss":
+			port = "443"
+		case "ws":
+			port = "80"
+		}
+	}
+	conn, err := net.Dial("tcp", host+":"+port)
 	if err != nil {
 		return err
 	}
 	// conn.SetDeadline(time.Now().Add(time.Second))
-	wsurl, err := url.Parse(fmt.Sprintf("ws://%s/index.ws", hostport))
-	if err != nil {
-		return err
-	}
 	headers := http.Header{}
 	headers.Set("User-Agent", "ostent/Go-http-client")
-	/*
-		host, _, err := net.SplitHostPort(hostport)
-		if err != nil {
-			return err
-		}
-		headers.Set("Host", host) // */
-	// headers.Set("Origin", "http://"+hostport+"/")
-	wsconn, _, err := websocket.NewClient(conn, wsurl, headers, 10, 10) // 4096, 4096)
+	// headers.Set("Host", host)
+	//// headers.Set("Origin", "http://"+k.URL.Host+"/")
+	k.URL.Fragment = "" // reset the fragment otherwise ws.NewClient fails
+	k.URL.Query().Del("times")
+	wsconn, _, err := websocket.NewClient(conn, &k.URL, headers, 10, 10) // 4096, 4096)
 	if err != nil {
-		return err
+		return fmt.Errorf("%s: %s", k.URL.String(), err)
 	}
-	err = wsconn.WriteMessage(websocket.TextMessage, []byte(`{"Search": ""}`))
-	if err != nil {
+	if err = wsconn.WriteMessage(websocket.TextMessage, search); err != nil {
 		return err
 	}
 
-	for {
+	// k.Times == -1 means non-stop iterations
+	for i := 0; k.Times <= 0 || i < k.Times; i++ {
 		_, message, err := wsconn.ReadMessage()
 		if err != nil {
 			return err
@@ -476,7 +512,8 @@ func Fetch(hostport string, keys []string, once bool) error {
 			}
 			fmt.Printf("%s\n", text)
 		}
-		if once {
+		if k.Times == 0 {
+			// 0 is the default value, which encodes 1 time pass
 			break
 		}
 	}
