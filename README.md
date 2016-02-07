@@ -1,7 +1,8 @@
-[![GoDoc](https://godoc.org/github.com/ostrost/ostent?status.svg)](https://godoc.org/github.com/ostrost/ostent)
-[![Travis CI](https://travis-ci.org/ostrost/ostent.svg?branch=master)](https://travis-ci.org/ostrost/ostent)
+# ostent [![Travis CI][2]][1]
+[1]: https://travis-ci.org/ostrost/ostent
+[2]: https://travis-ci.org/ostrost/ostent.svg?branch=master
 
-ostent collects system metrics to display and relay to
+Ostent collects system metrics to display and relay to
 
 - Graphite
 - InfluxDB
@@ -25,7 +26,7 @@ although the metrics naming is slightly different.
 
 ## Install
 
-ostent is a single executable (everything is builtin) without dependecies.
+Ostent is a single executable (everything is builtin) without dependecies.
 Release binaries self-upgrade whenever there's new stable release.
 Binaries builds by courtesy of [Travis CI](https://travis-ci.org/ostrost/ostent),
 distributed by [GitHub Releases](https://github.com/ostrost/ostent/releases).
@@ -34,9 +35,9 @@ Install & run with `curl -sSL https://github.com/ostrost/ostent/raw/master/osten
 
 Platforms:
 
-   - [Mac OS X](https://github.com/ostrost/ostent/releases/download/v0.5.0/Darwin.x86_64)
-   - Linux [64-bit](https://github.com/ostrost/ostent/releases/download/v0.5.0/Linux.x86_64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.5.0/Linux.i686)
-   - FreeBSD [64-bit](https://github.com/ostrost/ostent/releases/download/v0.5.0/FreeBSD.amd64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.5.0/FreeBSD.i386)
+   - [Mac OS X](https://github.com/ostrost/ostent/releases/download/v0.6/Darwin.x86_64)
+   - Linux [64-bit](https://github.com/ostrost/ostent/releases/download/v0.6/Linux.x86_64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.6/Linux.i686)
+   - FreeBSD [64-bit](https://github.com/ostrost/ostent/releases/download/v0.6/FreeBSD.amd64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.6/FreeBSD.i386)
 
 ## Usage
 
