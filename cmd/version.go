@@ -16,7 +16,7 @@ var VersionFlag bool
 var OstentVersionCmd = &cobra.Command{
 	SilenceUsage: true,
 	Use:          "version",
-	Short:        "Print ostent version",
+	Short:        "Print ostent version.",
 	RunE:         OstentVersionRunE,
 }
 

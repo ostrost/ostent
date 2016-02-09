@@ -27,7 +27,7 @@ var (
 // ExtractAssetsCmd represents the extractassets subcommand
 var ExtractAssetsCmd = &cobra.Command{
 	Use:   "extractassets",
-	Short: "extractassets subcommand extracts embeded assets",
+	Short: "Extract embeded assets & manage symlinks.",
 	// Long: ``,
 	PreRunE: ExtractAssetsPreRunE,
 	RunE:    ExtractAssetsRunE,

@@ -22,7 +22,7 @@ var (
 	// GenDocCmd represents the gendoc subcommand
 	GenDocCmd = &cobra.Command{
 		Use:   "gendoc",
-		Short: "Generate ostent commands docs",
+		Short: "Generate ostent commands docs.",
 		RunE:  GenDocRunE,
 	}
 	// GenDocDir is the flag value.

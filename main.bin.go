@@ -56,6 +56,7 @@ func init() {
 		"Delay startup upgrade check")
 }
 
+// OstentRunE is the run of the ostent command.
 func OstentRunE(cmd *cobra.Command, args []string) error {
 	OstentUpgradeRun(false)
 
@@ -65,6 +66,7 @@ func OstentRunE(cmd *cobra.Command, args []string) error {
 	return OstentWebserverRunE()
 }
 
+// OstentWebserverServe spawns web serving goroutine.
 func OstentWebserverServe(listen net.Listener) {
 	go UntilUpgrade()
 	go func() {
@@ -74,6 +76,7 @@ func OstentWebserverServe(listen net.Listener) {
 	}()
 }
 
+// OstentWebserverRunE is the webserver run of the ostent command.
 func OstentWebserverRunE() error {
 	listen, err := goagain.Listener()
 	if err != nil {
@@ -121,10 +124,11 @@ func main() {
 	cmd.Execute()
 }
 
+// NewerVersion checks out GitHub for the latest ostent version in form of "v...".
 func NewerVersion() (string, error) {
 	// 1. https://github.com/ostrost/ostent/releases/latest # redirects, NOT followed
-	// 2. https://github.com/ostrost/ostent/releases/vX.Y.Z # Redirect location
-	// 3. return "vX.Y.Z" # basename of the location
+	// 2. https://github.com/ostrost/ostent/releases/v... # Redirect location
+	// 3. return "v..." # basename of the location
 
 	type redirected struct {
 		error
@@ -154,6 +158,7 @@ func NewerVersion() (string, error) {
 	return filepath.Base(redir.url.Path), nil
 }
 
+// RuntimeMach returns `uname -i`-like arch.
 func RuntimeMach() string {
 	m := runtime.GOARCH
 	if m == "amd64" {
@@ -164,6 +169,7 @@ func RuntimeMach() string {
 	return m
 }
 
+// OstentUpgradeUpgrade does the upgrade if available returning true.
 func OstentUpgradeUpgrade() bool {
 	newVersion, err := NewerVersion()
 	if err != nil {
@@ -219,6 +225,7 @@ func GoAgain() { syscall.Kill(os.Getpid(), syscall.SIGUSR2) }
 // GoneAgain return whether the process is restarted with goagain.
 func GoneAgain() bool { return os.Getenv("GOAGAIN_PPID") != "" }
 
+// UntilUpgrade waits for an upgrade, applies one and returns.
 func UntilUpgrade() {
 	seed := time.Now().UTC().UnixNano()
 	random := rand.New(rand.NewSource(seed))
@@ -233,6 +240,7 @@ func UntilUpgrade() {
 	}
 }
 
+// OstentUpgradeRun does initial upgrade if available.
 func OstentUpgradeRun(isCommand bool) {
 	if UpgradeLater {
 		return

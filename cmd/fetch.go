@@ -15,7 +15,7 @@ func init() {
 		fetchCmd  = &cobra.Command{
 			SilenceUsage: true,
 			Use:          "fetch",
-			Short:        "Print collected data",
+			Short:        "Print collected data.",
 			Long: `Fetch retrieves data from one or many ostent servers for print. Server addresses
 and request details may be specified with --keys flag. The value is parsed as a
 partial URL: most details can be omitted for defaults. The fragment is treated

@@ -21,6 +21,9 @@ func init() {
 	ostent.AddBackground(ostent.CollectLoop)
 }
 
+// Serve acceps incoming HTTP connections on the listener.
+// Routes are set here, extra may be a hook to finalize the router.
+// taggedbin is required for some handlers.
 func Serve(listener net.Listener, taggedbin bool, extra func(*httprouter.Router, alice.Chain)) error {
 	r, achain, access := ostent.NewServery(taggedbin)
 

@@ -23,6 +23,7 @@ import (
 // AssetAltModTimeFunc is nil.
 var AssetAltModTimeFunc func() time.Time
 
+// OstentRunE is the run of the ostent command.
 func OstentRunE(*cobra.Command, []string) error {
 	listen, err := net.Listen("tcp", cmd.OstentBind.String())
 	if err != nil {
@@ -62,6 +63,7 @@ func main() {
 	cmd.Execute()
 }
 
+// Serve is PprofServe handler.
 func (ps PprofServe) Serve(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	name := params.ByName("name")
 	var handler func(http.ResponseWriter, *http.Request)
@@ -72,7 +74,8 @@ func (ps PprofServe) Serve(w http.ResponseWriter, r *http.Request, params httpro
 		handler = pprof.Profile
 	case "symbol":
 		handler = pprof.Symbol
-	// TODO case "trace": handler = pprof.Trace // in go1.5
+	case "trace":
+		handler = pprof.Trace
 	default:
 		handler = pprof.Index
 	}
@@ -83,8 +86,10 @@ func (ps PprofServe) Serve(w http.ResponseWriter, r *http.Request, params httpro
 	ps.Chain.ThenFunc(handler).ServeHTTP(w, r)
 }
 
+// PprofServe is pprof data serving handler.
 type PprofServe struct{ Chain alice.Chain }
 
+// PprofExtra is a hook to add PprofServe-handled routes to r.
 func PprofExtra(r *httprouter.Router, chain alice.Chain) {
 	handle := PprofServe{chain}.Serve
 	r.GET("/debug/pprof/:name", handle)

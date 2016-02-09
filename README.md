@@ -1,6 +1,8 @@
-# ostent [![Travis CI][2]][1]
-[1]: https://travis-ci.org/ostrost/ostent
-[2]: https://travis-ci.org/ostrost/ostent.svg?branch=master
+# ostent [![GoDoc][2]][1] [![Travis CI][4]][3]
+[1]: https://godoc.org/github.com/ostrost/ostent
+[2]: https://godoc.org/github.com/ostrost/ostent?status.svg
+[3]: https://travis-ci.org/ostrost/ostent
+[4]: https://travis-ci.org/ostrost/ostent.svg?branch=master
 
 Ostent collects system metrics to display and relay to
 

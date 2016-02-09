@@ -33,9 +33,7 @@ bingo_modtime=1400000000 # const mod time for bin bindata fileinfo
 # Non-dev bindata mode templates identified by this value in templateutil.
 
 .PHONY: all al init test covertest coverfunc coverhtml bindata bindata-dev bindata-bin check-update dev
-.PHONY: all32 boot32 x
-x:
-	printenv|grep GO
+.PHONY: all32 boot32
 ifneq (init, $(MAKECMDGOALS))
 # before init:
 # - go list would fail (for *packagefiles)

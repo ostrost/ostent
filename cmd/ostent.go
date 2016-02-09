@@ -32,7 +32,7 @@ var (
 	OstentCmd = &cobra.Command{
 		SilenceUsage: true,
 		Use:          "ostent",
-		Short:        "Ostent is a metrics tool",
+		Short:        "Ostent is a metrics tool.",
 		Long: `Ostent collects system metrics and put them on display.
 Optionally exports them to metrics servers.
 
