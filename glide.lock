@@ -1,5 +1,5 @@
 hash: 1823028d1b1072e45760e3cf98f8d22fcc316883a6760b65a300535cd4ff1be7
-updated: 2016-02-07T19:14:08.446428093Z
+updated: 2016-02-10T14:40:11.311484827Z
 imports:
 - name: collectd.org
   version: 9fc824c70f713ea0f058a07b49a4c563ef2a3b98
@@ -32,9 +32,9 @@ imports:
 - name: github.com/gogo/protobuf
   version: 82d16f734d6d871204a3feb1a73cb220cc92574c
 - name: github.com/golang/protobuf
-  version: b982704f8bb716bb608144408cff30e15fbde841
+  version: 001690d39bd620847bb265d93a7c5e1bd3737308
 - name: github.com/golang/snappy
-  version: 894fd4616c897c201d223c3c0c128e8c648c96a2
+  version: 75a5f0a18524f82ea066e173c9b481e0fc874c89
 - name: github.com/google/go-querystring
   version: 2a60fc2ba6c19de80291203597d752e9ba58e4c0
   subpackages:
@@ -48,7 +48,7 @@ imports:
 - name: github.com/hashicorp/go-msgpack
   version: fa3f63826f7c23912c15263591e65d54d080b458
 - name: github.com/hashicorp/hcl
-  version: a01f759c89c1f9ebc2bc643fbc8d593fd2aba77a
+  version: 8cc810768200e949a2a92972845244f6a818f68d
 - name: github.com/hashicorp/raft
   version: 057b893fd996696719e98b6c44649ea14968c811
 - name: github.com/hashicorp/raft-boltdb
@@ -56,7 +56,7 @@ imports:
 - name: github.com/inconshreveable/go-update
   version: 8152e7eb6ccf8679a64582a66b78519688d156ad
 - name: github.com/influxdb/influxdb
-  version: af1a22da763414b6cc2f8c12f25b107521c19a30
+  version: bb9eed941ec0d36612a8d10a6e26c82a7155ab95
 - name: github.com/influxdb/usage-client
   version: 475977e68d79883d9c8d67131c84e4241523f452
 - name: github.com/jeffail/gabs
@@ -67,9 +67,9 @@ imports:
   - .
   - /go-bindata
 - name: github.com/julienschmidt/httprouter
-  version: fd848ba9ca16e86a98b18e1a0e31358534101d34
+  version: 2c34ec888a7359c0750064e0a4c8df360806c255
 - name: github.com/justinas/alice
-  version: 82db91fe6d1db4c070fed544cb5d0b5cc08fe276
+  version: 2ac31ddd090e634eeabd598d1066a9a3e4a58a9f
 - name: github.com/jwilder/encoding
   version: 07d88d4f35eec497617bee0c7bfe651a796dae13
 - name: github.com/kimor79/gollectd
@@ -89,13 +89,13 @@ imports:
 - name: github.com/mitchellh/mapstructure
   version: 281073eb9eb092240d33ef253c404f1cca550309
 - name: github.com/ostrost/gosigar
-  version: 7b4f54e4de100d5fc07eba849514bf492f992840
+  version: 2fa6f5483b949b13f56ee3d193d985653b749b74
 - name: github.com/paulbellamy/ratecounter
   version: 5a11f585a31379765c190c033b6ad39956584447
 - name: github.com/peterh/liner
   version: ad1edfd30321d8f006ccf05f1e0524adeb943060
 - name: github.com/prometheus/client_golang
-  version: 67994f177195311c3ea3d4407ed0175e34a4256f
+  version: 15006a7ed88e73201c4e6142a2e66b54ae5fdf00
 - name: github.com/prometheus/client_model
   version: fa8ad6fec33561be4280a8f0514318c79d7f6cb6
 - name: github.com/prometheus/common
@@ -111,7 +111,7 @@ imports:
 - name: github.com/russross/blackfriday
   version: 006144af03eeeff1037240a71865a9fd61f1c25f
 - name: github.com/shirou/gopsutil
-  version: 59b63dedef23deb98fc82b4d2acfd881cdf1d3a2
+  version: b7e206ba772ed2f759021b1d64598e933acb44ee
   subpackages:
   - /host
   - /net
@@ -122,7 +122,7 @@ imports:
 - name: github.com/spf13/cast
   version: ee7b3e0353166ab1f3a605294ac8cd2b77953778
 - name: github.com/spf13/cobra
-  version: 04d02e318480593f48e66ff338c7b8027e5b7660
+  version: 65a708cee0a4424f4e353d031ce440643e312f92
   subpackages:
   - .
   - /doc
@@ -131,7 +131,7 @@ imports:
 - name: github.com/spf13/pflag
   version: 7f60f83a2c81bc3c3c0d5297f61ddfa68da9d3b7
 - name: github.com/spf13/viper
-  version: a212099cbe6fbe8d07476bfda8d2d39b6ff8f325
+  version: c975dc1b4eacf4ec7fdbf0873638de5d090ba323
 - name: github.com/stathat/go
   version: cf69b0bcb80478755dc0ea1120b36000e35dcbbb
 - name: github.com/ugorji/go
