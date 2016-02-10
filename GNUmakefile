@@ -73,10 +73,7 @@ init:
 		go get -v -a -tags bin $(package); \
 	fi
 
-check-update:
-	npm outdated # upgrade with npm update --save-dev
-	bower list # | grep latest\ is
-	# update with bower install [] --save
+check-update: ; npm outdated # upgrade with npm update --save-dev
 
 %: %.sh # clear the implicit *.sh rule
 # print-* rule for debugging. http://blog.jgc.org/2015/04/the-one-line-you-should-add-to-every.html :

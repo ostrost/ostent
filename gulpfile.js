@@ -26,12 +26,11 @@ gulp.task('jade', function() {
     .pipe(gulp.dest('.'));
 });
 
-var bower_components = path.join(__dirname, './bower_components'),
-    node_modules     = path.join(__dirname, './node_modules');
+var node_modules = path.join(__dirname, './node_modules');
 var wpconf = {
   bail: true,
   resolve: {
-    root: [bower_components, node_modules],
+    root: [node_modules],
     //? extensions: ['', '.js', '.jsx', '.css', '.scss'],
     alias: {
       'react-dom': 'react/lib/ReactDOM.js',
@@ -45,7 +44,7 @@ var wpconf = {
       {
         test: /\.jsx?$/,
         loader: 'babel',
-        exclude: /(node_modules|bower_components)/,
+        exclude: /node_modules/,
         query: {
           presets: ['react', 'es2015'],
           plugins: ['transform-react-jsx',
@@ -57,13 +56,8 @@ var wpconf = {
     ],
     postLoaders: [{loader: 'transform?envify'}]
   },
-  sassLoader: {includePaths: [
-    bower_components+'/foundation-sites/scss/',
-    bower_components+'/foundation-apps/scss/'
-  ]},
+  sassLoader: {includePaths: [node_modules+'/foundation-sites/scss/']},
   plugins: [
-    // new webpack.ResolverPlugin(new webpack.ResolverPlugin.DirectoryDescriptionFilePlugin(
-    //     'bower.json', ['main'])), // this will resolve with bower.json:"main"
     new ExtractTextPlugin('index.css', {allChunks: true}),
     new purify({paths: [
       'share/templates/*.html',

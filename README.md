@@ -83,9 +83,7 @@ $ ostent                                     ________________
 
 1. `cd $(go list -f {{.Dir}} github.com/ostrost/ostent)`
 2. `make init` once.
-3. Optionally, for asset and template rebuilding only (once):
-   - `npm install`: the package list comes from package.json
-   - `node_modules/.bin/bower install`: the list from bower.json
+3. `npm install` once, optional, sets up assets and template rebuilding.
 4. `gulp watch` or `make` after changes.
 
 `make` rebuilds these **commited to the repo** files:

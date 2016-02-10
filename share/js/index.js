@@ -1,6 +1,6 @@
 var React       = require('react'),
     ReactDOM    = require('react-dom'),
-    ReconnectWS = require('reconnectingWebsocket'),
+    ReconnectWS = require('reconnectingwebsocket'),
     jsdefines   = require('./jsdefines.jsx');
 
 /*
