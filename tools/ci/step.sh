@@ -1,7 +1,8 @@
 #!/bin/sh
 test -n "$BASH" -o -n "$KSH_VERSION" -o -n "$ZSH_VERSION" &&
 set -o pipefail 2>/dev/null
-set -eu
+set -e # not -u
+set +u # non-strict unset variables use in CI build script
 
 : ${MAKE:=make}
 
@@ -16,8 +17,6 @@ Gmake() {
 # The split is so that each function must end with one timely action.
 
 install1st() {
-    cat ~/build.sh
-    echo CAT END
     if hash gvm 2>/dev/null ; then
         gvm get
     else
