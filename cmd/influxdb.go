@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	influxdb "github.com/vrischmann/go-metrics-influxdb"
+	influxdb "github.com/ostrost/go-metrics-influxdb"
 
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/params"

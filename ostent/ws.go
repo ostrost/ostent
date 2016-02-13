@@ -11,8 +11,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Jeffail/gabs"
 	"github.com/gorilla/websocket"
-	"github.com/jeffail/gabs"
 
 	"github.com/ostrost/ostent/params"
 )

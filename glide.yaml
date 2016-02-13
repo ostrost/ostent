@@ -9,7 +9,7 @@ import:
 - package: github.com/gorilla/schema
 - package: github.com/gorilla/websocket
 - package: github.com/inconshreveable/go-update
-- package: github.com/jeffail/gabs
+- package: github.com/Jeffail/gabs
 - package: github.com/jteeuwen/go-bindata
   subpackages:
   - .
@@ -25,8 +25,8 @@ import:
   - .
   - /doc
 - package: github.com/spf13/pflag
-- package: github.com/vrischmann/go-metrics-influxdb
 - package: github.com/shirou/gopsutil
   subpackages:
   - /host
   - /net
+- package: github.com/ostrost/go-metrics-influxdb
