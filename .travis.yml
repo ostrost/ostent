@@ -7,37 +7,19 @@ addons:
     - gcc-multilib
 env:
   global:
-    - GVMINSTALLER_URL=https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer
     - DPL_GO=go1.5.3 # Deploy only when this matches GVM_GO in the matrix.
     - GO_BOOTSTRAP=go1.4.3
   matrix:
     - GVM_GO=go1.5.3
   # - GVM_GO=tip
 install:
-  - set -e # errors are fatal
-  - |
-    if test x$TRAVIS_OS_NAME \!= xlinux ; then
-      # linux is ok with gcc
-      export CXX=clang++ CC=clang
-      # default CC=gcc for `language: c'
-    fi
-  - if type -t gvm; then gvm get; else curl -sSL $GVMINSTALLER_URL | bash; fi
-  - |
-    if test x$TRAVIS_OS_NAME == xosx -a xx$GVM_GO == xxgo1.5.3 ; then
-      GO_BINARY_PATH=~/.gvm/archive///////$GVM_GO.darwin-amd64-osx10.8.tar.gz
-      GO_BINARY_URL=https://golang.org/dl/$GVM_GO.darwin-amd64.tar.gz
-      test -f $GO_BINARY_PATH ||
-      curl --silent --show-error --fail --location --output $GO_BINARY_PATH $GO_BINARY_URL
-    fi
-  - source ~/.gvm/scripts/gvm
-  - gvm version
-  - gvm install $GVM_GO --binary # || gvm install $GVM_GO
-  - gvm use $GVM_GO; gvm list
-  - cd; mkdir -p gopath/src; mv build gopath/src/github.com; cd gopath/src/github.com/$TRAVIS_REPO_SLUG
-  - export GOPATH=~/gopath:$GOPATH PATH=~/gopath/bin:$PATH
-  - go version; go env
-  - make init # gmake
-script: make --always-make test all # gmake
+  - source ./tools/ci/step.sh install1st
+  - source ./tools/ci/step.sh install2nd $GVM_GO $TRAVIS_OS_NAME
+  - source ./tools/ci/step.sh install3rd $GVM_GO
+  - source ./tools/ci/step.sh install4th $GVM_GO $TRAVIS_REPO_SLUG
+  - source ./tools/ci/step.sh Gmake init
+script:
+  - source ./tools/ci/step.sh Gmake --always-make test all
 before_deploy:
   - |
     os=$(uname -s)
