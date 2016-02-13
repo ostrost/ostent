@@ -56,7 +56,7 @@ install4th() {
     cd
     mkdir -p gopath/src
     mv build gopath/src/github.com
-    cd gopath/src/github.com/$REPO
+    cd gopath/src/github.com/$REPOSLUG
 
     export GOPATH=~/gopath:$GOPATH # NB
     export PATH=~/gopath/bin:$PATH
