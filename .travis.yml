@@ -22,7 +22,7 @@ before_deploy:
 deploy:
   skip_clean: true
   file_glob: true
-  file: [$HOME/gopath/src/github.com/$TRAVIS_REPO_SLUG/deploy/*]
+  file: $HOME/gopath/src/github.com/$TRAVIS_REPO_SLUG/deploy/*
   on: {tags: true, condition: $GVM_GO = $DPL_GO}
   provider: releases
   prerelease: true
