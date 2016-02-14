@@ -98,7 +98,7 @@ before_deploy.3() {
     fi
     cp -p $HOME/gopath/bin/ostent deploy/$UNAME.$ARCH
 
-    export DEPLOY_FILES=$(find $HOME/gopath/src/github.com/$REPOSLUG/deploy/)
+    export DEPLOY_FILES=$(ls $HOME/gopath/src/github.com/$REPOSLUG/deploy/*)
 
     set +e # NB off fatal errors for travis-dpl
 }
