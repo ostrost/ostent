@@ -18,11 +18,10 @@ script:
 before_deploy:
   - source ./tools/ci/step.sh before_deploy.1 $TRAVIS_OS_NAME
   - source ./tools/ci/step.sh before_deploy.2 $TRAVIS_OS_NAME
-  - source ./tools/ci/step.sh before_deploy.3 $TRAVIS_OS_NAME
+  - source ./tools/ci/step.sh before_deploy.3 $TRAVIS_OS_NAME $TRAVIS_REPO_SLUG
 deploy:
   skip_clean: true
-  file_glob: true
-  file: "$HOME/gopath/src/github.com/$TRAVIS_REPO_SLUG/deploy/*"
+  file: "$DEPLOY_FILES"
   on: {tags: true, condition: $GVM_GO = $DPL_GO}
   provider: releases
   prerelease: true

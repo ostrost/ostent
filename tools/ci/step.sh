@@ -72,7 +72,6 @@ install.4() {
 before_deploy.1() {
     local OSXOS="$1" # "osx" if host is a mac
 
-    set -x
     mkdir -p deploy/ # NB
 
     if test x$OSXOS != xosx ; then
@@ -91,12 +90,15 @@ before_deploy.2() {
 
 before_deploy.3() {
     local OSXOS="$1" # "osx" if host is a mac
+    local REPOSLUG="$2" # The "owner/repo" form.
 
     if test x$OSXOS != xosx ; then
         Gmake all32
         cp -p $HOME/gopath/bin/ostent.32 deploy/$UNAME.i686
     fi
     cp -p $HOME/gopath/bin/ostent deploy/$UNAME.$ARCH
+
+    export DEPLOY_FILES=$(find $HOME/gopath/src/github.com/$REPOSLUG/deploy/)
 
     set +e # NB off fatal errors for travis-dpl
 }
