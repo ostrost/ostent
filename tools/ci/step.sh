@@ -55,6 +55,7 @@ install.4() {
     gvm list
 
     cd
+    mkdir -p gopath/deploy # NB
     mkdir -p gopath/src
     mv build gopath/src/github.com
     cd gopath/src/github.com/$REPOSLUG
@@ -69,8 +70,6 @@ install.4() {
 
 before_deploy.1() {
     local OSXOS="$1" # "osx" if host is a mac
-
-    mkdir -p deploy/ # NB
 
     if test x$OSXOS != xosx ; then
         gvm install $GO_BOOTSTRAPVER --binary || true
