@@ -4,6 +4,8 @@ set -o pipefail 2>/dev/null
 set -e # not -u
 set +u # non-strict unset variables use in CI build script
 
+set -x # debug
+
 GO_BOOTSTRAPVER=1.4.3
 UNAME=$(uname)
 ARCH=$(uname -m)
@@ -75,7 +77,8 @@ before-deploy1st() {
     mkdir -p deploy/ # NB
 
     if test x$OSXOS != xosx ; then
-        gvm install $GO_BOOTSTRAPVER -- binary || true
+        gvm install $GO_BOOTSTRAPVER --binary || true
+        (gvm use $GO_BOOTSTRAPVER; gvm pkgset list)
     fi
 }
 
