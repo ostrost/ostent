@@ -72,6 +72,7 @@ install.4() {
 before_deploy.1() {
     local OSXOS="$1" # "osx" if host is a mac
 
+    set -x
     mkdir -p deploy/ # NB
 
     if test x$OSXOS != xosx ; then
