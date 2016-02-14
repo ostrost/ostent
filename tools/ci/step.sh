@@ -5,8 +5,6 @@ set -e # not -u
 set +u # non-strict unset variables use in CI build script
 
 GO_BOOTSTRAPVER=go1.4.3
-UNAME=$(uname)
-ARCH=$(uname -m)
 : ${MAKE:=make}
 
 Gmake() {
@@ -90,15 +88,14 @@ before_deploy.2() {
 
 before_deploy.3() {
     local OSXOS="$1" # "osx" if host is a mac
-    local REPOSLUG="$2" # The "owner/repo" form.
+    local uname=$(uname)
+    local arch=$(uname -m)
 
     if test x$OSXOS != xosx ; then
         Gmake all32
-        cp -p $HOME/gopath/bin/ostent.32 deploy/$UNAME.i686
+        cp -p ~/gopath/bin/ostent.32 ~/gopath/deploy/$uname.i686
     fi
-    cp -p $HOME/gopath/bin/ostent deploy/$UNAME.$ARCH
-
-    export DEPLOY_FILES=$(ls $HOME/gopath/src/github.com/$REPOSLUG/deploy/*)
+    cp -p ~/gopath/bin/ostent ~/gopath/deploy/$uname.$arch
 
     set +e # NB off fatal errors for travis-dpl
 }
