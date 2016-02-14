@@ -8,21 +8,21 @@ env:
     - GVM_GO=go1.5.3
   # - GVM_GO=tip
 install:
-  - source ./tools/ci/step.sh install1st
-  - source ./tools/ci/step.sh install2nd $GVM_GO $TRAVIS_OS_NAME
-  - source ./tools/ci/step.sh install3rd $GVM_GO
-  - source ./tools/ci/step.sh install4th $GVM_GO $TRAVIS_REPO_SLUG
+  - source ./tools/ci/step.sh install.1
+  - source ./tools/ci/step.sh install.2 $GVM_GO $TRAVIS_OS_NAME
+  - source ./tools/ci/step.sh install.3 $GVM_GO
+  - source ./tools/ci/step.sh install.4 $GVM_GO $TRAVIS_REPO_SLUG
   - source ./tools/ci/step.sh Gmake init
 script:
   - source ./tools/ci/step.sh Gmake --always-make test all
 before_deploy:
-  - source ./tools/ci/step.sh before-deploy1st $TRAVIS_OS_NAME
-  - source ./tools/ci/step.sh before-deploy2nd $TRAVIS_OS_NAME
-  - source ./tools/ci/step.sh before-deploy3rd $TRAVIS_OS_NAME
+  - source ./tools/ci/step.sh before_deploy.1 $TRAVIS_OS_NAME
+  - source ./tools/ci/step.sh before_deploy.2 $TRAVIS_OS_NAME
+  - source ./tools/ci/step.sh before_deploy.3 $TRAVIS_OS_NAME
 deploy:
   skip_clean: true
   file_glob: true
-  file: [$HOME/gopath/src/github.com/$TRAVIS_REPO_SLUG/*]
+  file: [$HOME/gopath/src/github.com/$TRAVIS_REPO_SLUG/deploy/*]
   on: {tags: true, condition: $GVM_GO = $DPL_GO}
   provider: releases
   prerelease: true

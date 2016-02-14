@@ -4,9 +4,7 @@ set -o pipefail 2>/dev/null
 set -e # not -u
 set +u # non-strict unset variables use in CI build script
 
-set -x # debug
-
-GO_BOOTSTRAPVER=1.4.3
+GO_BOOTSTRAPVER=go1.4.3
 UNAME=$(uname)
 ARCH=$(uname -m)
 : ${MAKE:=make}
@@ -21,7 +19,7 @@ Gmake() {
 # Following functions of this script is expected to be executed sequentially.
 # The split is so that each function must end with one timely action.
 
-install1st() {
+install.1() {
     if hash gvm 2>/dev/null ; then
         gvm get
     else
@@ -30,7 +28,7 @@ install1st() {
     fi
 }
 
-install2nd() {
+install.2() {
     local GOVER="$1" # go version in form of "goX.Y[.Z]"
     local OSXOS="$2" # "osx" if host is a mac
 
@@ -42,7 +40,7 @@ install2nd() {
     fi
 }
 
-install3rd() {
+install.3() {
     local GOVER="$1" # go version in form of "goX.Y[.Z]"
 
     source ~/.gvm/scripts/gvm
@@ -51,7 +49,7 @@ install3rd() {
 }
 
 # Nothing timely here, but it's the last install step.
-install4th() {
+install.4() {
     local GOVER="$1" # go version in form of "goX.Y[.Z]"
     local REPOSLUG="$2" # The "owner/repo" form.
 
@@ -71,7 +69,7 @@ install4th() {
     go env
 }
 
-before-deploy1st() {
+before_deploy.1() {
     local OSXOS="$1" # "osx" if host is a mac
 
     mkdir -p deploy/ # NB
@@ -82,7 +80,7 @@ before-deploy1st() {
     fi
 }
 
-before-deploy2nd() {
+before_deploy.2() {
     local OSXOS="$1" # "osx" if host is a mac
 
     if test x$OSXOS != xosx ; then
@@ -90,7 +88,7 @@ before-deploy2nd() {
     fi
 }
 
-before-deploy3rd() {
+before_deploy.3() {
     local OSXOS="$1" # "osx" if host is a mac
 
     if test x$OSXOS != xosx ; then
