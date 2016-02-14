@@ -4,6 +4,9 @@ set -o pipefail 2>/dev/null
 set -e # not -u
 set +u # non-strict unset variables use in CI build script
 
+GO_BOOTSTRAPVER=1.4.3
+UNAME=$(uname)
+ARCH=$(uname -m)
 : ${MAKE:=make}
 
 Gmake() {
@@ -13,7 +16,7 @@ Gmake() {
     $MAKE "$@"
 }
 
-# \w+Nth functions of this script is expected to be executed sequentially.
+# Following functions of this script is expected to be executed sequentially.
 # The split is so that each function must end with one timely action.
 
 install1st() {
@@ -27,7 +30,7 @@ install1st() {
 
 install2nd() {
     local GOVER="$1" # go version in form of "goX.Y[.Z]"
-    local OSXOS="$2" # "osx" if the host is a mac
+    local OSXOS="$2" # "osx" if host is a mac
 
     if test x$OSXOS == xosx -a x$GOVER != xtip ; then
         GO_BINARY_PATH=~/.gvm/archive///////$GOVER.darwin-amd64-osx10.8.tar.gz
@@ -48,7 +51,7 @@ install3rd() {
 # Nothing timely here, but it's the last install step.
 install4th() {
     local GOVER="$1" # go version in form of "goX.Y[.Z]"
-    local REPOSLUG="$2" # The "user/repo" form.
+    local REPOSLUG="$2" # The "owner/repo" form.
 
     gvm use $GOVER
     gvm list
@@ -64,6 +67,36 @@ install4th() {
 
     go version
     go env
+}
+
+before-deploy1st() {
+    local OSXOS="$1" # "osx" if host is a mac
+
+    mkdir -p deploy/ # NB
+
+    if test x$OSXOS != xosx ; then
+        gvm install $GO_BOOTSTRAPVER -- binary || true
+    fi
+}
+
+before-deploy2nd() {
+    local OSXOS="$1" # "osx" if host is a mac
+
+    if test x$OSXOS != xosx ; then
+        Gmake boot32 GOROOT_BOOTSTRAP=~/.gvm/gos/$GO_BOOTSTRAPVER
+    fi
+}
+
+before-deploy3rd() {
+    local OSXOS="$1" # "osx" if host is a mac
+
+    if test x$OSXOS != xosx ; then
+        Gmake all32
+        cp -p $HOME/gopath/bin/ostent.32 deploy/$UNAME.i686
+    fi
+    cp -p $HOME/gopath/bin/ostent deploy/$UNAME.$ARCH
+
+    set +e # NB off fatal errors for travis-dpl
 }
 
 "$@" # The last line to dispatch. $1 is ought to be a func name.

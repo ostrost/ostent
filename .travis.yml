@@ -1,14 +1,9 @@
 os: [linux, osx] # ostrost/ostent flagged multi-os
 language: c # Go runtime is managed with gvm
 sudo: false
-addons:
-  apt:
-    packages:
-    - gcc-multilib
 env:
   global:
     - DPL_GO=go1.5.3 # Deploy only when this matches GVM_GO in the matrix.
-    - GO_BOOTSTRAP=go1.4.3
   matrix:
     - GVM_GO=go1.5.3
   # - GVM_GO=tip
@@ -21,40 +16,16 @@ install:
 script:
   - source ./tools/ci/step.sh Gmake --always-make test all
 before_deploy:
-  - |
-    os=$(uname -s)
-    x64=.$(uname -m)
-    if test x$GVM_GO \!= x$DPL_GO ; then
-      x64=.non-dpl-go-to-be-removed
-    fi
-    x32=$x64
-    if test x$TRAVIS_OS_NAME \!= xosx ; then # 32bit build on non-osx
-      x32=.i686
-      gvm install $GO_BOOTSTRAP --binary || true
-      make boot32 GOROOT_BOOTSTRAP=~/.gvm/gos/$GO_BOOTSTRAP # gmake
-      make all32 # gmake
-      : ; mv $HOME/gopath/bin/ostent.32 $HOME/gopath/bin/$os$x32
-    fi
-    : : ; mv $HOME/gopath/bin/ostent    $HOME/gopath/bin/$os$x64
-  - set +e # off fatal errors for travis-dpl
-after_deploy:
-  - set -e # errors are fatal again
-  - |
-    if test x$TRAVIS_OS_NAME \!= xosx ; then # 32bit build on non-osx
-      : ; mv $HOME/gopath/bin/$os$x32 $HOME/gopath/bin/ostent.32
-    fi
-    : : ; mv $HOME/gopath/bin/$os$x64 $HOME/gopath/bin/ostent
+  - source ./tools/ci/step.sh before-deploy1st $TRAVIS_OS_NAME
+  - source ./tools/ci/step.sh before-deploy2nd $TRAVIS_OS_NAME
+  - source ./tools/ci/step.sh before-deploy3rd $TRAVIS_OS_NAME
 deploy:
-  file:
-    - $HOME/gopath/bin/$os$x32
-    - $HOME/gopath/bin/$os$x64
   skip_clean: true
-  on:
-    tags: true
-    condition: $GVM_GO = $DPL_GO
-    # condition may not work with prerelease:
-  prerelease: true # https://github.com/travis-ci/dpl/issues/234
+  file_glob: true
+  file: [$HOME/gopath/src/github.com/$TRAVIS_REPO_SLUG/*]
+  on: {tags: true, condition: $GVM_GO = $DPL_GO}
   provider: releases
+  prerelease: true
   api_key:
     secure: >
       EFMPpR2rZkCdlfWuz7bE4ji3/0OL+fgIq+lXJ5SWDUG7aYWVqlLpR1hYXb0yqy8YA2Rg3xvAfPY/sFZvCyUMv0Wx1ZhiVzNvAUduzYFqovvHoYS4nuv0bXWis4YBnx7zJ7uikl5aGAOB8g0L+ofsUAswlDU5M9g9stDG4upWSgw=
