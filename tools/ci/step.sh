@@ -1,11 +1,14 @@
 #!/bin/sh
 test -n "$BASH" -o -n "$KSH_VERSION" -o -n "$ZSH_VERSION" &&
 set -o pipefail 2>/dev/null
-set -e # not -u
-set +u # non-strict unset variables use in CI build script
+set -eu
+if test x${TRAVIS:-false} == xtrue ; then
+    set +u # non-strict unset variables use in CI build script
+fi
 
 GO_BOOTSTRAPVER=go1.4.3
 : ${MAKE:=make}
+: ${DPL_DIR:=$(git rev-parse --show-toplevel)/deploy}
 
 Gmake() {
     if test x$MAKE == xmake && hash gmake 2>/dev/null ; then
@@ -17,7 +20,7 @@ Gmake() {
 # Following functions of this script is expected to be executed sequentially.
 # The split is so that each function must end with one timely action.
 
-install.1() {
+install_1() {
     if hash gvm 2>/dev/null ; then
         gvm get
     else
@@ -26,7 +29,7 @@ install.1() {
     fi
 }
 
-install.2() {
+install_2() {
     local GOVER="$1" # go version in form of "goX.Y[.Z]"
     local OSXOS="$2" # "osx" if host is a mac
 
@@ -38,7 +41,7 @@ install.2() {
     fi
 }
 
-install.3() {
+install_3() {
     local GOVER="$1" # go version in form of "goX.Y[.Z]"
 
     source ~/.gvm/scripts/gvm
@@ -47,18 +50,16 @@ install.3() {
 }
 
 # Nothing timely here, but it's the last install step.
-install.4() {
+install_4() {
     local GOVER="$1" # go version in form of "goX.Y[.Z]"
     local REPOSLUG="$2" # The "owner/repo" form.
 
     gvm use $GOVER
     gvm list
 
-    cd
-    mkdir -p gopath/deploy # NB
-    mkdir -p gopath/src
-    mv build gopath/src/github.com
-    cd gopath/src/github.com/$REPOSLUG
+    mkdir -p ~/gopath/src
+    mv ~/build ~/gopath/src/github.com # ~/build is cwd
+    cd ~/gopath/src/github.com/$REPOSLUG # new cwd
 
     export GOPATH=~/gopath:$GOPATH # NB
     export PATH=~/gopath/bin:$PATH
@@ -68,8 +69,10 @@ install.4() {
     go env
 }
 
-before_deploy.1() {
+before_deploy_1() {
     local OSXOS="$1" # "osx" if host is a mac
+
+    mkdir -p "$DPL_DIR"
 
     if test x$OSXOS != xosx ; then
         gvm install $GO_BOOTSTRAPVER --binary || true
@@ -77,7 +80,7 @@ before_deploy.1() {
     fi
 }
 
-before_deploy.2() {
+before_deploy_2() {
     local OSXOS="$1" # "osx" if host is a mac
 
     if test x$OSXOS != xosx ; then
@@ -85,18 +88,91 @@ before_deploy.2() {
     fi
 }
 
-before_deploy.3() {
-    local OSXOS="$1" # "osx" if host is a mac
+unamem32() {
+    local uname=${1:-$(uname)}
+    if test x$uname == xFreeBSD ; then
+        echo i386
+    else
+        echo i686
+    fi
+}
+
+before_deploy_3() {
     local uname=$(uname)
     local arch=$(uname -m)
 
-    if test x$OSXOS != xosx ; then
+    if test x$uname != xDarwin ; then
         Gmake all32
-        cp -p ~/gopath/bin/ostent.32 ~/gopath/deploy/$uname.i686
+        cp -p ~/gopath/bin/ostent.32 "$DPL_DIR"/$uname.$(unamem32 $uname)
     fi
-    cp -p ~/gopath/bin/ostent ~/gopath/deploy/$uname.$arch
+    cp -p ~/gopath/bin/ostent "$DPL_DIR"/$uname.$arch
+}
 
-    set +e # NB off fatal errors for travis-dpl
+before_deploy_4() {
+    local uname=${1:-$(uname)}
+
+    before_deploy_fptar $uname
+    before_deploy_fptar $uname 32
+
+    local shacommand=sha256sum
+    if ! hash $shacommand 2>/dev/null ; then
+        shacommand=sha256\ -r
+    fi
+    (
+        cd "$DPL_DIR" || exit 1
+        find . -type f \! -name CHECKSUM.\* | sed 's,^\./,,' |
+        xargs $shacommand >CHECKSUM."$uname".SHA256
+    )
+}
+
+before_deploy_fptar() {
+    local uname=${1:-$(uname)}
+    local arch=${2:-$(uname -m)}
+
+    local prefix=/usr
+    if test x$uname == xDarwin ; then
+        prefix=/opt/local
+    fi
+    if test x$uname == xFreeBSD ; then
+        prefix=/usr/local
+        if test x$arch == xx86_64 ; then
+            arch=amd64
+        fi
+    elif test x$arch == xamd64 ; then
+        arch=x86_64
+    fi
+    if test x$arch == x32 ; then
+        if test x$uname == xDarwin ; then
+            return # No darwin 32-bit builds
+        fi
+        arch=$(unamem32 $uname)
+    fi
+
+    local tarball="$DPL_DIR"/$uname-$arch.tar.xz
+    if test -e "$tarball" ; then
+        echo File already exists: "$tarball" >&2
+        exit 1
+    fi
+    local tmpsubdir=$(mktemp -d tmpstage.XXXXXXXX) || exit 1 # in cwd
+    trap 'rm -rf "$PWD"/'"$tmpsubdir" EXIT
+    (
+        cd "$tmpsubdir" || exit 1
+
+        # umask 022 # MIND UMASK
+        install -m 755 -d . ./$prefix/bin
+        install -m 755 -p "$DPL_DIR"/$uname.$arch ./$prefix/bin/ostent
+        find . -type d |
+        xargs touch -r "$DPL_DIR"/$uname.$arch
+
+        echo Packing $uname-$arch >&2
+        tar Jcf "$tarball" --numeric-owner --owner=0 --group=0 .
+    )
+    rm -rf "$tmpsubdir"
+    # trap EXIT # clear the trap
+}
+
+prior_to_deploy() {
+    set +e # off fatal errors for travis-dpl
 }
 
 "$@" # The last line to dispatch. $1 is ought to be a func name.

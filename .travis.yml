@@ -2,26 +2,29 @@ os: [linux, osx] # ostrost/ostent flagged multi-os
 language: c # Go runtime is managed with gvm
 sudo: false
 env:
-  global:
-    - DPL_GO=go1.5.3 # Deploy only when this matches GVM_GO in the matrix.
   matrix:
-    - GVM_GO=go1.5.3
   # - GVM_GO=tip
+    - GVM_GO=go1.5.3
+  global:
+    - DPL_DIR=~/deploy # ~/deploy is outside the clone dir
+    - DPL_GO=go1.5.3 # Deploy only when this matches GVM_GO in the matrix.
 install:
-  - source ./tools/ci/step.sh install.1
-  - source ./tools/ci/step.sh install.2 $GVM_GO $TRAVIS_OS_NAME
-  - source ./tools/ci/step.sh install.3 $GVM_GO
-  - source ./tools/ci/step.sh install.4 $GVM_GO $TRAVIS_REPO_SLUG
+  - source ./tools/ci/step.sh install_1
+  - source ./tools/ci/step.sh install_2 $GVM_GO $TRAVIS_OS_NAME
+  - source ./tools/ci/step.sh install_3 $GVM_GO
+  - source ./tools/ci/step.sh install_4 $GVM_GO $TRAVIS_REPO_SLUG
   - source ./tools/ci/step.sh Gmake init
 script:
   - source ./tools/ci/step.sh Gmake --always-make test all
 before_deploy:
-  - source ./tools/ci/step.sh before_deploy.1 $TRAVIS_OS_NAME
-  - source ./tools/ci/step.sh before_deploy.2 $TRAVIS_OS_NAME
-  - source ./tools/ci/step.sh before_deploy.3 $TRAVIS_OS_NAME
+  - source ./tools/ci/step.sh before_deploy_1 $TRAVIS_OS_NAME
+  - source ./tools/ci/step.sh before_deploy_2 $TRAVIS_OS_NAME
+  - source ./tools/ci/step.sh before_deploy_3
+  - source ./tools/ci/step.sh before_deploy_4
+  - source ./tools/ci/step.sh prior_to_deploy # must be last one
 deploy:
   file_glob: true
-  file: $HOME/gopath/deploy/*
+  file: $HOME/deploy/*
   on: {tags: true, condition: $GVM_GO = $DPL_GO}
   provider: releases
   prerelease: true
