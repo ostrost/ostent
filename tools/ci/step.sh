@@ -129,12 +129,7 @@ before_deploy_fptar() {
     local uname=${1:-$(uname)}
     local arch=${2:-$(uname -m)}
 
-    local prefix=/usr
-    if test x$uname == xDarwin ; then
-        prefix=/opt/local
-    fi
     if test x$uname == xFreeBSD ; then
-        prefix=/usr/local
         if test x$arch == xx86_64 ; then
             arch=amd64
         fi
@@ -146,6 +141,11 @@ before_deploy_fptar() {
             return # No darwin 32-bit builds
         fi
         arch=$(unamem32 $uname)
+    fi
+
+    local prefix=/usr
+    if test x$uname != xLinux ; then
+        prefix=/usr/local
     fi
 
     local tarball="$DPL_DIR"/$uname-$arch.tar.xz
