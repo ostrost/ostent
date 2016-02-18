@@ -570,17 +570,15 @@ var (
 
 func init() {
 	reg := metrics.NewRegistry()
-	Reg1s = IndexRegistry{
-		Registry: reg,
-		PrivateCPUAll: system.NewMetricCPU(reg, // metrics.NewRegistry(),
-			"cpu"),
-		PrivateCPURegistry: metrics.NewRegistry(),
-		PrivateDFRegistry:  metrics.NewRegistry(),
-		PrivateIFRegistry:  metrics.NewRegistry(),
-		Load:               system.NewMetricLoad(reg),
-		Swap:               system.NewMetricSwap(reg),
-		RAM:                system.NewMetricRAM(reg),
-	}
+	Reg1s.Registry = reg
+	Reg1s.PrivateCPUAll = system.NewMetricCPU(reg, // metrics.NewRegistry(),
+		"cpu")
+	Reg1s.PrivateCPURegistry = metrics.NewRegistry()
+	Reg1s.PrivateDFRegistry = metrics.NewRegistry()
+	Reg1s.PrivateIFRegistry = metrics.NewRegistry()
+	Reg1s.Load = system.NewMetricLoad(reg)
+	Reg1s.Swap = system.NewMetricSwap(reg)
+	Reg1s.RAM = system.NewMetricRAM(reg)
 }
 
 func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
