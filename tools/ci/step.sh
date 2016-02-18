@@ -10,9 +10,9 @@ GO_BOOTSTRAPVER=go1.4.3
 : ${DPL_DIR:=$(git rev-parse --show-toplevel)/deploy}
 
 eq()      { test x$1 == x$2 ;}
-linux()   { eq "$1" Linux   ;}
-darwin()  { eq "$1" Darwin  ;}
-freebsd() { eq "$1" FreeBSD ;}
+linux()   { eq ${1:-$(uname)} Linux   ;}
+darwin()  { eq ${1:-$(uname)} Darwin  ;}
+freebsd() { eq ${1:-$(uname)} FreeBSD ;}
 
 : ${MAKE:=make}
 Gmake() {
@@ -89,10 +89,7 @@ before_deploy_2() {
 }
 
 before_deploy_3() {
-    local uname=$(uname)
-    local arch=$(uname -m)
-
-    if ! darwin $uname ; then
+    if ! darwin ; then
         Gmake all32
     fi
 }
