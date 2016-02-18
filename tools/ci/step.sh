@@ -163,13 +163,13 @@ before_deploy_fptar() {
         find . -type d |
         xargs touch -r "$DPL_DIR"/$uname.$arch
 
-        local owner=--owner=0
+        local owner=--owner=0\ --group=0
         if test x$uname == xDarwin ; then
             owner=
         fi
 
         echo Packing $uname-$arch >&2
-        tar Jcf "$tarball" --numeric-owner $owner --group=0 .
+        tar Jcf "$tarball" --numeric-owner $owner .
     )
     rm -rf "$tmpsubdir"
     # trap EXIT # clear the trap
