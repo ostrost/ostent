@@ -105,15 +105,15 @@ func (la *last) collect(when time.Time, wantprocs bool) {
 
 	c := Machine{}
 	var wg sync.WaitGroup
-	wg.Add(8)              // EIGHT:
-	go c.CPU(&Reg1s, &wg)  // one
-	go c.RAM(&Reg1s, &wg)  // two
-	go c.Swap(&Reg1s, &wg) // three
-	go c.DF(&Reg1s, &wg)   // four
-	go c.HN(RegMSS, &wg)   // five
-	go c.UP(RegMSS, &wg)   // six
-	go c.LA(&Reg1s, &wg)   // seven
-	go c.IF(&Reg1s, &wg)   // eight
+	wg.Add(8)             // EIGHT:
+	go c.CPU(Reg1s, &wg)  // one
+	go c.RAM(Reg1s, &wg)  // two
+	go c.Swap(Reg1s, &wg) // three
+	go c.DF(Reg1s, &wg)   // four
+	go c.HN(RegMSS, &wg)  // five
+	go c.UP(RegMSS, &wg)  // six
+	go c.LA(Reg1s, &wg)   // seven
+	go c.IF(Reg1s, &wg)   // eight
 
 	if wantprocs {
 		pch := make(chan PSSlice, 1)
@@ -564,21 +564,23 @@ type IndexRegistry struct {
 }
 
 var (
-	Reg1s  IndexRegistry
+	Reg1s  *IndexRegistry
 	RegMSS = &MSS{KV: map[string]string{}}
 )
 
 func init() {
 	reg := metrics.NewRegistry()
-	Reg1s.Registry = reg
-	Reg1s.PrivateCPUAll = system.NewMetricCPU(reg, // metrics.NewRegistry(),
-		"cpu")
-	Reg1s.PrivateCPURegistry = metrics.NewRegistry()
-	Reg1s.PrivateDFRegistry = metrics.NewRegistry()
-	Reg1s.PrivateIFRegistry = metrics.NewRegistry()
-	Reg1s.Load = system.NewMetricLoad(reg)
-	Reg1s.Swap = system.NewMetricSwap(reg)
-	Reg1s.RAM = system.NewMetricRAM(reg)
+	Reg1s = &IndexRegistry{
+		Registry: reg,
+		PrivateCPUAll: system.NewMetricCPU(reg, // metrics.NewRegistry(),
+			"cpu"),
+		PrivateCPURegistry: metrics.NewRegistry(),
+		PrivateDFRegistry:  metrics.NewRegistry(),
+		PrivateIFRegistry:  metrics.NewRegistry(),
+		Load:               system.NewMetricLoad(reg),
+		Swap:               system.NewMetricSwap(reg),
+		RAM:                system.NewMetricRAM(reg),
+	}
 }
 
 func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
