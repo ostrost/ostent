@@ -1,7 +1,6 @@
 #!/usr/bin/env gmake -f
 
-export GO15VENDOREXPERIMENT=1
-ifeq (Linux, $(shell uname -s))
+ifeq (Linux, $(shell uname))
 export CGO_ENABLED=0
 endif
 
@@ -25,7 +24,7 @@ templates_devgo = $(shareprefix)/templates/bindata.dev.go
 templates_bingo = $(shareprefix)/templates/bindata.bin.go
 
 xargs=xargs
-ifeq (Linux, $(shell uname -s))
+ifeq (Linux, $(shell uname))
 xargs=xargs --no-run-if-empty
 endif
 go-bindata=go-bindata -ignore '.*\.go'# Go regexp syntax for -ignore
