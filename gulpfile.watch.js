@@ -42,7 +42,8 @@ gulp.task('gmake print', ['which gmake'], function(cb) {
 });
 
 gulp.task('server build', function(cb) {
-  var proc = child.spawn('go', ('get -v -race '+makep.package[0]).split(' '));
+  var goget = 'CGO_ENABLED=1 go get -v -race'; // Race detector requires cgo compiler.
+  var proc = child.spawn('env', (goget+' '+makep.package[0]).split(' '));
   proc.stdout.on('end', cb);
   dup('stdout', proc);
   dup('stderr', proc);
