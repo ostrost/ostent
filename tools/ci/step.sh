@@ -7,11 +7,16 @@ if test x${TRAVIS:-false} == xtrue ; then
 fi
 
 GO_BOOTSTRAPVER=go1.4.3
-: ${MAKE:=make}
 : ${DPL_DIR:=$(git rev-parse --show-toplevel)/deploy}
 
+eq()      { test x$1 == x$2 ;}
+linux()   { eq "$1" Linux   ;}
+darwin()  { eq "$1" Darwin  ;}
+freebsd() { eq "$1" FreeBSD ;}
+
+: ${MAKE:=make}
 Gmake() {
-    if test x$MAKE == xmake && hash gmake 2>/dev/null ; then
+    if eq $MAKE make && hash gmake 2>/dev/null ; then
         MAKE=gmake
     fi
     $MAKE "$@"
@@ -31,9 +36,8 @@ install_1() {
 
 install_2() {
     local GOVER="$1" # go version in form of "goX.Y[.Z]"
-    local OSXOS="$2" # "osx" if host is a mac
 
-    if test x$OSXOS == xosx -a x$GOVER != xtip ; then
+    if darwin && ! eq $GOVER tip ; then
         GO_BINARY_PATH=~/.gvm/archive///////$GOVER.darwin-amd64-osx10.8.tar.gz
         GO_BINARY_URL=https://golang.org/dl/$GOVER.darwin-amd64.tar.gz
         test -f $GO_BINARY_PATH ||
@@ -69,20 +73,17 @@ install_4() {
 }
 
 before_deploy_1() {
-    local OSXOS="$1" # "osx" if host is a mac
-
-    mkdir -p "$DPL_DIR"
-
-    if test x$OSXOS != xosx ; then
+    if ! darwin ; then
         gvm install $GO_BOOTSTRAPVER --binary || true
-        (gvm use $GO_BOOTSTRAPVER; gvm pkgset list)
+        (
+            gvm use $GO_BOOTSTRAPVER
+            gvm pkgset list
+        )
     fi
 }
 
 before_deploy_2() {
-    local OSXOS="$1" # "osx" if host is a mac
-
-    if test x$OSXOS != xosx ; then
+    if ! darwin ; then
         Gmake boot32 GOROOT_BOOTSTRAP=~/.gvm/gos/$GO_BOOTSTRAPVER
     fi
 }
@@ -91,7 +92,7 @@ before_deploy_3() {
     local uname=$(uname)
     local arch=$(uname -m)
 
-    if test x$uname != xDarwin ; then
+    if ! darwin $uname ; then
         Gmake all32
     fi
 }
@@ -99,6 +100,7 @@ before_deploy_3() {
 before_deploy_4() {
     local uname=${1:-$(uname)}
 
+    mkdir -p "$DPL_DIR"
     before_deploy_fptar $uname
     before_deploy_fptar $uname 32
 
@@ -117,29 +119,29 @@ before_deploy_fptar() {
     local uname=${1:-$(uname)}
     local arch=${2:-$(uname -m)}
 
-    if test x$uname == xFreeBSD ; then
-        if test x$arch == xx86_64 ; then
+    if freebsd $uname ; then
+        if eq $arch x86_64 ; then
             arch=amd64
         fi
-    elif test x$arch == xamd64 ; then
+    elif eq $arch == amd64 ; then
         arch=x86_64
     fi
 
     local binary=~/gopath/bin/ostent
-    if test x$arch == x32 ; then
+    if eq $arch 32 ; then
         binary=~/gopath/bin/ostent.32
         arch=i686
-        if test x$uname == xFreeBSD ; then
+        if freebsd $uname ; then
             arch=i386
-        else
+        fi
     fi
 
-    if test x$uname == xDarwin -a x$arch != xx86_64 ; then
+    if darwin $uname && ! eq $arch x86_64 ; then
         return # Only 64-bit builds for darwin
     fi
 
     local prefix=/usr
-    if test x$uname != xLinux ; then
+    if ! linux $uname; then
         prefix=/usr/local
     fi
 
@@ -159,9 +161,9 @@ before_deploy_fptar() {
         find . -type d | xargs touch -r $binary
 
         local ownerargs=--owner=0\ --group=0
-        if test x$uname == xFreeBSD ; then
+        if freebsd $uname ; then
             ownerargs=--uid=0\ --gid=0
-        elif test x$uname == xDarwin ; then
+        elif darwin $uname ; then
             ownerargs= # No way to specify owners in darwin
         fi
 

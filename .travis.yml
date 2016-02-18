@@ -10,15 +10,15 @@ env:
     - DPL_GO=go1.6 # Deploy only when this matches GVM_GO in the matrix.
 install:
   - source ./tools/ci/step.sh install_1
-  - source ./tools/ci/step.sh install_2 $GVM_GO $TRAVIS_OS_NAME
+  - source ./tools/ci/step.sh install_2 $GVM_GO
   - source ./tools/ci/step.sh install_3 $GVM_GO
   - source ./tools/ci/step.sh install_4 $GVM_GO $TRAVIS_REPO_SLUG
   - source ./tools/ci/step.sh Gmake init
 script:
   - source ./tools/ci/step.sh Gmake --always-make test all
 before_deploy:
-  - source ./tools/ci/step.sh before_deploy_1 $TRAVIS_OS_NAME
-  - source ./tools/ci/step.sh before_deploy_2 $TRAVIS_OS_NAME
+  - source ./tools/ci/step.sh before_deploy_1
+  - source ./tools/ci/step.sh before_deploy_2
   - source ./tools/ci/step.sh before_deploy_3
   - source ./tools/ci/step.sh before_deploy_4
   - source ./tools/ci/step.sh prior_to_deploy # must be last one
