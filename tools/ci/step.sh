@@ -87,24 +87,13 @@ before_deploy_2() {
     fi
 }
 
-unamem32() {
-    local uname=${1:-$(uname)}
-    if test x$uname == xFreeBSD ; then
-        echo i386
-    else
-        echo i686
-    fi
-}
-
 before_deploy_3() {
     local uname=$(uname)
     local arch=$(uname -m)
 
     if test x$uname != xDarwin ; then
         Gmake all32
-        cp -p ~/gopath/bin/ostent.32 "$DPL_DIR"/$uname.$(unamem32 $uname)
     fi
-    cp -p ~/gopath/bin/ostent "$DPL_DIR"/$uname.$arch
 }
 
 before_deploy_4() {
@@ -135,11 +124,18 @@ before_deploy_fptar() {
     elif test x$arch == xamd64 ; then
         arch=x86_64
     fi
+
+    local binary=~/gopath/bin/ostent
     if test x$arch == x32 ; then
-        if test x$uname == xDarwin ; then
-            return # No darwin 32-bit builds
-        fi
-        arch=$(unamem32 $uname)
+        binary=~/gopath/bin/ostent.32
+        arch=i686
+        if test x$uname == xFreeBSD ; then
+            arch=i386
+        else
+    fi
+
+    if test x$uname == xDarwin -a x$arch != xx86_64 ; then
+        return # Only 64-bit builds for darwin
     fi
 
     local prefix=/usr
@@ -159,17 +155,18 @@ before_deploy_fptar() {
 
         # umask 022 # MIND UMASK
         install -m 755 -d . ./$prefix/bin
-        install -m 755 -p "$DPL_DIR"/$uname.$arch ./$prefix/bin/ostent
-        find . -type d |
-        xargs touch -r "$DPL_DIR"/$uname.$arch
+        install -m 755 -p $binary ./$prefix/bin/ostent
+        find . -type d | xargs touch -r $binary
 
-        local owner=--owner=0\ --group=0
-        if test x$uname == xDarwin ; then
-            owner=
+        local ownerargs=--owner=0\ --group=0
+        if test x$uname == xFreeBSD ; then
+            ownerargs=--uid=0\ --gid=0
+        elif test x$uname == xDarwin ; then
+            ownerargs= # No way to specify owners in darwin
         fi
 
         echo Packing $uname-$arch >&2
-        tar Jcf "$tarball" --numeric-owner $owner .
+        tar Jcf "$tarball" --numeric-owner $ownerargs .
     )
     rm -rf "$tmpsubdir"
     # trap EXIT # clear the trap
