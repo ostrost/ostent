@@ -1,5 +1,5 @@
-hash: 773062a0fb371a458d0d33dec0b420bfa92b576286ef6c3211ffe8bda7da521d
-updated: 2016-02-18T09:03:03.139389781Z
+hash: 0c8e8316ca6a1da9a00b4efd22e23cfe4be92a1ec600c154073e06a921c7ed87
+updated: 2016-02-18T09:29:02.606823931Z
 imports:
 - name: github.com/cpuguy83/go-md2man
   version: 2724a9c9051aa62e9cca11304e7dd518e9e41599
@@ -41,8 +41,6 @@ imports:
   version: 78131a09b9e7bcccbb8a99d8e2f2168bb576e67a
 - name: github.com/mihasya/go-metrics-librato
   version: 742811266180500ea5934ea6ed3313f90d806a20
-- name: github.com/ostrost/go-metrics-influxdb
-  version: ca7d1785fc3e2616afbae45524a7dc63c4adf3cc
 - name: github.com/ostrost/gosigar
   version: 2fa6f5483b949b13f56ee3d193d985653b749b74
 - name: github.com/rcrowley/go-metrics
@@ -68,4 +66,6 @@ imports:
   - doc
 - name: github.com/spf13/pflag
   version: 7f60f83a2c81bc3c3c0d5297f61ddfa68da9d3b7
+- name: github.com/vrischmann/go-metrics-influxdb
+  version: 361681540e2f0e96a5c4644b1ec42c8e25da0357
 devImports: []

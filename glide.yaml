@@ -4,7 +4,7 @@ import:
 - package: github.com/cyberdelia/go-metrics-graphite
 - package: github.com/google/go-querystring
   subpackages:
-  - /query
+  - query
 - package: github.com/gorilla/context
 - package: github.com/gorilla/schema
 - package: github.com/gorilla/websocket
@@ -13,7 +13,7 @@ import:
 - package: github.com/jteeuwen/go-bindata
   subpackages:
   - .
-  - /go-bindata
+  - go-bindata
 - package: github.com/julienschmidt/httprouter
 - package: github.com/justinas/alice
 - package: github.com/mihasya/go-metrics-librato
@@ -23,10 +23,10 @@ import:
 - package: github.com/spf13/cobra
   subpackages:
   - .
-  - /doc
+  - doc
 - package: github.com/spf13/pflag
 - package: github.com/shirou/gopsutil
   subpackages:
-  - /host
-  - /net
-- package: github.com/ostrost/go-metrics-influxdb
+  - host
+  - net
+- package: github.com/vrischmann/go-metrics-influxdb
