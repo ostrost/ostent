@@ -113,9 +113,9 @@ before_deploy_4() {
     before_deploy_fptar $uname
     before_deploy_fptar $uname 32
 
-    local shacommand=sha256sum
-    if ! hash $shacommand 2>/dev/null ; then
-        shacommand=sha256\ -r
+    local shacommand=shasum\ -a\ 256
+    if ! hash shasum 2>/dev/null ; then
+        shacommand=sha256\ -r # freebsd
     fi
     (
         cd "$DPL_DIR" || exit 1
@@ -163,8 +163,13 @@ before_deploy_fptar() {
         find . -type d |
         xargs touch -r "$DPL_DIR"/$uname.$arch
 
+        local owner=--owner=0
+        if test x$uname == xDarwin ; then
+            owner=
+        fi
+
         echo Packing $uname-$arch >&2
-        tar Jcf "$tarball" --numeric-owner --owner=0 --group=0 .
+        tar Jcf "$tarball" --numeric-owner $owner --group=0 .
     )
     rm -rf "$tmpsubdir"
     # trap EXIT # clear the trap
