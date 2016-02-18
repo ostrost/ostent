@@ -63,7 +63,6 @@ install_4() {
 
     export GOPATH=~/gopath:$GOPATH # NB
     export PATH=~/gopath/bin:$PATH
-    export CC=clang CXX=clang++
 
     go version
     go env

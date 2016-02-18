@@ -4,10 +4,10 @@ sudo: false
 env:
   matrix:
   # - GVM_GO=tip
-    - GVM_GO=go1.5.3
+    - GVM_GO=go1.6
   global:
     - DPL_DIR=~/deploy # ~/deploy is outside the clone dir
-    - DPL_GO=go1.5.3 # Deploy only when this matches GVM_GO in the matrix.
+    - DPL_GO=go1.6 # Deploy only when this matches GVM_GO in the matrix.
 install:
   - source ./tools/ci/step.sh install_1
   - source ./tools/ci/step.sh install_2 $GVM_GO $TRAVIS_OS_NAME
