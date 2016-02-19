@@ -28,18 +28,22 @@ although the metrics naming is slightly different.
 
 ## Install
 
-Ostent is a single executable (everything is builtin) without dependecies.
-Release binaries self-upgrade whenever there's new stable release.
-Binaries builds by courtesy of [Travis CI](https://travis-ci.org/ostrost/ostent),
-distributed by [GitHub Releases](https://github.com/ostrost/ostent/releases).
+Ostent is a single executable.
+[Release tarball](https://github.com/ostrost/ostent/releases)
+has the binary &mdash; download and extract in one go:
 
-Install & run with `curl -sSL https://github.com/ostrost/ostent/raw/master/ostent.sh | sh`
+```sh
+tar Jxf - <<<$(curl -L https://github.com/ostrost/ostent/releases/download/v0.6/`uname`-`uname -m`.tar.xz)
+```
+
+This will place executable in `./usr/**/bin/ostent`.
+For system-wide install use `sudo tar Jxf - -C / <<<...`.
 
 Platforms:
 
-   - [Mac OS X](https://github.com/ostrost/ostent/releases/download/v0.6/Darwin.x86_64)
-   - Linux [64-bit](https://github.com/ostrost/ostent/releases/download/v0.6/Linux.x86_64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.6/Linux.i686)
-   - FreeBSD [64-bit](https://github.com/ostrost/ostent/releases/download/v0.6/FreeBSD.amd64) | [32-bit](https://github.com/ostrost/ostent/releases/download/v0.6/FreeBSD.i386)
+   - Linux
+   - FreeBSD
+   - Mac OS X
 
 ## Usage
 
