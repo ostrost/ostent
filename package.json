@@ -31,8 +31,8 @@
     "sass-loader": "^3.1.2",
     "style-loader": "^0.13.0",
     "transform-loader": "^0.2.3",
-    "uglify-js": "^2.6.1",
-    "webpack": "^1.12.13",
+    "uglify-js": "^2.6.2",
+    "webpack": "^1.12.14",
     "webpack-sources": "^0.1.1"
   }
 }
