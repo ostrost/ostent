@@ -673,40 +673,6 @@ ul ul {
   color: #fff;
 }
 
-.button.hollow {
-  border: 1px solid #2199e8;
-  color: #2199e8;
-}
-
-.button.hollow,.button.hollow:focus,.button.hollow:hover {
-  background-color: transparent;
-}
-
-.button.hollow:focus,.button.hollow:hover {
-  border-color: #0c4d78;
-  color: #0c4d78;
-}
-
-.button.hollow.secondary {
-  border: 1px solid #777;
-  color: #777;
-}
-
-.button.hollow.secondary:focus,.button.hollow.secondary:hover {
-  border-color: #3c3c3c;
-  color: #3c3c3c;
-}
-
-.button.hollow.success {
-  border: 1px solid #3adb76;
-  color: #3adb76;
-}
-
-.button.hollow.success:focus,.button.hollow.success:hover {
-  border-color: #157539;
-  color: #157539;
-}
-
 .button.disabled,.button[disabled] {
   opacity: .25;
   cursor: not-allowed;
@@ -1193,13 +1159,13 @@ input:checked+label>.switch-inactive {
   flex: 1 1 0px;
 }
 
-h1.h4 {
-  font-size: 1.5625rem;
+h1.h5 {
+  font-size: 1.25rem;
 }
 
 @media screen and (min-width:40em) {
-  h1.h4,  h2.h4 {
-    font-size: 1.5625rem;
+  h1.h5,  h2.h5 {
+    font-size: 1.25rem;
   }
 }
 

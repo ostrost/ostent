@@ -20271,7 +20271,7 @@
 	    }, void 0, _jsx('div', {
 	      className: Data.params.CPUn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('h1', {
-	      className: 'h4 text-overflow'
+	      className: 'h5 text-overflow'
 	    }, void 0, _jsx('a', {
 	      title: 'CPU display options',
 	      href: Data.params.Tlinks.CPUn,
@@ -20394,7 +20394,7 @@
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Dfn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('h1', {
-	      className: 'h4 text-overflow'
+	      className: 'h5 text-overflow'
 	    }, void 0, _jsx('a', {
 	      title: 'Disk usage display options',
 	      href: Data.params.Tlinks.Dfn,
@@ -20588,7 +20588,7 @@
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Ifn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('h1', {
-	      className: 'h4 text-overflow'
+	      className: 'h5 text-overflow'
 	    }, void 0, _jsx('a', {
 	      title: 'Interfaces display options',
 	      href: Data.params.Tlinks.Ifn,
@@ -20751,7 +20751,7 @@
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Lan.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('h1', {
-	      className: 'h4 text-overflow'
+	      className: 'h5 text-overflow'
 	    }, void 0, _jsx('a', {
 	      title: 'Load avg display options',
 	      href: Data.params.Tlinks.Lan,
@@ -20860,7 +20860,7 @@
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Memn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('h1', {
-	      className: 'h4 text-overflow'
+	      className: 'h5 text-overflow'
 	    }, void 0, _jsx('a', {
 	      title: 'Memory display options',
 	      href: Data.params.Tlinks.Memn,
@@ -20976,7 +20976,7 @@
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Psn.Negative ? "show-showhide" : "hide-showhide"
 	    }, void 0, _jsx('h1', {
-	      className: 'h4 text-overflow'
+	      className: 'h5 text-overflow'
 	    }, void 0, _jsx('a', {
 	      title: 'Processes display options',
 	      href: Data.params.Tlinks.Psn,

@@ -130,7 +130,7 @@ jsdefines.define_cpu = React.createClass({
     return (
 <div className="row expanded hr-bottom">
   <div className="column small-1 text-right"><div className={Data.params.CPUn.Negative ? "show-showhide" : "hide-showhide"}>
-    <h1 className="h4 text-overflow"><a title="CPU display options" href={Data.params.Tlinks.CPUn} onClick={this.handleClick}><span className="showhide-hide whitespace-pre float-left">... </span>CPU</a>
+    <h1 className="h5 text-overflow"><a title="CPU display options" href={Data.params.Tlinks.CPUn} onClick={this.handleClick}><span className="showhide-hide whitespace-pre float-left">... </span>CPU</a>
     </h1></div>
   </div>
   <div className="column large-11"><div className={Data.params.CPUn.Negative ? "show-showhide" : "hide-showhide"}>
@@ -208,7 +208,7 @@ jsdefines.define_df = React.createClass({
     return (
 <div className="row expanded hr-bottom">
   <div className="column small-1 text-right"><div className={Data.params.Dfn.Negative ? "show-showhide" : "hide-showhide"}>
-    <h1 className="h4 text-overflow"><a title="Disk usage display options" href={Data.params.Tlinks.Dfn} onClick={this.handleClick}><span className="showhide-hide whitespace-pre float-left">... </span>Disk usage</a>
+    <h1 className="h5 text-overflow"><a title="Disk usage display options" href={Data.params.Tlinks.Dfn} onClick={this.handleClick}><span className="showhide-hide whitespace-pre float-left">... </span>Disk usage</a>
     </h1></div>
   </div>
   <div className="column large-11"><div className={Data.params.Dfn.Negative ? "show-showhide" : "hide-showhide"}>
@@ -298,7 +298,7 @@ jsdefines.define_if = React.createClass({
     return (
 <div className="row expanded hr-bottom">
   <div className="column small-1 text-right"><div className={Data.params.Ifn.Negative ? "show-showhide" : "hide-showhide"}>
-    <h1 className="h4 text-overflow"><a title="Interfaces display options" href={Data.params.Tlinks.Ifn} onClick={this.handleClick}><span className="showhide-hide whitespace-pre float-left">... </span>Interfaces</a>
+    <h1 className="h5 text-overflow"><a title="Interfaces display options" href={Data.params.Tlinks.Ifn} onClick={this.handleClick}><span className="showhide-hide whitespace-pre float-left">... </span>Interfaces</a>
     </h1></div>
   </div>
   <div className="column large-11"><div className={Data.params.Ifn.Negative ? "show-showhide" : "hide-showhide"}>
@@ -369,7 +369,7 @@ jsdefines.define_la = React.createClass({
     return (
 <div className="row expanded hr-bottom">
   <div className="column small-1 text-right"><div className={Data.params.Lan.Negative ? "show-showhide" : "hide-showhide"}>
-    <h1 className="h4 text-overflow"><a title="Load avg display options" href={Data.params.Tlinks.Lan} onClick={this.handleClick}><span className="showhide-hide whitespace-pre float-left">... </span>Load avg</a>
+    <h1 className="h5 text-overflow"><a title="Load avg display options" href={Data.params.Tlinks.Lan} onClick={this.handleClick}><span className="showhide-hide whitespace-pre float-left">... </span>Load avg</a>
     </h1></div>
   </div>
   <div className="column large-11"><div className={Data.params.Lan.Negative ? "show-showhide" : "hide-showhide"}>
@@ -441,7 +441,7 @@ jsdefines.define_mem = React.createClass({
     return (
 <div className="row expanded hr-bottom">
   <div className="column small-1 text-right"><div className={Data.params.Memn.Negative ? "show-showhide" : "hide-showhide"}>
-    <h1 className="h4 text-overflow"><a title="Memory display options" href={Data.params.Tlinks.Memn} onClick={this.handleClick}><span className="showhide-hide whitespace-pre float-left">... </span>Memory</a>
+    <h1 className="h5 text-overflow"><a title="Memory display options" href={Data.params.Tlinks.Memn} onClick={this.handleClick}><span className="showhide-hide whitespace-pre float-left">... </span>Memory</a>
     </h1></div>
   </div>
   <div className="column large-11"><div className={Data.params.Memn.Negative ? "show-showhide" : "hide-showhide"}>
@@ -512,7 +512,7 @@ jsdefines.define_ps = React.createClass({
     return (
 <div className="row expanded hr-bottom">
   <div className="column small-1 text-right"><div className={Data.params.Psn.Negative ? "show-showhide" : "hide-showhide"}>
-    <h1 className="h4 text-overflow"><a title="Processes display options" href={Data.params.Tlinks.Psn} onClick={this.handleClick}><span className="showhide-hide whitespace-pre float-left">... </span>Processes</a>
+    <h1 className="h5 text-overflow"><a title="Processes display options" href={Data.params.Tlinks.Psn} onClick={this.handleClick}><span className="showhide-hide whitespace-pre float-left">... </span>Processes</a>
     </h1></div>
   </div>
   <div className="column large-11"><div className={Data.params.Psn.Negative ? "show-showhide" : "hide-showhide"}>

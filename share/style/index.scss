@@ -50,12 +50,17 @@
 
 .expand { flex: 1 1 0px; } // this is essential
 
+// regular header sizes:
+// h3: 31 1.9375rem
+// h4: 25 1.5625rem
+// h5: 20 1.25rem
+// h6: 16 1rem
 @each $size in ('small', 'medium') {
-  @include breakpoint($size) { // the h3 size (31)
-    h1.h4 { font-size: rem-calc(map-get(map-get($header-sizes, 'medium'), 'h4')); }
+  @include breakpoint($size) {
+    h1.h5 { font-size: rem-calc(map-get(map-get($header-sizes, 'medium'), 'h5')); }
   }
-  @include breakpoint('medium') { // the h4 size (25) // 1.5625rem
-    h2.h4 { font-size: rem-calc(map-get(map-get($header-sizes, 'medium'), 'h4')); }
+  @include breakpoint('medium') {
+    h2.h5 { font-size: rem-calc(map-get(map-get($header-sizes, 'medium'), 'h5')); }
   }
 }
 

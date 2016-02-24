@@ -33,7 +33,7 @@ mixin table(nparam, dparam, title)
         | <div class={#{ndata}.Negative ? "show-showhide" : "hide-showhide"}>
       else
         | <div class="{{if .#{ndata}.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-      h1.h4.text-overflow
+      h1.h5.text-overflow
         if JSX
           | <a title="#{title} display options" href={#{ntlink}} onClick={this.handleClick}>
         else
@@ -318,27 +318,24 @@ html
 
   body
     .top-bar
-      .top-bar-left
-        ul.menu
-          li
-            h2.h4.margin-bottom-0
-              span.updates(data-define='define_hostname')
-                | {{template "define_hostname" .}}
-              |  
-              small {{.Distrib}}
-          li
-            span.col up
-            span.col.updates.whitespace-pre(data-define='define_uptime')
-              | {{template "define_uptime" .}}
-      .top-bar-right
-        ul.menu
-          li
-            a.button.secondary.hollow.margin-0(href='https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}') ostent
+      - var latestOstent = 'https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}'
+      .top-bar-title
+        h2.h5.margin-bottom-0
+          span.updates(data-define='define_hostname')
+            | {{template "define_hostname" .}}
+          |  
+          a(href=latestOstent) ostent
+      //- .top-bar-left: a(href=latestOstent) release available
+      .top-bar-right: h2.h5.margin-bottom-0: small
+        | {{.Distrib}} up 
+        span.updates.whitespace-pre(data-define='define_uptime')
+          | {{template "define_uptime" .}}
+        //- a.button.secondary.hollow.margin-0(href='https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}') ostent
 
     | {{if ne (len .Exporting) 0}}
     .row.expanded.hr-bottom
       .column.large-11.small-offset-1
-        //- h4 Exporting to
+        //- h5 Exporting to
         .stripe
           .row.thead
             span.expand.col.small-2

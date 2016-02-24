@@ -1,7 +1,7 @@
 {{define "define_uptime"}}<span>{{.Data.uptime}}</span>{{end}}{{define "define_hostname"}}<a href="/" title="hostname {{.Data.hostname}}">{{.Data.hostname}}</a>{{end}}{{define "define_la"}}
 <div class="row expanded hr-bottom">
   <div class="column small-1 text-right"><div class="{{if .Data.params.Lan.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-    <h1 class="h4 text-overflow"><a title="Load avg display options" href={{.Data.params.Tlinks.Lan}}><span class="showhide-hide whitespace-pre float-left">... </span>Load avg</a>
+    <h1 class="h5 text-overflow"><a title="Load avg display options" href={{.Data.params.Tlinks.Lan}}><span class="showhide-hide whitespace-pre float-left">... </span>Load avg</a>
     </h1></div>
   </div>
   <div class="column large-11"><div class="{{if .Data.params.Lan.Negative}}show-showhide{{else}}hide-showhide{{end}}">
@@ -50,7 +50,7 @@
 </div>{{end}}{{define "define_mem"}}
 <div class="row expanded hr-bottom">
   <div class="column small-1 text-right"><div class="{{if .Data.params.Memn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-    <h1 class="h4 text-overflow"><a title="Memory display options" href={{.Data.params.Tlinks.Memn}}><span class="showhide-hide whitespace-pre float-left">... </span>Memory</a>
+    <h1 class="h5 text-overflow"><a title="Memory display options" href={{.Data.params.Tlinks.Memn}}><span class="showhide-hide whitespace-pre float-left">... </span>Memory</a>
     </h1></div>
   </div>
   <div class="column large-11"><div class="{{if .Data.params.Memn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
@@ -98,7 +98,7 @@
 </div>{{end}}{{define "define_df"}}
 <div class="row expanded hr-bottom">
   <div class="column small-1 text-right"><div class="{{if .Data.params.Dfn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-    <h1 class="h4 text-overflow"><a title="Disk usage display options" href={{.Data.params.Tlinks.Dfn}}><span class="showhide-hide whitespace-pre float-left">... </span>Disk usage</a>
+    <h1 class="h5 text-overflow"><a title="Disk usage display options" href={{.Data.params.Tlinks.Dfn}}><span class="showhide-hide whitespace-pre float-left">... </span>Disk usage</a>
     </h1></div>
   </div>
   <div class="column large-11"><div class="{{if .Data.params.Dfn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
@@ -170,7 +170,7 @@
 </div>{{end}}{{define "define_cpu"}}
 <div class="row expanded hr-bottom">
   <div class="column small-1 text-right"><div class="{{if .Data.params.CPUn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-    <h1 class="h4 text-overflow"><a title="CPU display options" href={{.Data.params.Tlinks.CPUn}}><span class="showhide-hide whitespace-pre float-left">... </span>CPU</a>
+    <h1 class="h5 text-overflow"><a title="CPU display options" href={{.Data.params.Tlinks.CPUn}}><span class="showhide-hide whitespace-pre float-left">... </span>CPU</a>
     </h1></div>
   </div>
   <div class="column large-11"><div class="{{if .Data.params.CPUn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
@@ -225,7 +225,7 @@
 </div>{{end}}{{define "define_if"}}
 <div class="row expanded hr-bottom">
   <div class="column small-1 text-right"><div class="{{if .Data.params.Ifn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-    <h1 class="h4 text-overflow"><a title="Interfaces display options" href={{.Data.params.Tlinks.Ifn}}><span class="showhide-hide whitespace-pre float-left">... </span>Interfaces</a>
+    <h1 class="h5 text-overflow"><a title="Interfaces display options" href={{.Data.params.Tlinks.Ifn}}><span class="showhide-hide whitespace-pre float-left">... </span>Interfaces</a>
     </h1></div>
   </div>
   <div class="column large-11"><div class="{{if .Data.params.Ifn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
@@ -273,7 +273,7 @@
 </div>{{end}}{{define "define_ps"}}
 <div class="row expanded hr-bottom">
   <div class="column small-1 text-right"><div class="{{if .Data.params.Psn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
-    <h1 class="h4 text-overflow"><a title="Processes display options" href={{.Data.params.Tlinks.Psn}}><span class="showhide-hide whitespace-pre float-left">... </span>Processes</a>
+    <h1 class="h5 text-overflow"><a title="Processes display options" href={{.Data.params.Tlinks.Psn}}><span class="showhide-hide whitespace-pre float-left">... </span>Processes</a>
     </h1></div>
   </div>
   <div class="column large-11"><div class="{{if .Data.params.Psn.Negative}}show-showhide{{else}}hide-showhide{{end}}">
@@ -371,18 +371,11 @@
   </head>
   <body>
     <div class="top-bar">
-      <div class="top-bar-left">
-        <ul class="menu">
-          <li>
-            <h2 class="h4 margin-bottom-0"><span data-define="define_hostname" class="updates">{{template "define_hostname" .}}</span> <small>{{.Distrib}}</small></h2>
-          </li>
-          <li><span class="col">up</span><span data-define="define_uptime" class="col updates whitespace-pre">{{template "define_uptime" .}}</span></li>
-        </ul>
+      <div class="top-bar-title">
+        <h2 class="h5 margin-bottom-0"><span data-define="define_hostname" class="updates">{{template "define_hostname" .}}</span> <a href="https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}">ostent</a></h2>
       </div>
       <div class="top-bar-right">
-        <ul class="menu">
-          <li><a href="https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}" class="button secondary hollow margin-0">ostent</a></li>
-        </ul>
+        <h2 class="h5 margin-bottom-0"><small>{{.Distrib}} up <span data-define="define_uptime" class="updates whitespace-pre">{{template "define_uptime" .}}</span></small></h2>
       </div>
     </div>{{if ne (len .Exporting) 0}}
     <div class="row expanded hr-bottom">
