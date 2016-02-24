@@ -8,7 +8,6 @@ import:
 - package: github.com/gorilla/context
 - package: github.com/gorilla/schema
 - package: github.com/gorilla/websocket
-- package: github.com/inconshreveable/go-update
 - package: github.com/Jeffail/gabs
 - package: github.com/jteeuwen/go-bindata
   subpackages:

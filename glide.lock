@@ -17,11 +17,6 @@ imports:
   version: 14c555599c2a4f493c1e13fd1ea6fdf721739028
 - name: github.com/gorilla/websocket
   version: b824a5d8536651ad2d690c17e270d58855dbfd02
-- name: github.com/inconshreveable/go-update
-  version: 8152e7eb6ccf8679a64582a66b78519688d156ad
-  subpackages:
-  - internal/binarydist
-  - internal/osext
 - name: github.com/influxdata/influxdb
   version: 8e100998fab81a70f8b8fa8fbb41e1ed8cafa6f5
   subpackages:

@@ -563,9 +563,32 @@ type IndexRegistry struct {
 	Mutex sync.Mutex
 }
 
+type UpgradeInfo struct {
+	RWMutex       sync.RWMutex
+	LatestVersion string
+}
+
+func (ui *UpgradeInfo) Set(lv string) {
+	ui.RWMutex.Lock()
+	defer ui.RWMutex.Unlock()
+	ui.LatestVersion = lv
+}
+
+func (ui *UpgradeInfo) Get() string {
+	ui.RWMutex.RLock()
+	s := ui.LatestVersion
+	ui.RWMutex.RUnlock()
+	if s == "" {
+		return ""
+	}
+	return s + " release available"
+}
+
 var (
 	Reg1s  *IndexRegistry
 	RegMSS = &MSS{KV: map[string]string{}}
+
+	OstentUpgrade = new(UpgradeInfo)
 )
 
 func init() {
@@ -674,12 +697,14 @@ func (si ServeIndex) Index(w http.ResponseWriter, r *http.Request) {
 		TAGGEDbin     bool
 		Distrib       string
 		OstentVersion string
+		OstentUpgrade string
 		Exporting     ExportingList
 		Data          IndexData
 	}{
 		TAGGEDbin:     si.TaggedBin,
-		Distrib:       DISTRIB,   // value set in init()
-		OstentVersion: VERSION,   // from ./server.go
+		Distrib:       DISTRIB, // value set in init()
+		OstentVersion: VERSION, // from ./server.go
+		OstentUpgrade: OstentUpgrade.Get(),
 		Exporting:     Exporting, // from ./ws.go
 		Data:          data,
 	})

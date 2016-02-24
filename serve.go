@@ -1,10 +1,15 @@
 package main
 
 import (
+	"errors"
 	"log"
+	"math/rand"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
+	"path/filepath"
+	"time"
 
 	"github.com/gorilla/context"
 	"github.com/julienschmidt/httprouter"
@@ -16,7 +21,12 @@ import (
 	"github.com/ostrost/ostent/share/templates"
 )
 
+// NoUpgradeCheck is the flag value.
+var NoUpgradeCheck bool
+
 func init() {
+	cmd.OstentCmd.Flags().BoolVar(&NoUpgradeCheck, "noupgradecheck", false,
+		"Off periodic upgrade check")
 	ostent.AddBackground(ostent.ConnectionsLoop)
 	ostent.AddBackground(ostent.CollectLoop)
 }
@@ -25,6 +35,10 @@ func init() {
 // Routes are set here, extra may be a hook to finalize the router.
 // taggedbin is required for some handlers.
 func Serve(listener net.Listener, taggedbin bool, extra func(*httprouter.Router, alice.Chain)) error {
+	if !NoUpgradeCheck {
+		go UntilUpgradeCheck()
+	}
+
 	r, achain, access := ostent.NewServery(taggedbin)
 
 	ostentLog := log.New(os.Stderr, "[ostent] ", 0)
@@ -83,4 +97,75 @@ func Serve(listener net.Listener, taggedbin bool, extra func(*httprouter.Router,
 		Handler:  r,
 	}
 	return s.Serve(listener)
+}
+
+// UntilUpgradeCheck waits for an upgrade and returns.
+func UntilUpgradeCheck() {
+	if UpgradeCheck() {
+		return
+	}
+
+	seed := time.Now().UTC().UnixNano()
+	random := rand.New(rand.NewSource(seed))
+
+	wait := time.Hour
+	wait += time.Duration(random.Int63n(int64(wait))) // 1.5 +- 0.5 h
+	for {
+		time.Sleep(wait)
+		if UpgradeCheck() {
+			break
+		}
+	}
+}
+
+// UpgradeCheck does upgrade check and returns true if an upgrade is available.
+func UpgradeCheck() bool {
+	newVersion, err := NewerVersion()
+	if err != nil {
+		log.Printf("Upgrade check error: %s\n", err)
+		return false
+	}
+	if newVersion == "" || newVersion[0] != 'v' {
+		log.Printf("Upgrade check error: version unexpected: %q\n", newVersion)
+		return false
+	}
+	if newVersion == "v"+ostent.VERSION {
+		return false
+	}
+	log.Printf("Upgrade check: %s release available\n", newVersion[1:])
+	ostent.OstentUpgrade.Set(newVersion[1:])
+	return true
+}
+
+// NewerVersion checks GitHub for the latest ostent version in form of "v...".
+func NewerVersion() (string, error) {
+	// 1. https://github.com/ostrost/ostent/releases/latest // redirects, NOT followed
+	// 2. https://github.com/ostrost/ostent/releases/v...   // Redirect location
+	// 3. return "v..." // basename of the location
+
+	type redirected struct {
+		error
+		url url.URL
+	}
+	checkRedirect := func(req *http.Request, _via []*http.Request) error {
+		return redirected{url: *req.URL}
+	}
+	client := &http.Client{CheckRedirect: checkRedirect}
+	resp, err := client.Get("https://github.com/ostrost/ostent/releases/latest")
+	if err == nil {
+		resp.Body.Close()
+		return "", errors.New("The GitHub /latest page did not return a redirect.")
+	}
+	urlerr, ok := err.(*url.Error)
+	if !ok {
+		return "", err
+	}
+	if resp != nil && resp.Body != nil {
+		resp.Body.Close()
+	}
+	redir, ok := urlerr.Err.(redirected)
+	if !ok {
+		return "", urlerr
+	}
+	return filepath.Base(redir.url.Path), nil
 }

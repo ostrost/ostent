@@ -325,7 +325,9 @@ html
             | {{template "define_hostname" .}}
           |  
           a(href=latestOstent) ostent
-      //- .top-bar-left: a(href=latestOstent) release available
+      | {{if .OstentUpgrade}}
+      .top-bar-left: a(href=latestOstent) {{.OstentUpgrade}}
+      | {{end}}
       .top-bar-right: h2.h5.margin-bottom-0: small
         | {{.Distrib}} up 
         span.updates.whitespace-pre(data-define='define_uptime')
