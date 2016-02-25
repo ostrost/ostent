@@ -121,7 +121,6 @@ func (c *conn) Tack() {
 type receiver interface {
 	Tick()
 	Tack()
-	Reload()
 	Expired() bool
 	CloseChans()
 	WantProcs() bool
@@ -160,19 +159,6 @@ func (cs *conns) Tack() {
 			c.Tack()
 		}
 	}
-}
-
-// Reload sends reload signal to all the connections, returns false if there were no connections
-func (cs *conns) Reload() bool {
-	cs.mutex.Lock()
-	defer cs.mutex.Unlock()
-
-	var reloaded bool
-	for c := range cs.connmap {
-		c.Reload()
-		reloaded = true
-	}
-	return reloaded
 }
 
 func (cs *conns) Reg(r receiver) {
@@ -232,8 +218,7 @@ func (el ExportingList) Less(i, j int) bool { return el[i].Name < el[j].Name }
 func (el ExportingList) Swap(i, j int)      { el[i], el[j] = el[j], el[i] }
 
 var (
-	// Connections is an instance of unexported conns type to hold
-	// active websocket connections. The only method is Reload.
+	// Connections is of unexported conns type to hold active ws connections.
 	Connections = conns{connmap: make(map[receiver]struct{})}
 
 	Unregister = make(chan receiver)
@@ -260,12 +245,6 @@ func (c *conn) writeJSON(data interface{}) error {
 	case <-time.After(5 * time.Second):
 		return fmt.Errorf("timed out (5s)")
 	}
-}
-
-func (c *conn) Reload() {
-	c.writeJSON(struct {
-		Reload bool
-	}{true})
 }
 
 func (c *conn) writeError(err error) bool {

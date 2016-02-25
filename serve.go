@@ -4,13 +4,13 @@ import (
 	"errors"
 	"log"
 	"math/rand"
-	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
 	"time"
 
+	"github.com/facebookgo/grace/gracehttp"
 	"github.com/gorilla/context"
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
@@ -31,13 +31,15 @@ func init() {
 	ostent.AddBackground(ostent.CollectLoop)
 }
 
-// Serve acceps incoming HTTP connections on the listener.
+// Serve constructs a *http.Server to (gracefully) Serve.
 // Routes are set here, extra may be a hook to finalize the router.
 // taggedbin is required for some handlers.
-func Serve(listener net.Listener, taggedbin bool, extra func(*httprouter.Router, alice.Chain)) error {
+func Serve(laddr string, taggedbin bool, extra func(*httprouter.Router, alice.Chain)) error {
 	if !NoUpgradeCheck {
 		go UntilUpgradeCheck()
 	}
+	ostent.RunBackground()
+	templates.InitTemplates()
 
 	r, achain, access := ostent.NewServery(taggedbin)
 
@@ -91,12 +93,11 @@ func Serve(listener net.Listener, taggedbin bool, extra func(*httprouter.Router,
 		extra(r, achain)
 	}
 
-	ostent.Banner(listener.Addr().String(), "ostent", ostentLog)
-	s := &http.Server{
+	return gracehttp.Serve(&http.Server{
+		Addr:     laddr,
 		ErrorLog: errlog,
 		Handler:  r,
-	}
-	return s.Serve(listener)
+	})
 }
 
 // UntilUpgradeCheck waits for an upgrade and returns.

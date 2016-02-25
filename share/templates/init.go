@@ -7,10 +7,7 @@ var (
 	IndexTemplate = templateutil.NewLT(Asset, AssetInfo, "index.html", nil)
 )
 
-// InitTemplates inits must-have templates and signals done when finished.
-func InitTemplates(done chan<- struct{}) {
+// InitTemplates inits must-have templates.
+func InitTemplates() {
 	templateutil.MustInit(IndexTemplate)
-	if done != nil {
-		done <- struct{}{}
-	}
 }

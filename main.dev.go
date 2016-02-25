@@ -3,12 +3,8 @@
 package main
 
 import (
-	"net"
 	"net/http"
 	"net/http/pprof"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/julienschmidt/httprouter"
@@ -16,50 +12,15 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/ostrost/ostent/cmd"
-	"github.com/ostrost/ostent/ostent"
-	"github.com/ostrost/ostent/share/templates"
 )
 
 // AssetAltModTimeFunc is nil.
 var AssetAltModTimeFunc func() time.Time
 
-// OstentRunE is the run of the ostent command.
-func OstentRunE(*cobra.Command, []string) error {
-	listen, err := net.Listen("tcp", cmd.OstentBind.String())
-	if err != nil {
-		return err
-	}
-
-	ostent.RunBackground()
-
-	templatesLoaded := make(chan struct{}, 1)
-	go templates.InitTemplates(templatesLoaded)
-
-	errch := make(chan error, 2)
-	go func(ch chan<- error) {
-		<-templatesLoaded
-		ch <- Serve(listen, false, PprofExtra)
-	}(errch)
-	sigch := make(chan os.Signal, 2)
-	signal.Notify(sigch,
-		syscall.SIGINT,
-		syscall.SIGQUIT,
-		syscall.SIGTERM,
-	)
-wait:
-	for {
-		select {
-		case _ = <-sigch:
-			break wait
-		case err := <-errch:
-			return err
-		}
-	}
-	return nil
-}
-
 func main() {
-	cmd.OstentCmd.RunE = OstentRunE
+	cmd.OstentCmd.RunE = func(*cobra.Command, []string) error {
+		return Serve(cmd.OstentBind.String(), false, PprofExtra)
+	}
 	cmd.Execute()
 }
 

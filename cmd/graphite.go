@@ -39,7 +39,6 @@ type Carbond struct {
 }
 
 func (cd Carbond) CloseChans()     {} // intentionally empty
-func (cd Carbond) Reload()         {} // intentionally empty
 func (cd Carbond) WantProcs() bool { return false }
 
 func (cd *Carbond) Tack() {

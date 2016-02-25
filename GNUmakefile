@@ -69,7 +69,6 @@ init:
 	go get -v github.com/jteeuwen/go-bindata/go-bindata; \
 	if ! type glide >/dev/null 2>&1 ; then \
 		go get -v $(package); \
-		go get -v github.com/rcrowley/goagain; \
 	fi
 
 check-update: ; npm outdated # upgrade with npm update --save-dev

@@ -4,10 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"log"
-	"net"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/gorilla/context"
@@ -160,61 +158,6 @@ func (sa ServeAssets) Serve(w http.ResponseWriter, r *http.Request) {
 		mt = info.ModTime()
 	}
 	http.ServeContent(w, r, path, mt, bytes.NewReader(text))
-}
-
-type loggerPrint interface {
-	Print(v ...interface{})
-}
-
-// Banner prints a banner with the logger.
-func Banner(listenaddr string, suffix string, logger loggerPrint) {
-	hostname, _ := GetHN()
-	var addrsp *[]net.Addr
-	if addrs, err := net.InterfaceAddrs(); err == nil {
-		addrsp = &addrs
-	} else {
-		logger.Print(fmt.Sprintf("%s\n", err))
-	}
-	bannerText(listenaddr, hostname, suffix, addrsp, logger)
-}
-
-func bannerText(listenaddr, hostname, suffix string, addrsp *[]net.Addr, logger loggerPrint) {
-	if limit := 32 /* width */ - 6 /* const chars */ - len(suffix); len(hostname) >= limit {
-		hostname = hostname[:limit-4] + "..."
-	}
-	logger.Print(fmt.Sprintf("   %s\n", strings.Repeat("-", len(hostname)+1 /* space */ +len(suffix))))
-	logger.Print(fmt.Sprintf(" / %s %s \\\n", hostname, suffix))
-	logger.Print("+------------------------------+\n")
-
-	if h, port, err := net.SplitHostPort(listenaddr); err == nil && h == "::" && addrsp != nil {
-		// wildcard bind
-		fst := true
-		for _, a := range *addrsp {
-			ip := a.String()
-			if ipnet, ok := a.(*net.IPNet); ok {
-				ip = ipnet.IP.String()
-			}
-			if strings.Contains(ip, ":") { // IPv6, skip for now
-				continue
-			}
-			f := fmt.Sprintf("http://%s:%s", ip, port)
-			if len(f) < 28 {
-				f += strings.Repeat(" ", 28-len(f))
-			}
-			if !fst {
-				logger.Print("|------------------------------|\n")
-			}
-			fst = false
-			logger.Print(fmt.Sprintf("| %s |\n", f))
-		}
-	} else {
-		f := fmt.Sprintf("http://%s", listenaddr)
-		if len(f) < 28 {
-			f += strings.Repeat(" ", 28-len(f))
-		}
-		logger.Print(fmt.Sprintf("| %s |\n", f))
-	}
-	logger.Print("+------------------------------+\n")
 }
 
 // VERSION of the latest known release.

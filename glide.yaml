@@ -1,7 +1,13 @@
 package: github.com/ostrost/ostent
+ignore:
+- github.com/influxdata/influxdb/statik
+- github.com/rakyll/statik/example/statik
 import:
 - package: github.com/Sirupsen/logrus
 - package: github.com/cyberdelia/go-metrics-graphite
+- package: github.com/facebookgo/grace
+  subpackages:
+  - gracehttp
 - package: github.com/google/go-querystring
   subpackages:
   - query
