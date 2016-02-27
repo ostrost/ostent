@@ -18,7 +18,7 @@
     "envify": "^3.4.0",
     "es6-promise": "^3.0.2",
     "extract-text-webpack-plugin": "^1.0.1",
-    "foundation-sites": "^6.1.2",
+    "foundation-sites": "^6.2.0",
     "gulp": "^3.9.1",
     "gulp-jade": "^1.1.0",
     "gulp-rename": "^1.2.2",

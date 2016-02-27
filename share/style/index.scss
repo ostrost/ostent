@@ -4,49 +4,9 @@
 
 @import 'settings'; // foundation settings
 
-// foundation imports and includes sans:
-// - @import 'motion-ui';
-// - @include motion-ui-transitions;
-// - @include motion-ui-animations;
 @import 'foundation';
 
-// NOT foundation-grid
-@include foundation-flex-grid;
-
-@include foundation-global-styles;
-@include foundation-typography;
-@include foundation-button;
-@include foundation-forms;
-@include foundation-visibility-classes;
-@include foundation-float-classes;
-@include foundation-accordion;
-@include foundation-badge;
-@include foundation-breadcrumbs;
-@include foundation-button-group;
-@include foundation-callout;
-@include foundation-close-button;
-@include foundation-drilldown-menu;
-@include foundation-dropdown;
-@include foundation-dropdown-menu;
-@include foundation-flex-video;
-@include foundation-label;
-@include foundation-media-object;
-@include foundation-menu;
-@include foundation-off-canvas;
-@include foundation-orbit;
-@include foundation-pagination;
-@include foundation-progress-bar;
-@include foundation-slider;
-@include foundation-sticky;
-@include foundation-reveal;
-@include foundation-switch;
-@include foundation-table;
-@include foundation-tabs;
-@include foundation-thumbnail;
-@include foundation-title-bar;
-@include foundation-tooltip;
-@include foundation-top-bar;
-// END OF foundation imports and includes
+@include foundation-everything($flex: true);
 
 .expand { flex: 1 1 0px; } // this is essential
 

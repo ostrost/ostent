@@ -48,7 +48,7 @@ mixin table(nparam, dparam, title)
       ul.row.menu.showhide-show
         li
           .input-group
-            .input-group-label.small.text-nowrap delay
+            .input-group-label.text-nowrap delay
             .input-group-button
               a.button.small.secondary.disabled {{.#{ddata}}}
             - var cls = 'text-nowrap button small';
@@ -64,7 +64,7 @@ mixin table(nparam, dparam, title)
                 +alink_html(cls, '%s +', dlinkMore)
         li
           .input-group
-            .input-group-label.small.text-nowrap rows
+            .input-group-label.text-nowrap rows
             .input-group-button
               a.button.small.secondary.disabled {{.#{ndata}.Absolute}}
             - var cls = 'text-nowrap button small success';

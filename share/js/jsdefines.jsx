@@ -137,7 +137,7 @@ jsdefines.define_cpu = React.createClass({
     <ul className="row menu showhide-show">
       <li>
         <div className="input-group">
-          <div className="input-group-label small text-nowrap">delay</div>
+          <div className="input-group-label text-nowrap">delay</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.CPUd}</a></div>
           <div className="input-group-button">
             <a href={Data.params.Dlinks.CPUd.Less.Href} onClick={this.handleClick}
@@ -153,7 +153,7 @@ jsdefines.define_cpu = React.createClass({
       </li>
       <li>
         <div className="input-group">
-          <div className="input-group-label small text-nowrap">rows</div>
+          <div className="input-group-label text-nowrap">rows</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.CPUn.Absolute}</a></div>
           <div className="input-group-button">
             <a href={Data.params.Nlinks.CPUn.Less.Href} onClick={this.handleClick}
@@ -215,7 +215,7 @@ jsdefines.define_df = React.createClass({
     <ul className="row menu showhide-show">
       <li>
         <div className="input-group">
-          <div className="input-group-label small text-nowrap">delay</div>
+          <div className="input-group-label text-nowrap">delay</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Dfd}</a></div>
           <div className="input-group-button">
             <a href={Data.params.Dlinks.Dfd.Less.Href} onClick={this.handleClick}
@@ -231,7 +231,7 @@ jsdefines.define_df = React.createClass({
       </li>
       <li>
         <div className="input-group">
-          <div className="input-group-label small text-nowrap">rows</div>
+          <div className="input-group-label text-nowrap">rows</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Dfn.Absolute}</a></div>
           <div className="input-group-button">
             <a href={Data.params.Nlinks.Dfn.Less.Href} onClick={this.handleClick}
@@ -305,7 +305,7 @@ jsdefines.define_if = React.createClass({
     <ul className="row menu showhide-show">
       <li>
         <div className="input-group">
-          <div className="input-group-label small text-nowrap">delay</div>
+          <div className="input-group-label text-nowrap">delay</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Ifd}</a></div>
           <div className="input-group-button">
             <a href={Data.params.Dlinks.Ifd.Less.Href} onClick={this.handleClick}
@@ -321,7 +321,7 @@ jsdefines.define_if = React.createClass({
       </li>
       <li>
         <div className="input-group">
-          <div className="input-group-label small text-nowrap">rows</div>
+          <div className="input-group-label text-nowrap">rows</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Ifn.Absolute}</a></div>
           <div className="input-group-button">
             <a href={Data.params.Nlinks.Ifn.Less.Href} onClick={this.handleClick}
@@ -376,7 +376,7 @@ jsdefines.define_la = React.createClass({
     <ul className="row menu showhide-show">
       <li>
         <div className="input-group">
-          <div className="input-group-label small text-nowrap">delay</div>
+          <div className="input-group-label text-nowrap">delay</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Lad}</a></div>
           <div className="input-group-button">
             <a href={Data.params.Dlinks.Lad.Less.Href} onClick={this.handleClick}
@@ -392,7 +392,7 @@ jsdefines.define_la = React.createClass({
       </li>
       <li>
         <div className="input-group">
-          <div className="input-group-label small text-nowrap">rows</div>
+          <div className="input-group-label text-nowrap">rows</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Lan.Absolute}</a></div>
           <div className="input-group-button">
             <a href={Data.params.Nlinks.Lan.Less.Href} onClick={this.handleClick}
@@ -448,7 +448,7 @@ jsdefines.define_mem = React.createClass({
     <ul className="row menu showhide-show">
       <li>
         <div className="input-group">
-          <div className="input-group-label small text-nowrap">delay</div>
+          <div className="input-group-label text-nowrap">delay</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Memd}</a></div>
           <div className="input-group-button">
             <a href={Data.params.Dlinks.Memd.Less.Href} onClick={this.handleClick}
@@ -464,7 +464,7 @@ jsdefines.define_mem = React.createClass({
       </li>
       <li>
         <div className="input-group">
-          <div className="input-group-label small text-nowrap">rows</div>
+          <div className="input-group-label text-nowrap">rows</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Memn.Absolute}</a></div>
           <div className="input-group-button">
             <a href={Data.params.Nlinks.Memn.Less.Href} onClick={this.handleClick}
@@ -519,7 +519,7 @@ jsdefines.define_ps = React.createClass({
     <ul className="row menu showhide-show">
       <li>
         <div className="input-group">
-          <div className="input-group-label small text-nowrap">delay</div>
+          <div className="input-group-label text-nowrap">delay</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Psd}</a></div>
           <div className="input-group-button">
             <a href={Data.params.Dlinks.Psd.Less.Href} onClick={this.handleClick}
@@ -535,7 +535,7 @@ jsdefines.define_ps = React.createClass({
       </li>
       <li>
         <div className="input-group">
-          <div className="input-group-label small text-nowrap">rows</div>
+          <div className="input-group-label text-nowrap">rows</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Psn.Absolute}</a></div>
           <div className="input-group-button">
             <a href={Data.params.Nlinks.Psn.Less.Href} onClick={this.handleClick}

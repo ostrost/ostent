@@ -20287,7 +20287,7 @@
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
-	      className: 'input-group-label small text-nowrap'
+	      className: 'input-group-label text-nowrap'
 	    }, void 0, 'delay'), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
@@ -20307,7 +20307,7 @@
 	    }, void 0, Data.params.Dlinks.CPUd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
-	      className: 'input-group-label small text-nowrap'
+	      className: 'input-group-label text-nowrap'
 	    }, void 0, 'rows'), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
@@ -20410,7 +20410,7 @@
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
-	      className: 'input-group-label small text-nowrap'
+	      className: 'input-group-label text-nowrap'
 	    }, void 0, 'delay'), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
@@ -20430,7 +20430,7 @@
 	    }, void 0, Data.params.Dlinks.Dfd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
-	      className: 'input-group-label small text-nowrap'
+	      className: 'input-group-label text-nowrap'
 	    }, void 0, 'rows'), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
@@ -20604,7 +20604,7 @@
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
-	      className: 'input-group-label small text-nowrap'
+	      className: 'input-group-label text-nowrap'
 	    }, void 0, 'delay'), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
@@ -20624,7 +20624,7 @@
 	    }, void 0, Data.params.Dlinks.Ifd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
-	      className: 'input-group-label small text-nowrap'
+	      className: 'input-group-label text-nowrap'
 	    }, void 0, 'rows'), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
@@ -20767,7 +20767,7 @@
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
-	      className: 'input-group-label small text-nowrap'
+	      className: 'input-group-label text-nowrap'
 	    }, void 0, 'delay'), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
@@ -20787,7 +20787,7 @@
 	    }, void 0, Data.params.Dlinks.Lad.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
-	      className: 'input-group-label small text-nowrap'
+	      className: 'input-group-label text-nowrap'
 	    }, void 0, 'rows'), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
@@ -20876,7 +20876,7 @@
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
-	      className: 'input-group-label small text-nowrap'
+	      className: 'input-group-label text-nowrap'
 	    }, void 0, 'delay'), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
@@ -20896,7 +20896,7 @@
 	    }, void 0, Data.params.Dlinks.Memd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
-	      className: 'input-group-label small text-nowrap'
+	      className: 'input-group-label text-nowrap'
 	    }, void 0, 'rows'), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
@@ -20992,7 +20992,7 @@
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
-	      className: 'input-group-label small text-nowrap'
+	      className: 'input-group-label text-nowrap'
 	    }, void 0, 'delay'), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
@@ -21012,7 +21012,7 @@
 	    }, void 0, Data.params.Dlinks.Psd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
 	    }, void 0, _jsx('div', {
-	      className: 'input-group-label small text-nowrap'
+	      className: 'input-group-label text-nowrap'
 	    }, void 0, 'rows'), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
