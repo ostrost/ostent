@@ -5,6 +5,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"net/http/pprof"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -14,12 +15,20 @@ import (
 	"github.com/gorilla/context"
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
+	"github.com/spf13/cobra"
 
 	"github.com/ostrost/ostent/cmd"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/share/assets"
 	"github.com/ostrost/ostent/share/templates"
 )
+
+func main() {
+	cmd.OstentCmd.RunE = func(*cobra.Command, []string) error {
+		return Serve(cmd.OstentBind.String())
+	}
+	cmd.Execute()
+}
 
 // NoUpgradeCheck is the flag value.
 var NoUpgradeCheck bool
@@ -31,16 +40,15 @@ func init() {
 	ostent.AddBackground(ostent.CollectLoop)
 }
 
-// Serve constructs a *http.Server to (gracefully) Serve.
-// Routes are set here, extra may be a hook to finalize the router.
-// taggedbin is required for some handlers.
-func Serve(laddr string, taggedbin bool, extra func(*httprouter.Router, alice.Chain)) error {
+// Serve constructs a *http.Server to (gracefully) Serve. Routes are set here.
+func Serve(laddr string) error {
 	if !NoUpgradeCheck {
 		go UntilUpgradeCheck()
 	}
 	ostent.RunBackground()
 	templates.InitTemplates()
 
+	taggedbin := assets.AssetAltModTimeFunc != nil
 	r, achain, access := ostent.NewServery(taggedbin)
 
 	ostentLog := log.New(os.Stderr, "[ostent] ", 0)
@@ -55,7 +63,7 @@ func Serve(laddr string, taggedbin bool, extra func(*httprouter.Router, alice.Ch
 			Log:                 ostentLog,
 			AssetFunc:           assets.Asset,
 			AssetInfoFunc:       assets.AssetInfo,
-			AssetAltModTimeFunc: AssetAltModTimeFunc, // from main.*.go
+			AssetAltModTimeFunc: assets.AssetAltModTimeFunc,
 		}
 	)
 
@@ -89,8 +97,11 @@ func Serve(laddr string, taggedbin bool, extra func(*httprouter.Router, alice.Ch
 
 	// now bind
 	ostent.ApplyRoutes(r, routes, nil)
-	if extra != nil {
-		extra(r, achain)
+	if !taggedbin {
+		handle := PprofServe{achain}.Serve
+		r.GET("/debug/pprof/:name", handle)
+		r.HEAD("/debug/pprof/:name", handle)
+		r.POST("/debug/pprof/:name", handle)
 	}
 
 	return gracehttp.Serve(&http.Server{
@@ -170,3 +181,29 @@ func NewerVersion() (string, error) {
 	}
 	return filepath.Base(redir.url.Path), nil
 }
+
+// Serve is PprofServe handler.
+func (ps PprofServe) Serve(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	name := params.ByName("name")
+	var handler func(http.ResponseWriter, *http.Request)
+	switch name {
+	case "cmdline":
+		handler = pprof.Cmdline
+	case "profile":
+		handler = pprof.Profile
+	case "symbol":
+		handler = pprof.Symbol
+	case "trace":
+		handler = pprof.Trace
+	default:
+		handler = pprof.Index
+	}
+	if handler == nil {
+		http.NotFound(w, r)
+		return
+	}
+	ps.Chain.ThenFunc(handler).ServeHTTP(w, r)
+}
+
+// PprofServe is pprof data serving handler.
+type PprofServe struct{ Chain alice.Chain }
