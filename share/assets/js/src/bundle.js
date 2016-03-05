@@ -20250,7 +20250,7 @@
 
 	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
 	  List: function List(data) {
-	    var list = undefined;
+	    var list = void 0;
 	    if (data == null || data["cpu"] == null || (list = data["cpu"].List) == null) {
 	      return [];
 	    }
@@ -20373,7 +20373,7 @@
 
 	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
 	  List: function List(data) {
-	    var list = undefined;
+	    var list = void 0;
 	    if (data == null || data["df"] == null || (list = data["df"].List) == null) {
 	      return [];
 	    }
@@ -20567,7 +20567,7 @@
 
 	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
 	  List: function List(data) {
-	    var list = undefined;
+	    var list = void 0;
 	    if (data == null || data["netio"] == null || (list = data["netio"].List) == null) {
 	      return [];
 	    }
@@ -20730,7 +20730,7 @@
 
 	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
 	  List: function List(data) {
-	    var list = undefined;
+	    var list = void 0;
 	    if (data == null || data["la"] == null || (list = data["la"].List) == null) {
 	      return [];
 	    }
@@ -20839,7 +20839,7 @@
 
 	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
 	  List: function List(data) {
-	    var list = undefined;
+	    var list = void 0;
 	    if (data == null || data["mem"] == null || (list = data["mem"].List) == null) {
 	      return [];
 	    }
@@ -20955,7 +20955,7 @@
 
 	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
 	  List: function List(data) {
-	    var list = undefined;
+	    var list = void 0;
 	    if (data == null || data["procs"] == null || (list = data["procs"].List) == null) {
 	      return [];
 	    }
