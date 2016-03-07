@@ -65,23 +65,12 @@ Flags:
       --version                 Print version and exit
 ```
 
-Here's how it goes:
-
-```
-$ ostent                                     ________________
-[ostent]    -------------                   < Spot the links >
-[ostent]  / server ostent \                  ----------------
-[ostent] +------------------------------+           \   ^__^
-[ostent] | http://127.0.0.1:8050        |            \  (oo)\_______
-[ostent] |------------------------------|               (__)\       )\/\
-[ostent] | http://192.168.1.2:8050      |                   ||----w |
-[ostent] +------------------------------+                   ||     ||
-```
-
 ## Running the code
 
-1. **`go get github.com/ostrost/ostent`**
+1. `go get github.com/ostrost/ostent`
 2. `ostent` to run.
+
+See also [Two kind of builds](#two-kinds-of-builds).
 
 ### Rebuilding
 
@@ -109,18 +98,9 @@ should not differ from the commited.
 
 ### Two kinds of builds
 
-Standalone and release binaries produced by `make` are built with `bin` tag.
-These binaries include
+Standalone and release binaries produced by `make` (or `go get -tags bin`)
+include embeded template and assets.
 
-- embeded template and assets
-- [goagain](https://github.com/rcrowley/goagain) recovering
-- self-upgrading via [go-update](https://github.com/inconshreveable/go-update)
-
-This builds also contain `extractassets` subcommand to copy assets on disk.
-
-Non-bin builds have
-- `main.dev.go` as entry point in main package
-- different set of flags: facilitating debugging etc.
-- serving from actual template and asset files as is
-
-This kind (`!bin`) is produced by `gulp watch` and `go get`.
+Non-bin builds made by `gulp watch` and `go get`
+- serve assets and use template from actual files
+- have a set of flags facilitating debugging etc.
