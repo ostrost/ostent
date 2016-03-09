@@ -44,9 +44,7 @@ func RunBackground() {
 }
 
 // NextSecond returns precisely next second in Time.
-func NextSecond() time.Time {
-	return time.Now().Truncate(time.Second).Add(time.Second)
-}
+func NextSecond() time.Time { return time.Now().Truncate(time.Second).Add(time.Second) }
 
 // NextSecondDelta returns precisely next second in Time and Duration.
 func NextSecondDelta() (time.Time, time.Duration) {
@@ -68,27 +66,14 @@ func CollectLoop() {
 	}
 }
 
-// ConnectionsLoop is a ostent background job: serve connections.
-func ConnectionsLoop() {
-	for {
-		select {
-		case conn := <-Register:
-			Connections.Reg(conn)
-		case conn := <-Unregister:
-			Connections.Unreg(conn)
-		}
-	}
-}
-
 type conn struct {
 	Conn     *websocket.Conn
 	ErrorLog *log.Logger
 
 	requestOrigin *http.Request
 
-	receive chan *received
-	para    *params.Params
-	access  *Access
+	para   *params.Params
+	access *Access
 
 	mutex      sync.Mutex
 	writemutex sync.Mutex
@@ -112,17 +97,12 @@ func (c *conn) WantProcs() bool {
 	return c.para.NonZeroPsn()
 }
 
-func (c *conn) Tack() {
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-	c.receive <- nil
-}
+func (c *conn) Tack() { c.Process(nil) }
 
 type receiver interface {
 	Tick()
 	Tack()
 	Expired() bool
-	CloseChans()
 	WantProcs() bool
 }
 
@@ -167,23 +147,9 @@ func (cs *conns) Reg(r receiver) {
 	cs.connmap[r] = struct{}{}
 }
 
-func (c *conn) CloseChans() {
-	c.mutex.Lock()
-	defer func() {
-		defer c.mutex.Unlock()
-		if e := recover(); e != nil {
-			c.ErrorLog.Printf("close error (recovered panic; from CloseChans) %+v\n", e)
-		}
-	}()
-	close(c.receive)
-}
-
 func (cs *conns) Unreg(r receiver) {
-	r.CloseChans()
-
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
-
 	delete(cs.connmap, r)
 }
 
@@ -220,25 +186,20 @@ func (el ExportingList) Swap(i, j int)      { el[i], el[j] = el[j], el[i] }
 var (
 	// Connections is of unexported conns type to hold active ws connections.
 	Connections = conns{connmap: make(map[receiver]struct{})}
-
-	Unregister = make(chan receiver)
-	Register   = make(chan receiver, 1)
 )
 
-type received struct {
-	Search *string
-}
+type received struct{ Search *string }
 
 type served struct {
-	conn     *conn // passing conn into received.ServeHTTP
-	received *received
+	conn      *conn // in
+	WriteFail bool  // out
 }
 
 func (c *conn) writeJSON(data interface{}) error {
 	c.writemutex.Lock()
 	defer c.writemutex.Unlock()
 	errch := make(chan error, 1)
-	go func() { errch <- c.Conn.WriteJSON(data) }()
+	go func(ch chan error) { ch <- c.Conn.WriteJSON(data) }(errch)
 	select {
 	case err := <-errch:
 		return err
@@ -253,39 +214,7 @@ func (c *conn) writeError(err error) bool {
 	}{err.Error()})
 }
 
-func (c *conn) receiveLoop(stop chan<- struct{}) { // read from the conn
-	for {
-		rd := new(received)
-		if err := c.Conn.ReadJSON(&rd); err != nil {
-			stop <- struct{}{}
-			return
-		}
-		c.receive <- rd
-	}
-}
-
-func (c *conn) updateLoop(stop <-chan struct{}) { // write to the conn
-loop:
-	for {
-		select {
-		case rd, ok := <-c.receive:
-			if !ok {
-				return
-			}
-			if next := c.Process(rd); next != nil {
-				if *next {
-					continue loop
-				} else {
-					return
-				}
-			}
-		case _ = <-stop:
-			return
-		}
-	}
-}
-
-func (c *conn) Process(rd *received) *bool {
+func (c *conn) Process(rd *received) bool {
 	c.mutex.Lock()
 	defer func() {
 		c.mutex.Unlock()
@@ -302,9 +231,7 @@ func (c *conn) Process(rd *received) *bool {
 	var req *http.Request
 	if form, err := rd.form(); err != nil {
 		// if !c.writeError(err) { return new(bool) } // should I write an error?
-		b := new(bool)
-		*b = true // true is to continue receiving
-		return b
+		return true // continue receiving
 	} else if form != nil {
 		// compile an actual Request
 		r := *c.requestOrigin
@@ -312,21 +239,18 @@ func (c *conn) Process(rd *received) *bool {
 		req = &r // http.Request{Form: form}
 	}
 
-	sd := served{conn: c, received: rd}
-	serve := sd.ServeHTTP // sd.ServeHTTP survives req being nil
-
+	sd := &served{conn: c}
+	serve := sd.ServeHTTP
 	if req != nil && c.access != nil { // the only case when req.Form is not nil
-		// a non-nil req is no-go for access anyway
+		// a nil req is no-go for access anyway
 		serve = c.access.Constructor(sd).ServeHTTP
 	}
+	serve(nil, req)
 
-	w := dummyStatus{}
-	serve(w, req)
-
-	if w.status == http.StatusBadRequest {
-		return new(bool) // write failure, stop receiving
+	if sd.WriteFail {
+		return false // write failure, stop receiving
 	}
-	return nil
+	return true
 }
 
 func (rd *received) form() (url.Values, error) {
@@ -337,49 +261,20 @@ func (rd *received) form() (url.Values, error) {
 	// url.ParseQuery should not return a nil url.Values without an error
 }
 
-func (sd served) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	stop := func() {
-		w.WriteHeader(http.StatusBadRequest) // well, not a bad request but a write failure
-	}
+func (sd *served) ServeHTTP(_ http.ResponseWriter, r *http.Request) {
 	data, updated, err := Updates(r, sd.conn.para)
 	if err != nil || !updated { // nothing scheduled for the moment, no update
 		return
 	}
-
-	if sd.conn.writeJSON(data) != nil {
-		stop()
-		return
+	if err := sd.conn.writeJSON(data); err != nil {
+		sd.WriteFail = true
 	}
-	w.WriteHeader(http.StatusSwitchingProtocols) // last change to WriteHeader. 101 is 200
-}
-
-type dummyStatus struct { // yet another ResponseWriter
-	status int
-}
-
-func (w dummyStatus) WriteHeader(s int) {
-	w.status = s
-	// don't expect any actual WriteHeader. This is dummy after all
-}
-
-func (w dummyStatus) Header() http.Header {
-	panic("dummyStatus.Header: SHOULD NOT BE USED")
-	// return w.ResponseWriter.Header()
-	// return make(http.Header) // IF TO RETURN ANYTHING, THAT SHOULD BE ONE http.Header PER dummyStatus
-}
-
-func (w dummyStatus) Write(b []byte) (int, error) {
-	panic("dummyStatus.Write: SHOULD NOT BE USED")
-	// return w.ResponseWriter.Write(b)
-	// return len(b), nil
 }
 
 // IndexWS serves ws updates.
 func (sw ServeWS) IndexWS(w http.ResponseWriter, req *http.Request) {
 	// Upgrader.Upgrade() has Origin check if .CheckOrigin is nil
-	upgrader := websocket.Upgrader{
-		HandshakeTimeout: 5 * time.Second,
-	}
+	upgrader := &websocket.Upgrader{HandshakeTimeout: 5 * time.Second}
 	wsconn, err := upgrader.Upgrade(w, req, nil)
 	if err != nil { // Upgrade() does http.Error() to the client
 		return
@@ -393,18 +288,20 @@ func (sw ServeWS) IndexWS(w http.ResponseWriter, req *http.Request) {
 
 		requestOrigin: req,
 
-		receive: make(chan *received, 2),
-		para:    params.NewParams(sw.DelayBounds),
-		access:  sw.Access,
+		para:   params.NewParams(sw.DelayBounds),
+		access: sw.Access,
 	}
-	Register <- c
+	Connections.Reg(c)
 	defer func() {
-		Unregister <- c
+		Connections.Unreg(c)
 		c.Conn.Close()
 	}()
-	stop := make(chan struct{}, 1)
-	go c.receiveLoop(stop) // read from the client
-	c.updateLoop(stop)     // write to the client
+	for {
+		rd := new(received)
+		if err := c.Conn.ReadJSON(&rd); err != nil || !c.Process(rd) {
+			return
+		}
+	}
 }
 
 func Fetch(keys *params.FetchKeys) error {

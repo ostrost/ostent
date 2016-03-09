@@ -36,7 +36,6 @@ var NoUpgradeCheck bool
 func init() {
 	cmd.OstentCmd.Flags().BoolVar(&NoUpgradeCheck, "noupgradecheck", false,
 		"Off periodic upgrade check")
-	ostent.AddBackground(ostent.ConnectionsLoop)
 	ostent.AddBackground(ostent.CollectLoop)
 }
 

@@ -24,10 +24,10 @@ func GraphiteRun(elisting *ostent.ExportingListing, gends params.GraphiteEndpoin
 
 func GraphiteRunFunc(value params.Endpoint) func() {
 	return func() {
-		ostent.Register <- &Carbond{
+		ostent.Connections.Reg(&Carbond{
 			ServerAddr: value.ServerAddr.String(),
 			Delay:      &value.Delay,
-		}
+		})
 	}
 }
 
@@ -38,7 +38,6 @@ type Carbond struct {
 	Failing       bool
 }
 
-func (cd Carbond) CloseChans()     {} // intentionally empty
 func (cd Carbond) WantProcs() bool { return false }
 
 func (cd *Carbond) Tack() {
