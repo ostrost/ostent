@@ -1,5 +1,5 @@
 hash: 56f030c12e98ae74d4e6b3c33f14de4907a9dbbf291ba7b9ccd3789402f718b6
-updated: 2016-03-05T19:27:13.050366495Z
+updated: 2016-03-09T16:20:11.108714322Z
 imports:
 - name: github.com/cpuguy83/go-md2man
   version: 2724a9c9051aa62e9cca11304e7dd518e9e41599
@@ -35,7 +35,7 @@ imports:
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/influxdb
-  version: 4e8004ec83d7f6748cf3b2fc716027a7200ede56
+  version: 425ef2c32a74c25929a178632efa8342e0d4d810
   subpackages:
   - client
   - models
@@ -64,7 +64,7 @@ imports:
 - name: github.com/russross/blackfriday
   version: 006144af03eeeff1037240a71865a9fd61f1c25f
 - name: github.com/shirou/gopsutil
-  version: 715c421b57b08535cf69baa61c9503333c65f2b4
+  version: 627d2a98711da9c9a6f3e63cc76e19e0028b5fe5
   subpackages:
   - host
   - net
