@@ -96,8 +96,8 @@
 	    els.push(ReactDOM.render(React.createElement(cl), sel[i]));
 	  }
 
-	  var hostport = location.hostname + (location.port ? ':' + location.port : '');
-	  var ws = new ReconnectWS('ws://' + hostport + '/index.ws');
+	  var wscheme = location.protocol === 'https:' ? 'wss' : 'ws';
+	  var ws = new ReconnectWS(wscheme + '://' + location.host + '/index.ws');
 
 	  // sendSearch is also referenced as window.updates.sendSearch
 	  ws.sendSearch = function (search) {
