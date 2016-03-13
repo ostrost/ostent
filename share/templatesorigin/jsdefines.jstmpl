@@ -41,7 +41,7 @@ var Sparkline = React.createClass({
                limit={this.state.limit}
                width={this.state.width}
                height={33}>
-        <SparkLines.SparklinesLine />
+        <SparkLines.SparklinesCurve />
         <SparkLines.SparklinesSpots {...spotsProps} />
       </SparkLines.Sparklines>
     </div>;
