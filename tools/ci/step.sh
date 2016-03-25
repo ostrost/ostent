@@ -2,6 +2,7 @@
 test -n "${BASH:-}" -o -n "${KSH_VERSION:-}" -o -n "${ZSH_VERSION:-}" &&
 set -o pipefail 2>/dev/null
 set -eu
+eq() { test x$1 = x$2; }
 if eq "$TRAVIS" true ; then
     set +u # non-strict unset variables use in CI build script
 fi
@@ -9,7 +10,6 @@ fi
 GO_BOOTSTRAPVER=go1.4.3
 : ${DPL_DIR:=$(git rev-parse --show-toplevel)/deploy}
 
-eq()      { test x$1 = x$2; }
 linux()   { eq ${1:-$(uname)} Linux   ;}
 darwin()  { eq ${1:-$(uname)} Darwin  ;}
 freebsd() { eq ${1:-$(uname)} FreeBSD ;}
