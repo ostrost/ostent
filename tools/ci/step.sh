@@ -1,15 +1,15 @@
 #!/bin/sh
-test -n "$BASH" -o -n "$KSH_VERSION" -o -n "$ZSH_VERSION" &&
+test -n "${BASH:-}" -o -n "${KSH_VERSION:-}" -o -n "${ZSH_VERSION:-}" &&
 set -o pipefail 2>/dev/null
 set -eu
-if test x${TRAVIS:-false} == xtrue ; then
+if eq "$TRAVIS" true ; then
     set +u # non-strict unset variables use in CI build script
 fi
 
 GO_BOOTSTRAPVER=go1.4.3
 : ${DPL_DIR:=$(git rev-parse --show-toplevel)/deploy}
 
-eq()      { test x$1 == x$2 ;}
+eq()      { test x$1 = x$2; }
 linux()   { eq ${1:-$(uname)} Linux   ;}
 darwin()  { eq ${1:-$(uname)} Darwin  ;}
 freebsd() { eq ${1:-$(uname)} FreeBSD ;}
@@ -120,7 +120,7 @@ before_deploy_fptar() {
         if eq $arch x86_64 ; then
             arch=amd64
         fi
-    elif eq $arch == amd64 ; then
+    elif eq $arch amd64 ; then
         arch=x86_64
     fi
 
