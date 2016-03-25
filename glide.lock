@@ -1,5 +1,5 @@
 hash: 56f030c12e98ae74d4e6b3c33f14de4907a9dbbf291ba7b9ccd3789402f718b6
-updated: 2016-03-09T16:20:11.108714322Z
+updated: 2016-03-25T18:38:11.260090072Z
 imports:
 - name: github.com/cpuguy83/go-md2man
   version: 2724a9c9051aa62e9cca11304e7dd518e9e41599
@@ -15,11 +15,11 @@ imports:
   - gracehttp
   - gracenet
 - name: github.com/facebookgo/httpdown
-  version: 1fa03998d20119dfe4ef73f56a638d83048052e2
+  version: a3b1354551a26449fbe05f5d855937f6e7acbd71
 - name: github.com/facebookgo/stats
   version: 1b76add642e42c6ffba7211ad7b3939ce654526e
 - name: github.com/go-ole/go-ole
-  version: 4528ca3fd1f79aeff5cad74425d0a60fb18a5761
+  version: 572eabb84c424e76a0d39d31510dd7dfd62f70b2
   subpackages:
   - oleutil
 - name: github.com/google/go-querystring
@@ -31,11 +31,11 @@ imports:
 - name: github.com/gorilla/schema
   version: ddf016c1034e9cfd3eb5b276f626c8f04d765f6f
 - name: github.com/gorilla/websocket
-  version: c45a635370221f34fea2d5163fd156fcb4e38e8a
+  version: e2e3d8414d0fbae04004f151979f4e27c6747fe7
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/influxdb
-  version: 425ef2c32a74c25929a178632efa8342e0d4d810
+  version: 97f55e6930e9a2d6876165ba1efabfee53ea5c12
   subpackages:
   - client
   - models
@@ -62,9 +62,9 @@ imports:
 - name: github.com/rcrowley/goagain
   version: f2f192b5d1a96e21dd4026ce67cda85e49659a48
 - name: github.com/russross/blackfriday
-  version: 006144af03eeeff1037240a71865a9fd61f1c25f
+  version: b43df972fb5fdf3af8d2e90f38a69d374fe26dd0
 - name: github.com/shirou/gopsutil
-  version: 627d2a98711da9c9a6f3e63cc76e19e0028b5fe5
+  version: be06a94d4487f6562f3c8dbfa6e51689406e0c61
   subpackages:
   - host
   - net
@@ -78,9 +78,9 @@ imports:
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 - name: github.com/Sirupsen/logrus
-  version: 219c8cb75c258c552e999735be6df753ffc7afdc
+  version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
 - name: github.com/spf13/cobra
-  version: 65a708cee0a4424f4e353d031ce440643e312f92
+  version: c678ff029ee250b65714e518f4f5c5cb934955de
   subpackages:
   - .
   - doc
@@ -91,7 +91,7 @@ imports:
 - name: github.com/vrischmann/go-metrics-influxdb
   version: 361681540e2f0e96a5c4644b1ec42c8e25da0357
 - name: golang.org/x/sys
-  version: 7a56174f0086b32866ebd746a794417edbc678a1
+  version: 320cb01ddbbf0473674c2585f9b6e245721de355
   subpackages:
   - unix
 devImports: []
