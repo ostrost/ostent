@@ -25,7 +25,7 @@
     "gulp-spawn": "^0.3.0",
     "node-sass": "^3.4.2",
     "purifycss-webpack-plugin": "^2.0.3",
-    "react": "^0.14.7",
+    "react": "^0.14.8",
     "react-sparklines": "^1.5.0",
     "reconnectingwebsocket": "^1.0.0",
     "sass-loader": "^3.2.0",
