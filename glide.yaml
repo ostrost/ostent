@@ -1,4 +1,6 @@
 package: github.com/ostrost/ostent
+exclude:
+- node_modules
 ignore:
 - github.com/influxdata/influxdb/statik
 - github.com/rakyll/statik/example/statik

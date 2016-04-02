@@ -1,5 +1,5 @@
 hash: 56f030c12e98ae74d4e6b3c33f14de4907a9dbbf291ba7b9ccd3789402f718b6
-updated: 2016-03-25T18:38:11.260090072Z
+updated: 2016-04-02T08:26:53.91973327Z
 imports:
 - name: github.com/cpuguy83/go-md2man
   version: 2724a9c9051aa62e9cca11304e7dd518e9e41599
@@ -35,13 +35,13 @@ imports:
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/influxdb
-  version: 97f55e6930e9a2d6876165ba1efabfee53ea5c12
+  version: d45ca3741e7406e3ae0887a1c378568e48c8d60e
   subpackages:
   - client
   - models
   - pkg/escape
 - name: github.com/Jeffail/gabs
-  version: 1ad8a462121027c511ab337b98028029352ca356
+  version: ee1575a53249b51d636e62464ca43a13030afdb5
 - name: github.com/jteeuwen/go-bindata
   version: a0ff2567cfb70903282db057e799fd826784d41d
   subpackages:
@@ -64,7 +64,7 @@ imports:
 - name: github.com/russross/blackfriday
   version: b43df972fb5fdf3af8d2e90f38a69d374fe26dd0
 - name: github.com/shirou/gopsutil
-  version: be06a94d4487f6562f3c8dbfa6e51689406e0c61
+  version: 37d89088411de59a4ef9fc340afa0e89dfcb4ea9
   subpackages:
   - host
   - net
@@ -80,7 +80,7 @@ imports:
 - name: github.com/Sirupsen/logrus
   version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
 - name: github.com/spf13/cobra
-  version: c678ff029ee250b65714e518f4f5c5cb934955de
+  version: 2ccf9e982a3e3eb21eba9c9ad8e546529fd74c71
   subpackages:
   - .
   - doc
@@ -91,7 +91,7 @@ imports:
 - name: github.com/vrischmann/go-metrics-influxdb
   version: 361681540e2f0e96a5c4644b1ec42c8e25da0357
 - name: golang.org/x/sys
-  version: 320cb01ddbbf0473674c2585f9b6e245721de355
+  version: a60af9cbbc6ab800af4f2be864a31f423a0ae1f2
   subpackages:
   - unix
 devImports: []
