@@ -15,7 +15,7 @@ import (
 func ProcName(_ int, procName string) string { return procName }
 
 func Distrib() (string, error) {
-	platform, _, version, err := pshost.GetPlatformInformation()
+	platform, _, version, err := pshost.PlatformInformation()
 	if err != nil {
 		return "", err
 	}
@@ -61,15 +61,15 @@ func (m Machine) IF(reg Registry, wg *sync.WaitGroup) {
 		wg.Done()
 		return
 	}
-	if list, err := psnet.NetIOCounters(true); err == nil {
+	if list, err := psnet.IOCounters(true); err == nil {
 		// err is gone
-		for _, netio := range list {
-			if !HardwareIF(netio.Name) {
+		for _, iocounter := range list {
+			if !HardwareIF(iocounter.Name) {
 				continue
 			}
-			stat := &NetIO{NetIOCountersStat: netio}
+			stat := &NetIO{IOCountersStat: iocounter}
 			for _, ia := range ifaddrs {
-				if ia.Name != netio.Name {
+				if ia.Name != iocounter.Name {
 					continue
 				}
 				if addrs, err := ia.Addrs(); err == nil && len(addrs) > 0 {
@@ -85,7 +85,7 @@ func (m Machine) IF(reg Registry, wg *sync.WaitGroup) {
 }
 
 type NetIO struct {
-	psnet.NetIOCountersStat
+	psnet.IOCountersStat
 	IP string
 }
 
