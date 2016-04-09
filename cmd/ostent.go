@@ -36,7 +36,7 @@ var (
 		Long: `Ostent collects system metrics and put them on display.
 Optionally exports them to metrics servers.
 
-To continuously export collected metrics, use --graphite, --influxdb and/or --librato.
+To continuously export collected metrics use graphite, influxdb and/or librato flags.
 Use multiple flags and/or use comma separated endpoints for the same kind.`,
 		Example: `ostent --graphite 10.0.0.1,10.0.0.2:2004\?delay=30s
 ostent --influxdb http://10.0.0.3\?delay=60s
@@ -105,7 +105,7 @@ func init() {
 			f.StringVar(&param.Database, "2", param.Database, "InfluxDB `database`")
 			f.StringVar(&param.Username, "3", param.Username, "InfluxDB `username`")
 			f.StringVar(&param.Password, "4", param.Password, "InfluxDB `password`")
-		})
+		}) + "  Any extra parameters become tags in every metrics post to InfluxDB server.\n"
 	}
 
 	hostname, _ := ostent.GetHN()

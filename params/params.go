@@ -486,9 +486,9 @@ func (p *Params) Decode(req *http.Request) error {
 	}
 
 	dec := schema.NewDecoder()
-	dec.SetAliasTag("url")
-	dec.IgnoreUnknownKeys(true)
 	dec.ZeroEmpty(true)
+	dec.IgnoreUnknownKeys(true)
+	dec.SetAliasTag("url") // single tag for decoding AND encoding
 
 	p.ResetSchema()
 	if err := dec.Decode(&p.Schema, req.Form); err != nil {
@@ -588,7 +588,7 @@ func (gends *GraphiteEndpoints) Set(input string) error {
 	gends.Values = make([]Endpoint, len(values))
 	for i, value := range values {
 		gends.Values[i] = gends.Default // copy
-		if err := Decode(nil, AddScheme(value), &gends.Values[i], &gends.Values[i]); err != nil {
+		if _, err := Decode(nil, AddScheme(value), false, &gends.Values[i], &gends.Values[i]); err != nil {
 			return err
 		}
 		if gends.Values[i].ServerAddr.Host == "" {
@@ -614,9 +614,10 @@ func (gends GraphiteEndpoints) Type() string { return "graphiteEndpoints" }
 // InfluxEndpoint holds influxdb params.
 type InfluxEndpoint struct {
 	Endpoint
-	Database string `schema:"database,omitempty"`
-	Username string `schema:"username,omitempty"`
-	Password string `schema:"password,omitempty"`
+	Database string            `schema:"database,omitempty"`
+	Username string            `schema:"username,omitempty"`
+	Password string            `schema:"password,omitempty"`
+	Tags     map[string]string `schema:"-"`
 }
 
 // String is a fmt.Stringer method.
@@ -641,11 +642,29 @@ func (iends *InfluxEndpoints) Set(input string) error {
 	iends.Values = make([]InfluxEndpoint, len(values))
 	for i, value := range values {
 		iends.Values[i] = iends.Default // copy
-		if err := Decode(nil, value, &iends.Values[i], &iends.Values[i]); err != nil {
+		uvalues, err := Decode(nil, value, true, &iends.Values[i], &iends.Values[i])
+		if err != nil {
 			return err
 		}
 		if iends.Values[i].ServerAddr.Host == "" {
 			return fmt.Errorf("server address required (prefixed with explicit scheme e.g. http://) for InfluxDB exporting")
+		}
+
+		// now .Tags to be set if any
+		for _, k := range []string{
+			"delay",
+			"database",
+			"username",
+			"password",
+		} {
+			delete(uvalues, k)
+		}
+		if klen := len(uvalues); klen != 0 {
+			iends.Values[i].Tags = make(map[string]string, klen)
+			for k, v := range uvalues {
+				iends.Values[i].Tags[k] = v[0]
+			}
+			// map[string][]string -> map[string]string
 		}
 	}
 	return nil
@@ -689,7 +708,7 @@ func (lends *LibratoEndpoints) Set(input string) error {
 	lends.Values = make([]LibratoEndpoint, len(values))
 	for i, value := range values {
 		lends.Values[i] = lends.Default // copy
-		if err := Decode(nil, AddScheme(value), &lends.Values[i], nil); err != nil {
+		if _, err := Decode(nil, AddScheme(value), false, &lends.Values[i], nil); err != nil {
 			return err
 		}
 		l := &lends.Values[i] // shortcut
@@ -747,7 +766,7 @@ func (fkeys *FetchKeys) Set(input string) error {
 	fkeys.Fragments = make([][]string, len(values))
 	for i, value := range values {
 		newkey := fkeys.Default // copy
-		if err := Decode(&fkeys.Default.URL, value, &newkey, nil); err != nil {
+		if _, err := Decode(&fkeys.Default.URL, value, false, &newkey, nil); err != nil {
 			return err
 		}
 		if newkey.URL.Path == "" {
@@ -775,18 +794,18 @@ func (fkeys FetchKeys) Type() string { return "fetchKeys" }
 func AddScheme(input string) string { return "http://" + input }
 
 // Decode does url parsing and schema decoding.
-func Decode(base *url.URL, input string,
+func Decode(base *url.URL, input string, ignoreUnknownKeys bool,
 	into interface {
 		// pflag.Value
 		SetURL(url.URL)
 	},
 	urluser interface {
 		UseURL(url.URL) error
-	}) error {
+	}) (map[string][]string, error) {
 
 	u, err := url.Parse(input)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if base != nil {
 		u = base.ResolveReference(u)
@@ -794,10 +813,15 @@ func Decode(base *url.URL, input string,
 	into.SetURL(*u)
 	if urluser != nil {
 		if err := urluser.UseURL(*u); err != nil {
-			return err
+			return nil, err
 		}
 	}
 	dec := schema.NewDecoder()
 	dec.ZeroEmpty(true)
-	return dec.Decode(into, u.Query())
+	if ignoreUnknownKeys {
+		dec.IgnoreUnknownKeys(true)
+	}
+	values := u.Query()
+	err = dec.Decode(into, values)
+	return values, err
 }

@@ -1,5 +1,5 @@
 hash: 56f030c12e98ae74d4e6b3c33f14de4907a9dbbf291ba7b9ccd3789402f718b6
-updated: 2016-04-07T16:33:54.649112808Z
+updated: 2016-04-09T16:55:04.195020618Z
 imports:
 - name: github.com/cpuguy83/go-md2man
   version: 2724a9c9051aa62e9cca11304e7dd518e9e41599
@@ -23,7 +23,7 @@ imports:
   subpackages:
   - oleutil
 - name: github.com/google/go-querystring
-  version: 6bb77fe6f42b85397288d4f6f67ac72f8f400ee7
+  version: 9235644dd9e52eeae6fa48efd539fdc351a0af53
   subpackages:
   - query
 - name: github.com/gorilla/context
@@ -35,7 +35,7 @@ imports:
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/influxdb
-  version: 61aa2980ced30f72f068b784e22d5f71e483cf10
+  version: 23e2c40923917e8e15c45bd4d843491716295986
   subpackages:
   - client
   - models
@@ -89,9 +89,9 @@ imports:
 - name: github.com/StackExchange/wmi
   version: f3e2bae1e0cb5aef83e319133eabfee30013a4a5
 - name: github.com/vrischmann/go-metrics-influxdb
-  version: 361681540e2f0e96a5c4644b1ec42c8e25da0357
+  version: be4fc87f4ea19631fadd5f80e4fb8ea0353348a6
 - name: golang.org/x/sys
-  version: 042a8f53ce82bbe081222da955159491e32146a0
+  version: 9eef40adf05b951699605195b829612bd7b69952
   subpackages:
   - unix
 devImports: []

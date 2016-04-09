@@ -21,12 +21,13 @@ func InfluxRunFunc(value params.InfluxEndpoint) func() {
 	return func() {
 		u := value.URL  // copy
 		u.RawQuery = "" // reset query string
-		go influxdb.InfluxDB(ostent.Reg1s.Registry,
+		go influxdb.InfluxDBWithTags(ostent.Reg1s.Registry,
 			value.Delay.D,
 			u.String(),
 			value.Database,
 			value.Username,
 			value.Password,
+			value.Tags,
 		)
 	}
 }
