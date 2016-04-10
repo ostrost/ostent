@@ -2,24 +2,24 @@
 test -n "${BASH:-}" -o -n "${KSH_VERSION:-}" -o -n "${ZSH_VERSION:-}" &&
 set -o pipefail 2>/dev/null
 set -eu
-eq() { test x$1 = x$2; }
-if eq "$TRAVIS" true ; then
+eq() { test "x$1" = "x$2"; }
+if eq "${TRAVIS:-}" true ; then
     set +u # non-strict unset variables use in CI build script
 fi
 
 GO_BOOTSTRAPVER=go1.4.3
-: ${DPL_DIR:=$(git rev-parse --show-toplevel)/deploy}
+: "${DPL_DIR:=$(git rev-parse --show-toplevel)/deploy}"
 
-linux()   { eq ${1:-$(uname)} Linux   ;}
-darwin()  { eq ${1:-$(uname)} Darwin  ;}
-freebsd() { eq ${1:-$(uname)} FreeBSD ;}
+linux()   { eq "${1:-$(uname)}" Linux   ;}
+darwin()  { eq "${1:-$(uname)}" Darwin  ;}
+freebsd() { eq "${1:-$(uname)}" FreeBSD ;}
 
-: ${MAKE:=make}
+: "${MAKE:=make}"
 Gmake() {
-    if eq $MAKE make && hash gmake 2>/dev/null ; then
+    if eq "$MAKE" make && hash gmake 2>/dev/null ; then
         MAKE=gmake
     fi
-    $MAKE "$@"
+    "$MAKE" "$@"
 }
 
 # Following functions of this script is expected to be executed sequentially.
@@ -37,20 +37,21 @@ install_1() {
 install_2() {
     local GOVER="$1" # go version in form of "goX.Y[.Z]"
 
-    if darwin && ! eq $GOVER tip ; then
-        GO_BINARY_PATH=~/.gvm/archive///////$GOVER.darwin-amd64-osx10.8.tar.gz
-        GO_BINARY_URL=https://golang.org/dl/$GOVER.darwin-amd64.tar.gz
-        test -f $GO_BINARY_PATH ||
-        curl --silent --show-error --fail --location --output $GO_BINARY_PATH $GO_BINARY_URL
+    if darwin && ! eq "$GOVER" tip ; then
+        local GO_BINARY_PATH GO_BINARY_URL
+        GO_BINARY_PATH=~/.gvm/archive///////"$GOVER".darwin-amd64-osx10.8.tar.gz
+        GO_BINARY_URL=https://golang.org/dl/"$GOVER".darwin-amd64.tar.gz
+        test -f "$GO_BINARY_PATH" ||
+        curl --silent --show-error --fail --location --output "$GO_BINARY_PATH" "$GO_BINARY_URL"
     fi
 }
 
 install_3() {
     local GOVER="$1" # go version in form of "goX.Y[.Z]"
 
-    source ~/.gvm/scripts/gvm
+    . ~/.gvm/scripts/gvm #source here
     gvm version
-    gvm install $GOVER --binary # || gvm install $GOVER
+    gvm install "$GOVER" --binary # || gvm install "$GOVER"
 }
 
 # Nothing timely here, but it's the last install step.
@@ -58,12 +59,12 @@ install_4() {
     local GOVER="$1" # go version in form of "goX.Y[.Z]"
     local REPOSLUG="$2" # The "owner/repo" form.
 
-    gvm use $GOVER
+    gvm use "$GOVER"
     gvm list
 
     mkdir -p ~/gopath/src
     mv ~/build ~/gopath/src/github.com # ~/build is cwd
-    cd ~/gopath/src/github.com/$REPOSLUG # new cwd
+    cd ~/gopath/src/github.com/"$REPOSLUG" # new cwd
 
     export GOPATH=~/gopath:$GOPATH # NB
     export PATH=~/gopath/bin:$PATH
@@ -98,8 +99,8 @@ before_deploy_4() {
     local uname=${1:-$(uname)}
 
     mkdir -p "$DPL_DIR"
-    before_deploy_fptar $uname
-    before_deploy_fptar $uname 32
+    before_deploy_fptar "$uname"
+    before_deploy_fptar "$uname" 32
 
     local shacommand=shasum\ -a\ 256
     if ! hash shasum 2>/dev/null ; then
@@ -108,7 +109,7 @@ before_deploy_4() {
     (
         cd "$DPL_DIR" || exit 1
         find . -type f \! -name CHECKSUM.\* | sed 's,^\./,,' |
-        xargs $shacommand >CHECKSUM."$uname".SHA256
+        xargs "$shacommand" >CHECKSUM."$uname".SHA256
     )
 }
 
@@ -116,38 +117,39 @@ before_deploy_fptar() {
     local uname=${1:-$(uname)}
     local arch=${2:-$(uname -m)}
 
-    if freebsd $uname ; then
-        if eq $arch x86_64 ; then
+    if freebsd "$uname" ; then
+        if eq "$arch" x86_64 ; then
             arch=amd64
         fi
-    elif eq $arch amd64 ; then
+    elif eq "$arch" amd64 ; then
         arch=x86_64
     fi
 
     local binary=~/gopath/bin/ostent
-    if eq $arch 32 ; then
+    if eq "$arch" 32 ; then
         binary=~/gopath/bin/ostent.32
         arch=i686
-        if freebsd $uname ; then
+        if freebsd "$uname" ; then
             arch=i386
         fi
     fi
 
-    if darwin $uname && ! eq $arch x86_64 ; then
+    if darwin "$uname" && ! eq "$arch" x86_64 ; then
         return # Only 64-bit builds for darwin
     fi
 
     local prefix=/usr
-    if ! linux $uname; then
+    if ! linux "$uname"; then
         prefix=/usr/local
     fi
 
-    local tarball="$DPL_DIR"/$uname-$arch.tar.xz
+    local tarball="$DPL_DIR/$uname-$arch".tar.xz
     if test -e "$tarball" ; then
         echo File already exists: "$tarball" >&2
         exit 1
     fi
-    local tmpsubdir=$(mktemp -d tmpstage.XXXXXXXX) || exit 1 # in cwd
+    local tmpsubdir
+    tmpsubdir=$(mktemp -d tmpstage.XXXXXXXX) || exit 1 # in cwd
     trap 'rm -rf "$PWD"/'"$tmpsubdir" EXIT
     (
         cd "$tmpsubdir" || exit 1
@@ -155,16 +157,16 @@ before_deploy_fptar() {
         # umask 022 # MIND UMASK
         install -m 755 -d . ./$prefix/bin
         install -m 755 -p $binary ./$prefix/bin/ostent
-        find . -type d | xargs touch -r $binary
+        find . -type d -print0 | xargs -0 touch -r $binary
 
         local ownerargs=--owner=0\ --group=0
-        if freebsd $uname ; then
+        if freebsd "$uname" ; then
             ownerargs=--uid=0\ --gid=0
-        elif darwin $uname ; then
-            ownerargs= # No way to specify owners in darwin
+        elif darwin "$uname" ; then
+            ownerargs='' # No way to specify owners in darwin
         fi
 
-        echo Packing $uname-$arch >&2
+        echo "Packing $uname-$arch" >&2
         tar Jcf "$tarball" --numeric-owner $ownerargs .
     )
     rm -rf "$tmpsubdir"
