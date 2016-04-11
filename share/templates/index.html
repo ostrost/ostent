@@ -40,11 +40,8 @@
       </li>
     </ul><div class="{{if eq .Data.params.Lan.Absolute 0}}hide{{end}}">
     <div class="stripe">
-      <div class="row thead"><span class="expand col small-1">Period</span><span class="expand col small-1 text-right"> Value</span><span class="expand col"></span></div>
-      {{if .Data.la}}
-      {{range $la := .Data.la.List}}<div class="row"><span class="expand col small-1">
-        <div class="text-right width-3rem">{{$la.Period}}m</div></span><span class="expand col small-1 text-right"> {{$la.Value}}</span><span class="expand col-lr"></span></div>{{end}}
-      {{end}}
+      <div class="row thead"><span class="expand col small-1">Period</span><span class="expand col small-1 text-right"> Value</span><span class="expand col"></span></div>{{if .Data.la}}{{range $la := .Data.la.List}}<div class="row"><span class="expand col small-1">
+        <div class="text-right width-3rem">{{$la.Period}}m</div></span><span class="expand col small-1 text-right"> {{$la.Value}}</span><span class="expand col-lr"></span></div>{{end}}{{end}}
     </div></div></div>
   </div>
 </div>{{end}}{{define "define_mem"}}
@@ -89,10 +86,7 @@
       </li>
     </ul><div class="{{if eq .Data.params.Memn.Absolute 0}}hide{{end}}">
     <div class="stripe">
-      <div class="row thead"><span class="expand col small-1">Memory</span><span class="expand col small-1 text-right"> Total</span><span class="expand col small-1 text-right"> Used</span><span class="expand col small-1 text-right"> Free</span><span class="expand col small-1 text-right"> Use%</span><span class="expand col"></span></div>
-      {{if .Data.mem}}
-      {{range $mem := .Data.mem.List}}<div class="row"><span class="expand col small-1">{{$mem.Kind}}</span><span class="expand col small-1 text-right"> {{$mem.Total}}</span><span class="expand col small-1 text-right"> {{$mem.Used}}</span><span class="expand col small-1 text-right"> {{$mem.Free}}</span><span class="expand col small-1 text-right bg-usepct" data-usepct={{$mem.UsePct}}> {{$mem.UsePct}}%</span><span class="expand col-lr"></span></div>{{end}}
-      {{end}}
+      <div class="row thead"><span class="expand col small-1">Memory</span><span class="expand col small-1 text-right"> Total</span><span class="expand col small-1 text-right"> Used</span><span class="expand col small-1 text-right"> Free</span><span class="expand col small-1 text-right"> Use%</span><span class="expand col"></span></div>{{if .Data.mem}}{{range $mem := .Data.mem.List}}<div class="row"><span class="expand col small-1">{{$mem.Kind}}</span><span class="expand col small-1 text-right"> {{$mem.Total}}</span><span class="expand col small-1 text-right"> {{$mem.Used}}</span><span class="expand col small-1 text-right"> {{$mem.Free}}</span><span class="expand col small-1 text-right bg-usepct" data-usepct={{$mem.UsePct}}> {{$mem.UsePct}}%</span><span class="expand col-lr"></span></div>{{end}}{{end}}
     </div></div></div>
   </div>
 </div>{{end}}{{define "define_df"}}
@@ -137,34 +131,19 @@
       </li>
     </ul><div class="{{if eq .Data.params.Dfn.Absolute 0}}hide{{end}}">
     <div class="stripe">
-      <div class="row thead">{{/* poke purifycss: <div class="dropup"><div class="caret" /></div> */}}<span class="expand col small-1 text-nowrap">
-          {{with index .Data.params.Vlinks.Dfk 0}}
+      <div class="row thead">{{/* poke purifycss: <div class="dropup"><div class="caret" /></div> */}}<span class="expand col small-1 text-nowrap">{{with index .Data.params.Vlinks.Dfk 0}}
           <a href={{.LinkHref}} class={{.LinkClass}}
-            >Device<span class={{.CaretClass}}></span></a>
-          {{end}}</span><span class="expand col small-1 text-nowrap">
-          {{with index .Data.params.Vlinks.Dfk 1}}
+            >Device<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap">{{with index .Data.params.Vlinks.Dfk 1}}
           <a href={{.LinkHref}} class={{.LinkClass}}
-            >Mounted<span class={{.CaretClass}}></span></a>
-          {{end}}</span><span class="expand col small-1 text-nowrap text-right">
-          {{with index .Data.params.Vlinks.Dfk 5}}
+            >Mounted<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with index .Data.params.Vlinks.Dfk 5}}
           <a href={{.LinkHref}} class={{.LinkClass}}
-            >Total<span class={{.CaretClass}}></span></a>
-          {{end}}</span><span class="expand col small-1 text-nowrap text-right">
-          {{with index .Data.params.Vlinks.Dfk 4}}
+            >Total<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with index .Data.params.Vlinks.Dfk 4}}
           <a href={{.LinkHref}} class={{.LinkClass}}
-            >Used<span class={{.CaretClass}}></span></a>
-          {{end}}</span><span class="expand col small-1 text-nowrap text-right">
-          {{with index .Data.params.Vlinks.Dfk 2}}
+            >Used<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with index .Data.params.Vlinks.Dfk 2}}
           <a href={{.LinkHref}} class={{.LinkClass}}
-            >Avail<span class={{.CaretClass}}></span></a>
-          {{end}}</span><span class="expand col small-1 text-nowrap text-right">
-          {{with index .Data.params.Vlinks.Dfk 3}}
+            >Avail<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with index .Data.params.Vlinks.Dfk 3}}
           <a href={{.LinkHref}} class={{.LinkClass}}
-            >Use%<span class={{.CaretClass}}></span></a>
-          {{end}}</span><span class="expand col"></span></div>
-      {{if .Data.df}}
-      {{range $df := .Data.df.List}}<div class="row"><span class="expand col small-1 text-overflow">{{$df.DevName}}</span><span class="expand col small-1 text-overflow"> {{$df.DirName}}</span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Total}}</span><span title="Inodes total"> {{$df.Inodes}}</span></span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Used}}</span><span title="Inodes used"> {{$df.Iused}}</span></span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Avail}}</span><span title="Inodes free"> {{$df.Ifree}}</span></span><span class="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct={{$df.UsePct}}><span class="float-right"> {{$df.UsePct}}%</span><span title="Inodes use%"> {{$df.IusePct}}%</span></span><span class="expand col-lr"></span></div>{{end}}
-      {{end}}
+            >Use%<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col"></span></div>{{if .Data.df}}{{range $df := .Data.df.List}}<div class="row"><span class="expand col small-1 text-overflow">{{$df.DevName}}</span><span class="expand col small-1 text-overflow"> {{$df.DirName}}</span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Total}}</span><span title="Inodes total"> {{$df.Inodes}}</span></span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Used}}</span><span title="Inodes used"> {{$df.Iused}}</span></span><span class="expand col small-1 text-overflow text-right gray"><span class="float-right"> {{$df.Avail}}</span><span title="Inodes free"> {{$df.Ifree}}</span></span><span class="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct={{$df.UsePct}}><span class="float-right"> {{$df.UsePct}}%</span><span title="Inodes use%"> {{$df.IusePct}}%</span></span><span class="expand col-lr"></span></div>{{end}}{{end}}
     </div></div></div>
   </div>
 </div>{{end}}{{define "define_cpu"}}
@@ -209,17 +188,14 @@
       </li>
     </ul><div class="{{if eq .Data.params.CPUn.Absolute 0}}hide{{end}}">
     <div class="stripe">
-      <div class="row thead"><span class="expand col small-1">Core</span><span class="expand col small-1 text-right"> User%</span><span class="expand col small-1 text-right"> Sys%</span><span class="expand col small-1 text-right"> Wait%</span><span class="expand col small-1 text-right"> Idle%</span><span class="expand col"></span></div>
-      {{if .Data.cpu}}
-      {{range $cpu := .Data.cpu.List}}<div class="row"><span class="expand col small-1 text-nowrap">{{$cpu.N}}</span><span class="expand col small-1 text-right bg-usepct"
+      <div class="row thead"><span class="expand col small-1">Core</span><span class="expand col small-1 text-right"> User%</span><span class="expand col small-1 text-right"> Sys%</span><span class="expand col small-1 text-right"> Wait%</span><span class="expand col small-1 text-right"> Idle%</span><span class="expand col"></span></div>{{if .Data.cpu}}{{range $cpu := .Data.cpu.List}}<div class="row"><span class="expand col small-1 text-nowrap">{{$cpu.N}}</span><span class="expand col small-1 text-right bg-usepct"
        data-usepct={{$cpu.UserPct}}> {{$cpu.UserPct}}%</span>
       <span class="expand col small-1 text-right bg-usepct"
        data-usepct={{$cpu.SysPct}}> {{$cpu.SysPct}}%</span>
       <span class="expand col small-1 text-right bg-usepct"
        data-usepct={{$cpu.WaitPct}}> {{$cpu.WaitPct}}%</span>
       <span class="expand col small-1 text-right bg-usepct-inverse"
-       data-usepct={{$cpu.IdlePct}}> {{$cpu.IdlePct}}%</span><span class="expand col-lr"></span></div>{{end}}
-      {{end}}
+       data-usepct={{$cpu.IdlePct}}> {{$cpu.IdlePct}}%</span><span class="expand col-lr"></span></div>{{end}}{{end}}
     </div></div></div>
   </div>
 </div>{{end}}{{define "define_if"}}
@@ -264,10 +240,7 @@
       </li>
     </ul><div class="{{if eq .Data.params.Ifn.Absolute 0}}hide{{end}}">
     <div class="stripe">
-      <div class="row thead"><span class="expand col small-1">Interface</span><span class="expand col small-1 text-right"> IP</span><span title="Drops,Errors In/Out per second" class="expand col small-2 text-right text-nowrap"> Loss IO ps</span><span title="Packets In/Out per second" class="expand col small-2 text-right text-nowrap"> Packets IO ps</span><span title="Bits In/Out per second" class="expand col small-2 text-right text-nowrap"> IO <i>b</i>ps</span><span class="expand col"></span></div>
-      {{if .Data.netio}}
-      {{range $if := .Data.netio.List}}<div class="row"><span class="expand col small-1 text-overflow">{{$if.Name}}</span><span class="expand col small-1 text-overflow text-right">{{$if.IP}}</span><span class="expand col small-2 text-right text-nowrap">&nbsp;<span title="Total drops,errors modulo 4G" class="gray"><span title="Total drops In modulo 4G">{{$if.DropsIn}}</span>/<span title="Total drops Out modulo 4G">{{$if.DropsOut}}</span>,<span title="Total errors In modulo 4G">{{$if.ErrorsIn}}</span>/<span title="Total errors Out modulo 4G">{{$if.ErrorsOut}}</span></span>&nbsp;<span class="{{if and (eq $if.DeltaDropsIn "0") (eq $if.DeltaDropsOut "0") (eq $if.DeltaErrorsIn "0") (eq $if.DeltaErrorsOut "0")}}gray{{end}}"><span title="Drops In per second">{{$if.DeltaDropsIn}}</span>/<span title="Drops Out per second">{{$if.DeltaDropsOut}}</span>,<span title="Errors In per second">{{$if.DeltaErrorsIn}}</span>/<span title="Errors Out per second">{{$if.DeltaErrorsOut}}</span></span></span><span class="expand col small-2 text-right text-nowrap">&nbsp;<span class="gray"><span title="Total packets In modulo 4G">{{$if.PacketsIn}}</span>/<span title="Total packets Out modulo 4G">{{$if.PacketsOut}}</span></span>&nbsp;<span title="Packets In per second">{{$if.DeltaPacketsIn}}</span>/<span title="Packets Out per second">{{$if.DeltaPacketsOut}}</span></span><span class="expand col small-2 text-right text-nowrap">&nbsp;<span class="gray"><span title="Total BYTES In modulo 4G">{{$if.BytesIn}}</span>/<span title="Total BYTES Out modulo 4G">{{$if.BytesOut}}</span></span>&nbsp;<span title="BITS In per second">{{$if.DeltaBitsIn}}</span>/<span title="BITS Out per second">{{$if.DeltaBitsOut}}</span></span><span class="expand col-lr"></span></div>{{end}}
-      {{end}}
+      <div class="row thead"><span class="expand col small-1">Interface</span><span class="expand col small-1 text-right"> IP</span><span title="Drops,Errors In/Out per second" class="expand col small-2 text-right text-nowrap"> Loss IO ps</span><span title="Packets In/Out per second" class="expand col small-2 text-right text-nowrap"> Packets IO ps</span><span title="Bits In/Out per second" class="expand col small-2 text-right text-nowrap"> IO <i>b</i>ps</span><span class="expand col"></span></div>{{if .Data.netio}}{{range $if := .Data.netio.List}}<div class="row"><span class="expand col small-1 text-overflow">{{$if.Name}}</span><span class="expand col small-1 text-overflow text-right">{{$if.IP}}</span><span class="expand col small-2 text-right text-nowrap">&nbsp;<span title="Total drops,errors modulo 4G" class="gray"><span title="Total drops In modulo 4G">{{$if.DropsIn}}</span>/<span title="Total drops Out modulo 4G">{{$if.DropsOut}}</span>,<span title="Total errors In modulo 4G">{{$if.ErrorsIn}}</span>/<span title="Total errors Out modulo 4G">{{$if.ErrorsOut}}</span></span>&nbsp;<span class="{{if and (eq $if.DeltaDropsIn "0") (eq $if.DeltaDropsOut "0") (eq $if.DeltaErrorsIn "0") (eq $if.DeltaErrorsOut "0")}}gray{{end}}"><span title="Drops In per second">{{$if.DeltaDropsIn}}</span>/<span title="Drops Out per second">{{$if.DeltaDropsOut}}</span>,<span title="Errors In per second">{{$if.DeltaErrorsIn}}</span>/<span title="Errors Out per second">{{$if.DeltaErrorsOut}}</span></span></span><span class="expand col small-2 text-right text-nowrap">&nbsp;<span class="gray"><span title="Total packets In modulo 4G">{{$if.PacketsIn}}</span>/<span title="Total packets Out modulo 4G">{{$if.PacketsOut}}</span></span>&nbsp;<span title="Packets In per second">{{$if.DeltaPacketsIn}}</span>/<span title="Packets Out per second">{{$if.DeltaPacketsOut}}</span></span><span class="expand col small-2 text-right text-nowrap">&nbsp;<span class="gray"><span title="Total BYTES In modulo 4G">{{$if.BytesIn}}</span>/<span title="Total BYTES Out modulo 4G">{{$if.BytesOut}}</span></span>&nbsp;<span title="BITS In per second">{{$if.DeltaBitsIn}}</span>/<span title="BITS Out per second">{{$if.DeltaBitsOut}}</span></span><span class="expand col-lr"></span></div>{{end}}{{end}}
     </div></div></div>
   </div>
 </div>{{end}}{{define "define_ps"}}
@@ -312,46 +285,25 @@
       </li>
     </ul><div class="{{if eq .Data.params.Psn.Absolute 0}}hide{{end}}">
     <div class="stripe">
-      <div class="row thead">{{/* poke purifycss: <div class="dropup"><div class="caret" /></div> */}}<span class="expand col small-1 text-nowrap text-right">
-          {{with index .Data.params.Vlinks.Psk 0}}
+      <div class="row thead">{{/* poke purifycss: <div class="dropup"><div class="caret" /></div> */}}<span class="expand col small-1 text-nowrap text-right">{{with index .Data.params.Vlinks.Psk 0}}
           <a href={{.LinkHref}} class={{.LinkClass}}
-            >PID<span class={{.CaretClass}}></span></a>
-          {{end}}</span><span class="expand col small-1 text-nowrap text-right">
-          {{with index .Data.params.Vlinks.Psk 1}}
+            >PID<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with index .Data.params.Vlinks.Psk 1}}
           <a href={{.LinkHref}} class={{.LinkClass}}
-            >UID<span class={{.CaretClass}}></span></a>
-          {{end}}</span><span class="expand col small-1 text-nowrap">
-          {{with index .Data.params.Vlinks.Psk 2}}
+            >UID<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap">{{with index .Data.params.Vlinks.Psk 2}}
           <a href={{.LinkHref}} class={{.LinkClass}}
-            >USER<span class={{.CaretClass}}></span></a>
-          {{end}}</span><span class="expand col small-1 text-nowrap text-right">
-          {{with index .Data.params.Vlinks.Psk 3}}
+            >USER<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with index .Data.params.Vlinks.Psk 3}}
           <a href={{.LinkHref}} class={{.LinkClass}}
-            >PR<span class={{.CaretClass}}></span></a>
-          {{end}}</span><span class="expand col small-1 text-nowrap text-right">
-          {{with index .Data.params.Vlinks.Psk 4}}
+            >PR<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with index .Data.params.Vlinks.Psk 4}}
           <a href={{.LinkHref}} class={{.LinkClass}}
-            >NI<span class={{.CaretClass}}></span></a>
-          {{end}}</span><span class="expand col small-1 text-nowrap text-right">
-          {{with index .Data.params.Vlinks.Psk 5}}
+            >NI<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with index .Data.params.Vlinks.Psk 5}}
           <a href={{.LinkHref}} class={{.LinkClass}}
-            >VIRT<span class={{.CaretClass}}></span></a>
-          {{end}}</span><span class="expand col small-1 text-nowrap text-right">
-          {{with index .Data.params.Vlinks.Psk 6}}
+            >VIRT<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-right">{{with index .Data.params.Vlinks.Psk 6}}
           <a href={{.LinkHref}} class={{.LinkClass}}
-            >RES<span class={{.CaretClass}}></span></a>
-          {{end}}</span><span class="expand col small-1 text-nowrap text-center">
-          {{with index .Data.params.Vlinks.Psk 7}}
+            >RES<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap text-center">{{with index .Data.params.Vlinks.Psk 7}}
           <a href={{.LinkHref}} class={{.LinkClass}}
-            >TIME<span class={{.CaretClass}}></span></a>
-          {{end}}</span><span class="expand col small-1 text-nowrap">
-          {{with index .Data.params.Vlinks.Psk 8}}
+            >TIME<span class={{.CaretClass}}></span></a>{{end}}</span><span class="expand col small-1 text-nowrap">{{with index .Data.params.Vlinks.Psk 8}}
           <a href={{.LinkHref}} class={{.LinkClass}}
-            >COMMAND<span class={{.CaretClass}}></span></a>
-          {{end}}</span></div>
-      {{if .Data.procs}}
-      {{range $ps := .Data.procs.List}}<div class="row"><span class="expand col small-1 text-right">{{$ps.PID}}</span><span class="expand col small-1 text-right"> {{$ps.UID}}</span><span class="expand col small-1"> {{$ps.User}}</span><span class="expand col small-1 text-right"> {{$ps.Priority}}</span><span class="expand col small-1 text-right"> {{$ps.Nice}}</span><span class="expand col small-1 text-right"> {{$ps.Size}}</span><span class="expand col small-1 text-right"> {{$ps.Resident}}</span><span class="expand col small-1 text-center"> {{$ps.Time}}</span><span class="expand col"> {{$ps.Name}}</span></div>{{end}}
-      {{end}}
+            >COMMAND<span class={{.CaretClass}}></span></a>{{end}}</span></div>{{if .Data.procs}}{{range $ps := .Data.procs.List}}<div class="row"><span class="expand col small-1 text-right">{{$ps.PID}}</span><span class="expand col small-1 text-right"> {{$ps.UID}}</span><span class="expand col small-1"> {{$ps.User}}</span><span class="expand col small-1 text-right"> {{$ps.Priority}}</span><span class="expand col small-1 text-right"> {{$ps.Nice}}</span><span class="expand col small-1 text-right"> {{$ps.Size}}</span><span class="expand col small-1 text-right"> {{$ps.Resident}}</span><span class="expand col small-1 text-center"> {{$ps.Time}}</span><span class="expand col"> {{$ps.Name}}</span></div>{{end}}{{end}}
     </div></div></div>
   </div>
 </div>{{end}}<!DOCTYPE html>
@@ -373,10 +325,12 @@
     <div class="top-bar">
       <div class="top-bar-title">
         <h2 class="h5 margin-bottom-0"><span data-define="define_hostname" class="updates">{{template "define_hostname" .}}</span> <a href="https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}">ostent</a></h2>
-      </div>{{if .OstentUpgrade}}
-      <div class="top-bar-left"><a href="https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}">{{.OstentUpgrade}}</a></div>{{end}}
-      <div class="top-bar-right">
-        <h2 class="h5 margin-bottom-0"><small>{{.Distrib}} up <span data-define="define_uptime" class="updates whitespace-pre">{{template "define_uptime" .}}</span></small></h2>
+      </div>
+      <div>{{if .OstentUpgrade}}
+        <div class="top-bar-left"><a href="https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}">{{.OstentUpgrade}}</a></div>{{end}}
+        <div class="top-bar-right">
+          <h2 class="h5 margin-bottom-0"><small>{{.Distrib}} up <span data-define="define_uptime" class="updates whitespace-pre">{{template "define_uptime" .}}</span></small></h2>
+        </div>
       </div>
     </div>{{if ne (len .Exporting) 0}}
     <div class="row expanded hr-bottom">

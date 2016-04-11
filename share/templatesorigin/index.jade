@@ -1,6 +1,21 @@
 - if (format === undefined) { format = function() { console.error('check locals'); }; }
 //- This is a stub: real jade invocation must have it in locals.
 
+mixin if(cond)
+  | {{if !{cond}}}
+  block
+  | {{end}}
+
+mixin range(pipe)
+  | {{range !{pipe}}}
+  block
+  | {{end}}
+
+mixin with(pipe)
+  | {{with !{pipe}}}
+  block
+  | {{end}}
+
 mixin define(name)
   | {{define "#{name}"}}
   block
@@ -9,15 +24,14 @@ mixin define(name)
 mixin vlink(kparam, number, text)
   - var vlinks = format('Data.params.Vlinks%s', kparam);
   if JSX
-    - var link = format('%s[%s-1]', vlinks, number);
-    | <a href={#{link}.LinkHref} class={#{link}.LinkClass} onClick={this.handleClick}
-    |   >#{text}<span class={#{link}.CaretClass}></span></a>
+    +with(format('"%s[%d-1]"', vlinks, number))
+      | <a href={ {{.}}.LinkHref} class={ {{.}}.LinkClass} onClick={this.handleClick}
+      |   >#{text}<span class={ {{.}}.CaretClass}></span></a>
   else
-    | {{with !{['index', '.'+vlinks, number-1].join(' ')}}}
-    | <a href={{.LinkHref}} class={{.LinkClass}}
-    |   >#{text}<span class={{.CaretClass}}></span></a>
-    | {{end}}
-  
+    +with(format('index .%s %d', vlinks, number-1))
+      | <a href={{.LinkHref}} class={{.LinkClass}}
+      |   >#{text}<span class={{.CaretClass}}></span></a>
+
 mixin table(nparam, dparam, title)
   .row.expanded.hr-bottom
     -
@@ -94,28 +108,26 @@ mixin alink_html(cls, fmt, link)
   | <a href={{.#{link}.Href}}
   |    class="#{cls} {{.#{link}.ExtraClass}}"
   |   >#{format(fmt, format('{{.%s.Text}}', link))}</a>
-  
+
 +define('define_uptime'): span {{.Data.uptime}}
 +define('define_hostname')
   if JSX
     | <a href="/" title={"hostname "+Data.hostname}>{{.Data.hostname}}</a>
   else
     | <a href="/" title="hostname {{.Data.hostname}}">{{.Data.hostname}}</a>
-  
+
 mixin range_list(datak, ranger, kvalue, keyid)
-  | {{if .Data.#{datak}}}
-  | {{range #{ranger} := .Data.#{datak}.List}}
-  if JSX
-    | {this.List(Data).map(function(#{ranger}, i) { return (
-    | <div class="row" key={"#{keyid}-"+#{kvalue}}>
-  else
-    | <div class="row">
-  block
-  | </div>
-  if JSX
-    | );})}
-  | {{end}}
-  | {{end}}
+  +if(format('.Data.%s', datak))
+    +range(format('%s := .Data.%s.List', ranger, datak))
+      if JSX
+        | {this.List(Data).map(function(#{ranger}, i) { return (
+        | <div class="row" key={"#{keyid}-"+#{kvalue}}>
+      else
+        | <div class="row">
+      block
+      | </div>
+      if JSX
+        | );})}
 
 +define('define_la')
   +table('.Lan', '.Lad', 'Load avg')
@@ -325,31 +337,27 @@ html
             | {{template "define_hostname" .}}
           |  
           a(href=latestOstent) ostent
-      | {{if .OstentUpgrade}}
-      .top-bar-left: a(href=latestOstent) {{.OstentUpgrade}}
-      | {{end}}
-      .top-bar-right: h2.h5.margin-bottom-0: small
-        | {{.Distrib}} up 
-        span.updates.whitespace-pre(data-define='define_uptime')
-          | {{template "define_uptime" .}}
-        //- a.button.secondary.hollow.margin-0(href='https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}') ostent
+      div
+        +if('.OstentUpgrade'): .top-bar-left: a(href=latestOstent) {{.OstentUpgrade}}
+        .top-bar-right: h2.h5.margin-bottom-0: small
+          | {{.Distrib}} up 
+          span.updates.whitespace-pre(data-define='define_uptime')
+            | {{template "define_uptime" .}}
+          //- a.button.secondary.hollow.margin-0(href=latestOstent) ostent
 
-    | {{if ne (len .Exporting) 0}}
-    .row.expanded.hr-bottom
-      .column.large-11.small-offset-1
-        //- h5 Exporting to
-        .stripe
-          .row.thead
-            span.expand.col.small-2
-              | Exporting to&nbsp;
-              span.badge.secondary {{len .Exporting}}
-            span.expand.col.small-10 Endpoint
-          | {{range $expo := .Exporting}}
-          .row
-            span.expand.col.small-2 {{$expo.Name}}
-            span.expand.col.small-10 {{$expo.Endpoint}}
-          | {{end}}
-    | {{end}}
+    +if('ne (len .Exporting) 0')
+      .row.expanded.hr-bottom
+        .column.large-11.small-offset-1
+          //- h5 Exporting to
+          .stripe
+            .row.thead
+              span.expand.col.small-2
+                | Exporting to&nbsp;
+                span.badge.secondary {{len .Exporting}}
+              span.expand.col.small-10 Endpoint
+            +range('$expo := .Exporting'): .row
+              span.expand.col.small-2 {{$expo.Name}}
+              span.expand.col.small-10 {{$expo.Endpoint}}
 
     .updates(data-define='define_la')  {{template "define_la"  .}}
     .updates(data-define='define_mem') {{template "define_mem" .}}
