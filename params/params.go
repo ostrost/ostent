@@ -621,7 +621,15 @@ type InfluxEndpoint struct {
 }
 
 // String is a fmt.Stringer method.
-func (iend InfluxEndpoint) String() string { return iend.Endpoint.URL.String() }
+func (iend InfluxEndpoint) String() string {
+	urlcopy := iend.Endpoint.URL
+	qvalues := urlcopy.Query()
+	if v := qvalues.Get("password"); v != "" {
+		qvalues.Set("password", strings.Repeat(" ", len(v)))
+		urlcopy.RawQuery = qvalues.Encode()
+	}
+	return urlcopy.String()
+}
 
 func NewInfluxEndpoints(delay time.Duration, database string) InfluxEndpoints {
 	return InfluxEndpoints{Default: InfluxEndpoint{
