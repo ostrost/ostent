@@ -487,8 +487,8 @@ func (p *Params) Decode(req *http.Request) error {
 
 	dec := schema.NewDecoder()
 	dec.ZeroEmpty(true)
-	dec.IgnoreUnknownKeys(true)
 	dec.SetAliasTag("url") // single tag for decoding AND encoding
+	dec.IgnoreUnknownKeys(true)
 
 	p.ResetSchema()
 	if err := dec.Decode(&p.Schema, req.Form); err != nil {
@@ -556,14 +556,14 @@ func (ep Endpoint) String() string { return strings.TrimPrefix(ep.URL.String(), 
 // Endpoint has an URL and other fields decoded from it.
 type Endpoint struct {
 	// URL is the base.
-	URL url.URL `schema:"-"`
+	URL url.URL `url:"-"`
 
 	// ServerAddr is server part (host[:port]) of URL.
-	ServerAddr flags.Bind `schema:"-"`
+	ServerAddr flags.Bind `url:"-"`
 
 	// The schema fields:
 	// Delay is the delay param.
-	Delay Delay `schema:"delay,omitempty"`
+	Delay Delay `url:"delay,omitempty"`
 }
 
 // UseURL sets ep.ServerAddr based on u.
@@ -614,20 +614,26 @@ func (gends GraphiteEndpoints) Type() string { return "graphiteEndpoints" }
 // InfluxEndpoint holds influxdb params.
 type InfluxEndpoint struct {
 	Endpoint
-	Database string            `schema:"database,omitempty"`
-	Username string            `schema:"username,omitempty"`
-	Password string            `schema:"password,omitempty"`
-	Tags     map[string]string `schema:"-"`
+
+	// url tag not used til encoding with query.Values for normalization.
+	Database string // `url:"database,omitempty"`
+	Username string // `url:"username,omitempty"`
+	Password string // `url:"password,omitempty"`
+
+	// Tags filled in Set with all the input params except explicitly defined here.
+	Tags map[string]string `url:"-"`
 }
 
 // String is a fmt.Stringer method.
 func (iend InfluxEndpoint) String() string {
 	urlcopy := iend.Endpoint.URL
 	qvalues := urlcopy.Query()
-	if v := qvalues.Get("password"); v != "" {
-		qvalues.Set("password", strings.Repeat(" ", len(v)))
-		urlcopy.RawQuery = qvalues.Encode()
+	for k, v := range qvalues {
+		if strings.ToLower(k) == "password" && len(v) != 0 && v[0] != "" {
+			qvalues.Set(k, strings.Repeat(" ", len(v[0])))
+		}
 	}
+	urlcopy.RawQuery = qvalues.Encode()
 	return urlcopy.String()
 }
 
@@ -659,13 +665,17 @@ func (iends *InfluxEndpoints) Set(input string) error {
 		}
 
 		// now .Tags to be set if any
-		for _, k := range []string{
+		for _, except := range []string{
 			"delay",
 			"database",
 			"username",
 			"password",
 		} {
-			delete(uvalues, k)
+			for k := range uvalues {
+				if strings.ToLower(k) == except {
+					delete(uvalues, k)
+				}
+			}
 		}
 		if klen := len(uvalues); klen != 0 {
 			iends.Values[i].Tags = make(map[string]string, klen)
@@ -694,7 +704,24 @@ func (iends InfluxEndpoints) Type() string { return "infuxEndpoints" }
 // LibratoEndpoint holds librato params.
 type LibratoEndpoint struct {
 	Endpoint
-	Email, Token, Source string
+
+	// url tag not used til encoding with query.Values for normalization.
+	Email  string // `url:"email,omitempty"`
+	Token  string // `url:"token,omitempty"`
+	Source string // `url:"source,omitempty"`
+}
+
+// String is a flag.Value method.
+func (lend LibratoEndpoint) String() string {
+	urlcopy := lend.Endpoint.URL
+	qvalues := urlcopy.Query()
+	for k, v := range qvalues {
+		if strings.ToLower(k) == "token" && len(v) != 0 && v[0] != "" {
+			qvalues.Set(k, strings.Repeat(" ", len(v[0])))
+		}
+	}
+	urlcopy.RawQuery = qvalues.Encode()
+	return strings.TrimPrefix(urlcopy.String(), "http://")
 }
 
 func NewLibratoEndpoints(delay time.Duration, source string) LibratoEndpoints {
@@ -750,7 +777,9 @@ func (lends LibratoEndpoints) Type() string { return "libratoEndpoints" }
 type FetchKey struct {
 	Endpoint
 	Schema
-	Times int `schema:"times"`
+
+	// url tag not used til encoding with query.Values for normalization.
+	Times int // `url:"times"`
 }
 
 func NewFetchKeys(bind flags.Bind) *FetchKeys {
@@ -826,6 +855,7 @@ func Decode(base *url.URL, input string, ignoreUnknownKeys bool,
 	}
 	dec := schema.NewDecoder()
 	dec.ZeroEmpty(true)
+	dec.SetAliasTag("url") // single tag for decoding AND encoding
 	if ignoreUnknownKeys {
 		dec.IgnoreUnknownKeys(true)
 	}
