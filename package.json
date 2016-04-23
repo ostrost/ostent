@@ -23,16 +23,16 @@
     "gulp-jade": "^1.1.0",
     "gulp-rename": "^1.2.2",
     "gulp-spawn": "^0.3.0",
-    "node-sass": "^3.5.3",
+    "node-sass": "^3.6.0",
     "purifycss-webpack-plugin": "^2.0.3",
-    "react": "^0.14.8",
-    "react-sparklines": "^1.5.0",
+    "react": "^15.0.1",
+    "react-sparklines": "^1.5.2",
     "reconnectingwebsocket": "^1.0.0",
     "sass-loader": "^3.2.0",
     "style-loader": "^0.13.1",
     "transform-loader": "^0.2.3",
     "uglify-js": "^2.6.2",
     "webpack": "^1.13.0",
-    "webpack-sources": "^0.1.1"
+    "webpack-sources": "^0.1.2"
   }
 }
