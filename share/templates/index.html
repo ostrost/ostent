@@ -325,9 +325,9 @@
     <div class="top-bar">
       <div class="top-bar-title">
         <h2 class="h5 margin-bottom-0"><span data-define="define_hostname" class="updates">{{template "define_hostname" .}}</span> <a href="https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}">ostent</a></h2>
-      </div>
-      <div>{{if .OstentUpgrade}}
-        <div class="top-bar-left"><a href="https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}">{{.OstentUpgrade}}</a></div>{{end}}
+      </div>{{if .OstentUpgrade}}
+      <div class="top-bar-left"><a href="https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}">{{.OstentUpgrade}}</a></div>{{end}}
+      <div>
         <div class="top-bar-right">
           <h2 class="h5 margin-bottom-0"><small>{{.Distrib}} up <span data-define="define_uptime" class="updates whitespace-pre">{{template "define_uptime" .}}</span></small></h2>
         </div>
