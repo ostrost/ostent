@@ -170,7 +170,7 @@ before_deploy_fptar() {
         tar Jcf "$tarball" --numeric-owner $ownerargs .
     )
     rm -rf "$tmpsubdir"
-    # trap EXIT # clear the trap
+    # trap '' EXIT # clear the trap
 }
 
 prior_to_deploy() {
