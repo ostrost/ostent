@@ -1,6 +1,8 @@
-hash: 56f030c12e98ae74d4e6b3c33f14de4907a9dbbf291ba7b9ccd3789402f718b6
-updated: 2016-04-23T20:49:14.188970932Z
+hash: c767a8d04a731ecd14011e2ace8f7b4e2b0c257f7571bbda457e364bb12d6862
+updated: 2016-04-26T11:16:22.095337184Z
 imports:
+- name: github.com/blang/semver
+  version: aea32c919a18e5ef4537bbd283ff29594b1b0165
 - name: github.com/cpuguy83/go-md2man
   version: 2724a9c9051aa62e9cca11304e7dd518e9e41599
   subpackages:
@@ -31,11 +33,11 @@ imports:
 - name: github.com/gorilla/schema
   version: ddf016c1034e9cfd3eb5b276f626c8f04d765f6f
 - name: github.com/gorilla/websocket
-  version: 3d02343cd35473727f9962992854b1829d2ef87b
+  version: a724ba452858d5b6d30c22d2d13ae77e1ed67cad
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/influxdb
-  version: 40e234539bd04375f3170679073557b5273ed42c
+  version: 9a3a52a37c2c589f3b7d23e331ae885e5f0a6ca4
   subpackages:
   - client
   - models
@@ -64,7 +66,7 @@ imports:
 - name: github.com/russross/blackfriday
   version: 151efb040f183f3b968215a236c71a2614b62879
 - name: github.com/shirou/gopsutil
-  version: d8317f10e98f43c8493c3724fbab416a16700184
+  version: f8c7af556592720f3dfc7098ca55953261c0f02a
   subpackages:
   - host
   - net
@@ -78,7 +80,7 @@ imports:
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 - name: github.com/Sirupsen/logrus
-  version: 081307d9bc1364753142d5962fc1d795c742baaf
+  version: cd7d1bbe41066b6c1f19780f895901052150a575
 - name: github.com/spf13/cobra
   version: 4c05eb1145f16d0e6bb4a3e1b6d769f4713cb41f
   subpackages:

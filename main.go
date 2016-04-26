@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/facebookgo/grace/gracehttp"
@@ -17,6 +19,7 @@ import (
 	"github.com/justinas/alice"
 	"github.com/spf13/cobra"
 
+	"github.com/blang/semver" // alt semver: "github.com/Masterminds/semver"
 	"github.com/ostrost/ostent/cmd"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/share/assets"
@@ -37,12 +40,33 @@ func init() {
 	cmd.OstentCmd.Flags().BoolVar(&NoUpgradeCheck, "noupgradecheck", false,
 		"Off periodic upgrade check")
 	ostent.AddBackground(ostent.CollectLoop)
+
+	var err error
+	CurrentV, err = NewSemver(ostent.VERSION)
+	if err != nil { // CurrentV stay nil
+		log.Printf("Current semver parse error: %s\n", err)
+	}
+}
+
+// CurrentV is a *semver.Version from ostent.VERSION.
+var CurrentV *semver.Version
+
+func NewSemver(s string) (*semver.Version, error) {
+	v, err := semver.New(s)
+	if err == nil {
+		return v, nil
+	}
+	if err.Error() == "No Major.Minor.Patch elements found" &&
+		len(strings.SplitN(s, ".", 3)) == 2 {
+		return semver.New(s + ".0")
+	}
+	return nil, err
 }
 
 // Serve constructs a *http.Server to (gracefully) Serve. Routes are set here.
 func Serve(laddr string) error {
-	if !NoUpgradeCheck {
-		go UntilUpgradeCheck()
+	if !NoUpgradeCheck && CurrentV != nil {
+		go UntilUpgradeCheck(CurrentV)
 	}
 	ostent.RunBackground()
 	templates.InitTemplates()
@@ -111,8 +135,8 @@ func Serve(laddr string) error {
 }
 
 // UntilUpgradeCheck waits for an upgrade and returns.
-func UntilUpgradeCheck() {
-	if UpgradeCheck() {
+func UntilUpgradeCheck(cv *semver.Version) {
+	if UpgradeCheck(cv) {
 		return
 	}
 
@@ -123,32 +147,38 @@ func UntilUpgradeCheck() {
 	wait += time.Duration(random.Int63n(int64(wait))) // 1.5 +- 0.5 h
 	for {
 		time.Sleep(wait)
-		if UpgradeCheck() {
+		if UpgradeCheck(cv) {
 			break
 		}
 	}
 }
 
 // UpgradeCheck does upgrade check and returns true if an upgrade is available.
-func UpgradeCheck() bool {
+func UpgradeCheck(cv *semver.Version) bool {
 	newVersion, err := NewerVersion()
 	if err != nil {
 		log.Printf("Upgrade check error: %s\n", err)
 		return false
 	}
-	if newVersion == "" || newVersion[0] != 'v' {
-		log.Printf("Upgrade check error: version unexpected: %q\n", newVersion)
+	if newVersion == "" {
+		log.Printf("Upgrade check: version is empty\n")
 		return false
 	}
-	if newVersion == "v"+ostent.VERSION {
+	nv, err := NewSemver(newVersion)
+	if err != nil {
+		log.Printf("Semver parse error: %s\n", err)
 		return false
 	}
-	log.Printf("Upgrade check: %s release available\n", newVersion[1:])
-	ostent.OstentUpgrade.Set(newVersion[1:])
+	if !nv.GT(*cv) {
+		return false
+	}
+	log.Printf("Upgrade check: %s release available\n", newVersion)
+	ostent.OstentUpgrade.Set(newVersion)
 	return true
 }
 
-// NewerVersion checks GitHub for the latest ostent version in form of "v...".
+// NewerVersion checks GitHub for the latest ostent version.
+// Return is in form of "\d.*" (sans "^v").
 func NewerVersion() (string, error) {
 	// 1. https://github.com/ostrost/ostent/releases/latest // redirects, NOT followed
 	// 2. https://github.com/ostrost/ostent/releases/v...   // Redirect location
@@ -178,7 +208,11 @@ func NewerVersion() (string, error) {
 	if !ok {
 		return "", urlerr
 	}
-	return filepath.Base(redir.url.Path), nil
+	v := filepath.Base(redir.url.Path)
+	if len(v) == 0 || v[0] != 'v' {
+		return "", fmt.Errorf("Unexpected version from GitHub: %q", v)
+	}
+	return v[1:], nil
 }
 
 // Serve is PprofServe handler.

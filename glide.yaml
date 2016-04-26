@@ -6,7 +6,7 @@ ignore:
 - github.com/influxdata/influxdb/statik
 - github.com/rakyll/statik/example/statik
 import:
-- package: github.com/Sirupsen/logrus
+- package: github.com/blang/semver
 - package: github.com/cyberdelia/go-metrics-graphite
 - package: github.com/facebookgo/grace
   subpackages:
@@ -28,6 +28,7 @@ import:
 - package: github.com/ostrost/gosigar
 - package: github.com/rcrowley/go-metrics
 - package: github.com/rcrowley/goagain
+- package: github.com/Sirupsen/logrus
 - package: github.com/spf13/cobra
   subpackages:
   - .

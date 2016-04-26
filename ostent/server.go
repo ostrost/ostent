@@ -162,5 +162,6 @@ func (sa ServeAssets) Serve(w http.ResponseWriter, r *http.Request) {
 
 // VERSION of the latest known release.
 // Unused in non-bin mode.
-// Compared with in github.com/ostrost/ostent/ostent[+build bin]
+// Compared with in github.com/ostrost/ostent/main.go
+// MUST BE semver compatible: no two digits ("X.Y") allowed.
 const VERSION = "0.6"
