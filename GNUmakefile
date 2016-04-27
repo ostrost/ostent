@@ -2,6 +2,8 @@
 
 ifeq (Linux, $(shell uname))
 export CGO_ENABLED=0
+else
+export CGO_ENABLED=1
 endif
 
 PATH:=$(shell echo -n $$PATH:; echo $$GOPATH | sed 's,:\|$$,/bin:,g'):$$PWD/node_modules/.bin

@@ -7,7 +7,7 @@ if eq "${TRAVIS:-}" true ; then
     set +u # non-strict unset variables use in CI build script
 fi
 
-GO_BOOTSTRAPVER=go1.4.3
+GO_BOOTSTRAPVER=go1.5.4
 : "${DPL_DIR:=$(git rev-parse --show-toplevel)/deploy}"
 
 linux()   { eq "${1:-$(uname)}" Linux   ;}
@@ -102,15 +102,7 @@ before_deploy_4() {
     before_deploy_fptar "$uname"
     before_deploy_fptar "$uname" 32
 
-    local xargsha='xargs shasum -a 256'
-    if ! hash shasum 2>/dev/null ; then
-        xargsha='xargs sha256 -r' # freebsd
-    fi
-    (
-        cd "$DPL_DIR" || exit 1
-        find . -type f \! -name CHECKSUM.\* | sed 's,^\./,,' |
-        $xargsha >CHECKSUM."$uname".SHA256
-    )
+    (cd "$DPL_DIR" && shasum -a 256 ./*.tar.xz >CHECKSUM."$uname".SHA256)
 }
 
 before_deploy_fptar() {
