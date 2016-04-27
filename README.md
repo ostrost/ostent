@@ -10,7 +10,7 @@ Ostent collects system metrics to display and relay to
 - InfluxDB
 - Librato
 
-The interactive UI ([**demo**](http://demo.ostrost.com/)):
+The interactive UI ([**demo**](https://demo.ostrost.com/)):
 
 ![Screenshot](https://www.ostrost.com/ostent/screenshot.png)
 
