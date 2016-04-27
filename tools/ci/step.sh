@@ -102,14 +102,14 @@ before_deploy_4() {
     before_deploy_fptar "$uname"
     before_deploy_fptar "$uname" 32
 
-    local shacommand=shasum\ -a\ 256
+    local xargsha='xargs shasum -a 256'
     if ! hash shasum 2>/dev/null ; then
-        shacommand=sha256\ -r # freebsd
+        xargsha='xargs sha256 -r' # freebsd
     fi
     (
         cd "$DPL_DIR" || exit 1
         find . -type f \! -name CHECKSUM.\* | sed 's,^\./,,' |
-        xargs "$shacommand" >CHECKSUM."$uname".SHA256
+        $xargsha >CHECKSUM."$uname".SHA256
     )
 }
 
