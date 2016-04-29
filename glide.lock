@@ -1,5 +1,5 @@
-hash: c767a8d04a731ecd14011e2ace8f7b4e2b0c257f7571bbda457e364bb12d6862
-updated: 2016-04-26T11:16:22.095337184Z
+hash: 518368a60ea35c8d656a287a3732fbae2dd5b7e2a677192ffc7d7ce6095fc54c
+updated: 2016-04-29T16:04:21.485012032Z
 imports:
 - name: github.com/blang/semver
   version: aea32c919a18e5ef4537bbd283ff29594b1b0165
@@ -31,13 +31,13 @@ imports:
 - name: github.com/gorilla/context
   version: a8d44e7d8e4d532b6a27a02dd82abb31cc1b01bd
 - name: github.com/gorilla/schema
-  version: ddf016c1034e9cfd3eb5b276f626c8f04d765f6f
+  version: 08023a0215e7fc27a9aecd8b8c50913c40019478
 - name: github.com/gorilla/websocket
-  version: a724ba452858d5b6d30c22d2d13ae77e1ed67cad
+  version: 1f512fc3f05332ba7117626cdfb4e07474e58e60
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/influxdb
-  version: 9a3a52a37c2c589f3b7d23e331ae885e5f0a6ca4
+  version: 61cdecbe7cc08e9b5de246652958f4bec45fbdeb
   subpackages:
   - client
   - models
@@ -56,7 +56,7 @@ imports:
 - name: github.com/mihasya/go-metrics-librato
   version: 0ec8d5e8bf04a48fc5c96792bfd016b08afdabad
 - name: github.com/ostrost/gosigar
-  version: 2fa6f5483b949b13f56ee3d193d985653b749b74
+  version: 92f17d4363e7e615e6fdfc74320946d37b95a939
   subpackages:
   - sysfreebsd
 - name: github.com/rcrowley/go-metrics
@@ -66,7 +66,7 @@ imports:
 - name: github.com/russross/blackfriday
   version: 151efb040f183f3b968215a236c71a2614b62879
 - name: github.com/shirou/gopsutil
-  version: f8c7af556592720f3dfc7098ca55953261c0f02a
+  version: cf454998dc51c6528a28b2f429fead8f5e5f6462
   subpackages:
   - host
   - net
@@ -82,18 +82,18 @@ imports:
 - name: github.com/Sirupsen/logrus
   version: cd7d1bbe41066b6c1f19780f895901052150a575
 - name: github.com/spf13/cobra
-  version: 4c05eb1145f16d0e6bb4a3e1b6d769f4713cb41f
+  version: e14e47b7a916ed178f4559ebd7e625cf16410181
   subpackages:
   - .
   - doc
 - name: github.com/spf13/pflag
-  version: 8f6a28b0916586e7f22fe931ae2fcfc380b1c0e6
+  version: cb88ea77998c3f024757528e3305022ab50b43be
 - name: github.com/StackExchange/wmi
   version: f3e2bae1e0cb5aef83e319133eabfee30013a4a5
 - name: github.com/vrischmann/go-metrics-influxdb
   version: be4fc87f4ea19631fadd5f80e4fb8ea0353348a6
 - name: golang.org/x/sys
-  version: f64b50fbea64174967a8882830d621a18ee1548e
+  version: c8bc69bc2db9c57ccf979550bc69655df5039a8a
   subpackages:
   - unix
 devImports: []
