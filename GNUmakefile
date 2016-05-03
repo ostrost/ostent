@@ -10,14 +10,13 @@ PATH:=$(shell echo -n $$PATH:; echo $$GOPATH | sed 's,:\|$$,/bin:,g'):$$PWD/node
 
 # This repo clone location (final subdirectories) defines package name thus
 # it should be */github.com/[ostrost]/ostent to make package=github.com/[ostrost]/ostent
-package:=$(shell echo $$PWD | awk -F/ '{ OFS="/"; print $$(NF-2), $$(NF-1), $$NF }')
+# package:=$(shell ...)
+package?=$(shell echo $$PWD | awk -F/ '{ OFS="/"; print $$(NF-2), $$(NF-1), $$NF }')
+export package
 templateppackage=$(package)/cmd/ostent-templatepp
 
-testpackage?=./...
-singletestpackage=$(testpackage)
-ifeq ($(testpackage), ./...)
-singletestpackage=$(package)
-endif
+testpackages=./...
+testpackage=$(testpackages)
 
 shareprefix=share
 assets_devgo    = $(shareprefix)/assets/bindata.dev.go
@@ -80,10 +79,8 @@ check-update: ; npm outdated # upgrade with npm update --save-dev
 print-%: ; @echo $*=$($*)
 
 ifneq (init, $(MAKECMDGOALS))
-test:
-	go vet $(testpackage)
-	go test -v $(testpackage)
-covertest:           ; go test -coverprofile=coverage.out -covermode=count -v $(singletestpackage)
+test:      ; env testpackages=$(testpackages) ./tools/ci/step.sh maketest
+covertest: ; env testpackage=$(testpackage) ''./tools/ci/step.sh coevrtest
 coverfunc: covertest ; go tool  cover  -func=coverage.out
 coverhtml: covertest ; go tool  cover  -html=coverage.out
 

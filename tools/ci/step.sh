@@ -7,8 +7,13 @@ if eq "${TRAVIS:-}" true ; then
     set +u # non-strict unset variables use in CI build script
 fi
 
+if ! eq "${TRAVIS:-}" true ; then
+    set -x #while debugging
+fi
+
 GO_BOOTSTRAPVER=go1.5.4
-: "${DPL_DIR:=$(git rev-parse --show-toplevel)/deploy}"
+: "${GIT_TOPLEVEL:=$(git rev-parse --show-toplevel)}"
+: "${DPL_DIR:=$GIT_TOPLEVEL/deploy}"
 
 linux()   { eq "${1:-$(uname)}" Linux   ;}
 darwin()  { eq "${1:-$(uname)}" Darwin  ;}
@@ -24,6 +29,66 @@ Gmake() {
 
 # Following functions of this script is expected to be executed sequentially.
 # The split is so that each function must end with one timely action.
+
+: "${GO_VERSION:=1.6.2}"
+: "${GIMME_PATH:=~/bin/gimme}"
+: "${GIMME_ENV_PREFIX:=~/.gimme/envs}"
+: "${GIMME_VERSION_PREFIX:=~/.gimme/versions}"
+export GIMME_ENV_PREFIX GIMME_VERSION_PREFIX
+
+# before_script is executed by gitlab-runner
+before_script() {
+    # required in environ: $GO_VERSION
+
+    local d ownername reponame
+    # d=/home/gitlab-runner\
+    # /builds/${runner_id:-deadbeef}/${CI_PROJECT_ID:-0}/$ownername/$reponame
+    d=${CI_PROJECT_DIR:-${TRAVIS_REPO_SLUG:-$GIT_TOPLEVEL}}
+    ownername=$(basename "$(dirname "$d")")
+    reponame=$(basename "$d")
+    export GOPATH="$HOME/gopath-$ownername-$reponame"
+
+    "$GIMME_PATH" "$GO_VERSION" # may be timely
+    . "$GIMME_ENV_PREFIX/go$GO_VERSION.env"; go env >&2 #source here & verbose to &2
+    PATH=''/home/glide/bin:"$PATH"; export PATH
+    glide --version >&2
+
+    package=$(glide name) # $(awk '/^package: / { print $2 }' glide.yaml)
+    # if eq "$package" ''; then
+    #     # || git remote show -n origin|x
+    #     # || git config remote.origin.url
+    #     local h
+    #     h=$(git ls-remote --get-url)
+    #     h=${h#*://} # remove prefix
+    #     h=${h#*@}   # remove prefix
+    #     h=${h%:*}   # remove suffix
+    #     h=${h%%/*}  # remove suffix, greedily
+    #     package="$h/$ownername/$reponame"
+    # fi
+    export package # [exported] $package used with Gmake
+
+    local symlink readlink destlink
+    symlink="$GOPATH/src/$package"
+    readlink=$(readlink "$symlink") || true
+    destlink="$PWD/"
+    if ! eq "$readlink" "$destlink" ; then
+        { #debug
+            ls -ld "$symlink" || true
+            echo link read: "$readlink"
+            echo link should: "$destlink"
+        }
+        rm -rf "$symlink"
+        mkdir -p "$(dirname "$symlink")"
+        ln -s "$destlink" "$symlink"
+    fi
+
+    local import
+    import=$(cd "$symlink" && go list -f '{{.ImportPath}}')
+    if ! eq "$import" "$package" ; then
+        echo "Import path skewed: package=$package go:$import" >&2
+        exit 1
+    fi
+}
 
 install_1() {
     if hash gvm 2>/dev/null ; then
@@ -66,11 +131,72 @@ install_4() {
     mv ~/build ~/gopath/src/github.com # ~/build is cwd
     cd ~/gopath/src/github.com/"$REPOSLUG" # new cwd
 
-    export GOPATH=~/gopath:$GOPATH # NB
+    export GOPATH=~/gopath # NB
     export PATH=~/gopath/bin:$PATH
 
     go version
     go env
+}
+
+cibuild() {
+    Gmake init
+    Gmake --always-make all
+}
+citest() {
+    # citest is a target so the env/state is clean but prepped with before_script.
+    glide install # partial Gmake init
+    Gmake test
+}
+cideploy() { # Gmake deploy
+    # cideploy is a target so the env/state is clean but prepped with before_script.
+    glide install # partial Gmake init
+
+    # before_deploy_1
+    # before_deploy_2
+    # before_deploy_3
+    if ! darwin ; then
+        # bootstrapping must have been done
+        Gmake all32
+    fi
+    before_deploy_4
+
+    local tag=$(git describe --tags --abbrev=0) # literal tag, should be in "v..." form
+    local tagsansv=${tag##v}
+
+    local release=/home/release/bin/github-release
+    # "$release" release \
+    #            --tag "$tag" \
+    #            --name "ostent $tagsansv" \
+    #            --description ' ' \
+    #            --draft \
+    #            --pre-release
+
+    for filename in "$DPL_DIR"/* ; do
+        "$release" upload \
+                   --tag "$tag" \
+                   --name $(basename "$filename") \
+                   --file test-"$filename" # NB
+    done
+}
+
+maketest() {
+    local ps=${testpackages:-./...}
+    if (eq "$ps" '' || eq "$ps" ./...) && hash glide 2>/dev/null ; then
+        ps=$(glide novendor | grep -v '^\./builds/')
+    fi
+
+    echo "$ps" | xargs go vet
+
+    local import="${GOPATH%%:*}/src/$package" # go list -f {{.Dir}} "$package"
+    (cd "$import" && echo "$ps" | xargs go test -v)
+}
+
+covertest() {
+    local sp=${testpackage:-./...}
+    if eq "$sp" ./... ; then
+        sp=${package:-$sp}
+    fi
+    go test -coverprofile=coverage.out -covermode=count -v "$sp"
 }
 
 before_deploy_1() {
@@ -117,9 +243,9 @@ before_deploy_fptar() {
         arch=x86_64
     fi
 
-    local binary=~/gopath/bin/ostent
+    local binary="$GOPATH"/bin/ostent
     if eq "$arch" 32 ; then
-        binary=~/gopath/bin/ostent.32
+        binary="$GOPATH"/bin/ostent.32
         arch=i686
         if freebsd "$uname" ; then
             arch=i386

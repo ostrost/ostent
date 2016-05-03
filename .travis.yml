@@ -2,12 +2,9 @@ os: [linux, osx] # ostrost/ostent flagged multi-os
 language: c # Go runtime is managed with gvm
 sudo: false
 env:
-  matrix:
-  # - GVM_GO=tip
-    - GVM_GO=go1.6.2
   global:
     - DPL_DIR=~/deploy # ~/deploy is outside the clone dir
-    - DPL_GO=go1.6.2 # Deploy only when this matches GVM_GO in the matrix.
+    - GVM_GO=go1.6.2
 install:
   - source ./tools/ci/step.sh install_1
   - source ./tools/ci/step.sh install_2 $GVM_GO
@@ -25,7 +22,7 @@ before_deploy:
 deploy:
   file_glob: true
   file: $HOME/deploy/*
-  on: {tags: true, condition: $GVM_GO = $DPL_GO}
+  on: {tags: true}
   provider: releases
   prerelease: true
   api_key:
