@@ -148,22 +148,25 @@ citest() {
     Gmake test
 }
 cideploy() { # Gmake deploy
+    local uname=${1:-$(uname)}
+
     # cideploy is a target so the env/state is clean but prepped with before_script.
     glide install # partial Gmake init
 
     # before_deploy_1
     # before_deploy_2
     # before_deploy_3
-    if ! darwin ; then
+    if ! darwin "$uname" ; then
         # bootstrapping must have been done
         Gmake all32
     fi
-    before_deploy_4
+    before_deploy_4 "$uname"
 
-    local tag=$(git describe --tags --abbrev=0) # literal tag, should be in "v..." form
-    local tagsansv=${tag##v}
+    local tag
+    tag=$(git describe --tags --abbrev=0) # literal tag, should be in "v..." form
 
     local release=/home/release/bin/github-release
+    # local tagsansv=${tag##v}
     # "$release" release \
     #            --tag "$tag" \
     #            --name "ostent $tagsansv" \
@@ -174,7 +177,7 @@ cideploy() { # Gmake deploy
     for filename in "$DPL_DIR"/* ; do
         "$release" upload \
                    --tag "$tag" \
-                   --name $(basename "$filename") \
+                   --name "$(basename "$filename")" \
                    --file test-"$filename" # NB
     done
 }
@@ -224,6 +227,7 @@ before_deploy_3() {
 before_deploy_4() {
     local uname=${1:-$(uname)}
 
+    DPL_DIR=$(eval echo "$DPL_DIR")
     mkdir -p "$DPL_DIR"
     before_deploy_fptar "$uname"
     before_deploy_fptar "$uname" 32
