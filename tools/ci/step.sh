@@ -143,24 +143,20 @@ cibuild() {
     Gmake --always-make all
 }
 citest() {
-    # citest is a target so the env/state is clean but prepped with before_script.
+    # It's a runner target so the env/state is clean but prepped with before_script.
     glide install # partial Gmake init
     Gmake test
 }
 cideploy() { # Gmake deploy
-    local uname=${1:-$(uname)}
-
-    # cideploy is a target so the env/state is clean but prepped with before_script.
+    # It's a runner target so the env/state is clean but prepped with before_script.
     glide install # partial Gmake init
 
-    # before_deploy_1
-    # before_deploy_2
-    # before_deploy_3
-    if ! darwin "$uname" ; then
-        # bootstrapping must have been done
-        Gmake all32
-    fi
-    before_deploy_4 "$uname"
+    # For a runner, bootstrapping must have been done
+    # For Travis CI, before_deploy_{1,2} bootstrap the 32-bit cross building
+    # before_deploy_{1,2}
+
+    before_deploy_3
+    before_deploy_4
 
     local tag
     tag=$(git describe --tags --abbrev=0) # literal tag, should be in "v..." form
@@ -177,8 +173,9 @@ cideploy() { # Gmake deploy
     for filename in "$DPL_DIR"/* ; do
         "$release" upload \
                    --tag "$tag" \
-                   --name "$(basename "$filename")" \
-                   --file test-"$filename" # NB
+                   --file "$filename" \
+                   --name "TESTING-$(basename "$filename")"
+        # The "TESTING-" prefix until we done testing this.
     done
 }
 
@@ -205,10 +202,6 @@ covertest() {
 before_deploy_1() {
     if ! darwin ; then
         gvm install $GO_BOOTSTRAPVER --binary || true
-        (
-            gvm use $GO_BOOTSTRAPVER
-            gvm pkgset list
-        )
     fi
 }
 
