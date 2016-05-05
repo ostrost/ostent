@@ -1,5 +1,5 @@
 hash: 518368a60ea35c8d656a287a3732fbae2dd5b7e2a677192ffc7d7ce6095fc54c
-updated: 2016-04-29T16:04:21.485012032Z
+updated: 2016-05-05T18:16:44.840643735Z
 imports:
 - name: github.com/blang/semver
   version: aea32c919a18e5ef4537bbd283ff29594b1b0165
@@ -37,7 +37,7 @@ imports:
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/influxdb
-  version: 61cdecbe7cc08e9b5de246652958f4bec45fbdeb
+  version: 4c45f8ec321a35ac3151be6bd660ccb6914f14f7
   subpackages:
   - client
   - models
@@ -64,9 +64,9 @@ imports:
 - name: github.com/rcrowley/goagain
   version: f2f192b5d1a96e21dd4026ce67cda85e49659a48
 - name: github.com/russross/blackfriday
-  version: 151efb040f183f3b968215a236c71a2614b62879
+  version: 43529be3978d5a7b8e144f459e3f96491acc569c
 - name: github.com/shirou/gopsutil
-  version: cf454998dc51c6528a28b2f429fead8f5e5f6462
+  version: 7b991b8135166c7fc81b65665a2f35c7a1966cfc
   subpackages:
   - host
   - net
@@ -82,7 +82,7 @@ imports:
 - name: github.com/Sirupsen/logrus
   version: cd7d1bbe41066b6c1f19780f895901052150a575
 - name: github.com/spf13/cobra
-  version: e14e47b7a916ed178f4559ebd7e625cf16410181
+  version: 336d629de064dbb12166b46c06039dbcfb935de1
   subpackages:
   - .
   - doc
@@ -93,7 +93,7 @@ imports:
 - name: github.com/vrischmann/go-metrics-influxdb
   version: be4fc87f4ea19631fadd5f80e4fb8ea0353348a6
 - name: golang.org/x/sys
-  version: c8bc69bc2db9c57ccf979550bc69655df5039a8a
+  version: b776ec39b3e54652e09028aaaaac9757f4f8211a
   subpackages:
   - unix
 devImports: []
