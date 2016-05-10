@@ -16,7 +16,6 @@ import (
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/gorilla/context"
 	"github.com/julienschmidt/httprouter"
-	"github.com/justinas/alice"
 	"github.com/spf13/cobra"
 
 	"github.com/blang/semver" // alt semver: "github.com/Masterminds/semver"
@@ -90,43 +89,45 @@ func Serve(laddr string) error {
 		}
 	)
 
-	m, n, chain0 := ostent.NewRoute, ostent.NewHandle, alice.New()
+	type route struct{ path, methods string }
+	m := func(p string, ms string) *route { return &route{path: p, methods: ms} }
 
+	achainT := ostent.HandleThen(achain.Then)
+	paramsT := ostent.ParamsFunc(achain.Append(context.ClearHandler).Then)
 	var (
 		panicp = "/panic"
 		panics = func(http.ResponseWriter, *http.Request) { panic(panicp) }
-		panicr = m(panicp, r.GET, r.HEAD)
+		panicr = m(panicp, "GET HEAD")
+		pprofr = m("/debug/pprof/:name", "GET HEAD POST")
 	)
 
-	routes := map[*ostent.Route]ostent.Handle{
-		m("/index.sse", r.GET): n(chain0, serve1.IndexSSE),
-		m("/index.ws", r.GET):  n(chain0, serve2.IndexWS),
-		m("/", r.GET, r.HEAD):  n(achain, serve3.Index),
-		panicr:                 n(achain, panics),
+	routes := map[*route]httprouter.Handle{
+		m("/index.sse", "GET"): ostent.HandleFunc(serve1.IndexSSE),
+		m("/index.ws", "GET"):  ostent.HandleFunc(serve2.IndexWS),
+		m("/", "GET HEAD"):     achainT(serve3.Index),
+		panicr:                 achainT(panics),
+		pprofr:                 paramsT(pprofHandle),
 	}
 	for _, path := range assets.AssetNames() {
 		p := "/" + path
 		if path != "favicon.ico" && path != "robots.txt" {
 			p = "/" + ostent.VERSION + "/" + path // the Version prefix
 		}
-		rr := m(p, r.GET, r.HEAD)
-		rr.Asset = true
-		routes[rr] = n(achain.Append(context.ClearHandler,
-			ostent.AddAssetPathContextFunc(path)), serve4.Serve)
+		routes[m(p, "GET HEAD")] = ostent.HandleThen(achain.Append(
+			context.ClearHandler,
+			ostent.AddAssetPathContextFunc(path),
+		).Then)(serve4.Serve)
 	}
-	if taggedbin { // no panicp in bin
+	if taggedbin { // no panicr or pprofr in bin
 		delete(routes, panicr)
+		delete(routes, pprofr)
 	}
 
-	// now bind
-	ostent.ApplyRoutes(r, routes, nil)
-	if !taggedbin {
-		handle := PprofServe{achain}.Serve
-		r.GET("/debug/pprof/:name", handle)
-		r.HEAD("/debug/pprof/:name", handle)
-		r.POST("/debug/pprof/:name", handle)
+	for x, handle := range routes {
+		for _, m := range strings.Split(x.methods, " ") {
+			r.Handle(m, x.path, handle)
+		}
 	}
-
 	return gracehttp.Serve(&http.Server{
 		Addr:     laddr,
 		ErrorLog: errlog,
@@ -215,8 +216,12 @@ func NewerVersion() (string, error) {
 	return v[1:], nil
 }
 
-// Serve is PprofServe handler.
-func (ps PprofServe) Serve(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+func pprofHandle(w http.ResponseWriter, r *http.Request) {
+	params, err := ostent.ContextParams(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusServiceUnavailable)
+		return
+	}
 	name := params.ByName("name")
 	var handler func(http.ResponseWriter, *http.Request)
 	switch name {
@@ -235,8 +240,5 @@ func (ps PprofServe) Serve(w http.ResponseWriter, r *http.Request, params httpro
 		http.NotFound(w, r)
 		return
 	}
-	ps.Chain.ThenFunc(handler).ServeHTTP(w, r)
+	handler(w, r)
 }
-
-// PprofServe is pprof data serving handler.
-type PprofServe struct{ Chain alice.Chain }

@@ -18,6 +18,7 @@ type ContextID int
 const (
 	CPanicError ContextID = iota
 	CAssetPath
+	CRouterParams
 )
 
 func AddAssetPathContextFunc(path string) func(http.Handler) http.Handler {
@@ -29,59 +30,48 @@ func AddAssetPathContextFunc(path string) func(http.Handler) http.Handler {
 	}
 }
 
-type Handle struct {
-	Chain alice.Chain
-	HFunc http.HandlerFunc
-}
-
-func NewHandle(chain alice.Chain, hfunc http.HandlerFunc) Handle {
-	return Handle{Chain: chain, HFunc: hfunc}
-}
-
-type RouteInfo struct {
-	Path   string
-	Asset  bool
-	Post   bool // filled after ApplyRoutes
-	Params bool // filled after ApplyRoutes
-}
-
-type Route struct {
-	*RouteInfo
-	RouterFuncs *[]func(string, httprouter.Handle)
-}
-
-func NewRoute(path string, rfs ...func(string, httprouter.Handle)) *Route {
-	return &Route{&RouteInfo{Path: path}, &rfs}
-}
-
-func ApplyRoutes(r *httprouter.Router, routes map[*Route]Handle, conv func(http.Handler) httprouter.Handle) {
-	if conv == nil {
-		// blank converter: does nothing with httprouter.Params
-		conv = func(handler http.Handler) httprouter.Handle {
-			return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-				handler.ServeHTTP(w, r)
-			}
-		}
+func ContextParams(r *http.Request) (httprouter.Params, error) {
+	pinterface := context.Get(r, CRouterParams)
+	if pinterface == nil {
+		return httprouter.Params{}, fmt.Errorf("CRouterParams is missing in meta request")
 	}
-	// .RouterFuncs bind the path with the router
-	for route, handle := range routes {
-		for _, rfunc := range *route.RouterFuncs {
-			rfunc(route.Path, conv(handle.Chain.ThenFunc(handle.HFunc)))
-		}
+	params, ok := pinterface.(httprouter.Params)
+	if !ok {
+		return httprouter.Params{}, fmt.Errorf("CRouterParams not of type httprouter.Params")
 	}
-	// fill .RouteInfo.{Post,Params}
-	for route := range routes {
-		// tsr stands for trailing slash redirect
-		if handle, params, tsr := r.Lookup("POST", route.Path); handle != nil && !tsr {
-			route.Post = true
-			route.Params = params != nil
-		}
-		// there should not be a params-less POST and params-featured GET
-		if !route.Params {
-			if handle, params, tsr := r.Lookup("GET", route.Path); handle != nil && !tsr {
-				route.Params = params != nil
-			}
-		}
+	return params, nil
+}
+
+// HandleFunc wraps http.HandlerFunc(h) into handle.
+func HandleFunc(hf http.HandlerFunc) httprouter.Handle {
+	return handle(http.HandlerFunc(hf))
+}
+
+func handle(h http.Handler) httprouter.Handle {
+	// make a httprouter.Handle from h ignoring httprouter.Params.
+	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+		h.ServeHTTP(w, r)
+	}
+}
+func handleParamSetContext(h http.Handler) httprouter.Handle {
+	// make a httprouter.Handle from h addind httprouter.Params into context.
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		context.Set(r, CRouterParams, p)
+		h.ServeHTTP(w, r)
+	}
+}
+
+// HandleThen wraps then(hf) into handle.
+func HandleThen(then func(http.Handler) http.Handler) func(http.HandlerFunc) httprouter.Handle {
+	return func(hf http.HandlerFunc) httprouter.Handle {
+		return handle(then(hf))
+	}
+}
+
+// ParamsFunc wraps then(hf) into handle with context setting by handleParamSetContext.
+func ParamsFunc(then func(http.Handler) http.Handler) func(http.HandlerFunc) httprouter.Handle {
+	return func(hf http.HandlerFunc) httprouter.Handle {
+		return handleParamSetContext(then(hf))
 	}
 }
 
