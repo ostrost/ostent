@@ -15,6 +15,7 @@ import:
   subpackages:
   - query
 - package: github.com/gorilla/context
+- package: github.com/gorilla/handlers
 - package: github.com/gorilla/schema
 - package: github.com/gorilla/websocket
 - package: github.com/Jeffail/gabs

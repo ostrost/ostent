@@ -1,17 +1,12 @@
 package ostent
 
 import (
-	"bufio"
-	"bytes"
-	"fmt"
 	"log"
-	"net"
 	"net/http"
-	"strconv"
-	"sync"
-	"time"
+	"os"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/gorilla/handlers"
 )
 
 // NewErrorLog creates a logger and returns a func to defer.
@@ -23,6 +18,15 @@ func NewErrorLog() (*log.Logger, func() error) {
 	return log.New(wlog, "", 0), wlog.Close
 }
 
+func LogHandler(logRequests bool, h http.Handler) http.Handler {
+	if logRequests {
+		return handlers.CombinedLoggingHandler(os.Stderr, h)
+		// stderr was used in logrus logging
+	}
+	return h
+}
+
+/*
 type Access struct {
 	TaggedBin bool
 	Log       *logrus.Logger
@@ -56,16 +60,12 @@ func (a *Access) DoLog(start time.Time, req *http.Request, rsp *Responding) {
 	if err != nil {
 		host = req.RemoteAddr
 	}
-	uri := req.URL.Path // OR req.RequestURI ??
-	if req.Form != nil && len(req.Form) > 0 {
-		uri += "?" + req.Form.Encode()
-	}
 	// msg is unused by formatter
 	msg, entry := "msg", a.Log.WithFields(logrus.Fields{
 		// every value must be string for formatter
 		"host":      host,
 		"method":    req.Method,
-		"uri":       uri,
+		"uri":       req.RequestURI,
 		"proto":     req.Proto,
 		"code":      fmt.Sprintf("%d", rsp.Status),
 		"size":      fmt.Sprintf("%d", rsp.Size),
@@ -190,3 +190,4 @@ func (r *Responding) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	}
 	return nil, nil, fmt.Errorf("Responding's ResponseWriter doesn't support the Hijacker interface")
 }
+*/

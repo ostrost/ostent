@@ -75,18 +75,17 @@ func ParamsFunc(then func(http.Handler) http.Handler) func(http.HandlerFunc) htt
 	}
 }
 
-func NewServery(taggedbin bool) (*httprouter.Router, alice.Chain, *Access) {
-	access := NewAccess(taggedbin)
-	achain := alice.New(access.Constructor)
+func NewServery(taggedBin bool) (*httprouter.Router, alice.Chain) {
+	achain := alice.New()
 	r := httprouter.New()
 	r.NotFound = achain.ThenFunc(http.NotFound)
 	phandler := achain.Append(context.ClearHandler).
-		ThenFunc(NewServePanic(taggedbin).PanicHandler)
+		ThenFunc(NewServePanic(taggedBin).PanicHandler)
 	r.PanicHandler = func(w http.ResponseWriter, r *http.Request, recd interface{}) {
 		context.Set(r, CPanicError, recd)
 		phandler.ServeHTTP(w, r)
 	}
-	return r, achain, access
+	return r, achain
 }
 
 // TimeInfo is for AssetInfoFunc: a reduced os.FileInfo.

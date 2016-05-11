@@ -144,22 +144,7 @@ gulp.task('server build', function(cb) {
 
 gulp.task('server run', ['server build'], function() {
   var run = function() {
-    var args = [];
-    for (var i in argv) {
-      if (i == '_' || i == '$0') {
-        continue;
-      }
-      if (i.length == 1) {
-        args.push('-'+i);
-      } else if (i !== 'cmd') {
-        args.push('--'+i);
-      }
-      if (typeof(argv[i]) != 'boolean') {
-        args.push(argv[i]);
-      }
-    }
-    // console.log('gulp: run args:', args);
-    server = child.spawn(makep.package[0].replace(/.*\//, ''), args);
+    server = child.spawn(makep.package[0].replace(/.*\//, ''), process.argv.slice(3));
     dup('stdout', server);
     dup('stderr', server);
     // server.stdout.once('data', function() { reload.reload('/'); });

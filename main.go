@@ -32,10 +32,19 @@ func main() {
 	cmd.Execute()
 }
 
-// NoUpgradeCheck is the flag value.
-var NoUpgradeCheck bool
+var (
+	// NoUpgradeCheck is the flag value.
+	NoUpgradeCheck bool
+
+	logRequests bool // flag
+	taggedBin   bool // whether the build features bin tag
+)
 
 func init() {
+	taggedBin = assets.AssetAltModTimeFunc != nil
+
+	cmd.OstentCmd.Flags().BoolVar(&logRequests, "log-requests", !taggedBin,
+		"Whether to log webserver requests")
 	cmd.OstentCmd.Flags().BoolVar(&NoUpgradeCheck, "noupgradecheck", false,
 		"Off periodic upgrade check")
 	ostent.AddBackground(ostent.CollectLoop)
@@ -70,17 +79,16 @@ func Serve(laddr string) error {
 	ostent.RunBackground()
 	templates.InitTemplates()
 
-	taggedbin := assets.AssetAltModTimeFunc != nil
-	r, achain, access := ostent.NewServery(taggedbin)
+	r, achain := ostent.NewServery(taggedBin)
 
 	ostentLog := log.New(os.Stderr, "[ostent] ", 0)
 	errlog, errclose := ostent.NewErrorLog()
 	defer errclose()
 
 	var (
-		serve1 = ostent.NewServeSSE(access, cmd.DelayFlags)
+		serve1 = ostent.NewServeSSE(logRequests, cmd.DelayFlags)
 		serve2 = ostent.NewServeWS(serve1, errlog)
-		serve3 = ostent.NewServeIndex(serve2, taggedbin, templates.IndexTemplate)
+		serve3 = ostent.NewServeIndex(serve2, taggedBin, templates.IndexTemplate)
 		serve4 = ostent.ServeAssets{
 			Log:                 ostentLog,
 			AssetFunc:           assets.Asset,
@@ -89,49 +97,46 @@ func Serve(laddr string) error {
 		}
 	)
 
-	type route struct{ path, methods string }
-	m := func(p string, ms string) *route { return &route{path: p, methods: ms} }
-
 	achainT := ostent.HandleThen(achain.Then)
 	paramsT := ostent.ParamsFunc(achain.Append(context.ClearHandler).Then)
 	var (
 		panicp = "/panic"
 		panics = func(http.ResponseWriter, *http.Request) { panic(panicp) }
-		panicr = m(panicp, "GET HEAD")
-		pprofr = m("/debug/pprof/:name", "GET HEAD POST")
+		panicr = [2]string{panicp, "GET HEAD"}
+		pprofr = [2]string{"/debug/pprof/:name", "GET HEAD POST"}
 	)
 
-	routes := map[*route]httprouter.Handle{
-		m("/index.sse", "GET"): ostent.HandleFunc(serve1.IndexSSE),
-		m("/index.ws", "GET"):  ostent.HandleFunc(serve2.IndexWS),
-		m("/", "GET HEAD"):     achainT(serve3.Index),
-		panicr:                 achainT(panics),
-		pprofr:                 paramsT(pprofHandle),
+	routes := map[[2]string]httprouter.Handle{
+		{"/index.sse", "GET"}: ostent.HandleFunc(serve1.IndexSSE),
+		{"/index.ws", "GET"}:  ostent.HandleFunc(serve2.IndexWS),
+		{"/", "GET HEAD"}:     achainT(serve3.Index),
+		panicr:                achainT(panics),
+		pprofr:                paramsT(pprofHandle),
 	}
 	for _, path := range assets.AssetNames() {
 		p := "/" + path
 		if path != "favicon.ico" && path != "robots.txt" {
 			p = "/" + ostent.VERSION + "/" + path // the Version prefix
 		}
-		routes[m(p, "GET HEAD")] = ostent.HandleThen(achain.Append(
+		routes[[2]string{p, "GET HEAD"}] = ostent.HandleThen(achain.Append(
 			context.ClearHandler,
 			ostent.AddAssetPathContextFunc(path),
 		).Then)(serve4.Serve)
 	}
-	if taggedbin { // no panicr or pprofr in bin
+	if taggedBin { // no panicr or pprofr in bin
 		delete(routes, panicr)
 		delete(routes, pprofr)
 	}
 
 	for x, handle := range routes {
-		for _, m := range strings.Split(x.methods, " ") {
-			r.Handle(m, x.path, handle)
+		for _, m := range strings.Split(x[1], " ") {
+			r.Handle(m, x[0], handle)
 		}
 	}
 	return gracehttp.Serve(&http.Server{
 		Addr:     laddr,
 		ErrorLog: errlog,
-		Handler:  r,
+		Handler:  ostent.LogHandler(logRequests, r),
 	})
 }
 

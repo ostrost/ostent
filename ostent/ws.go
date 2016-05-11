@@ -70,10 +70,10 @@ type conn struct {
 	Conn     *websocket.Conn
 	ErrorLog *log.Logger
 
-	requestOrigin *http.Request
+	initialRequest *http.Request
+	logRequests    bool
 
-	para   *params.Params
-	access *Access
+	para *params.Params
 
 	mutex      sync.Mutex
 	writemutex sync.Mutex
@@ -234,16 +234,17 @@ func (c *conn) Process(rd *received) bool {
 		return true // continue receiving
 	} else if form != nil {
 		// compile an actual Request
-		r := *c.requestOrigin
-		r.Form = form
-		req = &r // http.Request{Form: form}
+		r := *c.initialRequest         // copy
+		form.Set("search", "true")     // identify this type of requests in logs
+		r.URL.RawQuery = form.Encode() // RawQuery as is does not go into logs though
+		r.RequestURI = r.URL.String()  // the RequestURI goes into logs
+		req = &r
 	}
 
 	sd := &served{conn: c}
 	serve := sd.ServeHTTP
-	if req != nil && c.access != nil { // the only case when req.Form is not nil
-		// a nil req is no-go for access anyway
-		serve = c.access.Constructor(sd).ServeHTTP
+	if req != nil { // new form, new request to be logged
+		serve = LogHandler(c.logRequests, sd).ServeHTTP
 	}
 	serve(nil, req)
 
@@ -280,16 +281,14 @@ func (sw ServeWS) IndexWS(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// req.Method == "GET" asserted by the mux
-	req.Form = nil // reset reused later .Form
 	c := &conn{
 		Conn:     wsconn,
 		ErrorLog: sw.ErrLog,
 
-		requestOrigin: req,
+		initialRequest: req,
+		logRequests:    sw.logRequests,
 
-		para:   params.NewParams(sw.DelayBounds),
-		access: sw.Access,
+		para: params.NewParams(sw.DelayBounds),
 	}
 	Connections.Reg(c)
 	defer func() {

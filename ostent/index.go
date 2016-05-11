@@ -654,7 +654,7 @@ func init() {
 var DISTRIB string
 
 type ServeSSE struct {
-	Access *Access
+	logRequests bool
 	flags.DelayBounds
 }
 
@@ -669,12 +669,12 @@ type ServeIndex struct {
 	IndexTemplate *templateutil.LazyTemplate
 }
 
-func NewServeSSE(access *Access, dbounds flags.DelayBounds) ServeSSE {
-	return ServeSSE{Access: access, DelayBounds: dbounds}
+func NewServeSSE(logRequests bool, dbounds flags.DelayBounds) ServeSSE {
+	return ServeSSE{logRequests: logRequests, DelayBounds: dbounds}
 }
 
-func NewServeWS(ss ServeSSE, errlog *log.Logger) ServeWS {
-	return ServeWS{ServeSSE: ss, ErrLog: errlog}
+func NewServeWS(se ServeSSE, errlog *log.Logger) ServeWS {
+	return ServeWS{ServeSSE: se, ErrLog: errlog}
 }
 
 func NewServeIndex(sw ServeWS, taggedbin bool, template *templateutil.LazyTemplate) ServeIndex {
@@ -757,10 +757,10 @@ func (sse *SSE) SetHeader(name, value string) bool {
 // IndexSSE serves SSE updates.
 func (ss ServeSSE) IndexSSE(w http.ResponseWriter, r *http.Request) {
 	sse := &SSE{Writer: w, Params: params.NewParams(ss.DelayBounds)}
-	if ss.Access.Constructor(sse).ServeHTTP(nil, r); sse.Errord { // the request logging
+	if LogHandler(ss.logRequests, sse).ServeHTTP(nil, r); sse.Errord {
 		return
 	}
-	for { // loop is access-log-free
+	for { // loop is log-requests-free
 		_, sleep := NextSecondDelta()
 		time.Sleep(sleep)
 		if sse.ServeHTTP(nil, r); sse.Errord {
