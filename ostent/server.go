@@ -9,23 +9,37 @@ import (
 	"time"
 
 	"github.com/gorilla/context"
+	"github.com/gorilla/handlers"
 	"github.com/julienschmidt/httprouter"
-	"github.com/justinas/alice"
 )
+
+func LogHandler(logRequests bool, h http.Handler) http.Handler {
+	if !logRequests {
+		return h
+	}
+	return handlers.CombinedLoggingHandler(os.Stderr, h)
+}
+
+func ServerHandler(logRequests bool, h http.Handler) http.Handler {
+	h = handlers.RecoveryHandler(
+		handlers.RecoveryLogger(log.New(os.Stderr, "[panic recovery] ", log.LstdFlags)),
+		handlers.PrintRecoveryStack(true),
+	)(h)
+	return LogHandler(logRequests, h)
+}
 
 type ContextID int
 
 const (
-	CPanicError ContextID = iota
-	CAssetPath
+	CAssetPath ContextID = iota
 	CRouterParams
 )
 
 func AddAssetPathContextFunc(path string) func(http.Handler) http.Handler {
-	return func(handler http.Handler) http.Handler { // Constructor
+	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			context.Set(r, CAssetPath, path)
-			handler.ServeHTTP(w, r)
+			h.ServeHTTP(w, r)
 		})
 	}
 }
@@ -75,19 +89,6 @@ func ParamsFunc(then func(http.Handler) http.Handler) func(http.HandlerFunc) htt
 	}
 }
 
-func NewServery(taggedBin bool) (*httprouter.Router, alice.Chain) {
-	achain := alice.New()
-	r := httprouter.New()
-	r.NotFound = achain.ThenFunc(http.NotFound)
-	phandler := achain.Append(context.ClearHandler).
-		ThenFunc(NewServePanic(taggedBin).PanicHandler)
-	r.PanicHandler = func(w http.ResponseWriter, r *http.Request, recd interface{}) {
-		context.Set(r, CPanicError, recd)
-		phandler.ServeHTTP(w, r)
-	}
-	return r, achain
-}
-
 // TimeInfo is for AssetInfoFunc: a reduced os.FileInfo.
 type TimeInfo interface {
 	ModTime() time.Time
@@ -106,42 +107,40 @@ func AssetReadFunc(readfunc func(string) ([]byte, error)) func(string) ([]byte, 
 }
 
 type ServeAssets struct {
-	Log                 *log.Logger
-	AssetFunc           func(string) ([]byte, error)
-	AssetInfoFunc       func(string) (os.FileInfo, error)
-	AssetAltModTimeFunc func() time.Time // may be nil
+	ReadFunc       func(string) ([]byte, error)
+	InfoFunc       func(string) (os.FileInfo, error)
+	AltModTimeFunc func() time.Time // may be nil
+}
+
+func (sa ServeAssets) error(w http.ResponseWriter, err error) {
+	logru.Println(err)
+	http.Error(w, err.Error(), http.StatusInternalServerError)
 }
 
 // Serve does http.ServeContent with asset content and info.
 func (sa ServeAssets) Serve(w http.ResponseWriter, r *http.Request) {
 	p := context.Get(r, CAssetPath)
 	if p == nil {
-		err := fmt.Errorf("ServeAssets.Serve must receive CAssetPath in context")
-		sa.Log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		sa.error(w, fmt.Errorf("ServeAssets.Serve must receive CAssetPath in context"))
 		return
 	}
 	path, ok := p.(string)
 	if !ok {
-		err := fmt.Errorf("ServeAssets.Serve received non-string CAssetPath in context")
-		sa.Log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		sa.error(w, fmt.Errorf("ServeAssets.Serve received non-string CAssetPath in context"))
 		return
 	}
-	text, err := sa.AssetFunc(path)
+	text, err := sa.ReadFunc(path)
 	if err != nil {
-		sa.Log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		sa.error(w, err)
 		return
 	}
 	var mt time.Time
-	if sa.AssetAltModTimeFunc != nil {
-		mt = sa.AssetAltModTimeFunc()
+	if sa.AltModTimeFunc != nil {
+		mt = sa.AltModTimeFunc()
 	} else {
-		info, err := sa.AssetInfoFunc(path)
+		info, err := sa.InfoFunc(path)
 		if err != nil {
-			sa.Log.Println(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			sa.error(w, err)
 			return
 		}
 		mt = info.ModTime()

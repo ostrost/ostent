@@ -4,7 +4,6 @@ package ostent
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os/user"
 	"sort"
@@ -12,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Sirupsen/logrus"
 	sigar "github.com/ostrost/gosigar"
 	metrics "github.com/rcrowley/go-metrics"
 
@@ -643,10 +643,16 @@ func statusLine(status int) string {
 	return fmt.Sprintf("%d %s", status, http.StatusText(status))
 }
 
+var logru *logrus.Logger
+
 func init() {
+	logru := logrus.New() // into os.Stderr
+	logru.Formatter = &logrus.TextFormatter{FullTimestamp: true}
+	// , TimestampFormat: "02/Jan/2006:15:04:05 -0700",
+
 	var err error
 	if DISTRIB, err = Distrib(); err != nil {
-		log.Printf("WARN: detecting distribution: %s\n", err)
+		logru.Warnf("detecting distribution: %s\n", err)
 	}
 }
 
@@ -660,7 +666,6 @@ type ServeSSE struct {
 
 type ServeWS struct {
 	ServeSSE
-	ErrLog *log.Logger
 }
 
 type ServeIndex struct {
@@ -673,9 +678,7 @@ func NewServeSSE(logRequests bool, dbounds flags.DelayBounds) ServeSSE {
 	return ServeSSE{logRequests: logRequests, DelayBounds: dbounds}
 }
 
-func NewServeWS(se ServeSSE, errlog *log.Logger) ServeWS {
-	return ServeWS{ServeSSE: se, ErrLog: errlog}
-}
+func NewServeWS(se ServeSSE) ServeWS { return ServeWS{ServeSSE: se} }
 
 func NewServeIndex(sw ServeWS, taggedbin bool, template *templateutil.LazyTemplate) ServeIndex {
 	return ServeIndex{ServeWS: sw, TaggedBin: taggedbin, IndexTemplate: template}

@@ -3,7 +3,6 @@ package ostent
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 	"net/url"
@@ -67,8 +66,7 @@ func CollectLoop() {
 }
 
 type conn struct {
-	Conn     *websocket.Conn
-	ErrorLog *log.Logger
+	Conn *websocket.Conn
 
 	initialRequest *http.Request
 	logRequests    bool
@@ -220,9 +218,9 @@ func (c *conn) Process(rd *received) bool {
 		c.mutex.Unlock()
 		if e := recover(); e != nil {
 			if _, ok := e.(websocket.CloseError); ok {
-				c.ErrorLog.Printf("close error (recovered panic; from Proccess) %+v\n", e)
+				logru.Errorf("websocket.CloseError (recovered panic; from Proccess) %+v\n", e)
 			} else {
-				c.ErrorLog.Printf("ws error (recovered panic; sent to client) %+v\n", e)
+				logru.Errorf("websocket error (recovered panic; sent to client) %+v\n", e)
 				c.writeError(fmt.Errorf("%+v", e))
 			}
 		}
@@ -282,8 +280,7 @@ func (sw ServeWS) IndexWS(w http.ResponseWriter, req *http.Request) {
 	}
 
 	c := &conn{
-		Conn:     wsconn,
-		ErrorLog: sw.ErrLog,
+		Conn: wsconn,
 
 		initialRequest: req,
 		logRequests:    sw.logRequests,
