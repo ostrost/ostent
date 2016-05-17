@@ -32,9 +32,9 @@ Gmake() {
 
 : "${GO_VERSION:=1.6.2}"
 : "${GIMME_VERSION:=0.2.4}"
-: "${GIMME_PATH:=~/bin/gimme}"
-: "${GIMME_ENV_PREFIX:=~/.gimme/envs}"
-: "${GIMME_VERSION_PREFIX:=~/.gimme/versions}"
+: "${GIMME_PATH:=$HOME/bin/gimme}"
+: "${GIMME_ENV_PREFIX:=$HOME/.gimme/envs}"
+: "${GIMME_VERSION_PREFIX:=$HOME/.gimme/versions}"
 export GIMME_ENV_PREFIX GIMME_VERSION_PREFIX
 
 # before_script is executed by gitlab-runner
