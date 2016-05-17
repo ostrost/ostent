@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func FormatUptime(seconds float64) string { // "seconds" is expected to be sigar.Uptime.Length
+func Uptime(seconds float64) string { // "seconds" is expected to be sigar.Uptime.Length
 	d := time.Duration(seconds) * time.Second
 	s := ""
 	if d > time.Duration(24)*time.Hour {
@@ -27,28 +27,8 @@ func FormatUptime(seconds float64) string { // "seconds" is expected to be sigar
 	return s
 }
 
-func HumanUnitless(n uint64) string {
-	sizes := []string{"", "k", "M", "G", "T", "P", "E"}
-	base := float64(1000)
-	if float64(n) < base { // small number
-		return fmt.Sprintf("%d%s", n, sizes[0])
-	}
-	e := math.Floor(math.Log(float64(n)) / math.Log(base))
-	pow := math.Pow(base, math.Floor(e))
-	val := float64(n) / pow
-	f := "%.0f"
-	if val < 10 {
-		f = "%.1f"
-	}
-	return fmt.Sprintf(f+"%s", val, sizes[int(e)])
-}
-
-func _formatOctet(n uint64, bits bool) (string, string, float64, float64) { // almost humanize.IBytes
-	sizes := []string{"B", "K", "M", "G", "T", "P", "E"}
-	if bits { // bits instead of bytes
-		sizes = []string{"b", "k", "m", "g", "t", "p", "e"}
-	}
-	base := float64(1024)
+func _formatOctet(sizes []string, baseInt int, n uint64) (string, string, float64, float64) { // almost humanize.IBytes
+	base := float64(baseInt)
 	if float64(n) < base { // small number
 		return fmt.Sprintf("%d%s", n, sizes[0]), "%.0f", float64(n), float64(1)
 	}
@@ -59,22 +39,32 @@ func _formatOctet(n uint64, bits bool) (string, string, float64, float64) { // a
 	if val < 10 {
 		f = "%.1f"
 	}
-	s := fmt.Sprintf(f+"%s", val, sizes[int(e)])
-	return s, f, val, pow
+	return fmt.Sprintf(f+"%s", val, sizes[int(e)]), f, val, pow
+}
+
+var (
+	unitlessSizes = []string{"", "k", "M", "G", "T", "P", "E"}
+	bytesSizes    = []string{"B", "K", "M", "G", "T", "P", "E"}
+	bitsSizes     = []string{"b", "k", "m", "g", "t", "p", "e"}
+)
+
+func HumanUnitless(n uint64) string {
+	s, _, _, _ := _formatOctet(unitlessSizes, 1000, n)
+	return s
 }
 
 func HumanBits(n uint64) string {
-	s, _, _, _ := _formatOctet(n, true)
+	s, _, _, _ := _formatOctet(bitsSizes, 1024, n)
 	return s
 }
 
 func HumanB(n uint64) string {
-	s, _, _, _ := _formatOctet(n, false)
+	s, _, _, _ := _formatOctet(bytesSizes, 1024, n)
 	return s
 }
 
 func HumanBandback(n uint64) (string, uint64, error) {
-	s, f, val, pow := _formatOctet(n, false)
+	s, f, val, pow := _formatOctet(bytesSizes, 1024, n)
 	d, err := strconv.ParseFloat(fmt.Sprintf(f, val), 64)
 	return s, uint64(d * pow), err
 }
@@ -84,14 +74,14 @@ func Percent(used, total uint64) uint {
 		return 0
 	}
 	used *= 100
-	pct := uint64(used / total)
+	pct := used / total
 	if pct != 99 && used%total != 0 {
 		pct++
 	}
 	return uint(pct)
 }
 
-func FormatTime(T uint64) string {
+func Time(T uint64) string {
 	// 	ms := T % 60
 	t := T / 1000
 	ss := t % 60

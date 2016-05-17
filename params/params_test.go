@@ -33,7 +33,7 @@ func TestLinks(t *testing.T) {
 		t.Fatal(err)
 	}
 	para := NewParams(DelayFlags)
-	if err := para.Decode(req); err != nil {
+	if err = para.Decode(req); err != nil {
 		t.Fatal(err)
 	}
 	if para.Dfk.Negative || para.Dfk.Absolute != 2 {

@@ -849,7 +849,7 @@ func Decode(base *url.URL, input string, ignoreUnknownKeys bool,
 	}
 	into.SetURL(*u)
 	if urluser != nil {
-		if err := urluser.UseURL(*u); err != nil {
+		if err = urluser.UseURL(*u); err != nil {
 			return nil, err
 		}
 	}

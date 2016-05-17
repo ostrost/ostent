@@ -185,7 +185,9 @@ func NewerVersion() (string, error) {
 	client := &http.Client{CheckRedirect: checkRedirect}
 	resp, err := client.Get("https://github.com/ostrost/ostent/releases/latest")
 	if err == nil {
-		resp.Body.Close()
+		if err := resp.Body.Close(); err != nil {
+			return "", err
+		}
 		return "", errors.New("The GitHub /latest page did not return a redirect.")
 	}
 	urlerr, ok := err.(*url.Error)
@@ -193,7 +195,9 @@ func NewerVersion() (string, error) {
 		return "", err
 	}
 	if resp != nil && resp.Body != nil {
-		resp.Body.Close()
+		if err := resp.Body.Close(); err != nil {
+			return "", err
+		}
 	}
 	redir, ok := urlerr.Err.(redirected)
 	if !ok {

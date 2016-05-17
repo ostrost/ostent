@@ -116,7 +116,7 @@ func Test_Percent(t *testing.T) {
 	}
 }
 
-func Test_FormatTime(t *testing.T) {
+func TestTime(t *testing.T) {
 	for _, v := range []struct {
 		a   int
 		cmp string
@@ -124,14 +124,14 @@ func Test_FormatTime(t *testing.T) {
 		{1000 * 62, "   01:02"},
 		{1000 * 60 * 60, "01:00:00"},
 	} {
-		cmp := FormatTime(uint64(v.a))
+		cmp := Time(uint64(v.a))
 		if cmp != v.cmp {
-			t.Errorf("Mismatch: FormatTime(%v) == %v != %v\n", v.a, v.cmp, cmp)
+			t.Errorf("Mismatch: Time(%v) == %v != %v\n", v.a, v.cmp, cmp)
 		}
 	}
 }
 
-func Test_FormatUptime(t *testing.T) {
+func TestUptime(t *testing.T) {
 	for _, v := range []struct {
 		a   float64
 		cmp string
@@ -141,9 +141,9 @@ func Test_FormatUptime(t *testing.T) {
 		{43920, "12:12"},
 		{33120, " 9:12"},
 	} {
-		cmp := FormatUptime(v.a)
+		cmp := Uptime(v.a)
 		if cmp != v.cmp {
-			t.Errorf("Mismatch: FormatUptime(%v) == %v != %v\n", v.a, v.cmp, cmp)
+			t.Errorf("Mismatch: Uptime(%v) == %v != %v\n", v.a, v.cmp, cmp)
 		}
 	}
 }
@@ -152,13 +152,13 @@ func sigarUptime(t *testing.B) *sigar.Uptime {
 	return &sigar.Uptime{Length: 1080720 + float64(t.N)}
 }
 
-func BenchmarkUptimeFormat(t *testing.B)      { sigarUptime(t).Format() }
-func BenchmarkFormatUptime(t *testing.B)      { FormatUptime((*sigarUptime(t)).Length) }
-func BenchmarkSigarUptimeFormat(t *testing.B) { sigarUptimeFormatString(*sigarUptime(t)) }
+func BenchmarkUptime(t *testing.B)             { Uptime((*sigarUptime(t)).Length) }
+func BenchmarkSigarUptimeFormat(t *testing.B)  { sigarUptime(t).Format() }
+func BenchmarkSigarUptimeFormat2(t *testing.B) { sigarUptimeFormatString2(*sigarUptime(t)) }
 
 // the way sigar.Uptime.Format implemented
 // sans bytes.Buffer, bufio.NewWriter stuff
-func sigarUptimeFormatString(u sigar.Uptime) string {
+func sigarUptimeFormatString2(u sigar.Uptime) string {
 	uptime := uint64(u.Length)
 	days := uptime / (60 * 60 * 24)
 

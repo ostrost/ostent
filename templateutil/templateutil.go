@@ -112,5 +112,7 @@ func (lt *LazyTemplate) Apply(w http.ResponseWriter, data interface{}) {
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Set("Content-Length", strconv.Itoa(buf.Len()))
-	io.Copy(w, buf) // or w.Write(buf.Bytes())
+	if _, err := io.Copy(w, buf); /* or w.Write(buf.Bytes()) */ err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }

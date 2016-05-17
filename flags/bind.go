@@ -17,12 +17,12 @@ func NewBind(defhost string, defport int) Bind {
 		DefaultHost: defhost,
 		DefaultPort: strconv.Itoa(defport),
 	}
-	b.Set("")
+	_ = b.Set("") // must not err
 	return b
 }
 
 // String is to conform interfaces (flag.Value, fmt.Stringer).
-func (b Bind) String() string { return string(b.Host + ":" + b.Port) }
+func (b Bind) String() string { return b.Host + ":" + b.Port }
 
 func (b *Bind) Set(input string) error {
 	if input == "" {

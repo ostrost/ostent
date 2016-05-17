@@ -62,7 +62,7 @@ func (pss PSSlice) Ordered(para *params.Params) *PS {
 			UID:      p.UID,
 			Priority: p.Priority,
 			Nice:     p.Nice,
-			Time:     format.FormatTime(p.Time),
+			Time:     format.Time(p.Time),
 			Name:     p.Name,
 			User:     username(uids, p.UID),
 			Size:     format.HumanB(p.Size),
@@ -637,10 +637,6 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 		}
 	}
 	return data, updated, nil
-}
-
-func statusLine(status int) string {
-	return fmt.Sprintf("%d %s", status, http.StatusText(status))
 }
 
 var logru *logrus.Logger

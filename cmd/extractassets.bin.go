@@ -74,14 +74,14 @@ func ExtractGzip(name string) error {
 	}
 	full := filepath.Join(ExtractDestDir, name)
 	if name == "favicon.ico" || name == "robots.txt" {
-		if err := ExtractSymlink(name, full); err != nil {
+		if err = ExtractSymlink(name, full); err != nil {
 			EaLog.Printf("ExtractSymlink: %s: %s", name, err)
 			return nil // continue
 		}
 	}
 
 	now := time.Now()
-	if err := os.Chtimes(full, now, now); err != nil {
+	if err = os.Chtimes(full, now, now); err != nil {
 		return err
 	}
 

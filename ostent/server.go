@@ -56,10 +56,8 @@ func ContextParams(r *http.Request) (httprouter.Params, error) {
 	return params, nil
 }
 
-// HandleFunc wraps http.HandlerFunc(h) into handle.
-func HandleFunc(hf http.HandlerFunc) httprouter.Handle {
-	return handle(http.HandlerFunc(hf))
-}
+// HandleFunc wraps hf into handle.
+func HandleFunc(hf http.HandlerFunc) httprouter.Handle { return handle(hf) }
 
 func handle(h http.Handler) httprouter.Handle {
 	// make a httprouter.Handle from h ignoring httprouter.Params.
@@ -77,9 +75,7 @@ func handleParamSetContext(h http.Handler) httprouter.Handle {
 
 // HandleThen wraps then(hf) into handle.
 func HandleThen(then func(http.Handler) http.Handler) func(http.HandlerFunc) httprouter.Handle {
-	return func(hf http.HandlerFunc) httprouter.Handle {
-		return handle(then(hf))
-	}
+	return func(hf http.HandlerFunc) httprouter.Handle { return handle(then(hf)) }
 }
 
 // ParamsFunc wraps then(hf) into handle with context setting by handleParamSetContext.

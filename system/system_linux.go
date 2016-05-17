@@ -36,11 +36,11 @@ type ExtraMetricCPU struct {
 	Stolen  *GaugePercent
 }
 
-func (emc *ExtraMetricCPU) UpdateCPU(sigarCpu sigar.Cpu, totalDelta int64) {
-	emc.Wait.UpdatePercent(totalDelta, sigarCpu.Wait)
-	emc.Irq.UpdatePercent(totalDelta, sigarCpu.Irq)
-	emc.SoftIrq.UpdatePercent(totalDelta, sigarCpu.SoftIrq)
-	emc.Stolen.UpdatePercent(totalDelta, sigarCpu.Stolen)
+func (emc *ExtraMetricCPU) UpdateCPU(sigarCPU sigar.Cpu, totalDelta int64) {
+	emc.Wait.UpdatePercent(totalDelta, sigarCPU.Wait)
+	emc.Irq.UpdatePercent(totalDelta, sigarCPU.Irq)
+	emc.SoftIrq.UpdatePercent(totalDelta, sigarCPU.SoftIrq)
+	emc.Stolen.UpdatePercent(totalDelta, sigarCPU.Stolen)
 }
 
 func NewMetricCPU(r metrics.Registry, name string) *MetricCPU {

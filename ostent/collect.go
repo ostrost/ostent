@@ -39,16 +39,16 @@ type Collector interface {
 
 // These are regexps to match network interfaces.
 var (
-	RXlo      = regexp.MustCompile("^lo\\d*$")
-	RXvbr     = regexp.MustCompile("^virbr\\d+$")
-	RXvbrnic  = regexp.MustCompile("^virbr\\d+-nic$")
-	RXbridge  = regexp.MustCompile("^bridge\\d+$")
-	RXvboxnet = regexp.MustCompile("^vboxnet\\d+$")
-	RXfw      = regexp.MustCompile("^fw\\d+$")
-	RXgif     = regexp.MustCompile("^gif\\d+$")
-	RXstf     = regexp.MustCompile("^stf\\d+$")
-	RXwdl     = regexp.MustCompile("^awdl\\d+$")
-	RXairdrop = regexp.MustCompile("^p2p\\d+$")
+	RXlo      = regexp.MustCompile(`^lo\d*$`)
+	RXvbr     = regexp.MustCompile(`^virbr\d+$`)
+	RXvbrnic  = regexp.MustCompile(`^virbr\d+-nic$`)
+	RXbridge  = regexp.MustCompile(`^bridge\d+$`)
+	RXvboxnet = regexp.MustCompile(`^vboxnet\d+$`)
+	RXfw      = regexp.MustCompile(`^fw\d+$`)
+	RXgif     = regexp.MustCompile(`^gif\d+$`)
+	RXstf     = regexp.MustCompile(`^stf\d+$`)
+	RXwdl     = regexp.MustCompile(`^awdl\d+$`)
+	RXairdrop = regexp.MustCompile(`^p2p\d+$`)
 )
 
 // HardwareIF returns false for known virtual/software network interface name.
@@ -97,16 +97,18 @@ func (m Machine) HN(sreg S2SRegistry, wg *sync.WaitGroup) {
 func (m Machine) UP(sreg S2SRegistry, wg *sync.WaitGroup) {
 	// m is unused
 	uptime := sigar.Uptime{}
-	uptime.Get()
-	sreg.SetString("uptime", format.FormatUptime(uptime.Length))
+	if err := uptime.Get(); err == nil {
+		sreg.SetString("uptime", format.Uptime(uptime.Length))
+	}
 	wg.Done()
 }
 
 func (m Machine) LA(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	la := sigar.LoadAverage{}
-	la.Get()
-	reg.UpdateLA(la)
+	if err := la.Get(); err == nil {
+		reg.UpdateLA(la)
+	}
 	wg.Done()
 }
 
@@ -144,15 +146,19 @@ func (m Machine) RAM(reg Registry, wg *sync.WaitGroup) {
 func (m Machine) Swap(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	got := sigar.Swap{}
-	got.Get()
-	reg.UpdateSwap(got)
+	if err := got.Get(); err == nil {
+		reg.UpdateSwap(got)
+	}
 	wg.Done()
 }
 
 func (m Machine) DF(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	fls := sigar.FileSystemList{}
-	fls.Get()
+	if err := fls.Get(); err != nil {
+		wg.Done()
+		return
+	}
 
 	// devnames := map[string]bool{}
 	dirnames := map[string]bool{}
@@ -160,7 +166,9 @@ func (m Machine) DF(reg Registry, wg *sync.WaitGroup) {
 	for _, fs := range fls.List {
 
 		usage := sigar.FileSystemUsage{}
-		usage.Get(fs.DirName)
+		if err := usage.Get(fs.DirName); err != nil {
+			continue
+		}
 
 		if !strings.HasPrefix(fs.DevName, "/") {
 			continue
@@ -181,7 +189,10 @@ func (m Machine) PS(CH chan<- PSSlice) {
 	// m is unused
 	var pss PSSlice
 	pls := sigar.ProcList{}
-	pls.Get()
+	if err := pls.Get(); err != nil {
+		CH <- nil
+		return
+	}
 
 	for _, pid := range pls.List {
 
@@ -219,8 +230,10 @@ func (m Machine) PS(CH chan<- PSSlice) {
 func (m Machine) CPU(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	all, list := sigar.Cpu{}, sigar.CpuList{}
-	all.Get()
-	list.Get()
-	reg.UpdateCPU(all, list.List)
+	err1 := all.Get()
+	err2 := list.Get()
+	if err1 == nil && err2 == nil {
+		reg.UpdateCPU(all, list.List)
+	}
 	wg.Done()
 }

@@ -246,10 +246,7 @@ func (c *conn) Process(rd *received) bool {
 	}
 	serve(nil, req)
 
-	if sd.WriteFail {
-		return false // write failure, stop receiving
-	}
-	return true
+	return !sd.WriteFail // false on write failure, stop receiving
 }
 
 func (rd *received) form() (url.Values, error) {
@@ -329,7 +326,7 @@ func FetchOne(k params.FetchKey, keys []string) error {
 	}
 	host, port, err := net.SplitHostPort(k.URL.Host)
 	if err != nil {
-		if !strings.HasPrefix(err.Error(), "missing port in address ") {
+		if !strings.HasPrefix(err.Error(), "missing port in address") {
 			return err
 		}
 		if host == "" {
@@ -365,29 +362,36 @@ func FetchOne(k params.FetchKey, keys []string) error {
 
 	// k.Times == -1 means non-stop iterations
 	for i := 0; k.Times <= 0 || i < k.Times; i++ {
-		_, message, err := wsconn.ReadMessage()
-		if err != nil {
+		if err := fetchOnce(wsconn, keys); err != nil {
 			return err
-		}
-		jdata, err := gabs.ParseJSON(message)
-		if err != nil {
-			return err
-		}
-		one, many := FetchExtract(jdata, keys)
-		jdata.Delete("params")
-		if one != nil {
-			fmt.Println(one.StringIndent("", "  "))
-		} else {
-			text, err := json.MarshalIndent(many, "", "  ")
-			if err != nil {
-				return err
-			}
-			fmt.Printf("%s\n", text)
 		}
 		if k.Times == 0 {
 			// 0 is the default value, which encodes 1 time pass
 			break
 		}
+	}
+	return nil
+}
+
+func fetchOnce(wsconn *websocket.Conn, keys []string) error {
+	_, message, err := wsconn.ReadMessage()
+	if err != nil {
+		return err
+	}
+	jdata, err := gabs.ParseJSON(message)
+	if err != nil {
+		return err
+	}
+	one, many := FetchExtract(jdata, keys)
+	_ = jdata.Delete("params") // err is ignored (missing  "params" is the only error)
+	if one != nil {
+		fmt.Println(one.StringIndent("", "  "))
+	} else {
+		text, err := json.MarshalIndent(many, "", "  ")
+		if err != nil {
+			return err
+		}
+		fmt.Printf("%s\n", text)
 	}
 	return nil
 }

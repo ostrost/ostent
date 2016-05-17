@@ -53,7 +53,8 @@ func TestDelaySet(t *testing.T) {
 		}
 		d := Delay{Duration: td}
 		if v.above != "" {
-			if ad, err := time.ParseDuration(v.above); err != nil {
+			var ad time.Duration
+			if ad, err = time.ParseDuration(v.above); err != nil {
 				t.Error(err)
 			} else {
 				d.Above = &ad
