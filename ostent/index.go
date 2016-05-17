@@ -646,7 +646,7 @@ func statusLine(status int) string {
 var logru *logrus.Logger
 
 func init() {
-	logru := logrus.New() // into os.Stderr
+	logru = logrus.New() // into os.Stderr
 	logru.Formatter = &logrus.TextFormatter{FullTimestamp: true}
 	// , TimestampFormat: "02/Jan/2006:15:04:05 -0700",
 
