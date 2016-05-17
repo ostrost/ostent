@@ -4,12 +4,10 @@ sudo: false
 env:
   global:
     - DPL_DIR=~/deploy # ~/deploy is outside the clone dir
-    - GVM_GO=go1.6.2
+    - GO_VERSION: 1.6.2
 install:
   - source ./tools/ci/step.sh install_1
-  - source ./tools/ci/step.sh install_2 $GVM_GO
-  - source ./tools/ci/step.sh install_3 $GVM_GO
-  - source ./tools/ci/step.sh install_4 $GVM_GO $TRAVIS_REPO_SLUG
+  - source ./tools/ci/step.sh install_2 $TRAVIS_REPO_SLUG
   - source ./tools/ci/step.sh Gmake init
 script:
   - source ./tools/ci/step.sh Gmake --always-make test all
@@ -18,7 +16,7 @@ before_deploy:
   - source ./tools/ci/step.sh before_deploy_2
   - source ./tools/ci/step.sh before_deploy_3
   - source ./tools/ci/step.sh before_deploy_4
-  - source ./tools/ci/step.sh prior_to_deploy # must be last one
+  - set +e # off fatal errors for travis-dpl
 deploy:
   file_glob: true
   file: $HOME/deploy/*

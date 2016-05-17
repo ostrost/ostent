@@ -31,6 +31,7 @@ Gmake() {
 # The split is so that each function must end with one timely action.
 
 : "${GO_VERSION:=1.6.2}"
+: "${GIMME_VERSION:=0.2.4}"
 : "${GIMME_PATH:=~/bin/gimme}"
 : "${GIMME_ENV_PREFIX:=~/.gimme/envs}"
 : "${GIMME_VERSION_PREFIX:=~/.gimme/versions}"
@@ -50,6 +51,7 @@ before_script() {
 
     "$GIMME_PATH" "$GO_VERSION" # may be timely
     . "$GIMME_ENV_PREFIX/go$GO_VERSION.env"; go env >&2 #source here & verbose to &2
+
     PATH=''/home/glide/bin:"$PATH"; export PATH
     glide --version >&2
 
@@ -91,41 +93,17 @@ before_script() {
 }
 
 install_1() {
-    if hash gvm 2>/dev/null ; then
-        gvm get
-    else
-        curl -sSL https://github.com/moovweb/gvm/raw/master/binscripts/gvm-installer |
-        bash
-    fi
+    # unconditionally install gimme(1); travis env most definitely does not have it
+    mkdir -p "$(dirname "$GIMME_PATH")"
+    curl -sSL -o "$GIMME_PATH" https://github.com/travis-ci/gimme/raw/v"$GIMME_VERSION"/gimme # timely
+    chmod +x "$GIMME_PATH"
 }
 
 install_2() {
-    local GOVER="$1" # go version in form of "goX.Y[.Z]"
+    local REPOSLUG="$1"
 
-    if darwin && ! eq "$GOVER" tip ; then
-        local GO_BINARY_PATH GO_BINARY_URL
-        GO_BINARY_PATH=~/.gvm/archive///////"$GOVER".darwin-amd64-osx10.8.tar.gz
-        GO_BINARY_URL=https://golang.org/dl/"$GOVER".darwin-amd64.tar.gz
-        test -f "$GO_BINARY_PATH" ||
-        curl --silent --show-error --fail --location --output "$GO_BINARY_PATH" "$GO_BINARY_URL"
-    fi
-}
-
-install_3() {
-    local GOVER="$1" # go version in form of "goX.Y[.Z]"
-
-    . ~/.gvm/scripts/gvm #source here
-    gvm version
-    gvm install "$GOVER" --binary # || gvm install "$GOVER"
-}
-
-# Nothing timely here, but it's the last install step.
-install_4() {
-    local GOVER="$1" # go version in form of "goX.Y[.Z]"
-    local REPOSLUG="$2" # The "owner/repo" form.
-
-    gvm use "$GOVER"
-    gvm list
+    "$GIMME_PATH" "$GO_VERSION" # timely
+    . "$GIMME_ENV_PREFIX/go$GO_VERSION.env"; go env >&2 #source here & verbose to &2
 
     mkdir -p ~/gopath/src
     mv ~/build ~/gopath/src/github.com # ~/build is cwd
@@ -153,7 +131,6 @@ cideploy() { # Gmake deploy
 
     # For a runner, bootstrapping must have been done
     # For Travis CI, before_deploy_{1,2} bootstrap the 32-bit cross building
-    # before_deploy_{1,2}
 
     before_deploy_3
     before_deploy_4
@@ -201,13 +178,14 @@ covertest() {
 
 before_deploy_1() {
     if ! darwin ; then
-        gvm install $GO_BOOTSTRAPVER --binary || true
+        "$GIMME_PATH" "$GO_BOOTSTRAPVER" >/dev/null # timely
     fi
 }
 
 before_deploy_2() {
     if ! darwin ; then
-        Gmake boot32 GOROOT_BOOTSTRAP=~/.gvm/gos/$GO_BOOTSTRAPVER
+        GOROOT_BOOTSTRAP="$(ls -d "$GIMME_VERSION_PREFIX/go$GO_BOOTSTRAPVER".*.amd64)" \
+        Gmake boot32
     fi
 }
 
@@ -218,14 +196,14 @@ before_deploy_3() {
 }
 
 before_deploy_4() {
-    local uname=${1:-$(uname)}
-
     DPL_DIR=$(eval echo "$DPL_DIR")
     mkdir -p "$DPL_DIR"
-    before_deploy_fptar "$uname"
-    before_deploy_fptar "$uname" 32
 
-    (cd "$DPL_DIR" && shasum -a 256 ./*.tar.xz >CHECKSUM."$uname".SHA256)
+    local u; u=$(uname)
+    before_deploy_fptar "$u"
+    before_deploy_fptar "$u" 32
+
+    (cd "$DPL_DIR" && shasum -a 256 ./*.tar.xz >CHECKSUM."$u".SHA256)
 }
 
 before_deploy_fptar() {
@@ -286,10 +264,6 @@ before_deploy_fptar() {
     )
     rm -rf "$tmpsubdir"
     # trap '' EXIT # clear the trap
-}
-
-prior_to_deploy() {
-    set +e # off fatal errors for travis-dpl
 }
 
 "$@" # The last line to dispatch. $1 is ought to be a func name.
