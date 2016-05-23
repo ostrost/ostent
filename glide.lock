@@ -1,5 +1,5 @@
-hash: 2c04550df9f8dce98eb1e9de5acf5687978a7cccf0875fe6e72acc1076b2b0f2
-updated: 2016-05-11T09:24:13.927038494Z
+hash: f1c41e2fda6a66d7c57abe4d682c8a7fc2b0258f89ba5ea96a202c6987bf019f
+updated: 2016-05-23T13:02:14.224851491Z
 imports:
 - name: github.com/blang/semver
   version: aea32c919a18e5ef4537bbd283ff29594b1b0165
@@ -39,7 +39,7 @@ imports:
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/influxdb
-  version: c32906a3665c8ca0982c7c10519a0fb356abd2ad
+  version: 39657cd09ffacadea2b880e824e39c7c6cbe3850
   subpackages:
   - client
   - models
@@ -54,7 +54,7 @@ imports:
 - name: github.com/julienschmidt/httprouter
   version: 77366a47451a56bb3ba682481eed85b64fea14e8
 - name: github.com/justinas/alice
-  version: 671ef6b31288a51b5517ba2f1349e781b91a4da3
+  version: 052b8b6c18edb9db317af86806d8e00ebaa94160
 - name: github.com/mihasya/go-metrics-librato
   version: 0ec8d5e8bf04a48fc5c96792bfd016b08afdabad
 - name: github.com/ostrost/gosigar
@@ -68,7 +68,7 @@ imports:
 - name: github.com/russross/blackfriday
   version: 2004188462c3946efefbdcd91aa83e49b4175bfb
 - name: github.com/shirou/gopsutil
-  version: bae75faa5ad1212d3e80f11f5e9cd147c6be9198
+  version: 83c6e72cbdef6e8ada934549abf700ff0ba96776
   subpackages:
   - host
   - net
@@ -84,7 +84,7 @@ imports:
 - name: github.com/Sirupsen/logrus
   version: cd7d1bbe41066b6c1f19780f895901052150a575
 - name: github.com/spf13/cobra
-  version: 0f866a6211e33cde2091d9290c08f6afd6c9ebbc
+  version: f368244301305f414206f889b1735a54cfc8bde8
   subpackages:
   - .
   - doc
@@ -95,7 +95,7 @@ imports:
 - name: github.com/vrischmann/go-metrics-influxdb
   version: be4fc87f4ea19631fadd5f80e4fb8ea0353348a6
 - name: golang.org/x/sys
-  version: b776ec39b3e54652e09028aaaaac9757f4f8211a
+  version: d4feaf1a7e61e1d9e79e6c4e76c6349e9cab0a03
   subpackages:
   - unix
 devImports: []
