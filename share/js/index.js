@@ -1,7 +1,7 @@
 var React       = require('react'),
     ReactDOM    = require('react-dom'),
     ReconnectWS = require('reconnectingwebsocket'),
-    jsdefines   = require('./jsdefines.jsx');
+    jsdefines   = require('./jsxdefines.js');
 
 /*
 function neweventsource(onmessage) {

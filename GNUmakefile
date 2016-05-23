@@ -99,7 +99,7 @@ dev: \
 share/assets/css/index.css \
 share/assets/js/src/bundle.js \
 share/templates/index.html \
-share/js/jsdefines.jsx
+share/js/jsxdefines.js
 
 share/assets/css/index.css \
 share/assets/js/src/bundle.js \
@@ -110,16 +110,16 @@ share/assets/js/min/bundle.min.js \
 	type gulp >/dev/null || exit 0; gulp webpack --silent --output=$@ --input=./$<
 share/templates/index.html:
 	type gulp >/dev/null || exit 0; gulp jade    --silent --output=$@ --input=./$<
-share/js/jsdefines.jsx:
+share/js/jsxdefines.js:
 	type gulp >/dev/null || exit 0; gulp jade    --silent --output=$@ --input=./$< --template $(word 2,$^) --JSX
 
 share/assets/css/index.css:        share/style/index.scss
 share/assets/css/index.css:        share/templates/index.html
-share/assets/css/index.css:        share/js/index.js share/js/jsdefines.jsx
-share/assets/js/src/bundle.js:     share/js/index.js share/js/jsdefines.jsx
-share/assets/js/min/bundle.min.js: share/js/index.js share/js/jsdefines.jsx
+share/assets/css/index.css:        share/js/index.js share/js/jsxdefines.js
+share/assets/js/src/bundle.js:     share/js/index.js share/js/jsxdefines.js
+share/assets/js/min/bundle.min.js: share/js/index.js share/js/jsxdefines.js
 share/templates/index.html:        share/templatesorigin/index.jade
-share/js/jsdefines.jsx:            share/templatesorigin/index.jade share/templatesorigin/jsdefines.jstmpl $(templatepp)
+share/js/jsxdefines.js:            share/templatesorigin/index.jade share/templatesorigin/jsdefines.jstmpl $(templatepp)
 
 $(templates_bingo) $(templates_devgo): $(shell find share/templates/ -type f \! -name \*.go)
 
