@@ -7,36 +7,36 @@ import (
 )
 
 type Bind struct {
-	DefaultHost string
-	DefaultPort string
-	Host, Port  string
+	defaultHost string
+	defaultPort string
+	Host, port  string
 }
 
 func NewBind(defhost string, defport int) Bind {
 	b := Bind{
-		DefaultHost: defhost,
-		DefaultPort: strconv.Itoa(defport),
+		defaultHost: defhost,
+		defaultPort: strconv.Itoa(defport),
 	}
 	_ = b.Set("") // must not err
 	return b
 }
 
 // String is to conform interfaces (flag.Value, fmt.Stringer).
-func (b Bind) String() string { return b.Host + ":" + b.Port }
+func (b Bind) String() string { return b.Host + ":" + b.port }
 
 func (b *Bind) Set(input string) error {
 	if input == "" {
-		input = b.DefaultHost + ":" + b.DefaultPort
+		input = b.defaultHost + ":" + b.defaultPort
 	}
 	var err error
-	b.Host, b.Port, err = net.SplitHostPort(input)
+	b.Host, b.port, err = net.SplitHostPort(input)
 	if err != nil {
 		if !strings.HasPrefix(err.Error(), "missing port in address") {
 			return err
 		}
-		b.Host, b.Port = input, b.DefaultPort
+		b.Host, b.port = input, b.defaultPort
 	}
-	if _, err = net.LookupPort("tcp", b.Port); err != nil {
+	if _, err = net.LookupPort("tcp", b.port); err != nil {
 		return err
 	}
 	return nil

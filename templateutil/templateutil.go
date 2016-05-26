@@ -1,4 +1,4 @@
-// Package templateutil features LazyTemplate and TemplateWriter.
+// Package templateutil features LazyTemplate.
 package templateutil
 
 import (
@@ -13,91 +13,87 @@ import (
 )
 
 // NewLT constructs LazyTemplate.
-func NewLT(readfunc ReadFunc, infofunc InfoFunc, filename string, funcmap template.FuncMap) *LazyTemplate {
+func NewLT(readfunc readFunc, infofunc infoFunc, filename string, funcmap template.FuncMap) *LazyTemplate {
 	return &LazyTemplate{
-		ReadFunc: readfunc,
-		InfoFunc: infofunc,
-		Filename: filename,
-		Funcmap:  funcmap,
+		readFunc: readfunc,
+		infoFunc: infofunc,
+		filename: filename,
+		funcmap:  funcmap,
 	}
 }
 
-// ReadFunc type is shortcut for Asset-type func.
-type ReadFunc func(string) ([]byte, error)
+type readFunc func(string) ([]byte, error)      // shortcut for Asset-type func
+type infoFunc func(string) (os.FileInfo, error) // shortcut for AssetInfo-type func
 
-// InfoFunc type is shortcut for AssetInfo-type func.
-type InfoFunc func(string) (os.FileInfo, error)
-
-// LazyTemplate has a template.Template.
+// LazyTemplate encloses template.Template.
 // Lazy parse
 // , always clone for bin templates
 // , sometimes re-parse for dev-bins
 // . NewLT is the constructor.
 type LazyTemplate struct {
-	MU sync.Mutex // protects everything
+	Mutex    sync.Mutex // protects everything
+	Template *template.Template
 
 	// arguments to NewLT (all required)
-	ReadFunc ReadFunc
-	InfoFunc InfoFunc
-	Filename string
-	Funcmap  template.FuncMap
+	readFunc readFunc
+	infoFunc infoFunc
+	filename string
+	funcmap  template.FuncMap
 
 	// operationals
-	NonDev     bool
-	DevModTime time.Time
-	Template   *template.Template
-	Err        error
+	nonDev     bool
+	devModTime time.Time
+	err        error
 }
 
 // MustInit is a Must func for LazyTemplate.
 func MustInit(lt *LazyTemplate) {
-	lt.MU.Lock()
-	defer lt.MU.Unlock()
-	lt.Init()
-	template.Must(lt.Template, lt.Err)
+	lt.Mutex.Lock()
+	defer lt.Mutex.Unlock()
+	lt.init()
+	template.Must(lt.Template, lt.err)
 }
 
-// Init is internal and lock-free.
-func (lt *LazyTemplate) Init() {
-	if lt.Err != nil {
+func (lt *LazyTemplate) init() { // init is internal and lock-free.
+	if lt.err != nil {
 		return
 	}
-	if lt.NonDev && lt.Template != nil {
+	if lt.nonDev && lt.Template != nil {
 		// allgood#1: non-dev mode & have .Template
 		return
 	}
-	text, err := lt.ReadFunc(lt.Filename)
+	text, err := lt.readFunc(lt.filename)
 	if err != nil {
-		lt.Err = err
+		lt.err = err
 		return
 	}
-	if info, err := lt.InfoFunc(lt.Filename); err != nil {
-		lt.Err = err
+	if info, err := lt.infoFunc(lt.filename); err != nil {
+		lt.err = err
 		return
 	} else if modtime := info.ModTime(); modtime == time.Unix(1400000000, 0) {
-		lt.NonDev = true
+		lt.nonDev = true
 	} else {
-		if lt.Template != nil && modtime == lt.DevModTime {
+		if lt.Template != nil && modtime == lt.devModTime {
 			// allgood#2: dev mode + modtime did not change
 			return
 		}
-		lt.DevModTime = modtime
+		lt.devModTime = modtime
 	}
-	t := template.New(lt.Filename)
+	t := template.New(lt.filename)
 	t = t.Option("missingkey=error")
-	if lt.Funcmap != nil {
-		t.Funcs(lt.Funcmap)
+	if lt.funcmap != nil {
+		t.Funcs(lt.funcmap)
 	}
-	lt.Template, lt.Err = t.Parse(string(text))
+	lt.Template, lt.err = t.Parse(string(text))
 }
 
-// Apply clones .Template to execute it into w.
+// Apply executes enclosed template into w.
 func (lt *LazyTemplate) Apply(w http.ResponseWriter, data interface{}) {
 	clone, err := func() (*template.Template, error) {
-		lt.MU.Lock()
-		defer lt.MU.Unlock()
-		if lt.Init(); lt.Err != nil {
-			return nil, lt.Err
+		lt.Mutex.Lock()
+		defer lt.Mutex.Unlock()
+		if lt.init(); lt.err != nil {
+			return nil, lt.err
 		}
 		return lt.Template.Clone()
 	}()
