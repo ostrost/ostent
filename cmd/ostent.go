@@ -28,7 +28,7 @@ type runs struct {
 	list  []func() error // the list to have
 }
 
-func (rs *runs) Add(f func() error) {
+func (rs *runs) add(f func() error) {
 	rs.mutex.Lock()
 	defer rs.mutex.Unlock()
 	rs.list = append(rs.list, f)
@@ -97,14 +97,14 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 
-	persistentPreRuns.Add(OstentVersionRun)
+	persistentPreRuns.add(OstentVersionRun)
 	OstentCmd.PersistentFlags().BoolVar(&VersionFlag, "version", false, "Print version and exit")
 
 	OstentCmd.Flags().VarP(&OstentBind, "bind", "b", "Bind `address`")
 	OstentCmd.Flags().Var(&DelayFlags.Max, "max-delay", "Maximum for display `delay`")
 	OstentCmd.Flags().VarP(&DelayFlags.Min, "min-delay", "d", "Collection and display minimum `delay`")
 
-	preRuns.Add(func() error {
+	preRuns.add(func() error {
 		if DelayFlags.Max.Duration < DelayFlags.Min.Duration {
 			DelayFlags.Max.Duration = DelayFlags.Min.Duration
 		}
@@ -114,7 +114,7 @@ func init() {
 	var elisting ostent.ExportingListing
 
 	if gends := params.NewGraphiteEndpoints(10*time.Second, flags.NewBind("127.0.0.1", 2003)); true {
-		preRuns.Add(func() error { return GraphiteRun(&elisting, gends) })
+		preRuns.add(func() error { return GraphiteRun(&elisting, gends) })
 		OstentCmd.Flags().Var(&gends, "graphite", "Graphite exporting `endpoint(s)`")
 		OstentCmd.Example += "Graphite params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &gends.Default // shortcut, f does not alter it
@@ -124,7 +124,7 @@ func init() {
 	}
 
 	if iends := params.NewInfluxEndpoints(10*time.Second, "ostent"); true {
-		preRuns.Add(func() error { return InfluxRun(&elisting, iends) })
+		preRuns.add(func() error { return InfluxRun(&elisting, iends) })
 		OstentCmd.Flags().Var(&iends, "influxdb", "InfluxDB exporting `endpoint(s)`")
 		OstentCmd.Example += "InfluxDB params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &iends.Default // shortcut, f does not alter it
@@ -138,7 +138,7 @@ func init() {
 
 	hostname, _ := ostent.GetHN()
 	if lends := params.NewLibratoEndpoints(10*time.Second, hostname); true {
-		preRuns.Add(func() error { return LibratoRun(&elisting, lends) })
+		preRuns.add(func() error { return LibratoRun(&elisting, lends) })
 		OstentCmd.Flags().Var(&lends, "librato", "Librato exporting `parameter(s)`")
 		OstentCmd.Example += "Librato params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &lends.Default // shortcut, f does not alter it
@@ -149,7 +149,7 @@ func init() {
 		})
 	}
 	OstentCmd.Example = strings.TrimRight(OstentCmd.Example, "\n")
-	preRuns.Add(func() error {
+	preRuns.add(func() error {
 		ostent.Exporting = elisting.ExportingList
 		sort.Stable(ostent.Exporting)
 		return nil
