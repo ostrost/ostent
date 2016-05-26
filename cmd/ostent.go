@@ -4,6 +4,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 	"unicode"
 
@@ -11,11 +12,38 @@ import (
 	"github.com/spf13/pflag"
 	// "github.com/spf13/viper"
 
-	"github.com/ostrost/ostent/cmd/cmdcobra"
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/params"
 )
+
+var (
+	persistentPostRuns runs // a list of funcs to be cobra.Command's PersistentPostRunE.
+	persistentPreRuns  runs // a list of funcs to be cobra.Command's PersistentPreRunEE.
+	preRuns            runs // a list of funcs to be cobra.Command's PreRunE.
+)
+
+type runs struct {
+	mutex sync.Mutex     // protect everything e.g. list
+	list  []func() error // the list to have
+}
+
+func (rs *runs) Add(f func() error) {
+	rs.mutex.Lock()
+	defer rs.mutex.Unlock()
+	rs.list = append(rs.list, f)
+}
+
+func (rs *runs) runE(*cobra.Command, []string) error {
+	rs.mutex.Lock()
+	defer rs.mutex.Unlock()
+	for _, run := range rs.list {
+		if err := run(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
 var (
 	// DelayFlags sets min and max for any delay.
@@ -44,9 +72,9 @@ ostent --librato \?email=EMAIL\&token=TOKEN
 
 `,
 
-		PersistentPostRunE: cmdcobra.PersistentPostRuns.RunE,
-		PersistentPreRunE:  cmdcobra.PersistentPreRuns.RunE,
-		PreRunE:            cmdcobra.PreRuns.RunE,
+		PersistentPostRunE: persistentPostRuns.runE,
+		PersistentPreRunE:  persistentPreRuns.runE,
+		PreRunE:            preRuns.runE,
 	}
 )
 
@@ -69,14 +97,14 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 
-	cmdcobra.PersistentPreRuns.Add(OstentVersionRun)
+	persistentPreRuns.Add(OstentVersionRun)
 	OstentCmd.PersistentFlags().BoolVar(&VersionFlag, "version", false, "Print version and exit")
 
 	OstentCmd.Flags().VarP(&OstentBind, "bind", "b", "Bind `address`")
 	OstentCmd.Flags().Var(&DelayFlags.Max, "max-delay", "Maximum for display `delay`")
 	OstentCmd.Flags().VarP(&DelayFlags.Min, "min-delay", "d", "Collection and display minimum `delay`")
 
-	cmdcobra.PreRuns.Add(func() error {
+	preRuns.Add(func() error {
 		if DelayFlags.Max.Duration < DelayFlags.Min.Duration {
 			DelayFlags.Max.Duration = DelayFlags.Min.Duration
 		}
@@ -86,7 +114,7 @@ func init() {
 	var elisting ostent.ExportingListing
 
 	if gends := params.NewGraphiteEndpoints(10*time.Second, flags.NewBind("127.0.0.1", 2003)); true {
-		cmdcobra.PreRuns.Add(func() error { return GraphiteRun(&elisting, gends) })
+		preRuns.Add(func() error { return GraphiteRun(&elisting, gends) })
 		OstentCmd.Flags().Var(&gends, "graphite", "Graphite exporting `endpoint(s)`")
 		OstentCmd.Example += "Graphite params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &gends.Default // shortcut, f does not alter it
@@ -96,7 +124,7 @@ func init() {
 	}
 
 	if iends := params.NewInfluxEndpoints(10*time.Second, "ostent"); true {
-		cmdcobra.PreRuns.Add(func() error { return InfluxRun(&elisting, iends) })
+		preRuns.Add(func() error { return InfluxRun(&elisting, iends) })
 		OstentCmd.Flags().Var(&iends, "influxdb", "InfluxDB exporting `endpoint(s)`")
 		OstentCmd.Example += "InfluxDB params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &iends.Default // shortcut, f does not alter it
@@ -110,7 +138,7 @@ func init() {
 
 	hostname, _ := ostent.GetHN()
 	if lends := params.NewLibratoEndpoints(10*time.Second, hostname); true {
-		cmdcobra.PreRuns.Add(func() error { return LibratoRun(&elisting, lends) })
+		preRuns.Add(func() error { return LibratoRun(&elisting, lends) })
 		OstentCmd.Flags().Var(&lends, "librato", "Librato exporting `parameter(s)`")
 		OstentCmd.Example += "Librato params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &lends.Default // shortcut, f does not alter it
@@ -121,7 +149,7 @@ func init() {
 		})
 	}
 	OstentCmd.Example = strings.TrimRight(OstentCmd.Example, "\n")
-	cmdcobra.PreRuns.Add(func() error {
+	preRuns.Add(func() error {
 		ostent.Exporting = elisting.ExportingList
 		sort.Stable(ostent.Exporting)
 		return nil
