@@ -13,12 +13,11 @@ import (
 )
 
 // NewLT constructs LazyTemplate.
-func NewLT(readfunc readFunc, infofunc infoFunc, filename string, funcmap template.FuncMap) *LazyTemplate {
+func NewLT(readfunc readFunc, infofunc infoFunc, filename string) *LazyTemplate {
 	return &LazyTemplate{
 		readFunc: readfunc,
 		infoFunc: infofunc,
 		filename: filename,
-		funcmap:  funcmap,
 	}
 }
 
@@ -38,7 +37,6 @@ type LazyTemplate struct {
 	readFunc readFunc
 	infoFunc infoFunc
 	filename string
-	funcmap  template.FuncMap
 
 	// operationals
 	nonDev     bool
@@ -79,12 +77,8 @@ func (lt *LazyTemplate) init() { // init is internal and lock-free.
 		}
 		lt.devModTime = modtime
 	}
-	t := template.New(lt.filename)
-	t = t.Option("missingkey=error")
-	if lt.funcmap != nil {
-		t.Funcs(lt.funcmap)
-	}
-	lt.Template, lt.err = t.Parse(string(text))
+	lt.Template, lt.err = template.New(lt.filename).Option("missingkey=error").
+		Parse(string(text))
 }
 
 // Apply executes enclosed template into w.

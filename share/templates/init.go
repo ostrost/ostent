@@ -4,7 +4,7 @@ import "github.com/ostrost/ostent/templateutil"
 
 var (
 	// IndexTemplate is a templateutil.LazyTemplate of "index.html" asset.
-	IndexTemplate = templateutil.NewLT(Asset, AssetInfo, "index.html", nil)
+	IndexTemplate = templateutil.NewLT(Asset, AssetInfo, "index.html")
 )
 
 // InitTemplates inits must-have templates.
