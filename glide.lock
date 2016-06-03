@@ -1,5 +1,5 @@
 hash: f1c41e2fda6a66d7c57abe4d682c8a7fc2b0258f89ba5ea96a202c6987bf019f
-updated: 2016-05-23T13:02:14.224851491Z
+updated: 2016-06-03T09:08:12.35328593Z
 imports:
 - name: github.com/blang/semver
   version: aea32c919a18e5ef4537bbd283ff29594b1b0165
@@ -29,17 +29,17 @@ imports:
   subpackages:
   - query
 - name: github.com/gorilla/context
-  version: a8d44e7d8e4d532b6a27a02dd82abb31cc1b01bd
+  version: aed02d124ae4a0e94fea4541c8effd05bf0c8296
 - name: github.com/gorilla/handlers
   version: 66e6c6f01d8da976ee113437745ca029c2b585a6
 - name: github.com/gorilla/schema
   version: 08023a0215e7fc27a9aecd8b8c50913c40019478
 - name: github.com/gorilla/websocket
-  version: 1f512fc3f05332ba7117626cdfb4e07474e58e60
+  version: 3ddc98405808dc90b76f43a2eddca8f12e244e2b
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/influxdb
-  version: 39657cd09ffacadea2b880e824e39c7c6cbe3850
+  version: 7729e10a8f987d8b0b8b045991f0b26d254cd6d6
   subpackages:
   - client
   - models
@@ -66,9 +66,9 @@ imports:
 - name: github.com/rcrowley/goagain
   version: f2f192b5d1a96e21dd4026ce67cda85e49659a48
 - name: github.com/russross/blackfriday
-  version: 2004188462c3946efefbdcd91aa83e49b4175bfb
+  version: 1d6b8e9301e720b08a8938b8c25c018285885438
 - name: github.com/shirou/gopsutil
-  version: 83c6e72cbdef6e8ada934549abf700ff0ba96776
+  version: ddc9f5a41c52d0a7c52d48ab27e94b46220a7990
   subpackages:
   - host
   - net
@@ -82,7 +82,7 @@ imports:
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 - name: github.com/Sirupsen/logrus
-  version: cd7d1bbe41066b6c1f19780f895901052150a575
+  version: f3cfb454f4c209e6668c95216c4744b8fddb2356
 - name: github.com/spf13/cobra
   version: f368244301305f414206f889b1735a54cfc8bde8
   subpackages:
@@ -95,7 +95,7 @@ imports:
 - name: github.com/vrischmann/go-metrics-influxdb
   version: be4fc87f4ea19631fadd5f80e4fb8ea0353348a6
 - name: golang.org/x/sys
-  version: d4feaf1a7e61e1d9e79e6c4e76c6349e9cab0a03
+  version: 076b546753157f758b316e59bcb51e6807c04057
   subpackages:
   - unix
 devImports: []

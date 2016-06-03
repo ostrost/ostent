@@ -151,9 +151,9 @@ button {
 }
 
 .row .row {
+  max-width: none;
   margin-left: -.625rem;
   margin-right: -.625rem;
-  max-width: none;
 }
 
 @media screen and (min-width:40em) {
@@ -171,7 +171,7 @@ button {
   flex: 1 1 0px;
   padding-left: .625rem;
   padding-right: .625rem;
-  min-width: 0;
+  min-width: initial;
 }
 
 @media screen and (min-width:40em) {
@@ -855,6 +855,7 @@ label {
 
 .input-group-button,.input-group-label {
   margin: 0;
+  white-space: nowrap;
 }
 
 .input-group-label {
@@ -958,6 +959,20 @@ label {
   cursor: not-allowed;
 }
 
+.button.disabled:focus,.button.disabled:hover,.button[disabled]:focus,.button[disabled]:hover {
+  background-color: #2199e8;
+  color: #fefefe;
+}
+
+:last-child:not(.is-active)>.accordion-title {
+  border-radius: 0 0 0 0;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+:last-child>.accordion-content:last-child {
+  border-bottom: 1px solid #e6e6e6;
+}
+
 .badge {
   display: inline-block;
   padding: .3em;
@@ -999,12 +1014,14 @@ label {
 
 .button-group .button {
   margin: 0;
+  margin-right: 1px;
+  margin-bottom: 1px;
   font-size: .9rem;
   flex: 0 0 auto;
 }
 
-.button-group .button:not(:last-child) {
-  margin-right: 1px;
+.button-group .button:last-child {
+  margin-right: 0;
 }
 
 .button-group.small .button {
@@ -1209,7 +1226,7 @@ input:checked+label>.switch-inactive {
 
 .title-bar .menu-icon {
   margin-left: .25rem;
-  margin-right: .5rem;
+  margin-right: .25rem;
 }
 
 .title-bar-left,.title-bar-right {

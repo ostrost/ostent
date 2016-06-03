@@ -20912,8 +20912,32 @@
 	// transformed from define_* templates:
 
 	var _ref2 = _jsx('span', {
+	  className: 'showhide-hide whitespace-pre float-left'
+	}, void 0, '... ');
+
+	var _ref3 = _jsx('div', {
+	  className: 'input-group-label text-nowrap'
+	}, void 0, 'delay');
+
+	var _ref4 = _jsx('div', {
+	  className: 'input-group-label text-nowrap'
+	}, void 0, 'rows');
+
+	var _ref5 = _jsx('div', {
+	  className: 'row thead'
+	}, void 0, _jsx('span', {
+	  className: 'expand col small-1'
+	}, void 0, 'Core'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' User%'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' Sys%'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' Wait%'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' Idle%'), _jsx('span', {
 	  className: 'expand col'
-	});
+	}));
 
 	jsdefines.define_cpu = React.createClass({
 	  displayName: 'define_cpu',
@@ -20946,9 +20970,7 @@
 	      title: 'CPU display options',
 	      href: Data.params.Tlinks.CPUn,
 	      onClick: this.handleClick
-	    }, void 0, _jsx('span', {
-	      className: 'showhide-hide whitespace-pre float-left'
-	    }, void 0, '... '), 'CPU')))), _jsx('div', {
+	    }, void 0, _ref2, 'CPU')))), _jsx('div', {
 	      className: 'column large-11'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.CPUn.Negative ? "show-showhide" : "hide-showhide"
@@ -20956,9 +20978,7 @@
 	      className: 'row menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
-	    }, void 0, _jsx('div', {
-	      className: 'input-group-label text-nowrap'
-	    }, void 0, 'delay'), _jsx('div', {
+	    }, void 0, _ref3, _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      className: 'button small secondary disabled'
@@ -20976,9 +20996,7 @@
 	      className: "text-nowrap button small " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : "")
 	    }, void 0, Data.params.Dlinks.CPUd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
-	    }, void 0, _jsx('div', {
-	      className: 'input-group-label text-nowrap'
-	    }, void 0, 'rows'), _jsx('div', {
+	    }, void 0, _ref4, _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      className: 'button small secondary disabled'
@@ -20998,19 +21016,7 @@
 	      className: Data.params.CPUn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
 	      className: 'stripe'
-	    }, void 0, _jsx('div', {
-	      className: 'row thead'
-	    }, void 0, _jsx('span', {
-	      className: 'expand col small-1'
-	    }, void 0, 'Core'), _jsx('span', {
-	      className: 'expand col small-1 text-right'
-	    }, void 0, ' User%'), _jsx('span', {
-	      className: 'expand col small-1 text-right'
-	    }, void 0, ' Sys%'), _jsx('span', {
-	      className: 'expand col small-1 text-right'
-	    }, void 0, ' Wait%'), _jsx('span', {
-	      className: 'expand col small-1 text-right'
-	    }, void 0, ' Idle%'), _ref2), this.List(Data).map(function ($cpu, i) {
+	    }, void 0, _ref5, this.List(Data).map(function ($cpu, i) {
 	      return _jsx('div', {
 	        className: 'row'
 	      }, "cpu-rowby-n-" + $cpu.N, _jsx('span', {
@@ -21034,7 +21040,19 @@
 	  }
 	});
 
-	var _ref3 = _jsx('span', {
+	var _ref6 = _jsx('span', {
+	  className: 'showhide-hide whitespace-pre float-left'
+	}, void 0, '... ');
+
+	var _ref7 = _jsx('div', {
+	  className: 'input-group-label text-nowrap'
+	}, void 0, 'delay');
+
+	var _ref8 = _jsx('div', {
+	  className: 'input-group-label text-nowrap'
+	}, void 0, 'rows');
+
+	var _ref9 = _jsx('span', {
 	  className: 'expand col'
 	});
 
@@ -21069,9 +21087,7 @@
 	      title: 'Disk usage display options',
 	      href: Data.params.Tlinks.Dfn,
 	      onClick: this.handleClick
-	    }, void 0, _jsx('span', {
-	      className: 'showhide-hide whitespace-pre float-left'
-	    }, void 0, '... '), 'Disk usage')))), _jsx('div', {
+	    }, void 0, _ref6, 'Disk usage')))), _jsx('div', {
 	      className: 'column large-11'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Dfn.Negative ? "show-showhide" : "hide-showhide"
@@ -21079,9 +21095,7 @@
 	      className: 'row menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
-	    }, void 0, _jsx('div', {
-	      className: 'input-group-label text-nowrap'
-	    }, void 0, 'delay'), _jsx('div', {
+	    }, void 0, _ref7, _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      className: 'button small secondary disabled'
@@ -21099,9 +21113,7 @@
 	      className: "text-nowrap button small " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : "")
 	    }, void 0, Data.params.Dlinks.Dfd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
-	    }, void 0, _jsx('div', {
-	      className: 'input-group-label text-nowrap'
-	    }, void 0, 'rows'), _jsx('div', {
+	    }, void 0, _ref8, _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      className: 'button small secondary disabled'
@@ -21171,7 +21183,7 @@
 	      onClick: this.handleClick
 	    }, void 0, 'Use%', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[4 - 1].CaretClass
-	    }))), _ref3), this.List(Data).map(function ($df, i) {
+	    }))), _ref9), this.List(Data).map(function ($df, i) {
 	      return _jsx('div', {
 	        className: 'row'
 	      }, "df-rowby-dirname-" + $df.DirName, _jsx('span', {
@@ -21228,9 +21240,36 @@
 	  }
 	});
 
-	var _ref4 = _jsx('span', {
+	var _ref10 = _jsx('span', {
+	  className: 'showhide-hide whitespace-pre float-left'
+	}, void 0, '... ');
+
+	var _ref11 = _jsx('div', {
+	  className: 'input-group-label text-nowrap'
+	}, void 0, 'delay');
+
+	var _ref12 = _jsx('div', {
+	  className: 'input-group-label text-nowrap'
+	}, void 0, 'rows');
+
+	var _ref13 = _jsx('div', {
+	  className: 'row thead'
+	}, void 0, _jsx('span', {
+	  className: 'expand col small-1'
+	}, void 0, 'Interface'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' IP'), _jsx('span', {
+	  title: 'Drops,Errors In/Out per second',
+	  className: 'expand col small-2 text-right text-nowrap'
+	}, void 0, ' Loss IO ps'), _jsx('span', {
+	  title: 'Packets In/Out per second',
+	  className: 'expand col small-2 text-right text-nowrap'
+	}, void 0, ' Packets IO ps'), _jsx('span', {
+	  title: 'Bits In/Out per second',
+	  className: 'expand col small-2 text-right text-nowrap'
+	}, void 0, ' IO ', _jsx('i', {}, void 0, 'b'), 'ps'), _jsx('span', {
 	  className: 'expand col'
-	});
+	}));
 
 	jsdefines.define_if = React.createClass({
 	  displayName: 'define_if',
@@ -21263,9 +21302,7 @@
 	      title: 'Interfaces display options',
 	      href: Data.params.Tlinks.Ifn,
 	      onClick: this.handleClick
-	    }, void 0, _jsx('span', {
-	      className: 'showhide-hide whitespace-pre float-left'
-	    }, void 0, '... '), 'Interfaces')))), _jsx('div', {
+	    }, void 0, _ref10, 'Interfaces')))), _jsx('div', {
 	      className: 'column large-11'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Ifn.Negative ? "show-showhide" : "hide-showhide"
@@ -21273,9 +21310,7 @@
 	      className: 'row menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
-	    }, void 0, _jsx('div', {
-	      className: 'input-group-label text-nowrap'
-	    }, void 0, 'delay'), _jsx('div', {
+	    }, void 0, _ref11, _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      className: 'button small secondary disabled'
@@ -21293,9 +21328,7 @@
 	      className: "text-nowrap button small " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : "")
 	    }, void 0, Data.params.Dlinks.Ifd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
-	    }, void 0, _jsx('div', {
-	      className: 'input-group-label text-nowrap'
-	    }, void 0, 'rows'), _jsx('div', {
+	    }, void 0, _ref12, _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      className: 'button small secondary disabled'
@@ -21315,22 +21348,7 @@
 	      className: Data.params.Ifn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
 	      className: 'stripe'
-	    }, void 0, _jsx('div', {
-	      className: 'row thead'
-	    }, void 0, _jsx('span', {
-	      className: 'expand col small-1'
-	    }, void 0, 'Interface'), _jsx('span', {
-	      className: 'expand col small-1 text-right'
-	    }, void 0, ' IP'), _jsx('span', {
-	      title: 'Drops,Errors In/Out per second',
-	      className: 'expand col small-2 text-right text-nowrap'
-	    }, void 0, ' Loss IO ps'), _jsx('span', {
-	      title: 'Packets In/Out per second',
-	      className: 'expand col small-2 text-right text-nowrap'
-	    }, void 0, ' Packets IO ps'), _jsx('span', {
-	      title: 'Bits In/Out per second',
-	      className: 'expand col small-2 text-right text-nowrap'
-	    }, void 0, ' IO ', _jsx('i', {}, void 0, 'b'), 'ps'), _ref4), this.List(Data).map(function ($if, i) {
+	    }, void 0, _ref13, this.List(Data).map(function ($if, i) {
 	      return _jsx('div', {
 	        className: 'row'
 	      }, "if-rowby-name-" + $if.Name, _jsx('span', {
@@ -21391,9 +21409,27 @@
 	  }
 	});
 
-	var _ref5 = _jsx('span', {
+	var _ref14 = _jsx('span', {
+	  className: 'showhide-hide whitespace-pre float-left'
+	}, void 0, '... ');
+
+	var _ref15 = _jsx('div', {
+	  className: 'input-group-label text-nowrap'
+	}, void 0, 'delay');
+
+	var _ref16 = _jsx('div', {
+	  className: 'input-group-label text-nowrap'
+	}, void 0, 'rows');
+
+	var _ref17 = _jsx('div', {
+	  className: 'row thead'
+	}, void 0, _jsx('span', {
+	  className: 'expand col small-1'
+	}, void 0, 'Period'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' Value'), _jsx('span', {
 	  className: 'expand col'
-	});
+	}));
 
 	jsdefines.define_la = React.createClass({
 	  displayName: 'define_la',
@@ -21426,9 +21462,7 @@
 	      title: 'Load avg display options',
 	      href: Data.params.Tlinks.Lan,
 	      onClick: this.handleClick
-	    }, void 0, _jsx('span', {
-	      className: 'showhide-hide whitespace-pre float-left'
-	    }, void 0, '... '), 'Load avg')))), _jsx('div', {
+	    }, void 0, _ref14, 'Load avg')))), _jsx('div', {
 	      className: 'column large-11'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Lan.Negative ? "show-showhide" : "hide-showhide"
@@ -21436,9 +21470,7 @@
 	      className: 'row menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
-	    }, void 0, _jsx('div', {
-	      className: 'input-group-label text-nowrap'
-	    }, void 0, 'delay'), _jsx('div', {
+	    }, void 0, _ref15, _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      className: 'button small secondary disabled'
@@ -21456,9 +21488,7 @@
 	      className: "text-nowrap button small " + (Data.params.Dlinks.Lad.More.ExtraClass != null ? Data.params.Dlinks.Lad.More.ExtraClass : "")
 	    }, void 0, Data.params.Dlinks.Lad.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
-	    }, void 0, _jsx('div', {
-	      className: 'input-group-label text-nowrap'
-	    }, void 0, 'rows'), _jsx('div', {
+	    }, void 0, _ref16, _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      className: 'button small secondary disabled'
@@ -21478,13 +21508,7 @@
 	      className: Data.params.Lan.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
 	      className: 'stripe'
-	    }, void 0, _jsx('div', {
-	      className: 'row thead'
-	    }, void 0, _jsx('span', {
-	      className: 'expand col small-1'
-	    }, void 0, 'Period'), _jsx('span', {
-	      className: 'expand col small-1 text-right'
-	    }, void 0, ' Value'), _ref5), this.List(Data).map(function ($la, i) {
+	    }, void 0, _ref17, this.List(Data).map(function ($la, i) {
 	      return _jsx('div', {
 	        className: 'row'
 	      }, "la-rowby-period-" + $la.Period, _jsx('span', {
@@ -21500,9 +21524,33 @@
 	  }
 	});
 
-	var _ref6 = _jsx('span', {
+	var _ref18 = _jsx('span', {
+	  className: 'showhide-hide whitespace-pre float-left'
+	}, void 0, '... ');
+
+	var _ref19 = _jsx('div', {
+	  className: 'input-group-label text-nowrap'
+	}, void 0, 'delay');
+
+	var _ref20 = _jsx('div', {
+	  className: 'input-group-label text-nowrap'
+	}, void 0, 'rows');
+
+	var _ref21 = _jsx('div', {
+	  className: 'row thead'
+	}, void 0, _jsx('span', {
+	  className: 'expand col small-1'
+	}, void 0, 'Memory'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' Total'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' Used'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' Free'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' Use%'), _jsx('span', {
 	  className: 'expand col'
-	});
+	}));
 
 	jsdefines.define_mem = React.createClass({
 	  displayName: 'define_mem',
@@ -21535,9 +21583,7 @@
 	      title: 'Memory display options',
 	      href: Data.params.Tlinks.Memn,
 	      onClick: this.handleClick
-	    }, void 0, _jsx('span', {
-	      className: 'showhide-hide whitespace-pre float-left'
-	    }, void 0, '... '), 'Memory')))), _jsx('div', {
+	    }, void 0, _ref18, 'Memory')))), _jsx('div', {
 	      className: 'column large-11'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Memn.Negative ? "show-showhide" : "hide-showhide"
@@ -21545,9 +21591,7 @@
 	      className: 'row menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
-	    }, void 0, _jsx('div', {
-	      className: 'input-group-label text-nowrap'
-	    }, void 0, 'delay'), _jsx('div', {
+	    }, void 0, _ref19, _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      className: 'button small secondary disabled'
@@ -21565,9 +21609,7 @@
 	      className: "text-nowrap button small " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : "")
 	    }, void 0, Data.params.Dlinks.Memd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
-	    }, void 0, _jsx('div', {
-	      className: 'input-group-label text-nowrap'
-	    }, void 0, 'rows'), _jsx('div', {
+	    }, void 0, _ref20, _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      className: 'button small secondary disabled'
@@ -21587,19 +21629,7 @@
 	      className: Data.params.Memn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
 	      className: 'stripe'
-	    }, void 0, _jsx('div', {
-	      className: 'row thead'
-	    }, void 0, _jsx('span', {
-	      className: 'expand col small-1'
-	    }, void 0, 'Memory'), _jsx('span', {
-	      className: 'expand col small-1 text-right'
-	    }, void 0, ' Total'), _jsx('span', {
-	      className: 'expand col small-1 text-right'
-	    }, void 0, ' Used'), _jsx('span', {
-	      className: 'expand col small-1 text-right'
-	    }, void 0, ' Free'), _jsx('span', {
-	      className: 'expand col small-1 text-right'
-	    }, void 0, ' Use%'), _ref6), this.List(Data).map(function ($mem, i) {
+	    }, void 0, _ref21, this.List(Data).map(function ($mem, i) {
 	      return _jsx('div', {
 	        className: 'row'
 	      }, "mem-rowby-kind-" + $mem.Kind, _jsx('span', {
@@ -21619,6 +21649,18 @@
 	    }))))));
 	  }
 	});
+
+	var _ref22 = _jsx('span', {
+	  className: 'showhide-hide whitespace-pre float-left'
+	}, void 0, '... ');
+
+	var _ref23 = _jsx('div', {
+	  className: 'input-group-label text-nowrap'
+	}, void 0, 'delay');
+
+	var _ref24 = _jsx('div', {
+	  className: 'input-group-label text-nowrap'
+	}, void 0, 'rows');
 
 	jsdefines.define_ps = React.createClass({
 	  displayName: 'define_ps',
@@ -21651,9 +21693,7 @@
 	      title: 'Processes display options',
 	      href: Data.params.Tlinks.Psn,
 	      onClick: this.handleClick
-	    }, void 0, _jsx('span', {
-	      className: 'showhide-hide whitespace-pre float-left'
-	    }, void 0, '... '), 'Processes')))), _jsx('div', {
+	    }, void 0, _ref22, 'Processes')))), _jsx('div', {
 	      className: 'column large-11'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Psn.Negative ? "show-showhide" : "hide-showhide"
@@ -21661,9 +21701,7 @@
 	      className: 'row menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
-	    }, void 0, _jsx('div', {
-	      className: 'input-group-label text-nowrap'
-	    }, void 0, 'delay'), _jsx('div', {
+	    }, void 0, _ref23, _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      className: 'button small secondary disabled'
@@ -21681,9 +21719,7 @@
 	      className: "text-nowrap button small " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : "")
 	    }, void 0, Data.params.Dlinks.Psd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
-	    }, void 0, _jsx('div', {
-	      className: 'input-group-label text-nowrap'
-	    }, void 0, 'rows'), _jsx('div', {
+	    }, void 0, _ref24, _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      className: 'button small secondary disabled'
