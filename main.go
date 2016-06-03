@@ -13,32 +13,49 @@ import (
 	"strings"
 	"time"
 
+	"github.com/blang/semver" // alt semver: "github.com/Masterminds/semver"
 	"github.com/facebookgo/grace/gracehttp"
-	"github.com/gorilla/context"
+	gorillaContext "github.com/gorilla/context"
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
 	"github.com/spf13/cobra"
 
-	"github.com/blang/semver" // alt semver: "github.com/Masterminds/semver"
 	"github.com/ostrost/ostent/cmd"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/share/assets"
 	"github.com/ostrost/ostent/share/templates"
 )
 
-func main() {
-	cmd.OstentCmd.RunE = func(*cobra.Command, []string) error {
-		return Serve(cmd.OstentBind.String())
+func run(*cobra.Command, []string) error {
+	go func() {
+		for interval := 10 * time.Minute; ; time.Sleep(interval) {
+			if count := gorillaContext.Purge(int(interval.Seconds())); count != 0 {
+				log.Printf("Gorilla context purged (non-zero) %d entries\n", count)
+			}
+		}
+	}()
+	if !noUpgradeCheck && currentVersion != nil {
+		go untilUpgradeCheck(currentVersion)
 	}
-	cmd.Execute()
+	ostent.RunBackground()
+	templates.InitTemplates()
+	return serve(cmd.OstentBind.String())
+}
+
+func main() {
+	cmd.OstentCmd.RunE = run
+	if err := cmd.OstentCmd.Execute(); err != nil {
+		os.Exit(-1)
+	}
 }
 
 var (
-	// NoUpgradeCheck is the flag value.
-	NoUpgradeCheck bool
+	noUpgradeCheck bool // flag value
+	logRequests    bool // flag value
 
-	logRequests bool // flag
-	taggedBin   bool // whether the build features bin tag
+	taggedBin bool // whether the build features bin tag
+
+	currentVersion *semver.Version // parsed from ostent.VERSION at init time
 )
 
 func init() {
@@ -46,21 +63,17 @@ func init() {
 
 	cmd.OstentCmd.Flags().BoolVar(&logRequests, "log-requests", !taggedBin,
 		"Whether to log webserver requests")
-	cmd.OstentCmd.Flags().BoolVar(&NoUpgradeCheck, "noupgradecheck", false,
+	cmd.OstentCmd.Flags().BoolVar(&noUpgradeCheck, "noupgradecheck", false,
 		"Off periodic upgrade check")
 	ostent.AddBackground(ostent.CollectLoop)
 
 	var err error
-	CurrentV, err = NewSemver(ostent.VERSION)
-	if err != nil { // CurrentV stay nil
+	if currentVersion, err = newSemver(ostent.VERSION); err != nil {
 		log.Printf("Current semver parse error: %s\n", err)
 	}
 }
 
-// CurrentV is a *semver.Version from ostent.VERSION.
-var CurrentV *semver.Version
-
-func NewSemver(s string) (*semver.Version, error) {
+func newSemver(s string) (*semver.Version, error) {
 	v, err := semver.New(s)
 	if err == nil {
 		return v, nil
@@ -72,14 +85,8 @@ func NewSemver(s string) (*semver.Version, error) {
 	return nil, err
 }
 
-// Serve constructs a *http.Server to (gracefully) Serve. Routes are set here.
-func Serve(laddr string) error {
-	if !NoUpgradeCheck && CurrentV != nil {
-		go UntilUpgradeCheck(CurrentV)
-	}
-	ostent.RunBackground()
-	templates.InitTemplates()
-
+// serve constructs a *http.Server to (gracefully) Serve. Routes are set here.
+func serve(laddr string) error {
 	var (
 		serve1 = ostent.NewServeSSE(logRequests, cmd.DelayFlags)
 		serve2 = ostent.NewServeWS(serve1)
@@ -103,13 +110,13 @@ func Serve(laddr string) error {
 			p = "/" + ostent.VERSION + "/" + path // the Version prefix
 		}
 		routes[[2]string{p, "GET HEAD"}] = ostent.HandleThen(alice.New(
-			context.ClearHandler,
+			gorillaContext.ClearHandler,
 			ostent.AddAssetPathContextFunc(path),
 		).Then)(serve4.Serve)
 	}
 	if !taggedBin { // pprof in dev
 		routes[[2]string{"/debug/pprof/:name", "GET HEAD POST"}] =
-			ostent.ParamsFunc(context.ClearHandler)(pprofHandle)
+			ostent.ParamsFunc(gorillaContext.ClearHandler)(pprofHandle)
 	}
 
 	r := httprouter.New()
@@ -125,9 +132,9 @@ func Serve(laddr string) error {
 	})
 }
 
-// UntilUpgradeCheck waits for an upgrade and returns.
-func UntilUpgradeCheck(cv *semver.Version) {
-	if UpgradeCheck(cv) {
+// untilUpgradeCheck waits for an upgrade and returns.
+func untilUpgradeCheck(cv *semver.Version) {
+	if upgradeCheck(cv) {
 		return
 	}
 
@@ -138,15 +145,15 @@ func UntilUpgradeCheck(cv *semver.Version) {
 	wait += time.Duration(random.Int63n(int64(wait))) // 1.5 +- 0.5 h
 	for {
 		time.Sleep(wait)
-		if UpgradeCheck(cv) {
+		if upgradeCheck(cv) {
 			break
 		}
 	}
 }
 
-// UpgradeCheck does upgrade check and returns true if an upgrade is available.
-func UpgradeCheck(cv *semver.Version) bool {
-	newVersion, err := NewerVersion()
+// upgradeCheck does upgrade check and returns true if an upgrade is available.
+func upgradeCheck(cv *semver.Version) bool {
+	newVersion, err := newerVersion()
 	if err != nil {
 		log.Printf("Upgrade check error: %s\n", err)
 		return false
@@ -155,7 +162,7 @@ func UpgradeCheck(cv *semver.Version) bool {
 		log.Printf("Upgrade check: version is empty\n")
 		return false
 	}
-	nv, err := NewSemver(newVersion)
+	nv, err := newSemver(newVersion)
 	if err != nil {
 		log.Printf("Semver parse error: %s\n", err)
 		return false
@@ -168,9 +175,9 @@ func UpgradeCheck(cv *semver.Version) bool {
 	return true
 }
 
-// NewerVersion checks GitHub for the latest ostent version.
+// newerVersion checks GitHub for the latest ostent version.
 // Return is in form of "\d.*" (sans "^v").
-func NewerVersion() (string, error) {
+func newerVersion() (string, error) {
 	// 1. https://github.com/ostrost/ostent/releases/latest // redirects, NOT followed
 	// 2. https://github.com/ostrost/ostent/releases/v...   // Redirect location
 	// 3. return "v..." // basename of the location

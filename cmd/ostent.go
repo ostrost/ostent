@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"os"
 	"sort"
 	"strings"
 	"sync"
@@ -77,14 +76,6 @@ ostent --librato \?email=EMAIL\&token=TOKEN
 		PreRunE:            preRuns.runE,
 	}
 )
-
-// Execute adds all child commands to the ostent command sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the OstentCmd.
-func Execute() {
-	if err := OstentCmd.Execute(); err != nil {
-		os.Exit(-1)
-	}
-}
 
 func init() {
 	// cobra.OnInitialize(initConfig)

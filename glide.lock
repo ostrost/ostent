@@ -1,5 +1,5 @@
-hash: f1c41e2fda6a66d7c57abe4d682c8a7fc2b0258f89ba5ea96a202c6987bf019f
-updated: 2016-06-03T09:08:12.35328593Z
+hash: fda676beb56a3540c71a31c63dee2c33f623f4bc3672f46b12ecdf47e525adf6
+updated: 2016-06-03T15:29:50.362734828Z
 imports:
 - name: github.com/blang/semver
   version: aea32c919a18e5ef4537bbd283ff29594b1b0165
@@ -68,7 +68,7 @@ imports:
 - name: github.com/russross/blackfriday
   version: 1d6b8e9301e720b08a8938b8c25c018285885438
 - name: github.com/shirou/gopsutil
-  version: ddc9f5a41c52d0a7c52d48ab27e94b46220a7990
+  version: 586bb697f3ec9f8ec08ffefe18f521a64534037c
   subpackages:
   - host
   - net
@@ -94,6 +94,10 @@ imports:
   version: f3e2bae1e0cb5aef83e319133eabfee30013a4a5
 - name: github.com/vrischmann/go-metrics-influxdb
   version: be4fc87f4ea19631fadd5f80e4fb8ea0353348a6
+- name: golang.org/x/net
+  version: c4c3ea71919de159c9e246d7be66deb7f0a39a58
+  subpackages:
+  - context
 - name: golang.org/x/sys
   version: 076b546753157f758b316e59bcb51e6807c04057
   subpackages:

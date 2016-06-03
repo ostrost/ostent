@@ -40,3 +40,6 @@ import:
   - host
   - net
 - package: github.com/vrischmann/go-metrics-influxdb
+- package: golang.org/x/net
+  subpackages:
+  - context
