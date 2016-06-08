@@ -2,35 +2,35 @@
 //- This is a stub: real jade invocation must have it in locals.
 
 mixin if(cond)
-  | {{if !{cond}}}
+  | [[if !{cond}]]
   block
-  | {{end}}
+  | [[end]]
 
 mixin range(pipe)
-  | {{range !{pipe}}}
+  | [[range !{pipe}]]
   block
-  | {{end}}
+  | [[end]]
 
 mixin with(pipe)
-  | {{with !{pipe}}}
+  | [[with !{pipe}]]
   block
-  | {{end}}
+  | [[end]]
 
 mixin define(name)
-  | {{define "#{name}"}}
+  | [[define "#{name}"]]
   block
-  | {{end}}
+  | [[end]]
 
 mixin vlink(kparam, number, text)
   - var vlinks = format('Data.params.Vlinks%s', kparam);
   if JSX
     +with(format('"%s[%d-1]"', vlinks, number))
-      | <a href={ {{.}}.LinkHref} class={ {{.}}.LinkClass} onClick={this.handleClick}
-      |   >#{text}<span class={ {{.}}.CaretClass}></span></a>
+      | <a href={ [[.]].LinkHref} class={ [[.]].LinkClass} onClick={this.handleClick}
+      |   >#{text}<span class={ [[.]].CaretClass}></span></a>
   else
     +with(format('index .%s %d', vlinks, number-1))
-      | <a href={{.LinkHref}} class={{.LinkClass}}
-      |   >#{text}<span class={{.CaretClass}}></span></a>
+      | <a href=[[.LinkHref]] class=[[.LinkClass]]
+      |   >#{text}<span class=[[.CaretClass]]></span></a>
 
 mixin table(nparam, dparam, title)
   .row.expanded.hr-bottom
@@ -46,25 +46,25 @@ mixin table(nparam, dparam, title)
       if JSX
         | <div class={#{ndata}.Negative ? "show-showhide" : "hide-showhide"}>
       else
-        | <div class="{{if .#{ndata}.Negative}}show-showhide{{else}}hide-showhide{{end}}">
+        | <div class="[[if .#{ndata}.Negative]]show-showhide[[else]]hide-showhide[[end]]">
       h1.h5.text-overflow
         if JSX
           | <a title="#{title} display options" href={#{ntlink}} onClick={this.handleClick}>
         else
-          | <a title="#{title} display options" href={{.#{ntlink}}}>
+          | <a title="#{title} display options" href=[[.#{ntlink}]]>
         | <span class="showhide-hide whitespace-pre float-left">... </span>#{title}</a>
       | </div>
     .column.large-11
       if JSX
         | <div class={#{ndata}.Negative ? "show-showhide" : "hide-showhide"}>
       else
-        | <div class="{{if .#{ndata}.Negative}}show-showhide{{else}}hide-showhide{{end}}">
+        | <div class="[[if .#{ndata}.Negative]]show-showhide[[else]]hide-showhide[[end]]">
       ul.row.menu.showhide-show
         li
           .input-group
             .input-group-label.text-nowrap delay
             .input-group-button
-              a.button.small.secondary.disabled {{.#{ddata}}}
+              a.button.small.secondary.disabled [[.#{ddata}]]
             - var cls = 'text-nowrap button small';
             .input-group-button
               if JSX
@@ -80,7 +80,7 @@ mixin table(nparam, dparam, title)
           .input-group
             .input-group-label.text-nowrap rows
             .input-group-button
-              a.button.small.secondary.disabled {{.#{ndata}.Absolute}}
+              a.button.small.secondary.disabled [[.#{ndata}.Absolute]]
             - var cls = 'text-nowrap button small success';
             .input-group-button
               if JSX
@@ -95,7 +95,7 @@ mixin table(nparam, dparam, title)
       if JSX
         | <div class={#{ndata}.Absolute == 0 ? "hide":""}>
       else
-        | <div class="{{if eq .#{ndata}.Absolute 0}}hide{{end}}">
+        | <div class="[[if eq .#{ndata}.Absolute 0]]hide[[end]]">
       block
       | </div></div>
 
@@ -105,16 +105,16 @@ mixin alink_jsxl(cls, fmt, link)
   |   >#{format(fmt, format('{%s.Text}', link))}</a>
 
 mixin alink_html(cls, fmt, link)
-  | <a href={{.#{link}.Href}}
-  |    class="#{cls} {{.#{link}.ExtraClass}}"
-  |   >#{format(fmt, format('{{.%s.Text}}', link))}</a>
+  | <a href=[[.#{link}.Href]]
+  |    class="#{cls} [[.#{link}.ExtraClass]]"
+  |   >#{format(fmt, format('[[.%s.Text]]', link))}</a>
 
-+define('define_uptime'): span {{.Data.uptime}}
++define('define_uptime'): span [[.Data.uptime]]
 +define('define_hostname')
   if JSX
-    | <a href="/" title={"hostname "+Data.hostname}>{{.Data.hostname}}</a>
+    | <a href="/" title={"hostname "+Data.hostname}>[[.Data.hostname]]</a>
   else
-    | <a href="/" title="hostname {{.Data.hostname}}">{{.Data.hostname}}</a>
+    | <a href="/" title="hostname [[.Data.hostname]]">[[.Data.hostname]]</a>
 
 mixin range_list(datak, ranger, kvalue, keyid)
   +if(format('.Data.%s', datak))
@@ -138,8 +138,8 @@ mixin range_list(datak, ranger, kvalue, keyid)
         span.expand.col
       +range_list('la', '$la', '$la.Period', 'la-rowby-period')
         span.expand.col.small-1
-          .text-right.width-3rem {{$la.Period}}m
-        span.expand.col.small-1.text-right  {{$la.Value}}
+          .text-right.width-3rem [[$la.Period]]m
+        span.expand.col.small-1.text-right  [[$la.Value]]
         span.expand.col-lr
           if JSX
             | {jsxdefines.Sparkline({ref: i, col: 'Value'})}
@@ -155,11 +155,11 @@ mixin range_list(datak, ranger, kvalue, keyid)
         span.expand.col.small-1.text-right  Use%
         span.expand.col
       +range_list('mem', '$mem', '$mem.Kind', 'mem-rowby-kind')
-        span.expand.col.small-1 {{$mem.Kind}}
-        span.expand.col.small-1.text-right  {{$mem.Total}}
-        span.expand.col.small-1.text-right  {{$mem.Used}}
-        span.expand.col.small-1.text-right  {{$mem.Free}}
-        | <span class="expand col small-1 text-right bg-usepct" data-usepct={{$mem.UsePct}}> {{$mem.UsePct}}%</span>
+        span.expand.col.small-1 [[$mem.Kind]]
+        span.expand.col.small-1.text-right  [[$mem.Total]]
+        span.expand.col.small-1.text-right  [[$mem.Used]]
+        span.expand.col.small-1.text-right  [[$mem.Free]]
+        | <span class="expand col small-1 text-right bg-usepct" data-usepct=[[$mem.UsePct]]> [[$mem.UsePct]]%</span>
         span.expand.col-lr
           if JSX
             | {jsxdefines.Sparkline({ref: i, col: 'UsePct'})}
@@ -168,29 +168,29 @@ mixin range_list(datak, ranger, kvalue, keyid)
   +table('.Dfn', '.Dfd', 'Disk usage')
     .stripe
       .row.thead
-        | {{/* poke purifycss: <div class="dropup"><div class="caret" /></div> */}}
-        span.expand.col.small-1.text-nowrap:            +vlink('.Dfk', 1, 'Device')  {{/* FS     */}}
-        span.expand.col.small-1.text-nowrap:            +vlink('.Dfk', 2, 'Mounted') {{/* MP     */}}
-        span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 6, 'Total')   {{/* TOTAL  */}}
-        span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 5, 'Used')    {{/* USED   */}}
-        span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 3, 'Avail')   {{/* AVAIL  */}}
-        span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 4, 'Use%')    {{/* USEPCT */}}
+        | [[/* poke purifycss: <div class="dropup"><div class="caret" /></div> */]]
+        span.expand.col.small-1.text-nowrap:            +vlink('.Dfk', 1, 'Device')  [[/* FS     */]]
+        span.expand.col.small-1.text-nowrap:            +vlink('.Dfk', 2, 'Mounted') [[/* MP     */]]
+        span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 6, 'Total')   [[/* TOTAL  */]]
+        span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 5, 'Used')    [[/* USED   */]]
+        span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 3, 'Avail')   [[/* AVAIL  */]]
+        span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 4, 'Use%')    [[/* USEPCT */]]
         span.expand.col
       +range_list('df', '$df', '$df.DirName', 'df-rowby-dirname')
-        span.expand.col.small-1.text-overflow {{$df.DevName}}
-        span.expand.col.small-1.text-overflow  {{$df.DirName}}
+        span.expand.col.small-1.text-overflow [[$df.DevName]]
+        span.expand.col.small-1.text-overflow  [[$df.DirName]]
         span.expand.col.small-1.text-overflow.text-right.gray
-          span.float-right  {{$df.Total}}
-          span(title='Inodes total')  {{$df.Inodes}}
+          span.float-right  [[$df.Total]]
+          span(title='Inodes total')  [[$df.Inodes]]
         span.expand.col.small-1.text-overflow.text-right.gray
-          span.float-right  {{$df.Used}}
-          span(title='Inodes used')  {{$df.Iused}}
+          span.float-right  [[$df.Used]]
+          span(title='Inodes used')  [[$df.Iused]]
         span.expand.col.small-1.text-overflow.text-right.gray
-          span.float-right  {{$df.Avail}}
-          span(title='Inodes free')  {{$df.Ifree}}
-        | <span class="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct={{$df.UsePct}}>
-        span.float-right  {{$df.UsePct}}%
-        span(title='Inodes use%')  {{$df.IusePct}}%
+          span.float-right  [[$df.Avail]]
+          span(title='Inodes free')  [[$df.Ifree]]
+        | <span class="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct=[[$df.UsePct]]>
+        span.float-right  [[$df.UsePct]]%
+        span(title='Inodes use%')  [[$df.IusePct]]%
         | </span>
         span.expand.col-lr
           if JSX
@@ -207,15 +207,15 @@ mixin range_list(datak, ranger, kvalue, keyid)
         span.expand.col.small-1.text-right  Idle%
         span.expand.col
       +range_list('cpu', '$cpu', '$cpu.N', 'cpu-rowby-n')
-        span.expand.col.small-1.text-nowrap {{$cpu.N}}
+        span.expand.col.small-1.text-nowrap [[$cpu.N]]
         | <span class="expand col small-1 text-right bg-usepct"
-        |  data-usepct={{$cpu.UserPct}}> {{$cpu.UserPct}}%</span>
+        |  data-usepct=[[$cpu.UserPct]]> [[$cpu.UserPct]]%</span>
         | <span class="expand col small-1 text-right bg-usepct"
-        |  data-usepct={{$cpu.SysPct}}> {{$cpu.SysPct}}%</span>
+        |  data-usepct=[[$cpu.SysPct]]> [[$cpu.SysPct]]%</span>
         | <span class="expand col small-1 text-right bg-usepct"
-        |  data-usepct={{$cpu.WaitPct}}> {{$cpu.WaitPct}}%</span>
+        |  data-usepct=[[$cpu.WaitPct]]> [[$cpu.WaitPct]]%</span>
         | <span class="expand col small-1 text-right bg-usepct-inverse"
-        |  data-usepct={{$cpu.IdlePct}}> {{$cpu.IdlePct}}%</span>
+        |  data-usepct=[[$cpu.IdlePct]]> [[$cpu.IdlePct]]%</span>
         span.expand.col-lr
           if JSX
             | {jsxdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}
@@ -234,51 +234,51 @@ mixin range_list(datak, ranger, kvalue, keyid)
           | ps
         span.expand.col
       +range_list('netio', '$if', '$if.Name', 'if-rowby-name')
-        span.expand.col.small-1.text-overflow {{$if.Name}}
-        span.expand.col.small-1.text-overflow.text-right {{$if.IP}}
+        span.expand.col.small-1.text-overflow [[$if.Name]]
+        span.expand.col.small-1.text-overflow.text-right [[$if.IP]]
         span.expand.col.small-2.text-right.text-nowrap
           | &nbsp;
           span.gray(title='Total drops,errors modulo 4G')
-            span(title='Total drops In modulo 4G') {{$if.DropsIn}}
+            span(title='Total drops In modulo 4G') [[$if.DropsIn]]
             | /
-            span(title='Total drops Out modulo 4G') {{$if.DropsOut}}
+            span(title='Total drops Out modulo 4G') [[$if.DropsOut]]
             | ,
-            span(title='Total errors In modulo 4G') {{$if.ErrorsIn}}
+            span(title='Total errors In modulo 4G') [[$if.ErrorsIn]]
             | /
-            span(title='Total errors Out modulo 4G') {{$if.ErrorsOut}}
+            span(title='Total errors Out modulo 4G') [[$if.ErrorsOut]]
           | &nbsp;
           if JSX
             | <span class={($if.DeltaDropsIn == "0" && $if.DeltaDropsOut == "0" && $if.DeltaErrorsIn == "0" && $if.DeltaErrorsOut == "0") ? "gray":""}>
           else
-            | <span class="{{if and (eq $if.DeltaDropsIn "0") (eq $if.DeltaDropsOut "0") (eq $if.DeltaErrorsIn "0") (eq $if.DeltaErrorsOut "0")}}gray{{end}}">
-          span(title='Drops In per second') {{$if.DeltaDropsIn}}
+            | <span class="[[if and (eq $if.DeltaDropsIn "0") (eq $if.DeltaDropsOut "0") (eq $if.DeltaErrorsIn "0") (eq $if.DeltaErrorsOut "0")]]gray[[end]]">
+          span(title='Drops In per second') [[$if.DeltaDropsIn]]
           | /
-          span(title='Drops Out per second') {{$if.DeltaDropsOut}}
+          span(title='Drops Out per second') [[$if.DeltaDropsOut]]
           | ,
-          span(title='Errors In per second') {{$if.DeltaErrorsIn}}
+          span(title='Errors In per second') [[$if.DeltaErrorsIn]]
           | /
-          span(title='Errors Out per second') {{$if.DeltaErrorsOut}}
+          span(title='Errors Out per second') [[$if.DeltaErrorsOut]]
           | </span>
         span.expand.col.small-2.text-right.text-nowrap
           | &nbsp;
           span.gray
-            span(title='Total packets In modulo 4G') {{$if.PacketsIn}}
+            span(title='Total packets In modulo 4G') [[$if.PacketsIn]]
             | /
-            span(title='Total packets Out modulo 4G') {{$if.PacketsOut}}
+            span(title='Total packets Out modulo 4G') [[$if.PacketsOut]]
           | &nbsp;
-          span(title='Packets In per second') {{$if.DeltaPacketsIn}}
+          span(title='Packets In per second') [[$if.DeltaPacketsIn]]
           | /
-          span(title='Packets Out per second') {{$if.DeltaPacketsOut}}
+          span(title='Packets Out per second') [[$if.DeltaPacketsOut]]
         span.expand.col.small-2.text-right.text-nowrap
           | &nbsp;
           span.gray
-            span(title='Total BYTES In modulo 4G') {{$if.BytesIn}}
+            span(title='Total BYTES In modulo 4G') [[$if.BytesIn]]
             | /
-            span(title='Total BYTES Out modulo 4G') {{$if.BytesOut}}
+            span(title='Total BYTES Out modulo 4G') [[$if.BytesOut]]
           | &nbsp;
-          span(title='BITS In per second') {{$if.DeltaBitsIn}}
+          span(title='BITS In per second') [[$if.DeltaBitsIn]]
           | /
-          span(title='BITS Out per second') {{$if.DeltaBitsOut}}
+          span(title='BITS Out per second') [[$if.DeltaBitsOut]]
         span.expand.col-lr
           if JSX
             | {jsxdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}
@@ -287,61 +287,61 @@ mixin range_list(datak, ranger, kvalue, keyid)
   +table('.Psn', '.Psd', 'Processes')
     .stripe
       .row.thead
-        | {{/* poke purifycss: <div class="dropup"><div class="caret" /></div> */}}
+        | [[/* poke purifycss: <div class="dropup"><div class="caret" /></div> */]]
         span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 1, 'PID')
         span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 2, 'UID')
         span.expand.col.small-1.text-nowrap:             +vlink('.Psk', 3, 'USER')
-        span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 4, 'PR')      {{/* PRI  */}}
-        span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 5, 'NI')      {{/* NICE */}}
+        span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 4, 'PR')      [[/* PRI  */]]
+        span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 5, 'NI')      [[/* NICE */]]
         span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 6, 'VIRT')
         span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 7, 'RES')
         span.expand.col.small-1.text-nowrap.text-center: +vlink('.Psk', 8, 'TIME')
-        span.expand.col.small-1.text-nowrap:             +vlink('.Psk', 9, 'COMMAND') {{/* NAME */}}
+        span.expand.col.small-1.text-nowrap:             +vlink('.Psk', 9, 'COMMAND') [[/* NAME */]]
       +range_list('procs', '$ps', '$ps.PID', 'ps-rowby-pid')
-        span.expand.col.small-1.text-right {{$ps.PID}}
-        span.expand.col.small-1.text-right  {{$ps.UID}}
-        span.expand.col.small-1  {{$ps.User}}
-        span.expand.col.small-1.text-right  {{$ps.Priority}}
-        span.expand.col.small-1.text-right  {{$ps.Nice}}
-        span.expand.col.small-1.text-right  {{$ps.Size}}
-        span.expand.col.small-1.text-right  {{$ps.Resident}}
-        span.expand.col.small-1.text-center  {{$ps.Time}}
-        span.expand.col  {{$ps.Name}}
+        span.expand.col.small-1.text-right [[$ps.PID]]
+        span.expand.col.small-1.text-right  [[$ps.UID]]
+        span.expand.col.small-1  [[$ps.User]]
+        span.expand.col.small-1.text-right  [[$ps.Priority]]
+        span.expand.col.small-1.text-right  [[$ps.Nice]]
+        span.expand.col.small-1.text-right  [[$ps.Size]]
+        span.expand.col.small-1.text-right  [[$ps.Resident]]
+        span.expand.col.small-1.text-center  [[$ps.Time]]
+        span.expand.col  [[$ps.Name]]
 
 //- The index:
 doctype html
 html
   head
     meta(charset='utf-8')
-    title {{.Data.hostname}} ostent
+    title [[.Data.hostname]] ostent
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
 
     <!--[if IE]>
     link(rel='shortcut icon', href='/favicon.ico')
     <![endif]-->
-    link(rel='icon', sizes='32x32', href='/{{.OstentVersion}}/favicons/favicon-32.png', 'type=image/png')
-    link(rel='apple-touch-icon', sizes='120x120', href='/{{.OstentVersion}}/favicons/favicon-120.png')
-    link(rel='apple-touch-icon', sizes='144x144', href='/{{.OstentVersion}}/favicons/favicon-144.png')
-    link(rel='apple-touch-icon', sizes='152x152', href='/{{.OstentVersion}}/favicons/favicon-152.png')
-    link(rel='apple-touch-icon', sizes='180x180', href='/{{.OstentVersion}}/favicons/favicon-180.png')
+    link(rel='icon', sizes='32x32', href='/[[.OstentVersion]]/favicons/favicon-32.png', 'type=image/png')
+    link(rel='apple-touch-icon', sizes='120x120', href='/[[.OstentVersion]]/favicons/favicon-120.png')
+    link(rel='apple-touch-icon', sizes='144x144', href='/[[.OstentVersion]]/favicons/favicon-144.png')
+    link(rel='apple-touch-icon', sizes='152x152', href='/[[.OstentVersion]]/favicons/favicon-152.png')
+    link(rel='apple-touch-icon', sizes='180x180', href='/[[.OstentVersion]]/favicons/favicon-180.png')
 
-    link(rel='stylesheet', type='text/css', href='/{{.OstentVersion}}/css/index.css')
+    link(rel='stylesheet', type='text/css', href='/[[.OstentVersion]]/css/index.css')
 
   body
     .top-bar
-      - var latestOstent = 'https://www.ostrost.com/ostent/releases/latest?cmp={{.OstentVersion}}'
+      - var latestOstent = 'https://www.ostrost.com/ostent/releases/latest?cmp=[[.OstentVersion]]'
       .top-bar-title
         h2.h5.margin-bottom-0
           span.updates(data-define='define_hostname')
-            | {{template "define_hostname" .}}
+            | [[template "define_hostname" .]]
           |  
           a(href=latestOstent) ostent
-      +if('.OstentUpgrade'): .top-bar-left: a(href=latestOstent) {{.OstentUpgrade}}
+      +if('.OstentUpgrade'): .top-bar-left: a(href=latestOstent) [[.OstentUpgrade]]
       div: .top-bar-right: h2.h5.margin-bottom-0: small
-        | {{.Distrib}} up 
+        | [[.Distrib]] up 
         span.updates.whitespace-pre(data-define='define_uptime')
-          | {{template "define_uptime" .}}
+          | [[template "define_uptime" .]]
         //- a.button.secondary.hollow.margin-0(href=latestOstent) ostent
 
     +if('ne (len .Exporting) 0')
@@ -352,19 +352,19 @@ html
             .row.thead
               span.expand.col.small-2
                 | Exporting to&nbsp;
-                span.badge.secondary {{len .Exporting}}
+                span.badge.secondary [[len .Exporting]]
               span.expand.col.small-10 Endpoint
             +range('$expo := .Exporting'): .row
-              span.expand.col.small-2 {{$expo.Name}}
-              span.expand.col.small-10 {{$expo.Endpoint}}
+              span.expand.col.small-2 [[$expo.Name]]
+              span.expand.col.small-10 [[$expo.Endpoint]]
 
-    .updates(data-define='define_la')  {{template "define_la"  .}}
-    .updates(data-define='define_mem') {{template "define_mem" .}}
-    .updates(data-define='define_df')  {{template "define_df"  .}}
-    .updates(data-define='define_cpu') {{template "define_cpu" .}}
-    .updates(data-define='define_if')  {{template "define_if"  .}}
-    .updates(data-define='define_ps')  {{template "define_ps"  .}}
+    .updates(data-define='define_la')  [[template "define_la"  .]]
+    .updates(data-define='define_mem') [[template "define_mem" .]]
+    .updates(data-define='define_df')  [[template "define_df"  .]]
+    .updates(data-define='define_cpu') [[template "define_cpu" .]]
+    .updates(data-define='define_if')  [[template "define_if"  .]]
+    .updates(data-define='define_ps')  [[template "define_ps"  .]]
 
     script(type='text/javascript').
-      var Data = {{.Data}};
-    script(type='text/javascript', charset='utf-8', src='/{{.OstentVersion}}/js/{{if .TAGGEDbin}}min/bundle.min.js{{else}}src/bundle.js{{end}}')
+      var Data = [[.Data]];
+    script(type='text/javascript', charset='utf-8', src='/[[.OstentVersion]]/js/[[if .TAGGEDbin]]min/bundle.min.js[[else]]src/bundle.js[[end]]')

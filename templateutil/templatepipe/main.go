@@ -18,7 +18,7 @@ func Convert(inputTemplateFile, definesFromFile string,
 		return err
 	}
 
-	definesFrom := template.New(definesFromFile).Funcs(htmlFuncs)
+	definesFrom := template.New(definesFromFile).Delims("[[", "]]").Funcs(htmlFuncs)
 	if definesFromFile == "-" {
 		text, err2 := ioutil.ReadAll(os.Stdin)
 		if err2 != nil {

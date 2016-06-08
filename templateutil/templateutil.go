@@ -77,7 +77,10 @@ func (lt *LazyTemplate) init() { // init is internal and lock-free.
 		}
 		lt.devModTime = modtime
 	}
-	lt.Template, lt.err = template.New(lt.filename).Option("missingkey=error").
+	lt.Template, lt.err = template.
+		New(lt.filename).
+		Option("missingkey=error").
+		Delims("[[", "]]").
 		Parse(string(text))
 }
 
