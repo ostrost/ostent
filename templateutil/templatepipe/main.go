@@ -33,7 +33,7 @@ func Convert(inputTemplateFile, definesFromFile string,
 	}
 
 	// definesOnly will have just "define_" templates added in the tree.
-	definesOnly := template.New("jsdefines") // .Funcs(template.FuncMap(jsxlFuncs))
+	definesOnly := template.New("jsxdefines") // .Funcs(template.FuncMap(jsxlFuncs))
 
 	definesTemplates := SortableTemplates(definesFrom.Templates())
 	sort.Stable(definesTemplates)

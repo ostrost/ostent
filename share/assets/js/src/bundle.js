@@ -50,7 +50,7 @@
 	var React = __webpack_require__(1),
 	    ReactDOM = __webpack_require__(38),
 	    ReconnectWS = __webpack_require__(167),
-	    jsdefines = __webpack_require__(168);
+	    jsxdefines = __webpack_require__(168);
 
 	/*
 	function neweventsource(onmessage) {
@@ -92,7 +92,7 @@
 
 	  var els = [];
 	  for (var i = 0, sel = document.querySelectorAll('.updates'); i < sel.length; i++) {
-	    var cl = jsdefines[sel[i].getAttribute('data-define')];
+	    var cl = jsxdefines[sel[i].getAttribute('data-define')];
 	    els.push(ReactDOM.render(React.createElement(cl), sel[i]));
 	  }
 
@@ -20847,12 +20847,12 @@
 	  }
 	});
 
-	var jsdefines = {};
-	jsdefines.Sparkline = function (props) {
+	var jsxdefines = {};
+	jsxdefines.Sparkline = function (props) {
 	  return React.createElement(Sparkline, props);
 	};
 
-	jsdefines.StateHandlingMixin = { // requires .Reduce method
+	jsxdefines.StateHandlingMixin = { // requires .Reduce method
 	  getInitialState: function getInitialState() {
 	    return this.StateFrom(Data); // global Data
 	  },
@@ -20895,7 +20895,7 @@
 	    return state;
 	  }
 	};
-	jsdefines.HandlerMixin = {
+	jsxdefines.HandlerMixin = {
 	  handleClick: function handleClick(e) {
 	    var href = e.target.getAttribute('href');
 	    if (href == null) {
@@ -20939,10 +20939,10 @@
 	  className: 'expand col'
 	}));
 
-	jsdefines.define_cpu = React.createClass({
+	jsxdefines.define_cpu = React.createClass({
 	  displayName: 'define_cpu',
 
-	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+	  mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
 	  List: function List(data) {
 	    var list = void 0;
 	    if (data == null || data["cpu"] == null || (list = data["cpu"].List) == null) {
@@ -21035,7 +21035,7 @@
 	        'data-usepct': $cpu.IdlePct
 	      }, void 0, ' ', $cpu.IdlePct, '%'), _jsx('span', {
 	        className: 'expand col-lr'
-	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'IdlePct', defaultSpots: true })));
+	      }, void 0, jsxdefines.Sparkline({ ref: i, col: 'IdlePct', defaultSpots: true })));
 	    }))))));
 	  }
 	});
@@ -21056,10 +21056,10 @@
 	  className: 'expand col'
 	});
 
-	jsdefines.define_df = React.createClass({
+	jsxdefines.define_df = React.createClass({
 	  displayName: 'define_df',
 
-	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+	  mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
 	  List: function List(data) {
 	    var list = void 0;
 	    if (data == null || data["df"] == null || (list = data["df"].List) == null) {
@@ -21217,15 +21217,15 @@
 	        title: 'Inodes use%'
 	      }, void 0, ' ', $df.IusePct, '%')), _jsx('span', {
 	        className: 'expand col-lr'
-	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct' })));
+	      }, void 0, jsxdefines.Sparkline({ ref: i, col: 'UsePct' })));
 	    }))))));
 	  }
 	});
 
-	jsdefines.define_hostname = React.createClass({
+	jsxdefines.define_hostname = React.createClass({
 	  displayName: 'define_hostname',
 
-	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+	  mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
 	  Reduce: function Reduce(data) {
 	    return {
 	      hostname: data.hostname
@@ -21271,10 +21271,10 @@
 	  className: 'expand col'
 	}));
 
-	jsdefines.define_if = React.createClass({
+	jsxdefines.define_if = React.createClass({
 	  displayName: 'define_if',
 
-	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+	  mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
 	  List: function List(data) {
 	    var list = void 0;
 	    if (data == null || data["netio"] == null || (list = data["netio"].List) == null) {
@@ -21404,7 +21404,7 @@
 	        title: 'BITS Out per second'
 	      }, void 0, $if.DeltaBitsOut)), _jsx('span', {
 	        className: 'expand col-lr'
-	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'DeltaBytesOutNum' })));
+	      }, void 0, jsxdefines.Sparkline({ ref: i, col: 'DeltaBytesOutNum' })));
 	    }))))));
 	  }
 	});
@@ -21431,10 +21431,10 @@
 	  className: 'expand col'
 	}));
 
-	jsdefines.define_la = React.createClass({
+	jsxdefines.define_la = React.createClass({
 	  displayName: 'define_la',
 
-	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+	  mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
 	  List: function List(data) {
 	    var list = void 0;
 	    if (data == null || data["la"] == null || (list = data["la"].List) == null) {
@@ -21519,7 +21519,7 @@
 	        className: 'expand col small-1 text-right'
 	      }, void 0, ' ', $la.Value), _jsx('span', {
 	        className: 'expand col-lr'
-	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'Value' })));
+	      }, void 0, jsxdefines.Sparkline({ ref: i, col: 'Value' })));
 	    }))))));
 	  }
 	});
@@ -21552,10 +21552,10 @@
 	  className: 'expand col'
 	}));
 
-	jsdefines.define_mem = React.createClass({
+	jsxdefines.define_mem = React.createClass({
 	  displayName: 'define_mem',
 
-	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+	  mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
 	  List: function List(data) {
 	    var list = void 0;
 	    if (data == null || data["mem"] == null || (list = data["mem"].List) == null) {
@@ -21645,7 +21645,7 @@
 	        'data-usepct': $mem.UsePct
 	      }, void 0, ' ', $mem.UsePct, '%'), _jsx('span', {
 	        className: 'expand col-lr'
-	      }, void 0, jsdefines.Sparkline({ ref: i, col: 'UsePct' })));
+	      }, void 0, jsxdefines.Sparkline({ ref: i, col: 'UsePct' })));
 	    }))))));
 	  }
 	});
@@ -21662,10 +21662,10 @@
 	  className: 'input-group-label text-nowrap'
 	}, void 0, 'rows');
 
-	jsdefines.define_ps = React.createClass({
+	jsxdefines.define_ps = React.createClass({
 	  displayName: 'define_ps',
 
-	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+	  mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
 	  List: function List(data) {
 	    var list = void 0;
 	    if (data == null || data["procs"] == null || (list = data["procs"].List) == null) {
@@ -21839,10 +21839,10 @@
 	  }
 	});
 
-	jsdefines.define_uptime = React.createClass({
+	jsxdefines.define_uptime = React.createClass({
 	  displayName: 'define_uptime',
 
-	  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+	  mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
 	  Reduce: function Reduce(data) {
 	    return {
 	      uptime: data.uptime
@@ -21854,7 +21854,7 @@
 	  }
 	});
 
-	module.exports = jsdefines;
+	module.exports = jsxdefines;
 
 	// Local variables:
 	// js-indent-level: 2

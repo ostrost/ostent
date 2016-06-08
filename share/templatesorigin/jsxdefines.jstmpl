@@ -48,10 +48,10 @@ var Sparkline = React.createClass({
   }
 });
 
-let jsdefines = {};
-jsdefines.Sparkline = function(props) { return <Sparkline {...props} />; }
+let jsxdefines = {};
+jsxdefines.Sparkline = function(props) { return <Sparkline {...props} />; }
 
-jsdefines.StateHandlingMixin = { // requires .Reduce method
+jsxdefines.StateHandlingMixin = { // requires .Reduce method
   getInitialState: function() {
     return this.StateFrom(Data); // global Data
   },
@@ -94,7 +94,7 @@ jsdefines.StateHandlingMixin = { // requires .Reduce method
     return state;
   }
 };
-jsdefines.HandlerMixin = {
+jsxdefines.HandlerMixin = {
   handleClick: function(e) {
     let href = e.target.getAttribute('href');
     if (href == null) {
@@ -110,8 +110,8 @@ jsdefines.HandlerMixin = {
 
 // transformed from define_* templates:
 {{range $d := .Defines}}{{$q := printf "%q" $d.Iterable}}
-jsdefines.{{$d.ShortName}} = React.createClass({
-  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+jsxdefines.{{$d.ShortName}} = React.createClass({
+  mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
   {{if .NeedList}}{{/*
 */}}List: function(data) {
     let list;
@@ -135,7 +135,7 @@ jsdefines.{{$d.ShortName}} = React.createClass({
 });
 {{end}}
 
-module.exports = jsdefines;
+module.exports = jsxdefines;
 
 // Local variables:
 // js-indent-level: 2

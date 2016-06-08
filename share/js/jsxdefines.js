@@ -49,10 +49,10 @@ var Sparkline = React.createClass({
   }
 });
 
-let jsdefines = {};
-jsdefines.Sparkline = function(props) { return <Sparkline {...props} />; }
+let jsxdefines = {};
+jsxdefines.Sparkline = function(props) { return <Sparkline {...props} />; }
 
-jsdefines.StateHandlingMixin = { // requires .Reduce method
+jsxdefines.StateHandlingMixin = { // requires .Reduce method
   getInitialState: function() {
     return this.StateFrom(Data); // global Data
   },
@@ -95,7 +95,7 @@ jsdefines.StateHandlingMixin = { // requires .Reduce method
     return state;
   }
 };
-jsdefines.HandlerMixin = {
+jsxdefines.HandlerMixin = {
   handleClick: function(e) {
     let href = e.target.getAttribute('href');
     if (href == null) {
@@ -111,8 +111,8 @@ jsdefines.HandlerMixin = {
 
 // transformed from define_* templates:
 
-jsdefines.define_cpu = React.createClass({
-  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+jsxdefines.define_cpu = React.createClass({
+  mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
   List: function(data) {
     let list;
     if (data == null || data["cpu"] == null || (list = data["cpu"].List) == null) {
@@ -179,15 +179,15 @@ jsdefines.define_cpu = React.createClass({
       <span className="expand col small-1 text-right bg-usepct"
        data-usepct={$cpu.WaitPct}> {$cpu.WaitPct}%</span>
       <span className="expand col small-1 text-right bg-usepct-inverse"
-       data-usepct={$cpu.IdlePct}> {$cpu.IdlePct}%</span><span className="expand col-lr">{jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}</span></div>);})}
+       data-usepct={$cpu.IdlePct}> {$cpu.IdlePct}%</span><span className="expand col-lr">{jsxdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}</span></div>);})}
     </div></div></div>
   </div>
 </div>);
   }
 });
 
-jsdefines.define_df = React.createClass({
-  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+jsxdefines.define_df = React.createClass({
+  mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
   List: function(data) {
     let list;
     if (data == null || data["df"] == null || (list = data["df"].List) == null) {
@@ -259,15 +259,15 @@ jsdefines.define_df = React.createClass({
           <a href={ Data.params.Vlinks.Dfk[4-1].LinkHref} className={ Data.params.Vlinks.Dfk[4-1].LinkClass} onClick={this.handleClick}
             >Use%<span className={ Data.params.Vlinks.Dfk[4-1].CaretClass}></span></a></span><span className="expand col"></span></div>
       {this.List(Data).map(function($df, i) { return (
-      <div className="row" key={"df-rowby-dirname-"+$df.DirName}><span className="expand col small-1 text-overflow">{$df.DevName}</span><span className="expand col small-1 text-overflow"> {$df.DirName}</span><span className="expand col small-1 text-overflow text-right gray"><span className="float-right"> {$df.Total}</span><span title="Inodes total"> {$df.Inodes}</span></span><span className="expand col small-1 text-overflow text-right gray"><span className="float-right"> {$df.Used}</span><span title="Inodes used"> {$df.Iused}</span></span><span className="expand col small-1 text-overflow text-right gray"><span className="float-right"> {$df.Avail}</span><span title="Inodes free"> {$df.Ifree}</span></span><span className="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct={$df.UsePct}><span className="float-right"> {$df.UsePct}%</span><span title="Inodes use%"> {$df.IusePct}%</span></span><span className="expand col-lr">{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</span></div>);})}
+      <div className="row" key={"df-rowby-dirname-"+$df.DirName}><span className="expand col small-1 text-overflow">{$df.DevName}</span><span className="expand col small-1 text-overflow"> {$df.DirName}</span><span className="expand col small-1 text-overflow text-right gray"><span className="float-right"> {$df.Total}</span><span title="Inodes total"> {$df.Inodes}</span></span><span className="expand col small-1 text-overflow text-right gray"><span className="float-right"> {$df.Used}</span><span title="Inodes used"> {$df.Iused}</span></span><span className="expand col small-1 text-overflow text-right gray"><span className="float-right"> {$df.Avail}</span><span title="Inodes free"> {$df.Ifree}</span></span><span className="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct={$df.UsePct}><span className="float-right"> {$df.UsePct}%</span><span title="Inodes use%"> {$df.IusePct}%</span></span><span className="expand col-lr">{jsxdefines.Sparkline({ref: i, col: 'UsePct'})}</span></div>);})}
     </div></div></div>
   </div>
 </div>);
   }
 });
 
-jsdefines.define_hostname = React.createClass({
-  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+jsxdefines.define_hostname = React.createClass({
+  mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
   Reduce: function(data) {
     return {
       hostname: data.hostname
@@ -279,8 +279,8 @@ jsdefines.define_hostname = React.createClass({
   }
 });
 
-jsdefines.define_if = React.createClass({
-  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+jsxdefines.define_if = React.createClass({
+  mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
   List: function(data) {
     let list;
     if (data == null || data["netio"] == null || (list = data["netio"].List) == null) {
@@ -340,15 +340,15 @@ jsdefines.define_if = React.createClass({
     <div className="stripe">
       <div className="row thead"><span className="expand col small-1">Interface</span><span className="expand col small-1 text-right"> IP</span><span title="Drops,Errors In/Out per second" className="expand col small-2 text-right text-nowrap"> Loss IO ps</span><span title="Packets In/Out per second" className="expand col small-2 text-right text-nowrap"> Packets IO ps</span><span title="Bits In/Out per second" className="expand col small-2 text-right text-nowrap"> IO <i>b</i>ps</span><span className="expand col"></span></div>
       {this.List(Data).map(function($if, i) { return (
-      <div className="row" key={"if-rowby-name-"+$if.Name}><span className="expand col small-1 text-overflow">{$if.Name}</span><span className="expand col small-1 text-overflow text-right">{$if.IP}</span><span className="expand col small-2 text-right text-nowrap">&nbsp;<span title="Total drops,errors modulo 4G" className="gray"><span title="Total drops In modulo 4G">{$if.DropsIn}</span>/<span title="Total drops Out modulo 4G">{$if.DropsOut}</span>,<span title="Total errors In modulo 4G">{$if.ErrorsIn}</span>/<span title="Total errors Out modulo 4G">{$if.ErrorsOut}</span></span>&nbsp;<span className={($if.DeltaDropsIn == "0" && $if.DeltaDropsOut == "0" && $if.DeltaErrorsIn == "0" && $if.DeltaErrorsOut == "0") ? "gray":""}><span title="Drops In per second">{$if.DeltaDropsIn}</span>/<span title="Drops Out per second">{$if.DeltaDropsOut}</span>,<span title="Errors In per second">{$if.DeltaErrorsIn}</span>/<span title="Errors Out per second">{$if.DeltaErrorsOut}</span></span></span><span className="expand col small-2 text-right text-nowrap">&nbsp;<span className="gray"><span title="Total packets In modulo 4G">{$if.PacketsIn}</span>/<span title="Total packets Out modulo 4G">{$if.PacketsOut}</span></span>&nbsp;<span title="Packets In per second">{$if.DeltaPacketsIn}</span>/<span title="Packets Out per second">{$if.DeltaPacketsOut}</span></span><span className="expand col small-2 text-right text-nowrap">&nbsp;<span className="gray"><span title="Total BYTES In modulo 4G">{$if.BytesIn}</span>/<span title="Total BYTES Out modulo 4G">{$if.BytesOut}</span></span>&nbsp;<span title="BITS In per second">{$if.DeltaBitsIn}</span>/<span title="BITS Out per second">{$if.DeltaBitsOut}</span></span><span className="expand col-lr">{jsdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}</span></div>);})}
+      <div className="row" key={"if-rowby-name-"+$if.Name}><span className="expand col small-1 text-overflow">{$if.Name}</span><span className="expand col small-1 text-overflow text-right">{$if.IP}</span><span className="expand col small-2 text-right text-nowrap">&nbsp;<span title="Total drops,errors modulo 4G" className="gray"><span title="Total drops In modulo 4G">{$if.DropsIn}</span>/<span title="Total drops Out modulo 4G">{$if.DropsOut}</span>,<span title="Total errors In modulo 4G">{$if.ErrorsIn}</span>/<span title="Total errors Out modulo 4G">{$if.ErrorsOut}</span></span>&nbsp;<span className={($if.DeltaDropsIn == "0" && $if.DeltaDropsOut == "0" && $if.DeltaErrorsIn == "0" && $if.DeltaErrorsOut == "0") ? "gray":""}><span title="Drops In per second">{$if.DeltaDropsIn}</span>/<span title="Drops Out per second">{$if.DeltaDropsOut}</span>,<span title="Errors In per second">{$if.DeltaErrorsIn}</span>/<span title="Errors Out per second">{$if.DeltaErrorsOut}</span></span></span><span className="expand col small-2 text-right text-nowrap">&nbsp;<span className="gray"><span title="Total packets In modulo 4G">{$if.PacketsIn}</span>/<span title="Total packets Out modulo 4G">{$if.PacketsOut}</span></span>&nbsp;<span title="Packets In per second">{$if.DeltaPacketsIn}</span>/<span title="Packets Out per second">{$if.DeltaPacketsOut}</span></span><span className="expand col small-2 text-right text-nowrap">&nbsp;<span className="gray"><span title="Total BYTES In modulo 4G">{$if.BytesIn}</span>/<span title="Total BYTES Out modulo 4G">{$if.BytesOut}</span></span>&nbsp;<span title="BITS In per second">{$if.DeltaBitsIn}</span>/<span title="BITS Out per second">{$if.DeltaBitsOut}</span></span><span className="expand col-lr">{jsxdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}</span></div>);})}
     </div></div></div>
   </div>
 </div>);
   }
 });
 
-jsdefines.define_la = React.createClass({
-  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+jsxdefines.define_la = React.createClass({
+  mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
   List: function(data) {
     let list;
     if (data == null || data["la"] == null || (list = data["la"].List) == null) {
@@ -409,15 +409,15 @@ jsdefines.define_la = React.createClass({
       <div className="row thead"><span className="expand col small-1">Period</span><span className="expand col small-1 text-right"> Value</span><span className="expand col"></span></div>
       {this.List(Data).map(function($la, i) { return (
       <div className="row" key={"la-rowby-period-"+$la.Period}><span className="expand col small-1">
-        <div className="text-right width-3rem">{$la.Period}m</div></span><span className="expand col small-1 text-right"> {$la.Value}</span><span className="expand col-lr">{jsdefines.Sparkline({ref: i, col: 'Value'})}</span></div>);})}
+        <div className="text-right width-3rem">{$la.Period}m</div></span><span className="expand col small-1 text-right"> {$la.Value}</span><span className="expand col-lr">{jsxdefines.Sparkline({ref: i, col: 'Value'})}</span></div>);})}
     </div></div></div>
   </div>
 </div>);
   }
 });
 
-jsdefines.define_mem = React.createClass({
-  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+jsxdefines.define_mem = React.createClass({
+  mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
   List: function(data) {
     let list;
     if (data == null || data["mem"] == null || (list = data["mem"].List) == null) {
@@ -477,15 +477,15 @@ jsdefines.define_mem = React.createClass({
     <div className="stripe">
       <div className="row thead"><span className="expand col small-1">Memory</span><span className="expand col small-1 text-right"> Total</span><span className="expand col small-1 text-right"> Used</span><span className="expand col small-1 text-right"> Free</span><span className="expand col small-1 text-right"> Use%</span><span className="expand col"></span></div>
       {this.List(Data).map(function($mem, i) { return (
-      <div className="row" key={"mem-rowby-kind-"+$mem.Kind}><span className="expand col small-1">{$mem.Kind}</span><span className="expand col small-1 text-right"> {$mem.Total}</span><span className="expand col small-1 text-right"> {$mem.Used}</span><span className="expand col small-1 text-right"> {$mem.Free}</span><span className="expand col small-1 text-right bg-usepct" data-usepct={$mem.UsePct}> {$mem.UsePct}%</span><span className="expand col-lr">{jsdefines.Sparkline({ref: i, col: 'UsePct'})}</span></div>);})}
+      <div className="row" key={"mem-rowby-kind-"+$mem.Kind}><span className="expand col small-1">{$mem.Kind}</span><span className="expand col small-1 text-right"> {$mem.Total}</span><span className="expand col small-1 text-right"> {$mem.Used}</span><span className="expand col small-1 text-right"> {$mem.Free}</span><span className="expand col small-1 text-right bg-usepct" data-usepct={$mem.UsePct}> {$mem.UsePct}%</span><span className="expand col-lr">{jsxdefines.Sparkline({ref: i, col: 'UsePct'})}</span></div>);})}
     </div></div></div>
   </div>
 </div>);
   }
 });
 
-jsdefines.define_ps = React.createClass({
-  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+jsxdefines.define_ps = React.createClass({
+  mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
   List: function(data) {
     let list;
     if (data == null || data["procs"] == null || (list = data["procs"].List) == null) {
@@ -570,8 +570,8 @@ jsdefines.define_ps = React.createClass({
   }
 });
 
-jsdefines.define_uptime = React.createClass({
-  mixins: [ReactPureRenderMixin, jsdefines.StateHandlingMixin, jsdefines.HandlerMixin],
+jsxdefines.define_uptime = React.createClass({
+  mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
   Reduce: function(data) {
     return {
       uptime: data.uptime
@@ -584,7 +584,7 @@ jsdefines.define_uptime = React.createClass({
 });
 
 
-module.exports = jsdefines;
+module.exports = jsxdefines;
 
 // Local variables:
 // js-indent-level: 2

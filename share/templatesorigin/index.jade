@@ -142,7 +142,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
         span.expand.col.small-1.text-right  {{$la.Value}}
         span.expand.col-lr
           if JSX
-            | {jsdefines.Sparkline({ref: i, col: 'Value'})}
+            | {jsxdefines.Sparkline({ref: i, col: 'Value'})}
 
 +define('define_mem')
   +table('.Memn', '.Memd', 'Memory')
@@ -162,7 +162,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
         | <span class="expand col small-1 text-right bg-usepct" data-usepct={{$mem.UsePct}}> {{$mem.UsePct}}%</span>
         span.expand.col-lr
           if JSX
-            | {jsdefines.Sparkline({ref: i, col: 'UsePct'})}
+            | {jsxdefines.Sparkline({ref: i, col: 'UsePct'})}
 
 +define('define_df')
   +table('.Dfn', '.Dfd', 'Disk usage')
@@ -194,7 +194,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
         | </span>
         span.expand.col-lr
           if JSX
-            | {jsdefines.Sparkline({ref: i, col: 'UsePct'})}
+            | {jsxdefines.Sparkline({ref: i, col: 'UsePct'})}
 
 +define('define_cpu')
   +table('.CPUn', '.CPUd', 'CPU')
@@ -218,7 +218,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
         |  data-usepct={{$cpu.IdlePct}}> {{$cpu.IdlePct}}%</span>
         span.expand.col-lr
           if JSX
-            | {jsdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}
+            | {jsxdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}
 
 +define('define_if')
   +table('.Ifn', '.Ifd', 'Interfaces')
@@ -281,7 +281,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
           span(title='BITS Out per second') {{$if.DeltaBitsOut}}
         span.expand.col-lr
           if JSX
-            | {jsdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}
+            | {jsxdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}
 
 +define('define_ps')
   +table('.Psn', '.Psd', 'Processes')

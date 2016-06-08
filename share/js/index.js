@@ -1,7 +1,7 @@
 var React       = require('react'),
     ReactDOM    = require('react-dom'),
     ReconnectWS = require('reconnectingwebsocket'),
-    jsdefines   = require('./jsxdefines.js');
+    jsxdefines  = require('./jsxdefines.js');
 
 /*
 function neweventsource(onmessage) {
@@ -43,7 +43,7 @@ function main(data) {
 
   var els = [];
   for (var i = 0, sel = document.querySelectorAll('.updates'); i < sel.length; i++) {
-    var cl = jsdefines[sel[i].getAttribute('data-define')];
+    var cl = jsxdefines[sel[i].getAttribute('data-define')];
     els.push(ReactDOM.render(React.createElement(cl), sel[i]));
   }
 

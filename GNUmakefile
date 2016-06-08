@@ -119,7 +119,7 @@ share/assets/css/index.css:        share/js/index.js share/js/jsxdefines.js
 share/assets/js/src/bundle.js:     share/js/index.js share/js/jsxdefines.js
 share/assets/js/min/bundle.min.js: share/js/index.js share/js/jsxdefines.js
 share/templates/index.html:        share/templatesorigin/index.jade
-share/js/jsxdefines.js:            share/templatesorigin/index.jade share/templatesorigin/jsdefines.jstmpl $(templatepp)
+share/js/jsxdefines.js:            share/templatesorigin/index.jade share/templatesorigin/jsxdefines.jstmpl $(templatepp)
 
 $(templates_bingo) $(templates_devgo): $(shell find share/templates/ -type f \! -name \*.go)
 
