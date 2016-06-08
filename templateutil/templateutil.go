@@ -60,11 +60,6 @@ func (lt *LazyTemplate) init() { // init is internal and lock-free.
 		// allgood#1: non-dev mode & have .Template
 		return
 	}
-	text, err := lt.readFunc(lt.filename)
-	if err != nil {
-		lt.err = err
-		return
-	}
 	if info, err := lt.infoFunc(lt.filename); err != nil {
 		lt.err = err
 		return
@@ -77,10 +72,13 @@ func (lt *LazyTemplate) init() { // init is internal and lock-free.
 		}
 		lt.devModTime = modtime
 	}
-	lt.Template, lt.err = template.
-		New(lt.filename).
-		Option("missingkey=error").
-		Delims("[[", "]]").
+	text, err := lt.readFunc(lt.filename)
+	if err != nil {
+		lt.err = err
+		return
+	}
+	lt.Template, lt.err = template.New(lt.filename).
+		Delims("[[", "]]").Option("missingkey=error").
 		Parse(string(text))
 }
 
