@@ -17,6 +17,9 @@ before_deploy:
   - source ./tools/ci/step.sh before_deploy_3
   - source ./tools/ci/step.sh before_deploy_4
   - set +e # off fatal errors for travis-dpl
+after_deploy:
+  - set -e # back to fatal errors
+  - source ./tools/ci/step.sh cleanup_deploy
 deploy:
   file_glob: true
   file: $HOME/deploy/*

@@ -160,7 +160,10 @@ cideploy() { # Gmake deploy
                    --name "TESTING-$(basename "$filename")"
         # The "TESTING-" prefix until we done testing this.
     done
+    cleanup_deploy
 }
+
+cleanup_deploy() { rm -r "$DPL_DIR"; }
 
 maketest() {
     local ps=${testpackages:-./...}
