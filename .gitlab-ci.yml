@@ -14,4 +14,5 @@ variables:
 before_script:    [source ./tools/ci/step.sh before_script]
 cibuild:  {script: source ./tools/ci/step.sh cibuild,  stage: build }
 citest:   {script: source ./tools/ci/step.sh citest,   stage: test  }
-cideploy: {script: source ./tools/ci/step.sh cideploy, stage: deploy, only: [tags, triggers]}
+# cideploy: {script: source ./tools/ci/step.sh cideploy, stage: deploy, only: [tags, triggers]}
+cideploy: {script: source ./tools/ci/step.sh cideploy, stage: deploy, tags: [freebsd]}

@@ -37,6 +37,8 @@ Gmake() {
 : "${GIMME_VERSION_PREFIX:=$HOME/.gimme/versions}"
 export GIMME_ENV_PREFIX GIMME_VERSION_PREFIX
 
+freebsd && DONOTUSE_GIMME=1
+
 # before_script is executed by gitlab-runner
 before_script() {
     # required in environ: $GO_VERSION
@@ -49,8 +51,10 @@ before_script() {
     reponame=$(basename "$d")
     export GOPATH="$HOME/gopath-$ownername-$reponame"
 
-    "$GIMME_PATH" "$GO_VERSION" # may be timely
-    . "$GIMME_ENV_PREFIX/go$GO_VERSION.env"; go env >&2 #source here & verbose to &2
+    if ! eq 1 "$DONOTUSE_GIMME" ; then
+        "$GIMME_PATH" "$GO_VERSION" # may be timely
+        . "$GIMME_ENV_PREFIX/go$GO_VERSION.env"; go env >&2 #source here & verbose to &2
+    fi
 
     PATH=''/home/glide/bin:"$PATH"; export PATH
     glide --version >&2
@@ -94,6 +98,7 @@ before_script() {
 
 install_1() {
     # unconditionally install gimme(1); travis env most definitely does not have it
+    # if ! eq 1 "$DONOTUSE_GIMME" ; then # travis always uses gimme
     mkdir -p "$(dirname "$GIMME_PATH")"
     curl -sSL -o "$GIMME_PATH" https://github.com/travis-ci/gimme/raw/v"$GIMME_VERSION"/gimme # timely
     chmod +x "$GIMME_PATH"
@@ -102,6 +107,7 @@ install_1() {
 install_2() {
     local REPOSLUG="$1"
 
+    # if ! eq 1 "$DONOTUSE_GIMME" ; then # travis always uses gimme
     "$GIMME_PATH" "$GO_VERSION" # timely
     . "$GIMME_ENV_PREFIX/go$GO_VERSION.env"; go env >&2 #source here & verbose to &2
 
@@ -178,12 +184,14 @@ covertest() {
 
 before_deploy_1() {
     if ! darwin ; then
+        # if ! eq 1 "$DONOTUSE_GIMME" ; then # travis always uses gimme
         "$GIMME_PATH" "$GO_BOOTSTRAPVER" >/dev/null # timely
     fi
 }
 
 before_deploy_2() {
     if ! darwin ; then
+        # if ! eq 1 "$DONOTUSE_GIMME" ; then # travis always uses gimme
         GOROOT_BOOTSTRAP="$(ls -d "$GIMME_VERSION_PREFIX/go$GO_BOOTSTRAPVER".*.amd64)" \
         Gmake boot32
     fi
