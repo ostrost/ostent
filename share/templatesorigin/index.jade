@@ -60,38 +60,36 @@ mixin table(nparam, dparam, title)
       else
         | <div class="[[if .#{ndata}.Negative]]show-showhide[[else]]hide-showhide[[end]]">
       ul.row.menu.showhide-show
-        li
-          .input-group
-            .input-group-label.text-nowrap delay
-            .input-group-button
-              a.button.small.secondary.disabled [[.#{ddata}]]
-            - var cls = 'text-nowrap button small';
-            .input-group-button
-              if JSX
-                +alink_jsxl(cls, '- %s', dlinkLess)
-              else
-                +alink_html(cls, '- %s', dlinkLess)
-            .input-group-button
-              if JSX
-                +alink_jsxl(cls, '%s +', dlinkMore)
-              else
-                +alink_html(cls, '%s +', dlinkMore)
-        li
-          .input-group
-            .input-group-label.text-nowrap rows
-            .input-group-button
-              a.button.small.secondary.disabled [[.#{ndata}.Absolute]]
-            - var cls = 'text-nowrap button small success';
-            .input-group-button
-              if JSX
-                +alink_jsxl(cls, '- %s', nlinkLess)
-              else
-                +alink_html(cls, '- %s', nlinkLess)
-            .input-group-button
-              if JSX
-                +alink_jsxl(cls, '%s +', nlinkMore)
-              else
-                +alink_html(cls, '%s +', nlinkMore)
+        li: .input-group
+          .input-group-label.text-nowrap delay
+          .input-group-button
+            a.button.small.secondary.disabled [[.#{ddata}]]
+          - var cls = 'text-nowrap button small';
+          .input-group-button
+            if JSX
+              +alink_jsxl(cls, '- %s', dlinkLess)
+            else
+              +alink_html(cls, '- %s', dlinkLess)
+          .input-group-button
+            if JSX
+              +alink_jsxl(cls, '%s +', dlinkMore)
+            else
+              +alink_html(cls, '%s +', dlinkMore)
+        li: .input-group
+          .input-group-label.text-nowrap rows
+          .input-group-button
+            a.button.small.secondary.disabled [[.#{ndata}.Absolute]]
+          - var cls = 'text-nowrap button small success';
+          .input-group-button
+            if JSX
+              +alink_jsxl(cls, '- %s', nlinkLess)
+            else
+              +alink_html(cls, '- %s', nlinkLess)
+          .input-group-button
+            if JSX
+              +alink_jsxl(cls, '%s +', nlinkMore)
+            else
+              +alink_html(cls, '%s +', nlinkMore)
       if JSX
         | <div class={#{ndata}.Absolute == 0 ? "hide":""}>
       else
@@ -117,196 +115,188 @@ mixin alink_html(cls, fmt, link)
     | <a href="/" title="hostname [[.Data.hostname]]">[[.Data.hostname]]</a>
 
 mixin range_list(datak, ranger, kvalue, keyid)
-  +if(format('.Data.%s', datak))
-    +range(format('%s := .Data.%s.List', ranger, datak))
-      if JSX
-        | {this.List(Data).map(function(#{ranger}, i) { return (
-        | <div class="row" key={"#{keyid}-"+#{kvalue}}>
-      else
-        | <div class="row">
-      block
-      | </div>
-      if JSX
-        | );})}
+  +if(format('.Data.%s', datak)): +range(format('%s := .Data.%s.List', ranger, datak))
+    if JSX
+      | {this.List(Data).map(function(#{ranger}, i) { return (
+      | <div class="row" key={"#{keyid}-"+#{kvalue}}>
+    else
+      | <div class="row">
+    block
+    | </div>
+    if JSX
+      | );})}
 
 +define('define_la')
-  +table('.Lan', '.Lad', 'Load avg')
-    .stripe
-      .row.thead
-        span.expand.col.small-1 Period
-        span.expand.col.small-1.text-right  Value
-        span.expand.col
-      +range_list('la', '$la', '$la.Period', 'la-rowby-period')
-        span.expand.col.small-1
-          .text-right.width-3rem [[$la.Period]]m
-        span.expand.col.small-1.text-right  [[$la.Value]]
-        span.expand.col-lr
-          if JSX
-            | {jsxdefines.Sparkline({ref: i, col: 'Value'})}
+  +table('.Lan', '.Lad', 'Load avg'): .stripe
+    .row.thead
+      span.expand.col.small-1 Period
+      span.expand.col.small-1.text-right  Value
+      span.expand.col
+    +range_list('la', '$la', '$la.Period', 'la-rowby-period')
+      span.expand.col.small-1: .text-right.width-3rem [[$la.Period]]m
+      span.expand.col.small-1.text-right  [[$la.Value]]
+      span.expand.col-lr
+        if JSX
+          | {jsxdefines.Sparkline({ref: i, col: 'Value'})}
 
 +define('define_mem')
-  +table('.Memn', '.Memd', 'Memory')
-    .stripe
-      .row.thead
-        span.expand.col.small-1 Memory
-        span.expand.col.small-1.text-right  Total
-        span.expand.col.small-1.text-right  Used
-        span.expand.col.small-1.text-right  Free
-        span.expand.col.small-1.text-right  Use%
-        span.expand.col
-      +range_list('mem', '$mem', '$mem.Kind', 'mem-rowby-kind')
-        span.expand.col.small-1 [[$mem.Kind]]
-        span.expand.col.small-1.text-right  [[$mem.Total]]
-        span.expand.col.small-1.text-right  [[$mem.Used]]
-        span.expand.col.small-1.text-right  [[$mem.Free]]
-        | <span class="expand col small-1 text-right bg-usepct" data-usepct=[[$mem.UsePct]]> [[$mem.UsePct]]%</span>
-        span.expand.col-lr
-          if JSX
-            | {jsxdefines.Sparkline({ref: i, col: 'UsePct'})}
+  +table('.Memn', '.Memd', 'Memory'): .stripe
+    .row.thead
+      span.expand.col.small-1 Memory
+      span.expand.col.small-1.text-right  Total
+      span.expand.col.small-1.text-right  Used
+      span.expand.col.small-1.text-right  Free
+      span.expand.col.small-1.text-right  Use%
+      span.expand.col
+    +range_list('mem', '$mem', '$mem.Kind', 'mem-rowby-kind')
+      span.expand.col.small-1 [[$mem.Kind]]
+      span.expand.col.small-1.text-right  [[$mem.Total]]
+      span.expand.col.small-1.text-right  [[$mem.Used]]
+      span.expand.col.small-1.text-right  [[$mem.Free]]
+      | <span class="expand col small-1 text-right bg-usepct" data-usepct=[[$mem.UsePct]]> [[$mem.UsePct]]%</span>
+      span.expand.col-lr
+        if JSX
+          | {jsxdefines.Sparkline({ref: i, col: 'UsePct'})}
 
 +define('define_df')
-  +table('.Dfn', '.Dfd', 'Disk usage')
-    .stripe
-      .row.thead
-        | [[/* poke purifycss: <div class="dropup"><div class="caret" /></div> */]]
-        span.expand.col.small-1.text-nowrap:            +vlink('.Dfk', 1, 'Device')  [[/* FS     */]]
-        span.expand.col.small-1.text-nowrap:            +vlink('.Dfk', 2, 'Mounted') [[/* MP     */]]
-        span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 6, 'Total')   [[/* TOTAL  */]]
-        span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 5, 'Used')    [[/* USED   */]]
-        span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 3, 'Avail')   [[/* AVAIL  */]]
-        span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 4, 'Use%')    [[/* USEPCT */]]
-        span.expand.col
-      +range_list('df', '$df', '$df.DirName', 'df-rowby-dirname')
-        span.expand.col.small-1.text-overflow [[$df.DevName]]
-        span.expand.col.small-1.text-overflow  [[$df.DirName]]
-        span.expand.col.small-1.text-overflow.text-right.gray
-          span.float-right  [[$df.Total]]
-          span(title='Inodes total')  [[$df.Inodes]]
-        span.expand.col.small-1.text-overflow.text-right.gray
-          span.float-right  [[$df.Used]]
-          span(title='Inodes used')  [[$df.Iused]]
-        span.expand.col.small-1.text-overflow.text-right.gray
-          span.float-right  [[$df.Avail]]
-          span(title='Inodes free')  [[$df.Ifree]]
-        | <span class="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct=[[$df.UsePct]]>
-        span.float-right  [[$df.UsePct]]%
-        span(title='Inodes use%')  [[$df.IusePct]]%
-        | </span>
-        span.expand.col-lr
-          if JSX
-            | {jsxdefines.Sparkline({ref: i, col: 'UsePct'})}
+  +table('.Dfn', '.Dfd', 'Disk usage'): .stripe
+    .row.thead
+      | [[/* poke purifycss: <div class="dropup"><div class="caret" /></div> */]]
+      span.expand.col.small-1.text-nowrap:            +vlink('.Dfk', 1, 'Device')  [[/* FS     */]]
+      span.expand.col.small-1.text-nowrap:            +vlink('.Dfk', 2, 'Mounted') [[/* MP     */]]
+      span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 6, 'Total')   [[/* TOTAL  */]]
+      span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 5, 'Used')    [[/* USED   */]]
+      span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 3, 'Avail')   [[/* AVAIL  */]]
+      span.expand.col.small-1.text-nowrap.text-right: +vlink('.Dfk', 4, 'Use%')    [[/* USEPCT */]]
+      span.expand.col
+    +range_list('df', '$df', '$df.DirName', 'df-rowby-dirname')
+      span.expand.col.small-1.text-overflow [[$df.DevName]]
+      span.expand.col.small-1.text-overflow  [[$df.DirName]]
+      span.expand.col.small-1.text-overflow.text-right.gray
+        span.float-right  [[$df.Total]]
+        span(title='Inodes total')  [[$df.Inodes]]
+      span.expand.col.small-1.text-overflow.text-right.gray
+        span.float-right  [[$df.Used]]
+        span(title='Inodes used')  [[$df.Iused]]
+      span.expand.col.small-1.text-overflow.text-right.gray
+        span.float-right  [[$df.Avail]]
+        span(title='Inodes free')  [[$df.Ifree]]
+      | <span class="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct=[[$df.UsePct]]>
+      span.float-right  [[$df.UsePct]]%
+      span(title='Inodes use%')  [[$df.IusePct]]%
+      | </span>
+      span.expand.col-lr
+        if JSX
+          | {jsxdefines.Sparkline({ref: i, col: 'UsePct'})}
 
 +define('define_cpu')
-  +table('.CPUn', '.CPUd', 'CPU')
-    .stripe
-      .row.thead
-        span.expand.col.small-1 Core
-        span.expand.col.small-1.text-right  User%
-        span.expand.col.small-1.text-right  Sys%
-        span.expand.col.small-1.text-right  Wait%
-        span.expand.col.small-1.text-right  Idle%
-        span.expand.col
-      +range_list('cpu', '$cpu', '$cpu.N', 'cpu-rowby-n')
-        span.expand.col.small-1.text-nowrap [[$cpu.N]]
-        | <span class="expand col small-1 text-right bg-usepct"
-        |  data-usepct=[[$cpu.UserPct]]> [[$cpu.UserPct]]%</span>
-        | <span class="expand col small-1 text-right bg-usepct"
-        |  data-usepct=[[$cpu.SysPct]]> [[$cpu.SysPct]]%</span>
-        | <span class="expand col small-1 text-right bg-usepct"
-        |  data-usepct=[[$cpu.WaitPct]]> [[$cpu.WaitPct]]%</span>
-        | <span class="expand col small-1 text-right bg-usepct-inverse"
-        |  data-usepct=[[$cpu.IdlePct]]> [[$cpu.IdlePct]]%</span>
-        span.expand.col-lr
-          if JSX
-            | {jsxdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}
+  +table('.CPUn', '.CPUd', 'CPU'): .stripe
+    .row.thead
+      span.expand.col.small-1 Core
+      span.expand.col.small-1.text-right  User%
+      span.expand.col.small-1.text-right  Sys%
+      span.expand.col.small-1.text-right  Wait%
+      span.expand.col.small-1.text-right  Idle%
+      span.expand.col
+    +range_list('cpu', '$cpu', '$cpu.N', 'cpu-rowby-n')
+      span.expand.col.small-1.text-nowrap [[$cpu.N]]
+      | <span class="expand col small-1 text-right bg-usepct"
+      |  data-usepct=[[$cpu.UserPct]]> [[$cpu.UserPct]]%</span>
+      | <span class="expand col small-1 text-right bg-usepct"
+      |  data-usepct=[[$cpu.SysPct]]> [[$cpu.SysPct]]%</span>
+      | <span class="expand col small-1 text-right bg-usepct"
+      |  data-usepct=[[$cpu.WaitPct]]> [[$cpu.WaitPct]]%</span>
+      | <span class="expand col small-1 text-right bg-usepct-inverse"
+      |  data-usepct=[[$cpu.IdlePct]]> [[$cpu.IdlePct]]%</span>
+      span.expand.col-lr
+        if JSX
+          | {jsxdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}
 
 +define('define_if')
-  +table('.Ifn', '.Ifd', 'Interfaces')
-    .stripe
-      .row.thead
-        span.expand.col.small-1 Interface
-        span.expand.col.small-1.text-right  IP
-        span.expand.col.small-2.text-right.text-nowrap(title='Drops,Errors In/Out per second')  Loss IO ps
-        span.expand.col.small-2.text-right.text-nowrap(title='Packets In/Out per second')  Packets IO ps
-        span.expand.col.small-2.text-right.text-nowrap(title='Bits In/Out per second')
-          |  IO 
-          i b
-          | ps
-        span.expand.col
-      +range_list('netio', '$if', '$if.Name', 'if-rowby-name')
-        span.expand.col.small-1.text-overflow [[$if.Name]]
-        span.expand.col.small-1.text-overflow.text-right [[$if.IP]]
-        span.expand.col.small-2.text-right.text-nowrap
-          | &nbsp;
-          span.gray(title='Total drops,errors modulo 4G')
-            span(title='Total drops In modulo 4G') [[$if.DropsIn]]
-            | /
-            span(title='Total drops Out modulo 4G') [[$if.DropsOut]]
-            | ,
-            span(title='Total errors In modulo 4G') [[$if.ErrorsIn]]
-            | /
-            span(title='Total errors Out modulo 4G') [[$if.ErrorsOut]]
-          | &nbsp;
-          if JSX
-            | <span class={($if.DeltaDropsIn == "0" && $if.DeltaDropsOut == "0" && $if.DeltaErrorsIn == "0" && $if.DeltaErrorsOut == "0") ? "gray":""}>
-          else
-            | <span class="[[if and (eq $if.DeltaDropsIn "0") (eq $if.DeltaDropsOut "0") (eq $if.DeltaErrorsIn "0") (eq $if.DeltaErrorsOut "0")]]gray[[end]]">
-          span(title='Drops In per second') [[$if.DeltaDropsIn]]
+  +table('.Ifn', '.Ifd', 'Interfaces'): .stripe
+    .row.thead
+      span.expand.col.small-1 Interface
+      span.expand.col.small-1.text-right  IP
+      span.expand.col.small-2.text-right.text-nowrap(title='Drops,Errors In/Out per second')  Loss IO ps
+      span.expand.col.small-2.text-right.text-nowrap(title='Packets In/Out per second')  Packets IO ps
+      span.expand.col.small-2.text-right.text-nowrap(title='Bits In/Out per second')
+        |  IO 
+        i b
+        | ps
+      span.expand.col
+    +range_list('netio', '$if', '$if.Name', 'if-rowby-name')
+      span.expand.col.small-1.text-overflow [[$if.Name]]
+      span.expand.col.small-1.text-overflow.text-right [[$if.IP]]
+      span.expand.col.small-2.text-right.text-nowrap
+        | &nbsp;
+        span.gray(title='Total drops,errors modulo 4G')
+          span(title='Total drops In modulo 4G') [[$if.DropsIn]]
           | /
-          span(title='Drops Out per second') [[$if.DeltaDropsOut]]
+          span(title='Total drops Out modulo 4G') [[$if.DropsOut]]
           | ,
-          span(title='Errors In per second') [[$if.DeltaErrorsIn]]
+          span(title='Total errors In modulo 4G') [[$if.ErrorsIn]]
           | /
-          span(title='Errors Out per second') [[$if.DeltaErrorsOut]]
-          | </span>
-        span.expand.col.small-2.text-right.text-nowrap
-          | &nbsp;
-          span.gray
-            span(title='Total packets In modulo 4G') [[$if.PacketsIn]]
-            | /
-            span(title='Total packets Out modulo 4G') [[$if.PacketsOut]]
-          | &nbsp;
-          span(title='Packets In per second') [[$if.DeltaPacketsIn]]
+          span(title='Total errors Out modulo 4G') [[$if.ErrorsOut]]
+        | &nbsp;
+        if JSX
+          | <span class={($if.DeltaDropsIn == "0" && $if.DeltaDropsOut == "0" && $if.DeltaErrorsIn == "0" && $if.DeltaErrorsOut == "0") ? "gray":""}>
+        else
+          | <span class="[[if and (eq $if.DeltaDropsIn "0") (eq $if.DeltaDropsOut "0") (eq $if.DeltaErrorsIn "0") (eq $if.DeltaErrorsOut "0")]]gray[[end]]">
+        span(title='Drops In per second') [[$if.DeltaDropsIn]]
+        | /
+        span(title='Drops Out per second') [[$if.DeltaDropsOut]]
+        | ,
+        span(title='Errors In per second') [[$if.DeltaErrorsIn]]
+        | /
+        span(title='Errors Out per second') [[$if.DeltaErrorsOut]]
+        | </span>
+      span.expand.col.small-2.text-right.text-nowrap
+        | &nbsp;
+        span.gray
+          span(title='Total packets In modulo 4G') [[$if.PacketsIn]]
           | /
-          span(title='Packets Out per second') [[$if.DeltaPacketsOut]]
-        span.expand.col.small-2.text-right.text-nowrap
-          | &nbsp;
-          span.gray
-            span(title='Total BYTES In modulo 4G') [[$if.BytesIn]]
-            | /
-            span(title='Total BYTES Out modulo 4G') [[$if.BytesOut]]
-          | &nbsp;
-          span(title='BITS In per second') [[$if.DeltaBitsIn]]
+          span(title='Total packets Out modulo 4G') [[$if.PacketsOut]]
+        | &nbsp;
+        span(title='Packets In per second') [[$if.DeltaPacketsIn]]
+        | /
+        span(title='Packets Out per second') [[$if.DeltaPacketsOut]]
+      span.expand.col.small-2.text-right.text-nowrap
+        | &nbsp;
+        span.gray
+          span(title='Total BYTES In modulo 4G') [[$if.BytesIn]]
           | /
-          span(title='BITS Out per second') [[$if.DeltaBitsOut]]
-        span.expand.col-lr
-          if JSX
-            | {jsxdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}
+          span(title='Total BYTES Out modulo 4G') [[$if.BytesOut]]
+        | &nbsp;
+        span(title='BITS In per second') [[$if.DeltaBitsIn]]
+        | /
+        span(title='BITS Out per second') [[$if.DeltaBitsOut]]
+      span.expand.col-lr
+        if JSX
+          | {jsxdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}
 
 +define('define_ps')
-  +table('.Psn', '.Psd', 'Processes')
-    .stripe
-      .row.thead
-        | [[/* poke purifycss: <div class="dropup"><div class="caret" /></div> */]]
-        span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 1, 'PID')
-        span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 2, 'UID')
-        span.expand.col.small-1.text-nowrap:             +vlink('.Psk', 3, 'USER')
-        span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 4, 'PR')      [[/* PRI  */]]
-        span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 5, 'NI')      [[/* NICE */]]
-        span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 6, 'VIRT')
-        span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 7, 'RES')
-        span.expand.col.small-1.text-nowrap.text-center: +vlink('.Psk', 8, 'TIME')
-        span.expand.col.small-1.text-nowrap:             +vlink('.Psk', 9, 'COMMAND') [[/* NAME */]]
-      +range_list('procs', '$ps', '$ps.PID', 'ps-rowby-pid')
-        span.expand.col.small-1.text-right [[$ps.PID]]
-        span.expand.col.small-1.text-right  [[$ps.UID]]
-        span.expand.col.small-1  [[$ps.User]]
-        span.expand.col.small-1.text-right  [[$ps.Priority]]
-        span.expand.col.small-1.text-right  [[$ps.Nice]]
-        span.expand.col.small-1.text-right  [[$ps.Size]]
-        span.expand.col.small-1.text-right  [[$ps.Resident]]
-        span.expand.col.small-1.text-center  [[$ps.Time]]
-        span.expand.col  [[$ps.Name]]
+  +table('.Psn', '.Psd', 'Processes'): .stripe
+    .row.thead
+      | [[/* poke purifycss: <div class="dropup"><div class="caret" /></div> */]]
+      span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 1, 'PID')
+      span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 2, 'UID')
+      span.expand.col.small-1.text-nowrap:             +vlink('.Psk', 3, 'USER')
+      span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 4, 'PR')      [[/* PRI  */]]
+      span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 5, 'NI')      [[/* NICE */]]
+      span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 6, 'VIRT')
+      span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 7, 'RES')
+      span.expand.col.small-1.text-nowrap.text-center: +vlink('.Psk', 8, 'TIME')
+      span.expand.col.small-1.text-nowrap:             +vlink('.Psk', 9, 'COMMAND') [[/* NAME */]]
+    +range_list('procs', '$ps', '$ps.PID', 'ps-rowby-pid')
+      span.expand.col.small-1.text-right [[$ps.PID]]
+      span.expand.col.small-1.text-right  [[$ps.UID]]
+      span.expand.col.small-1  [[$ps.User]]
+      span.expand.col.small-1.text-right  [[$ps.Priority]]
+      span.expand.col.small-1.text-right  [[$ps.Nice]]
+      span.expand.col.small-1.text-right  [[$ps.Size]]
+      span.expand.col.small-1.text-right  [[$ps.Resident]]
+      span.expand.col.small-1.text-center  [[$ps.Time]]
+      span.expand.col  [[$ps.Name]]
 
 //- The index:
 doctype html
@@ -331,32 +321,29 @@ html
   body
     .top-bar
       - var latestOstent = 'https://www.ostrost.com/ostent/releases/latest?cmp=[[.OstentVersion]]'
-      .top-bar-title
-        h2.h5.margin-bottom-0
-          span.updates(data-define='define_hostname')
-            | [[template "define_hostname" .]]
-          |  
-          a(href=latestOstent) ostent
+      .top-bar-title: h2.h5.margin-bottom-0
+        span.updates(data-define='define_hostname')
+          | [[template "define_hostname" .]]
+        |  
+        a(href=latestOstent) ostent
       +if('.OstentUpgrade'): .top-bar-left: a(href=latestOstent) [[.OstentUpgrade]]
       div: .top-bar-right: h2.h5.margin-bottom-0: small
         | [[.Distrib]] up 
-        span.updates.whitespace-pre(data-define='define_uptime')
-          | [[template "define_uptime" .]]
+        span.updates.whitespace-pre(data-define='define_uptime') [[template "define_uptime" .]]
         //- a.button.secondary.hollow.margin-0(href=latestOstent) ostent
 
     +if('ne (len .Exporting) 0')
-      .row.expanded.hr-bottom
-        .column.large-11.small-offset-1
-          //- h5 Exporting to
-          .stripe
-            .row.thead
-              span.expand.col.small-2
-                | Exporting to&nbsp;
-                span.badge.secondary [[len .Exporting]]
-              span.expand.col.small-10 Endpoint
-            +range('$expo := .Exporting'): .row
-              span.expand.col.small-2 [[$expo.Name]]
-              span.expand.col.small-10 [[$expo.Endpoint]]
+      .row.expanded.hr-bottom: .column.large-11.small-offset-1
+        //- h5 Exporting to
+        .stripe
+          .row.thead
+            span.expand.col.small-2
+              | Exporting to&nbsp;
+              span.badge.secondary [[len .Exporting]]
+            span.expand.col.small-10 Endpoint
+          +range('$expo := .Exporting'): .row
+            span.expand.col.small-2 [[$expo.Name]]
+            span.expand.col.small-10 [[$expo.Endpoint]]
 
     .updates(data-define='define_la')  [[template "define_la"  .]]
     .updates(data-define='define_mem') [[template "define_mem" .]]
