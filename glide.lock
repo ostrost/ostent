@@ -1,8 +1,8 @@
 hash: fda676beb56a3540c71a31c63dee2c33f623f4bc3672f46b12ecdf47e525adf6
-updated: 2016-06-26T09:16:41.193894634Z
+updated: 2016-07-01T09:14:39.334169191Z
 imports:
 - name: github.com/blang/semver
-  version: e64c75d1c910cd81c8caa1f2cc2c6409dd65af81
+  version: 60ec3488bfea7cca02b021d106d9911120d25fe9
 - name: github.com/cpuguy83/go-md2man
   version: 2724a9c9051aa62e9cca11304e7dd518e9e41599
   subpackages:
@@ -35,11 +35,11 @@ imports:
 - name: github.com/gorilla/schema
   version: 8aac656cd31cfb73a9dfd142494864fa0b84f723
 - name: github.com/gorilla/websocket
-  version: a68708917c6a4f06314ab4e52493cc61359c9d42
+  version: a87eae1d6ff562bf944755f4a6f527b6ef6fb888
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/influxdb
-  version: 9fb1c514e45675bdba763e599a0853301052cebf
+  version: b2ca3b24700c27c17c7f27da1fc269cc99e0f10e
   subpackages:
   - client
   - models
@@ -95,7 +95,7 @@ imports:
 - name: github.com/vrischmann/go-metrics-influxdb
   version: be4fc87f4ea19631fadd5f80e4fb8ea0353348a6
 - name: golang.org/x/net
-  version: bc3663df0ac92f928d419e31e0d2af22e683a5a2
+  version: b400c2eff1badec7022a8c8f5bea058b6315eed7
   subpackages:
   - context
 - name: golang.org/x/sys
