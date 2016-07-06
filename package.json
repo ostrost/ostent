@@ -26,13 +26,13 @@
     "gulp-spawn": "^0.3.0",
     "node-sass": "^3.8.0",
     "purifycss-webpack-plugin": "^2.0.3",
-    "react": "^15.1.0",
+    "react": "^15.2.0",
     "react-sparklines": "^1.5.2",
     "reconnectingwebsocket": "^1.0.0",
     "sass-loader": "^3.2.3",
     "style-loader": "^0.13.1",
     "transform-loader": "^0.2.3",
-    "uglify-js": "^2.6.4",
+    "uglify-js": "^2.7.0",
     "webpack": "^1.13.1",
     "webpack-sources": "^0.1.2"
   }
