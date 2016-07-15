@@ -1,5 +1,5 @@
 hash: fda676beb56a3540c71a31c63dee2c33f623f4bc3672f46b12ecdf47e525adf6
-updated: 2016-07-01T09:14:39.334169191Z
+updated: 2016-07-15T10:47:11.730232677Z
 imports:
 - name: github.com/blang/semver
   version: 60ec3488bfea7cca02b021d106d9911120d25fe9
@@ -21,7 +21,7 @@ imports:
 - name: github.com/facebookgo/stats
   version: 1b76add642e42c6ffba7211ad7b3939ce654526e
 - name: github.com/go-ole/go-ole
-  version: 572eabb84c424e76a0d39d31510dd7dfd62f70b2
+  version: be49f7c07711fcb603cff39e1de7c67926dc0ba7
   subpackages:
   - oleutil
 - name: github.com/google/go-querystring
@@ -33,13 +33,13 @@ imports:
 - name: github.com/gorilla/handlers
   version: 66e6c6f01d8da976ee113437745ca029c2b585a6
 - name: github.com/gorilla/schema
-  version: 8aac656cd31cfb73a9dfd142494864fa0b84f723
+  version: d68043406bea8bd90f7b38e9c54fab18d903ea25
 - name: github.com/gorilla/websocket
-  version: a87eae1d6ff562bf944755f4a6f527b6ef6fb888
+  version: a836c37014dbbf0d1e871d04531b851fcbdeb22d
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/influxdb
-  version: b2ca3b24700c27c17c7f27da1fc269cc99e0f10e
+  version: 4254ad304c96f853df811d813a9dc90f8f0da621
   subpackages:
   - client
   - models
@@ -52,9 +52,9 @@ imports:
   - .
   - go-bindata
 - name: github.com/julienschmidt/httprouter
-  version: 77366a47451a56bb3ba682481eed85b64fea14e8
+  version: fb79d6a91d3e4a9ecb6d945b218d78fc0d9b1939
 - name: github.com/justinas/alice
-  version: 8f06f3153579369bb91f084f39f86f5d5030d4dc
+  version: 43e429cd03e6faac34faf94153cfb7a5adb6b928
 - name: github.com/mihasya/go-metrics-librato
   version: 0ec8d5e8bf04a48fc5c96792bfd016b08afdabad
 - name: github.com/ostrost/gosigar
@@ -68,7 +68,7 @@ imports:
 - name: github.com/russross/blackfriday
   version: 1d6b8e9301e720b08a8938b8c25c018285885438
 - name: github.com/shirou/gopsutil
-  version: 2728d81cdef579d6ed88d2fd5c71e85aa83eaba8
+  version: ca63fa830d76df9fad479ff3737349bcbeddc543
   subpackages:
   - host
   - net
@@ -82,9 +82,9 @@ imports:
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 - name: github.com/Sirupsen/logrus
-  version: f3cfb454f4c209e6668c95216c4744b8fddb2356
+  version: 32055c351ea8b00b96d70f28db48d9840feaf0ec
 - name: github.com/spf13/cobra
-  version: 6a8bd97bdb1fc0d08a83459940498ea49d3e8c93
+  version: a272c3cbd5ff80a5bf5c5603df50183f9f3f7324
   subpackages:
   - .
   - doc
@@ -95,11 +95,11 @@ imports:
 - name: github.com/vrischmann/go-metrics-influxdb
   version: be4fc87f4ea19631fadd5f80e4fb8ea0353348a6
 - name: golang.org/x/net
-  version: b400c2eff1badec7022a8c8f5bea058b6315eed7
+  version: a728288923b47049b2ce791836767ffbe964a5bd
   subpackages:
   - context
 - name: golang.org/x/sys
-  version: 62bee037599929a6e9146f29d10dd5208c43507d
+  version: b518c298ac9dc94b6ac0757394f50d10c5dfa25a
   subpackages:
   - unix
 devImports: []
