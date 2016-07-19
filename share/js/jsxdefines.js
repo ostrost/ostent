@@ -586,8 +586,3 @@ jsxdefines.define_uptime = React.createClass({
 
 
 module.exports = jsxdefines;
-
-// Local variables:
-// js-indent-level: 2
-// js2-basic-offset: 2
-// End:

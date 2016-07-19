@@ -175,8 +175,3 @@ gulp.task('watch', ['gmake print'], function() {
     __dirname+'/share/templatesorigin/*'
   ], ['gmake dev']);
 });
-
-// Local variables:
-// js-indent-level: 2
-// js2-basic-offset: 2
-// End:
