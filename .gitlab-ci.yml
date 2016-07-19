@@ -11,7 +11,7 @@ variables:
   GITHUB_USER: ostrost
   GITHUB_REPO: ostent
 
-before_script:    [source ./tools/ci/step.sh before_script]
-cibuild:  {script: source ./tools/ci/step.sh cibuild,  stage: build }
-citest:   {script: source ./tools/ci/step.sh citest,   stage: test  }
-cideploy: {script: source ./tools/ci/step.sh cideploy, stage: deploy, only: [tags, triggers], tags: [freebsd]}
+before_script:    [source ./tools/sh/env.sh before_script]
+cibuild:  {script: source ./tools/sh/env.sh cibuild,  stage: build }
+citest:   {script: source ./tools/sh/env.sh citest,   stage: test  }
+cideploy: {script: source ./tools/sh/env.sh cideploy, stage: deploy, only: [tags, triggers], tags: [freebsd]}

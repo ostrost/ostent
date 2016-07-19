@@ -79,8 +79,8 @@ check-update: ; npm outdated # upgrade with npm update --save-dev
 print-%: ; @echo $*=$($*)
 
 ifneq (init, $(MAKECMDGOALS))
-test:      ; env testpackages=$(testpackages) ./tools/ci/step.sh maketest
-covertest: ; env testpackage=$(testpackage) ''./tools/ci/step.sh coevrtest
+test:      ; env testpackages=$(testpackages) ./tools/sh/env.sh maketest
+covertest: ; env testpackage=$(testpackage) ''./tools/sh/env.sh covertest
 coverfunc: covertest ; go tool  cover  -func=coverage.out
 coverhtml: covertest ; go tool  cover  -html=coverage.out
 

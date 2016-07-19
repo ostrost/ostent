@@ -31,7 +31,7 @@ Gmake() {
 # The split is so that each function must end with one timely action.
 
 : "${GO_VERSION:=1.6.2}"
-: "${GIMME_VERSION:=0.2.4}"
+: "${GIMME_VERSION:=1.0.0}"
 : "${GIMME_PATH:=$HOME/bin/gimme}"
 : "${GIMME_ENV_PREFIX:=$HOME/.gimme/envs}"
 : "${GIMME_VERSION_PREFIX:=$HOME/.gimme/versions}"
