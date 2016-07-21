@@ -160,8 +160,7 @@ func (m Machine) DF(reg Registry, wg *sync.WaitGroup) {
 		return
 	}
 
-	// devnames := map[string]bool{}
-	dirnames := map[string]bool{}
+	devnames, dirnames := map[string]struct{}{}, map[string]struct{}{}
 
 	for _, fs := range fls.List {
 
@@ -173,12 +172,14 @@ func (m Machine) DF(reg Registry, wg *sync.WaitGroup) {
 		if !strings.HasPrefix(fs.DevName, "/") {
 			continue
 		}
-		// if _, ok := devnames[fs.DevName]; ok
+		if _, ok := devnames[fs.DevName]; ok {
+			continue
+		}
 		if _, ok := dirnames[fs.DirName]; ok {
 			continue
 		}
-		// devnames[fs.DevName] = true
-		dirnames[fs.DirName] = true
+		devnames[fs.DevName] = struct{}{}
+		dirnames[fs.DirName] = struct{}{}
 
 		reg.UpdateDF(fs, usage)
 	}
