@@ -6,6 +6,7 @@ import (
 
 	sigar "github.com/ostrost/gosigar"
 	metrics "github.com/rcrowley/go-metrics"
+	"github.com/shirou/gopsutil/disk"
 )
 
 // Memory type is a struct of memory metrics.
@@ -368,22 +369,21 @@ type MetricDF struct {
 }
 
 // Update reads usage and fs and updates the corresponding fields in DF.
-func (md *MetricDF) Update(fs sigar.FileSystem, usage sigar.FileSystemUsage) {
-	md.DevName.Update(fs.DevName)
-	md.DirName.Update(fs.DirName)
-	md.Free.Update(float64(usage.Free << 10))
-	md.Reserved.Update(float64((usage.Free - usage.Avail) << 10))
-	md.Total.Update(int64(usage.Total << 10))
-	md.Used.Update(float64(usage.Used << 10))
-	md.Avail.Update(int64(usage.Avail << 10))
-	md.UsePct.Update(usage.UsePercent())
-	md.Inodes.Update(int64(usage.Files))
-	md.Iused.Update(int64(usage.Files - usage.FreeFiles))
-	md.Ifree.Update(int64(usage.FreeFiles))
-	if iusepct := 0.0; usage.Files != 0 {
-		iusepct = float64(100) * float64(usage.Files-usage.FreeFiles) / float64(usage.Files)
-		md.IusePct.Update(iusepct)
-	}
+func (md *MetricDF) Update(part disk.PartitionStat, usage *disk.UsageStat) {
+	md.DevName.Update(part.Device)
+	md.DirName.Update(part.Mountpoint)
+
+	md.Free.Update(float64(usage.Total - usage.Used))
+	md.Reserved.Update(float64(usage.Total - usage.Used - usage.Free))
+	md.Total.Update(int64(usage.Total))
+	md.Used.Update(float64(usage.Used))
+	md.Avail.Update(int64(usage.Free))
+	md.UsePct.Update(usage.UsedPercent)
+
+	md.Inodes.Update(int64(usage.InodesTotal))
+	md.Iused.Update(int64(usage.InodesUsed))
+	md.Ifree.Update(int64(usage.InodesFree))
+	md.IusePct.Update(usage.InodesUsedPercent)
 }
 
 // MetricIF set of interface metrics.

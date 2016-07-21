@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	sigar "github.com/ostrost/gosigar"
+	"github.com/shirou/gopsutil/disk"
 
 	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/system"
@@ -20,7 +21,7 @@ type Registry interface {
 	UpdateLA(sigar.LoadAverage)
 	UpdateSwap(sigar.Swap)
 	UpdateRAM(sigar.Mem, uint64, uint64)
-	UpdateDF(sigar.FileSystem, sigar.FileSystemUsage)
+	UpdateDF(disk.PartitionStat, *disk.UsageStat)
 }
 
 // Collector is collection interface.
@@ -154,34 +155,23 @@ func (m Machine) Swap(reg Registry, wg *sync.WaitGroup) {
 
 func (m Machine) DF(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
-	fls := sigar.FileSystemList{}
-	if err := fls.Get(); err != nil {
+	parts, err := disk.Partitions(false)
+	if err != nil {
 		wg.Done()
 		return
 	}
 
-	devnames, dirnames := map[string]struct{}{}, map[string]struct{}{}
-
-	for _, fs := range fls.List {
-
-		usage := sigar.FileSystemUsage{}
-		if err := usage.Get(fs.DirName); err != nil {
+	devices := map[string]struct{}{}
+	for _, part := range parts {
+		usage, err := disk.Usage(part.Mountpoint)
+		if err != nil {
 			continue
 		}
-
-		if !strings.HasPrefix(fs.DevName, "/") {
+		if _, ok := devices[part.Device]; ok {
 			continue
 		}
-		if _, ok := devnames[fs.DevName]; ok {
-			continue
-		}
-		if _, ok := dirnames[fs.DirName]; ok {
-			continue
-		}
-		devnames[fs.DevName] = struct{}{}
-		dirnames[fs.DirName] = struct{}{}
-
-		reg.UpdateDF(fs, usage)
+		devices[part.Device] = struct{}{}
+		reg.UpdateDF(part, usage)
 	}
 	wg.Done()
 }

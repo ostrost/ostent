@@ -14,6 +14,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	sigar "github.com/ostrost/gosigar"
 	metrics "github.com/rcrowley/go-metrics"
+	"github.com/shirou/gopsutil/disk"
 
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/format"
@@ -229,19 +230,19 @@ func (ir *IndexRegistry) GetOrRegisterPrivateIF(name string) *system.MetricIF {
 	return i
 }
 
-func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) *system.MetricDF {
+func (ir *IndexRegistry) GetOrRegisterPrivateDF(part disk.PartitionStat) *system.MetricDF {
 	ir.PrivateMutex.Lock()
 	defer ir.PrivateMutex.Unlock()
-	if fs.DirName == "/" {
-		fs.DevName = "root"
+	if part.Mountpoint == "/" {
+		part.Device = "root"
 	} else {
-		fs.DevName = strings.Replace(strings.TrimPrefix(fs.DevName, "/dev/"), "/", "-", -1)
+		part.Device = strings.Replace(strings.TrimPrefix(part.Device, "/dev/"), "/", "-", -1)
 	}
-	if metric := ir.PrivateDFRegistry.Get(fs.DevName); metric != nil {
+	if metric := ir.PrivateDFRegistry.Get(part.Device); metric != nil {
 		return metric.(*system.MetricDF)
 	}
 	label := func(tail string) string {
-		return fmt.Sprintf("df-%s.df_complex-%s", fs.DevName, tail)
+		return fmt.Sprintf("df-%s.df_complex-%s", part.Device, tail)
 	}
 	r, unusedr := ir.Registry, metrics.NewRegistry()
 	i := &system.MetricDF{
@@ -258,7 +259,7 @@ func (ir *IndexRegistry) GetOrRegisterPrivateDF(fs sigar.FileSystem) *system.Met
 		Ifree:    metrics.NewRegisteredGauge(label("ifree"), unusedr),
 		IusePct:  metrics.NewRegisteredGaugeFloat64(label("iusepercent"), unusedr),
 	}
-	ir.PrivateDFRegistry.Register(fs.DevName, i) // error is ignored
+	ir.PrivateDFRegistry.Register(part.Device, i) // error is ignored
 	// errs when the type is not derived from (go-)metrics types
 	return i
 }
@@ -482,10 +483,10 @@ func (ir *IndexRegistry) LA(para *params.Params, data IndexData) bool {
 	return true
 }
 
-func (ir *IndexRegistry) UpdateDF(fs sigar.FileSystem, usage sigar.FileSystemUsage) {
+func (ir *IndexRegistry) UpdateDF(part disk.PartitionStat, usage *disk.UsageStat) {
 	ir.Mutex.Lock()
 	defer ir.Mutex.Unlock()
-	ir.GetOrRegisterPrivateDF(fs).Update(fs, usage)
+	ir.GetOrRegisterPrivateDF(part).Update(part, usage)
 }
 
 func (ir *IndexRegistry) UpdateRAM(got sigar.Mem, extra1, extra2 uint64) {
