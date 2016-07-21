@@ -10,6 +10,7 @@ import (
 	sigar "github.com/ostrost/gosigar"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/host"
+	"github.com/shirou/gopsutil/load"
 
 	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/system"
@@ -19,7 +20,7 @@ import (
 type Registry interface {
 	UpdateIF(system.IfAddress)
 	UpdateCPU(sigar.Cpu, []sigar.Cpu)
-	UpdateLA(sigar.LoadAverage)
+	UpdateLA(load.AvgStat)
 	UpdateSwap(sigar.Swap)
 	UpdateRAM(sigar.Mem, uint64, uint64)
 	UpdateDF(disk.PartitionStat, *disk.UsageStat)
@@ -106,9 +107,8 @@ func (m Machine) UP(sreg S2SRegistry, wg *sync.WaitGroup) {
 
 func (m Machine) LA(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
-	la := sigar.LoadAverage{}
-	if err := la.Get(); err == nil {
-		reg.UpdateLA(la)
+	if stat, err := load.Avg(); err == nil {
+		reg.UpdateLA(*stat)
 	}
 	wg.Done()
 }

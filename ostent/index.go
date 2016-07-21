@@ -15,6 +15,7 @@ import (
 	sigar "github.com/ostrost/gosigar"
 	metrics "github.com/rcrowley/go-metrics"
 	"github.com/shirou/gopsutil/disk"
+	"github.com/shirou/gopsutil/load"
 
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/format"
@@ -502,12 +503,12 @@ func (ir *IndexRegistry) UpdateSwap(got sigar.Swap) {
 	ir.Swap.Update(got)
 }
 
-func (ir *IndexRegistry) UpdateLA(la sigar.LoadAverage) {
+func (ir *IndexRegistry) UpdateLA(stat load.AvgStat) {
 	ir.Mutex.Lock()
 	defer ir.Mutex.Unlock()
-	ir.Load.Short.Update(la.One)
-	ir.Load.Mid.Update(la.Five)
-	ir.Load.Long.Update(la.Fifteen)
+	ir.Load.Short.Update(stat.Load1)
+	ir.Load.Mid.Update(stat.Load5)
+	ir.Load.Long.Update(stat.Load15)
 }
 
 func (ir *IndexRegistry) UpdateCPU(all sigar.Cpu, list []sigar.Cpu) {
