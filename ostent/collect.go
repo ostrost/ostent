@@ -9,6 +9,7 @@ import (
 
 	sigar "github.com/ostrost/gosigar"
 	"github.com/shirou/gopsutil/disk"
+	"github.com/shirou/gopsutil/host"
 
 	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/system"
@@ -97,9 +98,8 @@ func (m Machine) HN(sreg S2SRegistry, wg *sync.WaitGroup) {
 
 func (m Machine) UP(sreg S2SRegistry, wg *sync.WaitGroup) {
 	// m is unused
-	uptime := sigar.Uptime{}
-	if err := uptime.Get(); err == nil {
-		sreg.SetString("uptime", format.Uptime(uptime.Length))
+	if uptime, err := host.Uptime(); err == nil {
+		sreg.SetString("uptime", format.Uptime(uptime))
 	}
 	wg.Done()
 }

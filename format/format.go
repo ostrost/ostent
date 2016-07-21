@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func Uptime(seconds float64) string { // "seconds" is expected to be sigar.Uptime.Length
+func Uptime(seconds uint64) string {
 	d := time.Duration(seconds) * time.Second
 	s := ""
 	if d > time.Duration(24)*time.Hour {

@@ -1,12 +1,6 @@
 package format
 
-import (
-	"fmt"
-	"testing"
-
-	// "github.com/dustin/go-humanize"
-	sigar "github.com/ostrost/gosigar"
-)
+import "testing"
 
 /* func Test_humanizeParseBytes(t *testing.T) {
 	_, err := humanize.ParseBytes("70GiB")
@@ -133,7 +127,7 @@ func TestTime(t *testing.T) {
 
 func TestUptime(t *testing.T) {
 	for _, v := range []struct {
-		a   float64
+		a   uint64
 		cmp string
 	}{
 		{1080720, "12 days, 12:12"},
@@ -141,41 +135,8 @@ func TestUptime(t *testing.T) {
 		{43920, "12:12"},
 		{33120, " 9:12"},
 	} {
-		cmp := Uptime(v.a)
-		if cmp != v.cmp {
+		if cmp := Uptime(v.a); cmp != v.cmp {
 			t.Errorf("Mismatch: Uptime(%v) == %v != %v\n", v.a, v.cmp, cmp)
 		}
 	}
-}
-
-func sigarUptime(t *testing.B) *sigar.Uptime {
-	return &sigar.Uptime{Length: 1080720 + float64(t.N)}
-}
-
-func BenchmarkUptime(t *testing.B)             { Uptime((*sigarUptime(t)).Length) }
-func BenchmarkSigarUptimeFormat(t *testing.B)  { sigarUptime(t).Format() }
-func BenchmarkSigarUptimeFormat2(t *testing.B) { sigarUptimeFormatString2(*sigarUptime(t)) }
-
-// the way sigar.Uptime.Format implemented
-// sans bytes.Buffer, bufio.NewWriter stuff
-func sigarUptimeFormatString2(u sigar.Uptime) string {
-	uptime := uint64(u.Length)
-	days := uptime / (60 * 60 * 24)
-
-	s := ""
-	if days != 0 {
-		end := ""
-		if days > 1 {
-			end = "s"
-		}
-		s = fmt.Sprintf("%d day%s, ", days, end)
-	}
-
-	minutes := uptime / 60
-	hours := minutes / 60
-	hours %= 24
-	minutes %= 60
-
-	s += fmt.Sprintf("%2d:%02d", hours, minutes)
-	return s
 }
