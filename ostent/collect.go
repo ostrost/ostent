@@ -11,6 +11,7 @@ import (
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/load"
+	"github.com/shirou/gopsutil/mem"
 
 	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/system"
@@ -21,8 +22,8 @@ type Registry interface {
 	UpdateIF(system.IfAddress)
 	UpdateCPU(sigar.Cpu, []sigar.Cpu)
 	UpdateLA(load.AvgStat)
-	UpdateSwap(sigar.Swap)
-	UpdateRAM(sigar.Mem, uint64, uint64)
+	UpdateSwap(*mem.SwapMemoryStat)
+	UpdateRAM(*mem.VirtualMemoryStat)
 	UpdateDF(disk.PartitionStat, *disk.UsageStat)
 }
 
@@ -128,27 +129,16 @@ func _getmem(kind string, in sigar.Swap) system.Memory {
 
 func (m Machine) RAM(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
-	got := sigar.Mem{}
-	extra1, extra2, _ := sigar.GetExtra(&got)
-	reg.UpdateRAM(got, extra1, extra2)
+	if stat, err := mem.VirtualMemory(); err == nil {
+		reg.UpdateRAM(stat)
+	}
 	wg.Done()
-
-	// inactive := got.ActualFree - got.Free // == got.Used - got.ActualUsed // "kern"
-	// _ = inactive
-
-	// Used = .Total - .Free
-	// | Free |           Used +%         | Total
-	// | Free | Inactive | Active | Wired | Total
-
-	// TODO active := vm_data.active_count << 12 (pagesize)
-	// TODO wired  := vm_data.wire_count   << 12 (pagesoze)
 }
 
 func (m Machine) Swap(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
-	got := sigar.Swap{}
-	if err := got.Get(); err == nil {
-		reg.UpdateSwap(got)
+	if stat, err := mem.SwapMemory(); err == nil {
+		reg.UpdateSwap(stat)
 	}
 	wg.Done()
 }

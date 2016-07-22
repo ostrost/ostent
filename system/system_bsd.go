@@ -3,8 +3,8 @@
 package system
 
 import (
-	sigar "github.com/ostrost/gosigar"
 	metrics "github.com/rcrowley/go-metrics"
+	"github.com/shirou/gopsutil/mem"
 )
 
 type ExtraMetricRAM struct {
@@ -21,10 +21,10 @@ func NewMetricRAM(r metrics.Registry) *MetricRAM {
 	})
 }
 
-func (emr *ExtraMetricRAM) UpdateRAM(got sigar.Mem, extra1, extra2 uint64) {
-	emr.Inactive.Update(int64(got.ActualFree - got.Free))
-	emr.Wired.Update(int64(extra1))
-	emr.Active.Update(int64(extra2))
+func (emr *ExtraMetricRAM) UpdateRAM(stat *mem.VirtualMemoryStat) {
+	emr.Inactive.Update(int64(stat.Inactive))
+	emr.Wired.Update(int64(stat.Wired))
+	emr.Active.Update(int64(stat.Active))
 }
 
 func NewMetricCPU(r metrics.Registry, name string) *MetricCPU {

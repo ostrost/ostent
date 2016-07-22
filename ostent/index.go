@@ -16,6 +16,7 @@ import (
 	metrics "github.com/rcrowley/go-metrics"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/load"
+	"github.com/shirou/gopsutil/mem"
 
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/format"
@@ -440,13 +441,17 @@ func (ir *IndexRegistry) MEM(para *params.Params, data IndexData) bool {
 	if para.Memn.Absolute < 1 {
 		return false
 	}
+	var (
+		total = ir.RAM.Total.Snapshot().Value()
+		free  = ir.RAM.Free.Snapshot().Value()
+	)
 	mem := new(system.MEM)
 	mem.List = []system.Memory{}
 	mem.List = append(mem.List,
 		_getmem("RAM", sigar.Swap{
-			Total: uint64(ir.RAM.Total.Snapshot().Value()),
-			Free:  uint64(ir.RAM.Free.Snapshot().Value()),
-			Used:  ir.RAM.UsedValue(), // == .Total - .Free
+			Total: uint64(total),
+			Free:  uint64(free),
+			Used:  uint64(total - free),
 		}))
 	data["mem"] = mem
 
@@ -490,17 +495,18 @@ func (ir *IndexRegistry) UpdateDF(part disk.PartitionStat, usage *disk.UsageStat
 	ir.GetOrRegisterPrivateDF(part).Update(part, usage)
 }
 
-func (ir *IndexRegistry) UpdateRAM(got sigar.Mem, extra1, extra2 uint64) {
+// UpdateRAM reads stat and updates the ir.RAM.
+func (ir *IndexRegistry) UpdateRAM(stat *mem.VirtualMemoryStat) {
 	ir.Mutex.Lock()
 	defer ir.Mutex.Unlock()
-	ir.RAM.Update(got, extra1, extra2)
+	ir.RAM.Update(stat)
 }
 
-// UpdateSwap reads got and updates the ir.Swap. TODO Bad description.
-func (ir *IndexRegistry) UpdateSwap(got sigar.Swap) {
+// UpdateSwap reads stat and updates the ir.Swap.
+func (ir *IndexRegistry) UpdateSwap(stat *mem.SwapMemoryStat) {
 	ir.Mutex.Lock()
 	defer ir.Mutex.Unlock()
-	ir.Swap.Update(got)
+	ir.Swap.Update(stat)
 }
 
 func (ir *IndexRegistry) UpdateLA(stat load.AvgStat) {

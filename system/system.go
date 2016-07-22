@@ -7,6 +7,7 @@ import (
 	sigar "github.com/ostrost/gosigar"
 	metrics "github.com/rcrowley/go-metrics"
 	"github.com/shirou/gopsutil/disk"
+	"github.com/shirou/gopsutil/mem"
 )
 
 // Memory type is a struct of memory metrics.
@@ -21,12 +22,6 @@ type Memory struct {
 // MEM type has a list of Memory.
 type MEM struct {
 	List []Memory
-}
-
-type RAM struct {
-	Memory
-	Extra1 uint64 // linux:buffered // darwin:wired
-	Extra2 uint64 // linux:cached   // darwin:active
 }
 
 // DFData type is a struct of disk metrics.
@@ -114,7 +109,7 @@ type PSData struct {
 }
 
 type RAMUpdater interface {
-	UpdateRAM(sigar.Mem, uint64, uint64)
+	UpdateRAM(*mem.VirtualMemoryStat)
 }
 
 type MetricRAM struct {
@@ -131,11 +126,11 @@ func ExtraNewMetricRAM(r metrics.Registry, extra RAMUpdater) *MetricRAM {
 	}
 }
 
-func (mr *MetricRAM) Update(got sigar.Mem, extra1, extra2 uint64) {
-	mr.Free.Update(int64(got.Free))
-	mr.Total.Update(int64(got.Total))
+func (mr *MetricRAM) Update(stat *mem.VirtualMemoryStat) {
+	mr.Free.Update(int64(stat.Free))
+	mr.Total.Update(int64(stat.Total))
 	if mr.Extra != nil {
-		mr.Extra.UpdateRAM(got, extra1, extra2)
+		mr.Extra.UpdateRAM(stat)
 	}
 }
 
@@ -173,9 +168,9 @@ func (ms *MetricSwap) TotalValue() uint64 { // Free + Used
 	return uint64(ms.Free.Snapshot().Value() + ms.Used.Snapshot().Value())
 }
 
-func (ms *MetricSwap) Update(got sigar.Swap) {
-	ms.Free.Update(int64(got.Free))
-	ms.Used.Update(int64(got.Used))
+func (ms *MetricSwap) Update(stat *mem.SwapMemoryStat) {
+	ms.Free.Update(int64(stat.Free))
+	ms.Used.Update(int64(stat.Used))
 }
 
 // GaugeDiff holds two Gauge metrics: the first is the exported one.
