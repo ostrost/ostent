@@ -114,19 +114,6 @@ func (m Machine) LA(reg Registry, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func _getmem(kind string, in sigar.Swap) system.Memory {
-	total, approxtotal, _ := format.HumanBandback(in.Total)
-	used, approxused, _ := format.HumanBandback(in.Used)
-
-	return system.Memory{
-		Kind:   kind,
-		Total:  total,
-		Used:   used,
-		Free:   format.HumanB(in.Free),
-		UsePct: format.Percent(approxused, approxtotal),
-	}
-}
-
 func (m Machine) RAM(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	if stat, err := mem.VirtualMemory(); err == nil {

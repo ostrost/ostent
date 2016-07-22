@@ -164,10 +164,6 @@ func NewMetricSwap(r metrics.Registry) MetricSwap {
 	}
 }
 
-func (ms *MetricSwap) TotalValue() uint64 { // Free + Used
-	return uint64(ms.Free.Snapshot().Value() + ms.Used.Snapshot().Value())
-}
-
 func (ms *MetricSwap) Update(stat *mem.SwapMemoryStat) {
 	ms.Free.Update(int64(stat.Free))
 	ms.Used.Update(int64(stat.Used))

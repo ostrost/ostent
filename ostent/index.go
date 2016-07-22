@@ -433,6 +433,21 @@ func (ir *IndexRegistry) GetOrRegisterPrivateCPU(coreno int) *system.MetricCPU {
 	return i
 }
 
+type memoryValues struct{ Total, Free, Used uint64 }
+
+func newMemory(kind string, in memoryValues) system.Memory {
+	total, approxtotal, _ := format.HumanBandback(in.Total)
+	used, approxused, _ := format.HumanBandback(in.Used)
+
+	return system.Memory{
+		Kind:   kind,
+		Total:  total,
+		Used:   used,
+		Free:   format.HumanB(in.Free),
+		UsePct: format.Percent(approxused, approxtotal),
+	}
+}
+
 func (ir *IndexRegistry) MEM(para *params.Params, data IndexData) bool {
 	if !para.Memd.Expired() {
 		return false
@@ -442,27 +457,31 @@ func (ir *IndexRegistry) MEM(para *params.Params, data IndexData) bool {
 		return false
 	}
 	var (
-		total = ir.RAM.Total.Snapshot().Value()
-		free  = ir.RAM.Free.Snapshot().Value()
+		mtotal = ir.RAM.Total.Snapshot().Value()
+		mfree  = ir.RAM.Free.Snapshot().Value()
 	)
 	mem := new(system.MEM)
 	mem.List = []system.Memory{}
 	mem.List = append(mem.List,
-		_getmem("RAM", sigar.Swap{
-			Total: uint64(total),
-			Free:  uint64(free),
-			Used:  uint64(total - free),
+		newMemory("RAM", memoryValues{
+			Total: uint64(mtotal),
+			Free:  uint64(mfree),
+			Used:  uint64(mtotal - mfree),
 		}))
 	data["mem"] = mem
 
 	if para.Memn.Absolute < 2 {
 		return true
 	}
+	var (
+		sfree = ir.Swap.Free.Snapshot().Value()
+		sused = ir.Swap.Used.Snapshot().Value()
+	)
 	mem.List = append(mem.List,
-		_getmem("swap", sigar.Swap{
-			Total: ir.Swap.TotalValue(),
-			Free:  uint64(ir.Swap.Free.Snapshot().Value()),
-			Used:  uint64(ir.Swap.Used.Snapshot().Value()),
+		newMemory("swap", memoryValues{
+			Total: uint64(sfree + sused),
+			Free:  uint64(sfree),
+			Used:  uint64(sused),
 		}))
 	return true
 }
