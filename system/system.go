@@ -4,8 +4,8 @@ package system
 import (
 	"sync"
 
-	sigar "github.com/ostrost/gosigar"
 	metrics "github.com/rcrowley/go-metrics"
+	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/mem"
 )
@@ -205,10 +205,10 @@ func (gd *GaugeDiff) UpdateAbsolute(absolute int64) int64 {
 	previous := gd.Previous.Snapshot().Value()
 	gd.Absolute.Update(absolute)
 	gd.Previous.Update(absolute)
-	if previous == 0 { // do not .Update
+	if previous == 0 { // no previous value, cannot calc absolute delta
 		return 0
 	}
-	if absolute < previous { // counters got reset
+	if absolute < previous { // counters got reset, gonna update with absolute value
 		previous = 0
 	}
 	delta := absolute - previous
@@ -218,14 +218,14 @@ func (gd *GaugeDiff) UpdateAbsolute(absolute int64) int64 {
 
 type GaugePercent struct {
 	Percent  metrics.GaugeFloat64 // Percent as the primary metric.
-	Previous metrics.Gauge
+	Previous metrics.GaugeFloat64
 	Mutex    sync.Mutex
 }
 
 func NewGaugePercent(name string, r metrics.Registry) *GaugePercent {
 	return &GaugePercent{
 		Percent:  metrics.NewRegisteredGaugeFloat64(name, r),
-		Previous: metrics.NewRegisteredGauge(name+"-previous", metrics.NewRegistry()),
+		Previous: metrics.NewRegisteredGaugeFloat64(name+"-previous", metrics.NewRegistry()),
 	}
 }
 
@@ -233,21 +233,22 @@ func (gp *GaugePercent) SnapshotValueUint() uint {
 	return uint(gp.Percent.Snapshot().Value())
 }
 
-func (gp *GaugePercent) UpdatePercent(totalDelta int64, uabsolute uint64) {
+func (gp *GaugePercent) UpdatePercent(totalDelta, absolute float64) {
 	gp.Mutex.Lock()
 	defer gp.Mutex.Unlock()
 	previous := gp.Previous.Snapshot().Value()
-	absolute := int64(uabsolute)
 	gp.Previous.Update(absolute)
-	if previous != 0 /* otherwise do not update */ &&
-		absolute >= previous /* otherwise counters got reset */ &&
-		totalDelta != 0 /* otherwise there were no previous value for Total */ {
-		percent := float64(100) * float64(absolute-previous) / float64(totalDelta) // TODO rounding good?
-		if percent > 100.0 {
-			percent = 100.0
-		}
-		gp.Percent.Update(percent)
+	if previous == 0 { // no previous value, cannot calc absolute delta
+		return
 	}
+	if absolute < previous { // counters got reset, won't update anything
+		return
+	}
+	percent := float64(100) * (absolute - previous) / totalDelta
+	if percent > 100.0 {
+		percent = 100.0
+	}
+	gp.Percent.Update(percent)
 }
 
 // CPU type has a list of CPUData.
@@ -266,7 +267,7 @@ type CPUData struct {
 }
 
 type CPUUpdater interface {
-	UpdateCPU(sigar.Cpu, int64)
+	UpdateCPU(cpu.TimesStat, float64)
 }
 
 type MetricCPU struct {
@@ -282,15 +283,19 @@ type MetricCPU struct {
 	Extra   CPUUpdater
 }
 
-func (mc *MetricCPU) Update(scpu sigar.Cpu) {
-	totalDelta := mc.Total.UpdateAbsolute(int64(scpu.Total()))
-	mc.UserPct.UpdatePercent(totalDelta, scpu.User)
-	mc.NicePct.UpdatePercent(totalDelta, scpu.Nice)
-	mc.SysPct.UpdatePercent(totalDelta, scpu.Sys)
-	mc.WaitPct.UpdatePercent(totalDelta, scpu.Wait)
-	mc.IdlePct.UpdatePercent(totalDelta, scpu.Idle)
+func (mc *MetricCPU) Update(stat cpu.TimesStat) {
+	totalDelta := float64(mc.Total.UpdateAbsolute(int64(stat.Total())))
+	if totalDelta == 0 { // when there was no previous total value
+		return
+	}
+	mc.UserPct.UpdatePercent(totalDelta, stat.User)
+	mc.NicePct.UpdatePercent(totalDelta, stat.Nice)
+	mc.SysPct.UpdatePercent(totalDelta, stat.System)
+	mc.WaitPct.UpdatePercent(totalDelta, stat.Iowait) // NB non-zero in linux only
+	mc.IdlePct.UpdatePercent(totalDelta, stat.Idle)
 	if mc.Extra != nil {
-		mc.Extra.UpdateCPU(scpu, totalDelta)
+		mc.Extra.UpdateCPU(stat, totalDelta)
+		// TODO freebsd: gopsutil provides .Irq (not in darwin though)
 	}
 }
 

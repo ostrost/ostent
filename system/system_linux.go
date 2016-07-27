@@ -3,8 +3,8 @@
 package system
 
 import (
-	sigar "github.com/ostrost/gosigar"
 	metrics "github.com/rcrowley/go-metrics"
+	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/mem"
 )
 
@@ -37,11 +37,11 @@ type ExtraMetricCPU struct {
 	Stolen  *GaugePercent
 }
 
-func (emc *ExtraMetricCPU) UpdateCPU(sigarCPU sigar.Cpu, totalDelta int64) {
-	emc.Wait.UpdatePercent(totalDelta, sigarCPU.Wait)
-	emc.Irq.UpdatePercent(totalDelta, sigarCPU.Irq)
-	emc.SoftIrq.UpdatePercent(totalDelta, sigarCPU.SoftIrq)
-	emc.Stolen.UpdatePercent(totalDelta, sigarCPU.Stolen)
+func (emc *ExtraMetricCPU) UpdateCPU(stat cpu.TimesStat, totalDelta float64) {
+	emc.Wait.UpdatePercent(totalDelta, stat.Iowait)
+	emc.Irq.UpdatePercent(totalDelta, stat.Irq)
+	emc.SoftIrq.UpdatePercent(totalDelta, stat.Softirq)
+	emc.Stolen.UpdatePercent(totalDelta, stat.Stolen)
 }
 
 func NewMetricCPU(r metrics.Registry, name string) *MetricCPU {

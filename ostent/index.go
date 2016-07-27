@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/Sirupsen/logrus"
-	sigar "github.com/ostrost/gosigar"
 	metrics "github.com/rcrowley/go-metrics"
+	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
@@ -536,10 +536,10 @@ func (ir *IndexRegistry) UpdateLA(stat load.AvgStat) {
 	ir.Load.Long.Update(stat.Load15)
 }
 
-func (ir *IndexRegistry) UpdateCPU(all sigar.Cpu, list []sigar.Cpu) {
+func (ir *IndexRegistry) UpdateCPU(agg cpu.TimesStat, list []cpu.TimesStat) {
 	ir.Mutex.Lock()
 	defer ir.Mutex.Unlock()
-	ir.PrivateCPUAll.Update(all)
+	ir.PrivateCPUAll.Update(agg)
 	for coreno, cpu := range list {
 		ir.GetOrRegisterPrivateCPU(coreno).Update(cpu)
 	}

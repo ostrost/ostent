@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	sigar "github.com/ostrost/gosigar"
+	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/load"
@@ -17,10 +18,10 @@ import (
 	"github.com/ostrost/ostent/system"
 )
 
-// Registry has updates with sigar values.
+// Registry has updates with gopsutil stats.
 type Registry interface {
 	UpdateIF(system.IfAddress)
-	UpdateCPU(sigar.Cpu, []sigar.Cpu)
+	UpdateCPU(cpu.TimesStat, []cpu.TimesStat)
 	UpdateLA(load.AvgStat)
 	UpdateSwap(*mem.SwapMemoryStat)
 	UpdateRAM(*mem.VirtualMemoryStat)
@@ -197,11 +198,12 @@ func (m Machine) PS(CH chan<- PSSlice) {
 
 func (m Machine) CPU(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
-	all, list := sigar.Cpu{}, sigar.CpuList{}
-	err1 := all.Get()
-	err2 := list.Get()
+	var (
+		aggs, err1 = cpu.Times(false)
+		list, err2 = cpu.Times(true)
+	)
 	if err1 == nil && err2 == nil {
-		reg.UpdateCPU(all, list.List)
+		reg.UpdateCPU(aggs[0], list)
 	}
 	wg.Done()
 }
