@@ -311,36 +311,45 @@ func Fetch(keys *params.FetchKeys) error {
 	return nil
 }
 
-func FetchOne(k params.FetchKey, keys []string) error {
-	switch k.URL.Scheme {
+func address(u url.URL) (string, string, error) {
+	switch u.Scheme {
 	case "https":
-		k.URL.Scheme = "wss"
+		u.Scheme = "wss"
 	case "http":
-		k.URL.Scheme = "ws"
+		u.Scheme = "ws"
 	default:
-		return fmt.Errorf("Unknown scheme for WebSocket connection: %s", k.URL.Scheme)
+		return "", "", fmt.Errorf("Unknown scheme for WebSocket connection: %s", u.Scheme)
 	}
-	search, err := json.Marshal(struct{ Search string }{k.URL.RawQuery})
-	if err != nil {
-		return err
-	}
-	host, port, err := net.SplitHostPort(k.URL.Host)
+	host, port, err := net.SplitHostPort(u.Host)
 	if err != nil {
 		if !strings.HasPrefix(err.Error(), "missing port in address") {
-			return err
+			return "", "", err
 		}
 		if host == "" {
-			host = k.URL.Host
+			host = u.Host
 		}
 	}
 	if port == "" {
-		switch k.URL.Scheme {
+		switch u.Scheme {
 		case "wss":
 			port = "443"
 		case "ws":
 			port = "80"
 		}
 	}
+	return host, port, nil
+}
+
+func FetchOne(k params.FetchKey, keys []string) error {
+	host, port, err := address(k.URL)
+	if err != nil {
+		return err
+	}
+	search, err := json.Marshal(struct{ Search string }{k.URL.RawQuery})
+	if err != nil {
+		return err
+	}
+
 	conn, err := net.Dial("tcp", host+":"+port)
 	if err != nil {
 		return err
