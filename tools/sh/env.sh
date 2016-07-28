@@ -30,7 +30,7 @@ Gmake() {
 # Following functions of this script is expected to be executed sequentially.
 # The split is so that each function must end with one timely action.
 
-: "${GO_VERSION:=1.6.2}"
+: "${GO_VERSION:=1.6.3}"
 : "${GIMME_VERSION:=1.0.0}"
 : "${GIMME_PATH:=$HOME/bin/gimme}"
 : "${GIMME_ENV_PREFIX:=$HOME/.gimme/envs}"
