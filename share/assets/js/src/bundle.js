@@ -22601,12 +22601,12 @@
 	  mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
 	  Reduce: function Reduce(data) {
 	    return {
-	      uptime: data.uptime
+	      system: data.system
 	    };
 	  },
 	  render: function render() {
 	    var Data = this.state; // shadow global Data
-	    return _jsx('span', {}, void 0, Data.uptime);
+	    return _jsx('span', {}, void 0, Data.system.uptime_format);
 	  }
 	});
 

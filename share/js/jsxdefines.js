@@ -575,12 +575,12 @@ jsxdefines.define_uptime = React.createClass({
   mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
   Reduce: function(data) {
     return {
-      uptime: data.uptime
+      system: data.system
     };
   },
   render: function() {
     let Data = this.state; // shadow global Data
-    return (<span>{Data.uptime}</span>);
+    return (<span>{Data.system.uptime_format}</span>);
   }
 });
 

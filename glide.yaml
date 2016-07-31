@@ -18,6 +18,18 @@ import:
 - package: github.com/gorilla/handlers
 - package: github.com/gorilla/schema
 - package: github.com/gorilla/websocket
+- package: github.com/influxdata/telegraf
+  version: 1.0.0-beta3
+  subpackages:
+  - plugins/inputs
+  - plugins/inputs/system
+  - plugins/outputs
+  - plugins/outputs/file
+  - plugins/serializers
+- package: github.com/influxdata/toml
+  subpackages:
+  - .
+  - plugins/inputs
 - package: github.com/Jeffail/gabs
 - package: github.com/jteeuwen/go-bindata
   subpackages:

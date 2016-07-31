@@ -1,5 +1,5 @@
-hash: fda676beb56a3540c71a31c63dee2c33f623f4bc3672f46b12ecdf47e525adf6
-updated: 2016-07-28T21:19:45.265856689Z
+hash: ad5b4d57c7a2d7115c5ca258d4c88ef61ceb30f3373fef63d79010849c0f40df
+updated: 2016-07-30T21:21:00.928015226Z
 imports:
 - name: github.com/blang/semver
   version: 60ec3488bfea7cca02b021d106d9911120d25fe9
@@ -9,6 +9,10 @@ imports:
   - md2man
 - name: github.com/cyberdelia/go-metrics-graphite
   version: 7e54b5c2aa6eaff4286c44129c3def899dff528c
+- name: github.com/davecgh/go-spew
+  version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
+  subpackages:
+  - spew
 - name: github.com/facebookgo/clock
   version: 600d898af40aa09a7a93ecb9265d87b0504b6f03
 - name: github.com/facebookgo/grace
@@ -21,7 +25,7 @@ imports:
 - name: github.com/facebookgo/stats
   version: 1b76add642e42c6ffba7211ad7b3939ce654526e
 - name: github.com/go-ole/go-ole
-  version: be49f7c07711fcb603cff39e1de7c67926dc0ba7
+  version: 7dfdcf409020452e29b4babcbb22f984d2aa308a
   subpackages:
   - oleutil
 - name: github.com/google/go-querystring
@@ -39,11 +43,28 @@ imports:
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/influxdb
-  version: a1c7d9c8f218aeb8cd9d045f4fd6334cf7e43ad5
+  version: e094138084855d444195b252314dfee9eae34cab
   subpackages:
   - client
+  - client/v2
   - models
   - pkg/escape
+- name: github.com/influxdata/telegraf
+  version: 03d02fa67a06b73614cae657f36adb8dd7e147ba
+  subpackages:
+  - plugins/inputs
+  - plugins/inputs/system
+  - plugins/outputs
+  - plugins/outputs/file
+  - plugins/serializers
+  - internal
+  - plugins/serializers/graphite
+  - plugins/serializers/influx
+  - plugins/serializers/json
+- name: github.com/influxdata/toml
+  version: af4df43894b16e3fd2b788d01bd27ad0776ef2d0
+  subpackages:
+  - ast
 - name: github.com/Jeffail/gabs
   version: c28ac41b517d24bf381d39d5a294fac6536d81fa
 - name: github.com/jteeuwen/go-bindata
@@ -57,10 +78,16 @@ imports:
   version: 43e429cd03e6faac34faf94153cfb7a5adb6b928
 - name: github.com/mihasya/go-metrics-librato
   version: 0ec8d5e8bf04a48fc5c96792bfd016b08afdabad
+- name: github.com/naoina/go-stringutil
+  version: 6b638e95a32d0c1131db0e7fe83775cbea4a0d0b
 - name: github.com/ostrost/gosigar
   version: 92f17d4363e7e615e6fdfc74320946d37b95a939
   subpackages:
   - sysfreebsd
+- name: github.com/pmezard/go-difflib
+  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
+  subpackages:
+  - difflib
 - name: github.com/rcrowley/go-metrics
   version: bdb33529eca3e55eac7328e07c57012a797af602
 - name: github.com/rcrowley/goagain
@@ -68,7 +95,7 @@ imports:
 - name: github.com/russross/blackfriday
   version: 93622da34e54fb6529bfb7c57e710f37a8d9cbd8
 - name: github.com/shirou/gopsutil
-  version: 4d0c402af66c78735c5ccf820dc2ca7de5e4ff08
+  version: 586bb697f3ec9f8ec08ffefe18f521a64534037c
   subpackages:
   - host
   - net
@@ -92,7 +119,14 @@ imports:
 - name: github.com/spf13/pflag
   version: 1560c1005499d61b80f865c04d39ca7505bf7f0b
 - name: github.com/StackExchange/wmi
-  version: d4ae5b448be53329ab38edcbc8aa1d196fc87f21
+  version: 771c736650b4aabf956d9103ba5bf439414f79f9
+- name: github.com/stretchr/objx
+  version: cbeaeb16a013161a98496fad62933b1d21786672
+- name: github.com/stretchr/testify
+  version: 1f4a1643a57e798696635ea4c126e9127adb7d3c
+  subpackages:
+  - mock
+  - assert
 - name: github.com/vrischmann/go-metrics-influxdb
   version: be4fc87f4ea19631fadd5f80e4fb8ea0353348a6
 - name: golang.org/x/net

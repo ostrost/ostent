@@ -20,6 +20,7 @@ import (
 
 	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/format"
+	"github.com/ostrost/ostent/internal/plugins/outputs/ostent"
 	"github.com/ostrost/ostent/params"
 	"github.com/ostrost/ostent/system"
 	"github.com/ostrost/ostent/templateutil"
@@ -108,15 +109,14 @@ func (la *last) collect(when time.Time, wantprocs bool) {
 
 	c := Machine{}
 	var wg sync.WaitGroup
-	wg.Add(8)             // EIGHT:
+	wg.Add(7)             // SEVEN:
 	go c.CPU(Reg1s, &wg)  // one
 	go c.RAM(Reg1s, &wg)  // two
 	go c.Swap(Reg1s, &wg) // three
 	go c.DF(Reg1s, &wg)   // four
 	go c.HN(RegMSS, &wg)  // five
-	go c.UP(RegMSS, &wg)  // six
-	go c.LA(Reg1s, &wg)   // seven
-	go c.IF(Reg1s, &wg)   // eight
+	go c.LA(Reg1s, &wg)   // six
+	go c.IF(Reg1s, &wg)   // seven
 
 	if wantprocs {
 		pch := make(chan PSSlice, 1)
@@ -137,12 +137,6 @@ func (la *last) CopyPS() PSSlice {
 func (mss *MSS) HN(para *params.Params, data IndexData) bool {
 	// HN has no delay, always updates data
 	data.SetString("hostname", mss.GetString("hostname"))
-	return true
-}
-
-func (mss *MSS) UP(para *params.Params, data IndexData) bool {
-	// UP has no delay, always updates data
-	data.SetString("uptime", mss.GetString("uptime"))
 	return true
 }
 
@@ -652,7 +646,6 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 		// These are updaters:
 		psCopy.IU,
 		RegMSS.HN,
-		RegMSS.UP,
 		Reg1s.MEM,
 		Reg1s.CPU,
 		Reg1s.DF,
@@ -663,6 +656,7 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 			updated = true
 		}
 	}
+	data["system"] = ostent.Output.SystemCopy()
 	return data, updated, nil
 }
 

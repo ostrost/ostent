@@ -10,11 +10,9 @@ import (
 	sigar "github.com/ostrost/gosigar"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
-	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
 
-	"github.com/ostrost/ostent/format"
 	"github.com/ostrost/ostent/system"
 )
 
@@ -32,7 +30,6 @@ type Registry interface {
 type Collector interface {
 	GetHN() (string, error)
 	HN(S2SRegistry, *sync.WaitGroup)
-	UP(S2SRegistry, *sync.WaitGroup)
 	LA(Registry, *sync.WaitGroup)
 	RAM(Registry, *sync.WaitGroup)
 	Swap(Registry, *sync.WaitGroup)
@@ -95,14 +92,6 @@ func GetHN() (string, error) {
 func (m Machine) HN(sreg S2SRegistry, wg *sync.WaitGroup) {
 	if hostname, err := m.GetHN(); err == nil {
 		sreg.SetString("hostname", hostname)
-	}
-	wg.Done()
-}
-
-func (m Machine) UP(sreg S2SRegistry, wg *sync.WaitGroup) {
-	// m is unused
-	if uptime, err := host.Uptime(); err == nil {
-		sreg.SetString("uptime", format.Uptime(uptime))
 	}
 	wg.Done()
 }

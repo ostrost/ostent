@@ -107,7 +107,7 @@ mixin alink_html(cls, fmt, link)
   |    class="#{cls} [[.#{link}.ExtraClass]]"
   |   >#{format(fmt, format('[[.%s.Text]]', link))}</a>
 
-+define('define_uptime'): span [[.Data.uptime]]
++define('define_uptime'): span [[.Data.system.uptime_format]]
 +define('define_hostname')
   if JSX
     | <a href="/" title={"hostname "+Data.hostname}>[[.Data.hostname]]</a>
@@ -330,7 +330,6 @@ html
       div: .top-bar-right: h2.h5.margin-bottom-0: small
         | [[.Distrib]] up 
         span.updates.whitespace-pre(data-define='define_uptime') [[template "define_uptime" .]]
-        //- a.button.secondary.hollow.margin-0(href=latestOstent) ostent
 
     +if('ne (len .Exporting) 0')
       .row.expanded.hr-bottom: .column.large-11.small-offset-1
