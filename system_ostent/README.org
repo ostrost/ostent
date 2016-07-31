@@ -1,7 +1,7 @@
 * package system_ostent
 
 Package =system_ostent= implements "=system_ostent=" input plugin.
-This plugin derived from "system" plugin with the following changes.
+It derived from "=system=" plugin with the following changes.
 
 #+BEGIN_SRC sh :results raw
 fst=../vendor/github.com/influxdata/telegraf/plugins/inputs/system/system.go
@@ -22,7 +22,7 @@ diff --unified \
 sed 1,2d # filenames printed already
 #+END_SRC
 
-#+BEGIN_EXAMPLE
+#+BEGIN_SRC diff
 #+RESULTS:
 --- ../vendor/github.com/influxdata/telegraf/plugins/inputs/system/system.go
 +++ ../system_ostent/system_ostent.go
@@ -98,4 +98,4 @@ sed 1,2d # filenames printed already
  		return &SystemStats{}
  	})
  }
-#+END_EXAMPLE
+#+END_SRC
