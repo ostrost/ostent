@@ -22,7 +22,6 @@ import:
   version: 1.0.0-beta3
   subpackages:
   - plugins/inputs
-  - plugins/inputs/system
   - plugins/outputs
   - plugins/outputs/file
   - plugins/serializers

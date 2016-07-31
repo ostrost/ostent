@@ -656,7 +656,7 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 			updated = true
 		}
 	}
-	data["system"] = ostent.Output.SystemCopy()
+	data["system_ostent"] = ostent.Output.SystemOstentCopy()
 	return data, updated, nil
 }
 

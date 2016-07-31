@@ -13,7 +13,6 @@ import (
 
 	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/plugins/inputs"
-	_ "github.com/influxdata/telegraf/plugins/inputs/system" // "system" input
 	"github.com/influxdata/telegraf/plugins/outputs"
 	_ "github.com/influxdata/telegraf/plugins/outputs/file"
 	"github.com/influxdata/telegraf/plugins/serializers"
@@ -21,6 +20,7 @@ import (
 	"github.com/influxdata/toml/ast"
 
 	_ "github.com/ostrost/ostent/internal/plugins/outputs/ostent" // "ostent" output
+	_ "github.com/ostrost/ostent/system_ostent"                   // "system_ostent" input
 )
 
 func Start() {
@@ -44,7 +44,7 @@ func (c *config) loadConfig() error {
 [agent]
   interval = "1s"
   flushInterval = "1s"
-[[inputs.system]]
+[[inputs.system_ostent]]
   interval = "1s"
 # [[outputs.file]]
 [[outputs.ostent]]

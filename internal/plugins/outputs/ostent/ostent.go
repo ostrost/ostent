@@ -17,25 +17,24 @@ type group struct {
 type ostent struct {
 	// serializer serializers.Serializer
 	// Metrics map[string]*Metric
-	system group
+	systemOstent group
 }
 
-func (o *ostent) SystemCopy() map[string]string {
-	o.system.mutex.Lock()
-	defer o.system.mutex.Unlock()
-	copy := make(map[string]string, len(o.system.kv))
-	for k, v := range o.system.kv {
+func (o *ostent) SystemOstentCopy() map[string]string {
+	o.systemOstent.mutex.Lock()
+	defer o.systemOstent.mutex.Unlock()
+	copy := make(map[string]string, len(o.systemOstent.kv))
+	for k, v := range o.systemOstent.kv {
 		copy[k] = v // v is a string
 	}
 	return copy
 }
 
-func (o *ostent) writeSystem(m telegraf.Metric) error {
+func (o *ostent) writeSystemOstent(m telegraf.Metric) error {
 	fields := m.Fields()
-	for k, field := range fields {
-		if k != "uptime_format" { // && !strings.HasPrefix(k, "load")
-			continue
-		}
+	// for k, field := range fields { if k = "uptime_format" || strings.HasPrefix(k, "load") //...
+	k := "uptime_format"
+	if field, ok := fields["uptime_format"]; ok {
 		var tail string
 		/* if up, ok := fields["uptime"]; ok {
 			if uptime, ok := up.(int64); ok {
@@ -43,10 +42,9 @@ func (o *ostent) writeSystem(m telegraf.Metric) error {
 			}
 		} // */
 
-		o.system.mutex.Lock()
-		defer o.system.mutex.Unlock()
-		o.system.kv[k] = fmt.Sprintf("%v", field) + tail
-		return nil
+		o.systemOstent.mutex.Lock()
+		defer o.systemOstent.mutex.Unlock()
+		o.systemOstent.kv[k] = fmt.Sprintf("%v", field) + tail
 	}
 	return nil
 }
@@ -77,8 +75,8 @@ func (o *ostent) Write(ms []telegraf.Metric) error {
 		return nil
 	}
 	for _, m := range ms {
-		if m.Name() == "system" {
-			if err := o.writeSystem(m); err != nil {
+		if m.Name() == "system_ostent" {
+			if err := o.writeSystemOstent(m); err != nil {
 				return err
 			}
 		}
@@ -91,7 +89,7 @@ func (o *ostent) Write(ms []telegraf.Metric) error {
 
 var Output = &ostent{
 	// Metrics: make(map[string]*Metric),
-	system: group{kv: make(map[string]string)},
+	systemOstent: group{kv: make(map[string]string)},
 }
 
 func init() { outputs.Add("ostent", func() telegraf.Output { return Output }) }

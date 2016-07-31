@@ -1,0 +1,101 @@
+* package system_ostent
+
+Package =system_ostent= implements "=system_ostent=" input plugin.
+This plugin derived from "system" plugin with the following changes.
+
+#+BEGIN_SRC sh :results raw
+fst=../vendor/github.com/influxdata/telegraf/plugins/inputs/system/system.go
+snd=../system_ostent/system_ostent.go
+printf -- '--- %s\n' "$fst"
+printf -- '+++ %s\n' "$snd"
+
+diff --unified --ignore-all-space \
+"$fst" \
+"$snd" |
+sed 1,2d # filenames printed already
+exit $? # ......................................................... END HERE .
+
+# bash syntax: have above: #+BEGIN_SRC bash
+diff --unified \
+<(go run print_ast.go -- "$fst" | grep -vF -- "$fst" | grep -v Rparen:) \
+<(go run print_ast.go -- "$snd" | grep -vF -- "$snd" | grep -v Rparen:) |
+sed 1,2d # filenames printed already
+#+END_SRC
+
+#+BEGIN_EXAMPLE
+#+RESULTS:
+--- ../vendor/github.com/influxdata/telegraf/plugins/inputs/system/system.go
++++ ../system_ostent/system_ostent.go
+@@ -1,13 +1,8 @@
+-package system
++package system_ostent
+ 
+ import (
+-	"bufio"
+-	"bytes"
+-	"fmt"
+-	"runtime"
+-
+ 	"github.com/shirou/gopsutil/host"
+-	"github.com/shirou/gopsutil/load"
++	// "github.com/shirou/gopsutil/load"
+ 
+ 	"github.com/influxdata/telegraf"
+ 	"github.com/influxdata/telegraf/plugins/inputs"
+@@ -22,35 +17,32 @@
+ func (_ *SystemStats) SampleConfig() string { return "" }
+ 
+ func (_ *SystemStats) Gather(acc telegraf.Accumulator) error {
++	/*
+ 	loadavg, err := load.Avg()
+ 	if err != nil {
+ 		return err
+ 	}
++	*/
+ 
+-	hostinfo, err := host.Info()
+-	if err != nil {
+-		return err
+-	}
+-
+-	users, err := host.Users()
++	upseconds, err := host.Uptime()
+ 	if err != nil {
+ 		return err
+ 	}
+ 
+ 	fields := map[string]interface{}{
++		/*
+ 		"load1":         loadavg.Load1,
+ 		"load5":         loadavg.Load5,
+ 		"load15":        loadavg.Load15,
+-		"uptime":        hostinfo.Uptime,
+-		"n_users":       len(users),
+-		"uptime_format": format_uptime(hostinfo.Uptime),
+-		"n_cpus":        runtime.NumCPU(),
++		*/
++		"uptime_format": format_uptime(upseconds),
+ 	}
+-	acc.AddFields("system", fields, nil)
++	acc.AddFields("system_ostent", fields, nil)
+ 
+ 	return nil
+ }
+ 
++/*
+ func format_uptime(uptime uint64) string {
+ 	buf := new(bytes.Buffer)
+ 	w := bufio.NewWriter(buf)
+@@ -75,9 +67,10 @@
+ 	w.Flush()
+ 	return buf.String()
+ }
++*/
+ 
+ func init() {
+-	inputs.Add("system", func() telegraf.Input {
++	inputs.Add("system_ostent", func() telegraf.Input {
+ 		return &SystemStats{}
+ 	})
+ }
+#+END_EXAMPLE

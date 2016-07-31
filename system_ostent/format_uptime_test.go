@@ -1,10 +1,6 @@
-//+build none
-
-package format
+package system_ostent
 
 import "testing"
-
-func init() { panic(nil) }
 
 func TestFormatUptime(t *testing.T) {
 	for _, v := range []struct {

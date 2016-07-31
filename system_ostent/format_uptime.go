@@ -1,6 +1,4 @@
-//+build none
-
-package format
+package system_ostent
 
 import (
 	"fmt"
