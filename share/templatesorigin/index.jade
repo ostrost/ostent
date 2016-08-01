@@ -110,9 +110,9 @@ mixin alink_html(cls, fmt, link)
 +define('define_uptime'): span [[.Data.system_ostent.uptime_format]]
 +define('define_hostname')
   if JSX
-    | <a href="/" title={"hostname "+Data.hostname}>[[.Data.hostname]]</a>
+    | <a href="/" title={"hostname "+Data.system_ostent.hostname_short}>[[.Data.system_ostent.hostname_short]]</a>
   else
-    | <a href="/" title="hostname [[.Data.hostname]]">[[.Data.hostname]]</a>
+    | <a href="/" title="hostname [[.Data.system_ostent.hostname_short]]">[[.Data.system_ostent.hostname_short]]</a>
 
 mixin range_list(datak, ranger, kvalue, keyid)
   +if(format('.Data.%s', datak)): +range(format('%s := .Data.%s.List', ranger, datak))
@@ -303,7 +303,7 @@ doctype html
 html
   head
     meta(charset='utf-8')
-    title [[.Data.hostname]] ostent
+    title [[.Data.system_ostent.hostname_short]] ostent
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
 
@@ -322,8 +322,7 @@ html
     .top-bar
       - var latestOstent = 'https://www.ostrost.com/ostent/releases/latest?cmp=[[.OstentVersion]]'
       .top-bar-title: h2.h5.margin-bottom-0
-        span.updates(data-define='define_hostname')
-          | [[template "define_hostname" .]]
+        span.updates(data-define='define_hostname') [[template "define_hostname" .]]
         |  
         a(href=latestOstent) ostent
       +if('.OstentUpgrade'): .top-bar-left: a(href=latestOstent) [[.OstentUpgrade]]

@@ -26,7 +26,7 @@ sed 1,2d # filenames printed already
 #+RESULTS:
 --- ../vendor/github.com/influxdata/telegraf/plugins/inputs/system/system.go
 +++ ../system_ostent/system_ostent.go
-@@ -1,13 +1,8 @@
+@@ -1,13 +1,11 @@
 -package system
 +package system_ostent
  
@@ -35,14 +35,16 @@ sed 1,2d # filenames printed already
 -	"bytes"
 -	"fmt"
 -	"runtime"
--
++	"os"
++	"strings"
+ 
  	"github.com/shirou/gopsutil/host"
 -	"github.com/shirou/gopsutil/load"
 +	// "github.com/shirou/gopsutil/load"
  
  	"github.com/influxdata/telegraf"
  	"github.com/influxdata/telegraf/plugins/inputs"
-@@ -22,35 +17,32 @@
+@@ -22,35 +20,38 @@
  func (_ *SystemStats) SampleConfig() string { return "" }
  
  func (_ *SystemStats) Gather(acc telegraf.Accumulator) error {
@@ -54,10 +56,11 @@ sed 1,2d # filenames printed already
 +	*/
  
 -	hostinfo, err := host.Info()
--	if err != nil {
--		return err
--	}
--
++	hostname, err := os.Hostname()
+ 	if err != nil {
+ 		return err
+ 	}
+ 
 -	users, err := host.Users()
 +	upseconds, err := host.Uptime()
  	if err != nil {
@@ -74,7 +77,8 @@ sed 1,2d # filenames printed already
 -		"uptime_format": format_uptime(hostinfo.Uptime),
 -		"n_cpus":        runtime.NumCPU(),
 +		*/
-+		"uptime_format": format_uptime(upseconds),
++		"hostname_short": strings.Split(hostname, ".")[0],
++		"uptime_format":  format_uptime(upseconds),
  	}
 -	acc.AddFields("system", fields, nil)
 +	acc.AddFields("system_ostent", fields, nil)
@@ -86,7 +90,7 @@ sed 1,2d # filenames printed already
  func format_uptime(uptime uint64) string {
  	buf := new(bytes.Buffer)
  	w := bufio.NewWriter(buf)
-@@ -75,9 +67,10 @@
+@@ -75,9 +76,10 @@
  	w.Flush()
  	return buf.String()
  }

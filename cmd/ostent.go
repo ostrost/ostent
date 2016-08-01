@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"os"
 	"sort"
 	"strings"
 	"sync"
@@ -127,7 +128,7 @@ func init() {
 		}) + "  Any extra parameters become tags in every metrics post to InfluxDB server.\n"
 	}
 
-	hostname, _ := ostent.GetHN()
+	hostname, _ := os.Hostname()
 	if lends := params.NewLibratoEndpoints(10*time.Second, hostname); true {
 		preRuns.add(func() error { return LibratoRun(&elisting, lends) })
 		OstentCmd.Flags().Var(&lends, "librato", "Librato exporting `parameter(s)`")

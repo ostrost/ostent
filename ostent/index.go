@@ -109,14 +109,13 @@ func (la *last) collect(when time.Time, wantprocs bool) {
 
 	c := Machine{}
 	var wg sync.WaitGroup
-	wg.Add(7)             // SEVEN:
+	wg.Add(6)             // SIX:
 	go c.CPU(Reg1s, &wg)  // one
 	go c.RAM(Reg1s, &wg)  // two
 	go c.Swap(Reg1s, &wg) // three
 	go c.DF(Reg1s, &wg)   // four
-	go c.HN(RegMSS, &wg)  // five
-	go c.LA(Reg1s, &wg)   // six
-	go c.IF(Reg1s, &wg)   // seven
+	go c.LA(Reg1s, &wg)   // five
+	go c.IF(Reg1s, &wg)   // six
 
 	if wantprocs {
 		pch := make(chan PSSlice, 1)
@@ -132,12 +131,6 @@ func (la *last) CopyPS() PSSlice {
 	psCopy := make(PSSlice, len(la.PSSlice))
 	copy(psCopy, la.PSSlice)
 	return psCopy
-}
-
-func (mss *MSS) HN(para *params.Params, data IndexData) bool {
-	// HN has no delay, always updates data
-	data.SetString("hostname", mss.GetString("hostname"))
-	return true
 }
 
 // IFSlice is a list of MetricIF.
@@ -551,24 +544,6 @@ type S2SRegistry interface {
 	GetString(string) string
 }
 
-// MSS implements S2SRegistry in a map[string]string.
-type MSS struct {
-	MU sync.Mutex
-	KV map[string]string
-}
-
-func (mss *MSS) SetString(k, v string) {
-	mss.MU.Lock()
-	defer mss.MU.Unlock()
-	mss.KV[k] = v
-}
-
-func (mss *MSS) GetString(k string) string {
-	mss.MU.Lock()
-	defer mss.MU.Unlock()
-	return mss.KV[k]
-}
-
 type IndexRegistry struct {
 	Registry           metrics.Registry
 	PrivateCPUAll      *system.MetricCPU /// metrics.Registry
@@ -606,8 +581,7 @@ func (ui *UpgradeInfo) Get() string {
 }
 
 var (
-	Reg1s  *IndexRegistry
-	RegMSS = &MSS{KV: map[string]string{}}
+	Reg1s *IndexRegistry
 
 	OstentUpgrade = new(UpgradeInfo)
 )
@@ -645,7 +619,6 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 	for _, update := range []func(*params.Params, IndexData) bool{
 		// These are updaters:
 		psCopy.IU,
-		RegMSS.HN,
 		Reg1s.MEM,
 		Reg1s.CPU,
 		Reg1s.DF,

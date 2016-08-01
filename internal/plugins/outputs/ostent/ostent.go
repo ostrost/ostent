@@ -1,7 +1,6 @@
 package ostent
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/influxdata/telegraf"
@@ -30,23 +29,14 @@ func (o *ostent) SystemOstentCopy() map[string]string {
 	return copy
 }
 
-func (o *ostent) writeSystemOstent(m telegraf.Metric) error {
-	fields := m.Fields()
-	// for k, field := range fields { if k = "uptime_format" || strings.HasPrefix(k, "load") //...
-	k := "uptime_format"
-	if field, ok := fields["uptime_format"]; ok {
-		var tail string
-		/* if up, ok := fields["uptime"]; ok {
-			if uptime, ok := up.(int64); ok {
-				tail = fmt.Sprintf(":%02d", 60+uptime%40)
-			}
-		} // */
-
-		o.systemOstent.mutex.Lock()
-		defer o.systemOstent.mutex.Unlock()
-		o.systemOstent.kv[k] = fmt.Sprintf("%v", field) + tail
+func (o *ostent) writeSystemOstent(m telegraf.Metric) {
+	o.systemOstent.mutex.Lock()
+	defer o.systemOstent.mutex.Unlock()
+	for k, field := range m.Fields() {
+		if v, ok := field.(string); ok {
+			o.systemOstent.kv[k] = v
+		}
 	}
-	return nil
 }
 
 /*
@@ -76,9 +66,7 @@ func (o *ostent) Write(ms []telegraf.Metric) error {
 	}
 	for _, m := range ms {
 		if m.Name() == "system_ostent" {
-			if err := o.writeSystemOstent(m); err != nil {
-				return err
-			}
+			o.writeSystemOstent(m)
 		}
 		/* if err := o.writeMetric(m); err != nil {
 			return err

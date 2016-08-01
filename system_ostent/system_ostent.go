@@ -1,6 +1,9 @@
 package system_ostent
 
 import (
+	"os"
+	"strings"
+
 	"github.com/shirou/gopsutil/host"
 	// "github.com/shirou/gopsutil/load"
 
@@ -24,6 +27,11 @@ func (_ *SystemStats) Gather(acc telegraf.Accumulator) error {
 		}
 	*/
 
+	hostname, err := os.Hostname()
+	if err != nil {
+		return err
+	}
+
 	upseconds, err := host.Uptime()
 	if err != nil {
 		return err
@@ -35,7 +43,8 @@ func (_ *SystemStats) Gather(acc telegraf.Accumulator) error {
 			"load5":         loadavg.Load5,
 			"load15":        loadavg.Load15,
 		*/
-		"uptime_format": format_uptime(upseconds),
+		"hostname_short": strings.Split(hostname, ".")[0],
+		"uptime_format":  format_uptime(upseconds),
 	}
 	acc.AddFields("system_ostent", fields, nil)
 

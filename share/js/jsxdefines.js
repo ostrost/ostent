@@ -271,12 +271,12 @@ jsxdefines.define_hostname = React.createClass({
   mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
   Reduce: function(data) {
     return {
-      hostname: data.hostname
+      system_ostent: data.system_ostent
     };
   },
   render: function() {
     let Data = this.state; // shadow global Data
-    return (<a href="/" title={"hostname "+Data.hostname}>{Data.hostname}</a>);
+    return (<a href="/" title={"hostname "+Data.system_ostent.hostname_short}>{Data.system_ostent.hostname_short}</a>);
   }
 });
 

@@ -21984,15 +21984,15 @@
 	  mixins: [ReactPureRenderMixin, jsxdefines.StateHandlingMixin, jsxdefines.HandlerMixin],
 	  Reduce: function Reduce(data) {
 	    return {
-	      hostname: data.hostname
+	      system_ostent: data.system_ostent
 	    };
 	  },
 	  render: function render() {
 	    var Data = this.state; // shadow global Data
 	    return _jsx('a', {
 	      href: '/',
-	      title: "hostname " + Data.hostname
-	    }, void 0, Data.hostname);
+	      title: "hostname " + Data.system_ostent.hostname_short
+	    }, void 0, Data.system_ostent.hostname_short);
 	  }
 	});
 

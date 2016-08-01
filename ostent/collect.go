@@ -1,10 +1,8 @@
 package ostent
 
 import (
-	"os"
 	"regexp"
 	"runtime"
-	"strings"
 	"sync"
 
 	sigar "github.com/ostrost/gosigar"
@@ -28,7 +26,6 @@ type Registry interface {
 
 // Collector is collection interface.
 type Collector interface {
-	GetHN() (string, error)
 	HN(S2SRegistry, *sync.WaitGroup)
 	LA(Registry, *sync.WaitGroup)
 	RAM(Registry, *sync.WaitGroup)
@@ -75,26 +72,6 @@ func HardwareIF(name string) bool {
 
 // Machine implements Collector by collecting the maching metrics.
 type Machine struct{}
-
-func (m Machine) GetHN() (string, error) {
-	// m is unused
-	return GetHN()
-}
-
-func GetHN() (string, error) {
-	hostname, err := os.Hostname()
-	if err == nil {
-		hostname = strings.Split(hostname, ".")[0]
-	}
-	return hostname, err
-}
-
-func (m Machine) HN(sreg S2SRegistry, wg *sync.WaitGroup) {
-	if hostname, err := m.GetHN(); err == nil {
-		sreg.SetString("hostname", hostname)
-	}
-	wg.Done()
-}
 
 func (m Machine) LA(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
