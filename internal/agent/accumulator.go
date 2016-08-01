@@ -99,4 +99,5 @@ func (ac *accumulator) DisablePrecision() {
 	// TODO
 }
 
-// func (ac *accumulator) AddError(err error) { log.Printf("Error in input: %s", err) }
+// TODO AddError is not part of telegraf.Accumulator interface as of 1.0.0-beta3
+func (ac *accumulator) AddError(err error) { log.Printf("Error in input: %s", err) }
