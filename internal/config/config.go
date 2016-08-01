@@ -3,6 +3,7 @@ package config
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"os"
 	"regexp"
 	"time"
@@ -15,9 +16,12 @@ import (
 	"github.com/influxdata/toml/ast"
 
 	"github.com/ostrost/ostent/internal"
-	"github.com/ostrost/ostent/internal/buffer"
 	internal_models "github.com/ostrost/ostent/internal/models"
 )
+
+var config = struct {
+	UnmarshalTable func(*ast.Table, interface{}) error
+}{UnmarshalTable: toml.UnmarshalTable}
 
 var (
 	// envVarRe is a regex to find environment variables in the config file
@@ -34,17 +38,20 @@ type Config struct {
 }
 
 func NewConfig() *Config {
-	return &Config{
+	c := &Config{
 		Agent: &AgentConfig{
-			// values are defaults
-			Interval:      internal.Duration{Duration: time.Second * 10},
-			FlushInterval: internal.Duration{Duration: time.Second * 10},
+			Interval:      internal.Duration{Duration: 10 * time.Second},
+			FlushInterval: internal.Duration{Duration: 10 * time.Second},
 		},
 	}
+	return c
 }
 
 type AgentConfig struct {
-	Interval      internal.Duration
+	// Interval at which to gather information
+	Interval internal.Duration
+
+	// FlushInterval is the Interval at which to flush data
 	FlushInterval internal.Duration
 }
 
@@ -56,7 +63,9 @@ func trimBOM(f []byte) []byte {
 }
 
 func parse(contents []byte) (*ast.Table, error) {
+	// ugh windows why
 	contents = trimBOM(contents)
+
 	for _, dword := range envVarRe.FindAll(contents, -1) {
 		if val := os.Getenv(string(dword[1:])); val != "" {
 			contents = bytes.Replace(contents, dword, []byte(val), 1)
@@ -66,6 +75,7 @@ func parse(contents []byte) (*ast.Table, error) {
 }
 
 func (c *Config) LoadConfig() error {
+	path := "internal config"
 	tbl, err := parse([]byte(`
 [agent]
   interval = "1s"
@@ -78,53 +88,60 @@ func (c *Config) LoadConfig() error {
 	if err != nil {
 		return err
 	}
+
+	// Parse agent table:
 	if val, ok := tbl.Fields["agent"]; ok {
-		subt, ok := val.(*ast.Table)
+		subTable, ok := val.(*ast.Table)
 		if !ok {
-			return fmt.Errorf("Cannot parse config")
+			return fmt.Errorf("%s: invalid configuration", path)
 		}
-		if err := toml.UnmarshalTable(subt, c.Agent); err != nil {
-			return fmt.Errorf("Cannot parse config: [agent] section: %s", err)
+		if err = config.UnmarshalTable(subTable, c.Agent); err != nil {
+			log.Printf("Could not parse [agent] config\n")
+			return fmt.Errorf("Error parsing %s, %s", path, err)
 		}
 	}
 
+	// Parse all the rest of the plugins:
 	for name, val := range tbl.Fields {
-		subt, ok := val.(*ast.Table)
+		subTable, ok := val.(*ast.Table)
 		if !ok {
-			return fmt.Errorf("Cannot parse config")
+			return fmt.Errorf("%s: invalid configuration", path)
 		}
-		if name == "outputs" {
-			for pname, pval := range subt.Fields {
-				switch psubt := pval.(type) {
+		switch name {
+		case "outputs":
+			for pluginName, pluginVal := range subTable.Fields {
+				switch pluginSubTable := pluginVal.(type) {
 				case *ast.Table:
-					if err := c.AddOutput(pname, psubt); err != nil {
-						return fmt.Errorf("Parse error: %s", err)
+					if err = c.addOutput(pluginName, pluginSubTable); err != nil {
+						return fmt.Errorf("Error parsing %s, %s", path, err)
 					}
 				case []*ast.Table:
-					for _, t := range psubt {
-						if err := c.AddOutput(pname, t); err != nil {
-							return fmt.Errorf("Parse error: %s", err)
+					for _, t := range pluginSubTable {
+						if err = c.addOutput(pluginName, t); err != nil {
+							return fmt.Errorf("Error parsing %s, %s", path, err)
 						}
 					}
 				default:
-					return fmt.Errorf("Unsupported type in config: [%s] section", pname)
+					return fmt.Errorf("Unsupported config format: %s, file %s",
+						pluginName, path)
 				}
 			}
-		} else if name == "inputs" {
-			for pname, pval := range subt.Fields {
-				switch psubt := pval.(type) {
+		case "inputs", "plugins":
+			for pluginName, pluginVal := range subTable.Fields {
+				switch pluginSubTable := pluginVal.(type) {
 				case *ast.Table:
-					if err := c.AddInput(pname, psubt); err != nil {
-						return fmt.Errorf("Parse error: %s", err)
+					if err = c.addInput(pluginName, pluginSubTable); err != nil {
+						return fmt.Errorf("Error parsing %s, %s", path, err)
 					}
 				case []*ast.Table:
-					for _, t := range psubt {
-						if err := c.AddInput(pname, t); err != nil {
-							return fmt.Errorf("Parse error: %s", err)
+					for _, t := range pluginSubTable {
+						if err = c.addInput(pluginName, t); err != nil {
+							return fmt.Errorf("Error parsing %s, %s", path, err)
 						}
 					}
 				default:
-					return fmt.Errorf("Unsupported type in config: [%s] section", pname)
+					return fmt.Errorf("Unsupported config format: %s, file %s",
+						pluginName, path)
 				}
 			}
 		}
@@ -132,70 +149,72 @@ func (c *Config) LoadConfig() error {
 	return err
 }
 
-func makeSerializer(name string) (serializers.Serializer, error) {
+func (c *Config) addOutput(name string, table *ast.Table) error {
+	creator, ok := outputs.Outputs[name]
+	if !ok {
+		return fmt.Errorf("Undefined but requested output: %s", name)
+	}
+	output := creator()
+
+	// If the output has a SetSerializer function, then this means it can write
+	// arbitrary types of output, so build the serializer and set it.
+	switch t := output.(type) {
+	case serializers.SerializerOutput:
+		serializer, err := buildSerializer(name, table)
+		if err != nil {
+			return err
+		}
+		if serializer == nil {
+			return fmt.Errorf("Serializer is nil")
+		}
+		t.SetSerializer(serializer)
+	}
+
+	ro := internal_models.NewRunningOutput(name, output)
+	c.Outputs = append(c.Outputs, ro)
+	return nil
+}
+
+func (c *Config) addInput(name string, table *ast.Table) error {
+	creator, ok := inputs.Inputs[name]
+	if !ok {
+		return fmt.Errorf("Undefined but requested input: %s", name)
+	}
+	input := creator()
+	pluginConfig, err := buildInput(name, table)
+	if err != nil {
+		return err
+	}
+	rp := &internal_models.RunningInput{
+		Name:   name,
+		Input:  input,
+		Config: pluginConfig,
+	}
+	c.Inputs = append(c.Inputs, rp)
+	return nil
+}
+
+// buildSerializer grabs the necessary entries from the ast.Table for creating
+// a serializers.Serializer object, and creates it, which can then be added onto
+// an Output object.
+func buildSerializer(name string, tbl *ast.Table) (serializers.Serializer, error) {
 	return serializers.NewSerializer(&serializers.Config{
 		DataFormat: "graphite",
 	})
 }
 
-func (c *Config) AddOutput(name string, table *ast.Table) error {
-	create, ok := outputs.Outputs[name]
-	if !ok {
-		return fmt.Errorf("Unknown output by name %q", name)
-	}
-	out := create()
-
-	if ser, ok := out.(serializers.SerializerOutput); ok {
-		newSer, err := makeSerializer(name)
-		if err != nil {
-			return err
-		}
-		if newSer == nil {
-			return fmt.Errorf("Serializer is nil")
-		}
-		ser.SetSerializer(newSer)
-	}
-
-	bbs := 1000
-	c.Outputs = append(c.Outputs, &internal_models.RunningOutput{
-		Output:       out,
-		Name:         name,
-		BufBatchSize: bbs,
-		Buf:          buffer.NewBuffer(bbs),
-	})
-	return nil
-}
-
-func (c *Config) AddInput(name string, table *ast.Table) error {
-	create, ok := inputs.Inputs[name]
-	if !ok {
-		return fmt.Errorf("Unknown input by name %q", name)
-	}
-	in := create()
-	pc, err := buildInput(name, table)
-	if err != nil {
-		return err
-	}
-	c.Inputs = append(c.Inputs, &internal_models.RunningInput{
-		Input:  in,
-		Name:   name,
-		Config: pc,
-	})
-	return nil
-}
-
 func buildInput(name string, tbl *ast.Table) (*internal_models.InputConfig, error) {
-	conf := &internal_models.InputConfig{Name: name, Interval: time.Second * 10}
+	cp := &internal_models.InputConfig{Name: name}
 	if node, ok := tbl.Fields["interval"]; ok {
 		if kv, ok := node.(*ast.KeyValue); ok {
-			if sv, ok := kv.Value.(*ast.String); ok {
-				d, err := time.ParseDuration(sv.Value)
+			if str, ok := kv.Value.(*ast.String); ok {
+				dur, err := time.ParseDuration(str.Value)
 				if err != nil {
 					return nil, err
 				}
-				conf.Interval = d
+				cp.Interval = dur
 			}
 		}
 	}
-	return conf, nil
+	return cp, nil
 }
