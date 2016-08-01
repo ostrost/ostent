@@ -1,24 +1,16 @@
 package agent
 
 import (
-	"bytes"
-	"fmt"
 	"log"
 	"math"
-	"os"
-	"regexp"
-	"strconv"
 	"sync"
 	"time"
 
 	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/plugins/inputs"
-	"github.com/influxdata/telegraf/plugins/outputs"
 	_ "github.com/influxdata/telegraf/plugins/outputs/file"
-	"github.com/influxdata/telegraf/plugins/serializers"
-	"github.com/influxdata/toml"
-	"github.com/influxdata/toml/ast"
 
+	"github.com/ostrost/ostent/internal/config"
+	internal_models "github.com/ostrost/ostent/internal/models"
 	_ "github.com/ostrost/ostent/internal/plugins/outputs/ostent" // "ostent" output
 	_ "github.com/ostrost/ostent/system_ostent"                   // "system_ostent" input
 )
@@ -29,127 +21,18 @@ func Start() {
 	}
 }
 
-func parse(contents []byte) (*ast.Table, error) {
-	contents = bytes.TrimPrefix(contents, []byte("\xef\xbb\xbf")) // windows
-	for _, dword := range regexp.MustCompile(`\$\w+`).FindAll(contents, -1) {
-		if val := os.Getenv(string(dword[1:])); val != "" {
-			contents = bytes.Replace(contents, dword, []byte(val), 1)
-		}
+func start() error {
+	c := config.NewConfig()
+	if err := c.LoadConfig(); err != nil {
+		return err
 	}
-	return toml.Parse(contents)
-}
 
-func (c *config) loadConfig() error {
-	tbl, err := parse([]byte(`
-[agent]
-  interval = "1s"
-  flushInterval = "1s"
-[[inputs.system_ostent]]
-  interval = "1s"
-# [[outputs.file]]
-[[outputs.ostent]]
-`))
+	ag, err := NewAgent(c)
 	if err != nil {
 		return err
 	}
-	if val, ok := tbl.Fields["agent"]; ok {
-		subt, ok := val.(*ast.Table)
-		if !ok {
-			return fmt.Errorf("Cannot parse config")
-		}
-		if err := toml.UnmarshalTable(subt, c.agent); err != nil {
-			return fmt.Errorf("Cannot parse config: [agent] section: %s", err)
-		}
-	}
 
-	for name, val := range tbl.Fields {
-		subt, ok := val.(*ast.Table)
-		if !ok {
-			return fmt.Errorf("Cannot parse config")
-		}
-		if name == "outputs" {
-			for pname, pval := range subt.Fields {
-				switch psubt := pval.(type) {
-				case *ast.Table:
-					if err := c.addOutput(pname, psubt); err != nil {
-						return fmt.Errorf("Parse error: %s", err)
-					}
-				case []*ast.Table:
-					for _, t := range psubt {
-						if err := c.addOutput(pname, t); err != nil {
-							return fmt.Errorf("Parse error: %s", err)
-						}
-					}
-				default:
-					return fmt.Errorf("Unsupported type in config: [%s] section", pname)
-				}
-			}
-		} else if name == "inputs" {
-			for pname, pval := range subt.Fields {
-				switch psubt := pval.(type) {
-				case *ast.Table:
-					if err := c.addInput(pname, psubt); err != nil {
-						return fmt.Errorf("Parse error: %s", err)
-					}
-				case []*ast.Table:
-					for _, t := range psubt {
-						if err := c.addInput(pname, t); err != nil {
-							return fmt.Errorf("Parse error: %s", err)
-						}
-					}
-				default:
-					return fmt.Errorf("Unsupported type in config: [%s] section", pname)
-				}
-			}
-		}
-	}
-	return err
-}
-
-type duration struct{ Duration time.Duration }
-
-func (d *duration) UnmarshalTOML(b []byte) error {
-	var err error
-	d.Duration, err = time.ParseDuration(string(b[1 : len(b)-1]))
-	if err == nil {
-		return nil
-	}
-	if n, err := strconv.ParseInt(string(b), 10, 64); err == nil {
-		d.Duration = time.Second * time.Duration(n)
-	} else if f, err := strconv.ParseFloat(string(b), 64); err == nil {
-		d.Duration = time.Second * time.Duration(f)
-	}
-	return nil
-}
-
-// fields are public for unmarshalling
-type agentConfig struct{ Interval, FlushInterval duration }
-type config struct {
-	agent *agentConfig
-
-	Inputs  []*input
-	Outputs []*output
-}
-
-func newConfig() *config {
-	return &config{
-		agent: &agentConfig{
-			// values are defaults
-			Interval:      duration{Duration: time.Second * 10},
-			FlushInterval: duration{Duration: time.Second * 10},
-		},
-	}
-}
-
-func start() error {
-	c := newConfig()
-	if err := c.loadConfig(); err != nil {
-		return err
-	}
-
-	ag := agent{metricch: make(chan telegraf.Metric, 10000), config: c}
-
-	if err := ag.connect(); err != nil {
+	if err := ag.Connect(); err != nil {
 		return err
 	}
 	/* There will be loop with waiting for reload signal.
@@ -163,33 +46,47 @@ func start() error {
 	return nil
 }
 
-type agent struct {
+// Agent runs the agent and collects data based on the given config
+type Agent struct {
 	metricch chan telegraf.Metric
-	config   *config
+	Config   *config.Config
 }
 
-func (ag *agent) connect() error {
-	for _, out := range ag.config.Outputs {
-		if err := connectOne(out); err != nil {
-			return err
+// NewAgent returns an Agent struct based off the given Config
+func NewAgent(config *config.Config) (*Agent, error) {
+	a := &Agent{
+		Config: config,
+	}
+	a.metricch = make(chan telegraf.Metric, 10000)
+	return a, nil
+}
+
+func (a *Agent) Connect() error {
+	for _, o := range a.Config.Outputs {
+		err := o.Output.Connect()
+		if err != nil {
+			log.Printf("Failed to connect to output %q (will retry in 15s): %s",
+				o.Name, err.Error())
+			time.Sleep(15 * time.Second)
+			err = o.Output.Connect()
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
 }
 
-func connectOne(out *output) error {
-	err := out.output.Connect()
-	if err == nil {
-		return nil
+// Close closes the connection to all configured outputs
+func (a *Agent) Close() error {
+	var err error
+	for _, o := range a.Config.Outputs {
+		err = o.Output.Close()
+		switch ot := o.Output.(type) {
+		case telegraf.ServiceOutput:
+			ot.Stop()
+		}
 	}
-	log.Printf("Failed to connect to output %q (will retry in 15s): %s",
-		out.name, err.Error())
-	time.Sleep(15 * time.Second)
-	err = out.output.Connect()
-	if err == nil {
-		return nil
-	}
-	log.Printf("Failed to connect to output %q: %s", out.name, err.Error())
 	return err
 }
 
@@ -198,8 +95,8 @@ func NextDelta(d time.Duration) time.Duration {
 	return now.Truncate(d).Add(d).Sub(now)
 }
 
-func (ag *agent) Run() error {
-	time.Sleep(NextDelta(ag.config.agent.Interval.Duration))
+func (ag *Agent) Run() error {
+	time.Sleep(NextDelta(ag.Config.Agent.Interval.Duration))
 
 	var wg sync.WaitGroup
 	wg.Add(1)
@@ -210,81 +107,60 @@ func (ag *agent) Run() error {
 		}
 	}()
 
-	wg.Add(len(ag.config.Inputs))
-	for _, in := range ag.config.Inputs {
-		interval := ag.config.agent.Interval.Duration
-		if in.config.interval != 0 {
-			interval = in.config.interval
+	wg.Add(len(ag.Config.Inputs))
+	for _, input := range ag.Config.Inputs {
+		interval := ag.Config.Agent.Interval.Duration
+		if input.Config.Interval != 0 {
+			interval = input.Config.Interval
 		}
-		go func(inputInput *input, inputInterval time.Duration, mch chan telegraf.Metric) {
+		go func(in *internal_models.RunningInput, interv time.Duration, mch chan telegraf.Metric) {
 			defer wg.Done()
-			if err := gather(inputInput, inputInterval, mch); err != nil {
+			if err := gather(in, interv, mch); err != nil {
 				log.Printf(err.Error())
 			}
-		}(in, interval, ag.metricch)
+		}(input, interval, ag.metricch)
 	}
 	wg.Wait()
 	return nil
 }
 
-func (ag *agent) flush() error {
+func (ag *Agent) flush() error {
 	time.Sleep(time.Millisecond * 200) // time for gather threads to run
 
-	ticker := time.NewTicker(ag.config.agent.FlushInterval.Duration)
+	ticker := time.NewTicker(ag.Config.Agent.FlushInterval.Duration)
 
 	for {
 		select {
 		case <-ticker.C:
 			ag.doFlush()
 		case m := <-ag.metricch:
-			ag.addMetric(m)
+			ag.AddMetric(m)
 		}
 	}
 }
 
-func (ag *agent) doFlush() {
+func (ag *Agent) doFlush() {
 	var wg sync.WaitGroup
-	wg.Add(len(ag.config.Outputs))
-	for _, out := range ag.config.Outputs {
-		go func(o *output) {
+	wg.Add(len(ag.Config.Outputs))
+	for _, out := range ag.Config.Outputs {
+		go func(output *internal_models.RunningOutput) {
 			defer wg.Done()
-			if err := o.Write(); err != nil {
-				log.Printf("Error writing to output [%s]: %s\n", o.name, err.Error())
+			if err := output.Write(); err != nil {
+				log.Printf("Error writing to output [%s]: %s\n", output.Name, err.Error())
 			}
 		}(out)
 	}
 	wg.Wait()
 }
 
-func (ag *agent) addMetric(m telegraf.Metric) {
-	for i, out := range ag.config.Outputs {
-		if i == len(ag.config.Outputs)-1 { // the last
-			out.addMetric(m)
+func (ag *Agent) AddMetric(m telegraf.Metric) {
+	for i, out := range ag.Config.Outputs {
+		if i == len(ag.Config.Outputs)-1 { // the last
+			out.AddMetric(m)
 		} else if mcopy, err := copyMetric(m); err == nil { // err is ignored
-			out.addMetric(mcopy)
+			out.AddMetric(mcopy)
 		}
 	}
-}
-
-func (out *output) addMetric(m telegraf.Metric) {
-	out.buf.Add(m)
-	if out.buf.Len() == out.bufBatchSize {
-		b := out.buf.Batch(out.bufBatchSize)
-		if err := out.rawWrite(b); err != nil {
-			panic(err)
-		}
-	}
-}
-
-func (out *output) rawWrite(ms []telegraf.Metric) error {
-	if ms == nil || len(ms) == 0 {
-		return nil
-	}
-	return out.output.Write(ms)
-}
-
-func (out *output) Write() error {
-	return out.rawWrite(out.buf.Batch(out.bufBatchSize))
 }
 
 func copyMetric(m telegraf.Metric) (telegraf.Metric, error) {
@@ -299,113 +175,6 @@ func copyMetric(m telegraf.Metric) (telegraf.Metric, error) {
 		fields[k] = v
 	}
 	return telegraf.NewMetric(m.Name(), tags, fields, time.Time(m.Time()))
-}
-
-type buffer struct{ buf chan telegraf.Metric }
-
-func newBuffer(size int) *buffer { return &buffer{buf: make(chan telegraf.Metric, size)} }
-
-func (b *buffer) Len() int { return len(b.buf) }
-
-func (b *buffer) Add(ms ...telegraf.Metric) {
-	for i := range ms {
-		select {
-		case b.buf <- ms[i]:
-		default:
-			<-b.buf
-			b.buf <- ms[i]
-		}
-	}
-}
-
-func (b *buffer) Batch(bsize int) []telegraf.Metric {
-	n := b.Len()
-	if n >= bsize {
-		n = bsize
-	}
-	o := make([]telegraf.Metric, n)
-	for i := 0; i < n; i++ {
-		o[i] = <-b.buf
-	}
-	return o
-}
-
-func makeSerializer(name string) (serializers.Serializer, error) {
-	return serializers.NewSerializer(&serializers.Config{
-		DataFormat: "graphite",
-	})
-}
-
-type output struct {
-	output telegraf.Output
-	name   string
-	// Config struct { Interval time.Duration }
-	bufBatchSize int
-	buf          *buffer
-}
-
-func (c *config) addOutput(name string, table *ast.Table) error {
-	create, ok := outputs.Outputs[name]
-	if !ok {
-		return fmt.Errorf("Unknown output by name %q", name)
-	}
-	out := create()
-
-	if ser, ok := out.(serializers.SerializerOutput); ok {
-		newSer, err := makeSerializer(name)
-		if err != nil {
-			return err
-		}
-		if newSer == nil {
-			return fmt.Errorf("Serializer is nil")
-		}
-		ser.SetSerializer(newSer)
-	}
-
-	bbs := 1000
-	c.Outputs = append(c.Outputs, &output{output: out, name: name, bufBatchSize: bbs, buf: newBuffer(bbs)})
-	return nil
-}
-
-type input struct {
-	input  telegraf.Input
-	name   string
-	config *inputConfig
-}
-
-type inputConfig struct {
-	name     string
-	interval time.Duration
-}
-
-func (c *config) addInput(name string, table *ast.Table) error {
-	create, ok := inputs.Inputs[name]
-	if !ok {
-		return fmt.Errorf("Unknown input by name %q", name)
-	}
-	in := create()
-	pc, err := buildInput(name, table)
-	if err != nil {
-		return err
-	}
-	c.Inputs = append(c.Inputs, &input{input: in, name: name, config: pc})
-	return nil
-}
-
-func buildInput(name string, tbl *ast.Table) (*inputConfig, error) {
-	conf := &inputConfig{name: name, interval: time.Second * 10}
-	if node, ok := tbl.Fields["interval"]; ok {
-		if kv, ok := node.(*ast.KeyValue); ok {
-			if sv, ok := kv.Value.(*ast.String); ok {
-				d, err := time.ParseDuration(sv.Value)
-				if err != nil {
-					return nil, err
-				}
-				conf.interval = d
-			}
-		}
-	}
-	return conf, nil
 }
 
 type acc struct {
@@ -482,7 +251,7 @@ func (ac *acc) AddFields(measurement string, fields map[string]interface{}, tags
 	ac.metricch <- m
 }
 
-func gather(input *input, interval time.Duration, metricch chan telegraf.Metric) error {
+func gather(input *internal_models.RunningInput, interval time.Duration, metricch chan telegraf.Metric) error {
 	defer catch(input)
 
 	ticker := time.NewTicker(interval)
@@ -497,33 +266,33 @@ func gather(input *input, interval time.Duration, metricch chan telegraf.Metric)
 	}
 }
 
-func gatherTimed(input *input, interval time.Duration, ac *acc) {
+func gatherTimed(input *internal_models.RunningInput, interval time.Duration, ac *acc) {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
 	done := make(chan error)
 	go func() {
-		done <- input.input.Gather(ac)
+		done <- input.Input.Gather(ac)
 	}()
 
 	for {
 		select {
 		case err := <-done:
 			if err != nil {
-				log.Printf("Error in input [%s]: %s", input.name, err)
+				log.Printf("Error in input [%s]: %s", input.Name, err)
 			}
 			return
 		case <-ticker.C:
 			log.Printf(
 				"Error: input [%s] took longer to collect than collection interval (%s)",
-				input.name, interval)
+				input.Name, interval)
 			continue
 		}
 	}
 }
 
-func catch(input *input) {
+func catch(input *internal_models.RunningInput) {
 	if err := recover(); err != nil {
-		log.Printf("Panic: %s: %s\n", input.name, err)
+		log.Printf("Panic: %s: %s\n", input.Name, err)
 	}
 }
