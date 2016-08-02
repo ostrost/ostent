@@ -55,7 +55,6 @@ imports:
   - plugins/inputs
   - plugins/inputs/system
   - plugins/outputs
-  - plugins/outputs/file
   - plugins/serializers
   - internal
   - plugins/serializers/graphite

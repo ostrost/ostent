@@ -15,5 +15,6 @@ type RunningInput struct {
 // InputConfig containing a name, interval, and filter
 type InputConfig struct {
 	Name     string
+	Filter   Filter
 	Interval time.Duration
 }

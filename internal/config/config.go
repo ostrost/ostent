@@ -10,6 +10,7 @@ import (
 
 	"github.com/influxdata/telegraf/plugins/inputs"
 	"github.com/influxdata/telegraf/plugins/outputs"
+	_ "github.com/influxdata/telegraf/plugins/outputs/graphite"
 	"github.com/influxdata/telegraf/plugins/serializers"
 
 	"github.com/influxdata/toml"
@@ -17,6 +18,8 @@ import (
 
 	"github.com/ostrost/ostent/internal"
 	internal_models "github.com/ostrost/ostent/internal/models"
+	_ "github.com/ostrost/ostent/internal/plugins/outputs/ostent" // "ostent" output
+	_ "github.com/ostrost/ostent/system_ostent"                   // "system_ostent" input
 )
 
 var config = struct {
@@ -32,6 +35,8 @@ var (
 // will be logging to, as well as all the plugins that the user has
 // specified
 type Config struct {
+	Tags map[string]string
+
 	Agent   *AgentConfig
 	Inputs  []*internal_models.RunningInput
 	Outputs []*internal_models.RunningOutput
@@ -75,18 +80,48 @@ func parse(contents []byte) (*ast.Table, error) {
 }
 
 func (c *Config) LoadConfig() error {
-	path := "internal config"
 	tbl, err := parse([]byte(`
 [agent]
   interval = "1s"
   flushInterval = "1s"
 [[inputs.system_ostent]]
   interval = "1s"
-# [[outputs.file]]
 [[outputs.ostent]]
 `))
 	if err != nil {
 		return err
+	}
+	return c.LoadTable("/internal/config", tbl)
+}
+
+func (c *Config) LoadInterface(path string, in interface{}) error {
+	text, err := toml.Marshal(in)
+	if err != nil {
+		return err
+	}
+	log.Printf("#%s TOML formatted:\n%s", path, text)
+	tbl, err := parse(text)
+	if err != nil {
+		return err
+	}
+	return c.LoadTable(path, tbl)
+}
+
+func (c *Config) LoadTable(path string, tbl *ast.Table) error {
+	var err error
+
+	// Parse tags tables first:
+	for _, tableName := range []string{"tags", "global_tags"} {
+		if val, ok := tbl.Fields[tableName]; ok {
+			subTable, ok := val.(*ast.Table)
+			if !ok {
+				return fmt.Errorf("%s: invalid configuration", path)
+			}
+			if err = config.UnmarshalTable(subTable, c.Tags); err != nil {
+				log.Printf("Could not parse [global_tags] config\n")
+				return fmt.Errorf("Error parsing %s, %s", path, err)
+			}
+		}
 	}
 
 	// Parse agent table:
@@ -170,7 +205,16 @@ func (c *Config) addOutput(name string, table *ast.Table) error {
 		t.SetSerializer(serializer)
 	}
 
-	ro := internal_models.NewRunningOutput(name, output)
+	outputConfig, err := buildOutput(name, table)
+	if err != nil {
+		return err
+	}
+
+	if err := config.UnmarshalTable(table, output); err != nil {
+		return err
+	}
+
+	ro := internal_models.NewRunningOutput(name, output, outputConfig)
 	c.Outputs = append(c.Outputs, ro)
 	return nil
 }
@@ -192,6 +236,34 @@ func (c *Config) addInput(name string, table *ast.Table) error {
 	}
 	c.Inputs = append(c.Inputs, rp)
 	return nil
+}
+
+// buildFilter builds a Filter
+// (tagpass/tagdrop/namepass/namedrop/fieldpass/fielddrop) to
+// be inserted into the internal_models.OutputConfig/internal_models.InputConfig
+// to be used for glob filtering on tags and measurements
+func buildFilter(tbl *ast.Table) (internal_models.Filter, error) {
+	f := internal_models.Filter{}
+
+	if node, ok := tbl.Fields["namedrop"]; ok {
+		if kv, ok := node.(*ast.KeyValue); ok {
+			if ary, ok := kv.Value.(*ast.Array); ok {
+				for _, elem := range ary.Value {
+					if str, ok := elem.(*ast.String); ok {
+						f.NameDrop = append(f.NameDrop, str.Value)
+						f.IsActive = true
+					}
+				}
+			}
+		}
+	}
+
+	if err := f.CompileFilter(); err != nil {
+		return f, err
+	}
+
+	delete(tbl.Fields, "namedrop")
+	return f, nil
 }
 
 // buildSerializer grabs the necessary entries from the ast.Table for creating
@@ -216,5 +288,37 @@ func buildInput(name string, tbl *ast.Table) (*internal_models.InputConfig, erro
 			}
 		}
 	}
+
+	delete(tbl.Fields, "interval")
+	var err error
+	cp.Filter, err = buildFilter(tbl)
+	if err != nil {
+		return cp, err
+	}
 	return cp, nil
+}
+
+// buildOutput parses output specific items from the ast.Table,
+// builds the filter and returns an
+// internal_models.OutputConfig to be inserted into internal_models.RunningInput
+// Note: error exists in the return for future calls that might require error
+func buildOutput(name string, tbl *ast.Table) (*internal_models.OutputConfig, error) {
+	filter, err := buildFilter(tbl)
+	if err != nil {
+		return nil, err
+	}
+	oc := &internal_models.OutputConfig{
+		Name:   name,
+		Filter: filter,
+	}
+	/*
+		// Outputs don't support FieldDrop/FieldPass, so set to NameDrop/NamePass
+		if len(oc.Filter.FieldDrop) > 0 {
+			oc.Filter.NameDrop = oc.Filter.FieldDrop
+		}
+		if len(oc.Filter.FieldPass) > 0 {
+			oc.Filter.NamePass = oc.Filter.FieldPass
+		}
+	*/
+	return oc, nil
 }

@@ -21,7 +21,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/ostrost/ostent/cmd"
-	"github.com/ostrost/ostent/internal/agent"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/share/assets"
 	"github.com/ostrost/ostent/share/templates"
@@ -67,7 +66,6 @@ func init() {
 	cmd.OstentCmd.Flags().BoolVar(&noUpgradeCheck, "noupgradecheck", false,
 		"Off periodic upgrade check")
 	ostent.AddBackground(ostent.CollectLoop)
-	ostent.AddBackground(agent.Start)
 
 	var err error
 	if currentVersion, err = newSemver(ostent.VERSION); err != nil {

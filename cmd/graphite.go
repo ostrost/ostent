@@ -8,14 +8,35 @@ import (
 
 	graphite "github.com/cyberdelia/go-metrics-graphite"
 
+	"github.com/ostrost/ostent/internal/config"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/params"
 )
 
-func GraphiteRun(elisting *ostent.ExportingListing, gends params.GraphiteEndpoints) error {
+type Graphite struct {
+	Servers  []string
+	Prefix   string
+	Namedrop []string // not graphite but general output preference
+	// Interval string // not graphite but general output preference
+}
+type ConfigType struct {
+	Outputs []Graphite `toml:"outputs.graphite"`
+}
+
+func GraphiteRun(elisting *ostent.ExportingListing, cconfig *config.Config, gends params.GraphiteEndpoints) error {
 	for _, value := range gends.Values {
 		if value.ServerAddr.Host != "" {
 			elisting.AddExporter("Graphite", value)
+			err := cconfig.LoadInterface("/internal/graphite/config", ConfigType{
+				Outputs: []Graphite{{
+					Servers:  []string{value.ServerAddr.String()},
+					Prefix:   "ostent",
+					Namedrop: []string{"system_ostent"},
+					// Interval: value.Delay.String(),
+				}}})
+			if err != nil {
+				return err
+			}
 			ostent.AddBackground(GraphiteRunFunc(value))
 		}
 	}

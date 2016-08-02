@@ -10,6 +10,7 @@ import (
 type RunningOutput struct {
 	Name            string
 	Output          telegraf.Output
+	Config          *OutputConfig
 	MetricBatchSize int
 
 	metrics *buffer.Buffer
@@ -18,11 +19,13 @@ type RunningOutput struct {
 func NewRunningOutput(
 	name string,
 	output telegraf.Output,
+	conf *OutputConfig,
 ) *RunningOutput {
 	batchSize := 1000
 	ro := &RunningOutput{
 		Name:            name,
 		metrics:         buffer.NewBuffer(batchSize),
+		Config:          conf,
 		Output:          output,
 		MetricBatchSize: batchSize,
 	}
@@ -32,6 +35,12 @@ func NewRunningOutput(
 // AddMetric adds a metric to the output. This function can also write cached
 // points if FlushBufferWhenFull is true.
 func (ro *RunningOutput) AddMetric(metric telegraf.Metric) {
+	if ro.Config.Filter.IsActive {
+		if !ro.Config.Filter.ShouldMetricPass(metric) {
+			return
+		}
+	}
+
 	ro.metrics.Add(metric)
 	if ro.metrics.Len() == ro.MetricBatchSize {
 		batch := ro.metrics.Batch(ro.MetricBatchSize)
@@ -62,4 +71,10 @@ func (ro *RunningOutput) write(metrics []telegraf.Metric) error {
 	}
 	err := ro.Output.Write(metrics)
 	return err
+}
+
+// OutputConfig containing name and filter
+type OutputConfig struct {
+	Name   string
+	Filter Filter
 }

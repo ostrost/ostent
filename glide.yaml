@@ -23,7 +23,6 @@ import:
   subpackages:
   - plugins/inputs
   - plugins/outputs
-  - plugins/outputs/file
   - plugins/serializers
 - package: github.com/influxdata/toml
   subpackages:

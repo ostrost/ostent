@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"sort"
 	"strings"
@@ -13,6 +14,8 @@ import (
 	// "github.com/spf13/viper"
 
 	"github.com/ostrost/ostent/flags"
+	"github.com/ostrost/ostent/internal/agent"
+	"github.com/ostrost/ostent/internal/config"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/params"
 )
@@ -21,6 +24,8 @@ var (
 	persistentPostRuns runs // a list of funcs to be cobra.Command's PersistentPostRunE.
 	persistentPreRuns  runs // a list of funcs to be cobra.Command's PersistentPreRunEE.
 	preRuns            runs // a list of funcs to be cobra.Command's PreRunE.
+
+	cconfig *config.Config
 )
 
 type runs struct {
@@ -103,10 +108,11 @@ func init() {
 		return nil
 	})
 
+	cconfig = config.NewConfig()
 	var elisting ostent.ExportingListing
 
 	if gends := params.NewGraphiteEndpoints(10*time.Second, flags.NewBind("127.0.0.1", 2003)); true {
-		preRuns.add(func() error { return GraphiteRun(&elisting, gends) })
+		preRuns.add(func() error { return GraphiteRun(&elisting, cconfig, gends) })
 		OstentCmd.Flags().Var(&gends, "graphite", "Graphite exporting `endpoint(s)`")
 		OstentCmd.Example += "Graphite params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &gends.Default // shortcut, f does not alter it
@@ -145,6 +151,13 @@ func init() {
 		ostent.Exporting = elisting.ExportingList
 		sort.Stable(ostent.Exporting)
 		return nil
+	})
+
+	ostent.AddBackground(func() {
+		if err := agent.Run(cconfig); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	})
 }
 

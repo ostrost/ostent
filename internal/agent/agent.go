@@ -7,22 +7,12 @@ import (
 	"time"
 
 	"github.com/influxdata/telegraf"
-	_ "github.com/influxdata/telegraf/plugins/outputs/file"
 
 	"github.com/ostrost/ostent/internal/config"
 	internal_models "github.com/ostrost/ostent/internal/models"
-	_ "github.com/ostrost/ostent/internal/plugins/outputs/ostent" // "ostent" output
-	_ "github.com/ostrost/ostent/system_ostent"                   // "system_ostent" input
 )
 
-func Start() {
-	if err := start(); err != nil {
-		log.Printf("Agent error: %s", err)
-	}
-}
-
-func start() error {
-	c := config.NewConfig()
+func Run(c *config.Config) error {
 	if err := c.LoadConfig(); err != nil {
 		return err
 	}
