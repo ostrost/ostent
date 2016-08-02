@@ -14,25 +14,27 @@ import (
 )
 
 type Graphite struct {
-	Servers  []string
-	Prefix   string
-	Namedrop []string // not graphite but general output preference
-	// Interval string // not graphite but general output preference
+	Servers []string
+	Prefix  string // hard-coded
+
+	Namedrop []string // general output preference
 }
-type ConfigType struct {
-	Outputs []Graphite `toml:"outputs.graphite"`
-}
+
+// type ConfigType
 
 func GraphiteRun(elisting *ostent.ExportingListing, cconfig *config.Config, gends params.GraphiteEndpoints) error {
 	for _, value := range gends.Values {
 		if value.ServerAddr.Host != "" {
 			elisting.AddExporter("Graphite", value)
-			err := cconfig.LoadInterface("/internal/graphite/config", ConfigType{
+			err := cconfig.LoadInterface("/internal/graphite/config", struct {
+				Outputs []Graphite `toml:"outputs.graphite"`
+			}{
 				Outputs: []Graphite{{
-					Servers:  []string{value.ServerAddr.String()},
-					Prefix:   "ostent",
+					Servers: []string{value.ServerAddr.String()},
+					Prefix:  "ostent", // hard-coded
+
+					// TODO value.Delay becomes meaningless
 					Namedrop: []string{"system_ostent"},
-					// Interval: value.Delay.String(),
 				}}})
 			if err != nil {
 				return err

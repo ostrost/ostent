@@ -11,6 +11,8 @@ import (
 	"github.com/influxdata/telegraf/plugins/inputs"
 	"github.com/influxdata/telegraf/plugins/outputs"
 	_ "github.com/influxdata/telegraf/plugins/outputs/graphite"
+	_ "github.com/influxdata/telegraf/plugins/outputs/influxdb"
+	_ "github.com/influxdata/telegraf/plugins/outputs/librato"
 	"github.com/influxdata/telegraf/plugins/serializers"
 
 	"github.com/influxdata/toml"

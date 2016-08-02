@@ -122,7 +122,7 @@ func init() {
 	}
 
 	if iends := params.NewInfluxEndpoints(10*time.Second, "ostent"); true {
-		preRuns.add(func() error { return InfluxRun(&elisting, iends) })
+		preRuns.add(func() error { return InfluxRun(&elisting, cconfig, iends) })
 		OstentCmd.Flags().Var(&iends, "influxdb", "InfluxDB exporting `endpoint(s)`")
 		OstentCmd.Example += "InfluxDB params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &iends.Default // shortcut, f does not alter it
@@ -136,7 +136,7 @@ func init() {
 
 	hostname, _ := os.Hostname()
 	if lends := params.NewLibratoEndpoints(10*time.Second, hostname); true {
-		preRuns.add(func() error { return LibratoRun(&elisting, lends) })
+		preRuns.add(func() error { return LibratoRun(&elisting, cconfig, lends) })
 		OstentCmd.Flags().Var(&lends, "librato", "Librato exporting `parameter(s)`")
 		OstentCmd.Example += "Librato params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &lends.Default // shortcut, f does not alter it

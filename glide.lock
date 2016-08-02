@@ -55,6 +55,9 @@ imports:
   - plugins/inputs
   - plugins/inputs/system
   - plugins/outputs
+  - plugins/outputs/graphite
+  - plugins/outputs/influxdb
+  - plugins/outputs/librato
   - plugins/serializers
   - internal
   - plugins/serializers/graphite

@@ -23,6 +23,9 @@ import:
   subpackages:
   - plugins/inputs
   - plugins/outputs
+  - plugins/outputs/graphite
+  - plugins/outputs/influxdb
+  - plugins/outputs/librato
   - plugins/serializers
 - package: github.com/influxdata/toml
   subpackages:

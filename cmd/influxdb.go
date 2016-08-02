@@ -3,14 +3,42 @@ package cmd
 import (
 	influxdb "github.com/vrischmann/go-metrics-influxdb"
 
+	"github.com/ostrost/ostent/internal/config"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/params"
 )
 
-func InfluxRun(elisting *ostent.ExportingListing, iends params.InfluxEndpoints) error {
+type Influxdb struct {
+	URLs     []string `toml:"urls"`
+	Username string
+	Password string
+	Database string
+
+	Namedrop []string // general output preference
+}
+
+func InfluxRun(elisting *ostent.ExportingListing, cconfig *config.Config, iends params.InfluxEndpoints) error {
 	for _, value := range iends.Values {
 		if value.ServerAddr.String() != "" {
 			elisting.AddExporter("InfluxDB", value)
+			u := value.URL  // copy
+			u.RawQuery = "" // reset query string
+			err := cconfig.LoadInterface("/internal/influxdb/config", struct {
+				Outputs []Influxdb `toml:"outputs.influxdb"`
+			}{
+				Outputs: []Influxdb{{
+					URLs:     []string{u.String()},
+					Username: value.Username,
+					Password: value.Password,
+					Database: value.Database,
+
+					// TODO value.Tags is ignored
+					// TODO value.Delay becomes meaningless
+					Namedrop: []string{"system_ostent"},
+				}}})
+			if err != nil {
+				return err
+			}
 			ostent.AddBackground(InfluxRunFunc(value))
 		}
 	}
