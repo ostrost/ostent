@@ -198,18 +198,27 @@ func ParamsUsage(setf func(*pflag.FlagSet)) string {
 }
 
 func loadConfigs(cconfig *config.Config) error {
-	type inputCPU struct{}
-	for name, input := range map[string]interface{}{
-		"cpu": struct {
-			Inputs []inputCPU `toml:"inputs.cpu"`
-		}{
-			Inputs: []inputCPU{}}, // Off
-		// Inputs: []inputCPU{{}}}, // ON
-	} {
-
-		if err := cconfig.LoadInterface("/internal/"+name+"/config", input); err != nil {
-			return err
-		}
+	type diskConfig struct{ IgnoreFs []string }
+	/* if err := cconfig.LoadInterface("/internal/disk/config", struct {
+		Inputs []diskConfig `toml:"inputs.disk"`
+	}{
+		Inputs: []diskConfig{{
+			IgnoreFs: []string{"tmpfs", "devtmpfs"},
+		}},
+	}); err != nil {
+		return err
+	} // */
+	on := struct{}{}
+	_ = on
+	type input struct {
+		// CPU  struct{}
+		// Disk diskConfig
 	}
-	return nil
+	in := struct {
+		Inputs input
+	}{input{
+	// CPU:  on,
+	// Disk: diskConfig{[]string{"tmpfs", "devtmpfs"}},
+	}}
+	return cconfig.LoadInterface("/internal/generated/config", in)
 }

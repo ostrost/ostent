@@ -232,6 +232,11 @@ func (c *Config) addInput(name string, table *ast.Table) error {
 	if err != nil {
 		return err
 	}
+
+	if err := config.UnmarshalTable(table, input); err != nil {
+		return err
+	}
+
 	rp := &internal_models.RunningInput{
 		Name:   name,
 		Input:  input,

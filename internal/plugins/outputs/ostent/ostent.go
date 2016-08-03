@@ -7,11 +7,37 @@ import (
 	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/plugins/outputs"
 	// "github.com/influxdata/telegraf/plugins/serializers"
+
+	"github.com/ostrost/ostent/format"
 )
 
 type group struct {
 	mutex sync.Mutex
 	kv    map[string]string
+}
+
+type disk struct {
+	DevName string // empty
+	DirName string
+
+	// strings with units
+
+	// bytes
+	Total  string
+	Used   string
+	Avail  string
+	UsePct uint
+
+	// inodes
+	Inodes  string
+	Iused   string
+	Ifree   string
+	IusePct uint
+}
+
+type groupDisk struct {
+	mutex sync.Mutex
+	list  []disk
 }
 
 type cpu struct {
@@ -37,6 +63,7 @@ func (cl cpuList) Less(i, j int) bool { return cl[i].IdlePct < cl[j].IdlePct }
 type ostent struct {
 	// serializer serializers.Serializer
 	// Metrics map[string]*Metric
+	systemDisk   groupDisk
 	systemCPU    groupCPU
 	systemOstent group
 }
@@ -44,11 +71,25 @@ type ostent struct {
 func (o *ostent) SystemOstentCopy() map[string]string {
 	o.systemOstent.mutex.Lock()
 	defer o.systemOstent.mutex.Unlock()
-	copy := make(map[string]string, len(o.systemOstent.kv))
+	dup := make(map[string]string, len(o.systemOstent.kv))
 	for k, v := range o.systemOstent.kv {
-		copy[k] = v // v is a string
+		dup[k] = v
 	}
-	return copy
+	return dup
+}
+
+func (o *ostent) SystemDiskCopy() []disk {
+	o.systemDisk.mutex.Lock()
+	defer o.systemDisk.mutex.Unlock()
+	llen := len(o.systemDisk.list)
+	if llen == 0 {
+		return []disk{}
+	}
+	dup := make([]disk, llen)
+	copy(dup, o.systemDisk.list)
+	// for i, c := range o.systemDisk.list { copy[i] = c }
+	// sort.Sort(diskList(copy))
+	return dup
 }
 
 func (o *ostent) SystemCPUCopy() []cpu {
@@ -63,15 +104,54 @@ func (o *ostent) SystemCPUCopy() []cpu {
 		tshift = 1
 	}
 
-	copy := make([]cpu, llen)
-	for i, c := range o.systemCPU.list[:llen-tshift] {
-		copy[tshift+i] = c
-	}
-	sort.Sort(cpuList(copy[tshift:]))
+	dup := make([]cpu, llen)
+	copy(dup[tshift:], o.systemCPU.list[:llen-tshift])
+	// for i, c := range o.systemCPU.list[:llen-tshift] { dup[tshift+i] = c }
+	sort.Sort(cpuList(dup[tshift:]))
 	if tshift != 0 {
-		copy[0] = o.systemCPU.list[llen-tshift] // last, "cpu-total", becomes first
+		dup[0] = o.systemCPU.list[llen-tshift] // last, "cpu-total", becomes first
 	}
-	return copy
+	return dup
+}
+
+func (o *ostent) writeSystemDisk(diskno int, m telegraf.Metric) {
+	fields := m.Fields()
+	d := disk{DirName: m.Tags()["path"]}
+
+	var aused, afree, iaused, iafree uint64
+	for _, pair := range []struct {
+		name  string
+		value *string
+		back  *uint64
+	}{
+		{"total", &d.Total, nil},
+		{"used", &d.Used, &aused},
+		{"free", &d.Avail, &afree},
+		{"inodes_total", &d.Inodes, nil},
+		{"inodes_used", &d.Iused, &iaused},
+		{"inodes_free", &d.Ifree, &iafree},
+	} {
+		if field, ok := fields[pair.name]; ok {
+			if v, ok := field.(int64); ok {
+				if pair.back != nil {
+					*pair.value, *pair.back, _ = format.HumanBandback(uint64(v))
+				} else {
+					*pair.value = format.HumanB(uint64(v))
+				}
+			}
+		}
+	}
+	d.UsePct = format.Percent(aused, aused+afree)
+	d.IusePct = format.Percent(iaused, iaused+iafree)
+
+	o.systemDisk.mutex.Lock()
+	defer o.systemDisk.mutex.Unlock()
+	if len(o.systemDisk.list) < diskno {
+		list := make([]disk, diskno)
+		copy(list, o.systemDisk.list)
+		o.systemDisk.list = list
+	}
+	o.systemDisk.list[diskno-1] = d
 }
 
 func (o *ostent) writeSystemCPU(cpuno int, m telegraf.Metric) {
@@ -103,6 +183,14 @@ func (o *ostent) writeSystemCPU(cpuno int, m telegraf.Metric) {
 		o.systemCPU.list = list
 	}
 	o.systemCPU.list[cpuno-1] = c
+}
+
+func (o *ostent) setDiskno(diskno int) {
+	o.systemDisk.mutex.Lock()
+	defer o.systemDisk.mutex.Unlock()
+	if len(o.systemDisk.list) > diskno {
+		o.systemDisk.list = o.systemDisk.list[:diskno]
+	}
 }
 
 func (o *ostent) setCPUno(cpuno int) {
@@ -149,7 +237,7 @@ func (o *ostent) Write(ms []telegraf.Metric) error {
 		return nil
 	}
 
-	cpus := 0
+	cpus, disks := 0, 0
 	for _, m := range ms {
 		switch m.Name() {
 		case "system_ostent":
@@ -157,9 +245,13 @@ func (o *ostent) Write(ms []telegraf.Metric) error {
 		case "cpu":
 			cpus++
 			o.writeSystemCPU(cpus, m)
+		case "disk":
+			disks++
+			o.writeSystemDisk(disks, m)
 		}
 		// default: if err := o.writeMetric(m); err != nil { return err }
 	}
+	o.setDiskno(disks)
 	o.setCPUno(cpus)
 	return nil
 }
@@ -168,6 +260,7 @@ var Output = &ostent{
 	// Metrics: make(map[string]*Metric),
 	systemOstent: group{kv: make(map[string]string)},
 	systemCPU:    groupCPU{},
+	systemDisk:   groupDisk{},
 }
 
 func init() { outputs.Add("ostent", func() telegraf.Output { return Output }) }

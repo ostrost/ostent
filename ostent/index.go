@@ -615,7 +615,7 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 		psCopy.IU,
 		Reg1s.MEM,
 		Reg1s.CPU, // either this or set data["cpu"] with ostent.Output.SystemCPUCopy
-		Reg1s.DF,
+		Reg1s.DF,  // either this or set data["df"] with ostent.Output.SystemDiskCopy
 		Reg1s.IF,
 		Reg1s.LA,
 	} {
@@ -624,6 +624,7 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 		}
 	}
 	// data["cpu"] = struct{ List interface{} }{ostent.Output.SystemCPUCopy()}
+	// data["df"] = struct{ List interface{} }{ostent.Output.SystemDiskCopy()}
 	data["system_ostent"] = ostent.Output.SystemOstentCopy()
 	return data, updated, nil
 }
