@@ -538,12 +538,6 @@ func (ir *IndexRegistry) UpdateIF(ifaddr system.IfAddress) {
 	ir.GetOrRegisterPrivateIF(ifaddr.GetName()).Update(ifaddr)
 }
 
-// S2SRegistry is for string kv storage.
-type S2SRegistry interface {
-	SetString(string, string)
-	GetString(string) string
-}
-
 type IndexRegistry struct {
 	Registry           metrics.Registry
 	PrivateCPUAll      *system.MetricCPU /// metrics.Registry
@@ -620,7 +614,7 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 		// These are updaters:
 		psCopy.IU,
 		Reg1s.MEM,
-		Reg1s.CPU,
+		Reg1s.CPU, // either this or set data["cpu"] with ostent.Output.SystemCPUCopy
 		Reg1s.DF,
 		Reg1s.IF,
 		Reg1s.LA,
@@ -629,6 +623,7 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 			updated = true
 		}
 	}
+	// data["cpu"] = struct{ List interface{} }{ostent.Output.SystemCPUCopy()}
 	data["system_ostent"] = ostent.Output.SystemOstentCopy()
 	return data, updated, nil
 }

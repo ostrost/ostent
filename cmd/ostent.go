@@ -109,6 +109,7 @@ func init() {
 	})
 
 	cconfig = config.NewConfig()
+	preRuns.add(func() error { return loadConfigs(cconfig) })
 	var elisting ostent.ExportingListing
 
 	if gends := params.NewGraphiteEndpoints(10*time.Second, flags.NewBind("127.0.0.1", 2003)); true {
@@ -194,4 +195,21 @@ func ParamsUsage(setf func(*pflag.FlagSet)) string {
 		}
 	}
 	return strings.Join(lines, "\n")
+}
+
+func loadConfigs(cconfig *config.Config) error {
+	type inputCPU struct{}
+	for name, input := range map[string]interface{}{
+		"cpu": struct {
+			Inputs []inputCPU `toml:"inputs.cpu"`
+		}{
+			Inputs: []inputCPU{}}, // Off
+		// Inputs: []inputCPU{{}}}, // ON
+	} {
+
+		if err := cconfig.LoadInterface("/internal/"+name+"/config", input); err != nil {
+			return err
+		}
+	}
+	return nil
 }

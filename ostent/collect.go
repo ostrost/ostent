@@ -26,7 +26,6 @@ type Registry interface {
 
 // Collector is collection interface.
 type Collector interface {
-	HN(S2SRegistry, *sync.WaitGroup)
 	LA(Registry, *sync.WaitGroup)
 	RAM(Registry, *sync.WaitGroup)
 	Swap(Registry, *sync.WaitGroup)

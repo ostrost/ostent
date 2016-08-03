@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/influxdata/telegraf/plugins/inputs"
+	_ "github.com/influxdata/telegraf/plugins/inputs/system"
 	"github.com/influxdata/telegraf/plugins/outputs"
 	_ "github.com/influxdata/telegraf/plugins/outputs/graphite"
 	_ "github.com/influxdata/telegraf/plugins/outputs/influxdb"
