@@ -224,11 +224,11 @@ func loadConfigs(cconfig *config.Config) error {
 		Outputs output
 		Inputs  input
 	}{
-		Agent: agentConfig{Interval: "1s", FlushInterval: "1s"},
+		Agent:   agentConfig{Interval: "1s", FlushInterval: "1s"},
+		Outputs: output{Ostent: on},
 		Inputs: input{
 			SystemOstent: interval{"1s"},
 			// CPU:  on,
 			// Disk: diskConfig{[]string{"tmpfs", "devtmpfs"}},
-		},
-		Outputs: output{Ostent: on}})
+		}})
 }

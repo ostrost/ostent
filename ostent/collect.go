@@ -24,17 +24,6 @@ type Registry interface {
 	UpdateDF(disk.PartitionStat, *disk.UsageStat)
 }
 
-// Collector is collection interface.
-type Collector interface {
-	LA(Registry, *sync.WaitGroup)
-	RAM(Registry, *sync.WaitGroup)
-	Swap(Registry, *sync.WaitGroup)
-	IF(Registry, *sync.WaitGroup)
-	PS(chan<- PSSlice)
-	DF(Registry, *sync.WaitGroup)
-	CPU(Registry, *sync.WaitGroup)
-}
-
 // These are regexps to match network interfaces.
 var (
 	RXlo      = regexp.MustCompile(`^lo\d*$`)
@@ -69,10 +58,7 @@ func HardwareIF(name string) bool {
 	return true
 }
 
-// Machine implements Collector by collecting the maching metrics.
-type Machine struct{}
-
-func (m Machine) LA(reg Registry, wg *sync.WaitGroup) {
+func collectLA(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	if stat, err := load.Avg(); err == nil {
 		reg.UpdateLA(*stat)
@@ -80,7 +66,7 @@ func (m Machine) LA(reg Registry, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (m Machine) RAM(reg Registry, wg *sync.WaitGroup) {
+func collectRAM(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	if stat, err := mem.VirtualMemory(); err == nil {
 		reg.UpdateRAM(stat)
@@ -88,7 +74,7 @@ func (m Machine) RAM(reg Registry, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (m Machine) Swap(reg Registry, wg *sync.WaitGroup) {
+func collectSwap(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	if stat, err := mem.SwapMemory(); err == nil {
 		reg.UpdateSwap(stat)
@@ -96,7 +82,7 @@ func (m Machine) Swap(reg Registry, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (m Machine) DF(reg Registry, wg *sync.WaitGroup) {
+func collectDF(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	parts, err := disk.Partitions(false)
 	if err != nil {
@@ -119,7 +105,7 @@ func (m Machine) DF(reg Registry, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (m Machine) PS(CH chan<- PSSlice) {
+func collectPS(CH chan<- PSSlice) {
 	// m is unused
 	var pss PSSlice
 	pls := sigar.ProcList{}
@@ -161,7 +147,7 @@ func (m Machine) PS(CH chan<- PSSlice) {
 	CH <- pss
 }
 
-func (m Machine) CPU(reg Registry, wg *sync.WaitGroup) {
+func collectCPU(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	var (
 		aggs, err1 = cpu.Times(false)

@@ -48,7 +48,7 @@ import (
 )
 
 // IF registers the interfaces with the reg.
-func (m Machine) IF(reg Registry, wg *sync.WaitGroup) {
+func collectIF(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	if ifaddrs, err := Getifaddrs(); err == nil {
 		// err is gone

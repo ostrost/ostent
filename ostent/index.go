@@ -85,12 +85,6 @@ type PS struct {
 // Keys (even abbrevs eg CPU) intentionally start with lowercase.
 type IndexData map[string]interface{}
 
-func (data IndexData) SetString(k, v string) {
-	if v != "" {
-		data[k] = v
-	}
-}
-
 type last struct {
 	MU            sync.Mutex
 	PSSlice       PSSlice
@@ -107,19 +101,24 @@ func (la *last) collect(when time.Time, wantprocs bool) {
 	}
 	la.LastCollected = when
 
-	c := Machine{}
+	funcs := []func(Registry, *sync.WaitGroup){
+		collectCPU,
+		collectDF,
+		collectIF,
+		collectLA,
+		collectRAM,
+		collectSwap,
+	}
+
 	var wg sync.WaitGroup
-	wg.Add(6)             // SIX:
-	go c.CPU(Reg1s, &wg)  // one
-	go c.RAM(Reg1s, &wg)  // two
-	go c.Swap(Reg1s, &wg) // three
-	go c.DF(Reg1s, &wg)   // four
-	go c.LA(Reg1s, &wg)   // five
-	go c.IF(Reg1s, &wg)   // six
+	wg.Add(len(funcs))
+	for _, f := range funcs {
+		go f(Reg1s, &wg)
+	}
 
 	if wantprocs {
 		pch := make(chan PSSlice, 1)
-		go c.PS(pch)
+		go collectPS(pch)
 		la.PSSlice = <-pch
 	}
 	wg.Wait()
@@ -612,12 +611,12 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 	var updated bool
 	for _, update := range []func(*params.Params, IndexData) bool{
 		// These are updaters:
-		psCopy.IU,
-		Reg1s.MEM,
 		Reg1s.CPU, // either this or set data["cpu"] with ostent.Output.SystemCPUCopy
 		Reg1s.DF,  // either this or set data["df"] with ostent.Output.SystemDiskCopy
 		Reg1s.IF,
 		Reg1s.LA,
+		Reg1s.MEM,
+		psCopy.IU,
 	} {
 		if update(para, data) {
 			updated = true

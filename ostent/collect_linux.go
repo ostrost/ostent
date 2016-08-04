@@ -53,7 +53,7 @@ func LSBID(platform string) string {
 }
 
 // IF registers the interfaces with the reg.
-func (m Machine) IF(reg Registry, wg *sync.WaitGroup) {
+func collectIF(reg Registry, wg *sync.WaitGroup) {
 	// m is unused
 	ifaddrs, err := net.Interfaces()
 	if err != nil {
