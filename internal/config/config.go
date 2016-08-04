@@ -70,10 +70,11 @@ func (c *Config) LoadConfig(path string) error {
 	var err error
 	if path == "" {
 		return fmt.Errorf("No config file specified")
-		getDefaultConfigPath := func() (string, error) { return "", nil }
-		if path, err = getDefaultConfigPath(); err != nil {
-			return err
-		}
+		/*
+			if path, err = getDefaultConfigPath(); err != nil {
+				return err
+			}
+		*/
 	}
 	tbl, err := parseFile(path)
 	if err != nil {
