@@ -4,6 +4,8 @@ import (
 	"sort"
 	"sync"
 
+	"github.com/shirou/gopsutil/disk"
+
 	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/plugins/outputs"
 	// "github.com/influxdata/telegraf/plugins/serializers"
@@ -16,8 +18,8 @@ type group struct {
 	kv    map[string]string
 }
 
-type disk struct {
-	DevName string // empty
+type diskData struct {
+	DevName string
 	DirName string
 
 	// strings with units
@@ -37,7 +39,7 @@ type disk struct {
 
 type groupDisk struct {
 	mutex sync.Mutex
-	list  []disk
+	list  []diskData
 }
 
 type cpu struct {
@@ -66,6 +68,13 @@ type ostent struct {
 	systemDisk   groupDisk
 	systemCPU    groupCPU
 	systemOstent group
+
+	diskParts dparts
+}
+
+type dparts struct {
+	mutex sync.Mutex
+	parts map[string]string
 }
 
 func (o *ostent) SystemOstentCopy() map[string]string {
@@ -78,14 +87,14 @@ func (o *ostent) SystemOstentCopy() map[string]string {
 	return dup
 }
 
-func (o *ostent) SystemDiskCopy() []disk {
+func (o *ostent) SystemDiskCopy() []diskData {
 	o.systemDisk.mutex.Lock()
 	defer o.systemDisk.mutex.Unlock()
 	llen := len(o.systemDisk.list)
 	if llen == 0 {
-		return []disk{}
+		return []diskData{}
 	}
-	dup := make([]disk, llen)
+	dup := make([]diskData, llen)
 	copy(dup, o.systemDisk.list)
 	// for i, c := range o.systemDisk.list { copy[i] = c }
 	// sort.Sort(diskList(copy))
@@ -114,9 +123,27 @@ func (o *ostent) SystemCPUCopy() []cpu {
 	return dup
 }
 
+func (dp *dparts) mpDevice(mountpoint string) (string, error) {
+	dp.mutex.Lock()
+	defer dp.mutex.Unlock()
+
+	if device, ok := dp.parts[mountpoint]; ok {
+		return device, nil
+	}
+	parts, err := disk.Partitions(true)
+	if err != nil {
+		return "", err
+	}
+	for _, p := range parts {
+		dp.parts[p.Mountpoint] = p.Device
+	}
+	return dp.parts[mountpoint], nil
+}
+
 func (o *ostent) writeSystemDisk(diskno int, m telegraf.Metric) {
 	fields := m.Fields()
-	d := disk{DirName: m.Tags()["path"]}
+	dd := diskData{DirName: m.Tags()["path"]}
+	dd.DevName, _ = o.diskParts.mpDevice(dd.DirName) // err is ignored
 
 	var aused, afree, iaused, iafree uint64
 	for _, pair := range []struct {
@@ -124,12 +151,12 @@ func (o *ostent) writeSystemDisk(diskno int, m telegraf.Metric) {
 		value *string
 		back  *uint64
 	}{
-		{"total", &d.Total, nil},
-		{"used", &d.Used, &aused},
-		{"free", &d.Avail, &afree},
-		{"inodes_total", &d.Inodes, nil},
-		{"inodes_used", &d.Iused, &iaused},
-		{"inodes_free", &d.Ifree, &iafree},
+		{"total", &dd.Total, nil},
+		{"used", &dd.Used, &aused},
+		{"free", &dd.Avail, &afree},
+		{"inodes_total", &dd.Inodes, nil},
+		{"inodes_used", &dd.Iused, &iaused},
+		{"inodes_free", &dd.Ifree, &iafree},
 	} {
 		if field, ok := fields[pair.name]; ok {
 			if v, ok := field.(int64); ok {
@@ -141,17 +168,17 @@ func (o *ostent) writeSystemDisk(diskno int, m telegraf.Metric) {
 			}
 		}
 	}
-	d.UsePct = format.Percent(aused, aused+afree)
-	d.IusePct = format.Percent(iaused, iaused+iafree)
+	dd.UsePct = format.Percent(aused, aused+afree)
+	dd.IusePct = format.Percent(iaused, iaused+iafree)
 
 	o.systemDisk.mutex.Lock()
 	defer o.systemDisk.mutex.Unlock()
 	if len(o.systemDisk.list) < diskno {
-		list := make([]disk, diskno)
+		list := make([]diskData, diskno)
 		copy(list, o.systemDisk.list)
 		o.systemDisk.list = list
 	}
-	o.systemDisk.list[diskno-1] = d
+	o.systemDisk.list[diskno-1] = dd
 }
 
 func (o *ostent) writeSystemCPU(cpuno int, m telegraf.Metric) {
@@ -261,6 +288,7 @@ var Output = &ostent{
 	systemOstent: group{kv: make(map[string]string)},
 	systemCPU:    groupCPU{},
 	systemDisk:   groupDisk{},
+	diskParts:    dparts{parts: make(map[string]string)},
 }
 
 func init() { outputs.Add("ostent", func() telegraf.Output { return Output }) }
