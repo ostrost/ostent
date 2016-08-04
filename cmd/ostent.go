@@ -208,17 +208,27 @@ func loadConfigs(cconfig *config.Config) error {
 	}); err != nil {
 		return err
 	} // */
-	on := struct{}{}
-	_ = on
+
+	type interval struct{ Interval string }
+	type agentConfig struct{ Interval, FlushInterval string }
+	type output struct{ Ostent struct{} }
 	type input struct {
+		SystemOstent interval
 		// CPU  struct{}
 		// Disk diskConfig
 	}
-	in := struct {
-		Inputs input
-	}{input{
-	// CPU:  on,
-	// Disk: diskConfig{[]string{"tmpfs", "devtmpfs"}},
-	}}
-	return cconfig.LoadInterface("/internal/generated/config", in)
+
+	on := struct{}{}
+	return cconfig.LoadInterface("/internal/config", struct {
+		Agent   agentConfig
+		Outputs output
+		Inputs  input
+	}{
+		Agent: agentConfig{Interval: "1s", FlushInterval: "1s"},
+		Inputs: input{
+			SystemOstent: interval{"1s"},
+			// CPU:  on,
+			// Disk: diskConfig{[]string{"tmpfs", "devtmpfs"}},
+		},
+		Outputs: output{Ostent: on}})
 }

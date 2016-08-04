@@ -13,9 +13,7 @@ import (
 )
 
 func Run(c *config.Config) error {
-	if err := c.LoadConfig(); err != nil {
-		return err
-	}
+	// if err := c.LoadConfig( ... ); err != nil { return err }
 
 	a, err := NewAgent(c)
 	if err != nil {

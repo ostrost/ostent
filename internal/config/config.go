@@ -3,9 +3,11 @@ package config
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/influxdata/telegraf/plugins/inputs"
@@ -63,50 +65,21 @@ type AgentConfig struct {
 	FlushInterval internal.Duration
 }
 
-// trimBOM trims the Byte-Order-Marks from the beginning of the file.
-// this is for Windows compatability only.
-// see https://github.com/influxdata/telegraf/issues/1378
-func trimBOM(f []byte) []byte {
-	return bytes.TrimPrefix(f, []byte("\xef\xbb\xbf"))
-}
-
-func parse(contents []byte) (*ast.Table, error) {
-	// ugh windows why
-	contents = trimBOM(contents)
-
-	for _, dword := range envVarRe.FindAll(contents, -1) {
-		if val := os.Getenv(string(dword[1:])); val != "" {
-			contents = bytes.Replace(contents, dword, []byte(val), 1)
+// LoadConfig loads the given config file and applies it to c
+func (c *Config) LoadConfig(path string) error {
+	var err error
+	if path == "" {
+		return fmt.Errorf("No config file specified")
+		getDefaultConfigPath := func() (string, error) { return "", nil }
+		if path, err = getDefaultConfigPath(); err != nil {
+			return err
 		}
 	}
-	return toml.Parse(contents)
-}
+	tbl, err := parseFile(path)
+	if err != nil {
+		return fmt.Errorf("Error parsing %s, %s", path, err)
+	}
 
-func (c *Config) LoadConfig() error {
-	tbl, err := parse([]byte(`
-[agent]
-  interval = "1s"
-  flushInterval = "1s"
-[[inputs.system_ostent]]
-  interval = "1s"
-[[outputs.ostent]]
-`))
-	if err != nil {
-		return err
-	}
-	return c.LoadTable("/internal/config", tbl)
-}
-
-func (c *Config) LoadInterface(path string, in interface{}) error {
-	text, err := toml.Marshal(in)
-	if err != nil {
-		return err
-	}
-	log.Printf("#%s TOML formatted:\n%s", path, text)
-	tbl, err := parse(text)
-	if err != nil {
-		return err
-	}
 	return c.LoadTable(path, tbl)
 }
 
@@ -145,7 +118,9 @@ func (c *Config) LoadTable(path string, tbl *ast.Table) error {
 		if !ok {
 			return fmt.Errorf("%s: invalid configuration", path)
 		}
+
 		switch name {
+		case "agent", "global_tags", "tags":
 		case "outputs":
 			for pluginName, pluginVal := range subTable.Fields {
 				switch pluginSubTable := pluginVal.(type) {
@@ -184,7 +159,40 @@ func (c *Config) LoadTable(path string, tbl *ast.Table) error {
 			}
 		}
 	}
-	return err
+	return nil
+}
+
+// trimBOM trims the Byte-Order-Marks from the beginning of the file.
+// this is for Windows compatability only.
+// see https://github.com/influxdata/telegraf/issues/1378
+func trimBOM(f []byte) []byte {
+	return bytes.TrimPrefix(f, []byte("\xef\xbb\xbf"))
+}
+
+// parseFile loads a TOML configuration from a provided path and
+// returns the AST produced from the TOML parser. When loading the file, it
+// will find environment variables and replace them.
+func parseFile(fpath string) (*ast.Table, error) {
+	contents, err := ioutil.ReadFile(fpath)
+	if err != nil {
+		return nil, err
+	}
+	return parseContents(contents)
+}
+
+func parseContents(contents []byte) (*ast.Table, error) {
+	// ugh windows why
+	contents = trimBOM(contents)
+
+	env_vars := envVarRe.FindAll(contents, -1)
+	for _, env_var := range env_vars {
+		env_val := os.Getenv(strings.TrimPrefix(string(env_var), "$"))
+		if env_val != "" {
+			contents = bytes.Replace(contents, env_var, []byte(env_val), 1)
+		}
+	}
+
+	return toml.Parse(contents)
 }
 
 func (c *Config) addOutput(name string, table *ast.Table) error {
@@ -329,4 +337,17 @@ func buildOutput(name string, tbl *ast.Table) (*internal_models.OutputConfig, er
 		}
 	*/
 	return oc, nil
+}
+
+func (c *Config) LoadInterface(path string, in interface{}) error {
+	text, err := toml.Marshal(in)
+	if err != nil {
+		return err
+	}
+	log.Printf("#%s TOML formatted:\n%s", path, text)
+	tbl, err := parseContents(text)
+	if err != nil {
+		return err
+	}
+	return c.LoadTable(path, tbl)
 }
