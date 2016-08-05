@@ -264,12 +264,11 @@ func (cs CPUSlice) Less(i, j int) bool {
 	return aidle < bidle
 }
 
-func (ir *IndexRegistry) DF(para *params.Params, data IndexData) bool {
+func (ir *IndexRegistry) DF(para *params.Params) interface{} {
 	if !para.Dfd.Expired() {
-		return false
+		return nil
 	}
-	data["df"] = &system.DF{List: ir.GetDF(para)}
-	return true
+	return &system.DF{List: ir.GetDF(para)}
 }
 
 func (ir *IndexRegistry) GetDF(para *params.Params) []system.DFData {
@@ -323,32 +322,29 @@ func FormatDF(md *system.MetricDF) system.DFData {
 // PSSlice is a list of PSInfo.
 type PSSlice []*system.PSInfo
 
-func (pss PSSlice) IU(para *params.Params, data IndexData) bool {
+func (pss PSSlice) IU(para *params.Params) interface{} {
 	if !para.Psd.Expired() {
-		return false
+		return nil
 	}
-	data["procs"] = pss.Ordered(para)
-	return true
+	return pss.Ordered(para)
 }
 
-func (ir *IndexRegistry) IF(para *params.Params, data IndexData) bool {
+func (ir *IndexRegistry) IF(para *params.Params) interface{} {
 	if !para.Ifd.Expired() {
-		return false
+		return nil
 	}
-	data["netio"] = &system.IF{List: ir.GetIF(para)}
-	return true
+	return &system.IF{List: ir.GetIF(para)}
 }
 
-func (ir *IndexRegistry) CPU(para *params.Params, data IndexData) bool {
+func (ir *IndexRegistry) CPU(para *params.Params) interface{} {
 	if !para.CPUd.Expired() {
-		return false
+		return nil
 	}
 	if para.CPUn.Absolute == 0 {
 		para.CPUn.Limit = 1
-		return false
+		return nil
 	}
-	data["cpu"] = &system.CPU{List: ir.GetCPU(para)}
-	return true
+	return &system.CPU{List: ir.GetCPU(para)}
 }
 
 func (ir *IndexRegistry) GetCPU(para *params.Params) []system.CPUData {
@@ -434,13 +430,13 @@ func newMemory(kind string, in memoryValues) system.Memory {
 	}
 }
 
-func (ir *IndexRegistry) MEM(para *params.Params, data IndexData) bool {
+func (ir *IndexRegistry) MEM(para *params.Params) interface{} {
 	if !para.Memd.Expired() {
-		return false
+		return nil
 	}
 	para.Memn.Limit = 2
 	if para.Memn.Absolute < 1 {
-		return false
+		return nil
 	}
 	var (
 		mtotal = ir.RAM.Total.Snapshot().Value()
@@ -454,10 +450,9 @@ func (ir *IndexRegistry) MEM(para *params.Params, data IndexData) bool {
 			Free:  uint64(mfree),
 			Used:  uint64(mtotal - mfree),
 		}))
-	data["mem"] = mem
 
 	if para.Memn.Absolute < 2 {
-		return true
+		return mem
 	}
 	var (
 		sfree = ir.Swap.Free.Snapshot().Value()
@@ -469,15 +464,15 @@ func (ir *IndexRegistry) MEM(para *params.Params, data IndexData) bool {
 			Free:  uint64(sfree),
 			Used:  uint64(sused),
 		}))
-	return true
+	return mem
 }
 
-func (ir *IndexRegistry) LA(para *params.Params, data IndexData) bool {
+func (ir *IndexRegistry) LA(para *params.Params) interface{} {
 	if !para.Lad.Expired() {
-		return false
+		return nil
 	}
 	if para.Lan.Absolute < 1 {
-		return false
+		return nil
 	}
 	para.Lan.Limit = 3
 	if para.Lan.Absolute > para.Lan.Limit {
@@ -486,12 +481,11 @@ func (ir *IndexRegistry) LA(para *params.Params, data IndexData) bool {
 	type LA struct {
 		Period, Value string
 	}
-	data["la"] = &struct{ List []LA }{[]LA{
+	return &struct{ List []LA }{[]LA{
 		{"1", fmt.Sprintf("%.2f", ir.Load.Short.Snapshot().Value())},
 		{"5", fmt.Sprintf("%.2f", ir.Load.Mid.Snapshot().Value())},
 		{"15", fmt.Sprintf("%.2f", ir.Load.Long.Snapshot().Value())},
 	}[:para.Lan.Absolute]}
-	return true
 }
 
 func (ir *IndexRegistry) UpdateDF(part disk.PartitionStat, usage *disk.UsageStat) {
@@ -608,22 +602,34 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 	lastInfo.collect(NextSecond(), para.NonZeroPsn())
 	psCopy := lastInfo.CopyPS()
 
+	olds := map[string]func(*params.Params) interface{}{
+		/* if a key is commented out (or missing from predefined set),
+		   data[key] still may be filled with a ostent.Output.System*Copy* (see below) */
+
+		"cpu":   Reg1s.CPU,
+		"df":    Reg1s.DF,
+		"netio": Reg1s.IF,
+		"la":    Reg1s.LA,
+		"mem":   Reg1s.MEM,
+		"procs": psCopy.IU,
+	}
+
 	var updated bool
-	for _, update := range []func(*params.Params, IndexData) bool{
-		// These are updaters:
-		Reg1s.CPU, // either this or set data["cpu"] with ostent.Output.SystemCPUCopy
-		Reg1s.DF,  // either this or set data["df"] with ostent.Output.SystemDiskCopy
-		Reg1s.IF,
-		Reg1s.LA,
-		Reg1s.MEM,
-		psCopy.IU,
-	} {
-		if update(para, data) {
+	for key, update := range olds {
+		if value := update(para); value != nil {
+			data[key] = value
 			updated = true
 		}
 	}
-	// data["cpu"] = struct{ List interface{} }{ostent.Output.SystemCPUCopy()}
-	// data["df"] = struct{ List interface{} }{ostent.Output.SystemDiskCopy()}
+	for key, update := range map[string]func() interface{}{
+		"cpu": ostent.Output.SystemCPUCopyL,
+		"df":  ostent.Output.SystemDiskCopyL,
+	} {
+		if _, ok := olds[key]; !ok {
+			data[key] = update()
+			updated = true
+		}
+	}
 	data["system_ostent"] = ostent.Output.SystemOstentCopy()
 	return data, updated, nil
 }

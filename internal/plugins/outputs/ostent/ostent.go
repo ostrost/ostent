@@ -87,7 +87,12 @@ func (o *ostent) SystemOstentCopy() map[string]string {
 	return dup
 }
 
-func (o *ostent) SystemDiskCopy() []diskData {
+type list struct{ List interface{} }
+
+func (o *ostent) SystemDiskCopyL() interface{} { return list{o.systemDiskCopy()} }
+func (o *ostent) SystemCPUCopyL() interface{}  { return list{o.systemCPUCopy()} }
+
+func (o *ostent) systemDiskCopy() []diskData {
 	o.systemDisk.mutex.Lock()
 	defer o.systemDisk.mutex.Unlock()
 	llen := len(o.systemDisk.list)
@@ -101,7 +106,7 @@ func (o *ostent) SystemDiskCopy() []diskData {
 	return dup
 }
 
-func (o *ostent) SystemCPUCopy() []cpu {
+func (o *ostent) systemCPUCopy() []cpu {
 	o.systemCPU.mutex.Lock()
 	defer o.systemCPU.mutex.Unlock()
 	llen := len(o.systemCPU.list)
