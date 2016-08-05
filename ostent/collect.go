@@ -14,16 +14,6 @@ import (
 	"github.com/ostrost/ostent/system"
 )
 
-// Registry has updates with gopsutil stats.
-type Registry interface {
-	UpdateIF(system.IfAddress)
-	UpdateCPU(cpu.TimesStat, []cpu.TimesStat)
-	UpdateLA(load.AvgStat)
-	UpdateSwap(*mem.SwapMemoryStat)
-	UpdateRAM(*mem.VirtualMemoryStat)
-	UpdateDF(disk.PartitionStat, *disk.UsageStat)
-}
-
 // These are regexps to match network interfaces.
 var (
 	RXlo      = regexp.MustCompile(`^lo\d*$`)
@@ -58,32 +48,28 @@ func HardwareIF(name string) bool {
 	return true
 }
 
-func collectLA(reg Registry, wg *sync.WaitGroup) {
-	// m is unused
+func (ir *IndexRegistry) collectLA(wg *sync.WaitGroup) {
 	if stat, err := load.Avg(); err == nil {
-		reg.UpdateLA(*stat)
+		ir.UpdateLA(*stat)
 	}
 	wg.Done()
 }
 
-func collectRAM(reg Registry, wg *sync.WaitGroup) {
-	// m is unused
+func (ir *IndexRegistry) collectRAM(wg *sync.WaitGroup) {
 	if stat, err := mem.VirtualMemory(); err == nil {
-		reg.UpdateRAM(stat)
+		ir.UpdateRAM(stat)
 	}
 	wg.Done()
 }
 
-func collectSwap(reg Registry, wg *sync.WaitGroup) {
-	// m is unused
+func (ir *IndexRegistry) collectSwap(wg *sync.WaitGroup) {
 	if stat, err := mem.SwapMemory(); err == nil {
-		reg.UpdateSwap(stat)
+		ir.UpdateSwap(stat)
 	}
 	wg.Done()
 }
 
-func collectDF(reg Registry, wg *sync.WaitGroup) {
-	// m is unused
+func (ir *IndexRegistry) collectDF(wg *sync.WaitGroup) {
 	parts, err := disk.Partitions(false)
 	if err != nil {
 		wg.Done()
@@ -100,13 +86,12 @@ func collectDF(reg Registry, wg *sync.WaitGroup) {
 			continue
 		}
 		devices[part.Device] = struct{}{}
-		reg.UpdateDF(part, usage)
+		ir.UpdateDF(part, usage)
 	}
 	wg.Done()
 }
 
 func collectPS(CH chan<- PSSlice) {
-	// m is unused
 	var pss PSSlice
 	pls := sigar.ProcList{}
 	if err := pls.Get(); err != nil {
@@ -147,14 +132,13 @@ func collectPS(CH chan<- PSSlice) {
 	CH <- pss
 }
 
-func collectCPU(reg Registry, wg *sync.WaitGroup) {
-	// m is unused
+func (ir *IndexRegistry) collectCPU(wg *sync.WaitGroup) {
 	var (
 		aggs, err1 = cpu.Times(false)
 		list, err2 = cpu.Times(true)
 	)
 	if err1 == nil && err2 == nil {
-		reg.UpdateCPU(aggs[0], list)
+		ir.UpdateCPU(aggs[0], list)
 	}
 	wg.Done()
 }

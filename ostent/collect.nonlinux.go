@@ -48,15 +48,14 @@ import (
 )
 
 // IF registers the interfaces with the reg.
-func collectIF(reg Registry, wg *sync.WaitGroup) {
-	// m is unused
+func (ir *IndexRegistry) collectIF(wg *sync.WaitGroup) {
 	if ifaddrs, err := Getifaddrs(); err == nil {
 		// err is gone
 		for _, ifaddr := range ifaddrs {
 			if !HardwareIF(ifaddr.GetName()) {
 				continue
 			}
-			reg.UpdateIF(&ifaddr) // pointer not to copy everywhere
+			ir.UpdateIF(&ifaddr) // pointer not to copy everywhere
 		}
 	}
 	wg.Done()

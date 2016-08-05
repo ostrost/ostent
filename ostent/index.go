@@ -101,19 +101,19 @@ func (la *last) collect(when time.Time, wantprocs bool) {
 	}
 	la.LastCollected = when
 
-	funcs := []func(Registry, *sync.WaitGroup){
-		collectCPU,
-		collectDF,
-		collectIF,
-		collectLA,
-		collectRAM,
-		collectSwap,
+	funcs := []func(*sync.WaitGroup){
+		Reg1s.collectCPU,
+		Reg1s.collectDF,
+		Reg1s.collectIF,
+		Reg1s.collectLA,
+		Reg1s.collectRAM,
+		Reg1s.collectSwap,
 	}
 
 	var wg sync.WaitGroup
 	wg.Add(len(funcs))
 	for _, f := range funcs {
-		go f(Reg1s, &wg)
+		go f(&wg)
 	}
 
 	if wantprocs {
