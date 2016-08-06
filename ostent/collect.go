@@ -55,16 +55,13 @@ func (ir *IndexRegistry) collectLA(wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (ir *IndexRegistry) collectRAM(wg *sync.WaitGroup) {
-	if stat, err := mem.VirtualMemory(); err == nil {
-		ir.UpdateRAM(stat)
-	}
-	wg.Done()
-}
-
-func (ir *IndexRegistry) collectSwap(wg *sync.WaitGroup) {
-	if stat, err := mem.SwapMemory(); err == nil {
-		ir.UpdateSwap(stat)
+func (ir *IndexRegistry) collectMEM(wg *sync.WaitGroup) {
+	var (
+		ram, err1  = mem.VirtualMemory()
+		swap, err2 = mem.SwapMemory()
+	)
+	if err1 == nil && err2 == nil {
+		ir.UpdateMEM(ram, swap)
 	}
 	wg.Done()
 }

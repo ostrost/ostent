@@ -106,8 +106,7 @@ func (la *last) collect(when time.Time, wantprocs bool) {
 		Reg1s.collectDF,
 		Reg1s.collectIF,
 		Reg1s.collectLA,
-		Reg1s.collectRAM,
-		Reg1s.collectSwap,
+		Reg1s.collectMEM,
 	}
 
 	var wg sync.WaitGroup
@@ -264,7 +263,7 @@ func (cs CPUSlice) Less(i, j int) bool {
 	return aidle < bidle
 }
 
-func (ir *IndexRegistry) DF(para *params.Params) interface{} {
+func (ir *IndexRegistry) dataDF(para *params.Params) interface{} {
 	if !para.Dfd.Expired() {
 		return nil
 	}
@@ -322,21 +321,21 @@ func FormatDF(md *system.MetricDF) system.DFData {
 // PSSlice is a list of PSInfo.
 type PSSlice []*system.PSInfo
 
-func (pss PSSlice) IU(para *params.Params) interface{} {
+func (pss PSSlice) data(para *params.Params) interface{} {
 	if !para.Psd.Expired() {
 		return nil
 	}
 	return pss.Ordered(para)
 }
 
-func (ir *IndexRegistry) IF(para *params.Params) interface{} {
+func (ir *IndexRegistry) dataIF(para *params.Params) interface{} {
 	if !para.Ifd.Expired() {
 		return nil
 	}
 	return &system.IF{List: ir.GetIF(para)}
 }
 
-func (ir *IndexRegistry) CPU(para *params.Params) interface{} {
+func (ir *IndexRegistry) dataCPU(para *params.Params) interface{} {
 	if !para.CPUd.Expired() {
 		return nil
 	}
@@ -430,7 +429,7 @@ func newMemory(kind string, in memoryValues) system.Memory {
 	}
 }
 
-func (ir *IndexRegistry) MEM(para *params.Params) interface{} {
+func (ir *IndexRegistry) dataMEM(para *params.Params) interface{} {
 	if !para.Memd.Expired() {
 		return nil
 	}
@@ -467,7 +466,7 @@ func (ir *IndexRegistry) MEM(para *params.Params) interface{} {
 	return mem
 }
 
-func (ir *IndexRegistry) LA(para *params.Params) interface{} {
+func (ir *IndexRegistry) dataLA(para *params.Params) interface{} {
 	if !para.Lad.Expired() {
 		return nil
 	}
@@ -494,18 +493,12 @@ func (ir *IndexRegistry) UpdateDF(part disk.PartitionStat, usage *disk.UsageStat
 	ir.GetOrRegisterPrivateDF(part).Update(part, usage)
 }
 
-// UpdateRAM reads stat and updates the ir.RAM.
-func (ir *IndexRegistry) UpdateRAM(stat *mem.VirtualMemoryStat) {
+// UpdateMEM reads stat and updates ir.RAM and ir.Swap
+func (ir *IndexRegistry) UpdateMEM(ram *mem.VirtualMemoryStat, swap *mem.SwapMemoryStat) {
 	ir.Mutex.Lock()
 	defer ir.Mutex.Unlock()
-	ir.RAM.Update(stat)
-}
-
-// UpdateSwap reads stat and updates the ir.Swap.
-func (ir *IndexRegistry) UpdateSwap(stat *mem.SwapMemoryStat) {
-	ir.Mutex.Lock()
-	defer ir.Mutex.Unlock()
-	ir.Swap.Update(stat)
+	ir.RAM.Update(ram)
+	ir.Swap.Update(swap)
 }
 
 func (ir *IndexRegistry) UpdateLA(stat load.AvgStat) {
@@ -606,12 +599,12 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 		/* if a key is commented out (or missing from predefined set),
 		   data[key] still may be filled with a ostent.Output.System*Copy* (see below) */
 
-		"cpu":   Reg1s.CPU,
-		"df":    Reg1s.DF,
-		"netio": Reg1s.IF,
-		"la":    Reg1s.LA,
-		"mem":   Reg1s.MEM,
-		"procs": psCopy.IU,
+		"cpu":   Reg1s.dataCPU,
+		"df":    Reg1s.dataDF,
+		"netio": Reg1s.dataIF,
+		"la":    Reg1s.dataLA,
+		"mem":   Reg1s.dataMEM,
+		"procs": psCopy.data,
 	}
 
 	var updated bool
