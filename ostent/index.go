@@ -89,6 +89,12 @@ type last struct {
 	MU            sync.Mutex
 	PSSlice       PSSlice
 	LastCollected time.Time
+	olds          map[string]oldFuncs
+}
+
+type oldFuncs struct {
+	collectFunc func(*sync.WaitGroup)
+	dataFunc    func(*params.Params) interface{}
 }
 
 func (la *last) collect(when time.Time, wantprocs bool) {
@@ -99,18 +105,10 @@ func (la *last) collect(when time.Time, wantprocs bool) {
 	}
 	la.LastCollected = when
 
-	funcs := []func(*sync.WaitGroup){
-		Reg1s.collectCPU,
-		Reg1s.collectDF,
-		Reg1s.collectIF,
-		Reg1s.collectLA,
-		Reg1s.collectMEM,
-	}
-
 	var wg sync.WaitGroup
-	wg.Add(len(funcs))
-	for _, f := range funcs {
-		go f(&wg)
+	wg.Add(len(la.olds))
+	for _, funcs := range la.olds {
+		go funcs.collectFunc(&wg)
 	}
 
 	if wantprocs {
@@ -124,9 +122,9 @@ func (la *last) collect(when time.Time, wantprocs bool) {
 func (la *last) CopyPS() PSSlice {
 	la.MU.Lock()
 	defer la.MU.Unlock()
-	psCopy := make(PSSlice, len(la.PSSlice))
-	copy(psCopy, la.PSSlice)
-	return psCopy
+	dup := make(PSSlice, len(la.PSSlice))
+	copy(dup, la.PSSlice)
+	return dup
 }
 
 // IFSlice is a list of MetricIF.
@@ -562,19 +560,20 @@ var (
 	distrib       string // distribution + release version
 	lastInfo      last
 	logru         *logrus.Logger
+	news          map[string]func() interface{}
 	OstentUpgrade = new(UpgradeInfo)
 	Reg1s         *IndexRegistry
 )
 
 func init() {
+	logru = logrus.New() // into os.Stderr
+	logru.Formatter = &logrus.TextFormatter{FullTimestamp: true}
+	// , TimestampFormat: "02/Jan/2006:15:04:05 -0700",
+
 	var err error
 	if distrib, err = Distrib(); err != nil {
 		logru.Warnf("detecting distribution: %s\n", err)
 	}
-
-	logru = logrus.New() // into os.Stderr
-	logru.Formatter = &logrus.TextFormatter{FullTimestamp: true}
-	// , TimestampFormat: "02/Jan/2006:15:04:05 -0700",
 
 	reg := metrics.NewRegistry()
 	Reg1s = &IndexRegistry{
@@ -587,6 +586,21 @@ func init() {
 		Load:               system.NewMetricLoad(reg),
 		Swap:               system.NewMetricSwap(reg),
 		RAM:                system.NewMetricRAM(reg),
+	}
+
+	lastInfo.olds = map[string]oldFuncs{
+		/* if a key is commented out (or missing from predefined set),
+		   func Updates may fill data[key] with a ostent.Output.System*Copy* */
+
+		"cpu":   {Reg1s.collectCPU, Reg1s.dataCPU},
+		"df":    {Reg1s.collectDF, Reg1s.dataDF},
+		"la":    {Reg1s.collectLA, Reg1s.dataLA},
+		"mem":   {Reg1s.collectMEM, Reg1s.dataMEM},
+		"netio": {Reg1s.collectIF, Reg1s.dataIF},
+	}
+	news = map[string]func() interface{}{
+		"cpu": ostent.Output.SystemCPUCopyL,
+		"df":  ostent.Output.SystemDiskCopyL,
 	}
 }
 
@@ -604,31 +618,22 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 	lastInfo.collect(NextSecond(), para.NonZeroPsn())
 	psCopy := lastInfo.CopyPS()
 
-	olds := map[string]func(*params.Params) interface{}{
-		/* if a key is commented out (or missing from predefined set),
-		   data[key] still may be filled with a ostent.Output.System*Copy* (see below) */
-
-		"cpu":   Reg1s.dataCPU,
-		"df":    Reg1s.dataDF,
-		"netio": Reg1s.dataIF,
-		"la":    Reg1s.dataLA,
-		"mem":   Reg1s.dataMEM,
-		"procs": psCopy.data,
+	var updated bool
+	if value := psCopy.data(para); value != nil {
+		data["procs"] = value
+		updated = true
 	}
 
-	var updated bool
-	for key, update := range olds {
-		if value := update(para); value != nil {
+	for key, funcs := range lastInfo.olds {
+		if value := funcs.dataFunc(para); value != nil {
 			data[key] = value
 			updated = true
 		}
 	}
-	for key, update := range map[string]func() interface{}{
-		"cpu": ostent.Output.SystemCPUCopyL,
-		"df":  ostent.Output.SystemDiskCopyL,
-	} {
-		if _, ok := olds[key]; !ok {
-			data[key] = update()
+
+	for key, dataFunc := range news {
+		if _, ok := lastInfo.olds[key]; !ok {
+			data[key] = dataFunc()
 			updated = true
 		}
 	}
