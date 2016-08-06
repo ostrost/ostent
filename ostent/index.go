@@ -601,6 +601,7 @@ func init() {
 	news = map[string]func() interface{}{
 		"cpu": ostent.Output.SystemCPUCopyL,
 		"df":  ostent.Output.SystemDiskCopyL,
+		// "la" is copied with ostent.Output.SystemOstentCopy
 	}
 }
 
@@ -637,7 +638,11 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 			updated = true
 		}
 	}
-	data["system_ostent"] = ostent.Output.SystemOstentCopy()
+	sodup, sola := ostent.Output.SystemOstentCopy()
+	data["system_ostent"] = sodup
+	if _, ok := lastInfo.olds["la"]; !ok {
+		data["la"] = sola
+	}
 	return data, updated, nil
 }
 

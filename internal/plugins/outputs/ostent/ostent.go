@@ -1,7 +1,9 @@
 package ostent
 
 import (
+	"fmt"
 	"sort"
+	"strings"
 	"sync"
 
 	"github.com/shirou/gopsutil/disk"
@@ -15,7 +17,7 @@ import (
 
 type group struct {
 	mutex sync.Mutex
-	kv    map[string]string
+	kv    map[string]interface{}
 }
 
 type diskData struct {
@@ -77,20 +79,38 @@ type dparts struct {
 	parts map[string]string
 }
 
-func (o *ostent) SystemOstentCopy() map[string]string {
+func (o *ostent) SystemOstentCopy() (map[string]string, lalist) {
 	o.systemOstent.mutex.Lock()
 	defer o.systemOstent.mutex.Unlock()
 	dup := make(map[string]string, len(o.systemOstent.kv))
 	for k, v := range o.systemOstent.kv {
-		dup[k] = v
+		if !strings.HasPrefix(k, "load") {
+			if s, ok := v.(string); ok {
+				dup[k] = s
+			}
+		}
 	}
-	return dup
+	periods := [3]string{"1", "5", "15"}
+	lal := lalist{make([]la, len(periods))}
+	for i, period := range periods {
+		if v, ok := o.systemOstent.kv["load"+period]; ok {
+			if f, ok := v.(float64); ok {
+				lal.List[i] = la{period, fmt.Sprintf("%.2f", f)}
+			}
+		}
+	}
+	return dup, lal
 }
 
+type la struct {
+	Period, Value string
+}
+
+type lalist struct{ List []la }
 type list struct{ List interface{} }
 
-func (o *ostent) SystemDiskCopyL() interface{} { return list{o.systemDiskCopy()} }
 func (o *ostent) SystemCPUCopyL() interface{}  { return list{o.systemCPUCopy()} }
+func (o *ostent) SystemDiskCopyL() interface{} { return list{o.systemDiskCopy()} }
 
 func (o *ostent) systemDiskCopy() []diskData {
 	o.systemDisk.mutex.Lock()
@@ -236,10 +256,8 @@ func (o *ostent) setCPUno(cpuno int) {
 func (o *ostent) writeSystemOstent(m telegraf.Metric) {
 	o.systemOstent.mutex.Lock()
 	defer o.systemOstent.mutex.Unlock()
-	for k, field := range m.Fields() {
-		if v, ok := field.(string); ok {
-			o.systemOstent.kv[k] = v
-		}
+	for k, v := range m.Fields() {
+		o.systemOstent.kv[k] = v
 	}
 }
 
@@ -290,7 +308,7 @@ func (o *ostent) Write(ms []telegraf.Metric) error {
 
 var Output = &ostent{
 	// Metrics: make(map[string]*Metric),
-	systemOstent: group{kv: make(map[string]string)},
+	systemOstent: group{kv: make(map[string]interface{})},
 	systemCPU:    groupCPU{},
 	systemDisk:   groupDisk{},
 	diskParts:    dparts{parts: make(map[string]string)},

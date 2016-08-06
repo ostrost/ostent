@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/shirou/gopsutil/host"
-	// "github.com/shirou/gopsutil/load"
+	"github.com/shirou/gopsutil/load"
 
 	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/plugins/inputs"
@@ -20,12 +20,10 @@ func (_ *SystemStats) Description() string {
 func (_ *SystemStats) SampleConfig() string { return "" }
 
 func (_ *SystemStats) Gather(acc telegraf.Accumulator) error {
-	/*
-		loadavg, err := load.Avg()
-		if err != nil {
-			return err
-		}
-	*/
+	loadavg, err := load.Avg()
+	if err != nil {
+		return err
+	}
 
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -38,11 +36,9 @@ func (_ *SystemStats) Gather(acc telegraf.Accumulator) error {
 	}
 
 	fields := map[string]interface{}{
-		/*
-			"load1":         loadavg.Load1,
-			"load5":         loadavg.Load5,
-			"load15":        loadavg.Load15,
-		*/
+		"load1":          loadavg.Load1,
+		"load5":          loadavg.Load5,
+		"load15":         loadavg.Load15,
 		"hostname_short": strings.Split(hostname, ".")[0],
 		"uptime_format":  format_uptime(upseconds),
 	}
