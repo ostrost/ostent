@@ -197,38 +197,43 @@ func ParamsUsage(setf func(*pflag.FlagSet)) string {
 	return strings.Join(lines, "\n")
 }
 
+type diskInput struct{ IgnoreFs []string }
+
 func loadConfigs(cconfig *config.Config) error {
-	type diskConfig struct{ IgnoreFs []string }
 	/* if err := cconfig.LoadInterface("/internal/disk/config", struct {
-		Inputs []diskConfig `toml:"inputs.disk"`
+		Inputs []diskInput `toml:"inputs.disk"`
 	}{
-		Inputs: []diskConfig{{
+		Inputs: []diskInput{{
 			IgnoreFs: []string{"tmpfs", "devtmpfs"},
 		}},
 	}); err != nil {
 		return err
 	} // */
 
-	type interval struct{ Interval string }
 	type agentConfig struct{ Interval, FlushInterval string }
-	type output struct{ Ostent struct{} }
-	type input struct {
-		SystemOstent interval
-		// CPU  struct{}
-		// Disk diskConfig
-	}
+	type outputs struct{ Ostent struct{} }
 
 	on := struct{}{}
 	return cconfig.LoadInterface("/internal/config", struct {
 		Agent   agentConfig
-		Outputs output
-		Inputs  input
+		Outputs outputs
+		Inputs  inputs
 	}{
 		Agent:   agentConfig{Interval: "1s", FlushInterval: "1s"},
-		Outputs: output{Ostent: on},
-		Inputs: input{
-			SystemOstent: interval{"1s"},
-			// CPU:  on,
-			// Disk: diskConfig{[]string{"tmpfs", "devtmpfs"}},
+		Outputs: outputs{Ostent: on},
+		Inputs: inputs{
+			SystemOstent: struct{ Interval string }{"1s"},
+
+			// skipped fields are omitted from config
+			// CPU: &on,
+			// Disk: &diskInput{[]string{"tmpfs", "devtmpfs"}},
 		}})
+}
+
+type inputs struct {
+	SystemOstent struct{ Interval string }
+
+	// later fields are pointers with omitempty
+	CPU  *struct{}  `toml:",omitempty"`
+	Disk *diskInput `toml:",omitempty"`
 }
