@@ -19,13 +19,15 @@ import (
 type backgroundHandler func()
 
 var (
+	// Connections is of unexported conns type to hold active ws connections.
+	Connections = conns{connmap: make(map[receiver]struct{})}
+	// Exporting has "exporting to" list (after init)
+	Exporting ExportingList
+
 	jobs = struct {
 		mutex sync.Mutex
 		added []backgroundHandler
 	}{}
-
-	// Exporting has "exporting to" list (after init)
-	Exporting ExportingList
 )
 
 func AddBackground(j backgroundHandler) {
@@ -180,11 +182,6 @@ type ExportingList []struct{ Name, Endpoint string }
 func (el ExportingList) Len() int           { return len(el) }
 func (el ExportingList) Less(i, j int) bool { return el[i].Name < el[j].Name }
 func (el ExportingList) Swap(i, j int)      { el[i], el[j] = el[j], el[i] }
-
-var (
-	// Connections is of unexported conns type to hold active ws connections.
-	Connections = conns{connmap: make(map[receiver]struct{})}
-)
 
 type received struct{ Search *string }
 

@@ -91,8 +91,6 @@ type last struct {
 	LastCollected time.Time
 }
 
-var lastInfo last
-
 func (la *last) collect(when time.Time, wantprocs bool) {
 	la.MU.Lock()
 	defer la.MU.Unlock()
@@ -561,12 +559,23 @@ func (ui *UpgradeInfo) Get() string {
 }
 
 var (
-	Reg1s *IndexRegistry
-
+	distrib       string // distribution + release version
+	lastInfo      last
+	logru         *logrus.Logger
 	OstentUpgrade = new(UpgradeInfo)
+	Reg1s         *IndexRegistry
 )
 
 func init() {
+	var err error
+	if distrib, err = Distrib(); err != nil {
+		logru.Warnf("detecting distribution: %s\n", err)
+	}
+
+	logru = logrus.New() // into os.Stderr
+	logru.Formatter = &logrus.TextFormatter{FullTimestamp: true}
+	// , TimestampFormat: "02/Jan/2006:15:04:05 -0700",
+
 	reg := metrics.NewRegistry()
 	Reg1s = &IndexRegistry{
 		Registry: reg,
@@ -627,22 +636,6 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 	return data, updated, nil
 }
 
-var logru *logrus.Logger
-
-func init() {
-	logru = logrus.New() // into os.Stderr
-	logru.Formatter = &logrus.TextFormatter{FullTimestamp: true}
-	// , TimestampFormat: "02/Jan/2006:15:04:05 -0700",
-
-	var err error
-	if DISTRIB, err = Distrib(); err != nil {
-		logru.Warnf("detecting distribution: %s\n", err)
-	}
-}
-
-// DISTRIB is distribution string and it's version. Set once at init.
-var DISTRIB string
-
 type ServeSSE struct {
 	logRequests bool
 	flags.DelayBounds
@@ -689,7 +682,7 @@ func (si ServeIndex) Index(w http.ResponseWriter, r *http.Request) {
 		Data          IndexData
 	}{
 		TAGGEDbin:     si.TaggedBin,
-		Distrib:       DISTRIB, // value set in init()
+		Distrib:       distrib,
 		OstentVersion: VERSION, // from ./server.go
 		OstentUpgrade: OstentUpgrade.Get(),
 		Exporting:     Exporting, // from ./ws.go
