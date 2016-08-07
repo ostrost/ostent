@@ -227,6 +227,8 @@ func loadConfigs(cconfig *config.Config) error {
 			// skipped fields are omitted from config
 			// CPU: &on,
 			// Disk: &diskInput{[]string{"tmpfs", "devtmpfs"}},
+			// Mem:  &on,
+			// Swap: &on,
 		}})
 }
 
@@ -236,4 +238,6 @@ type inputs struct {
 	// later fields are pointers with omitempty
 	CPU  *struct{}  `toml:",omitempty"`
 	Disk *diskInput `toml:",omitempty"`
+	Mem  *struct{}  `toml:",omitempty"`
+	Swap *struct{}  `toml:",omitempty"`
 }

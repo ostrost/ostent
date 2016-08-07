@@ -15,6 +15,42 @@ import (
 	"github.com/ostrost/ostent/format"
 )
 
+type convert struct {
+	k string // k for key; required, others optional
+	v *int64 // v for value
+	// for humanB conversion:
+	s *string // s for string
+	r *uint64 // r for round
+}
+
+// decode returns true if everything went ok.
+func decode(fields map[string]interface{}, converts []convert) bool {
+	for _, c := range converts {
+		if f, ok := fields[c.k]; ok {
+			if v, ok := f.(int64); ok {
+				if c.v != nil {
+					*c.v = v
+				}
+				if c.s != nil {
+					*c.s = humanB(v, c.r)
+				}
+				continue
+			}
+		}
+		return false // either fields lookup or casting failed
+	}
+	return true
+}
+
+func humanB(value int64, round *uint64) string {
+	if round == nil {
+		return format.HumanB(uint64(value))
+	}
+	var s string
+	s, *round, _ = format.HumanBandback(uint64(value)) // err is ignored
+	return s
+}
+
 type group struct {
 	mutex sync.Mutex
 	kv    map[string]interface{}
@@ -30,14 +66,19 @@ type groupDisk struct {
 	list  []diskData
 }
 
+type groupMemory struct {
+	mutex sync.Mutex
+	list  [2]memoryData
+}
+
 type cpuData struct {
 	N string
 
 	// percents without "%"
-	UserPct int
-	SysPct  int
-	WaitPct int
-	IdlePct int
+	UserPct int64
+	SysPct  int64
+	WaitPct int64
+	IdlePct int64
 }
 
 type diskData struct {
@@ -50,13 +91,24 @@ type diskData struct {
 	Total  string
 	Used   string
 	Avail  string
-	UsePct uint
+	UsePct uint // percent without "%"
 
 	// inodes
 	Inodes  string
 	Iused   string
 	Ifree   string
-	IusePct uint
+	IusePct uint // percent without "%"
+}
+
+type memoryData struct {
+	Kind string
+
+	// strings with units
+	Total string
+	Used  string
+	Free  string
+
+	UsePct uint // percent without "%"
 }
 
 type cpuList []cpuData
@@ -73,6 +125,7 @@ type ostent struct {
 
 	systemCPU    groupCPU
 	systemDisk   groupDisk
+	systemMemory groupMemory
 	systemOstent group
 }
 
@@ -111,8 +164,9 @@ type la struct {
 type lalist struct{ List []la }
 type list struct{ List interface{} }
 
-func (o *ostent) SystemCPUCopyL() interface{}  { return list{o.systemCPUCopy()} }
-func (o *ostent) SystemDiskCopyL() interface{} { return list{o.systemDiskCopy()} }
+func (o *ostent) SystemCPUCopyL() interface{}    { return list{o.systemCPUCopy()} }
+func (o *ostent) SystemDiskCopyL() interface{}   { return list{o.systemDiskCopy()} }
+func (o *ostent) SystemMemoryCopyL() interface{} { return list{o.systemMemoryCopy()} }
 
 func (o *ostent) systemDiskCopy() []diskData {
 	o.systemDisk.mutex.Lock()
@@ -149,6 +203,14 @@ func (o *ostent) systemCPUCopy() []cpuData {
 	return dup
 }
 
+func (o *ostent) systemMemoryCopy() []memoryData {
+	o.systemMemory.mutex.Lock()
+	defer o.systemMemory.mutex.Unlock()
+	dup := make([]memoryData, len(o.systemMemory.list))
+	copy(dup, o.systemMemory.list[:])
+	return dup
+}
+
 func (dp *dparts) mpDevice(mountpoint string) (string, error) {
 	dp.mutex.Lock()
 	defer dp.mutex.Unlock()
@@ -167,24 +229,15 @@ func (dp *dparts) mpDevice(mountpoint string) (string, error) {
 }
 
 func (o *ostent) writeSystemCPU(cpuno int, m telegraf.Metric) {
-	fields := m.Fields()
-	id := m.Tags()["cpu"]
-	cd := cpuData{N: id}
+	cd := cpuData{N: m.Tags()["cpu"]}
 
-	for _, pair := range []struct {
-		name  string
-		value *int
-	}{
-		{"usage_user", &cd.UserPct},
-		{"usage_system", &cd.SysPct},
-		{"usage_iowait", &cd.WaitPct},
-		{"usage_idle", &cd.IdlePct},
-	} {
-		if field, ok := fields[pair.name]; ok {
-			if v, ok := field.(float64); ok {
-				*pair.value = int(v)
-			}
-		}
+	if !decode(m.Fields(), []convert{
+		{k: "usage_user", v: &cd.UserPct},
+		{k: "usage_system", v: &cd.SysPct},
+		{k: "usage_iowait", v: &cd.WaitPct},
+		{k: "usage_idle", v: &cd.IdlePct},
+	}) {
+		return // either fields lookup or casting failed
 	}
 
 	o.systemCPU.mutex.Lock()
@@ -198,35 +251,22 @@ func (o *ostent) writeSystemCPU(cpuno int, m telegraf.Metric) {
 }
 
 func (o *ostent) writeSystemDisk(diskno int, m telegraf.Metric) {
-	fields := m.Fields()
 	dd := diskData{DirName: m.Tags()["path"]}
 	dd.DevName, _ = o.diskParts.mpDevice(dd.DirName) // err is ignored
 
-	var aused, afree, iaused, iafree uint64
-	for _, pair := range []struct {
-		name  string
-		value *string
-		back  *uint64
-	}{
-		{"total", &dd.Total, nil},
-		{"used", &dd.Used, &aused},
-		{"free", &dd.Avail, &afree},
-		{"inodes_total", &dd.Inodes, nil},
-		{"inodes_used", &dd.Iused, &iaused},
-		{"inodes_free", &dd.Ifree, &iafree},
-	} {
-		if field, ok := fields[pair.name]; ok {
-			if v, ok := field.(int64); ok {
-				if pair.back != nil {
-					*pair.value, *pair.back, _ = format.HumanBandback(uint64(v))
-				} else {
-					*pair.value = format.HumanB(uint64(v))
-				}
-			}
-		}
+	var rounds, roundInodes struct{ used, free uint64 }
+	if !decode(m.Fields(), []convert{
+		{k: "total", s: &dd.Total},
+		{k: "used", s: &dd.Used, r: &rounds.used},
+		{k: "free", s: &dd.Avail, r: &rounds.free},
+		{k: "inodes_total", s: &dd.Inodes},
+		{k: "inodes_used", s: &dd.Iused, r: &roundInodes.used},
+		{k: "inodes_free", s: &dd.Ifree, r: &roundInodes.free},
+	}) {
+		return // either fields lookup or casting failed
 	}
-	dd.UsePct = format.Percent(aused, aused+afree)
-	dd.IusePct = format.Percent(iaused, iaused+iafree)
+	dd.UsePct = format.Percent(rounds.used, rounds.used+rounds.free)
+	dd.IusePct = format.Percent(roundInodes.used, roundInodes.used+roundInodes.free)
 
 	o.systemDisk.mutex.Lock()
 	defer o.systemDisk.mutex.Unlock()
@@ -236,6 +276,44 @@ func (o *ostent) writeSystemDisk(diskno int, m telegraf.Metric) {
 		o.systemDisk.list = list
 	}
 	o.systemDisk.list[diskno-1] = dd
+}
+
+func (o *ostent) writeSystemMemory(m telegraf.Metric) {
+	var (
+		fields = m.Fields()
+		md     = memoryData{Kind: m.Name()}
+	)
+	isRAM := md.Kind == "mem"
+	if isRAM {
+		md.Kind = "RAM"
+	}
+
+	var values struct{ total, free int64 }
+	var rounds struct{ total, used uint64 }
+	if !decode(fields, []convert{
+		{k: "total", v: &values.total, s: &md.Total, r: &rounds.total},
+		{k: "free", v: &values.free, s: &md.Free},
+	}) {
+		return // either fields lookup or casting failed
+	}
+	if isRAM {
+		md.Used = humanB(values.total-values.free, &rounds.used)
+	} else if !decode(fields, []convert{
+		{k: "used", s: &md.Used, r: &rounds.used},
+	}) {
+		return // either fields lookup or casting failed
+	}
+
+	md.UsePct = format.Percent(rounds.used, rounds.total)
+
+	index := 0
+	if !isRAM { // must be swap
+		index = 1
+	}
+
+	o.systemMemory.mutex.Lock()
+	defer o.systemMemory.mutex.Unlock()
+	o.systemMemory.list[index] = md
 }
 
 func (o *ostent) setCPUno(cpuno int) {
@@ -283,6 +361,10 @@ func (o *ostent) Write(ms []telegraf.Metric) error {
 		case "disk":
 			disks++
 			o.writeSystemDisk(disks, m)
+		case "mem":
+			o.writeSystemMemory(m)
+		case "swap":
+			o.writeSystemMemory(m)
 		case "system_ostent":
 			o.writeSystemOstent(m)
 		}
@@ -297,6 +379,7 @@ var Output = &ostent{
 
 	systemCPU:    groupCPU{},
 	systemDisk:   groupDisk{},
+	systemMemory: groupMemory{},
 	systemOstent: group{kv: make(map[string]interface{})},
 }
 
