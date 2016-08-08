@@ -1,6 +1,6 @@
 // +build darwin
 
-package internal
+package system_ostent
 
 import (
 	"unsafe"

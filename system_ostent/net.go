@@ -8,8 +8,6 @@ import (
 
 	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/plugins/inputs"
-
-	"github.com/ostrost/ostent/system_ostent/internal"
 )
 
 func interfaceIPByName(interfaces []psnet.InterfaceStat, name string) (string, bool) {
@@ -74,7 +72,7 @@ func (_ *NetIOStats) SampleConfig() string {
 }
 
 func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
-	netio, err := internal.IOCounters(true)
+	netio, err := iocounters(true)
 	if err != nil {
 		return fmt.Errorf("error getting net io info: %s", err)
 	}

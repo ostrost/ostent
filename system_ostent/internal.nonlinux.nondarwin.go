@@ -1,6 +1,6 @@
 // +build !linux,!darwin
 
-package internal
+package system_ostent
 
 /*
 #include <stdio.h>

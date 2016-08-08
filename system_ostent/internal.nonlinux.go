@@ -1,6 +1,6 @@
 // +build !linux
 
-package internal
+package system_ostent
 
 /*
 #include <sys/socket.h>
@@ -42,8 +42,8 @@ u_int32_t Idrops(void *data) { return ((struct if_data *)data)->ifi_iqdrops; }
 import "C"
 import "github.com/shirou/gopsutil/net"
 
-// IOCounters is to call getifaddrs(3).
-func IOCounters(bool) ([]net.IOCountersStat, error) { return getifaddrs() }
+// iocounters is to call getifaddrs(3).
+func iocounters(bool) ([]net.IOCountersStat, error) { return getifaddrs() }
 
 func getifaddrs() ([]net.IOCountersStat, error) {
 	list := []net.IOCountersStat{}
