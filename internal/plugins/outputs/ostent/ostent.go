@@ -21,6 +21,7 @@ type convert struct {
 	// for humanB conversion:
 	s *string // s for string
 	r *uint64 // r for round
+	f func(uint64) string
 }
 
 // decode returns true if everything went ok.
@@ -32,7 +33,11 @@ func decode(fields map[string]interface{}, converts []convert) bool {
 					*c.v = v
 				}
 				if c.s != nil {
-					*c.s = humanB(v, c.r)
+					if c.f != nil {
+						*c.s = c.f(uint64(v))
+					} else {
+						*c.s = humanB(v, c.r)
+					}
 				}
 				continue
 			}
@@ -41,6 +46,10 @@ func decode(fields map[string]interface{}, converts []convert) bool {
 	}
 	return true
 }
+
+var humanUnitless = format.HumanUnitless
+
+func humanBits(n uint64) string { return format.HumanBits(n * 8) }
 
 func humanB(value int64, round *uint64) string {
 	if round == nil {
@@ -69,6 +78,11 @@ type groupDisk struct {
 type groupMemory struct {
 	mutex sync.Mutex
 	list  [2]memoryData
+}
+
+type groupNet struct {
+	mutex sync.Mutex
+	list  []netData
 }
 
 type cpuData struct {
@@ -111,12 +125,58 @@ type memoryData struct {
 	UsePct uint // percent without "%"
 }
 
+type netData struct {
+	loopback bool
+
+	Name string
+	IP   string `json:",omitempty"` // may be empty
+
+	// strings with units
+
+	BytesIn    string
+	BytesOut   string
+	DropsIn    string
+	DropsOut   string `json:",omitempty"`
+	ErrorsIn   string
+	ErrorsOut  string
+	PacketsIn  string
+	PacketsOut string
+
+	DeltaBitsIn      string
+	DeltaBitsOut     string
+	DeltaBytesOutNum int64
+	DeltaDropsIn     string
+	DeltaDropsOut    string `json:",omitempty"`
+	DeltaErrorsIn    string
+	DeltaErrorsOut   string
+	DeltaPacketsIn   string
+	DeltaPacketsOut  string
+}
+
 type cpuList []cpuData
 
 // Len, Swap and Less satisfy sorting interface.
 func (cl cpuList) Len() int           { return len(cl) }
 func (cl cpuList) Swap(i, j int)      { cl[i], cl[j] = cl[j], cl[i] }
 func (cl cpuList) Less(i, j int) bool { return cl[i].IdlePct < cl[j].IdlePct }
+
+// TODO type diskList []diskData
+
+type netList []netData
+
+func (nl netList) Len() int      { return len(nl) }
+func (nl netList) Swap(i, j int) { nl[i], nl[j] = nl[j], nl[i] }
+func (nl netList) Less(i, j int) bool {
+	a, b := nl[i], nl[j]
+	if !(a.loopback && b.loopback) {
+		if a.loopback {
+			return false
+		} else if b.loopback {
+			return true
+		}
+	}
+	return a.Name < b.Name
+}
 
 type ostent struct {
 	// serializer serializers.Serializer
@@ -126,6 +186,7 @@ type ostent struct {
 	systemCPU    groupCPU
 	systemDisk   groupDisk
 	systemMemory groupMemory
+	systemNet    groupNet
 	systemOstent group
 }
 
@@ -167,6 +228,7 @@ type list struct{ List interface{} }
 func (o *ostent) SystemCPUCopyL() interface{}    { return list{o.systemCPUCopy()} }
 func (o *ostent) SystemDiskCopyL() interface{}   { return list{o.systemDiskCopy()} }
 func (o *ostent) SystemMemoryCopyL() interface{} { return list{o.systemMemoryCopy()} }
+func (o *ostent) SystemNetCopyL() interface{}    { return list{o.systemNetCopy()} }
 
 func (o *ostent) systemDiskCopy() []diskData {
 	o.systemDisk.mutex.Lock()
@@ -177,8 +239,7 @@ func (o *ostent) systemDiskCopy() []diskData {
 	}
 	dup := make([]diskData, llen)
 	copy(dup, o.systemDisk.list)
-	// for i, c := range o.systemDisk.list { copy[i] = c }
-	// sort.Sort(diskList(copy))
+	// sort.Sort(diskList(dup))
 	return dup
 }
 
@@ -208,6 +269,19 @@ func (o *ostent) systemMemoryCopy() []memoryData {
 	defer o.systemMemory.mutex.Unlock()
 	dup := make([]memoryData, len(o.systemMemory.list))
 	copy(dup, o.systemMemory.list[:])
+	return dup
+}
+
+func (o *ostent) systemNetCopy() []netData {
+	o.systemNet.mutex.Lock()
+	defer o.systemNet.mutex.Unlock()
+	llen := len(o.systemNet.list)
+	if llen == 0 {
+		return []netData{}
+	}
+	dup := make([]netData, llen)
+	copy(dup, o.systemNet.list)
+	sort.Sort(netList(dup)) // not .Stable
 	return dup
 }
 
@@ -316,6 +390,50 @@ func (o *ostent) writeSystemMemory(m telegraf.Metric) {
 	o.systemMemory.list[index] = md
 }
 
+func (o *ostent) writeSystemNet(netno int, m telegraf.Metric) bool {
+	tags := m.Tags()
+	nd := netData{Name: tags["interface"], IP: tags["ip"]}
+	if nd.Name == "all" { // uninterested NetProto stats
+		return false
+	}
+	if _, ok := tags["nonemptyifLoopback"]; ok {
+		nd.loopback = true
+	}
+
+	if !decode(m.Fields(), []convert{
+		{k: "bytes_sent", s: &nd.BytesOut},
+		{k: "bytes_recv", s: &nd.BytesIn},
+		{f: humanUnitless, k: "packets_sent", s: &nd.PacketsOut},
+		{f: humanUnitless, k: "packets_recv", s: &nd.PacketsIn},
+		{f: humanUnitless, k: "err_in", s: &nd.ErrorsIn},
+		{f: humanUnitless, k: "err_out", s: &nd.ErrorsOut},
+		{f: humanUnitless, k: "drop_in", s: &nd.DropsIn},
+		{f: humanUnitless, k: "drop_out", s: &nd.DropsOut},
+
+		{f: humanBits, k: "delta_bytes_sent", s: &nd.DeltaBitsOut, v: &nd.DeltaBytesOutNum},
+		{f: humanBits, k: "delta_bytes_recv", s: &nd.DeltaBitsIn},
+
+		{f: humanUnitless, k: "delta_packets_sent", s: &nd.DeltaPacketsOut},
+		{f: humanUnitless, k: "delta_packets_recv", s: &nd.DeltaPacketsIn},
+		{f: humanUnitless, k: "delta_err_in", s: &nd.DeltaErrorsIn},
+		{f: humanUnitless, k: "delta_err_out", s: &nd.DeltaErrorsOut},
+		{f: humanUnitless, k: "delta_drop_in", s: &nd.DeltaDropsIn},
+		{f: humanUnitless, k: "delta_drop_out", s: &nd.DeltaDropsOut},
+	}) {
+		return false // either fields lookup or casting failed
+	}
+
+	o.systemNet.mutex.Lock()
+	defer o.systemNet.mutex.Unlock()
+	if len(o.systemNet.list) < netno {
+		list := make([]netData, netno)
+		copy(list, o.systemNet.list)
+		o.systemNet.list = list
+	}
+	o.systemNet.list[netno-1] = nd
+	return true
+}
+
 func (o *ostent) setCPUno(cpuno int) {
 	o.systemCPU.mutex.Lock()
 	defer o.systemCPU.mutex.Unlock()
@@ -329,6 +447,14 @@ func (o *ostent) setDiskno(diskno int) {
 	defer o.systemDisk.mutex.Unlock()
 	if len(o.systemDisk.list) > diskno {
 		o.systemDisk.list = o.systemDisk.list[:diskno]
+	}
+}
+
+func (o *ostent) setNetno(netno int) {
+	o.systemNet.mutex.Lock()
+	defer o.systemNet.mutex.Unlock()
+	if len(o.systemNet.list) > netno {
+		o.systemNet.list = o.systemNet.list[:netno]
 	}
 }
 
@@ -352,25 +478,29 @@ func (o *ostent) Write(ms []telegraf.Metric) error {
 		return nil
 	}
 
-	cpus, disks := 0, 0
+	cpus, disks, nets := 0, 0, 0
 	for _, m := range ms {
 		switch m.Name() {
+		case "system_ostent":
+			o.writeSystemOstent(m)
+
 		case "cpu":
 			cpus++
 			o.writeSystemCPU(cpus, m)
 		case "disk":
 			disks++
 			o.writeSystemDisk(disks, m)
-		case "mem":
+		case "mem", "swap":
 			o.writeSystemMemory(m)
-		case "swap":
-			o.writeSystemMemory(m)
-		case "system_ostent":
-			o.writeSystemOstent(m)
+		case "net":
+			if o.writeSystemNet(nets+1, m) {
+				nets++
+			}
 		}
 	}
-	o.setDiskno(disks)
 	o.setCPUno(cpus)
+	o.setDiskno(disks)
+	o.setNetno(nets)
 	return nil
 }
 
@@ -380,6 +510,7 @@ var Output = &ostent{
 	systemCPU:    groupCPU{},
 	systemDisk:   groupDisk{},
 	systemMemory: groupMemory{},
+	systemNet:    groupNet{},
 	systemOstent: group{kv: make(map[string]interface{})},
 }
 

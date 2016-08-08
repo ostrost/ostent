@@ -602,7 +602,8 @@ func init() {
 		"cpu": ostent.Output.SystemCPUCopyL,
 		"df":  ostent.Output.SystemDiskCopyL,
 		// "la" is copied with ostent.Output.SystemOstentCopy
-		"mem": ostent.Output.SystemMemoryCopyL,
+		"mem":   ostent.Output.SystemMemoryCopyL,
+		"netio": ostent.Output.SystemNetCopyL,
 	}
 }
 

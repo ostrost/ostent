@@ -229,6 +229,7 @@ func loadConfigs(cconfig *config.Config) error {
 			// Disk: &diskInput{[]string{"tmpfs", "devtmpfs"}},
 			// Mem:  &on,
 			// Swap: &on,
+			// SystemOstentNet: &on,
 		}})
 }
 
@@ -236,8 +237,9 @@ type inputs struct {
 	SystemOstent struct{ Interval string }
 
 	// later fields are pointers with omitempty
-	CPU  *struct{}  `toml:",omitempty"`
-	Disk *diskInput `toml:",omitempty"`
-	Mem  *struct{}  `toml:",omitempty"`
-	Swap *struct{}  `toml:",omitempty"`
+	CPU             *struct{}  `toml:",omitempty"`
+	Disk            *diskInput `toml:",omitempty"`
+	Mem             *struct{}  `toml:",omitempty"`
+	Swap            *struct{}  `toml:",omitempty"`
+	SystemOstentNet *struct{}  `toml:",omitempty"`
 }
