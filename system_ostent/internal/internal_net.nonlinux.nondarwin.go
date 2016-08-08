@@ -1,6 +1,6 @@
 // +build !linux,!darwin
 
-package system_ostent
+package internal
 
 /*
 #include <stdio.h>
@@ -12,14 +12,14 @@ package system_ostent
 
 #ifdef __linux__
 #include <linux/if_link.h>
-u_int32_t odrops(void *data) { return ((struct rtnl_link_stats *)data)->tx_dropped; }
+u_int32_t cdropsOut(void *data) { return ((struct rtnl_link_stats *)data)->tx_dropped; }
 
 #else // freebsd
-u_int32_t odrops(void *data) { return ((struct if_data *)data)->ifi_oqdrops; }
+u_int32_t cdropsOut(void *data) { return ((struct if_data *)data)->ifi_oqdrops; }
 #endif
 */
 // #cgo CFLAGS: -D_IFI_OQDROPS
 import "C"
 import "unsafe"
 
-func ifaDropsOut(ifadata unsafe.Pointer) uint64 { return uint64(C.odrops(ifadata)) }
+func dropsOut(data unsafe.Pointer) uint64 { return uint64(C.cdropsOut(data)) }
