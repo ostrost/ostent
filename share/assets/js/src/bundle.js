@@ -21585,8 +21585,8 @@
 	    this.setState({ data: data });
 	  },
 	  render: function render() {
-	    var curveProps = { style: { strokeWidth: 2 } };
-	    var spotsProps = { size: 4, spotColors: { '-1': 'green', '1': 'red' } }; // reverse default colors
+	    var curveProps = { style: { strokeWidth: 1 } };
+	    var spotsProps = { size: 2, spotColors: { '-1': 'green', '1': 'red' } }; // reverse default colors
 	    if (this.props.defaultSpots) {
 	      delete spotsProps.spotColors;
 	    } // back to default colors
@@ -21597,6 +21597,8 @@
 	        data: this.state.data,
 	        limit: this.state.limit,
 	        width: this.state.width,
+	        svgWidth: this.state.width,
+	        height: 33,
 	        svgHeight: 33
 	      }, void 0, React.createElement(SparkLines.SparklinesCurve, curveProps), React.createElement(SparkLines.SparklinesSpots, spotsProps))
 	    );
