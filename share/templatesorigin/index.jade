@@ -62,34 +62,16 @@ mixin table(nparam, dparam, title)
       ul.row.menu.showhide-show
         li: .input-group
           .input-group-label.text-nowrap delay
-          .input-group-button
-            a.button.small.secondary.disabled [[.#{ddata}]]
+          .input-group-button: a.button.small.secondary.disabled [[.#{ddata}]]
           - var cls = 'text-nowrap button small';
-          .input-group-button
-            if JSX
-              +alink_jsxl(cls, '- %s', dlinkLess)
-            else
-              +alink_html(cls, '- %s', dlinkLess)
-          .input-group-button
-            if JSX
-              +alink_jsxl(cls, '%s +', dlinkMore)
-            else
-              +alink_html(cls, '%s +', dlinkMore)
+          .input-group-button: +alink(cls, '- %s', dlinkLess)
+          .input-group-button: +alink(cls, '%s +', dlinkMore)
         li: .input-group
           .input-group-label.text-nowrap rows
-          .input-group-button
-            a.button.small.secondary.disabled [[.#{ndata}.Absolute]]
+          .input-group-button: a.button.small.secondary.disabled [[.#{ndata}.Absolute]]
           - var cls = 'text-nowrap button small success';
-          .input-group-button
-            if JSX
-              +alink_jsxl(cls, '- %s', nlinkLess)
-            else
-              +alink_html(cls, '- %s', nlinkLess)
-          .input-group-button
-            if JSX
-              +alink_jsxl(cls, '%s +', nlinkMore)
-            else
-              +alink_html(cls, '%s +', nlinkMore)
+          .input-group-button: +alink(cls, '- %s', nlinkLess)
+          .input-group-button: +alink(cls, '%s +', nlinkMore)
       if JSX
         | <div class={#{ndata}.Absolute == 0 ? "hide":""}>
       else
@@ -97,15 +79,15 @@ mixin table(nparam, dparam, title)
       block
       | </div></div>
 
-mixin alink_jsxl(cls, fmt, link)
-  | <a href={#{link}.Href} onClick={this.handleClick}
-  |    class={"#{cls} " + (#{link}.ExtraClass != null ? #{link}.ExtraClass : "")}
-  |   >#{format(fmt, format('{%s.Text}', link))}</a>
-
-mixin alink_html(cls, fmt, link)
-  | <a href=[[.#{link}.Href]]
-  |    class="#{cls} [[.#{link}.ExtraClass]]"
-  |   >#{format(fmt, format('[[.%s.Text]]', link))}</a>
+mixin alink(cls, fmt, link)
+  if JSX
+    | <a href={#{link}.Href} onClick={this.handleClick}
+    |    class={"#{cls} " + (#{link}.ExtraClass != null ? #{link}.ExtraClass : "")}
+    |   >#{format(fmt, format('{%s.Text}', link))}</a>
+  else
+    | <a href=[[.#{link}.Href]]
+    |    class="#{cls} [[.#{link}.ExtraClass]]"
+    |   >#{format(fmt, format('[[.%s.Text]]', link))}</a>
 
 +define('define_uptime'): span [[.Data.system_ostent.uptime_format]]
 +define('define_hostname')
