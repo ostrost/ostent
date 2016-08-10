@@ -13,6 +13,7 @@ import (
 	// "github.com/influxdata/telegraf/plugins/serializers"
 
 	"github.com/ostrost/ostent/format"
+	"github.com/ostrost/ostent/params"
 )
 
 type convert struct {
@@ -29,22 +30,29 @@ func decode(fields map[string]interface{}, converts []convert) bool {
 	for _, c := range converts {
 		if f, ok := fields[c.k]; ok {
 			if v, ok := f.(int64); ok {
-				if c.v != nil {
-					*c.v = v
-				}
-				if c.s != nil {
-					if c.f != nil {
-						*c.s = c.f(uint64(v))
-					} else {
-						*c.s = humanB(v, c.r)
-					}
-				}
+				decodeInt(v, &c)
+				continue
+			} else if v, ok := f.(float64); ok {
+				decodeInt(int64(v), &c)
 				continue
 			}
 		}
 		return false // either fields lookup or casting failed
 	}
 	return true
+}
+
+func decodeInt(v int64, c *convert) {
+	if c.v != nil {
+		*c.v = v
+	}
+	if c.s != nil {
+		if c.f != nil {
+			*c.s = c.f(uint64(v))
+		} else {
+			*c.s = humanB(v, c.r)
+		}
+	}
 }
 
 var humanUnitless = format.HumanUnitless
@@ -195,7 +203,7 @@ type dparts struct {
 	parts map[string]string
 }
 
-func (o *ostent) SystemOstentCopy() (map[string]string, lalist) {
+func (o *ostent) CopySO(para *params.Params) (map[string]string, lalist) {
 	o.systemOstent.mutex.Lock()
 	defer o.systemOstent.mutex.Unlock()
 	dup := make(map[string]string, len(o.systemOstent.kv))
@@ -206,12 +214,21 @@ func (o *ostent) SystemOstentCopy() (map[string]string, lalist) {
 			}
 		}
 	}
-	periods := [3]string{"1", "5", "15"}
+
+	n := &para.Lan
+	if whenZero(n) {
+		return dup, lalist{}
+	}
+
+	periods := []string{"1", "5", "15"}[:limit(n, 3)]
 	lal := lalist{make([]la, len(periods))}
 	for i, period := range periods {
 		if v, ok := o.systemOstent.kv["load"+period]; ok {
 			if f, ok := v.(float64); ok {
-				lal.List[i] = la{period, fmt.Sprintf("%.2f", f)}
+				lal.List[i] = la{
+					Period: period,
+					Value:  fmt.Sprintf("%.2f", f),
+				}
 			}
 		}
 	}
@@ -225,31 +242,60 @@ type la struct {
 type lalist struct{ List []la }
 type list struct{ List interface{} }
 
-func (o *ostent) SystemCPUCopyL() interface{}    { return list{o.systemCPUCopy()} }
-func (o *ostent) SystemDiskCopyL() interface{}   { return list{o.systemDiskCopy()} }
-func (o *ostent) SystemMemoryCopyL() interface{} { return list{o.systemMemoryCopy()} }
-func (o *ostent) SystemNetCopyL() interface{}    { return list{o.systemNetCopy()} }
+func (o *ostent) CopyCPU(para *params.Params) interface{}  { return list{o.copyCPU(&para.CPUn)} }
+func (o *ostent) CopyDisk(para *params.Params) interface{} { return list{o.copyDisk(&para.Dfn)} }
+func (o *ostent) CopyMem(para *params.Params) interface{}  { return list{o.copyMem(&para.Memn)} }
+func (o *ostent) CopyNet(para *params.Params) interface{}  { return list{o.copyNet(&para.Ifn)} }
 
-func (o *ostent) systemDiskCopy() []diskData {
+func positiveLimit(n *params.Num) { n.Limit = 1 }
+func whenZero(n *params.Num) bool {
+	if n.Absolute == 0 {
+		positiveLimit(n)
+		return true
+	}
+	return false
+}
+func limit(n *params.Num, lim int) int {
+	n.Limit = lim
+	if n.Absolute > n.Limit {
+		n.Absolute = n.Limit
+	}
+	return n.Absolute
+}
+
+func (o *ostent) copyDisk(n *params.Num) []diskData {
+	if whenZero(n) {
+		return nil
+	}
+
 	o.systemDisk.mutex.Lock()
 	defer o.systemDisk.mutex.Unlock()
 	llen := len(o.systemDisk.list)
 	if llen == 0 {
-		return []diskData{}
+		positiveLimit(n)
+		return nil
 	}
+
 	dup := make([]diskData, llen)
 	copy(dup, o.systemDisk.list)
 	// sort.Sort(diskList(dup))
-	return dup
+
+	return dup[:limit(n, llen)]
 }
 
-func (o *ostent) systemCPUCopy() []cpuData {
+func (o *ostent) copyCPU(n *params.Num) []cpuData {
+	if whenZero(n) {
+		return nil
+	}
+
 	o.systemCPU.mutex.Lock()
 	defer o.systemCPU.mutex.Unlock()
 	llen := len(o.systemCPU.list)
 	if llen == 0 {
-		return []cpuData{}
+		positiveLimit(n)
+		return nil
 	}
+
 	tshift := 0 // "total shift"
 	if o.systemCPU.list[llen-1].N == "cpu-total" {
 		tshift = 1
@@ -261,28 +307,41 @@ func (o *ostent) systemCPUCopy() []cpuData {
 	if tshift != 0 {
 		dup[0] = o.systemCPU.list[llen-tshift] // last, "cpu-total", becomes first
 	}
-	return dup
+
+	return dup[:limit(n, llen)]
 }
 
-func (o *ostent) systemMemoryCopy() []memoryData {
+func (o *ostent) copyMem(n *params.Num) []memoryData {
+	if whenZero(n) {
+		return nil
+	}
+
 	o.systemMemory.mutex.Lock()
 	defer o.systemMemory.mutex.Unlock()
 	dup := make([]memoryData, len(o.systemMemory.list))
 	copy(dup, o.systemMemory.list[:])
-	return dup
+
+	return dup[:limit(n, 2)]
 }
 
-func (o *ostent) systemNetCopy() []netData {
+func (o *ostent) copyNet(n *params.Num) []netData {
+	if whenZero(n) {
+		return nil
+	}
+
 	o.systemNet.mutex.Lock()
 	defer o.systemNet.mutex.Unlock()
 	llen := len(o.systemNet.list)
 	if llen == 0 {
-		return []netData{}
+		positiveLimit(n)
+		return nil
 	}
+
 	dup := make([]netData, llen)
 	copy(dup, o.systemNet.list)
 	sort.Sort(netList(dup)) // not .Stable
-	return dup
+
+	return dup[:limit(n, llen)]
 }
 
 func (dp *dparts) mpDevice(mountpoint string) (string, error) {

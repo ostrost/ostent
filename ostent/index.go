@@ -94,8 +94,10 @@ type last struct {
 
 type oldFuncs struct {
 	collectFunc func(*sync.WaitGroup)
-	dataFunc    func(*params.Params) interface{}
+	dataFunc    renderFunc
 }
+
+type renderFunc func(*params.Params) interface{}
 
 func (la *last) collect(when time.Time, wantprocs bool) {
 	la.MU.Lock()
@@ -560,7 +562,7 @@ var (
 	distrib       string // distribution + release version
 	lastInfo      last
 	logru         *logrus.Logger
-	news          map[string]func() interface{}
+	news          map[string]renderFunc
 	OstentUpgrade = new(UpgradeInfo)
 	Reg1s         *IndexRegistry
 )
@@ -598,12 +600,12 @@ func init() {
 		"mem":   {Reg1s.collectMEM, Reg1s.dataMEM},
 		"netio": {Reg1s.collectIF, Reg1s.dataIF},
 	}
-	news = map[string]func() interface{}{
-		"cpu": ostent.Output.SystemCPUCopyL,
-		"df":  ostent.Output.SystemDiskCopyL,
-		// "la" is copied with ostent.Output.SystemOstentCopy
-		"mem":   ostent.Output.SystemMemoryCopyL,
-		"netio": ostent.Output.SystemNetCopyL,
+	news = map[string]renderFunc{
+		"cpu": ostent.Output.CopyCPU,
+		"df":  ostent.Output.CopyDisk,
+		// "la" is copied with ostent.Output.CopySO
+		"mem":   ostent.Output.CopyMem,
+		"netio": ostent.Output.CopyNet,
 	}
 }
 
@@ -635,12 +637,13 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 	}
 
 	for key, dataFunc := range news {
-		if _, ok := lastInfo.olds[key]; !ok {
-			data[key] = dataFunc()
-			updated = true
+		if _, ok := lastInfo.olds[key]; ok {
+			continue
 		}
+		data[key] = dataFunc(para)
+		updated = true
 	}
-	sodup, sola := ostent.Output.SystemOstentCopy()
+	sodup, sola := ostent.Output.CopySO(para)
 	data["system_ostent"] = sodup
 	if _, ok := lastInfo.olds["la"]; !ok {
 		data["la"] = sola
