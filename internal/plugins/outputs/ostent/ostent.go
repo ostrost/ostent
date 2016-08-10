@@ -107,6 +107,12 @@ type diskData struct {
 	DevName string
 	DirName string
 
+	// values for sorting:
+
+	total int64
+	used  int64
+	avail int64
+
 	// strings with units
 
 	// bytes
@@ -168,7 +174,42 @@ func (cl cpuList) Len() int           { return len(cl) }
 func (cl cpuList) Swap(i, j int)      { cl[i], cl[j] = cl[j], cl[i] }
 func (cl cpuList) Less(i, j int) bool { return cl[i].IdlePct < cl[j].IdlePct }
 
-// TODO type diskList []diskData
+type diskList struct {
+	k    *params.Num // a pointer to set .Alpha
+	list []diskData
+}
+
+func (dl diskList) Len() int      { return len(dl.list) }
+func (dl diskList) Swap(i, j int) { dl.list[i], dl.list[j] = dl.list[j], dl.list[i] }
+func (dl diskList) Less(i, j int) (r bool) {
+	if match, isa, cmpr := ddCmp(dl.k.Absolute, dl.list[i], dl.list[j]); match {
+		dl.k.Alpha, r = isa, cmpr
+	}
+	if dl.k.Negative {
+		return !r
+	}
+	return r
+}
+
+func ddCmp(k int, a, b diskData) (bool, bool, bool) {
+	switch k {
+	case params.FS:
+		return true, true, a.DevName < b.DevName
+	case params.MP:
+		return true, true, a.DirName < b.DirName
+
+	case params.TOTAL:
+		return true, false, a.total > b.total
+	case params.USED:
+		return true, false, a.used > b.used
+	case params.AVAIL:
+		return true, false, a.avail > b.avail
+	case params.USEPCT:
+		cmp := float64(a.used)/float64(a.total) > float64(b.used)/float64(b.total)
+		return true, false, cmp
+	}
+	return false, false, false
+}
 
 type netList []netData
 
@@ -243,7 +284,7 @@ type lalist struct{ List []la }
 type list struct{ List interface{} }
 
 func (o *ostent) CopyCPU(para *params.Params) interface{}  { return list{o.copyCPU(&para.CPUn)} }
-func (o *ostent) CopyDisk(para *params.Params) interface{} { return list{o.copyDisk(&para.Dfn)} }
+func (o *ostent) CopyDisk(para *params.Params) interface{} { return list{o.copyDisk(para)} }
 func (o *ostent) CopyMem(para *params.Params) interface{}  { return list{o.copyMem(&para.Memn)} }
 func (o *ostent) CopyNet(para *params.Params) interface{}  { return list{o.copyNet(&para.Ifn)} }
 
@@ -263,7 +304,8 @@ func limit(n *params.Num, lim int) int {
 	return n.Absolute
 }
 
-func (o *ostent) copyDisk(n *params.Num) []diskData {
+func (o *ostent) copyDisk(para *params.Params) []diskData {
+	n := &para.Dfn
 	if whenZero(n) {
 		return nil
 	}
@@ -278,7 +320,7 @@ func (o *ostent) copyDisk(n *params.Num) []diskData {
 
 	dup := make([]diskData, llen)
 	copy(dup, o.systemDisk.list)
-	// sort.Sort(diskList(dup))
+	sort.Stable(diskList{k: &para.Dfk, list: dup})
 
 	return dup[:limit(n, llen)]
 }
@@ -389,9 +431,9 @@ func (o *ostent) writeSystemDisk(diskno int, m telegraf.Metric) {
 
 	var rounds, roundInodes struct{ used, free uint64 }
 	if !decode(m.Fields(), []convert{
-		{k: "total", s: &dd.Total},
-		{k: "used", s: &dd.Used, r: &rounds.used},
-		{k: "free", s: &dd.Avail, r: &rounds.free},
+		{k: "total", s: &dd.Total, v: &dd.total},
+		{k: "used", s: &dd.Used, v: &dd.used, r: &rounds.used},
+		{k: "free", s: &dd.Avail, v: &dd.avail, r: &rounds.free},
 		{k: "inodes_total", s: &dd.Inodes},
 		{k: "inodes_used", s: &dd.Iused, r: &roundInodes.used},
 		{k: "inodes_free", s: &dd.Ifree, r: &roundInodes.free},
