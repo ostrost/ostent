@@ -1,5 +1,5 @@
-hash: ad5b4d57c7a2d7115c5ca258d4c88ef61ceb30f3373fef63d79010849c0f40df
-updated: 2016-07-30T21:21:00.928015226Z
+hash: 01d15da45402a18ce56c2fee66c2cd1e3abda9266abd60a60b274588391f5543
+updated: 2016-08-10T09:40:41.409277132Z
 imports:
 - name: github.com/blang/semver
   version: 60ec3488bfea7cca02b021d106d9911120d25fe9
@@ -28,6 +28,12 @@ imports:
   version: 7dfdcf409020452e29b4babcbb22f984d2aa308a
   subpackages:
   - oleutil
+- name: github.com/gobwas/glob
+  version: 49571a1557cd20e6a2410adc6421f85b66c730b5
+  subpackages:
+  - match
+  - runes
+  - strings
 - name: github.com/google/go-querystring
   version: 9235644dd9e52eeae6fa48efd539fdc351a0af53
   subpackages:
@@ -39,7 +45,7 @@ imports:
 - name: github.com/gorilla/schema
   version: d68043406bea8bd90f7b38e9c54fab18d903ea25
 - name: github.com/gorilla/websocket
-  version: 5e2e56d5dfd46884df1036f828777ee6273f2cff
+  version: a69d25be2fe2923a97c2af6849b2f52426f68fc0
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/influxdb
@@ -59,6 +65,7 @@ imports:
   - plugins/outputs/influxdb
   - plugins/outputs/librato
   - plugins/serializers
+  - filter
   - internal
   - plugins/serializers/graphite
   - plugins/serializers/influx
@@ -66,9 +73,10 @@ imports:
 - name: github.com/influxdata/toml
   version: af4df43894b16e3fd2b788d01bd27ad0776ef2d0
   subpackages:
+  - .
   - ast
 - name: github.com/Jeffail/gabs
-  version: c28ac41b517d24bf381d39d5a294fac6536d81fa
+  version: 855034b6b7a3b7144977efcaefe72d2c64b0d039
 - name: github.com/jteeuwen/go-bindata
   version: a0ff2567cfb70903282db057e799fd826784d41d
   subpackages:
@@ -101,12 +109,12 @@ imports:
   subpackages:
   - host
   - net
-  - cpu
   - disk
+  - cpu
   - load
   - mem
-  - process
   - internal/common
+  - process
 - name: github.com/shirou/w32
   version: 3c9377fc6748f222729a8270fe2775d149a249ad
 - name: github.com/shurcooL/sanitized_anchor_name
@@ -114,12 +122,12 @@ imports:
 - name: github.com/Sirupsen/logrus
   version: a283a10442df8dc09befd873fab202bf8a253d6a
 - name: github.com/spf13/cobra
-  version: f62e98d28ab7ad31d707ba837a966378465c7b57
+  version: 7c674d9e72017ed25f6d2b5e497a1368086b6a6f
   subpackages:
   - .
   - doc
 - name: github.com/spf13/pflag
-  version: 1560c1005499d61b80f865c04d39ca7505bf7f0b
+  version: f676131e2660dc8cd88de99f7486d34aa8172635
 - name: github.com/StackExchange/wmi
   version: 771c736650b4aabf956d9103ba5bf439414f79f9
 - name: github.com/stretchr/objx
@@ -132,7 +140,7 @@ imports:
 - name: github.com/vrischmann/go-metrics-influxdb
   version: be4fc87f4ea19631fadd5f80e4fb8ea0353348a6
 - name: golang.org/x/net
-  version: 6a513affb38dc9788b449d59ffed099b8de18fa0
+  version: 075e191f18186a8ff2becaf64478e30f4545cdad
   subpackages:
   - context
 - name: golang.org/x/sys

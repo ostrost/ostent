@@ -31,7 +31,7 @@ import:
 - package: github.com/influxdata/toml
   subpackages:
   - .
-  - plugins/inputs
+  - ast
 - package: github.com/Jeffail/gabs
 - package: github.com/jteeuwen/go-bindata
   subpackages:
@@ -53,6 +53,10 @@ import:
   subpackages:
   - host
   - net
+  - disk
+  - cpu
+  - load
+  - mem
 - package: github.com/vrischmann/go-metrics-influxdb
 - package: golang.org/x/net
   subpackages:
