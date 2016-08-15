@@ -14,10 +14,9 @@ import (
 )
 
 type Graphite struct {
-	Servers []string
-	Prefix  string // hard-coded
-
-	Namedrop []string // general output preference
+	Namedrop namedrop
+	Servers  []string
+	Prefix   string // hard-coded
 }
 
 // type ConfigType
@@ -30,11 +29,11 @@ func GraphiteRun(elisting *ostent.ExportingListing, cconfig *config.Config, gend
 				Outputs []Graphite `toml:"outputs.graphite"`
 			}{
 				Outputs: []Graphite{{
-					Servers: []string{value.ServerAddr.String()},
-					Prefix:  "ostent", // hard-coded
+					Namedrop: commonNamedrop,
+					Servers:  []string{value.ServerAddr.String()},
+					Prefix:   "ostent", // hard-coded
 
 					// TODO value.Delay becomes meaningless
-					Namedrop: []string{"system_ostent"},
 				}}})
 			if err != nil {
 				return err

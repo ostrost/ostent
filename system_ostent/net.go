@@ -162,7 +162,7 @@ func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("system_ostent_net", func() telegraf.Input {
+	inputs.Add("net_ostent", func() telegraf.Input {
 		return &NetIOStats{ps: &systemPS{}}
 	})
 }

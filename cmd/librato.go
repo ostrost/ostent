@@ -11,12 +11,11 @@ import (
 )
 
 type Librato struct {
+	Namedrop  namedrop
 	ApiUser   string
 	ApiToken  string
 	SourceTag string
 	Template  string // hard-coded
-
-	Namedrop []string // general output preference
 }
 
 func LibratoRun(elisting *ostent.ExportingListing, cconfig *config.Config, lends params.LibratoEndpoints) error {
@@ -27,13 +26,13 @@ func LibratoRun(elisting *ostent.ExportingListing, cconfig *config.Config, lends
 				Outputs []Librato `toml:"outputs.librato"`
 			}{
 				Outputs: []Librato{{
+					Namedrop:  commonNamedrop,
 					ApiUser:   value.Email,
 					ApiToken:  value.Token,
 					SourceTag: value.Source,
 					Template:  "host.tags.measurement.field", // hard-coded
 
 					// TODO value.Delay becomes meaningless
-					Namedrop: []string{"system_ostent"},
 				}}})
 			if err != nil {
 				return err

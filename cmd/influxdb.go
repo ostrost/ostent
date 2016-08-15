@@ -9,12 +9,11 @@ import (
 )
 
 type Influxdb struct {
+	Namedrop namedrop
 	URLs     []string `toml:"urls"`
 	Username string
 	Password string
 	Database string
-
-	Namedrop []string // general output preference
 }
 
 func InfluxRun(elisting *ostent.ExportingListing, cconfig *config.Config, iends params.InfluxEndpoints) error {
@@ -27,6 +26,7 @@ func InfluxRun(elisting *ostent.ExportingListing, cconfig *config.Config, iends 
 				Outputs []Influxdb `toml:"outputs.influxdb"`
 			}{
 				Outputs: []Influxdb{{
+					Namedrop: commonNamedrop,
 					URLs:     []string{u.String()},
 					Username: value.Username,
 					Password: value.Password,
@@ -34,7 +34,6 @@ func InfluxRun(elisting *ostent.ExportingListing, cconfig *config.Config, iends 
 
 					// TODO value.Tags is ignored
 					// TODO value.Delay becomes meaningless
-					Namedrop: []string{"system_ostent"},
 				}}})
 			if err != nil {
 				return err
