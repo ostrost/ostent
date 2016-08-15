@@ -18,6 +18,17 @@ import (
 	"github.com/ostrost/ostent/internal/config"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/params"
+
+	// plugging outputs:
+	_ "github.com/influxdata/telegraf/plugins/outputs/graphite"
+	_ "github.com/influxdata/telegraf/plugins/outputs/influxdb"
+	_ "github.com/influxdata/telegraf/plugins/outputs/librato"
+
+	_ "github.com/ostrost/ostent/internal/plugins/outputs/ostent" // "ostent" output
+
+	// plugging inputs:
+	_ "github.com/influxdata/telegraf/plugins/inputs/system" // "{cpu,disk,mem,swap}" inputs
+	_ "github.com/ostrost/ostent/system_ostent"              // "{net,system}_ostent" inputs
 )
 
 var (
@@ -228,9 +239,9 @@ func loadConfigs(cconfig *config.Config) error {
 			// CPU: &on,
 			// Disk: &diskInput{[]string{"tmpfs", "devtmpfs"}},
 			// Mem:  &on,
-			// Swap: &on,
 			// NetOstent: &on,
 			//// ProcstatOstent:  &on,
+			// Swap:           &on,
 		}})
 }
 
@@ -241,9 +252,9 @@ type inputs struct {
 	CPU       *struct{}  `toml:",omitempty"`
 	Disk      *diskInput `toml:",omitempty"`
 	Mem       *struct{}  `toml:",omitempty"`
-	Swap      *struct{}  `toml:",omitempty"`
 	NetOstent *struct{}  `toml:",omitempty"`
 	//// ProcstatOstent  *struct{}  `toml:",omitempty"`
+	Swap *struct{} `toml:",omitempty"`
 }
 
 type namedrop []string

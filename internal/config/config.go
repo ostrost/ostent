@@ -11,11 +11,7 @@ import (
 	"time"
 
 	"github.com/influxdata/telegraf/plugins/inputs"
-	_ "github.com/influxdata/telegraf/plugins/inputs/system"
 	"github.com/influxdata/telegraf/plugins/outputs"
-	_ "github.com/influxdata/telegraf/plugins/outputs/graphite"
-	_ "github.com/influxdata/telegraf/plugins/outputs/influxdb"
-	_ "github.com/influxdata/telegraf/plugins/outputs/librato"
 	"github.com/influxdata/telegraf/plugins/serializers"
 
 	"github.com/influxdata/toml"
@@ -23,8 +19,6 @@ import (
 
 	"github.com/ostrost/ostent/internal"
 	internal_models "github.com/ostrost/ostent/internal/models"
-	_ "github.com/ostrost/ostent/internal/plugins/outputs/ostent" // "ostent" output
-	_ "github.com/ostrost/ostent/system_ostent"                   // "system_ostent" input
 )
 
 var config = struct {
