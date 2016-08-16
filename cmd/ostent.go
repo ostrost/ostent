@@ -37,8 +37,6 @@ var (
 	persistentPostRuns runs // a list of funcs to be cobra.Command's PersistentPostRunE.
 	persistentPreRuns  runs // a list of funcs to be cobra.Command's PersistentPreRunEE.
 	preRuns            runs // a list of funcs to be cobra.Command's PreRunE.
-
-	cconfig *config.Config
 )
 
 type runs struct {
@@ -121,7 +119,7 @@ func init() {
 		return nil
 	})
 
-	cconfig = config.NewConfig()
+	cconfig := config.NewConfig() // &dummyConfig{}
 	preRuns.add(func() error { return loadConfigs(cconfig) })
 	var elisting ostent.ExportingListing
 
@@ -167,12 +165,13 @@ func init() {
 		return nil
 	})
 
+	// /*
 	ostent.AddBackground(func() {
 		if err := agent.Run(cconfig); err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-	})
+	}) // */
 }
 
 /*
@@ -210,9 +209,17 @@ func ParamsUsage(setf func(*pflag.FlagSet)) string {
 	return strings.Join(lines, "\n")
 }
 
+type dummyConfig struct{}
+
+func (_ *dummyConfig) LoadInterface(string, interface{}) error { return nil }
+
+type configer interface {
+	LoadInterface(string, interface{}) error
+}
+
 type diskInput struct{ IgnoreFs []string }
 
-func loadConfigs(cconfig *config.Config) error {
+func loadConfigs(cconfig configer) error {
 	/* if err := cconfig.LoadInterface("/internal/disk/config", struct {
 		Inputs []diskInput `toml:"inputs.disk"`
 	}{

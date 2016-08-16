@@ -592,7 +592,7 @@ func init() {
 
 	lastInfo.olds = map[string]oldFuncs{
 		/* if a key is commented out (or missing from predefined set),
-		   func Updates may fill data[key] with a ostent.Output.System*Copy* */
+		   func Updates may fill data[key] with a ostent.Output.Copy* */
 
 		"cpu":   {Reg1s.collectCPU, Reg1s.dataCPU},
 		"df":    {Reg1s.collectDF, Reg1s.dataDF},

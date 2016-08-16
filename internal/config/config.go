@@ -339,7 +339,7 @@ func (c *Config) LoadInterface(path string, in interface{}) error {
 	if err != nil {
 		return err
 	}
-	log.Printf("#%s TOML formatted:\n%s", path, text)
+	log.Printf("#%s.toml:\n%s", path, text)
 	tbl, err := parseContents(text)
 	if err != nil {
 		return err

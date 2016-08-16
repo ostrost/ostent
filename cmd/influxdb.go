@@ -3,7 +3,6 @@ package cmd
 import (
 	influxdb "github.com/vrischmann/go-metrics-influxdb"
 
-	"github.com/ostrost/ostent/internal/config"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/params"
 )
@@ -16,7 +15,7 @@ type Influxdb struct {
 	Database string
 }
 
-func InfluxRun(elisting *ostent.ExportingListing, cconfig *config.Config, iends params.InfluxEndpoints) error {
+func InfluxRun(elisting *ostent.ExportingListing, cconfig configer, iends params.InfluxEndpoints) error {
 	for _, value := range iends.Values {
 		if value.ServerAddr.String() != "" {
 			elisting.AddExporter("InfluxDB", value)
