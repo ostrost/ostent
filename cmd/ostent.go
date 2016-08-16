@@ -28,7 +28,9 @@ import (
 
 	// plugging inputs:
 	_ "github.com/influxdata/telegraf/plugins/inputs/system" // "{cpu,disk,mem,swap}" inputs
-	_ "github.com/ostrost/ostent/system_ostent"              // "{net,system}_ostent" inputs
+
+	_ "github.com/ostrost/ostent/procstat_ostent" // "procstat_ostent" input
+	_ "github.com/ostrost/ostent/system_ostent"   // "{net,system}_ostent" inputs
 )
 
 var (
@@ -236,11 +238,11 @@ func loadConfigs(cconfig *config.Config) error {
 			SystemOstent: struct{ Interval string }{"1s"},
 
 			// skipped fields are omitted from config
-			// CPU: &on,
-			// Disk: &diskInput{[]string{"tmpfs", "devtmpfs"}},
-			// Mem:  &on,
-			// NetOstent: &on,
-			//// ProcstatOstent:  &on,
+			// CPU:            &on,
+			// Disk:           &diskInput{[]string{"tmpfs", "devtmpfs"}},
+			// Mem:            &on,
+			// NetOstent:      &on,
+			// ProcstatOstent: &on,
 			// Swap:           &on,
 		}})
 }
@@ -249,12 +251,12 @@ type inputs struct {
 	SystemOstent struct{ Interval string }
 
 	// later fields are pointers with omitempty
-	CPU       *struct{}  `toml:",omitempty"`
-	Disk      *diskInput `toml:",omitempty"`
-	Mem       *struct{}  `toml:",omitempty"`
-	NetOstent *struct{}  `toml:",omitempty"`
-	//// ProcstatOstent  *struct{}  `toml:",omitempty"`
-	Swap *struct{} `toml:",omitempty"`
+	CPU            *struct{}  `toml:",omitempty"`
+	Disk           *diskInput `toml:",omitempty"`
+	Mem            *struct{}  `toml:",omitempty"`
+	NetOstent      *struct{}  `toml:",omitempty"`
+	ProcstatOstent *struct{}  `toml:",omitempty"`
+	Swap           *struct{}  `toml:",omitempty"`
 }
 
 type namedrop []string
