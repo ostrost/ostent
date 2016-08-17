@@ -2,6 +2,7 @@ package ostent
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,8 +11,6 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/julienschmidt/httprouter"
-
-	"github.com/ostrost/ostent/ostent/context"
 )
 
 func LogHandler(logRequests bool, h http.Handler) http.Handler {
@@ -39,20 +38,23 @@ const (
 func AddAssetPathContextFunc(path string) func(http.Handler) http.Handler {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			context.Write(r, CAssetPath, path) // was gorillaContext.Set(...)
+			*r = *r.WithContext(context.WithValue(r.Context(),
+				CAssetPath, path))
 			h.ServeHTTP(w, r)
 		})
 	}
 }
 
+func contextString(r *http.Request, c ContextID) (string, bool) {
+	v, ok := r.Context().Value(c).(string)
+	return v, ok
+}
+
 func ContextParams(r *http.Request) (httprouter.Params, error) {
-	pinterface := context.Read(r, CRouterParams) // was gorillaContext.Get(...)
-	if pinterface == nil {
-		return httprouter.Params{}, fmt.Errorf("CRouterParams is missing in meta request")
-	}
-	params, ok := pinterface.(httprouter.Params)
+	params, ok := r.Context().Value(CRouterParams).(httprouter.Params)
 	if !ok {
-		return httprouter.Params{}, fmt.Errorf("CRouterParams not of type httprouter.Params")
+		return httprouter.Params{}, fmt.Errorf(
+			"CRouterParams mistyped/missing in the context")
 	}
 	return params, nil
 }
@@ -69,7 +71,8 @@ func handle(h http.Handler) httprouter.Handle {
 func handleParamSetContext(h http.Handler) httprouter.Handle {
 	// make a httprouter.Handle from h addind httprouter.Params into context.
 	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-		context.Write(r, CRouterParams, p) // was gorillaContext.Set(...)
+		*r = *r.WithContext(context.WithValue(r.Context(),
+			CRouterParams, p))
 		h.ServeHTTP(w, r)
 	}
 }
@@ -82,7 +85,10 @@ func HandleThen(then func(http.Handler) http.Handler) func(http.HandlerFunc) htt
 // ParamsFunc wraps then(hf) into handle with context setting by handleParamSetContext.
 func ParamsFunc(then func(http.Handler) http.Handler) func(http.HandlerFunc) httprouter.Handle {
 	return func(hf http.HandlerFunc) httprouter.Handle {
-		return handleParamSetContext(then(hf))
+		if then != nil {
+			hf = then(hf).ServeHTTP
+		}
+		return handleParamSetContext(hf)
 	}
 }
 
@@ -116,14 +122,9 @@ func (sa ServeAssets) error(w http.ResponseWriter, err error) {
 
 // Serve does http.ServeContent with asset content and info.
 func (sa ServeAssets) Serve(w http.ResponseWriter, r *http.Request) {
-	p := context.Read(r, CAssetPath) // was gorillaContext.Get(...)
-	if p == nil {
-		sa.error(w, fmt.Errorf("ServeAssets.Serve must receive CAssetPath in context"))
-		return
-	}
-	path, ok := p.(string)
-	if !ok {
-		sa.error(w, fmt.Errorf("ServeAssets.Serve received non-string CAssetPath in context"))
+	path, ok := contextString(r, CAssetPath)
+	if !ok || path == "" {
+		sa.error(w, fmt.Errorf("CAssetPath mistyped/missing in the context"))
 		return
 	}
 	text, err := sa.ReadFunc(path)

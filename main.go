@@ -15,7 +15,6 @@ import (
 
 	"github.com/blang/semver" // alt semver: "github.com/Masterminds/semver"
 	"github.com/facebookgo/grace/gracehttp"
-	gorillaContext "github.com/gorilla/context"
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
 	"github.com/spf13/cobra"
@@ -27,13 +26,6 @@ import (
 )
 
 func run(*cobra.Command, []string) error {
-	go func() {
-		for interval := 10 * time.Minute; ; time.Sleep(interval) {
-			if count := gorillaContext.Purge(int(interval.Seconds())); count != 0 {
-				log.Printf("Gorilla context purged (non-zero) %d entries\n", count)
-			}
-		}
-	}()
 	if !noUpgradeCheck && currentVersion != nil {
 		go untilUpgradeCheck(currentVersion)
 	}
@@ -110,13 +102,12 @@ func serve(laddr string) error {
 			p = "/" + ostent.VERSION + "/" + path // the Version prefix
 		}
 		routes[[2]string{p, "GET HEAD"}] = ostent.HandleThen(alice.New(
-			gorillaContext.ClearHandler,
 			ostent.AddAssetPathContextFunc(path),
 		).Then)(serve4.Serve)
 	}
 	if !taggedBin { // pprof in dev
 		routes[[2]string{"/debug/pprof/:name", "GET HEAD POST"}] =
-			ostent.ParamsFunc(gorillaContext.ClearHandler)(pprofHandle)
+			ostent.ParamsFunc(nil)(pprofHandle)
 	}
 
 	r := httprouter.New()
