@@ -11,7 +11,7 @@ if ! eq "${TRAVIS:-}" true ; then
     set -x #while debugging
 fi
 
-GO_BOOTSTRAPVER=go1.5.4
+GO_BOOTSTRAPVER=go1.6.3
 : "${GIT_TOPLEVEL:=$(git rev-parse --show-toplevel)}"
 : "${DPL_DIR:=$GIT_TOPLEVEL/deploy}"
 
@@ -30,7 +30,7 @@ Gmake() {
 # Following functions of this script is expected to be executed sequentially.
 # The split is so that each function must end with one timely action.
 
-: "${GO_VERSION:=1.6.3}"
+: "${GO_VERSION:=1.7}"
 : "${GIMME_VERSION:=1.0.0}"
 : "${GIMME_PATH:=$HOME/bin/gimme}"
 : "${GIMME_ENV_PREFIX:=$HOME/.gimme/envs}"

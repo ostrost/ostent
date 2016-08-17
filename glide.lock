@@ -1,5 +1,5 @@
 hash: 01d15da45402a18ce56c2fee66c2cd1e3abda9266abd60a60b274588391f5543
-updated: 2016-08-10T09:40:41.409277132Z
+updated: 2016-08-17T13:06:33.404328313Z
 imports:
 - name: github.com/blang/semver
   version: 60ec3488bfea7cca02b021d106d9911120d25fe9
@@ -39,11 +39,11 @@ imports:
   subpackages:
   - query
 - name: github.com/gorilla/context
-  version: aed02d124ae4a0e94fea4541c8effd05bf0c8296
+  version: 01ef6ff48fdcdcb29ae84f90f10f33dac24845a0
 - name: github.com/gorilla/handlers
-  version: 801d6e3b008914ee888c9ab9b1b379b9a56fbf44
+  version: a5775781a543af3c6b9f5baf10995e4d14168950
 - name: github.com/gorilla/schema
-  version: d68043406bea8bd90f7b38e9c54fab18d903ea25
+  version: a30fc2876ba631a279fc9207eb889f33f6c52d9f
 - name: github.com/gorilla/websocket
   version: a69d25be2fe2923a97c2af6849b2f52426f68fc0
 - name: github.com/inconshreveable/mousetrap
@@ -51,8 +51,8 @@ imports:
 - name: github.com/influxdata/influxdb
   version: e094138084855d444195b252314dfee9eae34cab
   subpackages:
-  - client
   - client/v2
+  - client
   - models
   - pkg/escape
 - name: github.com/influxdata/telegraf
@@ -83,7 +83,7 @@ imports:
   - .
   - go-bindata
 - name: github.com/julienschmidt/httprouter
-  version: fb79d6a91d3e4a9ecb6d945b218d78fc0d9b1939
+  version: d8ff598a019f2c7bad0980917a588193cf26666e
 - name: github.com/justinas/alice
   version: 43e429cd03e6faac34faf94153cfb7a5adb6b928
 - name: github.com/mihasya/go-metrics-librato
@@ -113,23 +113,23 @@ imports:
   - cpu
   - load
   - mem
-  - internal/common
   - process
+  - internal/common
 - name: github.com/shirou/w32
   version: 3c9377fc6748f222729a8270fe2775d149a249ad
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 - name: github.com/Sirupsen/logrus
-  version: a283a10442df8dc09befd873fab202bf8a253d6a
+  version: 08a8a7c27e3d058a8989316a850daad1c10bf4ab
 - name: github.com/spf13/cobra
   version: 7c674d9e72017ed25f6d2b5e497a1368086b6a6f
   subpackages:
   - .
   - doc
 - name: github.com/spf13/pflag
-  version: f676131e2660dc8cd88de99f7486d34aa8172635
+  version: 4f9190456aed1c2113ca51ea9b89219747458dc1
 - name: github.com/StackExchange/wmi
-  version: 771c736650b4aabf956d9103ba5bf439414f79f9
+  version: e54cbda6595d7293a7a468ccf9525f6bc8887f99
 - name: github.com/stretchr/objx
   version: cbeaeb16a013161a98496fad62933b1d21786672
 - name: github.com/stretchr/testify
@@ -140,7 +140,7 @@ imports:
 - name: github.com/vrischmann/go-metrics-influxdb
   version: be4fc87f4ea19631fadd5f80e4fb8ea0353348a6
 - name: golang.org/x/net
-  version: 075e191f18186a8ff2becaf64478e30f4545cdad
+  version: 07b51741c1d6423d4a6abab1c49940ec09cb1aaf
   subpackages:
   - context
 - name: golang.org/x/sys
