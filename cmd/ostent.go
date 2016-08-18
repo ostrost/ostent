@@ -20,17 +20,17 @@ import (
 	"github.com/ostrost/ostent/params"
 
 	// plugging outputs:
-	_ "github.com/influxdata/telegraf/plugins/outputs/graphite"
-	_ "github.com/influxdata/telegraf/plugins/outputs/influxdb"
-	_ "github.com/influxdata/telegraf/plugins/outputs/librato"
+	//// _ "github.com/influxdata/telegraf/plugins/outputs/graphite"
+	//// _ "github.com/influxdata/telegraf/plugins/outputs/influxdb"
+	//// _ "github.com/influxdata/telegraf/plugins/outputs/librato"
 
 	_ "github.com/ostrost/ostent/internal/plugins/outputs/ostent" // "ostent" output
 
 	// plugging inputs:
-	_ "github.com/influxdata/telegraf/plugins/inputs/system" // "{cpu,disk,mem,swap}" inputs
+	//// _ "github.com/influxdata/telegraf/plugins/inputs/system" // "{cpu,disk,mem,swap}" inputs
 
-	_ "github.com/ostrost/ostent/procstat_ostent" // "procstat_ostent" input
-	_ "github.com/ostrost/ostent/system_ostent"   // "{net,system}_ostent" inputs
+	//// _ "github.com/ostrost/ostent/procstat_ostent" // "procstat_ostent" input
+	_ "github.com/ostrost/ostent/system_ostent" // "{net,system}_ostent" inputs
 )
 
 var (
@@ -119,7 +119,7 @@ func init() {
 		return nil
 	})
 
-	cconfig := config.NewConfig() // &dummyConfig{}
+	cconfig := &partialConfig{config.NewConfig()} // config.NewConfig()
 	preRuns.add(func() error { return loadConfigs(cconfig) })
 	var elisting ostent.ExportingListing
 
@@ -167,7 +167,7 @@ func init() {
 
 	// /*
 	ostent.AddBackground(func() {
-		if err := agent.Run(cconfig); err != nil {
+		if err := agent.Run(cconfig.Config); err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
@@ -209,9 +209,14 @@ func ParamsUsage(setf func(*pflag.FlagSet)) string {
 	return strings.Join(lines, "\n")
 }
 
-type dummyConfig struct{}
+type partialConfig struct{ *config.Config }
 
-func (_ *dummyConfig) LoadInterface(string, interface{}) error { return nil }
+func (pc *partialConfig) LoadInterface(path string, in interface{}) error {
+	if path == "/internal/config" {
+		return pc.Config.LoadInterface(path, in)
+	}
+	return nil
+}
 
 type configer interface {
 	LoadInterface(string, interface{}) error
