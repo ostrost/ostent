@@ -11,7 +11,7 @@ if ! eq "${TRAVIS:-}" true ; then
     set -x #while debugging
 fi
 
-GO_BOOTSTRAPVER=go1.6.3
+GO_BOOTSTRAPVER=1.6.3
 : "${GIT_TOPLEVEL:=$(git rev-parse --show-toplevel)}"
 : "${DPL_DIR:=$GIT_TOPLEVEL/deploy}"
 
