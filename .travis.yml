@@ -8,6 +8,7 @@ env:
 install:
   - source ./tools/sh/env.sh install_1
   - source ./tools/sh/env.sh install_2 $TRAVIS_REPO_SLUG
+  - source ./tools/sh/env.sh install_3
   - source ./tools/sh/env.sh Gmake init
 script:
   - source ./tools/sh/env.sh Gmake --always-make test all

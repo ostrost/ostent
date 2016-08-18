@@ -32,6 +32,8 @@ Gmake() {
 
 : "${GO_VERSION:=1.7}"
 : "${GIMME_VERSION:=1.0.0}"
+: "${GLIDE_VERSION:=0.11.1}"
+
 : "${GIMME_PATH:=$HOME/bin/gimme}"
 : "${GIMME_ENV_PREFIX:=$HOME/.gimme/envs}"
 : "${GIMME_VERSION_PREFIX:=$HOME/.gimme/versions}"
@@ -120,6 +122,31 @@ install_2() {
 
     go version
     go env
+}
+
+install_3() {
+    "$0" _install_glide
+    export PATH=~/bin:$PATH
+    which glide
+}
+
+_install_glide() {
+    local home glide
+    home=$(eval echo ~)
+    glide="$home"/bin/glide
+    mkdir -p "$(dirname "$glide")"
+    export GOPATH="$home"/glidegopath
+    . "$GIMME_ENV_PREFIX/go$GO_VERSION.env"; go env >&2 #source here & verbose to &2
+    local wd="$GOPATH"/src/github.com/Masterminds
+    mkdir -p "$wd"
+    cd "$wd"
+    git clone https://github.com/Masterminds/glide.git
+    cd glide
+    git checkout tags/v"$GLIDE_VERSION"
+    Gmake build
+    install -m 755 glide "$glide"
+    cd
+    rm -rf "$GOPATH"
 }
 
 cibuild() {
