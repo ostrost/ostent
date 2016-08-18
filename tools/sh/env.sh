@@ -185,8 +185,7 @@ cideploy() { # Gmake deploy
         "$release" upload \
                    --tag "$tag" \
                    --file "$filename" \
-                   --name "TESTING-$(basename "$filename")"
-        # The "TESTING-" prefix until we done testing this.
+                   --name "$(basename "$filename")"
     done
     cleanup_deploy
 }
@@ -288,8 +287,8 @@ before_deploy_fptar() {
 
         # umask 022 # MIND UMASK
         install -m 755 -d . ./$prefix/bin
-        install -m 755 -p $binary ./$prefix/bin/ostent
-        find . -type d -print0 | xargs -0 touch -r $binary
+        install -m 755 -p "$binary" ./$prefix/bin/ostent
+        find . -type d -print0 | xargs -0 touch -r "$binary"
 
         local ownerargs=--owner=0\ --group=0
         if freebsd "$uname" ; then
