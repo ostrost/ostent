@@ -8,7 +8,7 @@
     "babel": "^6.5.2",
     "babel-cli": "^6.11.4",
     "babel-core": "^6.13.2",
-    "babel-loader": "^6.2.4",
+    "babel-loader": "^6.2.5",
     "babel-plugin-transform-react-constant-elements": "^6.9.1",
     "babel-plugin-transform-react-inline-elements": "^6.8.0",
     "babel-plugin-transform-react-jsx": "^6.8.0",
@@ -32,8 +32,8 @@
     "sass-loader": "^3.2.3",
     "style-loader": "^0.13.1",
     "transform-loader": "^0.2.3",
-    "uglify-js": "^2.7.2",
-    "webpack": "^1.13.1",
+    "uglify-js": "^2.7.3",
+    "webpack": "^1.13.2",
     "webpack-sources": "^0.1.2"
   }
 }
