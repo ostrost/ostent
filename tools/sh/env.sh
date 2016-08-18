@@ -122,7 +122,7 @@ install_2() {
 }
 
 install_3() {
-    _install_glide
+    (_install_glide)
     export PATH=~/bin:$PATH
     which glide
 
@@ -145,7 +145,7 @@ _install_glide() {
     git checkout tags/v"$GLIDE_VERSION"
     Gmake build
     install -m 755 glide "$glide"
-    cd
+    cd -
     rm -rf "$GOPATH"
     unset GOPATH
 }
