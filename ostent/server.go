@@ -150,4 +150,4 @@ func (sa ServeAssets) Serve(w http.ResponseWriter, r *http.Request) {
 // Unused in non-bin mode.
 // Compared with in github.com/ostrost/ostent/main.go
 // MUST BE semver compatible: no two digits ("X.Y") allowed.
-const VERSION = "0.6.1"
+const VERSION = "0.6.2"
