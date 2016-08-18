@@ -117,17 +117,17 @@ install_2() {
     mv ~/build ~/gopath/src/github.com # ~/build is cwd
     cd ~/gopath/src/github.com/"$REPOSLUG" # new cwd
 
-    export GOPATH=~/gopath # NB
-    export PATH=~/gopath/bin:$PATH
-
     go version
     go env
 }
 
 install_3() {
-    "$0" _install_glide
+    _install_glide
     export PATH=~/bin:$PATH
     which glide
+
+    export GOPATH=~/gopath # NB
+    export PATH=~/gopath/bin:$PATH
 }
 
 _install_glide() {
@@ -147,6 +147,7 @@ _install_glide() {
     install -m 755 glide "$glide"
     cd
     rm -rf "$GOPATH"
+    unset GOPATH
 }
 
 cibuild() {
