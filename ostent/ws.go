@@ -68,7 +68,8 @@ func CollectLoop() {
 }
 
 type conn struct {
-	Conn *websocket.Conn
+	logger logger
+	Conn   *websocket.Conn
 
 	initialRequest *http.Request
 	logRequests    bool
@@ -214,11 +215,9 @@ func (c *conn) Process(rd *received) bool {
 	defer func() {
 		c.mutex.Unlock()
 		if e := recover(); e != nil {
-			if _, ok := e.(websocket.CloseError); ok {
-				logru.Errorf("websocket.CloseError (recovered panic; from Proccess) %+v\n", e)
-			} else {
-				logru.Errorf("websocket error (recovered panic; sent to client) %+v\n", e)
-				c.writeError(fmt.Errorf("%+v", e))
+			c.logger.Println(e)
+			if _, ok := e.(websocket.CloseError); !ok {
+				c.writeError(fmt.Errorf("%v", e))
 			}
 		}
 	}()
@@ -274,7 +273,8 @@ func (sw ServeWS) IndexWS(w http.ResponseWriter, req *http.Request) {
 	}
 
 	c := &conn{
-		Conn: wsconn,
+		logger: sw.logger,
+		Conn:   wsconn,
 
 		initialRequest: req,
 		logRequests:    sw.logRequests,

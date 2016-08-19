@@ -105,14 +105,19 @@ func ParamsFunc(then func(http.Handler) http.Handler) func(http.HandlerFunc) htt
 	}
 }
 
+type logger interface {
+	Println(...interface{})
+}
+
 type ServeAssets struct {
+	Logger         logger
 	ReadFunc       func(string) ([]byte, error)
 	InfoFunc       func(string) (os.FileInfo, error)
 	AltModTimeFunc func() time.Time // may be nil
 }
 
 func (sa ServeAssets) error(w http.ResponseWriter, err error) {
-	logru.Println(err)
+	sa.Logger.Println(err)
 	http.Error(w, err.Error(), http.StatusInternalServerError)
 }
 

@@ -48,6 +48,7 @@ var (
 
 	taggedBin bool // whether the build features bin tag
 
+	logru          *logrus.Logger
 	currentVersion *semver.Version // parsed from cmd.OstentVersion at init time
 )
 
@@ -60,9 +61,13 @@ func init() {
 		"Off periodic upgrade check")
 	ostent.AddBackground(ostent.CollectLoop)
 
+	logru := logrus.New() // into os.Stderr
+	logru.Formatter = &logrus.TextFormatter{FullTimestamp: true}
+	// , TimestampFormat: "02/Jan/2006:15:04:05 -0700",
+
 	var err error
 	if currentVersion, err = newSemver(cmd.OstentVersion); err != nil {
-		log.Printf("Current semver parse error: %s\n", err)
+		logru.Printf("Current semver parse error: %s\n", err)
 	}
 }
 
@@ -80,10 +85,6 @@ func newSemver(s string) (*semver.Version, error) {
 
 // serve constructs a *http.Server to (gracefully) Serve. Routes are set here.
 func serve(laddr string) error {
-	logru := logrus.New() // into os.Stderr
-	logru.Formatter = &logrus.TextFormatter{FullTimestamp: true}
-	// , TimestampFormat: "02/Jan/2006:15:04:05 -0700",
-
 	distrib, err := ostent.Distrib()
 	if err != nil {
 		logru.Printf("Warning: detecting distrib: %s\n", err)
@@ -91,13 +92,14 @@ func serve(laddr string) error {
 
 	var (
 		serve1 = ostent.NewServeSSE(logRequests, cmd.DelayFlags)
-		serve2 = ostent.NewServeWS(serve1)
+		serve2 = ostent.NewServeWS(serve1, logru)
 		serve3 = ostent.NewServeIndex(serve2, templates.IndexTemplate, ostent.StaticData{
 			TAGGEDbin:     taggedBin,
 			Distrib:       distrib,
 			OstentVersion: cmd.OstentVersion,
 		})
 		serve4 = ostent.ServeAssets{
+			Logger:         logru,
 			ReadFunc:       assets.Asset,
 			InfoFunc:       assets.AssetInfo,
 			AltModTimeFunc: assets.AssetAltModTimeFunc,
@@ -160,22 +162,22 @@ func untilUpgradeCheck(cv *semver.Version) {
 func upgradeCheck(cv *semver.Version) bool {
 	newVersion, err := newerVersion()
 	if err != nil {
-		log.Printf("Upgrade check error: %s\n", err)
+		logru.Printf("Upgrade check error: %s\n", err)
 		return false
 	}
 	if newVersion == "" {
-		log.Printf("Upgrade check: version is empty\n")
+		logru.Printf("Upgrade check: version is empty\n")
 		return false
 	}
 	nv, err := newSemver(newVersion)
 	if err != nil {
-		log.Printf("Semver parse error: %s\n", err)
+		logru.Printf("Semver parse error: %s\n", err)
 		return false
 	}
 	if !nv.GT(*cv) {
 		return false
 	}
-	log.Printf("Upgrade check: %s release available\n", newVersion)
+	logru.Printf("Upgrade check: %s release available\n", newVersion)
 	ostent.OstentUpgrade.Set(newVersion)
 	return true
 }

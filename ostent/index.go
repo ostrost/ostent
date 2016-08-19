@@ -11,7 +11,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Sirupsen/logrus"
 	metrics "github.com/rcrowley/go-metrics"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
@@ -560,17 +559,12 @@ func (ui *UpgradeInfo) Get() string {
 
 var (
 	lastInfo      last
-	logru         *logrus.Logger
 	news          map[string]renderFunc
 	OstentUpgrade = new(UpgradeInfo)
 	Reg1s         *IndexRegistry
 )
 
 func init() {
-	logru = logrus.New() // into os.Stderr
-	logru.Formatter = &logrus.TextFormatter{FullTimestamp: true}
-	// , TimestampFormat: "02/Jan/2006:15:04:05 -0700",
-
 	reg := metrics.NewRegistry()
 	Reg1s = &IndexRegistry{
 		Registry: reg,
@@ -652,6 +646,7 @@ type ServeSSE struct {
 
 type ServeWS struct {
 	ServeSSE
+	logger logger
 }
 
 type ServeIndex struct {
@@ -670,7 +665,7 @@ func NewServeSSE(logRequests bool, dbounds flags.DelayBounds) ServeSSE {
 	return ServeSSE{logRequests: logRequests, DelayBounds: dbounds}
 }
 
-func NewServeWS(se ServeSSE) ServeWS { return ServeWS{ServeSSE: se} }
+func NewServeWS(se ServeSSE, lg logger) ServeWS { return ServeWS{ServeSSE: se, logger: lg} }
 
 func NewServeIndex(sw ServeWS, template *templateutil.LazyTemplate, sd StaticData) ServeIndex {
 	return ServeIndex{ServeWS: sw, StaticData: sd, IndexTemplate: template}
