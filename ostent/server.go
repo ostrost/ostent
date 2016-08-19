@@ -28,10 +28,10 @@ func ServerHandler(logRequests bool, h http.Handler) http.Handler {
 	return LogHandler(logRequests, h)
 }
 
-type ContextID int
+type contextID int
 
 const (
-	CAssetPath ContextID = iota
+	CAssetPath contextID = iota
 	CRouterParams
 )
 
@@ -45,18 +45,31 @@ func AddAssetPathContextFunc(path string) func(http.Handler) http.Handler {
 	}
 }
 
-func contextString(r *http.Request, c ContextID) (string, bool) {
+func contextString(r *http.Request, c contextID) (string, bool) {
 	v, ok := r.Context().Value(c).(string)
 	return v, ok
 }
 
-func ContextParams(r *http.Request) (httprouter.Params, error) {
+func contextParams(r *http.Request) (httprouter.Params, error) {
 	params, ok := r.Context().Value(CRouterParams).(httprouter.Params)
 	if !ok {
 		return httprouter.Params{}, fmt.Errorf(
 			"CRouterParams mistyped/missing in the context")
 	}
 	return params, nil
+}
+
+// ContextParam is to retrieve pname param from context params.
+func ContextParam(r *http.Request, pname string) (string, error) {
+	params, err := contextParams(r)
+	if err != nil {
+		return "", err
+	}
+	pvalue := params.ByName(pname)
+	if pvalue == "" {
+		return "", fmt.Errorf("%q param is empty", pname)
+	}
+	return pvalue, nil
 }
 
 // HandleFunc wraps hf into handle.
@@ -90,23 +103,6 @@ func ParamsFunc(then func(http.Handler) http.Handler) func(http.HandlerFunc) htt
 		}
 		return handleParamSetContext(hf)
 	}
-}
-
-// TimeInfo is for AssetInfoFunc: a reduced os.FileInfo.
-type TimeInfo interface {
-	ModTime() time.Time
-}
-
-// AssetInfoFunc wraps bindata's AssetInfo func. Returns typecasted infofunc.
-func AssetInfoFunc(infofunc func(string) (os.FileInfo, error)) func(string) (TimeInfo, error) {
-	return func(name string) (TimeInfo, error) {
-		return infofunc(name)
-	}
-}
-
-// AssetReadFunc wraps bindata's Asset func. Returns readfunc itself.
-func AssetReadFunc(readfunc func(string) ([]byte, error)) func(string) ([]byte, error) {
-	return readfunc
 }
 
 type ServeAssets struct {

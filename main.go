@@ -210,12 +210,11 @@ func newerVersion() (string, error) {
 }
 
 func pprofHandle(w http.ResponseWriter, r *http.Request) {
-	params, err := ostent.ContextParams(r)
+	name, err := ostent.ContextParam(r, "name")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		return
 	}
-	name := params.ByName("name")
 	var handler func(http.ResponseWriter, *http.Request)
 	switch name {
 	case "cmdline":
