@@ -12,7 +12,6 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/share/assets"
 )
 
@@ -36,7 +35,7 @@ var ExtractAssetsCmd = &cobra.Command{
 func init() {
 	OstentCmd.AddCommand(ExtractAssetsCmd)
 	ExtractAssetsCmd.Flags().StringVarP(&ExtractDestDir, "destdir", "d",
-		ostent.VERSION /* default is this */, "Destrination directory for extraction")
+		OstentVersion /* default is this */, "Destrination directory for extraction")
 }
 
 func ExtractAssetsPreRunE(*cobra.Command, []string) error {
