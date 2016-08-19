@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/blang/semver" // alt semver: "github.com/Masterminds/semver"
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/julienschmidt/httprouter"
@@ -47,7 +48,7 @@ var (
 
 	taggedBin bool // whether the build features bin tag
 
-	currentVersion *semver.Version // parsed from ostent.VERSION at init time
+	currentVersion *semver.Version // parsed from cmd.OstentVersion at init time
 )
 
 func init() {
@@ -60,7 +61,7 @@ func init() {
 	ostent.AddBackground(ostent.CollectLoop)
 
 	var err error
-	if currentVersion, err = newSemver(ostent.VERSION); err != nil {
+	if currentVersion, err = newSemver(cmd.OstentVersion); err != nil {
 		log.Printf("Current semver parse error: %s\n", err)
 	}
 }
@@ -79,10 +80,23 @@ func newSemver(s string) (*semver.Version, error) {
 
 // serve constructs a *http.Server to (gracefully) Serve. Routes are set here.
 func serve(laddr string) error {
+	logru := logrus.New() // into os.Stderr
+	logru.Formatter = &logrus.TextFormatter{FullTimestamp: true}
+	// , TimestampFormat: "02/Jan/2006:15:04:05 -0700",
+
+	distrib, err := ostent.Distrib()
+	if err != nil {
+		logru.Printf("Warning: detecting distrib: %s\n", err)
+	}
+
 	var (
 		serve1 = ostent.NewServeSSE(logRequests, cmd.DelayFlags)
 		serve2 = ostent.NewServeWS(serve1)
-		serve3 = ostent.NewServeIndex(serve2, taggedBin, templates.IndexTemplate)
+		serve3 = ostent.NewServeIndex(serve2, templates.IndexTemplate, ostent.StaticData{
+			TAGGEDbin:     taggedBin,
+			Distrib:       distrib,
+			OstentVersion: cmd.OstentVersion,
+		})
 		serve4 = ostent.ServeAssets{
 			ReadFunc:       assets.Asset,
 			InfoFunc:       assets.AssetInfo,
@@ -99,7 +113,7 @@ func serve(laddr string) error {
 	for _, path := range assets.AssetNames() {
 		p := "/" + path
 		if path != "favicon.ico" && path != "robots.txt" {
-			p = "/" + ostent.VERSION + "/" + path // the Version prefix
+			p = "/" + cmd.OstentVersion + "/" + path // the Version prefix
 		}
 		routes[[2]string{p, "GET HEAD"}] = ostent.HandleThen(alice.New(
 			ostent.AddAssetPathContextFunc(path),

@@ -5,8 +5,6 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-
-	"github.com/ostrost/ostent/ostent"
 )
 
 // VersionFlag is true when displaying version.
@@ -25,7 +23,7 @@ func init() {
 }
 
 func OstentVersionRunE(*cobra.Command, []string) error {
-	log.New(os.Stdout, "", 0).Printf("Ostent version %+v", ostent.VERSION)
+	log.New(os.Stdout, "", 0).Printf("Ostent version %+v", OstentVersion)
 	return nil
 }
 
@@ -39,3 +37,7 @@ func OstentVersionRun() error {
 	os.Exit(0) // NB
 	return nil
 }
+
+// OstentVersion of the latest known release. Compared to bin mode.
+// MUST BE semver compatible: no two digits ("X.Y") allowed.
+const OstentVersion = "0.6.2"

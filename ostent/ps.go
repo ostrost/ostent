@@ -22,7 +22,8 @@ TODO Check for platform (&version?) naming
     - defaults read /System/Library/CoreServices/SystemVersion ProductVersion
 */
 
-func psDistrib() (string, error) {
+// Distrib is to return distribution identifier string with version.
+func Distrib() (string, error) {
 	platform, _, version, err := host.PlatformInformation()
 	if err != nil {
 		return "", err

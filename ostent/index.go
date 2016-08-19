@@ -559,7 +559,6 @@ func (ui *UpgradeInfo) Get() string {
 }
 
 var (
-	distrib       string // distribution + release version
 	lastInfo      last
 	logru         *logrus.Logger
 	news          map[string]renderFunc
@@ -571,11 +570,6 @@ func init() {
 	logru = logrus.New() // into os.Stderr
 	logru.Formatter = &logrus.TextFormatter{FullTimestamp: true}
 	// , TimestampFormat: "02/Jan/2006:15:04:05 -0700",
-
-	var err error
-	if distrib, err = psDistrib(); err != nil {
-		logru.Warnf("detecting distribution: %s\n", err)
-	}
 
 	reg := metrics.NewRegistry()
 	Reg1s = &IndexRegistry{
@@ -662,8 +656,14 @@ type ServeWS struct {
 
 type ServeIndex struct {
 	ServeWS
-	TaggedBin     bool
+	StaticData
 	IndexTemplate *templateutil.LazyTemplate
+}
+
+type StaticData struct {
+	TAGGEDbin     bool
+	Distrib       string
+	OstentVersion string
 }
 
 func NewServeSSE(logRequests bool, dbounds flags.DelayBounds) ServeSSE {
@@ -672,8 +672,8 @@ func NewServeSSE(logRequests bool, dbounds flags.DelayBounds) ServeSSE {
 
 func NewServeWS(se ServeSSE) ServeWS { return ServeWS{ServeSSE: se} }
 
-func NewServeIndex(sw ServeWS, taggedbin bool, template *templateutil.LazyTemplate) ServeIndex {
-	return ServeIndex{ServeWS: sw, TaggedBin: taggedbin, IndexTemplate: template}
+func NewServeIndex(sw ServeWS, template *templateutil.LazyTemplate, sd StaticData) ServeIndex {
+	return ServeIndex{ServeWS: sw, StaticData: sd, IndexTemplate: template}
 }
 
 // Index renders index page.
@@ -689,16 +689,12 @@ func (si ServeIndex) Index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	si.IndexTemplate.Apply(w, struct {
-		TAGGEDbin     bool
-		Distrib       string
-		OstentVersion string
+		StaticData
 		OstentUpgrade string
 		Exporting     ExportingList
 		Data          IndexData
 	}{
-		TAGGEDbin:     si.TaggedBin,
-		Distrib:       distrib,
-		OstentVersion: VERSION, // from ./server.go
+		StaticData:    si.StaticData,
 		OstentUpgrade: OstentUpgrade.Get(),
 		Exporting:     Exporting, // from ./ws.go
 		Data:          data,
