@@ -8,29 +8,11 @@ package ostent
 import "C"
 
 import (
-	"os/exec"
 	"path/filepath"
-	"strings"
 	"unsafe"
 
 	sigar "github.com/ostrost/gosigar"
 )
-
-// Distrib returns system distribution and version string.
-func Distrib() (string, error) {
-	/* various cli to show the mac version
-	sw_vers
-	sw_vers -productVersion
-	system_profiler SPSoftwareDataType
-	defaults read loginwindow SystemVersionStampAsString
-	defaults read /System/Library/CoreServices/SystemVersion ProductVersion
-	*/
-	std, err := exec.Command("sw_vers", "-productVersion").CombinedOutput()
-	if err != nil {
-		return "", err
-	}
-	return "Mac OS X " + strings.TrimRight(string(std), "\n\t "), nil
-}
 
 // ProcName returns argv[0].
 // pbiComm originating from ProcState may be chopped, in which case

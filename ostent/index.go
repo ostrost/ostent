@@ -573,7 +573,7 @@ func init() {
 	// , TimestampFormat: "02/Jan/2006:15:04:05 -0700",
 
 	var err error
-	if distrib, err = Distrib(); err != nil {
+	if distrib, err = psDistrib(); err != nil {
 		logru.Warnf("detecting distribution: %s\n", err)
 	}
 
