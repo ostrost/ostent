@@ -27,8 +27,10 @@ import (
 )
 
 func run(*cobra.Command, []string) error {
-	if !noUpgradeCheck && currentVersion != nil {
-		go untilUpgradeCheck(currentVersion)
+	if cv, err := newSemver(cmd.OstentVersion); err != nil {
+		logru.Printf("Current semver parse error: %s\n", err)
+	} else if !noUpgradeCheck && cv != nil {
+		go untilUpgradeCheck(cv)
 	}
 	ostent.RunBackground()
 	templates.InitTemplates()
@@ -43,32 +45,26 @@ func main() {
 }
 
 var (
-	noUpgradeCheck bool // flag value
-	logRequests    bool // flag value
+	taggedBin = assets.AssetAltModTimeFunc != nil // whether the build features bin tag
+	logru     = newLogger()
 
-	taggedBin bool // whether the build features bin tag
-
-	logru          *logrus.Logger
-	currentVersion *semver.Version // parsed from cmd.OstentVersion at init time
+	// flags
+	noUpgradeCheck, logRequests bool
 )
 
-func init() {
-	taggedBin = assets.AssetAltModTimeFunc != nil
+func newLogger() *logrus.Logger {
+	lr := logrus.New() // into os.Stderr
+	lr.Formatter = &logrus.TextFormatter{FullTimestamp: true}
+	// , TimestampFormat: "02/Jan/2006:15:04:05 -0700",
+	return lr
+}
 
+func init() {
 	cmd.OstentCmd.Flags().BoolVar(&logRequests, "log-requests", !taggedBin,
 		"Whether to log webserver requests")
 	cmd.OstentCmd.Flags().BoolVar(&noUpgradeCheck, "noupgradecheck", false,
 		"Off periodic upgrade check")
 	ostent.AddBackground(ostent.CollectLoop)
-
-	logru := logrus.New() // into os.Stderr
-	logru.Formatter = &logrus.TextFormatter{FullTimestamp: true}
-	// , TimestampFormat: "02/Jan/2006:15:04:05 -0700",
-
-	var err error
-	if currentVersion, err = newSemver(cmd.OstentVersion); err != nil {
-		logru.Printf("Current semver parse error: %s\n", err)
-	}
 }
 
 func newSemver(s string) (*semver.Version, error) {
