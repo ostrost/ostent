@@ -14,23 +14,24 @@ import (
 	// "github.com/spf13/viper"
 
 	"github.com/ostrost/ostent/flags"
+	"github.com/ostrost/ostent/internal"
 	"github.com/ostrost/ostent/internal/agent"
 	"github.com/ostrost/ostent/internal/config"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/params"
 
 	// plugging outputs:
-	//// _ "github.com/influxdata/telegraf/plugins/outputs/graphite"
-	//// _ "github.com/influxdata/telegraf/plugins/outputs/influxdb"
-	//// _ "github.com/influxdata/telegraf/plugins/outputs/librato"
+	_ "github.com/influxdata/telegraf/plugins/outputs/graphite"
+	_ "github.com/influxdata/telegraf/plugins/outputs/influxdb"
+	_ "github.com/influxdata/telegraf/plugins/outputs/librato"
 
 	_ "github.com/ostrost/ostent/internal/plugins/outputs/ostent" // "ostent" output
 
 	// plugging inputs:
-	//// _ "github.com/influxdata/telegraf/plugins/inputs/system" // "{cpu,disk,mem,swap}" inputs
+	_ "github.com/influxdata/telegraf/plugins/inputs/system" // "{cpu,disk,mem,swap}" inputs
 
-	//// _ "github.com/ostrost/ostent/procstat_ostent" // "procstat_ostent" input
-	_ "github.com/ostrost/ostent/system_ostent" // "{net,system}_ostent" inputs
+	_ "github.com/ostrost/ostent/procstat_ostent" // "procstat_ostent" input
+	_ "github.com/ostrost/ostent/system_ostent"   // "{net,system}_ostent" inputs
 )
 
 var (
@@ -62,6 +63,7 @@ func (rs *runs) runE(*cobra.Command, []string) error {
 }
 
 var (
+	cconfig = config.NewConfig()
 	// DelayFlags sets min and max for any delay.
 	DelayFlags = flags.DelayBounds{
 		Max: flags.Delay{Duration: 10 * time.Minute},
@@ -111,6 +113,18 @@ func init() {
 	OstentCmd.Flags().VarP(&OstentBind, "bind", "b", "Bind `address`")
 	OstentCmd.Flags().Var(&DelayFlags.Max, "max-delay", "Maximum for display `delay`")
 	OstentCmd.Flags().VarP(&DelayFlags.Min, "min-delay", "d", "Collection and display minimum `delay`")
+	/* TODO
+	   - remove `*d` parameters
+	     - all corresponding inputs have interval input config values
+	     - MAYBE add flags for these
+	   - remove `--max-delay` flag as there won't be `*d` params any more
+	   - the `-d` aka `--min-delay` is to be replaced by `--interval` which maps to interval agent config value
+	*/
+
+	oneSecond := internal.Duration{time.Second}
+	// TODO Not to change these and go with defaults: 10s/10s
+	cconfig.Agent.Interval = oneSecond
+	cconfig.Agent.FlushInterval = oneSecond
 
 	preRuns.add(func() error {
 		if DelayFlags.Max.Duration < DelayFlags.Min.Duration {
@@ -119,7 +133,6 @@ func init() {
 		return nil
 	})
 
-	cconfig := &partialConfig{config.NewConfig()} // config.NewConfig()
 	preRuns.add(func() error { return loadConfigs(cconfig) })
 	var elisting ostent.ExportingListing
 
@@ -167,7 +180,7 @@ func init() {
 
 	// /*
 	ostent.AddBackground(func() {
-		if err := agent.Run(cconfig.Config); err != nil {
+		if err := agent.Run(cconfig); err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
@@ -209,15 +222,6 @@ func ParamsUsage(setf func(*pflag.FlagSet)) string {
 	return strings.Join(lines, "\n")
 }
 
-type partialConfig struct{ *config.Config }
-
-func (pc *partialConfig) LoadInterface(path string, in interface{}) error {
-	if path == "/internal/config" {
-		return pc.Config.LoadInterface(path, in)
-	}
-	return nil
-}
-
 type configer interface {
 	LoadInterface(string, interface{}) error
 }
@@ -235,27 +239,24 @@ func loadConfigs(cconfig configer) error {
 		return err
 	} // */
 
-	type agentConfig struct{ Interval, FlushInterval string }
 	type outputs struct{ Ostent struct{} }
 
 	on := struct{}{}
 	return cconfig.LoadInterface("/internal/config", struct {
-		Agent   agentConfig
 		Outputs outputs
 		Inputs  inputs
 	}{
-		Agent:   agentConfig{Interval: "1s", FlushInterval: "1s"},
 		Outputs: outputs{Ostent: on},
 		Inputs: inputs{
 			SystemOstent: struct{ Interval string }{"1s"},
 
 			// skipped fields are omitted from config
-			// CPU:            &on,
-			// Disk:           &diskInput{[]string{"tmpfs", "devtmpfs"}},
-			// Mem:            &on,
-			// NetOstent:      &on,
-			// ProcstatOstent: &on,
-			// Swap:           &on,
+			CPU:            &on,
+			Disk:           &diskInput{[]string{"tmpfs", "devtmpfs"}},
+			Mem:            &on,
+			NetOstent:      &on,
+			ProcstatOstent: &on,
+			Swap:           &on,
 		}})
 }
 

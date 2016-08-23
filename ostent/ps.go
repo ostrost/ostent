@@ -6,22 +6,6 @@ import (
 	"github.com/shirou/gopsutil/host"
 )
 
-/*
-TODO Check for platform (&version?) naming
-- gopsutil/host in !linux executes
-  - `uname -s` for platform
-  - `uname -r` for version
-- ostent used to
-  - in freebsd: `sysctl kern.version | cut -f1,2`
-  - in darwin: "Mac OS X " + `sw_vers -productVersion`
-    other darwin commands for version retrieval:
-    - sw_vers
-    - sw_vers -productVersion
-    - system_profiler SPSoftwareDataType
-    - defaults read loginwindow SystemVersionStampAsString
-    - defaults read /System/Library/CoreServices/SystemVersion ProductVersion
-*/
-
 // Distrib is to return distribution identifier string with version.
 func Distrib() (string, error) {
 	platform, _, version, err := host.PlatformInformation()
