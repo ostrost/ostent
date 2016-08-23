@@ -5,6 +5,7 @@ import (
 
 	librato "github.com/mihasya/go-metrics-librato"
 
+	"github.com/ostrost/ostent/internal/config"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/params"
 )
@@ -17,7 +18,7 @@ type Librato struct {
 	Template  string // hard-coded
 }
 
-func LibratoRun(elisting *ostent.ExportingListing, cconfig configer, lends params.LibratoEndpoints) error {
+func LibratoRun(elisting *ostent.ExportingListing, cconfig *config.Config, lends params.LibratoEndpoints) error {
 	for _, value := range lends.Values {
 		if value.Email != "" {
 			elisting.AddExporter("Librato", value)

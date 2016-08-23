@@ -113,6 +113,26 @@ func init() {
 	OstentCmd.Flags().VarP(&OstentBind, "bind", "b", "Bind `address`")
 	OstentCmd.Flags().Var(&DelayFlags.Max, "max-delay", "Maximum for display `delay`")
 	OstentCmd.Flags().VarP(&DelayFlags.Min, "min-delay", "d", "Collection and display minimum `delay`")
+
+	/* TODO have one func init; rconfig is not set until then
+	for _, v := range []struct {
+		pointer *string
+		name    string
+		usage   string
+	}{
+		{rconfig.Inputs.CPU.Interval, "input-interval-cpu", "Interval for input: cpu"},
+		// ...
+	} {
+		var dvalue string
+		if v.pointer != nil || *v.pointer != "" {
+			dvalue = *v.pointer
+		} else {
+			dvalue = cconfig.Agent.Interval.Duration.String()
+		}
+		OstentCmd.Flags().StringVar(v.pointer, v.name, dvalue, v.usage)
+	}
+	*/
+
 	/* TODO
 	   - remove `*d` parameters
 	     - all corresponding inputs have interval input config values
@@ -133,7 +153,7 @@ func init() {
 		return nil
 	})
 
-	preRuns.add(func() error { return loadConfigs(cconfig) })
+	preRuns.add(func() error { return cconfig.LoadInterface("/internal/config", rconfig) })
 	var elisting ostent.ExportingListing
 
 	if gends := params.NewGraphiteEndpoints(10*time.Second, flags.NewBind("127.0.0.1", 2003)); true {
@@ -222,54 +242,52 @@ func ParamsUsage(setf func(*pflag.FlagSet)) string {
 	return strings.Join(lines, "\n")
 }
 
-type configer interface {
-	LoadInterface(string, interface{}) error
+type inputConfig struct {
+	Interval *string `toml:",omitempty"`
 }
 
-type diskInput struct{ IgnoreFs []string }
+type diskInput struct {
+	inputConfig
+	IgnoreFs []string
+}
 
-func loadConfigs(cconfig configer) error {
-	/* if err := cconfig.LoadInterface("/internal/disk/config", struct {
-		Inputs []diskInput `toml:"inputs.disk"`
-	}{
-		Inputs: []diskInput{{
-			IgnoreFs: []string{"tmpfs", "devtmpfs"},
-		}},
-	}); err != nil {
-		return err
-	} // */
+var rconfig struct {
+	Outputs outputs
+	Inputs  inputs
+}
 
-	type outputs struct{ Ostent struct{} }
+type outputs struct{ Ostent struct{} }
 
-	on := struct{}{}
-	return cconfig.LoadInterface("/internal/config", struct {
+func init() {
+	on := inputConfig{}
+	rconfig = struct {
 		Outputs outputs
 		Inputs  inputs
 	}{
-		Outputs: outputs{Ostent: on},
+		Outputs: outputs{Ostent: struct{}{}},
 		Inputs: inputs{
 			SystemOstent: struct{ Interval string }{"1s"},
 
 			// skipped fields are omitted from config
 			CPU:            &on,
-			Disk:           &diskInput{[]string{"tmpfs", "devtmpfs"}},
+			Disk:           &diskInput{IgnoreFs: []string{"tmpfs", "devtmpfs"}},
 			Mem:            &on,
 			NetOstent:      &on,
 			ProcstatOstent: &on,
 			Swap:           &on,
-		}})
+		}}
 }
 
 type inputs struct {
 	SystemOstent struct{ Interval string }
 
 	// later fields are pointers with omitempty
-	CPU            *struct{}  `toml:",omitempty"`
-	Disk           *diskInput `toml:",omitempty"`
-	Mem            *struct{}  `toml:",omitempty"`
-	NetOstent      *struct{}  `toml:",omitempty"`
-	ProcstatOstent *struct{}  `toml:",omitempty"`
-	Swap           *struct{}  `toml:",omitempty"`
+	CPU            *inputConfig `toml:",omitempty"`
+	Disk           *diskInput   `toml:",omitempty"`
+	Mem            *inputConfig `toml:",omitempty"`
+	NetOstent      *inputConfig `toml:",omitempty"`
+	ProcstatOstent *inputConfig `toml:",omitempty"`
+	Swap           *inputConfig `toml:",omitempty"`
 }
 
 type namedrop []string

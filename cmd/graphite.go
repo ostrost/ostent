@@ -8,6 +8,7 @@ import (
 
 	graphite "github.com/cyberdelia/go-metrics-graphite"
 
+	"github.com/ostrost/ostent/internal/config"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/params"
 )
@@ -20,7 +21,7 @@ type Graphite struct {
 
 // type ConfigType
 
-func GraphiteRun(elisting *ostent.ExportingListing, cconfig configer, gends params.GraphiteEndpoints) error {
+func GraphiteRun(elisting *ostent.ExportingListing, cconfig *config.Config, gends params.GraphiteEndpoints) error {
 	for _, value := range gends.Values {
 		if value.ServerAddr.Host != "" {
 			elisting.AddExporter("Graphite", value)
