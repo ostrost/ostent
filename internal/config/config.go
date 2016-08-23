@@ -339,7 +339,18 @@ func (c *Config) LoadInterface(path string, in interface{}) error {
 	if err != nil {
 		return err
 	}
-	// log.Printf("#%s.toml:\n%s", path, text)
+	lines := strings.Split(string(text), "\n")
+	for _, replace := range [][2]string{
+		{"password=", "********"},
+		{"api_token=", "****************"},
+	} {
+		for i := range lines {
+			if strings.HasPrefix(lines[i], replace[0]) {
+				lines[i] = fmt.Sprintf("%s=\"%s\"", replace[0], replace[1])
+			}
+		}
+	}
+	log.Printf("#%s.toml:\n%s", path, strings.Join(lines, "\n"))
 	tbl, err := parseContents(text)
 	if err != nil {
 		return err
