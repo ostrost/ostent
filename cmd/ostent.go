@@ -97,6 +97,24 @@ ostent --librato \?email=EMAIL\&token=TOKEN
 )
 
 func init() {
+	on := func() *inputConfig { return &inputConfig{} }
+	rconfig := struct {
+		Outputs outputs
+		Inputs  inputs
+	}{
+		Outputs: outputs{Ostent: struct{}{}},
+		Inputs: inputs{
+			SystemOstent: struct{ Interval string }{"1s"},
+
+			// skipped fields are omitted from config
+			CPU:            on(),
+			Disk:           &diskInput{IgnoreFs: []string{"tmpfs", "devtmpfs"}},
+			Mem:            on(),
+			NetOstent:      on(),
+			ProcstatOstent: on(),
+			Swap:           on(),
+		}}
+
 	// cobra.OnInitialize(initConfig)
 
 	// Here you will define your flags and configuration settings.
@@ -114,24 +132,23 @@ func init() {
 	OstentCmd.Flags().Var(&DelayFlags.Max, "max-delay", "Maximum for display `delay`")
 	OstentCmd.Flags().VarP(&DelayFlags.Min, "min-delay", "d", "Collection and display minimum `delay`")
 
-	/* TODO have one func init; rconfig is not set until then
+	defaultInterval := cconfig.Agent.Interval.Duration.String()
+	intervals := struct{ CPU, Disk, Mem, NetOstent, ProcstatOstent, Swap string }{}
 	for _, v := range []struct {
 		pointer *string
 		name    string
 		usage   string
 	}{
-		{rconfig.Inputs.CPU.Interval, "input-interval-cpu", "Interval for input: cpu"},
+		{&intervals.CPU, "input-interval-cpu", "Interval for input: cpu"},
+		{&intervals.Disk, "input-interval-disk", "Interval for input: disk"},
+		{&intervals.Mem, "input-interval-mem", "Interval for input: mem"},
+		{&intervals.NetOstent, "input-interval-net-ostent", "Interval for input: net_ostent"},
+		{&intervals.ProcstatOstent, "input-interval-procstat-ostent", "Interval for input: procstat_ostent"},
+		{&intervals.Swap, "input-interval-swap", "Interval for input: swap"},
 		// ...
 	} {
-		var dvalue string
-		if v.pointer != nil || *v.pointer != "" {
-			dvalue = *v.pointer
-		} else {
-			dvalue = cconfig.Agent.Interval.Duration.String()
-		}
-		OstentCmd.Flags().StringVar(v.pointer, v.name, dvalue, v.usage)
+		OstentCmd.Flags().StringVar(v.pointer, v.name, defaultInterval, v.usage)
 	}
-	*/
 
 	/* TODO
 	   - remove `*d` parameters
@@ -153,7 +170,25 @@ func init() {
 		return nil
 	})
 
-	preRuns.add(func() error { return cconfig.LoadInterface("/internal/config", rconfig) })
+	preRuns.add(func() error {
+		for _, v := range []struct {
+			pointer **string
+			value   string
+		}{
+			{&rconfig.Inputs.CPU.Interval, intervals.CPU},
+			{&rconfig.Inputs.Disk.Interval, intervals.Disk},
+			{&rconfig.Inputs.Mem.Interval, intervals.Mem},
+			{&rconfig.Inputs.NetOstent.Interval, intervals.NetOstent},
+			{&rconfig.Inputs.ProcstatOstent.Interval, intervals.ProcstatOstent},
+			{&rconfig.Inputs.Swap.Interval, intervals.Swap},
+		} {
+			if v.value != defaultInterval {
+				*v.pointer = new(string)
+				**v.pointer = v.value
+			}
+		}
+		return cconfig.LoadInterface("/internal/config", rconfig)
+	})
 	var elisting ostent.ExportingListing
 
 	if gends := params.NewGraphiteEndpoints(10*time.Second, flags.NewBind("127.0.0.1", 2003)); true {
@@ -251,32 +286,7 @@ type diskInput struct {
 	IgnoreFs []string
 }
 
-var rconfig struct {
-	Outputs outputs
-	Inputs  inputs
-}
-
 type outputs struct{ Ostent struct{} }
-
-func init() {
-	on := inputConfig{}
-	rconfig = struct {
-		Outputs outputs
-		Inputs  inputs
-	}{
-		Outputs: outputs{Ostent: struct{}{}},
-		Inputs: inputs{
-			SystemOstent: struct{ Interval string }{"1s"},
-
-			// skipped fields are omitted from config
-			CPU:            &on,
-			Disk:           &diskInput{IgnoreFs: []string{"tmpfs", "devtmpfs"}},
-			Mem:            &on,
-			NetOstent:      &on,
-			ProcstatOstent: &on,
-			Swap:           &on,
-		}}
-}
 
 type inputs struct {
 	SystemOstent struct{ Interval string }
