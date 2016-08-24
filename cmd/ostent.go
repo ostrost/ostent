@@ -151,7 +151,7 @@ func init() {
 	   - the `-d` aka `--min-delay` is to be replaced by `--interval` which maps to interval agent config value
 	*/
 
-	oneSecond := internal.Duration{time.Second}
+	oneSecond := internal.Duration{Duration: time.Second}
 	// TODO Not to change these and go with defaults: 10s/10s
 	cconfig.Agent.Interval = oneSecond
 	cconfig.Agent.FlushInterval = oneSecond

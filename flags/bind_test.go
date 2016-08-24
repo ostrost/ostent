@@ -1,77 +1,9 @@
 package flags
 
 import (
-	"bytes"
 	"fmt"
 	"testing"
-	"time"
 )
-
-func TestDelayStr(t *testing.T) {
-	for _, v := range []struct {
-		dstr string
-		cmp  string
-		json []byte
-	}{
-		{"1h", "1h", []byte("\"1h\"")},
-	} {
-		td, err := time.ParseDuration(v.dstr)
-		if err != nil {
-			t.Error(err)
-		}
-		d := Delay{Duration: td}
-		cmp := d.String()
-		if cmp != v.cmp {
-			t.Errorf("Mismatch: %q vs %q", cmp, v.cmp)
-		}
-		j, err := d.MarshalJSON()
-		if err != nil {
-			t.Error(err)
-		}
-		if !bytes.Equal(j, v.json) {
-			t.Errorf("Mismatch: %q vs %q", j, v.json)
-		}
-	}
-}
-
-func TestDelaySet(t *testing.T) {
-	for _, v := range []struct {
-		dstr  string
-		above string
-		str   string
-		err   error
-	}{
-		{"abc", "", "", fmt.Errorf("time: invalid duration abc")},
-		{"0.5s", "", "", fmt.Errorf("Less than a second: 500ms")},
-		{"1.5s", "", "", fmt.Errorf("Not a multiple of a second: 1.5s")},
-		{"1s1s", "", "2s", nil},
-		{"3s", "4s", "", fmt.Errorf("Should be above 4s: 3s")},
-	} {
-		td, err := time.ParseDuration(v.dstr)
-		if err != nil && err.Error() != v.err.Error() {
-			t.Error(err)
-		}
-		d := Delay{Duration: td}
-		if v.above != "" {
-			var ad time.Duration
-			if ad, err = time.ParseDuration(v.above); err != nil {
-				t.Error(err)
-			} else {
-				d.Above = &ad
-			}
-		}
-		err = d.Set(v.dstr)
-		if err != nil {
-			if err.Error() == v.err.Error() {
-				continue
-			}
-			t.Error(err)
-		}
-		if d.String() != v.str {
-			t.Errorf("Mismatch: %q vs %q", d.String(), v.str)
-		}
-	}
-}
 
 func TestBindSet(t *testing.T) {
 	for _, v := range []struct {

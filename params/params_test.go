@@ -3,22 +3,14 @@ package params
 import (
 	"net/http"
 	"testing"
-	"time"
-
-	"github.com/ostrost/ostent/flags"
 )
-
-var DelayFlags = flags.DelayBounds{
-	Max: flags.Delay{Duration: time.Second * 2},
-	Min: flags.Delay{Duration: time.Second},
-}
 
 func TestBoolLinks(t *testing.T) {
 	req, err := http.NewRequest("GET", "http://localhost/index?memn=0", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	para := NewParams(DelayFlags)
+	para := NewParams()
 	if err := para.Decode(req); err != nil {
 		t.Fatal(err)
 	}
@@ -32,7 +24,7 @@ func TestLinks(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	para := NewParams(DelayFlags)
+	para := NewParams()
 	if err = para.Decode(req); err != nil {
 		t.Fatal(err)
 	}
@@ -59,7 +51,7 @@ func TestLinks(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		para := NewParams(DelayFlags)
+		para := NewParams()
 		if err := para.Decode(req); err == nil || err.Error() != "?dfk=2" {
 			t.Fatalf("Error expected (%q)", err)
 		}
