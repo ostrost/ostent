@@ -44,24 +44,16 @@ func RunBackground() {
 	}
 }
 
-// NextSecond returns precisely next second in Time.
-func NextSecond() time.Time { return time.Now().Truncate(time.Second).Add(time.Second) }
-
-// NextSecondDelta returns precisely next second in Time and Duration.
-func NextSecondDelta() (time.Time, time.Duration) {
+// sleepTilNextSecond sleeps til precisely next second.
+func sleepTilNextSecond() {
 	now := time.Now()
-	when := now.Truncate(time.Second).Add(time.Second)
-	return when, when.Sub(now)
+	time.Sleep(now.Truncate(time.Second).Add(time.Second).Sub(now))
 }
 
 // CollectLoop is a ostent background job: collect the metrics.
 func CollectLoop() {
 	for {
-		when, sleep := NextSecondDelta()
-		time.Sleep(sleep)
-		if len(Exporting) != 0 || Connections.NonZero() {
-			lastInfo.collect(when, Connections.NonZeroWantProcs())
-		}
+		sleepTilNextSecond()
 		Connections.tick()
 		Connections.Tack()
 	}
@@ -92,43 +84,18 @@ func (c *conn) Tick() {
 	c.para.Tick()
 }
 
-func (c *conn) WantProcs() bool {
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-	return c.para.NonZeroPsn()
-}
-
 func (c *conn) Tack() { c.Process(nil) }
 
 type receiver interface {
 	Tick()
 	Tack()
 	Expired() bool
-	WantProcs() bool
 }
 
 type connmap map[receiver]struct{}
 type conns struct {
 	connmap
 	mutex sync.Mutex
-}
-
-func (cs *conns) NonZero() bool {
-	cs.mutex.Lock()
-	defer cs.mutex.Unlock()
-	return len(cs.connmap) != 0
-}
-
-func (cs *conns) NonZeroWantProcs() bool {
-	cs.mutex.Lock()
-	defer cs.mutex.Unlock()
-
-	for c := range cs.connmap {
-		if c.WantProcs() {
-			return true
-		}
-	}
-	return false
 }
 
 func (cs *conns) Tack() {
