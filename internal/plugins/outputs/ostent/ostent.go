@@ -2,6 +2,7 @@ package ostent
 
 import (
 	"fmt"
+	"os/user"
 	"sort"
 	"strings"
 	"sync"
@@ -93,6 +94,11 @@ type groupNet struct {
 	list  []netData
 }
 
+type groupProcstat struct {
+	mutex sync.Mutex
+	list  []procData
+}
+
 type cpuData struct {
 	N string
 
@@ -167,6 +173,23 @@ type netData struct {
 	DeltaPacketsOut  string
 }
 
+type procData struct {
+	PID      int64 // int32 from fields
+	UID      int64 // int32 from fields
+	Priority int64 // NB always 0 because gopsutil
+	Nice     int64 // int32 from fields // gopsutil term; the other is IONice
+
+	time     float64 // float64 from fields
+	size     int64   // uint64 from fields
+	resident int64   // uint64 from fields
+
+	Time     string // formatted
+	Name     string
+	User     string // username from .UID
+	Size     string // with units
+	Resident string // with units
+}
+
 type cpuList []cpuData
 
 // Len, Swap and Less satisfy sorting interface.
@@ -227,11 +250,56 @@ func (nl netList) Less(i, j int) bool {
 	return a.Name < b.Name
 }
 
+type procList struct {
+	k    *params.Num // a pointer to set .Alpha
+	list []procData
+	uids map[int64]string
+}
+
+func (pl procList) Len() int      { return len(pl.list) }
+func (pl procList) Swap(i, j int) { pl.list[i], pl.list[j] = pl.list[j], pl.list[i] }
+func (pl procList) Less(i, j int) (r bool) {
+	k, a, b := pl.k.Absolute, pl.list[i], pl.list[j]
+	if match, isa, cmpr := pdCmp(k, a, b); match {
+		pl.k.Alpha, r = isa, cmpr
+	} else if k == params.USER {
+		pl.k.Alpha, r = true, username(pl.uids, a.UID) < username(pl.uids, b.UID)
+	}
+	if pl.k.Negative {
+		return !r
+	}
+	return r
+}
+
+func pdCmp(k int, a, b procData) (bool, bool, bool) {
+	switch k {
+	case params.PID:
+		return true, false, a.PID > b.PID
+	case params.PRI:
+		return true, false, a.Priority > b.Priority
+	case params.NICE:
+		return true, false, a.Nice > b.Nice
+	case params.VIRT:
+		return true, false, a.size > b.size
+	case params.RES:
+		return true, false, a.resident > b.resident
+	case params.TIME:
+		return true, false, a.time > b.time
+	case params.UID:
+		return true, false, a.UID > b.UID
+
+	case params.NAME: // alpha
+		return true, true, a.Name < b.Name
+	}
+	return false, false, false
+}
+
 type ostent struct {
 	// serializer serializers.Serializer
 
 	diskParts dparts
 
+	procstat     groupProcstat
 	systemCPU    groupCPU
 	systemDisk   groupDisk
 	systemMemory groupMemory
@@ -287,6 +355,7 @@ func (o *ostent) CopyCPU(para *params.Params) interface{}  { return list{o.copyC
 func (o *ostent) CopyDisk(para *params.Params) interface{} { return list{o.copyDisk(para)} }
 func (o *ostent) CopyMem(para *params.Params) interface{}  { return list{o.copyMem(&para.Memn)} }
 func (o *ostent) CopyNet(para *params.Params) interface{}  { return list{o.copyNet(&para.Ifn)} }
+func (o *ostent) CopyProc(para *params.Params) interface{} { return list{o.copyProc(para)} }
 
 func positiveLimit(n *params.Num) { n.Limit = 1 }
 func whenZero(n *params.Num) bool {
@@ -386,6 +455,44 @@ func (o *ostent) copyNet(n *params.Num) []netData {
 	return dup[:limit(n, llen)]
 }
 
+func username(uids map[int64]string, uid int64) string {
+	if s, ok := uids[uid]; ok {
+		return s
+	}
+	s := fmt.Sprintf("%d", uid)
+	if usr, err := user.LookupId(s); err == nil {
+		s = usr.Username
+	}
+	uids[uid] = s
+	return s
+}
+
+func (o *ostent) copyProc(para *params.Params) []procData {
+	n := &para.Psn
+	if whenZero(n) {
+		return nil
+	}
+
+	o.procstat.mutex.Lock()
+	defer o.procstat.mutex.Unlock()
+	llen := len(o.procstat.list)
+	if llen == 0 {
+		positiveLimit(n)
+		return nil
+	}
+
+	dup := make([]procData, llen)
+	copy(dup, o.procstat.list)
+
+	pl := procList{k: &para.Psk, list: dup, uids: make(map[int64]string)}
+	for i := range dup {
+		dup[i].User = username(pl.uids, dup[i].UID)
+	}
+	sort.Sort(pl) // not .Stable
+
+	return dup[:limit(n, llen)]
+}
+
 func (dp *dparts) mpDevice(mountpoint string) (string, error) {
 	dp.mutex.Lock()
 	defer dp.mutex.Unlock()
@@ -401,6 +508,39 @@ func (dp *dparts) mpDevice(mountpoint string) (string, error) {
 		dp.parts[p.Mountpoint] = p.Device
 	}
 	return dp.parts[mountpoint], nil
+}
+
+func (o *ostent) writeProcstat(m telegraf.Metric) {
+	pd := procData{}
+	var (
+		tags   = m.Tags()
+		fields = m.Fields()
+	)
+
+	pd.Name = tags["process_name"]
+
+	pd.PID, _ = fields["pid"].(int64)
+	pd.UID, _ = fields["uid"].(int64)
+	// skip pd.Priority
+	pd.Nice, _ = fields["nice"].(int64)
+
+	var (
+		time_user, _   = fields["cpu_time_user"].(float64)
+		time_system, _ = fields["cpu_time_system"].(float64)
+	)
+	pd.time = 1000.0 * (time_user + time_system)
+	pd.Time = format.Time(uint64(pd.time))
+
+	pd.size, _ = fields["memory_vms"].(int64)
+	pd.resident, _ = fields["memory_rss"].(int64)
+	pd.Size = format.HumanB(uint64(pd.size))
+	pd.Resident = format.HumanB(uint64(pd.resident))
+
+	// pd.User is not touched; to be set in o.copyProc
+
+	o.procstat.mutex.Lock()
+	defer o.procstat.mutex.Unlock()
+	o.procstat.list = append(o.procstat.list, pd)
 }
 
 func (o *ostent) writeSystemCPU(cpuno int, m telegraf.Metric) {
@@ -579,6 +719,12 @@ func (o *ostent) Write(ms []telegraf.Metric) error {
 		return nil
 	}
 
+	func() {
+		o.procstat.mutex.Lock()
+		defer o.procstat.mutex.Unlock()
+		o.procstat.list = []procData{}
+	}()
+
 	cpus, disks, nets := 0, 0, 0
 	for _, m := range ms {
 		switch m.Name() {
@@ -597,6 +743,8 @@ func (o *ostent) Write(ms []telegraf.Metric) error {
 			if o.writeSystemNet(nets+1, m) {
 				nets++
 			}
+		case "procstat_ostent":
+			o.writeProcstat(m)
 		}
 	}
 	o.setCPUno(cpus)
@@ -608,6 +756,7 @@ func (o *ostent) Write(ms []telegraf.Metric) error {
 var Output = &ostent{
 	diskParts: dparts{parts: make(map[string]string)},
 
+	procstat:     groupProcstat{},
 	systemCPU:    groupCPU{},
 	systemDisk:   groupDisk{},
 	systemMemory: groupMemory{},

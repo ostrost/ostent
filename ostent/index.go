@@ -595,6 +595,8 @@ func init() {
 		"mem":   ostent.Output.CopyMem,
 		"netio": ostent.Output.CopyNet,
 	}
+
+	news["procs"] = ostent.Output.CopyProc
 }
 
 func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {

@@ -50,6 +50,13 @@ func (p *SpecProcessor) pushMetrics() {
 	}
 	fields := map[string]interface{}{"pid": p.pid}
 
+	if uids, err := p.proc.Uids(); err == nil {
+		fields[prefix+"uid"] = uids[0] // int32
+	}
+	if nice, err := p.proc.Nice(); err == nil {
+		fields[prefix+"nice"] = nice // int32
+	}
+
 	numThreads, err := p.proc.NumThreads()
 	if err == nil {
 		fields[prefix+"num_threads"] = numThreads
