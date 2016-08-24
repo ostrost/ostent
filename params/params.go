@@ -8,7 +8,6 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/google/go-querystring/query"
 	"github.com/gorilla/schema"
@@ -42,18 +41,11 @@ const (
 	NAME     // 9
 )
 
-var (
-	NumType   = reflect.TypeOf(Num{})
-	DelayType = reflect.TypeOf(Delay{})
-)
+var NumType = reflect.TypeOf(Num{})
 
 // NewParams constructs new Params.
-func NewParams(dbounds flags.DelayBounds) *Params {
-	p := &Params{
-		Defaults:    make(map[interface{}]Num),
-		Delays:      make(map[string]*Delay),
-		DelayBounds: dbounds,
-	}
+func NewParams() *Params {
+	p := &Params{Defaults: make(map[interface{}]Num)}
 
 	val := reflect.ValueOf(&p.Schema).Elem()
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
@@ -73,61 +65,20 @@ func NewParams(dbounds flags.DelayBounds) *Params {
 				p.Defaults[sf.Name] = def // ?
 				p.Defaults[num] = def
 			}
-		} else if sft == DelayType {
-			d := fv.Addr().Interface().(*Delay)
-			p.Delays[tags[0]] = d
-			// p.Defaults[d] = def
 		}
 	}
 	return p
 }
 
-// Expired satisfying receiver interface.
-func (p Params) Expired() bool {
-	for _, d := range p.Delays {
-		if d.Expired() {
-			return true
-		}
-	}
-	return false
-}
-
-// Expired satisfying receiver interface.
-func (d Delay) Expired() bool { return d.Ticks <= 1 }
-
-func (p *Params) Tick() {
-	for _, d := range p.Delays {
-		d.Tick()
-	}
-}
-
-func (d *Delay) Tick() {
-	d.Ticks++
-	if d.Ticks-1 >= int(d.D/time.Second) {
-		d.Ticks = 1 // expired
-	}
-}
-
 type Params struct {
 	Schema
-	Defaults    map[interface{}]Num `json:"-"`
-	Delays      map[string]*Delay   `json:"-"`
-	DelayBounds flags.DelayBounds   `json:"-"`
+	Defaults map[interface{}]Num `json:"-"`
 }
 
 type Schema struct {
 	// Still is here to be preserved for url encoding.
 	// Not in use by Go code, but by js.
 	Still Num `url:"still,posonly,default0"`
-
-	// The NewParams must populate .Delays with EACH *Delay
-
-	CPUd Delay `url:"cpud,omitempty"`
-	Dfd  Delay `url:"dfd,omitempty"`
-	Ifd  Delay `url:"ifd,omitempty"`
-	Lad  Delay `url:"lad,omitempty"`
-	Memd Delay `url:"memd,omitempty"`
-	Psd  Delay `url:"psd,omitempty"`
 
 	// Num encodes a number and config toggle.
 	// "Negative" value states config displaying and
@@ -147,9 +98,6 @@ type Schema struct {
 type Nlinks struct {
 	More, Less ALink
 }
-type Dlinks struct {
-	More, Less ALink
-}
 
 type ALink struct {
 	Href       string
@@ -167,13 +115,11 @@ func (p *Params) MarshalJSON() ([]byte, error) {
 	d := struct {
 		Schema
 		Tlinks map[string]string
-		Dlinks map[string]Dlinks
 		Nlinks map[string]Nlinks
 		Vlinks map[string][]VLink
 	}{
 		Schema: p.Schema,
 		Tlinks: p.Tlinks(),
-		Dlinks: p.Dlinks(),
 		Nlinks: p.Nlinks(),
 		Vlinks: p.Vlinks(),
 	}
@@ -198,28 +144,6 @@ func (p Params) Nlinks() map[string]Nlinks {
 		nl.More, _ = MoreN(&p, num)
 		nl.Less, _ = LessN(&p, num)
 		m[sf.Name] = nl
-	}
-	return m
-}
-
-func (p Params) Dlinks() map[string]Dlinks {
-	m := make(map[string]Dlinks)
-	val := reflect.ValueOf(&p.Schema).Elem()
-	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
-		sf := typ.Field(i)
-		if sf.Type != DelayType {
-			continue
-		}
-		tags, ok := TagsOk(sf)
-		if !ok || tags[0] == "" {
-			continue
-		}
-		d := val.Field(i).Addr().Interface().(*Delay)
-		dl := Dlinks{}
-		// errors are ignored
-		dl.More, _ = MoreD(&p, d)
-		dl.Less, _ = LessD(&p, d)
-		m[sf.Name] = dl
 	}
 	return m
 }
@@ -355,39 +279,6 @@ func (num *Num) UnmarshalText(text []byte) error {
 	return nil
 }
 
-// Delay has it's own MarshalJSON.
-type Delay struct {
-	D       time.Duration
-	Above   *time.Duration
-	Below   *time.Duration
-	Default time.Duration
-	Ticks   int
-}
-
-func (d Delay) String() string { return flags.DurationString(d.D) }
-
-func (d Delay) MarshalJSON() ([]byte, error) { return json.Marshal(d.String()) }
-
-func (d Delay) EncodeValues(key string, values *url.Values) error {
-	if d.D != d.Default {
-		(*values)[key] = []string{d.String()}
-	}
-	return nil
-}
-
-func (d Delay) Type() string { return "delay" }
-
-func (d *Delay) Set(input string) error { return d.UnmarshalText([]byte(input)) }
-
-func (d *Delay) UnmarshalText(text []byte) error {
-	f := flags.Delay{Above: d.Above, Below: d.Below}
-	if err := f.Set(string(text)); err != nil {
-		return err
-	}
-	d.D = f.Duration
-	return nil
-}
-
 func (p *Params) ResetSchema() {
 	val := reflect.ValueOf(&p.Schema).Elem()
 	for typ, i := val.Type(), 0; i < typ.NumField(); i++ {
@@ -402,11 +293,6 @@ func (p *Params) ResetSchema() {
 				}
 			}
 			fv.Set(reflect.ValueOf(Num{PositiveOnly: posonly}))
-		case DelayType:
-			fv.Set(reflect.ValueOf(Delay{
-				Above: &p.DelayBounds.Min.Duration,
-				Below: &p.DelayBounds.Max.Duration,
-			}))
 		}
 	}
 }
@@ -446,20 +332,6 @@ func (p *Params) SetDefaults(form url.Values) {
 			if num.Absolute == 0 { // not allow 0 init value
 				num.Absolute = def.Absolute
 			}
-		case DelayType:
-			d := fv.Addr().Interface().(*Delay)
-			d.Default = p.DelayBounds.Min.Duration
-			if d.D != time.Duration(0) { // value specified, no need for defaults
-				continue
-			}
-			tags, ok := TagsOk(sf)
-			if !ok {
-				continue
-			}
-			if _, ok := form[tags[0]]; ok { // have parameter
-				continue
-			}
-			d.D = p.DelayBounds.Min.Duration
 		}
 	}
 }
@@ -476,6 +348,13 @@ func (p *Params) Decode(req *http.Request) error {
 		"ift",
 		"vgd",
 		"vgn",
+
+		"cpud",
+		"dfd",
+		"ifd",
+		"lad",
+		"memd",
+		"psd",
 	} {
 		if _, ok := req.Form[name]; ok {
 			req.Form.Del(name)
@@ -509,14 +388,6 @@ func (p Params) Encode() (string, error) {
 		return "", err
 	}
 	return values.Encode(), nil
-}
-
-func (p *Params) EncodeD(d *Delay, set time.Duration) (string, error) {
-	copy := d.D
-	d.D = set
-	qs, err := p.Encode()
-	d.D = copy
-	return "?" + qs, err
 }
 
 func (p *Params) EncodeT(num *Num) (string, error) {
@@ -558,10 +429,6 @@ type Endpoint struct {
 
 	// ServerAddr is server part (host[:port]) of URL.
 	ServerAddr flags.Bind `url:"-"`
-
-	// The schema fields:
-	// Delay is the delay param.
-	Delay Delay `url:"delay,omitempty"`
 }
 
 // UseURL sets ep.ServerAddr based on u.
@@ -570,8 +437,8 @@ func (ep *Endpoint) UseURL(u url.URL) error {
 	return ep.ServerAddr.Set(u.Host)
 }
 
-func NewGraphiteEndpoints(delay time.Duration, bind flags.Bind) GraphiteEndpoints {
-	return GraphiteEndpoints{Default: Endpoint{ServerAddr: bind, Delay: Delay{D: delay}}}
+func NewGraphiteEndpoints(bind flags.Bind) GraphiteEndpoints {
+	return GraphiteEndpoints{Default: Endpoint{ServerAddr: bind}}
 }
 
 // GraphiteEndpoints holds graphite endpoints list.
@@ -635,11 +502,8 @@ func (iend InfluxEndpoint) String() string {
 	return urlcopy.String()
 }
 
-func NewInfluxEndpoints(delay time.Duration, database string) InfluxEndpoints {
-	return InfluxEndpoints{Default: InfluxEndpoint{
-		Endpoint: Endpoint{Delay: Delay{D: delay}},
-		Database: database,
-	}}
+func NewInfluxEndpoints(database string) InfluxEndpoints {
+	return InfluxEndpoints{Default: InfluxEndpoint{Database: database}}
 }
 
 // InfluxEndpoints holds infuxdb endpoints list.
@@ -664,7 +528,6 @@ func (iends *InfluxEndpoints) Set(input string) error {
 
 		// now .Tags to be set if any
 		for _, except := range []string{
-			"delay",
 			"database",
 			"username",
 			"password",
@@ -722,11 +585,8 @@ func (lend LibratoEndpoint) String() string {
 	return strings.TrimPrefix(urlcopy.String(), "http://")
 }
 
-func NewLibratoEndpoints(delay time.Duration, source string) LibratoEndpoints {
-	return LibratoEndpoints{Default: LibratoEndpoint{
-		Endpoint: Endpoint{Delay: Delay{D: delay}},
-		Source:   source,
-	}}
+func NewLibratoEndpoints(source string) LibratoEndpoints {
+	return LibratoEndpoints{Default: LibratoEndpoint{Source: source}}
 }
 
 // LibratoEndpoints holds librato endpoints list.

@@ -32,16 +32,13 @@ mixin vlink(kparam, number, text)
       | <a href=[[.LinkHref]] class=[[.LinkClass]]
       |   >#{text}<span class=[[.CaretClass]]></span></a>
 
-mixin table(nparam, dparam, title)
+mixin table(nparam, title)
   .row.expanded.hr-bottom
     -
-      var dlinkLess = format('Data.params.Dlinks%s.Less', dparam),
-          dlinkMore = format('Data.params.Dlinks%s.More', dparam),
-          nlinkLess = format('Data.params.Nlinks%s.Less', nparam),
+      var nlinkLess = format('Data.params.Nlinks%s.Less', nparam),
           nlinkMore = format('Data.params.Nlinks%s.More', nparam),
           ntlink    = format('Data.params.Tlinks%s', nparam),
-          ndata     = format('Data.params%s', nparam),
-          ddata     = format('Data.params%s', dparam);
+          ndata     = format('Data.params%s', nparam);
     .column.small-1.text-right
       if JSX
         | <div class={#{ndata}.Negative ? "show-showhide" : "hide-showhide"}>
@@ -60,12 +57,6 @@ mixin table(nparam, dparam, title)
       else
         | <div class="[[if .#{ndata}.Negative]]show-showhide[[else]]hide-showhide[[end]]">
       ul.row.menu.showhide-show
-        li: .input-group
-          .input-group-label.text-nowrap delay
-          .input-group-button: a.button.small.secondary.disabled [[.#{ddata}]]
-          - var cls = 'text-nowrap button small';
-          .input-group-button: +alink(cls, '- %s', dlinkLess)
-          .input-group-button: +alink(cls, '%s +', dlinkMore)
         li: .input-group
           .input-group-label.text-nowrap rows
           .input-group-button: a.button.small.secondary.disabled [[.#{ndata}.Absolute]]
@@ -109,7 +100,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
       | );})}
 
 +define('define_la')
-  +table('.Lan', '.Lad', 'Load avg'): .stripe
+  +table('.Lan', 'Load avg'): .stripe
     .row.thead
       span.expand.col.small-1 Period
       span.expand.col.small-1.text-right  Value
@@ -122,7 +113,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
           | {jsxdefines.Sparkline({ref: i, col: 'Value'})}
 
 +define('define_mem')
-  +table('.Memn', '.Memd', 'Memory'): .stripe
+  +table('.Memn', 'Memory'): .stripe
     .row.thead
       span.expand.col.small-1 Memory
       span.expand.col.small-1.text-right  Total
@@ -141,7 +132,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
           | {jsxdefines.Sparkline({ref: i, col: 'UsePct'})}
 
 +define('define_df')
-  +table('.Dfn', '.Dfd', 'Disk usage'): .stripe
+  +table('.Dfn', 'Disk usage'): .stripe
     .row.thead
       | [[/* poke purifycss: <div class="dropup"><div class="caret" /></div> */]]
       span.expand.col.small-1.text-nowrap:            +vlink('.Dfk', 1, 'Device')  [[/* FS     */]]
@@ -172,7 +163,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
           | {jsxdefines.Sparkline({ref: i, col: 'UsePct'})}
 
 +define('define_cpu')
-  +table('.CPUn', '.CPUd', 'CPU'): .stripe
+  +table('.CPUn', 'CPU'): .stripe
     .row.thead
       span.expand.col.small-1 Core
       span.expand.col.small-1.text-right  User%
@@ -195,7 +186,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
           | {jsxdefines.Sparkline({ref: i, col: 'IdlePct', defaultSpots: true})}
 
 +define('define_if')
-  +table('.Ifn', '.Ifd', 'Interfaces'): .stripe
+  +table('.Ifn', 'Interfaces'): .stripe
     .row.thead
       span.expand.col.small-1 Interface
       span.expand.col.small-1.text-right  IP
@@ -257,7 +248,7 @@ mixin range_list(datak, ranger, kvalue, keyid)
           | {jsxdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}
 
 +define('define_ps')
-  +table('.Psn', '.Psd', 'Processes'): .stripe
+  +table('.Psn', 'Processes'): .stripe
     .row.thead
       | [[/* poke purifycss: <div class="dropup"><div class="caret" /></div> */]]
       span.expand.col.small-1.text-nowrap.text-right:  +vlink('.Psk', 1, 'PID')

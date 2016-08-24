@@ -64,12 +64,6 @@ func (rs *runs) runE(*cobra.Command, []string) error {
 
 var (
 	cconfig = config.NewConfig()
-	// DelayFlags sets min and max for any delay.
-	DelayFlags = flags.DelayBounds{
-		Max: flags.Delay{Duration: 10 * time.Minute},
-		Min: flags.Delay{Duration: time.Second},
-		// 10m and 1s are corresponding defaults
-	}
 
 	// OstentBind is the flag value.
 	OstentBind = flags.NewBind("", 8050)
@@ -129,11 +123,9 @@ func init() {
 	OstentCmd.PersistentFlags().BoolVar(&VersionFlag, "version", false, "Print version and exit")
 
 	OstentCmd.Flags().VarP(&OstentBind, "bind", "b", "Bind `address`")
-	OstentCmd.Flags().Var(&DelayFlags.Max, "max-delay", "Maximum for display `delay`")
-	OstentCmd.Flags().VarP(&DelayFlags.Min, "min-delay", "d", "Collection and display minimum `delay`")
 
 	defaultInterval := cconfig.Agent.Interval.Duration.String()
-	intervals := struct{ CPU, Disk, Mem, NetOstent, ProcstatOstent, Swap string }{}
+	intervals := struct{ Agent, CPU, Disk, Mem, NetOstent, ProcstatOstent, Swap string }{}
 	for _, v := range []struct {
 		pointer *string
 		name    string
@@ -149,6 +141,7 @@ func init() {
 	} {
 		OstentCmd.Flags().StringVar(v.pointer, v.name, defaultInterval, v.usage)
 	}
+	OstentCmd.Flags().StringVarP(&intervals.Agent, "interval", "d", defaultInterval, "Interval for agent and inputs")
 
 	/* TODO
 	   - remove `*d` parameters
@@ -164,13 +157,16 @@ func init() {
 	cconfig.Agent.FlushInterval = oneSecond
 
 	preRuns.add(func() error {
-		if DelayFlags.Max.Duration < DelayFlags.Min.Duration {
-			DelayFlags.Max.Duration = DelayFlags.Min.Duration
-		}
-		return nil
-	})
 
-	preRuns.add(func() error {
+		if intervals.Agent != defaultInterval {
+			if err := cconfig.Agent.Interval.UnmarshalTOML([]byte(fmt.Sprintf("%q", intervals.Agent))); err != nil {
+				return err
+			}
+			if cconfig.Agent.FlushInterval.Duration < cconfig.Agent.Interval.Duration {
+				cconfig.Agent.FlushInterval = cconfig.Agent.Interval
+			}
+		}
+
 		for _, v := range []struct {
 			pointer **string
 			value   string
@@ -191,23 +187,17 @@ func init() {
 	})
 	var elisting ostent.ExportingListing
 
-	if gends := params.NewGraphiteEndpoints(10*time.Second, flags.NewBind("127.0.0.1", 2003)); true {
+	if gends := params.NewGraphiteEndpoints(flags.NewBind("127.0.0.1", 2003)); true {
 		preRuns.add(func() error { return GraphiteRun(&elisting, cconfig, gends) })
 		OstentCmd.Flags().Var(&gends, "graphite", "Graphite exporting `endpoint(s)`")
-		OstentCmd.Example += "Graphite params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
-			param := &gends.Default // shortcut, f does not alter it
-			// f.Var(&param.ServerAddr, "0", "Graphite server `host[:port]`")
-			f.Var(&param.Delay, "1", "Graphite exporting `delay`")
-		})
 	}
 
-	if iends := params.NewInfluxEndpoints(10*time.Second, "ostent"); true {
+	if iends := params.NewInfluxEndpoints("ostent"); true {
 		preRuns.add(func() error { return InfluxRun(&elisting, cconfig, iends) })
 		OstentCmd.Flags().Var(&iends, "influxdb", "InfluxDB exporting `endpoint(s)`")
 		OstentCmd.Example += "InfluxDB params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &iends.Default // shortcut, f does not alter it
 			// f.Var(&param.ServerAddr, "0", "InfluxDB server `address`")
-			f.Var(&param.Delay, "1", "InfluxDB exporting `delay`")
 			f.StringVar(&param.Database, "2", param.Database, "InfluxDB `database`")
 			f.StringVar(&param.Username, "3", param.Username, "InfluxDB `username`")
 			f.StringVar(&param.Password, "4", param.Password, "InfluxDB `password`")
@@ -215,12 +205,11 @@ func init() {
 	}
 
 	hostname, _ := os.Hostname()
-	if lends := params.NewLibratoEndpoints(10*time.Second, hostname); true {
+	if lends := params.NewLibratoEndpoints(hostname); true {
 		preRuns.add(func() error { return LibratoRun(&elisting, cconfig, lends) })
 		OstentCmd.Flags().Var(&lends, "librato", "Librato exporting `parameter(s)`")
 		OstentCmd.Example += "Librato params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &lends.Default // shortcut, f does not alter it
-			f.Var(&param.Delay, "1", "Librato exporting `delay`")
 			f.StringVar(&param.Source, "2", param.Source, "Librato `source`")
 			f.StringVar(&param.Email, "3", param.Email, "Librato `email`")
 			f.StringVar(&param.Token, "4", param.Token, "Librato `token`")
@@ -304,5 +293,6 @@ type namedrop []string
 
 var commonNamedrop = namedrop{
 	"system_ostent",
+	"procstat",
 	"procstat_ostent",
 }

@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	influxdb "github.com/vrischmann/go-metrics-influxdb"
-
 	"github.com/ostrost/ostent/internal/config"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/params"
@@ -22,7 +20,7 @@ func InfluxRun(elisting *ostent.ExportingListing, cconfig *config.Config, iends 
 			elisting.AddExporter("InfluxDB", value)
 			u := value.URL  // copy
 			u.RawQuery = "" // reset query string
-			err := cconfig.LoadInterface("/internal/influxdb/config", struct {
+			if err := cconfig.LoadInterface("/internal/influxdb/config", struct {
 				Outputs []Influxdb `toml:"outputs.influxdb"`
 			}{
 				Outputs: []Influxdb{{
@@ -33,28 +31,10 @@ func InfluxRun(elisting *ostent.ExportingListing, cconfig *config.Config, iends 
 					Database: value.Database,
 
 					// TODO value.Tags is ignored
-					// TODO value.Delay becomes meaningless
-				}}})
-			if err != nil {
+				}}}); err != nil {
 				return err
 			}
-			ostent.AddBackground(InfluxRunFunc(value))
 		}
 	}
 	return nil
-}
-
-func InfluxRunFunc(value params.InfluxEndpoint) func() {
-	return func() {
-		u := value.URL  // copy
-		u.RawQuery = "" // reset query string
-		go influxdb.InfluxDBWithTags(ostent.Reg1s.Registry,
-			value.Delay.D,
-			u.String(),
-			value.Database,
-			value.Username,
-			value.Password,
-			value.Tags,
-		)
-	}
 }

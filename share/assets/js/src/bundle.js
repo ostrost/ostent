@@ -22008,13 +22008,9 @@
 
 	var _ref2 = _jsx('div', {
 	  className: 'input-group-label text-nowrap'
-	}, void 0, 'delay');
-
-	var _ref3 = _jsx('div', {
-	  className: 'input-group-label text-nowrap'
 	}, void 0, 'rows');
 
-	var _ref4 = _jsx('div', {
+	var _ref3 = _jsx('div', {
 	  className: 'row thead'
 	}, void 0, _jsx('span', {
 	  className: 'expand col small-1'
@@ -22073,24 +22069,6 @@
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      className: 'button small secondary disabled'
-	    }, void 0, Data.params.CPUd)), _jsx('div', {
-	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
-	      href: Data.params.Dlinks.CPUd.Less.Href,
-	      onClick: this.handleClick,
-	      className: "text-nowrap button small " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : "")
-	    }, void 0, '- ', Data.params.Dlinks.CPUd.Less.Text)), _jsx('div', {
-	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
-	      href: Data.params.Dlinks.CPUd.More.Href,
-	      onClick: this.handleClick,
-	      className: "text-nowrap button small " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : "")
-	    }, void 0, Data.params.Dlinks.CPUd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
-	      className: 'input-group'
-	    }, void 0, _ref3, _jsx('div', {
-	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
-	      className: 'button small secondary disabled'
 	    }, void 0, Data.params.CPUn.Absolute)), _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
@@ -22107,7 +22085,7 @@
 	      className: Data.params.CPUn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
 	      className: 'stripe'
-	    }, void 0, _ref4, this.List(Data).map(function ($cpu, i) {
+	    }, void 0, _ref3, this.List(Data).map(function ($cpu, i) {
 	      return _jsx('div', {
 	        className: 'row'
 	      }, "cpu-rowby-n-" + $cpu.N, _jsx('span', {
@@ -22131,19 +22109,15 @@
 	  }
 	});
 
-	var _ref5 = _jsx('span', {
+	var _ref4 = _jsx('span', {
 	  className: 'showhide-hide whitespace-pre float-left'
 	}, void 0, '... ');
 
-	var _ref6 = _jsx('div', {
-	  className: 'input-group-label text-nowrap'
-	}, void 0, 'delay');
-
-	var _ref7 = _jsx('div', {
+	var _ref5 = _jsx('div', {
 	  className: 'input-group-label text-nowrap'
 	}, void 0, 'rows');
 
-	var _ref8 = _jsx('span', {
+	var _ref6 = _jsx('span', {
 	  className: 'expand col'
 	});
 
@@ -22178,7 +22152,7 @@
 	      title: 'Disk usage display options',
 	      href: Data.params.Tlinks.Dfn,
 	      onClick: this.handleClick
-	    }, void 0, _ref5, 'Disk usage')))), _jsx('div', {
+	    }, void 0, _ref4, 'Disk usage')))), _jsx('div', {
 	      className: 'column large-11'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Dfn.Negative ? "show-showhide" : "hide-showhide"
@@ -22186,25 +22160,7 @@
 	      className: 'row menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
-	    }, void 0, _ref6, _jsx('div', {
-	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
-	      className: 'button small secondary disabled'
-	    }, void 0, Data.params.Dfd)), _jsx('div', {
-	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
-	      href: Data.params.Dlinks.Dfd.Less.Href,
-	      onClick: this.handleClick,
-	      className: "text-nowrap button small " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : "")
-	    }, void 0, '- ', Data.params.Dlinks.Dfd.Less.Text)), _jsx('div', {
-	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
-	      href: Data.params.Dlinks.Dfd.More.Href,
-	      onClick: this.handleClick,
-	      className: "text-nowrap button small " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : "")
-	    }, void 0, Data.params.Dlinks.Dfd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
-	      className: 'input-group'
-	    }, void 0, _ref7, _jsx('div', {
+	    }, void 0, _ref5, _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      className: 'button small secondary disabled'
@@ -22274,7 +22230,7 @@
 	      onClick: this.handleClick
 	    }, void 0, 'Use%', _jsx('span', {
 	      className: Data.params.Vlinks.Dfk[4 - 1].CaretClass
-	    }))), _ref8), this.List(Data).map(function ($df, i) {
+	    }))), _ref6), this.List(Data).map(function ($df, i) {
 	      return _jsx('div', {
 	        className: 'row'
 	      }, "df-rowby-dirname-" + $df.DirName, _jsx('span', {
@@ -22331,19 +22287,15 @@
 	  }
 	});
 
-	var _ref9 = _jsx('span', {
+	var _ref7 = _jsx('span', {
 	  className: 'showhide-hide whitespace-pre float-left'
 	}, void 0, '... ');
 
-	var _ref10 = _jsx('div', {
-	  className: 'input-group-label text-nowrap'
-	}, void 0, 'delay');
-
-	var _ref11 = _jsx('div', {
+	var _ref8 = _jsx('div', {
 	  className: 'input-group-label text-nowrap'
 	}, void 0, 'rows');
 
-	var _ref12 = _jsx('div', {
+	var _ref9 = _jsx('div', {
 	  className: 'row thead'
 	}, void 0, _jsx('span', {
 	  className: 'expand col small-1'
@@ -22393,7 +22345,7 @@
 	      title: 'Interfaces display options',
 	      href: Data.params.Tlinks.Ifn,
 	      onClick: this.handleClick
-	    }, void 0, _ref9, 'Interfaces')))), _jsx('div', {
+	    }, void 0, _ref7, 'Interfaces')))), _jsx('div', {
 	      className: 'column large-11'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Ifn.Negative ? "show-showhide" : "hide-showhide"
@@ -22401,25 +22353,7 @@
 	      className: 'row menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
-	    }, void 0, _ref10, _jsx('div', {
-	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
-	      className: 'button small secondary disabled'
-	    }, void 0, Data.params.Ifd)), _jsx('div', {
-	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
-	      href: Data.params.Dlinks.Ifd.Less.Href,
-	      onClick: this.handleClick,
-	      className: "text-nowrap button small " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : "")
-	    }, void 0, '- ', Data.params.Dlinks.Ifd.Less.Text)), _jsx('div', {
-	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
-	      href: Data.params.Dlinks.Ifd.More.Href,
-	      onClick: this.handleClick,
-	      className: "text-nowrap button small " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : "")
-	    }, void 0, Data.params.Dlinks.Ifd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
-	      className: 'input-group'
-	    }, void 0, _ref11, _jsx('div', {
+	    }, void 0, _ref8, _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      className: 'button small secondary disabled'
@@ -22439,7 +22373,7 @@
 	      className: Data.params.Ifn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
 	      className: 'stripe'
-	    }, void 0, _ref12, this.List(Data).map(function ($if, i) {
+	    }, void 0, _ref9, this.List(Data).map(function ($if, i) {
 	      return _jsx('div', {
 	        className: 'row'
 	      }, "if-rowby-name-" + $if.Name, _jsx('span', {
@@ -22500,19 +22434,15 @@
 	  }
 	});
 
-	var _ref13 = _jsx('span', {
+	var _ref10 = _jsx('span', {
 	  className: 'showhide-hide whitespace-pre float-left'
 	}, void 0, '... ');
 
-	var _ref14 = _jsx('div', {
-	  className: 'input-group-label text-nowrap'
-	}, void 0, 'delay');
-
-	var _ref15 = _jsx('div', {
+	var _ref11 = _jsx('div', {
 	  className: 'input-group-label text-nowrap'
 	}, void 0, 'rows');
 
-	var _ref16 = _jsx('div', {
+	var _ref12 = _jsx('div', {
 	  className: 'row thead'
 	}, void 0, _jsx('span', {
 	  className: 'expand col small-1'
@@ -22553,7 +22483,7 @@
 	      title: 'Load avg display options',
 	      href: Data.params.Tlinks.Lan,
 	      onClick: this.handleClick
-	    }, void 0, _ref13, 'Load avg')))), _jsx('div', {
+	    }, void 0, _ref10, 'Load avg')))), _jsx('div', {
 	      className: 'column large-11'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Lan.Negative ? "show-showhide" : "hide-showhide"
@@ -22561,25 +22491,7 @@
 	      className: 'row menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
-	    }, void 0, _ref14, _jsx('div', {
-	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
-	      className: 'button small secondary disabled'
-	    }, void 0, Data.params.Lad)), _jsx('div', {
-	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
-	      href: Data.params.Dlinks.Lad.Less.Href,
-	      onClick: this.handleClick,
-	      className: "text-nowrap button small " + (Data.params.Dlinks.Lad.Less.ExtraClass != null ? Data.params.Dlinks.Lad.Less.ExtraClass : "")
-	    }, void 0, '- ', Data.params.Dlinks.Lad.Less.Text)), _jsx('div', {
-	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
-	      href: Data.params.Dlinks.Lad.More.Href,
-	      onClick: this.handleClick,
-	      className: "text-nowrap button small " + (Data.params.Dlinks.Lad.More.ExtraClass != null ? Data.params.Dlinks.Lad.More.ExtraClass : "")
-	    }, void 0, Data.params.Dlinks.Lad.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
-	      className: 'input-group'
-	    }, void 0, _ref15, _jsx('div', {
+	    }, void 0, _ref11, _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      className: 'button small secondary disabled'
@@ -22599,7 +22511,7 @@
 	      className: Data.params.Lan.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
 	      className: 'stripe'
-	    }, void 0, _ref16, this.List(Data).map(function ($la, i) {
+	    }, void 0, _ref12, this.List(Data).map(function ($la, i) {
 	      return _jsx('div', {
 	        className: 'row'
 	      }, "la-rowby-period-" + $la.Period, _jsx('span', {
@@ -22615,19 +22527,15 @@
 	  }
 	});
 
-	var _ref17 = _jsx('span', {
+	var _ref13 = _jsx('span', {
 	  className: 'showhide-hide whitespace-pre float-left'
 	}, void 0, '... ');
 
-	var _ref18 = _jsx('div', {
-	  className: 'input-group-label text-nowrap'
-	}, void 0, 'delay');
-
-	var _ref19 = _jsx('div', {
+	var _ref14 = _jsx('div', {
 	  className: 'input-group-label text-nowrap'
 	}, void 0, 'rows');
 
-	var _ref20 = _jsx('div', {
+	var _ref15 = _jsx('div', {
 	  className: 'row thead'
 	}, void 0, _jsx('span', {
 	  className: 'expand col small-1'
@@ -22674,7 +22582,7 @@
 	      title: 'Memory display options',
 	      href: Data.params.Tlinks.Memn,
 	      onClick: this.handleClick
-	    }, void 0, _ref17, 'Memory')))), _jsx('div', {
+	    }, void 0, _ref13, 'Memory')))), _jsx('div', {
 	      className: 'column large-11'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Memn.Negative ? "show-showhide" : "hide-showhide"
@@ -22682,25 +22590,7 @@
 	      className: 'row menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
-	    }, void 0, _ref18, _jsx('div', {
-	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
-	      className: 'button small secondary disabled'
-	    }, void 0, Data.params.Memd)), _jsx('div', {
-	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
-	      href: Data.params.Dlinks.Memd.Less.Href,
-	      onClick: this.handleClick,
-	      className: "text-nowrap button small " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : "")
-	    }, void 0, '- ', Data.params.Dlinks.Memd.Less.Text)), _jsx('div', {
-	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
-	      href: Data.params.Dlinks.Memd.More.Href,
-	      onClick: this.handleClick,
-	      className: "text-nowrap button small " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : "")
-	    }, void 0, Data.params.Dlinks.Memd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
-	      className: 'input-group'
-	    }, void 0, _ref19, _jsx('div', {
+	    }, void 0, _ref14, _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      className: 'button small secondary disabled'
@@ -22720,7 +22610,7 @@
 	      className: Data.params.Memn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
 	      className: 'stripe'
-	    }, void 0, _ref20, this.List(Data).map(function ($mem, i) {
+	    }, void 0, _ref15, this.List(Data).map(function ($mem, i) {
 	      return _jsx('div', {
 	        className: 'row'
 	      }, "mem-rowby-kind-" + $mem.Kind, _jsx('span', {
@@ -22741,15 +22631,11 @@
 	  }
 	});
 
-	var _ref21 = _jsx('span', {
+	var _ref16 = _jsx('span', {
 	  className: 'showhide-hide whitespace-pre float-left'
 	}, void 0, '... ');
 
-	var _ref22 = _jsx('div', {
-	  className: 'input-group-label text-nowrap'
-	}, void 0, 'delay');
-
-	var _ref23 = _jsx('div', {
+	var _ref17 = _jsx('div', {
 	  className: 'input-group-label text-nowrap'
 	}, void 0, 'rows');
 
@@ -22784,7 +22670,7 @@
 	      title: 'Processes display options',
 	      href: Data.params.Tlinks.Psn,
 	      onClick: this.handleClick
-	    }, void 0, _ref21, 'Processes')))), _jsx('div', {
+	    }, void 0, _ref16, 'Processes')))), _jsx('div', {
 	      className: 'column large-11'
 	    }, void 0, _jsx('div', {
 	      className: Data.params.Psn.Negative ? "show-showhide" : "hide-showhide"
@@ -22792,25 +22678,7 @@
 	      className: 'row menu showhide-show'
 	    }, void 0, _jsx('li', {}, void 0, _jsx('div', {
 	      className: 'input-group'
-	    }, void 0, _ref22, _jsx('div', {
-	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
-	      className: 'button small secondary disabled'
-	    }, void 0, Data.params.Psd)), _jsx('div', {
-	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
-	      href: Data.params.Dlinks.Psd.Less.Href,
-	      onClick: this.handleClick,
-	      className: "text-nowrap button small " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : "")
-	    }, void 0, '- ', Data.params.Dlinks.Psd.Less.Text)), _jsx('div', {
-	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
-	      href: Data.params.Dlinks.Psd.More.Href,
-	      onClick: this.handleClick,
-	      className: "text-nowrap button small " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : "")
-	    }, void 0, Data.params.Dlinks.Psd.More.Text, ' +')))), _jsx('li', {}, void 0, _jsx('div', {
-	      className: 'input-group'
-	    }, void 0, _ref23, _jsx('div', {
+	    }, void 0, _ref17, _jsx('div', {
 	      className: 'input-group-button'
 	    }, void 0, _jsx('a', {
 	      className: 'button small secondary disabled'

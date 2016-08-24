@@ -87,7 +87,7 @@ func serve(laddr string) error {
 	}
 
 	var (
-		serve1 = ostent.NewServeSSE(logRequests, cmd.DelayFlags)
+		serve1 = ostent.NewServeSSE(logRequests)
 		serve2 = ostent.NewServeWS(serve1, logru)
 		serve3 = ostent.NewServeIndex(serve2, templates.IndexTemplate, ostent.StaticData{
 			TAGGEDbin:     taggedBin,

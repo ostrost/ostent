@@ -141,22 +141,6 @@ jsxdefines.define_cpu = React.createClass({
     <ul className="row menu showhide-show">
       <li>
         <div className="input-group">
-          <div className="input-group-label text-nowrap">delay</div>
-          <div className="input-group-button"><a className="button small secondary disabled">{Data.params.CPUd}</a></div>
-          <div className="input-group-button">
-            <a href={Data.params.Dlinks.CPUd.Less.Href} onClick={this.handleClick}
-               className={"text-nowrap button small " + (Data.params.Dlinks.CPUd.Less.ExtraClass != null ? Data.params.Dlinks.CPUd.Less.ExtraClass : "")}
-              >- {Data.params.Dlinks.CPUd.Less.Text}</a>
-          </div>
-          <div className="input-group-button">
-            <a href={Data.params.Dlinks.CPUd.More.Href} onClick={this.handleClick}
-               className={"text-nowrap button small " + (Data.params.Dlinks.CPUd.More.ExtraClass != null ? Data.params.Dlinks.CPUd.More.ExtraClass : "")}
-              >{Data.params.Dlinks.CPUd.More.Text} +</a>
-          </div>
-        </div>
-      </li>
-      <li>
-        <div className="input-group">
           <div className="input-group-label text-nowrap">rows</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.CPUn.Absolute}</a></div>
           <div className="input-group-button">
@@ -214,22 +198,6 @@ jsxdefines.define_df = React.createClass({
   </div>
   <div className="column large-11"><div className={Data.params.Dfn.Negative ? "show-showhide" : "hide-showhide"}>
     <ul className="row menu showhide-show">
-      <li>
-        <div className="input-group">
-          <div className="input-group-label text-nowrap">delay</div>
-          <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Dfd}</a></div>
-          <div className="input-group-button">
-            <a href={Data.params.Dlinks.Dfd.Less.Href} onClick={this.handleClick}
-               className={"text-nowrap button small " + (Data.params.Dlinks.Dfd.Less.ExtraClass != null ? Data.params.Dlinks.Dfd.Less.ExtraClass : "")}
-              >- {Data.params.Dlinks.Dfd.Less.Text}</a>
-          </div>
-          <div className="input-group-button">
-            <a href={Data.params.Dlinks.Dfd.More.Href} onClick={this.handleClick}
-               className={"text-nowrap button small " + (Data.params.Dlinks.Dfd.More.ExtraClass != null ? Data.params.Dlinks.Dfd.More.ExtraClass : "")}
-              >{Data.params.Dlinks.Dfd.More.Text} +</a>
-          </div>
-        </div>
-      </li>
       <li>
         <div className="input-group">
           <div className="input-group-label text-nowrap">rows</div>
@@ -309,22 +277,6 @@ jsxdefines.define_if = React.createClass({
     <ul className="row menu showhide-show">
       <li>
         <div className="input-group">
-          <div className="input-group-label text-nowrap">delay</div>
-          <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Ifd}</a></div>
-          <div className="input-group-button">
-            <a href={Data.params.Dlinks.Ifd.Less.Href} onClick={this.handleClick}
-               className={"text-nowrap button small " + (Data.params.Dlinks.Ifd.Less.ExtraClass != null ? Data.params.Dlinks.Ifd.Less.ExtraClass : "")}
-              >- {Data.params.Dlinks.Ifd.Less.Text}</a>
-          </div>
-          <div className="input-group-button">
-            <a href={Data.params.Dlinks.Ifd.More.Href} onClick={this.handleClick}
-               className={"text-nowrap button small " + (Data.params.Dlinks.Ifd.More.ExtraClass != null ? Data.params.Dlinks.Ifd.More.ExtraClass : "")}
-              >{Data.params.Dlinks.Ifd.More.Text} +</a>
-          </div>
-        </div>
-      </li>
-      <li>
-        <div className="input-group">
           <div className="input-group-label text-nowrap">rows</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Ifn.Absolute}</a></div>
           <div className="input-group-button">
@@ -375,22 +327,6 @@ jsxdefines.define_la = React.createClass({
   </div>
   <div className="column large-11"><div className={Data.params.Lan.Negative ? "show-showhide" : "hide-showhide"}>
     <ul className="row menu showhide-show">
-      <li>
-        <div className="input-group">
-          <div className="input-group-label text-nowrap">delay</div>
-          <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Lad}</a></div>
-          <div className="input-group-button">
-            <a href={Data.params.Dlinks.Lad.Less.Href} onClick={this.handleClick}
-               className={"text-nowrap button small " + (Data.params.Dlinks.Lad.Less.ExtraClass != null ? Data.params.Dlinks.Lad.Less.ExtraClass : "")}
-              >- {Data.params.Dlinks.Lad.Less.Text}</a>
-          </div>
-          <div className="input-group-button">
-            <a href={Data.params.Dlinks.Lad.More.Href} onClick={this.handleClick}
-               className={"text-nowrap button small " + (Data.params.Dlinks.Lad.More.ExtraClass != null ? Data.params.Dlinks.Lad.More.ExtraClass : "")}
-              >{Data.params.Dlinks.Lad.More.Text} +</a>
-          </div>
-        </div>
-      </li>
       <li>
         <div className="input-group">
           <div className="input-group-label text-nowrap">rows</div>
@@ -446,22 +382,6 @@ jsxdefines.define_mem = React.createClass({
     <ul className="row menu showhide-show">
       <li>
         <div className="input-group">
-          <div className="input-group-label text-nowrap">delay</div>
-          <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Memd}</a></div>
-          <div className="input-group-button">
-            <a href={Data.params.Dlinks.Memd.Less.Href} onClick={this.handleClick}
-               className={"text-nowrap button small " + (Data.params.Dlinks.Memd.Less.ExtraClass != null ? Data.params.Dlinks.Memd.Less.ExtraClass : "")}
-              >- {Data.params.Dlinks.Memd.Less.Text}</a>
-          </div>
-          <div className="input-group-button">
-            <a href={Data.params.Dlinks.Memd.More.Href} onClick={this.handleClick}
-               className={"text-nowrap button small " + (Data.params.Dlinks.Memd.More.ExtraClass != null ? Data.params.Dlinks.Memd.More.ExtraClass : "")}
-              >{Data.params.Dlinks.Memd.More.Text} +</a>
-          </div>
-        </div>
-      </li>
-      <li>
-        <div className="input-group">
           <div className="input-group-label text-nowrap">rows</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Memn.Absolute}</a></div>
           <div className="input-group-button">
@@ -512,22 +432,6 @@ jsxdefines.define_ps = React.createClass({
   </div>
   <div className="column large-11"><div className={Data.params.Psn.Negative ? "show-showhide" : "hide-showhide"}>
     <ul className="row menu showhide-show">
-      <li>
-        <div className="input-group">
-          <div className="input-group-label text-nowrap">delay</div>
-          <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Psd}</a></div>
-          <div className="input-group-button">
-            <a href={Data.params.Dlinks.Psd.Less.Href} onClick={this.handleClick}
-               className={"text-nowrap button small " + (Data.params.Dlinks.Psd.Less.ExtraClass != null ? Data.params.Dlinks.Psd.Less.ExtraClass : "")}
-              >- {Data.params.Dlinks.Psd.Less.Text}</a>
-          </div>
-          <div className="input-group-button">
-            <a href={Data.params.Dlinks.Psd.More.Href} onClick={this.handleClick}
-               className={"text-nowrap button small " + (Data.params.Dlinks.Psd.More.ExtraClass != null ? Data.params.Dlinks.Psd.More.ExtraClass : "")}
-              >{Data.params.Dlinks.Psd.More.Text} +</a>
-          </div>
-        </div>
-      </li>
       <li>
         <div className="input-group">
           <div className="input-group-label text-nowrap">rows</div>

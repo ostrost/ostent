@@ -20,7 +20,7 @@ type backgroundHandler func()
 
 var (
 	// Connections is of unexported conns type to hold active ws connections.
-	Connections = conns{connmap: make(map[receiver]struct{})}
+	Connections = conns{connmap: make(map[*conn]struct{})}
 	// Exporting has "exporting to" list (after init)
 	Exporting ExportingList
 
@@ -54,8 +54,7 @@ func sleepTilNextSecond() {
 func CollectLoop() {
 	for {
 		sleepTilNextSecond()
-		Connections.tick()
-		Connections.Tack()
+		Connections.update()
 	}
 }
 
@@ -72,61 +71,31 @@ type conn struct {
 	writemutex sync.Mutex
 }
 
-func (c *conn) Expired() bool {
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-	return c.para.Expired()
-}
-
-func (c *conn) Tick() {
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-	c.para.Tick()
-}
-
-func (c *conn) Tack() { c.Process(nil) }
-
-type receiver interface {
-	Tick()
-	Tack()
-	Expired() bool
-}
-
-type connmap map[receiver]struct{}
+type connmap map[*conn]struct{}
 type conns struct {
 	connmap
 	mutex sync.Mutex
 }
 
-func (cs *conns) Tack() {
+func (cs *conns) update() {
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
 
 	for c := range cs.connmap {
-		if c.Expired() {
-			c.Tack()
-		}
+		c.Process(nil)
 	}
 }
 
-func (cs *conns) Reg(r receiver) {
+func (cs *conns) Reg(c *conn) {
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
-	cs.connmap[r] = struct{}{}
+	cs.connmap[c] = struct{}{}
 }
 
-func (cs *conns) Unreg(r receiver) {
+func (cs *conns) Unreg(c *conn) {
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
-	delete(cs.connmap, r)
-}
-
-func (cs *conns) tick() {
-	cs.mutex.Lock()
-	defer cs.mutex.Unlock()
-	for c := range cs.connmap {
-		c.Tick()
-	}
+	delete(cs.connmap, c)
 }
 
 // ExportingListing keeps "exporting to" list.
@@ -246,7 +215,7 @@ func (sw ServeWS) IndexWS(w http.ResponseWriter, req *http.Request) {
 		initialRequest: req,
 		logRequests:    sw.logRequests,
 
-		para: params.NewParams(sw.DelayBounds),
+		para: params.NewParams(),
 	}
 	Connections.Reg(c)
 	defer func() {

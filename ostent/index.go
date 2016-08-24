@@ -9,7 +9,6 @@ import (
 
 	metrics "github.com/rcrowley/go-metrics"
 
-	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/internal/plugins/outputs/ostent"
 	"github.com/ostrost/ostent/params"
 	"github.com/ostrost/ostent/templateutil"
@@ -98,7 +97,6 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 
 type ServeSSE struct {
 	logRequests bool
-	flags.DelayBounds
 }
 
 type ServeWS struct {
@@ -118,8 +116,8 @@ type StaticData struct {
 	OstentVersion string
 }
 
-func NewServeSSE(logRequests bool, dbounds flags.DelayBounds) ServeSSE {
-	return ServeSSE{logRequests: logRequests, DelayBounds: dbounds}
+func NewServeSSE(logRequests bool) ServeSSE {
+	return ServeSSE{logRequests: logRequests}
 }
 
 func NewServeWS(se ServeSSE, lg logger) ServeWS { return ServeWS{ServeSSE: se, logger: lg} }
@@ -130,7 +128,7 @@ func NewServeIndex(sw ServeWS, template *templateutil.LazyTemplate, sd StaticDat
 
 // Index renders index page.
 func (si ServeIndex) Index(w http.ResponseWriter, r *http.Request) {
-	para := params.NewParams(si.DelayBounds)
+	para := params.NewParams()
 	data, _, err := Updates(r, para)
 	if err != nil {
 		if _, ok := err.(params.RenamedConstError); ok {
@@ -199,7 +197,7 @@ func (sse *SSE) SetHeader(name, value string) bool {
 
 // IndexSSE serves SSE updates.
 func (ss ServeSSE) IndexSSE(w http.ResponseWriter, r *http.Request) {
-	sse := &SSE{Writer: w, Params: params.NewParams(ss.DelayBounds)}
+	sse := &SSE{Writer: w, Params: params.NewParams()}
 	if LogHandler(ss.logRequests, sse).ServeHTTP(nil, r); sse.Errord {
 		return
 	}
