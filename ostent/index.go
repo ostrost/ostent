@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"sync"
 
-	metrics "github.com/rcrowley/go-metrics"
-
 	"github.com/ostrost/ostent/internal/plugins/outputs/ostent"
 	"github.com/ostrost/ostent/params"
 	"github.com/ostrost/ostent/templateutil"
@@ -18,11 +16,7 @@ import (
 // Keys (even abbrevs eg CPU) intentionally start with lowercase.
 type IndexData map[string]interface{}
 
-type renderFunc func(*params.Params) interface{}
-
 type memoryValues struct{ Total, Free, Used uint64 }
-
-type IndexRegistry struct{ Registry metrics.Registry }
 
 type UpgradeInfo struct {
 	RWMutex       sync.RWMutex
@@ -45,35 +39,7 @@ func (ui *UpgradeInfo) Get() string {
 	return s + " release available"
 }
 
-var (
-	news          map[string]renderFunc
-	OstentUpgrade = new(UpgradeInfo)
-	Reg1s         *IndexRegistry
-)
-
-func init() {
-	reg := metrics.NewRegistry()
-	Reg1s = &IndexRegistry{Registry: reg}
-
-	// The keys with old collectors. New collectors must provide the same set.
-	// olds := map[string]struct{}{
-	// 	"cpu":   {},
-	// 	"df":    {},
-	// 	"la":    {},
-	// 	"mem":   {},
-	// 	"netio": {},
-	//
-	// 	"procs": {}, // special case
-	// }
-	news = map[string]renderFunc{
-		"cpu": ostent.Output.CopyCPU,
-		"df":  ostent.Output.CopyDisk,
-		// "la" is copied with ostent.Output.CopySO
-		"mem":   ostent.Output.CopyMem,
-		"netio": ostent.Output.CopyNet,
-		"procs": ostent.Output.CopyProc,
-	}
-}
+var OstentUpgrade = new(UpgradeInfo)
 
 func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 	data := IndexData{}
@@ -86,12 +52,18 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 		data["params"] = para
 	}
 
-	for key, dataFunc := range news {
-		data[key] = dataFunc(para)
+	data["system_ostent"] = ostent.Output.CopySO(para)
+	for key, dataFunc := range map[string]func(*params.Params) interface{}{
+		"cpu":   ostent.Output.CopyCPU,
+		"df":    ostent.Output.CopyDisk,
+		"la":    ostent.Output.CopyLA,
+		"mem":   ostent.Output.CopyMem,
+		"netio": ostent.Output.CopyNet,
+		"procs": ostent.Output.CopyProc,
+	} {
+		type list struct{ List interface{} }
+		data[key] = list{dataFunc(para)}
 	}
-	sodup, sola := ostent.Output.CopySO(para)
-	data["system_ostent"] = sodup
-	data["la"] = sola
 	return data, true, nil
 }
 

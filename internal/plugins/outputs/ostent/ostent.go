@@ -134,6 +134,8 @@ type diskData struct {
 	IusePct uint // percent without "%"
 }
 
+type laData struct{ Period, Value string }
+
 type memoryData struct {
 	Kind string
 
@@ -312,51 +314,6 @@ type dparts struct {
 	parts map[string]string
 }
 
-func (o *ostent) CopySO(para *params.Params) (map[string]string, lalist) {
-	o.systemOstent.mutex.Lock()
-	defer o.systemOstent.mutex.Unlock()
-	dup := make(map[string]string, len(o.systemOstent.kv))
-	for k, v := range o.systemOstent.kv {
-		if !strings.HasPrefix(k, "load") {
-			if s, ok := v.(string); ok {
-				dup[k] = s
-			}
-		}
-	}
-
-	n := &para.Lan
-	if whenZero(n) {
-		return dup, lalist{}
-	}
-
-	periods := []string{"1", "5", "15"}[:limit(n, 3)]
-	lal := lalist{make([]la, len(periods))}
-	for i, period := range periods {
-		if v, ok := o.systemOstent.kv["load"+period]; ok {
-			if f, ok := v.(float64); ok {
-				lal.List[i] = la{
-					Period: period,
-					Value:  fmt.Sprintf("%.2f", f),
-				}
-			}
-		}
-	}
-	return dup, lal
-}
-
-type la struct {
-	Period, Value string
-}
-
-type lalist struct{ List []la }
-type list struct{ List interface{} }
-
-func (o *ostent) CopyCPU(para *params.Params) interface{}  { return list{o.copyCPU(&para.CPUn)} }
-func (o *ostent) CopyDisk(para *params.Params) interface{} { return list{o.copyDisk(para)} }
-func (o *ostent) CopyMem(para *params.Params) interface{}  { return list{o.copyMem(&para.Memn)} }
-func (o *ostent) CopyNet(para *params.Params) interface{}  { return list{o.copyNet(&para.Ifn)} }
-func (o *ostent) CopyProc(para *params.Params) interface{} { return list{o.copyProc(para)} }
-
 func positiveLimit(n *params.Num) { n.Limit = 1 }
 func whenZero(n *params.Num) bool {
 	if n.Absolute == 0 {
@@ -373,28 +330,9 @@ func limit(n *params.Num, lim int) int {
 	return n.Absolute
 }
 
-func (o *ostent) copyDisk(para *params.Params) []diskData {
-	n := &para.Dfn
-	if whenZero(n) {
-		return nil
-	}
-
-	o.systemDisk.mutex.Lock()
-	defer o.systemDisk.mutex.Unlock()
-	llen := len(o.systemDisk.list)
-	if llen == 0 {
-		positiveLimit(n)
-		return nil
-	}
-
-	dup := make([]diskData, llen)
-	copy(dup, o.systemDisk.list)
-	sort.Stable(diskList{k: &para.Dfk, list: dup})
-
-	return dup[:limit(n, llen)]
-}
-
-func (o *ostent) copyCPU(n *params.Num) []cpuData {
+func (o *ostent) CopyCPU(p *params.Params) interface{} { return o.copyCPU(p) }
+func (o *ostent) copyCPU(para *params.Params) []cpuData {
+	n := &para.CPUn
 	if whenZero(n) {
 		return nil
 	}
@@ -422,7 +360,56 @@ func (o *ostent) copyCPU(n *params.Num) []cpuData {
 	return dup[:limit(n, llen)]
 }
 
-func (o *ostent) copyMem(n *params.Num) []memoryData {
+func (o *ostent) CopyDisk(p *params.Params) interface{} { return o.copyDisk(p) }
+func (o *ostent) copyDisk(para *params.Params) []diskData {
+	n := &para.Dfn
+	if whenZero(n) {
+		return nil
+	}
+
+	o.systemDisk.mutex.Lock()
+	defer o.systemDisk.mutex.Unlock()
+	llen := len(o.systemDisk.list)
+	if llen == 0 {
+		positiveLimit(n)
+		return nil
+	}
+
+	dup := make([]diskData, llen)
+	copy(dup, o.systemDisk.list)
+	sort.Stable(diskList{k: &para.Dfk, list: dup})
+
+	return dup[:limit(n, llen)]
+}
+
+func (o *ostent) CopyLA(p *params.Params) interface{} { return o.copyLA(p) }
+func (o *ostent) copyLA(para *params.Params) []laData {
+	n := &para.Lan
+	if whenZero(n) {
+		return nil
+	}
+
+	o.systemOstent.mutex.Lock()
+	defer o.systemOstent.mutex.Unlock()
+
+	periods := []string{"1", "5", "15"}[:limit(n, 3)]
+	dup := make([]laData, len(periods))
+	for i, period := range periods {
+		if v, ok := o.systemOstent.kv["load"+period]; ok {
+			if f, ok := v.(float64); ok {
+				dup[i] = laData{
+					Period: period,
+					Value:  fmt.Sprintf("%.2f", f),
+				}
+			}
+		}
+	}
+	return dup
+}
+
+func (o *ostent) CopyMem(p *params.Params) interface{} { return o.copyMem(p) }
+func (o *ostent) copyMem(para *params.Params) []memoryData {
+	n := &para.Memn
 	if whenZero(n) {
 		return nil
 	}
@@ -435,7 +422,9 @@ func (o *ostent) copyMem(n *params.Num) []memoryData {
 	return dup[:limit(n, 2)]
 }
 
-func (o *ostent) copyNet(n *params.Num) []netData {
+func (o *ostent) CopyNet(p *params.Params) interface{} { return o.copyNet(p) }
+func (o *ostent) copyNet(para *params.Params) []netData {
+	n := &para.Ifn
 	if whenZero(n) {
 		return nil
 	}
@@ -467,6 +456,7 @@ func username(uids map[int64]string, uid int64) string {
 	return s
 }
 
+func (o *ostent) CopyProc(p *params.Params) interface{} { return o.copyProc(p) }
 func (o *ostent) copyProc(para *params.Params) []procData {
 	n := &para.Psn
 	if whenZero(n) {
@@ -493,21 +483,28 @@ func (o *ostent) copyProc(para *params.Params) []procData {
 	return dup[:limit(n, llen)]
 }
 
-func (dp *dparts) mpDevice(mountpoint string) (string, error) {
-	dp.mutex.Lock()
-	defer dp.mutex.Unlock()
+func (o *ostent) CopySO(*params.Params) map[string]string {
+	const skipprefix = "load"
 
-	if device, ok := dp.parts[mountpoint]; ok {
-		return device, nil
+	o.systemOstent.mutex.Lock()
+	defer o.systemOstent.mutex.Unlock()
+	mlen := len(o.systemOstent.kv)
+	for k := range o.systemOstent.kv {
+		if strings.HasPrefix(k, skipprefix) {
+			mlen--
+		}
 	}
-	parts, err := disk.Partitions(true)
-	if err != nil {
-		return "", err
+
+	dup := make(map[string]string, mlen)
+	for k, v := range o.systemOstent.kv {
+		if strings.HasPrefix(k, skipprefix) {
+			continue
+		}
+		if s, ok := v.(string); ok {
+			dup[k] = s
+		}
 	}
-	for _, p := range parts {
-		dp.parts[p.Mountpoint] = p.Device
-	}
-	return dp.parts[mountpoint], nil
+	return dup
 }
 
 func (o *ostent) writeProcstat(m telegraf.Metric) {
@@ -563,6 +560,23 @@ func (o *ostent) writeSystemCPU(cpuno int, m telegraf.Metric) {
 		o.systemCPU.list = list
 	}
 	o.systemCPU.list[cpuno-1] = cd
+}
+
+func (dp *dparts) mpDevice(mountpoint string) (string, error) {
+	dp.mutex.Lock()
+	defer dp.mutex.Unlock()
+
+	if device, ok := dp.parts[mountpoint]; ok {
+		return device, nil
+	}
+	parts, err := disk.Partitions(true)
+	if err != nil {
+		return "", err
+	}
+	for _, p := range parts {
+		dp.parts[p.Mountpoint] = p.Device
+	}
+	return dp.parts[mountpoint], nil
 }
 
 func (o *ostent) writeSystemDisk(diskno int, m telegraf.Metric) {
