@@ -43,7 +43,7 @@ var OstentUpgrade = new(UpgradeInfo)
 
 func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 	data := IndexData{}
-	if req != nil {
+	if decoded, ok := req.Context().Value(crequestDecoded).(bool); !ok || !decoded {
 		if err := para.Decode(req); err != nil {
 			return data, false, err
 		}

@@ -1,6 +1,7 @@
 package ostent
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -158,22 +159,25 @@ func (c *conn) Process(rd *received) bool {
 		}
 	}()
 
-	var req *http.Request
-	if form, err := rd.form(); err != nil {
+	form, err := rd.form()
+	if err != nil {
 		// if !c.writeError(err) { return new(bool) } // should I write an error?
 		return true // continue receiving
-	} else if form != nil {
-		// compile an actual Request
-		r := *c.initialRequest         // copy
-		form.Set("search", "true")     // identify this type of requests in logs
-		r.URL.RawQuery = form.Encode() // RawQuery as is does not go into logs though
-		r.RequestURI = r.URL.String()  // the RequestURI goes into logs
-		req = &r
+	}
+
+	decoded := form == nil
+	req := c.initialRequest.WithContext(context.WithValue(
+		c.initialRequest.Context(), crequestDecoded, decoded))
+
+	if !decoded {
+		form.Set("search", "true")        // identify this type of requests in logs
+		req.URL.RawQuery = form.Encode()  // RawQuery as is does not go into logs though
+		req.RequestURI = req.URL.String() // the RequestURI goes into logs
 	}
 
 	sd := &served{conn: c}
 	serve := sd.ServeHTTP
-	if req != nil { // new form, new request to be logged
+	if !decoded {
 		serve = LogHandler(c.logRequests, sd).ServeHTTP
 	}
 	serve(nil, req)
