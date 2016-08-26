@@ -34,6 +34,7 @@ const (
 	CAssetPath contextID = iota
 	CRouterParams
 	crequestDecoded
+	coutputUpdate
 )
 
 func AddAssetPathContextFunc(path string) func(http.Handler) http.Handler {

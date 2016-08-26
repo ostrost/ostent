@@ -69,36 +69,6 @@ func humanB(value int64, round *uint64) string {
 	return s
 }
 
-type group struct {
-	mutex sync.Mutex
-	kv    map[string]interface{}
-}
-
-type groupCPU struct {
-	mutex sync.Mutex
-	list  []cpuData
-}
-
-type groupDisk struct {
-	mutex sync.Mutex
-	list  []diskData
-}
-
-type groupMemory struct {
-	mutex sync.Mutex
-	list  [2]memoryData
-}
-
-type groupNet struct {
-	mutex sync.Mutex
-	list  []netData
-}
-
-type groupProcstat struct {
-	mutex sync.Mutex
-	list  []procData
-}
-
 type cpuData struct {
 	N string
 
@@ -136,7 +106,7 @@ type diskData struct {
 
 type laData struct{ Period, Value string }
 
-type memoryData struct {
+type memData struct {
 	Kind string
 
 	// strings with units
@@ -253,9 +223,10 @@ func (nl netList) Less(i, j int) bool {
 }
 
 type procList struct {
-	k    *params.Num // a pointer to set .Alpha
-	list []procData
-	uids map[int64]string
+	k             *params.Num // a pointer to set .Alpha
+	list          []procData
+	usernames     map[int64]string
+	copyUsernames map[int64]string
 }
 
 func (pl procList) Len() int      { return len(pl.list) }
@@ -265,7 +236,13 @@ func (pl procList) Less(i, j int) (r bool) {
 	if match, isa, cmpr := pdCmp(k, a, b); match {
 		pl.k.Alpha, r = isa, cmpr
 	} else if k == params.USER {
-		pl.k.Alpha, r = true, username(pl.uids, a.UID) < username(pl.uids, b.UID)
+		if pl.usernames == nil {
+			pl.usernames = make(map[int64]string)
+			for k, v := range pl.copyUsernames {
+				pl.usernames[k] = v
+			}
+		}
+		pl.k.Alpha, r = true, username(pl.usernames, a.UID) < username(pl.usernames, b.UID)
 	}
 	if pl.k.Negative {
 		return !r
@@ -298,21 +275,14 @@ func pdCmp(k int, a, b procData) (bool, bool, bool) {
 
 type ostent struct {
 	// serializer serializers.Serializer
-
-	diskParts dparts
-
-	procstat     groupProcstat
-	systemCPU    groupCPU
-	systemDisk   groupDisk
-	systemMemory groupMemory
-	systemNet    groupNet
-	systemOstent group
 }
 
 type dparts struct {
 	mutex sync.Mutex
 	parts map[string]string
 }
+
+var diskParts = &dparts{parts: make(map[string]string)}
 
 func positiveLimit(n *params.Num) { n.Limit = 1 }
 func whenZero(n *params.Num) bool {
@@ -330,72 +300,65 @@ func limit(n *params.Num, lim int) int {
 	return n.Absolute
 }
 
-func (o *ostent) CopyCPU(p *params.Params) interface{} { return o.copyCPU(p) }
-func (o *ostent) copyCPU(para *params.Params) []cpuData {
+func (o *ostent) CopyCPU(up *Update, p *params.Params) interface{} { return o.copyCPU(up, p) }
+func (o *ostent) copyCPU(up *Update, para *params.Params) []cpuData {
 	n := &para.CPUn
 	if whenZero(n) {
 		return nil
 	}
 
-	o.systemCPU.mutex.Lock()
-	defer o.systemCPU.mutex.Unlock()
-	llen := len(o.systemCPU.list)
+	llen := len(up.cpuData)
 	if llen == 0 {
 		positiveLimit(n)
 		return nil
 	}
 
 	tshift := 0 // "total shift"
-	if o.systemCPU.list[llen-1].N == "cpu-total" {
+	if up.cpuData[llen-1].N == "cpu-total" {
 		tshift = 1
 	}
 
 	dup := make([]cpuData, llen)
-	copy(dup[tshift:], o.systemCPU.list[:llen-tshift])
+	copy(dup[tshift:], up.cpuData[:llen-tshift])
 	sort.Sort(cpuList(dup[tshift:]))
 	if tshift != 0 {
-		dup[0] = o.systemCPU.list[llen-tshift] // last, "cpu-total", becomes first
+		dup[0] = up.cpuData[llen-tshift] // last, "cpu-total", becomes first
 	}
 
 	return dup[:limit(n, llen)]
 }
 
-func (o *ostent) CopyDisk(p *params.Params) interface{} { return o.copyDisk(p) }
-func (o *ostent) copyDisk(para *params.Params) []diskData {
+func (o *ostent) CopyDisk(up *Update, p *params.Params) interface{} { return o.copyDisk(up, p) }
+func (o *ostent) copyDisk(up *Update, para *params.Params) []diskData {
 	n := &para.Dfn
 	if whenZero(n) {
 		return nil
 	}
 
-	o.systemDisk.mutex.Lock()
-	defer o.systemDisk.mutex.Unlock()
-	llen := len(o.systemDisk.list)
+	llen := len(up.diskData)
 	if llen == 0 {
 		positiveLimit(n)
 		return nil
 	}
 
 	dup := make([]diskData, llen)
-	copy(dup, o.systemDisk.list)
+	copy(dup, up.diskData)
 	sort.Stable(diskList{k: &para.Dfk, list: dup})
 
 	return dup[:limit(n, llen)]
 }
 
-func (o *ostent) CopyLA(p *params.Params) interface{} { return o.copyLA(p) }
-func (o *ostent) copyLA(para *params.Params) []laData {
+func (o *ostent) CopyLA(up *Update, p *params.Params) interface{} { return o.copyLA(up, p) }
+func (o *ostent) copyLA(up *Update, para *params.Params) []laData {
 	n := &para.Lan
 	if whenZero(n) {
 		return nil
 	}
 
-	o.systemOstent.mutex.Lock()
-	defer o.systemOstent.mutex.Unlock()
-
 	periods := []string{"1", "5", "15"}[:limit(n, 3)]
 	dup := make([]laData, len(periods))
 	for i, period := range periods {
-		if v, ok := o.systemOstent.kv["load"+period]; ok {
+		if v, ok := up.kv["load"+period]; ok {
 			if f, ok := v.(float64); ok {
 				dup[i] = laData{
 					Period: period,
@@ -407,96 +370,85 @@ func (o *ostent) copyLA(para *params.Params) []laData {
 	return dup
 }
 
-func (o *ostent) CopyMem(p *params.Params) interface{} { return o.copyMem(p) }
-func (o *ostent) copyMem(para *params.Params) []memoryData {
+func (o *ostent) CopyMem(up *Update, p *params.Params) interface{} { return o.copyMem(up, p) }
+func (o *ostent) copyMem(up *Update, para *params.Params) []memData {
 	n := &para.Memn
 	if whenZero(n) {
 		return nil
 	}
 
-	o.systemMemory.mutex.Lock()
-	defer o.systemMemory.mutex.Unlock()
-	dup := make([]memoryData, len(o.systemMemory.list))
-	copy(dup, o.systemMemory.list[:])
+	dup := make([]memData, len(up.memData))
+	copy(dup, up.memData[:])
 
 	return dup[:limit(n, 2)]
 }
 
-func (o *ostent) CopyNet(p *params.Params) interface{} { return o.copyNet(p) }
-func (o *ostent) copyNet(para *params.Params) []netData {
+func (o *ostent) CopyNet(up *Update, p *params.Params) interface{} { return o.copyNet(up, p) }
+func (o *ostent) copyNet(up *Update, para *params.Params) []netData {
 	n := &para.Ifn
 	if whenZero(n) {
 		return nil
 	}
 
-	o.systemNet.mutex.Lock()
-	defer o.systemNet.mutex.Unlock()
-	llen := len(o.systemNet.list)
+	llen := len(up.netData)
 	if llen == 0 {
 		positiveLimit(n)
 		return nil
 	}
 
 	dup := make([]netData, llen)
-	copy(dup, o.systemNet.list)
+	copy(dup, up.netData)
 	sort.Sort(netList(dup)) // not .Stable
 
 	return dup[:limit(n, llen)]
 }
 
-func username(uids map[int64]string, uid int64) string {
-	if s, ok := uids[uid]; ok {
+func username(usernames map[int64]string, uid int64) string {
+	if s, ok := usernames[uid]; ok {
 		return s
 	}
 	s := fmt.Sprintf("%d", uid)
 	if usr, err := user.LookupId(s); err == nil {
 		s = usr.Username
 	}
-	uids[uid] = s
+	usernames[uid] = s
 	return s
 }
 
-func (o *ostent) CopyProc(p *params.Params) interface{} { return o.copyProc(p) }
-func (o *ostent) copyProc(para *params.Params) []procData {
+func (o *ostent) CopyProc(up *Update, p *params.Params) interface{} { return o.copyProc(up, p) }
+func (o *ostent) copyProc(up *Update, para *params.Params) []procData {
 	n := &para.Psn
 	if whenZero(n) {
 		return nil
 	}
 
-	o.procstat.mutex.Lock()
-	defer o.procstat.mutex.Unlock()
-	llen := len(o.procstat.list)
+	llen := len(up.procData)
 	if llen == 0 {
 		positiveLimit(n)
 		return nil
 	}
 
 	dup := make([]procData, llen)
-	copy(dup, o.procstat.list)
+	copy(dup, up.procData)
 
-	pl := procList{k: &para.Psk, list: dup, uids: make(map[int64]string)}
-	for i := range dup {
-		dup[i].User = username(pl.uids, dup[i].UID)
-	}
+	pl := procList{k: &para.Psk, list: dup, copyUsernames: up.usernames}
 	sort.Sort(pl) // not .Stable
 
 	return dup[:limit(n, llen)]
 }
 
-func (o *ostent) CopySO(*params.Params) map[string]string {
+func (o *ostent) CopySO(up *Update, _ *params.Params) map[string]string {
 	const skipprefix = "load"
 
-	o.systemOstent.mutex.Lock()
-	defer o.systemOstent.mutex.Unlock()
-	mlen := len(o.systemOstent.kv)
-	for k := range o.systemOstent.kv {
+	mlen := len(up.kv)
+	for k := range up.kv {
 		if strings.HasPrefix(k, skipprefix) {
 			mlen--
 		}
 	}
 
 	dup := make(map[string]string, mlen)
-	for k, v := range o.systemOstent.kv {
+	for k, v := range up.kv {
 		if strings.HasPrefix(k, skipprefix) {
 			continue
 		}
@@ -507,7 +459,7 @@ func (o *ostent) CopySO(*params.Params) map[string]string {
 	return dup
 }
 
-func (o *ostent) writeProcstat(m telegraf.Metric) {
+func writeProcstat(m telegraf.Metric, up *Update) {
 	pd := procData{}
 	var (
 		tags   = m.Tags()
@@ -533,14 +485,12 @@ func (o *ostent) writeProcstat(m telegraf.Metric) {
 	pd.Size = format.HumanB(uint64(pd.size))
 	pd.Resident = format.HumanB(uint64(pd.resident))
 
-	// pd.User is not touched; to be set in o.copyProc
+	pd.User = username(up.usernames, pd.UID)
 
-	o.procstat.mutex.Lock()
-	defer o.procstat.mutex.Unlock()
-	o.procstat.list = append(o.procstat.list, pd)
+	up.procData = append(up.procData, pd)
 }
 
-func (o *ostent) writeSystemCPU(cpuno int, m telegraf.Metric) {
+func writeSystemCPU(m telegraf.Metric, up *Update, cpui int) {
 	cd := cpuData{N: m.Tags()["cpu"]}
 
 	if !decode(m.Fields(), []convert{
@@ -552,14 +502,7 @@ func (o *ostent) writeSystemCPU(cpuno int, m telegraf.Metric) {
 		return // either fields lookup or casting failed
 	}
 
-	o.systemCPU.mutex.Lock()
-	defer o.systemCPU.mutex.Unlock()
-	if len(o.systemCPU.list) < cpuno {
-		list := make([]cpuData, cpuno)
-		copy(list, o.systemCPU.list)
-		o.systemCPU.list = list
-	}
-	o.systemCPU.list[cpuno-1] = cd
+	up.cpuData[cpui] = cd
 }
 
 func (dp *dparts) mpDevice(mountpoint string) (string, error) {
@@ -579,9 +522,9 @@ func (dp *dparts) mpDevice(mountpoint string) (string, error) {
 	return dp.parts[mountpoint], nil
 }
 
-func (o *ostent) writeSystemDisk(diskno int, m telegraf.Metric) {
+func writeSystemDisk(m telegraf.Metric, up *Update, diski int) {
 	dd := diskData{DirName: m.Tags()["path"]}
-	dd.DevName, _ = o.diskParts.mpDevice(dd.DirName) // err is ignored
+	dd.DevName, _ = diskParts.mpDevice(dd.DirName) // err is ignored
 
 	var rounds, roundInodes struct{ used, free uint64 }
 	if !decode(m.Fields(), []convert{
@@ -597,20 +540,13 @@ func (o *ostent) writeSystemDisk(diskno int, m telegraf.Metric) {
 	dd.UsePct = format.Percent(rounds.used, rounds.used+rounds.free)
 	dd.IusePct = format.Percent(roundInodes.used, roundInodes.used+roundInodes.free)
 
-	o.systemDisk.mutex.Lock()
-	defer o.systemDisk.mutex.Unlock()
-	if len(o.systemDisk.list) < diskno {
-		list := make([]diskData, diskno)
-		copy(list, o.systemDisk.list)
-		o.systemDisk.list = list
-	}
-	o.systemDisk.list[diskno-1] = dd
+	up.diskData[diski] = dd
 }
 
-func (o *ostent) writeSystemMemory(m telegraf.Metric) {
+func writeSystemMem(m telegraf.Metric, up *Update, memi int) {
 	var (
 		fields = m.Fields()
-		md     = memoryData{Kind: m.Name()}
+		md     = memData{Kind: m.Name()}
 	)
 	isRAM := md.Kind == "mem"
 	if isRAM {
@@ -632,20 +568,12 @@ func (o *ostent) writeSystemMemory(m telegraf.Metric) {
 	}) {
 		return // either fields lookup or casting failed
 	}
-
 	md.UsePct = format.Percent(rounds.used, rounds.total)
 
-	index := 0
-	if !isRAM { // must be swap
-		index = 1
-	}
-
-	o.systemMemory.mutex.Lock()
-	defer o.systemMemory.mutex.Unlock()
-	o.systemMemory.list[index] = md
+	up.memData[memi] = md
 }
 
-func (o *ostent) writeSystemNet(netno int, m telegraf.Metric) bool {
+func writeSystemNet(m telegraf.Metric, up *Update, neti int) bool {
 	tags := m.Tags()
 	nd := netData{Name: tags["interface"], IP: tags["ip"]}
 	if nd.Name == "all" { // uninterested NetProto stats
@@ -678,46 +606,13 @@ func (o *ostent) writeSystemNet(netno int, m telegraf.Metric) bool {
 		return false // either fields lookup or casting failed
 	}
 
-	o.systemNet.mutex.Lock()
-	defer o.systemNet.mutex.Unlock()
-	if len(o.systemNet.list) < netno {
-		list := make([]netData, netno)
-		copy(list, o.systemNet.list)
-		o.systemNet.list = list
-	}
-	o.systemNet.list[netno-1] = nd
+	up.netData[neti] = nd
 	return true
 }
 
-func (o *ostent) setCPUno(cpuno int) {
-	o.systemCPU.mutex.Lock()
-	defer o.systemCPU.mutex.Unlock()
-	if len(o.systemCPU.list) > cpuno {
-		o.systemCPU.list = o.systemCPU.list[:cpuno]
-	}
-}
-
-func (o *ostent) setDiskno(diskno int) {
-	o.systemDisk.mutex.Lock()
-	defer o.systemDisk.mutex.Unlock()
-	if len(o.systemDisk.list) > diskno {
-		o.systemDisk.list = o.systemDisk.list[:diskno]
-	}
-}
-
-func (o *ostent) setNetno(netno int) {
-	o.systemNet.mutex.Lock()
-	defer o.systemNet.mutex.Unlock()
-	if len(o.systemNet.list) > netno {
-		o.systemNet.list = o.systemNet.list[:netno]
-	}
-}
-
-func (o *ostent) writeSystemOstent(m telegraf.Metric) {
-	o.systemOstent.mutex.Lock()
-	defer o.systemOstent.mutex.Unlock()
+func writeSystemOstent(m telegraf.Metric, up *Update) {
 	for k, v := range m.Fields() {
-		o.systemOstent.kv[k] = v
+		up.kv[k] = v
 	}
 }
 
@@ -733,49 +628,90 @@ func (o *ostent) Write(ms []telegraf.Metric) error {
 		return nil
 	}
 
-	func() {
-		o.procstat.mutex.Lock()
-		defer o.procstat.mutex.Unlock()
-		o.procstat.list = []procData{}
-	}()
+	cpuno, diskno, netno := 0, 0, 0
+	for _, m := range ms {
+		switch m.Name() {
+		case "cpu":
+			cpuno++
+		case "disk":
+			diskno++
+		case "net":
+			netno++
+		}
+	}
+	up := &Update{
+		usernames: make(map[int64]string),
 
-	cpus, disks, nets := 0, 0, 0
+		kv:       make(map[string]interface{}),
+		cpuData:  make([]cpuData, cpuno),
+		diskData: make([]diskData, diskno),
+		netData:  make([]netData, netno),
+	}
+
+	cpui, diski, neti := 0, 0, 0
 	for _, m := range ms {
 		switch m.Name() {
 		case "system_ostent":
-			o.writeSystemOstent(m)
+			writeSystemOstent(m, up)
 
 		case "cpu":
-			cpus++
-			o.writeSystemCPU(cpus, m)
+			writeSystemCPU(m, up, cpui)
+			cpui++
 		case "disk":
-			disks++
-			o.writeSystemDisk(disks, m)
-		case "mem", "swap":
-			o.writeSystemMemory(m)
+			writeSystemDisk(m, up, diski)
+			diski++
+		case "mem":
+			writeSystemMem(m, up, 0)
+		case "swap":
+			writeSystemMem(m, up, 1)
 		case "net":
-			if o.writeSystemNet(nets+1, m) {
-				nets++
+			if writeSystemNet(m, up, neti) {
+				neti++
 			}
 		case "procstat_ostent":
-			o.writeProcstat(m)
+			writeProcstat(m, up)
 		}
 	}
-	o.setCPUno(cpus)
-	o.setDiskno(disks)
-	o.setNetno(nets)
+	up.netData = up.netData[:neti]
+
+	Updates.set(up)
 	return nil
 }
 
-var Output = &ostent{
-	diskParts: dparts{parts: make(map[string]string)},
+type Update struct {
+	usernames map[int64]string
 
-	procstat:     groupProcstat{},
-	systemCPU:    groupCPU{},
-	systemDisk:   groupDisk{},
-	systemMemory: groupMemory{},
-	systemNet:    groupNet{},
-	systemOstent: group{kv: make(map[string]interface{})},
+	kv       map[string]interface{}
+	cpuData  []cpuData
+	diskData []diskData
+	laData   []laData
+	memData  [2]memData
+	netData  []netData
+	procData []procData
 }
+
+func (u *updates) set(up *Update) {
+	u.mutex.Lock()
+	defer u.mutex.Unlock()
+	close(u.ch)
+	u.ch = make(chan *Update, 1)
+	u.ch <- up
+}
+
+func (u *updates) Get() chan *Update {
+	u.mutex.Lock()
+	defer u.mutex.Unlock()
+	return u.ch
+}
+
+type updates struct {
+	// mutex to protect ch (it's being closed and recreated in set, read in Get)
+	mutex sync.Mutex
+	ch    chan *Update
+}
+
+var Updates = &updates{ch: make(chan *Update, 1)}
+
+var Output = &ostent{}
 
 func init() { outputs.Add("ostent", func() telegraf.Output { return Output }) }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/ostrost/ostent/internal/plugins/outputs/ostent"
 	"github.com/ostrost/ostent/params"
@@ -52,8 +53,18 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 		data["params"] = para
 	}
 
-	data["system_ostent"] = ostent.Output.CopySO(para)
-	for key, dataFunc := range map[string]func(*params.Params) interface{}{
+	up, _ := req.Context().Value(coutputUpdate).(*ostent.Update)
+	if up == nil { // http request (not ws)
+		up = lastCopy.get()
+	}
+	if up == nil { // before first collection
+		// "system_ostent" is expected to be an object (not an array)
+		data["system_ostent"] = map[string]string{}
+		return data, true, nil
+	}
+
+	data["system_ostent"] = ostent.Output.CopySO(up, para)
+	for key, dataFunc := range map[string]func(*ostent.Update, *params.Params) interface{}{
 		"cpu":   ostent.Output.CopyCPU,
 		"df":    ostent.Output.CopyDisk,
 		"la":    ostent.Output.CopyLA,
@@ -62,7 +73,7 @@ func Updates(req *http.Request, para *params.Params) (IndexData, bool, error) {
 		"procs": ostent.Output.CopyProc,
 	} {
 		type list struct{ List interface{} }
-		data[key] = list{dataFunc(para)}
+		data[key] = list{dataFunc(up, para)}
 	}
 	return data, true, nil
 }
@@ -174,7 +185,11 @@ func (ss ServeSSE) IndexSSE(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	for { // loop is log-requests-free
-		sleepTilNextSecond()
+
+		now := time.Now()
+		time.Sleep(now.Truncate(time.Second).Add(time.Second).Sub(now))
+		// TODO redo with some channel to receive from, pushed in lastCopy by CollectLoop or something
+
 		if sse.ServeHTTP(nil, r); sse.Errord {
 			break
 		}

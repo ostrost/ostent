@@ -14,6 +14,7 @@ import (
 	"github.com/Jeffail/gabs"
 	"github.com/gorilla/websocket"
 
+	"github.com/ostrost/ostent/internal/plugins/outputs/ostent" // "ostent" output
 	"github.com/ostrost/ostent/params"
 )
 
@@ -45,18 +46,34 @@ func RunBackground() {
 	}
 }
 
-// sleepTilNextSecond sleeps til precisely next second.
-func sleepTilNextSecond() {
-	now := time.Now()
-	time.Sleep(now.Truncate(time.Second).Add(time.Second).Sub(now))
-}
-
-// CollectLoop is a ostent background job: collect the metrics.
+// CollectLoop is a background job: updetes received to be pushed to Connections.
 func CollectLoop() {
 	for {
-		sleepTilNextSecond()
-		Connections.update()
+		up, ok := <-ostent.Updates.Get()
+		if ok {
+			Connections.update(up)
+			lastCopy.set(up)
+		}
 	}
+}
+
+var lastCopy = &updateCopy{}
+
+type updateCopy struct {
+	mutex sync.Mutex
+	up    *ostent.Update
+}
+
+func (uc *updateCopy) get() *ostent.Update {
+	uc.mutex.Lock()
+	defer uc.mutex.Unlock()
+	return uc.up
+}
+
+func (uc *updateCopy) set(up *ostent.Update) {
+	uc.mutex.Lock()
+	defer uc.mutex.Unlock()
+	uc.up = up
 }
 
 type conn struct {
@@ -78,12 +95,12 @@ type conns struct {
 	mutex sync.Mutex
 }
 
-func (cs *conns) update() {
+func (cs *conns) update(up *ostent.Update) {
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
 
 	for c := range cs.connmap {
-		c.Process(nil)
+		c.Process(nil, up)
 	}
 }
 
@@ -147,7 +164,7 @@ func (c *conn) writeError(err error) bool {
 	}{err.Error()})
 }
 
-func (c *conn) Process(rd *received) bool {
+func (c *conn) Process(rd *received, up *ostent.Update) bool {
 	c.mutex.Lock()
 	defer func() {
 		c.mutex.Unlock()
@@ -166,8 +183,10 @@ func (c *conn) Process(rd *received) bool {
 	}
 
 	decoded := form == nil
-	req := c.initialRequest.WithContext(context.WithValue(
-		c.initialRequest.Context(), crequestDecoded, decoded))
+	ctx := c.initialRequest.Context()
+	ctx = context.WithValue(ctx, crequestDecoded, decoded)
+	ctx = context.WithValue(ctx, coutputUpdate, up)
+	req := c.initialRequest.WithContext(ctx)
 
 	if !decoded {
 		form.Set("search", "true")        // identify this type of requests in logs
@@ -228,7 +247,7 @@ func (sw ServeWS) IndexWS(w http.ResponseWriter, req *http.Request) {
 	}()
 	for {
 		rd := new(received)
-		if err := c.Conn.ReadJSON(&rd); err != nil || !c.Process(rd) {
+		if err := c.Conn.ReadJSON(&rd); err != nil || !c.Process(rd, nil) {
 			return
 		}
 	}
