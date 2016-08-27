@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os/user"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -67,6 +68,37 @@ func humanB(value int64, round *uint64) string {
 	var s string
 	s, *round, _ = format.HumanBandback(uint64(value)) // err is ignored
 	return s
+}
+
+func newFields(m telegraf.Metric) *fields { return &fields{m.Fields()} }
+
+// methods have pointer reciever not to copy every time.
+type fields struct{ mfields map[string]interface{} }
+
+func (fs *fields) decodeFloat64(key string, p *float64) bool {
+	v, ok := fs.mfields[key]
+	if !ok {
+		return false
+	}
+	n, ok := v.(float64)
+	if !ok {
+		return false
+	}
+	*p = n
+	return true
+}
+
+func (fs *fields) decodeInt64(key string, p *int64) bool {
+	v, ok := fs.mfields[key]
+	if !ok {
+		return false
+	}
+	n, ok := v.(int64)
+	if !ok {
+		return false
+	}
+	*p = n
+	return true
 }
 
 type cpuData struct {
@@ -151,6 +183,8 @@ type procData struct {
 	Priority int64 // NB always 0 because gopsutil
 	Nice     int64 // int32 from fields // gopsutil term; the other is IONice
 
+	time_user, time_system float64 // float64 from fields
+
 	time     float64 // float64 from fields
 	size     int64   // uint64 from fields
 	resident int64   // uint64 from fields
@@ -224,7 +258,7 @@ func (nl netList) Less(i, j int) bool {
 
 type procList struct {
 	k             *params.Num // a pointer to set .Alpha
-	list          []procData
+	list          []*procData
 	usernames     map[int64]string
 	copyUsernames map[int64]string
 }
@@ -250,7 +284,7 @@ func (pl procList) Less(i, j int) (r bool) {
 	return r
 }
 
-func pdCmp(k int, a, b procData) (bool, bool, bool) {
+func pdCmp(k int, a, b *procData) (bool, bool, bool) {
 	switch k {
 	case params.PID:
 		return true, false, a.PID > b.PID
@@ -416,7 +450,7 @@ func username(usernames map[int64]string, uid int64) string {
 }
 
 func (o *ostent) CopyProc(up *Update, p *params.Params) interface{} { return o.copyProc(up, p) }
-func (o *ostent) copyProc(up *Update, para *params.Params) []procData {
+func (o *ostent) copyProc(up *Update, para *params.Params) []*procData {
 	n := &para.Psn
 	if whenZero(n) {
 		return nil
@@ -428,7 +462,7 @@ func (o *ostent) copyProc(up *Update, para *params.Params) []procData {
 		return nil
 	}
 
-	dup := make([]procData, llen)
+	dup := make([]*procData, llen)
 	copy(dup, up.procData)
 
 	pl := procList{k: &para.Psk, list: dup, copyUsernames: up.usernames}
@@ -460,34 +494,53 @@ func (o *ostent) CopySO(up *Update, _ *params.Params) map[string]string {
 }
 
 func writeProcstat(m telegraf.Metric, up *Update) {
-	pd := procData{}
-	var (
-		tags   = m.Tags()
-		fields = m.Fields()
-	)
+	tags := m.Tags()
 
+	pid, err := strconv.ParseInt(tags["pid"], 10, 0)
+	if err != nil {
+		return // err is ignored
+	}
+
+	pd, push := &procData{}, true
+	for _, p := range up.procData {
+		if p.PID == pid {
+			pd, push = p, false
+			break
+		}
+	}
+
+	pd.PID = pid
 	pd.Name = tags["process_name"]
 
-	pd.PID, _ = fields["pid"].(int64)
-	pd.UID, _ = fields["uid"].(int64)
+	fs := newFields(m)
+
+	if fs.decodeInt64("uid", &pd.UID) {
+		pd.User = username(up.usernames, pd.UID)
+	}
+
 	// skip pd.Priority
-	pd.Nice, _ = fields["nice"].(int64)
+	fs.decodeInt64("nice", &pd.Nice)
 
-	var (
-		time_user, _   = fields["cpu_time_user"].(float64)
-		time_system, _ = fields["cpu_time_system"].(float64)
-	)
-	pd.time = 1000.0 * (time_user + time_system)
-	pd.Time = format.Time(uint64(pd.time))
+	fs.decodeFloat64("cpu_time_user", &pd.time_user)
+	fs.decodeFloat64("cpu_time_system", &pd.time_system)
 
-	pd.size, _ = fields["memory_vms"].(int64)
-	pd.resident, _ = fields["memory_rss"].(int64)
-	pd.Size = format.HumanB(uint64(pd.size))
-	pd.Resident = format.HumanB(uint64(pd.resident))
+	if fs.decodeInt64("memory_vms", &pd.size) {
+		pd.Size = format.HumanB(uint64(pd.size))
+	}
+	if fs.decodeInt64("memory_rss", &pd.resident) {
+		pd.Resident = format.HumanB(uint64(pd.resident))
+	}
 
-	pd.User = username(up.usernames, pd.UID)
+	if push {
+		up.procData = append(up.procData, pd)
+	}
+}
 
-	up.procData = append(up.procData, pd)
+func writeProcstatEnd(up *Update) {
+	for _, pd := range up.procData {
+		pd.time = 1000.0 * (pd.time_user + pd.time_system)
+		pd.Time = format.Time(uint64(pd.time))
+	}
 }
 
 func writeSystemCPU(m telegraf.Metric, up *Update, cpui int) {
@@ -673,6 +726,7 @@ func (o *ostent) Write(ms []telegraf.Metric) error {
 		}
 	}
 	up.netData = up.netData[:neti]
+	writeProcstatEnd(up)
 
 	Updates.set(up)
 	return nil
@@ -687,7 +741,7 @@ type Update struct {
 	laData   []laData
 	memData  [2]memData
 	netData  []netData
-	procData []procData
+	procData []*procData
 }
 
 func (u *updates) set(up *Update) {

@@ -1,6 +1,7 @@
 package procstat_ostent
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/shirou/gopsutil/process"
@@ -48,7 +49,7 @@ func (p *SpecProcessor) pushMetrics() {
 	if p.Prefix != "" {
 		prefix = p.Prefix + "_"
 	}
-	fields := map[string]interface{}{"pid": p.pid}
+	fields := map[string]interface{}{} // pid goes into tags
 
 	if uids, err := p.proc.Uids(); err == nil {
 		fields[prefix+"uid"] = uids[0] // int32
@@ -108,5 +109,6 @@ func (p *SpecProcessor) pushMetrics() {
 		fields[prefix+"memory_swap"] = mem.Swap
 	}
 
+	p.tags["pid"] = strconv.Itoa(int(p.pid))
 	p.acc.AddFields("procstat_ostent", fields, p.tags)
 }
