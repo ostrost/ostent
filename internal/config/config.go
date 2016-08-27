@@ -57,6 +57,20 @@ type AgentConfig struct {
 
 	// FlushInterval is the Interval at which to flush data
 	FlushInterval internal.Duration
+
+	// MetricBatchSize is the maximum number of metrics that is wrote to an
+	// output plugin in one call.
+	MetricBatchSize int
+
+	// MetricBufferLimit is the max number of metrics that each output plugin
+	// will cache. The buffer is cleared when a successful write occurs. When
+	// full, the oldest metrics will be overwritten. This number should be a
+	// multiple of MetricBatchSize. Due to current implementation, this could
+	// not be less than 2 times MetricBatchSize.
+	MetricBufferLimit int
+
+	// Quiet is the option for running in quiet mode
+	Quiet bool
 }
 
 // LoadConfig loads the given config file and applies it to c
@@ -220,7 +234,8 @@ func (c *Config) addOutput(name string, table *ast.Table) error {
 		return err
 	}
 
-	ro := internal_models.NewRunningOutput(name, output, outputConfig)
+	ro := internal_models.NewRunningOutput(name, output, outputConfig,
+		c.Agent.MetricBatchSize, c.Agent.MetricBufferLimit)
 	c.Outputs = append(c.Outputs, ro)
 	return nil
 }
@@ -295,6 +310,7 @@ func buildInput(name string, tbl *ast.Table) (*internal_models.InputConfig, erro
 				if err != nil {
 					return nil, err
 				}
+
 				cp.Interval = dur
 			}
 		}
@@ -322,15 +338,13 @@ func buildOutput(name string, tbl *ast.Table) (*internal_models.OutputConfig, er
 		Name:   name,
 		Filter: filter,
 	}
-	/*
-		// Outputs don't support FieldDrop/FieldPass, so set to NameDrop/NamePass
-		if len(oc.Filter.FieldDrop) > 0 {
-			oc.Filter.NameDrop = oc.Filter.FieldDrop
-		}
-		if len(oc.Filter.FieldPass) > 0 {
-			oc.Filter.NamePass = oc.Filter.FieldPass
-		}
-	*/
+	// Outputs don't support FieldDrop/FieldPass, so set to NameDrop/NamePass
+	if len(oc.Filter.FieldDrop) > 0 {
+		oc.Filter.NameDrop = oc.Filter.FieldDrop
+	}
+	if len(oc.Filter.FieldPass) > 0 {
+		oc.Filter.NamePass = oc.Filter.FieldPass
+	}
 	return oc, nil
 }
 

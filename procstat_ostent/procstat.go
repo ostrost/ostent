@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/shirou/gopsutil/process"
 
@@ -65,18 +66,34 @@ func (_ *Procstat) Description() string {
 }
 
 func (p *Procstat) Gather(acc telegraf.Accumulator) error {
+	start := time.Now()
 	err := p.createProcesses()
 	if err != nil {
 		log.Printf("Error: procstat getting process, exe: [%s]	pidfile: [%s] pattern: [%s] user: [%s] %s",
 			p.Exe, p.PidFile, p.Pattern, p.User, err.Error())
 	} else {
 		for pid, proc := range p.pidmap {
-			p := NewSpecProcessor(p.ProcessName, p.Prefix, pid, acc, proc, p.tagmap[pid])
+			p := NewSpecProcessor(p.ProcessName, p.Prefix, pid, acc, proc, tags(p.tagmap[pid], start))
 			p.pushMetrics()
+		}
+		if false {
+			fmt.Printf("Gathered %#v pids in %s\n", len(p.pidmap), time.Since(start))
 		}
 	}
 
 	return nil
+}
+
+func tags(pidmap map[string]string, start time.Time) map[string]string {
+	if time.Since(start) < time.Millisecond*200 {
+		return pidmap
+	}
+	dup := make(map[string]string, len(pidmap))
+	for k, v := range pidmap {
+		dup[k] = v
+	}
+	dup["elapsed"] = "true"
+	return dup
 }
 
 func (p *Procstat) createProcesses() error {

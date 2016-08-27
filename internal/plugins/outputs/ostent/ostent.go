@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os/user"
 	"sort"
-	"strconv"
 	"strings"
 	"sync"
 
@@ -115,6 +114,10 @@ type diskData struct {
 	DevName string
 	DirName string
 
+	// values for End func:
+
+	rounds, roundInodes struct{ used, free uint64 }
+
 	// values for sorting:
 
 	total int64
@@ -196,7 +199,7 @@ type procData struct {
 	Resident string // with units
 }
 
-type cpuList []cpuData
+type cpuList []*cpuData
 
 // Len, Swap and Less satisfy sorting interface.
 func (cl cpuList) Len() int           { return len(cl) }
@@ -205,7 +208,7 @@ func (cl cpuList) Less(i, j int) bool { return cl[i].IdlePct < cl[j].IdlePct }
 
 type diskList struct {
 	k    *params.Num // a pointer to set .Alpha
-	list []diskData
+	list []*diskData
 }
 
 func (dl diskList) Len() int      { return len(dl.list) }
@@ -220,7 +223,7 @@ func (dl diskList) Less(i, j int) (r bool) {
 	return r
 }
 
-func ddCmp(k int, a, b diskData) (bool, bool, bool) {
+func ddCmp(k int, a, b *diskData) (bool, bool, bool) {
 	switch k {
 	case params.FS:
 		return true, true, a.DevName < b.DevName
@@ -240,7 +243,7 @@ func ddCmp(k int, a, b diskData) (bool, bool, bool) {
 	return false, false, false
 }
 
-type netList []netData
+type netList []*netData
 
 func (nl netList) Len() int      { return len(nl) }
 func (nl netList) Swap(i, j int) { nl[i], nl[j] = nl[j], nl[i] }
@@ -335,7 +338,7 @@ func limit(n *params.Num, lim int) int {
 }
 
 func (o *ostent) CopyCPU(up *Update, p *params.Params) interface{} { return o.copyCPU(up, p) }
-func (o *ostent) copyCPU(up *Update, para *params.Params) []cpuData {
+func (o *ostent) copyCPU(up *Update, para *params.Params) []*cpuData {
 	n := &para.CPUn
 	if whenZero(n) {
 		return nil
@@ -352,7 +355,7 @@ func (o *ostent) copyCPU(up *Update, para *params.Params) []cpuData {
 		tshift = 1
 	}
 
-	dup := make([]cpuData, llen)
+	dup := make([]*cpuData, llen)
 	copy(dup[tshift:], up.cpuData[:llen-tshift])
 	sort.Sort(cpuList(dup[tshift:]))
 	if tshift != 0 {
@@ -363,7 +366,7 @@ func (o *ostent) copyCPU(up *Update, para *params.Params) []cpuData {
 }
 
 func (o *ostent) CopyDisk(up *Update, p *params.Params) interface{} { return o.copyDisk(up, p) }
-func (o *ostent) copyDisk(up *Update, para *params.Params) []diskData {
+func (o *ostent) copyDisk(up *Update, para *params.Params) []*diskData {
 	n := &para.Dfn
 	if whenZero(n) {
 		return nil
@@ -375,7 +378,7 @@ func (o *ostent) copyDisk(up *Update, para *params.Params) []diskData {
 		return nil
 	}
 
-	dup := make([]diskData, llen)
+	dup := make([]*diskData, llen)
 	copy(dup, up.diskData)
 	sort.Stable(diskList{k: &para.Dfk, list: dup})
 
@@ -405,20 +408,20 @@ func (o *ostent) copyLA(up *Update, para *params.Params) []laData {
 }
 
 func (o *ostent) CopyMem(up *Update, p *params.Params) interface{} { return o.copyMem(up, p) }
-func (o *ostent) copyMem(up *Update, para *params.Params) []memData {
+func (o *ostent) copyMem(up *Update, para *params.Params) []*memData {
 	n := &para.Memn
 	if whenZero(n) {
 		return nil
 	}
 
-	dup := make([]memData, len(up.memData))
+	dup := make([]*memData, len(up.memData))
 	copy(dup, up.memData[:])
 
 	return dup[:limit(n, 2)]
 }
 
 func (o *ostent) CopyNet(up *Update, p *params.Params) interface{} { return o.copyNet(up, p) }
-func (o *ostent) copyNet(up *Update, para *params.Params) []netData {
+func (o *ostent) copyNet(up *Update, para *params.Params) []*netData {
 	n := &para.Ifn
 	if whenZero(n) {
 		return nil
@@ -430,7 +433,7 @@ func (o *ostent) copyNet(up *Update, para *params.Params) []netData {
 		return nil
 	}
 
-	dup := make([]netData, llen)
+	dup := make([]*netData, llen)
 	copy(dup, up.netData)
 	sort.Sort(netList(dup)) // not .Stable
 
@@ -493,26 +496,28 @@ func (o *ostent) CopySO(up *Update, _ *params.Params) map[string]string {
 	return dup
 }
 
-func writeProcstat(m telegraf.Metric, up *Update) {
-	tags := m.Tags()
-
-	pid, err := strconv.ParseInt(tags["pid"], 10, 0)
-	if err != nil {
-		return // err is ignored
-	}
-
-	pd, push := &procData{}, true
-	for _, p := range up.procData {
-		if p.PID == pid {
-			pd, push = p, false
-			break
-		}
-	}
-
-	pd.PID = pid
-	pd.Name = tags["process_name"]
-
+func writeProcstat(m telegraf.Metric, up *Update) bool {
 	fs := newFields(m)
+
+	var pid int64
+	if !fs.decodeInt64("pid", &pid) || pid == 0 {
+		return false
+	}
+
+	push := true
+	var pd *procData
+	/*
+		for _, p := range up.procData {
+			if p.PID == pid {
+				pd, push = p, false
+				break
+			}
+		}
+	*/
+	tags := m.Tags()
+	if pd == nil {
+		pd = &procData{PID: pid, Name: tags["process_name"]}
+	}
 
 	if fs.decodeInt64("uid", &pd.UID) {
 		pd.User = username(up.usernames, pd.UID)
@@ -534,17 +539,36 @@ func writeProcstat(m telegraf.Metric, up *Update) {
 	if push {
 		up.procData = append(up.procData, pd)
 	}
+	_, ok := tags["elapsed"]
+	return ok
 }
 
 func writeProcstatEnd(up *Update) {
 	for _, pd := range up.procData {
+		if pd == nil {
+			continue
+		}
 		pd.time = 1000.0 * (pd.time_user + pd.time_system)
 		pd.Time = format.Time(uint64(pd.time))
 	}
 }
 
-func writeSystemCPU(m telegraf.Metric, up *Update, cpui int) {
-	cd := cpuData{N: m.Tags()["cpu"]}
+func writeSystemCPU(m telegraf.Metric, up *Update, cpui int) bool {
+	n := m.Tags()["cpu"]
+
+	push := true
+	var cd *cpuData
+	/*
+		for _, c := range up.cpuData {
+			if c != nil && c.N == n {
+				cd, push = c, false
+				break
+			}
+		}
+	*/
+	if cd == nil {
+		cd = &cpuData{N: n}
+	}
 
 	if !decode(m.Fields(), []convert{
 		{k: "usage_user", v: &cd.UserPct},
@@ -552,10 +576,14 @@ func writeSystemCPU(m telegraf.Metric, up *Update, cpui int) {
 		{k: "usage_iowait", v: &cd.WaitPct},
 		{k: "usage_idle", v: &cd.IdlePct},
 	}) {
-		return // either fields lookup or casting failed
+		return false // either fields lookup or casting failed
 	}
 
-	up.cpuData[cpui] = cd
+	if push {
+		up.cpuData[cpui] = cd
+		return true
+	}
+	return false
 }
 
 func (dp *dparts) mpDevice(mountpoint string) (string, error) {
@@ -575,32 +603,56 @@ func (dp *dparts) mpDevice(mountpoint string) (string, error) {
 	return dp.parts[mountpoint], nil
 }
 
-func writeSystemDisk(m telegraf.Metric, up *Update, diski int) {
-	dd := diskData{DirName: m.Tags()["path"]}
-	dd.DevName, _ = diskParts.mpDevice(dd.DirName) // err is ignored
+func writeSystemDisk(m telegraf.Metric, up *Update, diski int) bool {
+	path := m.Tags()["path"]
 
-	var rounds, roundInodes struct{ used, free uint64 }
+	push := true
+	var dd *diskData
+	/*
+		for _, d := range up.diskData {
+			if d != nil && d.DirName == path {
+				dd, push = d, false
+				break
+			}
+		}
+	*/
+	if dd == nil {
+		device, _ := diskParts.mpDevice(path) // err is ignored
+		dd = &diskData{DirName: path, DevName: device}
+	}
+
 	if !decode(m.Fields(), []convert{
 		{k: "total", s: &dd.Total, v: &dd.total},
-		{k: "used", s: &dd.Used, v: &dd.used, r: &rounds.used},
-		{k: "free", s: &dd.Avail, v: &dd.avail, r: &rounds.free},
+		{k: "used", s: &dd.Used, v: &dd.used, r: &dd.rounds.used},
+		{k: "free", s: &dd.Avail, v: &dd.avail, r: &dd.rounds.free},
 		{k: "inodes_total", s: &dd.Inodes},
-		{k: "inodes_used", s: &dd.Iused, r: &roundInodes.used},
-		{k: "inodes_free", s: &dd.Ifree, r: &roundInodes.free},
+		{k: "inodes_used", s: &dd.Iused, r: &dd.roundInodes.used},
+		{k: "inodes_free", s: &dd.Ifree, r: &dd.roundInodes.free},
 	}) {
-		return // either fields lookup or casting failed
+		return false // either fields lookup or casting failed
 	}
-	dd.UsePct = format.Percent(rounds.used, rounds.used+rounds.free)
-	dd.IusePct = format.Percent(roundInodes.used, roundInodes.used+roundInodes.free)
 
-	up.diskData[diski] = dd
+	if push {
+		up.diskData[diski] = dd
+		return true
+	}
+	return false
+}
+
+func writeSystemDiskEnd(up *Update) {
+	for _, dd := range up.diskData {
+		if dd == nil {
+			continue
+		}
+		dd.UsePct = format.Percent(dd.rounds.used, dd.rounds.used+dd.rounds.free)
+		dd.IusePct = format.Percent(dd.roundInodes.used, dd.roundInodes.used+dd.roundInodes.free)
+	}
 }
 
 func writeSystemMem(m telegraf.Metric, up *Update, memi int) {
-	var (
-		fields = m.Fields()
-		md     = memData{Kind: m.Name()}
-	)
+	md := up.memData[memi]
+
+	md.Kind = m.Name()
 	isRAM := md.Kind == "mem"
 	if isRAM {
 		md.Kind = "RAM"
@@ -608,6 +660,8 @@ func writeSystemMem(m telegraf.Metric, up *Update, memi int) {
 
 	var values struct{ total, free int64 }
 	var rounds struct{ total, used uint64 }
+
+	fields := m.Fields()
 	if !decode(fields, []convert{
 		{k: "total", v: &values.total, s: &md.Total, r: &rounds.total},
 		{k: "free", v: &values.free, s: &md.Free},
@@ -622,18 +676,30 @@ func writeSystemMem(m telegraf.Metric, up *Update, memi int) {
 		return // either fields lookup or casting failed
 	}
 	md.UsePct = format.Percent(rounds.used, rounds.total)
-
-	up.memData[memi] = md
 }
 
 func writeSystemNet(m telegraf.Metric, up *Update, neti int) bool {
 	tags := m.Tags()
-	nd := netData{Name: tags["interface"], IP: tags["ip"]}
-	if nd.Name == "all" { // uninterested NetProto stats
+	name := tags["interface"]
+	if name == "all" { // uninterested NetProto stats
 		return false
 	}
-	if _, ok := tags["nonemptyifLoopback"]; ok {
-		nd.loopback = true
+
+	push := true
+	var nd *netData
+	/*
+		for _, n := range up.netData {
+			if n != nil && n.Name == name {
+				nd, push = n, false
+				break
+			}
+		}
+	*/
+	if nd == nil {
+		nd = &netData{Name: name, IP: tags["ip"]}
+		if _, ok := tags["nonemptyifLoopback"]; ok {
+			nd.loopback = true
+		}
 	}
 
 	if !decode(m.Fields(), []convert{
@@ -659,8 +725,11 @@ func writeSystemNet(m telegraf.Metric, up *Update, neti int) bool {
 		return false // either fields lookup or casting failed
 	}
 
-	up.netData[neti] = nd
-	return true
+	if push {
+		up.netData[neti] = nd
+		return true
+	}
+	return false
 }
 
 func writeSystemOstent(m telegraf.Metric, up *Update) {
@@ -696,11 +765,15 @@ func (o *ostent) Write(ms []telegraf.Metric) error {
 		usernames: make(map[int64]string),
 
 		kv:       make(map[string]interface{}),
-		cpuData:  make([]cpuData, cpuno),
-		diskData: make([]diskData, diskno),
-		netData:  make([]netData, netno),
+		cpuData:  make([]*cpuData, cpuno),
+		diskData: make([]*diskData, diskno),
+		netData:  make([]*netData, netno),
+	}
+	for i := range up.memData {
+		up.memData[i] = new(memData)
 	}
 
+	var procElapsed bool
 	cpui, diski, neti := 0, 0, 0
 	for _, m := range ms {
 		switch m.Name() {
@@ -708,11 +781,13 @@ func (o *ostent) Write(ms []telegraf.Metric) error {
 			writeSystemOstent(m, up)
 
 		case "cpu":
-			writeSystemCPU(m, up, cpui)
-			cpui++
+			if writeSystemCPU(m, up, cpui) {
+				cpui++
+			}
 		case "disk":
-			writeSystemDisk(m, up, diski)
-			diski++
+			if writeSystemDisk(m, up, diski) {
+				diski++
+			}
 		case "mem":
 			writeSystemMem(m, up, 0)
 		case "swap":
@@ -722,11 +797,18 @@ func (o *ostent) Write(ms []telegraf.Metric) error {
 				neti++
 			}
 		case "procstat_ostent":
-			writeProcstat(m, up)
+			if writeProcstat(m, up) {
+				procElapsed = true
+			}
 		}
 	}
 	up.netData = up.netData[:neti]
 	writeProcstatEnd(up)
+	writeSystemDiskEnd(up)
+
+	if false {
+		fmt.Printf("Written  %#v pids; elapsed %t\n", len(up.procData), procElapsed)
+	}
 
 	Updates.set(up)
 	return nil
@@ -736,11 +818,11 @@ type Update struct {
 	usernames map[int64]string
 
 	kv       map[string]interface{}
-	cpuData  []cpuData
-	diskData []diskData
+	cpuData  []*cpuData
+	diskData []*diskData
 	laData   []laData
-	memData  [2]memData
-	netData  []netData
+	memData  [2]*memData
+	netData  []*netData
 	procData []*procData
 }
 

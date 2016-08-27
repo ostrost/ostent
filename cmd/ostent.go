@@ -224,6 +224,7 @@ func init() {
 
 	// /*
 	ostent.AddBackground(func() {
+		cconfig.Agent.Quiet = true
 		if err := agent.Run(cconfig); err != nil {
 			fmt.Println(err)
 			os.Exit(1)

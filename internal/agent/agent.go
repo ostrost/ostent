@@ -50,6 +50,8 @@ func NewAgent(config *config.Config) (*Agent, error) {
 // Connect connects to all configured outputs
 func (a *Agent) Connect() error {
 	for _, o := range a.Config.Outputs {
+		o.Quiet = a.Config.Agent.Quiet
+
 		err := o.Output.Connect()
 		if err != nil {
 			log.Printf("Failed to connect to output %s, retrying in 15s, "+
