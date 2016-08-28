@@ -1,6 +1,7 @@
 package agent
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"runtime"
@@ -102,6 +103,7 @@ func panicRecover(input *internal_models.RunningInput) {
 // gatherer runs the inputs that have been configured with their own
 // reporting interval.
 func (a *Agent) gatherer(
+	shutdown chan struct{},
 	input *internal_models.RunningInput,
 	interval time.Duration,
 	metricC chan telegraf.Metric,
@@ -121,7 +123,7 @@ func (a *Agent) gatherer(
 		acc.setDefaultTags(a.Config.Tags)
 
 		start := time.Now()
-		gatherWithTimeout(input, acc, interval)
+		gatherWithTimeout(shutdown, input, acc, interval)
 		elapsed := time.Since(start)
 
 		if outerr != nil {
@@ -133,6 +135,8 @@ func (a *Agent) gatherer(
 		}
 
 		select {
+		case <-shutdown:
+			return nil
 		case <-ticker.C:
 			continue
 		}
@@ -145,6 +149,7 @@ func (a *Agent) gatherer(
 //   hung processes, and to prevent re-calling the same hung process over and
 //   over.
 func gatherWithTimeout(
+	shutdown chan struct{},
 	input *internal_models.RunningInput,
 	acc *accumulator,
 	timeout time.Duration,
@@ -168,8 +173,60 @@ func gatherWithTimeout(
 				"collection interval (%s)",
 				input.Name, timeout)
 			continue
+		case <-shutdown:
+			return
 		}
 	}
+}
+
+// Test verifies that we can 'Gather' from all inputs with their configured
+// Config struct
+func (a *Agent) Test() error {
+	shutdown := make(chan struct{})
+	defer close(shutdown)
+	metricC := make(chan telegraf.Metric)
+
+	// dummy receiver for the point channel
+	go func() {
+		for {
+			select {
+			case <-metricC:
+				// do nothing
+			case <-shutdown:
+				return
+			}
+		}
+	}()
+
+	for _, input := range a.Config.Inputs {
+		acc := NewAccumulator(input.Config, metricC)
+		acc.SetTrace(true)
+		acc.SetPrecision(a.Config.Agent.Precision.Duration,
+			a.Config.Agent.Interval.Duration)
+		acc.setDefaultTags(a.Config.Tags)
+
+		fmt.Printf("* Plugin: %s, Collection 1\n", input.Name)
+		if input.Config.Interval != 0 {
+			fmt.Printf("* Internal: %s\n", input.Config.Interval)
+		}
+
+		if err := input.Input.Gather(acc); err != nil {
+			return err
+		}
+
+		// Special instructions for some inputs. cpu, for example, needs to be
+		// run twice in order to return cpu usage percentages.
+		switch input.Name {
+		case "cpu", "mongodb", "procstat":
+			time.Sleep(500 * time.Millisecond)
+			fmt.Printf("* Plugin: %s, Collection 2\n", input.Name)
+			if err := input.Input.Gather(acc); err != nil {
+				return err
+			}
+		}
+
+	}
+	return nil
 }
 
 // flush writes a list of metrics to all configured outputs
@@ -192,7 +249,7 @@ func (a *Agent) flush() {
 }
 
 // flusher monitors the metrics input channel and flushes on the minimum interval
-func (a *Agent) flusher(metricC chan telegraf.Metric) error {
+func (a *Agent) flusher(shutdown chan struct{}, metricC chan telegraf.Metric) error {
 	// Inelegant, but this sleep is to allow the Gather threads to run, so that
 	// the flusher will flush after metrics are collected.
 	time.Sleep(time.Millisecond * 200)
@@ -201,6 +258,10 @@ func (a *Agent) flusher(metricC chan telegraf.Metric) error {
 
 	for {
 		select {
+		case <-shutdown:
+			log.Println("Hang on, flushing any cached metrics before shutdown")
+			a.flush()
+			return nil
 		case <-ticker.C:
 			a.flush()
 		case m := <-metricC:
@@ -232,8 +293,13 @@ func copyMetric(m telegraf.Metric) telegraf.Metric {
 }
 
 // Run runs the agent daemon, gathering every Interval
-func (a *Agent) Run() error {
+func (a *Agent) Run(shutdown chan struct{}) error {
 	var wg sync.WaitGroup
+
+	log.Printf("Agent Config: Interval:%s, Debug:%#v, Quiet:%#v, Hostname:%#v, "+
+		"Flush Interval:%s \n",
+		a.Config.Agent.Interval.Duration, a.Config.Agent.Debug, a.Config.Agent.Quiet,
+		a.Config.Agent.Hostname, a.Config.Agent.FlushInterval.Duration)
 
 	// channel shared between all input threads for accumulating metrics
 	metricC := make(chan telegraf.Metric, 10000)
@@ -258,7 +324,7 @@ func (a *Agent) Run() error {
 	}
 
 	// Round collection to nearest interval by sleeping
-	if true { // TODO  if a.Config.Agent.RoundInterval
+	if a.Config.Agent.RoundInterval {
 		i := int64(a.Config.Agent.Interval.Duration)
 		time.Sleep(time.Duration(i - (time.Now().UnixNano() % i)))
 	}
@@ -266,8 +332,9 @@ func (a *Agent) Run() error {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		if err := a.flusher(metricC); err != nil {
+		if err := a.flusher(shutdown, metricC); err != nil {
 			log.Printf("Flusher routine failed, exiting: %s\n", err.Error())
+			close(shutdown)
 		}
 	}()
 
@@ -280,34 +347,12 @@ func (a *Agent) Run() error {
 		}
 		go func(in *internal_models.RunningInput, interv time.Duration) {
 			defer wg.Done()
-			if err := a.gatherer(in, interv, metricC); err != nil {
+			if err := a.gatherer(shutdown, in, interv, metricC); err != nil {
 				log.Printf(err.Error())
 			}
 		}(input, interval)
 	}
 
 	wg.Wait()
-	return nil
-}
-
-func Run(c *config.Config) error {
-	// if err := c.LoadConfig( ... ); err != nil { return err }
-
-	a, err := NewAgent(c)
-	if err != nil {
-		return err
-	}
-
-	if err := a.Connect(); err != nil {
-		return err
-	}
-	/* There will be loop with waiting for reload signal.
-	reload := make(chan bool, 1)
-	reload <- true
-	for <-reload {
-		reload <- false // */
-	if err := a.Run(); err != nil {
-		return err
-	}
 	return nil
 }

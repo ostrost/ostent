@@ -2,19 +2,22 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"os/signal"
 	"sort"
 	"strings"
 	"sync"
-	"time"
+	"syscall"
 	"unicode"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	// "github.com/spf13/viper"
 
+	"github.com/influxdata/toml"
+
 	"github.com/ostrost/ostent/flags"
-	"github.com/ostrost/ostent/internal"
 	"github.com/ostrost/ostent/internal/agent"
 	"github.com/ostrost/ostent/internal/config"
 	"github.com/ostrost/ostent/ostent"
@@ -63,8 +66,6 @@ func (rs *runs) runE(*cobra.Command, []string) error {
 }
 
 var (
-	cconfig = config.NewConfig()
-
 	// OstentBind is the flag value.
 	OstentBind = flags.NewBind("", 8050)
 
@@ -93,6 +94,7 @@ ostent --librato \?email=EMAIL\&token=TOKEN
 func init() {
 	on := func() *inputConfig { return &inputConfig{} }
 	rconfig := struct {
+		Agent   agentConfig
 		Outputs outputs
 		Inputs  inputs
 	}{
@@ -109,6 +111,8 @@ func init() {
 			Swap:           on(),
 		}}
 
+	tabs := &tables{}
+
 	// cobra.OnInitialize(initConfig)
 
 	// Here you will define your flags and configuration settings.
@@ -124,7 +128,7 @@ func init() {
 
 	OstentCmd.Flags().VarP(&OstentBind, "bind", "b", "Bind `address`")
 
-	defaultInterval := cconfig.Agent.Interval.Duration.String()
+	defaultInterval := config.NewConfig().Agent.Interval.Duration.String()
 	intervals := struct{ Agent, CPU, Disk, Mem, NetOstent, ProcstatOstent, Swap string }{}
 	for _, v := range []struct {
 		pointer *string
@@ -143,28 +147,12 @@ func init() {
 	}
 	OstentCmd.Flags().StringVarP(&intervals.Agent, "interval", "d", defaultInterval, "Interval for agent and inputs")
 
-	/* TODO
-	   - remove `*d` parameters
-	     - all corresponding inputs have interval input config values
-	     - MAYBE add flags for these
-	   - remove `--max-delay` flag as there won't be `*d` params any more
-	   - the `-d` aka `--min-delay` is to be replaced by `--interval` which maps to interval agent config value
-	*/
-
-	oneSecond := internal.Duration{Duration: time.Second}
-	// TODO Not to change these and go with defaults: 10s/10s
-	cconfig.Agent.Interval = oneSecond
-	cconfig.Agent.FlushInterval = oneSecond
-
 	preRuns.add(func() error {
 
 		if intervals.Agent != defaultInterval {
-			if err := cconfig.Agent.Interval.UnmarshalTOML([]byte(fmt.Sprintf("%q", intervals.Agent))); err != nil {
-				return err
-			}
-			if cconfig.Agent.FlushInterval.Duration < cconfig.Agent.Interval.Duration {
-				cconfig.Agent.FlushInterval = cconfig.Agent.Interval
-			}
+			interval := new(string)
+			*interval = intervals.Agent
+			rconfig.Agent.Interval, rconfig.Agent.FlushInterval = interval, interval
 		}
 
 		for _, v := range []struct {
@@ -183,17 +171,18 @@ func init() {
 				**v.pointer = v.value
 			}
 		}
-		return cconfig.LoadInterface("/internal/config", rconfig)
+		tabs.add(rconfig)
+		return nil
 	})
 	var elisting ostent.ExportingListing
 
 	if gends := params.NewGraphiteEndpoints(flags.NewBind("127.0.0.1", 2003)); true {
-		preRuns.add(func() error { return GraphiteRun(&elisting, cconfig, gends) })
+		preRuns.add(func() error { return GraphiteRun(&elisting, tabs, gends) })
 		OstentCmd.Flags().Var(&gends, "graphite", "Graphite exporting `endpoint(s)`")
 	}
 
 	if iends := params.NewInfluxEndpoints("ostent"); true {
-		preRuns.add(func() error { return InfluxRun(&elisting, cconfig, iends) })
+		preRuns.add(func() error { return InfluxRun(&elisting, tabs, iends) })
 		OstentCmd.Flags().Var(&iends, "influxdb", "InfluxDB exporting `endpoint(s)`")
 		OstentCmd.Example += "InfluxDB params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &iends.Default // shortcut, f does not alter it
@@ -206,7 +195,7 @@ func init() {
 
 	hostname, _ := os.Hostname()
 	if lends := params.NewLibratoEndpoints(hostname); true {
-		preRuns.add(func() error { return LibratoRun(&elisting, cconfig, lends) })
+		preRuns.add(func() error { return LibratoRun(&elisting, tabs, lends) })
 		OstentCmd.Flags().Var(&lends, "librato", "Librato exporting `parameter(s)`")
 		OstentCmd.Example += "Librato params:\n" + ParamsUsage(func(f *pflag.FlagSet) {
 			param := &lends.Default // shortcut, f does not alter it
@@ -224,8 +213,7 @@ func init() {
 
 	// /*
 	ostent.AddBackground(func() {
-		cconfig.Agent.Quiet = true
-		if err := agent.Run(cconfig); err != nil {
+		if err := mainAgent(tabs); err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
@@ -267,6 +255,11 @@ func ParamsUsage(setf func(*pflag.FlagSet)) string {
 	return strings.Join(lines, "\n")
 }
 
+type agentConfig struct {
+	Interval      *string `toml:",omitempty"`
+	FlushInterval *string `toml:",omitempty"`
+}
+
 type inputConfig struct {
 	Interval *string `toml:",omitempty"`
 }
@@ -296,4 +289,93 @@ var commonNamedrop = namedrop{
 	"system_ostent",
 	"procstat",
 	"procstat_ostent",
+}
+
+func mainAgent(tabs *tables) error {
+	reload := make(chan bool, 1)
+	reload <- true
+	for <-reload {
+		reload <- false
+
+		c := config.NewConfig()
+
+		configText, err := tabs.marshal()
+		if err != nil {
+			return err
+		}
+
+		configPath := "/runtime/config"
+		log.Printf("#%s.toml:\n%s", configPath, printableConfigText(configText))
+
+		configTab, err := config.ParseContents(configText)
+		if err != nil {
+			return err
+		}
+		if err := c.LoadTable(configPath, configTab); err != nil {
+			return err
+		}
+
+		c.Agent.Quiet = true
+
+		ag, err := agent.NewAgent(c)
+		if err != nil {
+			return err
+		}
+
+		if err := ag.Connect(); err != nil {
+			return err
+		}
+
+		shutdown := make(chan struct{})
+		signals := make(chan os.Signal)
+		signal.Notify(signals, os.Interrupt, syscall.SIGHUP)
+		go func() {
+			sig := <-signals
+			if sig == os.Interrupt {
+				close(shutdown)
+			}
+			if sig == syscall.SIGHUP {
+				log.Printf("Reloading config\n")
+				<-reload
+				reload <- true
+				close(shutdown)
+			}
+		}()
+
+		if err := ag.Run(shutdown); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+type tables struct{ list []interface{} }
+
+func (tabs *tables) add(in interface{}) { tabs.list = append(tabs.list, in) }
+
+func (tabs tables) marshal() ([]byte, error) {
+	text := []byte{}
+	for _, in := range tabs.list {
+		add, err := toml.Marshal(in)
+		if err != nil {
+			return text, err
+		}
+		text = append(text, add...)
+	}
+	return text, nil
+}
+
+func printableConfigText(text []byte) string {
+	lines := strings.Split(string(text), "\n")
+	for _, replace := range [][2]string{
+		{"password=", "********"},
+		{"api_token=", "****************"},
+	} {
+		for i := range lines {
+			if strings.HasPrefix(lines[i], replace[0]) {
+				lines[i] = fmt.Sprintf("%s=\"%s\"", replace[0], replace[1])
+			}
+		}
+	}
+	return strings.Join(lines, "\n")
 }

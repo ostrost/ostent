@@ -2,16 +2,21 @@ package config
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 
+	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/plugins/inputs"
 	"github.com/influxdata/telegraf/plugins/outputs"
+	"github.com/influxdata/telegraf/plugins/parsers"
 	"github.com/influxdata/telegraf/plugins/serializers"
 
 	"github.com/influxdata/toml"
@@ -55,10 +60,13 @@ func NewConfig() *Config {
 		// Agent defaults:
 		Agent: &AgentConfig{
 			Interval:      internal.Duration{Duration: 10 * time.Second},
+			RoundInterval: true,
 			FlushInterval: internal.Duration{Duration: 10 * time.Second},
 		},
 
 		Tags:          make(map[string]string),
+		Inputs:        make([]*internal_models.RunningInput, 0),
+		Outputs:       make([]*internal_models.RunningOutput, 0),
 		InputFilters:  make([]string, 0),
 		OutputFilters: make([]string, 0),
 	}
@@ -68,6 +76,10 @@ func NewConfig() *Config {
 type AgentConfig struct {
 	// Interval at which to gather information
 	Interval internal.Duration
+
+	// RoundInterval rounds collection interval to 'interval'.
+	//     ie, if Interval=10s then always collect on :00, :10, :20, etc.
+	RoundInterval bool
 
 	// By default, precision will be set to the same timestamp order as the
 	// collection interval, with the maximum being 1s.
@@ -91,6 +103,16 @@ type AgentConfig struct {
 	// not be less than 2 times MetricBatchSize.
 	MetricBufferLimit int
 
+	// FlushBufferWhenFull tells Telegraf to flush the metric buffer whenever
+	// it fills up, regardless of FlushInterval. Setting this option to true
+	// does _not_ deactivate FlushInterval.
+	FlushBufferWhenFull bool
+
+	// TODO(cam): Remove UTC and parameter, they are no longer
+	// valid for the agent config. Leaving them here for now for backwards-
+	// compatability
+	UTC bool `toml:"utc"`
+
 	// Debug is the option for running in debug mode
 	Debug bool
 
@@ -100,6 +122,249 @@ type AgentConfig struct {
 	OmitHostname bool
 }
 
+// Inputs returns a list of strings of the configured inputs.
+func (c *Config) InputNames() []string {
+	var name []string
+	for _, input := range c.Inputs {
+		name = append(name, input.Name)
+	}
+	return name
+}
+
+// Outputs returns a list of strings of the configured inputs.
+func (c *Config) OutputNames() []string {
+	var name []string
+	for _, output := range c.Outputs {
+		name = append(name, output.Name)
+	}
+	return name
+}
+
+// ListTags returns a string of tags specified in the config,
+// line-protocol style
+func (c *Config) ListTags() string {
+	var tags []string
+
+	for k, v := range c.Tags {
+		tags = append(tags, fmt.Sprintf("%s=%s", k, v))
+	}
+
+	sort.Strings(tags)
+
+	return strings.Join(tags, " ")
+}
+
+var header = `# Telegraf Configuration
+#
+# Telegraf is entirely plugin driven. All metrics are gathered from the
+# declared inputs, and sent to the declared outputs.
+#
+# Plugins must be declared in here to be active.
+# To deactivate a plugin, comment out the name and any variables.
+#
+# Use 'telegraf -config telegraf.conf -test' to see what metrics a config
+# file would generate.
+#
+# Environment variables can be used anywhere in this config file, simply prepend
+# them with $. For strings the variable must be within quotes (ie, "$STR_VAR"),
+# for numbers and booleans they should be plain (ie, $INT_VAR, $BOOL_VAR)
+
+
+# Global tags can be specified here in key="value" format.
+[global_tags]
+  # dc = "us-east-1" # will tag all metrics with dc=us-east-1
+  # rack = "1a"
+  ## Environment variables can be used as tags, and throughout the config file
+  # user = "$USER"
+
+
+# Configuration for telegraf agent
+[agent]
+  ## Default data collection interval for all inputs
+  interval = "10s"
+  ## Rounds collection interval to 'interval'
+  ## ie, if interval="10s" then always collect on :00, :10, :20, etc.
+  round_interval = true
+
+  ## Telegraf will send metrics to outputs in batches of at
+  ## most metric_batch_size metrics.
+  metric_batch_size = 1000
+  ## For failed writes, telegraf will cache metric_buffer_limit metrics for each
+  ## output, and will flush this buffer on a successful write. Oldest metrics
+  ## are dropped first when this buffer fills.
+  metric_buffer_limit = 10000
+
+  ## Collection jitter is used to jitter the collection by a random amount.
+  ## Each plugin will sleep for a random time within jitter before collecting.
+  ## This can be used to avoid many plugins querying things like sysfs at the
+  ## same time, which can have a measurable effect on the system.
+  collection_jitter = "0s"
+
+  ## Default flushing interval for all outputs. You shouldn't set this below
+  ## interval. Maximum flush_interval will be flush_interval + flush_jitter
+  flush_interval = "10s"
+  ## Jitter the flush interval by a random amount. This is primarily to avoid
+  ## large write spikes for users running a large number of telegraf instances.
+  ## ie, a jitter of 5s and interval 10s means flushes will happen every 10-15s
+  flush_jitter = "0s"
+
+  ## By default, precision will be set to the same timestamp order as the
+  ## collection interval, with the maximum being 1s.
+  ## Precision will NOT be used for service inputs, such as logparser and statsd.
+  ## Valid values are "Nns", "Nus" (or "Nµs"), "Nms", "Ns".
+  precision = ""
+  ## Run telegraf in debug mode
+  debug = false
+  ## Run telegraf in quiet mode
+  quiet = false
+  ## Override default hostname, if empty use os.Hostname()
+  hostname = ""
+  ## If set to true, do no set the "host" tag in the telegraf agent.
+  omit_hostname = false
+
+
+###############################################################################
+#                            OUTPUT PLUGINS                                   #
+###############################################################################
+`
+
+var inputHeader = `
+
+###############################################################################
+#                            INPUT PLUGINS                                    #
+###############################################################################
+`
+
+var serviceInputHeader = `
+
+###############################################################################
+#                            SERVICE INPUT PLUGINS                            #
+###############################################################################
+`
+
+// PrintSampleConfig prints the sample config
+func PrintSampleConfig(inputFilters []string, outputFilters []string) {
+	fmt.Printf(header)
+
+	if len(outputFilters) != 0 {
+		printFilteredOutputs(outputFilters, false)
+	} else {
+		printFilteredOutputs(outputDefaults, false)
+		// Print non-default outputs, commented
+		var pnames []string
+		for pname := range outputs.Outputs {
+			if !sliceContains(pname, outputDefaults) {
+				pnames = append(pnames, pname)
+			}
+		}
+		sort.Strings(pnames)
+		printFilteredOutputs(pnames, true)
+	}
+
+	fmt.Printf(inputHeader)
+	if len(inputFilters) != 0 {
+		printFilteredInputs(inputFilters, false)
+	} else {
+		printFilteredInputs(inputDefaults, false)
+		// Print non-default inputs, commented
+		var pnames []string
+		for pname := range inputs.Inputs {
+			if !sliceContains(pname, inputDefaults) {
+				pnames = append(pnames, pname)
+			}
+		}
+		sort.Strings(pnames)
+		printFilteredInputs(pnames, true)
+	}
+}
+
+func printFilteredInputs(inputFilters []string, commented bool) {
+	// Filter inputs
+	var pnames []string
+	for pname := range inputs.Inputs {
+		if sliceContains(pname, inputFilters) {
+			pnames = append(pnames, pname)
+		}
+	}
+	sort.Strings(pnames)
+
+	// cache service inputs to print them at the end
+	servInputs := make(map[string]telegraf.ServiceInput)
+	// for alphabetical looping:
+	servInputNames := []string{}
+
+	// Print Inputs
+	for _, pname := range pnames {
+		creator := inputs.Inputs[pname]
+		input := creator()
+
+		switch p := input.(type) {
+		case telegraf.ServiceInput:
+			servInputs[pname] = p
+			servInputNames = append(servInputNames, pname)
+			continue
+		}
+
+		printConfig(pname, input, "inputs", commented)
+	}
+
+	// Print Service Inputs
+	if len(servInputs) == 0 {
+		return
+	}
+	sort.Strings(servInputNames)
+	fmt.Printf(serviceInputHeader)
+	for _, name := range servInputNames {
+		printConfig(name, servInputs[name], "inputs", commented)
+	}
+}
+
+func printFilteredOutputs(outputFilters []string, commented bool) {
+	// Filter outputs
+	var onames []string
+	for oname := range outputs.Outputs {
+		if sliceContains(oname, outputFilters) {
+			onames = append(onames, oname)
+		}
+	}
+	sort.Strings(onames)
+
+	// Print Outputs
+	for _, oname := range onames {
+		creator := outputs.Outputs[oname]
+		output := creator()
+		printConfig(oname, output, "outputs", commented)
+	}
+}
+
+type printer interface {
+	Description() string
+	SampleConfig() string
+}
+
+func printConfig(name string, p printer, op string, commented bool) {
+	comment := ""
+	if commented {
+		comment = "# "
+	}
+	fmt.Printf("\n%s# %s\n%s[[%s.%s]]", comment, p.Description(), comment,
+		op, name)
+
+	config := p.SampleConfig()
+	if config == "" {
+		fmt.Printf("\n%s  # no configuration\n\n", comment)
+	} else {
+		lines := strings.Split(config, "\n")
+		for i, line := range lines {
+			if i == 0 || i == len(lines)-1 {
+				fmt.Print("\n")
+				continue
+			}
+			fmt.Print(strings.TrimRight(comment+line, " ") + "\n")
+		}
+	}
+}
+
 func sliceContains(name string, list []string) bool {
 	for _, b := range list {
 		if b == name {
@@ -107,6 +372,47 @@ func sliceContains(name string, list []string) bool {
 		}
 	}
 	return false
+}
+
+// PrintInputConfig prints the config usage of a single input.
+func PrintInputConfig(name string) error {
+	if creator, ok := inputs.Inputs[name]; ok {
+		printConfig(name, creator(), "inputs", false)
+	} else {
+		return errors.New(fmt.Sprintf("Input %s not found", name))
+	}
+	return nil
+}
+
+// PrintOutputConfig prints the config usage of a single output.
+func PrintOutputConfig(name string) error {
+	if creator, ok := outputs.Outputs[name]; ok {
+		printConfig(name, creator(), "outputs", false)
+	} else {
+		return errors.New(fmt.Sprintf("Output %s not found", name))
+	}
+	return nil
+}
+
+func (c *Config) LoadDirectory(path string) error {
+	directoryEntries, err := ioutil.ReadDir(path)
+	if err != nil {
+		return err
+	}
+	for _, entry := range directoryEntries {
+		if entry.IsDir() {
+			continue
+		}
+		name := entry.Name()
+		if len(name) < 6 || name[len(name)-5:] != ".conf" {
+			continue
+		}
+		err := c.LoadConfig(filepath.Join(path, name))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // LoadConfig loads the given config file and applies it to c
@@ -228,10 +534,10 @@ func parseFile(fpath string) (*ast.Table, error) {
 	if err != nil {
 		return nil, err
 	}
-	return parseContents(contents)
+	return ParseContents(contents)
 }
 
-func parseContents(contents []byte) (*ast.Table, error) {
+func ParseContents(contents []byte) (*ast.Table, error) {
 	// ugh windows why
 	contents = trimBOM(contents)
 
@@ -299,6 +605,18 @@ func (c *Config) addInput(name string, table *ast.Table) error {
 		return fmt.Errorf("Undefined but requested input: %s", name)
 	}
 	input := creator()
+
+	// If the input has a SetParser function, then this means it can accept
+	// arbitrary types of input, so build the parser and set it.
+	switch t := input.(type) {
+	case parsers.ParserInput:
+		parser, err := buildParser(name, table)
+		if err != nil {
+			return err
+		}
+		t.SetParser(parser)
+	}
+
 	pluginConfig, err := buildInput(name, table)
 	if err != nil {
 		return err
@@ -460,15 +778,9 @@ func buildFilter(tbl *ast.Table) (internal_models.Filter, error) {
 	return f, nil
 }
 
-// buildSerializer grabs the necessary entries from the ast.Table for creating
-// a serializers.Serializer object, and creates it, which can then be added onto
-// an Output object.
-func buildSerializer(name string, tbl *ast.Table) (serializers.Serializer, error) {
-	return serializers.NewSerializer(&serializers.Config{
-		DataFormat: "graphite",
-	})
-}
-
+// buildInput parses input specific items from the ast.Table,
+// builds the filter and returns a
+// internal_models.InputConfig to be inserted into internal_models.RunningInput
 func buildInput(name string, tbl *ast.Table) (*internal_models.InputConfig, error) {
 	cp := &internal_models.InputConfig{Name: name}
 	if node, ok := tbl.Fields["interval"]; ok {
@@ -530,6 +842,118 @@ func buildInput(name string, tbl *ast.Table) (*internal_models.InputConfig, erro
 	return cp, nil
 }
 
+// buildParser grabs the necessary entries from the ast.Table for creating
+// a parsers.Parser object, and creates it, which can then be added onto
+// an Input object.
+func buildParser(name string, tbl *ast.Table) (parsers.Parser, error) {
+	c := &parsers.Config{}
+
+	if node, ok := tbl.Fields["data_format"]; ok {
+		if kv, ok := node.(*ast.KeyValue); ok {
+			if str, ok := kv.Value.(*ast.String); ok {
+				c.DataFormat = str.Value
+			}
+		}
+	}
+
+	// Legacy support, exec plugin originally parsed JSON by default.
+	if name == "exec" && c.DataFormat == "" {
+		c.DataFormat = "json"
+	} else if c.DataFormat == "" {
+		c.DataFormat = "influx"
+	}
+
+	if node, ok := tbl.Fields["separator"]; ok {
+		if kv, ok := node.(*ast.KeyValue); ok {
+			if str, ok := kv.Value.(*ast.String); ok {
+				c.Separator = str.Value
+			}
+		}
+	}
+
+	if node, ok := tbl.Fields["templates"]; ok {
+		if kv, ok := node.(*ast.KeyValue); ok {
+			if ary, ok := kv.Value.(*ast.Array); ok {
+				for _, elem := range ary.Value {
+					if str, ok := elem.(*ast.String); ok {
+						c.Templates = append(c.Templates, str.Value)
+					}
+				}
+			}
+		}
+	}
+
+	if node, ok := tbl.Fields["tag_keys"]; ok {
+		if kv, ok := node.(*ast.KeyValue); ok {
+			if ary, ok := kv.Value.(*ast.Array); ok {
+				for _, elem := range ary.Value {
+					if str, ok := elem.(*ast.String); ok {
+						c.TagKeys = append(c.TagKeys, str.Value)
+					}
+				}
+			}
+		}
+	}
+
+	if node, ok := tbl.Fields["data_type"]; ok {
+		if kv, ok := node.(*ast.KeyValue); ok {
+			if str, ok := kv.Value.(*ast.String); ok {
+				c.DataType = str.Value
+			}
+		}
+	}
+
+	c.MetricName = name
+
+	delete(tbl.Fields, "data_format")
+	delete(tbl.Fields, "separator")
+	delete(tbl.Fields, "templates")
+	delete(tbl.Fields, "tag_keys")
+	delete(tbl.Fields, "data_type")
+
+	return parsers.NewParser(c)
+}
+
+// buildSerializer grabs the necessary entries from the ast.Table for creating
+// a serializers.Serializer object, and creates it, which can then be added onto
+// an Output object.
+func buildSerializer(name string, tbl *ast.Table) (serializers.Serializer, error) {
+	c := &serializers.Config{}
+
+	if node, ok := tbl.Fields["data_format"]; ok {
+		if kv, ok := node.(*ast.KeyValue); ok {
+			if str, ok := kv.Value.(*ast.String); ok {
+				c.DataFormat = str.Value
+			}
+		}
+	}
+
+	if c.DataFormat == "" {
+		c.DataFormat = "influx"
+	}
+
+	if node, ok := tbl.Fields["prefix"]; ok {
+		if kv, ok := node.(*ast.KeyValue); ok {
+			if str, ok := kv.Value.(*ast.String); ok {
+				c.Prefix = str.Value
+			}
+		}
+	}
+
+	if node, ok := tbl.Fields["template"]; ok {
+		if kv, ok := node.(*ast.KeyValue); ok {
+			if str, ok := kv.Value.(*ast.String); ok {
+				c.Template = str.Value
+			}
+		}
+	}
+
+	delete(tbl.Fields, "data_format")
+	delete(tbl.Fields, "prefix")
+	delete(tbl.Fields, "template")
+	return serializers.NewSerializer(c)
+}
+
 // buildOutput parses output specific items from the ast.Table,
 // builds the filter and returns an
 // internal_models.OutputConfig to be inserted into internal_models.RunningInput
@@ -551,28 +975,4 @@ func buildOutput(name string, tbl *ast.Table) (*internal_models.OutputConfig, er
 		oc.Filter.NamePass = oc.Filter.FieldPass
 	}
 	return oc, nil
-}
-
-func (c *Config) LoadInterface(path string, in interface{}) error {
-	text, err := toml.Marshal(in)
-	if err != nil {
-		return err
-	}
-	lines := strings.Split(string(text), "\n")
-	for _, replace := range [][2]string{
-		{"password=", "********"},
-		{"api_token=", "****************"},
-	} {
-		for i := range lines {
-			if strings.HasPrefix(lines[i], replace[0]) {
-				lines[i] = fmt.Sprintf("%s=\"%s\"", replace[0], replace[1])
-			}
-		}
-	}
-	log.Printf("#%s.toml:\n%s", path, strings.Join(lines, "\n"))
-	tbl, err := parseContents(text)
-	if err != nil {
-		return err
-	}
-	return c.LoadTable(path, tbl)
 }
