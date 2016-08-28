@@ -5,8 +5,8 @@ fst=../vendor/github.com/influxdata/telegraf/internal
 snd=.
 
 (diff --unified --ignore-all-space --recursive \
- "$fst/../agent" \
- "$snd/agent";
+ "$fst"/../agent \
+ "$snd"/agent";
  diff --unified --ignore-all-space --recursive \
  "$fst" \
  "$snd") |

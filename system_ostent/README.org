@@ -4,17 +4,114 @@ Package =system_ostent= implements "=system_ostent=" input plugin.
 It derived from "=system=" plugin with the following changes.
 
 #+BEGIN_SRC sh :results raw
-fst=../vendor/github.com/influxdata/telegraf/plugins/inputs/system/system.go
-snd=../system_ostent/system_ostent.go
+fst=../vendor/github.com/influxdata/telegraf/plugins/inputs/system
+snd=../system_ostent
 
-diff --unified --ignore-all-space \
-"$fst" \
-"$snd" |
+(diff --unified --ignore-all-space --recursive \
+ "$fst"/net.go \
+ "$snd"/net.go;
+ diff --unified --ignore-all-space --recursive \
+ "$fst"/system.go \
+ "$snd"/system_ostent.go) |
 awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
 #+END_SRC
 
 #+BEGIN_SRC diff
 #+RESULTS:
+--- ../vendor/github.com/influxdata/telegraf/plugins/inputs/system/net.go
++++ ../system_ostent/net.go
+@@ -1,15 +1,23 @@
+-package system
++package system_ostent
+ 
+ import (
+ 	"fmt"
+ 	"net"
+-	"strings"
++
++	psnet "github.com/shirou/gopsutil/net"
+ 
+ 	"github.com/influxdata/telegraf"
+ 	"github.com/influxdata/telegraf/plugins/inputs"
++
++	"github.com/ostrost/ostent/system_ostent/internal"
+ )
+ 
++type PS interface{}
++type systemPS struct{}
++
+ type NetIOStats struct {
++	internal.LastNetIOStats
++
+ 	ps PS
+ 
+ 	skipChecks bool
+@@ -33,12 +41,19 @@
+ }
+ 
+ func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
+-	netio, err := s.ps.NetIO()
++	netio, err := internal.IOCounters(true)
+ 	if err != nil {
+ 		return fmt.Errorf("error getting net io info: %s", err)
+ 	}
+ 
++	interfaces, err := psnet.Interfaces()
++	if err != nil {
++		return err
++	}
++
+ 	for _, io := range netio {
++		var isLoopback bool
++
+ 		if len(s.Interfaces) != 0 {
+ 			var found bool
+ 
+@@ -59,7 +74,8 @@
+ 			}
+ 
+ 			if iface.Flags&net.FlagLoopback == net.FlagLoopback {
+-				continue
++				// continue // DO NOT skip loopback interface
++				isLoopback = true
+ 			}
+ 
+ 			if iface.Flags&net.FlagUp == 0 {
+@@ -70,6 +86,7 @@
+ 		tags := map[string]string{
+ 			"interface": io.Name,
+ 		}
++		internal.AddTags(interfaces, io.Name, isLoopback, tags)
+ 
+ 		fields := map[string]interface{}{
+ 			"bytes_sent":   io.BytesSent,
+@@ -81,9 +98,11 @@
+ 			"drop_in":      io.Dropin,
+ 			"drop_out":     io.Dropout,
+ 		}
++		s.AddDeltaFields(io, fields)
+ 		acc.AddFields("net", fields, tags)
+ 	}
+ 
++	/*
+ 	// Get system wide stats for different network protocols
+ 	// (ignore these stats if the call fails)
+ 	netprotos, _ := s.ps.NetProto()
+@@ -99,12 +118,13 @@
+ 		"interface": "all",
+ 	}
+ 	acc.AddFields("net", fields, tags)
++	*/
+ 
+ 	return nil
+ }
+ 
+ func init() {
+-	inputs.Add("net", func() telegraf.Input {
++	inputs.Add("net_ostent", func() telegraf.Input {
+ 		return &NetIOStats{ps: &systemPS{}}
+ 	})
+ }
 --- ../vendor/github.com/influxdata/telegraf/plugins/inputs/system/system.go
 +++ ../system_ostent/system_ostent.go
 @@ -1,10 +1,8 @@

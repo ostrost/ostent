@@ -12,44 +12,11 @@ import (
 	"github.com/ostrost/ostent/system_ostent/internal"
 )
 
-func interfaceIPByName(interfaces []psnet.InterfaceStat, name string) (string, bool) {
-	for _, fi := range interfaces {
-		if addrs := fi.Addrs; fi.Name == name && len(addrs) > 0 {
-			if ip, _, err := net.ParseCIDR(addrs[0].Addr); err == nil { // err is ignored
-				return ip.String(), true
-			}
-		}
-	}
-	return "", false
-}
-
-func (s *NetIOStats) addDeltaFields(io psnet.IOCountersStat, fields map[string]interface{}) {
-	if last, ok := s.last[io.Name]; ok {
-		deltaFields := map[string]interface{}{
-			"delta_bytes_sent":   io.BytesSent - last.BytesSent,
-			"delta_bytes_recv":   io.BytesRecv - last.BytesRecv,
-			"delta_packets_sent": io.PacketsSent - last.PacketsSent,
-			"delta_packets_recv": io.PacketsRecv - last.PacketsRecv,
-			"delta_err_in":       io.Errin - last.Errin,
-			"delta_err_out":      io.Errout - last.Errout,
-			"delta_drop_in":      io.Dropin - last.Dropin,
-			"delta_drop_out":     io.Dropout - last.Dropout,
-		}
-		for k, v := range deltaFields {
-			fields[k] = v
-		}
-	}
-	if s.last == nil {
-		s.last = make(map[string]psnet.IOCountersStat)
-	}
-	s.last[io.Name] = io
-}
-
 type PS interface{}
 type systemPS struct{}
 
 type NetIOStats struct {
-	last map[string]psnet.IOCountersStat
+	internal.LastNetIOStats
 
 	ps PS
 
@@ -119,12 +86,7 @@ func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
 		tags := map[string]string{
 			"interface": io.Name,
 		}
-		if isLoopback {
-			tags["nonemptyifLoopback"] = "nonempty"
-		}
-		if ip, ok := interfaceIPByName(interfaces, io.Name); ok {
-			tags["ip"] = ip
-		}
+		internal.AddTags(interfaces, io.Name, isLoopback, tags)
 
 		fields := map[string]interface{}{
 			"bytes_sent":   io.BytesSent,
@@ -136,7 +98,7 @@ func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
 			"drop_in":      io.Dropin,
 			"drop_out":     io.Dropout,
 		}
-		s.addDeltaFields(io, fields)
+		s.AddDeltaFields(io, fields)
 		acc.AddFields("net", fields, tags)
 	}
 
