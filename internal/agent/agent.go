@@ -2,6 +2,7 @@ package agent
 
 import (
 	"log"
+	"os"
 	"runtime"
 	"sync"
 	"time"
@@ -12,29 +13,7 @@ import (
 	internal_models "github.com/ostrost/ostent/internal/models"
 )
 
-func Run(c *config.Config) error {
-	// if err := c.LoadConfig( ... ); err != nil { return err }
-
-	a, err := NewAgent(c)
-	if err != nil {
-		return err
-	}
-
-	if err := a.Connect(); err != nil {
-		return err
-	}
-	/* There will be loop with waiting for reload signal.
-	reload := make(chan bool, 1)
-	reload <- true
-	for <-reload {
-		reload <- false // */
-	if err := a.Run(); err != nil {
-		return err
-	}
-	return nil
-}
-
-// Agent runs the agent and collects data based on the given config
+// Agent runs telegraf and collects data based on the given config
 type Agent struct {
 	Config *config.Config
 }
@@ -44,6 +23,20 @@ func NewAgent(config *config.Config) (*Agent, error) {
 	a := &Agent{
 		Config: config,
 	}
+
+	if !a.Config.Agent.OmitHostname {
+		if a.Config.Agent.Hostname == "" {
+			hostname, err := os.Hostname()
+			if err != nil {
+				return nil, err
+			}
+
+			a.Config.Agent.Hostname = hostname
+		}
+
+		config.Tags["host"] = a.Config.Agent.Hostname
+	}
+
 	return a, nil
 }
 
@@ -52,6 +45,18 @@ func (a *Agent) Connect() error {
 	for _, o := range a.Config.Outputs {
 		o.Quiet = a.Config.Agent.Quiet
 
+		switch ot := o.Output.(type) {
+		case telegraf.ServiceOutput:
+			if err := ot.Start(); err != nil {
+				log.Printf("Service for output %s failed to start, exiting\n%s\n",
+					o.Name, err.Error())
+				return err
+			}
+		}
+
+		if a.Config.Agent.Debug {
+			log.Printf("Attempting connection to output: %s\n", o.Name)
+		}
 		err := o.Output.Connect()
 		if err != nil {
 			log.Printf("Failed to connect to output %s, retrying in 15s, "+
@@ -61,6 +66,9 @@ func (a *Agent) Connect() error {
 			if err != nil {
 				return err
 			}
+		}
+		if a.Config.Agent.Debug {
+			log.Printf("Successfully connected to output: %s\n", o.Name)
 		}
 	}
 	return nil
@@ -85,6 +93,9 @@ func panicRecover(input *internal_models.RunningInput) {
 		runtime.Stack(trace, true)
 		log.Printf("FATAL: Input [%s] panicked: %s, Stack:\n%s\n",
 			input.Name, err, trace)
+		log.Println("PLEASE REPORT THIS PANIC ON GITHUB with " +
+			"stack trace, configuration, and OS information: " +
+			"https://github.com/influxdata/telegraf/issues/new")
 	}
 }
 
@@ -101,9 +112,26 @@ func (a *Agent) gatherer(
 	defer ticker.Stop()
 
 	for {
-		acc := NewAccumulator(metricC)
+		var outerr error
 
+		acc := NewAccumulator(input.Config, metricC)
+		acc.SetDebug(a.Config.Agent.Debug)
+		acc.SetPrecision(a.Config.Agent.Precision.Duration,
+			a.Config.Agent.Interval.Duration)
+		acc.setDefaultTags(a.Config.Tags)
+
+		start := time.Now()
 		gatherWithTimeout(input, acc, interval)
+		elapsed := time.Since(start)
+
+		if outerr != nil {
+			return outerr
+		}
+		if a.Config.Agent.Debug {
+			log.Printf("Input [%s] gathered metrics, (%s interval) in %s\n",
+				input.Name, interval, elapsed)
+		}
+
 		select {
 		case <-ticker.C:
 			continue
@@ -205,17 +233,36 @@ func copyMetric(m telegraf.Metric) telegraf.Metric {
 
 // Run runs the agent daemon, gathering every Interval
 func (a *Agent) Run() error {
-	nextDelta := func(d time.Duration) time.Duration {
-		now := time.Now()
-		return now.Truncate(d).Add(d).Sub(now)
-	}
+	var wg sync.WaitGroup
 
 	// channel shared between all input threads for accumulating metrics
 	metricC := make(chan telegraf.Metric, 10000)
 
-	time.Sleep(nextDelta(a.Config.Agent.Interval.Duration))
+	for _, input := range a.Config.Inputs {
+		// Start service of any ServicePlugins
+		switch p := input.Input.(type) {
+		case telegraf.ServiceInput:
+			acc := NewAccumulator(input.Config, metricC)
+			acc.SetDebug(a.Config.Agent.Debug)
+			// Service input plugins should set their own precision of their
+			// metrics.
+			acc.DisablePrecision()
+			acc.setDefaultTags(a.Config.Tags)
+			if err := p.Start(acc); err != nil {
+				log.Printf("Service for input %s failed to start, exiting\n%s\n",
+					input.Name, err.Error())
+				return err
+			}
+			defer p.Stop()
+		}
+	}
 
-	var wg sync.WaitGroup
+	// Round collection to nearest interval by sleeping
+	if true { // TODO  if a.Config.Agent.RoundInterval
+		i := int64(a.Config.Agent.Interval.Duration)
+		time.Sleep(time.Duration(i - (time.Now().UnixNano() % i)))
+	}
+
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
@@ -240,5 +287,27 @@ func (a *Agent) Run() error {
 	}
 
 	wg.Wait()
+	return nil
+}
+
+func Run(c *config.Config) error {
+	// if err := c.LoadConfig( ... ); err != nil { return err }
+
+	a, err := NewAgent(c)
+	if err != nil {
+		return err
+	}
+
+	if err := a.Connect(); err != nil {
+		return err
+	}
+	/* There will be loop with waiting for reload signal.
+	reload := make(chan bool, 1)
+	reload <- true
+	for <-reload {
+		reload <- false // */
+	if err := a.Run(); err != nil {
+		return err
+	}
 	return nil
 }

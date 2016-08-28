@@ -26,15 +26,24 @@ var config = struct {
 }{UnmarshalTable: toml.UnmarshalTable}
 
 var (
+	// Default input plugins
+	inputDefaults = []string{"cpu", "mem", "swap", "system", "kernel",
+		"processes", "disk", "diskio"}
+
+	// Default output plugins
+	outputDefaults = []string{"influxdb"}
+
 	// envVarRe is a regex to find environment variables in the config file
 	envVarRe = regexp.MustCompile(`\$\w+`)
 )
 
-// Config specifies the URL/user/password for the database that the agent
+// Config specifies the URL/user/password for the database that telegraf
 // will be logging to, as well as all the plugins that the user has
 // specified
 type Config struct {
-	Tags map[string]string
+	Tags          map[string]string
+	InputFilters  []string
+	OutputFilters []string
 
 	Agent   *AgentConfig
 	Inputs  []*internal_models.RunningInput
@@ -43,10 +52,15 @@ type Config struct {
 
 func NewConfig() *Config {
 	c := &Config{
+		// Agent defaults:
 		Agent: &AgentConfig{
 			Interval:      internal.Duration{Duration: 10 * time.Second},
 			FlushInterval: internal.Duration{Duration: 10 * time.Second},
 		},
+
+		Tags:          make(map[string]string),
+		InputFilters:  make([]string, 0),
+		OutputFilters: make([]string, 0),
 	}
 	return c
 }
@@ -54,6 +68,14 @@ func NewConfig() *Config {
 type AgentConfig struct {
 	// Interval at which to gather information
 	Interval internal.Duration
+
+	// By default, precision will be set to the same timestamp order as the
+	// collection interval, with the maximum being 1s.
+	//   ie, when interval = "10s", precision will be "1s"
+	//       when interval = "250ms", precision will be "1ms"
+	// Precision will NOT be used for service inputs. It is up to each individual
+	// service input to set the timestamp at the appropriate precision.
+	Precision internal.Duration
 
 	// FlushInterval is the Interval at which to flush data
 	FlushInterval internal.Duration
@@ -69,8 +91,22 @@ type AgentConfig struct {
 	// not be less than 2 times MetricBatchSize.
 	MetricBufferLimit int
 
+	// Debug is the option for running in debug mode
+	Debug bool
+
 	// Quiet is the option for running in quiet mode
-	Quiet bool
+	Quiet        bool
+	Hostname     string
+	OmitHostname bool
+}
+
+func sliceContains(name string, list []string) bool {
+	for _, b := range list {
+		if b == name {
+			return true
+		}
+	}
+	return false
 }
 
 // LoadConfig loads the given config file and applies it to c
@@ -166,6 +202,12 @@ func (c *Config) LoadTable(path string, tbl *ast.Table) error {
 						pluginName, path)
 				}
 			}
+			// Assume it's an input input for legacy config file support if no other
+			// identifiers are present
+		default:
+			if err = c.addInput(name, subTable); err != nil {
+				return fmt.Errorf("Error parsing %s, %s", path, err)
+			}
 		}
 	}
 	return nil
@@ -205,6 +247,9 @@ func parseContents(contents []byte) (*ast.Table, error) {
 }
 
 func (c *Config) addOutput(name string, table *ast.Table) error {
+	if len(c.OutputFilters) > 0 && !sliceContains(name, c.OutputFilters) {
+		return nil
+	}
 	creator, ok := outputs.Outputs[name]
 	if !ok {
 		return fmt.Errorf("Undefined but requested output: %s", name)
@@ -241,6 +286,14 @@ func (c *Config) addOutput(name string, table *ast.Table) error {
 }
 
 func (c *Config) addInput(name string, table *ast.Table) error {
+	if len(c.InputFilters) > 0 && !sliceContains(name, c.InputFilters) {
+		return nil
+	}
+	// Legacy support renaming io input to diskio
+	if name == "io" {
+		name = "diskio"
+	}
+
 	creator, ok := inputs.Inputs[name]
 	if !ok {
 		return fmt.Errorf("Undefined but requested input: %s", name)
@@ -271,6 +324,19 @@ func (c *Config) addInput(name string, table *ast.Table) error {
 func buildFilter(tbl *ast.Table) (internal_models.Filter, error) {
 	f := internal_models.Filter{}
 
+	if node, ok := tbl.Fields["namepass"]; ok {
+		if kv, ok := node.(*ast.KeyValue); ok {
+			if ary, ok := kv.Value.(*ast.Array); ok {
+				for _, elem := range ary.Value {
+					if str, ok := elem.(*ast.String); ok {
+						f.NamePass = append(f.NamePass, str.Value)
+						f.IsActive = true
+					}
+				}
+			}
+		}
+	}
+
 	if node, ok := tbl.Fields["namedrop"]; ok {
 		if kv, ok := node.(*ast.KeyValue); ok {
 			if ary, ok := kv.Value.(*ast.Array); ok {
@@ -284,11 +350,113 @@ func buildFilter(tbl *ast.Table) (internal_models.Filter, error) {
 		}
 	}
 
+	fields := []string{"pass", "fieldpass"}
+	for _, field := range fields {
+		if node, ok := tbl.Fields[field]; ok {
+			if kv, ok := node.(*ast.KeyValue); ok {
+				if ary, ok := kv.Value.(*ast.Array); ok {
+					for _, elem := range ary.Value {
+						if str, ok := elem.(*ast.String); ok {
+							f.FieldPass = append(f.FieldPass, str.Value)
+							f.IsActive = true
+						}
+					}
+				}
+			}
+		}
+	}
+
+	fields = []string{"drop", "fielddrop"}
+	for _, field := range fields {
+		if node, ok := tbl.Fields[field]; ok {
+			if kv, ok := node.(*ast.KeyValue); ok {
+				if ary, ok := kv.Value.(*ast.Array); ok {
+					for _, elem := range ary.Value {
+						if str, ok := elem.(*ast.String); ok {
+							f.FieldDrop = append(f.FieldDrop, str.Value)
+							f.IsActive = true
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if node, ok := tbl.Fields["tagpass"]; ok {
+		if subtbl, ok := node.(*ast.Table); ok {
+			for name, val := range subtbl.Fields {
+				if kv, ok := val.(*ast.KeyValue); ok {
+					tagfilter := &internal_models.TagFilter{Name: name}
+					if ary, ok := kv.Value.(*ast.Array); ok {
+						for _, elem := range ary.Value {
+							if str, ok := elem.(*ast.String); ok {
+								tagfilter.Filter = append(tagfilter.Filter, str.Value)
+							}
+						}
+					}
+					f.TagPass = append(f.TagPass, *tagfilter)
+					f.IsActive = true
+				}
+			}
+		}
+	}
+
+	if node, ok := tbl.Fields["tagdrop"]; ok {
+		if subtbl, ok := node.(*ast.Table); ok {
+			for name, val := range subtbl.Fields {
+				if kv, ok := val.(*ast.KeyValue); ok {
+					tagfilter := &internal_models.TagFilter{Name: name}
+					if ary, ok := kv.Value.(*ast.Array); ok {
+						for _, elem := range ary.Value {
+							if str, ok := elem.(*ast.String); ok {
+								tagfilter.Filter = append(tagfilter.Filter, str.Value)
+							}
+						}
+					}
+					f.TagDrop = append(f.TagDrop, *tagfilter)
+					f.IsActive = true
+				}
+			}
+		}
+	}
+
+	if node, ok := tbl.Fields["tagexclude"]; ok {
+		if kv, ok := node.(*ast.KeyValue); ok {
+			if ary, ok := kv.Value.(*ast.Array); ok {
+				for _, elem := range ary.Value {
+					if str, ok := elem.(*ast.String); ok {
+						f.TagExclude = append(f.TagExclude, str.Value)
+					}
+				}
+			}
+		}
+	}
+
+	if node, ok := tbl.Fields["taginclude"]; ok {
+		if kv, ok := node.(*ast.KeyValue); ok {
+			if ary, ok := kv.Value.(*ast.Array); ok {
+				for _, elem := range ary.Value {
+					if str, ok := elem.(*ast.String); ok {
+						f.TagInclude = append(f.TagInclude, str.Value)
+					}
+				}
+			}
+		}
+	}
 	if err := f.CompileFilter(); err != nil {
 		return f, err
 	}
 
 	delete(tbl.Fields, "namedrop")
+	delete(tbl.Fields, "namepass")
+	delete(tbl.Fields, "fielddrop")
+	delete(tbl.Fields, "fieldpass")
+	delete(tbl.Fields, "drop")
+	delete(tbl.Fields, "pass")
+	delete(tbl.Fields, "tagdrop")
+	delete(tbl.Fields, "tagpass")
+	delete(tbl.Fields, "tagexclude")
+	delete(tbl.Fields, "taginclude")
 	return f, nil
 }
 
@@ -316,7 +484,44 @@ func buildInput(name string, tbl *ast.Table) (*internal_models.InputConfig, erro
 		}
 	}
 
+	if node, ok := tbl.Fields["name_prefix"]; ok {
+		if kv, ok := node.(*ast.KeyValue); ok {
+			if str, ok := kv.Value.(*ast.String); ok {
+				cp.MeasurementPrefix = str.Value
+			}
+		}
+	}
+
+	if node, ok := tbl.Fields["name_suffix"]; ok {
+		if kv, ok := node.(*ast.KeyValue); ok {
+			if str, ok := kv.Value.(*ast.String); ok {
+				cp.MeasurementSuffix = str.Value
+			}
+		}
+	}
+
+	if node, ok := tbl.Fields["name_override"]; ok {
+		if kv, ok := node.(*ast.KeyValue); ok {
+			if str, ok := kv.Value.(*ast.String); ok {
+				cp.NameOverride = str.Value
+			}
+		}
+	}
+
+	cp.Tags = make(map[string]string)
+	if node, ok := tbl.Fields["tags"]; ok {
+		if subtbl, ok := node.(*ast.Table); ok {
+			if err := config.UnmarshalTable(subtbl, cp.Tags); err != nil {
+				log.Printf("Could not parse tags for input %s\n", name)
+			}
+		}
+	}
+
+	delete(tbl.Fields, "name_prefix")
+	delete(tbl.Fields, "name_suffix")
+	delete(tbl.Fields, "name_override")
 	delete(tbl.Fields, "interval")
+	delete(tbl.Fields, "tags")
 	var err error
 	cp.Filter, err = buildFilter(tbl)
 	if err != nil {

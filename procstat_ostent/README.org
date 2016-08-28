@@ -1,0 +1,149 @@
+* package procstat_ostent
+
+#+BEGIN_SRC sh :results raw
+fst=../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat
+snd=../procstat_ostent
+
+diff --unified --ignore-all-space --recursive \
+"$fst" \
+"$snd" |
+awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
+#+END_SRC
+
+#+BEGIN_SRC diff
+#+RESULTS:
+Only in ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat: README.md
+Only in ../procstat_ostent: README.org
+diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat/procstat.go ../procstat_ostent/procstat.go
+--- ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat/procstat.go
++++ ../procstat_ostent/procstat.go
+@@ -1,12 +1,14 @@
+-package procstat
++package procstat_ostent
+ 
+ import (
+ 	"fmt"
+ 	"io/ioutil"
+ 	"log"
++	"os"
+ 	"os/exec"
+ 	"strconv"
+ 	"strings"
++	"time"
+ 
+ 	"github.com/shirou/gopsutil/process"
+ 
+@@ -64,20 +66,36 @@
+ }
+ 
+ func (p *Procstat) Gather(acc telegraf.Accumulator) error {
++	start := time.Now()
+ 	err := p.createProcesses()
+ 	if err != nil {
+ 		log.Printf("Error: procstat getting process, exe: [%s]	pidfile: [%s] pattern: [%s] user: [%s] %s",
+ 			p.Exe, p.PidFile, p.Pattern, p.User, err.Error())
+ 	} else {
+ 		for pid, proc := range p.pidmap {
+-			p := NewSpecProcessor(p.ProcessName, p.Prefix, pid, acc, proc, p.tagmap[pid])
++			p := NewSpecProcessor(p.ProcessName, p.Prefix, pid, acc, proc, tags(p.tagmap[pid], start))
+ 			p.pushMetrics()
+ 		}
++		if false {
++			fmt.Printf("Gathered %#v pids in %s\n", len(p.pidmap), time.Since(start))
++		}
+ 	}
+ 
+ 	return nil
+ }
+ 
++func tags(pidmap map[string]string, start time.Time) map[string]string {
++	if time.Since(start) < time.Millisecond*200 {
++		return pidmap
++	}
++	dup := make(map[string]string, len(pidmap))
++	for k, v := range pidmap {
++		dup[k] = v
++	}
++	dup["elapsed"] = "true"
++	return dup
++}
++
+ func (p *Procstat) createProcesses() error {
+ 	var errstring string
+ 	var outerr error
+@@ -93,7 +111,7 @@
+ 			proc, err := process.NewProcess(pid)
+ 			if err == nil {
+ 				p.pidmap[pid] = proc
+-			} else {
++			} else if !os.IsNotExist(err) {
+ 				errstring += err.Error() + " "
+ 			}
+ 		}
+@@ -118,6 +136,8 @@
+ 		pids, err = p.pidsFromPattern()
+ 	} else if p.User != "" {
+ 		pids, err = p.pidsFromUser()
++	} else if true {
++		pids, err = p.pidsAll()
+ 	} else {
+ 		err = fmt.Errorf("Either exe, pid_file, user, or pattern has to be specified")
+ 	}
+@@ -125,6 +145,16 @@
+ 	return pids, err
+ }
+ 
++func (p *Procstat) pidsAll() ([]int32, error) {
++	pids, err := process.Pids()
++	if err == nil {
++		for _, pid := range pids {
++			p.tagmap[pid] = make(map[string]string)
++		}
++	}
++	return pids, err
++}
++
+ func (p *Procstat) pidsFromFile() ([]int32, error) {
+ 	var out []int32
+ 	var outerr error
+@@ -228,7 +258,7 @@
+ }
+ 
+ func init() {
+-	inputs.Add("procstat", func() telegraf.Input {
++	inputs.Add("procstat_ostent", func() telegraf.Input {
+ 		return NewProcstat()
+ 	})
+ }
+Only in ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat: procstat_test.go
+diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat/spec_processor.go ../procstat_ostent/spec_processor.go
+--- ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat/spec_processor.go
++++ ../procstat_ostent/spec_processor.go
+@@ -1,4 +1,4 @@
+-package procstat
++package procstat_ostent
+ 
+ import (
+ 	"time"
+@@ -50,6 +50,13 @@
+ 	}
+ 	fields := map[string]interface{}{"pid": p.pid}
+ 
++	if uids, err := p.proc.Uids(); err == nil {
++		fields[prefix+"uid"] = uids[0] // int32
++	}
++	if nice, err := p.proc.Nice(); err == nil {
++		fields[prefix+"nice"] = nice // int32
++	}
++
+ 	numThreads, err := p.proc.NumThreads()
+ 	if err == nil {
+ 		fields[prefix+"num_threads"] = numThreads
+@@ -101,5 +108,5 @@
+ 		fields[prefix+"memory_swap"] = mem.Swap
+ 	}
+ 
+-	p.acc.AddFields("procstat", fields, p.tags)
++	p.acc.AddFields("procstat_ostent", fields, p.tags)
+ }
+#+END_SRC

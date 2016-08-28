@@ -6,20 +6,11 @@ It derived from "=system=" plugin with the following changes.
 #+BEGIN_SRC sh :results raw
 fst=../vendor/github.com/influxdata/telegraf/plugins/inputs/system/system.go
 snd=../system_ostent/system_ostent.go
-printf -- '--- %s\n' "$fst"
-printf -- '+++ %s\n' "$snd"
 
 diff --unified --ignore-all-space \
 "$fst" \
 "$snd" |
-sed 1,2d # filenames printed already
-exit $? # ......................................................... END HERE .
-
-# bash syntax: have above: #+BEGIN_SRC bash
-diff --unified \
-<(go run print_ast.go -- "$fst" | grep -vF -- "$fst" | grep -v Rparen:) \
-<(go run print_ast.go -- "$snd" | grep -vF -- "$snd" | grep -v Rparen:) |
-sed 1,2d # filenames printed already
+awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
 #+END_SRC
 
 #+BEGIN_SRC diff

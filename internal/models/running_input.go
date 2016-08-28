@@ -14,7 +14,11 @@ type RunningInput struct {
 
 // InputConfig containing a name, interval, and filter
 type InputConfig struct {
-	Name     string
-	Filter   Filter
-	Interval time.Duration
+	Name              string
+	NameOverride      string
+	MeasurementPrefix string
+	MeasurementSuffix string
+	Tags              map[string]string
+	Filter            Filter
+	Interval          time.Duration
 }
