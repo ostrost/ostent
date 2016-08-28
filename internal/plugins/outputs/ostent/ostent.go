@@ -802,7 +802,10 @@ func (o *ostent) Write(ms []telegraf.Metric) error {
 			}
 		}
 	}
+	up.cpuData = up.cpuData[:cpui]
+	up.diskData = up.diskData[:diski]
 	up.netData = up.netData[:neti]
+
 	writeProcstatEnd(up)
 	writeSystemDiskEnd(up)
 
