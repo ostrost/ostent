@@ -89,8 +89,20 @@ type AgentConfig struct {
 	// service input to set the timestamp at the appropriate precision.
 	Precision internal.Duration
 
+	// CollectionJitter is used to jitter the collection by a random amount.
+	// Each plugin will sleep for a random time within jitter before collecting.
+	// This can be used to avoid many plugins querying things like sysfs at the
+	// same time, which can have a measurable effect on the system.
+	CollectionJitter internal.Duration
+
 	// FlushInterval is the Interval at which to flush data
 	FlushInterval internal.Duration
+
+	// FlushJitter Jitters the flush interval by a random amount.
+	// This is primarily to avoid large write spikes for users running a large
+	// number of telegraf instances.
+	// ie, a jitter of 5s and interval 10s means flushes will happen every 10-15s
+	FlushJitter internal.Duration
 
 	// MetricBatchSize is the maximum number of metrics that is wrote to an
 	// output plugin in one call.
@@ -415,16 +427,34 @@ func (c *Config) LoadDirectory(path string) error {
 	return nil
 }
 
+// Try to find a default config file at these locations (in order):
+//   1. $TELEGRAF_CONFIG_PATH
+//   2. $HOME/.telegraf/telegraf.conf
+//   3. /etc/telegraf/telegraf.conf
+//
+func getDefaultConfigPath() (string, error) {
+	envfile := os.Getenv("TELEGRAF_CONFIG_PATH")
+	homefile := os.ExpandEnv("${HOME}/.telegraf/telegraf.conf")
+	etcfile := "/etc/telegraf/telegraf.conf"
+	for _, path := range []string{envfile, homefile, etcfile} {
+		if _, err := os.Stat(path); err == nil {
+			log.Printf("Using config file: %s", path)
+			return path, nil
+		}
+	}
+
+	// if we got here, we didn't find a file in a default location
+	return "", fmt.Errorf("No config file specified, and could not find one"+
+		" in $TELEGRAF_CONFIG_PATH, %s, or %s", homefile, etcfile)
+}
+
 // LoadConfig loads the given config file and applies it to c
 func (c *Config) LoadConfig(path string) error {
 	var err error
 	if path == "" {
-		return fmt.Errorf("No config file specified")
-		/*
-			if path, err = getDefaultConfigPath(); err != nil {
-				return err
-			}
-		*/
+		if path, err = getDefaultConfigPath(); err != nil {
+			return err
+		}
 	}
 	tbl, err := parseFile(path)
 	if err != nil {

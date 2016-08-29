@@ -10,6 +10,7 @@ import (
 
 	"github.com/influxdata/telegraf"
 
+	"github.com/ostrost/ostent/internal"
 	"github.com/ostrost/ostent/internal/config"
 	internal_models "github.com/ostrost/ostent/internal/models"
 )
@@ -121,6 +122,8 @@ func (a *Agent) gatherer(
 		acc.SetPrecision(a.Config.Agent.Precision.Duration,
 			a.Config.Agent.Interval.Duration)
 		acc.setDefaultTags(a.Config.Tags)
+
+		internal.RandomSleep(a.Config.Agent.CollectionJitter.Duration, shutdown)
 
 		start := time.Now()
 		gatherWithTimeout(shutdown, input, acc, interval)
