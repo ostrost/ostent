@@ -25,14 +25,14 @@ type Procstat struct {
 	User        string
 
 	// pidmap maps a pid to a process object, so we don't recreate every gather
-	pidmap map[int32]*process.Process
+	pidmap map[int32]proc
 	// tagmap maps a pid to a map of tags for that pid
 	tagmap map[int32]map[string]string
 }
 
 func NewProcstat() *Procstat {
 	return &Procstat{
-		pidmap: make(map[int32]*process.Process),
+		pidmap: make(map[int32]proc),
 		tagmap: make(map[int32]map[string]string),
 	}
 }
@@ -108,7 +108,7 @@ func (p *Procstat) createProcesses() error {
 	for _, pid := range pids {
 		_, ok := p.pidmap[pid]
 		if !ok {
-			proc, err := process.NewProcess(pid)
+			proc, err := newProcess(pid)
 			if err == nil {
 				p.pidmap[pid] = proc
 			} else if !os.IsNotExist(err) {

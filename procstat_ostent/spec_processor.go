@@ -3,7 +3,7 @@ package procstat_ostent
 import (
 	"time"
 
-	"github.com/shirou/gopsutil/process"
+	// "github.com/shirou/gopsutil/process"
 
 	"github.com/influxdata/telegraf"
 )
@@ -14,7 +14,7 @@ type SpecProcessor struct {
 	tags   map[string]string
 	fields map[string]interface{}
 	acc    telegraf.Accumulator
-	proc   *process.Process
+	proc   proc // *process.Process
 }
 
 func NewSpecProcessor(
@@ -22,7 +22,7 @@ func NewSpecProcessor(
 	prefix string,
 	pid int32,
 	acc telegraf.Accumulator,
-	p *process.Process,
+	p proc, // *process.Process,
 	tags map[string]string,
 ) *SpecProcessor {
 	if processName != "" {
