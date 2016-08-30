@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -73,8 +72,11 @@ func (p *Procstat) Gather(acc telegraf.Accumulator) error {
 			p.Exe, p.PidFile, p.Pattern, p.User, err.Error())
 	} else {
 		for pid, proc := range p.pidmap {
-			p := NewSpecProcessor(p.ProcessName, p.Prefix, pid, acc, proc, tags(p.tagmap[pid], start))
-			p.pushMetrics()
+			sp := NewSpecProcessor(p.ProcessName, p.Prefix, pid, acc, proc, p.tagmap[pid])
+			if err := sp.pushMetrics(); err != nil && isNotExist(err) {
+				delete(p.pidmap, pid)
+				delete(p.tagmap, pid)
+			}
 		}
 		if false {
 			fmt.Printf("Gathered %#v pids in %s\n", len(p.pidmap), time.Since(start))
@@ -82,18 +84,6 @@ func (p *Procstat) Gather(acc telegraf.Accumulator) error {
 	}
 
 	return nil
-}
-
-func tags(pidmap map[string]string, start time.Time) map[string]string {
-	if time.Since(start) < time.Millisecond*200 {
-		return pidmap
-	}
-	dup := make(map[string]string, len(pidmap))
-	for k, v := range pidmap {
-		dup[k] = v
-	}
-	dup["elapsed"] = "true"
-	return dup
 }
 
 func (p *Procstat) createProcesses() error {
@@ -111,7 +101,7 @@ func (p *Procstat) createProcesses() error {
 			proc, err := newProcess(pid)
 			if err == nil {
 				p.pidmap[pid] = proc
-			} else if !os.IsNotExist(err) {
+			} else if !isNotExist(err) {
 				errstring += err.Error() + " "
 			}
 		}
