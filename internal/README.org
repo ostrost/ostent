@@ -18,13 +18,13 @@ awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
 diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/internal/../agent/accumulator.go ./agent/accumulator.go
 --- ../vendor/github.com/influxdata/telegraf/internal/../agent/accumulator.go
 +++ ./agent/accumulator.go
-@@ -7,7 +7,8 @@
+@@ -8,7 +8,8 @@
  	"time"
  
  	"github.com/influxdata/telegraf"
 -	"github.com/influxdata/telegraf/internal/models"
 +
-+	internal_models "github.com/ostrost/ostent/internal/models"
++	"github.com/ostrost/ostent/internal/models"
  )
  
  func NewAccumulator(
@@ -42,11 +42,11 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
 +
 +	"github.com/ostrost/ostent/internal"
 +	"github.com/ostrost/ostent/internal/config"
-+	internal_models "github.com/ostrost/ostent/internal/models"
++	"github.com/ostrost/ostent/internal/models"
  )
  
  // Agent runs telegraf and collects data based on the given config
-@@ -265,7 +266,6 @@
+@@ -268,7 +269,6 @@
  			a.flush()
  			return nil
  		case <-ticker.C:
@@ -62,7 +62,7 @@ Only in ../vendor/github.com/influxdata/telegraf/internal/config: aws
 diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/internal/config/config.go ./config/config.go
 --- ../vendor/github.com/influxdata/telegraf/internal/config/config.go
 +++ ./config/config.go
-@@ -14,18 +14,22 @@
+@@ -15,18 +15,22 @@
  	"time"
  
  	"github.com/influxdata/telegraf"
@@ -78,7 +78,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	"github.com/influxdata/toml/ast"
 +
 +	"github.com/ostrost/ostent/internal"
-+	internal_models "github.com/ostrost/ostent/internal/models"
++	"github.com/ostrost/ostent/internal/models"
  )
  
 +var config = struct {
@@ -88,7 +88,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  var (
  	// Default input plugins
  	inputDefaults = []string{"cpu", "mem", "swap", "system", "kernel",
-@@ -457,6 +461,12 @@
+@@ -461,6 +465,12 @@
  		return fmt.Errorf("Error parsing %s, %s", path, err)
  	}
  
@@ -101,7 +101,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	// Parse tags tables first:
  	for _, tableName := range []string{"tags", "global_tags"} {
  		if val, ok := tbl.Fields[tableName]; ok {
-@@ -554,6 +564,10 @@
+@@ -558,6 +568,10 @@
  	if err != nil {
  		return nil, err
  	}
@@ -112,7 +112,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	// ugh windows why
  	contents = trimBOM(contents)
  
-@@ -586,6 +600,9 @@
+@@ -590,6 +604,9 @@
  		if err != nil {
  			return err
  		}

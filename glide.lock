@@ -1,5 +1,5 @@
-hash: 01d15da45402a18ce56c2fee66c2cd1e3abda9266abd60a60b274588391f5543
-updated: 2016-08-17T13:06:33.404328313Z
+hash: 172ef6b33d44b5574fd19abf9f57e13158d31da6e9f84666fb64645e0012ccd7
+updated: 2016-08-31T16:27:25.973069614Z
 imports:
 - name: github.com/blang/semver
   version: 60ec3488bfea7cca02b021d106d9911120d25fe9
@@ -7,10 +7,8 @@ imports:
   version: 2724a9c9051aa62e9cca11304e7dd518e9e41599
   subpackages:
   - md2man
-- name: github.com/cyberdelia/go-metrics-graphite
-  version: 7e54b5c2aa6eaff4286c44129c3def899dff528c
 - name: github.com/davecgh/go-spew
-  version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
+  version: 6cf5744a041a0022271cefed95ba843f6d87fd51
   subpackages:
   - spew
 - name: github.com/facebookgo/clock
@@ -29,21 +27,23 @@ imports:
   subpackages:
   - oleutil
 - name: github.com/gobwas/glob
-  version: 49571a1557cd20e6a2410adc6421f85b66c730b5
+  version: ce6abff51712df5da11095fb41dd4b0353559797
   subpackages:
+  - compiler
   - match
-  - runes
-  - strings
+  - syntax
+  - syntax/ast
+  - syntax/lexer
+  - util/runes
+  - util/strings
 - name: github.com/google/go-querystring
   version: 9235644dd9e52eeae6fa48efd539fdc351a0af53
   subpackages:
   - query
-- name: github.com/gorilla/context
-  version: 01ef6ff48fdcdcb29ae84f90f10f33dac24845a0
 - name: github.com/gorilla/handlers
   version: a5775781a543af3c6b9f5baf10995e4d14168950
 - name: github.com/gorilla/schema
-  version: a30fc2876ba631a279fc9207eb889f33f6c52d9f
+  version: 0164a00ab4cd01d814d8cd5bf63fd9fcea30e23b
 - name: github.com/gorilla/websocket
   version: a69d25be2fe2923a97c2af6849b2f52426f68fc0
 - name: github.com/inconshreveable/mousetrap
@@ -52,26 +52,31 @@ imports:
   version: e094138084855d444195b252314dfee9eae34cab
   subpackages:
   - client/v2
-  - client
   - models
   - pkg/escape
 - name: github.com/influxdata/telegraf
-  version: 03d02fa67a06b73614cae657f36adb8dd7e147ba
+  version: 8264ed6c8cb5e8e3ebb7533c1798f4e4e31fd1a7
   subpackages:
+  - filter
+  - internal
   - plugins/inputs
   - plugins/inputs/system
   - plugins/outputs
   - plugins/outputs/graphite
   - plugins/outputs/influxdb
   - plugins/outputs/librato
+  - plugins/parsers
+  - plugins/parsers/graphite
+  - plugins/parsers/influx
+  - plugins/parsers/json
+  - plugins/parsers/nagios
+  - plugins/parsers/value
   - plugins/serializers
-  - filter
-  - internal
   - plugins/serializers/graphite
   - plugins/serializers/influx
   - plugins/serializers/json
 - name: github.com/influxdata/toml
-  version: af4df43894b16e3fd2b788d01bd27ad0776ef2d0
+  version: ff2a26079d60c4a832804b5fdfeca9245f8062f4
   subpackages:
   - .
   - ast
@@ -86,8 +91,6 @@ imports:
   version: d8ff598a019f2c7bad0980917a588193cf26666e
 - name: github.com/justinas/alice
   version: 43e429cd03e6faac34faf94153cfb7a5adb6b928
-- name: github.com/mihasya/go-metrics-librato
-  version: 0ec8d5e8bf04a48fc5c96792bfd016b08afdabad
 - name: github.com/naoina/go-stringutil
   version: 6b638e95a32d0c1131db0e7fe83775cbea4a0d0b
 - name: github.com/ostrost/gosigar
@@ -95,7 +98,7 @@ imports:
   subpackages:
   - sysfreebsd
 - name: github.com/pmezard/go-difflib
-  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
+  version: 792786c7400a136282c1664665ae0a8db921c6c2
   subpackages:
   - difflib
 - name: github.com/rcrowley/go-metrics
@@ -105,42 +108,40 @@ imports:
 - name: github.com/russross/blackfriday
   version: 93622da34e54fb6529bfb7c57e710f37a8d9cbd8
 - name: github.com/shirou/gopsutil
-  version: 586bb697f3ec9f8ec08ffefe18f521a64534037c
+  version: 859c81da50839c6829da58c9e90e1fff1edd8194
   subpackages:
-  - host
-  - net
-  - disk
   - cpu
+  - disk
+  - host
+  - internal/common
   - load
   - mem
+  - net
   - process
-  - internal/common
 - name: github.com/shirou/w32
   version: 3c9377fc6748f222729a8270fe2775d149a249ad
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 - name: github.com/Sirupsen/logrus
-  version: 08a8a7c27e3d058a8989316a850daad1c10bf4ab
+  version: 3ec0642a7fb6488f65b06f9040adc67e3990296a
 - name: github.com/spf13/cobra
-  version: 7c674d9e72017ed25f6d2b5e497a1368086b6a6f
+  version: 9c28e4bbd74e5c3ed7aacbc552b2cab7cfdfe744
   subpackages:
   - .
   - doc
 - name: github.com/spf13/pflag
-  version: 4f9190456aed1c2113ca51ea9b89219747458dc1
+  version: 103ce5cd2042f2fe629c1957abb64ab3e7f50235
 - name: github.com/StackExchange/wmi
   version: e54cbda6595d7293a7a468ccf9525f6bc8887f99
 - name: github.com/stretchr/objx
-  version: cbeaeb16a013161a98496fad62933b1d21786672
+  version: 1a9d0bb9f541897e62256577b352fdbc1fb4fd94
 - name: github.com/stretchr/testify
-  version: 1f4a1643a57e798696635ea4c126e9127adb7d3c
+  version: d77da356e56a7428ad25149ca77381849a6a5232
   subpackages:
-  - mock
   - assert
-- name: github.com/vrischmann/go-metrics-influxdb
-  version: be4fc87f4ea19631fadd5f80e4fb8ea0353348a6
+  - mock
 - name: golang.org/x/net
-  version: 07b51741c1d6423d4a6abab1c49940ec09cb1aaf
+  version: 9bc2a3340c92c17a20edcd0080e93851ed58f5d5
   subpackages:
   - context
 - name: golang.org/x/sys

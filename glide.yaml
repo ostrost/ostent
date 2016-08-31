@@ -7,19 +7,17 @@ ignore:
 - github.com/rakyll/statik/example/statik
 import:
 - package: github.com/blang/semver
-- package: github.com/cyberdelia/go-metrics-graphite
 - package: github.com/facebookgo/grace
   subpackages:
   - gracehttp
 - package: github.com/google/go-querystring
   subpackages:
   - query
-- package: github.com/gorilla/context
 - package: github.com/gorilla/handlers
 - package: github.com/gorilla/schema
 - package: github.com/gorilla/websocket
 - package: github.com/influxdata/telegraf
-  version: 1.0.0-beta3
+  version: 1.0.0-rc1
   subpackages:
   - plugins/inputs
   - plugins/inputs/system
@@ -39,7 +37,6 @@ import:
   - go-bindata
 - package: github.com/julienschmidt/httprouter
 - package: github.com/justinas/alice
-- package: github.com/mihasya/go-metrics-librato
 - package: github.com/ostrost/gosigar
 - package: github.com/rcrowley/go-metrics
 - package: github.com/rcrowley/goagain
@@ -57,7 +54,6 @@ import:
   - cpu
   - load
   - mem
-- package: github.com/vrischmann/go-metrics-influxdb
 - package: golang.org/x/net
   subpackages:
   - context

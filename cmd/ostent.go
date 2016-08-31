@@ -368,12 +368,12 @@ func (tabs tables) marshal() ([]byte, error) {
 func printableConfigText(text []byte) string {
 	lines := strings.Split(string(text), "\n")
 	for _, replace := range [][2]string{
-		{"password=", "********"},
-		{"api_token=", "****************"},
+		{"password = ", `"********"`},
+		{"api_token = ", `"****************"`},
 	} {
 		for i := range lines {
-			if strings.HasPrefix(lines[i], replace[0]) {
-				lines[i] = fmt.Sprintf("%s=\"%s\"", replace[0], replace[1])
+			if j := strings.Index(lines[i], replace[0]); j != -1 {
+				lines[i] = lines[i][:j] + replace[0] + replace[1]
 			}
 		}
 	}

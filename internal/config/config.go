@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"sort"
 	"strings"
 	"time"
@@ -23,7 +24,7 @@ import (
 	"github.com/influxdata/toml/ast"
 
 	"github.com/ostrost/ostent/internal"
-	internal_models "github.com/ostrost/ostent/internal/models"
+	"github.com/ostrost/ostent/internal/models"
 )
 
 var config = struct {
@@ -51,8 +52,8 @@ type Config struct {
 	OutputFilters []string
 
 	Agent   *AgentConfig
-	Inputs  []*internal_models.RunningInput
-	Outputs []*internal_models.RunningOutput
+	Inputs  []*models.RunningInput
+	Outputs []*models.RunningOutput
 }
 
 func NewConfig() *Config {
@@ -65,8 +66,8 @@ func NewConfig() *Config {
 		},
 
 		Tags:          make(map[string]string),
-		Inputs:        make([]*internal_models.RunningInput, 0),
-		Outputs:       make([]*internal_models.RunningOutput, 0),
+		Inputs:        make([]*models.RunningInput, 0),
+		Outputs:       make([]*models.RunningOutput, 0),
 		InputFilters:  make([]string, 0),
 		OutputFilters: make([]string, 0),
 	}
@@ -143,7 +144,7 @@ func (c *Config) InputNames() []string {
 	return name
 }
 
-// Outputs returns a list of strings of the configured inputs.
+// Outputs returns a list of strings of the configured outputs.
 func (c *Config) OutputNames() []string {
 	var name []string
 	for _, output := range c.Outputs {
@@ -223,7 +224,7 @@ var header = `# Telegraf Configuration
   ## By default, precision will be set to the same timestamp order as the
   ## collection interval, with the maximum being 1s.
   ## Precision will NOT be used for service inputs, such as logparser and statsd.
-  ## Valid values are "Nns", "Nus" (or "Nµs"), "Nms", "Ns".
+  ## Valid values are "ns", "us" (or "µs"), "ms", "s".
   precision = ""
   ## Run telegraf in debug mode
   debug = false
@@ -436,6 +437,9 @@ func getDefaultConfigPath() (string, error) {
 	envfile := os.Getenv("TELEGRAF_CONFIG_PATH")
 	homefile := os.ExpandEnv("${HOME}/.telegraf/telegraf.conf")
 	etcfile := "/etc/telegraf/telegraf.conf"
+	if runtime.GOOS == "windows" {
+		etcfile = `C:\Program Files\Telegraf\telegraf.conf`
+	}
 	for _, path := range []string{envfile, homefile, etcfile} {
 		if _, err := os.Stat(path); err == nil {
 			log.Printf("Using config file: %s", path)
@@ -615,7 +619,7 @@ func (c *Config) addOutput(name string, table *ast.Table) error {
 		return err
 	}
 
-	ro := internal_models.NewRunningOutput(name, output, outputConfig,
+	ro := models.NewRunningOutput(name, output, outputConfig,
 		c.Agent.MetricBatchSize, c.Agent.MetricBufferLimit)
 	c.Outputs = append(c.Outputs, ro)
 	return nil
@@ -656,7 +660,7 @@ func (c *Config) addInput(name string, table *ast.Table) error {
 		return err
 	}
 
-	rp := &internal_models.RunningInput{
+	rp := &models.RunningInput{
 		Name:   name,
 		Input:  input,
 		Config: pluginConfig,
@@ -667,10 +671,10 @@ func (c *Config) addInput(name string, table *ast.Table) error {
 
 // buildFilter builds a Filter
 // (tagpass/tagdrop/namepass/namedrop/fieldpass/fielddrop) to
-// be inserted into the internal_models.OutputConfig/internal_models.InputConfig
+// be inserted into the models.OutputConfig/models.InputConfig
 // to be used for glob filtering on tags and measurements
-func buildFilter(tbl *ast.Table) (internal_models.Filter, error) {
-	f := internal_models.Filter{}
+func buildFilter(tbl *ast.Table) (models.Filter, error) {
+	f := models.Filter{}
 
 	if node, ok := tbl.Fields["namepass"]; ok {
 		if kv, ok := node.(*ast.KeyValue); ok {
@@ -734,7 +738,7 @@ func buildFilter(tbl *ast.Table) (internal_models.Filter, error) {
 		if subtbl, ok := node.(*ast.Table); ok {
 			for name, val := range subtbl.Fields {
 				if kv, ok := val.(*ast.KeyValue); ok {
-					tagfilter := &internal_models.TagFilter{Name: name}
+					tagfilter := &models.TagFilter{Name: name}
 					if ary, ok := kv.Value.(*ast.Array); ok {
 						for _, elem := range ary.Value {
 							if str, ok := elem.(*ast.String); ok {
@@ -753,7 +757,7 @@ func buildFilter(tbl *ast.Table) (internal_models.Filter, error) {
 		if subtbl, ok := node.(*ast.Table); ok {
 			for name, val := range subtbl.Fields {
 				if kv, ok := val.(*ast.KeyValue); ok {
-					tagfilter := &internal_models.TagFilter{Name: name}
+					tagfilter := &models.TagFilter{Name: name}
 					if ary, ok := kv.Value.(*ast.Array); ok {
 						for _, elem := range ary.Value {
 							if str, ok := elem.(*ast.String); ok {
@@ -810,9 +814,9 @@ func buildFilter(tbl *ast.Table) (internal_models.Filter, error) {
 
 // buildInput parses input specific items from the ast.Table,
 // builds the filter and returns a
-// internal_models.InputConfig to be inserted into internal_models.RunningInput
-func buildInput(name string, tbl *ast.Table) (*internal_models.InputConfig, error) {
-	cp := &internal_models.InputConfig{Name: name}
+// models.InputConfig to be inserted into models.RunningInput
+func buildInput(name string, tbl *ast.Table) (*models.InputConfig, error) {
+	cp := &models.InputConfig{Name: name}
 	if node, ok := tbl.Fields["interval"]; ok {
 		if kv, ok := node.(*ast.KeyValue); ok {
 			if str, ok := kv.Value.(*ast.String); ok {
@@ -986,14 +990,14 @@ func buildSerializer(name string, tbl *ast.Table) (serializers.Serializer, error
 
 // buildOutput parses output specific items from the ast.Table,
 // builds the filter and returns an
-// internal_models.OutputConfig to be inserted into internal_models.RunningInput
+// models.OutputConfig to be inserted into models.RunningInput
 // Note: error exists in the return for future calls that might require error
-func buildOutput(name string, tbl *ast.Table) (*internal_models.OutputConfig, error) {
+func buildOutput(name string, tbl *ast.Table) (*models.OutputConfig, error) {
 	filter, err := buildFilter(tbl)
 	if err != nil {
 		return nil, err
 	}
-	oc := &internal_models.OutputConfig{
+	oc := &models.OutputConfig{
 		Name:   name,
 		Filter: filter,
 	}

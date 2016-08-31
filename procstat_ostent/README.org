@@ -211,7 +211,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
 @@ -72,12 +85,16 @@
  		fields[prefix+"write_count"] = io.WriteCount
  		fields[prefix+"read_bytes"] = io.ReadBytes
- 		fields[prefix+"write_bytes"] = io.WriteCount
+ 		fields[prefix+"write_bytes"] = io.WriteBytes
 +		} else {
 +			return err
  	}

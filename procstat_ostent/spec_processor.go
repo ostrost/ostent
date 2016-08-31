@@ -84,7 +84,7 @@ func (p *SpecProcessor) pushMetrics() error {
 			fields[prefix+"read_count"] = io.ReadCount
 			fields[prefix+"write_count"] = io.WriteCount
 			fields[prefix+"read_bytes"] = io.ReadBytes
-			fields[prefix+"write_bytes"] = io.WriteCount
+			fields[prefix+"write_bytes"] = io.WriteBytes
 		} else {
 			return err
 		}
