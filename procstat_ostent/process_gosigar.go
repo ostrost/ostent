@@ -20,15 +20,15 @@ func newProcess(pid int32) (proc, error) { return &sigarProcess{pid: int(pid)}, 
 type sigarProcess struct {
 	pid int
 
-	state    sigar.ProcState
+	state    sigar.ProcState // plain struct
 	stateErr error
 	stateGot bool
 
-	ptime    sigar.ProcTime
+	ptime    sigar.ProcTime // plain struct
 	ptimeErr error
 	ptimeGot bool
 
-	uid    uid
+	uid    uid // plain value
 	uidErr error
 	uidGot bool
 }

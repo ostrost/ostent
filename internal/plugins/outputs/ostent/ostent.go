@@ -183,8 +183,8 @@ type netData struct {
 type procData struct {
 	PID      int64 // int32 from fields
 	UID      int64 // int32 from fields
-	Priority int64 // NB always 0 because gopsutil
-	Nice     int64 // int32 from fields // gopsutil term; the other is IONice
+	Priority int64 // int32 from fields // missing with gopsutil
+	Nice     int64 // int32 from fields // gopsutil miscalcs this
 
 	time_user, time_system float64 // float64 from fields
 
@@ -523,7 +523,7 @@ func writeProcstat(m telegraf.Metric, up *Update) bool {
 		pd.User = username(up.usernames, pd.UID)
 	}
 
-	// skip pd.Priority
+	fs.decodeInt64("prio", &pd.Priority)
 	fs.decodeInt64("nice", &pd.Nice)
 
 	fs.decodeFloat64("cpu_time_user", &pd.time_user)

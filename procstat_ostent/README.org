@@ -160,7 +160,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	tags map[string]string,
  ) *SpecProcessor {
  	if processName != "" {
-@@ -43,27 +37,46 @@
+@@ -43,27 +37,51 @@
  	}
  }
  
@@ -183,6 +183,11 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
 +		return err
 +	}
 +	fields[prefix+"nice"] = nice
++	prio, err := p.proc.Prio()
++	if err != nil {
++		return err
++	}
++	fields[prefix+"prio"] = prio
 +
 +	/*
  	numThreads, err := p.proc.NumThreads()
@@ -208,7 +213,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	}
  
  	io, err := p.proc.IOCounters()
-@@ -72,12 +85,16 @@
+@@ -72,12 +90,16 @@
  		fields[prefix+"write_count"] = io.WriteCount
  		fields[prefix+"read_bytes"] = io.ReadBytes
  		fields[prefix+"write_bytes"] = io.WriteBytes
@@ -225,7 +230,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  		fields[prefix+"cpu_time_idle"] = cpu_time.Idle
  		fields[prefix+"cpu_time_nice"] = cpu_time.Nice
  		fields[prefix+"cpu_time_iowait"] = cpu_time.Iowait
-@@ -87,19 +104,31 @@
+@@ -87,19 +109,31 @@
  		fields[prefix+"cpu_time_stolen"] = cpu_time.Stolen
  		fields[prefix+"cpu_time_guest"] = cpu_time.Guest
  		fields[prefix+"cpu_time_guest_nice"] = cpu_time.GuestNice

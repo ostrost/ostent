@@ -55,6 +55,11 @@ func (p *SpecProcessor) pushMetrics() error {
 		return err
 	}
 	fields[prefix+"nice"] = nice
+	prio, err := p.proc.Prio()
+	if err != nil {
+		return err
+	}
+	fields[prefix+"prio"] = prio
 
 	/*
 		numThreads, err := p.proc.NumThreads()
