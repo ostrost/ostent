@@ -1,8 +1,10 @@
-hash: 172ef6b33d44b5574fd19abf9f57e13158d31da6e9f84666fb64645e0012ccd7
-updated: 2016-08-31T16:27:25.973069614Z
+hash: c5190c4a485576e7a8b5295e54f54030116f7ae4dabc1a9fde4d46303e268743
+updated: 2016-09-01T15:48:40.124318199Z
 imports:
 - name: github.com/blang/semver
   version: 60ec3488bfea7cca02b021d106d9911120d25fe9
+- name: github.com/cloudfoundry/gosigar
+  version: c32d31af94b0e9d3b2877e49c1a581ad5a793343
 - name: github.com/cpuguy83/go-md2man
   version: 2724a9c9051aa62e9cca11304e7dd518e9e41599
   subpackages:
@@ -93,10 +95,6 @@ imports:
   version: 43e429cd03e6faac34faf94153cfb7a5adb6b928
 - name: github.com/naoina/go-stringutil
   version: 6b638e95a32d0c1131db0e7fe83775cbea4a0d0b
-- name: github.com/ostrost/gosigar
-  version: 92f17d4363e7e615e6fdfc74320946d37b95a939
-  subpackages:
-  - sysfreebsd
 - name: github.com/pmezard/go-difflib
   version: 792786c7400a136282c1664665ae0a8db921c6c2
   subpackages:

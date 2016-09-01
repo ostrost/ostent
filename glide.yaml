@@ -1,12 +1,10 @@
 package: github.com/ostrost/ostent
-exclude:
-- builds
-- node_modules
 ignore:
 - github.com/influxdata/influxdb/statik
 - github.com/rakyll/statik/example/statik
 import:
 - package: github.com/blang/semver
+- package: github.com/cloudfoundry/gosigar
 - package: github.com/facebookgo/grace
   subpackages:
   - gracehttp
@@ -37,7 +35,6 @@ import:
   - go-bindata
 - package: github.com/julienschmidt/httprouter
 - package: github.com/justinas/alice
-- package: github.com/ostrost/gosigar
 - package: github.com/rcrowley/go-metrics
 - package: github.com/rcrowley/goagain
 - package: github.com/Sirupsen/logrus

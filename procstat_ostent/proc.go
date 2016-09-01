@@ -13,6 +13,7 @@ type proc interface {
 	MemoryInfo() (*process.MemoryInfoStat, error)
 	Name() (string, error)
 	Nice() (int32, error)
+	Prio() (int32, error)
 	Times() (*cpu.TimesStat, error)
 	Uids() ([]int32, error)
 }
