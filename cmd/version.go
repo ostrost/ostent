@@ -7,31 +7,42 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// VersionFlag is true when displaying version.
-var VersionFlag bool
-
-// OstentVersionCmd represents the version command
-var OstentVersionCmd = &cobra.Command{
+// versionCmd represents the version command
+var versionCmd = &cobra.Command{
 	SilenceUsage: true,
 	Use:          "version",
 	Short:        "Print ostent version.",
-	RunE:         OstentVersionRunE,
+	RunE:         versionRunE,
 }
 
 func init() {
-	OstentCmd.AddCommand(OstentVersionCmd)
+	RootCmd.AddCommand(versionCmd)
+
+	// Here you will define your flags and configuration settings.
+
+	// Cobra supports Persistent Flags which will work for this command
+	// and all subcommands, e.g.:
+	// versionCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	// Cobra supports local flags which will only run when this command
+	// is called directly, e.g.:
+	// versionCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
 }
 
-func OstentVersionRunE(*cobra.Command, []string) error {
+// versionFlag is true when displaying version.
+var versionFlag bool
+
+func versionRunE(*cobra.Command, []string) error {
 	log.New(os.Stdout, "", 0).Printf("Ostent version %+v", OstentVersion)
 	return nil
 }
 
-func OstentVersionRun() error {
-	if !VersionFlag {
+func versionRun() error {
+	if !versionFlag {
 		return nil
 	}
-	if err := OstentVersionRunE(nil, nil); err != nil {
+	if err := versionRunE(nil, nil); err != nil {
 		return err
 	}
 	os.Exit(0) // NB

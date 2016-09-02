@@ -5,7 +5,7 @@ import (
 	"github.com/ostrost/ostent/params"
 )
 
-type Librato struct {
+type librato struct {
 	Namedrop  namedrop
 	ApiUser   string
 	ApiToken  string
@@ -13,14 +13,14 @@ type Librato struct {
 	Template  string // hard-coded
 }
 
-func LibratoRun(elisting *ostent.ExportingListing, tabs *tables, lends params.LibratoEndpoints) error {
+func libratoRun(elisting *ostent.ExportingListing, tabs *tables, lends params.LibratoEndpoints) error {
 	for _, value := range lends.Values {
 		if value.Email != "" {
 			elisting.AddExporter("Librato", value)
 			tabs.add(struct {
-				Outputs []Librato `toml:"outputs.librato"`
+				Outputs []librato `toml:"outputs.librato"`
 			}{
-				Outputs: []Librato{{
+				Outputs: []librato{{
 					Namedrop:  commonNamedrop,
 					ApiUser:   value.Email,
 					ApiToken:  value.Token,

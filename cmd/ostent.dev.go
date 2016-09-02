@@ -15,6 +15,42 @@ import (
 	"github.com/spf13/cobra/doc"
 )
 
+// gendocCmd represents the gendoc command
+var gendocCmd = &cobra.Command{
+	Use:   "gendoc",
+	Short: "Generate ostent commands docs.",
+	RunE:  gendocRunE,
+}
+
+func init() {
+	RootCmd.AddCommand(gendocCmd)
+
+	// Here you will define your flags and configuration settings.
+
+	// Cobra supports Persistent Flags which will work for this command
+	// and all subcommands, e.g.:
+	// gendocCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	// Cobra supports local flags which will only run when this command
+	// is called directly, e.g.:
+	// gendocCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	RootCmd.PersistentFlags().StringVar(&profileHeapOutput, "profile-heap", "",
+		"Profiling heap output `filename`")
+	RootCmd.PersistentFlags().StringVar(&profileCPUOutput, "profile-cpu", "",
+		"Profiling CPU output `filename`")
+	persistentPreRuns.add(profileHeapRun)
+	persistentPreRuns.add(profileCPURun)
+
+	pkg, err := build.Import(pkgPath, "", build.FindOnly)
+	if err != nil {
+		log.Fatal(err)
+	}
+	gendocDir = filepath.Join(pkg.Dir, "doc")
+	gendocCmd.Flags().StringVar(&gendocDir, "directory", gendocDir,
+		"Output `directory` for saving docs")
+}
+
 // http://blog.golang.org/profiling-go-programs
 
 var (
@@ -68,47 +104,22 @@ func profileCPURun() error {
 	return nil
 }
 
-func init() {
-	OstentCmd.PersistentFlags().StringVar(&profileHeapOutput, "profile-heap", "",
-		"Profiling heap output `filename`")
-	OstentCmd.PersistentFlags().StringVar(&profileCPUOutput, "profile-cpu", "",
-		"Profiling CPU output `filename`")
-	persistentPreRuns.add(profileHeapRun)
-	persistentPreRuns.add(profileCPURun)
-
-	pkg, err := build.Import(pkgPath, "", build.FindOnly)
-	if err != nil {
-		log.Fatal(err)
-	}
-	genDocDir = filepath.Join(pkg.Dir, "doc")
-	genDocCmd.Flags().StringVar(&genDocDir, "directory", genDocDir,
-		"Output `directory` for saving docs")
-	OstentCmd.AddCommand(genDocCmd)
-}
-
 // pkgPath defined for looking up the package directory.
 const pkgPath = "github.com/ostrost/ostent"
 
-var (
-	genDocCmd = &cobra.Command{ // gendoc subcommand
-		Use:   "gendoc",
-		Short: "Generate ostent commands docs.",
-		RunE:  genDocRunE,
-	}
-	genDocDir string // flag value
-)
+var gendocDir string // flag value
 
-func genDocRunE(*cobra.Command, []string) error {
-	OstentCmd.DisableAutoGenTag = true
-	if cmd, _, err := OstentCmd.Find([]string{"gendoc"}); err == nil {
+func gendocRunE(*cobra.Command, []string) error {
+	RootCmd.DisableAutoGenTag = true
+	if cmd, _, err := RootCmd.Find([]string{"gendoc"}); err == nil {
 		// err is gone
-		OstentCmd.RemoveCommand(cmd)
+		RootCmd.RemoveCommand(cmd)
 	}
-	if err := doc.GenMarkdownTree(OstentCmd, genDocDir); err != nil {
+	if err := doc.GenMarkdownTree(RootCmd, gendocDir); err != nil {
 		return err
 	}
-	mdfile := filepath.Join(genDocDir,
-		strings.Replace(OstentCmd.CommandPath(), " ", "_", -1)+".md")
+	mdfile := filepath.Join(gendocDir,
+		strings.Replace(RootCmd.CommandPath(), " ", "_", -1)+".md")
 	text, err := ioutil.ReadFile(mdfile)
 	if err != nil {
 		return err

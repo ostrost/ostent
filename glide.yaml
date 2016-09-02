@@ -43,6 +43,7 @@ import:
   - .
   - doc
 - package: github.com/spf13/pflag
+- package: github.com/spf13/viper
 - package: github.com/shirou/gopsutil
   subpackages:
   - host

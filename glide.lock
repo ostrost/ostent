@@ -1,5 +1,5 @@
-hash: c5190c4a485576e7a8b5295e54f54030116f7ae4dabc1a9fde4d46303e268743
-updated: 2016-09-01T15:48:40.124318199Z
+hash: 6aee77a73a144011bcea34ae795515a1581bf113da1e56e09aec91b336195af6
+updated: 2016-09-02T15:43:06.754976465Z
 imports:
 - name: github.com/blang/semver
   version: 60ec3488bfea7cca02b021d106d9911120d25fe9
@@ -24,6 +24,8 @@ imports:
   version: a3b1354551a26449fbe05f5d855937f6e7acbd71
 - name: github.com/facebookgo/stats
   version: 1b76add642e42c6ffba7211ad7b3939ce654526e
+- name: github.com/fsnotify/fsnotify
+  version: f12c6236fe7b5cf6bcf30e5935d08cb079d78334
 - name: github.com/go-ole/go-ole
   version: 7dfdcf409020452e29b4babcbb22f984d2aa308a
   subpackages:
@@ -48,6 +50,17 @@ imports:
   version: 0164a00ab4cd01d814d8cd5bf63fd9fcea30e23b
 - name: github.com/gorilla/websocket
   version: a69d25be2fe2923a97c2af6849b2f52426f68fc0
+- name: github.com/hashicorp/hcl
+  version: baeb59c710717b06aac1dbe2270e8192ec593244
+  subpackages:
+  - hcl/ast
+  - hcl/parser
+  - hcl/scanner
+  - hcl/strconv
+  - hcl/token
+  - json/parser
+  - json/scanner
+  - json/token
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/influxdb
@@ -93,8 +106,22 @@ imports:
   version: d8ff598a019f2c7bad0980917a588193cf26666e
 - name: github.com/justinas/alice
   version: 43e429cd03e6faac34faf94153cfb7a5adb6b928
+- name: github.com/kr/fs
+  version: 2788f0dbd16903de03cb8186e5c7d97b69ad387b
+- name: github.com/magiconair/properties
+  version: 61b492c03cf472e0c6419be5899b8e0dc28b1b88
+- name: github.com/mitchellh/mapstructure
+  version: ca63d7c062ee3c9f34db231e352b60012b4fd0c1
 - name: github.com/naoina/go-stringutil
   version: 6b638e95a32d0c1131db0e7fe83775cbea4a0d0b
+- name: github.com/pelletier/go-buffruneio
+  version: df1e16fde7fc330a0ca68167c23bf7ed6ac31d6d
+- name: github.com/pelletier/go-toml
+  version: 5a62685873ef617233ab5f1b825a6e4a758e16cf
+- name: github.com/pkg/errors
+  version: 17b591df37844cde689f4d5813e5cea0927d8dd2
+- name: github.com/pkg/sftp
+  version: a71e8f580e3b622ebff585309160b1cc549ef4d2
 - name: github.com/pmezard/go-difflib
   version: 792786c7400a136282c1664665ae0a8db921c6c2
   subpackages:
@@ -122,13 +149,24 @@ imports:
   version: 10ef21a441db47d8b13ebcc5fd2310f636973c77
 - name: github.com/Sirupsen/logrus
   version: 3ec0642a7fb6488f65b06f9040adc67e3990296a
+- name: github.com/spf13/afero
+  version: 20500e2abd0d1f4564a499e83d11d6c73cd58c27
+  subpackages:
+  - mem
+  - sftp
+- name: github.com/spf13/cast
+  version: e31f36ffc91a2ba9ddb72a4b6a607ff9b3d3cb63
 - name: github.com/spf13/cobra
   version: 9c28e4bbd74e5c3ed7aacbc552b2cab7cfdfe744
   subpackages:
   - .
   - doc
+- name: github.com/spf13/jwalterweatherman
+  version: 33c24e77fb80341fe7130ee7c594256ff08ccc46
 - name: github.com/spf13/pflag
   version: 103ce5cd2042f2fe629c1957abb64ab3e7f50235
+- name: github.com/spf13/viper
+  version: 16990631d4aa7e38f73dbbbf37fa13e67c648531
 - name: github.com/StackExchange/wmi
   version: e54cbda6595d7293a7a468ccf9525f6bc8887f99
 - name: github.com/stretchr/objx
@@ -138,6 +176,13 @@ imports:
   subpackages:
   - assert
   - mock
+- name: golang.org/x/crypto
+  version: f160b6bf95857cd862817875dd958be022e587c4
+  subpackages:
+  - curve25519
+  - ed25519
+  - ed25519/internal/edwards25519
+  - ssh
 - name: golang.org/x/net
   version: 9bc2a3340c92c17a20edcd0080e93851ed58f5d5
   subpackages:
@@ -146,4 +191,11 @@ imports:
   version: a646d33e2ee3172a661fc09bca23bb4889a41bc8
   subpackages:
   - unix
+- name: golang.org/x/text
+  version: ceefd2213ed29504fff30155163c8f59827734f3
+  subpackages:
+  - transform
+  - unicode/norm
+- name: gopkg.in/yaml.v2
+  version: e4d366fc3c7938e2958e662b4258c7a89e1f0e3e
 testImports: []

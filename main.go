@@ -34,14 +34,12 @@ func run(*cobra.Command, []string) error {
 	}
 	ostent.RunBackground()
 	templates.InitTemplates()
-	return serve(cmd.OstentBind.String())
+	return serve(cmd.Bind.String())
 }
 
 func main() {
-	cmd.OstentCmd.RunE = run
-	if err := cmd.OstentCmd.Execute(); err != nil {
-		os.Exit(-1)
-	}
+	cmd.RootCmd.RunE = run
+	cmd.RootCmd.Execute()
 }
 
 var (
@@ -60,9 +58,9 @@ func newLogger() *logrus.Logger {
 }
 
 func init() {
-	cmd.OstentCmd.Flags().BoolVar(&logRequests, "log-requests", !taggedBin,
+	cmd.RootCmd.Flags().BoolVar(&logRequests, "log-requests", !taggedBin,
 		"Whether to log webserver requests")
-	cmd.OstentCmd.Flags().BoolVar(&noUpgradeCheck, "noupgradecheck", false,
+	cmd.RootCmd.Flags().BoolVar(&noUpgradeCheck, "noupgradecheck", false,
 		"Off periodic upgrade check")
 	ostent.AddBackground(ostent.CollectLoop)
 }

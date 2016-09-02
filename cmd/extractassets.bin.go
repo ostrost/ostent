@@ -15,66 +15,77 @@ import (
 	"github.com/ostrost/ostent/share/assets"
 )
 
-var (
-	// ExtractDestDir is a flag value.
-	ExtractDestDir string
-
-	// EaLog is a logger to log this subcommand's messages with.
-	EaLog = log.New(os.Stderr, "[ostent extract-assets] ", log.LstdFlags)
-)
-
-// ExtractAssetsCmd represents the extractassets subcommand
-var ExtractAssetsCmd = &cobra.Command{
+// extractassetsCmd represents the extractassets command
+var extractassetsCmd = &cobra.Command{
 	Use:   "extractassets",
 	Short: "Extract embeded assets & manage symlinks.",
 	// Long: ``,
-	PreRunE: ExtractAssetsPreRunE,
-	RunE:    ExtractAssetsRunE,
+	PreRunE: extractassetsPreRunE,
+	RunE:    extractassetsRunE,
 }
 
 func init() {
-	OstentCmd.AddCommand(ExtractAssetsCmd)
-	ExtractAssetsCmd.Flags().StringVarP(&ExtractDestDir, "destdir", "d",
+	RootCmd.AddCommand(extractassetsCmd)
+
+	// Here you will define your flags and configuration settings.
+
+	// Cobra supports Persistent Flags which will work for this command
+	// and all subcommands, e.g.:
+	// extractassetsCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	// Cobra supports local flags which will only run when this command
+	// is called directly, e.g.:
+	// extractassetsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	extractassetsCmd.Flags().StringVarP(&extractDestDir, "destdir", "d",
 		OstentVersion /* default is this */, "Destrination directory for extraction")
 }
 
-func ExtractAssetsPreRunE(*cobra.Command, []string) error {
-	if ExtractDestDir == "" {
+var (
+	// extractDestDir is a flag value.
+	extractDestDir string
+
+	// eaLog is a logger to log this command's messages with.
+	eaLog = log.New(os.Stderr, "[ostent extract-assets] ", log.LstdFlags)
+)
+
+func extractassetsPreRunE(*cobra.Command, []string) error {
+	if extractDestDir == "" {
 		return fmt.Errorf("--destdir wasn't provided")
 	}
 	return nil
 }
 
-// ExtractAssetsRunE does the following:
+// extractassetsRunE does the following:
 // - creates the dest directory
 // - every asset is saved as a file
 // - every asset is gzipped saved as a file + .gz if it's size is above threshold
-func ExtractAssetsRunE(*cobra.Command, []string) error {
-	if _, err := os.Stat(ExtractDestDir); err == nil {
-		return fmt.Errorf("%s: File exists\n", ExtractDestDir)
+func extractassetsRunE(*cobra.Command, []string) error {
+	if _, err := os.Stat(extractDestDir); err == nil {
+		return fmt.Errorf("%s: File exists\n", extractDestDir)
 	}
 	// RestoreAssets (among other things) creates DestDir.
-	if err := assets.RestoreAssets(ExtractDestDir, ""); err != nil {
+	if err := assets.RestoreAssets(extractDestDir, ""); err != nil {
 		return err
 	}
 	for _, name := range assets.AssetNames() {
-		if err := ExtractGzip(name); err != nil {
+		if err := extractGzip(name); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func ExtractGzip(name string) error {
+func extractGzip(name string) error {
 	text, err := assets.Asset(name)
 	if err != nil {
-		EaLog.Printf("assets.Asset: %s: %s", name, err)
+		eaLog.Printf("assets.Asset: %s: %s", name, err)
 		return nil // continue
 	}
-	full := filepath.Join(ExtractDestDir, name)
+	full := filepath.Join(extractDestDir, name)
 	if name == "favicon.ico" || name == "robots.txt" {
-		if err = ExtractSymlink(name, full); err != nil {
-			EaLog.Printf("ExtractSymlink: %s: %s", name, err)
+		if err = extractSymlink(name, full); err != nil {
+			eaLog.Printf("extractSymlink: %s: %s", name, err)
 			return nil // continue
 		}
 	}
@@ -105,13 +116,13 @@ func ExtractGzip(name string) error {
 	return os.Chtimes(full+".gz", now, now)
 }
 
-func ExtractSymlink(name, full string) error {
+func extractSymlink(name, full string) error {
 	if dest, err := os.Readlink(name); err != nil {
 		if !os.IsNotExist(err) {
 			return err
 		}
 	} else {
-		EaLog.Printf("Removing symlink %q pointing to %q", name, dest)
+		eaLog.Printf("Removing symlink %q pointing to %q", name, dest)
 		if err := os.Remove(name); err != nil {
 			return err
 		}
