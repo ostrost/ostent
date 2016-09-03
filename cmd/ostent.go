@@ -68,27 +68,7 @@ func (rs *runs) runE(*cobra.Command, []string) error {
 var Bind = flags.NewBind("", 8050)
 
 func initFlags() {
-	var (
-		oneSecond = "1s"
-		ignoreFs  = []string{"tmpfs", "devtmpfs"}
-	)
-	var (
-		on  = func() *inputConfig { return &inputConfig{} }
-		ion = func() *[]struct{} { return &[]struct{}{struct{}{}} }
-	)
-
-	rconfig := oneConfig{
-		Outputs: outputs{Ostent: ion()},
-		Inputs: inputs{
-			CPU:             on(),
-			Disk:            &diskInput{Ignore_fs: &ignoreFs},
-			Mem:             on(),
-			Net_ostent:      on(),
-			Procstat_ostent: on(),
-			Swap:            on(),
-			System_ostent:   &inputConfig{&oneSecond},
-		}}
-
+	rconfig := defaultConfig()
 	tabs := &tables{}
 
 	persistentPreRuns.add(versionRun)
@@ -121,6 +101,7 @@ func initFlags() {
 			interval := new(string)
 			*interval = intervals.Agent
 			rconfig.Agent.Interval, rconfig.Agent.FlushInterval = interval, interval
+			rconfig.Inputs.System_ostent.Interval = interval // otherwise it's 1s per System_ostent default
 		}
 
 		for _, v := range []struct {
@@ -205,6 +186,29 @@ func paramsUsage(setf func(*pflag.FlagSet)) string {
 	return strings.Join(lines, "\n")
 }
 
+func defaultConfig() oneConfig {
+	var (
+		oneSecond = "1s"
+		ignoreFs  = []string{"tmpfs", "devtmpfs"}
+	)
+	var (
+		on  = func() *inputConfig { return &inputConfig{} }
+		ion = func() *[]struct{} { return &[]struct{}{struct{}{}} }
+	)
+
+	return oneConfig{
+		Outputs: outputs{Ostent: ion()},
+		Inputs: inputs{
+			CPU:             on(),
+			Disk:            &diskInput{Ignore_fs: &ignoreFs},
+			Mem:             on(),
+			Net_ostent:      on(),
+			Procstat_ostent: on(),
+			Swap:            on(),
+			System_ostent:   &inputConfig{&oneSecond},
+		}}
+}
+
 type oneConfig struct {
 	Agent   agentConfig
 	Outputs outputs
@@ -212,35 +216,35 @@ type oneConfig struct {
 }
 
 type agentConfig struct {
-	Interval      *string `toml:",omitempty"`
-	FlushInterval *string `toml:",omitempty"`
+	Interval      *string `toml:",omitempty" yaml:",omitempty"`
+	FlushInterval *string `toml:",omitempty" yaml:",omitempty"`
 }
 
 type inputConfig struct {
-	Interval *string `toml:",omitempty"`
+	Interval *string `toml:",omitempty" yaml:",omitempty"`
 }
 
 type diskInput struct {
-	inputConfig
-	Ignore_fs *[]string `toml:",omitempty"`
+	Interval  *string   `toml:",omitempty" yaml:",omitempty"` // common inputConfig
+	Ignore_fs *[]string `toml:",omitempty" yaml:",omitempty"`
 }
 
 type outputs struct {
-	Ostent   *[]struct{} `toml:",omitempty"`
+	Ostent   *[]struct{} `toml:",omitempty" yaml:",omitempty"`
 	Influxdb *[]struct {
 		Username, Password, Database string
 		Namedrop, URLs               []string
-	} `toml:",omitempty"`
+	} `toml:",omitempty" yaml:",omitempty"`
 }
 
 type inputs struct {
-	CPU             *inputConfig `toml:",omitempty"`
-	Disk            *diskInput   `toml:",omitempty"`
-	Mem             *inputConfig `toml:",omitempty"`
-	Net_ostent      *inputConfig `toml:",omitempty"`
-	Procstat_ostent *inputConfig `toml:",omitempty"`
-	Swap            *inputConfig `toml:",omitempty"`
-	System_ostent   *inputConfig `toml:",omitempty"`
+	CPU             *inputConfig `toml:",omitempty" yaml:",omitempty"`
+	Disk            *diskInput   `toml:",omitempty" yaml:",omitempty"`
+	Mem             *inputConfig `toml:",omitempty" yaml:",omitempty"`
+	Net_ostent      *inputConfig `toml:",omitempty" yaml:",omitempty"`
+	Procstat_ostent *inputConfig `toml:",omitempty" yaml:",omitempty"`
+	Swap            *inputConfig `toml:",omitempty" yaml:",omitempty"`
+	System_ostent   *inputConfig `toml:",omitempty" yaml:",omitempty"`
 }
 
 type namedrop []string
