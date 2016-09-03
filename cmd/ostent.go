@@ -101,7 +101,9 @@ func initFlags() {
 			interval := new(string)
 			*interval = intervals.Agent
 			rconfig.Agent.Interval, rconfig.Agent.FlushInterval = interval, interval
-			rconfig.Inputs.System_ostent.Interval = interval // otherwise it's 1s per System_ostent default
+			if rconfig.Inputs.System_ostent != nil {
+				rconfig.Inputs.System_ostent.Interval = interval // otherwise it's 1s per System_ostent default
+			}
 		}
 
 		for _, v := range []struct {
@@ -186,30 +188,68 @@ func paramsUsage(setf func(*pflag.FlagSet)) string {
 	return strings.Join(lines, "\n")
 }
 
-func defaultConfig() oneConfig {
+func defaultConfig() *ostentConfig {
 	var (
 		oneSecond = "1s"
 		ignoreFs  = []string{"tmpfs", "devtmpfs"}
 	)
 	var (
-		on  = func() *inputConfig { return &inputConfig{} }
-		ion = func() *[]struct{} { return &[]struct{}{struct{}{}} }
+		input  = func() *inputConfig { return &inputConfig{} }
+		output = func() *outputConfig { return &outputConfig{} }
 	)
 
-	return oneConfig{
-		Outputs: outputs{Ostent: ion()},
+	return &ostentConfig{
+		Outputs: outputs{Ostent: output()},
 		Inputs: inputs{
-			CPU:             on(),
+			CPU:             input(),
 			Disk:            &diskInput{Ignore_fs: &ignoreFs},
-			Mem:             on(),
-			Net_ostent:      on(),
-			Procstat_ostent: on(),
-			Swap:            on(),
-			System_ostent:   &inputConfig{&oneSecond},
+			Mem:             input(),
+			Net_ostent:      input(),
+			Procstat_ostent: input(),
+			Swap:            input(),
+			System_ostent:   &inputConfig{Interval: &oneSecond},
 		}}
 }
 
-type oneConfig struct {
+func istrue(b *bool) bool { return b != nil && *b }
+
+func (oc *ostentConfig) cleanup() {
+	oc.cleanupInputs()
+	oc.cleanupOutputs()
+}
+
+func (oc *ostentConfig) cleanupInputs() {
+	for _, inc := range []**inputConfig{
+		&oc.Inputs.CPU,
+		&oc.Inputs.Mem,
+		&oc.Inputs.Net_ostent,
+		&oc.Inputs.Procstat_ostent,
+		&oc.Inputs.Swap,
+		&oc.Inputs.System_ostent,
+	} {
+		if *inc != nil && istrue((*inc).Disable) {
+			*inc = nil
+		}
+	}
+	if oc.Inputs.Disk != nil && istrue(oc.Inputs.Disk.Disable) {
+		oc.Inputs.Disk = nil
+	}
+}
+
+func (oc *ostentConfig) cleanupOutputs() {
+	for _, outc := range []**outputConfig{
+		&oc.Outputs.Ostent,
+	} {
+		if *outc != nil && istrue((*outc).Disable) {
+			*outc = nil
+		}
+	}
+	if oc.Outputs.Influxdb != nil && istrue(oc.Outputs.Influxdb.Disable) {
+		oc.Outputs.Influxdb = nil
+	}
+}
+
+type ostentConfig struct {
 	Agent   agentConfig
 	Outputs outputs
 	Inputs  inputs
@@ -221,17 +261,24 @@ type agentConfig struct {
 }
 
 type inputConfig struct {
+	Disable  *bool   `toml:",omitempty" yaml:",omitempty"`
 	Interval *string `toml:",omitempty" yaml:",omitempty"`
 }
 
 type diskInput struct {
+	Disable   *bool     `toml:",omitempty" yaml:",omitempty"` // common inputConfig
 	Interval  *string   `toml:",omitempty" yaml:",omitempty"` // common inputConfig
 	Ignore_fs *[]string `toml:",omitempty" yaml:",omitempty"`
 }
 
+type outputConfig struct {
+	Disable *bool `toml:",omitempty" yaml:",omitempty"`
+}
+
 type outputs struct {
-	Ostent   *[]struct{} `toml:",omitempty" yaml:",omitempty"`
-	Influxdb *[]struct {
+	Ostent   *outputConfig `toml:",omitempty" yaml:",omitempty"`
+	Influxdb *struct {
+		Disable                      *bool `toml:",omitempty" yaml:",omitempty"` // common outputConfig
 		Username, Password, Database string
 		Namedrop, URLs               []string
 	} `toml:",omitempty" yaml:",omitempty"`
