@@ -260,14 +260,14 @@ func Fetch(keys *params.FetchKeys) error {
 		}
 	}
 	for i := range keys.Values {
-		if err := FetchOne(keys.Values[i], keys.Fragments[i]); err != nil {
+		if err := fetchOne(keys.Values[i], keys.Fragments[i]); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func address(u url.URL) (string, string, error) {
+func address(u *url.URL) (string, string, error) {
 	switch u.Scheme {
 	case "https":
 		u.Scheme = "wss"
@@ -296,8 +296,8 @@ func address(u url.URL) (string, string, error) {
 	return host, port, nil
 }
 
-func FetchOne(k params.FetchKey, keys []string) error {
-	host, port, err := address(k.URL)
+func fetchOne(k params.FetchKey, keys []string) error {
+	host, port, err := address(&k.URL)
 	if err != nil {
 		return err
 	}
