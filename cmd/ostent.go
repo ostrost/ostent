@@ -68,23 +68,25 @@ func (rs *runs) runE(*cobra.Command, []string) error {
 var Bind = flags.NewBind("", 8050)
 
 func initFlags() {
-	on := func() *inputConfig { return &inputConfig{} }
-	rconfig := struct {
-		Agent   agentConfig
-		Outputs outputs
-		Inputs  inputs
-	}{
-		Outputs: outputs{Ostent: struct{}{}},
-		Inputs: inputs{
-			SystemOstent: struct{ Interval string }{"1s"},
+	var (
+		oneSecond = "1s"
+		ignoreFs  = []string{"tmpfs", "devtmpfs"}
+	)
+	var (
+		on  = func() *inputConfig { return &inputConfig{} }
+		ion = func() *[]struct{} { return &[]struct{}{struct{}{}} }
+	)
 
-			// skipped fields are omitted from config
-			CPU:            on(),
-			Disk:           &diskInput{IgnoreFs: []string{"tmpfs", "devtmpfs"}},
-			Mem:            on(),
-			NetOstent:      on(),
-			ProcstatOstent: on(),
-			Swap:           on(),
+	rconfig := oneConfig{
+		Outputs: outputs{Ostent: ion()},
+		Inputs: inputs{
+			CPU:             on(),
+			Disk:            &diskInput{Ignore_fs: &ignoreFs},
+			Mem:             on(),
+			Net_ostent:      on(),
+			Procstat_ostent: on(),
+			Swap:            on(),
+			System_ostent:   &inputConfig{&oneSecond},
 		}}
 
 	tabs := &tables{}
@@ -128,8 +130,8 @@ func initFlags() {
 			{&rconfig.Inputs.CPU.Interval, intervals.CPU},
 			{&rconfig.Inputs.Disk.Interval, intervals.Disk},
 			{&rconfig.Inputs.Mem.Interval, intervals.Mem},
-			{&rconfig.Inputs.NetOstent.Interval, intervals.NetOstent},
-			{&rconfig.Inputs.ProcstatOstent.Interval, intervals.ProcstatOstent},
+			{&rconfig.Inputs.Net_ostent.Interval, intervals.NetOstent},
+			{&rconfig.Inputs.Procstat_ostent.Interval, intervals.ProcstatOstent},
 			{&rconfig.Inputs.Swap.Interval, intervals.Swap},
 		} {
 			if v.value != defaultInterval {
@@ -203,6 +205,12 @@ func paramsUsage(setf func(*pflag.FlagSet)) string {
 	return strings.Join(lines, "\n")
 }
 
+type oneConfig struct {
+	Agent   agentConfig
+	Outputs outputs
+	Inputs  inputs
+}
+
 type agentConfig struct {
 	Interval      *string `toml:",omitempty"`
 	FlushInterval *string `toml:",omitempty"`
@@ -214,21 +222,25 @@ type inputConfig struct {
 
 type diskInput struct {
 	inputConfig
-	IgnoreFs []string
+	Ignore_fs *[]string `toml:",omitempty"`
 }
 
-type outputs struct{ Ostent struct{} }
+type outputs struct {
+	Ostent   *[]struct{} `toml:",omitempty"`
+	Influxdb *[]struct {
+		Username, Password, Database string
+		Namedrop, URLs               []string
+	} `toml:",omitempty"`
+}
 
 type inputs struct {
-	SystemOstent struct{ Interval string }
-
-	// later fields are pointers with omitempty
-	CPU            *inputConfig `toml:",omitempty"`
-	Disk           *diskInput   `toml:",omitempty"`
-	Mem            *inputConfig `toml:",omitempty"`
-	NetOstent      *inputConfig `toml:",omitempty"`
-	ProcstatOstent *inputConfig `toml:",omitempty"`
-	Swap           *inputConfig `toml:",omitempty"`
+	CPU             *inputConfig `toml:",omitempty"`
+	Disk            *diskInput   `toml:",omitempty"`
+	Mem             *inputConfig `toml:",omitempty"`
+	Net_ostent      *inputConfig `toml:",omitempty"`
+	Procstat_ostent *inputConfig `toml:",omitempty"`
+	Swap            *inputConfig `toml:",omitempty"`
+	System_ostent   *inputConfig `toml:",omitempty"`
 }
 
 type namedrop []string
