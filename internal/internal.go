@@ -32,6 +32,11 @@ type Duration struct {
 	Duration time.Duration
 }
 
+// MarshalTOML is for toml.Marshaler interface.
+func (d Duration) MarshalTOML() ([]byte, error) {
+	return []byte(fmt.Sprintf("%q", d.Duration)), nil
+}
+
 // UnmarshalTOML parses the duration from the TOML config file
 func (d *Duration) UnmarshalTOML(b []byte) error {
 	var err error

@@ -1,26 +1,22 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os"
 	"os/signal"
-	"sort"
-	"strings"
 	"sync"
 	"syscall"
-	"unicode"
-
-	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 
 	"github.com/influxdata/toml"
+	"github.com/spf13/cobra"
 
 	"github.com/ostrost/ostent/flags"
+	"github.com/ostrost/ostent/internal"
 	"github.com/ostrost/ostent/internal/agent"
 	"github.com/ostrost/ostent/internal/config"
 	"github.com/ostrost/ostent/ostent"
-	"github.com/ostrost/ostent/params"
 
 	// plugging outputs:
 	_ "github.com/influxdata/telegraf/plugins/outputs/graphite"
@@ -68,265 +64,106 @@ func (rs *runs) runE(*cobra.Command, []string) error {
 var Bind = flags.NewBind("", 8050)
 
 func initFlags() {
-	rconfig := defaultConfig()
-	tabs := &tables{}
+	rconfig := config.NewConfig()
 
 	persistentPreRuns.add(versionRun)
 	RootCmd.PersistentFlags().BoolVar(&versionFlag, "version", false, "Print version and exit")
 
 	RootCmd.Flags().VarP(&Bind, "bind", "b", "Bind `address`")
 
-	defaultInterval := config.NewConfig().Agent.Interval.Duration.String()
-	intervals := struct{ Agent, CPU, Disk, Mem, NetOstent, ProcstatOstent, Swap string }{}
-	for _, v := range []struct {
-		pointer *string
-		name    string
-		usage   string
-	}{
-		{&intervals.CPU, "input-interval-cpu", "Interval for input: cpu"},
-		{&intervals.Disk, "input-interval-disk", "Interval for input: disk"},
-		{&intervals.Mem, "input-interval-mem", "Interval for input: mem"},
-		{&intervals.NetOstent, "input-interval-net-ostent", "Interval for input: net_ostent"},
-		{&intervals.ProcstatOstent, "input-interval-procstat-ostent", "Interval for input: procstat_ostent"},
-		{&intervals.Swap, "input-interval-swap", "Interval for input: swap"},
-		// ...
-	} {
-		RootCmd.Flags().StringVar(v.pointer, v.name, defaultInterval, v.usage)
-	}
+	defaultInterval := rconfig.Agent.Interval.Duration.String()
+	intervals := struct{ Agent string }{}
+	/*
+		intervals := struct{ Agent, CPU, Disk, Mem, NetOstent, ProcstatOstent, Swap string }{}
+		for _, v := range []struct {
+			pointer *string
+			name    string
+			usage   string
+		}{
+			{&intervals.CPU, "input-interval-cpu", "Interval for input: cpu"},
+			{&intervals.Disk, "input-interval-disk", "Interval for input: disk"},
+			{&intervals.Mem, "input-interval-mem", "Interval for input: mem"},
+			{&intervals.NetOstent, "input-interval-net-ostent", "Interval for input: net_ostent"},
+			{&intervals.ProcstatOstent, "input-interval-procstat-ostent", "Interval for input: procstat_ostent"},
+			{&intervals.Swap, "input-interval-swap", "Interval for input: swap"},
+			// ...
+		} {
+			RootCmd.Flags().StringVar(v.pointer, v.name, defaultInterval, v.usage)
+		}
+	*/
 	RootCmd.Flags().StringVarP(&intervals.Agent, "interval", "d", defaultInterval, "Interval for agent and inputs")
 
-	preRuns.add(func() error {
-
-		if intervals.Agent != defaultInterval {
-			interval := new(string)
-			*interval = intervals.Agent
-			rconfig.Agent.Interval, rconfig.Agent.FlushInterval = interval, interval
-			if rconfig.Inputs.System_ostent != nil {
-				rconfig.Inputs.System_ostent.Interval = interval // otherwise it's 1s per System_ostent default
+	_ = defaultInterval
+	/*
+		preRuns.add(func() error {
+			if intervals.Agent != defaultInterval {
+				var interval internal.Duration
+				_ = interval.UnmarshalTOML([]byte(fmt.Sprintf("%q", intervals.Agent)))
+				// TODO set rconfig.Agent.{Flush,}Interval, rconfig.Outputs["system_ostent"].Interval
 			}
-		}
 
-		for _, v := range []struct {
-			pointer **string
-			value   string
-		}{
-			{&rconfig.Inputs.CPU.Interval, intervals.CPU},
-			{&rconfig.Inputs.Disk.Interval, intervals.Disk},
-			{&rconfig.Inputs.Mem.Interval, intervals.Mem},
-			{&rconfig.Inputs.Net_ostent.Interval, intervals.NetOstent},
-			{&rconfig.Inputs.Procstat_ostent.Interval, intervals.ProcstatOstent},
-			{&rconfig.Inputs.Swap.Interval, intervals.Swap},
-		} {
-			if v.value != defaultInterval {
-				*v.pointer = new(string)
-				**v.pointer = v.value
+			for _, v := range []struct {
+				pointer **string
+				value   string
+			}{
+				{&rconfig.Inputs.CPU.Interval, intervals.CPU},
+				{&rconfig.Inputs.Disk.Interval, intervals.Disk},
+				{&rconfig.Inputs.Mem.Interval, intervals.Mem},
+				{&rconfig.Inputs.Net_ostent.Interval, intervals.NetOstent},
+				{&rconfig.Inputs.Procstat_ostent.Interval, intervals.ProcstatOstent},
+				{&rconfig.Inputs.Swap.Interval, intervals.Swap},
+			} {
+				if v.value != defaultInterval {
+					*v.pointer = new(string)
+					**v.pointer = v.value
+				}
 			}
-		}
-		tabs.add(rconfig)
-		return nil
-	})
-	var elisting ostent.ExportingListing
-
-	if gends := params.NewGraphiteEndpoints(flags.NewBind("127.0.0.1", 2003)); true {
-		preRuns.add(func() error { return graphiteRun(&elisting, tabs, gends) })
-		RootCmd.Flags().Var(&gends, "graphite", "Graphite exporting `endpoint(s)`")
-	}
-
-	if iends := params.NewInfluxEndpoints("ostent"); true {
-		preRuns.add(func() error { return influxRun(&elisting, tabs, iends) })
-		RootCmd.Flags().Var(&iends, "influxdb", "InfluxDB exporting `endpoint(s)`")
-		RootCmd.Example += "InfluxDB params:\n" + paramsUsage(func(f *pflag.FlagSet) {
-			param := &iends.Default // shortcut, f does not alter it
-			// f.Var(&param.ServerAddr, "0", "InfluxDB server `address`")
-			f.StringVar(&param.Database, "2", param.Database, "InfluxDB `database`")
-			f.StringVar(&param.Username, "3", param.Username, "InfluxDB `username`")
-			f.StringVar(&param.Password, "4", param.Password, "InfluxDB `password`")
-		}) + "  Any extra parameters become tags in every metrics post to InfluxDB server.\n"
-	}
-
-	hostname, _ := os.Hostname()
-	if lends := params.NewLibratoEndpoints(hostname); true {
-		preRuns.add(func() error { return libratoRun(&elisting, tabs, lends) })
-		RootCmd.Flags().Var(&lends, "librato", "Librato exporting `parameter(s)`")
-		RootCmd.Example += "Librato params:\n" + paramsUsage(func(f *pflag.FlagSet) {
-			param := &lends.Default // shortcut, f does not alter it
-			f.StringVar(&param.Source, "2", param.Source, "Librato `source`")
-			f.StringVar(&param.Email, "3", param.Email, "Librato `email`")
-			f.StringVar(&param.Token, "4", param.Token, "Librato `token`")
+			return nil
 		})
-	}
-	RootCmd.Example = strings.TrimRight(RootCmd.Example, "\n")
+	*/
+
 	preRuns.add(func() error {
-		ostent.Exporting = elisting.ExportingList
-		sort.Stable(ostent.Exporting)
+		ostent.AddBackground(func() {
+			if err := mainAgent(rconfig); err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		})
 		return nil
 	})
-
-	// /*
-	ostent.AddBackground(func() {
-		if err := mainAgent(tabs); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-	}) // */
 }
 
-// paramsUsage returns formatted usage of a FlagSet set by setf.
-// All flags assumed to be params thus formatting trims dashes.
-// The flag names supposed to be digits so it strips them likewise.
-func paramsUsage(setf func(*pflag.FlagSet)) string {
-	cmd := cobra.Command{}
-	setf(cmd.Flags())
-	lines := strings.Split(cmd.NonInheritedFlags().FlagUsages(), "\n")
-	for i := range lines {
-		lines[i] = strings.TrimPrefix(lines[i], "      --")
-		lines[i] = strings.TrimLeftFunc(lines[i], unicode.IsDigit)
-		if lines[i] != "" {
-			lines[i] = " " + lines[i]
-		}
-	}
-	return strings.Join(lines, "\n")
-}
-
-func defaultConfig() *ostentConfig {
-	var (
-		oneSecond = "1s"
-		ignoreFs  = []string{"tmpfs", "devtmpfs"}
-	)
-	var (
-		input  = func() *inputConfig { return &inputConfig{} }
-		output = func() *outputConfig { return &outputConfig{} }
-	)
-
-	return &ostentConfig{
-		Outputs: outputs{Ostent: output()},
-		Inputs: inputs{
-			CPU:             input(),
-			Disk:            &diskInput{Ignore_fs: &ignoreFs},
-			Mem:             input(),
-			Net_ostent:      input(),
-			Procstat_ostent: input(),
-			Swap:            input(),
-			System_ostent:   &inputConfig{Interval: &oneSecond},
-		}}
-}
-
-func istrue(b *bool) bool { return b != nil && *b }
-
-func (oc *ostentConfig) cleanup() {
-	oc.cleanupInputs()
-	oc.cleanupOutputs()
-}
-
-func (oc *ostentConfig) cleanupInputs() {
-	for _, inc := range []**inputConfig{
-		&oc.Inputs.CPU,
-		&oc.Inputs.Mem,
-		&oc.Inputs.Net_ostent,
-		&oc.Inputs.Procstat_ostent,
-		&oc.Inputs.Swap,
-		&oc.Inputs.System_ostent,
-	} {
-		if *inc != nil && istrue((*inc).Disable) {
-			*inc = nil
-		}
-	}
-	if oc.Inputs.Disk != nil && istrue(oc.Inputs.Disk.Disable) {
-		oc.Inputs.Disk = nil
-	}
-}
-
-func (oc *ostentConfig) cleanupOutputs() {
-	for _, outc := range []**outputConfig{
-		&oc.Outputs.Ostent,
-	} {
-		if *outc != nil && istrue((*outc).Disable) {
-			*outc = nil
-		}
-	}
-	if oc.Outputs.Influxdb != nil && istrue(oc.Outputs.Influxdb.Disable) {
-		oc.Outputs.Influxdb = nil
-	}
-}
-
-type ostentConfig struct {
-	Agent   agentConfig
-	Outputs outputs
-	Inputs  inputs
-}
-
-type agentConfig struct {
-	Interval      *string `toml:",omitempty" yaml:",omitempty"`
-	FlushInterval *string `toml:",omitempty" yaml:",omitempty"`
-}
-
-type inputConfig struct {
-	Disable  *bool   `toml:",omitempty" yaml:",omitempty"`
-	Interval *string `toml:",omitempty" yaml:",omitempty"`
-}
-
-type diskInput struct {
-	Disable   *bool     `toml:",omitempty" yaml:",omitempty"` // common inputConfig
-	Interval  *string   `toml:",omitempty" yaml:",omitempty"` // common inputConfig
-	Ignore_fs *[]string `toml:",omitempty" yaml:",omitempty"`
-}
-
-type outputConfig struct {
-	Disable *bool `toml:",omitempty" yaml:",omitempty"`
-}
-
-type outputs struct {
-	Ostent   *outputConfig `toml:",omitempty" yaml:",omitempty"`
-	Influxdb *struct {
-		Disable                      *bool `toml:",omitempty" yaml:",omitempty"` // common outputConfig
-		Username, Password, Database string
-		Namedrop, URLs               []string
-	} `toml:",omitempty" yaml:",omitempty"`
-}
-
-type inputs struct {
-	CPU             *inputConfig `toml:",omitempty" yaml:",omitempty"`
-	Disk            *diskInput   `toml:",omitempty" yaml:",omitempty"`
-	Mem             *inputConfig `toml:",omitempty" yaml:",omitempty"`
-	Net_ostent      *inputConfig `toml:",omitempty" yaml:",omitempty"`
-	Procstat_ostent *inputConfig `toml:",omitempty" yaml:",omitempty"`
-	Swap            *inputConfig `toml:",omitempty" yaml:",omitempty"`
-	System_ostent   *inputConfig `toml:",omitempty" yaml:",omitempty"`
-}
-
-type namedrop []string
-
-var commonNamedrop = namedrop{
-	"system_ostent",
-	"procstat",
-	"procstat_ostent",
-}
-
-func mainAgent(tabs *tables) error {
+func mainAgent(rconfig *config.Config) error {
 	reload := make(chan bool, 1)
 	reload <- true
 	for <-reload {
 		reload <- false
 
-		c := config.NewConfig()
-
-		configText, err := tabs.marshal()
-		if err != nil {
-			return err
-		}
-
-		configPath := "/runtime/config"
-		log.Printf("#%s.toml:\n%s", configPath, printableConfigText(configText))
-
-		configTab, err := config.ParseContents(configText)
-		if err != nil {
-			return err
-		}
-		if err := c.LoadTable(configPath, configTab); err != nil {
-			return err
-		}
-
+		c := rconfig // config.NewConfig() // TODO rconfig copy
 		c.Agent.Quiet = true
+
+		if tab, err := readConfig(rconfig); err != nil {
+			return err
+		} else if tab != nil {
+			if err := c.LoadTable("/runtime/config", tab); err != nil {
+				return err
+			}
+		}
+
+		if text, err := printableConfig(rconfig); err != nil {
+			return err
+		} else {
+			log.Printf("Config overview:\n%s", text)
+			/*
+				var system_ostent *models.RunningInput
+				for _, ri := range rconfig.Inputs {
+					if ri.Name == "system_ostent" {
+						system_ostent = ri
+					}
+				}
+				log.Printf("ins...._system_ostent.interval = %q\n",
+					system_ostent.Config.Interval) */
+		}
 
 		ag, err := agent.NewAgent(c)
 		if err != nil {
@@ -360,33 +197,54 @@ func mainAgent(tabs *tables) error {
 	return nil
 }
 
-type tables struct{ list []interface{} }
-
-func (tabs *tables) add(in interface{}) { tabs.list = append(tabs.list, in) }
-
-func (tabs tables) marshal() ([]byte, error) {
-	text := []byte{}
-	for _, in := range tabs.list {
-		add, err := toml.Marshal(in)
-		if err != nil {
-			return text, err
-		}
-		text = append(text, add...)
-	}
-	return text, nil
-}
-
-func printableConfigText(text []byte) string {
-	lines := strings.Split(string(text), "\n")
-	for _, replace := range [][2]string{
+func printableConfigText(text []byte) []byte {
+	lines := bytes.Split(text, []byte("\n"))
+	for _, replaceString := range [][2]string{
 		{"password = ", `"********"`},
 		{"api_token = ", `"****************"`},
 	} {
+		replace := [2][]byte{[]byte(replaceString[0]), []byte(replaceString[1])}
 		for i := range lines {
-			if j := strings.Index(lines[i], replace[0]); j != -1 {
-				lines[i] = lines[i][:j] + replace[0] + replace[1]
+			if j := bytes.Index(lines[i], replace[0]); j != -1 {
+				lines[i] = append(append(lines[i][:j], replace[0]...), replace[1]...)
 			}
 		}
 	}
-	return strings.Join(lines, "\n")
+	return bytes.Join(lines, []byte("\n"))
+}
+
+func printableConfig(rconfig *config.Config) ([]byte, error) {
+	type agentSelect struct {
+		Debug         bool `toml:",omitempty"`
+		Quiet         bool `toml:",omitempty"`
+		FlushInterval internal.Duration
+		Interval      internal.Duration
+		RoundInterval bool `toml:",omitempty"`
+	}
+	rt := struct {
+		AgentSelect *agentSelect
+		Ins         map[string]map[string]interface{}
+		Outs        map[string]map[string]interface{}
+	}{
+		AgentSelect: &agentSelect{
+			Debug:         rconfig.Agent.Debug,
+			Quiet:         rconfig.Agent.Quiet,
+			FlushInterval: rconfig.Agent.FlushInterval,
+			Interval:      rconfig.Agent.Interval,
+			RoundInterval: rconfig.Agent.RoundInterval,
+		},
+		Ins:  make(map[string]map[string]interface{}),
+		Outs: make(map[string]map[string]interface{}),
+	}
+	for _, input := range rconfig.Inputs {
+		rt.Ins["enable_"+input.Name] = nil
+	}
+	for _, output := range rconfig.Outputs {
+		rt.Outs["enable_"+output.Name] = nil
+	}
+	text, err := toml.Marshal(rt)
+	if err != nil {
+		return []byte{}, err
+	}
+	return printableConfigText(text), nil
 }

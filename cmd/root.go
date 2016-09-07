@@ -20,11 +20,6 @@ Optionally exports them to metrics servers.
 
 To continuously export collected metrics use graphite, influxdb and/or librato flags.
 Use multiple flags and/or use comma separated endpoints for the same kind.`,
-	Example: `ostent --graphite 10.0.0.1,10.0.0.2:2004\?delay=30s
-ostent --influxdb http://10.0.0.3\?delay=60s
-ostent --librato \?email=EMAIL\&token=TOKEN
-
-`,
 
 	PersistentPostRunE: persistentPostRuns.runE,
 	PersistentPreRunE:  persistentPreRuns.runE,
@@ -47,7 +42,7 @@ func init() {
 	// Cobra supports Persistent Flags, which, if defined here,
 	// will be global for your application.
 
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.ostent.yaml)")
+	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.ostent.toml)")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	//- RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
