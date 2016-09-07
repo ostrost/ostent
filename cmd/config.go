@@ -73,33 +73,39 @@ func normalize(tab *ast.Table) error {
 	deleteDisable(ins)
 	deleteDisable(outs)
 
-	commonNamedrop, err := config.ParseContents([]byte(`
+	var nonostentOutputs int
+	for name := range outs.Fields {
+		if name != "ostent" {
+			nonostentOutputs++
+		}
+	}
+	if nonostentOutputs > 0 {
+		commonNamedrop, err := config.ParseContents([]byte(`
 namedrop = ["system_ostent", "procstat", "procstat_ostent"]
 `))
-	if err != nil {
-		return err
+		if err != nil {
+			return err
+		}
+		for name, value := range outs.Fields {
+			if name != "ostent" {
+				setNamedrop(value, commonNamedrop.Fields["namedrop"])
+			}
+		}
 	}
-	setNamedrop(outs, commonNamedrop.Fields["namedrop"] /* a *ast.KeyValue */)
 
 	return nil
 }
 
-func setNamedrop(tab *ast.Table, set interface{}) {
-	for _, value := range tab.Fields {
-		setNamedropone(value, set)
-	}
-}
-
-func setNamedropone(value, set interface{}) {
+// value must be an (outs sub-)table.
+func setNamedrop(value, set interface{}) {
 	vtab, ok := value.(*ast.Table)
 	if !ok {
 		return
 	}
-	ndif, ok := vtab.Fields["namedrop"]
+	_, ok = vtab.Fields["namedrop"]
 	if ok {
 		return
 	}
-	_, ok = ndif.(*ast.KeyValue)
 	vtab.Fields["namedrop"] = set
 }
 
