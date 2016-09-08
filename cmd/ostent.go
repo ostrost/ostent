@@ -13,8 +13,10 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/ostrost/ostent/flags"
+	"github.com/ostrost/ostent/internal"
 	"github.com/ostrost/ostent/internal/agent"
 	"github.com/ostrost/ostent/internal/config"
+	"github.com/ostrost/ostent/internal/models"
 	"github.com/ostrost/ostent/ostent"
 
 	// plugging outputs:
@@ -219,7 +221,8 @@ func printableConfig(rconfig *config.Config) (string, error) {
 
 	text := string(agtext) + "[inputs]\n"
 	for _, in := range rconfig.Inputs {
-		subtext, err := printableTable("inputs", in.Name, in.Input)
+		subtext, err := printableTable("inputs", in.Name, in.Input,
+			printableInput(in.Config), printableFilter(in.Config.Filter))
 		if err != nil {
 			return "", err
 		}
@@ -228,7 +231,8 @@ func printableConfig(rconfig *config.Config) (string, error) {
 
 	text += "[outputs]\n"
 	for _, out := range rconfig.Outputs {
-		subtext, err := printableTable("outputs", out.Name, out.Output)
+		subtext, err := printableTable("outputs", out.Name, out.Output,
+			nil, printableFilter(out.Config.Filter))
 		if err != nil {
 			return "", err
 		}
@@ -238,16 +242,102 @@ func printableConfig(rconfig *config.Config) (string, error) {
 	return printableConfigText(text), nil
 }
 
-func printableTable(upname, name string, in interface{}) (string, error) {
-	intext, err := toml.Marshal(in)
+func printableTable(upname, name string, in1 interface{},
+	in2 *printInput, in3 *printFilter) (string, error) {
+	intext1, err := toml.Marshal(in1)
 	if err != nil {
 		return "", err
 	}
-	lines := strings.Split(string(intext), "\n")
+	var intext2 []byte
+	if in2 != nil {
+		intext2, err = toml.Marshal(in2)
+		if err != nil {
+			return "", err
+		}
+	}
+	var intext3 []byte
+	if in3 != nil {
+		intext3, err = toml.Marshal(in3)
+		if err != nil {
+			return "", err
+		}
+	}
+	lines := strings.Split(string(intext1)+string(intext2)+string(intext3), "\n")
 	for i := range lines {
 		if lines[i] != "" {
 			lines[i] = "        " + lines[i]
 		}
 	}
 	return "    [" + upname + "." + name + "]\n" + strings.Join(lines, "\n"), nil
+}
+
+type printInput struct {
+	NameOverride      string             `toml:",omitempty"`
+	MeasurementPrefix string             `toml:",omitempty"`
+	MeasurementSuffix string             `toml:",omitempty"`
+	Tags              *map[string]string `toml:",omitempty"`
+	Interval          internal.Duration  `toml:",omitempty"`
+}
+
+func printableInput(ic *models.InputConfig) *printInput {
+	p := printInput{
+		NameOverride:      ic.NameOverride,
+		MeasurementPrefix: ic.MeasurementPrefix,
+		MeasurementSuffix: ic.MeasurementSuffix,
+		Interval:          internal.Duration{Duration: ic.Interval},
+	}
+	if ic.Tags != nil && len(ic.Tags) > 0 {
+		p.Tags = &ic.Tags
+	}
+	if p == (printInput{}) {
+		return nil
+	}
+	return &p
+}
+
+type printFilter struct {
+	Filter struct {
+		NameDrop   *[]string           `toml:",omitempty"`
+		NamePass   *[]string           `toml:",omitempty"`
+		FieldDrop  *[]string           `toml:",omitempty"`
+		FieldPass  *[]string           `toml:",omitempty"`
+		TagDrop    *[]models.TagFilter `toml:",omitempty"`
+		TagPass    *[]models.TagFilter `toml:",omitempty"`
+		TagExclude *[]string           `toml:",omitempty"`
+		TagInclude *[]string           `toml:",omitempty"`
+	}
+}
+
+func printableFilter(f models.Filter) *printFilter {
+	if !f.IsActive {
+		return nil
+	}
+	var p printFilter
+	for _, pair := range []struct {
+		in  *[]string
+		out **[]string
+	}{
+		{&f.NameDrop, &p.Filter.NameDrop},
+		{&f.NamePass, &p.Filter.NamePass},
+		{&f.FieldDrop, &p.Filter.FieldDrop},
+		{&f.FieldPass, &p.Filter.FieldPass},
+		{&f.TagExclude, &p.Filter.TagExclude},
+		{&f.TagInclude, &p.Filter.TagInclude},
+	} {
+		if len(*pair.in) > 0 {
+			*pair.out = pair.in
+		}
+	}
+	for _, pair := range []struct {
+		in  *[]models.TagFilter
+		out **[]models.TagFilter
+	}{
+		{&f.TagDrop, &p.Filter.TagDrop},
+		{&f.TagPass, &p.Filter.TagPass},
+	} {
+		if len(*pair.in) > 0 {
+			*pair.out = pair.in
+		}
+	}
+	return &p
 }
