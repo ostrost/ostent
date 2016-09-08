@@ -16,7 +16,7 @@ type PS interface{}
 type systemPS struct{}
 
 type NetIOStats struct {
-	internal.LastNetIOStats
+	internal.LastNetIOStats `toml:"-"`
 
 	ps PS
 

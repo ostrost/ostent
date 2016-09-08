@@ -1,11 +1,11 @@
 package cmd
 
 import (
-	"bytes"
 	"fmt"
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"sync"
 	"syscall"
 
@@ -13,7 +13,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/ostrost/ostent/flags"
-	"github.com/ostrost/ostent/internal"
 	"github.com/ostrost/ostent/internal/agent"
 	"github.com/ostrost/ostent/internal/config"
 	"github.com/ostrost/ostent/ostent"
@@ -153,7 +152,7 @@ func mainAgent(rconfig *config.Config) error {
 		if text, err := printableConfig(rconfig); err != nil {
 			return err
 		} else {
-			log.Printf("Config overview:\n%s", text)
+			log.Printf("Runtime config:\n%s", text)
 			/*
 				var system_ostent *models.RunningInput
 				for _, ri := range rconfig.Inputs {
@@ -197,54 +196,58 @@ func mainAgent(rconfig *config.Config) error {
 	return nil
 }
 
-func printableConfigText(text []byte) []byte {
-	lines := bytes.Split(text, []byte("\n"))
-	for _, replaceString := range [][2]string{
-		{"password = ", `"********"`},
-		{"api_token = ", `"****************"`},
+func printableConfigText(text string) string {
+	lines := strings.Split(text, "\n")
+	for _, replace := range [][2]string{
+		{"password = ", `"PASSWORD"`},
+		{"api_token = ", `"API_TOKEN"`},
 	} {
-		replace := [2][]byte{[]byte(replaceString[0]), []byte(replaceString[1])}
 		for i := range lines {
-			if j := bytes.Index(lines[i], replace[0]); j != -1 {
-				lines[i] = append(append(lines[i][:j], replace[0]...), replace[1]...)
+			if j := strings.Index(lines[i], replace[0]); j != -1 {
+				lines[i] = lines[i][:j] + replace[0] + replace[1]
 			}
 		}
 	}
-	return bytes.Join(lines, []byte("\n"))
+	return strings.Join(lines, "\n")
 }
 
-func printableConfig(rconfig *config.Config) ([]byte, error) {
-	type agentSelect struct {
-		Debug         bool `toml:",omitempty"`
-		Quiet         bool `toml:",omitempty"`
-		FlushInterval internal.Duration
-		Interval      internal.Duration
-		RoundInterval bool `toml:",omitempty"`
-	}
-	rt := struct {
-		AgentSelect *agentSelect
-		Ins         map[string]map[string]interface{}
-		Outs        map[string]map[string]interface{}
-	}{
-		AgentSelect: &agentSelect{
-			Debug:         rconfig.Agent.Debug,
-			Quiet:         rconfig.Agent.Quiet,
-			FlushInterval: rconfig.Agent.FlushInterval,
-			Interval:      rconfig.Agent.Interval,
-			RoundInterval: rconfig.Agent.RoundInterval,
-		},
-		Ins:  make(map[string]map[string]interface{}),
-		Outs: make(map[string]map[string]interface{}),
-	}
-	for _, input := range rconfig.Inputs {
-		rt.Ins["enable_"+input.Name] = nil
-	}
-	for _, output := range rconfig.Outputs {
-		rt.Outs["enable_"+output.Name] = nil
-	}
-	text, err := toml.Marshal(rt)
+func printableConfig(rconfig *config.Config) (string, error) {
+	agtext, err := toml.Marshal(struct{ Agent *config.AgentConfig }{rconfig.Agent})
 	if err != nil {
-		return []byte{}, err
+		return "", err
 	}
+
+	text := string(agtext) + "[inputs]\n"
+	for _, in := range rconfig.Inputs {
+		subtext, err := printableTable("inputs", in.Name, in.Input)
+		if err != nil {
+			return "", err
+		}
+		text += subtext
+	}
+
+	text += "[outputs]\n"
+	for _, out := range rconfig.Outputs {
+		subtext, err := printableTable("outputs", out.Name, out.Output)
+		if err != nil {
+			return "", err
+		}
+		text += subtext
+	}
+
 	return printableConfigText(text), nil
+}
+
+func printableTable(upname, name string, in interface{}) (string, error) {
+	intext, err := toml.Marshal(in)
+	if err != nil {
+		return "", err
+	}
+	lines := strings.Split(string(intext), "\n")
+	for i := range lines {
+		if lines[i] != "" {
+			lines[i] = "        " + lines[i]
+		}
+	}
+	return "    [" + upname + "." + name + "]\n" + strings.Join(lines, "\n"), nil
 }
