@@ -41,7 +41,7 @@ awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
 +type systemPS struct{}
 +
  type NetIOStats struct {
-+	internal.LastNetIOStats
++	internal.LastNetIOStats `toml:"-"`
 +
  	ps PS
  
@@ -143,7 +143,7 @@ awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
  	if err != nil {
  		return err
  	}
-@@ -41,16 +39,15 @@
+@@ -41,16 +39,17 @@
  		"load1":         loadavg.Load1,
  		"load5":         loadavg.Load5,
  		"load15":        loadavg.Load15,
@@ -151,11 +151,13 @@ awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
 -		"n_users":       len(users),
 -		"uptime_format": format_uptime(hostinfo.Uptime),
 -		"n_cpus":        runtime.NumCPU(),
-+		"hostname_short": strings.Split(hostname, ".")[0],
-+		"uptime_format":  format_uptime(upseconds),
  	}
 -	acc.AddFields("system", fields, nil)
 +	acc.AddFields("system_ostent", fields, nil)
++	acc.AddFields("system_ostent", map[string]interface{}{
++		"hostname_short": strings.Split(hostname, ".")[0],
++		"uptime_format":  format_uptime(upseconds),
++	}, map[string]string{"kind": "system_ostent_runtime"})
  
  	return nil
  }
@@ -164,7 +166,7 @@ awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
  func format_uptime(uptime uint64) string {
  	buf := new(bytes.Buffer)
  	w := bufio.NewWriter(buf)
-@@ -75,9 +72,10 @@
+@@ -75,9 +74,10 @@
  	w.Flush()
  	return buf.String()
  }

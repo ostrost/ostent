@@ -33,13 +33,13 @@ func normalize(tab *ast.Table) error {
 	}
 
 	for iname, ctext := range map[string]string{
-		"cpu":             "",
+		"cpu":             ``,
 		"disk":            `ignore_fs = ["tmpfs", "devtmpfs"]`,
-		"mem":             "",
-		"net_ostent":      "",
-		"procstat_ostent": "",
-		"swap":            "",
-		"system_ostent":   `interval = "1s"`,
+		"mem":             ``,
+		"net_ostent":      ``,
+		"procstat_ostent": ``,
+		"swap":            ``,
+		"system_ostent":   ``,
 	} {
 		if _, ok := ins.Fields[iname]; ok {
 			continue
@@ -55,7 +55,7 @@ func normalize(tab *ast.Table) error {
 	}
 
 	for oname, ctext := range map[string]string{
-		"ostent": "",
+		"ostent": ``,
 	} {
 		if _, ok := outs.Fields[oname]; ok {
 			continue
@@ -80,33 +80,34 @@ func normalize(tab *ast.Table) error {
 		}
 	}
 	if nonostentOutputs > 0 {
-		commonNamedrop, err := config.ParseContents([]byte(`
-namedrop = ["system_ostent", "procstat", "procstat_ostent"]
+		commondrop, err := config.ParseContents([]byte(`
+namedrop = ["procstat", "procstat_ostent"]
+[tagdrop]
+    kind = ["system_ostent_runtime"]
 `))
 		if err != nil {
 			return err
 		}
 		for name, value := range outs.Fields {
 			if name != "ostent" {
-				setNamedrop(value, commonNamedrop.Fields["namedrop"])
+				setfield(value, "namedrop", commondrop.Fields["namedrop"])
+				setfield(value, "tagdrop", commondrop.Fields["tagdrop"])
 			}
 		}
 	}
-
 	return nil
 }
 
-// value must be an (outs sub-)table.
-func setNamedrop(value, set interface{}) {
+func setfield(value interface{}, key string, set interface{}) {
 	vtab, ok := value.(*ast.Table)
 	if !ok {
 		return
 	}
-	_, ok = vtab.Fields["namedrop"]
+	_, ok = vtab.Fields[key]
 	if ok {
 		return
 	}
-	vtab.Fields["namedrop"] = set
+	vtab.Fields[key] = set
 }
 
 func deleteDisable(tab *ast.Table) {

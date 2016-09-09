@@ -36,13 +36,15 @@ func (_ *SystemStats) Gather(acc telegraf.Accumulator) error {
 	}
 
 	fields := map[string]interface{}{
-		"load1":          loadavg.Load1,
-		"load5":          loadavg.Load5,
-		"load15":         loadavg.Load15,
-		"hostname_short": strings.Split(hostname, ".")[0],
-		"uptime_format":  format_uptime(upseconds),
+		"load1":  loadavg.Load1,
+		"load5":  loadavg.Load5,
+		"load15": loadavg.Load15,
 	}
 	acc.AddFields("system_ostent", fields, nil)
+	acc.AddFields("system_ostent", map[string]interface{}{
+		"hostname_short": strings.Split(hostname, ".")[0],
+		"uptime_format":  format_uptime(upseconds),
+	}, map[string]string{"kind": "system_ostent_runtime"})
 
 	return nil
 }
