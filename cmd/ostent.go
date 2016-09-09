@@ -200,17 +200,31 @@ func mainAgent(rconfig *config.Config) error {
 
 func printableConfigText(text string) string {
 	lines := strings.Split(text, "\n")
-	for _, replace := range [][2]string{
-		{"password = ", `"PASSWORD"`},
-		{"api_token = ", `"API_TOKEN"`},
-	} {
-		for i := range lines {
+	var newlines []string
+rangelines:
+	for i := range lines {
+		for _, suffix := range []string{
+			" = 0",
+			` = ""`,
+			" = []",
+			" = false",
+		} {
+			if strings.HasSuffix(lines[i], suffix) {
+				continue rangelines
+			}
+		}
+
+		for _, replace := range [][2]string{
+			{"password = ", `"PASSWORD"`},
+			{"api_token = ", `"API_TOKEN"`},
+		} {
 			if j := strings.Index(lines[i], replace[0]); j != -1 {
 				lines[i] = lines[i][:j] + replace[0] + replace[1]
 			}
 		}
+		newlines = append(newlines, lines[i])
 	}
-	return strings.Join(lines, "\n")
+	return strings.Join(newlines, "\n")
 }
 
 func printableConfig(rconfig *config.Config) (string, error) {
