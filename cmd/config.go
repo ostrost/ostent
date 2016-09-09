@@ -39,7 +39,7 @@ func normalize(tab *ast.Table) error {
 		"net_ostent":      ``,
 		"procstat_ostent": ``,
 		"swap":            ``,
-		"system_ostent":   ``,
+		"system_ostent":   `interval = "1s"`,
 	} {
 		if _, ok := ins.Fields[iname]; ok {
 			continue

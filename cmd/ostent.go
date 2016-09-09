@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync"
 	"syscall"
+	"time"
 
 	"github.com/influxdata/toml"
 	"github.com/spf13/cobra"
@@ -65,67 +66,19 @@ func (rs *runs) runE(*cobra.Command, []string) error {
 var Bind = flags.NewBind("", 8050)
 
 func initFlags() {
-	rconfig := config.NewConfig()
-
 	persistentPreRuns.add(versionRun)
 	RootCmd.PersistentFlags().BoolVar(&versionFlag, "version", false, "Print version and exit")
 
 	RootCmd.Flags().VarP(&Bind, "bind", "b", "Bind `address`")
 
-	defaultInterval := rconfig.Agent.Interval.Duration.String()
-	intervals := struct{ Agent string }{}
-	/*
-		intervals := struct{ Agent, CPU, Disk, Mem, NetOstent, ProcstatOstent, Swap string }{}
-		for _, v := range []struct {
-			pointer *string
-			name    string
-			usage   string
-		}{
-			{&intervals.CPU, "input-interval-cpu", "Interval for input: cpu"},
-			{&intervals.Disk, "input-interval-disk", "Interval for input: disk"},
-			{&intervals.Mem, "input-interval-mem", "Interval for input: mem"},
-			{&intervals.NetOstent, "input-interval-net-ostent", "Interval for input: net_ostent"},
-			{&intervals.ProcstatOstent, "input-interval-procstat-ostent", "Interval for input: procstat_ostent"},
-			{&intervals.Swap, "input-interval-swap", "Interval for input: swap"},
-			// ...
-		} {
-			RootCmd.Flags().StringVar(v.pointer, v.name, defaultInterval, v.usage)
-		}
-	*/
-	RootCmd.Flags().StringVarP(&intervals.Agent, "interval", "d", defaultInterval, "Interval for agent and inputs")
-
-	_ = defaultInterval
-	/*
-		preRuns.add(func() error {
-			if intervals.Agent != defaultInterval {
-				var interval internal.Duration
-				_ = interval.UnmarshalTOML([]byte(fmt.Sprintf("%q", intervals.Agent)))
-				// TODO set rconfig.Agent.{Flush,}Interval, rconfig.Outputs["system_ostent"].Interval
-			}
-
-			for _, v := range []struct {
-				pointer **string
-				value   string
-			}{
-				{&rconfig.Inputs.CPU.Interval, intervals.CPU},
-				{&rconfig.Inputs.Disk.Interval, intervals.Disk},
-				{&rconfig.Inputs.Mem.Interval, intervals.Mem},
-				{&rconfig.Inputs.Net_ostent.Interval, intervals.NetOstent},
-				{&rconfig.Inputs.Procstat_ostent.Interval, intervals.ProcstatOstent},
-				{&rconfig.Inputs.Swap.Interval, intervals.Swap},
-			} {
-				if v.value != defaultInterval {
-					*v.pointer = new(string)
-					**v.pointer = v.value
-				}
-			}
-			return nil
-		})
-	*/
+	agentargs := agentArguments{
+		defaultInterval: config.NewConfig().Agent.Interval.Duration}
+	RootCmd.Flags().StringVarP(&agentargs.intervals, "agent.intervals", "d",
+		agentargs.defaultInterval.String(), "Agent Interval and FlushInterval")
 
 	preRuns.add(func() error {
 		ostent.AddBackground(func() {
-			if err := mainAgent(rconfig); err != nil {
+			if err := mainAgent(&agentargs); err != nil {
 				fmt.Println(err)
 				os.Exit(1)
 			}
@@ -134,16 +87,21 @@ func initFlags() {
 	})
 }
 
-func mainAgent(rconfig *config.Config) error {
+type agentArguments struct {
+	defaultInterval time.Duration
+	intervals       string // from flags
+}
+
+func mainAgent(args *agentArguments) error {
 	reload := make(chan bool, 1)
 	reload <- true
 	for <-reload {
 		reload <- false
 
-		c := rconfig // config.NewConfig() // TODO rconfig copy
+		c := config.NewConfig()
 		c.Agent.Quiet = true
 
-		if tab, err := readConfig(rconfig); err != nil {
+		if tab, err := readConfig(c); err != nil {
 			return err
 		} else if tab != nil {
 			if err := c.LoadTable("/runtime/config", tab); err != nil {
@@ -151,19 +109,19 @@ func mainAgent(rconfig *config.Config) error {
 			}
 		}
 
-		if text, err := printableConfig(rconfig); err != nil {
+		if args.intervals != "" && args.intervals != args.defaultInterval.String() {
+			var interval internal.Duration
+			q := []byte(fmt.Sprintf("%q", args.intervals))
+			if err := interval.UnmarshalTOML(q); err != nil {
+				return err
+			}
+			c.Agent.Interval, c.Agent.FlushInterval = interval, interval
+		}
+
+		if text, err := printableConfig(c); err != nil {
 			return err
 		} else {
-			log.Printf("Runtime config:\n%s", text)
-			/*
-				var system_ostent *models.RunningInput
-				for _, ri := range rconfig.Inputs {
-					if ri.Name == "system_ostent" {
-						system_ostent = ri
-					}
-				}
-				log.Printf("ins...._system_ostent.interval = %q\n",
-					system_ostent.Config.Interval) */
+			log.Printf("Effective runtime config:\n%s", text)
 		}
 
 		ag, err := agent.NewAgent(c)
@@ -207,6 +165,7 @@ rangelines:
 			" = 0",
 			` = ""`,
 			" = []",
+			` = "0s"`,
 			" = false",
 		} {
 			if strings.HasSuffix(lines[i], suffix) {
