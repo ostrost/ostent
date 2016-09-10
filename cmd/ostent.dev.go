@@ -3,6 +3,7 @@
 package cmd
 
 import (
+	"fmt"
 	"go/build"
 	"io/ioutil"
 	"log"
@@ -10,9 +11,12 @@ import (
 	"path/filepath"
 	"runtime/pprof"
 	"strings"
+	"syscall"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
+	"github.com/spf13/viper"
 )
 
 // gendocCmd represents the gendoc command
@@ -134,4 +138,12 @@ func gendocRunE(*cobra.Command, []string) error {
 		}
 	}
 	return ioutil.WriteFile(mdfile, []byte(strings.Join(lines, "\n")), 0600)
+}
+
+func watchConfig() {
+	viper.OnConfigChange(func(e fsnotify.Event) {
+		fmt.Println("Config file changed:", e.Name)
+		syscall.Kill(syscall.Getpid(), syscall.SIGHUP)
+	})
+	viper.WatchConfig()
 }

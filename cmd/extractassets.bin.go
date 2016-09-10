@@ -130,3 +130,5 @@ func extractSymlink(name, full string) error {
 	return os.Symlink(full, name)
 	// no need to os.Chtimes as os.Symlink will set the times to about now
 }
+
+func watchConfig() {}
