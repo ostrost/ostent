@@ -15,7 +15,7 @@ import:
 - package: github.com/gorilla/schema
 - package: github.com/gorilla/websocket
 - package: github.com/influxdata/telegraf
-  version: 1.0.0-rc1
+  version: 1.0.0
   subpackages:
   - plugins/inputs
   - plugins/inputs/system

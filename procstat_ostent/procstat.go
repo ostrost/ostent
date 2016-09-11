@@ -16,12 +16,12 @@ import (
 )
 
 type Procstat struct {
-	PidFile     string `toml:"pid_file,omitempty"`
-	Exe         string `toml:",omitempty"`
-	Pattern     string `toml:",omitempty"`
-	Prefix      string `toml:",omitempty"`
-	ProcessName string `toml:",omitempty"`
-	User        string `toml:",omitempty"`
+	PidFile     string `toml:"pid_file"`
+	Exe         string
+	Pattern     string
+	Prefix      string
+	ProcessName string
+	User        string
 
 	// pidmap maps a pid to a process object, so we don't recreate every gather
 	pidmap map[int32]proc

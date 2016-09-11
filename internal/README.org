@@ -126,6 +126,21 @@ Only in ../vendor/github.com/influxdata/telegraf/internal/config: config_test.go
 Only in ../vendor/github.com/influxdata/telegraf/internal/config: testdata
 Only in ../vendor/github.com/influxdata/telegraf/internal: errchan
 Only in ../vendor/github.com/influxdata/telegraf/internal: globpath
+diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/internal/internal.go ./internal.go
+--- ../vendor/github.com/influxdata/telegraf/internal/internal.go
++++ ./internal.go
+@@ -32,6 +32,11 @@
+ 	Duration time.Duration
+ }
+ 
++// MarshalTOML is for toml.Marshaler interface.
++func (d Duration) MarshalTOML() ([]byte, error) {
++	return []byte(fmt.Sprintf("%q", d.Duration)), nil
++}
++
+ // UnmarshalTOML parses the duration from the TOML config file
+ func (d *Duration) UnmarshalTOML(b []byte) error {
+ 	var err error
 Only in ../vendor/github.com/influxdata/telegraf/internal: internal_test.go
 Only in ../vendor/github.com/influxdata/telegraf/internal: limiter
 Only in ../vendor/github.com/influxdata/telegraf/internal/models: filter_test.go
