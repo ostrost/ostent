@@ -1,5 +1,5 @@
-hash: 6aee77a73a144011bcea34ae795515a1581bf113da1e56e09aec91b336195af6
-updated: 2016-09-02T15:43:06.754976465Z
+hash: 5cc1a0e84f2162d26f22e81133b9738bf241a343c2d55efa6c33040bbc26f4a8
+updated: 2016-09-11T18:54:49.353004517Z
 imports:
 - name: github.com/blang/semver
   version: 60ec3488bfea7cca02b021d106d9911120d25fe9
@@ -51,7 +51,7 @@ imports:
 - name: github.com/gorilla/websocket
   version: a69d25be2fe2923a97c2af6849b2f52426f68fc0
 - name: github.com/hashicorp/hcl
-  version: baeb59c710717b06aac1dbe2270e8192ec593244
+  version: 99df0eb941dd8ddbc83d3f3605a34f6a686ac85e
   subpackages:
   - hcl/ast
   - hcl/parser
@@ -109,7 +109,7 @@ imports:
 - name: github.com/kr/fs
   version: 2788f0dbd16903de03cb8186e5c7d97b69ad387b
 - name: github.com/magiconair/properties
-  version: 61b492c03cf472e0c6419be5899b8e0dc28b1b88
+  version: 0723e352fa358f9322c938cc2dadda874e9151a9
 - name: github.com/mitchellh/mapstructure
   version: ca63d7c062ee3c9f34db231e352b60012b4fd0c1
 - name: github.com/naoina/go-stringutil
@@ -117,11 +117,11 @@ imports:
 - name: github.com/pelletier/go-buffruneio
   version: df1e16fde7fc330a0ca68167c23bf7ed6ac31d6d
 - name: github.com/pelletier/go-toml
-  version: 5a62685873ef617233ab5f1b825a6e4a758e16cf
+  version: 31055c2ff0bb0c7f9095aec0d220aed21108121e
 - name: github.com/pkg/errors
   version: 17b591df37844cde689f4d5813e5cea0927d8dd2
 - name: github.com/pkg/sftp
-  version: a71e8f580e3b622ebff585309160b1cc549ef4d2
+  version: 8197a2e580736b78d704be0fc47b2324c0591a32
 - name: github.com/pmezard/go-difflib
   version: 792786c7400a136282c1664665ae0a8db921c6c2
   subpackages:
@@ -177,7 +177,7 @@ imports:
   - assert
   - mock
 - name: golang.org/x/crypto
-  version: f160b6bf95857cd862817875dd958be022e587c4
+  version: 0e31b188fd38db611d4fbab7de9373a95f36aae5
   subpackages:
   - curve25519
   - ed25519
@@ -192,7 +192,7 @@ imports:
   subpackages:
   - unix
 - name: golang.org/x/text
-  version: ceefd2213ed29504fff30155163c8f59827734f3
+  version: 1e65e9bf72c307081cea196f47ef37aed17eb316
   subpackages:
   - transform
   - unicode/norm
