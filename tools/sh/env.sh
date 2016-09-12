@@ -30,7 +30,7 @@ Gmake() {
 # Following functions of this script is expected to be executed sequentially.
 # The split is so that each function must end with one timely action.
 
-: "${GO_VERSION:=1.7}"
+: "${GO_VERSION:=1.7.1}"
 : "${GIMME_VERSION:=1.0.0}"
 : "${GLIDE_VERSION:=0.12.1}"
 
