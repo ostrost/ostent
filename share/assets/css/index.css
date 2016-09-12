@@ -10,7 +10,7 @@ body {
   margin: 0;
 }
 
-menu {
+header,menu {
   display: block;
 }
 
@@ -971,27 +971,6 @@ label {
 
 :last-child>.accordion-content:last-child {
   border-bottom: 1px solid #e6e6e6;
-}
-
-.badge {
-  display: inline-block;
-  padding: .3em;
-  min-width: 2.1em;
-  font-size: .6rem;
-  text-align: center;
-  border-radius: 50%;
-  background: #2199e8;
-  color: #fefefe;
-}
-
-.badge.secondary {
-  background: #777;
-  color: #fefefe;
-}
-
-.badge.success {
-  background: #3adb76;
-  color: #fefefe;
 }
 
 .button-group {

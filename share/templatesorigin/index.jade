@@ -271,6 +271,21 @@ mixin range_list(datak, ranger, kvalue, keyid)
       span.expand.col.small-1.text-center  [[$ps.Time]]
       span.expand.col  [[$ps.Name]]
 
+mixin exporting
+  h5 Exporting
+  .stripe
+    .row.thead(style='font-weight: inherit')
+      span.expand.small-12: small: pre
+        | [outputs][["\n"]]
+        i
+          |     # [outputs.ostent] not counted nor shown. Counted 
+          b [[len .Exporting]] output[[if ne 1 (len .Exporting)]]s[[end]]
+          | :
+    +range('$expo := .Exporting'): .row
+      span.expand.small-12: small: pre
+        b [[$expo.Header]]
+        | [[$expo.Text]]
+
 //- The index:
 doctype html
 html
@@ -303,25 +318,13 @@ html
         | [[.Distrib]] up 
         span.updates.whitespace-pre(data-define='define_uptime') [[template "define_uptime" .]]
 
-    +if('ne (len .Exporting) 0')
-      .row.expanded.hr-bottom: .column.large-11.small-offset-1
-        //- h5 Exporting to
-        .stripe
-          .row.thead
-            span.expand.col.small-2
-              | Exporting to&nbsp;
-              span.badge.secondary [[len .Exporting]]
-            span.expand.col.small-10 Endpoint
-          +range('$expo := .Exporting'): .row
-            span.expand.col.small-2 [[$expo.Name]]
-            span.expand.col.small-10 [[$expo.Endpoint]]
-
     .updates(data-define='define_la')  [[template "define_la"  .]]
     .updates(data-define='define_mem') [[template "define_mem" .]]
     .updates(data-define='define_df')  [[template "define_df"  .]]
     .updates(data-define='define_cpu') [[template "define_cpu" .]]
     .updates(data-define='define_if')  [[template "define_if"  .]]
     .updates(data-define='define_ps')  [[template "define_ps"  .]]
+    +if('ne (len .Exporting) 0'): .row.expanded.hr-bottom: .column.large-11.small-offset-1: +exporting
 
     script(type='text/javascript').
       var Data = [[.Data]];

@@ -199,29 +199,34 @@ func printableConfig(rconfig *config.Config) (string, error) {
 
 	text := string(agtext) + "[inputs]\n"
 	for _, in := range rconfig.Inputs {
-		subtext, err := printableTable("inputs", in.Name, in.Input,
-			printableInput(in.Config), printableFilter(in.Config.Filter))
+		tabtext, err := printableTable(in.Input, printableInput(in.Config),
+			printableFilter(in.Config.Filter))
 		if err != nil {
 			return "", err
 		}
-		text += subtext
+		text += printableHeader("inputs", in.Name) + tabtext
 	}
 
 	text += "[outputs]\n"
 	for _, out := range rconfig.Outputs {
-		subtext, err := printableTable("outputs", out.Name, out.Output,
-			nil, printableFilter(out.Config.Filter))
+		tabtext, err := printableTable(out.Output, nil,
+			printableFilter(out.Config.Filter))
 		if err != nil {
 			return "", err
 		}
-		text += subtext
+		header := printableHeader("outputs", out.Name)
+		text += header + tabtext
+		if out.Name != "ostent" {
+			ostent.Exporting.AddExporter(header, printableConfigText(tabtext))
+		}
 	}
 
 	return printableConfigText(text), nil
 }
 
-func printableTable(upname, name string, in1 interface{},
-	in2 *printInput, in3 *printFilter) (string, error) {
+func printableHeader(a, b string) string { return fmt.Sprintf("    [%s.%s]\n", a, b) }
+
+func printableTable(in1 interface{}, in2 *printInput, in3 *printFilter) (string, error) {
 	intext1, err := toml.Marshal(in1)
 	if err != nil {
 		return "", err
@@ -246,7 +251,7 @@ func printableTable(upname, name string, in1 interface{},
 			lines[i] = "        " + lines[i]
 		}
 	}
-	return "    [" + upname + "." + name + "]\n" + strings.Join(lines, "\n"), nil
+	return strings.Join(lines, "\n"), nil
 }
 
 type printInput struct {

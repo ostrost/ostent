@@ -24,7 +24,7 @@ var (
 	// Connections is of unexported conns type to hold active ws connections.
 	Connections = conns{connmap: make(map[*conn]struct{})}
 	// Exporting has "exporting to" list (after init)
-	Exporting ExportingList
+	Exporting = new(exportingList)
 
 	jobs = struct {
 		mutex sync.Mutex
@@ -116,27 +116,25 @@ func (cs *conns) Unreg(c *conn) {
 	delete(cs.connmap, c)
 }
 
-// ExportingListing keeps "exporting to" list.
-type ExportingListing struct {
-	RWMutex sync.RWMutex
-	ExportingList
+type exportingList struct {
+	rwmu sync.RWMutex
+	list exportingListing
 }
 
-func (el *ExportingListing) AddExporter(name string, stringer fmt.Stringer) {
-	el.RWMutex.Lock()
-	el.ExportingList = append(el.ExportingList,
-		struct{ Name, Endpoint string }{name, stringer.String()})
-	el.RWMutex.Unlock()
+func (el *exportingList) AddExporter(header, text string) {
+	el.rwmu.Lock()
+	defer el.rwmu.Unlock()
+	el.list = append(el.list, exporting{Header: header, Text: text})
 }
 
-// ExportingList is a list to be sorted by .Name:
-// - Entries come from CLI flags which may be specified in any order
-// - That order not preserved since parsing anyway
-type ExportingList []struct{ Name, Endpoint string }
+type exportingListing []exporting
+type exporting struct{ Header, Text string }
 
-func (el ExportingList) Len() int           { return len(el) }
-func (el ExportingList) Less(i, j int) bool { return el[i].Name < el[j].Name }
-func (el ExportingList) Swap(i, j int)      { el[i], el[j] = el[j], el[i] }
+func (el *exportingList) get() exportingListing {
+	el.rwmu.RLock()
+	defer el.rwmu.RUnlock()
+	return el.list
+}
 
 type received struct{ Search *string }
 
