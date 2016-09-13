@@ -217,7 +217,7 @@ func printableConfig(rconfig *config.Config) (string, error) {
 		header := printableHeader("outputs", out.Name)
 		text += header + tabtext
 		if out.Name != "ostent" {
-			ostent.Exporting.AddExporter(header, printableConfigText(tabtext))
+			ostent.AddExporter(header, printableConfigText(tabtext))
 		}
 	}
 

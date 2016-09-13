@@ -124,12 +124,12 @@ func (si ServeIndex) Index(w http.ResponseWriter, r *http.Request) {
 	si.IndexTemplate.Apply(w, struct {
 		StaticData
 		OstentUpgrade string
-		Exporting     exportingListing
+		Exporting     exportingList
 		Data          IndexData
 	}{
 		StaticData:    si.StaticData,
 		OstentUpgrade: OstentUpgrade.Get(),
-		Exporting:     Exporting.get(), // from ./ws.go
+		Exporting:     exportingCopy(), // from ./ws.go
 		Data:          data,
 	})
 }

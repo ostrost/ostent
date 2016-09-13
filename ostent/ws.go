@@ -24,7 +24,10 @@ var (
 	// Connections is of unexported conns type to hold active ws connections.
 	Connections = conns{connmap: make(map[*conn]struct{})}
 	// Exporting has "exporting to" list (after init)
-	Exporting = new(exportingList)
+	exporting = new(struct {
+		rwmu sync.RWMutex
+		list exportingList
+	})
 
 	jobs = struct {
 		mutex sync.Mutex
@@ -116,24 +119,23 @@ func (cs *conns) Unreg(c *conn) {
 	delete(cs.connmap, c)
 }
 
-type exportingList struct {
-	rwmu sync.RWMutex
-	list exportingListing
+func AddExporter(header, text string) {
+	e := exporting
+	e.rwmu.Lock()
+	defer e.rwmu.Unlock()
+	e.list = append(e.list, exportingItem{Header: header, Text: text})
 }
 
-func (el *exportingList) AddExporter(header, text string) {
-	el.rwmu.Lock()
-	defer el.rwmu.Unlock()
-	el.list = append(el.list, exporting{Header: header, Text: text})
-}
+type exportingList []exportingItem
+type exportingItem struct{ Header, Text string }
 
-type exportingListing []exporting
-type exporting struct{ Header, Text string }
-
-func (el *exportingList) get() exportingListing {
-	el.rwmu.RLock()
-	defer el.rwmu.RUnlock()
-	return el.list
+func exportingCopy() exportingList {
+	e := exporting
+	e.rwmu.RLock()
+	defer e.rwmu.RUnlock()
+	dup := make(exportingList, len(exporting.list))
+	copy(dup, e.list)
+	return dup
 }
 
 type received struct{ Search *string }
