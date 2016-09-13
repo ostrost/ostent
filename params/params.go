@@ -89,7 +89,7 @@ type Schema struct {
 	Ifn  Num `url:"ifn,default-2"`
 	Lan  Num `url:"lan,default-3"`
 	Memn Num `url:"memn,default-2"`
-	Psn  Num `url:"psn,default0"`
+	Psn  Num `url:"psn,default-8"`
 
 	Psk Num `url:"psk,default1,enumerate9"` // sort, default PID
 	Dfk Num `url:"dfk,default1,enumerate6"` // sort, default FS
