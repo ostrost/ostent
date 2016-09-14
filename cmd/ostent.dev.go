@@ -3,7 +3,6 @@
 package cmd
 
 import (
-	"fmt"
 	"go/build"
 	"io/ioutil"
 	"log"
@@ -142,7 +141,7 @@ func gendocRunE(*cobra.Command, []string) error {
 
 func watchConfig() {
 	viper.OnConfigChange(func(e fsnotify.Event) {
-		fmt.Println("Config file changed:", e.Name)
+		log.Printf("%s config file changed\n", e.Name)
 		syscall.Kill(syscall.Getpid(), syscall.SIGHUP)
 	})
 	viper.WatchConfig()

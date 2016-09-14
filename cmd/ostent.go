@@ -325,7 +325,7 @@ func printableFilter(f models.Filter) *printFilter {
 	return &p
 }
 
-func normalize(tab *ast.Table) error {
+func normalize(cf string, tab *ast.Table) error {
 	var (
 		ins  = &ast.Table{Fields: make(map[string]interface{})}
 		outs = &ast.Table{Fields: make(map[string]interface{})}
@@ -385,8 +385,8 @@ func normalize(tab *ast.Table) error {
 		outs.Fields[oname] = ctab
 	}
 
-	deleteDisable(ins)
-	deleteDisable(outs)
+	deleteDisable(cf, "inputs", ins)
+	deleteDisable(cf, "inputs", outs)
 
 	var nonostentOutputs int
 	for name := range outs.Fields {
@@ -425,25 +425,47 @@ func setfield(value interface{}, key string, set interface{}) {
 	vtab.Fields[key] = set
 }
 
-func deleteDisable(tab *ast.Table) {
+func deleteDisable(cf string, tname string, tab *ast.Table) {
 	for name, value := range tab.Fields {
-		if vtab, ok := value.(*ast.Table); ok {
-			if bv, ok := vtab.Fields["disable"]; ok {
-				if bkv, ok := bv.(*ast.KeyValue); ok {
-					if bb, ok := bkv.Value.(*ast.Boolean); ok {
-						if b, err := bb.Boolean(); err == nil && b {
-							delete(tab.Fields, name)
-						}
-					}
-				}
-			}
+		vtab, ok := value.(*ast.Table)
+		if !ok {
+			continue
+		}
+		k := "disabled" // the proper key for deletion
+		bv, ok := vtab.Fields[k]
+		if !ok {
+			k = "disable" // an alias key for deletion
+			bv, ok = vtab.Fields[k]
+		}
+		if !ok {
+			continue
+		}
+		kpath := fmt.Sprintf("%s.%s.%s", tname, name, k)
+
+		// default config (cf == "") should not have `disabled` entries
+		// so log calls with empty cf won't be caused.
+
+		bkv, ok := bv.(*ast.KeyValue)
+		if !ok {
+			log.Printf("%s: Warn: %s value is of wrong type\n", cf, kpath)
+			continue
+		}
+		bb, ok := bkv.Value.(*ast.Boolean)
+		if !ok {
+			log.Printf("%s: Warn: %s value is not a boolean\n", cf, kpath)
+			continue
+		}
+		if b, err := bb.Boolean(); err == nil && b {
+			delete(tab.Fields, name)
+			log.Printf("%s: Info: [%s.%s] is disabled\n", cf, tname, name)
 		}
 	}
 }
 
 func readConfig(rconfig *config.Config) (*ast.Table, error) {
 	var tab *ast.Table
-	if cf := viper.ConfigFileUsed(); cf != "" {
+	cf := viper.ConfigFileUsed()
+	if cf != "" {
 		// fmt.Printf("Using config file parsed:\n%#v\n", viper.AllSettings())
 
 		text, err := ioutil.ReadFile(cf)
@@ -460,7 +482,7 @@ func readConfig(rconfig *config.Config) (*ast.Table, error) {
 	} else if tab.Fields == nil {
 		tab.Fields = make(map[string]interface{})
 	}
-	if err := normalize(tab); err != nil {
+	if err := normalize(cf, tab); err != nil {
 		return nil, err
 	}
 	return tab, nil
