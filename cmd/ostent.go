@@ -9,7 +9,6 @@ import (
 	"strings"
 	"sync"
 	"syscall"
-	"time"
 
 	"github.com/influxdata/toml"
 	"github.com/influxdata/toml/ast"
@@ -74,14 +73,14 @@ func initFlags() {
 
 	RootCmd.Flags().VarP(&Bind, "bind", "b", "Bind `address`")
 
-	agentargs := agentArguments{
-		defaultInterval: config.NewConfig().Agent.Interval.Duration}
-	RootCmd.Flags().StringVarP(&agentargs.intervals, "agent.intervals", "d",
-		agentargs.defaultInterval.String(), "Agent Interval and FlushInterval")
+	agentargs := &agentArguments{
+		defaultInterval: config.NewConfig().Agent.Interval.Duration.String()}
+	RootCmd.Flags().StringVar(&agentargs.interval, "interval",
+		agentargs.defaultInterval, "Agent interval")
 
 	preRuns.add(func() error {
 		ostent.AddBackground(func() {
-			if err := mainAgent(&agentargs); err != nil {
+			if err := mainAgent(agentargs); err != nil {
 				fmt.Println(err)
 				os.Exit(1)
 			}
@@ -91,8 +90,8 @@ func initFlags() {
 }
 
 type agentArguments struct {
-	defaultInterval time.Duration
-	intervals       string // from flags
+	defaultInterval string // not an arg
+	interval        string
 }
 
 func mainAgent(args *agentArguments) error {
@@ -103,30 +102,15 @@ func mainAgent(args *agentArguments) error {
 	for <-reload {
 		reload <- false
 
+		var inputFilters []string
+		var outputFilters []string
+
 		c := config.NewConfig()
-		c.Agent.Quiet = true
-
-		if tab, err := readConfig(c); err != nil {
+		c.OutputFilters = outputFilters
+		c.InputFilters = inputFilters
+		err := loadConfig(c, args)
+		if err != nil {
 			return err
-		} else if tab != nil {
-			if err := c.LoadTable("/runtime/config", tab); err != nil {
-				return err
-			}
-		}
-
-		if args.intervals != "" && args.intervals != args.defaultInterval.String() {
-			var interval internal.Duration
-			q := []byte(fmt.Sprintf("%q", args.intervals))
-			if err := interval.UnmarshalTOML(q); err != nil {
-				return err
-			}
-			c.Agent.Interval, c.Agent.FlushInterval = interval, interval
-		}
-
-		if text, err := printableConfig(c); err != nil {
-			return err
-		} else {
-			log.Printf("Effective runtime config:\n%s", text)
 		}
 
 		ag, err := agent.NewAgent(c)
@@ -157,6 +141,34 @@ func mainAgent(args *agentArguments) error {
 		if err := ag.Run(shutdown); err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func loadConfig(c *config.Config, args *agentArguments) error {
+	c.Agent.Quiet = true // patch work
+
+	if tab, err := readConfig(c); err != nil {
+		return err
+	} else if tab != nil {
+		if err := c.LoadTable("/runtime/config", tab); err != nil {
+			return err
+		}
+	}
+
+	if args.interval != "" && args.interval != args.defaultInterval {
+		var interval internal.Duration
+		q := []byte(fmt.Sprintf("%q", args.interval))
+		if err := interval.UnmarshalTOML(q); err != nil {
+			return err
+		}
+		c.Agent.Interval = interval
+	}
+
+	if text, err := printableConfig(c); err != nil {
+		return err
+	} else {
+		log.Printf("Effective runtime config:\n%s", text)
 	}
 	return nil
 }
