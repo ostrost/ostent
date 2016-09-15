@@ -13,6 +13,7 @@ import (
 	"github.com/influxdata/toml"
 	"github.com/influxdata/toml/ast"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
 	"github.com/ostrost/ostent/flags"
@@ -71,16 +72,21 @@ func initFlags() {
 	persistentPreRuns.add(versionRun)
 	RootCmd.PersistentFlags().BoolVar(&versionFlag, "version", false, "Print version and exit")
 
-	RootCmd.Flags().VarP(&Bind, "bind", "b", "Bind `address`")
+	defaultAgent := config.NewConfig().Agent
+	var (
+		fs = RootCmd.Flags()
+		fv = &flagValues{
+			interval: intervalFlag(defaultAgent.Interval),
+		}
+	)
+	fs.VarP(&Bind, "bind", "b", "Bind `address`")
 
-	agentargs := &agentArguments{
-		defaultInterval: config.NewConfig().Agent.Interval.Duration.String()}
-	RootCmd.Flags().StringVar(&agentargs.interval, "interval",
-		agentargs.defaultInterval, "Agent interval")
+	fs.Var(&fv.interval, "interval", fmt.Sprintf(
+		"Agent interval (default %s)", fv.interval))
 
 	preRuns.add(func() error {
 		ostent.AddBackground(func() {
-			if err := mainAgent(agentargs); err != nil {
+			if err := mainAgent(fs, fv); err != nil {
 				fmt.Println(err)
 				os.Exit(1)
 			}
@@ -89,12 +95,26 @@ func initFlags() {
 	})
 }
 
-type agentArguments struct {
-	defaultInterval string // not an arg
-	interval        string
+type flagValues struct {
+	interval intervalFlag
 }
 
-func mainAgent(args *agentArguments) error {
+type intervalFlag internal.Duration
+
+// String is of fmt.Stringer interface.
+func (iv intervalFlag) String() string { return iv.Duration.String() }
+func (iv intervalFlag) Type() string   { return "interval" }
+func (iv *intervalFlag) Set(input string) error {
+	var in internal.Duration
+	q := []byte(fmt.Sprintf("%q", input))
+	if err := in.UnmarshalTOML(q); err != nil {
+		return err
+	}
+	*iv = intervalFlag(in)
+	return nil
+}
+
+func mainAgent(fs *pflag.FlagSet, fv *flagValues) error {
 	watchConfig()
 
 	reload := make(chan bool, 1)
@@ -108,7 +128,7 @@ func mainAgent(args *agentArguments) error {
 		c := config.NewConfig()
 		c.OutputFilters = outputFilters
 		c.InputFilters = inputFilters
-		err := loadConfig(c, args)
+		err := loadConfig(c, fs, fv)
 		if err != nil {
 			return err
 		}
@@ -145,7 +165,7 @@ func mainAgent(args *agentArguments) error {
 	return nil
 }
 
-func loadConfig(c *config.Config, args *agentArguments) error {
+func loadConfig(c *config.Config, fs *pflag.FlagSet, fv *flagValues) error {
 	c.Agent.Quiet = true // patch work
 
 	if tab, err := readConfig(c); err != nil {
@@ -156,13 +176,8 @@ func loadConfig(c *config.Config, args *agentArguments) error {
 		}
 	}
 
-	if args.interval != "" && args.interval != args.defaultInterval {
-		var interval internal.Duration
-		q := []byte(fmt.Sprintf("%q", args.interval))
-		if err := interval.UnmarshalTOML(q); err != nil {
-			return err
-		}
-		c.Agent.Interval = interval
+	if f := fs.Lookup("interval"); f != nil && f.Changed {
+		c.Agent.Interval = internal.Duration(fv.interval)
 	}
 
 	if text, err := printableConfig(c); err != nil {
