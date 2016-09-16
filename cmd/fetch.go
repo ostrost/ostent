@@ -3,7 +3,6 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/ostent"
 	"github.com/ostrost/ostent/params"
 )
@@ -21,7 +20,7 @@ as key(s) to reduce data with. Join multiple keys with "#".`,
 ostent fetch --keys '?times=-1#uptime'
 ostent fetch --keys 'http://10.0.0.4:8050?cpun=1#cpu'
 ostent fetch --keys 'http://10.0.0.5:8050#hostname,http://10.0.0.6:8050#hostname'`,
-	RunE: func(*cobra.Command, []string) error { return ostent.Fetch(fetchKeys) },
+	RunE: fetchRun,
 }
 
 func init() {
@@ -40,4 +39,13 @@ func init() {
 	fetchCmd.PersistentFlags().VarP(fetchKeys, "keys", "k", "Ostent server(s) `endpoint(s)`")
 }
 
-var fetchKeys = params.NewFetchKeys(flags.NewBind("127.0.0.1", 8050))
+var fetchKeys = params.NewFetchKeys(8050)
+
+func fetchRun(*cobra.Command, []string) error {
+	if len(fetchKeys.Values) == 0 {
+		if err := fetchKeys.Set(""); err != nil {
+			return err
+		}
+	}
+	return ostent.Fetch(fetchKeys)
+}

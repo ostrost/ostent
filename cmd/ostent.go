@@ -82,7 +82,7 @@ func initFlags() {
 	fs.VarP(&Bind, "bind", "b", "Bind `address`")
 
 	fs.Var(&fv.interval, "interval", fmt.Sprintf(
-		"Agent interval (default %s)", fv.interval))
+		"Agent `interval` (default %s)", fv.interval))
 
 	preRuns.add(func() error {
 		ostent.AddBackground(func() {
@@ -103,7 +103,7 @@ type intervalFlag internal.Duration
 
 // String is of fmt.Stringer interface.
 func (iv intervalFlag) String() string { return iv.Duration.String() }
-func (iv intervalFlag) Type() string   { return "interval" }
+func (iv intervalFlag) Type() string   { return "duration" }
 func (iv *intervalFlag) Set(input string) error {
 	var in internal.Duration
 	q := []byte(fmt.Sprintf("%q", input))

@@ -254,11 +254,6 @@ func (sw ServeWS) IndexWS(w http.ResponseWriter, req *http.Request) {
 }
 
 func Fetch(keys *params.FetchKeys) error {
-	if len(keys.Values) == 0 {
-		if err := keys.Set(""); err != nil {
-			return err
-		}
-	}
 	for i := range keys.Values {
 		if err := fetchOne(keys.Values[i], keys.Fragments[i]); err != nil {
 			return err

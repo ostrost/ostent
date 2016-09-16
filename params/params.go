@@ -440,10 +440,10 @@ type FetchKey struct {
 	Times int // `url:"times"`
 }
 
-func NewFetchKeys(bind flags.Bind) *FetchKeys {
-	def := FetchKey{} // Endpoint: Endpoint{URL: url.URL{Host: bind.String()}}}
+func NewFetchKeys(defport int) *FetchKeys {
+	def := FetchKey{}
 	def.URL.Scheme = "http"
-	def.URL.Host = bind.String()
+	def.URL.Host = "127.0.0.1" + strconv.Itoa(defport)
 	def.URL.Path = "/index.ws"
 	return &FetchKeys{Default: def}
 }
