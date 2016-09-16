@@ -34,7 +34,7 @@ func run(*cobra.Command, []string) error {
 	}
 	ostent.RunBackground()
 	templates.InitTemplates()
-	return serve(cmd.Bind.String())
+	return serve(cmd.JoinHostPort())
 }
 
 func main() {

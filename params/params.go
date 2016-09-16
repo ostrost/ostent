@@ -12,8 +12,6 @@ import (
 	"github.com/google/go-querystring/query"
 	"github.com/gorilla/schema"
 	// "github.com/spf13/pflag"
-
-	"github.com/ostrost/ostent/flags"
 )
 
 // Constants for DF sorting criterion.
@@ -416,24 +414,11 @@ type RenamedConstError string
 
 func (rc RenamedConstError) Error() string { return string(rc) }
 
-// SetURL sets the .URL.
-func (ep *Endpoint) SetURL(u url.URL) { ep.URL = u }
+func (fk *FetchKey) setURL(u url.URL) { fk.URL = u }
 
-// String return string repr.
-func (ep Endpoint) String() string { return strings.TrimPrefix(ep.URL.String(), "http://") }
-
-// Endpoint has an URL and other fields decoded from it.
-type Endpoint struct {
-	// URL is the base.
-	URL url.URL `url:"-"`
-
-	// ServerAddr is server part (host[:port]) of URL.
-	ServerAddr flags.Bind `url:"-"`
-}
-
-// FetchKey encloses an Endpoint and has extra params.
+// FetchKey encloses an URL and has extra params.
 type FetchKey struct {
-	Endpoint
+	URL url.URL
 	Schema
 
 	// url tag not used til encoding with query.Values for normalization.
@@ -478,7 +463,7 @@ func (fkeys FetchKeys) String() string {
 	values := fkeys.Values // shortcut
 	ss := make([]string, len(values))
 	for i, v := range values {
-		ss[i] = v.String()
+		ss[i] = strings.TrimPrefix(v.URL.String(), "http://")
 	}
 	return strings.Join(ss, ",")
 }
@@ -492,7 +477,7 @@ func AddScheme(input string) string { return "http://" + input }
 func Decode(base *url.URL, input string, ignoreUnknownKeys bool,
 	into interface {
 		// pflag.Value
-		SetURL(url.URL)
+		setURL(url.URL)
 	},
 	urluser interface {
 		UseURL(url.URL) error
@@ -505,7 +490,7 @@ func Decode(base *url.URL, input string, ignoreUnknownKeys bool,
 	if base != nil {
 		u = base.ResolveReference(u)
 	}
-	into.SetURL(*u)
+	into.setURL(*u)
 	if urluser != nil {
 		if err = urluser.UseURL(*u); err != nil {
 			return nil, err

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net"
 	"os"
 	"os/signal"
 	"strings"
@@ -16,7 +17,6 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
-	"github.com/ostrost/ostent/flags"
 	"github.com/ostrost/ostent/internal"
 	"github.com/ostrost/ostent/internal/agent"
 	"github.com/ostrost/ostent/internal/config"
@@ -65,8 +65,10 @@ func (rs *runs) runE(*cobra.Command, []string) error {
 	return nil
 }
 
-// Bind is flag value.
-var Bind = flags.NewBind("", 8050)
+var (
+	bindAddress string
+	bindPort    = portFlag("8050")
+)
 
 func initFlags() {
 	persistentPreRuns.add(versionRun)
@@ -75,14 +77,13 @@ func initFlags() {
 	defaultAgent := config.NewConfig().Agent
 	var (
 		fs = RootCmd.Flags()
-		fv = &flagValues{
-			interval: intervalFlag(defaultAgent.Interval),
-		}
+		fv = &flagValues{interval: intervalFlag(defaultAgent.Interval)}
 	)
-	fs.VarP(&Bind, "bind", "b", "Bind `address`")
 
-	fs.Var(&fv.interval, "interval", fmt.Sprintf(
-		"Agent `interval` (default %s)", fv.interval))
+	fs.StringVar(&bindAddress, "bind-address", "", "Bind `address`")
+	fs.Var(&bindPort, "bind-port", fmt.Sprintf("Bind `port` (default %d)", 8050))
+	fs.Var(&fv.interval, "interval", fmt.Sprintf("Agent `interval` (default %s)",
+		fv.interval))
 
 	preRuns.add(func() error {
 		ostent.AddBackground(func() {
@@ -95,11 +96,13 @@ func initFlags() {
 	})
 }
 
-type flagValues struct {
-	interval intervalFlag
-}
-
-type intervalFlag internal.Duration
+type (
+	portFlag     string
+	intervalFlag internal.Duration
+	flagValues   struct {
+		interval intervalFlag
+	}
+)
 
 // String is of fmt.Stringer interface.
 func (iv intervalFlag) String() string { return iv.Duration.String() }
@@ -112,6 +115,24 @@ func (iv *intervalFlag) Set(input string) error {
 	}
 	*iv = intervalFlag(in)
 	return nil
+}
+
+// String is of fmt.Stringer interface.
+func (pf portFlag) String() string { return string(pf) }
+func (pf portFlag) Type() string   { return "port" }
+func (pf *portFlag) Set(input string) error {
+	_, err := net.LookupPort("tcp", input)
+	if err != nil {
+		return err
+	}
+	*pf = portFlag(input)
+	return nil
+}
+
+// JoinHostPort combines flags bind address and port.
+func JoinHostPort() string { return bindPort.joinHostPort(bindAddress) }
+func (pf portFlag) joinHostPort(h string) string {
+	return net.JoinHostPort(h, string(pf))
 }
 
 func mainAgent(fs *pflag.FlagSet, fv *flagValues) error {
@@ -493,8 +514,6 @@ func readConfig(rconfig *config.Config) (*ast.Table, error) {
 	var tab *ast.Table
 	cf := viper.ConfigFileUsed()
 	if cf != "" {
-		// fmt.Printf("Using config file parsed:\n%#v\n", viper.AllSettings())
-
 		text, err := ioutil.ReadFile(cf)
 		if err != nil {
 			return nil, err
