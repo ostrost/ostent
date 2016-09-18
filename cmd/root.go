@@ -24,7 +24,6 @@ Use multiple flags and/or use comma separated endpoints for the same kind.`,
 
 	PersistentPostRunE: persistentPostRuns.runE,
 	PersistentPreRunE:  persistentPreRuns.runE,
-	PreRunE:            preRuns.runE,
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.

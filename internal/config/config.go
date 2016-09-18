@@ -75,6 +75,11 @@ func NewConfig() *Config {
 }
 
 type AgentConfig struct {
+	// BindAddress is webserver bind address
+	BindAddress string
+	// BindPort is webserver bind port
+	BindPort int
+
 	// Interval at which to gather information
 	Interval internal.Duration
 

@@ -32,9 +32,16 @@ func run(*cobra.Command, []string) error {
 	} else if !noUpgradeCheck && cv != nil {
 		go untilUpgradeCheck(cv)
 	}
-	ostent.RunBackground()
+
+	send, recv := make(chan chan string, 1), make(chan string, 1)
+	send <- recv
+	go cmd.MainAgent(send)
+	hp := <-recv
+	close(send)
+
 	templates.InitTemplates()
-	return serve(cmd.JoinHostPort())
+	go ostent.UpdateLoop()
+	return serve(hp)
 }
 
 func main() {
@@ -62,7 +69,6 @@ func init() {
 		"Whether to log webserver requests")
 	cmd.RootCmd.Flags().BoolVar(&noUpgradeCheck, "noupgradecheck", false,
 		"Off periodic upgrade check")
-	ostent.AddBackground(ostent.CollectLoop)
 }
 
 func newSemver(s string) (*semver.Version, error) {

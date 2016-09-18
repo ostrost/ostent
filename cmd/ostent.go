@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -40,7 +41,6 @@ import (
 var (
 	persistentPostRuns runs // a list of funcs to be cobra.Command's PersistentPostRunE.
 	persistentPreRuns  runs // a list of funcs to be cobra.Command's PersistentPreRunEE.
-	preRuns            runs // a list of funcs to be cobra.Command's PreRunE.
 )
 
 type runs struct {
@@ -65,42 +65,33 @@ func (rs *runs) runE(*cobra.Command, []string) error {
 	return nil
 }
 
-var (
-	bindAddress string
-	bindPort    = portFlag("8050")
-)
+var fv = &flagValues{
+	FlagSet:  RootCmd.Flags(),
+	interval: intervalFlag(config.NewConfig().Agent.Interval),
+	bindPort: portFlag(8050),
+}
 
 func initFlags() {
 	persistentPreRuns.add(versionRun)
 	RootCmd.PersistentFlags().BoolVar(&versionFlag, "version", false, "Print version and exit")
 
-	defaultAgent := config.NewConfig().Agent
-	var (
-		fs = RootCmd.Flags()
-		fv = &flagValues{interval: intervalFlag(defaultAgent.Interval)}
-	)
-
-	fs.StringVar(&bindAddress, "bind-address", "", "Bind `address`")
-	fs.Var(&bindPort, "bind-port", fmt.Sprintf("Bind `port` (default %d)", 8050))
-	fs.Var(&fv.interval, "interval", fmt.Sprintf("Agent `interval` (default %s)",
-		fv.interval))
-
-	preRuns.add(func() error {
-		ostent.AddBackground(func() {
-			if err := mainAgent(fs, fv); err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-		})
-		return nil
-	})
+	fv.StringVar(&fv.bindAddress, "bind-address", "",
+		fmt.Sprintf("Bind `address` (default %q)", fv.bindAddress))
+	fv.Var(&fv.bindPort, "bind-port",
+		fmt.Sprintf("Bind `port` (default %d)", fv.bindPort))
+	fv.Var(&fv.interval, "interval",
+		fmt.Sprintf("Agent `interval` (default %s)", fv.interval))
 }
 
 type (
-	portFlag     string
+	portFlag     int
 	intervalFlag internal.Duration
 	flagValues   struct {
-		interval intervalFlag
+		*pflag.FlagSet
+
+		interval    intervalFlag
+		bindAddress string
+		bindPort    portFlag
 	}
 )
 
@@ -118,24 +109,43 @@ func (iv *intervalFlag) Set(input string) error {
 }
 
 // String is of fmt.Stringer interface.
-func (pf portFlag) String() string { return string(pf) }
+func (pf portFlag) String() string { return strconv.Itoa(int(pf)) }
 func (pf portFlag) Type() string   { return "port" }
 func (pf *portFlag) Set(input string) error {
-	_, err := net.LookupPort("tcp", input)
+	p, err := net.LookupPort("tcp", input)
 	if err != nil {
 		return err
 	}
-	*pf = portFlag(input)
+	*pf = portFlag(p)
 	return nil
 }
 
-// JoinHostPort combines flags bind address and port.
-func JoinHostPort() string { return bindPort.joinHostPort(bindAddress) }
-func (pf portFlag) joinHostPort(h string) string {
-	return net.JoinHostPort(h, string(pf))
+type setonce struct {
+	mutex sync.Mutex
+	set   bool
+	host  string
+	port  int
 }
 
-func mainAgent(fs *pflag.FlagSet, fv *flagValues) error {
+// change compares host and port with previously passed values.
+func (o *setonce) change(host string, port int) (string, int, bool) {
+	o.mutex.Lock()
+	defer o.mutex.Unlock()
+	if o.set {
+		return o.host, o.port, o.host != host || o.port != port
+	}
+	o.host, o.port, o.set = host, port, true
+	return host, port, false
+}
+
+func MainAgent(send chan chan string) {
+	if err := mainAgent(send, new(setonce)); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
+
+func mainAgent(send <-chan chan string, fsthp *setonce) error {
 	watchConfig()
 
 	reload := make(chan bool, 1)
@@ -149,7 +159,7 @@ func mainAgent(fs *pflag.FlagSet, fv *flagValues) error {
 		c := config.NewConfig()
 		c.OutputFilters = outputFilters
 		c.InputFilters = inputFilters
-		err := loadConfig(c, fs, fv)
+		err := loadConfig(c, send, fsthp)
 		if err != nil {
 			return err
 		}
@@ -186,10 +196,11 @@ func mainAgent(fs *pflag.FlagSet, fv *flagValues) error {
 	return nil
 }
 
-func loadConfig(c *config.Config, fs *pflag.FlagSet, fv *flagValues) error {
+func loadConfig(c *config.Config, send <-chan chan string, fsthp *setonce) error {
 	c.Agent.Quiet = true // patch work
 
-	if tab, err := readConfig(c); err != nil {
+	tab, cf, err := readConfig(c)
+	if err != nil {
 		return err
 	} else if tab != nil {
 		if err := c.LoadTable("/runtime/config", tab); err != nil {
@@ -197,8 +208,35 @@ func loadConfig(c *config.Config, fs *pflag.FlagSet, fv *flagValues) error {
 		}
 	}
 
-	if f := fs.Lookup("interval"); f != nil && f.Changed {
+	// fv is a global
+	if f := fv.Lookup("interval"); f != nil && f.Changed {
 		c.Agent.Interval = internal.Duration(fv.interval)
+	}
+	host := fv.bindAddress
+	if f := fv.Lookup("bind-address"); f == nil || !f.Changed {
+		host = c.Agent.BindAddress
+	}
+	port := int(fv.bindPort)
+	if f := fv.Lookup("bind-port"); (f == nil || !f.Changed) && c.Agent.BindPort != 0 {
+		port = c.Agent.BindPort
+	}
+
+	var change bool
+	newhost, newport := host, port
+	host, port, change = fsthp.change(host, port)
+	hp := net.JoinHostPort(host, strconv.Itoa(port))
+	if change {
+		newhp := net.JoinHostPort(newhost, strconv.Itoa(newport))
+		log.Printf("%s: Warn: new bind address:port require process restart\n", cf)
+		log.Printf("%s: Warn: new bind address:port: %q\n", cf, newhp)
+		log.Printf("%s: Warn: old bind address:port: %q\n", cf, hp)
+		log.Printf("%s: Warn: old bind address:port in effect until a restart\n", cf)
+	}
+
+	c.Agent.BindAddress, c.Agent.BindPort = host, port
+
+	if receive, ok := <-send; ok && receive != nil {
+		receive <- hp
 	}
 
 	if text, err := printableConfig(c); err != nil {
@@ -220,6 +258,9 @@ rangelines:
 			" = []",
 			` = "0s"`,
 			" = false",
+			// bind_address default "" covered
+			"bind_port = 8050",
+			//? "quiet = true",
 		} {
 			if strings.HasSuffix(lines[i], suffix) {
 				continue rangelines
@@ -510,17 +551,17 @@ func deleteDisable(cf string, tname string, tab *ast.Table) {
 	}
 }
 
-func readConfig(rconfig *config.Config) (*ast.Table, error) {
+func readConfig(rconfig *config.Config) (*ast.Table, string, error) {
 	var tab *ast.Table
 	cf := viper.ConfigFileUsed()
 	if cf != "" {
 		text, err := ioutil.ReadFile(cf)
 		if err != nil {
-			return nil, err
+			return nil, cf, err
 		}
 		tab, err = config.ParseContents(text)
 		if err != nil {
-			return nil, err
+			return nil, cf, err
 		}
 	}
 	if tab == nil {
@@ -529,7 +570,7 @@ func readConfig(rconfig *config.Config) (*ast.Table, error) {
 		tab.Fields = make(map[string]interface{})
 	}
 	if err := normalize(cf, tab); err != nil {
-		return nil, err
+		return nil, cf, err
 	}
-	return tab, nil
+	return tab, cf, nil
 }

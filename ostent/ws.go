@@ -18,43 +18,22 @@ import (
 	"github.com/ostrost/ostent/params"
 )
 
-type backgroundHandler func()
-
 var (
-	// Connections is of unexported conns type to hold active ws connections.
-	Connections = conns{connmap: make(map[*conn]struct{})}
-	// Exporting has "exporting to" list (after init)
+	// connections keep active ws connections registry.
+	connections = conns{connmap: make(map[*conn]struct{})}
+	// exporting is a "exporting to" list
 	exporting = new(struct {
 		rwmu sync.RWMutex
 		list exportingList
 	})
-
-	jobs = struct {
-		mutex sync.Mutex
-		added []backgroundHandler
-	}{}
 )
 
-func AddBackground(j backgroundHandler) {
-	jobs.mutex.Lock()
-	defer jobs.mutex.Unlock()
-	jobs.added = append(jobs.added, j)
-}
-
-func RunBackground() {
-	jobs.mutex.Lock()
-	defer jobs.mutex.Unlock()
-	for _, j := range jobs.added {
-		go j()
-	}
-}
-
-// CollectLoop is a background job: updetes received to be pushed to Connections.
-func CollectLoop() {
+// UpdateLoop pushes updates to connections.
+func UpdateLoop() {
 	for {
 		up, ok := <-ostent.Updates.Get()
 		if ok {
-			Connections.update(up)
+			connections.update(up)
 			lastCopy.set(up)
 		}
 	}
@@ -107,13 +86,13 @@ func (cs *conns) update(up *ostent.Update) {
 	}
 }
 
-func (cs *conns) Reg(c *conn) {
+func (cs *conns) reg(c *conn) {
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
 	cs.connmap[c] = struct{}{}
 }
 
-func (cs *conns) Unreg(c *conn) {
+func (cs *conns) unreg(c *conn) {
 	cs.mutex.Lock()
 	defer cs.mutex.Unlock()
 	delete(cs.connmap, c)
@@ -240,9 +219,9 @@ func (sw ServeWS) IndexWS(w http.ResponseWriter, req *http.Request) {
 
 		para: params.NewParams(),
 	}
-	Connections.Reg(c)
+	connections.reg(c)
 	defer func() {
-		Connections.Unreg(c)
+		connections.unreg(c)
 		c.Conn.Close()
 	}()
 	for {
