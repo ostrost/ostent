@@ -17,8 +17,10 @@ import (
 
 // extractassetsCmd represents the extractassets command
 var extractassetsCmd = &cobra.Command{
-	Use:     "extractassets",
-	Short:   "Extract ostent embeded assets & manage symlinks in current directory.",
+	Use:   "extractassets",
+	Short: "Manage assets & symlinks.",
+	Long: `Ostent extractassets extracts binary-embeded asset files and manages symlinks
+for favicon.ico & robots.txt in current directory.`,
 	PreRunE: extractassetsPreRunE,
 	RunE:    extractassetsRunE,
 }
