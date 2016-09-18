@@ -88,7 +88,19 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  var (
  	// Default input plugins
  	inputDefaults = []string{"cpu", "mem", "swap", "system", "kernel",
-@@ -461,6 +465,12 @@
+@@ -71,6 +75,11 @@
+ }
+ 
+ type AgentConfig struct {
++	// Bind is server bind address
++	Bind string
++	// BindPort is server bind port
++	BindPort int
++
+ 	// Interval at which to gather information
+ 	Interval internal.Duration
+ 
+@@ -461,6 +470,12 @@
  		return fmt.Errorf("Error parsing %s, %s", path, err)
  	}
  
@@ -101,7 +113,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	// Parse tags tables first:
  	for _, tableName := range []string{"tags", "global_tags"} {
  		if val, ok := tbl.Fields[tableName]; ok {
-@@ -558,6 +568,10 @@
+@@ -558,6 +573,10 @@
  	if err != nil {
  		return nil, err
  	}
@@ -112,7 +124,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	// ugh windows why
  	contents = trimBOM(contents)
  
-@@ -590,6 +604,9 @@
+@@ -590,6 +609,9 @@
  		if err != nil {
  			return err
  		}

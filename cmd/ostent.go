@@ -67,16 +67,16 @@ func (rs *runs) runE(*cobra.Command, []string) error {
 
 var fv = &flagValues{
 	FlagSet:  RootCmd.Flags(),
+	bindPort: portFlag(8050), // default 8050
 	interval: intervalFlag(config.NewConfig().Agent.Interval),
-	bindPort: portFlag(8050),
 }
 
 func initFlags() {
 	persistentPreRuns.add(versionRun)
 	RootCmd.PersistentFlags().BoolVar(&versionFlag, "version", false, "Print version and exit")
 
-	fv.StringVar(&fv.bindAddress, "bind-address", "",
-		fmt.Sprintf("Bind `address` (default %q)", fv.bindAddress))
+	fv.StringVar(&fv.bind, "bind", "",
+		fmt.Sprintf("Bind `address` (default %q)", fv.bind))
 	fv.Var(&fv.bindPort, "bind-port",
 		fmt.Sprintf("Bind `port` (default %d)", fv.bindPort))
 	fv.Var(&fv.interval, "interval",
@@ -89,9 +89,9 @@ type (
 	flagValues   struct {
 		*pflag.FlagSet
 
-		interval    intervalFlag
-		bindAddress string
-		bindPort    portFlag
+		bind     string
+		bindPort portFlag
+		interval intervalFlag
 	}
 )
 
@@ -212,9 +212,9 @@ func loadConfig(c *config.Config, send <-chan chan string, fsthp *setonce) error
 	if f := fv.Lookup("interval"); f != nil && f.Changed {
 		c.Agent.Interval = internal.Duration(fv.interval)
 	}
-	host := fv.bindAddress
-	if f := fv.Lookup("bind-address"); f == nil || !f.Changed {
-		host = c.Agent.BindAddress
+	host := fv.bind
+	if f := fv.Lookup("bind"); f == nil || !f.Changed {
+		host = c.Agent.Bind
 	}
 	port := int(fv.bindPort)
 	if f := fv.Lookup("bind-port"); (f == nil || !f.Changed) && c.Agent.BindPort != 0 {
@@ -233,7 +233,7 @@ func loadConfig(c *config.Config, send <-chan chan string, fsthp *setonce) error
 		log.Printf("%s: Warn: old bind address:port in effect until a restart\n", cf)
 	}
 
-	c.Agent.BindAddress, c.Agent.BindPort = host, port
+	c.Agent.Bind, c.Agent.BindPort = host, port
 
 	if receive, ok := <-send; ok && receive != nil {
 		receive <- hp
@@ -258,7 +258,7 @@ rangelines:
 			" = []",
 			` = "0s"`,
 			" = false",
-			// bind_address default "" covered
+			// `bind` default "" covered
 			"bind_port = 8050",
 			//? "quiet = true",
 		} {

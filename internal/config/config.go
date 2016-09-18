@@ -75,9 +75,9 @@ func NewConfig() *Config {
 }
 
 type AgentConfig struct {
-	// BindAddress is webserver bind address
-	BindAddress string
-	// BindPort is webserver bind port
+	// Bind is server bind address
+	Bind string
+	// BindPort is server bind port
 	BindPort int
 
 	// Interval at which to gather information
