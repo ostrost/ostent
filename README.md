@@ -1,30 +1,20 @@
-# ostent [![GoDoc][2]][1] [![Travis CI][4]][3]
-[1]: https://godoc.org/github.com/ostrost/ostent
-[2]: https://godoc.org/github.com/ostrost/ostent?status.svg
-[3]: https://travis-ci.org/ostrost/ostent
-[4]: https://travis-ci.org/ostrost/ostent.svg?branch=master
+# Ostent [![Travis CI][2]][1]
+[1]: https://travis-ci.org/ostrost/ostent
+[2]: https://travis-ci.org/ostrost/ostent.svg?branch=master
 
-Ostent collects system metrics to display and relay to
+Ostent collects metrics to display and report to InfluxDB, Graphite, Librato.
 
-- Graphite
-- InfluxDB
-- Librato
-
-The interactive UI ([**demo**](https://demo.ostrost.com/)):
+The interactive display UI ([**demo**](https://demo.ostrost.com/)):
 
 ![Screenshot](https://www.ostrost.com/ostent/screenshot.png)
 
-The metrics collected and exported:
+System metrics collected and reported:
 - RAM, swap usage
 - CPU usage, load average
 - Disk space usage in bytes and inodes
 - Network ins and outs in bytes, packets, drops and errors
 
 The processes top is on-display only.
-
-The exporting is kept on par with [collectd](https://collectd.org/)
-[reporting](https://collectd.org/wiki/index.php/Plugin:Write_Graphite),
-although the metrics naming is slightly different.
 
 ## Install
 
@@ -48,21 +38,20 @@ Platforms:
 ## Usage
 
 ```
-To continuously export collected metrics, use --graphite, --influxdb and/or --librato.
-Use multiple flags and/or use comma separated endpoints for the same kind. E.g.:
-      --graphite 10.0.0.1,10.0.0.2:2004\?delay=30s
-      --influxdb http://10.0.0.3\?delay=60s
-      --librato \?email=EMAIL\&token=TOKEN
-ostent -h lists supported parameters and defaults.
+$ ostent -h
+Ostent is a server tool to collect, display and report system metrics.
+
+Usage:
+  ostent [flags]
 
 Flags:
-  -b, --bind address            Bind address (default :8050)
-      --graphite endpoints      Graphite exporting endpoints
-      --influxdb endpoints      InfluxDB exporting endpoints
-      --librato parameters      Librato exporting parameters
-      --max-delay delay         Maximum for display delay (default 10m)
-  -d, --min-delay delay         Collection and display minimum delay (default 1s)
-      --version                 Print version and exit
+      --bind string         server bind address (default "")
+      --bind-port int       server bind port (default 8050)
+      --config string       config filename (default "$HOME/.ostent.toml")
+      --interval duration   metrics collection interval (default 10s)
+      --log-requests        log server requests (default false)
+      --upgrade-checks      periodic upgrade checks (default true)
+      --version             print version and exit
 ```
 
 ## Running the code
