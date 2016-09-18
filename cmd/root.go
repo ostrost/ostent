@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -16,11 +15,7 @@ var RootCmd = &cobra.Command{
 	SilenceUsage: true,
 	Use:          "ostent",
 	Short:        "Ostent is a metrics tool.",
-	Long: `Ostent collects system metrics and put them on display.
-Optionally exports them to metrics servers.
-
-To continuously export collected metrics use graphite, influxdb and/or librato flags.
-Use multiple flags and/or use comma separated endpoints for the same kind.`,
+	Long:         "Ostent is a server tool to collect, display and report system metrics.",
 
 	PersistentPostRunE: persistentPostRuns.runE,
 	PersistentPreRunE:  persistentPreRuns.runE,
@@ -42,7 +37,7 @@ func init() {
 	// Cobra supports Persistent Flags, which, if defined here,
 	// will be global for your application.
 
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config `filename` (default \"$HOME/.ostent.toml\")")
+	RootCmd.Flags().StringVar(&cfgFile, "config", "", "config filename (default \"$HOME/.ostent.toml\")")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	//- RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
@@ -63,6 +58,6 @@ func initConfig() {
 	viper.SetConfigFile(cfgFile) // NB AFTER .SetConfigName for flag value
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		log.Printf("%s config file in use\n", viper.ConfigFileUsed())
+		// fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
 }

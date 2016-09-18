@@ -17,9 +17,8 @@ import (
 
 // extractassetsCmd represents the extractassets command
 var extractassetsCmd = &cobra.Command{
-	Use:   "extractassets",
-	Short: "Extract embeded assets & manage symlinks.",
-	// Long: ``,
+	Use:     "extractassets",
+	Short:   "Extract ostent embeded assets & manage symlinks in current directory.",
 	PreRunE: extractassetsPreRunE,
 	RunE:    extractassetsRunE,
 }
@@ -37,8 +36,8 @@ func init() {
 	// is called directly, e.g.:
 	// extractassetsCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	extractassetsCmd.Flags().StringVarP(&extractDestDir, "destdir", "d",
-		OstentVersion /* default is this */, "Destrination directory for extraction")
+	extractassetsCmd.Flags().StringVar(&extractDestDir, "destdir",
+		OstentVersion /* default is this */, "destrination directory for extraction")
 }
 
 var (

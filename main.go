@@ -65,10 +65,14 @@ func newLogger() *logrus.Logger {
 }
 
 func init() {
-	cmd.RootCmd.Flags().BoolVar(&logRequests, "log-requests", !taggedBin,
-		"Whether to log webserver requests")
+	lrusage := "log server requests"
+	lrdefault := !taggedBin
+	if !lrdefault {
+		lrusage += fmt.Sprintf(" (default %t)", lrdefault /* false */)
+	}
+	cmd.RootCmd.Flags().BoolVar(&logRequests, "log-requests", lrdefault, lrusage)
 	cmd.RootCmd.Flags().BoolVar(&noUpgradeCheck, "noupgradecheck", false,
-		"Off periodic upgrade check")
+		"off periodic upgrade check (default false)")
 }
 
 func newSemver(s string) (*semver.Version, error) {

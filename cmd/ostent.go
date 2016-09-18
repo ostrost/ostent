@@ -73,14 +73,14 @@ var fv = &flagValues{
 
 func initFlags() {
 	persistentPreRuns.add(versionRun)
-	RootCmd.PersistentFlags().BoolVar(&versionFlag, "version", false, "Print version and exit")
+	fv.BoolVar(&versionFlag, "version", false, "print version and exit")
 
 	fv.StringVar(&fv.bind, "bind", "",
-		fmt.Sprintf("Bind `address` (default %q)", fv.bind))
+		fmt.Sprintf("server bind address (default %q)", fv.bind))
 	fv.Var(&fv.bindPort, "bind-port",
-		fmt.Sprintf("Bind `port` (default %d)", fv.bindPort))
+		fmt.Sprintf("server bind port (default %d)", fv.bindPort))
 	fv.Var(&fv.interval, "interval",
-		fmt.Sprintf("Agent `interval` (default %s)", fv.interval))
+		fmt.Sprintf("metrics collection interval (default %s)", fv.interval))
 }
 
 type (
@@ -110,7 +110,7 @@ func (iv *intervalFlag) Set(input string) error {
 
 // String is of fmt.Stringer interface.
 func (pf portFlag) String() string { return strconv.Itoa(int(pf)) }
-func (pf portFlag) Type() string   { return "port" }
+func (pf portFlag) Type() string   { return "int" }
 func (pf *portFlag) Set(input string) error {
 	p, err := net.LookupPort("tcp", input)
 	if err != nil {
@@ -555,6 +555,8 @@ func readConfig(rconfig *config.Config) (*ast.Table, string, error) {
 	var tab *ast.Table
 	cf := viper.ConfigFileUsed()
 	if cf != "" {
+		log.Printf("%s config file to use\n", cf)
+
 		text, err := ioutil.ReadFile(cf)
 		if err != nil {
 			return nil, cf, err

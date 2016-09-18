@@ -39,9 +39,9 @@ func init() {
 	// gendocCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	RootCmd.PersistentFlags().StringVar(&profileHeapOutput, "profile-heap", "",
-		"Profiling heap output `filename`")
+		"profiling heap output filename")
 	RootCmd.PersistentFlags().StringVar(&profileCPUOutput, "profile-cpu", "",
-		"Profiling CPU output `filename`")
+		"profiling CPU output filename")
 	persistentPreRuns.add(profileHeapRun)
 	persistentPreRuns.add(profileCPURun)
 
