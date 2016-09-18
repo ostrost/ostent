@@ -428,7 +428,7 @@ type FetchKey struct {
 func NewFetchKeys(defport int) *FetchKeys {
 	def := FetchKey{}
 	def.URL.Scheme = "http"
-	def.URL.Host = "127.0.0.1" + strconv.Itoa(defport)
+	def.URL.Host = "127.0.0.1:" + strconv.Itoa(defport)
 	def.URL.Path = "/index.ws"
 	return &FetchKeys{Default: def}
 }
@@ -469,7 +469,7 @@ func (fkeys FetchKeys) String() string {
 }
 
 // Type is a pflag.Value method.
-func (fkeys FetchKeys) Type() string { return "fetchKeys" }
+func (fkeys FetchKeys) Type() string { return "string" }
 
 func AddScheme(input string) string { return "http://" + input }
 
