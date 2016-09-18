@@ -29,8 +29,8 @@ import (
 func run(*cobra.Command, []string) error {
 	if cv, err := newSemver(cmd.OstentVersion); err != nil {
 		logru.Printf("Current semver parse error: %s\n", err)
-	} else if !noUpgradeCheck && cv != nil {
-		go untilUpgradeCheck(cv)
+	} else if upgradeChecks && cv != nil {
+		go untilUpgrade(cv)
 	}
 
 	send, recv := make(chan chan string, 1), make(chan string, 1)
@@ -54,7 +54,8 @@ var (
 	logru     = newLogger()
 
 	// flags
-	noUpgradeCheck, logRequests bool
+	upgradeChecks = true
+	logRequests   = !taggedBin
 )
 
 func newLogger() *logrus.Logger {
@@ -65,14 +66,14 @@ func newLogger() *logrus.Logger {
 }
 
 func init() {
-	lrusage := "log server requests"
-	lrdefault := !taggedBin
-	if !lrdefault {
-		lrusage += fmt.Sprintf(" (default %t)", lrdefault /* false */)
+	var usagedefault string
+	if !logRequests {
+		usagedefault = fmt.Sprintf(" (default %t)", logRequests /* false */)
 	}
-	cmd.RootCmd.Flags().BoolVar(&logRequests, "log-requests", lrdefault, lrusage)
-	cmd.RootCmd.Flags().BoolVar(&noUpgradeCheck, "noupgradecheck", false,
-		"off periodic upgrade check (default false)")
+	cmd.RootCmd.Flags().BoolVar(&logRequests, "log-requests", logRequests,
+		"log server requests"+usagedefault)
+	cmd.RootCmd.Flags().BoolVar(&upgradeChecks, "upgrade-checks", upgradeChecks,
+		"periodic upgrade checks") // default true
 }
 
 func newSemver(s string) (*semver.Version, error) {
@@ -143,9 +144,9 @@ func serve(laddr string) error {
 	})
 }
 
-// untilUpgradeCheck waits for an upgrade and returns.
-func untilUpgradeCheck(cv *semver.Version) {
-	if upgradeCheck(cv) {
+// untilUpgrade waits for an upgrade and returns.
+func untilUpgrade(cv *semver.Version) {
+	if checkUpgrade(cv) {
 		return
 	}
 
@@ -156,14 +157,14 @@ func untilUpgradeCheck(cv *semver.Version) {
 	wait += time.Duration(random.Int63n(int64(wait))) // 1.5 +- 0.5 h
 	for {
 		time.Sleep(wait)
-		if upgradeCheck(cv) {
+		if checkUpgrade(cv) {
 			break
 		}
 	}
 }
 
-// upgradeCheck does upgrade check and returns true if an upgrade is available.
-func upgradeCheck(cv *semver.Version) bool {
+// checkUpgrade does upgrade check and returns true if an upgrade is available.
+func checkUpgrade(cv *semver.Version) bool {
 	newVersion, err := newerVersion()
 	if err != nil {
 		logru.Printf("Upgrade check error: %s\n", err)
