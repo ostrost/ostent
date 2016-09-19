@@ -32,7 +32,7 @@ Gmake() {
 
 : "${GO_VERSION:=1.7.1}"
 : "${GIMME_VERSION:=1.0.0}"
-: "${GLIDE_VERSION:=0.12.1}"
+: "${GLIDE_VERSION:=0.12.2}"
 
 : "${GIMME_PATH:=$HOME/bin/gimme}"
 : "${GIMME_ENV_PREFIX:=$HOME/.gimme/envs}"
