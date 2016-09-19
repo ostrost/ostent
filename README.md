@@ -56,10 +56,10 @@ Flags:
 
 ## Config
 
-Configuration file supports all [telegraf][1] settings.
+Configuration file supports all [telegraf][3] settings.
 Ostent implementation features extra `[agent]` `bind` and `bind_port`.
-Otherwise same structure, sections and options of [telegraf config][1].
-[1]: https://github.com/influxdata/telegraf/blob/master/docs/CONFIGURATION.md#agent-configuration
+Otherwise same structure, sections and options of [telegraf config][3].
+[3]: https://github.com/influxdata/telegraf/blob/master/docs/CONFIGURATION.md#agent-configuration
 
 Defaults for options and plugins applied when they're not stated in the file.
 Each default plugin can be disabled with it's `disabled = true`.
