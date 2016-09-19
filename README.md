@@ -54,6 +54,28 @@ Flags:
       --version             print version and exit
 ```
 
+## Config
+
+Configuration file supports all [telegraf][1] settings.
+Ostent implementation features extra `[agent]` `bind` and `bind_port`.
+Otherwise same structure, sections and options of [telegraf config][1].
+[1]: https://github.com/influxdata/telegraf/blob/master/docs/CONFIGURATION.md#agent-configuration
+
+Defaults for options and plugins applied when they're not stated in the file.
+Each default plugin can be disabled with it's `disabled = true`.
+Effective runtime config is printed at ostent startup and reload.
+
+To enable reporting to InfluxDB:
+
+```toml
+[outputs]
+  [outputs.influxdb]
+    database = "ostent"
+    urls = ["http://127.0.0.1:8086"]
+```
+
+Other outputs sections would be `[outputs.graphite]` and `[outputs.librato]`.
+
 ## Running the code
 
 1. `go get github.com/ostrost/ostent`
