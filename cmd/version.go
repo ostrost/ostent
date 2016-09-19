@@ -51,4 +51,4 @@ func versionRun() error {
 
 // OstentVersion of the latest known release. Compared to bin mode.
 // MUST BE semver compatible: no two digits ("X.Y") allowed.
-const OstentVersion = "0.6.2"
+const OstentVersion = "0.7.0"

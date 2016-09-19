@@ -23,7 +23,7 @@ Ostent is a single executable.
 has the binary &mdash; download and extract in one go:
 
 ```sh
-curl -L https://github.com/ostrost/ostent/releases/download/v0.6.2/`uname`-`uname -m`.tar.xz | tar Jxf -
+curl -L https://github.com/ostrost/ostent/releases/download/v0.7.0/`uname`-`uname -m`.tar.xz | tar Jxf -
 ```
 
 This will place executable in `./usr/**/bin/ostent`.
