@@ -6,10 +6,7 @@ eq() { test "x$1" = "x$2"; }
 if eq "${TRAVIS:-}" true ; then
     set +u # non-strict unset variables use in CI build script
 fi
-
-if ! eq "${TRAVIS:-}" true ; then
-    set -x #while debugging
-fi
+set -x #while debugging
 
 GO_BOOTSTRAPVER=1.6.3
 : "${GIT_TOPLEVEL:=$(git rev-parse --show-toplevel)}"
