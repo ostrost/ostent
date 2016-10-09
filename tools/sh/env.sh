@@ -97,6 +97,12 @@ before_script() {
 }
 
 install_1() {
+    if eq "${TRAVIS:-}" true && darwin ; then
+        if (true) 2>&1 | grep shell_session_update ; then # TODO remove someday
+            gvm get head
+        fi
+    fi
+
     # unconditionally install gimme(1); travis env most definitely does not have it
     # if ! eq 1 "$DONOTUSE_GIMME" ; then # travis always uses gimme
     mkdir -p "$(dirname "$GIMME_PATH")"
