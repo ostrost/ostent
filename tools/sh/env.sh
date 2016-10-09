@@ -32,13 +32,14 @@ Gmake() {
 
 : "${GO_VERSION:=1.7.1}"
 : "${GIMME_VERSION:=1.0.0}"
-: "${GLIDE_VERSION:=0.12.2}"
+: "${GLIDE_VERSION:=0.12.3}"
 
 : "${GIMME_PATH:=$HOME/bin/gimme}"
 : "${GIMME_ENV_PREFIX:=$HOME/.gimme/envs}"
 : "${GIMME_VERSION_PREFIX:=$HOME/.gimme/versions}"
 export GIMME_ENV_PREFIX GIMME_VERSION_PREFIX
 
+DONOTUSE_GIMME= #empty for false
 freebsd && DONOTUSE_GIMME=1
 
 # before_script is executed by gitlab-runner
