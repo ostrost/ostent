@@ -36,7 +36,7 @@ Gmake() {
 : "${GIMME_VERSION_PREFIX:=$HOME/.gimme/versions}"
 export GIMME_ENV_PREFIX GIMME_VERSION_PREFIX
 
-DONOTUSE_GIMME= #empty for false
+DONOTUSE_GIMME='' #empty for false
 freebsd && DONOTUSE_GIMME=1
 
 # before_script is executed by gitlab-runner
@@ -97,9 +97,11 @@ before_script() {
 }
 
 install_1() {
+    # https://github.com/travis-ci/travis-ci/issues/6307
+    # TODO remove someday
     if eq "${TRAVIS:-}" true && darwin ; then
-        if (true) 2>&1 | grep shell_session_update ; then # TODO remove someday
-            gvm get head
+        if echo "${PATH:-}" | grep ruby-2.0.0-p648 ; then
+            rvm get head
         fi
     fi
 
