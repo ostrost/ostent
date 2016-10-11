@@ -1,5 +1,11 @@
-/builds/
 /node_modules/
 /share/cache/
 /vendor/
 coverage.out
+
+# gitlab-runner
+/builds/
+
+# emacs
+/.projectile
+/TODOs.org
