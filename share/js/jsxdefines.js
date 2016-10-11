@@ -143,13 +143,11 @@ jsxdefines.define_cpu = React.createClass({
         <div className="input-group">
           <div className="input-group-label text-nowrap">rows</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.CPUn.Absolute}</a></div>
-          <div className="input-group-button">
-            <a href={Data.params.Nlinks.CPUn.Less.Href} onClick={this.handleClick}
+          <div className="input-group-button"><a href={Data.params.Nlinks.CPUn.Less.Href} onClick={this.handleClick}
                className={"text-nowrap button small success " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : "")}
               >- {Data.params.Nlinks.CPUn.Less.Text}</a>
           </div>
-          <div className="input-group-button">
-            <a href={Data.params.Nlinks.CPUn.More.Href} onClick={this.handleClick}
+          <div className="input-group-button"><a href={Data.params.Nlinks.CPUn.More.Href} onClick={this.handleClick}
                className={"text-nowrap button small success " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : "")}
               >{Data.params.Nlinks.CPUn.More.Text} +</a>
           </div>
@@ -157,9 +155,9 @@ jsxdefines.define_cpu = React.createClass({
       </li>
     </ul><div className={Data.params.CPUn.Absolute == 0 ? "hide":""}>
     <div className="stripe">
-      <div className="row thead"><span className="expand col small-1">Core</span><span className="expand col small-1 text-right"> User%</span><span className="expand col small-1 text-right"> Sys%</span><span className="expand col small-1 text-right"> Wait%</span><span className="expand col small-1 text-right"> Idle%</span><span className="expand col"></span></div>
-      {this.List(Data).map(function($cpu, i) { return (
-      <div className="row" key={"cpu-rowby-n-"+$cpu.N}><span className="expand col small-1 text-nowrap">{$cpu.N}</span><span className="expand col small-1 text-right bg-usepct"
+      <div className="row thead"><span className="expand col small-1">Core</span><span className="expand col small-1 text-right"> User%</span><span className="expand col small-1 text-right"> Sys%</span><span className="expand col small-1 text-right"> Wait%</span><span className="expand col small-1 text-right"> Idle%</span><span className="expand col"></span></div>{this.List(Data).map(function($cpu, i) { return (
+      <div className="row" key={"cpu-rowby-n-"+$cpu.N}><span className="expand col small-1 text-nowrap">{$cpu.N}</span>
+      <span className="expand col small-1 text-right bg-usepct"
        data-usepct={$cpu.UserPct}> {$cpu.UserPct}%</span>
       <span className="expand col small-1 text-right bg-usepct"
        data-usepct={$cpu.SysPct}> {$cpu.SysPct}%</span>
@@ -202,13 +200,11 @@ jsxdefines.define_df = React.createClass({
         <div className="input-group">
           <div className="input-group-label text-nowrap">rows</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Dfn.Absolute}</a></div>
-          <div className="input-group-button">
-            <a href={Data.params.Nlinks.Dfn.Less.Href} onClick={this.handleClick}
+          <div className="input-group-button"><a href={Data.params.Nlinks.Dfn.Less.Href} onClick={this.handleClick}
                className={"text-nowrap button small success " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : "")}
               >- {Data.params.Nlinks.Dfn.Less.Text}</a>
           </div>
-          <div className="input-group-button">
-            <a href={Data.params.Nlinks.Dfn.More.Href} onClick={this.handleClick}
+          <div className="input-group-button"><a href={Data.params.Nlinks.Dfn.More.Href} onClick={this.handleClick}
                className={"text-nowrap button small success " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : "")}
               >{Data.params.Nlinks.Dfn.More.Text} +</a>
           </div>
@@ -228,8 +224,7 @@ jsxdefines.define_df = React.createClass({
           <a href={ Data.params.Vlinks.Dfk[3-1].LinkHref} className={ Data.params.Vlinks.Dfk[3-1].LinkClass} onClick={this.handleClick}
             >Avail<span className={ Data.params.Vlinks.Dfk[3-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap text-right">
           <a href={ Data.params.Vlinks.Dfk[4-1].LinkHref} className={ Data.params.Vlinks.Dfk[4-1].LinkClass} onClick={this.handleClick}
-            >Use%<span className={ Data.params.Vlinks.Dfk[4-1].CaretClass}></span></a></span><span className="expand col"></span></div>
-      {this.List(Data).map(function($df, i) { return (
+            >Use%<span className={ Data.params.Vlinks.Dfk[4-1].CaretClass}></span></a></span><span className="expand col"></span></div>{this.List(Data).map(function($df, i) { return (
       <div className="row" key={"df-rowby-dirname-"+$df.DirName}><span className="expand col small-1 text-overflow">{$df.DevName}</span><span className="expand col small-1 text-overflow"> {$df.DirName}</span><span className="expand col small-1 text-overflow text-right gray"><span className="float-right"> {$df.Total}</span><span title="Inodes total"> {$df.Inodes}</span></span><span className="expand col small-1 text-overflow text-right gray"><span className="float-right"> {$df.Used}</span><span title="Inodes used"> {$df.Iused}</span></span><span className="expand col small-1 text-overflow text-right gray"><span className="float-right"> {$df.Avail}</span><span title="Inodes free"> {$df.Ifree}</span></span><span className="expand col small-1 text-overflow text-right gray bg-usepct" data-usepct={$df.UsePct}><span className="float-right"> {$df.UsePct}%</span><span title="Inodes use%"> {$df.IusePct}%</span></span><span className="expand col-lr">{jsxdefines.Sparkline({ref: i, col: 'UsePct'})}</span></div>);})}
     </div></div></div>
   </div>
@@ -279,13 +274,11 @@ jsxdefines.define_if = React.createClass({
         <div className="input-group">
           <div className="input-group-label text-nowrap">rows</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Ifn.Absolute}</a></div>
-          <div className="input-group-button">
-            <a href={Data.params.Nlinks.Ifn.Less.Href} onClick={this.handleClick}
+          <div className="input-group-button"><a href={Data.params.Nlinks.Ifn.Less.Href} onClick={this.handleClick}
                className={"text-nowrap button small success " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : "")}
               >- {Data.params.Nlinks.Ifn.Less.Text}</a>
           </div>
-          <div className="input-group-button">
-            <a href={Data.params.Nlinks.Ifn.More.Href} onClick={this.handleClick}
+          <div className="input-group-button"><a href={Data.params.Nlinks.Ifn.More.Href} onClick={this.handleClick}
                className={"text-nowrap button small success " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : "")}
               >{Data.params.Nlinks.Ifn.More.Text} +</a>
           </div>
@@ -293,9 +286,8 @@ jsxdefines.define_if = React.createClass({
       </li>
     </ul><div className={Data.params.Ifn.Absolute == 0 ? "hide":""}>
     <div className="stripe">
-      <div className="row thead"><span className="expand col small-1">Interface</span><span className="expand col small-1 text-right"> IP</span><span title="Drops,Errors In/Out per second" className="expand col small-2 text-right text-nowrap"> Loss IO ps</span><span title="Packets In/Out per second" className="expand col small-2 text-right text-nowrap"> Packets IO ps</span><span title="Bits In/Out per second" className="expand col small-2 text-right text-nowrap"> IO <i>b</i>ps</span><span className="expand col"></span></div>
-      {this.List(Data).map(function($if, i) { return (
-      <div className="row" key={"if-rowby-name-"+$if.Name}><span className="expand col small-1 text-overflow">{$if.Name}</span><span className="expand col small-1 text-overflow text-right">{$if.IP}</span><span className="expand col small-2 text-right text-nowrap">&nbsp;<span title="Total drops,errors modulo 4G" className="gray"><span title="Total drops In modulo 4G">{$if.DropsIn}</span>/<span title="Total drops Out modulo 4G">{$if.DropsOut}</span>,<span title="Total errors In modulo 4G">{$if.ErrorsIn}</span>/<span title="Total errors Out modulo 4G">{$if.ErrorsOut}</span></span>&nbsp;<span className={($if.DeltaDropsIn == "0" && $if.DeltaDropsOut == "0" && $if.DeltaErrorsIn == "0" && $if.DeltaErrorsOut == "0") ? "gray":""}><span title="Drops In per second">{$if.DeltaDropsIn}</span>/<span title="Drops Out per second">{$if.DeltaDropsOut}</span>,<span title="Errors In per second">{$if.DeltaErrorsIn}</span>/<span title="Errors Out per second">{$if.DeltaErrorsOut}</span></span></span><span className="expand col small-2 text-right text-nowrap">&nbsp;<span className="gray"><span title="Total packets In modulo 4G">{$if.PacketsIn}</span>/<span title="Total packets Out modulo 4G">{$if.PacketsOut}</span></span>&nbsp;<span title="Packets In per second">{$if.DeltaPacketsIn}</span>/<span title="Packets Out per second">{$if.DeltaPacketsOut}</span></span><span className="expand col small-2 text-right text-nowrap">&nbsp;<span className="gray"><span title="Total BYTES In modulo 4G">{$if.BytesIn}</span>/<span title="Total BYTES Out modulo 4G">{$if.BytesOut}</span></span>&nbsp;<span title="BITS In per second">{$if.DeltaBitsIn}</span>/<span title="BITS Out per second">{$if.DeltaBitsOut}</span></span><span className="expand col-lr">{jsxdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}</span></div>);})}
+      <div className="row thead"><span className="expand col small-1">Interface</span><span className="expand col small-1 text-right"> IP</span><span className="expand col small-2 text-right text-nowrap" title="Drops,Errors In/Out per second"> Loss IO ps</span><span className="expand col small-2 text-right text-nowrap" title="Packets In/Out per second"> Packets IO ps</span><span className="expand col small-2 text-right text-nowrap" title="Bits In/Out per second"> IO <i>b</i>ps</span><span className="expand col"></span></div>{this.List(Data).map(function($if, i) { return (
+      <div className="row" key={"if-rowby-name-"+$if.Name}><span className="expand col small-1 text-overflow">{$if.Name}</span><span className="expand col small-1 text-overflow text-right">{$if.IP}</span><span className="expand col small-2 text-right text-nowrap">&nbsp;<span className="gray" title="Total drops,errors modulo 4G"><span title="Total drops In modulo 4G">{$if.DropsIn}</span>/<span title="Total drops Out modulo 4G">{$if.DropsOut}</span>,<span title="Total errors In modulo 4G">{$if.ErrorsIn}</span>/<span title="Total errors Out modulo 4G">{$if.ErrorsOut}</span></span>&nbsp;<span className={($if.DeltaDropsIn == "0" && $if.DeltaDropsOut == "0" && $if.DeltaErrorsIn == "0" && $if.DeltaErrorsOut == "0") ? "gray":""}><span title="Drops In per second">{$if.DeltaDropsIn}</span>/<span title="Drops Out per second">{$if.DeltaDropsOut}</span>,<span title="Errors In per second">{$if.DeltaErrorsIn}</span>/<span title="Errors Out per second">{$if.DeltaErrorsOut}</span></span></span><span className="expand col small-2 text-right text-nowrap">&nbsp;<span className="gray"><span title="Total packets In modulo 4G">{$if.PacketsIn}</span>/<span title="Total packets Out modulo 4G">{$if.PacketsOut}</span></span>&nbsp;<span title="Packets In per second">{$if.DeltaPacketsIn}</span>/<span title="Packets Out per second">{$if.DeltaPacketsOut}</span></span><span className="expand col small-2 text-right text-nowrap">&nbsp;<span className="gray"><span title="Total BYTES In modulo 4G">{$if.BytesIn}</span>/<span title="Total BYTES Out modulo 4G">{$if.BytesOut}</span></span>&nbsp;<span title="BITS In per second">{$if.DeltaBitsIn}</span>/<span title="BITS Out per second">{$if.DeltaBitsOut}</span></span><span className="expand col-lr">{jsxdefines.Sparkline({ref: i, col: 'DeltaBytesOutNum'})}</span></div>);})}
     </div></div></div>
   </div>
 </div>);
@@ -331,13 +323,11 @@ jsxdefines.define_la = React.createClass({
         <div className="input-group">
           <div className="input-group-label text-nowrap">rows</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Lan.Absolute}</a></div>
-          <div className="input-group-button">
-            <a href={Data.params.Nlinks.Lan.Less.Href} onClick={this.handleClick}
+          <div className="input-group-button"><a href={Data.params.Nlinks.Lan.Less.Href} onClick={this.handleClick}
                className={"text-nowrap button small success " + (Data.params.Nlinks.Lan.Less.ExtraClass != null ? Data.params.Nlinks.Lan.Less.ExtraClass : "")}
               >- {Data.params.Nlinks.Lan.Less.Text}</a>
           </div>
-          <div className="input-group-button">
-            <a href={Data.params.Nlinks.Lan.More.Href} onClick={this.handleClick}
+          <div className="input-group-button"><a href={Data.params.Nlinks.Lan.More.Href} onClick={this.handleClick}
                className={"text-nowrap button small success " + (Data.params.Nlinks.Lan.More.ExtraClass != null ? Data.params.Nlinks.Lan.More.ExtraClass : "")}
               >{Data.params.Nlinks.Lan.More.Text} +</a>
           </div>
@@ -345,8 +335,7 @@ jsxdefines.define_la = React.createClass({
       </li>
     </ul><div className={Data.params.Lan.Absolute == 0 ? "hide":""}>
     <div className="stripe">
-      <div className="row thead"><span className="expand col small-1">Period</span><span className="expand col small-1 text-right"> Value</span><span className="expand col"></span></div>
-      {this.List(Data).map(function($la, i) { return (
+      <div className="row thead"><span className="expand col small-1">Period</span><span className="expand col small-1 text-right"> Value</span><span className="expand col"></span></div>{this.List(Data).map(function($la, i) { return (
       <div className="row" key={"la-rowby-period-"+$la.Period}><span className="expand col small-1">
         <div className="text-right width-3rem">{$la.Period}m</div></span><span className="expand col small-1 text-right"> {$la.Value}</span><span className="expand col-lr">{jsxdefines.Sparkline({ref: i, col: 'Value'})}</span></div>);})}
     </div></div></div>
@@ -384,13 +373,11 @@ jsxdefines.define_mem = React.createClass({
         <div className="input-group">
           <div className="input-group-label text-nowrap">rows</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Memn.Absolute}</a></div>
-          <div className="input-group-button">
-            <a href={Data.params.Nlinks.Memn.Less.Href} onClick={this.handleClick}
+          <div className="input-group-button"><a href={Data.params.Nlinks.Memn.Less.Href} onClick={this.handleClick}
                className={"text-nowrap button small success " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : "")}
               >- {Data.params.Nlinks.Memn.Less.Text}</a>
           </div>
-          <div className="input-group-button">
-            <a href={Data.params.Nlinks.Memn.More.Href} onClick={this.handleClick}
+          <div className="input-group-button"><a href={Data.params.Nlinks.Memn.More.Href} onClick={this.handleClick}
                className={"text-nowrap button small success " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : "")}
               >{Data.params.Nlinks.Memn.More.Text} +</a>
           </div>
@@ -398,8 +385,7 @@ jsxdefines.define_mem = React.createClass({
       </li>
     </ul><div className={Data.params.Memn.Absolute == 0 ? "hide":""}>
     <div className="stripe">
-      <div className="row thead"><span className="expand col small-1">Memory</span><span className="expand col small-1 text-right"> Total</span><span className="expand col small-1 text-right"> Used</span><span className="expand col small-1 text-right"> Free</span><span className="expand col small-1 text-right"> Use%</span><span className="expand col"></span></div>
-      {this.List(Data).map(function($mem, i) { return (
+      <div className="row thead"><span className="expand col small-1">Memory</span><span className="expand col small-1 text-right"> Total</span><span className="expand col small-1 text-right"> Used</span><span className="expand col small-1 text-right"> Free</span><span className="expand col small-1 text-right"> Use%</span><span className="expand col"></span></div>{this.List(Data).map(function($mem, i) { return (
       <div className="row" key={"mem-rowby-kind-"+$mem.Kind}><span className="expand col small-1">{$mem.Kind}</span><span className="expand col small-1 text-right"> {$mem.Total}</span><span className="expand col small-1 text-right"> {$mem.Used}</span><span className="expand col small-1 text-right"> {$mem.Free}</span><span className="expand col small-1 text-right bg-usepct" data-usepct={$mem.UsePct}> {$mem.UsePct}%</span><span className="expand col-lr">{jsxdefines.Sparkline({ref: i, col: 'UsePct'})}</span></div>);})}
     </div></div></div>
   </div>
@@ -436,13 +422,11 @@ jsxdefines.define_ps = React.createClass({
         <div className="input-group">
           <div className="input-group-label text-nowrap">rows</div>
           <div className="input-group-button"><a className="button small secondary disabled">{Data.params.Psn.Absolute}</a></div>
-          <div className="input-group-button">
-            <a href={Data.params.Nlinks.Psn.Less.Href} onClick={this.handleClick}
+          <div className="input-group-button"><a href={Data.params.Nlinks.Psn.Less.Href} onClick={this.handleClick}
                className={"text-nowrap button small success " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : "")}
               >- {Data.params.Nlinks.Psn.Less.Text}</a>
           </div>
-          <div className="input-group-button">
-            <a href={Data.params.Nlinks.Psn.More.Href} onClick={this.handleClick}
+          <div className="input-group-button"><a href={Data.params.Nlinks.Psn.More.Href} onClick={this.handleClick}
                className={"text-nowrap button small success " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : "")}
               >{Data.params.Nlinks.Psn.More.Text} +</a>
           </div>
@@ -468,8 +452,7 @@ jsxdefines.define_ps = React.createClass({
           <a href={ Data.params.Vlinks.Psk[8-1].LinkHref} className={ Data.params.Vlinks.Psk[8-1].LinkClass} onClick={this.handleClick}
             >TIME<span className={ Data.params.Vlinks.Psk[8-1].CaretClass}></span></a></span><span className="expand col small-1 text-nowrap">
           <a href={ Data.params.Vlinks.Psk[9-1].LinkHref} className={ Data.params.Vlinks.Psk[9-1].LinkClass} onClick={this.handleClick}
-            >COMMAND<span className={ Data.params.Vlinks.Psk[9-1].CaretClass}></span></a></span></div>
-      {this.List(Data).map(function($ps, i) { return (
+            >COMMAND<span className={ Data.params.Vlinks.Psk[9-1].CaretClass}></span></a></span></div>{this.List(Data).map(function($ps, i) { return (
       <div className="row" key={"ps-rowby-pid-"+$ps.PID}><span className="expand col small-1 text-right">{$ps.PID}</span><span className="expand col small-1 text-right"> {$ps.UID}</span><span className="expand col small-1"> {$ps.User}</span><span className="expand col small-1 text-right"> {$ps.Priority}</span><span className="expand col small-1 text-right"> {$ps.Nice}</span><span className="expand col small-1 text-right"> {$ps.Size}</span><span className="expand col small-1 text-right"> {$ps.Resident}</span><span className="expand col small-1 text-center"> {$ps.Time}</span><span className="expand col"> {$ps.Name}</span></div>);})}
     </div></div></div>
   </div>

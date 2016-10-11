@@ -22304,14 +22304,14 @@
 	}, void 0, 'Interface'), _jsx('span', {
 	  className: 'expand col small-1 text-right'
 	}, void 0, ' IP'), _jsx('span', {
-	  title: 'Drops,Errors In/Out per second',
-	  className: 'expand col small-2 text-right text-nowrap'
+	  className: 'expand col small-2 text-right text-nowrap',
+	  title: 'Drops,Errors In/Out per second'
 	}, void 0, ' Loss IO ps'), _jsx('span', {
-	  title: 'Packets In/Out per second',
-	  className: 'expand col small-2 text-right text-nowrap'
+	  className: 'expand col small-2 text-right text-nowrap',
+	  title: 'Packets In/Out per second'
 	}, void 0, ' Packets IO ps'), _jsx('span', {
-	  title: 'Bits In/Out per second',
-	  className: 'expand col small-2 text-right text-nowrap'
+	  className: 'expand col small-2 text-right text-nowrap',
+	  title: 'Bits In/Out per second'
 	}, void 0, ' IO ', _jsx('i', {}, void 0, 'b'), 'ps'), _jsx('span', {
 	  className: 'expand col'
 	}));
@@ -22385,8 +22385,8 @@
 	      }, void 0, $if.IP), _jsx('span', {
 	        className: 'expand col small-2 text-right text-nowrap'
 	      }, void 0, '\xA0', _jsx('span', {
-	        title: 'Total drops,errors modulo 4G',
-	        className: 'gray'
+	        className: 'gray',
+	        title: 'Total drops,errors modulo 4G'
 	      }, void 0, _jsx('span', {
 	        title: 'Total drops In modulo 4G'
 	      }, void 0, $if.DropsIn), '/', _jsx('span', {

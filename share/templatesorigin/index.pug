@@ -1,5 +1,5 @@
 - if (format === undefined) { format = function() { console.error('check locals'); }; }
-//- This is a stub: real jade invocation must have it in locals.
+//- This is a stub: real pug invocation must have it in locals.
 
 mixin if(cond)
   | [[if !{cond}]]
@@ -298,7 +298,7 @@ html
     <!--[if IE]>
     link(rel='shortcut icon', href='/favicon.ico')
     <![endif]-->
-    link(rel='icon', sizes='32x32', href='/[[.OstentVersion]]/favicons/favicon-32.png', 'type=image/png')
+    link(rel='icon', sizes='32x32', href='/[[.OstentVersion]]/favicons/favicon-32.png', type='image/png')
     link(rel='apple-touch-icon', sizes='120x120', href='/[[.OstentVersion]]/favicons/favicon-120.png')
     link(rel='apple-touch-icon', sizes='144x144', href='/[[.OstentVersion]]/favicons/favicon-144.png')
     link(rel='apple-touch-icon', sizes='152x152', href='/[[.OstentVersion]]/favicons/favicon-152.png')

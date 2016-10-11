@@ -5,7 +5,7 @@ var child             = require('child_process'),
     ExtractTextPlugin = require('extract-text-webpack-plugin'),
     gulp              = require('gulp'),
     header            = require('gulp-header'),
-    jade              = require('gulp-jade'),
+    pug               = require('gulp-pug'),
     rename            = require('gulp-rename'),
     spawn             = require('gulp-spawn'),
     gutil             = require('gulp-util'),
@@ -17,9 +17,9 @@ var child             = require('child_process'),
     argv              = require('yargs').argv;
 //  reload            = require('gulp-livereload');
 
-gulp.task('jade', function() {
+gulp.task('pug', function() {
   gulp.src(argv.input)
-    .pipe(jade({locals: _.merge(argv, {format: util.format}), pretty: true}))
+    .pipe(pug({locals: _.merge(argv, {format: util.format}), pretty: true}))
     .pipe('JSX' in argv ?
           spawn({cmd: 'ostent-templatepp',
                  args: '--definesfrom - --template'.split(' ').concat(argv.template)}) :
