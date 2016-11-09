@@ -99,7 +99,7 @@ before_script() {
 install_1() {
     # https://github.com/travis-ci/travis-ci/issues/6307
     # TODO remove someday
-    if false && eq "${TRAVIS:-}" true && darwin ; then
+    if eq "${TRAVIS:-}" true && darwin ; then
         if echo "${PATH:-}" | grep -qF ruby-2.0.0-p648 ; then
             rvm get head
         fi
