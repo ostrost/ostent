@@ -15,19 +15,6 @@ awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
 
 #+BEGIN_SRC diff
 #+RESULTS:
-diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/internal/../agent/accumulator.go ./agent/accumulator.go
---- ../vendor/github.com/influxdata/telegraf/internal/../agent/accumulator.go
-+++ ./agent/accumulator.go
-@@ -8,7 +8,8 @@
- 	"time"
- 
- 	"github.com/influxdata/telegraf"
--	"github.com/influxdata/telegraf/internal/models"
-+
-+	"github.com/ostrost/ostent/internal/models"
- )
- 
- func NewAccumulator(
 Only in ../vendor/github.com/influxdata/telegraf/internal/../agent: accumulator_test.go
 diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/internal/../agent/agent.go ./agent/agent.go
 --- ../vendor/github.com/influxdata/telegraf/internal/../agent/agent.go
@@ -46,14 +33,17 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  )
  
  // Agent runs telegraf and collects data based on the given config
-@@ -268,7 +269,6 @@
- 			a.flush()
- 			return nil
- 		case <-ticker.C:
--			internal.RandomSleep(a.Config.Agent.FlushJitter.Duration, shutdown)
- 			a.flush()
- 		case m := <-metricC:
- 			for i, o := range a.Config.Outputs {
+@@ -122,8 +123,10 @@
+ 		gatherWithTimeout(shutdown, input, acc, interval)
+ 		elapsed := time.Since(start)
+ 
++		if a.Config.Agent.Debug {
+ 		log.Printf("D! Input [%s] gathered metrics, (%s interval) in %s\n",
+ 			input.Name(), interval, elapsed)
++		}
+ 
+ 		select {
+ 		case <-shutdown:
 Only in ../vendor/github.com/influxdata/telegraf/internal/../agent: agent_test.go
 Only in .: README.org
 Only in .: agent
@@ -62,15 +52,17 @@ Only in ../vendor/github.com/influxdata/telegraf/internal/config: aws
 diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/internal/config/config.go ./config/config.go
 --- ../vendor/github.com/influxdata/telegraf/internal/config/config.go
 +++ ./config/config.go
-@@ -15,18 +15,22 @@
+@@ -16,8 +16,6 @@
  	"time"
  
  	"github.com/influxdata/telegraf"
 -	"github.com/influxdata/telegraf/internal"
 -	"github.com/influxdata/telegraf/internal/models"
+ 	"github.com/influxdata/telegraf/plugins/aggregators"
  	"github.com/influxdata/telegraf/plugins/inputs"
  	"github.com/influxdata/telegraf/plugins/outputs"
- 	"github.com/influxdata/telegraf/plugins/parsers"
+@@ -25,11 +23,17 @@
+ 	"github.com/influxdata/telegraf/plugins/processors"
  	"github.com/influxdata/telegraf/plugins/serializers"
  
 -	"github.com/influxdata/config"
@@ -88,7 +80,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  var (
  	// Default input plugins
  	inputDefaults = []string{"cpu", "mem", "swap", "system", "kernel",
-@@ -71,6 +75,11 @@
+@@ -78,6 +82,11 @@
  }
  
  type AgentConfig struct {
@@ -100,7 +92,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	// Interval at which to gather information
  	Interval internal.Duration
  
-@@ -461,6 +470,12 @@
+@@ -559,6 +568,12 @@
  		return fmt.Errorf("Error parsing %s, %s", path, err)
  	}
  
@@ -113,7 +105,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	// Parse tags tables first:
  	for _, tableName := range []string{"tags", "global_tags"} {
  		if val, ok := tbl.Fields[tableName]; ok {
-@@ -558,6 +573,10 @@
+@@ -690,6 +705,10 @@
  	if err != nil {
  		return nil, err
  	}
@@ -124,7 +116,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	// ugh windows why
  	contents = trimBOM(contents)
  
-@@ -590,6 +609,9 @@
+@@ -768,6 +787,9 @@
  		if err != nil {
  			return err
  		}
@@ -156,6 +148,8 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
 Only in ../vendor/github.com/influxdata/telegraf/internal: internal_test.go
 Only in ../vendor/github.com/influxdata/telegraf/internal: limiter
 Only in ../vendor/github.com/influxdata/telegraf/internal/models: filter_test.go
+Only in ../vendor/github.com/influxdata/telegraf/internal/models: running_aggregator_test.go
+Only in ../vendor/github.com/influxdata/telegraf/internal/models: running_input_test.go
 diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/internal/models/running_output.go ./models/running_output.go
 --- ../vendor/github.com/influxdata/telegraf/internal/models/running_output.go
 +++ ./models/running_output.go
@@ -170,5 +164,6 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  
  const (
 Only in ../vendor/github.com/influxdata/telegraf/internal/models: running_output_test.go
+Only in ../vendor/github.com/influxdata/telegraf/internal/models: running_processor_test.go
 Only in .: plugins
 #+END_SRC

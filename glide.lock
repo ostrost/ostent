@@ -1,5 +1,5 @@
-hash: 5cca6f1c22c7ccb0ecc421992fa7219b49253608e4bdc53504e2511fdbf850e5
-updated: 2016-10-09T18:25:31.550995287Z
+hash: dd19a89436b99f56f1c87258d559c97214cc5aab80b0a85d4f97f93cc7acbe5b
+updated: 2016-11-09T09:08:42.400308077Z
 imports:
 - name: github.com/blang/semver
   version: 60ec3488bfea7cca02b021d106d9911120d25fe9
@@ -60,13 +60,13 @@ imports:
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/influxdb
-  version: e094138084855d444195b252314dfee9eae34cab
+  version: fc57c0f7c635df3873f3d64f0ed2100ddc94d5ae
   subpackages:
   - client/v2
   - models
   - pkg/escape
 - name: github.com/influxdata/telegraf
-  version: 215f1b57d06845708e0867b11b9c853a56b00d81
+  version: 8ecfe13bf813d5512267d90e7b3ad2f62aba5842
   subpackages:
   - filter
   - internal
@@ -173,7 +173,7 @@ imports:
   - assert
   - mock
 - name: golang.org/x/crypto
-  version: 5dc8cb4b8a8eb076cbb5a06bc3b8682c15bdbbd3
+  version: c197bcf24cde29d3f73c7b4ac6fd41f4384e8af6
   subpackages:
   - curve25519
   - ssh

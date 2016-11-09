@@ -90,7 +90,7 @@ awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
  			"drop_out":     io.Dropout,
  		}
 +		s.AddDeltaFields(io, fields)
- 		acc.AddFields("net", fields, tags)
+ 		acc.AddCounter("net", fields, tags)
  	}
  
 +	/*
@@ -128,7 +128,7 @@ awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
  
  	"github.com/shirou/gopsutil/host"
  	"github.com/shirou/gopsutil/load"
-@@ -27,12 +25,12 @@
+@@ -27,31 +25,30 @@
  		return err
  	}
  
@@ -143,18 +143,20 @@ awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
  	if err != nil {
  		return err
  	}
-@@ -41,16 +39,17 @@
- 		"load1":         loadavg.Load1,
- 		"load5":         loadavg.Load5,
- 		"load15":        loadavg.Load15,
+ 
+-	acc.AddGauge("system", map[string]interface{}{
++	acc.AddGauge("system_ostent", map[string]interface{}{
+ 		"load1":   loadavg.Load1,
+ 		"load5":   loadavg.Load5,
+ 		"load15":  loadavg.Load15,
+-		"n_users": len(users),
+-		"n_cpus":  runtime.NumCPU(),
+-	}, nil)
+-	acc.AddCounter("system", map[string]interface{}{
 -		"uptime":        hostinfo.Uptime,
--		"n_users":       len(users),
 -		"uptime_format": format_uptime(hostinfo.Uptime),
--		"n_cpus":        runtime.NumCPU(),
- 	}
--	acc.AddFields("system", fields, nil)
-+	acc.AddFields("system_ostent", fields, nil)
-+	acc.AddFields("system_ostent", map[string]interface{}{
+ 	}, nil)
++	acc.AddCounter("system_ostent", map[string]interface{}{
 +		"hostname_short": strings.Split(hostname, ".")[0],
 +		"uptime_format":  format_uptime(upseconds),
 +	}, map[string]string{"kind": "system_ostent_runtime"})
@@ -166,7 +168,7 @@ awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
  func format_uptime(uptime uint64) string {
  	buf := new(bytes.Buffer)
  	w := bufio.NewWriter(buf)
-@@ -75,9 +74,10 @@
+@@ -76,9 +73,10 @@
  	w.Flush()
  	return buf.String()
  }

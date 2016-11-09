@@ -99,7 +99,7 @@ func (s *NetIOStats) Gather(acc telegraf.Accumulator) error {
 			"drop_out":     io.Dropout,
 		}
 		s.AddDeltaFields(io, fields)
-		acc.AddFields("net", fields, tags)
+		acc.AddCounter("net", fields, tags)
 	}
 
 	/*

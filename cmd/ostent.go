@@ -239,11 +239,11 @@ func loadConfig(c *config.Config, send <-chan chan string, fsthp *setonce) error
 		receive <- hp
 	}
 
-	if text, err := printableConfig(c); err != nil {
+	text, err := printableConfig(c)
+	if err != nil {
 		return err
-	} else {
-		log.Printf("Effective runtime config:\n%s", text)
 	}
+	log.Printf("Effective runtime config:\n%s", text)
 	return nil
 }
 
@@ -293,7 +293,7 @@ func printableConfig(rconfig *config.Config) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		text += printableHeader("inputs", in.Name) + tabtext
+		text += printableHeader("inputs", in.Config.Name) + tabtext
 	}
 
 	text += "[outputs]\n"
@@ -381,7 +381,7 @@ type printFilter struct {
 }
 
 func printableFilter(f models.Filter) *printFilter {
-	if !f.IsActive {
+	if !f.IsActive() {
 		return nil
 	}
 	var p printFilter

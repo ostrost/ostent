@@ -68,7 +68,7 @@ func (p *Procstat) Gather(acc telegraf.Accumulator) error {
 	start := time.Now()
 	err := p.createProcesses()
 	if err != nil {
-		log.Printf("Error: procstat getting process, exe: [%s]	pidfile: [%s] pattern: [%s] user: [%s] %s",
+		log.Printf("E! Error: procstat getting process, exe: [%s]	pidfile: [%s] pattern: [%s] user: [%s] %s",
 			p.Exe, p.PidFile, p.Pattern, p.User, err.Error())
 	} else {
 		for pid, proc := range p.pidmap {

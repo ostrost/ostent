@@ -151,7 +151,6 @@ button {
 }
 
 .row .row {
-  max-width: none;
   margin-left: -.625rem;
   margin-right: -.625rem;
 }
@@ -889,10 +888,6 @@ label {
   margin: 0;
 }
 
-.input-group .input-group-button {
-  display: table-cell;
-}
-
 .button {
   display: inline-block;
   text-align: center;
@@ -961,6 +956,26 @@ label {
 
 .button.disabled:focus,.button.disabled:hover,.button[disabled]:focus,.button[disabled]:hover {
   background-color: #2199e8;
+  color: #fefefe;
+}
+
+.button.disabled.secondary,.button[disabled].secondary {
+  opacity: .25;
+  cursor: not-allowed;
+}
+
+.button.disabled.secondary:focus,.button.disabled.secondary:hover,.button[disabled].secondary:focus,.button[disabled].secondary:hover {
+  background-color: #777;
+  color: #fefefe;
+}
+
+.button.disabled.success,.button[disabled].success {
+  opacity: .25;
+  cursor: not-allowed;
+}
+
+.button.disabled.success:focus,.button.disabled.success:hover,.button[disabled].success:focus,.button[disabled].success:hover {
+  background-color: #3adb76;
   color: #fefefe;
 }
 
@@ -1217,11 +1232,11 @@ input:checked+label>.switch-inactive {
 }
 
 .title-bar-title {
-  font-weight: 700;
+  vertical-align: middle;
 }
 
 .title-bar-title {
-  vertical-align: middle;
+  font-weight: 700;
   display: inline-block;
 }
 
@@ -1257,8 +1272,12 @@ input:checked+label>.switch-inactive {
     flex-wrap: nowrap;
   }
 
-  .top-bar .top-bar-left,  .top-bar .top-bar-right {
-    flex: 1 1 0px;
+  .top-bar .top-bar-left {
+    flex: 1 1 auto;
+  }
+
+  .top-bar .top-bar-right {
+    flex: 0 1 auto;
   }
 }
 

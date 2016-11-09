@@ -6,7 +6,7 @@ eq() { test "x$1" = "x$2"; }
 if eq "${TRAVIS:-}" true ; then
     set +u # non-strict unset variables use in CI build script
 fi
-set -x #while debugging
+#set -x #while debugging
 
 GO_BOOTSTRAPVER=1.6.3
 : "${GIT_TOPLEVEL:=$(git rev-parse --show-toplevel)}"
@@ -27,7 +27,7 @@ Gmake() {
 # Following functions of this script is expected to be executed sequentially.
 # The split is so that each function must end with one timely action.
 
-: "${GO_VERSION:=1.7.1}"
+: "${GO_VERSION:=1.7.3}"
 : "${GIMME_VERSION:=1.0.0}"
 : "${GLIDE_VERSION:=0.12.3}"
 
@@ -99,8 +99,8 @@ before_script() {
 install_1() {
     # https://github.com/travis-ci/travis-ci/issues/6307
     # TODO remove someday
-    if eq "${TRAVIS:-}" true && darwin ; then
-        if echo "${PATH:-}" | grep ruby-2.0.0-p648 ; then
+    if false && eq "${TRAVIS:-}" true && darwin ; then
+        if echo "${PATH:-}" | grep -qF ruby-2.0.0-p648 ; then
             rvm get head
         fi
     fi
