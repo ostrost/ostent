@@ -38,7 +38,6 @@ var wpconf = {
     root: [node_modules],
     //? extensions: ['', '.js', '.jsx', '.css', '.scss'],
     alias: {
-      'react-dom': 'react/lib/ReactDOM.js',
       'react-prm': 'react/lib/ReactComponentWithPureRenderMixin.js'
     }
   },

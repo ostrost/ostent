@@ -1,5 +1,5 @@
-hash: dd19a89436b99f56f1c87258d559c97214cc5aab80b0a85d4f97f93cc7acbe5b
-updated: 2016-11-09T09:08:42.400308077Z
+hash: a1e3cda02faead70914676a426b6c9bf25a43e8e0787fff3a5bf6e633b17c06c
+updated: 2016-11-17T09:29:45.937265093Z
 imports:
 - name: github.com/blang/semver
   version: 60ec3488bfea7cca02b021d106d9911120d25fe9
@@ -66,10 +66,11 @@ imports:
   - models
   - pkg/escape
 - name: github.com/influxdata/telegraf
-  version: 8ecfe13bf813d5512267d90e7b3ad2f62aba5842
+  version: 94de9dca1fc6efb3a4bf3ec6869c356278c6755a
   subpackages:
   - filter
   - internal
+  - plugins/aggregators
   - plugins/inputs
   - plugins/inputs/system
   - plugins/outputs
@@ -82,6 +83,7 @@ imports:
   - plugins/parsers/json
   - plugins/parsers/nagios
   - plugins/parsers/value
+  - plugins/processors
   - plugins/serializers
   - plugins/serializers/graphite
   - plugins/serializers/influx
