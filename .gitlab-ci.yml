@@ -1,6 +1,6 @@
 variables:
   DPL_DIR: ~/deploy # ~/deploy is outside the clone dir
-  GO_VERSION: "1.7.3"
+  GO_VERSION: "1.7.4"
 
   # specific paths in working gitlab-runner env
   GIMME_PATH: /home/gimme/bin/gimme
