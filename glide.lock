@@ -1,5 +1,5 @@
-hash: a1e3cda02faead70914676a426b6c9bf25a43e8e0787fff3a5bf6e633b17c06c
-updated: 2016-11-17T09:29:45.937265093Z
+hash: 2c1feae49f642c8f6af402f51f1ff83b2f7ea4b55d349b8bb80727e336d3fb07
+updated: 2016-12-20T14:59:53.282862502Z
 imports:
 - name: github.com/blang/semver
   version: 60ec3488bfea7cca02b021d106d9911120d25fe9
@@ -66,7 +66,7 @@ imports:
   - models
   - pkg/escape
 - name: github.com/influxdata/telegraf
-  version: 94de9dca1fc6efb3a4bf3ec6869c356278c6755a
+  version: 3da3a2279108d02c2158782794532de7cd7deacd
   subpackages:
   - filter
   - internal

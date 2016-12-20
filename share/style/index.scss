@@ -2,7 +2,10 @@
 
 @charset 'utf-8';
 
-@import 'settings'; // foundation settings
+@import 'settings'; /* foundation settings; modifications:
+  $topbar-padding: 0px;
+  $topbar-title-spacing: 0.5rem 1rem 0.5rem 1rem;
+*/
 
 @import 'foundation';
 
@@ -17,10 +20,10 @@
 // h6: 16 1rem
 @each $size in ('small', 'medium') {
   @include breakpoint($size) {
-    h1.h5 { font-size: rem-calc(map-get(map-get($header-sizes, 'medium'), 'h5')); }
+    h1.h5 { font-size: rem-calc(map-get(map-get(map-get($header-styles, 'medium'), 'h5'), 'font-size')); }
   }
   @include breakpoint('medium') {
-    h2.h5 { font-size: rem-calc(map-get(map-get($header-sizes, 'medium'), 'h5')); }
+    h2.h5 { font-size: rem-calc(map-get(map-get(map-get($header-styles, 'medium'), 'h5'), 'font-size')); }
   }
 }
 

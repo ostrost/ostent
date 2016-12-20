@@ -22118,20 +22118,20 @@
 	      className: 'input-group'
 	    }, void 0, _ref2, _jsx('div', {
 	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
+	    }, void 0, _jsx('button', {
 	      className: 'button small secondary disabled'
 	    }, void 0, Data.params.CPUn.Absolute)), _jsx('div', {
 	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
+	    }, void 0, _jsx('button', {
 	      href: Data.params.Nlinks.CPUn.Less.Href,
 	      onClick: this.handleClick,
-	      className: "text-nowrap button small success " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : "")
+	      className: "text-nowrap button small " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : "")
 	    }, void 0, '- ', Data.params.Nlinks.CPUn.Less.Text)), _jsx('div', {
 	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
+	    }, void 0, _jsx('button', {
 	      href: Data.params.Nlinks.CPUn.More.Href,
 	      onClick: this.handleClick,
-	      className: "text-nowrap button small success " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : "")
+	      className: "text-nowrap button small " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : "")
 	    }, void 0, Data.params.Nlinks.CPUn.More.Text, ' +'))))), _jsx('div', {
 	      className: Data.params.CPUn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
@@ -22213,20 +22213,20 @@
 	      className: 'input-group'
 	    }, void 0, _ref5, _jsx('div', {
 	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
+	    }, void 0, _jsx('button', {
 	      className: 'button small secondary disabled'
 	    }, void 0, Data.params.Dfn.Absolute)), _jsx('div', {
 	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
+	    }, void 0, _jsx('button', {
 	      href: Data.params.Nlinks.Dfn.Less.Href,
 	      onClick: this.handleClick,
-	      className: "text-nowrap button small success " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : "")
+	      className: "text-nowrap button small " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : "")
 	    }, void 0, '- ', Data.params.Nlinks.Dfn.Less.Text)), _jsx('div', {
 	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
+	    }, void 0, _jsx('button', {
 	      href: Data.params.Nlinks.Dfn.More.Href,
 	      onClick: this.handleClick,
-	      className: "text-nowrap button small success " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : "")
+	      className: "text-nowrap button small " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : "")
 	    }, void 0, Data.params.Nlinks.Dfn.More.Text, ' +'))))), _jsx('div', {
 	      className: Data.params.Dfn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
@@ -22406,20 +22406,20 @@
 	      className: 'input-group'
 	    }, void 0, _ref8, _jsx('div', {
 	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
+	    }, void 0, _jsx('button', {
 	      className: 'button small secondary disabled'
 	    }, void 0, Data.params.Ifn.Absolute)), _jsx('div', {
 	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
+	    }, void 0, _jsx('button', {
 	      href: Data.params.Nlinks.Ifn.Less.Href,
 	      onClick: this.handleClick,
-	      className: "text-nowrap button small success " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : "")
+	      className: "text-nowrap button small " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : "")
 	    }, void 0, '- ', Data.params.Nlinks.Ifn.Less.Text)), _jsx('div', {
 	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
+	    }, void 0, _jsx('button', {
 	      href: Data.params.Nlinks.Ifn.More.Href,
 	      onClick: this.handleClick,
-	      className: "text-nowrap button small success " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : "")
+	      className: "text-nowrap button small " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : "")
 	    }, void 0, Data.params.Nlinks.Ifn.More.Text, ' +'))))), _jsx('div', {
 	      className: Data.params.Ifn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
@@ -22544,20 +22544,20 @@
 	      className: 'input-group'
 	    }, void 0, _ref11, _jsx('div', {
 	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
+	    }, void 0, _jsx('button', {
 	      className: 'button small secondary disabled'
 	    }, void 0, Data.params.Lan.Absolute)), _jsx('div', {
 	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
+	    }, void 0, _jsx('button', {
 	      href: Data.params.Nlinks.Lan.Less.Href,
 	      onClick: this.handleClick,
-	      className: "text-nowrap button small success " + (Data.params.Nlinks.Lan.Less.ExtraClass != null ? Data.params.Nlinks.Lan.Less.ExtraClass : "")
+	      className: "text-nowrap button small " + (Data.params.Nlinks.Lan.Less.ExtraClass != null ? Data.params.Nlinks.Lan.Less.ExtraClass : "")
 	    }, void 0, '- ', Data.params.Nlinks.Lan.Less.Text)), _jsx('div', {
 	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
+	    }, void 0, _jsx('button', {
 	      href: Data.params.Nlinks.Lan.More.Href,
 	      onClick: this.handleClick,
-	      className: "text-nowrap button small success " + (Data.params.Nlinks.Lan.More.ExtraClass != null ? Data.params.Nlinks.Lan.More.ExtraClass : "")
+	      className: "text-nowrap button small " + (Data.params.Nlinks.Lan.More.ExtraClass != null ? Data.params.Nlinks.Lan.More.ExtraClass : "")
 	    }, void 0, Data.params.Nlinks.Lan.More.Text, ' +'))))), _jsx('div', {
 	      className: Data.params.Lan.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
@@ -22643,20 +22643,20 @@
 	      className: 'input-group'
 	    }, void 0, _ref14, _jsx('div', {
 	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
+	    }, void 0, _jsx('button', {
 	      className: 'button small secondary disabled'
 	    }, void 0, Data.params.Memn.Absolute)), _jsx('div', {
 	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
+	    }, void 0, _jsx('button', {
 	      href: Data.params.Nlinks.Memn.Less.Href,
 	      onClick: this.handleClick,
-	      className: "text-nowrap button small success " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : "")
+	      className: "text-nowrap button small " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : "")
 	    }, void 0, '- ', Data.params.Nlinks.Memn.Less.Text)), _jsx('div', {
 	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
+	    }, void 0, _jsx('button', {
 	      href: Data.params.Nlinks.Memn.More.Href,
 	      onClick: this.handleClick,
-	      className: "text-nowrap button small success " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : "")
+	      className: "text-nowrap button small " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : "")
 	    }, void 0, Data.params.Nlinks.Memn.More.Text, ' +'))))), _jsx('div', {
 	      className: Data.params.Memn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
@@ -22731,20 +22731,20 @@
 	      className: 'input-group'
 	    }, void 0, _ref17, _jsx('div', {
 	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
+	    }, void 0, _jsx('button', {
 	      className: 'button small secondary disabled'
 	    }, void 0, Data.params.Psn.Absolute)), _jsx('div', {
 	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
+	    }, void 0, _jsx('button', {
 	      href: Data.params.Nlinks.Psn.Less.Href,
 	      onClick: this.handleClick,
-	      className: "text-nowrap button small success " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : "")
+	      className: "text-nowrap button small " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : "")
 	    }, void 0, '- ', Data.params.Nlinks.Psn.Less.Text)), _jsx('div', {
 	      className: 'input-group-button'
-	    }, void 0, _jsx('a', {
+	    }, void 0, _jsx('button', {
 	      href: Data.params.Nlinks.Psn.More.Href,
 	      onClick: this.handleClick,
-	      className: "text-nowrap button small success " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : "")
+	      className: "text-nowrap button small " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : "")
 	    }, void 0, Data.params.Nlinks.Psn.More.Text, ' +'))))), _jsx('div', {
 	      className: Data.params.Psn.Absolute == 0 ? "hide" : ""
 	    }, void 0, _jsx('div', {
