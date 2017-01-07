@@ -11,6 +11,7 @@ import (
 	"strings"
 	"sync"
 	"syscall"
+	"unicode"
 
 	"github.com/influxdata/toml"
 	"github.com/influxdata/toml/ast"
@@ -247,32 +248,49 @@ func loadConfig(c *config.Config, send <-chan chan string, fsthp *setonce) error
 	return nil
 }
 
+func hasEsuffix(s, suffix string) bool {
+	return strings.HasSuffix(s, "="+suffix) || strings.HasSuffix(s, " = "+suffix)
+}
+func hasprefixE(s, prefix string) bool {
+	return strings.HasPrefix(s, prefix+"=") || strings.HasPrefix(s, prefix+" = ")
+}
+
 func printableConfigText(text string) string {
 	lines := strings.Split(text, "\n")
 	var newlines []string
 rangelines:
-	for i := range lines {
+	for i, line := range lines {
+
 		for _, suffix := range []string{
-			" = 0",
-			` = ""`,
-			" = []",
-			` = "0s"`,
-			" = false",
-			// `bind` default "" covered
-			"bind_port = 8050",
-			//? "quiet = true",
+			"0",
+			`""`,
+			"[]",
+			`"0s"`,
+			"false",
 		} {
-			if strings.HasSuffix(lines[i], suffix) {
+			if hasEsuffix(line, suffix) {
+				continue rangelines
+			}
+		}
+		for _, x := range []struct{ name, defvalue string }{
+			{"bind_port", "8050"},
+			{"round_interval", "true"},
+			{"quiet", "true"},
+		} {
+			if hasprefixE(strings.TrimLeftFunc(line, unicode.IsSpace), x.name) &&
+				(hasEsuffix(line, x.defvalue) /* || hasEsuffix(line, fmt.Sprintf("%q", x.defvalue)) */) {
 				continue rangelines
 			}
 		}
 
 		for _, replace := range [][2]string{
-			{"password = ", `"PASSWORD"`},
-			{"api_token = ", `"API_TOKEN"`},
+			{"password", `"PASSWORD"`},
+			{"api_token", `"API_TOKEN"`},
 		} {
-			if j := strings.Index(lines[i], replace[0]); j != -1 {
-				lines[i] = lines[i][:j] + replace[0] + replace[1]
+			if j := strings.Index(line, replace[0]+"="); j != -1 {
+				lines[i] = line[:j] + replace[0] + "=" + replace[1]
+			} else if j := strings.Index(line, replace[0]+" = "); j != -1 {
+				lines[i] = line[:j] + replace[0] + " = " + replace[1]
 			}
 		}
 		newlines = append(newlines, lines[i])
