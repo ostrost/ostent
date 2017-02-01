@@ -19,13 +19,14 @@ Only in ../vendor/github.com/influxdata/telegraf/internal/../agent: accumulator_
 diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/internal/../agent/agent.go ./agent/agent.go
 --- ../vendor/github.com/influxdata/telegraf/internal/../agent/agent.go
 +++ ./agent/agent.go
-@@ -9,9 +9,10 @@
+@@ -9,10 +9,11 @@
  	"time"
  
  	"github.com/influxdata/telegraf"
 -	"github.com/influxdata/telegraf/internal"
 -	"github.com/influxdata/telegraf/internal/config"
 -	"github.com/influxdata/telegraf/internal/models"
+ 	"github.com/influxdata/telegraf/selfstat"
 +
 +	"github.com/ostrost/ostent/internal"
 +	"github.com/ostrost/ostent/internal/config"
@@ -33,17 +34,15 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  )
  
  // Agent runs telegraf and collects data based on the given config
-@@ -122,8 +123,10 @@
- 		gatherWithTimeout(shutdown, input, acc, interval)
- 		elapsed := time.Since(start)
- 
-+		if a.Config.Agent.Debug {
- 		log.Printf("D! Input [%s] gathered metrics, (%s interval) in %s\n",
- 			input.Name(), interval, elapsed)
-+		}
- 
- 		select {
- 		case <-shutdown:
+@@ -45,6 +46,8 @@
+ // Connect connects to all configured outputs
+ func (a *Agent) Connect() error {
+ 	for _, o := range a.Config.Outputs {
++		o.Quiet = a.Config.Agent.Quiet
++
+ 		switch ot := o.Output.(type) {
+ 		case telegraf.ServiceOutput:
+ 			if err := ot.Start(); err != nil {
 Only in ../vendor/github.com/influxdata/telegraf/internal/../agent: agent_test.go
 Only in .: README.org
 Only in .: agent
@@ -153,16 +152,48 @@ Only in ../vendor/github.com/influxdata/telegraf/internal/models: running_input_
 diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/internal/models/running_output.go ./models/running_output.go
 --- ../vendor/github.com/influxdata/telegraf/internal/models/running_output.go
 +++ ./models/running_output.go
-@@ -5,7 +5,8 @@
+@@ -5,9 +5,10 @@
  	"time"
  
  	"github.com/influxdata/telegraf"
 -	"github.com/influxdata/telegraf/internal/buffer"
+ 	"github.com/influxdata/telegraf/metric"
+ 	"github.com/influxdata/telegraf/selfstat"
 +
 +	"github.com/ostrost/ostent/internal/buffer"
  )
  
  const (
+@@ -23,6 +24,7 @@
+ 	Name              string
+ 	Output            telegraf.Output
+ 	Config            *OutputConfig
++	Quiet             bool
+ 	MetricBufferLimit int
+ 	MetricBatchSize   int
+ 
+@@ -119,8 +121,10 @@
+ // Write writes all cached points to this output.
+ func (ro *RunningOutput) Write() error {
+ 	nFails, nMetrics := ro.failMetrics.Len(), ro.metrics.Len()
++	if !ro.Quiet {
+ 	log.Printf("D! Output [%s] buffer fullness: %d / %d metrics. ",
+ 		ro.Name, nFails+nMetrics, ro.MetricBufferLimit)
++	}
+ 	ro.BufferSize.Incr(int64(nFails + nMetrics))
+ 	var err error
+ 	if !ro.failMetrics.IsEmpty() {
+@@ -170,8 +174,10 @@
+ 	err := ro.Output.Write(metrics)
+ 	elapsed := time.Since(start)
+ 	if err == nil {
++		if !ro.Quiet {
+ 		log.Printf("D! Output [%s] wrote batch of %d metrics in %s\n",
+ 			ro.Name, nMetrics, elapsed)
++		}
+ 		ro.MetricsWritten.Incr(int64(nMetrics))
+ 		ro.BufferSize.Incr(-int64(nMetrics))
+ 		ro.WriteTime.Incr(elapsed.Nanoseconds())
 Only in ../vendor/github.com/influxdata/telegraf/internal/models: running_output_test.go
 Only in ../vendor/github.com/influxdata/telegraf/internal/models: running_processor_test.go
 Only in .: plugins

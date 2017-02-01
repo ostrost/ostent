@@ -34,8 +34,8 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  
  	"github.com/shirou/gopsutil/process"
  
-@@ -23,14 +24,14 @@
- 	User        string
+@@ -24,14 +25,14 @@
+ 	PidTag      bool
  
  	// pidmap maps a pid to a process object, so we don't recreate every gather
 -	pidmap map[int32]*process.Process
@@ -51,7 +51,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  		tagmap: make(map[int32]map[string]string),
  	}
  }
-@@ -64,14 +65,21 @@
+@@ -67,6 +68,7 @@
  }
  
  func (p *Procstat) Gather(acc telegraf.Accumulator) error {
@@ -59,9 +59,10 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	err := p.createProcesses()
  	if err != nil {
  		log.Printf("E! Error: procstat getting process, exe: [%s] pidfile: [%s] pattern: [%s] user: [%s] %s",
- 			p.Exe, p.PidFile, p.Pattern, p.User, err.Error())
- 	} else {
- 		for pid, proc := range p.pidmap {
+@@ -76,8 +78,14 @@
+ 			if p.PidTag {
+ 				p.tagmap[pid]["pid"] = fmt.Sprint(pid)
+ 			}
 -			p := NewSpecProcessor(p.ProcessName, p.Prefix, pid, acc, proc, p.tagmap[pid])
 -			p.pushMetrics()
 +			sp := NewSpecProcessor(p.ProcessName, p.Prefix, pid, acc, proc, p.tagmap[pid])
@@ -75,7 +76,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  		}
  	}
  
-@@ -90,10 +98,10 @@
+@@ -96,10 +104,10 @@
  	for _, pid := range pids {
  		_, ok := p.pidmap[pid]
  		if !ok {
@@ -88,7 +89,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  				errstring += err.Error() + " "
  			}
  		}
-@@ -118,6 +126,8 @@
+@@ -124,6 +132,8 @@
  		pids, err = p.pidsFromPattern()
  	} else if p.User != "" {
  		pids, err = p.pidsFromUser()
@@ -97,7 +98,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	} else {
  		err = fmt.Errorf("Either exe, pid_file, user, or pattern has to be specified")
  	}
-@@ -125,6 +135,16 @@
+@@ -131,6 +141,16 @@
  	return pids, err
  }
  
@@ -114,7 +115,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  func (p *Procstat) pidsFromFile() ([]int32, error) {
  	var out []int32
  	var outerr error
-@@ -228,7 +248,7 @@
+@@ -234,7 +254,7 @@
  }
  
  func init() {
@@ -127,22 +128,19 @@ Only in ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat: procst
 diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat/spec_processor.go ../procstat_ostent/spec_processor.go
 --- ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat/spec_processor.go
 +++ ../procstat_ostent/spec_processor.go
-@@ -1,12 +1,6 @@
+@@ -1,10 +1,6 @@
 -package procstat
 +package procstat_ostent
  
--import (
+ import (
 -	"time"
 -
 -	"github.com/shirou/gopsutil/process"
 -
--	"github.com/influxdata/telegraf"
--)
-+import "github.com/influxdata/telegraf"
+ 	"github.com/influxdata/telegraf"
+ )
  
- type SpecProcessor struct {
- 	Prefix string
-@@ -14,7 +8,7 @@
+@@ -14,7 +10,7 @@
  	tags   map[string]string
  	fields map[string]interface{}
  	acc    telegraf.Accumulator
@@ -151,7 +149,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  }
  
  func NewSpecProcessor(
-@@ -22,7 +16,7 @@
+@@ -22,7 +18,7 @@
  	prefix string,
  	pid int32,
  	acc telegraf.Accumulator,
@@ -160,7 +158,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	tags map[string]string,
  ) *SpecProcessor {
  	if processName != "" {
-@@ -43,27 +37,51 @@
+@@ -43,7 +39,7 @@
  	}
  }
  
@@ -169,8 +167,9 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	var prefix string
  	if p.Prefix != "" {
  		prefix = p.Prefix + "_"
+@@ -55,20 +51,44 @@
+ 		fields["pid"] = p.pid
  	}
- 	fields := map[string]interface{}{"pid": p.pid}
  
 +	uids, err := p.proc.Uids()
 +	if err != nil {
@@ -213,7 +212,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	}
  
  	io, err := p.proc.IOCounters()
-@@ -72,12 +90,16 @@
+@@ -77,12 +97,16 @@
  		fields[prefix+"write_count"] = io.WriteCount
  		fields[prefix+"read_bytes"] = io.ReadBytes
  		fields[prefix+"write_bytes"] = io.WriteBytes
@@ -230,7 +229,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  		fields[prefix+"cpu_time_idle"] = cpu_time.Idle
  		fields[prefix+"cpu_time_nice"] = cpu_time.Nice
  		fields[prefix+"cpu_time_iowait"] = cpu_time.Iowait
-@@ -87,19 +109,31 @@
+@@ -92,19 +116,31 @@
  		fields[prefix+"cpu_time_stolen"] = cpu_time.Stolen
  		fields[prefix+"cpu_time_guest"] = cpu_time.Guest
  		fields[prefix+"cpu_time_guest_nice"] = cpu_time.GuestNice

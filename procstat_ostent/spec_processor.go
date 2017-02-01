@@ -1,6 +1,8 @@
 package procstat_ostent
 
-import "github.com/influxdata/telegraf"
+import (
+	"github.com/influxdata/telegraf"
+)
 
 type SpecProcessor struct {
 	Prefix string
@@ -42,7 +44,12 @@ func (p *SpecProcessor) pushMetrics() error {
 	if p.Prefix != "" {
 		prefix = p.Prefix + "_"
 	}
-	fields := map[string]interface{}{"pid": p.pid}
+	fields := map[string]interface{}{}
+
+	//If pid is not present as a tag, include it as a field.
+	if _, pidInTags := p.tags["pid"]; !pidInTags {
+		fields["pid"] = p.pid
+	}
 
 	uids, err := p.proc.Uids()
 	if err != nil {

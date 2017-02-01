@@ -1,5 +1,5 @@
-hash: 2c1feae49f642c8f6af402f51f1ff83b2f7ea4b55d349b8bb80727e336d3fb07
-updated: 2017-01-03T09:08:08.011030012Z
+hash: 9c0bba9e6970d11988d7296984e3f1eefd76a2ae29818c722e1eee0c0a14aa37
+updated: 2017-02-01T11:01:48.631671001Z
 imports:
 - name: github.com/blang/semver
   version: 60ec3488bfea7cca02b021d106d9911120d25fe9
@@ -66,10 +66,11 @@ imports:
   - models
   - pkg/escape
 - name: github.com/influxdata/telegraf
-  version: 3da3a2279108d02c2158782794532de7cd7deacd
+  version: b2c1d98cff5a58d5ded3e74741c6bc32d6e789ee
   subpackages:
   - filter
   - internal
+  - metric
   - plugins/aggregators
   - plugins/inputs
   - plugins/inputs/system
@@ -131,7 +132,7 @@ imports:
 - name: github.com/russross/blackfriday
   version: 93622da34e54fb6529bfb7c57e710f37a8d9cbd8
 - name: github.com/shirou/gopsutil
-  version: 4d0c402af66c78735c5ccf820dc2ca7de5e4ff08
+  version: 1516eb9ddc5e61ba58874047a98f8b44b5e585e8
   subpackages:
   - cpu
   - disk

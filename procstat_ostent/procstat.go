@@ -22,6 +22,7 @@ type Procstat struct {
 	Prefix      string
 	ProcessName string
 	User        string
+	PidTag      bool
 
 	// pidmap maps a pid to a process object, so we don't recreate every gather
 	pidmap map[int32]proc
@@ -54,6 +55,8 @@ var sampleConfig = `
   prefix = ""
   ## comment this out if you want raw cpu_time stats
   fielddrop = ["cpu_time_*"]
+  ## This is optional; moves pid into a tag instead of a field
+  pid_tag = false
 `
 
 func (_ *Procstat) SampleConfig() string {
@@ -72,6 +75,9 @@ func (p *Procstat) Gather(acc telegraf.Accumulator) error {
 			p.Exe, p.PidFile, p.Pattern, p.User, err.Error())
 	} else {
 		for pid, proc := range p.pidmap {
+			if p.PidTag {
+				p.tagmap[pid]["pid"] = fmt.Sprint(pid)
+			}
 			sp := NewSpecProcessor(p.ProcessName, p.Prefix, pid, acc, proc, p.tagmap[pid])
 			if err := sp.pushMetrics(); err != nil && isNotExist(err) {
 				delete(p.pidmap, pid)
