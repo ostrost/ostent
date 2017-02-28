@@ -7,10 +7,6 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
-body {
-  margin: 0;
-}
-
 header {
   display: block;
 }
@@ -22,7 +18,6 @@ h1 {
 
 hr {
   box-sizing: content-box;
-  height: 0;
   overflow: visible;
 }
 
@@ -47,10 +42,6 @@ b {
 
 dfn {
   font-style: italic;
-}
-
-small {
-  font-size: 80%;
 }
 
 button,input {
@@ -764,8 +755,8 @@ ul ul {
     content: " (" attr(href) ")";
   }
 
-  a[href^='#']:after,  a[href^='javascript:']:after {
-    content: '';
+  a[href^="#"]:after,  a[href^="javascript:"]:after {
+    content: "";
   }
 
   pre {
@@ -1008,7 +999,7 @@ label {
 
 .button-group:after,.button-group:before {
   display: table;
-  content: ' ';
+  content: " ";
   flex-basis: 0;
   order: 1;
 }
@@ -1108,7 +1099,7 @@ label {
 
 .menu>li>a {
   display: flex;
-  flex-flow: row;
+  flex-flow: row nowrap;
 }
 
 .menu>li>a i {
@@ -1142,7 +1133,7 @@ label {
 }
 
 .menu.icon-top>li>a {
-  flex-flow: column;
+  flex-flow: column nowrap;
 }
 
 .menu.icon-top>li>a i {
@@ -1178,7 +1169,7 @@ label {
   height: 2px;
   background: #fefefe;
   box-shadow: 0 7px 0 #fefefe,0 14px 0 #fefefe;
-  content: '';
+  content: "";
 }
 
 .menu-icon:hover:after {

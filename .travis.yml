@@ -4,7 +4,7 @@ sudo: false
 env:
   global:
     - DPL_DIR=~/deploy # ~/deploy is outside the clone dir
-    - GO_VERSION: '1.7.5'
+    - GO_VERSION: '1.8'
 install:
   - source ./tools/sh/env.sh install_1
   - source ./tools/sh/env.sh install_2 $TRAVIS_REPO_SLUG

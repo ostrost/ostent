@@ -172,7 +172,17 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	MetricBufferLimit int
  	MetricBatchSize   int
  
-@@ -119,8 +121,10 @@
+@@ -90,9 +92,6 @@
+ // AddMetric adds a metric to the output. This function can also write cached
+ // points if FlushBufferWhenFull is true.
+ func (ro *RunningOutput) AddMetric(m telegraf.Metric) {
+-	if m == nil {
+-		return
+-	}
+ 	// Filter any tagexclude/taginclude parameters before adding metric
+ 	if ro.Config.Filter.IsActive() {
+ 		// In order to filter out tags, we need to create a new metric, since
+@@ -122,8 +121,10 @@
  // Write writes all cached points to this output.
  func (ro *RunningOutput) Write() error {
  	nFails, nMetrics := ro.failMetrics.Len(), ro.metrics.Len()
@@ -183,7 +193,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	ro.BufferSize.Incr(int64(nFails + nMetrics))
  	var err error
  	if !ro.failMetrics.IsEmpty() {
-@@ -170,8 +174,10 @@
+@@ -173,8 +174,10 @@
  	err := ro.Output.Write(metrics)
  	elapsed := time.Since(start)
  	if err == nil {
