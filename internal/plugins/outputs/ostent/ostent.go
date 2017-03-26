@@ -71,7 +71,7 @@ func humanB(value int64, round *uint64) string {
 
 func newFields(m telegraf.Metric) *fields { return &fields{m.Fields()} }
 
-// methods have pointer reciever not to copy every time.
+// methods have pointer receiver not to copy every time.
 type fields struct{ mfields map[string]interface{} }
 
 func (fs *fields) decodeFloat64(key string, p *float64) bool {

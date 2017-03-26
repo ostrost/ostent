@@ -46,7 +46,7 @@ func run(*cobra.Command, []string) error {
 
 func main() {
 	cmd.RootCmd.RunE = run
-	cmd.RootCmd.Execute()
+	cmd.Execute()
 }
 
 var (
@@ -208,7 +208,7 @@ func newerVersion() (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return "", errors.New("The GitHub /latest page did not return a redirect.")
+		return "", errors.New("/latest GitHub page did not return a redirect")
 	}
 	urlerr, ok := err.(*url.Error)
 	if !ok {

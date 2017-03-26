@@ -11,6 +11,8 @@ import (
 	"text/template"
 )
 
+// Convert is the main templatepipe func.
+// nolint: gocyclo
 func Convert(inputTemplateFile, definesFromFile string,
 	htmlFuncs /*, jsxlFuncs */ map[string]interface{}, outputFile string) error {
 	input, err := template.ParseFiles(inputTemplateFile)
@@ -44,14 +46,14 @@ func Convert(inputTemplateFile, definesFromFile string,
 		}
 	}
 
-	jdata := struct{ Defines []Define }{}
+	jdata := struct{ Defines []define }{}
 	for _, t := range definesTemplates {
 		if tname := t.Name(); strings.HasPrefix(tname, "define_") {
-			define, err := MakeDefine(definesOnly, tname, tname)
+			def, err := makeDefine(definesOnly, tname, tname)
 			if err != nil {
 				return err
 			}
-			jdata.Defines = append(jdata.Defines, define)
+			jdata.Defines = append(jdata.Defines, def)
 		}
 	}
 	buf := new(bytes.Buffer)
@@ -65,7 +67,7 @@ func Convert(inputTemplateFile, definesFromFile string,
 	return ioutil.WriteFile(outputFile, buf.Bytes(), 0644)
 }
 
-type Define struct {
+type define struct {
 	ShortName  string
 	Iterable   string
 	NeedList   bool
@@ -80,29 +82,30 @@ func (st SortableTemplates) Len() int           { return len(st) }
 func (st SortableTemplates) Less(i, j int) bool { return st[i].Name() < st[j].Name() }
 func (st SortableTemplates) Swap(i, j int)      { st[i], st[j] = st[j], st[i] }
 
-func MakeDefine(definesOnly *template.Template, shortname, fullname string) (Define, error) {
-	define := Define{ShortName: shortname}
+// nolint: gocyclo
+func makeDefine(definesOnly *template.Template, shortname, fullname string) (define, error) {
+	def := define{ShortName: shortname}
 	t, err := definesOnly.Clone()
 	if err != nil {
-		return define, err
+		return def, err
 	}
 	if t, err = t.Parse(fmt.Sprintf(`{{template %q .}}`, fullname)); err != nil {
-		return define, err
+		return def, err
 	}
 
-	data := Data(CurlyNotMethod, t)
+	data := templateData(curlyNotMethod, t)
 	if nota, ok := data.(Nota); ok {
 		for k, v := range nota["Data"].(Nota) {
 			if k == "params" {
-				define.UsesParams = true
+				def.UsesParams = true
 			} else if k != "." {
-				if define.Iterable != "" {
-					return define, fmt.Errorf("Key %q is second: iterable already by %q", k, define.Iterable)
+				if def.Iterable != "" {
+					return def, fmt.Errorf("Key %q is second: iterable already by %q", k, def.Iterable)
 				}
-				define.Iterable = k
+				def.Iterable = k
 				if n, ok := v.(Nota); ok {
 					if _, ok := n["List"]; ok {
-						define.NeedList = true
+						def.NeedList = true
 					}
 				}
 			}
@@ -110,17 +113,17 @@ func MakeDefine(definesOnly *template.Template, shortname, fullname string) (Def
 	}
 	buf := new(bytes.Buffer)
 	if err := t.Execute(buf, data); err != nil {
-		return define, err
+		return def, err
 	}
-	define.JSX = strings.Replace(buf.String(), "class=", "className=", -1)
-	return define, nil
+	def.JSX = strings.Replace(buf.String(), "class=", "className=", -1)
+	return def, nil
 }
 
 var vtype = reflect.TypeOf(Nota(nil))
 
-func CurlyNotMethod(parent, key, full string) interface{} {
+func curlyNotMethod(parent, key, full string) interface{} {
 	if _, ok := vtype.MethodByName(key); ok {
 		return nil
 	}
-	return CurlyX(parent, key, full)
+	return curly(parent, key, full)
 }

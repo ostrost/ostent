@@ -139,6 +139,7 @@ func (o *setonce) change(host string, port int) (string, int, bool) {
 	return host, port, false
 }
 
+// MainAgent is the main agent job.
 func MainAgent(send chan chan string) {
 	if err := mainAgent(send, new(setonce)); err != nil {
 		fmt.Println(err)
@@ -197,6 +198,7 @@ func mainAgent(send <-chan chan string, fsthp *setonce) error {
 	return nil
 }
 
+// nolint: gocyclo
 func loadConfig(c *config.Config, send <-chan chan string, fsthp *setonce) error {
 	c.Agent.Quiet = true // patch work
 
@@ -204,8 +206,8 @@ func loadConfig(c *config.Config, send <-chan chan string, fsthp *setonce) error
 	if err != nil {
 		return err
 	} else if tab != nil {
-		if err := c.LoadTable("/runtime/config", tab); err != nil {
-			return err
+		if err2 := c.LoadTable("/runtime/config", tab); err2 != nil {
+			return err2
 		}
 	}
 
@@ -432,6 +434,7 @@ func printableFilter(f models.Filter) *printFilter {
 	return &p
 }
 
+// nolint: gocyclo
 func normalize(cf string, tab *ast.Table) error {
 	var (
 		ins  = &ast.Table{Fields: make(map[string]interface{})}
@@ -476,8 +479,9 @@ func normalize(cf string, tab *ast.Table) error {
 		ins.Fields[iname] = ctab
 	}
 
+	const ostentOutput = "ostent"
 	for oname, ctext := range map[string]string{
-		"ostent": ``,
+		ostentOutput: ``,
 	} {
 		if _, ok := outs.Fields[oname]; ok {
 			continue
@@ -497,7 +501,7 @@ func normalize(cf string, tab *ast.Table) error {
 
 	var nonostentOutputs int
 	for name := range outs.Fields {
-		if name != "ostent" {
+		if name != ostentOutput {
 			nonostentOutputs++
 		}
 	}
@@ -511,7 +515,7 @@ namedrop = ["procstat", "procstat_ostent"]
 			return err
 		}
 		for name, value := range outs.Fields {
-			if name != "ostent" {
+			if name != ostentOutput {
 				setfield(value, "namedrop", commondrop.Fields["namedrop"])
 				setfield(value, "tagdrop", commondrop.Fields["tagdrop"])
 			}

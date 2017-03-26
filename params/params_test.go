@@ -19,6 +19,7 @@ func TestBoolLinks(t *testing.T) {
 	}
 }
 
+// nolint: gocyclo
 func TestLinks(t *testing.T) {
 	req, err := http.NewRequest("GET", "http://localhost/index?dfk=2", nil)
 	if err != nil {

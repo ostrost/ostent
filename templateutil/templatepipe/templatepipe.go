@@ -7,117 +7,118 @@ import (
 	"text/template/parse"
 )
 
-// Uncurl is required by templatefunc.Uncurler interface.
-func (n Nota) Uncurl() string   { return Uncurl(n.String()) }
-func (c Curled) Uncurl() string { return Uncurl(string(c)) }
-
-func Uncurl(s string) string {
+/*
+func (n Nota) uncurl() string   { return uncurl(n.String()) }
+func (c curled) uncurl() string { return uncurl(string(c)) }
+func uncurl(s string) string {
 	return strings.TrimSuffix(strings.TrimPrefix(s, "{"), "}")
-}
+} // */
 
-type CurlyFunc func(string, string, string) interface{}
+type curlyFunc func(string, string, string) interface{}
 
-func Data(cf CurlyFunc, root *template.Template) interface{} {
+func templateData(cf curlyFunc, root *template.Template) interface{} {
 	if root == nil || root.Tree == nil || root.Tree.Root == nil {
 		return "{}"
 	}
-	c := Context{Vars: make(map[string][]string)}
-	for _, node := range root.Tree.Root.Nodes {
-		c.Node(node, NodeArgs{Template: root})
+	c := context{vars: make(map[string][]string)}
+	for _, n := range root.Tree.Root.Nodes {
+		c.node(n, nodeArgs{template: root})
 	}
 	if cf == nil {
-		cf = CurlyX
+		cf = curly
 	}
-	return Encurl(cf, c.Dotted, 0)
+	return encurl(cf, c.dotted, 0)
 }
 
-type NodeArgs struct {
-	Template    *template.Template
-	PrefixWords []string
-	Decl        []*parse.VariableNode
+type nodeArgs struct {
+	template    *template.Template
+	prefixWords []string
+	decl        []*parse.VariableNode
 }
 
-type Context struct {
-	Dotted Dotted              // end result
-	Vars   map[string][]string // for vars kept between Node* methods calls
+type context struct {
+	dotted dotted              // end result
+	vars   map[string][]string // for vars kept between Node* methods calls
 }
 
-func (c *Context) Touch(na NodeArgs, words []string) {
-	c.Dotted.Append(words, na.PrefixWords)
-	if len(na.Decl) > 0 && len(na.Decl[0].Ident) > 0 {
-		c.Vars[na.Decl[0].Ident[0]] = words
+func (c *context) touch(na nodeArgs, words []string) {
+	c.dotted.append(words, na.prefixWords)
+	if len(na.decl) > 0 && len(na.decl[0].Ident) > 0 {
+		c.vars[na.decl[0].Ident[0]] = words
 	}
 }
 
-func (c *Context) Ranging(rangeNode *parse.RangeNode, na NodeArgs) {
+func (c *context) ranging(rangeNode *parse.RangeNode, na nodeArgs) {
 	var (
 		decl  = rangeNode.Pipe.Decl[len(rangeNode.Pipe.Decl)-1].String()
 		field = rangeNode.Pipe.Cmds[0].Args[0].(*parse.FieldNode)
 	)
-	leaf := c.Dotted.Append(field.Ident, na.PrefixWords)
-	leaf.Keys = append(leaf.Keys, getKeys(decl, rangeNode.List)...)
-	leaf.Decl = decl // redefined $
-	leaf.Ranged = true
+	leaf := c.dotted.append(field.Ident, na.prefixWords)
+	leaf.keys = append(leaf.keys, getKeys(decl, rangeNode.List)...)
+	leaf.decl = decl // redefined $
+	leaf.ranged = true
 }
 
-func (c *Context) Node(node parse.Node, na NodeArgs) {
+// nolint: gocyclo
+func (c *context) node(node parse.Node, na nodeArgs) {
 	switch node.Type() {
 	// straightforward recursives:
 	case parse.NodeCommand:
 		for _, n := range node.(*parse.CommandNode).Args {
-			c.Node(n, na)
+			c.node(n, na)
 		}
 	case parse.NodeIf:
 		fi := node.(*parse.IfNode)
 		if fi.List != nil {
-			c.Node(fi.List, na)
+			c.node(fi.List, na)
 		}
 		if fi.ElseList != nil {
-			c.Node(fi.ElseList, na)
+			c.node(fi.ElseList, na)
 		}
 	case parse.NodeList:
 		for _, n := range node.(*parse.ListNode).Nodes {
-			c.Node(n, na)
+			c.node(n, na)
 		}
 	case parse.NodePipe:
 		for _, n := range node.(*parse.PipeNode).Cmds {
-			c.Node(n, na)
+			c.node(n, na)
 		}
 	case parse.NodeWith:
 		with := node.(*parse.WithNode)
-		c.Node(with.Pipe, na)
+		c.node(with.Pipe, na)
 		if with.List != nil {
-			c.Node(with.List, na)
+			c.node(with.List, na)
 		}
 		if with.ElseList != nil {
-			c.Node(with.ElseList, na)
+			c.node(with.ElseList, na)
 		}
 
 	// other recursives:
 	case parse.NodeAction:
 		an := node.(*parse.ActionNode)
-		na.Decl = an.Pipe.Decl // !
-		c.Node(an.Pipe, na)
+		na.decl = an.Pipe.Decl // !
+		c.node(an.Pipe, na)
 	case parse.NodeTemplate:
 		t := node.(*parse.TemplateNode)
-		c.Node(t.Pipe, na)
-		if s := na.Template.Lookup(t.Name); s != nil && s.Tree != nil && s.Tree.Root != nil {
-			c.Node(s.Tree.Root, na)
+		c.node(t.Pipe, na)
+		if s := na.template.Lookup(t.Name); s != nil && s.Tree != nil && s.Tree.Root != nil {
+			c.node(s.Tree.Root, na)
 		}
 
 	// touchers:
 	case parse.NodeRange:
-		c.Ranging(node.(*parse.RangeNode), na)
+		c.ranging(node.(*parse.RangeNode), na)
 	case parse.NodeField:
-		c.Touch(na, node.(*parse.FieldNode).Ident)
+		c.touch(na, node.(*parse.FieldNode).Ident)
 	case parse.NodeVariable:
 		v := node.(*parse.VariableNode)
-		if words, ok := c.Vars[v.Ident[0]]; ok {
-			c.Touch(na, append(words, v.Ident[1:]...))
+		if words, ok := c.vars[v.Ident[0]]; ok {
+			c.touch(na, append(words, v.Ident[1:]...))
 		}
 	}
 }
 
+// nolint: gocyclo
 func getKeys(decl string, node parse.Node) (keys []string) {
 	switch node.Type() {
 	case parse.NodeAction:
@@ -127,16 +128,16 @@ func getKeys(decl string, node parse.Node) (keys []string) {
 	case parse.NodeTemplate:
 		return getKeys(decl, node.(*parse.TemplateNode).Pipe)
 	case parse.NodeCommand:
-		for _, arg := range node.(*parse.CommandNode).Args {
-			keys = append(keys, getKeys(decl, arg)...)
+		for _, n := range node.(*parse.CommandNode).Args {
+			keys = append(keys, getKeys(decl, n)...)
 		}
 	case parse.NodeList:
 		for _, n := range node.(*parse.ListNode).Nodes {
 			keys = append(keys, getKeys(decl, n)...)
 		}
 	case parse.NodePipe:
-		for _, cmd := range node.(*parse.PipeNode).Cmds {
-			keys = append(keys, getKeys(decl, cmd)...)
+		for _, n := range node.(*parse.PipeNode).Cmds {
+			keys = append(keys, getKeys(decl, n)...)
 		}
 	case parse.NodeVariable:
 		ident := node.(*parse.VariableNode).Ident
@@ -148,49 +149,49 @@ func getKeys(decl string, node parse.Node) (keys []string) {
 	return
 }
 
-// Dotted is a tree.
-type Dotted struct {
-	Parent *Dotted
-	Leaves []*Dotted // template/parse has nodes, we ought to have leaves
-	Name   string
+// dotted is a tree.
+type dotted struct {
+	parent *dotted
+	leaves []*dotted // template/parse has nodes, we ought to have leaves
+	name   string
 
-	Ranged bool
-	Keys   []string
-	Decl   string
+	ranged bool
+	keys   []string
+	decl   string
 }
 
-// Append adds words into d.
-func (d *Dotted) Append(words []string, prefix []string) *Dotted {
+// append adds words into d.
+func (d *dotted) append(words []string, prefix []string) *dotted {
 	if prefix != nil {
 		words = append(prefix, words...)
 	}
 	if len(words) == 0 {
 		return d
 	}
-	if l := d.Leave(words[0]); l != nil {
-		return l.Append(words[1:], nil)
+	if l := d.leave(words[0]); l != nil {
+		return l.append(words[1:], nil)
 	}
-	n := &Dotted{Parent: d, Name: words[0]}
-	d.Leaves = append(d.Leaves, n)
-	return n.Append(words[1:], nil)
+	n := &dotted{parent: d, name: words[0]}
+	d.leaves = append(d.leaves, n)
+	return n.append(words[1:], nil)
 }
 
-// Find traverses d to search by words. Used by tests.
-func (d *Dotted) Find(words []string) *Dotted {
+// find traverses d to search by words. Used by tests.
+func (d *dotted) find(words []string) *dotted {
 	if len(words) == 0 {
 		return d
 	}
-	for _, l := range d.Leaves {
-		if l.Name == words[0] {
-			return l.Find(words[1:])
+	for _, l := range d.leaves {
+		if l.name == words[0] {
+			return l.find(words[1:])
 		}
 	}
 	return nil
 }
 
-func (d Dotted) Leave(name string) *Dotted {
-	for _, l := range d.Leaves {
-		if l.Name == name {
+func (d dotted) leave(name string) *dotted {
+	for _, l := range d.leaves {
+		if l.name == name {
 			return l
 		}
 	}
@@ -205,62 +206,56 @@ func (n Nota) String() string {
 	if s, ok := v.(string); ok {
 		return s
 	}
-	return string(v.(Curled))
+	return string(v.(curled))
 }
 
-func (d *Dotted) Notation() (string, string, string) {
-	if d == nil || d.Name == "" {
+func (d *dotted) notation() (string, string, string) {
+	if d == nil || d.name == "" {
 		return "", "", ""
 	}
-	if _, _, s := d.Parent.Notation(); s != "" {
-		return s, d.Name, s + "." + d.Name
+	if _, _, s := d.parent.notation(); s != "" {
+		return s, d.name, s + "." + d.name
 	}
-	return "", d.Name, d.Name
+	return "", d.name, d.name
 }
 
-func CurlyX(parent, key, full string) interface{} {
-	return Curly(parent, key, full)
-}
+func curly(_, _, full string) interface{} { return curled(curl(full)) }
 
-type Curled string
+type curled string
 
-func Curly(parent, key, full string) Curled {
-	return Curled(Curl(full))
-}
-
-func Curl(s string) string {
+func curl(s string) string {
 	if strings.HasSuffix(s, "HTML") {
 		return /* "{" + */ "<span dangerouslySetInnerHTML={{__html: " + s + "}} />" // + ".props.children}"
 	}
 	return "{" + s + "}"
 }
 
-// Encurl returns constructed Nota.
-func Encurl(cf CurlyFunc, parent Dotted, level int) interface{} {
-	if len(parent.Leaves) == 0 {
-		return cf(parent.Notation()) // may be nil
+// encurl returns constructed Nota.
+func encurl(cf curlyFunc, parent dotted, level int) interface{} {
+	if len(parent.leaves) == 0 {
+		return cf(parent.notation()) // may be nil
 	}
 	n := make(Nota)
-	for _, l := range parent.Leaves {
-		if l.Ranged {
-			if len(l.Keys) != 0 {
+	for _, l := range parent.leaves {
+		if l.ranged {
+			if len(l.keys) != 0 {
 				kv := make(map[string]Nota)
-				for _, k := range l.Keys {
-					if v := cf(l.Decl, k, l.Decl+"."+k); v != nil {
+				for _, k := range l.keys {
+					if v := cf(l.decl, k, l.decl+"."+k); v != nil {
 						kv[k] = make(Nota)
 						kv[k]["."] = v
 					}
 				}
 				if len(kv) != 0 {
-					n[l.Name] = []map[string]Nota{kv}
+					n[l.name] = []map[string]Nota{kv}
 				}
 			} else {
-				n[l.Name] = []string{}
+				n[l.name] = []string{}
 			}
-		} else if m := Encurl(cf, *l, level+1); m != nil {
-			n[l.Name] = m
+		} else if m := encurl(cf, *l, level+1); m != nil {
+			n[l.name] = m
 		}
 	}
-	_, _, n["."] = parent.Notation()
+	_, _, n["."] = parent.notation()
 	return n
 }

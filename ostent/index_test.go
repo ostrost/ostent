@@ -52,7 +52,7 @@ func Test_templatecomparison(t *testing.T) {
 		{`{{if .This }}That{{end}}`, struct{ This string }{""}, ""},
 		{`{{if .This }}That{{end}}`, struct{ This string }{"a"}, "That"},
 		{`{{if .This }}That{{end}}`, struct{ This *bool }{}, ""},
-		{`{{if .This }}Thta{{end}}`, struct{ This *bool }{newbool(true)}, "Thta"},
+		{`{{if .This }}That{{end}}`, struct{ This *bool }{newbool(true)}, "That"},
 		// {`{{if .This }}That{{end}}`, struct{ This *bool }{newbool(false)}, ""}, // should fail
 
 		{`{{not .This}}`, struct{ This *bool }{newbool(true)}, "false"},
