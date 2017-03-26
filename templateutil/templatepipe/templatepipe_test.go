@@ -40,7 +40,7 @@ func TestEncurl(t *testing.T) {
 		l2.ranged = true
 	}
 
-	v := encurl(curlyX, d, -1)
+	v := encurl(curly, d, -1)
 	c := v.(Nota)["a"].(Nota)["b"].(Nota)["c"].([]map[string]Nota)[0]
 	if expected := "{DECL.z}"; c["z"].String() != expected {
 		t.Errorf("encurl result mismatch: %q (expected %q)", c["z"], expected)
