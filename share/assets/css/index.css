@@ -141,6 +141,10 @@ button {
   outline: 0;
 }
 
+pre {
+  overflow: auto;
+}
+
 .row {
   max-width: 75rem;
   margin-right: auto;
@@ -168,7 +172,7 @@ button {
   }
 }
 
-.row.expanded {
+.row.expanded,.row:not(.expanded) .row {
   max-width: none;
 }
 
@@ -187,7 +191,8 @@ button {
 }
 
 .column.row.row {
-  display: flex;
+  float: none;
+  display: block;
 }
 
 .row .column.row.row {
@@ -966,7 +971,7 @@ label {
   cursor: not-allowed;
 }
 
-.button.disabled:focus,.button.disabled:hover,.button[disabled]:focus,.button[disabled]:hover {
+.button.disabled,.button.disabled:focus,.button.disabled:hover,.button[disabled],.button[disabled]:focus,.button[disabled]:hover {
   background-color: #1779ba;
   color: #fefefe;
 }
@@ -976,7 +981,7 @@ label {
   cursor: not-allowed;
 }
 
-.button.disabled.secondary:focus,.button.disabled.secondary:hover,.button[disabled].secondary:focus,.button[disabled].secondary:hover {
+.button.disabled.secondary,.button.disabled.secondary:focus,.button.disabled.secondary:hover,.button[disabled].secondary,.button[disabled].secondary:focus,.button[disabled].secondary:hover {
   background-color: #767676;
   color: #fefefe;
 }
