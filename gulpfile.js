@@ -37,9 +37,6 @@ var wpconf = {
   resolve: {
     root: [node_modules],
     //? extensions: ['', '.js', '.jsx', '.css', '.scss'],
-    alias: {
-      'react-prm': 'react/lib/ReactComponentWithPureRenderMixin.js'
-    }
   },
   module: {
     loaders: [
