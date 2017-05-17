@@ -1,6 +1,12 @@
-hash: 846cfce704090a6fb4e0aced8f0fece0e4fc641b53a07932cf7f8f41127d2159
-updated: 2017-02-28T20:51:42.193307321Z
+hash: 48702642b242550ebc0a8fa8a4ddc50727be24d88528e6abba9c54c4d602f941
+updated: 2017-05-17T08:38:41.915212509Z
 imports:
+- name: collectd.org
+  version: 2ce144541b8903101fb8f1483cc0497a68798122
+  subpackages:
+  - api
+  - cdtime
+  - network
 - name: github.com/blang/semver
   version: 60ec3488bfea7cca02b021d106d9911120d25fe9
 - name: github.com/cloudfoundry/gosigar
@@ -10,7 +16,7 @@ imports:
   subpackages:
   - md2man
 - name: github.com/davecgh/go-spew
-  version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
+  version: 346938d642f2ec3594ed81d874461961cd0faa76
   subpackages:
   - spew
 - name: github.com/facebookgo/clock
@@ -31,11 +37,15 @@ imports:
   subpackages:
   - oleutil
 - name: github.com/gobwas/glob
-  version: 49571a1557cd20e6a2410adc6421f85b66c730b5
+  version: bea32b9cd2d6f55753d94a28e959b13f0244797a
   subpackages:
+  - compiler
   - match
-  - runes
-  - strings
+  - syntax
+  - syntax/ast
+  - syntax/lexer
+  - util/runes
+  - util/strings
 - name: github.com/google/go-querystring
   version: 9235644dd9e52eeae6fa48efd539fdc351a0af53
   subpackages:
@@ -59,14 +69,8 @@ imports:
   - json/token
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
-- name: github.com/influxdata/influxdb
-  version: fc57c0f7c635df3873f3d64f0ed2100ddc94d5ae
-  subpackages:
-  - client/v2
-  - models
-  - pkg/escape
 - name: github.com/influxdata/telegraf
-  version: 3b6ffb344e5c03c1595d862282a6823ecb438cff
+  version: 2bc5594b44145368823d7aa78bfb753ab51e9235
   subpackages:
   - filter
   - internal
@@ -77,8 +81,10 @@ imports:
   - plugins/outputs
   - plugins/outputs/graphite
   - plugins/outputs/influxdb
+  - plugins/outputs/influxdb/client
   - plugins/outputs/librato
   - plugins/parsers
+  - plugins/parsers/collectd
   - plugins/parsers/graphite
   - plugins/parsers/influx
   - plugins/parsers/json
@@ -91,7 +97,7 @@ imports:
   - plugins/serializers/json
   - selfstat
 - name: github.com/influxdata/toml
-  version: ad49a5c2936f96b8f5943c3fdba47630ccf45a0d
+  version: 5d1d907f22ead1cd47adde17ceec5bda9cacaf8f
   subpackages:
   - .
   - ast
@@ -133,7 +139,7 @@ imports:
 - name: github.com/russross/blackfriday
   version: 93622da34e54fb6529bfb7c57e710f37a8d9cbd8
 - name: github.com/shirou/gopsutil
-  version: 1516eb9ddc5e61ba58874047a98f8b44b5e585e8
+  version: 70693b6a3da51a8a686d31f1b346077bbc066062
   subpackages:
   - cpu
   - disk
@@ -172,14 +178,16 @@ imports:
 - name: github.com/stretchr/objx
   version: cbeaeb16a013161a98496fad62933b1d21786672
 - name: github.com/stretchr/testify
-  version: 1f4a1643a57e798696635ea4c126e9127adb7d3c
+  version: 4d4bfba8f1d1027c4fdbe371823030df51419987
   subpackages:
   - assert
   - mock
 - name: golang.org/x/crypto
-  version: c197bcf24cde29d3f73c7b4ac6fd41f4384e8af6
+  version: dc137beb6cce2043eb6b5f223ab8bf51c32459f4
   subpackages:
   - curve25519
+  - ed25519
+  - ed25519/internal/edwards25519
   - ssh
 - name: golang.org/x/net
   version: 9bc2a3340c92c17a20edcd0080e93851ed58f5d5
@@ -190,10 +198,10 @@ imports:
   subpackages:
   - unix
 - name: golang.org/x/text
-  version: a71fd10341b064c10f4a81ceac72bcf70f26ea34
+  version: 506f9d5c962f284575e88337e7d9296d27e729d3
   subpackages:
   - transform
   - unicode/norm
 - name: gopkg.in/yaml.v2
-  version: a83829b6f1293c91addabc89d0571c246397bbf4
+  version: 4c78c975fe7c825c6d1466c42be594d1d6f3aba6
 testImports: []

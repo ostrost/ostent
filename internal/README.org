@@ -1,6 +1,6 @@
 * package internal
 
-#+BEGIN_SRC sh :results raw
+#+BEGIN_SRC sh :results code
 fst=../vendor/github.com/influxdata/telegraf/internal
 snd=.
 
@@ -13,8 +13,8 @@ snd=.
 awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
 #+END_SRC
 
-#+BEGIN_SRC diff
 #+RESULTS:
+#+BEGIN_SRC diff
 Only in ../vendor/github.com/influxdata/telegraf/internal/../agent: accumulator_test.go
 diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/internal/../agent/agent.go ./agent/agent.go
 --- ../vendor/github.com/influxdata/telegraf/internal/../agent/agent.go
@@ -51,7 +51,7 @@ Only in ../vendor/github.com/influxdata/telegraf/internal/config: aws
 diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/internal/config/config.go ./config/config.go
 --- ../vendor/github.com/influxdata/telegraf/internal/config/config.go
 +++ ./config/config.go
-@@ -16,8 +16,6 @@
+@@ -17,8 +17,6 @@
  	"time"
  
  	"github.com/influxdata/telegraf"
@@ -60,11 +60,8 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	"github.com/influxdata/telegraf/plugins/aggregators"
  	"github.com/influxdata/telegraf/plugins/inputs"
  	"github.com/influxdata/telegraf/plugins/outputs"
-@@ -25,11 +23,17 @@
- 	"github.com/influxdata/telegraf/plugins/processors"
- 	"github.com/influxdata/telegraf/plugins/serializers"
+@@ -28,6 +26,9 @@
  
--	"github.com/influxdata/config"
  	"github.com/influxdata/toml"
  	"github.com/influxdata/toml/ast"
 +
@@ -72,14 +69,8 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
 +	"github.com/ostrost/ostent/internal/models"
  )
  
-+var config = struct {
-+	UnmarshalTable func(*ast.Table, interface{}) error
-+}{UnmarshalTable: toml.UnmarshalTable}
-+
  var (
- 	// Default input plugins
- 	inputDefaults = []string{"cpu", "mem", "swap", "system", "kernel",
-@@ -78,6 +82,11 @@
+@@ -78,6 +79,11 @@
  }
  
  type AgentConfig struct {
@@ -91,7 +82,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	// Interval at which to gather information
  	Interval internal.Duration
  
-@@ -559,6 +568,12 @@
+@@ -566,6 +572,12 @@
  		return fmt.Errorf("Error parsing %s, %s", path, err)
  	}
  
@@ -104,7 +95,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	// Parse tags tables first:
  	for _, tableName := range []string{"tags", "global_tags"} {
  		if val, ok := tbl.Fields[tableName]; ok {
-@@ -690,6 +705,10 @@
+@@ -697,6 +709,10 @@
  	if err != nil {
  		return nil, err
  	}
@@ -115,7 +106,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	// ugh windows why
  	contents = trimBOM(contents)
  
-@@ -768,6 +787,9 @@
+@@ -775,6 +791,9 @@
  		if err != nil {
  			return err
  		}
@@ -127,7 +118,6 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  
 Only in ../vendor/github.com/influxdata/telegraf/internal/config: config_test.go
 Only in ../vendor/github.com/influxdata/telegraf/internal/config: testdata
-Only in ../vendor/github.com/influxdata/telegraf/internal: errchan
 Only in ../vendor/github.com/influxdata/telegraf/internal: globpath
 diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/internal/internal.go ./internal.go
 --- ../vendor/github.com/influxdata/telegraf/internal/internal.go
@@ -172,28 +162,18 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	MetricBufferLimit int
  	MetricBatchSize   int
  
-@@ -90,9 +92,6 @@
- // AddMetric adds a metric to the output. This function can also write cached
- // points if FlushBufferWhenFull is true.
- func (ro *RunningOutput) AddMetric(m telegraf.Metric) {
--	if m == nil {
--		return
--	}
- 	// Filter any tagexclude/taginclude parameters before adding metric
- 	if ro.Config.Filter.IsActive() {
- 		// In order to filter out tags, we need to create a new metric, since
-@@ -122,8 +121,10 @@
- // Write writes all cached points to this output.
+@@ -123,8 +125,10 @@
  func (ro *RunningOutput) Write() error {
  	nFails, nMetrics := ro.failMetrics.Len(), ro.metrics.Len()
+ 	ro.BufferSize.Set(int64(nFails + nMetrics))
 +	if !ro.Quiet {
  	log.Printf("D! Output [%s] buffer fullness: %d / %d metrics. ",
  		ro.Name, nFails+nMetrics, ro.MetricBufferLimit)
 +	}
- 	ro.BufferSize.Incr(int64(nFails + nMetrics))
  	var err error
  	if !ro.failMetrics.IsEmpty() {
-@@ -173,8 +174,10 @@
+ 		// how many batches of failed writes we need to write.
+@@ -173,8 +177,10 @@
  	err := ro.Output.Write(metrics)
  	elapsed := time.Since(start)
  	if err == nil {
@@ -202,8 +182,8 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  			ro.Name, nMetrics, elapsed)
 +		}
  		ro.MetricsWritten.Incr(int64(nMetrics))
- 		ro.BufferSize.Incr(-int64(nMetrics))
  		ro.WriteTime.Incr(elapsed.Nanoseconds())
+ 	}
 Only in ../vendor/github.com/influxdata/telegraf/internal/models: running_output_test.go
 Only in ../vendor/github.com/influxdata/telegraf/internal/models: running_processor_test.go
 Only in .: plugins

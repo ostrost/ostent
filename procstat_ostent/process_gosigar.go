@@ -15,10 +15,20 @@ import (
 	sigar "github.com/cloudfoundry/gosigar"
 )
 
-func newProcess(pid int32) (proc, error) { return &sigarProcess{pid: int(pid)}, nil }
+func NewProc(pid PID) (Process, error) {
+	// return psutilNewProc(pid)
+	return sigarNewProc(pid)
+}
+
+func sigarNewProc(pid PID) (Process, error) {
+	return &sigarProcess{pid: int(pid),
+		tags: make(map[string]string),
+	}, nil
+}
 
 type sigarProcess struct {
-	pid int
+	pid  int
+	tags map[string]string
 
 	state    sigar.ProcState // plain struct
 	stateErr error
@@ -131,3 +141,9 @@ func (self *uid) Get(pid int) error {
 	}
 	return nil
 }
+
+// PID returns PID.
+func (sp *sigarProcess) PID() PID { return PID(sp.pid) }
+
+// Tags returns tags. Always empty so far.
+func (sp *sigarProcess) Tags() map[string]string { return sp.tags }

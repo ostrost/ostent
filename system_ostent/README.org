@@ -3,7 +3,7 @@
 Package =system_ostent= implements "=system_ostent=" input plugin.
 It derived from "=system=" plugin with the following changes.
 
-#+BEGIN_SRC sh :results raw
+#+BEGIN_SRC sh :results code
 fst=../vendor/github.com/influxdata/telegraf/plugins/inputs/system
 snd=../system_ostent
 
@@ -16,8 +16,8 @@ snd=../system_ostent
 awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
 #+END_SRC
 
-#+BEGIN_SRC diff
 #+RESULTS:
+#+BEGIN_SRC diff
 --- ../vendor/github.com/influxdata/telegraf/plugins/inputs/system/net.go
 +++ ../system_ostent/net.go
 @@ -1,15 +1,23 @@
@@ -108,8 +108,9 @@ awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
  
  func init() {
 -	inputs.Add("net", func() telegraf.Input {
+-		return &NetIOStats{ps: newSystemPS()}
 +	inputs.Add("net_ostent", func() telegraf.Input {
- 		return &NetIOStats{ps: &systemPS{}}
++		return &NetIOStats{ps: &systemPS{}}
  	})
  }
 --- ../vendor/github.com/influxdata/telegraf/plugins/inputs/system/system.go

@@ -1,6 +1,6 @@
 * package procstat_ostent
 
-#+BEGIN_SRC sh :results raw
+#+BEGIN_SRC sh :results code
 fst=../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat
 snd=../procstat_ostent
 
@@ -10,218 +10,156 @@ diff --unified --ignore-all-space --recursive \
 awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
 #+END_SRC
 
-#+BEGIN_SRC diff
 #+RESULTS:
+#+BEGIN_SRC diff
 Only in ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat: README.md
 Only in ../procstat_ostent: README.org
-Only in ../procstat_ostent: proc.go
-Only in ../procstat_ostent: process_gopsutil.go
-Only in ../procstat_ostent: process_gosigar.go
-diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat/procstat.go ../procstat_ostent/procstat.go
---- ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat/procstat.go
-+++ ../procstat_ostent/procstat.go
+diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat/pgrep.go ../procstat_ostent/pgrep.go
+--- ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat/pgrep.go
++++ ../procstat_ostent/pgrep.go
 @@ -1,4 +1,4 @@
 -package procstat
 +package procstat_ostent
  
  import (
  	"fmt"
-@@ -7,6 +7,7 @@
+@@ -6,6 +6,8 @@
  	"os/exec"
  	"strconv"
  	"strings"
-+	"time"
- 
- 	"github.com/shirou/gopsutil/process"
- 
-@@ -24,14 +25,14 @@
- 	PidTag      bool
- 
- 	// pidmap maps a pid to a process object, so we don't recreate every gather
--	pidmap map[int32]*process.Process
-+	pidmap map[int32]proc
- 	// tagmap maps a pid to a map of tags for that pid
- 	tagmap map[int32]map[string]string
- }
- 
- func NewProcstat() *Procstat {
- 	return &Procstat{
--		pidmap: make(map[int32]*process.Process),
-+		pidmap: make(map[int32]proc),
- 		tagmap: make(map[int32]map[string]string),
- 	}
- }
-@@ -67,6 +68,7 @@
- }
- 
- func (p *Procstat) Gather(acc telegraf.Accumulator) error {
-+	start := time.Now()
- 	err := p.createProcesses()
- 	if err != nil {
- 		log.Printf("E! Error: procstat getting process, exe: [%s] pidfile: [%s] pattern: [%s] user: [%s] %s",
-@@ -76,8 +78,14 @@
- 			if p.PidTag {
- 				p.tagmap[pid]["pid"] = fmt.Sprint(pid)
- 			}
--			p := NewSpecProcessor(p.ProcessName, p.Prefix, pid, acc, proc, p.tagmap[pid])
--			p.pushMetrics()
-+			sp := NewSpecProcessor(p.ProcessName, p.Prefix, pid, acc, proc, p.tagmap[pid])
-+			if err := sp.pushMetrics(); err != nil && isNotExist(err) {
-+				delete(p.pidmap, pid)
-+				delete(p.tagmap, pid)
-+			}
-+		}
-+		if false {
-+			fmt.Printf("Gathered %#v pids in %s\n", len(p.pidmap), time.Since(start))
- 		}
- 	}
- 
-@@ -96,10 +104,10 @@
- 	for _, pid := range pids {
- 		_, ok := p.pidmap[pid]
- 		if !ok {
--			proc, err := process.NewProcess(pid)
-+			proc, err := newProcess(pid)
- 			if err == nil {
- 				p.pidmap[pid] = proc
--			} else {
-+			} else if !isNotExist(err) {
- 				errstring += err.Error() + " "
- 			}
- 		}
-@@ -124,6 +132,8 @@
- 		pids, err = p.pidsFromPattern()
- 	} else if p.User != "" {
- 		pids, err = p.pidsFromUser()
-+	} else if true {
-+		pids, err = p.pidsAll()
- 	} else {
- 		err = fmt.Errorf("Either exe, pid_file, user, or pattern has to be specified")
- 	}
-@@ -131,6 +141,16 @@
- 	return pids, err
- }
- 
-+func (p *Procstat) pidsAll() ([]int32, error) {
-+	pids, err := process.Pids()
-+	if err == nil {
-+		for _, pid := range pids {
-+			p.tagmap[pid] = make(map[string]string)
-+		}
-+	}
-+	return pids, err
-+}
 +
- func (p *Procstat) pidsFromFile() ([]int32, error) {
- 	var out []int32
- 	var outerr error
-@@ -234,7 +254,7 @@
++	"github.com/shirou/gopsutil/process"
+ )
+ 
+ type PIDFinder interface {
+@@ -13,6 +15,7 @@
+ 	Pattern(pattern string) ([]PID, error)
+ 	Uid(user string) ([]PID, error)
+ 	FullPattern(path string) ([]PID, error)
++	All() ([]PID, error)
  }
  
- func init() {
--	inputs.Add("procstat", func() telegraf.Input {
-+	inputs.Add("procstat_ostent", func() telegraf.Input {
- 		return NewProcstat()
- 	})
+ // Implemention of PIDGatherer that execs pgrep to find processes
+@@ -89,3 +92,15 @@
+ 	}
+ 	return pids, nil
  }
-Only in ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat: procstat_test.go
-diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat/spec_processor.go ../procstat_ostent/spec_processor.go
---- ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat/spec_processor.go
-+++ ../procstat_ostent/spec_processor.go
-@@ -1,10 +1,6 @@
++
++func (pg *Pgrep) All() ([]PID, error) {
++	pids, err := process.Pids()
++	if err != nil {
++		return nil, err
++	}
++	all := make([]PID, len(pids))
++	for i, p := range pids {
++		all[i] = PID(p)
++	}
++	return all, nil
++}
+diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat/process.go ../procstat_ostent/process.go
+--- ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat/process.go
++++ ../procstat_ostent/process.go
+@@ -1,4 +1,4 @@
 -package procstat
 +package procstat_ostent
  
  import (
--	"time"
--
--	"github.com/shirou/gopsutil/process"
--
- 	"github.com/influxdata/telegraf"
- )
+ 	"fmt"
+@@ -12,14 +12,20 @@
+ 	PID() PID
+ 	Tags() map[string]string
  
-@@ -14,7 +10,7 @@
- 	tags   map[string]string
- 	fields map[string]interface{}
- 	acc    telegraf.Accumulator
--	proc   *process.Process
-+	proc   proc
+-	IOCounters() (*process.IOCountersStat, error)
++	// IOCounters() (*process.IOCountersStat, error)
+ 	MemoryInfo() (*process.MemoryInfoStat, error)
+ 	Name() (string, error)
++	/*
+ 	NumCtxSwitches() (*process.NumCtxSwitchesStat, error)
+ 	NumFDs() (int32, error)
+ 	NumThreads() (int32, error)
+ 	Percent(interval time.Duration) (float64, error)
++	*/
+ 	Times() (*cpu.TimesStat, error)
++
++	Nice() (int32, error)
++	Prio() (int32, error)
++	Uids() ([]int32, error)
  }
  
- func NewSpecProcessor(
-@@ -22,7 +18,7 @@
- 	prefix string,
- 	pid int32,
- 	acc telegraf.Accumulator,
--	p *process.Process,
-+	p proc,
- 	tags map[string]string,
- ) *SpecProcessor {
- 	if processName != "" {
-@@ -43,7 +39,7 @@
+ type Proc struct {
+@@ -28,7 +34,7 @@
+ 	,*process.Process
+ }
+ 
+-func NewProc(pid PID) (Process, error) {
++func psutilNewProc(pid PID) (Process, error) {
+ 	process, err := process.NewProcess(int32(pid))
+ 	if err != nil {
+ 		return nil, err
+@@ -58,3 +64,5 @@
  	}
+ 	return cpu_perc, err
+ }
++
++func (p *Proc) Prio() (int32, error) { return 0, nil }
+Only in ../procstat_ostent: process_gopsutil.go
+Only in ../procstat_ostent: process_gosigar.go
+diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat/procstat.go ../procstat_ostent/procstat.go
+--- ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat/procstat.go
++++ ../procstat_ostent/procstat.go
+@@ -1,9 +1,8 @@
+-package procstat
++package procstat_ostent
+ 
+ import (
+ 	"fmt"
+ 	"strconv"
+-	"time"
+ 
+ 	"github.com/influxdata/telegraf"
+ 	"github.com/influxdata/telegraf/plugins/inputs"
+@@ -84,7 +83,7 @@
  }
  
--func (p *SpecProcessor) pushMetrics() {
-+func (p *SpecProcessor) pushMetrics() error {
+ // Add metrics a single Process
+-func (p *Procstat) addMetrics(proc Process, acc telegraf.Accumulator) {
++func (p *Procstat) addMetrics(proc Process, acc telegraf.Accumulator) error {
  	var prefix string
  	if p.Prefix != "" {
  		prefix = p.Prefix + "_"
-@@ -55,20 +51,44 @@
- 		fields["pid"] = p.pid
+@@ -105,6 +104,25 @@
+ 		fields["pid"] = int32(proc.PID())
  	}
  
-+	uids, err := p.proc.Uids()
++	uids, err := proc.Uids()
 +	if err != nil {
 +		return err
 +	}
 +	fields[prefix+"uid"] = uids[0]
 +	//
-+	nice, err := p.proc.Nice()
++	nice, err := proc.Nice()
 +	if err != nil {
 +		return err
 +	}
 +	fields[prefix+"nice"] = nice
-+	prio, err := p.proc.Prio()
++	//
++	prio, err := proc.Prio()
 +	if err != nil {
 +		return err
 +	}
 +	fields[prefix+"prio"] = prio
 +
 +	/*
- 	numThreads, err := p.proc.NumThreads()
+ 	numThreads, err := proc.NumThreads()
  	if err == nil {
  		fields[prefix+"num_threads"] = numThreads
-+		} else {
-+			return err
- 	}
- 
- 	fds, err := p.proc.NumFDs()
- 	if err == nil {
- 		fields[prefix+"num_fds"] = fds
-+		} else {
-+			return err
- 	}
- 
- 	ctx, err := p.proc.NumCtxSwitches()
- 	if err == nil {
- 		fields[prefix+"voluntary_context_switches"] = ctx.Voluntary
- 		fields[prefix+"involuntary_context_switches"] = ctx.Involuntary
-+		} else {
-+			return err
- 	}
- 
- 	io, err := p.proc.IOCounters()
-@@ -77,12 +97,16 @@
- 		fields[prefix+"write_count"] = io.WriteCount
+@@ -128,11 +146,13 @@
  		fields[prefix+"read_bytes"] = io.ReadBytes
  		fields[prefix+"write_bytes"] = io.WriteBytes
-+		} else {
-+			return err
  	}
 +	*/
  
- 	cpu_time, err := p.proc.Times()
+ 	cpu_time, err := proc.Times()
  	if err == nil {
  		fields[prefix+"cpu_time_user"] = cpu_time.User
  		fields[prefix+"cpu_time_system"] = cpu_time.System
@@ -229,7 +167,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  		fields[prefix+"cpu_time_idle"] = cpu_time.Idle
  		fields[prefix+"cpu_time_nice"] = cpu_time.Nice
  		fields[prefix+"cpu_time_iowait"] = cpu_time.Iowait
-@@ -92,19 +116,31 @@
+@@ -142,21 +162,31 @@
  		fields[prefix+"cpu_time_stolen"] = cpu_time.Stolen
  		fields[prefix+"cpu_time_guest"] = cpu_time.Guest
  		fields[prefix+"cpu_time_guest_nice"] = cpu_time.GuestNice
@@ -239,15 +177,13 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	}
  
 +	/*
- 	cpu_perc, err := p.proc.Percent(time.Duration(0))
- 	if err == nil && cpu_perc != 0 {
+ 	cpu_perc, err := proc.Percent(time.Duration(0))
+ 	if err == nil {
  		fields[prefix+"cpu_usage"] = cpu_perc
-+		} else if err != nil {
-+			return err
  	}
 +	*/
  
- 	mem, err := p.proc.MemoryInfo()
+ 	mem, err := proc.MemoryInfo()
  	if err == nil {
  		fields[prefix+"memory_rss"] = mem.RSS
  		fields[prefix+"memory_vms"] = mem.VMS
@@ -258,8 +194,30 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
 +		return err
 +	}
  
--	p.acc.AddFields("procstat", fields, p.tags)
-+	p.acc.AddFields("procstat_ostent", fields, p.tags)
+-	acc.AddFields("procstat", fields, proc.Tags())
++	acc.AddFields("procstat_ostent", fields, proc.Tags())
 +	return nil
  }
+ 
+ // Update monitored Processes
+@@ -232,6 +262,9 @@
+ 	} else if p.User != "" {
+ 		pids, err = f.Uid(p.User)
+ 		tags = map[string]string{"user": p.User}
++	} else if true {
++		pids, err = f.All()
++		tags = map[string]string{} // non-nil map
+ 	} else {
+ 		err = fmt.Errorf("Either exe, pid_file, user, or pattern has to be specified")
+ 	}
+@@ -240,7 +273,7 @@
+ }
+ 
+ func init() {
+-	inputs.Add("procstat", func() telegraf.Input {
++	inputs.Add("procstat_ostent", func() telegraf.Input {
+ 		return &Procstat{}
+ 	})
+ }
+Only in ../vendor/github.com/influxdata/telegraf/plugins/inputs/procstat: procstat_test.go
 #+END_SRC
