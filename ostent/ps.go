@@ -1,10 +1,14 @@
 package ostent
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/shirou/gopsutil/host"
+)
 
 // Distrib is to return distribution identifier string with version.
 func Distrib() (string, error) {
-	platform, version, err := hostPlatformVersion()
+	platform, _, version, err := host.PlatformInformation()
 	if err != nil {
 		return "", err
 	}
