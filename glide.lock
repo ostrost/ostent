@@ -1,5 +1,5 @@
-hash: 48702642b242550ebc0a8fa8a4ddc50727be24d88528e6abba9c54c4d602f941
-updated: 2017-05-17T08:38:41.915212509Z
+hash: 7a9ead1375ea79d0a11dac2b4da70b8d569e4f2229f5253fdecc1e2f14491199
+updated: 2017-08-15T09:18:22.078972891Z
 imports:
 - name: collectd.org
   version: 2ce144541b8903101fb8f1483cc0497a68798122
@@ -70,7 +70,7 @@ imports:
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/telegraf
-  version: 2bc5594b44145368823d7aa78bfb753ab51e9235
+  version: 7192e68b2423997177692834f53cdf171aee1a88
   subpackages:
   - filter
   - internal
@@ -139,7 +139,7 @@ imports:
 - name: github.com/russross/blackfriday
   version: 93622da34e54fb6529bfb7c57e710f37a8d9cbd8
 - name: github.com/shirou/gopsutil
-  version: 70693b6a3da51a8a686d31f1b346077bbc066062
+  version: 9a4a9167ad3b4355dbf1c2c7a0f5f0d3fb1e9ab9
   subpackages:
   - cpu
   - disk

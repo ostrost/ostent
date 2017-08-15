@@ -142,7 +142,7 @@ Only in ../vendor/github.com/influxdata/telegraf/internal/models: running_input_
 diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/telegraf/internal/models/running_output.go ./models/running_output.go
 --- ../vendor/github.com/influxdata/telegraf/internal/models/running_output.go
 +++ ./models/running_output.go
-@@ -5,9 +5,10 @@
+@@ -6,9 +6,10 @@
  	"time"
  
  	"github.com/influxdata/telegraf"
@@ -154,7 +154,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  )
  
  const (
-@@ -23,6 +24,7 @@
+@@ -24,6 +25,7 @@
  	Name              string
  	Output            telegraf.Output
  	Config            *OutputConfig
@@ -162,7 +162,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	MetricBufferLimit int
  	MetricBatchSize   int
  
-@@ -123,8 +125,10 @@
+@@ -127,8 +129,10 @@
  func (ro *RunningOutput) Write() error {
  	nFails, nMetrics := ro.failMetrics.Len(), ro.metrics.Len()
  	ro.BufferSize.Set(int64(nFails + nMetrics))
@@ -173,7 +173,7 @@ diff --unified --ignore-all-space --recursive ../vendor/github.com/influxdata/te
  	var err error
  	if !ro.failMetrics.IsEmpty() {
  		// how many batches of failed writes we need to write.
-@@ -173,8 +177,10 @@
+@@ -179,8 +183,10 @@
  	err := ro.Output.Write(metrics)
  	elapsed := time.Since(start)
  	if err == nil {

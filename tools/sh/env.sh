@@ -8,7 +8,7 @@ if eq "${TRAVIS:-}" true ; then
 fi
 #set -x #while debugging
 
-GO_BOOTSTRAPVER=1.7.5
+GO_BOOTSTRAPVER=1.7.6
 : "${GIT_TOPLEVEL:=$(git rev-parse --show-toplevel)}"
 : "${DPL_DIR:=$GIT_TOPLEVEL/deploy}"
 
@@ -27,7 +27,7 @@ Gmake() {
 # Following functions of this script is expected to be executed sequentially.
 # The split is so that each function must end with one timely action.
 
-: "${GO_VERSION:=1.8.1}"
+: "${GO_VERSION:=1.8.3}"
 : "${GIMME_VERSION:=1.1.0}"
 : "${GLIDE_VERSION:=0.12.3}"
 
