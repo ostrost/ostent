@@ -1,5 +1,5 @@
-hash: 7a9ead1375ea79d0a11dac2b4da70b8d569e4f2229f5253fdecc1e2f14491199
-updated: 2017-08-15T09:18:22.078972891Z
+hash: dfc29f896c686def3ae6ab78ea9155e8dd3225442948064ab68ea9e875933aea
+updated: 2017-09-11T10:14:54.56839999Z
 imports:
 - name: collectd.org
   version: 2ce144541b8903101fb8f1483cc0497a68798122
@@ -33,7 +33,7 @@ imports:
 - name: github.com/fsnotify/fsnotify
   version: f12c6236fe7b5cf6bcf30e5935d08cb079d78334
 - name: github.com/go-ole/go-ole
-  version: 7dfdcf409020452e29b4babcbb22f984d2aa308a
+  version: be49f7c07711fcb603cff39e1de7c67926dc0ba7
   subpackages:
   - oleutil
 - name: github.com/gobwas/glob
@@ -70,7 +70,7 @@ imports:
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/telegraf
-  version: 7192e68b2423997177692834f53cdf171aee1a88
+  version: 34b7a4c3611d1ede908ef275401544c34a4a3ba3
   subpackages:
   - filter
   - internal
@@ -125,7 +125,7 @@ imports:
 - name: github.com/pelletier/go-toml
   version: 31055c2ff0bb0c7f9095aec0d220aed21108121e
 - name: github.com/pkg/errors
-  version: 17b591df37844cde689f4d5813e5cea0927d8dd2
+  version: 645ef00459ed84a119197bfb8d8205042c6df63d
 - name: github.com/pkg/sftp
   version: 8197a2e580736b78d704be0fc47b2324c0591a32
 - name: github.com/pmezard/go-difflib
@@ -174,9 +174,9 @@ imports:
 - name: github.com/spf13/viper
   version: 16990631d4aa7e38f73dbbbf37fa13e67c648531
 - name: github.com/StackExchange/wmi
-  version: e54cbda6595d7293a7a468ccf9525f6bc8887f99
+  version: f3e2bae1e0cb5aef83e319133eabfee30013a4a5
 - name: github.com/stretchr/objx
-  version: cbeaeb16a013161a98496fad62933b1d21786672
+  version: 1a9d0bb9f541897e62256577b352fdbc1fb4fd94
 - name: github.com/stretchr/testify
   version: 4d4bfba8f1d1027c4fdbe371823030df51419987
   subpackages:

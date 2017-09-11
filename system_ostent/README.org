@@ -115,7 +115,7 @@ awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
  }
 --- ../vendor/github.com/influxdata/telegraf/plugins/inputs/system/system.go
 +++ ../system_ostent/system_ostent.go
-@@ -1,10 +1,8 @@
+@@ -1,10 +1,7 @@
 -package system
 +package system_ostent
  
@@ -125,11 +125,10 @@ awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
 -	"fmt"
 -	"runtime"
 +	"os"
-+	"strings"
+ 	"strings"
  
  	"github.com/shirou/gopsutil/host"
- 	"github.com/shirou/gopsutil/load"
-@@ -27,31 +25,30 @@
+@@ -28,31 +25,30 @@
  		return err
  	}
  
@@ -169,7 +168,7 @@ awk '{ if ($1 == "---" || $1 == "+++") { $_ = $1 FS $2; }; print }'
  func format_uptime(uptime uint64) string {
  	buf := new(bytes.Buffer)
  	w := bufio.NewWriter(buf)
-@@ -76,9 +73,10 @@
+@@ -77,9 +73,10 @@
  	w.Flush()
  	return buf.String()
  }
