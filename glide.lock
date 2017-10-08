@@ -1,5 +1,5 @@
-hash: dfc29f896c686def3ae6ab78ea9155e8dd3225442948064ab68ea9e875933aea
-updated: 2017-09-11T10:14:54.56839999Z
+hash: 463e217a39a8caed2575b4d893c94014048624bd1d68ecc95354488e2e6b3a14
+updated: 2017-10-08T13:14:35.901902107Z
 imports:
 - name: collectd.org
   version: 2ce144541b8903101fb8f1483cc0497a68798122
@@ -70,7 +70,7 @@ imports:
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/influxdata/telegraf
-  version: 34b7a4c3611d1ede908ef275401544c34a4a3ba3
+  version: 2de7aa23d7d3c3bcf639d417129ab7c17d83399b
   subpackages:
   - filter
   - internal
@@ -120,10 +120,8 @@ imports:
   version: ca63d7c062ee3c9f34db231e352b60012b4fd0c1
 - name: github.com/naoina/go-stringutil
   version: 6b638e95a32d0c1131db0e7fe83775cbea4a0d0b
-- name: github.com/pelletier/go-buffruneio
-  version: df1e16fde7fc330a0ca68167c23bf7ed6ac31d6d
 - name: github.com/pelletier/go-toml
-  version: 31055c2ff0bb0c7f9095aec0d220aed21108121e
+  version: 16398bac157da96aa88f98a2df640c7f32af1da2
 - name: github.com/pkg/errors
   version: 645ef00459ed84a119197bfb8d8205042c6df63d
 - name: github.com/pkg/sftp
