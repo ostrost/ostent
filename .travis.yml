@@ -5,7 +5,7 @@ env:
   global:
     - DPL_DIR=~/deploy # ~/deploy is outside the clone dir
 install:
-  - source ./tools/sh/env.sh install_1
+  - rvm get head; source ./tools/sh/env.sh install_1
   - source ./tools/sh/env.sh install_2 $TRAVIS_REPO_SLUG
   - source ./tools/sh/env.sh install_3
   - source ./tools/sh/env.sh Gmake init
