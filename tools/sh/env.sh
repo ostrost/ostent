@@ -100,9 +100,7 @@ install_1() {
     # https://github.com/travis-ci/travis-ci/issues/6307
     # TODO remove someday
     if eq "${TRAVIS:-}" true && darwin ; then
-        if echo "${PATH:-}" | grep -qF ruby-2.4.2 ; then
-            rvm get head
-        fi
+        rvm get head # MAYBE if echo "${PATH:-}" | grep -qF ruby-2.4.2 ; then
     fi
 
     # unconditionally install gimme(1); travis env most definitely does not have it
