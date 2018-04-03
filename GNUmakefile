@@ -98,6 +98,7 @@ boot32: ; cd $(GOROOT)/src && GOARCH=386 ./make.bash --no-clean
 dev: \
 share/assets/css/index.css \
 share/assets/js/src/bundle.js \
+share/templates/define_page.html \
 share/templates/index.html \
 share/js/jsxdefines.js
 
@@ -106,8 +107,9 @@ share/assets/js/src/bundle.js \
 share/assets/js/min/bundle.min.js \
 :
 # the first prerequisite only is passed to gulp
-	type gulp >/dev/null || exit 0; mkdir -p share/cache
 	type gulp >/dev/null || exit 0; gulp webpack --silent --output=$@ --input=./$<
+share/templates/define_page.html:
+	type gulp >/dev/null || exit 0; gulp ssr     --silent --output=$@ --input=./$<
 share/templates/index.html:
 	type gulp >/dev/null || exit 0; gulp pug     --silent --output=$@ --input=./$<
 share/js/jsxdefines.js:
@@ -118,6 +120,7 @@ share/assets/css/index.css:        share/templates/index.html
 share/assets/css/index.css:        share/js/index.js share/js/jsxdefines.js
 share/assets/js/src/bundle.js:     share/js/index.js share/js/jsxdefines.js
 share/assets/js/min/bundle.min.js: share/js/index.js share/js/jsxdefines.js
+share/templates/define_page.html:  share/js/index.js
 share/templates/index.html:        share/templatesorigin/index.pug
 share/js/jsxdefines.js:            share/templatesorigin/index.pug share/templatesorigin/jsxdefines.jstmpl $(templatepp)
 

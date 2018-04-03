@@ -31,6 +31,9 @@
 .top-bar, .hr-bottom { border-bottom: 1px solid $medium-gray; }
 
 .stripe > .row {
+  &.thead.nobold  {
+    & { font-weight: inherit; }
+  }
   &.thead  {
     & { font-weight: bold; background-color: $table-head-background; }
   }

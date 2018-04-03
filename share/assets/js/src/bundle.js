@@ -45,12 +45,766 @@
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	'use strict';
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var React = __webpack_require__(1),
-	    ReactDOM = __webpack_require__(12),
-	    ReconnectWS = __webpack_require__(32),
-	    jsxdefines = __webpack_require__(33);
+	var _jsx = function () { var REACT_ELEMENT_TYPE = typeof Symbol === "function" && Symbol.for && Symbol.for("react.element") || 0xeac7; return function createRawReactElement(type, props, key, children) { var defaultProps = type && type.defaultProps; var childrenLength = arguments.length - 3; if (!props && childrenLength !== 0) { props = {}; } if (props && defaultProps) { for (var propName in defaultProps) { if (props[propName] === void 0) { props[propName] = defaultProps[propName]; } } } else if (!props) { props = defaultProps || {}; } if (childrenLength === 1) { props.children = children; } else if (childrenLength > 1) { var childArray = Array(childrenLength); for (var i = 0; i < childrenLength; i++) { childArray[i] = arguments[i + 3]; } props.children = childArray; } return { $$typeof: REACT_ELEMENT_TYPE, type: type, key: key === undefined ? null : '' + key, ref: null, props: props, _owner: null }; }; }();
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/* eslint indent:0 no-console:0 */
+	/* eslint-env node */
+	/* global Data:false, options:false, pug:false */
+	/*
+	var React       = require('react'),
+	    ReactDOM    = require('react-dom'),
+	    ReconnectWS = require('reconnectingwebsocket'),
+	    jsxdefines  = require('./jsxdefines.js');
+	*/
+
+	var format = __webpack_require__(2).format;
+
+	var React = __webpack_require__(5),
+	    ReactDOM = __webpack_require__(15),
+	    SparkLines = __webpack_require__(35);
+
+	if (typeof options === 'undefined' || !options.ssr) {
+	  var ReconnectWS = __webpack_require__(36);
+	}
+
+	var Sparkline = function (_React$PureComponent) {
+	  _inherits(Sparkline, _React$PureComponent);
+
+	  function Sparkline(props) {
+	    _classCallCheck(this, Sparkline);
+
+	    var _this = _possibleConstructorReturn(this, (Sparkline.__proto__ || Object.getPrototypeOf(Sparkline)).call(this, props));
+
+	    _this.state = { data: [], limit: 90, width: 180 };
+	    return _this;
+	  }
+
+	  _createClass(Sparkline, [{
+	    key: 'componentDidUpdate',
+	    value: function componentDidUpdate(_, prevState) {
+	      var root = ReactDOM.findDOMNode(this.refs.root);
+	      if (root == null) {
+	        return;
+	      }
+	      var rootWidth = Math.floor(root.offsetWidth) - 10;
+	      if (prevState.width != rootWidth) {
+	        this.setState({ width: rootWidth, limit: Math.round(rootWidth / 2) });
+	      }
+	    }
+	  }, {
+	    key: 'NewState',
+	    value: function NewState(statentry) {
+	      var limit,
+	          data = [];
+	      if (this.state != null) {
+	        limit = this.state.limit;
+	        data = this.state.data.slice(); // NB .slice https://github.com/borisyankov/react-sparklines/issues/27
+	      }
+	      if (this.props.col != null) {
+	        statentry = statentry[this.props.col];
+	      }
+	      data.push(+statentry);
+	      if (limit != null && data.length > limit) {
+	        data = data.slice(-limit);
+	      }
+	      this.setState({ data: data });
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var e = React.createElement;
+	      var rootdiv = function rootdiv(c) {
+	        return e('div', { ref: 'root' }, c);
+	      };
+	      if (process.env.NODE_ENV !== 'production' && this.props.ssr) {
+	        return rootdiv();
+	      }
+	      var curveProps = { style: { strokeWidth: 1 } };
+	      var spotsProps = { size: 2, spotColors: { '-1': 'green', '1': 'red' } }; // reverse default colors
+	      if (this.props.defaultSpots) {
+	        delete spotsProps.spotColors;
+	      } // back to default colors
+	      curveProps.key = 'curve';
+	      spotsProps.key = 'spots';
+	      return rootdiv(e(SparkLines.Sparklines, {
+	        data: this.state.data,
+	        limit: this.state.limit,
+	        width: this.state.width,
+	        svgWidth: this.state.width,
+	        height: 33,
+	        svgHeight: 33 }, [e(SparkLines.SparklinesCurve, curveProps, null), e(SparkLines.SparklinesSpots, spotsProps, null)]));
+	    }
+	  }]);
+
+	  return Sparkline;
+	}(React.PureComponent);
+
+	var _ref = _jsx('span', {
+	  className: 'expand small-12'
+	}, void 0, _jsx('small', {}, void 0, _jsx('pre', {})));
+
+	var _ref2 = _jsx('h5', {}, void 0, 'Exporting');
+
+	var _ref3 = _jsx('span', {
+	  className: 'showhide-hide whitespace-pre float-left'
+	}, void 0, '... ');
+
+	var _ref4 = _jsx('div', {
+	  className: 'input-group-label text-nowrap'
+	}, void 0, 'rows');
+
+	var _ref5 = _jsx('div', {
+	  className: 'row thead'
+	}, void 0, _jsx('span', {
+	  className: 'expand col small-1'
+	}, void 0, 'Period'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' Value'), _jsx('span', {
+	  className: 'expand col'
+	}));
+
+	var _ref6 = _jsx('div', {
+	  className: 'row thead'
+	}, void 0, _jsx('span', {
+	  className: 'expand col small-1'
+	}, void 0, 'Memory'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' Total'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' Used'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' Free'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' Use%'), _jsx('span', {
+	  className: 'expand col'
+	}));
+
+	var _ref7 = _jsx('span', {
+	  className: 'expand col'
+	});
+
+	var _ref8 = _jsx('div', {
+	  className: 'row thead'
+	}, void 0, _jsx('span', {
+	  className: 'expand col small-1'
+	}, void 0, 'Core'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' User%'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' Sys%'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' Wait%'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' Idle%'), _jsx('span', {
+	  className: 'expand col'
+	}));
+
+	var _ref9 = _jsx('div', {
+	  className: 'row thead'
+	}, void 0, _jsx('span', {
+	  className: 'expand col small-1'
+	}, void 0, 'Interface'), _jsx('span', {
+	  className: 'expand col small-1 text-right'
+	}, void 0, ' IP'), _jsx('span', {
+	  title: 'Drops,Errors In/Out per second',
+	  className: 'expand col small-2 text-right text-nowrap'
+	}, void 0, ' Loss IO ps'), _jsx('span', {
+	  title: 'Packets In/Out per second',
+	  className: 'expand col small-2 text-right text-nowrap'
+	}, void 0, ' Packets IO ps'), _jsx('span', {
+	  title: 'Bits In/Out per second',
+	  className: 'expand col small-2 text-right text-nowrap'
+	}, void 0, ' IO ', _jsx('i', {}, void 0, 'b'), 'ps'), _jsx('span', {
+	  className: 'expand col'
+	}));
+
+	var Page = function (_React$PureComponent2) {
+	  _inherits(Page, _React$PureComponent2);
+
+	  _createClass(Page, [{
+	    key: 'maj_keys',
+	    value: function maj_keys(prefix, keys) {
+	      return keys.reduce(function (o, k) {
+	        return Object.assign(o, _defineProperty({}, k, '[[ ' + prefix + k + ' ]]'));
+	      }, {});
+	    }
+	  }]);
+
+	  function Page(props) {
+	    _classCallCheck(this, Page);
+
+	    var _this2 = _possibleConstructorReturn(this, (Page.__proto__ || Object.getPrototypeOf(Page)).call(this, props));
+
+	    if (props.initialState) {
+	      _this2.state = props.initialState;
+	    }
+	    if (!(process.env.NODE_ENV !== 'production' && props.ssr)) {
+	      return _possibleConstructorReturn(_this2);
+	    }
+	    var maj_keys = _this2.maj_keys;
+	    var data = maj_keys('.Data.', ['Distrib', 'OstentUpgrade', 'OstentVersion']);
+	    data.Exporting = [maj_keys('$e.', ['Header', 'Text'])];
+	    data.la = { List: [maj_keys('$la.', ['Period', 'Value'])] };
+	    data.mem = { List: [maj_keys('$mem.', ['Kind', 'Total', 'Used', 'Free', 'UsePct'])] };
+	    data.df = { List: [maj_keys('$df.', ['DevName', 'DirName', 'Total', 'Inodes', 'Used', 'Iused', 'Avail', 'Ifree', 'UsePct', 'IusePct'])] };
+	    data.cpu = { List: [maj_keys('$cpu.', ['N', 'UserPct', 'SysPct', 'WaitPct', 'IdlePct'])] };
+	    data.netio = { List: [maj_keys('$if.', ['DeltaDropsIn', 'DeltaDropsOut', 'DeltaErrorsIn', 'DeltaErrorsOut', 'Name', 'IP', 'DropsIn', 'DropsOut', 'ErrorsIn', 'ErrorsOut', 'DeltaDropsIn', 'DeltaDropsOut', 'DeltaErrorsIn', 'DeltaErrorsOut', 'PacketsIn', 'PacketsOut', 'DeltaPacketsIn', 'DeltaPacketsOut', 'BytesIn', 'BytesOut', 'DeltaBitsIn', 'DeltaBitsOut'])] };
+	    data.procs = { List: [maj_keys('$ps.', ['PID', 'UID', 'User', 'Priority', 'Nice', 'Size', 'Resident', 'Time', 'Name'])] };
+	    data.system_ostent = maj_keys('.Data.system_ostent.', ['hostname_short', 'uptime_format']);
+	    data.params = {
+	      Tlinks: maj_keys('.Data.params.Tlinks.', ['Lan', 'Memn', 'Dfn', 'CPUn', 'Ifn', 'Psn']),
+	      xVlinks: {
+	        Dfk: maj_keys('.Data.params.Vlinks.Dfk.', ['CaretClass', 'LinkClass', 'LinkHref']),
+	        Psk: maj_keys('.Data.params.Vlinks.Psk.', ['CaretClass', 'LinkClass', 'LinkHref'])
+	      },
+	      Vlinks: maj_keys('.Data.params.Vlinks.', ['Dfk', 'Psk']),
+	      Nlinks: {
+	        Lan: {
+	          Less: maj_keys('.Data.params.Nlinks.Lan.Less.', ['ExtraClass', 'Href', 'Text']),
+	          More: maj_keys('.Data.params.Nlinks.Lan.More.', ['ExtraClass', 'Href', 'Text'])
+	        },
+	        Memn: {
+	          Less: maj_keys('.Data.params.Nlinks.Memn.Less.', ['ExtraClass', 'Href', 'Text']),
+	          More: maj_keys('.Data.params.Nlinks.Memn.More.', ['ExtraClass', 'Href', 'Text'])
+	        },
+	        Dfn: {
+	          Less: maj_keys('.Data.params.Nlinks.Dfn.Less.', ['ExtraClass', 'Href', 'Text']),
+	          More: maj_keys('.Data.params.Nlinks.Dfn.More.', ['ExtraClass', 'Href', 'Text'])
+	        },
+	        CPUn: {
+	          Less: maj_keys('.Data.params.Nlinks.CPUn.Less.', ['ExtraClass', 'Href', 'Text']),
+	          More: maj_keys('.Data.params.Nlinks.CPUn.More.', ['ExtraClass', 'Href', 'Text'])
+	        },
+	        Ifn: {
+	          Less: maj_keys('.Data.params.Nlinks.Ifn.Less.', ['ExtraClass', 'Href', 'Text']),
+	          More: maj_keys('.Data.params.Nlinks.Ifn.More.', ['ExtraClass', 'Href', 'Text'])
+	        },
+	        Psn: {
+	          Less: maj_keys('.Data.params.Nlinks.Psn.Less.', ['ExtraClass', 'Href', 'Text']),
+	          More: maj_keys('.Data.params.Nlinks.Psn.More.', ['ExtraClass', 'Href', 'Text'])
+	        }
+	      },
+	      Lan: maj_keys('.Data.params.Lan.', ['Absolute', 'Negative']),
+	      Memn: maj_keys('.Data.params.Memn.', ['Absolute', 'Negative']),
+	      Dfn: maj_keys('.Data.params.Dfn.', ['Absolute', 'Negative']),
+	      CPUn: maj_keys('.Data.params.CPUn.', ['Absolute', 'Negative']),
+	      Ifn: maj_keys('.Data.params.Ifn.', ['Absolute', 'Negative']),
+	      Psn: maj_keys('.Data.params.Psn.', ['Absolute', 'Negative'])
+	    };
+	    _this2.state = data;
+	    return _this2;
+	  }
+
+	  _createClass(Page, [{
+	    key: 'NewState',
+	    value: function NewState(data) {
+	      var _this3 = this;
+
+	      this.setState(data);
+	      Object.keys(this.refs).forEach(function (ref) {
+	        if (_this3.refs[ref].props.getter) {
+	          var statentry = data['cpu'].List.filter(function (x) {
+	            return x.N == _this3.refs[ref].props.getter;
+	          })[0];
+	          _this3.refs[ref].NewState(statentry);
+	          return;
+	        }
+	        var refindex = ref.lastIndexOf('.');
+	        if (refindex == -1) {
+	          return;
+	        }
+	        var subindex = +ref.substr(refindex + 1),
+	            datakey = ref.substr(0, refindex);
+	        var dkindex = datakey.lastIndexOf('.');
+	        if (dkindex != -1) {
+	          datakey = datakey.substr(dkindex + 1);
+	        }
+
+	        var subdata = data[datakey];
+	        if (!subdata || !subdata.List) {
+	          return;
+	        }
+	        _this3.refs[ref].NewState(subdata.List[+subindex]);
+	      });
+	    }
+	  }, {
+	    key: 'handleClick',
+	    value: function handleClick(e) {
+	      var href = e.target.getAttribute('href');
+	      if (href == null) {
+	        href = e.target.parentNode.getAttribute('href');
+	      }
+	      history.pushState({}, '', href);
+	      window.updates.sendSearch(href);
+	      e.stopPropagation();
+	      e.preventDefault();
+	      return void 0;
+	    }
+	  }, {
+	    key: 'range',
+	    value: function range(v, items, f) {
+	      for (var _len = arguments.length, args = Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
+	        args[_key - 3] = arguments[_key];
+	      }
+
+	      var lines = [f.apply(undefined, args)];
+	      if (process.env.NODE_ENV !== 'production' && this.props.ssr) {
+	        lines.unshift('[[range ' + v + ' := ' + items + ']]');
+	        lines.push('[[end]]');
+	      }
+	      return lines;
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var _this4 = this;
+
+	      var ostentUpgrade = function ostentUpgrade(latestOstent) {
+	        var lines = [_jsx('div', {
+	          className: 'top-bar-left'
+	        }, void 0, _jsx('a', {
+	          href: latestOstent
+	        }, void 0, [_this4.state.OstentUpgrade, '}'].join('')))];
+	        if (process.env.NODE_ENV !== 'production' && _this4.props.ssr) {
+	          lines.unshift('[[if .Data.OstentUpgrade]]');
+	          lines.push('[[end]]');
+	        } else if (!_this4.state.OstentUpgrade) {
+	          lines = [];
+	        }
+	        return lines;
+	      };
+	      var exporting_line = function exporting_line(e, i) {
+	        return _jsx('div', {
+	          className: 'row'
+	        }, 'exporting_line_' + i, _ref, _jsx('b', {}, void 0, e.Header, e.Text));
+	      };
+	      var exporting = function exporting() {
+	        var elen = _this4.state.Exporting.length;
+	        var noutputs = elen + ' output ' + (elen !== 1 ? 's' : '');
+	        if (process.env.NODE_ENV !== 'production' && _this4.props.ssr) {
+	          noutputs = '[[len .Data.Exporting]] output[[if ne 1 (len .Data.Exporting)]]s[[end]]';
+	        }
+	        var lines = [_jsx('div', {
+	          className: 'row expanded hr-bottom'
+	        }, void 0, _jsx('div', {
+	          className: 'column large-11 small-offset-1'
+	        }, void 0, _ref2, _jsx('div', {
+	          className: 'stripe'
+	        }, void 0, _jsx('div', {
+	          className: 'row thead nobold'
+	        }, void 0, _jsx('span', {
+	          className: 'expand small-12'
+	        }, void 0, _jsx('small', {}, void 0, _jsx('pre', {}, void 0, '[outputs]', _jsx('i', {}, void 0, '    # [outputs.ostent] not counted nor shown. Counted ', _jsx('b', {}, void 0, noutputs), ':'))))), _this4.state.Exporting && _this4.state.Exporting.map(function (e, i) {
+	          return _this4.range('$e', '.Exporting', exporting_line, e, i);
+	        }))))];
+
+	        if (process.env.NODE_ENV !== 'production' && _this4.props.ssr) {
+	          lines.unshift('[[if ne (len .Data.Exporting) 0]]');
+	          lines.push('[[end]]');
+	        } else if (_this4.state.Exporting.length === 0) {
+	          lines = [];
+	        }
+	        return lines;
+	      };
+
+	      var htitle = 'hostname ' + this.state.system_ostent.hostname_short;
+	      var hostname = _jsx('a', {
+	        href: '/',
+	        title: htitle
+	      }, void 0, this.state.system_ostent.hostname_short);
+	      var uptime = _jsx('span', {}, void 0, this.state.system_ostent.uptime_format);
+
+	      var vlink = function vlink(kparam, number, text) {
+	        // console.log('vlink', kparam, number, text);
+	        var v = _this4.state.params.Vlinks[kparam];
+	        // console.log('v', v);
+	        if (process.env.NODE_ENV !== 'production' && _this4.props.ssr) {
+	          var y = v;
+	          v = format('(index %s %d)', v.replace(/(^\[\[\s?|\s?\]\]$)/g, ''), number - 1);
+	          v = {
+	            CaretClass: v + '.CaretClass',
+	            LinkClass: v + '.LinkClass',
+	            LinkHref: v + '.LinkHref'
+	          };
+	          v = _this4.maj_keys(format('(index %s %d).', y.replace(/(^\[\[\s?|\s?\]\]$)/g, ''), number - 1), ['CaretClass', 'LinkClass', 'LinkHref']);
+	        } else {
+	          v = v[number - 1];
+	        }
+	        // console.log('v', v);
+	        var handleClick = function handleClick(e) {
+	          return _this4.handleClick(e);
+	        };
+	        return _jsx('a', {
+	          href: v.LinkHref,
+	          onClick: handleClick,
+	          className: [v.LinkClass].join(' ')
+	        }, void 0, text, _jsx('span', {
+	          className: [v.CaretClass].join(' ')
+	        }));
+	      };
+
+	      var table = function table(nparam, title, block) {
+	        var _cls = void 0;
+
+	        var handleClick = function handleClick(e) {
+	          return _this4.handleClick(e);
+	        };
+	        var alink = function alink(cls, fmt, link) {
+	          cls = cls + ' ' + (link.ExtraClass || '');
+	          return _jsx('button', {
+	            href: link.Href,
+	            onClick: handleClick,
+	            className: [cls].join(' ')
+	          }, void 0, format(fmt, link.Text));
+	        };
+	        var negative = _this4.state.params[nparam].Negative ? 'show-showhide' : 'hide-showhide';
+	        var absolute = _this4.state.params[nparam].Absolute == 0 ? 'hide' : '';
+	        if (process.env.NODE_ENV !== 'production' && _this4.props.ssr) {
+	          negative = '[[if .Data.params.' + nparam + '.Negative]]show-showhide[[else]]hide-showhide[[end]]';
+	          absolute = '[[if eq .Data.params.' + nparam + '.Absolute 0]]hide[[end]]';
+	        }
+	        var atitle = title + ' display options';
+	        return _jsx('div', {
+	          className: 'row expanded hr-bottom'
+	        }, void 0, _jsx('div', {
+	          className: 'column text-right small-1'
+	        }, void 0, _jsx('div', {
+	          className: [negative].join(' ')
+	        }, void 0, _jsx('h1', {
+	          className: 'h5 text-overflow'
+	        }, void 0, _jsx('a', {
+	          title: atitle,
+	          href: _this4.state.params.Tlinks[nparam],
+	          onClick: handleClick
+	        }, void 0, _ref3, title)))), _jsx('div', {
+	          className: 'column large-11'
+	        }, void 0, _jsx('div', {
+	          className: [negative].join(' ')
+	        }, void 0, _jsx('ul', {
+	          className: 'row menu showhide-show'
+	        }, void 0, _jsx('li', {}, void 0, _jsx('div', {
+	          className: 'input-group'
+	        }, void 0, _ref4, _jsx('div', {
+	          className: 'input-group-button'
+	        }, void 0, _jsx('button', {
+	          className: 'button small secondary disabled'
+	        }, void 0, _this4.state.params[nparam].Absolute)), (_cls = 'text-nowrap button small', undefined), _jsx('div', {
+	          className: 'input-group-button'
+	        }, void 0, alink(_cls, '- %s', _this4.state.params.Nlinks[nparam].Less)), _jsx('div', {
+	          className: 'input-group-button'
+	        }, void 0, alink(_cls, '%s +', _this4.state.params.Nlinks[nparam].More))))), _jsx('div', {
+	          className: [absolute].join(' ')
+	        }, void 0, block))));
+	      };
+
+	      var la_line = function la_line(la, i) {
+	        return _jsx('div', {
+	          className: 'row'
+	        }, 'la_line_' + i, _jsx('span', {
+	          className: 'expand col small-1'
+	        }, void 0, _jsx('div', {
+	          className: 'text-right width-3rem'
+	        }, void 0, [la.Period, 'm'].join(''))), _jsx('span', {
+	          className: 'expand col small-1 text-right'
+	        }, void 0, [' ', la.Value].join('')), _jsx('span', {
+	          className: 'expand col-lr'
+	        }, void 0, React.createElement(Sparkline, {
+	          ref: 'la.' + i,
+	          col: 'Value',
+	          ssr: _this4.props.ssr
+	        })));
+	      };
+	      var la = table('Lan', 'Load avg', _jsx('div', {
+	        className: 'stripe'
+	      }, void 0, _ref5, this.state.la.List && this.state.la.List.map(function (la, i) {
+	        return _this4.range('$la', '.Data.la.List', la_line, la, i);
+	      })));
+
+	      var mem_line = function mem_line(mem, i) {
+	        return _jsx('div', {
+	          className: 'row'
+	        }, 'mem_line_' + i, _jsx('span', {
+	          className: 'expand col small-1'
+	        }, void 0, mem.Kind), _jsx('span', {
+	          className: 'expand col small-1 text-right'
+	        }, void 0, [' ', mem.Total].join('')), _jsx('span', {
+	          className: 'expand col small-1 text-right'
+	        }, void 0, [' ', mem.Used].join('')), _jsx('span', {
+	          className: 'expand col small-1 text-right'
+	        }, void 0, [' ', mem.Free].join('')), _jsx('span', {
+	          'data-usepct': mem.UsePct,
+	          className: 'expand col small-1 text-right bg-usepct'
+	        }, void 0, [mem.UsePct, '%'].join('')), _jsx('span', {
+	          className: 'expand col-lr'
+	        }, void 0, React.createElement(Sparkline, {
+	          ref: 'mem.' + i,
+	          col: 'UsePct',
+	          ssr: _this4.props.ssr
+	        })));
+	      };
+	      var mem = table('Memn', 'Memory', _jsx('div', {
+	        className: 'stripe'
+	      }, void 0, _ref6, this.state.mem.List && this.state.mem.List.map(function (mem, i) {
+	        return _this4.range('$mem', '.Data.mem.List', mem_line, mem, i);
+	      })));
+
+	      var df_line = function df_line(df, i) {
+	        return _jsx('div', {
+	          className: 'row'
+	        }, 'df_line_' + i, _jsx('span', {
+	          className: 'expand col small-1 text-overflow'
+	        }, void 0, df.DevName), _jsx('span', {
+	          className: 'expand col small-1 text-overflow'
+	        }, void 0, [' ', df.DirName].join('')), _jsx('span', {
+	          className: 'expand col small-1 text-overflow text-right gray'
+	        }, void 0, _jsx('span', {
+	          className: 'float-right'
+	        }, void 0, [' ', df.Total].join('')), _jsx('span', {
+	          title: 'Inodes total'
+	        }, void 0, [' ', df.Inodes].join(''))), _jsx('span', {
+	          className: 'expand col small-1 text-overflow text-right gray'
+	        }, void 0, _jsx('span', {
+	          className: 'float-right'
+	        }, void 0, [' ', df.Used].join('')), _jsx('span', {
+	          title: 'Inodes used'
+	        }, void 0, [' ', df.Iused].join(''))), _jsx('span', {
+	          className: 'expand col small-1 text-overflow text-right gray'
+	        }, void 0, _jsx('span', {
+	          className: 'float-right'
+	        }, void 0, [' ', df.Avail].join('')), _jsx('span', {
+	          title: 'Inodes free'
+	        }, void 0, [' ', df.Ifree].join(''))), _jsx('span', {
+	          'data-usepct': df.UsePct,
+	          className: 'expand col small-1 text-overflow text-right gray bg-usepct'
+	        }, void 0, _jsx('span', {
+	          className: 'float-right'
+	        }, void 0, [' ', df.UsePct, '%'].join('')), _jsx('span', {
+	          title: 'Inodes use%'
+	        }, void 0, [' ', df.IusePct, '%'].join(''))), _jsx('span', {
+	          className: 'expand col-lr'
+	        }, void 0, React.createElement(Sparkline, {
+	          ref: 'df.' + i,
+	          col: 'UsePct',
+	          ssr: _this4.props.ssr
+	        })));
+	      };
+	      var df = table('Dfn', 'Disk usage', _jsx('div', {
+	        className: 'stripe'
+	      }, void 0, _jsx('div', {
+	        className: 'row thead'
+	      }, void 0, _jsx('span', {
+	        className: 'expand col small-1 text-nowrap'
+	      }, void 0, vlink('Dfk', 1, 'Device')), _jsx('span', {
+	        className: 'expand col small-1 text-nowrap'
+	      }, void 0, vlink('Dfk', 2, 'Mounted')), _jsx('span', {
+	        className: 'expand col small-1 text-nowrap text-right'
+	      }, void 0, vlink('Dfk', 6, 'Total')), _jsx('span', {
+	        className: 'expand col small-1 text-nowrap text-right'
+	      }, void 0, vlink('Dfk', 5, 'Used')), _jsx('span', {
+	        className: 'expand col small-1 text-nowrap text-right'
+	      }, void 0, vlink('Dfk', 3, 'Avail')), _jsx('span', {
+	        className: 'expand col small-1 text-nowrap text-right'
+	      }, void 0, vlink('Dfk', 4, 'Use%')), _ref7), this.state.df.List && this.state.df.List.map(function (df, i) {
+	        return _this4.range('$df', '.Data.df.List', df_line, df, i);
+	      })));
+
+	      //- let cpu_spark = (i, col) => (data) => +data.cpu.List[i][col];
+	      var cpu_spark = function cpu_spark(N, col) {
+	        return function (data) {
+	          return data.cpu.List.filter(function (x) {
+	            return x.N == N;
+	          })[0][col];
+	        };
+	      };
+	      var cpu_line = function cpu_line(cpu, i) {
+	        return _jsx('div', {
+	          className: 'row'
+	        }, 'cpu_line_' + cpu.N, _jsx('span', {
+	          className: 'expand col small-1 text-nowrap'
+	        }, void 0, cpu.N), _jsx('span', {
+	          'data-usepct': cpu.UserPct,
+	          className: 'expand col small-1 text-right bg-usepct'
+	        }, void 0, [cpu.UserPct, '%'].join('')), _jsx('span', {
+	          'data-usepct': cpu.SysPct,
+	          className: 'expand col small-1 text-right bg-usepct'
+	        }, void 0, [cpu.SysPct, '%'].join('')), _jsx('span', {
+	          'data-usepct': cpu.WaitPct,
+	          className: 'expand col small-1 text-right bg-usepct'
+	        }, void 0, [cpu.WaitPct, '%'].join('')), _jsx('span', {
+	          'data-usepct': cpu.IdlePct,
+	          className: 'expand col small-1 text-right bg-usepct-inverse'
+	        }, void 0, [cpu.IdlePct, '%'].join('')), _jsx('span', {
+	          className: 'expand col-lr'
+	        }, void 0, React.createElement(Sparkline, {
+	          getter: cpu.N,
+	          col: 'IdlePct',
+	          ref: 'cpu.' + i,
+	          defaultSpots: true,
+	          ssr: _this4.props.ssr
+	        })));
+	      };
+	      var cpu = table('CPUn', 'CPU', _jsx('div', {
+	        className: 'stripe'
+	      }, void 0, _ref8, this.state.cpu.List && this.state.cpu.List.map(function (cpu, i) {
+	        return _this4.range('$cpu', '.Data.cpu.List', cpu_line, cpu, i);
+	      })));
+
+	      var if_line = function if_line(if_, i) {
+	        var deltacls = if_.DeltaDropsIn == "0" && if_.DeltaDropsOut == "0" && if_.DeltaErrorsIn == "0" && if_.DeltaErrorsOut == "0" ? 'gray' : '';
+	        if (process.env.NODE_ENV !== 'production' && _this4.props.ssr) {
+	          deltacls = '[[if and (eq $if.DeltaDropsIn `0`) (eq $if.DeltaDropsOut `0`) (eq $if.DeltaErrorsIn `0`) (eq $if.DeltaErrorsOut `0`)]]gray[[end]]';
+	        }
+	        return _jsx('div', {
+	          className: 'row'
+	        }, 'if_line_' + i, _jsx('span', {
+	          className: 'expand col small-1 text-overflow'
+	        }, void 0, if_.Name), _jsx('span', {
+	          className: 'expand col small-1 text-overflow text-right'
+	        }, void 0, if_.IP), _jsx('span', {
+	          className: 'expand col small-2 text-right text-nowrap'
+	        }, void 0, ' ', _jsx('span', {
+	          title: 'Total drops,errors modulo 4G',
+	          className: 'gray'
+	        }, void 0, _jsx('span', {
+	          title: 'Total drops In modulo 4G'
+	        }, void 0, if_.DropsIn), '/', _jsx('span', {
+	          title: 'Total drops Out modulo 4G'
+	        }, void 0, if_.DropsOut), ',', _jsx('span', {
+	          title: 'Total errors In modulo 4G'
+	        }, void 0, if_.ErrorsIn), '/', _jsx('span', {
+	          title: 'Total errors Out modulo 4G'
+	        }, void 0, if_.ErrorsOut)), ' ', _jsx('span', {
+	          className: [deltacls].join(' ')
+	        }, void 0, _jsx('span', {
+	          title: 'Drops In per second'
+	        }, void 0, if_.DeltaDropsIn), '/', _jsx('span', {
+	          title: 'Drops Out per second'
+	        }, void 0, if_.DeltaDropsOut), ',', _jsx('span', {
+	          title: 'Errors In per second'
+	        }, void 0, if_.DeltaErrorsIn), '/', _jsx('span', {
+	          title: 'Errors Out per second'
+	        }, void 0, if_.DeltaErrorsOut))), _jsx('span', {
+	          className: 'expand col small-2 text-right text-nowrap'
+	        }, void 0, ' ', _jsx('span', {
+	          className: 'gray'
+	        }, void 0, _jsx('span', {
+	          title: 'Total packets In modulo 4G'
+	        }, void 0, if_.PacketsIn), '/', _jsx('span', {
+	          title: 'Total packets Out modulo 4G'
+	        }, void 0, if_.PacketsOut)), ' ', _jsx('span', {
+	          title: 'Packets In per second'
+	        }, void 0, if_.DeltaPacketsIn), '/', _jsx('span', {
+	          title: 'Packets Out per second'
+	        }, void 0, if_.DeltaPacketsOut)), _jsx('span', {
+	          className: 'expand col small-2 text-right text-nowrap'
+	        }, void 0, ' ', _jsx('span', {
+	          className: 'gray'
+	        }, void 0, _jsx('span', {
+	          title: 'Total BYTES In modulo 4G'
+	        }, void 0, if_.BytesIn), '/', _jsx('span', {
+	          title: 'Total BYTES Out modulo 4G'
+	        }, void 0, if_.BytesOut)), ' ', _jsx('span', {
+	          title: 'BITS In per second'
+	        }, void 0, if_.DeltaBitsIn), '/', _jsx('span', {
+	          title: 'BITS Out per second'
+	        }, void 0, if_.DeltaBitsOut)), _jsx('span', {
+	          className: 'expand col-lr'
+	        }, void 0, React.createElement(Sparkline, {
+	          ref: 'netio.' + i,
+	          col: 'DeltaBytesOutNum',
+	          ssr: _this4.props.ssr
+	        })));
+	      };
+	      var ifs = table('Ifn', 'Interfaces', _jsx('div', {
+	        className: 'stripe'
+	      }, void 0, _ref9, this.state.netio.List && this.state.netio.List.map(function (if_, i) {
+	        return _this4.range('$if', '.Data.netio.List', if_line, if_, i);
+	      })));
+
+	      var ps_line = function ps_line(ps, i) {
+	        return _jsx('div', {
+	          className: 'row'
+	        }, 'ps_line_' + i, _jsx('span', {
+	          className: 'expand col small-1 text-right'
+	        }, void 0, ps.PID), _jsx('span', {
+	          className: 'expand col small-1 text-right'
+	        }, void 0, [' ', ps.UID].join('')), _jsx('span', {
+	          className: 'expand col small-1'
+	        }, void 0, [' ', ps.User].join('')), _jsx('span', {
+	          className: 'expand col small-1 text-right'
+	        }, void 0, [' ', ps.Priority].join('')), _jsx('span', {
+	          className: 'expand col small-1 text-right'
+	        }, void 0, [' ', ps.Nice].join('')), _jsx('span', {
+	          className: 'expand col small-1 text-right'
+	        }, void 0, [' ', ps.Size].join('')), _jsx('span', {
+	          className: 'expand col small-1 text-right'
+	        }, void 0, [' ', ps.Resident].join('')), _jsx('span', {
+	          className: 'expand col small-1 text-center'
+	        }, void 0, [' ', ps.Time].join('')), _jsx('span', {
+	          className: 'expand col'
+	        }, void 0, [' ', ps.Name].join('')));
+	      };
+	      var ps = table('Psn', 'Processes', _jsx('div', {
+	        className: 'stripe'
+	      }, void 0, _jsx('div', {
+	        className: 'row thead'
+	      }, void 0, _jsx('span', {
+	        className: 'expand col small-1 text-nowrap text-right'
+	      }, void 0, vlink('Psk', 1, 'PID')), _jsx('span', {
+	        className: 'expand col small-1 text-nowrap text-right'
+	      }, void 0, vlink('Psk', 2, 'UID')), _jsx('span', {
+	        className: 'expand col small-1 text-nowrap'
+	      }, void 0, vlink('Psk', 3, 'USER')), _jsx('span', {
+	        className: 'expand col small-1 text-nowrap text-right'
+	      }, void 0, vlink('Psk', 4, 'PR')), _jsx('span', {
+	        className: 'expand col small-1 text-nowrap text-right'
+	      }, void 0, vlink('Psk', 5, 'NI')), _jsx('span', {
+	        className: 'expand col small-1 text-nowrap text-right'
+	      }, void 0, vlink('Psk', 6, 'VIRT')), _jsx('span', {
+	        className: 'expand col small-1 text-nowrap text-right'
+	      }, void 0, vlink('Psk', 7, 'RES')), _jsx('span', {
+	        className: 'expand col small-1 text-nowrap text-center'
+	      }, void 0, vlink('Psk', 8, 'TIME')), _jsx('span', {
+	        className: 'expand col small-1 text-nowrap'
+	      }, void 0, vlink('Psk', 9, 'COMMAND'))), this.state.procs.List && this.state.procs.List.map(function (ps, i) {
+	        return _this4.range('$ps', '.Data.procs.List', ps_line, ps, i);
+	      })));
+
+	      var latestOstent = 'https://www.ostrost.com/ostent/releases/latest?cmp=' + this.state.OstentVersion;
+	      return [_jsx('div', {
+	        className: 'top-bar'
+	      }, void 0, _jsx('div', {
+	        className: 'top-bar-title'
+	      }, void 0, _jsx('h2', {
+	        className: 'h5 margin-bottom-0'
+	      }, void 0, hostname, ' ', _jsx('a', {
+	        href: latestOstent
+	      }, void 0, 'ostent'))), ostentUpgrade(latestOstent), _jsx('div', {}, void 0, _jsx('div', {
+	        className: 'top-bar-right'
+	      }, void 0, _jsx('h2', {
+	        className: 'h5 margin-bottom-0'
+	      }, void 0, _jsx('small', {}, void 0, [this.state.Distrib, ' up '].join(''), _jsx('span', {
+	        className: 'whitespace-pre'
+	      }, void 0, uptime)))))), la, mem, df, cpu, ifs, ps, exporting()];
+	    }
+	  }]);
+
+	  return Page;
+	}(React.PureComponent);
+
+	;
 
 	/*
 	function neweventsource(onmessage) {
@@ -90,11 +844,7 @@
 	    return;
 	  }
 
-	  var els = [];
-	  for (var i = 0, sel = document.querySelectorAll('.updates'); i < sel.length; i++) {
-	    var cl = jsxdefines[sel[i].getAttribute('data-define')];
-	    els.push(ReactDOM.render(React.createElement(cl), sel[i]));
-	  }
+	  var page = ReactDOM.hydrate(React.createElement(Page, { initialState: data }), document.getElementById('page'));
 
 	  var wscheme = location.protocol === 'https:' ? 'wss' : 'ws';
 	  var ws = new ReconnectWS(wscheme + '://' + location.host + '/index.ws');
@@ -119,11 +869,11 @@
 	  };
 	  ws.onmessage = function (event) {
 	    // the onmessage
-	    var data = JSON.parse(event.data);
-	    if (data == null) {
+	    var state = JSON.parse(event.data);
+	    if (state == null) {
 	      return;
 	    }
-	    if (data.Reload != null && data.Reload) {
+	    if (state.Reload != null && state.Reload) {
 	      window.setTimeout(function () {
 	        location.reload(true);
 	      }, 5000);
@@ -132,36 +882,25 @@
 	      console.log('in 2s: ws.close()');
 	      return;
 	    }
-	    if (data.Error != null) {
-	      console.log('Error', data.Error);
+	    if (state.Error != null) {
+	      console.log('Error', state.Error);
 	      return;
 	    }
-	    for (var i = 0; i < els.length; i++) {
-	      els[i].NewState(data);
-	    }
+	    page.NewState(state);
 	  };
 
 	  window.updates = ws; // neweventsource(onmessage);
 	}
 
-	main(Data); // global Data
+	if (typeof Data !== 'undefined') {
+	  main(Data);
+	} // global Data
+
+	module.exports = Page;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
-
-	if (process.env.NODE_ENV === 'production') {
-	  module.exports = __webpack_require__(3);
-	} else {
-	  module.exports = __webpack_require__(8);
-	}
-
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
-
-/***/ }),
-/* 2 */
 /***/ (function(module, exports) {
 
 	// shim for using process in browser
@@ -347,7 +1086,654 @@
 
 
 /***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
+	//
+	// Permission is hereby granted, free of charge, to any person obtaining a
+	// copy of this software and associated documentation files (the
+	// "Software"), to deal in the Software without restriction, including
+	// without limitation the rights to use, copy, modify, merge, publish,
+	// distribute, sublicense, and/or sell copies of the Software, and to permit
+	// persons to whom the Software is furnished to do so, subject to the
+	// following conditions:
+	//
+	// The above copyright notice and this permission notice shall be included
+	// in all copies or substantial portions of the Software.
+	//
+	// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+	// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+	// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+	// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+	// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+	// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+	var formatRegExp = /%[sdj%]/g;
+	exports.format = function(f) {
+	  if (!isString(f)) {
+	    var objects = [];
+	    for (var i = 0; i < arguments.length; i++) {
+	      objects.push(inspect(arguments[i]));
+	    }
+	    return objects.join(' ');
+	  }
+
+	  var i = 1;
+	  var args = arguments;
+	  var len = args.length;
+	  var str = String(f).replace(formatRegExp, function(x) {
+	    if (x === '%%') return '%';
+	    if (i >= len) return x;
+	    switch (x) {
+	      case '%s': return String(args[i++]);
+	      case '%d': return Number(args[i++]);
+	      case '%j':
+	        try {
+	          return JSON.stringify(args[i++]);
+	        } catch (_) {
+	          return '[Circular]';
+	        }
+	      default:
+	        return x;
+	    }
+	  });
+	  for (var x = args[i]; i < len; x = args[++i]) {
+	    if (isNull(x) || !isObject(x)) {
+	      str += ' ' + x;
+	    } else {
+	      str += ' ' + inspect(x);
+	    }
+	  }
+	  return str;
+	};
+
+
+	// Mark that a method should not be used.
+	// Returns a modified function which warns once by default.
+	// If --no-deprecation is set, then it is a no-op.
+	exports.deprecate = function(fn, msg) {
+	  // Allow for deprecating things in the process of starting up.
+	  if (isUndefined(global.process)) {
+	    return function() {
+	      return exports.deprecate(fn, msg).apply(this, arguments);
+	    };
+	  }
+
+	  if (process.noDeprecation === true) {
+	    return fn;
+	  }
+
+	  var warned = false;
+	  function deprecated() {
+	    if (!warned) {
+	      if (process.throwDeprecation) {
+	        throw new Error(msg);
+	      } else if (process.traceDeprecation) {
+	        console.trace(msg);
+	      } else {
+	        console.error(msg);
+	      }
+	      warned = true;
+	    }
+	    return fn.apply(this, arguments);
+	  }
+
+	  return deprecated;
+	};
+
+
+	var debugs = {};
+	var debugEnviron;
+	exports.debuglog = function(set) {
+	  if (isUndefined(debugEnviron))
+	    debugEnviron = process.env.NODE_DEBUG || '';
+	  set = set.toUpperCase();
+	  if (!debugs[set]) {
+	    if (new RegExp('\\b' + set + '\\b', 'i').test(debugEnviron)) {
+	      var pid = process.pid;
+	      debugs[set] = function() {
+	        var msg = exports.format.apply(exports, arguments);
+	        console.error('%s %d: %s', set, pid, msg);
+	      };
+	    } else {
+	      debugs[set] = function() {};
+	    }
+	  }
+	  return debugs[set];
+	};
+
+
+	/**
+	 * Echos the value of a value. Trys to print the value out
+	 * in the best way possible given the different types.
+	 *
+	 * @param {Object} obj The object to print out.
+	 * @param {Object} opts Optional options object that alters the output.
+	 */
+	/* legacy: obj, showHidden, depth, colors*/
+	function inspect(obj, opts) {
+	  // default options
+	  var ctx = {
+	    seen: [],
+	    stylize: stylizeNoColor
+	  };
+	  // legacy...
+	  if (arguments.length >= 3) ctx.depth = arguments[2];
+	  if (arguments.length >= 4) ctx.colors = arguments[3];
+	  if (isBoolean(opts)) {
+	    // legacy...
+	    ctx.showHidden = opts;
+	  } else if (opts) {
+	    // got an "options" object
+	    exports._extend(ctx, opts);
+	  }
+	  // set default options
+	  if (isUndefined(ctx.showHidden)) ctx.showHidden = false;
+	  if (isUndefined(ctx.depth)) ctx.depth = 2;
+	  if (isUndefined(ctx.colors)) ctx.colors = false;
+	  if (isUndefined(ctx.customInspect)) ctx.customInspect = true;
+	  if (ctx.colors) ctx.stylize = stylizeWithColor;
+	  return formatValue(ctx, obj, ctx.depth);
+	}
+	exports.inspect = inspect;
+
+
+	// http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
+	inspect.colors = {
+	  'bold' : [1, 22],
+	  'italic' : [3, 23],
+	  'underline' : [4, 24],
+	  'inverse' : [7, 27],
+	  'white' : [37, 39],
+	  'grey' : [90, 39],
+	  'black' : [30, 39],
+	  'blue' : [34, 39],
+	  'cyan' : [36, 39],
+	  'green' : [32, 39],
+	  'magenta' : [35, 39],
+	  'red' : [31, 39],
+	  'yellow' : [33, 39]
+	};
+
+	// Don't use 'blue' not visible on cmd.exe
+	inspect.styles = {
+	  'special': 'cyan',
+	  'number': 'yellow',
+	  'boolean': 'yellow',
+	  'undefined': 'grey',
+	  'null': 'bold',
+	  'string': 'green',
+	  'date': 'magenta',
+	  // "name": intentionally not styling
+	  'regexp': 'red'
+	};
+
+
+	function stylizeWithColor(str, styleType) {
+	  var style = inspect.styles[styleType];
+
+	  if (style) {
+	    return '\u001b[' + inspect.colors[style][0] + 'm' + str +
+	           '\u001b[' + inspect.colors[style][1] + 'm';
+	  } else {
+	    return str;
+	  }
+	}
+
+
+	function stylizeNoColor(str, styleType) {
+	  return str;
+	}
+
+
+	function arrayToHash(array) {
+	  var hash = {};
+
+	  array.forEach(function(val, idx) {
+	    hash[val] = true;
+	  });
+
+	  return hash;
+	}
+
+
+	function formatValue(ctx, value, recurseTimes) {
+	  // Provide a hook for user-specified inspect functions.
+	  // Check that value is an object with an inspect function on it
+	  if (ctx.customInspect &&
+	      value &&
+	      isFunction(value.inspect) &&
+	      // Filter out the util module, it's inspect function is special
+	      value.inspect !== exports.inspect &&
+	      // Also filter out any prototype objects using the circular check.
+	      !(value.constructor && value.constructor.prototype === value)) {
+	    var ret = value.inspect(recurseTimes, ctx);
+	    if (!isString(ret)) {
+	      ret = formatValue(ctx, ret, recurseTimes);
+	    }
+	    return ret;
+	  }
+
+	  // Primitive types cannot have properties
+	  var primitive = formatPrimitive(ctx, value);
+	  if (primitive) {
+	    return primitive;
+	  }
+
+	  // Look up the keys of the object.
+	  var keys = Object.keys(value);
+	  var visibleKeys = arrayToHash(keys);
+
+	  if (ctx.showHidden) {
+	    keys = Object.getOwnPropertyNames(value);
+	  }
+
+	  // IE doesn't make error fields non-enumerable
+	  // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
+	  if (isError(value)
+	      && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
+	    return formatError(value);
+	  }
+
+	  // Some type of object without properties can be shortcutted.
+	  if (keys.length === 0) {
+	    if (isFunction(value)) {
+	      var name = value.name ? ': ' + value.name : '';
+	      return ctx.stylize('[Function' + name + ']', 'special');
+	    }
+	    if (isRegExp(value)) {
+	      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+	    }
+	    if (isDate(value)) {
+	      return ctx.stylize(Date.prototype.toString.call(value), 'date');
+	    }
+	    if (isError(value)) {
+	      return formatError(value);
+	    }
+	  }
+
+	  var base = '', array = false, braces = ['{', '}'];
+
+	  // Make Array say that they are Array
+	  if (isArray(value)) {
+	    array = true;
+	    braces = ['[', ']'];
+	  }
+
+	  // Make functions say that they are functions
+	  if (isFunction(value)) {
+	    var n = value.name ? ': ' + value.name : '';
+	    base = ' [Function' + n + ']';
+	  }
+
+	  // Make RegExps say that they are RegExps
+	  if (isRegExp(value)) {
+	    base = ' ' + RegExp.prototype.toString.call(value);
+	  }
+
+	  // Make dates with properties first say the date
+	  if (isDate(value)) {
+	    base = ' ' + Date.prototype.toUTCString.call(value);
+	  }
+
+	  // Make error with message first say the error
+	  if (isError(value)) {
+	    base = ' ' + formatError(value);
+	  }
+
+	  if (keys.length === 0 && (!array || value.length == 0)) {
+	    return braces[0] + base + braces[1];
+	  }
+
+	  if (recurseTimes < 0) {
+	    if (isRegExp(value)) {
+	      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+	    } else {
+	      return ctx.stylize('[Object]', 'special');
+	    }
+	  }
+
+	  ctx.seen.push(value);
+
+	  var output;
+	  if (array) {
+	    output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
+	  } else {
+	    output = keys.map(function(key) {
+	      return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
+	    });
+	  }
+
+	  ctx.seen.pop();
+
+	  return reduceToSingleString(output, base, braces);
+	}
+
+
+	function formatPrimitive(ctx, value) {
+	  if (isUndefined(value))
+	    return ctx.stylize('undefined', 'undefined');
+	  if (isString(value)) {
+	    var simple = '\'' + JSON.stringify(value).replace(/^"|"$/g, '')
+	                                             .replace(/'/g, "\\'")
+	                                             .replace(/\\"/g, '"') + '\'';
+	    return ctx.stylize(simple, 'string');
+	  }
+	  if (isNumber(value))
+	    return ctx.stylize('' + value, 'number');
+	  if (isBoolean(value))
+	    return ctx.stylize('' + value, 'boolean');
+	  // For some reason typeof null is "object", so special case here.
+	  if (isNull(value))
+	    return ctx.stylize('null', 'null');
+	}
+
+
+	function formatError(value) {
+	  return '[' + Error.prototype.toString.call(value) + ']';
+	}
+
+
+	function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
+	  var output = [];
+	  for (var i = 0, l = value.length; i < l; ++i) {
+	    if (hasOwnProperty(value, String(i))) {
+	      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+	          String(i), true));
+	    } else {
+	      output.push('');
+	    }
+	  }
+	  keys.forEach(function(key) {
+	    if (!key.match(/^\d+$/)) {
+	      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+	          key, true));
+	    }
+	  });
+	  return output;
+	}
+
+
+	function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
+	  var name, str, desc;
+	  desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
+	  if (desc.get) {
+	    if (desc.set) {
+	      str = ctx.stylize('[Getter/Setter]', 'special');
+	    } else {
+	      str = ctx.stylize('[Getter]', 'special');
+	    }
+	  } else {
+	    if (desc.set) {
+	      str = ctx.stylize('[Setter]', 'special');
+	    }
+	  }
+	  if (!hasOwnProperty(visibleKeys, key)) {
+	    name = '[' + key + ']';
+	  }
+	  if (!str) {
+	    if (ctx.seen.indexOf(desc.value) < 0) {
+	      if (isNull(recurseTimes)) {
+	        str = formatValue(ctx, desc.value, null);
+	      } else {
+	        str = formatValue(ctx, desc.value, recurseTimes - 1);
+	      }
+	      if (str.indexOf('\n') > -1) {
+	        if (array) {
+	          str = str.split('\n').map(function(line) {
+	            return '  ' + line;
+	          }).join('\n').substr(2);
+	        } else {
+	          str = '\n' + str.split('\n').map(function(line) {
+	            return '   ' + line;
+	          }).join('\n');
+	        }
+	      }
+	    } else {
+	      str = ctx.stylize('[Circular]', 'special');
+	    }
+	  }
+	  if (isUndefined(name)) {
+	    if (array && key.match(/^\d+$/)) {
+	      return str;
+	    }
+	    name = JSON.stringify('' + key);
+	    if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
+	      name = name.substr(1, name.length - 2);
+	      name = ctx.stylize(name, 'name');
+	    } else {
+	      name = name.replace(/'/g, "\\'")
+	                 .replace(/\\"/g, '"')
+	                 .replace(/(^"|"$)/g, "'");
+	      name = ctx.stylize(name, 'string');
+	    }
+	  }
+
+	  return name + ': ' + str;
+	}
+
+
+	function reduceToSingleString(output, base, braces) {
+	  var numLinesEst = 0;
+	  var length = output.reduce(function(prev, cur) {
+	    numLinesEst++;
+	    if (cur.indexOf('\n') >= 0) numLinesEst++;
+	    return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
+	  }, 0);
+
+	  if (length > 60) {
+	    return braces[0] +
+	           (base === '' ? '' : base + '\n ') +
+	           ' ' +
+	           output.join(',\n  ') +
+	           ' ' +
+	           braces[1];
+	  }
+
+	  return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
+	}
+
+
+	// NOTE: These type checking functions intentionally don't use `instanceof`
+	// because it is fragile and can be easily faked with `Object.create()`.
+	function isArray(ar) {
+	  return Array.isArray(ar);
+	}
+	exports.isArray = isArray;
+
+	function isBoolean(arg) {
+	  return typeof arg === 'boolean';
+	}
+	exports.isBoolean = isBoolean;
+
+	function isNull(arg) {
+	  return arg === null;
+	}
+	exports.isNull = isNull;
+
+	function isNullOrUndefined(arg) {
+	  return arg == null;
+	}
+	exports.isNullOrUndefined = isNullOrUndefined;
+
+	function isNumber(arg) {
+	  return typeof arg === 'number';
+	}
+	exports.isNumber = isNumber;
+
+	function isString(arg) {
+	  return typeof arg === 'string';
+	}
+	exports.isString = isString;
+
+	function isSymbol(arg) {
+	  return typeof arg === 'symbol';
+	}
+	exports.isSymbol = isSymbol;
+
+	function isUndefined(arg) {
+	  return arg === void 0;
+	}
+	exports.isUndefined = isUndefined;
+
+	function isRegExp(re) {
+	  return isObject(re) && objectToString(re) === '[object RegExp]';
+	}
+	exports.isRegExp = isRegExp;
+
+	function isObject(arg) {
+	  return typeof arg === 'object' && arg !== null;
+	}
+	exports.isObject = isObject;
+
+	function isDate(d) {
+	  return isObject(d) && objectToString(d) === '[object Date]';
+	}
+	exports.isDate = isDate;
+
+	function isError(e) {
+	  return isObject(e) &&
+	      (objectToString(e) === '[object Error]' || e instanceof Error);
+	}
+	exports.isError = isError;
+
+	function isFunction(arg) {
+	  return typeof arg === 'function';
+	}
+	exports.isFunction = isFunction;
+
+	function isPrimitive(arg) {
+	  return arg === null ||
+	         typeof arg === 'boolean' ||
+	         typeof arg === 'number' ||
+	         typeof arg === 'string' ||
+	         typeof arg === 'symbol' ||  // ES6 symbol
+	         typeof arg === 'undefined';
+	}
+	exports.isPrimitive = isPrimitive;
+
+	exports.isBuffer = __webpack_require__(3);
+
+	function objectToString(o) {
+	  return Object.prototype.toString.call(o);
+	}
+
+
+	function pad(n) {
+	  return n < 10 ? '0' + n.toString(10) : n.toString(10);
+	}
+
+
+	var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
+	              'Oct', 'Nov', 'Dec'];
+
+	// 26 Feb 16:19:34
+	function timestamp() {
+	  var d = new Date();
+	  var time = [pad(d.getHours()),
+	              pad(d.getMinutes()),
+	              pad(d.getSeconds())].join(':');
+	  return [d.getDate(), months[d.getMonth()], time].join(' ');
+	}
+
+
+	// log is just a thin wrapper to console.log that prepends a timestamp
+	exports.log = function() {
+	  console.log('%s - %s', timestamp(), exports.format.apply(exports, arguments));
+	};
+
+
+	/**
+	 * Inherit the prototype methods from one constructor into another.
+	 *
+	 * The Function.prototype.inherits from lang.js rewritten as a standalone
+	 * function (not on Function.prototype). NOTE: If this file is to be loaded
+	 * during bootstrapping this function needs to be rewritten using some native
+	 * functions as prototype setup using normal JavaScript does not work as
+	 * expected during bootstrapping (see mirror.js in r114903).
+	 *
+	 * @param {function} ctor Constructor function which needs to inherit the
+	 *     prototype.
+	 * @param {function} superCtor Constructor function to inherit prototype from.
+	 */
+	exports.inherits = __webpack_require__(4);
+
+	exports._extend = function(origin, add) {
+	  // Don't do anything if add isn't an object
+	  if (!add || !isObject(add)) return origin;
+
+	  var keys = Object.keys(add);
+	  var i = keys.length;
+	  while (i--) {
+	    origin[keys[i]] = add[keys[i]];
+	  }
+	  return origin;
+	};
+
+	function hasOwnProperty(obj, prop) {
+	  return Object.prototype.hasOwnProperty.call(obj, prop);
+	}
+
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(1)))
+
+/***/ }),
 /* 3 */
+/***/ (function(module, exports) {
+
+	module.exports = function isBuffer(arg) {
+	  return arg && typeof arg === 'object'
+	    && typeof arg.copy === 'function'
+	    && typeof arg.fill === 'function'
+	    && typeof arg.readUInt8 === 'function';
+	}
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+	if (typeof Object.create === 'function') {
+	  // implementation from standard node.js 'util' module
+	  module.exports = function inherits(ctor, superCtor) {
+	    ctor.super_ = superCtor
+	    ctor.prototype = Object.create(superCtor.prototype, {
+	      constructor: {
+	        value: ctor,
+	        enumerable: false,
+	        writable: true,
+	        configurable: true
+	      }
+	    });
+	  };
+	} else {
+	  // old school shim for old browsers
+	  module.exports = function inherits(ctor, superCtor) {
+	    ctor.super_ = superCtor
+	    var TempCtor = function () {}
+	    TempCtor.prototype = superCtor.prototype
+	    ctor.prototype = new TempCtor()
+	    ctor.prototype.constructor = ctor
+	  }
+	}
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
+
+	if (process.env.NODE_ENV === 'production') {
+	  module.exports = __webpack_require__(6);
+	} else {
+	  module.exports = __webpack_require__(11);
+	}
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/*
@@ -359,7 +1745,7 @@
 	 This source code is licensed under the MIT license found in the
 	 LICENSE file in the root directory of this source tree.
 	*/
-	'use strict';var f=__webpack_require__(4),p=__webpack_require__(5);__webpack_require__(6);var r=__webpack_require__(7);
+	'use strict';var f=__webpack_require__(7),p=__webpack_require__(8);__webpack_require__(9);var r=__webpack_require__(10);
 	function t(a){for(var b=arguments.length-1,d="Minified React error #"+a+"; visit http://facebook.github.io/react/docs/error-decoder.html?invariant\x3d"+a,e=0;e<b;e++)d+="\x26args[]\x3d"+encodeURIComponent(arguments[e+1]);b=Error(d+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings.");b.name="Invariant Violation";b.framesToPop=1;throw b;}
 	var u={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}};function v(a,b,d){this.props=a;this.context=b;this.refs=p;this.updater=d||u}v.prototype.isReactComponent={};v.prototype.setState=function(a,b){"object"!==typeof a&&"function"!==typeof a&&null!=a?t("85"):void 0;this.updater.enqueueSetState(this,a,b,"setState")};v.prototype.forceUpdate=function(a){this.updater.enqueueForceUpdate(this,a,"forceUpdate")};
 	function w(a,b,d){this.props=a;this.context=b;this.refs=p;this.updater=d||u}function x(){}x.prototype=v.prototype;var y=w.prototype=new x;y.constructor=w;f(y,v.prototype);y.isPureReactComponent=!0;function z(a,b,d){this.props=a;this.context=b;this.refs=p;this.updater=d||u}var A=z.prototype=new x;A.constructor=z;f(A,v.prototype);A.unstable_isAsyncReactComponent=!0;A.render=function(){return this.props.children};
@@ -376,7 +1762,7 @@
 
 
 /***/ }),
-/* 4 */
+/* 7 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -465,7 +1851,7 @@
 
 
 /***/ }),
-/* 5 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -487,10 +1873,10 @@
 	}
 
 	module.exports = emptyObject;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 6 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -548,10 +1934,10 @@
 	}
 
 	module.exports = invariant;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 7 */
+/* 10 */
 /***/ (function(module, exports) {
 
 	"use strict";
@@ -594,7 +1980,7 @@
 	module.exports = emptyFunction;
 
 /***/ }),
-/* 8 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/** @license React v16.0.0
@@ -613,12 +1999,12 @@
 
 	'use strict';
 
-	var objectAssign$1 = __webpack_require__(4);
-	var require$$0 = __webpack_require__(9);
-	var emptyObject = __webpack_require__(5);
-	var invariant = __webpack_require__(6);
-	var emptyFunction = __webpack_require__(7);
-	var checkPropTypes = __webpack_require__(10);
+	var objectAssign$1 = __webpack_require__(7);
+	var require$$0 = __webpack_require__(12);
+	var emptyObject = __webpack_require__(8);
+	var invariant = __webpack_require__(9);
+	var emptyFunction = __webpack_require__(10);
+	var checkPropTypes = __webpack_require__(13);
 
 	/**
 	 * Copyright (c) 2013-present, Facebook, Inc.
@@ -2296,10 +3682,10 @@
 	})();
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 9 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -2314,7 +3700,7 @@
 
 	'use strict';
 
-	var emptyFunction = __webpack_require__(7);
+	var emptyFunction = __webpack_require__(10);
 
 	/**
 	 * Similar to invariant but only logs a warning if the condition is not met.
@@ -2366,10 +3752,10 @@
 	}
 
 	module.exports = warning;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 10 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -2384,9 +3770,9 @@
 	'use strict';
 
 	if (process.env.NODE_ENV !== 'production') {
-	  var invariant = __webpack_require__(6);
-	  var warning = __webpack_require__(9);
-	  var ReactPropTypesSecret = __webpack_require__(11);
+	  var invariant = __webpack_require__(9);
+	  var warning = __webpack_require__(12);
+	  var ReactPropTypesSecret = __webpack_require__(14);
 	  var loggedTypeFailures = {};
 	}
 
@@ -2434,10 +3820,10 @@
 
 	module.exports = checkPropTypes;
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 11 */
+/* 14 */
 /***/ (function(module, exports) {
 
 	/**
@@ -2457,7 +3843,7 @@
 
 
 /***/ }),
-/* 12 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -2494,15 +3880,15 @@
 	  // DCE check should happen before ReactDOM bundle executes so that
 	  // DevTools can report bad minification during injection.
 	  checkDCE();
-	  module.exports = __webpack_require__(13);
+	  module.exports = __webpack_require__(16);
 	} else {
-	  module.exports = __webpack_require__(22);
+	  module.exports = __webpack_require__(25);
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 13 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/*
@@ -2515,7 +3901,7 @@
 	 LICENSE file in the root directory of this source tree.
 	 Modernizr 3.0.0pre (Custom Build) | MIT
 	*/
-	'use strict';var aa=__webpack_require__(1);__webpack_require__(6);var l=__webpack_require__(14),n=__webpack_require__(4),ba=__webpack_require__(15),ca=__webpack_require__(7),da=__webpack_require__(5),ea=__webpack_require__(16),fa=__webpack_require__(17),ha=__webpack_require__(20),ia=__webpack_require__(21);
+	'use strict';var aa=__webpack_require__(5);__webpack_require__(9);var l=__webpack_require__(17),n=__webpack_require__(7),ba=__webpack_require__(18),ca=__webpack_require__(10),da=__webpack_require__(8),ea=__webpack_require__(19),fa=__webpack_require__(20),ha=__webpack_require__(23),ia=__webpack_require__(24);
 	function w(a){for(var b=arguments.length-1,c="Minified React error #"+a+"; visit http://facebook.github.io/react/docs/error-decoder.html?invariant\x3d"+a,d=0;d<b;d++)c+="\x26args[]\x3d"+encodeURIComponent(arguments[d+1]);b=Error(c+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings.");b.name="Invariant Violation";b.framesToPop=1;throw b;}aa?void 0:w("227");
 	function ja(a){switch(a){case "svg":return"http://www.w3.org/2000/svg";case "math":return"http://www.w3.org/1998/Math/MathML";default:return"http://www.w3.org/1999/xhtml"}}
 	var ka={Namespaces:{html:"http://www.w3.org/1999/xhtml",mathml:"http://www.w3.org/1998/Math/MathML",svg:"http://www.w3.org/2000/svg"},getIntrinsicNamespace:ja,getChildNamespace:function(a,b){return null==a||"http://www.w3.org/1999/xhtml"===a?ja(b):"http://www.w3.org/2000/svg"===a&&"foreignObject"===b?"http://www.w3.org/1999/xhtml":a}},la=null,oa={};
@@ -2764,7 +4150,7 @@
 
 
 /***/ }),
-/* 14 */
+/* 17 */
 /***/ (function(module, exports) {
 
 	/**
@@ -2804,7 +4190,7 @@
 	module.exports = ExecutionEnvironment;
 
 /***/ }),
-/* 15 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -2820,7 +4206,7 @@
 	 * @typechecks
 	 */
 
-	var emptyFunction = __webpack_require__(7);
+	var emptyFunction = __webpack_require__(10);
 
 	/**
 	 * Upstream version of event listener. Does not take into account specific
@@ -2883,10 +4269,10 @@
 	};
 
 	module.exports = EventListener;
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 16 */
+/* 19 */
 /***/ (function(module, exports) {
 
 	/**
@@ -2958,7 +4344,7 @@
 	module.exports = shallowEqual;
 
 /***/ }),
-/* 17 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2974,7 +4360,7 @@
 	 * 
 	 */
 
-	var isTextNode = __webpack_require__(18);
+	var isTextNode = __webpack_require__(21);
 
 	/*eslint-disable no-bitwise */
 
@@ -3002,7 +4388,7 @@
 	module.exports = containsNode;
 
 /***/ }),
-/* 18 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3018,7 +4404,7 @@
 	 * @typechecks
 	 */
 
-	var isNode = __webpack_require__(19);
+	var isNode = __webpack_require__(22);
 
 	/**
 	 * @param {*} object The object to check.
@@ -3031,7 +4417,7 @@
 	module.exports = isTextNode;
 
 /***/ }),
-/* 19 */
+/* 22 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -3060,7 +4446,7 @@
 	module.exports = isNode;
 
 /***/ }),
-/* 20 */
+/* 23 */
 /***/ (function(module, exports) {
 
 	/**
@@ -3091,7 +4477,7 @@
 	module.exports = focusNode;
 
 /***/ }),
-/* 21 */
+/* 24 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -3134,7 +4520,7 @@
 	module.exports = getActiveElement;
 
 /***/ }),
-/* 22 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/** @license React v16.0.0
@@ -3153,23 +4539,23 @@
 
 	'use strict';
 
-	var react = __webpack_require__(1);
-	var invariant = __webpack_require__(6);
-	var ExecutionEnvironment = __webpack_require__(14);
-	var _assign = __webpack_require__(4);
-	var EventListener = __webpack_require__(15);
-	var require$$0 = __webpack_require__(9);
-	var hyphenateStyleName = __webpack_require__(23);
-	var emptyFunction = __webpack_require__(7);
-	var camelizeStyleName = __webpack_require__(25);
-	var performanceNow = __webpack_require__(27);
-	var propTypes = __webpack_require__(29);
-	var emptyObject = __webpack_require__(5);
-	var checkPropTypes = __webpack_require__(10);
-	var shallowEqual = __webpack_require__(16);
-	var containsNode = __webpack_require__(17);
-	var focusNode = __webpack_require__(20);
-	var getActiveElement = __webpack_require__(21);
+	var react = __webpack_require__(5);
+	var invariant = __webpack_require__(9);
+	var ExecutionEnvironment = __webpack_require__(17);
+	var _assign = __webpack_require__(7);
+	var EventListener = __webpack_require__(18);
+	var require$$0 = __webpack_require__(12);
+	var hyphenateStyleName = __webpack_require__(26);
+	var emptyFunction = __webpack_require__(10);
+	var camelizeStyleName = __webpack_require__(28);
+	var performanceNow = __webpack_require__(30);
+	var propTypes = __webpack_require__(32);
+	var emptyObject = __webpack_require__(8);
+	var checkPropTypes = __webpack_require__(13);
+	var shallowEqual = __webpack_require__(19);
+	var containsNode = __webpack_require__(20);
+	var focusNode = __webpack_require__(23);
+	var getActiveElement = __webpack_require__(24);
 
 	/**
 	 * Copyright (c) 2013-present, Facebook, Inc.
@@ -20359,10 +21745,10 @@
 	})();
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 23 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -20378,7 +21764,7 @@
 
 	'use strict';
 
-	var hyphenate = __webpack_require__(24);
+	var hyphenate = __webpack_require__(27);
 
 	var msPattern = /^ms-/;
 
@@ -20405,7 +21791,7 @@
 	module.exports = hyphenateStyleName;
 
 /***/ }),
-/* 24 */
+/* 27 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -20442,7 +21828,7 @@
 	module.exports = hyphenate;
 
 /***/ }),
-/* 25 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -20458,7 +21844,7 @@
 
 	'use strict';
 
-	var camelize = __webpack_require__(26);
+	var camelize = __webpack_require__(29);
 
 	var msPattern = /^-ms-/;
 
@@ -20486,7 +21872,7 @@
 	module.exports = camelizeStyleName;
 
 /***/ }),
-/* 26 */
+/* 29 */
 /***/ (function(module, exports) {
 
 	"use strict";
@@ -20522,7 +21908,7 @@
 	module.exports = camelize;
 
 /***/ }),
-/* 27 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -20538,7 +21924,7 @@
 	 * @typechecks
 	 */
 
-	var performance = __webpack_require__(28);
+	var performance = __webpack_require__(31);
 
 	var performanceNow;
 
@@ -20560,7 +21946,7 @@
 	module.exports = performanceNow;
 
 /***/ }),
-/* 28 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -20576,7 +21962,7 @@
 
 	'use strict';
 
-	var ExecutionEnvironment = __webpack_require__(14);
+	var ExecutionEnvironment = __webpack_require__(17);
 
 	var performance;
 
@@ -20587,7 +21973,7 @@
 	module.exports = performance || {};
 
 /***/ }),
-/* 29 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -20614,17 +22000,17 @@
 	  // By explicitly using `prop-types` you are opting into new development behavior.
 	  // http://fb.me/prop-types-in-prod
 	  var throwOnDirectAccess = true;
-	  module.exports = __webpack_require__(30)(isValidElement, throwOnDirectAccess);
+	  module.exports = __webpack_require__(33)(isValidElement, throwOnDirectAccess);
 	} else {
 	  // By explicitly using `prop-types` you are opting into new production behavior.
 	  // http://fb.me/prop-types-in-prod
-	  module.exports = __webpack_require__(31)();
+	  module.exports = __webpack_require__(34)();
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 30 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -20638,12 +22024,12 @@
 
 	'use strict';
 
-	var emptyFunction = __webpack_require__(7);
-	var invariant = __webpack_require__(6);
-	var warning = __webpack_require__(9);
+	var emptyFunction = __webpack_require__(10);
+	var invariant = __webpack_require__(9);
+	var warning = __webpack_require__(12);
 
-	var ReactPropTypesSecret = __webpack_require__(11);
-	var checkPropTypes = __webpack_require__(10);
+	var ReactPropTypesSecret = __webpack_require__(14);
+	var checkPropTypes = __webpack_require__(13);
 
 	module.exports = function(isValidElement, throwOnDirectAccess) {
 	  /* global Symbol */
@@ -21140,10 +22526,10 @@
 	  return ReactPropTypes;
 	};
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 31 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/**
@@ -21157,9 +22543,9 @@
 
 	'use strict';
 
-	var emptyFunction = __webpack_require__(7);
-	var invariant = __webpack_require__(6);
-	var ReactPropTypesSecret = __webpack_require__(11);
+	var emptyFunction = __webpack_require__(10);
+	var invariant = __webpack_require__(9);
+	var ReactPropTypesSecret = __webpack_require__(14);
 
 	module.exports = function() {
 	  function shim(props, propName, componentName, location, propFullName, secret) {
@@ -21208,1478 +22594,12 @@
 
 
 /***/ }),
-/* 32 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// MIT License:
-	//
-	// Copyright (c) 2010-2012, Joe Walnes
-	//
-	// Permission is hereby granted, free of charge, to any person obtaining a copy
-	// of this software and associated documentation files (the "Software"), to deal
-	// in the Software without restriction, including without limitation the rights
-	// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-	// copies of the Software, and to permit persons to whom the Software is
-	// furnished to do so, subject to the following conditions:
-	//
-	// The above copyright notice and this permission notice shall be included in
-	// all copies or substantial portions of the Software.
-	//
-	// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-	// THE SOFTWARE.
-
-	/**
-	 * This behaves like a WebSocket in every way, except if it fails to connect,
-	 * or it gets disconnected, it will repeatedly poll until it successfully connects
-	 * again.
-	 *
-	 * It is API compatible, so when you have:
-	 *   ws = new WebSocket('ws://....');
-	 * you can replace with:
-	 *   ws = new ReconnectingWebSocket('ws://....');
-	 *
-	 * The event stream will typically look like:
-	 *  onconnecting
-	 *  onopen
-	 *  onmessage
-	 *  onmessage
-	 *  onclose // lost connection
-	 *  onconnecting
-	 *  onopen  // sometime later...
-	 *  onmessage
-	 *  onmessage
-	 *  etc...
-	 *
-	 * It is API compatible with the standard WebSocket API, apart from the following members:
-	 *
-	 * - `bufferedAmount`
-	 * - `extensions`
-	 * - `binaryType`
-	 *
-	 * Latest version: https://github.com/joewalnes/reconnecting-websocket/
-	 * - Joe Walnes
-	 *
-	 * Syntax
-	 * ======
-	 * var socket = new ReconnectingWebSocket(url, protocols, options);
-	 *
-	 * Parameters
-	 * ==========
-	 * url - The url you are connecting to.
-	 * protocols - Optional string or array of protocols.
-	 * options - See below
-	 *
-	 * Options
-	 * =======
-	 * Options can either be passed upon instantiation or set after instantiation:
-	 *
-	 * var socket = new ReconnectingWebSocket(url, null, { debug: true, reconnectInterval: 4000 });
-	 *
-	 * or
-	 *
-	 * var socket = new ReconnectingWebSocket(url);
-	 * socket.debug = true;
-	 * socket.reconnectInterval = 4000;
-	 *
-	 * debug
-	 * - Whether this instance should log debug messages. Accepts true or false. Default: false.
-	 *
-	 * automaticOpen
-	 * - Whether or not the websocket should attempt to connect immediately upon instantiation. The socket can be manually opened or closed at any time using ws.open() and ws.close().
-	 *
-	 * reconnectInterval
-	 * - The number of milliseconds to delay before attempting to reconnect. Accepts integer. Default: 1000.
-	 *
-	 * maxReconnectInterval
-	 * - The maximum number of milliseconds to delay a reconnection attempt. Accepts integer. Default: 30000.
-	 *
-	 * reconnectDecay
-	 * - The rate of increase of the reconnect delay. Allows reconnect attempts to back off when problems persist. Accepts integer or float. Default: 1.5.
-	 *
-	 * timeoutInterval
-	 * - The maximum time in milliseconds to wait for a connection to succeed before closing and retrying. Accepts integer. Default: 2000.
-	 *
-	 */
-	(function (global, factory) {
-	    if (true) {
-	        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	    } else if (typeof module !== 'undefined' && module.exports){
-	        module.exports = factory();
-	    } else {
-	        global.ReconnectingWebSocket = factory();
-	    }
-	})(this, function () {
-
-	    if (!('WebSocket' in window)) {
-	        return;
-	    }
-
-	    function ReconnectingWebSocket(url, protocols, options) {
-
-	        // Default settings
-	        var settings = {
-
-	            /** Whether this instance should log debug messages. */
-	            debug: false,
-
-	            /** Whether or not the websocket should attempt to connect immediately upon instantiation. */
-	            automaticOpen: true,
-
-	            /** The number of milliseconds to delay before attempting to reconnect. */
-	            reconnectInterval: 1000,
-	            /** The maximum number of milliseconds to delay a reconnection attempt. */
-	            maxReconnectInterval: 30000,
-	            /** The rate of increase of the reconnect delay. Allows reconnect attempts to back off when problems persist. */
-	            reconnectDecay: 1.5,
-
-	            /** The maximum time in milliseconds to wait for a connection to succeed before closing and retrying. */
-	            timeoutInterval: 2000,
-
-	            /** The maximum number of reconnection attempts to make. Unlimited if null. */
-	            maxReconnectAttempts: null
-	        }
-	        if (!options) { options = {}; }
-
-	        // Overwrite and define settings with options if they exist.
-	        for (var key in settings) {
-	            if (typeof options[key] !== 'undefined') {
-	                this[key] = options[key];
-	            } else {
-	                this[key] = settings[key];
-	            }
-	        }
-
-	        // These should be treated as read-only properties
-
-	        /** The URL as resolved by the constructor. This is always an absolute URL. Read only. */
-	        this.url = url;
-
-	        /** The number of attempted reconnects since starting, or the last successful connection. Read only. */
-	        this.reconnectAttempts = 0;
-
-	        /**
-	         * The current state of the connection.
-	         * Can be one of: WebSocket.CONNECTING, WebSocket.OPEN, WebSocket.CLOSING, WebSocket.CLOSED
-	         * Read only.
-	         */
-	        this.readyState = WebSocket.CONNECTING;
-
-	        /**
-	         * A string indicating the name of the sub-protocol the server selected; this will be one of
-	         * the strings specified in the protocols parameter when creating the WebSocket object.
-	         * Read only.
-	         */
-	        this.protocol = null;
-
-	        // Private state variables
-
-	        var self = this;
-	        var ws;
-	        var forcedClose = false;
-	        var timedOut = false;
-	        var eventTarget = document.createElement('div');
-
-	        // Wire up "on*" properties as event handlers
-
-	        eventTarget.addEventListener('open',       function(event) { self.onopen(event); });
-	        eventTarget.addEventListener('close',      function(event) { self.onclose(event); });
-	        eventTarget.addEventListener('connecting', function(event) { self.onconnecting(event); });
-	        eventTarget.addEventListener('message',    function(event) { self.onmessage(event); });
-	        eventTarget.addEventListener('error',      function(event) { self.onerror(event); });
-
-	        // Expose the API required by EventTarget
-
-	        this.addEventListener = eventTarget.addEventListener.bind(eventTarget);
-	        this.removeEventListener = eventTarget.removeEventListener.bind(eventTarget);
-	        this.dispatchEvent = eventTarget.dispatchEvent.bind(eventTarget);
-
-	        /**
-	         * This function generates an event that is compatible with standard
-	         * compliant browsers and IE9 - IE11
-	         *
-	         * This will prevent the error:
-	         * Object doesn't support this action
-	         *
-	         * http://stackoverflow.com/questions/19345392/why-arent-my-parameters-getting-passed-through-to-a-dispatched-event/19345563#19345563
-	         * @param s String The name that the event should use
-	         * @param args Object an optional object that the event will use
-	         */
-	        function generateEvent(s, args) {
-	        	var evt = document.createEvent("CustomEvent");
-	        	evt.initCustomEvent(s, false, false, args);
-	        	return evt;
-	        };
-
-	        this.open = function (reconnectAttempt) {
-	            ws = new WebSocket(self.url, protocols || []);
-
-	            if (reconnectAttempt) {
-	                if (this.maxReconnectAttempts && this.reconnectAttempts > this.maxReconnectAttempts) {
-	                    return;
-	                }
-	            } else {
-	                eventTarget.dispatchEvent(generateEvent('connecting'));
-	                this.reconnectAttempts = 0;
-	            }
-
-	            if (self.debug || ReconnectingWebSocket.debugAll) {
-	                console.debug('ReconnectingWebSocket', 'attempt-connect', self.url);
-	            }
-
-	            var localWs = ws;
-	            var timeout = setTimeout(function() {
-	                if (self.debug || ReconnectingWebSocket.debugAll) {
-	                    console.debug('ReconnectingWebSocket', 'connection-timeout', self.url);
-	                }
-	                timedOut = true;
-	                localWs.close();
-	                timedOut = false;
-	            }, self.timeoutInterval);
-
-	            ws.onopen = function(event) {
-	                clearTimeout(timeout);
-	                if (self.debug || ReconnectingWebSocket.debugAll) {
-	                    console.debug('ReconnectingWebSocket', 'onopen', self.url);
-	                }
-	                self.protocol = ws.protocol;
-	                self.readyState = WebSocket.OPEN;
-	                self.reconnectAttempts = 0;
-	                var e = generateEvent('open');
-	                e.isReconnect = reconnectAttempt;
-	                reconnectAttempt = false;
-	                eventTarget.dispatchEvent(e);
-	            };
-
-	            ws.onclose = function(event) {
-	                clearTimeout(timeout);
-	                ws = null;
-	                if (forcedClose) {
-	                    self.readyState = WebSocket.CLOSED;
-	                    eventTarget.dispatchEvent(generateEvent('close'));
-	                } else {
-	                    self.readyState = WebSocket.CONNECTING;
-	                    var e = generateEvent('connecting');
-	                    e.code = event.code;
-	                    e.reason = event.reason;
-	                    e.wasClean = event.wasClean;
-	                    eventTarget.dispatchEvent(e);
-	                    if (!reconnectAttempt && !timedOut) {
-	                        if (self.debug || ReconnectingWebSocket.debugAll) {
-	                            console.debug('ReconnectingWebSocket', 'onclose', self.url);
-	                        }
-	                        eventTarget.dispatchEvent(generateEvent('close'));
-	                    }
-
-	                    var timeout = self.reconnectInterval * Math.pow(self.reconnectDecay, self.reconnectAttempts);
-	                    setTimeout(function() {
-	                        self.reconnectAttempts++;
-	                        self.open(true);
-	                    }, timeout > self.maxReconnectInterval ? self.maxReconnectInterval : timeout);
-	                }
-	            };
-	            ws.onmessage = function(event) {
-	                if (self.debug || ReconnectingWebSocket.debugAll) {
-	                    console.debug('ReconnectingWebSocket', 'onmessage', self.url, event.data);
-	                }
-	                var e = generateEvent('message');
-	                e.data = event.data;
-	                eventTarget.dispatchEvent(e);
-	            };
-	            ws.onerror = function(event) {
-	                if (self.debug || ReconnectingWebSocket.debugAll) {
-	                    console.debug('ReconnectingWebSocket', 'onerror', self.url, event);
-	                }
-	                eventTarget.dispatchEvent(generateEvent('error'));
-	            };
-	        }
-
-	        // Whether or not to create a websocket upon instantiation
-	        if (this.automaticOpen == true) {
-	            this.open(false);
-	        }
-
-	        /**
-	         * Transmits data to the server over the WebSocket connection.
-	         *
-	         * @param data a text string, ArrayBuffer or Blob to send to the server.
-	         */
-	        this.send = function(data) {
-	            if (ws) {
-	                if (self.debug || ReconnectingWebSocket.debugAll) {
-	                    console.debug('ReconnectingWebSocket', 'send', self.url, data);
-	                }
-	                return ws.send(data);
-	            } else {
-	                throw 'INVALID_STATE_ERR : Pausing to reconnect websocket';
-	            }
-	        };
-
-	        /**
-	         * Closes the WebSocket connection or connection attempt, if any.
-	         * If the connection is already CLOSED, this method does nothing.
-	         */
-	        this.close = function(code, reason) {
-	            // Default CLOSE_NORMAL code
-	            if (typeof code == 'undefined') {
-	                code = 1000;
-	            }
-	            forcedClose = true;
-	            if (ws) {
-	                ws.close(code, reason);
-	            }
-	        };
-
-	        /**
-	         * Additional public API method to refresh the connection if still open (close, re-open).
-	         * For example, if the app suspects bad data / missed heart beats, it can try to refresh.
-	         */
-	        this.refresh = function() {
-	            if (ws) {
-	                ws.close();
-	            }
-	        };
-	    }
-
-	    /**
-	     * An event listener to be called when the WebSocket connection's readyState changes to OPEN;
-	     * this indicates that the connection is ready to send and receive data.
-	     */
-	    ReconnectingWebSocket.prototype.onopen = function(event) {};
-	    /** An event listener to be called when the WebSocket connection's readyState changes to CLOSED. */
-	    ReconnectingWebSocket.prototype.onclose = function(event) {};
-	    /** An event listener to be called when a connection begins being attempted. */
-	    ReconnectingWebSocket.prototype.onconnecting = function(event) {};
-	    /** An event listener to be called when a message is received from the server. */
-	    ReconnectingWebSocket.prototype.onmessage = function(event) {};
-	    /** An event listener to be called when an error occurs. */
-	    ReconnectingWebSocket.prototype.onerror = function(event) {};
-
-	    /**
-	     * Whether all instances of ReconnectingWebSocket should log debug messages.
-	     * Setting this to true is the equivalent of setting all instances of ReconnectingWebSocket.debug to true.
-	     */
-	    ReconnectingWebSocket.debugAll = false;
-
-	    ReconnectingWebSocket.CONNECTING = WebSocket.CONNECTING;
-	    ReconnectingWebSocket.OPEN = WebSocket.OPEN;
-	    ReconnectingWebSocket.CLOSING = WebSocket.CLOSING;
-	    ReconnectingWebSocket.CLOSED = WebSocket.CLOSED;
-
-	    return ReconnectingWebSocket;
-	});
-
-
-/***/ }),
-/* 33 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _jsx = function () { var REACT_ELEMENT_TYPE = typeof Symbol === "function" && Symbol.for && Symbol.for("react.element") || 0xeac7; return function createRawReactElement(type, props, key, children) { var defaultProps = type && type.defaultProps; var childrenLength = arguments.length - 3; if (!props && childrenLength !== 0) { props = {}; } if (props && defaultProps) { for (var propName in defaultProps) { if (props[propName] === void 0) { props[propName] = defaultProps[propName]; } } } else if (!props) { props = defaultProps || {}; } if (childrenLength === 1) { props.children = children; } else if (childrenLength > 1) { var childArray = Array(childrenLength); for (var i = 0; i < childrenLength; i++) { childArray[i] = arguments[i + 3]; } props.children = childArray; } return { $$typeof: REACT_ELEMENT_TYPE, type: type, key: key === undefined ? null : '' + key, ref: null, props: props, _owner: null }; }; }();
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	// Generated by ostent-templatepp. This comment is essential.
-	var React = __webpack_require__(1),
-	    ReactDOM = __webpack_require__(12),
-	    SparkLines = __webpack_require__(34);
-
-	var Sparkline = function (_React$PureComponent) {
-	  _inherits(Sparkline, _React$PureComponent);
-
-	  function Sparkline(props) {
-	    _classCallCheck(this, Sparkline);
-
-	    var _this = _possibleConstructorReturn(this, (Sparkline.__proto__ || Object.getPrototypeOf(Sparkline)).call(this, props));
-
-	    _this.state = { data: [], limit: 90, width: 180 };
-	    return _this;
-	  }
-
-	  _createClass(Sparkline, [{
-	    key: 'componentDidUpdate',
-	    value: function componentDidUpdate(_, prevState) {
-	      var root = ReactDOM.findDOMNode(this.refs.root);
-	      if (root == null) {
-	        return;
-	      }
-	      var rootWidth = Math.floor(root.offsetWidth) - 10;
-	      if (prevState.width != rootWidth) {
-	        this.setState({ width: rootWidth, limit: Math.round(rootWidth / 2) });
-	      }
-	    }
-	  }, {
-	    key: 'NewStateFrom',
-	    value: function NewStateFrom(statentry) {
-	      var limit,
-	          data = [];
-	      if (this.state != null) {
-	        limit = this.state.limit;
-	        data = this.state.data.slice(); // NB .slice https://github.com/borisyankov/react-sparklines/issues/27
-	      }
-	      if (this.props.col != null) {
-	        statentry = statentry[this.props.col];
-	      }
-	      data.push(+statentry);
-	      if (limit != null && data.length > limit) {
-	        data = data.slice(-limit);
-	      }
-	      this.setState({ data: data });
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var curveProps = { style: { strokeWidth: 1 } };
-	      var spotsProps = { size: 2, spotColors: { '-1': 'green', '1': 'red' } }; // reverse default colors
-	      if (this.props.defaultSpots) {
-	        delete spotsProps.spotColors;
-	      } // back to default colors
-	      return React.createElement(
-	        'div',
-	        { ref: 'root' },
-	        _jsx(SparkLines.Sparklines, {
-	          data: this.state.data,
-	          limit: this.state.limit,
-	          width: this.state.width,
-	          svgWidth: this.state.width,
-	          height: 33,
-	          svgHeight: 33
-	        }, void 0, React.createElement(SparkLines.SparklinesCurve, curveProps), React.createElement(SparkLines.SparklinesSpots, spotsProps))
-	      );
-	    }
-	  }]);
-
-	  return Sparkline;
-	}(React.PureComponent);
-
-	;
-
-	var jsxdefines = {};
-	jsxdefines.Sparkline = function (props) {
-	  return React.createElement(Sparkline, props);
-	};
-
-	var DefineComponent = function (_React$PureComponent2) {
-	  _inherits(DefineComponent, _React$PureComponent2);
-
-	  // requires .Reduce method
-
-	  // ex StateHandlingMixin
-	  function DefineComponent(props) {
-	    _classCallCheck(this, DefineComponent);
-
-	    var _this2 = _possibleConstructorReturn(this, (DefineComponent.__proto__ || Object.getPrototypeOf(DefineComponent)).call(this, props));
-
-	    _this2.state = _this2.StateFrom(Data); // global Data
-	    return _this2;
-	  }
-
-	  _createClass(DefineComponent, [{
-	    key: 'NewState',
-	    value: function NewState(data) {
-	      var state = this.StateFrom(data);
-	      if (state != null) {
-	        this.setState(state);
-	      }
-	      var rkeys = Object.keys(this.refs);
-	      if (rkeys.length == 0) {
-	        return;
-	      }
-	      var statefrom;
-	      if (this.List != null) {
-	        statefrom = this.List(state);
-	      } else {
-	        var skeys = Object.keys(state);
-	        if (skeys.length != 1) {
-	          return;
-	        }
-	        statefrom = state[skeys[0]];
-	      }
-	      rkeys.forEach(function (rk) {
-	        var statentry;
-	        if (this.refs[rk] == null || (statentry = statefrom[rk]) == null) {
-	          return;
-	        }
-	        this.refs[rk].NewStateFrom(statentry);
-	      }, this);
-	    }
-	  }, {
-	    key: 'StateFrom',
-	    value: function StateFrom(data) {
-	      var state = this.Reduce(data);
-	      if (state != null) {
-	        for (var key in state) {
-	          if (state[key] == null) {
-	            delete state[key];
-	          }
-	        }
-	      }
-	      return state;
-	    }
-
-	    // ex HandlerMixin
-
-	  }, {
-	    key: 'handleClick',
-	    value: function handleClick(e) {
-	      var href = e.target.getAttribute('href');
-	      if (href == null) {
-	        href = e.target.parentNode.getAttribute('href');
-	      }
-	      history.pushState({}, '', href);
-	      window.updates.sendSearch(href);
-	      e.stopPropagation();
-	      e.preventDefault();
-	      return void 0;
-	    }
-	  }]);
-
-	  return DefineComponent;
-	}(React.PureComponent);
-
-	;
-
-	// transformed from define_* templates:
-
-	var _ref = _jsx('span', {
-	  className: 'showhide-hide whitespace-pre float-left'
-	}, void 0, '... ');
-
-	var _ref2 = _jsx('div', {
-	  className: 'input-group-label text-nowrap'
-	}, void 0, 'rows');
-
-	var _ref3 = _jsx('div', {
-	  className: 'row thead'
-	}, void 0, _jsx('span', {
-	  className: 'expand col small-1'
-	}, void 0, 'Core'), _jsx('span', {
-	  className: 'expand col small-1 text-right'
-	}, void 0, ' User%'), _jsx('span', {
-	  className: 'expand col small-1 text-right'
-	}, void 0, ' Sys%'), _jsx('span', {
-	  className: 'expand col small-1 text-right'
-	}, void 0, ' Wait%'), _jsx('span', {
-	  className: 'expand col small-1 text-right'
-	}, void 0, ' Idle%'), _jsx('span', {
-	  className: 'expand col'
-	}));
-
-	jsxdefines.define_cpu = function (_DefineComponent) {
-	  _inherits(_class, _DefineComponent);
-
-	  function _class() {
-	    _classCallCheck(this, _class);
-
-	    return _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).apply(this, arguments));
-	  }
-
-	  _createClass(_class, [{
-	    key: 'List',
-	    value: function List(data) {
-	      var list = void 0;
-	      if (data == null || data["cpu"] == null || (list = data["cpu"].List) == null) {
-	        return [];
-	      }
-	      return list;
-	    }
-	  }, {
-	    key: 'Reduce',
-	    value: function Reduce(data) {
-	      return {
-	        params: data.params,
-	        cpu: data.cpu
-	      };
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var Data = this.state; // shadow global Data
-	      return _jsx('div', {
-	        className: 'row expanded hr-bottom'
-	      }, void 0, _jsx('div', {
-	        className: 'column small-1 text-right'
-	      }, void 0, _jsx('div', {
-	        className: Data.params.CPUn.Negative ? "show-showhide" : "hide-showhide"
-	      }, void 0, _jsx('h1', {
-	        className: 'h5 text-overflow'
-	      }, void 0, _jsx('a', {
-	        title: 'CPU display options',
-	        href: Data.params.Tlinks.CPUn,
-	        onClick: this.handleClick
-	      }, void 0, _ref, 'CPU')))), _jsx('div', {
-	        className: 'column large-11'
-	      }, void 0, _jsx('div', {
-	        className: Data.params.CPUn.Negative ? "show-showhide" : "hide-showhide"
-	      }, void 0, _jsx('ul', {
-	        className: 'row menu showhide-show'
-	      }, void 0, _jsx('li', {}, void 0, _jsx('div', {
-	        className: 'input-group'
-	      }, void 0, _ref2, _jsx('div', {
-	        className: 'input-group-button'
-	      }, void 0, _jsx('button', {
-	        className: 'button small secondary disabled'
-	      }, void 0, Data.params.CPUn.Absolute)), _jsx('div', {
-	        className: 'input-group-button'
-	      }, void 0, _jsx('button', {
-	        href: Data.params.Nlinks.CPUn.Less.Href,
-	        onClick: this.handleClick,
-	        className: "text-nowrap button small " + (Data.params.Nlinks.CPUn.Less.ExtraClass != null ? Data.params.Nlinks.CPUn.Less.ExtraClass : "")
-	      }, void 0, '- ', Data.params.Nlinks.CPUn.Less.Text)), _jsx('div', {
-	        className: 'input-group-button'
-	      }, void 0, _jsx('button', {
-	        href: Data.params.Nlinks.CPUn.More.Href,
-	        onClick: this.handleClick,
-	        className: "text-nowrap button small " + (Data.params.Nlinks.CPUn.More.ExtraClass != null ? Data.params.Nlinks.CPUn.More.ExtraClass : "")
-	      }, void 0, Data.params.Nlinks.CPUn.More.Text, ' +'))))), _jsx('div', {
-	        className: Data.params.CPUn.Absolute == 0 ? "hide" : ""
-	      }, void 0, _jsx('div', {
-	        className: 'stripe'
-	      }, void 0, _ref3, this.List(Data).map(function ($cpu, i) {
-	        return _jsx('div', {
-	          className: 'row'
-	        }, "cpu-rowby-n-" + $cpu.N, _jsx('span', {
-	          className: 'expand col small-1 text-nowrap'
-	        }, void 0, $cpu.N), _jsx('span', {
-	          className: 'expand col small-1 text-right bg-usepct',
-	          'data-usepct': $cpu.UserPct
-	        }, void 0, ' ', $cpu.UserPct, '%'), _jsx('span', {
-	          className: 'expand col small-1 text-right bg-usepct',
-	          'data-usepct': $cpu.SysPct
-	        }, void 0, ' ', $cpu.SysPct, '%'), _jsx('span', {
-	          className: 'expand col small-1 text-right bg-usepct',
-	          'data-usepct': $cpu.WaitPct
-	        }, void 0, ' ', $cpu.WaitPct, '%'), _jsx('span', {
-	          className: 'expand col small-1 text-right bg-usepct-inverse',
-	          'data-usepct': $cpu.IdlePct
-	        }, void 0, ' ', $cpu.IdlePct, '%'), _jsx('span', {
-	          className: 'expand col-lr'
-	        }, void 0, jsxdefines.Sparkline({ ref: i, col: 'IdlePct', defaultSpots: true })));
-	      }))))));
-	    }
-	  }]);
-
-	  return _class;
-	}(DefineComponent);
-
-	var _ref4 = _jsx('span', {
-	  className: 'showhide-hide whitespace-pre float-left'
-	}, void 0, '... ');
-
-	var _ref5 = _jsx('div', {
-	  className: 'input-group-label text-nowrap'
-	}, void 0, 'rows');
-
-	var _ref6 = _jsx('span', {
-	  className: 'expand col'
-	});
-
-	jsxdefines.define_df = function (_DefineComponent2) {
-	  _inherits(_class2, _DefineComponent2);
-
-	  function _class2() {
-	    _classCallCheck(this, _class2);
-
-	    return _possibleConstructorReturn(this, (_class2.__proto__ || Object.getPrototypeOf(_class2)).apply(this, arguments));
-	  }
-
-	  _createClass(_class2, [{
-	    key: 'List',
-	    value: function List(data) {
-	      var list = void 0;
-	      if (data == null || data["df"] == null || (list = data["df"].List) == null) {
-	        return [];
-	      }
-	      return list;
-	    }
-	  }, {
-	    key: 'Reduce',
-	    value: function Reduce(data) {
-	      return {
-	        params: data.params,
-	        df: data.df
-	      };
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var Data = this.state; // shadow global Data
-	      return _jsx('div', {
-	        className: 'row expanded hr-bottom'
-	      }, void 0, _jsx('div', {
-	        className: 'column small-1 text-right'
-	      }, void 0, _jsx('div', {
-	        className: Data.params.Dfn.Negative ? "show-showhide" : "hide-showhide"
-	      }, void 0, _jsx('h1', {
-	        className: 'h5 text-overflow'
-	      }, void 0, _jsx('a', {
-	        title: 'Disk usage display options',
-	        href: Data.params.Tlinks.Dfn,
-	        onClick: this.handleClick
-	      }, void 0, _ref4, 'Disk usage')))), _jsx('div', {
-	        className: 'column large-11'
-	      }, void 0, _jsx('div', {
-	        className: Data.params.Dfn.Negative ? "show-showhide" : "hide-showhide"
-	      }, void 0, _jsx('ul', {
-	        className: 'row menu showhide-show'
-	      }, void 0, _jsx('li', {}, void 0, _jsx('div', {
-	        className: 'input-group'
-	      }, void 0, _ref5, _jsx('div', {
-	        className: 'input-group-button'
-	      }, void 0, _jsx('button', {
-	        className: 'button small secondary disabled'
-	      }, void 0, Data.params.Dfn.Absolute)), _jsx('div', {
-	        className: 'input-group-button'
-	      }, void 0, _jsx('button', {
-	        href: Data.params.Nlinks.Dfn.Less.Href,
-	        onClick: this.handleClick,
-	        className: "text-nowrap button small " + (Data.params.Nlinks.Dfn.Less.ExtraClass != null ? Data.params.Nlinks.Dfn.Less.ExtraClass : "")
-	      }, void 0, '- ', Data.params.Nlinks.Dfn.Less.Text)), _jsx('div', {
-	        className: 'input-group-button'
-	      }, void 0, _jsx('button', {
-	        href: Data.params.Nlinks.Dfn.More.Href,
-	        onClick: this.handleClick,
-	        className: "text-nowrap button small " + (Data.params.Nlinks.Dfn.More.ExtraClass != null ? Data.params.Nlinks.Dfn.More.ExtraClass : "")
-	      }, void 0, Data.params.Nlinks.Dfn.More.Text, ' +'))))), _jsx('div', {
-	        className: Data.params.Dfn.Absolute == 0 ? "hide" : ""
-	      }, void 0, _jsx('div', {
-	        className: 'stripe'
-	      }, void 0, _jsx('div', {
-	        className: 'row thead'
-	      }, void 0, _jsx('span', {
-	        className: 'expand col small-1 text-nowrap'
-	      }, void 0, _jsx('a', {
-	        href: Data.params.Vlinks.Dfk[1 - 1].LinkHref,
-	        className: Data.params.Vlinks.Dfk[1 - 1].LinkClass,
-	        onClick: this.handleClick
-	      }, void 0, 'Device', _jsx('span', {
-	        className: Data.params.Vlinks.Dfk[1 - 1].CaretClass
-	      }))), _jsx('span', {
-	        className: 'expand col small-1 text-nowrap'
-	      }, void 0, _jsx('a', {
-	        href: Data.params.Vlinks.Dfk[2 - 1].LinkHref,
-	        className: Data.params.Vlinks.Dfk[2 - 1].LinkClass,
-	        onClick: this.handleClick
-	      }, void 0, 'Mounted', _jsx('span', {
-	        className: Data.params.Vlinks.Dfk[2 - 1].CaretClass
-	      }))), _jsx('span', {
-	        className: 'expand col small-1 text-nowrap text-right'
-	      }, void 0, _jsx('a', {
-	        href: Data.params.Vlinks.Dfk[6 - 1].LinkHref,
-	        className: Data.params.Vlinks.Dfk[6 - 1].LinkClass,
-	        onClick: this.handleClick
-	      }, void 0, 'Total', _jsx('span', {
-	        className: Data.params.Vlinks.Dfk[6 - 1].CaretClass
-	      }))), _jsx('span', {
-	        className: 'expand col small-1 text-nowrap text-right'
-	      }, void 0, _jsx('a', {
-	        href: Data.params.Vlinks.Dfk[5 - 1].LinkHref,
-	        className: Data.params.Vlinks.Dfk[5 - 1].LinkClass,
-	        onClick: this.handleClick
-	      }, void 0, 'Used', _jsx('span', {
-	        className: Data.params.Vlinks.Dfk[5 - 1].CaretClass
-	      }))), _jsx('span', {
-	        className: 'expand col small-1 text-nowrap text-right'
-	      }, void 0, _jsx('a', {
-	        href: Data.params.Vlinks.Dfk[3 - 1].LinkHref,
-	        className: Data.params.Vlinks.Dfk[3 - 1].LinkClass,
-	        onClick: this.handleClick
-	      }, void 0, 'Avail', _jsx('span', {
-	        className: Data.params.Vlinks.Dfk[3 - 1].CaretClass
-	      }))), _jsx('span', {
-	        className: 'expand col small-1 text-nowrap text-right'
-	      }, void 0, _jsx('a', {
-	        href: Data.params.Vlinks.Dfk[4 - 1].LinkHref,
-	        className: Data.params.Vlinks.Dfk[4 - 1].LinkClass,
-	        onClick: this.handleClick
-	      }, void 0, 'Use%', _jsx('span', {
-	        className: Data.params.Vlinks.Dfk[4 - 1].CaretClass
-	      }))), _ref6), this.List(Data).map(function ($df, i) {
-	        return _jsx('div', {
-	          className: 'row'
-	        }, "df-rowby-dirname-" + $df.DirName, _jsx('span', {
-	          className: 'expand col small-1 text-overflow'
-	        }, void 0, $df.DevName), _jsx('span', {
-	          className: 'expand col small-1 text-overflow'
-	        }, void 0, ' ', $df.DirName), _jsx('span', {
-	          className: 'expand col small-1 text-overflow text-right gray'
-	        }, void 0, _jsx('span', {
-	          className: 'float-right'
-	        }, void 0, ' ', $df.Total), _jsx('span', {
-	          title: 'Inodes total'
-	        }, void 0, ' ', $df.Inodes)), _jsx('span', {
-	          className: 'expand col small-1 text-overflow text-right gray'
-	        }, void 0, _jsx('span', {
-	          className: 'float-right'
-	        }, void 0, ' ', $df.Used), _jsx('span', {
-	          title: 'Inodes used'
-	        }, void 0, ' ', $df.Iused)), _jsx('span', {
-	          className: 'expand col small-1 text-overflow text-right gray'
-	        }, void 0, _jsx('span', {
-	          className: 'float-right'
-	        }, void 0, ' ', $df.Avail), _jsx('span', {
-	          title: 'Inodes free'
-	        }, void 0, ' ', $df.Ifree)), _jsx('span', {
-	          className: 'expand col small-1 text-overflow text-right gray bg-usepct',
-	          'data-usepct': $df.UsePct
-	        }, void 0, _jsx('span', {
-	          className: 'float-right'
-	        }, void 0, ' ', $df.UsePct, '%'), _jsx('span', {
-	          title: 'Inodes use%'
-	        }, void 0, ' ', $df.IusePct, '%')), _jsx('span', {
-	          className: 'expand col-lr'
-	        }, void 0, jsxdefines.Sparkline({ ref: i, col: 'UsePct' })));
-	      }))))));
-	    }
-	  }]);
-
-	  return _class2;
-	}(DefineComponent);
-
-	jsxdefines.define_hostname = function (_DefineComponent3) {
-	  _inherits(_class3, _DefineComponent3);
-
-	  function _class3() {
-	    _classCallCheck(this, _class3);
-
-	    return _possibleConstructorReturn(this, (_class3.__proto__ || Object.getPrototypeOf(_class3)).apply(this, arguments));
-	  }
-
-	  _createClass(_class3, [{
-	    key: 'Reduce',
-	    value: function Reduce(data) {
-	      return {
-	        system_ostent: data.system_ostent
-	      };
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var Data = this.state; // shadow global Data
-	      return _jsx('a', {
-	        href: '/',
-	        title: "hostname " + Data.system_ostent.hostname_short
-	      }, void 0, Data.system_ostent.hostname_short);
-	    }
-	  }]);
-
-	  return _class3;
-	}(DefineComponent);
-
-	var _ref7 = _jsx('span', {
-	  className: 'showhide-hide whitespace-pre float-left'
-	}, void 0, '... ');
-
-	var _ref8 = _jsx('div', {
-	  className: 'input-group-label text-nowrap'
-	}, void 0, 'rows');
-
-	var _ref9 = _jsx('div', {
-	  className: 'row thead'
-	}, void 0, _jsx('span', {
-	  className: 'expand col small-1'
-	}, void 0, 'Interface'), _jsx('span', {
-	  className: 'expand col small-1 text-right'
-	}, void 0, ' IP'), _jsx('span', {
-	  className: 'expand col small-2 text-right text-nowrap',
-	  title: 'Drops,Errors In/Out per second'
-	}, void 0, ' Loss IO ps'), _jsx('span', {
-	  className: 'expand col small-2 text-right text-nowrap',
-	  title: 'Packets In/Out per second'
-	}, void 0, ' Packets IO ps'), _jsx('span', {
-	  className: 'expand col small-2 text-right text-nowrap',
-	  title: 'Bits In/Out per second'
-	}, void 0, ' IO ', _jsx('i', {}, void 0, 'b'), 'ps'), _jsx('span', {
-	  className: 'expand col'
-	}));
-
-	jsxdefines.define_if = function (_DefineComponent4) {
-	  _inherits(_class4, _DefineComponent4);
-
-	  function _class4() {
-	    _classCallCheck(this, _class4);
-
-	    return _possibleConstructorReturn(this, (_class4.__proto__ || Object.getPrototypeOf(_class4)).apply(this, arguments));
-	  }
-
-	  _createClass(_class4, [{
-	    key: 'List',
-	    value: function List(data) {
-	      var list = void 0;
-	      if (data == null || data["netio"] == null || (list = data["netio"].List) == null) {
-	        return [];
-	      }
-	      return list;
-	    }
-	  }, {
-	    key: 'Reduce',
-	    value: function Reduce(data) {
-	      return {
-	        params: data.params,
-	        netio: data.netio
-	      };
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var Data = this.state; // shadow global Data
-	      return _jsx('div', {
-	        className: 'row expanded hr-bottom'
-	      }, void 0, _jsx('div', {
-	        className: 'column small-1 text-right'
-	      }, void 0, _jsx('div', {
-	        className: Data.params.Ifn.Negative ? "show-showhide" : "hide-showhide"
-	      }, void 0, _jsx('h1', {
-	        className: 'h5 text-overflow'
-	      }, void 0, _jsx('a', {
-	        title: 'Interfaces display options',
-	        href: Data.params.Tlinks.Ifn,
-	        onClick: this.handleClick
-	      }, void 0, _ref7, 'Interfaces')))), _jsx('div', {
-	        className: 'column large-11'
-	      }, void 0, _jsx('div', {
-	        className: Data.params.Ifn.Negative ? "show-showhide" : "hide-showhide"
-	      }, void 0, _jsx('ul', {
-	        className: 'row menu showhide-show'
-	      }, void 0, _jsx('li', {}, void 0, _jsx('div', {
-	        className: 'input-group'
-	      }, void 0, _ref8, _jsx('div', {
-	        className: 'input-group-button'
-	      }, void 0, _jsx('button', {
-	        className: 'button small secondary disabled'
-	      }, void 0, Data.params.Ifn.Absolute)), _jsx('div', {
-	        className: 'input-group-button'
-	      }, void 0, _jsx('button', {
-	        href: Data.params.Nlinks.Ifn.Less.Href,
-	        onClick: this.handleClick,
-	        className: "text-nowrap button small " + (Data.params.Nlinks.Ifn.Less.ExtraClass != null ? Data.params.Nlinks.Ifn.Less.ExtraClass : "")
-	      }, void 0, '- ', Data.params.Nlinks.Ifn.Less.Text)), _jsx('div', {
-	        className: 'input-group-button'
-	      }, void 0, _jsx('button', {
-	        href: Data.params.Nlinks.Ifn.More.Href,
-	        onClick: this.handleClick,
-	        className: "text-nowrap button small " + (Data.params.Nlinks.Ifn.More.ExtraClass != null ? Data.params.Nlinks.Ifn.More.ExtraClass : "")
-	      }, void 0, Data.params.Nlinks.Ifn.More.Text, ' +'))))), _jsx('div', {
-	        className: Data.params.Ifn.Absolute == 0 ? "hide" : ""
-	      }, void 0, _jsx('div', {
-	        className: 'stripe'
-	      }, void 0, _ref9, this.List(Data).map(function ($if, i) {
-	        return _jsx('div', {
-	          className: 'row'
-	        }, "if-rowby-name-" + $if.Name, _jsx('span', {
-	          className: 'expand col small-1 text-overflow'
-	        }, void 0, $if.Name), _jsx('span', {
-	          className: 'expand col small-1 text-overflow text-right'
-	        }, void 0, $if.IP), _jsx('span', {
-	          className: 'expand col small-2 text-right text-nowrap'
-	        }, void 0, '\xA0', _jsx('span', {
-	          className: 'gray',
-	          title: 'Total drops,errors modulo 4G'
-	        }, void 0, _jsx('span', {
-	          title: 'Total drops In modulo 4G'
-	        }, void 0, $if.DropsIn), '/', _jsx('span', {
-	          title: 'Total drops Out modulo 4G'
-	        }, void 0, $if.DropsOut), ',', _jsx('span', {
-	          title: 'Total errors In modulo 4G'
-	        }, void 0, $if.ErrorsIn), '/', _jsx('span', {
-	          title: 'Total errors Out modulo 4G'
-	        }, void 0, $if.ErrorsOut)), '\xA0', _jsx('span', {
-	          className: $if.DeltaDropsIn == "0" && $if.DeltaDropsOut == "0" && $if.DeltaErrorsIn == "0" && $if.DeltaErrorsOut == "0" ? "gray" : ""
-	        }, void 0, _jsx('span', {
-	          title: 'Drops In per second'
-	        }, void 0, $if.DeltaDropsIn), '/', _jsx('span', {
-	          title: 'Drops Out per second'
-	        }, void 0, $if.DeltaDropsOut), ',', _jsx('span', {
-	          title: 'Errors In per second'
-	        }, void 0, $if.DeltaErrorsIn), '/', _jsx('span', {
-	          title: 'Errors Out per second'
-	        }, void 0, $if.DeltaErrorsOut))), _jsx('span', {
-	          className: 'expand col small-2 text-right text-nowrap'
-	        }, void 0, '\xA0', _jsx('span', {
-	          className: 'gray'
-	        }, void 0, _jsx('span', {
-	          title: 'Total packets In modulo 4G'
-	        }, void 0, $if.PacketsIn), '/', _jsx('span', {
-	          title: 'Total packets Out modulo 4G'
-	        }, void 0, $if.PacketsOut)), '\xA0', _jsx('span', {
-	          title: 'Packets In per second'
-	        }, void 0, $if.DeltaPacketsIn), '/', _jsx('span', {
-	          title: 'Packets Out per second'
-	        }, void 0, $if.DeltaPacketsOut)), _jsx('span', {
-	          className: 'expand col small-2 text-right text-nowrap'
-	        }, void 0, '\xA0', _jsx('span', {
-	          className: 'gray'
-	        }, void 0, _jsx('span', {
-	          title: 'Total BYTES In modulo 4G'
-	        }, void 0, $if.BytesIn), '/', _jsx('span', {
-	          title: 'Total BYTES Out modulo 4G'
-	        }, void 0, $if.BytesOut)), '\xA0', _jsx('span', {
-	          title: 'BITS In per second'
-	        }, void 0, $if.DeltaBitsIn), '/', _jsx('span', {
-	          title: 'BITS Out per second'
-	        }, void 0, $if.DeltaBitsOut)), _jsx('span', {
-	          className: 'expand col-lr'
-	        }, void 0, jsxdefines.Sparkline({ ref: i, col: 'DeltaBytesOutNum' })));
-	      }))))));
-	    }
-	  }]);
-
-	  return _class4;
-	}(DefineComponent);
-
-	var _ref10 = _jsx('span', {
-	  className: 'showhide-hide whitespace-pre float-left'
-	}, void 0, '... ');
-
-	var _ref11 = _jsx('div', {
-	  className: 'input-group-label text-nowrap'
-	}, void 0, 'rows');
-
-	var _ref12 = _jsx('div', {
-	  className: 'row thead'
-	}, void 0, _jsx('span', {
-	  className: 'expand col small-1'
-	}, void 0, 'Period'), _jsx('span', {
-	  className: 'expand col small-1 text-right'
-	}, void 0, ' Value'), _jsx('span', {
-	  className: 'expand col'
-	}));
-
-	jsxdefines.define_la = function (_DefineComponent5) {
-	  _inherits(_class5, _DefineComponent5);
-
-	  function _class5() {
-	    _classCallCheck(this, _class5);
-
-	    return _possibleConstructorReturn(this, (_class5.__proto__ || Object.getPrototypeOf(_class5)).apply(this, arguments));
-	  }
-
-	  _createClass(_class5, [{
-	    key: 'List',
-	    value: function List(data) {
-	      var list = void 0;
-	      if (data == null || data["la"] == null || (list = data["la"].List) == null) {
-	        return [];
-	      }
-	      return list;
-	    }
-	  }, {
-	    key: 'Reduce',
-	    value: function Reduce(data) {
-	      return {
-	        params: data.params,
-	        la: data.la
-	      };
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var Data = this.state; // shadow global Data
-	      return _jsx('div', {
-	        className: 'row expanded hr-bottom'
-	      }, void 0, _jsx('div', {
-	        className: 'column small-1 text-right'
-	      }, void 0, _jsx('div', {
-	        className: Data.params.Lan.Negative ? "show-showhide" : "hide-showhide"
-	      }, void 0, _jsx('h1', {
-	        className: 'h5 text-overflow'
-	      }, void 0, _jsx('a', {
-	        title: 'Load avg display options',
-	        href: Data.params.Tlinks.Lan,
-	        onClick: this.handleClick
-	      }, void 0, _ref10, 'Load avg')))), _jsx('div', {
-	        className: 'column large-11'
-	      }, void 0, _jsx('div', {
-	        className: Data.params.Lan.Negative ? "show-showhide" : "hide-showhide"
-	      }, void 0, _jsx('ul', {
-	        className: 'row menu showhide-show'
-	      }, void 0, _jsx('li', {}, void 0, _jsx('div', {
-	        className: 'input-group'
-	      }, void 0, _ref11, _jsx('div', {
-	        className: 'input-group-button'
-	      }, void 0, _jsx('button', {
-	        className: 'button small secondary disabled'
-	      }, void 0, Data.params.Lan.Absolute)), _jsx('div', {
-	        className: 'input-group-button'
-	      }, void 0, _jsx('button', {
-	        href: Data.params.Nlinks.Lan.Less.Href,
-	        onClick: this.handleClick,
-	        className: "text-nowrap button small " + (Data.params.Nlinks.Lan.Less.ExtraClass != null ? Data.params.Nlinks.Lan.Less.ExtraClass : "")
-	      }, void 0, '- ', Data.params.Nlinks.Lan.Less.Text)), _jsx('div', {
-	        className: 'input-group-button'
-	      }, void 0, _jsx('button', {
-	        href: Data.params.Nlinks.Lan.More.Href,
-	        onClick: this.handleClick,
-	        className: "text-nowrap button small " + (Data.params.Nlinks.Lan.More.ExtraClass != null ? Data.params.Nlinks.Lan.More.ExtraClass : "")
-	      }, void 0, Data.params.Nlinks.Lan.More.Text, ' +'))))), _jsx('div', {
-	        className: Data.params.Lan.Absolute == 0 ? "hide" : ""
-	      }, void 0, _jsx('div', {
-	        className: 'stripe'
-	      }, void 0, _ref12, this.List(Data).map(function ($la, i) {
-	        return _jsx('div', {
-	          className: 'row'
-	        }, "la-rowby-period-" + $la.Period, _jsx('span', {
-	          className: 'expand col small-1'
-	        }, void 0, _jsx('div', {
-	          className: 'text-right width-3rem'
-	        }, void 0, $la.Period, 'm')), _jsx('span', {
-	          className: 'expand col small-1 text-right'
-	        }, void 0, ' ', $la.Value), _jsx('span', {
-	          className: 'expand col-lr'
-	        }, void 0, jsxdefines.Sparkline({ ref: i, col: 'Value' })));
-	      }))))));
-	    }
-	  }]);
-
-	  return _class5;
-	}(DefineComponent);
-
-	var _ref13 = _jsx('span', {
-	  className: 'showhide-hide whitespace-pre float-left'
-	}, void 0, '... ');
-
-	var _ref14 = _jsx('div', {
-	  className: 'input-group-label text-nowrap'
-	}, void 0, 'rows');
-
-	var _ref15 = _jsx('div', {
-	  className: 'row thead'
-	}, void 0, _jsx('span', {
-	  className: 'expand col small-1'
-	}, void 0, 'Memory'), _jsx('span', {
-	  className: 'expand col small-1 text-right'
-	}, void 0, ' Total'), _jsx('span', {
-	  className: 'expand col small-1 text-right'
-	}, void 0, ' Used'), _jsx('span', {
-	  className: 'expand col small-1 text-right'
-	}, void 0, ' Free'), _jsx('span', {
-	  className: 'expand col small-1 text-right'
-	}, void 0, ' Use%'), _jsx('span', {
-	  className: 'expand col'
-	}));
-
-	jsxdefines.define_mem = function (_DefineComponent6) {
-	  _inherits(_class6, _DefineComponent6);
-
-	  function _class6() {
-	    _classCallCheck(this, _class6);
-
-	    return _possibleConstructorReturn(this, (_class6.__proto__ || Object.getPrototypeOf(_class6)).apply(this, arguments));
-	  }
-
-	  _createClass(_class6, [{
-	    key: 'List',
-	    value: function List(data) {
-	      var list = void 0;
-	      if (data == null || data["mem"] == null || (list = data["mem"].List) == null) {
-	        return [];
-	      }
-	      return list;
-	    }
-	  }, {
-	    key: 'Reduce',
-	    value: function Reduce(data) {
-	      return {
-	        params: data.params,
-	        mem: data.mem
-	      };
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var Data = this.state; // shadow global Data
-	      return _jsx('div', {
-	        className: 'row expanded hr-bottom'
-	      }, void 0, _jsx('div', {
-	        className: 'column small-1 text-right'
-	      }, void 0, _jsx('div', {
-	        className: Data.params.Memn.Negative ? "show-showhide" : "hide-showhide"
-	      }, void 0, _jsx('h1', {
-	        className: 'h5 text-overflow'
-	      }, void 0, _jsx('a', {
-	        title: 'Memory display options',
-	        href: Data.params.Tlinks.Memn,
-	        onClick: this.handleClick
-	      }, void 0, _ref13, 'Memory')))), _jsx('div', {
-	        className: 'column large-11'
-	      }, void 0, _jsx('div', {
-	        className: Data.params.Memn.Negative ? "show-showhide" : "hide-showhide"
-	      }, void 0, _jsx('ul', {
-	        className: 'row menu showhide-show'
-	      }, void 0, _jsx('li', {}, void 0, _jsx('div', {
-	        className: 'input-group'
-	      }, void 0, _ref14, _jsx('div', {
-	        className: 'input-group-button'
-	      }, void 0, _jsx('button', {
-	        className: 'button small secondary disabled'
-	      }, void 0, Data.params.Memn.Absolute)), _jsx('div', {
-	        className: 'input-group-button'
-	      }, void 0, _jsx('button', {
-	        href: Data.params.Nlinks.Memn.Less.Href,
-	        onClick: this.handleClick,
-	        className: "text-nowrap button small " + (Data.params.Nlinks.Memn.Less.ExtraClass != null ? Data.params.Nlinks.Memn.Less.ExtraClass : "")
-	      }, void 0, '- ', Data.params.Nlinks.Memn.Less.Text)), _jsx('div', {
-	        className: 'input-group-button'
-	      }, void 0, _jsx('button', {
-	        href: Data.params.Nlinks.Memn.More.Href,
-	        onClick: this.handleClick,
-	        className: "text-nowrap button small " + (Data.params.Nlinks.Memn.More.ExtraClass != null ? Data.params.Nlinks.Memn.More.ExtraClass : "")
-	      }, void 0, Data.params.Nlinks.Memn.More.Text, ' +'))))), _jsx('div', {
-	        className: Data.params.Memn.Absolute == 0 ? "hide" : ""
-	      }, void 0, _jsx('div', {
-	        className: 'stripe'
-	      }, void 0, _ref15, this.List(Data).map(function ($mem, i) {
-	        return _jsx('div', {
-	          className: 'row'
-	        }, "mem-rowby-kind-" + $mem.Kind, _jsx('span', {
-	          className: 'expand col small-1'
-	        }, void 0, $mem.Kind), _jsx('span', {
-	          className: 'expand col small-1 text-right'
-	        }, void 0, ' ', $mem.Total), _jsx('span', {
-	          className: 'expand col small-1 text-right'
-	        }, void 0, ' ', $mem.Used), _jsx('span', {
-	          className: 'expand col small-1 text-right'
-	        }, void 0, ' ', $mem.Free), _jsx('span', {
-	          className: 'expand col small-1 text-right bg-usepct',
-	          'data-usepct': $mem.UsePct
-	        }, void 0, ' ', $mem.UsePct, '%'), _jsx('span', {
-	          className: 'expand col-lr'
-	        }, void 0, jsxdefines.Sparkline({ ref: i, col: 'UsePct' })));
-	      }))))));
-	    }
-	  }]);
-
-	  return _class6;
-	}(DefineComponent);
-
-	var _ref16 = _jsx('span', {
-	  className: 'showhide-hide whitespace-pre float-left'
-	}, void 0, '... ');
-
-	var _ref17 = _jsx('div', {
-	  className: 'input-group-label text-nowrap'
-	}, void 0, 'rows');
-
-	jsxdefines.define_ps = function (_DefineComponent7) {
-	  _inherits(_class7, _DefineComponent7);
-
-	  function _class7() {
-	    _classCallCheck(this, _class7);
-
-	    return _possibleConstructorReturn(this, (_class7.__proto__ || Object.getPrototypeOf(_class7)).apply(this, arguments));
-	  }
-
-	  _createClass(_class7, [{
-	    key: 'List',
-	    value: function List(data) {
-	      var list = void 0;
-	      if (data == null || data["procs"] == null || (list = data["procs"].List) == null) {
-	        return [];
-	      }
-	      return list;
-	    }
-	  }, {
-	    key: 'Reduce',
-	    value: function Reduce(data) {
-	      return {
-	        params: data.params,
-	        procs: data.procs
-	      };
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var Data = this.state; // shadow global Data
-	      return _jsx('div', {
-	        className: 'row expanded hr-bottom'
-	      }, void 0, _jsx('div', {
-	        className: 'column small-1 text-right'
-	      }, void 0, _jsx('div', {
-	        className: Data.params.Psn.Negative ? "show-showhide" : "hide-showhide"
-	      }, void 0, _jsx('h1', {
-	        className: 'h5 text-overflow'
-	      }, void 0, _jsx('a', {
-	        title: 'Processes display options',
-	        href: Data.params.Tlinks.Psn,
-	        onClick: this.handleClick
-	      }, void 0, _ref16, 'Processes')))), _jsx('div', {
-	        className: 'column large-11'
-	      }, void 0, _jsx('div', {
-	        className: Data.params.Psn.Negative ? "show-showhide" : "hide-showhide"
-	      }, void 0, _jsx('ul', {
-	        className: 'row menu showhide-show'
-	      }, void 0, _jsx('li', {}, void 0, _jsx('div', {
-	        className: 'input-group'
-	      }, void 0, _ref17, _jsx('div', {
-	        className: 'input-group-button'
-	      }, void 0, _jsx('button', {
-	        className: 'button small secondary disabled'
-	      }, void 0, Data.params.Psn.Absolute)), _jsx('div', {
-	        className: 'input-group-button'
-	      }, void 0, _jsx('button', {
-	        href: Data.params.Nlinks.Psn.Less.Href,
-	        onClick: this.handleClick,
-	        className: "text-nowrap button small " + (Data.params.Nlinks.Psn.Less.ExtraClass != null ? Data.params.Nlinks.Psn.Less.ExtraClass : "")
-	      }, void 0, '- ', Data.params.Nlinks.Psn.Less.Text)), _jsx('div', {
-	        className: 'input-group-button'
-	      }, void 0, _jsx('button', {
-	        href: Data.params.Nlinks.Psn.More.Href,
-	        onClick: this.handleClick,
-	        className: "text-nowrap button small " + (Data.params.Nlinks.Psn.More.ExtraClass != null ? Data.params.Nlinks.Psn.More.ExtraClass : "")
-	      }, void 0, Data.params.Nlinks.Psn.More.Text, ' +'))))), _jsx('div', {
-	        className: Data.params.Psn.Absolute == 0 ? "hide" : ""
-	      }, void 0, _jsx('div', {
-	        className: 'stripe'
-	      }, void 0, _jsx('div', {
-	        className: 'row thead'
-	      }, void 0, _jsx('span', {
-	        className: 'expand col small-1 text-nowrap text-right'
-	      }, void 0, _jsx('a', {
-	        href: Data.params.Vlinks.Psk[1 - 1].LinkHref,
-	        className: Data.params.Vlinks.Psk[1 - 1].LinkClass,
-	        onClick: this.handleClick
-	      }, void 0, 'PID', _jsx('span', {
-	        className: Data.params.Vlinks.Psk[1 - 1].CaretClass
-	      }))), _jsx('span', {
-	        className: 'expand col small-1 text-nowrap text-right'
-	      }, void 0, _jsx('a', {
-	        href: Data.params.Vlinks.Psk[2 - 1].LinkHref,
-	        className: Data.params.Vlinks.Psk[2 - 1].LinkClass,
-	        onClick: this.handleClick
-	      }, void 0, 'UID', _jsx('span', {
-	        className: Data.params.Vlinks.Psk[2 - 1].CaretClass
-	      }))), _jsx('span', {
-	        className: 'expand col small-1 text-nowrap'
-	      }, void 0, _jsx('a', {
-	        href: Data.params.Vlinks.Psk[3 - 1].LinkHref,
-	        className: Data.params.Vlinks.Psk[3 - 1].LinkClass,
-	        onClick: this.handleClick
-	      }, void 0, 'USER', _jsx('span', {
-	        className: Data.params.Vlinks.Psk[3 - 1].CaretClass
-	      }))), _jsx('span', {
-	        className: 'expand col small-1 text-nowrap text-right'
-	      }, void 0, _jsx('a', {
-	        href: Data.params.Vlinks.Psk[4 - 1].LinkHref,
-	        className: Data.params.Vlinks.Psk[4 - 1].LinkClass,
-	        onClick: this.handleClick
-	      }, void 0, 'PR', _jsx('span', {
-	        className: Data.params.Vlinks.Psk[4 - 1].CaretClass
-	      }))), _jsx('span', {
-	        className: 'expand col small-1 text-nowrap text-right'
-	      }, void 0, _jsx('a', {
-	        href: Data.params.Vlinks.Psk[5 - 1].LinkHref,
-	        className: Data.params.Vlinks.Psk[5 - 1].LinkClass,
-	        onClick: this.handleClick
-	      }, void 0, 'NI', _jsx('span', {
-	        className: Data.params.Vlinks.Psk[5 - 1].CaretClass
-	      }))), _jsx('span', {
-	        className: 'expand col small-1 text-nowrap text-right'
-	      }, void 0, _jsx('a', {
-	        href: Data.params.Vlinks.Psk[6 - 1].LinkHref,
-	        className: Data.params.Vlinks.Psk[6 - 1].LinkClass,
-	        onClick: this.handleClick
-	      }, void 0, 'VIRT', _jsx('span', {
-	        className: Data.params.Vlinks.Psk[6 - 1].CaretClass
-	      }))), _jsx('span', {
-	        className: 'expand col small-1 text-nowrap text-right'
-	      }, void 0, _jsx('a', {
-	        href: Data.params.Vlinks.Psk[7 - 1].LinkHref,
-	        className: Data.params.Vlinks.Psk[7 - 1].LinkClass,
-	        onClick: this.handleClick
-	      }, void 0, 'RES', _jsx('span', {
-	        className: Data.params.Vlinks.Psk[7 - 1].CaretClass
-	      }))), _jsx('span', {
-	        className: 'expand col small-1 text-nowrap text-center'
-	      }, void 0, _jsx('a', {
-	        href: Data.params.Vlinks.Psk[8 - 1].LinkHref,
-	        className: Data.params.Vlinks.Psk[8 - 1].LinkClass,
-	        onClick: this.handleClick
-	      }, void 0, 'TIME', _jsx('span', {
-	        className: Data.params.Vlinks.Psk[8 - 1].CaretClass
-	      }))), _jsx('span', {
-	        className: 'expand col small-1 text-nowrap'
-	      }, void 0, _jsx('a', {
-	        href: Data.params.Vlinks.Psk[9 - 1].LinkHref,
-	        className: Data.params.Vlinks.Psk[9 - 1].LinkClass,
-	        onClick: this.handleClick
-	      }, void 0, 'COMMAND', _jsx('span', {
-	        className: Data.params.Vlinks.Psk[9 - 1].CaretClass
-	      })))), this.List(Data).map(function ($ps, i) {
-	        return _jsx('div', {
-	          className: 'row'
-	        }, "ps-rowby-pid-" + $ps.PID, _jsx('span', {
-	          className: 'expand col small-1 text-right'
-	        }, void 0, $ps.PID), _jsx('span', {
-	          className: 'expand col small-1 text-right'
-	        }, void 0, ' ', $ps.UID), _jsx('span', {
-	          className: 'expand col small-1'
-	        }, void 0, ' ', $ps.User), _jsx('span', {
-	          className: 'expand col small-1 text-right'
-	        }, void 0, ' ', $ps.Priority), _jsx('span', {
-	          className: 'expand col small-1 text-right'
-	        }, void 0, ' ', $ps.Nice), _jsx('span', {
-	          className: 'expand col small-1 text-right'
-	        }, void 0, ' ', $ps.Size), _jsx('span', {
-	          className: 'expand col small-1 text-right'
-	        }, void 0, ' ', $ps.Resident), _jsx('span', {
-	          className: 'expand col small-1 text-center'
-	        }, void 0, ' ', $ps.Time), _jsx('span', {
-	          className: 'expand col'
-	        }, void 0, ' ', $ps.Name));
-	      }))))));
-	    }
-	  }]);
-
-	  return _class7;
-	}(DefineComponent);
-
-	jsxdefines.define_uptime = function (_DefineComponent8) {
-	  _inherits(_class8, _DefineComponent8);
-
-	  function _class8() {
-	    _classCallCheck(this, _class8);
-
-	    return _possibleConstructorReturn(this, (_class8.__proto__ || Object.getPrototypeOf(_class8)).apply(this, arguments));
-	  }
-
-	  _createClass(_class8, [{
-	    key: 'Reduce',
-	    value: function Reduce(data) {
-	      return {
-	        system_ostent: data.system_ostent
-	      };
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var Data = this.state; // shadow global Data
-	      return _jsx('span', {}, void 0, Data.system_ostent.uptime_format);
-	    }
-	  }]);
-
-	  return _class8;
-	}(DefineComponent);
-
-	module.exports = jsxdefines;
-
-/***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	(function webpackUniversalModuleDefinition(root, factory) {
 		if(true)
-			module.exports = factory(__webpack_require__(1));
+			module.exports = factory(__webpack_require__(5));
 		else if(typeof define === 'function' && define.amd)
 			define(["react"], factory);
 		else if(typeof exports === 'object')
@@ -24894,6 +24814,373 @@
 	/***/ })
 	/******/ ]);
 	});
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// MIT License:
+	//
+	// Copyright (c) 2010-2012, Joe Walnes
+	//
+	// Permission is hereby granted, free of charge, to any person obtaining a copy
+	// of this software and associated documentation files (the "Software"), to deal
+	// in the Software without restriction, including without limitation the rights
+	// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	// copies of the Software, and to permit persons to whom the Software is
+	// furnished to do so, subject to the following conditions:
+	//
+	// The above copyright notice and this permission notice shall be included in
+	// all copies or substantial portions of the Software.
+	//
+	// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	// THE SOFTWARE.
+
+	/**
+	 * This behaves like a WebSocket in every way, except if it fails to connect,
+	 * or it gets disconnected, it will repeatedly poll until it successfully connects
+	 * again.
+	 *
+	 * It is API compatible, so when you have:
+	 *   ws = new WebSocket('ws://....');
+	 * you can replace with:
+	 *   ws = new ReconnectingWebSocket('ws://....');
+	 *
+	 * The event stream will typically look like:
+	 *  onconnecting
+	 *  onopen
+	 *  onmessage
+	 *  onmessage
+	 *  onclose // lost connection
+	 *  onconnecting
+	 *  onopen  // sometime later...
+	 *  onmessage
+	 *  onmessage
+	 *  etc...
+	 *
+	 * It is API compatible with the standard WebSocket API, apart from the following members:
+	 *
+	 * - `bufferedAmount`
+	 * - `extensions`
+	 * - `binaryType`
+	 *
+	 * Latest version: https://github.com/joewalnes/reconnecting-websocket/
+	 * - Joe Walnes
+	 *
+	 * Syntax
+	 * ======
+	 * var socket = new ReconnectingWebSocket(url, protocols, options);
+	 *
+	 * Parameters
+	 * ==========
+	 * url - The url you are connecting to.
+	 * protocols - Optional string or array of protocols.
+	 * options - See below
+	 *
+	 * Options
+	 * =======
+	 * Options can either be passed upon instantiation or set after instantiation:
+	 *
+	 * var socket = new ReconnectingWebSocket(url, null, { debug: true, reconnectInterval: 4000 });
+	 *
+	 * or
+	 *
+	 * var socket = new ReconnectingWebSocket(url);
+	 * socket.debug = true;
+	 * socket.reconnectInterval = 4000;
+	 *
+	 * debug
+	 * - Whether this instance should log debug messages. Accepts true or false. Default: false.
+	 *
+	 * automaticOpen
+	 * - Whether or not the websocket should attempt to connect immediately upon instantiation. The socket can be manually opened or closed at any time using ws.open() and ws.close().
+	 *
+	 * reconnectInterval
+	 * - The number of milliseconds to delay before attempting to reconnect. Accepts integer. Default: 1000.
+	 *
+	 * maxReconnectInterval
+	 * - The maximum number of milliseconds to delay a reconnection attempt. Accepts integer. Default: 30000.
+	 *
+	 * reconnectDecay
+	 * - The rate of increase of the reconnect delay. Allows reconnect attempts to back off when problems persist. Accepts integer or float. Default: 1.5.
+	 *
+	 * timeoutInterval
+	 * - The maximum time in milliseconds to wait for a connection to succeed before closing and retrying. Accepts integer. Default: 2000.
+	 *
+	 */
+	(function (global, factory) {
+	    if (true) {
+	        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	    } else if (typeof module !== 'undefined' && module.exports){
+	        module.exports = factory();
+	    } else {
+	        global.ReconnectingWebSocket = factory();
+	    }
+	})(this, function () {
+
+	    if (!('WebSocket' in window)) {
+	        return;
+	    }
+
+	    function ReconnectingWebSocket(url, protocols, options) {
+
+	        // Default settings
+	        var settings = {
+
+	            /** Whether this instance should log debug messages. */
+	            debug: false,
+
+	            /** Whether or not the websocket should attempt to connect immediately upon instantiation. */
+	            automaticOpen: true,
+
+	            /** The number of milliseconds to delay before attempting to reconnect. */
+	            reconnectInterval: 1000,
+	            /** The maximum number of milliseconds to delay a reconnection attempt. */
+	            maxReconnectInterval: 30000,
+	            /** The rate of increase of the reconnect delay. Allows reconnect attempts to back off when problems persist. */
+	            reconnectDecay: 1.5,
+
+	            /** The maximum time in milliseconds to wait for a connection to succeed before closing and retrying. */
+	            timeoutInterval: 2000,
+
+	            /** The maximum number of reconnection attempts to make. Unlimited if null. */
+	            maxReconnectAttempts: null
+	        }
+	        if (!options) { options = {}; }
+
+	        // Overwrite and define settings with options if they exist.
+	        for (var key in settings) {
+	            if (typeof options[key] !== 'undefined') {
+	                this[key] = options[key];
+	            } else {
+	                this[key] = settings[key];
+	            }
+	        }
+
+	        // These should be treated as read-only properties
+
+	        /** The URL as resolved by the constructor. This is always an absolute URL. Read only. */
+	        this.url = url;
+
+	        /** The number of attempted reconnects since starting, or the last successful connection. Read only. */
+	        this.reconnectAttempts = 0;
+
+	        /**
+	         * The current state of the connection.
+	         * Can be one of: WebSocket.CONNECTING, WebSocket.OPEN, WebSocket.CLOSING, WebSocket.CLOSED
+	         * Read only.
+	         */
+	        this.readyState = WebSocket.CONNECTING;
+
+	        /**
+	         * A string indicating the name of the sub-protocol the server selected; this will be one of
+	         * the strings specified in the protocols parameter when creating the WebSocket object.
+	         * Read only.
+	         */
+	        this.protocol = null;
+
+	        // Private state variables
+
+	        var self = this;
+	        var ws;
+	        var forcedClose = false;
+	        var timedOut = false;
+	        var eventTarget = document.createElement('div');
+
+	        // Wire up "on*" properties as event handlers
+
+	        eventTarget.addEventListener('open',       function(event) { self.onopen(event); });
+	        eventTarget.addEventListener('close',      function(event) { self.onclose(event); });
+	        eventTarget.addEventListener('connecting', function(event) { self.onconnecting(event); });
+	        eventTarget.addEventListener('message',    function(event) { self.onmessage(event); });
+	        eventTarget.addEventListener('error',      function(event) { self.onerror(event); });
+
+	        // Expose the API required by EventTarget
+
+	        this.addEventListener = eventTarget.addEventListener.bind(eventTarget);
+	        this.removeEventListener = eventTarget.removeEventListener.bind(eventTarget);
+	        this.dispatchEvent = eventTarget.dispatchEvent.bind(eventTarget);
+
+	        /**
+	         * This function generates an event that is compatible with standard
+	         * compliant browsers and IE9 - IE11
+	         *
+	         * This will prevent the error:
+	         * Object doesn't support this action
+	         *
+	         * http://stackoverflow.com/questions/19345392/why-arent-my-parameters-getting-passed-through-to-a-dispatched-event/19345563#19345563
+	         * @param s String The name that the event should use
+	         * @param args Object an optional object that the event will use
+	         */
+	        function generateEvent(s, args) {
+	        	var evt = document.createEvent("CustomEvent");
+	        	evt.initCustomEvent(s, false, false, args);
+	        	return evt;
+	        };
+
+	        this.open = function (reconnectAttempt) {
+	            ws = new WebSocket(self.url, protocols || []);
+
+	            if (reconnectAttempt) {
+	                if (this.maxReconnectAttempts && this.reconnectAttempts > this.maxReconnectAttempts) {
+	                    return;
+	                }
+	            } else {
+	                eventTarget.dispatchEvent(generateEvent('connecting'));
+	                this.reconnectAttempts = 0;
+	            }
+
+	            if (self.debug || ReconnectingWebSocket.debugAll) {
+	                console.debug('ReconnectingWebSocket', 'attempt-connect', self.url);
+	            }
+
+	            var localWs = ws;
+	            var timeout = setTimeout(function() {
+	                if (self.debug || ReconnectingWebSocket.debugAll) {
+	                    console.debug('ReconnectingWebSocket', 'connection-timeout', self.url);
+	                }
+	                timedOut = true;
+	                localWs.close();
+	                timedOut = false;
+	            }, self.timeoutInterval);
+
+	            ws.onopen = function(event) {
+	                clearTimeout(timeout);
+	                if (self.debug || ReconnectingWebSocket.debugAll) {
+	                    console.debug('ReconnectingWebSocket', 'onopen', self.url);
+	                }
+	                self.protocol = ws.protocol;
+	                self.readyState = WebSocket.OPEN;
+	                self.reconnectAttempts = 0;
+	                var e = generateEvent('open');
+	                e.isReconnect = reconnectAttempt;
+	                reconnectAttempt = false;
+	                eventTarget.dispatchEvent(e);
+	            };
+
+	            ws.onclose = function(event) {
+	                clearTimeout(timeout);
+	                ws = null;
+	                if (forcedClose) {
+	                    self.readyState = WebSocket.CLOSED;
+	                    eventTarget.dispatchEvent(generateEvent('close'));
+	                } else {
+	                    self.readyState = WebSocket.CONNECTING;
+	                    var e = generateEvent('connecting');
+	                    e.code = event.code;
+	                    e.reason = event.reason;
+	                    e.wasClean = event.wasClean;
+	                    eventTarget.dispatchEvent(e);
+	                    if (!reconnectAttempt && !timedOut) {
+	                        if (self.debug || ReconnectingWebSocket.debugAll) {
+	                            console.debug('ReconnectingWebSocket', 'onclose', self.url);
+	                        }
+	                        eventTarget.dispatchEvent(generateEvent('close'));
+	                    }
+
+	                    var timeout = self.reconnectInterval * Math.pow(self.reconnectDecay, self.reconnectAttempts);
+	                    setTimeout(function() {
+	                        self.reconnectAttempts++;
+	                        self.open(true);
+	                    }, timeout > self.maxReconnectInterval ? self.maxReconnectInterval : timeout);
+	                }
+	            };
+	            ws.onmessage = function(event) {
+	                if (self.debug || ReconnectingWebSocket.debugAll) {
+	                    console.debug('ReconnectingWebSocket', 'onmessage', self.url, event.data);
+	                }
+	                var e = generateEvent('message');
+	                e.data = event.data;
+	                eventTarget.dispatchEvent(e);
+	            };
+	            ws.onerror = function(event) {
+	                if (self.debug || ReconnectingWebSocket.debugAll) {
+	                    console.debug('ReconnectingWebSocket', 'onerror', self.url, event);
+	                }
+	                eventTarget.dispatchEvent(generateEvent('error'));
+	            };
+	        }
+
+	        // Whether or not to create a websocket upon instantiation
+	        if (this.automaticOpen == true) {
+	            this.open(false);
+	        }
+
+	        /**
+	         * Transmits data to the server over the WebSocket connection.
+	         *
+	         * @param data a text string, ArrayBuffer or Blob to send to the server.
+	         */
+	        this.send = function(data) {
+	            if (ws) {
+	                if (self.debug || ReconnectingWebSocket.debugAll) {
+	                    console.debug('ReconnectingWebSocket', 'send', self.url, data);
+	                }
+	                return ws.send(data);
+	            } else {
+	                throw 'INVALID_STATE_ERR : Pausing to reconnect websocket';
+	            }
+	        };
+
+	        /**
+	         * Closes the WebSocket connection or connection attempt, if any.
+	         * If the connection is already CLOSED, this method does nothing.
+	         */
+	        this.close = function(code, reason) {
+	            // Default CLOSE_NORMAL code
+	            if (typeof code == 'undefined') {
+	                code = 1000;
+	            }
+	            forcedClose = true;
+	            if (ws) {
+	                ws.close(code, reason);
+	            }
+	        };
+
+	        /**
+	         * Additional public API method to refresh the connection if still open (close, re-open).
+	         * For example, if the app suspects bad data / missed heart beats, it can try to refresh.
+	         */
+	        this.refresh = function() {
+	            if (ws) {
+	                ws.close();
+	            }
+	        };
+	    }
+
+	    /**
+	     * An event listener to be called when the WebSocket connection's readyState changes to OPEN;
+	     * this indicates that the connection is ready to send and receive data.
+	     */
+	    ReconnectingWebSocket.prototype.onopen = function(event) {};
+	    /** An event listener to be called when the WebSocket connection's readyState changes to CLOSED. */
+	    ReconnectingWebSocket.prototype.onclose = function(event) {};
+	    /** An event listener to be called when a connection begins being attempted. */
+	    ReconnectingWebSocket.prototype.onconnecting = function(event) {};
+	    /** An event listener to be called when a message is received from the server. */
+	    ReconnectingWebSocket.prototype.onmessage = function(event) {};
+	    /** An event listener to be called when an error occurs. */
+	    ReconnectingWebSocket.prototype.onerror = function(event) {};
+
+	    /**
+	     * Whether all instances of ReconnectingWebSocket should log debug messages.
+	     * Setting this to true is the equivalent of setting all instances of ReconnectingWebSocket.debug to true.
+	     */
+	    ReconnectingWebSocket.debugAll = false;
+
+	    ReconnectingWebSocket.CONNECTING = WebSocket.CONNECTING;
+	    ReconnectingWebSocket.OPEN = WebSocket.OPEN;
+	    ReconnectingWebSocket.CLOSING = WebSocket.CLOSING;
+	    ReconnectingWebSocket.CLOSED = WebSocket.CLOSED;
+
+	    return ReconnectingWebSocket;
+	});
+
 
 /***/ })
 /******/ ]);

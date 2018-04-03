@@ -289,6 +289,10 @@ mixin exporting
         b [[$expo.Header]]
         | [[$expo.Text]]
 
+mixin poke-purifycss
+  //
+    <div class="dropup"><div class="caret" /></div> */]]
+
 //- The index:
 doctype html
 html
@@ -301,34 +305,39 @@ html
     <!--[if IE]>
     link(rel='shortcut icon', href='/favicon.ico')
     <![endif]-->
-    link(rel='icon', sizes='32x32', href='/[[.OstentVersion]]/favicons/favicon-32.png', type='image/png')
-    link(rel='apple-touch-icon', sizes='120x120', href='/[[.OstentVersion]]/favicons/favicon-120.png')
-    link(rel='apple-touch-icon', sizes='144x144', href='/[[.OstentVersion]]/favicons/favicon-144.png')
-    link(rel='apple-touch-icon', sizes='152x152', href='/[[.OstentVersion]]/favicons/favicon-152.png')
-    link(rel='apple-touch-icon', sizes='180x180', href='/[[.OstentVersion]]/favicons/favicon-180.png')
+    link(rel='icon', sizes='32x32', href='/[[.Data.OstentVersion]]/favicons/favicon-32.png', type='image/png')
+    link(rel='apple-touch-icon', sizes='120x120', href='/[[.Data.OstentVersion]]/favicons/favicon-120.png')
+    link(rel='apple-touch-icon', sizes='144x144', href='/[[.Data.OstentVersion]]/favicons/favicon-144.png')
+    link(rel='apple-touch-icon', sizes='152x152', href='/[[.Data.OstentVersion]]/favicons/favicon-152.png')
+    link(rel='apple-touch-icon', sizes='180x180', href='/[[.Data.OstentVersion]]/favicons/favicon-180.png')
 
-    link(rel='stylesheet', type='text/css', href='/[[.OstentVersion]]/css/index.css')
+    link(rel='stylesheet', type='text/css', href='/[[.Data.OstentVersion]]/css/index.css')
 
   body
-    .top-bar
-      - var latestOstent = 'https://www.ostrost.com/ostent/releases/latest?cmp=[[.OstentVersion]]'
-      .top-bar-title: h2.h5.margin-bottom-0
-        span.updates(data-define='define_hostname') [[template "define_hostname" .]]
-        |  
-        a(href=latestOstent) ostent
-      +if('.OstentUpgrade'): .top-bar-left: a(href=latestOstent) [[.OstentUpgrade]]
-      div: .top-bar-right: h2.h5.margin-bottom-0: small
-        | [[.Distrib]] up 
-        span.updates.whitespace-pre(data-define='define_uptime') [[template "define_uptime" .]]
+    //-
+      .top-bar
+        - var latestOstent = 'https://www.ostrost.com/ostent/releases/latest?cmp=[[.OstentVersion]]'
+        .top-bar-title: h2.h5.margin-bottom-0
+          span.updates(data-define='define_hostname') [[template "define_hostname" .]]
+          |  
+          a(href=latestOstent) ostent
+        +if('.OstentUpgrade'): .top-bar-left: a(href=latestOstent) [[.OstentUpgrade]]
+        div: .top-bar-right: h2.h5.margin-bottom-0: small
+          | [[.Distrib]] up 
+          span.updates.whitespace-pre(data-define='define_uptime') [[template "define_uptime" .]]
 
-    .updates(data-define='define_la')  [[template "define_la"  .]]
-    .updates(data-define='define_mem') [[template "define_mem" .]]
-    .updates(data-define='define_df')  [[template "define_df"  .]]
-    .updates(data-define='define_cpu') [[template "define_cpu" .]]
-    .updates(data-define='define_if')  [[template "define_if"  .]]
-    .updates(data-define='define_ps')  [[template "define_ps"  .]]
-    +if('ne (len .Exporting) 0'): .row.expanded.hr-bottom: .column.large-11.small-offset-1: +exporting
+      .updates(data-define='define_la')  [[template "define_la"  .]]
+      .updates(data-define='define_mem') [[template "define_mem" .]]
+      .updates(data-define='define_df')  [[template "define_df"  .]]
+      .updates(data-define='define_cpu') [[template "define_cpu" .]]
+      .updates(data-define='define_if')  [[template "define_if"  .]]
+      .updates(data-define='define_ps')  [[template "define_ps"  .]]
+      +if('ne (len .Exporting) 0'): .row.expanded.hr-bottom: .column.large-11.small-offset-1: +exporting
+    #page [[template `page` .]]
 
+    //- last thing in <body>
     script(type='text/javascript').
       var Data = [[.Data]];
-    script(type='text/javascript', charset='utf-8', src='/[[.OstentVersion]]/js/[[if .TAGGEDbin]]min/bundle.min.js[[else]]src/bundle.js[[end]]')
+    script(type='text/javascript', charset='utf-8', src='/[[.Data.OstentVersion]]/js/[[if .Data.TAGGEDbin]]min/bundle.min.js[[else]]src/bundle.js[[end]]')
+
+    +poke-purifycss

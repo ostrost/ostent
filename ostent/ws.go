@@ -24,7 +24,7 @@ var (
 	// exporting is a "exporting to" list
 	exporting = new(struct {
 		rwmu sync.RWMutex
-		list exportingList
+		list []exportingItem
 	})
 )
 
@@ -105,14 +105,13 @@ func AddExporter(header, text string) {
 	e.list = append(e.list, exportingItem{Header: header, Text: text})
 }
 
-type exportingList []exportingItem
 type exportingItem struct{ Header, Text string }
 
-func exportingCopy() exportingList {
+func exportingCopy() []exportingItem {
 	e := exporting
 	e.rwmu.RLock()
 	defer e.rwmu.RUnlock()
-	dup := make(exportingList, len(exporting.list))
+	dup := make([]exportingItem, len(exporting.list))
 	copy(dup, e.list)
 	return dup
 }

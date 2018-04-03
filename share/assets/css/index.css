@@ -21,6 +21,10 @@ hr {
   overflow: visible;
 }
 
+main {
+  display: block;
+}
+
 pre {
   font-family: monospace,monospace;
   font-size: 1em;
@@ -581,6 +585,24 @@ button,input {
 @media print,screen and (min-width:64em) and (min-width:64em) {
   .large-expand {
     flex: 1 1 0px;
+  }
+}
+
+.column-block {
+  margin-bottom: 1.25rem;
+}
+
+.column-block>:last-child {
+  margin-bottom: 0;
+}
+
+@media print,screen and (min-width:40em) {
+  .column-block {
+    margin-bottom: 1.875rem;
+  }
+
+  .column-block>:last-child {
+    margin-bottom: 0;
   }
 }
 
@@ -1187,6 +1209,10 @@ a.button:focus,a.button:hover {
   color: inherit;
 }
 
+.no-js [data-responsive-menu] ul {
+  display: none;
+}
+
 .menu-icon {
   position: relative;
   display: inline-block;
@@ -1257,6 +1283,13 @@ input:checked+label>.switch-active {
 
 input:checked+label>.switch-inactive {
   display: none;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 1rem;
+  border-radius: 0;
 }
 
 thead {
@@ -1400,6 +1433,10 @@ h1.h5 {
 
 .hr-bottom,.top-bar {
   border-bottom: 1px solid #cacaca;
+}
+
+.stripe>.row.thead.nobold {
+  font-weight: inherit;
 }
 
 .stripe>.row.thead {

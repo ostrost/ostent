@@ -121,17 +121,14 @@ func (si ServeIndex) Index(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	si.IndexTemplate.Apply(w, struct {
-		StaticData
-		OstentUpgrade string
-		Exporting     exportingList
-		Data          IndexData
-	}{
-		StaticData:    si.StaticData,
-		OstentUpgrade: OstentUpgrade.Get(),
-		Exporting:     exportingCopy(), // from ./ws.go
-		Data:          data,
-	})
+
+	data["Distrib"] = si.StaticData.Distrib
+	data["Exporting"] = exportingCopy() // from ./ws.go
+	data["OstentUpgrade"] = OstentUpgrade.Get()
+	data["OstentVersion"] = si.StaticData.OstentVersion
+	data["TAGGEDbin"] = si.StaticData.TAGGEDbin
+
+	si.IndexTemplate.Apply(w, struct{ Data IndexData }{Data: data})
 }
 
 type SSE struct {

@@ -219,43 +219,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"><!--[if IE]>
     <link rel="shortcut icon" href="/favicon.ico"><![endif]-->
-    <link rel="icon" sizes="32x32" href="/[[.OstentVersion]]/favicons/favicon-32.png" type="image/png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/[[.OstentVersion]]/favicons/favicon-120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/[[.OstentVersion]]/favicons/favicon-144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/[[.OstentVersion]]/favicons/favicon-152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/[[.OstentVersion]]/favicons/favicon-180.png">
-    <link rel="stylesheet" type="text/css" href="/[[.OstentVersion]]/css/index.css">
+    <link rel="icon" sizes="32x32" href="/[[.Data.OstentVersion]]/favicons/favicon-32.png" type="image/png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/[[.Data.OstentVersion]]/favicons/favicon-120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/[[.Data.OstentVersion]]/favicons/favicon-144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/[[.Data.OstentVersion]]/favicons/favicon-152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/[[.Data.OstentVersion]]/favicons/favicon-180.png">
+    <link rel="stylesheet" type="text/css" href="/[[.Data.OstentVersion]]/css/index.css">
   </head>
   <body>
-    <div class="top-bar">
-      <div class="top-bar-title">
-        <h2 class="h5 margin-bottom-0"><span class="updates" data-define="define_hostname">[[template "define_hostname" .]]</span> <a href="https://www.ostrost.com/ostent/releases/latest?cmp=[[.OstentVersion]]">ostent</a></h2>
-      </div>[[if .OstentUpgrade]]
-      <div class="top-bar-left"><a href="https://www.ostrost.com/ostent/releases/latest?cmp=[[.OstentVersion]]">[[.OstentUpgrade]]</a></div>[[end]]
-      <div>
-        <div class="top-bar-right">
-          <h2 class="h5 margin-bottom-0"><small>[[.Distrib]] up <span class="updates whitespace-pre" data-define="define_uptime">[[template "define_uptime" .]]</span></small></h2>
-        </div>
-      </div>
-    </div>
-    <div class="updates" data-define="define_la"> [[template "define_la"  .]]</div>
-    <div class="updates" data-define="define_mem">[[template "define_mem" .]]</div>
-    <div class="updates" data-define="define_df"> [[template "define_df"  .]]</div>
-    <div class="updates" data-define="define_cpu">[[template "define_cpu" .]]</div>
-    <div class="updates" data-define="define_if"> [[template "define_if"  .]]</div>
-    <div class="updates" data-define="define_ps"> [[template "define_ps"  .]]</div>[[if ne (len .Exporting) 0]]
-    <div class="row expanded hr-bottom">
-      <div class="column large-11 small-offset-1">
-        <h5>Exporting</h5>
-        <div class="stripe">
-          <div class="row thead" style="font-weight: inherit;"><span class="expand small-12"><small>
-                <pre>[outputs][["\n"]]<i>    # [outputs.ostent] not counted nor shown. Counted <b>[[len .Exporting]] output[[if ne 1 (len .Exporting)]]s[[end]]</b>:</i></pre></small></span></div>[[range $expo := .Exporting]]
-          <div class="row"><span class="expand small-12"><small>
-                <pre><b>[[$expo.Header]]</b>[[$expo.Text]]</pre></small></span></div>[[end]]
-        </div>
-      </div>
-    </div>[[end]]
+    <div id="page">[[template `page` .]]</div>
     <script type="text/javascript">var Data = [[.Data]];</script>
-    <script type="text/javascript" charset="utf-8" src="/[[.OstentVersion]]/js/[[if .TAGGEDbin]]min/bundle.min.js[[else]]src/bundle.js[[end]]"></script>
+    <script type="text/javascript" charset="utf-8" src="/[[.Data.OstentVersion]]/js/[[if .Data.TAGGEDbin]]min/bundle.min.js[[else]]src/bundle.js[[end]]"></script>
+    <!--
+    <div class="dropup"><div class="caret" /></div> */]]
+    
+    -->
   </body>
 </html>

@@ -1,9 +1,13 @@
-// required Promises https://github.com/postcss/postcss-nested/issues/30
-require('es6-promise').polyfill();
+/* eslint indent:0 */
+/* esline-env node */
+/* global Buffer:false, __dirname:false, process:false, require:false */
 
 var child             = require('child_process'),
     ExtractTextPlugin = require('extract-text-webpack-plugin'),
+    React             = require('react'),
+    ReactDOMServer    = require('react-dom/server'),
     gulp              = require('gulp'),
+    babel             = require('gulp-babel'),
     header            = require('gulp-header'),
     pug               = require('gulp-pug'),
     rename            = require('gulp-rename'),
@@ -12,6 +16,7 @@ var child             = require('child_process'),
     _                 = require('lodash'),
     path              = require('path'),
     purify            = require('purifycss-webpack-plugin'),
+    through           = require('through2'),
     webpack           = require('webpack'),
     util              = require('util'),
     argv              = require('yargs').argv;
@@ -31,6 +36,41 @@ gulp.task('pug', function() {
     .pipe(gulp.dest('.'));
 });
 
+function ssr(options) {
+  return through.obj(function(file, enc, cb) {
+    if (file.isStream()) {
+      return cb(new gutil.PluginError('ssr', 'Streaming not supported'));
+    }
+    try {
+      var mod = eval(file.contents.toString());
+      var str = ReactDOMServer.renderToString(
+        React.createElement(mod, options));
+      file.contents = new Buffer('[[define "page"]]'+ str +'[[end]]');
+      return cb(null, file);
+    } catch (err) {
+      this.emit('error', new gutil.PluginError('ssr', err, {fileName: file.path}));
+    }
+    cb();
+  });
+}
+
+var babelOptions = {
+  plugins: [
+    'babel-plugin-transform-react-constant-elements',
+    'babel-plugin-transform-react-inline-elements',
+    'transform-react-jsx',
+    'transform-react-pug'],
+  presets: ['react', 'es2015']
+};
+
+gulp.task('ssr', function() {
+  gulp.src(argv.input)
+    .pipe(babel(babelOptions))
+    .pipe(ssr({ssr: true}))
+    .pipe(rename(argv.output))
+    .pipe(gulp.dest('.'));
+});
+
 var node_modules = path.join(__dirname, './node_modules');
 var wpconf = {
   bail: true,
@@ -46,13 +86,7 @@ var wpconf = {
         test: /\.jsx?$/,
         loader: 'babel',
         exclude: /node_modules/,
-        query: {
-          presets: ['react', 'es2015'],
-          plugins: ['transform-react-jsx',
-                    'babel-plugin-transform-react-constant-elements',
-                    'babel-plugin-transform-react-inline-elements'],
-          cacheDirectory: './share/cache'
-        }
+        query: babelOptions
       }
     ],
     postLoaders: [{loader: 'transform?envify'}]
