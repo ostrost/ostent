@@ -5,9 +5,9 @@ env:
   global:
     - DPL_DIR=~/deploy # ~/deploy is outside the clone dir
 install:
-  - set +eu # off undefs & fatal errors for rvm
+  - set +eu # off unbounds & fatal errors for rvm
   - rvm get stable
-  - set -eu # back to undefs & fatal errors
+  - set -e # back to fatal errors (unbounds still off)
   - source ./tools/sh/env.sh install_1
   - source ./tools/sh/env.sh install_2 $TRAVIS_REPO_SLUG
   - source ./tools/sh/env.sh install_3
