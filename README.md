@@ -4,9 +4,7 @@
 
 Ostent collects metrics to display and report to InfluxDB, Graphite, Librato.
 
-The interactive display UI ([**demo**](https://demo.ostrost.com/)):
-
-![Screenshot](https://www.ostrost.com/ostent/screenshot.png)
+![Screenshot](./screenshot.png)
 
 System metrics collected and reported:
 - RAM, swap usage
